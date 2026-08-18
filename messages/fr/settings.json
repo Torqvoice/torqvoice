@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Mis à niveau vers Enterprise avec succès !",
     "upgradeError": "Échec de la mise à niveau de l'abonnement",
     "demoBadge": "Démo",
-    "demoExpiresIn": "Expire dans {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}} ({date})"
+    "demoExpiresIn": "Expire dans {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}} ({date})",
+    "trialBadge": "Essai gratuit",
+    "trialDaysRemaining": "Il reste {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}} d'essai gratuit",
+    "trialChargeNotice": "Votre carte sera débitée de {amount}/{interval} le {date}, sauf si vous annulez avant.",
+    "trialCancelingWarning": "Votre essai se termine le {date}. Votre carte ne sera pas débitée et vous passerez au plan gratuit.",
+    "cancelTrialDialogDescription": "Votre essai reste actif jusqu'au {date}. Votre carte ne sera pas débitée et vous passerez ensuite au plan gratuit.",
+    "trialTitle": "Commencez votre essai gratuit de 14 jours",
+    "trialDescription": "Essayez Pro ou Enterprise gratuitement pendant 14 jours. Vous saisissez votre carte maintenant, mais rien n'est débité aujourd'hui.",
+    "trialStartPro": "Commencer l'essai Pro de 14 jours",
+    "trialStartEnterprise": "Commencer l'essai Enterprise de 14 jours",
+    "trialCardNotice": "Carte requise maintenant, rien n'est débité aujourd'hui. Le prix complet du plan (Pro $99/an, Enterprise $140/an) est débité automatiquement le {date}. Annulez avant et vous ne payez rien."
   },
   "ai": {
     "title": "Assistant IA",

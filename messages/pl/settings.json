@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Pomyślnie ulepszono do Enterprise!",
     "upgradeError": "Nie udało się ulepszyć subskrypcji",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})"
+    "demoExpiresIn": "Wygasa za {days, plural, =0 {mniej niż dzień} one {# dzień} other {# dni}} ({date})",
+    "trialBadge": "Darmowy okres próbny",
+    "trialDaysRemaining": "Do końca okresu próbnego {days, plural, =0 {pozostało mniej niż dzień} one {pozostał # dzień} other {pozostało # dni}}",
+    "trialChargeNotice": "Twoja karta zostanie obciążona kwotą {amount}/{interval} dnia {date}, chyba że wcześniej anulujesz.",
+    "trialCancelingWarning": "Twój okres próbny kończy się {date}. Twoja karta nie zostanie obciążona i przejdziesz na plan darmowy.",
+    "cancelTrialDialogDescription": "Twój okres próbny pozostanie aktywny do {date}. Twoja karta nie zostanie obciążona, a potem przejdziesz na plan darmowy.",
+    "trialTitle": "Rozpocznij 14-dniowy darmowy okres próbny",
+    "trialDescription": "Wypróbuj Pro lub Enterprise za darmo przez 14 dni. Podajesz kartę teraz, ale dziś nic nie płacisz.",
+    "trialStartPro": "Rozpocznij 14-dniowy okres próbny Pro",
+    "trialStartEnterprise": "Rozpocznij 14-dniowy okres próbny Enterprise",
+    "trialCardNotice": "Karta jest wymagana teraz, dziś nic nie płacisz. Pełna cena planu (Pro $99/rok, Enterprise $140/rok) zostanie pobrana automatycznie {date}. Anuluj wcześniej, a nic nie zapłacisz."
   },
   "ai": {
     "title": "Asystent AI",

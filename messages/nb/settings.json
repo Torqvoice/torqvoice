@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Vellykket oppgradert til Enterprise!",
     "upgradeError": "Kunne ikke oppgradere abonnementet",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Utløper om {days, plural, =0 {mindre enn én dag} one {# dag} other {# dager}} ({date})"
+    "demoExpiresIn": "Utløper om {days, plural, =0 {mindre enn én dag} one {# dag} other {# dager}} ({date})",
+    "trialBadge": "Gratis prøveperiode",
+    "trialDaysRemaining": "{days, plural, =0 {Mindre enn én dag} one {# dag} other {# dager}} igjen av prøveperioden",
+    "trialChargeNotice": "Kortet ditt belastes med {amount}/{interval} den {date} med mindre du kansellerer før det.",
+    "trialCancelingWarning": "Prøveperioden din slutter {date}. Kortet ditt blir ikke belastet, og du går over til Gratis-planen.",
+    "cancelTrialDialogDescription": "Prøveperioden din forblir aktiv til {date}. Kortet ditt blir ikke belastet, og etterpå er du på Gratis-planen.",
+    "trialTitle": "Start din 14-dagers gratis prøveperiode",
+    "trialDescription": "Prøv Pro eller Enterprise gratis i 14 dager. Du legger inn kortet nå, men ingenting trekkes i dag.",
+    "trialStartPro": "Start 14 dagers Pro-prøveperiode",
+    "trialStartEnterprise": "Start 14 dagers Enterprise-prøveperiode",
+    "trialCardNotice": "Kort kreves nå, ingenting trekkes i dag. Full planpris (Pro $99/år, Enterprise $140/år) trekkes automatisk den {date}. Kansellerer du før det, betaler du ingenting."
   },
   "ai": {
     "title": "AI-assistent",

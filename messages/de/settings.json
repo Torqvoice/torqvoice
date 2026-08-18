@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Erfolgreich auf Enterprise upgegradet!",
     "upgradeError": "Abonnement konnte nicht upgegradet werden",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Läuft in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}} ab ({date})"
+    "demoExpiresIn": "Läuft in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}} ab ({date})",
+    "trialBadge": "Kostenlose Testphase",
+    "trialDaysRemaining": "Noch {days, plural, =0 {weniger als ein Tag} one {# Tag} other {# Tage}} in Ihrer Testphase",
+    "trialChargeNotice": "Ihre Karte wird am {date} mit {amount}/{interval} belastet, sofern Sie nicht vorher kündigen.",
+    "trialCancelingWarning": "Ihre Testphase endet am {date}. Ihre Karte wird nicht belastet und Sie wechseln zum kostenlosen Plan.",
+    "cancelTrialDialogDescription": "Ihre Testphase bleibt bis {date} aktiv. Ihre Karte wird nicht belastet, danach nutzen Sie den kostenlosen Plan.",
+    "trialTitle": "Starten Sie Ihre 14-tägige kostenlose Testphase",
+    "trialDescription": "Testen Sie Pro oder Enterprise 14 Tage kostenlos. Sie hinterlegen Ihre Karte jetzt, heute wird nichts abgebucht.",
+    "trialStartPro": "14 Tage Pro kostenlos testen",
+    "trialStartEnterprise": "14 Tage Enterprise kostenlos testen",
+    "trialCardNotice": "Karte jetzt erforderlich, heute wird nichts abgebucht. Der volle Planpreis (Pro $99/Jahr, Enterprise $140/Jahr) wird am {date} automatisch abgebucht. Kündigen Sie vorher, zahlen Sie nichts."
   },
   "ai": {
     "title": "KI-Assistent",

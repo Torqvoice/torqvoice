@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
 import { isDemoMode } from "@/lib/demo";
+import { isTrialEligible, TRIAL_PERIOD_DAYS } from "@/lib/subscription-trial";
 
 export async function POST(request: Request) {
   try {
@@ -52,16 +53,31 @@ export async function POST(request: Request) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const stripe = await getStripeClient();
 
+    // First-time subscribers get a 14-day free trial. The card is collected
+    // up front ($0 due today) and Stripe automatically charges the full plan
+    // price when the trial ends. If the payment method somehow goes missing,
+    // the subscription cancels instead of charging.
+    const trialEligible = await isTrialEligible(membership.organizationId);
+
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: session.user.email,
       line_items: [{ price: priceId, quantity: 1 }],
+      payment_method_collection: "always",
       metadata: {
         type: "subscription",
         plan,
         organizationId: membership.organizationId,
       },
       subscription_data: {
+        ...(trialEligible
+          ? {
+              trial_period_days: TRIAL_PERIOD_DAYS,
+              trial_settings: {
+                end_behavior: { missing_payment_method: "cancel" },
+              },
+            }
+          : {}),
         metadata: {
           plan,
           organizationId: membership.organizationId,

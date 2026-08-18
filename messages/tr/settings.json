@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Enterprise'a başarıyla yükseltildi!",
     "upgradeError": "Abonelik yükseltilemedi",
     "demoBadge": "Demo",
-    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})"
+    "demoExpiresIn": "{days, plural, =0 {bir günden az} one {# gün} other {# gün}} içinde sona erer ({date})",
+    "trialBadge": "Ücretsiz Deneme",
+    "trialDaysRemaining": "Ücretsiz denemenizde {days, plural, =0 {bir günden az} one {# gün} other {# gün}} kaldı",
+    "trialChargeNotice": "Önceden iptal etmezseniz {date} tarihinde kartınızdan {amount}/{interval} tahsil edilecektir.",
+    "trialCancelingWarning": "Denemeniz {date} tarihinde sona eriyor. Kartınızdan ücret alınmayacak ve ücretsiz plana geçeceksiniz.",
+    "cancelTrialDialogDescription": "Denemeniz {date} tarihine kadar aktif kalacak. Kartınızdan ücret alınmayacak ve sonrasında ücretsiz planda olacaksınız.",
+    "trialTitle": "14 Günlük Ücretsiz Denemenizi Başlatın",
+    "trialDescription": "Pro veya Enterprise'ı 14 gün ücretsiz deneyin. Kartınızı şimdi girersiniz, ancak bugün hiçbir ücret alınmaz.",
+    "trialStartPro": "14 günlük Pro denemesini başlat",
+    "trialStartEnterprise": "14 günlük Enterprise denemesini başlat",
+    "trialCardNotice": "Şimdi kart gerekli, bugün ücret alınmaz. Tam plan fiyatı (Pro $99/yıl, Enterprise $140/yıl) {date} tarihinde otomatik olarak tahsil edilir. Öncesinde iptal ederseniz hiçbir şey ödemezsiniz."
   },
   "ai": {
     "title": "Yapay Zeka Asistani",

@@ -2,6 +2,7 @@ import { getAuthContext } from "@/lib/get-auth-context";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { isCloudMode, PLAN_FEATURES, type Plan } from "@/lib/features";
+import { isTrialEligible } from "@/lib/subscription-trial";
 import { SubscriptionSettings } from "@/features/subscription/Components/subscription-settings";
 
 export default async function SubscriptionPage() {
@@ -21,10 +22,15 @@ export default async function SubscriptionPage() {
     ? (subscription.plan.name.toLowerCase() === "enterprise" ? "enterprise" : "pro")
     : "free";
 
-  // A demo is a trialing subscription not backed by Stripe (granted from the
-  // admin panel). It carries full plan features but expires at currentPeriodEnd.
+  // "trialing" covers two cases: an admin-granted demo (no Stripe subscription
+  // behind it, granted from the admin panel) and a self-serve 14-day free
+  // trial started through Stripe Checkout (has a stripeSubscriptionId, card on
+  // file, converts to a paid subscription automatically at trial end).
   const isDemo =
     subscription?.status === "trialing" && !subscription?.stripeSubscriptionId;
+
+  // Orgs that never had a subscription can start a 14-day free trial.
+  const trialEligible = await isTrialEligible(authContext.organizationId);
 
   const features = PLAN_FEATURES[plan];
 
@@ -41,6 +47,7 @@ export default async function SubscriptionPage() {
     <SubscriptionSettings
       plan={plan}
       isDemo={isDemo}
+      trialEligible={trialEligible}
       status={subscription?.status ?? null}
       cancelAtPeriodEnd={subscription?.cancelAtPeriodEnd ?? false}
       currentPeriodEnd={subscription?.currentPeriodEnd?.toISOString() ?? null}

@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "¡Mejorado a Enterprise con éxito!",
     "upgradeError": "Error al mejorar la suscripción",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Caduca en {days, plural, =0 {menos de un día} one {# día} other {# días}} ({date})"
+    "demoExpiresIn": "Caduca en {days, plural, =0 {menos de un día} one {# día} other {# días}} ({date})",
+    "trialBadge": "Prueba gratuita",
+    "trialDaysRemaining": "{days, plural, =0 {Queda menos de un día} one {Queda # día} other {Quedan # días}} de su prueba gratuita",
+    "trialChargeNotice": "Se cargará {amount}/{interval} a su tarjeta el {date}, a menos que cancele antes.",
+    "trialCancelingWarning": "Su prueba termina el {date}. No se hará ningún cargo a su tarjeta y pasará al plan gratuito.",
+    "cancelTrialDialogDescription": "Su prueba seguirá activa hasta {date}. No se hará ningún cargo a su tarjeta y después pasará al plan gratuito.",
+    "trialTitle": "Comience su prueba gratuita de 14 días",
+    "trialDescription": "Pruebe Pro o Enterprise gratis durante 14 días. Introduzca su tarjeta ahora; hoy no se cobra nada.",
+    "trialStartPro": "Iniciar prueba de Pro de 14 días",
+    "trialStartEnterprise": "Iniciar prueba de Enterprise de 14 días",
+    "trialCardNotice": "Se requiere tarjeta ahora, hoy no se cobra nada. El precio completo del plan (Pro $99/año, Enterprise $140/año) se cobra automáticamente el {date}. Cancele antes y no pagará nada."
   },
   "ai": {
     "title": "Asistente de IA",

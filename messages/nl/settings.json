@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Succesvol geüpgraded naar Enterprise!",
     "upgradeError": "Upgrade van abonnement mislukt",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})"
+    "demoExpiresIn": "Verloopt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} ({date})",
+    "trialBadge": "Gratis proefperiode",
+    "trialDaysRemaining": "Nog {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}} in uw proefperiode",
+    "trialChargeNotice": "Uw kaart wordt op {date} belast met {amount}/{interval}, tenzij u eerder annuleert.",
+    "trialCancelingWarning": "Uw proefperiode eindigt op {date}. Uw kaart wordt niet belast en u gaat over naar het gratis plan.",
+    "cancelTrialDialogDescription": "Uw proefperiode blijft actief tot {date}. Uw kaart wordt niet belast en daarna gebruikt u het gratis plan.",
+    "trialTitle": "Start uw gratis proefperiode van 14 dagen",
+    "trialDescription": "Probeer Pro of Enterprise 14 dagen gratis. U voert uw kaart nu in, maar er wordt vandaag niets afgeschreven.",
+    "trialStartPro": "Start 14 dagen Pro-proefperiode",
+    "trialStartEnterprise": "Start 14 dagen Enterprise-proefperiode",
+    "trialCardNotice": "Kaart nu vereist, vandaag wordt niets afgeschreven. De volledige planprijs (Pro $99/jaar, Enterprise $140/jaar) wordt automatisch afgeschreven op {date}. Annuleer eerder en u betaalt niets."
   },
   "ai": {
     "title": "AI-assistent",

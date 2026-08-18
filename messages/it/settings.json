@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Aggiornato a Enterprise con successo!",
     "upgradeError": "Aggiornamento dell'abbonamento non riuscito",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Scade tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}} ({date})"
+    "demoExpiresIn": "Scade tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}} ({date})",
+    "trialBadge": "Prova gratuita",
+    "trialDaysRemaining": "{days, plural, =0 {Manca meno di un giorno} one {Manca # giorno} other {Mancano # giorni}} alla fine della prova gratuita",
+    "trialChargeNotice": "Il {date} verrà addebitato sulla tua carta {amount}/{interval}, a meno che tu non annulli prima.",
+    "trialCancelingWarning": "La tua prova termina il {date}. La tua carta non verrà addebitata e passerai al piano gratuito.",
+    "cancelTrialDialogDescription": "La tua prova resta attiva fino al {date}. La tua carta non verrà addebitata e dopo passerai al piano gratuito.",
+    "trialTitle": "Inizia la tua prova gratuita di 14 giorni",
+    "trialDescription": "Prova Pro o Enterprise gratis per 14 giorni. Inserisci la carta ora, ma oggi non viene addebitato nulla.",
+    "trialStartPro": "Inizia la prova Pro di 14 giorni",
+    "trialStartEnterprise": "Inizia la prova Enterprise di 14 giorni",
+    "trialCardNotice": "Carta richiesta ora, oggi non viene addebitato nulla. Il prezzo completo del piano (Pro $99/anno, Enterprise $140/anno) viene addebitato automaticamente il {date}. Annulla prima e non paghi nulla."
   },
   "ai": {
     "title": "Assistente IA",

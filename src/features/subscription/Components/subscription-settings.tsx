@@ -35,6 +35,7 @@ import type { PlanFeatures } from "@/lib/features";
 type Props = {
   plan: string;
   isDemo: boolean;
+  trialEligible: boolean;
   status: string | null;
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: string | null;
@@ -49,6 +50,7 @@ type Props = {
 export function SubscriptionSettings({
   plan,
   isDemo,
+  trialEligible,
   status,
   cancelAtPeriodEnd,
   currentPeriodEnd,
@@ -75,12 +77,16 @@ export function SubscriptionSettings({
   const [previewLoading, setPreviewLoading] = useState(false);
 
   const isPaid = plan === "pro" || plan === "enterprise";
-  const isCanceling = cancelAtPeriodEnd && status === "active";
+  // A Stripe-backed free trial (card on file, converts to paid at trial end).
+  // Admin-granted demos also carry "trialing" but are flagged isDemo instead.
+  const isTrialing = status === "trialing" && !isDemo;
+  const isCanceling =
+    cancelAtPeriodEnd && (status === "active" || status === "trialing");
   const isPastDue = status === "past_due";
 
-  // Whole days left until a demo expires (0 once past the expiry date).
-  const demoDaysRemaining =
-    isDemo && currentPeriodEnd
+  // Whole days left until a demo or trial expires (0 once past the end date).
+  const daysRemaining =
+    (isDemo || isTrialing) && currentPeriodEnd
       ? Math.max(
           0,
           Math.ceil(
@@ -232,6 +238,10 @@ export function SubscriptionSettings({
     <Badge variant="outline" className="border-yellow-500 text-yellow-600">
       {t("subscription.statusCanceling")}
     </Badge>
+  ) : isTrialing ? (
+    <Badge variant="outline" className="border-blue-500 text-blue-600">
+      {t("subscription.trialBadge")}
+    </Badge>
   ) : status === "active" ? (
     <Badge variant="outline" className="border-green-500 text-green-600">
       {t("subscription.statusActive")}
@@ -290,9 +300,28 @@ export function SubscriptionSettings({
           {isDemo && currentPeriodEnd && (
             <div className="text-sm text-amber-600">
               {t("subscription.demoExpiresIn", {
-                days: demoDaysRemaining ?? 0,
+                days: daysRemaining ?? 0,
                 date: formatDate(currentPeriodEnd),
               })}
+            </div>
+          )}
+
+          {isTrialing && currentPeriodEnd && (
+            <div className="flex flex-col gap-1 text-sm">
+              <div className="text-blue-600">
+                {t("subscription.trialDaysRemaining", {
+                  days: daysRemaining ?? 0,
+                })}
+              </div>
+              {!isCanceling && (
+                <div className="text-muted-foreground">
+                  {t("subscription.trialChargeNotice", {
+                    amount: `$${planPrice}`,
+                    interval: intervalLabel,
+                    date: formatDate(currentPeriodEnd),
+                  })}
+                </div>
+              )}
             </div>
           )}
 
@@ -335,7 +364,9 @@ export function SubscriptionSettings({
             <div className="flex items-center gap-2 rounded-md border border-yellow-500/50 bg-yellow-500/10 p-3">
               <AlertTriangle className="h-4 w-4 text-yellow-600 shrink-0" />
               <p className="text-sm text-yellow-600">
-                {t("subscription.cancelingWarning", { date: formatDate(currentPeriodEnd) })}
+                {isTrialing
+                  ? t("subscription.trialCancelingWarning", { date: formatDate(currentPeriodEnd) })
+                  : t("subscription.cancelingWarning", { date: formatDate(currentPeriodEnd) })}
               </p>
             </div>
           )}
@@ -402,7 +433,7 @@ export function SubscriptionSettings({
                 {t("subscription.resumeSubscription")}
               </Button>
             ) : (
-              status === "active" && !cancelAtPeriodEnd && (
+              (status === "active" || isTrialing) && !cancelAtPeriodEnd && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive">
@@ -413,9 +444,13 @@ export function SubscriptionSettings({
                     <AlertDialogHeader>
                       <AlertDialogTitle>{t("subscription.cancelDialogTitle")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        {t("subscription.cancelDialogDescription", {
-                          date: formatDate(currentPeriodEnd),
-                        })}
+                        {isTrialing
+                          ? t("subscription.cancelTrialDialogDescription", {
+                              date: formatDate(currentPeriodEnd),
+                            })
+                          : t("subscription.cancelDialogDescription", {
+                              date: formatDate(currentPeriodEnd),
+                            })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -436,13 +471,20 @@ export function SubscriptionSettings({
           </AppCard>
       )}
 
-      {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout */}
+      {/* Upgrade Section — free users and demo users subscribe via Stripe Checkout.
+          First-time subscribers get a 14-day free trial (card required, full
+          amount charged automatically at trial end). */}
       {(plan === "free" || isDemo) && (
         <AppCard
-          title={t("subscription.upgradeTitle")}
-          description={t("subscription.upgradeToProDescription")}
+          title={trialEligible ? t("subscription.trialTitle") : t("subscription.upgradeTitle")}
+          description={
+            trialEligible
+              ? t("subscription.trialDescription")
+              : t("subscription.upgradeToProDescription")
+          }
+          contentClassName="space-y-3"
         >
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="default"
                 size="sm"
@@ -454,7 +496,9 @@ export function SubscriptionSettings({
                 ) : (
                   <Zap className="mr-2 h-4 w-4" />
                 )}
-                {t("subscription.upgradeToPro")}
+                {trialEligible
+                  ? t("subscription.trialStartPro")
+                  : t("subscription.upgradeToPro")}
               </Button>
               <Button
                 variant="outline"
@@ -467,9 +511,20 @@ export function SubscriptionSettings({
                 ) : (
                   <Crown className="mr-2 h-4 w-4" />
                 )}
-                {t("subscription.upgradeToEnterprise")}
+                {trialEligible
+                  ? t("subscription.trialStartEnterprise")
+                  : t("subscription.upgradeToEnterprise")}
               </Button>
             </div>
+            {trialEligible && (
+              <p className="text-sm text-muted-foreground">
+                {t("subscription.trialCardNotice", {
+                  date: formatDate(
+                    new Date(Date.now() + 14 * 86_400_000).toISOString(),
+                  ),
+                })}
+              </p>
+            )}
           </AppCard>
       )}
 

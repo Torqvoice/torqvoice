@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Sėkmingai atnaujinta į Enterprise!",
     "upgradeError": "Nepavyko atnaujinti prenumeratos",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})"
+    "demoExpiresIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} other {# dienų}} ({date})",
+    "trialBadge": "Nemokamas bandomasis laikotarpis",
+    "trialDaysRemaining": "Iki bandomojo laikotarpio pabaigos liko {days, plural, =0 {mažiau nei diena} one {# diena} other {# dienų}}",
+    "trialChargeNotice": "{date} nuo jūsų kortelės bus nuskaičiuota {amount}/{interval}, nebent atšauksite anksčiau.",
+    "trialCancelingWarning": "Jūsų bandomasis laikotarpis baigiasi {date}. Nuo kortelės nebus nuskaičiuota ir jūs pereisite į nemokamą planą.",
+    "cancelTrialDialogDescription": "Jūsų bandomasis laikotarpis liks aktyvus iki {date}. Nuo kortelės nebus nuskaičiuota, o po to naudositės nemokamu planu.",
+    "trialTitle": "Pradėkite 14 dienų nemokamą bandomąjį laikotarpį",
+    "trialDescription": "Išbandykite Pro arba Enterprise nemokamai 14 dienų. Kortelę įvedate dabar, bet šiandien niekas nenuskaičiuojama.",
+    "trialStartPro": "Pradėti 14 dienų Pro bandomąjį laikotarpį",
+    "trialStartEnterprise": "Pradėti 14 dienų Enterprise bandomąjį laikotarpį",
+    "trialCardNotice": "Kortelė reikalinga dabar, šiandien niekas nenuskaičiuojama. Visa plano kaina (Pro $99/m., Enterprise $140/m.) nuskaičiuojama automatiškai {date}. Atšaukite anksčiau ir nieko nemokėsite."
   },
   "ai": {
     "title": "DI asistentas",

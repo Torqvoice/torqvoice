@@ -1191,7 +1191,17 @@
     "upgradeSuccess": "Successfully upgraded to Enterprise!",
     "upgradeError": "Failed to upgrade subscription",
     "demoBadge": "Demo",
-    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})"
+    "demoExpiresIn": "Expires in {days, plural, =0 {less than a day} one {# day} other {# days}} ({date})",
+    "trialBadge": "Free Trial",
+    "trialDaysRemaining": "{days, plural, =0 {Less than a day} one {# day} other {# days}} left in your free trial",
+    "trialChargeNotice": "Your card will be charged {amount}/{interval} on {date} unless you cancel before then.",
+    "trialCancelingWarning": "Your trial ends on {date}. Your card will not be charged, and you will move to the Free plan.",
+    "cancelTrialDialogDescription": "Your trial stays active until {date}. Your card will not be charged, and after that you will be on the Free plan.",
+    "trialTitle": "Start Your 14-Day Free Trial",
+    "trialDescription": "Try Pro or Enterprise free for 14 days. You enter your card now, but nothing is charged today.",
+    "trialStartPro": "Start 14-day Pro trial",
+    "trialStartEnterprise": "Start 14-day Enterprise trial",
+    "trialCardNotice": "Card required now, nothing charged today. The full plan price (Pro $99/yr, Enterprise $140/yr) is charged automatically on {date}. Cancel before then and you pay nothing."
   },
   "ai": {
     "title": "AI Assistant",

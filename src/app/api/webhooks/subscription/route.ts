@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 import { getStripeClient, getStripeConfig } from "@/lib/stripe-config";
+import { notify } from "@/lib/notify";
 
 export async function POST(request: Request) {
   try {
@@ -84,6 +85,13 @@ export async function POST(request: Request) {
 
         const currentItem = subscription.items.data[0];
 
+        // A checkout with a free trial produces a "trialing" subscription;
+        // record it as such so the UI can show trial status. Stripe flips it
+        // to "active" at trial end (handled by customer.subscription.updated
+        // and the nightly reconcile).
+        const initialStatus =
+          subscription.status === "trialing" ? "trialing" : "active";
+
         await db.subscription.upsert({
           where: { organizationId },
           create: {
@@ -94,7 +102,7 @@ export async function POST(request: Request) {
               typeof subscription.customer === "string"
                 ? subscription.customer
                 : subscription.customer?.id ?? null,
-            status: "active",
+            status: initialStatus,
             currentPeriodStart: currentItem?.current_period_start
               ? new Date(currentItem.current_period_start * 1000)
               : null,
@@ -109,7 +117,7 @@ export async function POST(request: Request) {
               typeof subscription.customer === "string"
                 ? subscription.customer
                 : subscription.customer?.id ?? null,
-            status: "active",
+            status: initialStatus,
             currentPeriodStart: currentItem?.current_period_start
               ? new Date(currentItem.current_period_start * 1000)
               : null,
@@ -207,6 +215,56 @@ export async function POST(request: Request) {
               update: { value: "free" },
             });
           }
+        }
+
+        break;
+      }
+
+      case "customer.subscription.trial_will_end": {
+        // Stripe sends this 3 days before the trial ends. Warn the org in-app
+        // that the full plan price will be charged automatically.
+        const subscription = event.data.object as Stripe.Subscription;
+        const existing = await db.subscription.findUnique({
+          where: { stripeSubscriptionId: subscription.id },
+          include: { plan: true },
+        });
+
+        if (!existing || existing.status !== "trialing") {
+          return NextResponse.json({ received: true });
+        }
+
+        // Idempotent: Stripe may redeliver the event.
+        const alreadyNotified = await db.notification.findFirst({
+          where: {
+            organizationId: existing.organizationId,
+            type: "subscription_trial_ending",
+            entityId: existing.id,
+          },
+          select: { id: true },
+        });
+
+        if (!alreadyNotified) {
+          const trialEnd = subscription.trial_end
+            ? new Date(subscription.trial_end * 1000)
+            : existing.currentPeriodEnd;
+          const chargeDate = trialEnd
+            ? trialEnd.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            : "soon";
+          const interval = existing.plan.interval === "month" ? "month" : "year";
+
+          await notify({
+            organizationId: existing.organizationId,
+            type: "subscription_trial_ending",
+            title: "Your free trial ends in 3 days",
+            message: `Your card will be charged $${existing.plan.price}/${interval} for the ${existing.plan.name} plan on ${chargeDate}. Cancel before then in Settings > Subscription to avoid the charge.`,
+            entityType: "subscription",
+            entityId: existing.id,
+            entityUrl: "/settings/subscription",
+          });
         }
 
         break;
