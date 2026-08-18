@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { useGlassModal } from "@/components/glass-modal";
 import { createLaborPreset, updateLaborPreset } from "../Actions/laborPresetActions";
 import { Loader2, Plus, Trash2 } from "lucide-react";
@@ -257,6 +258,7 @@ export function LaborPresetForm({ open, onOpenChange, preset, defaultLaborRate =
           <DialogTitle>
             {preset ? t("form.editPackage") : t("form.addPackage")}
           </DialogTitle>
+          <DocsLink href="/docs/configuration/work-orders/labor-presets" variant="hint" className="self-start" />
         </DialogHeader>
 
         {/* Mode tabs */}

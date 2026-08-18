@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { useGlassModal } from "@/components/glass-modal";
 import { toast } from "sonner";
 import { createCustomer, updateCustomer } from "../Actions/customerActions";
@@ -89,6 +90,7 @@ export function CustomerForm({ open, onOpenChange, customer, onCreated }: Custom
           <DialogTitle>
             {customer ? t("editTitle") : t("addTitle")}
           </DialogTitle>
+          <DocsLink href="/docs/features/customers" variant="hint" className="self-start" />
           <DialogDescription className="sr-only">
             {customer ? t("editTitle") : t("addTitle")}
           </DialogDescription>

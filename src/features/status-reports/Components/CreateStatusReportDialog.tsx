@@ -6,6 +6,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import {
   Drawer, DrawerContent, DrawerHeader, DrawerTitle,
   DrawerDescription, DrawerFooter,
@@ -232,6 +233,7 @@ export function CreateStatusReportDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
+          <DocsLink href="/docs/features/status-reports" variant="hint" className="self-start" />
           <DialogDescription>{vehicleName}</DialogDescription>
         </DialogHeader>
         {formContent}

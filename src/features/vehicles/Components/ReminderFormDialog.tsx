@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { CalendarIcon, Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -164,6 +165,7 @@ export function ReminderFormDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{isEdit ? tv("editTitle") : tv("addTitle")}</DialogTitle>
+          <DocsLink href="/docs/features/reminders" variant="hint" className="self-start" />
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Target: workshop (nothing), customer, or vehicle */}

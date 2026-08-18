@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -122,6 +123,7 @@ export function TechnicianDialog({
           <DialogTitle>
             {technician ? t("editTitle") : t("addTitle")}
           </DialogTitle>
+          <DocsLink href="/docs/configuration/work-orders/technician-assignment" variant="hint" className="self-start" />
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">

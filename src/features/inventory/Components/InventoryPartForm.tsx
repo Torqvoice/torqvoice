@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import { toast } from "sonner";
 import { useGlassModal } from "@/components/glass-modal";
 import { createInventoryPart, updateInventoryPart, deleteOrphanedUploads } from "../Actions/inventoryActions";
@@ -338,6 +339,7 @@ export function InventoryPartForm({ open, onOpenChange, part, markupMultiplier, 
             <DialogTitle>
               {part ? t('form.editPart') : t('form.addNewPart')}
             </DialogTitle>
+            <DocsLink href="/docs/features/inventory" className="ml-auto" />
             {/* Only meaningful for a saved part — a new one has no history yet.
                 Opens on top of this dialog rather than replacing it, so
                 in-progress edits and uploads are not discarded. */}

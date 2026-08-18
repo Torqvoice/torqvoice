@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DocsLink } from '@/components/docs-link'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import {
@@ -302,6 +303,7 @@ export function CustomFieldsManager({
             <DialogTitle>
               {editing ? t('customFields.editField') : t('customFields.newField')}
             </DialogTitle>
+            <DocsLink href="/docs/configuration/custom-fields" variant="hint" className="self-start" />
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">

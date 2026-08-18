@@ -19,6 +19,7 @@ import { AlertTriangle, Search, X, Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
+import { DocsLink } from '@/components/docs-link'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -73,6 +74,24 @@ const docsMap: Record<string, string> = {
   '/settings/webhooks': '/docs/integrations/webhooks',
   '/settings/subscription': '/docs/configuration/subscription',
   '/settings/license': '/docs/licensing/white-label',
+  '/': '/docs/features/dashboard',
+  '/settings/company': '/docs/configuration/workshop-profile',
+  '/settings/workshop': '/docs/configuration/workshop-profile',
+  '/settings/localization': '/docs/configuration/localization',
+  '/settings/appearance': '/docs/configuration/localization',
+  '/settings/tax': '/docs/configuration/tax',
+  '/settings/invoice': '/docs/configuration/invoice-numbering',
+  '/settings/payment': '/docs/configuration/payment-providers',
+  '/settings/custom-fields': '/docs/configuration/custom-fields',
+  '/settings/maintenance': '/docs/configuration/predicted-maintenance',
+  '/settings/data': '/docs/configuration/backup-and-restore',
+  '/settings/alerts': '/docs/features/low-stock-alerts',
+  '/settings/ai': '/docs/integrations/ai',
+  '/settings/telegram': '/docs/integrations/telegram',
+  '/telegram': '/docs/integrations/telegram',
+  '/settings/report-schedule': '/docs/features/reports',
+  '/settings/account': '/docs/security/passkeys-and-2fa',
+  '/sales': '/docs/features/work-orders',
 }
 
 const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
@@ -198,16 +217,7 @@ export function PageHeader() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="ml-auto flex items-center gap-2">
-        {docsHref && (
-          <a
-            href={`https://torqvoice.com${docsHref}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden shrink-0 rounded text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:inline"
-          >
-            {tn('readMore')} →
-          </a>
-        )}
+        {docsHref && <DocsLink href={docsHref} className="hidden sm:inline" />}
         <SearchTrigger />
         <QuickCreateMenu />
         {showWhiteLabelCta && (

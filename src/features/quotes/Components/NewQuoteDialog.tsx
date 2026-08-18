@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DocsLink } from '@/components/docs-link'
 import { Loader2 } from 'lucide-react'
 import { createQuote } from '../Actions/quoteActions'
 import { VehicleCombobox } from './VehicleCombobox'
@@ -99,6 +100,7 @@ export function NewQuoteDialog({
       <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{t('form.newQuote')}</DialogTitle>
+          <DocsLink href="/docs/features/quotes" variant="hint" className="self-start" />
         </DialogHeader>
         <form onSubmit={handleCreate} className="space-y-4">
           <div className="space-y-2">
