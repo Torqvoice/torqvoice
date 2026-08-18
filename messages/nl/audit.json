@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Gepland bericht verzonden",
     "settings_applyTaxRate": "Btw-tarief toegepast",
     "settings_convertToExclusive": "Prijzen omgezet naar exclusief btw",
-    "settings_convertToInclusive": "Prijzen omgezet naar inclusief btw"
+    "settings_convertToInclusive": "Prijzen omgezet naar inclusief btw",
+    "organization_sampleDataRemove": "Voorbeeldgegevens verwijderd"
   }
 }

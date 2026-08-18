@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Išsiųsta suplanuota žinutė",
     "settings_applyTaxRate": "Pritaikytas mokesčio tarifas",
     "settings_convertToExclusive": "Kainos konvertuotos be mokesčio",
-    "settings_convertToInclusive": "Kainos konvertuotos su mokesčiu"
+    "settings_convertToInclusive": "Kainos konvertuotos su mokesčiu",
+    "organization_sampleDataRemove": "Pašalinti pavyzdiniai duomenys"
   }
 }

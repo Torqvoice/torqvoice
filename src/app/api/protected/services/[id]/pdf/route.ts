@@ -13,6 +13,7 @@ import { getFeatures } from "@/lib/features";
 import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
 import { formatDateForPdf } from "@/lib/format";
 import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
+import { markInvoiceIssued } from "@/features/onboarding/Lib/markInvoiceIssued";
 
 export async function GET(
   _request: Request,
@@ -98,6 +99,10 @@ export async function GET(
     if (!record) {
       return NextResponse.json({ error: "Record not found" }, { status: 404 });
     }
+
+    // Getting-started checklist: a downloaded invoice leaves no other trace
+    // in the data, so record it here. Best-effort, never blocks the PDF.
+    void markInvoiceIssued(ctx.organizationId, ctx.userId, record.id);
 
     // Fetch findings for this service record (open ones to show on invoice)
     const findings = await db.vehicleFinding.findMany({

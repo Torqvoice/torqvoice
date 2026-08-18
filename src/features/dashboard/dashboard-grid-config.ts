@@ -5,6 +5,7 @@
  */
 
 export const DASHBOARD_CARD_IDS = [
+  "gettingStarted",
   "maintenance",
   "reminders",
   "sms",
@@ -50,17 +51,20 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
   version: 1,
   hidden: [],
   cards: {
-    maintenance: half(0, 0),
-    reminders: half(6, 0),
-    sms: half(0, 5),
-    notifications: half(6, 5),
-    inspections: half(0, 10),
-    quoteRequests: half(6, 10),
-    quoteResponses: half(0, 15),
-    recentCompleted: full(20),
-    activeJobs: full(25),
-    recentActivity: half(0, 30),
-    recentObservations: half(6, 30),
+    // First-run checklist leads the grid; rows compact upward once it is
+    // gone (dismissed or not offered), so established users see no hole.
+    gettingStarted: full(0, 4),
+    maintenance: half(0, 4),
+    reminders: half(6, 4),
+    sms: half(0, 9),
+    notifications: half(6, 9),
+    inspections: half(0, 14),
+    quoteRequests: half(6, 14),
+    quoteResponses: half(0, 19),
+    recentCompleted: full(24),
+    activeJobs: full(29),
+    recentActivity: half(0, 34),
+    recentObservations: half(6, 34),
   },
 };
 

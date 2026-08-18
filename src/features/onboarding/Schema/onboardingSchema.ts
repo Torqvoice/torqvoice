@@ -6,6 +6,7 @@ export const onboardingSchema = z.object({
     .min(2, "Workshop name must be at least 2 characters")
     .max(100, "Workshop name must be at most 100 characters")
     .trim(),
+  loadSampleData: z.boolean().default(true),
 });
 
 export type OnboardingInput = z.infer<typeof onboardingSchema>;

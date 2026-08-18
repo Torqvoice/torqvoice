@@ -61,6 +61,7 @@ export default getRequestConfig(async () => {
   const statusReport = (await import(`../../messages/${locale}/statusReport.json`)).default
   const support = (await import(`../../messages/${locale}/support.json`)).default
   const inspections = (await import(`../../messages/${locale}/inspections.json`)).default
+  const onboarding = (await import(`../../messages/${locale}/onboarding.json`)).default
 
   return {
     locale,
@@ -96,6 +97,7 @@ export default getRequestConfig(async () => {
       statusReport,
       support,
       inspections,
+      onboarding,
     },
   }
 })

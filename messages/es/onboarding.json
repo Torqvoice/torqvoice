@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Configure su taller",
+    "subtitle": "Ingrese el nombre de su taller para comenzar",
+    "workshopName": "Nombre del taller",
+    "workshopNamePlaceholder": "Mi Taller Mecánico",
+    "submit": "Comenzar",
+    "sampleDataLabel": "Cargar datos de ejemplo",
+    "sampleDataDescription": "Añade algunos clientes, vehículos y trabajos de ejemplo para que pueda explorar. Puede eliminarlos de nuevo con un clic.",
+    "setupFailed": "Error en la configuración",
+    "couldNotCreate": "No se pudo crear el taller",
+    "unexpectedError": "Ocurrió un error inesperado"
+  },
+  "sample": {
+    "prefix": "Ejemplo:",
+    "oilService": "Cambio de aceite y filtro",
+    "brakeJob": "Sustitución de pastillas de freno delanteras",
+    "annualService": "Revisión anual",
+    "quoteTitle": "Renovación de la suspensión delantera",
+    "inspectionNote": "El neumático delantero izquierdo está cerca del límite de desgaste",
+    "parts": {
+      "oilFilter": "Filtro de aceite",
+      "engineOil": "Aceite de motor 5W-30",
+      "brakePads": "Juego de pastillas de freno delanteras",
+      "shockAbsorber": "Amortiguador"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Cambio de aceite",
+      "description": "Cambio de aceite de motor y filtro"
+    },
+    "frontBrakePads": {
+      "name": "Pastillas de freno delanteras",
+      "description": "Sustituir las pastillas de freno delanteras"
+    },
+    "tireSwap": {
+      "name": "Cambio de ruedas",
+      "description": "Cambio de ruedas de temporada con control de apriete"
+    },
+    "batteryReplacement": {
+      "name": "Sustitución de batería",
+      "description": "Sustituir y registrar la batería de arranque"
+    },
+    "diagnostics": {
+      "name": "Diagnóstico",
+      "description": "Lectura de códigos de avería y diagnóstico inicial"
+    },
+    "annualService": {
+      "name": "Revisión anual",
+      "description": "Revisión anual completa según el programa"
+    }
+  },
+  "checklist": {
+    "title": "Primeros pasos",
+    "description": "Cuatro pasos para poner su taller en marcha",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Añadir un cliente",
+        "description": "Cree su primera ficha de cliente"
+      },
+      "vehicle": {
+        "title": "Añadir un vehículo",
+        "description": "Registre un vehículo para un cliente"
+      },
+      "workOrder": {
+        "title": "Crear una orden de trabajo",
+        "description": "Abra su primer trabajo"
+      },
+      "invoice": {
+        "title": "Enviar o descargar una factura",
+        "description": "Comparta una factura con un cliente o descárguela en PDF"
+      }
+    },
+    "allDoneTitle": "Todo listo",
+    "allDoneDescription": "Todos los pasos están completados y su taller ya está en marcha.",
+    "dismiss": "Ocultar tarjeta",
+    "dismissAriaLabel": "Ocultar esta lista"
+  },
+  "sampleData": {
+    "title": "Datos de ejemplo",
+    "description": "Su taller todavía contiene los clientes, vehículos y trabajos de ejemplo de la configuración. Al eliminarlos se borran exactamente esos registros y nada más.",
+    "footerNote": "Hay datos de ejemplo cargados",
+    "remove": "Eliminar datos de ejemplo",
+    "removeConfirmTitle": "¿Eliminar los datos de ejemplo?",
+    "removeConfirmDescription": "Esto elimina los clientes, vehículos, órdenes de trabajo, el presupuesto y la inspección de ejemplo creados durante la configuración. Sus propios datos no se ven afectados.",
+    "removed": "Datos de ejemplo eliminados",
+    "removeFailed": "No se pudieron eliminar los datos de ejemplo"
+  }
+}

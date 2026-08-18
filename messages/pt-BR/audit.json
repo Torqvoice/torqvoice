@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Mensagem agendada enviada",
     "settings_applyTaxRate": "Alíquota aplicada",
     "settings_convertToExclusive": "Preços convertidos para sem imposto",
-    "settings_convertToInclusive": "Preços convertidos para com imposto"
+    "settings_convertToInclusive": "Preços convertidos para com imposto",
+    "organization_sampleDataRemove": "Dados de exemplo removidos"
   }
 }

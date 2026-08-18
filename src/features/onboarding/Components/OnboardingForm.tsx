@@ -2,15 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useGlassModal } from "@/components/glass-modal";
 import { Gauge, Loader2 } from "lucide-react";
 import { createOnboardingOrg } from "../Actions/createOnboardingOrg";
 
 export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
+  const t = useTranslations("onboarding.form");
   const [workshopName, setWorkshopName] = useState("");
+  const [loadSampleData, setLoadSampleData] = useState(true);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const modal = useGlassModal();
@@ -20,15 +24,15 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
     setLoading(true);
 
     try {
-      const result = await createOnboardingOrg({ workshopName });
+      const result = await createOnboardingOrg({ workshopName, loadSampleData });
       if (!result.success) {
-        modal.open("error", "Setup Failed", result.error || "Could not create workshop");
+        modal.open("error", t("setupFailed"), result.error || t("couldNotCreate"));
       } else {
         router.push(redirectTo || "/");
         router.refresh();
       }
     } catch {
-      modal.open("error", "Setup Failed", "An unexpected error occurred");
+      modal.open("error", t("setupFailed"), t("unexpectedError"));
     } finally {
       setLoading(false);
     }
@@ -43,19 +47,17 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
             Torqvoice
           </span>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Set up your workshop</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Enter your workshop name to get started
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="workshopName">Workshop Name</Label>
+          <Label htmlFor="workshopName">{t("workshopName")}</Label>
           <Input
             id="workshopName"
             type="text"
-            placeholder="My Auto Workshop"
+            placeholder={t("workshopNamePlaceholder")}
             value={workshopName}
             onChange={(e) => setWorkshopName(e.target.value)}
             required
@@ -65,9 +67,27 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
           />
         </div>
 
+        <label
+          htmlFor="loadSampleData"
+          className="flex cursor-pointer items-start justify-between gap-3 rounded-lg border bg-background/50 p-3"
+        >
+          <div className="space-y-0.5">
+            <span className="text-sm font-medium">{t("sampleDataLabel")}</span>
+            <p className="text-xs text-muted-foreground">
+              {t("sampleDataDescription")}
+            </p>
+          </div>
+          <Switch
+            id="loadSampleData"
+            checked={loadSampleData}
+            onCheckedChange={setLoadSampleData}
+            className="mt-0.5"
+          />
+        </label>
+
         <Button type="submit" className="h-11 w-full" disabled={loading}>
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Get Started
+          {t("submit")}
         </Button>
       </form>
     </div>

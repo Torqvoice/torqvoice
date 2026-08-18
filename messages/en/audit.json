@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Sent Scheduled Message",
     "settings_applyTaxRate": "Applied Tax Rate",
     "settings_convertToExclusive": "Converted Prices to Tax Exclusive",
-    "settings_convertToInclusive": "Converted Prices to Tax Inclusive"
+    "settings_convertToInclusive": "Converted Prices to Tax Inclusive",
+    "organization_sampleDataRemove": "Removed Sample Data"
   }
 }

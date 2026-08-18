@@ -53,7 +53,8 @@
     "recentCompleted": "Neseniai užbaigti",
     "activeJobs": "Aktyvūs darbai",
     "recentObservations": "Naujausi pastebėjimai",
-    "recentActivity": "Naujausia veikla"
+    "recentActivity": "Naujausia veikla",
+    "gettingStarted": "Pradžia"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",

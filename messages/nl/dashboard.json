@@ -53,7 +53,8 @@
     "recentCompleted": "Recent afgerond",
     "activeJobs": "Actieve opdrachten",
     "recentObservations": "Recente waarnemingen",
-    "recentActivity": "Recente activiteit"
+    "recentActivity": "Recente activiteit",
+    "gettingStarted": "Aan de slag"
   },
   "maintenance": {
     "title": "Verwacht onderhoud gepland",

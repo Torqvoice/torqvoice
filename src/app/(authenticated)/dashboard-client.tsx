@@ -79,6 +79,8 @@ import { CustomCardDialog } from "@/features/dashboard/Components/CustomCardDial
 import { deleteDashboardWidget } from "@/features/dashboard/Actions/customCardActions";
 import { customCardId, type CustomWidget } from "@/features/dashboard/custom-cards/registry";
 import { useConfirm } from "@/components/confirm-dialog";
+import { GettingStartedCard } from "@/features/onboarding/Components/GettingStartedCard";
+import type { OnboardingChecklistData } from "@/features/onboarding/Actions/checklistActions";
 
 interface ServiceItem {
   id: string;
@@ -263,6 +265,7 @@ export function DashboardClient({
   recentObservations = [],
   initialLayout = null,
   customWidgets = [],
+  onboardingChecklist = null,
 }: {
   stats: DashboardStats;
   currencyCode?: string;
@@ -291,6 +294,7 @@ export function DashboardClient({
   recentObservations?: DashboardObservation[];
   initialLayout?: unknown;
   customWidgets?: CustomWidget[];
+  onboardingChecklist?: OnboardingChecklistData | null;
 }) {
   const formatCurrency = useFormatCurrency();
   const t = useTranslations("dashboard");
@@ -318,7 +322,12 @@ export function DashboardClient({
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<CustomWidget | null>(null);
   const excludedCard: DashboardCardId = smsEnabled ? "notifications" : "sms";
-  const availableIds = DASHBOARD_CARD_IDS.filter((id) => id !== excludedCard);
+  // The getting-started card is offered only while the server says it should
+  // show (new org, steps open or done state not yet dismissed).
+  const excludedIds = new Set<DashboardCardId>(
+    onboardingChecklist ? [excludedCard] : [excludedCard, "gettingStarted"]
+  );
+  const availableIds = DASHBOARD_CARD_IDS.filter((id) => !excludedIds.has(id));
   const hiddenSet = new Set<string>(layout.hidden);
   const visibleIds = [
     ...availableIds,
@@ -545,6 +554,10 @@ export function DashboardClient({
           user's saved arrangement */}
       {(() => {
         const cardNodes: Partial<Record<string, ReactNode>> = {
+        // First-run checklist
+        ...(onboardingChecklist
+          ? { gettingStarted: <GettingStartedCard data={onboardingChecklist} /> }
+          : {}),
         // Vehicles Due for Service
         maintenance: (
           <AppCard

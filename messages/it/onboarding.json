@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Configuri la Sua officina",
+    "subtitle": "Inserisca il nome della Sua officina per iniziare",
+    "workshopName": "Nome dell'officina",
+    "workshopNamePlaceholder": "La Mia Officina",
+    "submit": "Inizia",
+    "sampleDataLabel": "Carica dati di esempio",
+    "sampleDataDescription": "Aggiunge alcuni clienti, veicoli e lavori di esempio per farsi un'idea. Potrà rimuoverli di nuovo con un clic.",
+    "setupFailed": "Configurazione non riuscita",
+    "couldNotCreate": "Impossibile creare l'officina",
+    "unexpectedError": "Si è verificato un errore imprevisto"
+  },
+  "sample": {
+    "prefix": "Esempio:",
+    "oilService": "Cambio olio e filtro",
+    "brakeJob": "Sostituzione pastiglie freni anteriori",
+    "annualService": "Tagliando annuale",
+    "quoteTitle": "Revisione sospensione anteriore",
+    "inspectionNote": "Lo pneumatico anteriore sinistro è vicino al limite di usura",
+    "parts": {
+      "oilFilter": "Filtro olio",
+      "engineOil": "Olio motore 5W-30",
+      "brakePads": "Kit pastiglie freni anteriori",
+      "shockAbsorber": "Ammortizzatore"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Cambio olio",
+      "description": "Sostituzione olio motore e filtro"
+    },
+    "frontBrakePads": {
+      "name": "Pastiglie freni anteriori",
+      "description": "Sostituire le pastiglie dei freni anteriori"
+    },
+    "tireSwap": {
+      "name": "Cambio gomme",
+      "description": "Cambio stagionale delle ruote con controllo della coppia"
+    },
+    "batteryReplacement": {
+      "name": "Sostituzione batteria",
+      "description": "Sostituire e registrare la batteria di avviamento"
+    },
+    "diagnostics": {
+      "name": "Diagnosi",
+      "description": "Lettura dei codici di errore e prima diagnosi"
+    },
+    "annualService": {
+      "name": "Tagliando annuale",
+      "description": "Tagliando annuale completo secondo il programma"
+    }
+  },
+  "checklist": {
+    "title": "Per iniziare",
+    "description": "Quattro passaggi per avviare la Sua officina",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Aggiungere un cliente",
+        "description": "Crei la Sua prima scheda cliente"
+      },
+      "vehicle": {
+        "title": "Aggiungere un veicolo",
+        "description": "Registri un veicolo per un cliente"
+      },
+      "workOrder": {
+        "title": "Creare un ordine di lavoro",
+        "description": "Apra il Suo primo lavoro"
+      },
+      "invoice": {
+        "title": "Inviare o scaricare una fattura",
+        "description": "Condivida una fattura con un cliente o la scarichi in PDF"
+      }
+    },
+    "allDoneTitle": "Tutto pronto",
+    "allDoneDescription": "Tutti i passaggi sono completati e la Sua officina è operativa.",
+    "dismiss": "Nascondi scheda",
+    "dismissAriaLabel": "Nascondi questa lista"
+  },
+  "sampleData": {
+    "title": "Dati di esempio",
+    "description": "La Sua officina contiene ancora i clienti, i veicoli e i lavori di esempio della configurazione. La rimozione elimina esattamente quei record e nient'altro.",
+    "footerNote": "Sono caricati dati di esempio",
+    "remove": "Rimuovi dati di esempio",
+    "removeConfirmTitle": "Rimuovere i dati di esempio?",
+    "removeConfirmDescription": "Verranno eliminati i clienti, i veicoli, gli ordini di lavoro, il preventivo e l'ispezione di esempio creati durante la configurazione. I Suoi dati non vengono toccati.",
+    "removed": "Dati di esempio rimossi",
+    "removeFailed": "Impossibile rimuovere i dati di esempio"
+  }
+}

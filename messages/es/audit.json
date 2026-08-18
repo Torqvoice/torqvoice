@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Mensaje programado enviado",
     "settings_applyTaxRate": "Tipo impositivo aplicado",
     "settings_convertToExclusive": "Precios convertidos a sin impuestos",
-    "settings_convertToInclusive": "Precios convertidos a con impuestos"
+    "settings_convertToInclusive": "Precios convertidos a con impuestos",
+    "organization_sampleDataRemove": "Datos de ejemplo eliminados"
   }
 }

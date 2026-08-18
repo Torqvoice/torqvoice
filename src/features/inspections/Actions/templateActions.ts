@@ -7,10 +7,9 @@ import { revalidatePath } from "next/cache";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import type { TemplateSectionInput } from "../Schema/templateSchema";
 import {
-  PRESET_VERSION,
   TEMPLATE_PRESETS,
   presetPackageId,
-  type TemplatePreset,
+  presetToTemplateCreate,
 } from "../Lib/templatePresets";
 
 /**
@@ -227,7 +226,7 @@ export async function createTemplateFromPreset(presetId: string) {
     const isFirst = (await db.inspectionTemplate.count({ where: { organizationId } })) === 0;
 
     const template = await db.inspectionTemplate.create({
-      data: presetToCreate(preset, organizationId, isFirst),
+      data: presetToTemplateCreate(preset, organizationId, isFirst),
       include: { sections: { include: { items: true } } },
     });
 
@@ -314,47 +313,6 @@ export async function duplicateTemplate(id: string) {
   });
 }
 
-/** Turns a preset into the nested create Prisma wants. */
-function presetToCreate(preset: TemplatePreset, organizationId: string, isDefault: boolean) {
-  return {
-    name: preset.name,
-    description: preset.description,
-    isDefault,
-    country: preset.country,
-    standard: preset.standard,
-    severityScale: preset.severityScale,
-    packageId: presetPackageId(preset),
-    packageVersion: PRESET_VERSION,
-    packageSource: "builtin",
-    organizationId,
-    sections: {
-      create: preset.sections.map((section, sIdx) => ({
-        name: section.name,
-        description: section.description || null,
-        code: section.code || null,
-        sortOrder: sIdx,
-        items: {
-          create: section.items.map((item, iIdx) => ({
-            name: item.name,
-            description: item.description || null,
-            code: item.code || null,
-            sortOrder: iIdx,
-            inputType: item.inputType ?? "condition",
-            unit: item.unit || null,
-            minValue: item.minValue ?? null,
-            maxValue: item.maxValue ?? null,
-            choices: item.choices ?? [],
-            required: item.required ?? false,
-            photoRequired: item.photoRequired ?? false,
-            defaultSeverity: item.defaultSeverity ?? null,
-            defectSuggestions: [],
-          })),
-        },
-      })),
-    },
-  };
-}
-
 /** Every preset a workshop would actually run. "blank" is a starting point for
  *  building one, not a checklist, so it stays out of the library. */
 const LIBRARY_PRESETS = TEMPLATE_PRESETS.filter((p) => p.id !== "blank");
@@ -417,7 +375,7 @@ async function syncPresetLibrary(organizationId: string, userId: string) {
     await db.$transaction(
       toCreate.map((preset) =>
         db.inspectionTemplate.create({
-          data: presetToCreate(
+          data: presetToTemplateCreate(
             preset,
             organizationId,
             !hasDefault && preset.id === "standard-multipoint"
@@ -465,7 +423,7 @@ export async function restoreMissingPresets() {
     await db.$transaction(
       missing.map((preset) =>
         db.inspectionTemplate.create({
-          data: presetToCreate(
+          data: presetToTemplateCreate(
             preset,
             organizationId,
             !hasDefault && preset.id === "standard-multipoint"

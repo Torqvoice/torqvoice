@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Zamanlanmış mesaj gönderildi",
     "settings_applyTaxRate": "Vergi oranı uygulandı",
     "settings_convertToExclusive": "Fiyatlar vergi hariç yapıldı",
-    "settings_convertToInclusive": "Fiyatlar vergi dahil yapıldı"
+    "settings_convertToInclusive": "Fiyatlar vergi dahil yapıldı",
+    "organization_sampleDataRemove": "Örnek veriler kaldırıldı"
   }
 }

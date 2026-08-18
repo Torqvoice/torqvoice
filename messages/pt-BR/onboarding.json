@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Configure sua oficina",
+    "subtitle": "Digite o nome da sua oficina para começar",
+    "workshopName": "Nome da oficina",
+    "workshopNamePlaceholder": "Minha Oficina Mecânica",
+    "submit": "Começar",
+    "sampleDataLabel": "Carregar dados de exemplo",
+    "sampleDataDescription": "Adiciona alguns clientes, veículos e serviços de exemplo para você explorar. Você pode removê-los novamente com um clique.",
+    "setupFailed": "Falha na configuração",
+    "couldNotCreate": "Não foi possível criar a oficina",
+    "unexpectedError": "Ocorreu um erro inesperado"
+  },
+  "sample": {
+    "prefix": "Exemplo:",
+    "oilService": "Troca de óleo e filtro",
+    "brakeJob": "Substituição das pastilhas de freio dianteiras",
+    "annualService": "Revisão anual",
+    "quoteTitle": "Reforma da suspensão dianteira",
+    "inspectionNote": "O pneu dianteiro esquerdo está perto do limite de desgaste",
+    "parts": {
+      "oilFilter": "Filtro de óleo",
+      "engineOil": "Óleo de motor 5W-30",
+      "brakePads": "Jogo de pastilhas de freio dianteiras",
+      "shockAbsorber": "Amortecedor"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Troca de óleo",
+      "description": "Troca de óleo do motor e filtro"
+    },
+    "frontBrakePads": {
+      "name": "Pastilhas de freio dianteiras",
+      "description": "Substituir as pastilhas de freio dianteiras"
+    },
+    "tireSwap": {
+      "name": "Rodízio de pneus",
+      "description": "Troca sazonal de rodas com controle de torque"
+    },
+    "batteryReplacement": {
+      "name": "Substituição da bateria",
+      "description": "Substituir e registrar a bateria de partida"
+    },
+    "diagnostics": {
+      "name": "Diagnóstico",
+      "description": "Leitura de códigos de falha e diagnóstico inicial"
+    },
+    "annualService": {
+      "name": "Revisão anual",
+      "description": "Revisão anual completa conforme o plano"
+    }
+  },
+  "checklist": {
+    "title": "Primeiros passos",
+    "description": "Quatro passos para colocar sua oficina em funcionamento",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Adicionar um cliente",
+        "description": "Crie seu primeiro cadastro de cliente"
+      },
+      "vehicle": {
+        "title": "Adicionar um veículo",
+        "description": "Registre um veículo para um cliente"
+      },
+      "workOrder": {
+        "title": "Criar uma ordem de serviço",
+        "description": "Abra seu primeiro serviço"
+      },
+      "invoice": {
+        "title": "Enviar ou baixar uma fatura",
+        "description": "Compartilhe uma fatura com um cliente ou baixe em PDF"
+      }
+    },
+    "allDoneTitle": "Tudo pronto",
+    "allDoneDescription": "Todos os passos foram concluídos e sua oficina está em funcionamento.",
+    "dismiss": "Ocultar cartão",
+    "dismissAriaLabel": "Ocultar esta lista"
+  },
+  "sampleData": {
+    "title": "Dados de exemplo",
+    "description": "Sua oficina ainda contém os clientes, veículos e serviços de exemplo da configuração. A remoção exclui exatamente esses registros e nada mais.",
+    "footerNote": "Dados de exemplo carregados",
+    "remove": "Remover dados de exemplo",
+    "removeConfirmTitle": "Remover os dados de exemplo?",
+    "removeConfirmDescription": "Isso exclui os clientes, veículos, ordens de serviço, o orçamento e a inspeção de exemplo criados durante a configuração. Seus próprios dados não são afetados.",
+    "removed": "Dados de exemplo removidos",
+    "removeFailed": "Não foi possível remover os dados de exemplo"
+  }
+}
