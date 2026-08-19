@@ -181,7 +181,11 @@
     "tiresTitle": "Pneus",
     "loadSpeed": "Índices de carga e velocidade",
     "ownerTitle": "Proprietário",
-    "phone": "Telefone"
+    "phone": "Telefone",
+    "deleteTitle": "Excluir este jogo de pneus?",
+    "deleteBody": "O jogo e todo o histórico serão removidos. Não é possível desfazer.",
+    "deleted": "Jogo de pneus excluído",
+    "deleteFailed": "Não foi possível excluir o jogo"
   },
   "checkOut": {
     "title": "Devolver pneus",
@@ -202,5 +206,14 @@
     "submit": "Mover",
     "success": "Jogo {reference} movido",
     "failed": "Não foi possível mover o jogo"
+  },
+  "edit": {
+    "title": "Editar jogo de pneus",
+    "description": "Corrija o que foi registrado no recebimento. Use Mover para trocar de prateleira.",
+    "quantityHint": "Aumentar é verificado contra a prateleira onde o jogo está.",
+    "rimType": "Tipo de roda",
+    "rimTypePlaceholder": "Liga leve, aço",
+    "success": "Jogo de pneus atualizado",
+    "failed": "Não foi possível salvar as alterações"
   }
 }

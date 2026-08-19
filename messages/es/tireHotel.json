@@ -181,7 +181,11 @@
     "tiresTitle": "Neumáticos",
     "loadSpeed": "Índices de carga y velocidad",
     "ownerTitle": "Propietario",
-    "phone": "Teléfono"
+    "phone": "Teléfono",
+    "deleteTitle": "¿Eliminar este juego de neumáticos?",
+    "deleteBody": "Se elimina el juego y todo su historial. Esto no se puede deshacer.",
+    "deleted": "Juego de neumáticos eliminado",
+    "deleteFailed": "No se ha podido eliminar el juego"
   },
   "checkOut": {
     "title": "Entregar neumáticos",
@@ -202,5 +206,14 @@
     "submit": "Mover",
     "success": "Juego {reference} movido",
     "failed": "No se ha podido mover el juego"
+  },
+  "edit": {
+    "title": "Editar juego de neumáticos",
+    "description": "Corrige lo que se registró en la recepción. Usa Mover para cambiar de estante.",
+    "quantityHint": "Aumentarlo se comprueba contra el estante donde está el juego.",
+    "rimType": "Tipo de llanta",
+    "rimTypePlaceholder": "Aleación, acero",
+    "success": "Juego de neumáticos actualizado",
+    "failed": "No se han podido guardar los cambios"
   }
 }

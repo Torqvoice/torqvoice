@@ -181,7 +181,11 @@
     "tiresTitle": "Tires",
     "loadSpeed": "Load and speed",
     "ownerTitle": "Owner",
-    "phone": "Phone"
+    "phone": "Phone",
+    "deleteTitle": "Delete this tire set?",
+    "deleteBody": "The set and its full history are removed. This cannot be undone.",
+    "deleted": "Tire set deleted",
+    "deleteFailed": "Could not delete the set"
   },
   "checkOut": {
     "title": "Check out tires",
@@ -202,5 +206,14 @@
     "submit": "Move",
     "success": "Set {reference} moved",
     "failed": "Could not move the set"
+  },
+  "edit": {
+    "title": "Edit tire set",
+    "description": "Correct what was recorded at check-in. Use Move to change the shelf.",
+    "quantityHint": "Raising this is checked against the shelf the set sits on.",
+    "rimType": "Rim type",
+    "rimTypePlaceholder": "Alloy, steel",
+    "success": "Tire set updated",
+    "failed": "Could not save the changes"
   }
 }

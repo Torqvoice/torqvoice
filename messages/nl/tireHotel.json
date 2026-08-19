@@ -181,7 +181,11 @@
     "tiresTitle": "Banden",
     "loadSpeed": "Draagvermogen en snelheid",
     "ownerTitle": "Eigenaar",
-    "phone": "Telefoon"
+    "phone": "Telefoon",
+    "deleteTitle": "Deze bandenset verwijderen?",
+    "deleteBody": "De set en de volledige geschiedenis worden verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    "deleted": "Bandenset verwijderd",
+    "deleteFailed": "Kon de set niet verwijderen"
   },
   "checkOut": {
     "title": "Banden teruggeven",
@@ -202,5 +206,14 @@
     "submit": "Verplaatsen",
     "success": "Set {reference} verplaatst",
     "failed": "Verplaatsen mislukt"
+  },
+  "edit": {
+    "title": "Bandenset bewerken",
+    "description": "Corrigeer wat bij het innemen is vastgelegd. Gebruik Verplaatsen om de stelling te wijzigen.",
+    "quantityHint": "Verhogen wordt getoetst aan de stelling waar de set op staat.",
+    "rimType": "Velgtype",
+    "rimTypePlaceholder": "Lichtmetaal, staal",
+    "success": "Bandenset bijgewerkt",
+    "failed": "Kon de wijzigingen niet opslaan"
   }
 }

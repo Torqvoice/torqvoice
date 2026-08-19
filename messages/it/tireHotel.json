@@ -181,7 +181,11 @@
     "tiresTitle": "Pneumatici",
     "loadSpeed": "Indici di carico e velocità",
     "ownerTitle": "Proprietario",
-    "phone": "Telefono"
+    "phone": "Telefono",
+    "deleteTitle": "Eliminare questo treno di pneumatici?",
+    "deleteBody": "Il treno e tutta la sua cronologia vengono rimossi. L’operazione non è reversibile.",
+    "deleted": "Treno di pneumatici eliminato",
+    "deleteFailed": "Impossibile eliminare il treno"
   },
   "checkOut": {
     "title": "Restituire gli pneumatici",
@@ -202,5 +206,14 @@
     "submit": "Sposta",
     "success": "Treno {reference} spostato",
     "failed": "Impossibile spostare il treno"
+  },
+  "edit": {
+    "title": "Modifica treno di pneumatici",
+    "description": "Correggi quanto registrato in accettazione. Usa Sposta per cambiare scaffale.",
+    "quantityHint": "L’aumento viene verificato rispetto allo scaffale su cui si trova il treno.",
+    "rimType": "Tipo di cerchio",
+    "rimTypePlaceholder": "Lega, acciaio",
+    "success": "Treno di pneumatici aggiornato",
+    "failed": "Impossibile salvare le modifiche"
   }
 }

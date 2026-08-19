@@ -181,7 +181,11 @@
     "tiresTitle": "Padangos",
     "loadSpeed": "Apkrovos ir greičio indeksai",
     "ownerTitle": "Savininkas",
-    "phone": "Telefonas"
+    "phone": "Telefonas",
+    "deleteTitle": "Ištrinti šį padangų komplektą?",
+    "deleteBody": "Komplektas ir visa jo istorija bus pašalinti. Atšaukti negalėsite.",
+    "deleted": "Padangų komplektas ištrintas",
+    "deleteFailed": "Nepavyko ištrinti komplekto"
   },
   "checkOut": {
     "title": "Atiduoti padangas",
@@ -202,5 +206,14 @@
     "submit": "Perkelti",
     "success": "Komplektas {reference} perkeltas",
     "failed": "Nepavyko perkelti komplekto"
+  },
+  "edit": {
+    "title": "Redaguoti padangų komplektą",
+    "description": "Pataisykite tai, kas užfiksuota priimant. Lentyną keiskite per „Perkelti“.",
+    "quantityHint": "Padidinimas tikrinamas pagal lentyną, kurioje guli komplektas.",
+    "rimType": "Ratlankio tipas",
+    "rimTypePlaceholder": "Lydinio, plieno",
+    "success": "Padangų komplektas atnaujintas",
+    "failed": "Nepavyko išsaugoti pakeitimų"
   }
 }

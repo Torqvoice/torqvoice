@@ -2,14 +2,19 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { useFormatDate } from '@/lib/use-format-date'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { useConfirm } from '@/components/confirm-dialog'
 import { CheckOutDialog } from '@/features/tire-hotel/Components/CheckOutDialog'
+import { EditTireSetDialog } from '@/features/tire-hotel/Components/EditTireSetDialog'
 import { RelocateDialog } from '@/features/tire-hotel/Components/RelocateDialog'
+import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
   CONDITION_TOKENS,
@@ -21,7 +26,18 @@ import {
   type TireSetStatus,
 } from '@/features/tire-hotel/Lib/tireConstants'
 import { cn } from '@/lib/utils'
-import { ArrowRightLeft, Car, Disc3, LogOut, MapPin, User, Warehouse } from 'lucide-react'
+import {
+  ArrowRightLeft,
+  Car,
+  Disc3,
+  Loader2,
+  LogOut,
+  MapPin,
+  Pencil,
+  Trash2,
+  User,
+  Warehouse,
+} from 'lucide-react'
 
 type Measurement = {
   id: string
@@ -84,16 +100,50 @@ type TireSet = {
 export function TireSetClient({
   set,
   locations,
+  vehicles,
   imperial,
 }: {
   set: TireSet
   locations: PickerLocation[]
+  vehicles: {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+    customerId: string | null
+  }[]
   imperial: boolean
 }) {
   const t = useTranslations('tireHotel')
+  const router = useRouter()
+  const confirm = useConfirm()
   const { formatDate } = useFormatDate()
   const [showCheckOut, setShowCheckOut] = useState(false)
   const [showRelocate, setShowRelocate] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  // Deleting is only offered once the set is off the shelf: the action
+  // refuses a stored set, so the shelf count can never drift from reality.
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: t('detail.deleteTitle'),
+      description: t('detail.deleteBody'),
+      confirmLabel: t('common.delete'),
+      destructive: true,
+    })
+    if (!ok) return
+    setDeleting(true)
+    const result = await deleteTireSet(set.id)
+    setDeleting(false)
+    if (!result.success) {
+      toast.error(result.error ?? t('detail.deleteFailed'))
+      return
+    }
+    toast.success(t('detail.deleted'))
+    router.push('/tire-hotel')
+  }
 
   const isStored = set.status === 'stored'
   const latestRound = set.measurements.length > 0 ? set.measurements[0].measuredAt : null
@@ -140,18 +190,39 @@ export function TireSetClient({
           </p>
         </div>
 
-        {isStored && (
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={() => setShowRelocate(true)}>
-              <ArrowRightLeft className="mr-1.5 h-3.5 w-3.5" />
-              {t('detail.move')}
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>
+            <Pencil className="mr-1.5 h-3.5 w-3.5" />
+            {t('common.edit')}
+          </Button>
+          {isStored ? (
+            <>
+              <Button variant="outline" size="sm" onClick={() => setShowRelocate(true)}>
+                <ArrowRightLeft className="mr-1.5 h-3.5 w-3.5" />
+                {t('detail.move')}
+              </Button>
+              <Button size="sm" onClick={() => setShowCheckOut(true)}>
+                <LogOut className="mr-1.5 h-3.5 w-3.5" />
+                {t('detail.checkOut')}
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="text-destructive hover:text-destructive"
+            >
+              {deleting ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              {t('common.delete')}
             </Button>
-            <Button size="sm" onClick={() => setShowCheckOut(true)}>
-              <LogOut className="mr-1.5 h-3.5 w-3.5" />
-              {t('detail.checkOut')}
-            </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -310,6 +381,8 @@ export function TireSetClient({
         currentLocationId={set.location?.id ?? null}
         locations={locations}
       />
+
+      <EditTireSetDialog open={showEdit} onOpenChange={setShowEdit} set={set} vehicles={vehicles} />
     </div>
   )
 }

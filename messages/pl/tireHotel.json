@@ -181,7 +181,11 @@
     "tiresTitle": "Opony",
     "loadSpeed": "Indeks nośności i prędkości",
     "ownerTitle": "Właściciel",
-    "phone": "Telefon"
+    "phone": "Telefon",
+    "deleteTitle": "Usunąć ten komplet opon?",
+    "deleteBody": "Komplet i cała jego historia zostaną usunięte. Tej operacji nie można cofnąć.",
+    "deleted": "Usunięto komplet opon",
+    "deleteFailed": "Nie udało się usunąć kompletu"
   },
   "checkOut": {
     "title": "Wydaj opony",
@@ -202,5 +206,14 @@
     "submit": "Przenieś",
     "success": "Komplet {reference} przeniesiony",
     "failed": "Nie udało się przenieść kompletu"
+  },
+  "edit": {
+    "title": "Edytuj komplet opon",
+    "description": "Popraw to, co zapisano przy przyjęciu. Aby zmienić półkę, użyj Przenieś.",
+    "quantityHint": "Zwiększenie jest sprawdzane względem półki, na której stoi komplet.",
+    "rimType": "Rodzaj felgi",
+    "rimTypePlaceholder": "Aluminiowa, stalowa",
+    "success": "Zaktualizowano komplet opon",
+    "failed": "Nie udało się zapisać zmian"
   }
 }

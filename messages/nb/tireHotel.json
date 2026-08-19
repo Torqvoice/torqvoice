@@ -181,7 +181,11 @@
     "tiresTitle": "Dekk",
     "loadSpeed": "Last og hastighet",
     "ownerTitle": "Eier",
-    "phone": "Telefon"
+    "phone": "Telefon",
+    "deleteTitle": "Slette dette dekksettet?",
+    "deleteBody": "Settet og hele historikken fjernes. Dette kan ikke angres.",
+    "deleted": "Dekksett slettet",
+    "deleteFailed": "Kunne ikke slette settet"
   },
   "checkOut": {
     "title": "Lever ut dekk",
@@ -202,5 +206,14 @@
     "submit": "Flytt",
     "success": "Sett {reference} flyttet",
     "failed": "Kunne ikke flytte settet"
+  },
+  "edit": {
+    "title": "Rediger dekksett",
+    "description": "Rett opp det som ble registrert ved innlevering. Bruk Flytt for å endre hylle.",
+    "quantityHint": "Økning kontrolleres mot hyllen settet står på.",
+    "rimType": "Felgtype",
+    "rimTypePlaceholder": "Alu, stål",
+    "success": "Dekksett oppdatert",
+    "failed": "Kunne ikke lagre endringene"
   }
 }

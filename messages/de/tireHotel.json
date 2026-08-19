@@ -181,7 +181,11 @@
     "tiresTitle": "Reifen",
     "loadSpeed": "Last- und Geschwindigkeitsindex",
     "ownerTitle": "Besitzer",
-    "phone": "Telefon"
+    "phone": "Telefon",
+    "deleteTitle": "Diesen Reifensatz löschen?",
+    "deleteBody": "Der Satz und sein gesamter Verlauf werden entfernt. Das lässt sich nicht rückgängig machen.",
+    "deleted": "Reifensatz gelöscht",
+    "deleteFailed": "Satz konnte nicht gelöscht werden"
   },
   "checkOut": {
     "title": "Reifen auslagern",
@@ -202,5 +206,14 @@
     "submit": "Umlagern",
     "success": "Satz {reference} umgelagert",
     "failed": "Umlagern fehlgeschlagen"
+  },
+  "edit": {
+    "title": "Reifensatz bearbeiten",
+    "description": "Korrigieren Sie, was bei der Einlagerung erfasst wurde. Das Fach ändern Sie über Umlagern.",
+    "quantityHint": "Eine Erhöhung wird gegen das Fach geprüft, in dem der Satz liegt.",
+    "rimType": "Felgentyp",
+    "rimTypePlaceholder": "Alu, Stahl",
+    "success": "Reifensatz aktualisiert",
+    "failed": "Änderungen konnten nicht gespeichert werden"
   }
 }

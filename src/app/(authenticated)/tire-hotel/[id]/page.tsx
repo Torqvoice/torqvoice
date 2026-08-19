@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { db } from '@/lib/db'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
@@ -18,10 +19,23 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
 
   const { id } = await params
 
-  const [setResult, locationResult, unitResult] = await Promise.all([
+  const [setResult, locationResult, unitResult, vehicles] = await Promise.all([
     getTireSet(id),
     getLocationOptions(),
     getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+    db.vehicle.findMany({
+      where: { organizationId, isArchived: false },
+      orderBy: { updatedAt: 'desc' },
+      take: 500,
+      select: {
+        id: true,
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
+        customerId: true,
+      },
+    }),
   ])
 
   if (!setResult.success || !setResult.data) notFound()
@@ -33,7 +47,12 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <TireSetClient set={setResult.data} locations={locations} imperial={imperial} />
+        <TireSetClient
+          set={setResult.data}
+          locations={locations}
+          vehicles={vehicles}
+          imperial={imperial}
+        />
       </div>
     </>
   )

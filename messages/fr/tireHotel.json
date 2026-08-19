@@ -181,7 +181,11 @@
     "tiresTitle": "Pneus",
     "loadSpeed": "Indices de charge et vitesse",
     "ownerTitle": "Propriétaire",
-    "phone": "Téléphone"
+    "phone": "Téléphone",
+    "deleteTitle": "Supprimer ce jeu de pneus ?",
+    "deleteBody": "Le jeu et tout son historique seront supprimés. Action irréversible.",
+    "deleted": "Jeu de pneus supprimé",
+    "deleteFailed": "Impossible de supprimer le jeu"
   },
   "checkOut": {
     "title": "Restituer les pneus",
@@ -202,5 +206,14 @@
     "submit": "Déplacer",
     "success": "Jeu {reference} déplacé",
     "failed": "Impossible de déplacer le jeu"
+  },
+  "edit": {
+    "title": "Modifier le jeu de pneus",
+    "description": "Corrigez ce qui a été saisi à la réception. Utilisez Déplacer pour changer d’étagère.",
+    "quantityHint": "Une augmentation est vérifiée par rapport à l’étagère où se trouve le jeu.",
+    "rimType": "Type de jante",
+    "rimTypePlaceholder": "Alliage, tôle",
+    "success": "Jeu de pneus mis à jour",
+    "failed": "Impossible d’enregistrer les modifications"
   }
 }

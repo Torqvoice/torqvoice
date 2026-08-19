@@ -181,7 +181,11 @@
     "tiresTitle": "Lastikler",
     "loadSpeed": "Yük ve hız endeksi",
     "ownerTitle": "Sahibi",
-    "phone": "Telefon"
+    "phone": "Telefon",
+    "deleteTitle": "Bu lastik takımı silinsin mi?",
+    "deleteBody": "Takım ve tüm geçmişi kaldırılır. Bu işlem geri alınamaz.",
+    "deleted": "Lastik takımı silindi",
+    "deleteFailed": "Takım silinemedi"
   },
   "checkOut": {
     "title": "Lastikleri teslim et",
@@ -202,5 +206,14 @@
     "submit": "Taşı",
     "success": "{reference} numaralı takım taşındı",
     "failed": "Takım taşınamadı"
+  },
+  "edit": {
+    "title": "Lastik takımını düzenle",
+    "description": "Kabulde kaydedilenleri düzeltin. Rafı değiştirmek için Taşı’yı kullanın.",
+    "quantityHint": "Artırma, takımın bulunduğu rafa göre kontrol edilir.",
+    "rimType": "Jant tipi",
+    "rimTypePlaceholder": "Alaşım, çelik",
+    "success": "Lastik takımı güncellendi",
+    "failed": "Değişiklikler kaydedilemedi"
   }
 }
