@@ -4,6 +4,7 @@ import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
+import { getAgreementsForSet } from '@/features/tire-hotel/Actions/agreementActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
@@ -19,10 +20,16 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
 
   const { id } = await params
 
-  const [setResult, locationResult, unitResult, vehicles] = await Promise.all([
+  const [setResult, locationResult, agreementResult, settingsResult, vehicles] = await Promise.all([
     getTireSet(id),
     getLocationOptions(),
-    getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+    getAgreementsForSet(id),
+    getSettings([
+      SETTING_KEYS.UNIT_SYSTEM,
+      SETTING_KEYS.CURRENCY_CODE,
+      SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE,
+      SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE,
+    ]),
     db.vehicle.findMany({
       where: { organizationId, isArchived: false },
       orderBy: { updatedAt: 'desc' },
@@ -41,7 +48,14 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
   if (!setResult.success || !setResult.data) notFound()
 
   const locations = locationResult.success && locationResult.data ? locationResult.data : []
-  const imperial = unitResult.success && unitResult.data?.[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'
+  const agreements = agreementResult.success && agreementResult.data ? agreementResult.data : []
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const imperial = settings[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'
+  const billing = {
+    seasonalPrice: Number(settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE]) || 0,
+    monthlyPrice: Number(settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE]) || 0,
+    currency: settings[SETTING_KEYS.CURRENCY_CODE] || 'USD',
+  }
 
   return (
     <>
@@ -51,6 +65,8 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
           set={setResult.data}
           locations={locations}
           vehicles={vehicles}
+          agreements={agreements}
+          billing={billing}
           imperial={imperial}
         />
       </div>

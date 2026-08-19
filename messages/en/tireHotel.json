@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Alloy, steel",
     "success": "Tire set updated",
     "failed": "Could not save the changes"
+  },
+  "agreement": {
+    "title": "Storage billing",
+    "add": "Add agreement",
+    "addTitle": "New storage agreement",
+    "editTitle": "Edit agreement",
+    "description": "What the customer pays to keep this set on the shelf.",
+    "none": "No agreement yet. Add one to start billing for this set.",
+    "billingModel": "Billing",
+    "models": {
+      "seasonal": "Per season",
+      "monthly": "Per month"
+    },
+    "price": "Price ({currency})",
+    "priceHint": {
+      "seasonal": "Charged once per six-month season.",
+      "monthly": "Charged every month."
+    },
+    "perPeriod": {
+      "seasonal": "per season",
+      "monthly": "per month"
+    },
+    "startDate": "Starts",
+    "endDate": "Ends",
+    "endDateHint": "Leave blank to keep it open-ended.",
+    "autoRenew": "Renew automatically",
+    "autoRenewHint": "Keeps billing into the next period until someone ends the agreement.",
+    "extras": "Extras",
+    "extrasHint": "Priced alongside storage: washing, balancing, a TPMS reset.",
+    "addExtra": "Add extra",
+    "removeExtra": "Remove extra",
+    "extraLabelPlaceholder": "Wash and balance",
+    "notes": "Notes",
+    "create": "Create agreement",
+    "created": "Agreement created",
+    "updated": "Agreement updated",
+    "saveFailed": "Could not save the agreement",
+    "statuses": {
+      "active": "Active",
+      "ended": "Ended",
+      "cancelled": "Cancelled"
+    },
+    "chargeStatuses": {
+      "pending": "Due",
+      "invoiced": "Invoiced",
+      "waived": "Waived"
+    },
+    "renews": "renews automatically",
+    "noRenew": "does not renew",
+    "invoice": "Invoice",
+    "invoiced": "Invoiced on {number}",
+    "invoiceFailed": "Could not create the invoice",
+    "openInvoice": "Open invoice",
+    "waive": "Waive",
+    "waiveTitle": "Waive this period?",
+    "waiveBody": "The customer will not be billed for it. The period stays in the history.",
+    "waived": "Period waived",
+    "waiveFailed": "Could not waive the period",
+    "end": "End",
+    "endTitle": "End this agreement?",
+    "endBody": "Billing stops. Invoices already raised are untouched.",
+    "endBodyPending": "Billing stops and {count} unbilled period(s) will be waived. Invoices already raised are untouched.",
+    "ended": "Agreement ended",
+    "endFailed": "Could not end the agreement"
   }
 }

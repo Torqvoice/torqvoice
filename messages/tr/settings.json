@@ -1478,6 +1478,19 @@
     "setupHint": "Sırada raflarınızı kurmak var.",
     "setupLink": "Depo düzenini aç",
     "save": "Lastik oteli ayarlarını kaydet",
-    "saved": "Lastik oteli ayarları kaydedildi"
+    "saved": "Lastik oteli ayarları kaydedildi",
+    "billingTitle": "Depolama faturalandırması",
+    "billingHint": "Yeni sözleşme oluştururken önceden doldurulur. Her sözleşme bunu değiştirebilir.",
+    "seasonalPrice": "Sezon başına varsayılan fiyat",
+    "monthlyPrice": "Ay başına varsayılan fiyat",
+    "invoiceTarget": "Depolama ücretinin gideceği yer",
+    "invoiceTargets": {
+      "separate": "Kendi faturası",
+      "workOrder": "Açık bir işe eklenir"
+    },
+    "invoiceTargetHint": {
+      "separate": "Depolama her zaman kendi belgesinde faturalandırılır.",
+      "workOrder": "Aynı araç için açık bir iş varsa ona eklenir, yoksa kendi faturası kesilir."
+    }
   }
 }

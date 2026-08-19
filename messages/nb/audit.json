@@ -123,6 +123,11 @@
     "tire_set_relocate": "Flyttet dekksett",
     "tire_set_update": "Oppdaterte dekksett",
     "tire_set_delete": "Slettet dekksett",
-    "tire_measurement_create": "Registrerte dekkmålinger"
+    "tire_measurement_create": "Registrerte dekkmålinger",
+    "tire_agreement_create": "Opprettet lagringsavtale",
+    "tire_agreement_update": "Oppdaterte lagringsavtale",
+    "tire_agreement_end": "Avsluttet lagringsavtale",
+    "tire_agreement_invoice": "Fakturerte dekklagring",
+    "tire_agreement_waive": "Frafalt en lagringsperiode"
   }
 }

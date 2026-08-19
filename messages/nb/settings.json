@@ -1478,6 +1478,19 @@
     "setupHint": "Sett så opp hyllene dine.",
     "setupLink": "Åpne lageroppsett",
     "save": "Lagre innstillinger for dekkhotell",
-    "saved": "Innstillinger for dekkhotell lagret"
+    "saved": "Innstillinger for dekkhotell lagret",
+    "billingTitle": "Lagerfakturering",
+    "billingHint": "Fylles inn når du oppretter en ny avtale. Hver avtale kan overstyre det.",
+    "seasonalPrice": "Standardpris per sesong",
+    "monthlyPrice": "Standardpris per måned",
+    "invoiceTarget": "Hvor lagringsgebyret havner",
+    "invoiceTargets": {
+      "separate": "Egen faktura",
+      "workOrder": "Lagt til på en åpen jobb"
+    },
+    "invoiceTargetHint": {
+      "separate": "Lagring faktureres alltid på sitt eget dokument.",
+      "workOrder": "Legges til på en åpen jobb for samme kjøretøy hvis det finnes, ellers egen faktura."
+    }
   }
 }

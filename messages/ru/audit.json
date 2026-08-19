@@ -123,6 +123,11 @@
     "tire_set_relocate": "Перемещён комплект шин",
     "tire_set_update": "Обновлён комплект шин",
     "tire_set_delete": "Удалён комплект шин",
-    "tire_measurement_create": "Записаны замеры шин"
+    "tire_measurement_create": "Записаны замеры шин",
+    "tire_agreement_create": "Создан договор хранения",
+    "tire_agreement_update": "Обновлён договор хранения",
+    "tire_agreement_end": "Завершён договор хранения",
+    "tire_agreement_invoice": "Выставлен счёт за хранение шин",
+    "tire_agreement_waive": "Списан период хранения"
   }
 }

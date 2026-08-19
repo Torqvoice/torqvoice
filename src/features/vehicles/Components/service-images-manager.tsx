@@ -1,35 +1,35 @@
-"use client";
+'use client'
 
-import { interactiveRow } from "@/lib/interactive-row";
-import { useState, useRef, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { AppCard } from "@/components/app-card";
-import { toast } from "sonner";
-import { Camera, Image as ImageIcon, Loader2, X } from "lucide-react";
-import { compressImage } from "@/lib/compress-image";
-import { addServiceAttachment } from "@/features/vehicles/Actions/addServiceAttachment";
-import { updateServiceAttachment } from "@/features/vehicles/Actions/updateServiceAttachment";
-import { deleteServiceAttachment } from "@/features/vehicles/Actions/serviceActions";
-import { ImageCarousel } from "@/features/vehicles/Components/service-detail/ImageCarousel";
+import { interactiveRow } from '@/lib/interactive-row'
+import { useState, useRef, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { AppCard } from '@/components/app-card'
+import { toast } from 'sonner'
+import { Camera, Image as ImageIcon, Loader2, X } from 'lucide-react'
+import { compressImage } from '@/lib/compress-image'
+import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAttachment'
+import { updateServiceAttachment } from '@/features/vehicles/Actions/updateServiceAttachment'
+import { deleteServiceAttachment } from '@/features/vehicles/Actions/serviceActions'
+import { ImageCarousel } from '@/features/vehicles/Components/service-detail/ImageCarousel'
 
 interface Attachment {
-  id: string;
-  fileName: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  category: string;
-  description: string | null;
-  includeInInvoice: boolean;
+  id: string
+  fileName: string
+  fileUrl: string
+  fileType: string
+  fileSize: number
+  category: string
+  description: string | null
+  includeInInvoice: boolean
 }
 
 interface ServiceImagesManagerProps {
-  serviceRecordId: string;
-  initialImages: Attachment[];
-  maxImages?: number;
+  serviceRecordId: string
+  initialImages: Attachment[]
+  maxImages?: number
 }
 
 export function ServiceImagesManager({
@@ -37,58 +37,56 @@ export function ServiceImagesManager({
   initialImages,
   maxImages,
 }: ServiceImagesManagerProps) {
-  const t = useTranslations("service");
-  const [images, setImages] = useState<Attachment[]>(initialImages);
-  const atLimit = maxImages !== undefined && images.length >= maxImages;
-  const [uploading, setUploading] = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('service')
+  const [images, setImages] = useState<Attachment[]>(initialImages)
+  const atLimit = maxImages !== undefined && images.length >= maxImages
+  const [uploading, setUploading] = useState(false)
+  const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleUpload = useCallback(
     async (files: FileList | File[]) => {
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-      let fileArr = Array.from(files);
-      const rejected = fileArr.filter((f) => !allowedTypes.includes(f.type));
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+      let fileArr = Array.from(files)
+      const rejected = fileArr.filter((f) => !allowedTypes.includes(f.type))
       if (rejected.length > 0) {
-        toast.error(
-          t("images.onlyAllowed", { names: rejected.map((f) => f.name).join(", ") })
-        );
-        fileArr = fileArr.filter((f) => allowedTypes.includes(f.type));
-        if (fileArr.length === 0) return;
+        toast.error(t('images.onlyAllowed', { names: rejected.map((f) => f.name).join(', ') }))
+        fileArr = fileArr.filter((f) => allowedTypes.includes(f.type))
+        if (fileArr.length === 0) return
       }
       if (maxImages !== undefined) {
-        const remaining = maxImages - images.length;
+        const remaining = maxImages - images.length
         if (remaining <= 0) {
-          toast.error(t("images.limitReached", { count: images.length, max: maxImages }));
-          return;
+          toast.error(t('images.limitReached', { count: images.length, max: maxImages }))
+          return
         }
         if (fileArr.length > remaining) {
-          fileArr = fileArr.slice(0, remaining);
-          toast.warning(t("images.onlyUploading", { count: remaining }));
+          fileArr = fileArr.slice(0, remaining)
+          toast.warning(t('images.onlyUploading', { count: remaining }))
         }
       }
-      setUploading(true);
-      const toastId = toast.loading(t("images.uploadingCount", { count: fileArr.length }));
-      let successCount = 0;
+      setUploading(true)
+      const toastId = toast.loading(t('images.uploadingCount', { count: fileArr.length }))
+      let successCount = 0
 
       for (let file of fileArr) {
-        if (file.type.startsWith("image/")) {
-          file = await compressImage(file);
+        if (file.type.startsWith('image/')) {
+          file = await compressImage(file)
         }
-        const formData = new FormData();
-        formData.append("file", file);
+        const formData = new FormData()
+        formData.append('file', file)
 
         try {
-          const res = await fetch("/api/protected/upload/service-files", {
-            method: "POST",
+          const res = await fetch('/api/protected/upload/service-files', {
+            method: 'POST',
             body: formData,
-          });
+          })
           if (!res.ok) {
-            const err = await res.json();
-            toast.error(err.error || `Failed to upload ${file.name}`);
-            continue;
+            const err = await res.json()
+            toast.error(err.error || `Failed to upload ${file.name}`)
+            continue
           }
-          const data = await res.json();
+          const data = await res.json()
 
           const result = await addServiceAttachment({
             serviceRecordId,
@@ -97,197 +95,178 @@ export function ServiceImagesManager({
               fileUrl: data.url,
               fileType: data.fileType,
               fileSize: data.fileSize,
-              category: "image",
+              category: 'image',
               includeInInvoice: true,
             },
-          });
+          })
 
           if (result.success && result.data) {
-            setImages((prev) => [...prev, result.data as Attachment]);
-            successCount++;
+            setImages((prev) => [...prev, result.data as Attachment])
+            successCount++
           } else {
-            toast.error(result.error || `Failed to save ${file.name}`);
+            toast.error(result.error || `Failed to save ${file.name}`)
           }
         } catch {
-          toast.error(`Failed to upload ${file.name}`);
+          toast.error(`Failed to upload ${file.name}`)
         }
       }
 
       if (successCount > 0) {
-        toast.success(t("images.uploadedCount", { count: successCount }), { id: toastId });
+        toast.success(t('images.uploadedCount', { count: successCount }), { id: toastId })
       } else {
-        toast.error(t("images.uploadFailed"), { id: toastId });
+        toast.error(t('images.uploadFailed'), { id: toastId })
       }
-      setUploading(false);
+      setUploading(false)
     },
     [serviceRecordId, maxImages, images.length, t]
-  );
+  )
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
-      e.preventDefault();
+      e.preventDefault()
       if (e.dataTransfer.files.length > 0) {
-        handleUpload(e.dataTransfer.files);
+        handleUpload(e.dataTransfer.files)
       }
     },
     [handleUpload]
-  );
+  )
 
-  const handleDelete = useCallback(async (attachmentId: string) => {
-    const result = await deleteServiceAttachment(attachmentId);
-    if (result.success) {
-      setImages((prev) => prev.filter((img) => img.id !== attachmentId));
-      toast.success(t("images.deleted"));
-    } else {
-      toast.error(result.error || t("images.failedDelete"));
-    }
-  }, [t]);
+  const handleDelete = useCallback(
+    async (attachmentId: string) => {
+      const result = await deleteServiceAttachment(attachmentId)
+      if (result.success) {
+        setImages((prev) => prev.filter((img) => img.id !== attachmentId))
+        toast.success(t('images.deleted'))
+      } else {
+        toast.error(result.error || t('images.failedDelete'))
+      }
+    },
+    [t]
+  )
 
   const handleToggleInvoice = useCallback(
     async (attachmentId: string, checked: boolean) => {
       setImages((prev) =>
-        prev.map((img) =>
-          img.id === attachmentId ? { ...img, includeInInvoice: checked } : img
-        )
-      );
+        prev.map((img) => (img.id === attachmentId ? { ...img, includeInInvoice: checked } : img))
+      )
       const result = await updateServiceAttachment({
         id: attachmentId,
         includeInInvoice: checked,
-      });
+      })
       if (!result.success) {
         setImages((prev) =>
           prev.map((img) =>
-            img.id === attachmentId
-              ? { ...img, includeInInvoice: !checked }
-              : img
+            img.id === attachmentId ? { ...img, includeInInvoice: !checked } : img
           )
-        );
-        toast.error(result.error || t("images.failedUpdate"));
+        )
+        toast.error(result.error || t('images.failedUpdate'))
       }
     },
     [t]
-  );
+  )
 
-  const handleDescriptionChange = useCallback(
-    async (attachmentId: string, description: string) => {
-      setImages((prev) =>
-        prev.map((img) =>
-          img.id === attachmentId ? { ...img, description } : img
-        )
-      );
-    },
-    []
-  );
+  const handleDescriptionChange = useCallback(async (attachmentId: string, description: string) => {
+    setImages((prev) =>
+      prev.map((img) => (img.id === attachmentId ? { ...img, description } : img))
+    )
+  }, [])
 
-  const handleDescriptionBlur = useCallback(
-    async (attachmentId: string, description: string) => {
-      await updateServiceAttachment({ id: attachmentId, description });
-    },
-    []
-  );
+  const handleDescriptionBlur = useCallback(async (attachmentId: string, description: string) => {
+    await updateServiceAttachment({ id: attachmentId, description })
+  }, [])
 
   return (
     <AppCard
       icon={Camera}
-      title={t("images.title")}
+      title={t('images.title')}
       badge={maxImages !== undefined ? `${images.length} / ${maxImages}` : undefined}
       contentClassName="space-y-4"
     >
-        {atLimit ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
-            <p className="text-sm font-medium text-muted-foreground">
-              {t("images.limitReached", { count: images.length, max: maxImages })}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("images.upgradePrompt")}
-            </p>
-          </div>
-        ) : (
-          <div
-            onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-            {...interactiveRow(() => inputRef.current?.click())}
-            className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
-          >
-            <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
-            <p className="text-sm font-medium">
-              {uploading ? t("images.uploading") : t("images.dropzone")}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {t("images.formats")}
-            </p>
-            <input
-              ref={inputRef}
-              type="file"
-              multiple
-              accept=".jpg,.jpeg,.png,.webp"
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  handleUpload(e.target.files);
-                  e.target.value = "";
-                }
-              }}
-            />
-          </div>
-        )}
+      {atLimit ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6">
+          <p className="text-sm font-medium text-muted-foreground">
+            {t('images.limitReached', { count: images.length, max: maxImages })}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{t('images.upgradePrompt')}</p>
+        </div>
+      ) : (
+        <div
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          {...interactiveRow(() => inputRef.current?.click())}
+          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 transition-colors hover:border-muted-foreground/50"
+        >
+          <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground/50" />
+          <p className="text-sm font-medium">
+            {uploading ? t('images.uploading') : t('images.dropzone')}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{t('images.formats')}</p>
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            accept=".jpg,.jpeg,.png,.webp"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleUpload(e.target.files)
+                e.target.value = ''
+              }
+            }}
+          />
+        </div>
+      )}
 
-        {uploading && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            {t("images.uploadingImages")}
-          </div>
-        )}
+      {uploading && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {t('images.uploadingImages')}
+        </div>
+      )}
 
-        {images.length > 0 && (
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-            {images.map((file) => (
-              <div key={file.id} className="group overflow-hidden rounded-lg border">
-                <div className="relative">
-                  <img
-                    src={file.fileUrl}
-                    alt={file.description || file.fileName}
-                    className="aspect-square w-full cursor-pointer object-cover"
-                    onClick={() => setCarouselIndex(images.indexOf(file))}
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="icon"
-                    className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => handleDelete(file.id)}
-                    aria-label={t("header.delete")}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-                <div className="space-y-1 p-1.5">
-                  <Input
-                    placeholder={t("images.description")}
-                    value={file.description || ""}
-                    onChange={(e) =>
-                      handleDescriptionChange(file.id, e.target.value)
-                    }
-                    onBlur={(e) =>
-                      handleDescriptionBlur(file.id, e.target.value)
-                    }
-                    className="h-7 text-xs"
-                  />
-                  <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Switch
-                      checked={file.includeInInvoice}
-                      onCheckedChange={(checked) =>
-                        handleToggleInvoice(file.id, checked)
-                      }
-                      className="scale-75"
-                    />
-                    {t("images.invoice")}
-                  </label>
-                </div>
+      {images.length > 0 && (
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+          {images.map((file) => (
+            <div key={file.id} className="group overflow-hidden rounded-lg border">
+              <div className="relative">
+                <img
+                  src={file.fileUrl}
+                  alt={file.description || file.fileName}
+                  className="aspect-square w-full cursor-pointer object-cover"
+                  onClick={() => setCarouselIndex(images.indexOf(file))}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                  onClick={() => handleDelete(file.id)}
+                  aria-label={t('header.delete')}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
               </div>
-            ))}
-          </div>
-        )}
+              <div className="space-y-1 p-1.5">
+                <Input
+                  placeholder={t('images.description')}
+                  value={file.description || ''}
+                  onChange={(e) => handleDescriptionChange(file.id, e.target.value)}
+                  onBlur={(e) => handleDescriptionBlur(file.id, e.target.value)}
+                  className="h-7 text-xs"
+                />
+                <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Switch
+                    checked={file.includeInInvoice}
+                    onCheckedChange={(checked) => handleToggleInvoice(file.id, checked)}
+                    className="scale-75"
+                  />
+                  {t('images.invoice')}
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <ImageCarousel
         images={images.map((img) => ({
@@ -299,5 +278,5 @@ export function ServiceImagesManager({
         onChangeIndex={setCarouselIndex}
       />
     </AppCard>
-  );
+  )
 }

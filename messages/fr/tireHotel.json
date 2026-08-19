@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Alliage, tôle",
     "success": "Jeu de pneus mis à jour",
     "failed": "Impossible d’enregistrer les modifications"
+  },
+  "agreement": {
+    "title": "Facturation du stockage",
+    "add": "Ajouter un contrat",
+    "addTitle": "Nouveau contrat de stockage",
+    "editTitle": "Modifier le contrat",
+    "description": "Ce que le client paie pour laisser ce jeu en rayon.",
+    "none": "Aucun contrat. Ajoutez-en un pour facturer ce jeu.",
+    "billingModel": "Facturation",
+    "models": {
+      "seasonal": "Par saison",
+      "monthly": "Par mois"
+    },
+    "price": "Prix ({currency})",
+    "priceHint": {
+      "seasonal": "Facturé une fois par saison de six mois.",
+      "monthly": "Facturé tous les mois."
+    },
+    "perPeriod": {
+      "seasonal": "par saison",
+      "monthly": "par mois"
+    },
+    "startDate": "Début",
+    "endDate": "Fin",
+    "endDateHint": "Laissez vide pour une durée indéterminée.",
+    "autoRenew": "Renouveler automatiquement",
+    "autoRenewHint": "Continue de facturer la période suivante jusqu’à ce que le contrat soit arrêté.",
+    "extras": "Suppléments",
+    "extrasHint": "Facturés avec le stockage : lavage, équilibrage, réinitialisation TPMS.",
+    "addExtra": "Ajouter un supplément",
+    "removeExtra": "Retirer le supplément",
+    "extraLabelPlaceholder": "Lavage et équilibrage",
+    "notes": "Notes",
+    "create": "Créer le contrat",
+    "created": "Contrat créé",
+    "updated": "Contrat mis à jour",
+    "saveFailed": "Impossible d’enregistrer le contrat",
+    "statuses": {
+      "active": "Actif",
+      "ended": "Terminé",
+      "cancelled": "Annulé"
+    },
+    "chargeStatuses": {
+      "pending": "À facturer",
+      "invoiced": "Facturé",
+      "waived": "Offert"
+    },
+    "renews": "se renouvelle automatiquement",
+    "noRenew": "ne se renouvelle pas",
+    "invoice": "Facturer",
+    "invoiced": "Facturé sur {number}",
+    "invoiceFailed": "Impossible de créer la facture",
+    "openInvoice": "Ouvrir la facture",
+    "waive": "Offrir",
+    "waiveTitle": "Offrir cette période ?",
+    "waiveBody": "Le client ne sera pas facturé. La période reste dans l’historique.",
+    "waived": "Période offerte",
+    "waiveFailed": "Impossible d’offrir la période",
+    "end": "Terminer",
+    "endTitle": "Terminer ce contrat ?",
+    "endBody": "La facturation s’arrête. Les factures déjà émises ne changent pas.",
+    "endBodyPending": "La facturation s’arrête et {count} période(s) non facturée(s) seront offertes. Les factures déjà émises ne changent pas.",
+    "ended": "Contrat terminé",
+    "endFailed": "Impossible de terminer le contrat"
   }
 }

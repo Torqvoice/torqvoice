@@ -6,10 +6,7 @@ import type { InvoiceData } from './types'
 import type { Style } from '@react-pdf/types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
 interface TablesProps {
@@ -20,7 +17,13 @@ interface TablesProps {
   labels: Record<string, string>
 }
 
-export function PartsTable({ data, currencyCode, currencyFormat = 'symbol', styles, labels }: TablesProps) {
+export function PartsTable({
+  data,
+  currencyCode,
+  currencyFormat = 'symbol',
+  styles,
+  labels,
+}: TablesProps) {
   if (data.partItems.length === 0) return null
 
   // Universal display: when an inclusive record is rendered, line item prices
@@ -34,13 +37,21 @@ export function PartsTable({ data, currencyCode, currencyFormat = 'symbol', styl
       <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.partNumber || 'Part #'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.description || 'Description'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>{labels.qty || 'Qty'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>
+            {labels.partNumber || 'Part #'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>
+            {labels.description || 'Description'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>
+            {labels.qty || 'Qty'}
+          </Text>
           <Text style={{ ...styles.tableHeaderCell, width: '18%', textAlign: 'right' }}>
             {labels.unitPrice || 'Unit Price'}
           </Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.total || 'Total'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
+            {labels.total || 'Total'}
+          </Text>
         </View>
         {data.partItems.map((part, i) => {
           const netUnitPrice = netLineTotal(part.unitPrice, taxRate, taxInclusive)
@@ -66,7 +77,13 @@ export function PartsTable({ data, currencyCode, currencyFormat = 'symbol', styl
   )
 }
 
-export function LaborTable({ data, currencyCode, currencyFormat = 'symbol', styles, labels }: TablesProps) {
+export function LaborTable({
+  data,
+  currencyCode,
+  currencyFormat = 'symbol',
+  styles,
+  labels,
+}: TablesProps) {
   if (data.laborItems.length === 0) return null
 
   // See PartsTable for the rationale on netLineTotal usage.
@@ -78,10 +95,18 @@ export function LaborTable({ data, currencyCode, currencyFormat = 'symbol', styl
       <Text style={styles.sectionTitle}>{labels.labor || 'Labor'}</Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>{labels.qtyOrHours || labels.hours || 'Qty / Hours'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.rate || 'Rate'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>{labels.total || 'Total'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>
+            {labels.description || 'Description'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>
+            {labels.qtyOrHours || labels.hours || 'Qty / Hours'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
+            {labels.rate || 'Rate'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '20%', textAlign: 'right' }}>
+            {labels.total || 'Total'}
+          </Text>
         </View>
         {data.laborItems.map((labor, i) => {
           const isService = labor.pricingType === 'service'
@@ -99,7 +124,9 @@ export function LaborTable({ data, currencyCode, currencyFormat = 'symbol', styl
                 {isService
                   ? formatCurrency(netRate, currencyCode, currencyFormat)
                   : labels.ratePerHour
-                    ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode, currencyFormat) })
+                    ? fillTemplate(labels.ratePerHour, {
+                        rate: formatCurrency(netRate, currencyCode, currencyFormat),
+                      })
                     : `${formatCurrency(netRate, currencyCode, currencyFormat)}/hr`}
               </Text>
               <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right' }}>
@@ -142,27 +169,40 @@ export function FindingsPdfSection({
   return (
     <View>
       <Text style={styles.sectionTitle}>{labels.findings || 'Findings'}</Text>
-      <Text style={{ fontSize: 8, color: '#666', marginBottom: 4, lineHeight: 1.4 }}>{labels.findingsDescription || 'The following items were observed during this service and may require attention.'}</Text>
+      <Text style={{ fontSize: 8, color: '#666', marginBottom: 4, lineHeight: 1.4 }}>
+        {labels.findingsDescription ||
+          'The following items were observed during this service and may require attention.'}
+      </Text>
       <View style={styles.table}>
         <View style={styles.tableHeader}>
-          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.findingSeverityLabel || 'Severity'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '40%' }}>{labels.description || 'Description'}</Text>
-          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.findingNotesLabel || 'Notes'}</Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>
+            {labels.findingSeverityLabel || 'Severity'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '40%' }}>
+            {labels.description || 'Description'}
+          </Text>
+          <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>
+            {labels.findingNotesLabel || 'Notes'}
+          </Text>
         </View>
         {findings.map((f, i) => (
           <View key={i} style={styles.tableRow}>
-            <Text style={{
-              ...styles.tableCell,
-              width: '15%',
-              fontSize: 8,
-              color: severityColors[f.severity] || '#666',
-              fontFamily: fontBold,
-              textTransform: 'uppercase',
-            }}>
+            <Text
+              style={{
+                ...styles.tableCell,
+                width: '15%',
+                fontSize: 8,
+                color: severityColors[f.severity] || '#666',
+                fontFamily: fontBold,
+                textTransform: 'uppercase',
+              }}
+            >
               {severityLabels[f.severity] || f.severity}
             </Text>
             <Text style={{ ...styles.tableCell, width: '40%' }}>{f.description}</Text>
-            <Text style={{ ...styles.tableCell, width: '45%', color: '#666' }}>{f.notes || '-'}</Text>
+            <Text style={{ ...styles.tableCell, width: '45%', color: '#666' }}>
+              {f.notes || '-'}
+            </Text>
           </View>
         ))}
       </View>

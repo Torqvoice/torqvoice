@@ -14,6 +14,7 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { CheckOutDialog } from '@/features/tire-hotel/Components/CheckOutDialog'
 import { EditTireSetDialog } from '@/features/tire-hotel/Components/EditTireSetDialog'
 import { RelocateDialog } from '@/features/tire-hotel/Components/RelocateDialog'
+import { AgreementCard, type AgreementRow } from '@/features/tire-hotel/Components/AgreementCard'
 import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
@@ -101,10 +102,14 @@ export function TireSetClient({
   set,
   locations,
   vehicles,
+  agreements,
+  billing,
   imperial,
 }: {
   set: TireSet
   locations: PickerLocation[]
+  agreements: AgreementRow[]
+  billing: { seasonalPrice: number; monthlyPrice: number; currency: string }
   vehicles: {
     id: string
     make: string
@@ -251,6 +256,14 @@ export function TireSetClient({
               />
             )}
           </AppCard>
+
+          <AgreementCard
+            tireSetId={set.id}
+            agreements={agreements}
+            defaultSeasonalPrice={billing.seasonalPrice}
+            defaultMonthlyPrice={billing.monthlyPrice}
+            currency={billing.currency}
+          />
 
           <AppCard icon={MapPin} title={t('detail.historyTitle')} contentClassName="space-y-0 p-0">
             <ul className="divide-y">

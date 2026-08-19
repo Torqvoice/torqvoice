@@ -1478,6 +1478,19 @@
     "setupHint": "Em seguida, configure suas prateleiras.",
     "setupLink": "Abrir layout da armazenagem",
     "save": "Salvar configurações do hotel de pneus",
-    "saved": "Configurações do hotel de pneus salvas"
+    "saved": "Configurações do hotel de pneus salvas",
+    "billingTitle": "Cobrança da armazenagem",
+    "billingHint": "Preenchido ao criar um novo contrato. Cada contrato pode alterar.",
+    "seasonalPrice": "Preço padrão por temporada",
+    "monthlyPrice": "Preço padrão por mês",
+    "invoiceTarget": "Onde a cobrança de armazenagem entra",
+    "invoiceTargets": {
+      "separate": "Fatura própria",
+      "workOrder": "Somado a um serviço aberto"
+    },
+    "invoiceTargetHint": {
+      "separate": "A armazenagem é sempre faturada em documento próprio.",
+      "workOrder": "Somada a um serviço aberto do mesmo veículo; caso não haja, fatura própria."
+    }
   }
 }

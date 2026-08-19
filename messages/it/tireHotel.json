@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Lega, acciaio",
     "success": "Treno di pneumatici aggiornato",
     "failed": "Impossibile salvare le modifiche"
+  },
+  "agreement": {
+    "title": "Fatturazione del deposito",
+    "add": "Aggiungi contratto",
+    "addTitle": "Nuovo contratto di deposito",
+    "editTitle": "Modifica contratto",
+    "description": "Quanto paga il cliente per tenere questo treno sullo scaffale.",
+    "none": "Nessun contratto. Aggiungine uno per fatturare questo treno.",
+    "billingModel": "Fatturazione",
+    "models": {
+      "seasonal": "A stagione",
+      "monthly": "Al mese"
+    },
+    "price": "Prezzo ({currency})",
+    "priceHint": {
+      "seasonal": "Addebitato una volta per stagione di sei mesi.",
+      "monthly": "Addebitato ogni mese."
+    },
+    "perPeriod": {
+      "seasonal": "a stagione",
+      "monthly": "al mese"
+    },
+    "startDate": "Inizio",
+    "endDate": "Fine",
+    "endDateHint": "Lascia vuoto per un contratto aperto.",
+    "autoRenew": "Rinnova automaticamente",
+    "autoRenewHint": "Continua a fatturare il periodo successivo finché qualcuno non chiude il contratto.",
+    "extras": "Extra",
+    "extrasHint": "Fatturati insieme al deposito: lavaggio, equilibratura, reset TPMS.",
+    "addExtra": "Aggiungi extra",
+    "removeExtra": "Rimuovi extra",
+    "extraLabelPlaceholder": "Lavaggio ed equilibratura",
+    "notes": "Note",
+    "create": "Crea contratto",
+    "created": "Contratto creato",
+    "updated": "Contratto aggiornato",
+    "saveFailed": "Impossibile salvare il contratto",
+    "statuses": {
+      "active": "Attivo",
+      "ended": "Chiuso",
+      "cancelled": "Annullato"
+    },
+    "chargeStatuses": {
+      "pending": "Da fatturare",
+      "invoiced": "Fatturato",
+      "waived": "Stornato"
+    },
+    "renews": "si rinnova automaticamente",
+    "noRenew": "non si rinnova",
+    "invoice": "Fattura",
+    "invoiced": "Fatturato su {number}",
+    "invoiceFailed": "Impossibile creare la fattura",
+    "openInvoice": "Apri fattura",
+    "waive": "Storna",
+    "waiveTitle": "Stornare questo periodo?",
+    "waiveBody": "Al cliente non verrà addebitato. Il periodo resta nella cronologia.",
+    "waived": "Periodo stornato",
+    "waiveFailed": "Impossibile stornare il periodo",
+    "end": "Chiudi",
+    "endTitle": "Chiudere questo contratto?",
+    "endBody": "La fatturazione si ferma. Le fatture già emesse restano invariate.",
+    "endBodyPending": "La fatturazione si ferma e {count} periodo/i non fatturato/i verranno stornati. Le fatture già emesse restano invariate.",
+    "ended": "Contratto chiuso",
+    "endFailed": "Impossibile chiudere il contratto"
   }
 }

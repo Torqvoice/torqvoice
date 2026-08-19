@@ -123,6 +123,11 @@
     "tire_set_relocate": "Moved tire set",
     "tire_set_update": "Updated tire set",
     "tire_set_delete": "Deleted tire set",
-    "tire_measurement_create": "Recorded tire measurements"
+    "tire_measurement_create": "Recorded tire measurements",
+    "tire_agreement_create": "Created storage agreement",
+    "tire_agreement_update": "Updated storage agreement",
+    "tire_agreement_end": "Ended storage agreement",
+    "tire_agreement_invoice": "Invoiced tire storage",
+    "tire_agreement_waive": "Waived a storage period"
   }
 }

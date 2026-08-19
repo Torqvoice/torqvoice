@@ -123,6 +123,11 @@
     "tire_set_relocate": "Lastik takımı taşındı",
     "tire_set_update": "Lastik takımı güncellendi",
     "tire_set_delete": "Lastik takımı silindi",
-    "tire_measurement_create": "Lastik ölçümleri kaydedildi"
+    "tire_measurement_create": "Lastik ölçümleri kaydedildi",
+    "tire_agreement_create": "Depolama sözleşmesi oluşturuldu",
+    "tire_agreement_update": "Depolama sözleşmesi güncellendi",
+    "tire_agreement_end": "Depolama sözleşmesi sonlandırıldı",
+    "tire_agreement_invoice": "Lastik depolaması faturalandı",
+    "tire_agreement_waive": "Depolama dönemi muaf tutuldu"
   }
 }

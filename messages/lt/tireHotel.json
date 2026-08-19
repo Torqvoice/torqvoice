@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Lydinio, plieno",
     "success": "Padangų komplektas atnaujintas",
     "failed": "Nepavyko išsaugoti pakeitimų"
+  },
+  "agreement": {
+    "title": "Saugojimo apmokėjimas",
+    "add": "Pridėti sutartį",
+    "addTitle": "Nauja saugojimo sutartis",
+    "editTitle": "Redaguoti sutartį",
+    "description": "Kiek klientas moka, kad komplektas gulėtų lentynoje.",
+    "none": "Sutarties dar nėra. Pridėkite ją, kad galėtumėte išrašyti sąskaitas už šį komplektą.",
+    "billingModel": "Apmokėjimas",
+    "models": {
+      "seasonal": "Už sezoną",
+      "monthly": "Už mėnesį"
+    },
+    "price": "Kaina ({currency})",
+    "priceHint": {
+      "seasonal": "Imama kartą per pusės metų sezoną.",
+      "monthly": "Imama kas mėnesį."
+    },
+    "perPeriod": {
+      "seasonal": "už sezoną",
+      "monthly": "per mėnesį"
+    },
+    "startDate": "Pradžia",
+    "endDate": "Pabaiga",
+    "endDateHint": "Palikite tuščią, kad sutartis būtų neterminuota.",
+    "autoRenew": "Atnaujinti automatiškai",
+    "autoRenewHint": "Toliau skaičiuoja kitą laikotarpį, kol kas nors nutrauks sutartį.",
+    "extras": "Papildomos paslaugos",
+    "extrasHint": "Kainuoja kartu su saugojimu: plovimas, balansavimas, TPMS atstatymas.",
+    "addExtra": "Pridėti paslaugą",
+    "removeExtra": "Pašalinti paslaugą",
+    "extraLabelPlaceholder": "Plovimas ir balansavimas",
+    "notes": "Pastabos",
+    "create": "Sukurti sutartį",
+    "created": "Sutartis sukurta",
+    "updated": "Sutartis atnaujinta",
+    "saveFailed": "Nepavyko išsaugoti sutarties",
+    "statuses": {
+      "active": "Galioja",
+      "ended": "Nutraukta",
+      "cancelled": "Atšaukta"
+    },
+    "chargeStatuses": {
+      "pending": "Laukia",
+      "invoiced": "Išrašyta sąskaita",
+      "waived": "Nurašyta"
+    },
+    "renews": "atsinaujina automatiškai",
+    "noRenew": "neatsinaujina",
+    "invoice": "Išrašyti sąskaitą",
+    "invoiced": "Įtraukta į {number}",
+    "invoiceFailed": "Nepavyko sukurti sąskaitos",
+    "openInvoice": "Atverti sąskaitą",
+    "waive": "Nurašyti",
+    "waiveTitle": "Nurašyti šį laikotarpį?",
+    "waiveBody": "Klientui už jį nebus išrašyta sąskaita. Laikotarpis lieka istorijoje.",
+    "waived": "Laikotarpis nurašytas",
+    "waiveFailed": "Nepavyko nurašyti laikotarpio",
+    "end": "Nutraukti",
+    "endTitle": "Nutraukti šią sutartį?",
+    "endBody": "Skaičiavimas sustoja. Jau išrašytos sąskaitos nekeičiamos.",
+    "endBodyPending": "Skaičiavimas sustoja, o {count} neapmokestintas (-i) laikotarpis (-iai) bus nurašyti. Jau išrašytos sąskaitos nekeičiamos.",
+    "ended": "Sutartis nutraukta",
+    "endFailed": "Nepavyko nutraukti sutarties"
   }
 }

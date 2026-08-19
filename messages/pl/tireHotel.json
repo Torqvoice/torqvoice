@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Aluminiowa, stalowa",
     "success": "Zaktualizowano komplet opon",
     "failed": "Nie udało się zapisać zmian"
+  },
+  "agreement": {
+    "title": "Rozliczenie przechowywania",
+    "add": "Dodaj umowę",
+    "addTitle": "Nowa umowa przechowywania",
+    "editTitle": "Edytuj umowę",
+    "description": "Ile klient płaci za trzymanie tego kompletu na półce.",
+    "none": "Brak umowy. Dodaj ją, aby rozliczać ten komplet.",
+    "billingModel": "Rozliczenie",
+    "models": {
+      "seasonal": "Za sezon",
+      "monthly": "Za miesiąc"
+    },
+    "price": "Cena ({currency})",
+    "priceHint": {
+      "seasonal": "Naliczana raz na półroczny sezon.",
+      "monthly": "Naliczana co miesiąc."
+    },
+    "perPeriod": {
+      "seasonal": "za sezon",
+      "monthly": "miesięcznie"
+    },
+    "startDate": "Początek",
+    "endDate": "Koniec",
+    "endDateHint": "Zostaw puste, aby umowa była bezterminowa.",
+    "autoRenew": "Odnawiaj automatycznie",
+    "autoRenewHint": "Nalicza kolejny okres, dopóki ktoś nie zakończy umowy.",
+    "extras": "Dodatki",
+    "extrasHint": "Wyceniane razem z przechowywaniem: mycie, wyważanie, reset TPMS.",
+    "addExtra": "Dodaj pozycję",
+    "removeExtra": "Usuń pozycję",
+    "extraLabelPlaceholder": "Mycie i wyważanie",
+    "notes": "Notatki",
+    "create": "Utwórz umowę",
+    "created": "Utworzono umowę",
+    "updated": "Zaktualizowano umowę",
+    "saveFailed": "Nie udało się zapisać umowy",
+    "statuses": {
+      "active": "Aktywna",
+      "ended": "Zakończona",
+      "cancelled": "Anulowana"
+    },
+    "chargeStatuses": {
+      "pending": "Do rozliczenia",
+      "invoiced": "Zafakturowano",
+      "waived": "Umorzono"
+    },
+    "renews": "odnawia się automatycznie",
+    "noRenew": "nie odnawia się",
+    "invoice": "Wystaw fakturę",
+    "invoiced": "Zafakturowano na {number}",
+    "invoiceFailed": "Nie udało się utworzyć faktury",
+    "openInvoice": "Otwórz fakturę",
+    "waive": "Umorz",
+    "waiveTitle": "Umorzyć ten okres?",
+    "waiveBody": "Klient nie zostanie za niego obciążony. Okres pozostaje w historii.",
+    "waived": "Okres umorzony",
+    "waiveFailed": "Nie udało się umorzyć okresu",
+    "end": "Zakończ",
+    "endTitle": "Zakończyć tę umowę?",
+    "endBody": "Rozliczanie się zatrzymuje. Wystawione już faktury pozostają bez zmian.",
+    "endBodyPending": "Rozliczanie się zatrzymuje, a {count} nierozliczony(ch) okres(ów) zostanie umorzonych. Wystawione już faktury pozostają bez zmian.",
+    "ended": "Umowa zakończona",
+    "endFailed": "Nie udało się zakończyć umowy"
   }
 }

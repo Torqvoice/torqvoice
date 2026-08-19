@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Alaşım, çelik",
     "success": "Lastik takımı güncellendi",
     "failed": "Değişiklikler kaydedilemedi"
+  },
+  "agreement": {
+    "title": "Depolama faturalandırması",
+    "add": "Sözleşme ekle",
+    "addTitle": "Yeni depolama sözleşmesi",
+    "editTitle": "Sözleşmeyi düzenle",
+    "description": "Müşterinin bu takımı rafta tutmak için ödediği tutar.",
+    "none": "Henüz sözleşme yok. Bu takımı faturalandırmak için bir tane ekleyin.",
+    "billingModel": "Faturalandırma",
+    "models": {
+      "seasonal": "Sezonluk",
+      "monthly": "Aylık"
+    },
+    "price": "Fiyat ({currency})",
+    "priceHint": {
+      "seasonal": "Altı aylık sezon başına bir kez alınır.",
+      "monthly": "Her ay alınır."
+    },
+    "perPeriod": {
+      "seasonal": "sezon başına",
+      "monthly": "ayda"
+    },
+    "startDate": "Başlangıç",
+    "endDate": "Bitiş",
+    "endDateHint": "Süresiz bırakmak için boş bırakın.",
+    "autoRenew": "Otomatik yenile",
+    "autoRenewHint": "Biri sözleşmeyi bitirene kadar sonraki dönemi faturalandırmaya devam eder.",
+    "extras": "Ek hizmetler",
+    "extrasHint": "Depolamayla birlikte fiyatlanır: yıkama, balans, TPMS sıfırlama.",
+    "addExtra": "Ek hizmet ekle",
+    "removeExtra": "Ek hizmeti kaldır",
+    "extraLabelPlaceholder": "Yıkama ve balans",
+    "notes": "Notlar",
+    "create": "Sözleşme oluştur",
+    "created": "Sözleşme oluşturuldu",
+    "updated": "Sözleşme güncellendi",
+    "saveFailed": "Sözleşme kaydedilemedi",
+    "statuses": {
+      "active": "Etkin",
+      "ended": "Sonlandırıldı",
+      "cancelled": "İptal edildi"
+    },
+    "chargeStatuses": {
+      "pending": "Bekliyor",
+      "invoiced": "Faturalandı",
+      "waived": "Muaf tutuldu"
+    },
+    "renews": "otomatik yenilenir",
+    "noRenew": "yenilenmez",
+    "invoice": "Faturalandır",
+    "invoiced": "{number} üzerinde faturalandı",
+    "invoiceFailed": "Fatura oluşturulamadı",
+    "openInvoice": "Faturayı aç",
+    "waive": "Muaf tut",
+    "waiveTitle": "Bu dönem muaf tutulsun mu?",
+    "waiveBody": "Müşteriden bu dönem için ücret alınmaz. Dönem geçmişte kalır.",
+    "waived": "Dönem muaf tutuldu",
+    "waiveFailed": "Dönem muaf tutulamadı",
+    "end": "Sonlandır",
+    "endTitle": "Bu sözleşme sonlandırılsın mı?",
+    "endBody": "Faturalandırma durur. Halihazırda kesilen faturalar etkilenmez.",
+    "endBodyPending": "Faturalandırma durur ve faturalandırılmamış {count} dönem muaf tutulur. Halihazırda kesilen faturalar etkilenmez.",
+    "ended": "Sözleşme sonlandırıldı",
+    "endFailed": "Sözleşme sonlandırılamadı"
   }
 }

@@ -123,6 +123,11 @@
     "tire_set_relocate": "Treno di pneumatici spostato",
     "tire_set_update": "Treno di pneumatici aggiornato",
     "tire_set_delete": "Treno di pneumatici eliminato",
-    "tire_measurement_create": "Misurazioni pneumatici registrate"
+    "tire_measurement_create": "Misurazioni pneumatici registrate",
+    "tire_agreement_create": "Contratto di deposito creato",
+    "tire_agreement_update": "Contratto di deposito aggiornato",
+    "tire_agreement_end": "Contratto di deposito chiuso",
+    "tire_agreement_invoice": "Deposito pneumatici fatturato",
+    "tire_agreement_waive": "Periodo di deposito stornato"
   }
 }

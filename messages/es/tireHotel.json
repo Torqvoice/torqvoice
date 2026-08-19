@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Aleación, acero",
     "success": "Juego de neumáticos actualizado",
     "failed": "No se han podido guardar los cambios"
+  },
+  "agreement": {
+    "title": "Facturación del almacenaje",
+    "add": "Añadir contrato",
+    "addTitle": "Nuevo contrato de almacenaje",
+    "editTitle": "Editar contrato",
+    "description": "Lo que paga el cliente por mantener este juego en el estante.",
+    "none": "Todavía no hay contrato. Añade uno para facturar este juego.",
+    "billingModel": "Facturación",
+    "models": {
+      "seasonal": "Por temporada",
+      "monthly": "Por mes"
+    },
+    "price": "Precio ({currency})",
+    "priceHint": {
+      "seasonal": "Se cobra una vez por temporada de seis meses.",
+      "monthly": "Se cobra cada mes."
+    },
+    "perPeriod": {
+      "seasonal": "por temporada",
+      "monthly": "al mes"
+    },
+    "startDate": "Empieza",
+    "endDate": "Termina",
+    "endDateHint": "Déjalo en blanco para dejarlo abierto.",
+    "autoRenew": "Renovar automáticamente",
+    "autoRenewHint": "Sigue facturando el siguiente periodo hasta que alguien finalice el contrato.",
+    "extras": "Extras",
+    "extrasHint": "Se cobran junto al almacenaje: lavado, equilibrado, reinicio del TPMS.",
+    "addExtra": "Añadir extra",
+    "removeExtra": "Quitar extra",
+    "extraLabelPlaceholder": "Lavado y equilibrado",
+    "notes": "Notas",
+    "create": "Crear contrato",
+    "created": "Contrato creado",
+    "updated": "Contrato actualizado",
+    "saveFailed": "No se ha podido guardar el contrato",
+    "statuses": {
+      "active": "Activo",
+      "ended": "Finalizado",
+      "cancelled": "Cancelado"
+    },
+    "chargeStatuses": {
+      "pending": "Pendiente",
+      "invoiced": "Facturado",
+      "waived": "Condonado"
+    },
+    "renews": "se renueva automáticamente",
+    "noRenew": "no se renueva",
+    "invoice": "Facturar",
+    "invoiced": "Facturado en {number}",
+    "invoiceFailed": "No se ha podido crear la factura",
+    "openInvoice": "Abrir factura",
+    "waive": "Condonar",
+    "waiveTitle": "¿Condonar este periodo?",
+    "waiveBody": "No se le facturará al cliente. El periodo se queda en el historial.",
+    "waived": "Periodo condonado",
+    "waiveFailed": "No se ha podido condonar el periodo",
+    "end": "Finalizar",
+    "endTitle": "¿Finalizar este contrato?",
+    "endBody": "La facturación se detiene. Las facturas ya emitidas no se tocan.",
+    "endBodyPending": "La facturación se detiene y se condonarán {count} periodo(s) sin facturar. Las facturas ya emitidas no se tocan.",
+    "ended": "Contrato finalizado",
+    "endFailed": "No se ha podido finalizar el contrato"
   }
 }

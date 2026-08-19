@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Alu, Stahl",
     "success": "Reifensatz aktualisiert",
     "failed": "Änderungen konnten nicht gespeichert werden"
+  },
+  "agreement": {
+    "title": "Lagerabrechnung",
+    "add": "Vereinbarung hinzufügen",
+    "addTitle": "Neue Lagervereinbarung",
+    "editTitle": "Vereinbarung bearbeiten",
+    "description": "Was der Kunde zahlt, damit der Satz im Regal bleibt.",
+    "none": "Noch keine Vereinbarung. Legen Sie eine an, um diesen Satz abzurechnen.",
+    "billingModel": "Abrechnung",
+    "models": {
+      "seasonal": "Pro Saison",
+      "monthly": "Pro Monat"
+    },
+    "price": "Preis ({currency})",
+    "priceHint": {
+      "seasonal": "Einmal pro Halbjahressaison berechnet.",
+      "monthly": "Monatlich berechnet."
+    },
+    "perPeriod": {
+      "seasonal": "pro Saison",
+      "monthly": "pro Monat"
+    },
+    "startDate": "Beginn",
+    "endDate": "Ende",
+    "endDateHint": "Leer lassen für unbefristet.",
+    "autoRenew": "Automatisch verlängern",
+    "autoRenewHint": "Rechnet weiter in die nächste Periode, bis jemand die Vereinbarung beendet.",
+    "extras": "Zusatzleistungen",
+    "extrasHint": "Zusammen mit der Lagerung berechnet: Waschen, Wuchten, RDKS-Reset.",
+    "addExtra": "Zusatz hinzufügen",
+    "removeExtra": "Zusatz entfernen",
+    "extraLabelPlaceholder": "Waschen und Wuchten",
+    "notes": "Notizen",
+    "create": "Vereinbarung anlegen",
+    "created": "Vereinbarung angelegt",
+    "updated": "Vereinbarung aktualisiert",
+    "saveFailed": "Vereinbarung konnte nicht gespeichert werden",
+    "statuses": {
+      "active": "Aktiv",
+      "ended": "Beendet",
+      "cancelled": "Storniert"
+    },
+    "chargeStatuses": {
+      "pending": "Fällig",
+      "invoiced": "Berechnet",
+      "waived": "Erlassen"
+    },
+    "renews": "verlängert sich automatisch",
+    "noRenew": "verlängert sich nicht",
+    "invoice": "Berechnen",
+    "invoiced": "Berechnet auf {number}",
+    "invoiceFailed": "Rechnung konnte nicht erstellt werden",
+    "openInvoice": "Rechnung öffnen",
+    "waive": "Erlassen",
+    "waiveTitle": "Diese Periode erlassen?",
+    "waiveBody": "Dem Kunden wird sie nicht berechnet. Die Periode bleibt im Verlauf.",
+    "waived": "Periode erlassen",
+    "waiveFailed": "Periode konnte nicht erlassen werden",
+    "end": "Beenden",
+    "endTitle": "Diese Vereinbarung beenden?",
+    "endBody": "Die Abrechnung stoppt. Bereits erstellte Rechnungen bleiben unberührt.",
+    "endBodyPending": "Die Abrechnung stoppt und {count} nicht berechnete Periode(n) werden erlassen. Bereits erstellte Rechnungen bleiben unberührt.",
+    "ended": "Vereinbarung beendet",
+    "endFailed": "Vereinbarung konnte nicht beendet werden"
   }
 }

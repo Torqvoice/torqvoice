@@ -1478,6 +1478,19 @@
     "setupHint": "Poi configura i tuoi scaffali.",
     "setupLink": "Apri la disposizione del deposito",
     "save": "Salva impostazioni hotel pneumatici",
-    "saved": "Impostazioni hotel pneumatici salvate"
+    "saved": "Impostazioni hotel pneumatici salvate",
+    "billingTitle": "Fatturazione del deposito",
+    "billingHint": "Precompilato quando crei un nuovo contratto. Ogni contratto può modificarlo.",
+    "seasonalPrice": "Prezzo predefinito a stagione",
+    "monthlyPrice": "Prezzo predefinito al mese",
+    "invoiceTarget": "Dove finisce il costo del deposito",
+    "invoiceTargets": {
+      "separate": "Fattura a sé",
+      "workOrder": "Aggiunto a un lavoro aperto"
+    },
+    "invoiceTargetHint": {
+      "separate": "Il deposito viene sempre fatturato su un documento a sé.",
+      "workOrder": "Aggiunto a un lavoro aperto per lo stesso veicolo, altrimenti una fattura a sé."
+    }
   }
 }

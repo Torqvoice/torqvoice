@@ -82,14 +82,16 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
       return
     }
-    const normalized = /^https?:\/\//i.test(url) || url.startsWith('mailto:')
-      ? url
-      : `https://${url}`
+    const normalized =
+      /^https?:\/\//i.test(url) || url.startsWith('mailto:') ? url : `https://${url}`
     editor.chain().focus().extendMarkRange('link').setLink({ href: normalized }).run()
   }
 
   return (
-    <div className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y" style={{ minHeight: 180 }}>
+    <div
+      className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y"
+      style={{ minHeight: 180 }}
+    >
       <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
         <ToolbarButton
           active={editor.isActive('bold')}
@@ -112,11 +114,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
         >
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('link')}
-          onClick={handleSetLink}
-          title="Link"
-        >
+        <ToolbarButton active={editor.isActive('link')} onClick={handleSetLink} title="Link">
           <LinkIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
 

@@ -74,19 +74,16 @@ function SortableLaborRow({
   dragEnabled: boolean
 }) {
   const formatCurrency = useFormatCurrency()
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  })
 
-  const style = dragEnabled ? {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  } : undefined
+  const style = dragEnabled
+    ? {
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }
+    : undefined
 
   const isService = labor.pricingType === 'service'
 
@@ -99,7 +96,7 @@ function SortableLaborRow({
         // container is wide enough to hold every column at a usable size
         'grid grid-cols-[auto_1fr] gap-2 rounded-lg border p-2',
         '@2xl:grid-cols-[auto_2fr_1fr_1fr_1fr_auto] @2xl:rounded-none @2xl:border-0 @2xl:p-0',
-        isDragging && dragEnabled && 'z-10 opacity-75',
+        isDragging && dragEnabled && 'z-10 opacity-75'
       )}
     >
       <button
@@ -205,18 +202,21 @@ export function LaborEditor({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-    const oldIndex = keysRef.current.indexOf(active.id as string)
-    const newIndex = keysRef.current.indexOf(over.id as string)
-    if (oldIndex === -1 || newIndex === -1) return
-    keysRef.current = arrayMove(keysRef.current, oldIndex, newIndex)
-    setLaborItems((prev) => arrayMove(prev, oldIndex, newIndex))
-  }, [setLaborItems])
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
+      const oldIndex = keysRef.current.indexOf(active.id as string)
+      const newIndex = keysRef.current.indexOf(over.id as string)
+      if (oldIndex === -1 || newIndex === -1) return
+      keysRef.current = arrayMove(keysRef.current, oldIndex, newIndex)
+      setLaborItems((prev) => arrayMove(prev, oldIndex, newIndex))
+    },
+    [setLaborItems]
+  )
 
   const addLaborAtStart = useCallback(() => {
     const key = `labor-${keyCounterRef.current++}`
@@ -242,10 +242,13 @@ export function LaborEditor({
     setLaborItems((prev) => [...prev, makeEmptyService()])
   }, [setLaborItems])
 
-  const deleteLabor = useCallback((index: number) => {
-    keysRef.current = keysRef.current.filter((_, j) => j !== index)
-    setLaborItems((prev) => prev.filter((_, j) => j !== index))
-  }, [setLaborItems])
+  const deleteLabor = useCallback(
+    (index: number) => {
+      keysRef.current = keysRef.current.filter((_, j) => j !== index)
+      setLaborItems((prev) => prev.filter((_, j) => j !== index))
+    },
+    [setLaborItems]
+  )
 
   return (
     // Sizes itself off its own container: the details view splits into two
@@ -256,18 +259,10 @@ export function LaborEditor({
         <h3 className="text-sm font-semibold">{t('title')}</h3>
         <div className="flex flex-wrap gap-1.5">
           {hasPresets && onOpenPresets && (
-            <IconActionButton
-              label={t('fromPresets')}
-              icon={Layers}
-              onClick={onOpenPresets}
-            />
+            <IconActionButton label={t('fromPresets')} icon={Layers} onClick={onOpenPresets} />
           )}
           <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
-          <IconActionButton
-            label={t('addService')}
-            icon={Wrench}
-            onClick={addServiceAtStart}
-          />
+          <IconActionButton label={t('addService')} icon={Wrench} onClick={addServiceAtStart} />
           {onAddFinding && openObservationsCount > 0 && onShowExistingObservations ? (
             <DropdownMenu>
               {/* Plain button with a native tooltip: a Radix dropdown trigger
@@ -289,13 +284,19 @@ export function LaborEditor({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={(e) => { e.preventDefault(); onAddFinding() }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onAddFinding()
+                  }}
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   {t('newObservation')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={(e) => { e.preventDefault(); onShowExistingObservations() }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    onShowExistingObservations()
+                  }}
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   {t('addExisting', { count: openObservationsCount })}
@@ -303,11 +304,7 @@ export function LaborEditor({
               </DropdownMenuContent>
             </DropdownMenu>
           ) : onAddFinding ? (
-            <IconActionButton
-              label={t('addFinding')}
-              icon={AlertTriangle}
-              onClick={onAddFinding}
-            />
+            <IconActionButton label={t('addFinding')} icon={AlertTriangle} onClick={onAddFinding} />
           ) : null}
         </div>
       </div>
@@ -323,7 +320,11 @@ export function LaborEditor({
             <span />
           </div>
           {mounted ? (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
               <SortableContext items={keysRef.current} strategy={verticalListSortingStrategy}>
                 {laborItems.map((labor, i) => (
                   <SortableLaborRow

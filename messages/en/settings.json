@@ -1478,6 +1478,19 @@
     "setupHint": "Next, set up your shelves.",
     "setupLink": "Open storage layout",
     "save": "Save tire hotel settings",
-    "saved": "Tire hotel settings saved"
+    "saved": "Tire hotel settings saved",
+    "billingTitle": "Storage billing",
+    "billingHint": "Prefilled when you create a new agreement. Each agreement can override it.",
+    "seasonalPrice": "Default price per season",
+    "monthlyPrice": "Default price per month",
+    "invoiceTarget": "Where the storage charge goes",
+    "invoiceTargets": {
+      "separate": "Its own invoice",
+      "workOrder": "Added to an open job"
+    },
+    "invoiceTargetHint": {
+      "separate": "Storage is always invoiced on its own document.",
+      "workOrder": "Added to an open job for the same vehicle when there is one, otherwise its own invoice."
+    }
   }
 }

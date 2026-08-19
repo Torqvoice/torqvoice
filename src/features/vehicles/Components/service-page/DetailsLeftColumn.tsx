@@ -23,9 +23,21 @@ interface DetailsLeftColumnProps {
   onScanBarcode?: () => void
   aiEnabled?: boolean
   vehicleId: string | null
-  findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
+  findings?: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+  }[]
   onAddFinding?: () => void
-  onEditFinding?: (finding: { id: string; description: string; severity: string; status: string; notes: string | null }) => void
+  onEditFinding?: (finding: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+  }) => void
   openObservationsCount?: number
   onShowExistingObservations?: () => void
 }

@@ -123,6 +123,11 @@
     "tire_set_relocate": "Bandenset verplaatst",
     "tire_set_update": "Bandenset bijgewerkt",
     "tire_set_delete": "Bandenset verwijderd",
-    "tire_measurement_create": "Bandenmetingen vastgelegd"
+    "tire_measurement_create": "Bandenmetingen vastgelegd",
+    "tire_agreement_create": "Opslagovereenkomst aangemaakt",
+    "tire_agreement_update": "Opslagovereenkomst bijgewerkt",
+    "tire_agreement_end": "Opslagovereenkomst beëindigd",
+    "tire_agreement_invoice": "Bandenopslag gefactureerd",
+    "tire_agreement_waive": "Opslagperiode kwijtgescholden"
   }
 }

@@ -13,7 +13,15 @@ import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Loader2, Save, Warehouse } from 'lucide-react'
+import { INVOICE_TARGETS } from '@/features/tire-hotel/Lib/billing'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { mmToThirtySeconds, thirtySecondsToMm } from '@/features/tire-hotel/Lib/tireConstants'
 
@@ -36,6 +44,15 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
   )
   const [warnPercent, setWarnPercent] = useState(
     settings[SETTING_KEYS.TIRE_HOTEL_CAPACITY_WARN_PERCENT] || '90'
+  )
+  const [invoiceTarget, setInvoiceTarget] = useState(
+    settings[SETTING_KEYS.TIRE_HOTEL_INVOICE_TARGET] === 'workOrder' ? 'workOrder' : 'separate'
+  )
+  const [seasonalPrice, setSeasonalPrice] = useState(
+    settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE] || '0'
+  )
+  const [monthlyPrice, setMonthlyPrice] = useState(
+    settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE] || '0'
   )
 
   // Thresholds are stored in mm. Workshops on imperial units type 32nds, so
@@ -69,6 +86,13 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
       ),
       [SETTING_KEYS.TIRE_HOTEL_CAPACITY_WARN_PERCENT]: String(
         Math.min(100, Math.max(1, Math.round(Number(warnPercent) || 90)))
+      ),
+      [SETTING_KEYS.TIRE_HOTEL_INVOICE_TARGET]: invoiceTarget,
+      [SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE]: String(
+        Math.max(0, Number(seasonalPrice) || 0)
+      ),
+      [SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE]: String(
+        Math.max(0, Number(monthlyPrice) || 0)
       ),
     })
     setSaving(false)
@@ -163,6 +187,59 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
                     onChange={(e) => setWinterLimit(e.target.value)}
                   />
                 </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <p className="text-sm font-medium">{t('tireHotel.billingTitle')}</p>
+                <p className="text-xs text-muted-foreground">{t('tireHotel.billingHint')}</p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="tireHotelSeasonal">{t('tireHotel.seasonalPrice')}</Label>
+                  <Input
+                    id="tireHotelSeasonal"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={seasonalPrice}
+                    onChange={(e) => setSeasonalPrice(e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tireHotelMonthly">{t('tireHotel.monthlyPrice')}</Label>
+                  <Input
+                    id="tireHotelMonthly"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={monthlyPrice}
+                    onChange={(e) => setMonthlyPrice(e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tireHotelTarget">{t('tireHotel.invoiceTarget')}</Label>
+                <Select value={invoiceTarget} onValueChange={setInvoiceTarget}>
+                  <SelectTrigger id="tireHotelTarget">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {INVOICE_TARGETS.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {t(`tireHotel.invoiceTargets.${value}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {t(`tireHotel.invoiceTargetHint.${invoiceTarget}`)}
+                </p>
               </div>
 
               <p className="text-xs text-muted-foreground">

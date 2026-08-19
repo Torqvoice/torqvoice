@@ -1,51 +1,60 @@
-"use client";
+'use client'
 
-import { useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, X as XIcon } from "lucide-react";
-import type { Attachment } from "./types";
+import { useEffect, useRef } from 'react'
+import { ChevronLeft, ChevronRight, X as XIcon } from 'lucide-react'
+import type { Attachment } from './types'
 
 interface ImageCarouselProps {
-  images: Attachment[];
-  currentIndex: number | null;
-  onClose: () => void;
-  onChangeIndex: (index: number) => void;
+  images: Attachment[]
+  currentIndex: number | null
+  onClose: () => void
+  onChangeIndex: (index: number) => void
 }
 
-export function ImageCarousel({ images, currentIndex, onClose, onChangeIndex }: ImageCarouselProps) {
-  const touchStartX = useRef<number | null>(null);
+export function ImageCarousel({
+  images,
+  currentIndex,
+  onClose,
+  onChangeIndex,
+}: ImageCarouselProps) {
+  const touchStartX = useRef<number | null>(null)
 
   const prev = () => {
-    if (currentIndex !== null && currentIndex > 0) onChangeIndex(currentIndex - 1);
-  };
+    if (currentIndex !== null && currentIndex > 0) onChangeIndex(currentIndex - 1)
+  }
   const next = () => {
-    if (currentIndex !== null && currentIndex < images.length - 1) onChangeIndex(currentIndex + 1);
-  };
+    if (currentIndex !== null && currentIndex < images.length - 1) onChangeIndex(currentIndex + 1)
+  }
 
   useEffect(() => {
-    if (currentIndex === null) return;
+    if (currentIndex === null) return
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowLeft") prev();
-      else if (e.key === "ArrowRight") next();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [currentIndex, images.length]);
+      if (e.key === 'Escape') onClose()
+      else if (e.key === 'ArrowLeft') prev()
+      else if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [currentIndex, images.length])
 
-  if (currentIndex === null || !images[currentIndex]) return null;
+  if (currentIndex === null || !images[currentIndex]) return null
 
-  const image = images[currentIndex];
+  const image = images[currentIndex]
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
       onClick={onClose}
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchStart={(e) => {
+        touchStartX.current = e.touches[0].clientX
+      }}
       onTouchEnd={(e) => {
-        if (touchStartX.current === null) return;
-        const diff = e.changedTouches[0].clientX - touchStartX.current;
-        if (Math.abs(diff) > 50) { diff > 0 ? prev() : next(); }
-        touchStartX.current = null;
+        if (touchStartX.current === null) return
+        const diff = e.changedTouches[0].clientX - touchStartX.current
+        if (Math.abs(diff) > 50) {
+          diff > 0 ? prev() : next()
+        }
+        touchStartX.current = null
       }}
     >
       <button
@@ -65,7 +74,10 @@ export function ImageCarousel({ images, currentIndex, onClose, onChangeIndex }: 
       {currentIndex > 0 && (
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); prev(); }}
+          onClick={(e) => {
+            e.stopPropagation()
+            prev()
+          }}
           className="absolute left-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:left-4 sm:h-12 sm:w-12"
         >
           <ChevronLeft className="h-6 w-6" />
@@ -75,14 +87,20 @@ export function ImageCarousel({ images, currentIndex, onClose, onChangeIndex }: 
       {currentIndex < images.length - 1 && (
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); next(); }}
+          onClick={(e) => {
+            e.stopPropagation()
+            next()
+          }}
           className="absolute right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 sm:right-4 sm:h-12 sm:w-12"
         >
           <ChevronRight className="h-6 w-6" />
         </button>
       )}
 
-      <div className="flex max-h-[85vh] max-w-[90vw] flex-col items-center" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="flex max-h-[85vh] max-w-[90vw] flex-col items-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         <img
           src={image.fileUrl}
           alt={image.description || image.fileName}
@@ -94,5 +112,5 @@ export function ImageCarousel({ images, currentIndex, onClose, onChangeIndex }: 
         )}
       </div>
     </div>
-  );
+  )
 }

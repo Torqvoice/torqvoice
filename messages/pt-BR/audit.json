@@ -123,6 +123,11 @@
     "tire_set_relocate": "Jogo de pneus movido",
     "tire_set_update": "Jogo de pneus atualizado",
     "tire_set_delete": "Jogo de pneus excluído",
-    "tire_measurement_create": "Medições de pneus registradas"
+    "tire_measurement_create": "Medições de pneus registradas",
+    "tire_agreement_create": "Contrato de armazenagem criado",
+    "tire_agreement_update": "Contrato de armazenagem atualizado",
+    "tire_agreement_end": "Contrato de armazenagem encerrado",
+    "tire_agreement_invoice": "Armazenagem de pneus faturada",
+    "tire_agreement_waive": "Período de armazenagem dispensado"
   }
 }

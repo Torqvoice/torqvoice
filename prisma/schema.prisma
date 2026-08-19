@@ -47,6 +47,7 @@ model User {
   tireSets               TireSet[]
   tireMeasurements       TireMeasurement[]
   tireMovements          TireMovement[]
+  tireStorageAgreements  TireStorageAgreement[]
 
   @@map("users")
 }
@@ -262,6 +263,7 @@ model ServiceRecord {
 
   partItems      ServicePart[]
   laborItems     ServiceLabor[]
+  tireStorageCharges TireStorageCharge[]
   attachments    ServiceAttachment[]
   payments       Payment[]
   statusReports  StatusReport[]
@@ -404,6 +406,7 @@ model Customer {
   serviceRecords ServiceRecord[]
   reminders      Reminder[]
   tireSets       TireSet[]
+  tireStorageAgreements TireStorageAgreement[]
 
   @@unique([organizationId, customerNumber])
   @@index([organizationId])
@@ -829,6 +832,8 @@ model Organization {
   tireLocations          TireLocation[]
   tireSets               TireSet[]
   tireMovements          TireMovement[]
+  tireStorageAgreements  TireStorageAgreement[]
+  tireStorageCharges     TireStorageCharge[]
 
   @@map("organizations")
 }
@@ -1703,6 +1708,7 @@ model TireSet {
 
   measurements TireMeasurement[]
   movements    TireMovement[]
+  agreements   TireStorageAgreement[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1794,4 +1800,103 @@ model TireMovement {
   @@index([tireSetId, createdAt(sort: Desc)])
   @@index([organizationId, createdAt(sort: Desc)])
   @@map("tire_movements")
+}
+
+/// What a customer pays to keep a set on the shelf.
+///
+/// Held separately from the set itself because the commercial terms and the
+/// physical facts have different lifetimes: a set can sit through three
+/// seasons on one agreement, or move to new terms without ever leaving its
+/// shelf. Keeping them apart also means ending an agreement never disturbs
+/// the storage history.
+model TireStorageAgreement {
+  id String @id @default(cuid())
+
+  /// seasonal | monthly — see STORAGE_BILLING_MODELS
+  billingModel String @default("seasonal")
+
+  /// Price for one billing period, before extras and tax, in the
+  /// organization's own currency.
+  price Float @default(0)
+
+  /// Optional one-off additions priced with the storage: wash, balancing, a
+  /// TPMS reset. Shape: [{ label: string, price: number }].
+  extras Json?
+
+  startDate DateTime
+  /// Null means open-ended, which is normal for monthly billing.
+  endDate   DateTime?
+
+  /// Seasonal agreements roll into the next season unless someone stops them.
+  autoRenew Boolean @default(false)
+
+  /// active | ended | cancelled — see STORAGE_AGREEMENT_STATUSES
+  status String @default("active")
+
+  notes String?
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  /// Who pays. Kept even when the set's own customer changes, so an invoice
+  /// already raised still points at the party that owes it.
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  charges TireStorageCharge[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([tireSetId])
+  @@index([customerId])
+  @@map("tire_storage_agreements")
+}
+
+/// One billable period on an agreement.
+///
+/// Exists so "what has been invoiced" is a fact rather than an inference: a
+/// period is created when it falls due and marked invoiced when it reaches a
+/// service record. Without it, re-running a sweep would bill a customer twice
+/// for the same season.
+model TireStorageCharge {
+  id String @id @default(cuid())
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  /// Total for this period, extras included, before tax.
+  amount Float @default(0)
+
+  /// pending | invoiced | waived — see STORAGE_CHARGE_STATUSES
+  status String @default("pending")
+
+  /// The invoice this landed on. SetNull rather than Cascade: deleting an
+  /// invoice must not erase the fact that a period was billed, or the next
+  /// sweep would silently bill it again.
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: SetNull)
+
+  invoicedAt DateTime?
+
+  agreementId String
+  agreement   TireStorageAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agreementId, periodStart])
+  @@index([organizationId, status])
+  @@index([serviceRecordId])
+  @@map("tire_storage_charges")
 }

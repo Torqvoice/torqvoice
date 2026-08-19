@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Lichtmetaal, staal",
     "success": "Bandenset bijgewerkt",
     "failed": "Kon de wijzigingen niet opslaan"
+  },
+  "agreement": {
+    "title": "Opslagfacturatie",
+    "add": "Overeenkomst toevoegen",
+    "addTitle": "Nieuwe opslagovereenkomst",
+    "editTitle": "Overeenkomst bewerken",
+    "description": "Wat de klant betaalt om deze set op de stelling te houden.",
+    "none": "Nog geen overeenkomst. Voeg er een toe om deze set te factureren.",
+    "billingModel": "Facturatie",
+    "models": {
+      "seasonal": "Per seizoen",
+      "monthly": "Per maand"
+    },
+    "price": "Prijs ({currency})",
+    "priceHint": {
+      "seasonal": "Eén keer per halfjaarseizoen in rekening gebracht.",
+      "monthly": "Elke maand in rekening gebracht."
+    },
+    "perPeriod": {
+      "seasonal": "per seizoen",
+      "monthly": "per maand"
+    },
+    "startDate": "Begint",
+    "endDate": "Eindigt",
+    "endDateHint": "Laat leeg voor onbepaalde tijd.",
+    "autoRenew": "Automatisch verlengen",
+    "autoRenewHint": "Blijft doorfactureren tot iemand de overeenkomst beëindigt.",
+    "extras": "Extra's",
+    "extrasHint": "Samen met de opslag geprijsd: wassen, balanceren, TPMS-reset.",
+    "addExtra": "Extra toevoegen",
+    "removeExtra": "Extra verwijderen",
+    "extraLabelPlaceholder": "Wassen en balanceren",
+    "notes": "Notities",
+    "create": "Overeenkomst aanmaken",
+    "created": "Overeenkomst aangemaakt",
+    "updated": "Overeenkomst bijgewerkt",
+    "saveFailed": "Kon de overeenkomst niet opslaan",
+    "statuses": {
+      "active": "Actief",
+      "ended": "Beëindigd",
+      "cancelled": "Geannuleerd"
+    },
+    "chargeStatuses": {
+      "pending": "Openstaand",
+      "invoiced": "Gefactureerd",
+      "waived": "Kwijtgescholden"
+    },
+    "renews": "verlengt automatisch",
+    "noRenew": "verlengt niet",
+    "invoice": "Factureren",
+    "invoiced": "Gefactureerd op {number}",
+    "invoiceFailed": "Kon de factuur niet aanmaken",
+    "openInvoice": "Factuur openen",
+    "waive": "Kwijtschelden",
+    "waiveTitle": "Deze periode kwijtschelden?",
+    "waiveBody": "De klant wordt er niet voor gefactureerd. De periode blijft in de geschiedenis staan.",
+    "waived": "Periode kwijtgescholden",
+    "waiveFailed": "Kon de periode niet kwijtschelden",
+    "end": "Beëindigen",
+    "endTitle": "Deze overeenkomst beëindigen?",
+    "endBody": "De facturatie stopt. Reeds verstuurde facturen blijven ongemoeid.",
+    "endBodyPending": "De facturatie stopt en {count} niet-gefactureerde periode(n) worden kwijtgescholden. Reeds verstuurde facturen blijven ongemoeid.",
+    "ended": "Overeenkomst beëindigd",
+    "endFailed": "Kon de overeenkomst niet beëindigen"
   }
 }

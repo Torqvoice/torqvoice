@@ -1478,6 +1478,19 @@
     "setupHint": "Następnie skonfiguruj półki.",
     "setupLink": "Otwórz układ magazynu",
     "save": "Zapisz ustawienia hotelu opon",
-    "saved": "Zapisano ustawienia hotelu opon"
+    "saved": "Zapisano ustawienia hotelu opon",
+    "billingTitle": "Rozliczenie przechowywania",
+    "billingHint": "Wypełniane przy tworzeniu nowej umowy. Każda umowa może to zmienić.",
+    "seasonalPrice": "Domyślna cena za sezon",
+    "monthlyPrice": "Domyślna cena za miesiąc",
+    "invoiceTarget": "Gdzie trafia opłata za przechowywanie",
+    "invoiceTargets": {
+      "separate": "Osobna faktura",
+      "workOrder": "Dodane do otwartego zlecenia"
+    },
+    "invoiceTargetHint": {
+      "separate": "Przechowywanie zawsze jest fakturowane na własnym dokumencie.",
+      "workOrder": "Dodawane do otwartego zlecenia dla tego samego pojazdu, w przeciwnym razie osobna faktura."
+    }
   }
 }

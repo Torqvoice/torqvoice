@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Liga leve, aço",
     "success": "Jogo de pneus atualizado",
     "failed": "Não foi possível salvar as alterações"
+  },
+  "agreement": {
+    "title": "Cobrança da armazenagem",
+    "add": "Adicionar contrato",
+    "addTitle": "Novo contrato de armazenagem",
+    "editTitle": "Editar contrato",
+    "description": "O que o cliente paga para manter este jogo na prateleira.",
+    "none": "Nenhum contrato ainda. Adicione um para cobrar por este jogo.",
+    "billingModel": "Cobrança",
+    "models": {
+      "seasonal": "Por temporada",
+      "monthly": "Por mês"
+    },
+    "price": "Preço ({currency})",
+    "priceHint": {
+      "seasonal": "Cobrado uma vez por temporada de seis meses.",
+      "monthly": "Cobrado todo mês."
+    },
+    "perPeriod": {
+      "seasonal": "por temporada",
+      "monthly": "por mês"
+    },
+    "startDate": "Início",
+    "endDate": "Término",
+    "endDateHint": "Deixe em branco para prazo indeterminado.",
+    "autoRenew": "Renovar automaticamente",
+    "autoRenewHint": "Continua cobrando o próximo período até alguém encerrar o contrato.",
+    "extras": "Adicionais",
+    "extrasHint": "Cobrados junto com a armazenagem: lavagem, balanceamento, reset do TPMS.",
+    "addExtra": "Adicionar item",
+    "removeExtra": "Remover item",
+    "extraLabelPlaceholder": "Lavagem e balanceamento",
+    "notes": "Observações",
+    "create": "Criar contrato",
+    "created": "Contrato criado",
+    "updated": "Contrato atualizado",
+    "saveFailed": "Não foi possível salvar o contrato",
+    "statuses": {
+      "active": "Ativo",
+      "ended": "Encerrado",
+      "cancelled": "Cancelado"
+    },
+    "chargeStatuses": {
+      "pending": "A cobrar",
+      "invoiced": "Faturado",
+      "waived": "Dispensado"
+    },
+    "renews": "renova automaticamente",
+    "noRenew": "não renova",
+    "invoice": "Faturar",
+    "invoiced": "Faturado em {number}",
+    "invoiceFailed": "Não foi possível criar a fatura",
+    "openInvoice": "Abrir fatura",
+    "waive": "Dispensar",
+    "waiveTitle": "Dispensar este período?",
+    "waiveBody": "O cliente não será cobrado por ele. O período continua no histórico.",
+    "waived": "Período dispensado",
+    "waiveFailed": "Não foi possível dispensar o período",
+    "end": "Encerrar",
+    "endTitle": "Encerrar este contrato?",
+    "endBody": "A cobrança para. Faturas já emitidas não são alteradas.",
+    "endBodyPending": "A cobrança para e {count} período(s) não faturado(s) serão dispensados. Faturas já emitidas não são alteradas.",
+    "ended": "Contrato encerrado",
+    "endFailed": "Não foi possível encerrar o contrato"
   }
 }

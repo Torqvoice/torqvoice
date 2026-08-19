@@ -1478,6 +1478,19 @@
     "setupHint": "Richten Sie als Nächstes Ihre Regale ein.",
     "setupLink": "Lagerstruktur öffnen",
     "save": "Reifenhotel-Einstellungen speichern",
-    "saved": "Reifenhotel-Einstellungen gespeichert"
+    "saved": "Reifenhotel-Einstellungen gespeichert",
+    "billingTitle": "Lagerabrechnung",
+    "billingHint": "Wird beim Anlegen einer neuen Vereinbarung vorausgefüllt. Jede Vereinbarung kann davon abweichen.",
+    "seasonalPrice": "Standardpreis pro Saison",
+    "monthlyPrice": "Standardpreis pro Monat",
+    "invoiceTarget": "Wohin die Lagergebühr geht",
+    "invoiceTargets": {
+      "separate": "Eigene Rechnung",
+      "workOrder": "Zu einem offenen Auftrag"
+    },
+    "invoiceTargetHint": {
+      "separate": "Die Lagerung wird immer auf einem eigenen Dokument berechnet.",
+      "workOrder": "Wird einem offenen Auftrag für dasselbe Fahrzeug hinzugefügt, sonst eigene Rechnung."
+    }
   }
 }

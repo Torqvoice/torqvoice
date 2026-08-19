@@ -123,6 +123,11 @@
     "tire_set_relocate": "Reifensatz umgelagert",
     "tire_set_update": "Reifensatz aktualisiert",
     "tire_set_delete": "Reifensatz gelöscht",
-    "tire_measurement_create": "Reifenmessungen erfasst"
+    "tire_measurement_create": "Reifenmessungen erfasst",
+    "tire_agreement_create": "Lagervereinbarung erstellt",
+    "tire_agreement_update": "Lagervereinbarung aktualisiert",
+    "tire_agreement_end": "Lagervereinbarung beendet",
+    "tire_agreement_invoice": "Reifeneinlagerung berechnet",
+    "tire_agreement_waive": "Lagerperiode erlassen"
   }
 }

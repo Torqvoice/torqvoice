@@ -223,12 +223,7 @@ export function ServicePageClient({
     })
     setNotifyMessage(message)
     setShowNotifyDialog(true)
-  }, [
-    formState.status,
-    customer,
-    record.vehicle,
-    record.title,
-  ]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [formState.status, customer, record.vehicle, record.title]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Observations state
   const tf = useTranslations('vehicles.findings')
@@ -385,16 +380,16 @@ export function ServicePageClient({
             />
           </form>
           {vehicleId && (
-          <ObservationsManager
-            vehicleId={vehicleId}
-            serviceRecordId={record.id}
-            openObservations={openObservations}
-            onAddObservations={handleAddObservationsToWorkOrder}
-            addingObservations={addingObservations}
-            onControlsReady={(c) => {
-              obsControlsRef.current = c
-            }}
-          />
+            <ObservationsManager
+              vehicleId={vehicleId}
+              serviceRecordId={record.id}
+              openObservations={openObservations}
+              onAddObservations={handleAddObservationsToWorkOrder}
+              addingObservations={addingObservations}
+              onControlsReady={(c) => {
+                obsControlsRef.current = c
+              }}
+            />
           )}
         </>
       )}

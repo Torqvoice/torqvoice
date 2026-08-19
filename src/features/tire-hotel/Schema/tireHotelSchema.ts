@@ -6,6 +6,7 @@ import {
   TIRE_SEASONS,
   TIRE_SET_STATUSES,
 } from '../Lib/tireConstants'
+import { STORAGE_AGREEMENT_STATUSES, STORAGE_BILLING_MODELS } from '../Lib/billing'
 
 const optionalText = z.string().trim().max(200).optional().or(z.literal(''))
 
@@ -137,6 +138,41 @@ export const movementSchema = z.object({
   type: z.enum(TIRE_MOVEMENT_TYPES),
   note: z.string().trim().max(500).optional().or(z.literal('')),
 })
+
+const extraSchema = z.object({
+  label: z.string().trim().min(1).max(80),
+  price: z.coerce.number().min(0).max(1_000_000),
+})
+
+export const agreementSchema = z.object({
+  tireSetId: z.string().min(1),
+  customerId: z.string().min(1).optional().nullable(),
+  billingModel: z.enum(STORAGE_BILLING_MODELS).default('seasonal'),
+  price: z.coerce.number().min(0, 'Price cannot be negative').max(1_000_000),
+  extras: z.array(extraSchema).max(20).optional(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date().optional().nullable(),
+  autoRenew: z.boolean().optional(),
+  notes: z.string().trim().max(2000).optional().or(z.literal('')),
+})
+
+export const updateAgreementSchema = agreementSchema
+  .omit({ tireSetId: true })
+  .partial()
+  .extend({
+    id: z.string().min(1),
+    status: z.enum(STORAGE_AGREEMENT_STATUSES).optional(),
+  })
+
+export const invoiceChargeSchema = z.object({
+  chargeId: z.string().min(1),
+  /// Optional existing job to append the line to. Without it the action
+  /// follows the organization's configured target.
+  serviceRecordId: z.string().min(1).optional().nullable(),
+})
+
+export type AgreementInput = z.infer<typeof agreementSchema>
+export type ExtraInput = z.infer<typeof extraSchema>
 
 export type WarehouseInput = z.infer<typeof warehouseSchema>
 export type LocationInput = z.infer<typeof locationSchema>

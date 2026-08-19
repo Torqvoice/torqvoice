@@ -123,6 +123,11 @@
     "tire_set_relocate": "Jeu de pneus déplacé",
     "tire_set_update": "Jeu de pneus modifié",
     "tire_set_delete": "Jeu de pneus supprimé",
-    "tire_measurement_create": "Mesures de pneus enregistrées"
+    "tire_measurement_create": "Mesures de pneus enregistrées",
+    "tire_agreement_create": "Contrat de stockage créé",
+    "tire_agreement_update": "Contrat de stockage modifié",
+    "tire_agreement_end": "Contrat de stockage terminé",
+    "tire_agreement_invoice": "Stockage de pneus facturé",
+    "tire_agreement_waive": "Période de stockage offerte"
   }
 }

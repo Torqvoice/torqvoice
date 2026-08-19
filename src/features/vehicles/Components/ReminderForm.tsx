@@ -1,78 +1,73 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DateInput } from "@/components/ui/date-input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useGlassModal } from "@/components/glass-modal";
-import { toast } from "sonner";
-import { createReminder, updateReminder } from "../Actions/reminderActions";
-import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useGlassModal } from '@/components/glass-modal'
+import { toast } from 'sonner'
+import { createReminder, updateReminder } from '../Actions/reminderActions'
+import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface ReminderData {
-  id: string;
-  title: string;
-  description: string | null;
-  dueDate: Date | null;
-  dueMileage: number | null;
-  notifyInApp?: boolean;
-  notifyEmail?: boolean;
+  id: string
+  title: string
+  description: string | null
+  dueDate: Date | null
+  dueMileage: number | null
+  notifyInApp?: boolean
+  notifyEmail?: boolean
 }
 
 interface ReminderFormProps {
-  vehicleId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  reminder?: ReminderData;
+  vehicleId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  reminder?: ReminderData
 }
 
 export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: ReminderFormProps) {
-  const router = useRouter();
-  const modal = useGlassModal();
-  const t = useTranslations("vehicles.reminders");
-  const tc = useTranslations("common.buttons");
-  const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [dueMileage, setDueMileage] = useState("");
-  const [notifyInApp, setNotifyInApp] = useState(true);
-  const [notifyEmail, setNotifyEmail] = useState(false);
+  const router = useRouter()
+  const modal = useGlassModal()
+  const t = useTranslations('vehicles.reminders')
+  const tc = useTranslations('common.buttons')
+  const [loading, setLoading] = useState(false)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [dueDate, setDueDate] = useState('')
+  const [dueMileage, setDueMileage] = useState('')
+  const [notifyInApp, setNotifyInApp] = useState(true)
+  const [notifyEmail, setNotifyEmail] = useState(false)
 
-  const isEdit = !!reminder;
+  const isEdit = !!reminder
 
   useEffect(() => {
     if (open && reminder) {
-      setTitle(reminder.title);
-      setDescription(reminder.description || "");
-      setDueDate(reminder.dueDate ? new Date(reminder.dueDate).toISOString().split("T")[0] : "");
-      setDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : "");
-      setNotifyInApp(reminder.notifyInApp ?? true);
-      setNotifyEmail(reminder.notifyEmail ?? false);
+      setTitle(reminder.title)
+      setDescription(reminder.description || '')
+      setDueDate(reminder.dueDate ? new Date(reminder.dueDate).toISOString().split('T')[0] : '')
+      setDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : '')
+      setNotifyInApp(reminder.notifyInApp ?? true)
+      setNotifyEmail(reminder.notifyEmail ?? false)
     } else if (open) {
-      setTitle("");
-      setDescription("");
-      setDueDate("");
-      setDueMileage("");
-      setNotifyInApp(true);
-      setNotifyEmail(false);
+      setTitle('')
+      setDescription('')
+      setDueDate('')
+      setDueMileage('')
+      setNotifyInApp(true)
+      setNotifyEmail(false)
     }
-  }, [open, reminder]);
+  }, [open, reminder])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     const payload = {
       vehicleId,
@@ -82,109 +77,101 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       dueMileage: dueMileage ? Number(dueMileage) : undefined,
       notifyInApp,
       notifyEmail,
-    };
+    }
 
     const result = isEdit
       ? await updateReminder({ ...payload, id: reminder.id })
-      : await createReminder(payload);
+      : await createReminder(payload)
 
     if (result.success) {
-      toast.success(isEdit ? t("reminderUpdated") : t("reminderCreated"));
-      onOpenChange(false);
-      router.refresh();
+      toast.success(isEdit ? t('reminderUpdated') : t('reminderCreated'))
+      onOpenChange(false)
+      router.refresh()
     } else {
-      modal.open("error", "Error", result.error || t("saveError"));
+      modal.open('error', 'Error', result.error || t('saveError'))
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? t("editTitle") : t("addTitle")}</DialogTitle>
+          <DialogTitle>{isEdit ? t('editTitle') : t('addTitle')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="reminder-title">{t("titleLabel")}</Label>
+            <Label htmlFor="reminder-title">{t('titleLabel')}</Label>
             <Input
               id="reminder-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("titlePlaceholder")}
+              placeholder={t('titlePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reminder-description">{t("descriptionLabel")}</Label>
+            <Label htmlFor="reminder-description">{t('descriptionLabel')}</Label>
             <Textarea
               id="reminder-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("descriptionPlaceholder")}
+              placeholder={t('descriptionPlaceholder')}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="reminder-dueDate">{t("dueDateLabel")}</Label>
-              <DateInput
-                id="reminder-dueDate"
-                value={dueDate}
-                onChange={setDueDate}
-              />
+              <Label htmlFor="reminder-dueDate">{t('dueDateLabel')}</Label>
+              <DateInput id="reminder-dueDate" value={dueDate} onChange={setDueDate} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="reminder-dueMileage">{t("dueMileageLabel")}</Label>
+              <Label htmlFor="reminder-dueMileage">{t('dueMileageLabel')}</Label>
               <Input
                 id="reminder-dueMileage"
                 type="number"
                 value={dueMileage}
                 onChange={(e) => setDueMileage(e.target.value)}
-                placeholder={t("dueMileagePlaceholder")}
+                placeholder={t('dueMileagePlaceholder')}
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>{t("notifyLabel")}</Label>
+            <Label>{t('notifyLabel')}</Label>
             <div className="flex gap-6">
               <label className="flex items-center gap-2 text-sm font-normal">
                 <Checkbox
                   checked={notifyInApp}
                   onCheckedChange={(v) => setNotifyInApp(v === true)}
                 />
-                {t("notifyInApp")}
+                {t('notifyInApp')}
               </label>
               <label className="flex items-center gap-2 text-sm font-normal">
                 <Checkbox
                   checked={notifyEmail}
                   onCheckedChange={(v) => setNotifyEmail(v === true)}
                 />
-                {t("notifyEmail")}
+                {t('notifyEmail')}
               </label>
             </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              {tc("cancel")}
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {tc('cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isEdit ? tc("saveChanges") : t("addTitle")}
+              {isEdit ? tc('saveChanges') : t('addTitle')}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

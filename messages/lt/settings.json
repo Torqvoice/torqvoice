@@ -1478,6 +1478,19 @@
     "setupHint": "Toliau sutvarkykite lentynas.",
     "setupLink": "Atverti saugyklos išdėstymą",
     "save": "Išsaugoti padangų viešbučio nustatymus",
-    "saved": "Padangų viešbučio nustatymai išsaugoti"
+    "saved": "Padangų viešbučio nustatymai išsaugoti",
+    "billingTitle": "Saugojimo apmokėjimas",
+    "billingHint": "Užpildoma kuriant naują sutartį. Kiekviena sutartis gali tai pakeisti.",
+    "seasonalPrice": "Numatytoji kaina už sezoną",
+    "monthlyPrice": "Numatytoji kaina už mėnesį",
+    "invoiceTarget": "Kur patenka saugojimo mokestis",
+    "invoiceTargets": {
+      "separate": "Atskira sąskaita",
+      "workOrder": "Pridedama prie atviro darbo"
+    },
+    "invoiceTargetHint": {
+      "separate": "Saugojimas visada išrašomas atskirame dokumente.",
+      "workOrder": "Pridedama prie atviro darbo tai pačiai transporto priemonei, kitu atveju atskira sąskaita."
+    }
   }
 }

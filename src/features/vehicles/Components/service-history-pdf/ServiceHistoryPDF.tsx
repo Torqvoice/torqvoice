@@ -1,5 +1,9 @@
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
-import { formatDateForPdf, DEFAULT_DATE_FORMAT, formatCurrency as formatCurrencyPdf } from '@/lib/format'
+import {
+  formatDateForPdf,
+  DEFAULT_DATE_FORMAT,
+  formatCurrency as formatCurrencyPdf,
+} from '@/lib/format'
 import { createStyles, gray, getFontBold } from '../invoice-pdf/styles'
 import type { WorkshopInfo, InvoiceSettingsProps } from '../invoice-pdf/types'
 
@@ -48,7 +52,6 @@ interface ServiceHistoryPDFProps {
   labels?: Record<string, string>
 }
 
-
 export function ServiceHistoryPDF({
   vehicle,
   records,
@@ -69,7 +72,7 @@ export function ServiceHistoryPDF({
   const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
   const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
   const tz = invoiceSettings?.timezone || undefined
-  const unitLabel = invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')
+  const unitLabel = invoiceSettings?.unitSystem === 'metric' ? labels.km || 'km' : labels.mi || 'mi'
 
   const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
   const shopDisplayName = workshop?.name || 'Torqvoice'
@@ -107,7 +110,9 @@ export function ServiceHistoryPDF({
             {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
             {workshop?.phone && (
               <Text style={styles.brandContact}>
-                {labels.tel ? labels.tel.replace('{phone}', workshop.phone) : `Tel: ${workshop.phone}`}
+                {labels.tel
+                  ? labels.tel.replace('{phone}', workshop.phone)
+                  : `Tel: ${workshop.phone}`}
               </Text>
             )}
             {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
@@ -119,10 +124,10 @@ export function ServiceHistoryPDF({
             )}
           </View>
           <View>
-            <Text style={styles.invoiceTitle}>{labels.serviceHistoryTitle || 'SERVICE HISTORY'}</Text>
-            <Text style={styles.invoiceNumber}>
-              {formatDateForPdf(new Date(), df, tz)}
+            <Text style={styles.invoiceTitle}>
+              {labels.serviceHistoryTitle || 'SERVICE HISTORY'}
             </Text>
+            <Text style={styles.invoiceNumber}>{formatDateForPdf(new Date(), df, tz)}</Text>
           </View>
         </View>
 
@@ -139,12 +144,17 @@ export function ServiceHistoryPDF({
               )}
               {vehicle.licensePlate && (
                 <Text style={styles.infoTextSmall}>
-                  {labels.plate ? labels.plate.replace('{plate}', vehicle.licensePlate) : `Plate: ${vehicle.licensePlate}`}
+                  {labels.plate
+                    ? labels.plate.replace('{plate}', vehicle.licensePlate)
+                    : `Plate: ${vehicle.licensePlate}`}
                 </Text>
               )}
               <Text style={styles.infoTextSmall}>
                 {labels.mileage
-                  ? labels.mileage.replace('{mileage}', `${vehicle.mileage.toLocaleString()} ${unitLabel}`)
+                  ? labels.mileage.replace(
+                      '{mileage}',
+                      `${vehicle.mileage.toLocaleString()} ${unitLabel}`
+                    )
                   : `Mileage: ${vehicle.mileage.toLocaleString()} ${unitLabel}`}
               </Text>
             </View>
@@ -170,7 +180,15 @@ export function ServiceHistoryPDF({
 
         {/* Summary Stats */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
-          <View style={{ flex: 1, padding: 8, backgroundColor: '#f3f4f6', borderRadius: 4, alignItems: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              padding: 8,
+              backgroundColor: '#f3f4f6',
+              borderRadius: 4,
+              alignItems: 'center',
+            }}
+          >
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
               {records.length}
             </Text>
@@ -178,7 +196,15 @@ export function ServiceHistoryPDF({
               {labels.totalServices || 'Total Services'}
             </Text>
           </View>
-          <View style={{ flex: 1, padding: 8, backgroundColor: '#f3f4f6', borderRadius: 4, alignItems: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              padding: 8,
+              backgroundColor: '#f3f4f6',
+              borderRadius: 4,
+              alignItems: 'center',
+            }}
+          >
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
               {totalParts}
             </Text>
@@ -186,7 +212,15 @@ export function ServiceHistoryPDF({
               {labels.totalPartsUsed || 'Parts Used'}
             </Text>
           </View>
-          <View style={{ flex: 1, padding: 8, backgroundColor: '#f3f4f6', borderRadius: 4, alignItems: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              padding: 8,
+              backgroundColor: '#f3f4f6',
+              borderRadius: 4,
+              alignItems: 'center',
+            }}
+          >
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
               {totalLabor}
             </Text>
@@ -194,13 +228,19 @@ export function ServiceHistoryPDF({
               {labels.totalLaborItems || 'Labor Items'}
             </Text>
           </View>
-          <View style={{ flex: 1, padding: 8, backgroundColor: '#f3f4f6', borderRadius: 4, alignItems: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              padding: 8,
+              backgroundColor: '#f3f4f6',
+              borderRadius: 4,
+              alignItems: 'center',
+            }}
+          >
             <Text style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
               {formatCurrencyPdf(grandTotal, cc, cf)}
             </Text>
-            <Text style={{ fontSize: 8, color: gray }}>
-              {labels.grandTotal || 'Grand Total'}
-            </Text>
+            <Text style={{ fontSize: 8, color: gray }}>{labels.grandTotal || 'Grand Total'}</Text>
           </View>
         </View>
 
@@ -210,11 +250,19 @@ export function ServiceHistoryPDF({
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, { width: '15%' }]}>{labels.date || 'Date'}</Text>
-            <Text style={[styles.tableHeaderCell, { width: '30%' }]}>{labels.serviceTitle || 'Service'}</Text>
+            <Text style={[styles.tableHeaderCell, { width: '30%' }]}>
+              {labels.serviceTitle || 'Service'}
+            </Text>
             <Text style={[styles.tableHeaderCell, { width: '12%' }]}>{labels.type || 'Type'}</Text>
-            <Text style={[styles.tableHeaderCell, { width: '12%' }]}>{labels.status || 'Status'}</Text>
-            <Text style={[styles.tableHeaderCell, { width: '13%', textAlign: 'right' }]}>{labels.mileageCol || 'Mileage'}</Text>
-            <Text style={[styles.tableHeaderCell, { width: '18%', textAlign: 'right' }]}>{labels.total || 'Total'}</Text>
+            <Text style={[styles.tableHeaderCell, { width: '12%' }]}>
+              {labels.status || 'Status'}
+            </Text>
+            <Text style={[styles.tableHeaderCell, { width: '13%', textAlign: 'right' }]}>
+              {labels.mileageCol || 'Mileage'}
+            </Text>
+            <Text style={[styles.tableHeaderCell, { width: '18%', textAlign: 'right' }]}>
+              {labels.total || 'Total'}
+            </Text>
           </View>
 
           {/* Table Rows */}

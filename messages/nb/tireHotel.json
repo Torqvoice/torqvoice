@@ -216,5 +216,69 @@
     "rimTypePlaceholder": "Alu, stål",
     "success": "Dekksett oppdatert",
     "failed": "Kunne ikke lagre endringene"
+  },
+  "agreement": {
+    "title": "Lagerfakturering",
+    "add": "Legg til avtale",
+    "addTitle": "Ny lagringsavtale",
+    "editTitle": "Rediger avtale",
+    "description": "Det kunden betaler for å ha settet stående.",
+    "none": "Ingen avtale ennå. Legg til én for å fakturere for dette settet.",
+    "billingModel": "Fakturering",
+    "models": {
+      "seasonal": "Per sesong",
+      "monthly": "Per måned"
+    },
+    "price": "Pris ({currency})",
+    "priceHint": {
+      "seasonal": "Belastes én gang per halvårssesong.",
+      "monthly": "Belastes hver måned."
+    },
+    "perPeriod": {
+      "seasonal": "per sesong",
+      "monthly": "per måned"
+    },
+    "startDate": "Starter",
+    "endDate": "Slutter",
+    "endDateHint": "La stå tom for løpende avtale.",
+    "autoRenew": "Forny automatisk",
+    "autoRenewHint": "Fortsetter å fakturere neste periode til noen avslutter avtalen.",
+    "extras": "Tillegg",
+    "extrasHint": "Prises sammen med lagringen: vask, balansering, TPMS-nullstilling.",
+    "addExtra": "Legg til tillegg",
+    "removeExtra": "Fjern tillegg",
+    "extraLabelPlaceholder": "Vask og balansering",
+    "notes": "Notater",
+    "create": "Opprett avtale",
+    "created": "Avtale opprettet",
+    "updated": "Avtale oppdatert",
+    "saveFailed": "Kunne ikke lagre avtalen",
+    "statuses": {
+      "active": "Aktiv",
+      "ended": "Avsluttet",
+      "cancelled": "Kansellert"
+    },
+    "chargeStatuses": {
+      "pending": "Forfalt",
+      "invoiced": "Fakturert",
+      "waived": "Frafalt"
+    },
+    "renews": "fornyes automatisk",
+    "noRenew": "fornyes ikke",
+    "invoice": "Fakturer",
+    "invoiced": "Fakturert på {number}",
+    "invoiceFailed": "Kunne ikke opprette fakturaen",
+    "openInvoice": "Åpne faktura",
+    "waive": "Frafall",
+    "waiveTitle": "Frafalle denne perioden?",
+    "waiveBody": "Kunden blir ikke fakturert for den. Perioden blir stående i historikken.",
+    "waived": "Perioden frafalt",
+    "waiveFailed": "Kunne ikke frafalle perioden",
+    "end": "Avslutt",
+    "endTitle": "Avslutte denne avtalen?",
+    "endBody": "Faktureringen stopper. Fakturaer som allerede er sendt, berøres ikke.",
+    "endBodyPending": "Faktureringen stopper og {count} ufakturert(e) periode(r) frafalles. Fakturaer som allerede er sendt, berøres ikke.",
+    "ended": "Avtale avsluttet",
+    "endFailed": "Kunne ikke avslutte avtalen"
   }
 }

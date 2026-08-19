@@ -123,6 +123,11 @@
     "tire_set_relocate": "Przeniesiono komplet opon",
     "tire_set_update": "Zaktualizowano komplet opon",
     "tire_set_delete": "Usunięto komplet opon",
-    "tire_measurement_create": "Zapisano pomiary opon"
+    "tire_measurement_create": "Zapisano pomiary opon",
+    "tire_agreement_create": "Utworzono umowę przechowywania",
+    "tire_agreement_update": "Zaktualizowano umowę przechowywania",
+    "tire_agreement_end": "Zakończono umowę przechowywania",
+    "tire_agreement_invoice": "Zafakturowano przechowywanie opon",
+    "tire_agreement_waive": "Umorzono okres przechowywania"
   }
 }

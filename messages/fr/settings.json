@@ -1478,6 +1478,19 @@
     "setupHint": "Configurez ensuite vos étagères.",
     "setupLink": "Ouvrir l’organisation du stockage",
     "save": "Enregistrer les réglages",
-    "saved": "Réglages de l’hôtel à pneus enregistrés"
+    "saved": "Réglages de l’hôtel à pneus enregistrés",
+    "billingTitle": "Facturation du stockage",
+    "billingHint": "Prérempli à la création d’un contrat. Chaque contrat peut le remplacer.",
+    "seasonalPrice": "Prix par défaut par saison",
+    "monthlyPrice": "Prix par défaut par mois",
+    "invoiceTarget": "Où va le montant du stockage",
+    "invoiceTargets": {
+      "separate": "Sa propre facture",
+      "workOrder": "Ajouté à un ordre ouvert"
+    },
+    "invoiceTargetHint": {
+      "separate": "Le stockage est toujours facturé sur son propre document.",
+      "workOrder": "Ajouté à un ordre ouvert pour le même véhicule, sinon sa propre facture."
+    }
   }
 }
