@@ -293,7 +293,10 @@
     "addToOpen": "Veya açık bir işe ekle",
     "noOpenInvoices": "Bu müşteri için açık iş yok.",
     "addLine": "Faturaya ekle",
-    "createInvoice": "Fatura oluştur"
+    "createInvoice": "Fatura oluştur",
+    "newWorkOrder": "Yeni iş emri",
+    "newWorkOrderHint": "Araca bağlı olur, böylece panoya düşer.",
+    "createWorkOrder": "İş emri oluştur"
   },
   "treatments": {
     "types": {

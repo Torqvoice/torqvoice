@@ -293,7 +293,10 @@
     "addToOpen": "Ou some a um serviço aberto",
     "noOpenInvoices": "Nenhum serviço aberto para este cliente.",
     "addLine": "Adicionar à fatura",
-    "createInvoice": "Criar fatura"
+    "createInvoice": "Criar fatura",
+    "newWorkOrder": "Nova ordem de serviço",
+    "newWorkOrderHint": "Vinculada ao veículo, então aparece no quadro.",
+    "createWorkOrder": "Criar ordem de serviço"
   },
   "treatments": {
     "types": {

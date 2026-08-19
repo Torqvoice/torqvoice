@@ -54,7 +54,8 @@
     "activeJobs": "Aktyvūs darbai",
     "recentObservations": "Naujausi pastebėjimai",
     "recentActivity": "Naujausia veikla",
-    "gettingStarted": "Pradžia"
+    "gettingStarted": "Pradžia",
+    "tireHotel": "Padangų viešbutis"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",
@@ -234,5 +235,14 @@
       "expired": "Nebegalioja",
       "converted": "Konvertuota"
     }
+  },
+  "tireHotel": {
+    "title": "Padangų viešbutis",
+    "viewAll": "Žiūrėti padangų viešbutį",
+    "stored": "Saugoma komplektų: {count}",
+    "capacity": "{used} / {capacity} padangų",
+    "roomLeft": "Vietos dar {count}",
+    "needsPrep": "Reikia paruošti",
+    "unbilled": "Neapmokestinta ({count})"
   }
 }

@@ -1482,15 +1482,6 @@
     "billingTitle": "Opslagfacturatie",
     "billingHint": "Vooraf ingevuld bij een nieuwe overeenkomst. Elke overeenkomst kan hiervan afwijken.",
     "seasonalPrice": "Standaardprijs per seizoen",
-    "monthlyPrice": "Standaardprijs per maand",
-    "invoiceTarget": "Waar de opslagkosten terechtkomen",
-    "invoiceTargets": {
-      "separate": "Eigen factuur",
-      "workOrder": "Toegevoegd aan een open opdracht"
-    },
-    "invoiceTargetHint": {
-      "separate": "Opslag wordt altijd op een eigen document gefactureerd.",
-      "workOrder": "Toegevoegd aan een open opdracht voor hetzelfde voertuig, anders een eigen factuur."
-    }
+    "monthlyPrice": "Standaardprijs per maand"
   }
 }

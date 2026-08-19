@@ -293,7 +293,10 @@
     "addToOpen": "Arba pridėti prie atviro darbo",
     "noOpenInvoices": "Šiam klientui atvirų darbų nėra.",
     "addLine": "Pridėti į sąskaitą",
-    "createInvoice": "Sukurti sąskaitą"
+    "createInvoice": "Sukurti sąskaitą",
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "newWorkOrderHint": "Susietas su transporto priemone, todėl pateks į lentą.",
+    "createWorkOrder": "Sukurti darbo užsakymą"
   },
   "treatments": {
     "types": {

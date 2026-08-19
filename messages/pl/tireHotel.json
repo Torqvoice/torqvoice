@@ -293,7 +293,10 @@
     "addToOpen": "Albo dodaj do otwartego zlecenia",
     "noOpenInvoices": "Brak otwartych zleceń dla tego klienta.",
     "addLine": "Dodaj do faktury",
-    "createInvoice": "Utwórz fakturę"
+    "createInvoice": "Utwórz fakturę",
+    "newWorkOrder": "Nowe zlecenie",
+    "newWorkOrderHint": "Powiązane z pojazdem, więc trafi na tablicę.",
+    "createWorkOrder": "Utwórz zlecenie"
   },
   "treatments": {
     "types": {

@@ -115,7 +115,6 @@ export function TireSetClient({
     seasonalPrice: number
     monthlyPrice: number
     currency: string
-    preferExistingInvoice: boolean
   }
   vehicles: {
     id: string
@@ -279,7 +278,7 @@ export function TireSetClient({
             defaultSeasonalPrice={billing.seasonalPrice}
             defaultMonthlyPrice={billing.monthlyPrice}
             currency={billing.currency}
-            preferExistingInvoice={billing.preferExistingInvoice}
+            hasVehicle={!!set.vehicle}
           />
 
           <AppCard icon={MapPin} title={t('detail.historyTitle')} contentClassName="space-y-0 p-0">

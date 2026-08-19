@@ -293,7 +293,10 @@
     "addToOpen": "Of toevoegen aan een open opdracht",
     "noOpenInvoices": "Geen open opdrachten voor deze klant.",
     "addLine": "Aan factuur toevoegen",
-    "createInvoice": "Factuur aanmaken"
+    "createInvoice": "Factuur aanmaken",
+    "newWorkOrder": "Nieuwe werkorder",
+    "newWorkOrderHint": "Gekoppeld aan het voertuig, zodat hij op het bord komt.",
+    "createWorkOrder": "Werkorder aanmaken"
   },
   "treatments": {
     "types": {

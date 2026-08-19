@@ -293,7 +293,10 @@
     "addToOpen": "Oder zu einem offenen Auftrag",
     "noOpenInvoices": "Keine offenen Aufträge für diesen Kunden.",
     "addLine": "Zur Rechnung hinzufügen",
-    "createInvoice": "Rechnung erstellen"
+    "createInvoice": "Rechnung erstellen",
+    "newWorkOrder": "Neuer Auftrag",
+    "newWorkOrderHint": "Am Fahrzeug hängend, damit er auf dem Board erscheint.",
+    "createWorkOrder": "Auftrag erstellen"
   },
   "treatments": {
     "types": {

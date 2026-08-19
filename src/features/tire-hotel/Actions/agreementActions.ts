@@ -7,13 +7,12 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   agreementSchema,
   invoiceChargeSchema,
   updateAgreementSchema,
 } from '../Schema/tireHotelSchema'
-import { duePeriods, parseExtras, periodAmount, round2, type InvoiceTarget } from '../Lib/billing'
+import { duePeriods, parseExtras, periodAmount, round2 } from '../Lib/billing'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
@@ -28,16 +27,6 @@ function revalidateBilling(tireSetId?: string) {
   revalidatePath('/tire-hotel')
   if (tireSetId) revalidatePath(`/tire-hotel/${tireSetId}`)
   revalidatePath('/billing')
-}
-
-async function invoiceTargetFor(organizationId: string): Promise<InvoiceTarget> {
-  const setting = await db.appSetting.findUnique({
-    where: {
-      organizationId_key: { organizationId, key: SETTING_KEYS.TIRE_HOTEL_INVOICE_TARGET },
-    },
-    select: { value: true },
-  })
-  return setting?.value === 'workOrder' ? 'workOrder' : 'separate'
 }
 
 /**
@@ -349,11 +338,10 @@ export async function refreshCharges(agreementId: string) {
 /**
  * Puts one due period onto an invoice.
  *
- * Where it lands follows the organization's setting: `separate` raises a
- * dedicated invoice, `workOrder` appends to an open job for the same vehicle
- * so the customer pays once. `workOrder` falls back to a separate invoice
- * when there is no open job to append to, because refusing to bill would be
- * a worse answer than billing on its own document.
+ * The caller says where it lands, because that is a decision about this
+ * customer on this day rather than a policy: someone collecting during a
+ * service wants one bill, someone who only stores wants their own document,
+ * and a set that belongs to a vehicle may want a job the whole shop can see.
  */
 export async function invoiceCharge(input: unknown) {
   return withAuth(
@@ -388,36 +376,28 @@ export async function invoiceCharge(input: unknown) {
         const { agreement } = charge
         const { tireSet } = agreement
 
-        // Reuse the job the caller named, otherwise follow the setting.
-        let record = data.serviceRecordId
-          ? await tx.serviceRecord.findFirst({
-              where: { id: data.serviceRecordId, organizationId },
-              select: { id: true, invoiceNumber: true },
-            })
-          : null
+        let record: { id: string; invoiceNumber: string | null } | null = null
 
-        if (
-          !record &&
-          (await invoiceTargetFor(organizationId)) === 'workOrder' &&
-          tireSet.vehicleId
-        ) {
+        if (data.target === 'existing') {
           record = await tx.serviceRecord.findFirst({
-            where: {
-              organizationId,
-              vehicleId: tireSet.vehicleId,
-              status: { in: ['pending', 'in_progress'] },
-            },
-            orderBy: { createdAt: 'desc' },
+            where: { id: data.serviceRecordId ?? '', organizationId },
             select: { id: true, invoiceNumber: true },
           })
-        }
+          if (!record) throw new Error('That job no longer exists')
+        } else {
+          // A work order hangs off the vehicle, so it reaches the board, the
+          // vehicle history and the technician's day. A plain invoice does
+          // not, which is exactly what a storage-only customer wants.
+          const asWorkOrder = data.target === 'new_work_order'
+          if (asWorkOrder && !tireSet.vehicleId) {
+            throw new Error('This set has no vehicle, so it cannot become a work order')
+          }
 
-        if (!record) {
           const created = await createDraftRecord(
             { organizationId, userId },
             {
-              vehicleId: null,
-              customerId: agreement.customerId,
+              vehicleId: asWorkOrder ? tireSet.vehicleId : null,
+              customerId: asWorkOrder ? null : agreement.customerId,
               customerExempt: agreement.customer?.taxExempt ?? false,
               title: `Tire storage${tireSet.reference ? ` #${tireSet.reference}` : ''}`,
             }

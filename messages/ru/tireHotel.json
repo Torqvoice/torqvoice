@@ -293,7 +293,10 @@
     "addToOpen": "Или добавить в открытый заказ-наряд",
     "noOpenInvoices": "У этого клиента нет открытых заказов.",
     "addLine": "Добавить в счёт",
-    "createInvoice": "Создать счёт"
+    "createInvoice": "Создать счёт",
+    "newWorkOrder": "Новый заказ-наряд",
+    "newWorkOrderHint": "Привязан к автомобилю, поэтому попадёт на доску.",
+    "createWorkOrder": "Создать заказ-наряд"
   },
   "treatments": {
     "types": {

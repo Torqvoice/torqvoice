@@ -293,7 +293,10 @@
     "addToOpen": "O añadir a un trabajo abierto",
     "noOpenInvoices": "No hay trabajos abiertos para este cliente.",
     "addLine": "Añadir a la factura",
-    "createInvoice": "Crear factura"
+    "createInvoice": "Crear factura",
+    "newWorkOrder": "Nueva orden de trabajo",
+    "newWorkOrderHint": "Vinculada al vehículo, así aparece en el tablero.",
+    "createWorkOrder": "Crear orden de trabajo"
   },
   "treatments": {
     "types": {

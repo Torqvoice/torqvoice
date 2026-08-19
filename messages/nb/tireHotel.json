@@ -293,7 +293,10 @@
     "addToOpen": "Eller legg til på en åpen jobb",
     "noOpenInvoices": "Ingen åpne jobber for denne kunden.",
     "addLine": "Legg til på faktura",
-    "createInvoice": "Opprett faktura"
+    "createInvoice": "Opprett faktura",
+    "newWorkOrder": "Ny arbeidsordre",
+    "newWorkOrderHint": "Knyttet til kjøretøyet, så den havner på tavla.",
+    "createWorkOrder": "Opprett arbeidsordre"
   },
   "treatments": {
     "types": {

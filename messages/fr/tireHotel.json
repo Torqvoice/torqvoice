@@ -293,7 +293,10 @@
     "addToOpen": "Ou ajouter à un ordre ouvert",
     "noOpenInvoices": "Aucun ordre ouvert pour ce client.",
     "addLine": "Ajouter à la facture",
-    "createInvoice": "Créer la facture"
+    "createInvoice": "Créer la facture",
+    "newWorkOrder": "Nouvel ordre de réparation",
+    "newWorkOrderHint": "Rattaché au véhicule, donc visible sur le tableau.",
+    "createWorkOrder": "Créer l’ordre"
   },
   "treatments": {
     "types": {

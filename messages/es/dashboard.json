@@ -54,7 +54,8 @@
     "activeJobs": "Trabajos activos",
     "recentObservations": "Observaciones recientes",
     "recentActivity": "Actividad reciente",
-    "gettingStarted": "Primeros pasos"
+    "gettingStarted": "Primeros pasos",
+    "tireHotel": "Hotel de neumáticos"
   },
   "maintenance": {
     "title": "Mantenimiento previsto pendiente",
@@ -234,5 +235,14 @@
       "expired": "Caducado",
       "converted": "Convertido"
     }
+  },
+  "tireHotel": {
+    "title": "Hotel de neumáticos",
+    "viewAll": "Ver hotel de neumáticos",
+    "stored": "{count} juegos guardados",
+    "capacity": "{used} / {capacity} neumáticos",
+    "roomLeft": "Sitio para {count} más",
+    "needsPrep": "Pendiente de preparar",
+    "unbilled": "Sin facturar ({count})"
   }
 }

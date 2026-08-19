@@ -6,7 +6,7 @@ import {
   TIRE_SEASONS,
   TIRE_SET_STATUSES,
 } from '../Lib/tireConstants'
-import { STORAGE_AGREEMENT_STATUSES, STORAGE_BILLING_MODELS } from '../Lib/billing'
+import { CHARGE_TARGETS, STORAGE_AGREEMENT_STATUSES, STORAGE_BILLING_MODELS } from '../Lib/billing'
 import { TREATMENT_TYPES } from '../Lib/treatments'
 
 const optionalText = z.string().trim().max(200).optional().or(z.literal(''))
@@ -167,12 +167,17 @@ export const updateAgreementSchema = agreementSchema
     status: z.enum(STORAGE_AGREEMENT_STATUSES).optional(),
   })
 
-export const invoiceChargeSchema = z.object({
-  chargeId: z.string().min(1),
-  /// Optional existing job to append the line to. Without it the action
-  /// follows the organization's configured target.
-  serviceRecordId: z.string().min(1).optional().nullable(),
-})
+export const invoiceChargeSchema = z
+  .object({
+    chargeId: z.string().min(1),
+    target: z.enum(CHARGE_TARGETS).default('new_invoice'),
+    /// The job to append to. Only meaningful when target is `existing`.
+    serviceRecordId: z.string().min(1).optional().nullable(),
+  })
+  .refine((v) => v.target !== 'existing' || !!v.serviceRecordId, {
+    message: 'Choose which job to add the line to',
+    path: ['serviceRecordId'],
+  })
 
 export type AgreementInput = z.infer<typeof agreementSchema>
 export type ExtraInput = z.infer<typeof extraSchema>

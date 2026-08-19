@@ -15,8 +15,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
-import { Check, FilePlus2, FileText, Loader2 } from 'lucide-react'
+import { Check, ClipboardList, FilePlus2, FileText, Loader2 } from 'lucide-react'
 import { getOpenInvoicesForCharge, invoiceCharge } from '../Actions/agreementActions'
+import type { ChargeTarget } from '../Lib/billing'
 
 type OpenInvoice = {
   id: string
@@ -43,15 +44,16 @@ export function InvoiceChargeDialog({
   chargeId,
   amount,
   currency,
-  preferExisting,
+  hasVehicle,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   chargeId: string
   amount: number
   currency: string
-  /** The organization's configured default, used to preselect. */
-  preferExisting: boolean
+  /** A work order needs a vehicle to hang off, so the option only appears
+   *  when the set has one. */
+  hasVehicle: boolean
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -59,10 +61,12 @@ export function InvoiceChargeDialog({
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [invoices, setInvoices] = useState<OpenInvoice[]>([])
+  const [target, setTarget] = useState<ChargeTarget>('new_invoice')
   const [selected, setSelected] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) {
+      setTarget('new_invoice')
       setSelected(null)
       setInvoices([])
       return
@@ -71,21 +75,21 @@ export function InvoiceChargeDialog({
     setLoading(true)
     getOpenInvoicesForCharge(chargeId).then((result) => {
       if (cancelled) return
-      const rows = result.success && result.data ? result.data : []
-      setInvoices(rows)
-      // Preselect the newest open job only when the shop asked for that
-      // behaviour; otherwise a new invoice stays the default.
-      setSelected(preferExisting && rows.length > 0 ? rows[0].id : null)
+      setInvoices(result.success && result.data ? result.data : [])
       setLoading(false)
     })
     return () => {
       cancelled = true
     }
-  }, [open, chargeId, preferExisting])
+  }, [open, chargeId])
 
   const handleSubmit = async () => {
     setSaving(true)
-    const result = await invoiceCharge({ chargeId, serviceRecordId: selected })
+    const result = await invoiceCharge({
+      chargeId,
+      target,
+      serviceRecordId: target === 'existing' ? selected : null,
+    })
     setSaving(false)
     if (!result.success) {
       toast.error(result.error ?? t('agreement.invoiceFailed'))
@@ -110,12 +114,31 @@ export function InvoiceChargeDialog({
 
         <div className="space-y-2">
           <Option
-            selected={selected === null}
-            onSelect={() => setSelected(null)}
+            selected={target === 'new_invoice'}
+            onSelect={() => {
+              setTarget('new_invoice')
+              setSelected(null)
+            }}
             icon={<FilePlus2 className="h-4 w-4" />}
             title={t('agreement.newInvoice')}
             subtitle={t('agreement.newInvoiceHint')}
           />
+
+          {/* Only offered with a vehicle: a work order is defined by the car
+              it is for, and the board, the history and the technician's day
+              all hang off that. */}
+          {hasVehicle && (
+            <Option
+              selected={target === 'new_work_order'}
+              onSelect={() => {
+                setTarget('new_work_order')
+                setSelected(null)
+              }}
+              icon={<ClipboardList className="h-4 w-4" />}
+              title={t('agreement.newWorkOrder')}
+              subtitle={t('agreement.newWorkOrderHint')}
+            />
+          )}
 
           {loading ? (
             <div className="flex items-center justify-center py-6">
@@ -133,8 +156,11 @@ export function InvoiceChargeDialog({
               {invoices.map((invoice) => (
                 <Option
                   key={invoice.id}
-                  selected={selected === invoice.id}
-                  onSelect={() => setSelected(invoice.id)}
+                  selected={target === 'existing' && selected === invoice.id}
+                  onSelect={() => {
+                    setTarget('existing')
+                    setSelected(invoice.id)
+                  }}
                   icon={<FileText className="h-4 w-4" />}
                   title={invoice.invoiceNumber ?? invoice.title}
                   subtitle={[
@@ -159,9 +185,16 @@ export function InvoiceChargeDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSubmit} disabled={saving || loading}>
+          <Button
+            onClick={handleSubmit}
+            disabled={saving || loading || (target === 'existing' && !selected)}
+          >
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {selected ? t('agreement.addLine') : t('agreement.createInvoice')}
+            {target === 'existing'
+              ? t('agreement.addLine')
+              : target === 'new_work_order'
+                ? t('agreement.createWorkOrder')
+                : t('agreement.createInvoice')}
           </Button>
         </DialogFooter>
       </DialogContent>

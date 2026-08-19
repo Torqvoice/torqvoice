@@ -17,9 +17,15 @@ export type StorageAgreementStatus = (typeof STORAGE_AGREEMENT_STATUSES)[number]
 export const STORAGE_CHARGE_STATUSES = ['pending', 'invoiced', 'waived'] as const
 export type StorageChargeStatus = (typeof STORAGE_CHARGE_STATUSES)[number]
 
-/** Where the storage line ends up. Chosen once per organization. */
-export const INVOICE_TARGETS = ['separate', 'workOrder'] as const
-export type InvoiceTarget = (typeof INVOICE_TARGETS)[number]
+/**
+ * Where a storage charge lands. Asked at the moment of billing rather than
+ * configured, because the right answer changes case by case: a customer
+ * collecting during a service wants one bill, a customer who only stores
+ * wants their own document, and a set on a vehicle may want a proper job
+ * others can see on the board.
+ */
+export const CHARGE_TARGETS = ['new_invoice', 'new_work_order', 'existing'] as const
+export type ChargeTarget = (typeof CHARGE_TARGETS)[number]
 
 export const AGREEMENT_STATUS_TOKENS: Record<StorageAgreementStatus, string> = {
   active: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',

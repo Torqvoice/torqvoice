@@ -54,7 +54,8 @@
     "activeJobs": "Travaux en cours",
     "recentObservations": "Observations récentes",
     "recentActivity": "Activité récente",
-    "gettingStarted": "Premiers pas"
+    "gettingStarted": "Premiers pas",
+    "tireHotel": "Hôtel à pneus"
   },
   "maintenance": {
     "title": "Maintenance prévue à effectuer",
@@ -234,5 +235,14 @@
       "expired": "Expiré",
       "converted": "Converti"
     }
+  },
+  "tireHotel": {
+    "title": "Hôtel à pneus",
+    "viewAll": "Voir l’hôtel à pneus",
+    "stored": "{count} jeux stockés",
+    "capacity": "{used} / {capacity} pneus",
+    "roomLeft": "Place pour {count} de plus",
+    "needsPrep": "À préparer",
+    "unbilled": "Non facturé ({count})"
   }
 }

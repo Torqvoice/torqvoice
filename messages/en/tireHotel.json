@@ -293,7 +293,10 @@
     "addToOpen": "Or add to an open job",
     "noOpenInvoices": "No open jobs for this customer.",
     "addLine": "Add to invoice",
-    "createInvoice": "Create invoice"
+    "createInvoice": "Create invoice",
+    "newWorkOrder": "New work order",
+    "newWorkOrderHint": "Attached to the vehicle, so it reaches the board.",
+    "createWorkOrder": "Create work order"
   },
   "treatments": {
     "types": {

@@ -5,45 +5,46 @@
  */
 
 export const DASHBOARD_CARD_IDS = [
-  "gettingStarted",
-  "maintenance",
-  "reminders",
-  "sms",
-  "notifications",
-  "inspections",
-  "quoteRequests",
-  "quoteResponses",
-  "recentCompleted",
-  "activeJobs",
-  "recentActivity",
-  "recentObservations",
-] as const;
+  'gettingStarted',
+  'maintenance',
+  'reminders',
+  'sms',
+  'notifications',
+  'inspections',
+  'quoteRequests',
+  'quoteResponses',
+  'recentCompleted',
+  'activeJobs',
+  'recentActivity',
+  'recentObservations',
+  'tireHotel',
+] as const
 
-export type DashboardCardId = (typeof DASHBOARD_CARD_IDS)[number];
+export type DashboardCardId = (typeof DASHBOARD_CARD_IDS)[number]
 
 export interface CardLayout {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+  x: number
+  y: number
+  w: number
+  h: number
 }
 
 export interface DashboardLayout {
-  version: 1;
+  version: 1
   /** Hidden card ids: built-in ids or custom:<widgetId> */
-  hidden: string[];
+  hidden: string[]
   /** Positions keyed by built-in id or custom:<widgetId> */
-  cards: Record<string, CardLayout>;
+  cards: Record<string, CardLayout>
 }
 
-export const GRID_COLS = 12;
-export const GRID_ROW_HEIGHT = 84;
-export const GRID_MARGIN: [number, number] = [16, 16];
-export const CARD_MIN_W = 3;
-export const CARD_MIN_H = 3;
+export const GRID_COLS = 12
+export const GRID_ROW_HEIGHT = 84
+export const GRID_MARGIN: [number, number] = [16, 16]
+export const CARD_MIN_W = 3
+export const CARD_MIN_H = 3
 
-const half = (x: 0 | 6, row: number, h = 5): CardLayout => ({ x, y: row, w: 6, h });
-const full = (row: number, h = 5): CardLayout => ({ x: 0, y: row, w: 12, h });
+const half = (x: 0 | 6, row: number, h = 5): CardLayout => ({ x, y: row, w: 6, h })
+const full = (row: number, h = 5): CardLayout => ({ x: 0, y: row, w: 12, h })
 
 /** Mirrors the original two-column dashboard order. Rows compact vertically,
  *  so hidden cards (e.g. sms vs notifications) leave no holes. */
@@ -65,15 +66,18 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     activeJobs: full(29),
     recentActivity: half(0, 34),
     recentObservations: half(6, 34),
+    // Opt-in module, so it sits last: shops without it never see a hole,
+    // since rows compact upward over hidden cards.
+    tireHotel: half(0, 39, 4),
   },
-};
+}
 
 function isCardLayout(v: unknown): v is CardLayout {
-  if (!v || typeof v !== "object") return false;
-  const c = v as Record<string, unknown>;
-  return (["x", "y", "w", "h"] as const).every(
-    (k) => typeof c[k] === "number" && Number.isFinite(c[k] as number)
-  );
+  if (!v || typeof v !== 'object') return false
+  const c = v as Record<string, unknown>
+  return (['x', 'y', 'w', 'h'] as const).every(
+    (k) => typeof c[k] === 'number' && Number.isFinite(c[k] as number)
+  )
 }
 
 function clampCard(stored: CardLayout): CardLayout {
@@ -82,13 +86,13 @@ function clampCard(stored: CardLayout): CardLayout {
     y: Math.max(0, Math.round(stored.y)),
     w: Math.max(CARD_MIN_W, Math.min(GRID_COLS, Math.round(stored.w))),
     h: Math.max(CARD_MIN_H, Math.min(40, Math.round(stored.h))),
-  };
+  }
 }
 
 /** A default spot for a card with no stored position: full row at the bottom */
 export function placeAtBottom(cards: Record<string, CardLayout>): CardLayout {
-  const bottom = Object.values(cards).reduce((max, c) => Math.max(max, c.y + c.h), 0);
-  return { x: 0, y: bottom, w: 6, h: 5 };
+  const bottom = Object.values(cards).reduce((max, c) => Math.max(max, c.y + c.h), 0)
+  return { x: 0, y: bottom, w: 6, h: 5 }
 }
 
 /**
@@ -103,28 +107,26 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
     version: 1,
     hidden: [],
     cards: { ...DEFAULT_LAYOUT.cards },
-  };
-  const knownIds = new Set<string>([...DASHBOARD_CARD_IDS, ...customIds]);
-  const data = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  }
+  const knownIds = new Set<string>([...DASHBOARD_CARD_IDS, ...customIds])
+  const data = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
 
   if (Array.isArray(data.hidden)) {
     result.hidden = data.hidden.filter(
-      (id): id is string => typeof id === "string" && knownIds.has(id)
-    );
+      (id): id is string => typeof id === 'string' && knownIds.has(id)
+    )
   }
 
   const cards =
-    data.cards && typeof data.cards === "object"
-      ? (data.cards as Record<string, unknown>)
-      : {};
+    data.cards && typeof data.cards === 'object' ? (data.cards as Record<string, unknown>) : {}
   for (const id of DASHBOARD_CARD_IDS) {
-    const stored = cards[id];
-    if (isCardLayout(stored)) result.cards[id] = clampCard(stored);
+    const stored = cards[id]
+    if (isCardLayout(stored)) result.cards[id] = clampCard(stored)
   }
   for (const id of customIds) {
-    const stored = cards[id];
-    result.cards[id] = isCardLayout(stored) ? clampCard(stored) : placeAtBottom(result.cards);
+    const stored = cards[id]
+    result.cards[id] = isCardLayout(stored) ? clampCard(stored) : placeAtBottom(result.cards)
   }
 
-  return result;
+  return result
 }

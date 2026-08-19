@@ -54,7 +54,8 @@
     "activeJobs": "Actieve opdrachten",
     "recentObservations": "Recente waarnemingen",
     "recentActivity": "Recente activiteit",
-    "gettingStarted": "Aan de slag"
+    "gettingStarted": "Aan de slag",
+    "tireHotel": "Bandenhotel"
   },
   "maintenance": {
     "title": "Verwacht onderhoud gepland",
@@ -234,5 +235,14 @@
       "expired": "Verlopen",
       "converted": "Omgezet"
     }
+  },
+  "tireHotel": {
+    "title": "Bandenhotel",
+    "viewAll": "Bandenhotel bekijken",
+    "stored": "{count} sets opgeslagen",
+    "capacity": "{used} / {capacity} banden",
+    "roomLeft": "Ruimte voor {count} meer",
+    "needsPrep": "Voorbereiding nodig",
+    "unbilled": "Niet gefactureerd ({count})"
   }
 }

@@ -60,14 +60,14 @@ export function AgreementCard({
   defaultSeasonalPrice,
   defaultMonthlyPrice,
   currency,
-  preferExistingInvoice,
+  hasVehicle,
 }: {
   tireSetId: string
   agreements: AgreementRow[]
   defaultSeasonalPrice: number
   defaultMonthlyPrice: number
   currency: string
-  preferExistingInvoice: boolean
+  hasVehicle: boolean
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -286,7 +286,7 @@ export function AgreementCard({
           chargeId={invoicing.id}
           amount={invoicing.amount}
           currency={currency}
-          preferExisting={preferExistingInvoice}
+          hasVehicle={hasVehicle}
         />
       )}
 

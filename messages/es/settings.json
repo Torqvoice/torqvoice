@@ -1482,15 +1482,6 @@
     "billingTitle": "Facturación del almacenaje",
     "billingHint": "Se rellena al crear un contrato nuevo. Cada contrato puede cambiarlo.",
     "seasonalPrice": "Precio por defecto por temporada",
-    "monthlyPrice": "Precio por defecto por mes",
-    "invoiceTarget": "Dónde acaba el cargo por almacenaje",
-    "invoiceTargets": {
-      "separate": "Su propia factura",
-      "workOrder": "Añadido a un trabajo abierto"
-    },
-    "invoiceTargetHint": {
-      "separate": "El almacenaje siempre se factura en su propio documento.",
-      "workOrder": "Se añade a un trabajo abierto del mismo vehículo; si no hay, su propia factura."
-    }
+    "monthlyPrice": "Precio por defecto por mes"
   }
 }

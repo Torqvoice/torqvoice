@@ -1482,15 +1482,6 @@
     "billingTitle": "Saugojimo apmokėjimas",
     "billingHint": "Užpildoma kuriant naują sutartį. Kiekviena sutartis gali tai pakeisti.",
     "seasonalPrice": "Numatytoji kaina už sezoną",
-    "monthlyPrice": "Numatytoji kaina už mėnesį",
-    "invoiceTarget": "Kur patenka saugojimo mokestis",
-    "invoiceTargets": {
-      "separate": "Atskira sąskaita",
-      "workOrder": "Pridedama prie atviro darbo"
-    },
-    "invoiceTargetHint": {
-      "separate": "Saugojimas visada išrašomas atskirame dokumente.",
-      "workOrder": "Pridedama prie atviro darbo tai pačiai transporto priemonei, kitu atveju atskira sąskaita."
-    }
+    "monthlyPrice": "Numatytoji kaina už mėnesį"
   }
 }

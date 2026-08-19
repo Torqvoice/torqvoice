@@ -54,7 +54,8 @@
     "activeJobs": "Aktif İşler",
     "recentObservations": "Son Gözlemler",
     "recentActivity": "Son Etkinlik",
-    "gettingStarted": "Başlarken"
+    "gettingStarted": "Başlarken",
+    "tireHotel": "Lastik oteli"
   },
   "maintenance": {
     "title": "Tahmini Bakım Zamanı",
@@ -234,5 +235,14 @@
       "expired": "Süresi doldu",
       "converted": "Dönüştürüldü"
     }
+  },
+  "tireHotel": {
+    "title": "Lastik oteli",
+    "viewAll": "Lastik otelini gör",
+    "stored": "{count} takım depoda",
+    "capacity": "{used} / {capacity} lastik",
+    "roomLeft": "{count} tane daha yer var",
+    "needsPrep": "Hazırlık bekliyor",
+    "unbilled": "Faturalanmamış ({count})"
   }
 }

@@ -13,15 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Loader2, Save, Warehouse } from 'lucide-react'
-import { INVOICE_TARGETS } from '@/features/tire-hotel/Lib/billing'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { mmToThirtySeconds, thirtySecondsToMm } from '@/features/tire-hotel/Lib/tireConstants'
 
@@ -44,9 +36,6 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
   )
   const [warnPercent, setWarnPercent] = useState(
     settings[SETTING_KEYS.TIRE_HOTEL_CAPACITY_WARN_PERCENT] || '90'
-  )
-  const [invoiceTarget, setInvoiceTarget] = useState(
-    settings[SETTING_KEYS.TIRE_HOTEL_INVOICE_TARGET] === 'workOrder' ? 'workOrder' : 'separate'
   )
   const [seasonalPrice, setSeasonalPrice] = useState(
     settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE] || '0'
@@ -87,7 +76,6 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
       [SETTING_KEYS.TIRE_HOTEL_CAPACITY_WARN_PERCENT]: String(
         Math.min(100, Math.max(1, Math.round(Number(warnPercent) || 90)))
       ),
-      [SETTING_KEYS.TIRE_HOTEL_INVOICE_TARGET]: invoiceTarget,
       [SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE]: String(
         Math.max(0, Number(seasonalPrice) || 0)
       ),
@@ -221,25 +209,6 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
                     className="tabular-nums"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tireHotelTarget">{t('tireHotel.invoiceTarget')}</Label>
-                <Select value={invoiceTarget} onValueChange={setInvoiceTarget}>
-                  <SelectTrigger id="tireHotelTarget">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INVOICE_TARGETS.map((value) => (
-                      <SelectItem key={value} value={value}>
-                        {t(`tireHotel.invoiceTargets.${value}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {t(`tireHotel.invoiceTargetHint.${invoiceTarget}`)}
-                </p>
               </div>
 
               <p className="text-xs text-muted-foreground">

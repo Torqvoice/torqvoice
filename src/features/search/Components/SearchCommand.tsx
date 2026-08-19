@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   CommandDialog,
   CommandInput,
@@ -9,202 +9,334 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandItem,
-} from "@/components/ui/command";
-import { Bell, Car, ClipboardCheck, FileText, Package, Settings, Users, Wrench } from "lucide-react";
-import { globalSearch, getRecentCustomers } from "@/features/search/Actions/searchActions";
+} from '@/components/ui/command'
+import {
+  Bell,
+  Car,
+  ClipboardCheck,
+  Disc3,
+  FileText,
+  Package,
+  Settings,
+  Users,
+  Wrench,
+} from 'lucide-react'
+import { globalSearch, getRecentCustomers } from '@/features/search/Actions/searchActions'
 
 interface SearchResult {
   vehicles: {
-    id: string;
-    make: string;
-    model: string;
-    year: number;
-    licensePlate: string | null;
-  }[];
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  }[]
   customers: {
-    id: string;
-    name: string;
-    email: string | null;
-    phone: string | null;
-    company: string | null;
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+    company: string | null
     vehicles: {
-      id: string;
-      make: string;
-      model: string;
-      year: number;
-      licensePlate: string | null;
-    }[];
-  }[];
+      id: string
+      make: string
+      model: string
+      year: number
+      licensePlate: string | null
+    }[]
+  }[]
   services: {
-    id: string;
-    title: string;
-    invoiceNumber: string | null;
+    id: string
+    title: string
+    invoiceNumber: string | null
     vehicle: {
-      id: string;
-      make: string;
-      model: string;
-      year: number;
-      licensePlate: string | null;
-    } | null;
-  }[];
+      id: string
+      make: string
+      model: string
+      year: number
+      licensePlate: string | null
+    } | null
+  }[]
   parts: {
-    id: string;
-    name: string;
-    partNumber: string | null;
-    quantity: number;
-  }[];
+    id: string
+    name: string
+    partNumber: string | null
+    quantity: number
+  }[]
   quotes: {
-    id: string;
-    title: string;
-    quoteNumber: string | null;
-    status: string;
-  }[];
+    id: string
+    title: string
+    quoteNumber: string | null
+    status: string
+  }[]
   reminders: {
-    id: string;
-    title: string;
-    dueDate: Date | null;
-    isCompleted: boolean;
-    customer: { id: string; name: string } | null;
+    id: string
+    title: string
+    dueDate: Date | null
+    isCompleted: boolean
+    customer: { id: string; name: string } | null
     vehicle: {
-      id: string;
-      make: string;
-      model: string;
-      year: number;
-      licensePlate: string | null;
-    } | null;
-  }[];
+      id: string
+      make: string
+      model: string
+      year: number
+      licensePlate: string | null
+    } | null
+  }[]
   inspections: {
-    id: string;
-    status: string;
-    createdAt: Date;
-    template: { name: string };
+    id: string
+    status: string
+    createdAt: Date
+    template: { name: string }
     vehicle: {
-      id: string;
-      make: string;
-      model: string;
-      year: number;
-      licensePlate: string | null;
-    };
-  }[];
+      id: string
+      make: string
+      model: string
+      year: number
+      licensePlate: string | null
+    }
+  }[]
+  tireSets: {
+    id: string
+    reference: string | null
+    season: string
+    size: string | null
+    quantity: number
+    status: string
+    location: { code: string } | null
+    customer: { id: string; name: string } | null
+    vehicle: {
+      id: string
+      make: string
+      model: string
+      year: number
+      licensePlate: string | null
+    } | null
+  }[]
 }
 
 const SEARCHABLE_SETTINGS = [
-  { label: "Company", description: "Company, business, branding, logo", href: "/settings/company", keywords: ["company", "business", "branding", "logo", "name", "address"] },
-  { label: "Account", description: "Account, profile, password", href: "/settings/account", keywords: ["account", "profile", "password", "email", "2fa"] },
-  { label: "Team", description: "Team members and roles", href: "/settings/team", keywords: ["team", "members", "roles", "invite"] },
-  { label: "Invoice", description: "Invoice layout and prefix", href: "/settings/invoice", keywords: ["invoice", "layout", "prefix", "footer", "due"] },
-  { label: "Templates", description: "Invoice & quote template styling", href: "/settings/templates", keywords: ["template", "styling", "colors", "font", "header", "quote"] },
-  { label: "Payment", description: "Payment and bank settings", href: "/settings/payment", keywords: ["payment", "bank", "vipps", "stripe", "terms"] },
-  { label: "Tax", description: "Tax rate and VAT defaults", href: "/settings/tax", keywords: ["tax", "vat", "rate"] },
-  { label: "Localization", description: "Language, currency, date & time", href: "/settings/localization", keywords: ["localization", "language", "currency", "locale", "timezone", "date", "time", "unit"] },
-  { label: "Custom Fields", description: "Custom fields configuration", href: "/settings/custom-fields", keywords: ["custom fields", "fields"] },
-  { label: "Email", description: "Email and SMTP settings", href: "/settings/email", keywords: ["email", "mail", "smtp", "sending"] },
-  { label: "Workshop", description: "Workshop and labor settings", href: "/settings/workshop", keywords: ["workshop", "technician", "labor", "hours"] },
-  { label: "Appearance", description: "Theme and date settings", href: "/settings/appearance", keywords: ["appearance", "theme", "dark", "light", "date", "timezone"] },
-  { label: "Data", description: "Data export and backup", href: "/settings/data", keywords: ["data", "export", "import", "backup"] },
-  { label: "About", description: "Version and info", href: "/settings/about", keywords: ["about", "version", "info"] },
-];
+  {
+    label: 'Company',
+    description: 'Company, business, branding, logo',
+    href: '/settings/company',
+    keywords: ['company', 'business', 'branding', 'logo', 'name', 'address'],
+  },
+  {
+    label: 'Account',
+    description: 'Account, profile, password',
+    href: '/settings/account',
+    keywords: ['account', 'profile', 'password', 'email', '2fa'],
+  },
+  {
+    label: 'Team',
+    description: 'Team members and roles',
+    href: '/settings/team',
+    keywords: ['team', 'members', 'roles', 'invite'],
+  },
+  {
+    label: 'Invoice',
+    description: 'Invoice layout and prefix',
+    href: '/settings/invoice',
+    keywords: ['invoice', 'layout', 'prefix', 'footer', 'due'],
+  },
+  {
+    label: 'Templates',
+    description: 'Invoice & quote template styling',
+    href: '/settings/templates',
+    keywords: ['template', 'styling', 'colors', 'font', 'header', 'quote'],
+  },
+  {
+    label: 'Payment',
+    description: 'Payment and bank settings',
+    href: '/settings/payment',
+    keywords: ['payment', 'bank', 'vipps', 'stripe', 'terms'],
+  },
+  {
+    label: 'Tax',
+    description: 'Tax rate and VAT defaults',
+    href: '/settings/tax',
+    keywords: ['tax', 'vat', 'rate'],
+  },
+  {
+    label: 'Localization',
+    description: 'Language, currency, date & time',
+    href: '/settings/localization',
+    keywords: [
+      'localization',
+      'language',
+      'currency',
+      'locale',
+      'timezone',
+      'date',
+      'time',
+      'unit',
+    ],
+  },
+  {
+    label: 'Custom Fields',
+    description: 'Custom fields configuration',
+    href: '/settings/custom-fields',
+    keywords: ['custom fields', 'fields'],
+  },
+  {
+    label: 'Email',
+    description: 'Email and SMTP settings',
+    href: '/settings/email',
+    keywords: ['email', 'mail', 'smtp', 'sending'],
+  },
+  {
+    label: 'Workshop',
+    description: 'Workshop and labor settings',
+    href: '/settings/workshop',
+    keywords: ['workshop', 'technician', 'labor', 'hours'],
+  },
+  {
+    label: 'Appearance',
+    description: 'Theme and date settings',
+    href: '/settings/appearance',
+    keywords: ['appearance', 'theme', 'dark', 'light', 'date', 'timezone'],
+  },
+  {
+    label: 'Data',
+    description: 'Data export and backup',
+    href: '/settings/data',
+    keywords: ['data', 'export', 'import', 'backup'],
+  },
+  {
+    label: 'About',
+    description: 'Version and info',
+    href: '/settings/about',
+    keywords: ['about', 'version', 'info'],
+  },
+]
 
 function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
+  const [debounced, setDebounced] = useState(value)
   useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-  return debounced;
+    const timer = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return debounced
 }
 
 type RecentCustomer = {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  company: string | null;
-};
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  company: string | null
+}
 
 function filterSettings(query: string) {
-  const q = query.toLowerCase();
+  const q = query.toLowerCase()
   return SEARCHABLE_SETTINGS.filter(
     (s) =>
       s.label.toLowerCase().includes(q) ||
       s.description.toLowerCase().includes(q) ||
       s.keywords.some((k) => k.toLowerCase().includes(q))
-  );
+  )
 }
 
 export function SearchCommand() {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult>({ vehicles: [], customers: [], services: [], parts: [], quotes: [], reminders: [], inspections: [] });
-  const [loading, setLoading] = useState(false);
-  const [recentCustomers, setRecentCustomers] = useState<RecentCustomer[]>([]);
-  const recentFetchedRef = useRef(false);
-  const debouncedQuery = useDebounce(query, 300);
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<SearchResult>({
+    vehicles: [],
+    customers: [],
+    services: [],
+    parts: [],
+    quotes: [],
+    reminders: [],
+    inspections: [],
+    tireSets: [],
+  })
+  const [loading, setLoading] = useState(false)
+  const [recentCustomers, setRecentCustomers] = useState<RecentCustomer[]>([])
+  const recentFetchedRef = useRef(false)
+  const debouncedQuery = useDebounce(query, 300)
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((prev) => !prev);
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((prev) => !prev)
       }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   // Fetch recent customers when dialog opens
   useEffect(() => {
     if (open && !recentFetchedRef.current) {
-      recentFetchedRef.current = true;
+      recentFetchedRef.current = true
       getRecentCustomers().then((res) => {
         if (res.success && res.data) {
-          setRecentCustomers(res.data);
+          setRecentCustomers(res.data)
         }
-      });
+      })
     }
     if (!open) {
-      recentFetchedRef.current = false;
+      recentFetchedRef.current = false
     }
-  }, [open]);
+  }, [open])
 
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results on query change is intentional
-      setResults({ vehicles: [], customers: [], services: [], parts: [], quotes: [], reminders: [], inspections: [] });
-      setLoading(false);
-      return;
+      setResults({
+        vehicles: [],
+        customers: [],
+        services: [],
+        parts: [],
+        quotes: [],
+        reminders: [],
+        inspections: [],
+        tireSets: [],
+      })
+      setLoading(false)
+      return
     }
 
-    let cancelled = false;
-    setLoading(true);
+    let cancelled = false
+    setLoading(true)
 
     globalSearch(debouncedQuery).then((res) => {
-      if (cancelled) return;
+      if (cancelled) return
       if (res.success && res.data) {
-        setResults(res.data);
+        setResults(res.data)
       }
-      setLoading(false);
-    });
+      setLoading(false)
+    })
 
     return () => {
-      cancelled = true;
-    };
-  }, [debouncedQuery]);
+      cancelled = true
+    }
+  }, [debouncedQuery])
 
   const handleSelect = useCallback(
     (path: string) => {
-      setOpen(false);
-      setQuery("");
-      router.push(path);
+      setOpen(false)
+      setQuery('')
+      router.push(path)
     },
     [router]
-  );
+  )
 
-  const hasQuery = debouncedQuery.length >= 2;
-  const hasResults = results.vehicles.length > 0 || results.customers.length > 0 || results.services.length > 0 || results.parts.length > 0 || results.quotes.length > 0 || results.reminders.length > 0 || results.inspections.length > 0;
-  const matchedSettings = hasQuery ? filterSettings(debouncedQuery) : SEARCHABLE_SETTINGS;
-  const showDefault = !hasQuery;
+  const hasQuery = debouncedQuery.length >= 2
+  const hasResults =
+    results.vehicles.length > 0 ||
+    results.customers.length > 0 ||
+    results.services.length > 0 ||
+    results.parts.length > 0 ||
+    results.quotes.length > 0 ||
+    results.reminders.length > 0 ||
+    results.inspections.length > 0 ||
+    results.tireSets.length > 0
+  const matchedSettings = hasQuery ? filterSettings(debouncedQuery) : SEARCHABLE_SETTINGS
+  const showDefault = !hasQuery
 
   return (
     <CommandDialog
@@ -231,14 +363,14 @@ export function SearchCommand() {
             {recentCustomers.map((c) => (
               <CommandItem
                 key={c.id}
-                value={`${c.name} ${c.email || ""} ${c.phone || ""} ${c.company || ""}`}
+                value={`${c.name} ${c.email || ''} ${c.phone || ''} ${c.company || ''}`}
                 onSelect={() => handleSelect(`/customers/${c.id}`)}
               >
                 <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col">
                   <span>{c.name}</span>
                   <span className="text-xs text-muted-foreground">
-                    {[c.company, c.email, c.phone].filter(Boolean).join(" · ")}
+                    {[c.company, c.email, c.phone].filter(Boolean).join(' · ')}
                   </span>
                 </div>
               </CommandItem>
@@ -254,21 +386,21 @@ export function SearchCommand() {
                 {results.customers.map((c) => (
                   <div key={c.id}>
                     <CommandItem
-                      value={`${c.name} ${c.email || ""} ${c.phone || ""} ${c.company || ""}`}
+                      value={`${c.name} ${c.email || ''} ${c.phone || ''} ${c.company || ''}`}
                       onSelect={() => handleSelect(`/customers/${c.id}`)}
                     >
                       <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                       <div className="flex flex-col">
                         <span>{c.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          {[c.company, c.email, c.phone].filter(Boolean).join(" · ")}
+                          {[c.company, c.email, c.phone].filter(Boolean).join(' · ')}
                         </span>
                       </div>
                     </CommandItem>
                     {c.vehicles.map((v) => (
                       <CommandItem
                         key={v.id}
-                        value={`${c.name} ${v.year} ${v.make} ${v.model} ${v.licensePlate || ""}`}
+                        value={`${c.name} ${v.year} ${v.make} ${v.model} ${v.licensePlate || ''}`}
                         onSelect={() => handleSelect(`/vehicles/${v.id}`)}
                         className="pl-10"
                       >
@@ -292,7 +424,7 @@ export function SearchCommand() {
                 {results.vehicles.map((v) => (
                   <CommandItem
                     key={v.id}
-                    value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ""}`}
+                    value={`${v.year} ${v.make} ${v.model} ${v.licensePlate || ''}`}
                     onSelect={() => handleSelect(`/vehicles/${v.id}`)}
                   >
                     <Car className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -313,8 +445,12 @@ export function SearchCommand() {
                 {results.services.map((s) => (
                   <CommandItem
                     key={s.id}
-                    value={`${s.title} ${s.invoiceNumber || ""} ${s.vehicle ? `${s.vehicle.make} ${s.vehicle.model}` : ""}`}
-                    onSelect={() => handleSelect(s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`)}
+                    value={`${s.title} ${s.invoiceNumber || ''} ${s.vehicle ? `${s.vehicle.make} ${s.vehicle.model}` : ''}`}
+                    onSelect={() =>
+                      handleSelect(
+                        s.vehicle ? `/vehicles/${s.vehicle.id}/service/${s.id}` : `/sales/${s.id}`
+                      )
+                    }
                   >
                     <Wrench className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
@@ -322,9 +458,13 @@ export function SearchCommand() {
                       <span className="text-xs text-muted-foreground">
                         {[
                           s.invoiceNumber,
-                          s.vehicle ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}` : null,
+                          s.vehicle
+                            ? `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}`
+                            : null,
                           s.vehicle?.licensePlate,
-                        ].filter(Boolean).join(" · ")}
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
                       </span>
                     </div>
                   </CommandItem>
@@ -336,14 +476,14 @@ export function SearchCommand() {
                 {results.quotes.map((q) => (
                   <CommandItem
                     key={q.id}
-                    value={`${q.title} ${q.quoteNumber || ""}`}
+                    value={`${q.title} ${q.quoteNumber || ''}`}
                     onSelect={() => handleSelect(`/quotes/${q.id}`)}
                   >
                     <FileText className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
                       <span>{q.title}</span>
                       <span className="text-xs text-muted-foreground">
-                        {[q.quoteNumber, q.status].filter(Boolean).join(" · ")}
+                        {[q.quoteNumber, q.status].filter(Boolean).join(' · ')}
                       </span>
                     </div>
                   </CommandItem>
@@ -355,14 +495,14 @@ export function SearchCommand() {
                 {results.parts.map((p) => (
                   <CommandItem
                     key={p.id}
-                    value={`${p.name} ${p.partNumber || ""}`}
-                    onSelect={() => handleSelect("/inventory")}
+                    value={`${p.name} ${p.partNumber || ''}`}
+                    onSelect={() => handleSelect('/inventory')}
                   >
                     <Package className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
                       <span>{p.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {[p.partNumber, `${p.quantity} in stock`].filter(Boolean).join(" · ")}
+                        {[p.partNumber, `${p.quantity} in stock`].filter(Boolean).join(' · ')}
                       </span>
                     </div>
                   </CommandItem>
@@ -374,16 +514,58 @@ export function SearchCommand() {
                 {results.reminders.map((r) => (
                   <CommandItem
                     key={r.id}
-                    value={`${r.title} ${r.vehicle ? `${r.vehicle.make} ${r.vehicle.model} ${r.vehicle.licensePlate || ""}` : r.customer?.name || ""}`}
-                    onSelect={() => handleSelect(r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : "/reminders")}
+                    value={`${r.title} ${r.vehicle ? `${r.vehicle.make} ${r.vehicle.model} ${r.vehicle.licensePlate || ''}` : r.customer?.name || ''}`}
+                    onSelect={() =>
+                      handleSelect(
+                        r.vehicle ? `/vehicles/${r.vehicle.id}?tab=reminders` : '/reminders'
+                      )
+                    }
                   >
                     <Bell className="mr-2 h-4 w-4 text-muted-foreground" />
                     <div className="flex flex-col">
-                      <span>{r.title}{r.isCompleted && <span className="ml-1.5 text-muted-foreground line-through">(done)</span>}</span>
+                      <span>
+                        {r.title}
+                        {r.isCompleted && (
+                          <span className="ml-1.5 text-muted-foreground line-through">(done)</span>
+                        )}
+                      </span>
                       <span className="text-xs text-muted-foreground">
                         {r.vehicle
-                          ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}${r.vehicle.licensePlate ? ` · ${r.vehicle.licensePlate}` : ""}`
-                          : r.customer?.name || ""}
+                          ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}${r.vehicle.licensePlate ? ` · ${r.vehicle.licensePlate}` : ''}`
+                          : r.customer?.name || ''}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+            {/* Shelf code leads: the desk asks "where are these tires", and
+                the code is the answer they are about to read out loud. */}
+            {results.tireSets.length > 0 && (
+              <CommandGroup heading="Tire Hotel">
+                {results.tireSets.map((set) => (
+                  <CommandItem
+                    key={set.id}
+                    value={`tire ${set.reference || ''} ${set.location?.code || ''} ${set.customer?.name || ''} ${set.vehicle?.make || ''} ${set.vehicle?.model || ''} ${set.vehicle?.licensePlate || ''} ${set.size || ''}`}
+                    onSelect={() => handleSelect(`/tire-hotel/${set.id}`)}
+                  >
+                    <Disc3 className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <div className="flex min-w-0 flex-col">
+                      <span className="truncate">
+                        {set.location?.code ? (
+                          <span className="font-mono">{set.location.code}</span>
+                        ) : (
+                          <span className="text-muted-foreground">{set.status}</span>
+                        )}
+                        {set.vehicle?.licensePlate && ` · ${set.vehicle.licensePlate}`}
+                      </span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {set.customer?.name ?? ''}
+                        {set.vehicle
+                          ? `${set.customer ? ' · ' : ''}${set.vehicle.make} ${set.vehicle.model}`
+                          : ''}
+                        {set.size ? ` · ${set.size}` : ''}
+                        {` · ${set.quantity} pcs`}
                       </span>
                     </div>
                   </CommandItem>
@@ -395,7 +577,7 @@ export function SearchCommand() {
                 {results.inspections.map((insp) => (
                   <CommandItem
                     key={insp.id}
-                    value={`${insp.template.name} ${insp.vehicle.make} ${insp.vehicle.model} ${insp.vehicle.licensePlate || ""}`}
+                    value={`${insp.template.name} ${insp.vehicle.make} ${insp.vehicle.model} ${insp.vehicle.licensePlate || ''}`}
                     onSelect={() => handleSelect(`/inspections/${insp.id}`)}
                   >
                     <ClipboardCheck className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -420,15 +602,13 @@ export function SearchCommand() {
             {matchedSettings.map((s) => (
               <CommandItem
                 key={s.href}
-                value={`${s.label} ${s.keywords.join(" ")}`}
+                value={`${s.label} ${s.keywords.join(' ')}`}
                 onSelect={() => handleSelect(s.href)}
               >
                 <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col">
                   <span>{s.label}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {s.description}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{s.description}</span>
                 </div>
               </CommandItem>
             ))}
@@ -437,10 +617,12 @@ export function SearchCommand() {
       </CommandList>
       <div className="border-t px-3 py-2">
         <span className="text-xs text-muted-foreground">
-          <kbd className="pointer-events-none inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">ESC</kbd>
+          <kbd className="pointer-events-none inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            ESC
+          </kbd>
           <span className="ml-1.5">to close</span>
         </span>
       </div>
     </CommandDialog>
-  );
+  )
 }

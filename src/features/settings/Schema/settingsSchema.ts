@@ -132,10 +132,6 @@ export const SETTING_KEYS = {
   TIRE_HOTEL_DEFAULT_CAPACITY: 'tireHotel.defaultCapacity',
   /// Warn in-app once the warehouse passes this fraction of total capacity.
   TIRE_HOTEL_CAPACITY_WARN_PERCENT: 'tireHotel.capacityWarnPercent',
-  /// Where a storage charge lands: `separate` raises its own invoice,
-  /// `workOrder` adds a line to an open job for the same vehicle when there
-  /// is one. See INVOICE_TARGETS.
-  TIRE_HOTEL_INVOICE_TARGET: 'tireHotel.invoiceTarget',
   /// Prefilled price for a new agreement, per billing model.
   TIRE_HOTEL_DEFAULT_SEASONAL_PRICE: 'tireHotel.defaultSeasonalPrice',
   TIRE_HOTEL_DEFAULT_MONTHLY_PRICE: 'tireHotel.defaultMonthlyPrice',
