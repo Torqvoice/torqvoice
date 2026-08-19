@@ -296,7 +296,11 @@
     "createInvoice": "Criar fatura",
     "newWorkOrder": "Nova ordem de serviço",
     "newWorkOrderHint": "Vinculada ao veículo, então aparece no quadro.",
-    "createWorkOrder": "Criar ordem de serviço"
+    "createWorkOrder": "Criar ordem de serviço",
+    "deleteTitle": "Excluir este contrato?",
+    "deleteBody": "Nada foi faturado nele, então o contrato e seus períodos não faturados são removidos. Não é possível desfazer.",
+    "deleted": "Contrato excluído",
+    "deleteFailed": "Não foi possível excluir o contrato"
   },
   "treatments": {
     "types": {

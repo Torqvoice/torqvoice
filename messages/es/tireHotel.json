@@ -296,7 +296,11 @@
     "createInvoice": "Crear factura",
     "newWorkOrder": "Nueva orden de trabajo",
     "newWorkOrderHint": "Vinculada al vehículo, así aparece en el tablero.",
-    "createWorkOrder": "Crear orden de trabajo"
+    "createWorkOrder": "Crear orden de trabajo",
+    "deleteTitle": "¿Eliminar este contrato?",
+    "deleteBody": "No se ha facturado nada con él, así que se eliminan el contrato y sus periodos sin facturar. Esto no se puede deshacer.",
+    "deleted": "Contrato eliminado",
+    "deleteFailed": "No se ha podido eliminar el contrato"
   },
   "treatments": {
     "types": {

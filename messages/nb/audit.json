@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Frafalt en lagringsperiode",
     "tire_treatment_update": "Oppdaterte klargjøring",
     "tire_treatment_mark": "Merket klargjøring",
-    "tire_treatment_complete_all": "Fullførte klargjøring"
+    "tire_treatment_complete_all": "Fullførte klargjøring",
+    "tire_agreement_delete": "Slettet lagringsavtale"
   }
 }

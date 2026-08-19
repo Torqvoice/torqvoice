@@ -296,7 +296,11 @@
     "createInvoice": "Créer la facture",
     "newWorkOrder": "Nouvel ordre de réparation",
     "newWorkOrderHint": "Rattaché au véhicule, donc visible sur le tableau.",
-    "createWorkOrder": "Créer l’ordre"
+    "createWorkOrder": "Créer l’ordre",
+    "deleteTitle": "Supprimer ce contrat ?",
+    "deleteBody": "Rien n’a été facturé dessus, donc le contrat et ses périodes non facturées sont supprimés. Action irréversible.",
+    "deleted": "Contrat supprimé",
+    "deleteFailed": "Impossible de supprimer le contrat"
   },
   "treatments": {
     "types": {

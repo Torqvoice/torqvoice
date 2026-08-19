@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Periodo di deposito stornato",
     "tire_treatment_update": "Preparazione aggiornata",
     "tire_treatment_mark": "Preparazione segnata",
-    "tire_treatment_complete_all": "Preparazione completata"
+    "tire_treatment_complete_all": "Preparazione completata",
+    "tire_agreement_delete": "Contratto di deposito eliminato"
   }
 }

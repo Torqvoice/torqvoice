@@ -296,7 +296,11 @@
     "createInvoice": "Opprett faktura",
     "newWorkOrder": "Ny arbeidsordre",
     "newWorkOrderHint": "Knyttet til kjøretøyet, så den havner på tavla.",
-    "createWorkOrder": "Opprett arbeidsordre"
+    "createWorkOrder": "Opprett arbeidsordre",
+    "deleteTitle": "Slette denne avtalen?",
+    "deleteBody": "Ingenting er fakturert på den, så avtalen og de ufakturerte periodene fjernes. Dette kan ikke angres.",
+    "deleted": "Avtale slettet",
+    "deleteFailed": "Kunne ikke slette avtalen"
   },
   "treatments": {
     "types": {

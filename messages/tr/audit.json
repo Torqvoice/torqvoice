@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Depolama dönemi muaf tutuldu",
     "tire_treatment_update": "Hazırlık güncellendi",
     "tire_treatment_mark": "Hazırlık işaretlendi",
-    "tire_treatment_complete_all": "Hazırlık tamamlandı"
+    "tire_treatment_complete_all": "Hazırlık tamamlandı",
+    "tire_agreement_delete": "Depolama sözleşmesi silindi"
   }
 }

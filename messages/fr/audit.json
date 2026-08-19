@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Période de stockage offerte",
     "tire_treatment_update": "Préparation modifiée",
     "tire_treatment_mark": "Préparation marquée",
-    "tire_treatment_complete_all": "Préparation terminée"
+    "tire_treatment_complete_all": "Préparation terminée",
+    "tire_agreement_delete": "Contrat de stockage supprimé"
   }
 }

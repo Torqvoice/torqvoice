@@ -296,7 +296,11 @@
     "createInvoice": "Rechnung erstellen",
     "newWorkOrder": "Neuer Auftrag",
     "newWorkOrderHint": "Am Fahrzeug hängend, damit er auf dem Board erscheint.",
-    "createWorkOrder": "Auftrag erstellen"
+    "createWorkOrder": "Auftrag erstellen",
+    "deleteTitle": "Diese Vereinbarung löschen?",
+    "deleteBody": "Darunter wurde nichts berechnet, also werden die Vereinbarung und ihre offenen Perioden entfernt. Das lässt sich nicht rückgängig machen.",
+    "deleted": "Vereinbarung gelöscht",
+    "deleteFailed": "Vereinbarung konnte nicht gelöscht werden"
   },
   "treatments": {
     "types": {

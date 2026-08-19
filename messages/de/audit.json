@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Lagerperiode erlassen",
     "tire_treatment_update": "Vorbereitung aktualisiert",
     "tire_treatment_mark": "Vorbereitung markiert",
-    "tire_treatment_complete_all": "Vorbereitung abgeschlossen"
+    "tire_treatment_complete_all": "Vorbereitung abgeschlossen",
+    "tire_agreement_delete": "Lagervereinbarung gelöscht"
   }
 }

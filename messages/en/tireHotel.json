@@ -296,7 +296,11 @@
     "createInvoice": "Create invoice",
     "newWorkOrder": "New work order",
     "newWorkOrderHint": "Attached to the vehicle, so it reaches the board.",
-    "createWorkOrder": "Create work order"
+    "createWorkOrder": "Create work order",
+    "deleteTitle": "Delete this agreement?",
+    "deleteBody": "Nothing was invoiced under it, so the agreement and its unbilled periods are removed. This cannot be undone.",
+    "deleted": "Agreement deleted",
+    "deleteFailed": "Could not delete the agreement"
   },
   "treatments": {
     "types": {

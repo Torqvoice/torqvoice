@@ -296,7 +296,11 @@
     "createInvoice": "Utwórz fakturę",
     "newWorkOrder": "Nowe zlecenie",
     "newWorkOrderHint": "Powiązane z pojazdem, więc trafi na tablicę.",
-    "createWorkOrder": "Utwórz zlecenie"
+    "createWorkOrder": "Utwórz zlecenie",
+    "deleteTitle": "Usunąć tę umowę?",
+    "deleteBody": "Nic na niej nie zafakturowano, więc umowa i jej nierozliczone okresy zostaną usunięte. Tej operacji nie można cofnąć.",
+    "deleted": "Umowa usunięta",
+    "deleteFailed": "Nie udało się usunąć umowy"
   },
   "treatments": {
     "types": {

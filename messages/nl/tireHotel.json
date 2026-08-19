@@ -296,7 +296,11 @@
     "createInvoice": "Factuur aanmaken",
     "newWorkOrder": "Nieuwe werkorder",
     "newWorkOrderHint": "Gekoppeld aan het voertuig, zodat hij op het bord komt.",
-    "createWorkOrder": "Werkorder aanmaken"
+    "createWorkOrder": "Werkorder aanmaken",
+    "deleteTitle": "Deze overeenkomst verwijderen?",
+    "deleteBody": "Er is niets onder gefactureerd, dus de overeenkomst en de niet-gefactureerde periodes worden verwijderd. Dit kan niet ongedaan worden gemaakt.",
+    "deleted": "Overeenkomst verwijderd",
+    "deleteFailed": "Kon de overeenkomst niet verwijderen"
   },
   "treatments": {
     "types": {

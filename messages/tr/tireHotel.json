@@ -296,7 +296,11 @@
     "createInvoice": "Fatura oluştur",
     "newWorkOrder": "Yeni iş emri",
     "newWorkOrderHint": "Araca bağlı olur, böylece panoya düşer.",
-    "createWorkOrder": "İş emri oluştur"
+    "createWorkOrder": "İş emri oluştur",
+    "deleteTitle": "Bu sözleşme silinsin mi?",
+    "deleteBody": "Altında hiçbir şey faturalandırılmadı, bu yüzden sözleşme ve faturalanmamış dönemleri kaldırılır. Bu işlem geri alınamaz.",
+    "deleted": "Sözleşme silindi",
+    "deleteFailed": "Sözleşme silinemedi"
   },
   "treatments": {
     "types": {

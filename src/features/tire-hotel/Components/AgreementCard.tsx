@@ -12,10 +12,10 @@ import { Separator } from '@/components/ui/separator'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
-import { FileText, Loader2, Pencil, Plus, Receipt, Ban } from 'lucide-react'
+import { Ban, FileText, Loader2, Pencil, Plus, Receipt, Trash2 } from 'lucide-react'
 import { AgreementDialog, type EditableAgreement } from './AgreementDialog'
 import { InvoiceChargeDialog } from './InvoiceChargeDialog'
-import { endAgreement, waiveCharge } from '../Actions/agreementActions'
+import { deleteAgreement, endAgreement, waiveCharge } from '../Actions/agreementActions'
 import {
   AGREEMENT_STATUS_TOKENS,
   CHARGE_STATUS_TOKENS,
@@ -95,6 +95,25 @@ export function AgreementCard({
       return
     }
     toast.success(t('agreement.waived'))
+    router.refresh()
+  }
+
+  const handleDelete = async (agreement: AgreementRow) => {
+    const ok = await confirm({
+      title: t('agreement.deleteTitle'),
+      description: t('agreement.deleteBody'),
+      confirmLabel: t('common.delete'),
+      destructive: true,
+    })
+    if (!ok) return
+    setBusyId(agreement.id)
+    const result = await deleteAgreement(agreement.id)
+    setBusyId(null)
+    if (!result.success) {
+      toast.error(result.error ?? t('agreement.deleteFailed'))
+      return
+    }
+    toast.success(t('agreement.deleted'))
     router.refresh()
   }
 
@@ -180,35 +199,54 @@ export function AgreementCard({
                   )}
                 </div>
 
-                {agreement.status === 'active' && (
-                  <div className="flex gap-1">
+                <div className="flex gap-1">
+                  {agreement.status === 'active' && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8"
+                        onClick={() => {
+                          setEditing(agreement)
+                          setShowDialog(true)
+                        }}
+                      >
+                        <Pencil className="mr-1 h-3.5 w-3.5" />
+                        {t('common.edit')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8"
+                        onClick={() => handleEnd(agreement)}
+                        disabled={busyId === agreement.id}
+                      >
+                        {busyId === agreement.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          t('agreement.end')
+                        )}
+                      </Button>
+                    </>
+                  )}
+                  {/* Nothing billed means nothing to preserve: a trial or a
+                      mistake should not sit on the record forever. Once a
+                      period reaches an invoice the agreement is the reason
+                      that line exists, so only End remains. */}
+                  {!agreement.charges.some((c) => c.status === 'invoiced') && (
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-8"
-                      onClick={() => {
-                        setEditing(agreement)
-                        setShowDialog(true)
-                      }}
-                    >
-                      <Pencil className="mr-1 h-3.5 w-3.5" />
-                      {t('common.edit')}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 text-destructive hover:text-destructive"
-                      onClick={() => handleEnd(agreement)}
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      onClick={() => handleDelete(agreement)}
                       disabled={busyId === agreement.id}
+                      aria-label={t('common.delete')}
+                      title={t('common.delete')}
                     >
-                      {busyId === agreement.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        t('agreement.end')
-                      )}
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {agreement.charges.length > 0 && (

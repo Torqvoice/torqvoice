@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Periodo de almacenaje condonado",
     "tire_treatment_update": "Preparación actualizada",
     "tire_treatment_mark": "Preparación marcada",
-    "tire_treatment_complete_all": "Preparación completada"
+    "tire_treatment_complete_all": "Preparación completada",
+    "tire_agreement_delete": "Contrato de almacenaje eliminado"
   }
 }

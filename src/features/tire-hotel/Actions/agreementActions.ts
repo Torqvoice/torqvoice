@@ -316,6 +316,59 @@ export async function endAgreement(id: string) {
   )
 }
 
+/**
+ * Removes an agreement outright.
+ *
+ * Only when nothing it produced ever reached an invoice. A period that has
+ * been billed is a document the customer holds, and the charge row is what
+ * ties that line back to a reason — deleting it would leave an unexplained
+ * amount on a real invoice. Those agreements are ended, not deleted.
+ *
+ * Everything else is a mistake or a trial, and a shop should be able to tidy
+ * it away rather than read past it forever.
+ */
+export async function deleteAgreement(id: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+
+      const agreement = await db.tireStorageAgreement.findFirst({
+        where: { id, organizationId },
+        include: {
+          tireSet: { select: { id: true, reference: true } },
+          charges: { select: { status: true } },
+        },
+      })
+      if (!agreement) throw new Error('Agreement not found')
+
+      const invoiced = agreement.charges.filter((c) => c.status === 'invoiced').length
+      if (invoiced > 0) {
+        throw new Error(
+          `This agreement has ${invoiced} invoiced period(s), so it cannot be deleted. End it instead.`
+        )
+      }
+
+      await db.tireStorageAgreement.delete({ where: { id } })
+
+      revalidateBilling(agreement.tireSet.id)
+      return {
+        id,
+        reference: agreement.tireSet.reference,
+        tireSetId: agreement.tireSet.id,
+        removedCharges: agreement.charges.length,
+      }
+    },
+    {
+      requiredPermissions: UPDATE,
+      audit: ({ result }) => ({
+        action: 'tire_agreement.delete',
+        message: `Deleted storage agreement for tire set ${result.reference ?? result.tireSetId}`,
+        metadata: { agreementId: result.id, removedCharges: result.removedCharges },
+      }),
+    }
+  )
+}
+
 /** Brings an agreement's charge rows up to date without waiting for a sweep. */
 export async function refreshCharges(agreementId: string) {
   return withAuth(

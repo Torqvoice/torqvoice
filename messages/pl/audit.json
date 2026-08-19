@@ -131,6 +131,7 @@
     "tire_agreement_waive": "Umorzono okres przechowywania",
     "tire_treatment_update": "Zaktualizowano przygotowanie",
     "tire_treatment_mark": "Oznaczono przygotowanie",
-    "tire_treatment_complete_all": "Ukończono przygotowanie"
+    "tire_treatment_complete_all": "Ukończono przygotowanie",
+    "tire_agreement_delete": "Usunięto umowę przechowywania"
   }
 }

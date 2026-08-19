@@ -296,7 +296,11 @@
     "createInvoice": "Crea fattura",
     "newWorkOrder": "Nuovo ordine di lavoro",
     "newWorkOrderHint": "Collegato al veicolo, così compare sulla lavagna.",
-    "createWorkOrder": "Crea ordine di lavoro"
+    "createWorkOrder": "Crea ordine di lavoro",
+    "deleteTitle": "Eliminare questo contratto?",
+    "deleteBody": "Non è stato fatturato nulla, quindi il contratto e i suoi periodi non fatturati vengono rimossi. L’operazione non è reversibile.",
+    "deleted": "Contratto eliminato",
+    "deleteFailed": "Impossibile eliminare il contratto"
   },
   "treatments": {
     "types": {
