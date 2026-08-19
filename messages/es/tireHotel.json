@@ -98,7 +98,8 @@
     "notes": "Notas",
     "submit": "Recibir",
     "success": "Juego {reference} guardado en {code}",
-    "failed": "No se ha podido recibir el juego"
+    "failed": "No se ha podido recibir el juego",
+    "noVehiclesForCustomer": "Este cliente aún no tiene vehículos. Añade uno desde su ficha de cliente."
   },
   "storage": {
     "title": "Estantes",

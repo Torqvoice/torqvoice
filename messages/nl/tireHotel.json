@@ -98,7 +98,8 @@
     "notes": "Notities",
     "submit": "Innemen",
     "success": "Set {reference} opgeslagen op {code}",
-    "failed": "Innemen mislukt"
+    "failed": "Innemen mislukt",
+    "noVehiclesForCustomer": "Deze klant heeft nog geen voertuigen. Voeg er eerst een toe op de klantpagina."
   },
   "storage": {
     "title": "Stellingen",

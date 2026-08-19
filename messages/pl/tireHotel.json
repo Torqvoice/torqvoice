@@ -98,7 +98,8 @@
     "notes": "Notatki",
     "submit": "Przyjmij",
     "success": "Komplet {reference} odłożony na {code}",
-    "failed": "Nie udało się przyjąć kompletu"
+    "failed": "Nie udało się przyjąć kompletu",
+    "noVehiclesForCustomer": "Ten klient nie ma jeszcze pojazdów. Najpierw dodaj pojazd na jego stronie klienta."
   },
   "storage": {
     "title": "Półki",

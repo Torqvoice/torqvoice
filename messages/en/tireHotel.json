@@ -98,7 +98,8 @@
     "notes": "Notes",
     "submit": "Check in",
     "success": "Set {reference} stored on {code}",
-    "failed": "Could not check the set in"
+    "failed": "Could not check the set in",
+    "noVehiclesForCustomer": "This customer has no vehicles yet. Add one from their customer page first."
   },
   "storage": {
     "title": "Shelves",

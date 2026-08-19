@@ -98,7 +98,8 @@
     "notes": "Notater",
     "submit": "Ta inn",
     "success": "Sett {reference} lagret på {code}",
-    "failed": "Kunne ikke ta inn settet"
+    "failed": "Kunne ikke ta inn settet",
+    "noVehiclesForCustomer": "Denne kunden har ingen kjøretøy ennå. Legg til ett på kundesiden først."
   },
   "storage": {
     "title": "Hyller",

@@ -98,7 +98,8 @@
     "notes": "Observações",
     "submit": "Receber",
     "success": "Jogo {reference} guardado em {code}",
-    "failed": "Não foi possível receber o jogo"
+    "failed": "Não foi possível receber o jogo",
+    "noVehiclesForCustomer": "Este cliente ainda não tem veículos. Adicione um na página do cliente primeiro."
   },
   "storage": {
     "title": "Prateleiras",

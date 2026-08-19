@@ -115,6 +115,20 @@ export function EditTireSetDialog({
     setNotes(set.notes ?? '')
   }, [open, set])
 
+  // Naming the customer narrows the vehicle list to theirs; with no customer
+  // the full list stays available.
+  const visibleVehicles = customerId
+    ? vehicles.filter((v) => v.customerId === customerId)
+    : vehicles
+
+  // Cleared here rather than in an effect, so re-seeding on open cannot wipe
+  // a pairing that was already saved.
+  const handleCustomer = (id: string) => {
+    setCustomerId(id)
+    const current = vehicles.find((v) => v.id === vehicleId)
+    if (id && current && current.customerId !== id) setVehicleId('')
+  }
+
   const handleSubmit = async () => {
     setSaving(true)
     const result = await updateTireSet({
@@ -160,19 +174,23 @@ export function EditTireSetDialog({
               <CustomerCombobox
                 value={customerId}
                 initialCustomer={set.customer ? { ...set.customer, company: null } : null}
-                onChange={(id) => setCustomerId(id)}
+                onChange={handleCustomer}
                 placeholder={t('checkIn.selectCustomer')}
                 noneLabel={t('checkIn.noCustomer')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="editVehicle">{t('checkIn.vehicle')}</Label>
-              <Select value={vehicleId} onValueChange={setVehicleId}>
+              <Select
+                value={vehicleId}
+                onValueChange={setVehicleId}
+                disabled={visibleVehicles.length === 0}
+              >
                 <SelectTrigger id="editVehicle">
                   <SelectValue placeholder={t('checkIn.selectVehicle')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {vehicles.map((vehicle) => (
+                  {visibleVehicles.map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
                       {vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}
                       {vehicle.year} {vehicle.make} {vehicle.model}
@@ -180,6 +198,11 @@ export function EditTireSetDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {customerId && visibleVehicles.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {t('checkIn.noVehiclesForCustomer')}
+                </p>
+              )}
             </div>
           </div>
 

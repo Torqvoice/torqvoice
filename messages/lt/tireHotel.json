@@ -98,7 +98,8 @@
     "notes": "Pastabos",
     "submit": "Priimti",
     "success": "Komplektas {reference} padėtas į {code}",
-    "failed": "Nepavyko priimti komplekto"
+    "failed": "Nepavyko priimti komplekto",
+    "noVehiclesForCustomer": "Šis klientas dar neturi transporto priemonių. Pirmiausia pridėkite ją kliento puslapyje."
   },
   "storage": {
     "title": "Lentynos",

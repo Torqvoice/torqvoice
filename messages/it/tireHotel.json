@@ -98,7 +98,8 @@
     "notes": "Note",
     "submit": "Accetta",
     "success": "Treno {reference} riposto in {code}",
-    "failed": "Impossibile accettare il treno"
+    "failed": "Impossibile accettare il treno",
+    "noVehiclesForCustomer": "Questo cliente non ha ancora veicoli. Aggiungine uno dalla sua scheda cliente."
   },
   "storage": {
     "title": "Scaffali",

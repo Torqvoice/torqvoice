@@ -98,7 +98,8 @@
     "notes": "Notes",
     "submit": "Réceptionner",
     "success": "Jeu {reference} rangé en {code}",
-    "failed": "Impossible de réceptionner le jeu"
+    "failed": "Impossible de réceptionner le jeu",
+    "noVehiclesForCustomer": "Ce client n’a pas encore de véhicule. Ajoutez-en un depuis sa fiche client."
   },
   "storage": {
     "title": "Étagères",

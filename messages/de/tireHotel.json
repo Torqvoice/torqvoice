@@ -98,7 +98,8 @@
     "notes": "Notizen",
     "submit": "Einlagern",
     "success": "Satz {reference} auf {code} eingelagert",
-    "failed": "Einlagerung fehlgeschlagen"
+    "failed": "Einlagerung fehlgeschlagen",
+    "noVehiclesForCustomer": "Dieser Kunde hat noch keine Fahrzeuge. Legen Sie zuerst eines auf der Kundenseite an."
   },
   "storage": {
     "title": "Regale",

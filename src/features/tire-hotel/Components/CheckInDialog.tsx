@@ -105,12 +105,28 @@ export function CheckInDialog({
 
   const qty = Math.max(1, Number(quantity) || 1)
 
+  // Naming the customer narrows the vehicle list to theirs. Without a
+  // customer the full list stays available, so staff can still start from
+  // the plate.
+  const visibleVehicles = customerId
+    ? vehicles.filter((v) => v.customerId === customerId)
+    : vehicles
+
   // Picking the vehicle names its owner, which is the common case at the
   // counter: staff scan a plate, not a customer record.
   const handleVehicle = (id: string) => {
     setVehicleId(id)
     const vehicle = vehicles.find((v) => v.id === id)
     if (vehicle?.customerId && !customerId) setCustomerId(vehicle.customerId)
+  }
+
+  // Cleared here rather than in an effect: a vehicle owned by someone else
+  // has just dropped out of the list, and leaving it selected would submit a
+  // pairing the form no longer shows.
+  const handleCustomer = (id: string) => {
+    setCustomerId(id)
+    const current = vehicles.find((v) => v.id === vehicleId)
+    if (id && current && current.customerId !== id) setVehicleId('')
   }
 
   const handleSubmit = async () => {
@@ -183,19 +199,23 @@ export function CheckInDialog({
               <Label>{t('checkIn.customer')}</Label>
               <CustomerCombobox
                 value={customerId}
-                onChange={(id) => setCustomerId(id)}
+                onChange={handleCustomer}
                 placeholder={t('checkIn.selectCustomer')}
                 noneLabel={t('checkIn.noCustomer')}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="checkInVehicle">{t('checkIn.vehicle')}</Label>
-              <Select value={vehicleId} onValueChange={handleVehicle}>
+              <Select
+                value={vehicleId}
+                onValueChange={handleVehicle}
+                disabled={visibleVehicles.length === 0}
+              >
                 <SelectTrigger id="checkInVehicle">
                   <SelectValue placeholder={t('checkIn.selectVehicle')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {vehicles.map((vehicle) => (
+                  {visibleVehicles.map((vehicle) => (
                     <SelectItem key={vehicle.id} value={vehicle.id}>
                       {vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}
                       {vehicle.year} {vehicle.make} {vehicle.model}
@@ -203,6 +223,11 @@ export function CheckInDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {customerId && visibleVehicles.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {t('checkIn.noVehiclesForCustomer')}
+                </p>
+              )}
             </div>
           </div>
 

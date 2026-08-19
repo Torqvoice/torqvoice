@@ -98,7 +98,8 @@
     "notes": "Notlar",
     "submit": "Kabul et",
     "success": "{reference} numaralı takım {code} rafına kondu",
-    "failed": "Takım kabul edilemedi"
+    "failed": "Takım kabul edilemedi",
+    "noVehiclesForCustomer": "Bu müşterinin henüz aracı yok. Önce müşteri sayfasından bir araç ekleyin."
   },
   "storage": {
     "title": "Raflar",
