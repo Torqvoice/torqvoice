@@ -198,12 +198,17 @@
     "description": "Komplet zostanie zdjęty z {code}.",
     "descriptionNoLocation": "Ten komplet wraca do klienta.",
     "treadTitle": "Głębokość bieżnika przy wydaniu",
-    "treadHint": "Różnica względem pomiaru przy przyjęciu to zużycie w tym sezonie.",
     "note": "Notatka",
     "submit": "Wydaj",
     "success": "Komplet {reference} wydany",
     "failed": "Nie udało się wydać kompletu",
-    "prepPending": "Pozostało {count} zadań przygotowania"
+    "prepPending": "Pozostało {count} zadań przygotowania",
+    "conditionTitle": "Stan przy przyjęciu",
+    "conditionLead": {
+      "replace": "Co najmniej jedna opona jest na granicy wymiany lub poniżej. Warto powiedzieć klientowi, zanim odjedzie.",
+      "fair": "Co najmniej jedna opona zbliża się do granicy wymiany. Warto wspomnieć przed kolejnym sezonem."
+    },
+    "treadHintUnmeasured": "Przy przyjęciu nie wykonano pomiaru. To ostatnia okazja, żeby go zapisać."
   },
   "relocate": {
     "title": "Przenieś opony",

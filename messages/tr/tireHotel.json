@@ -198,12 +198,17 @@
     "description": "Takım {code} rafından alınıyor.",
     "descriptionNoLocation": "Bu takım müşteriye geri veriliyor.",
     "treadTitle": "Çıkıştaki diş derinliği",
-    "treadHint": "Giriş ölçümüyle arasındaki fark bu sezonki aşınmadır.",
     "note": "Not",
     "submit": "Teslim et",
     "success": "{reference} numaralı takım teslim edildi",
     "failed": "Takım teslim edilemedi",
-    "prepPending": "{count} hazırlık işi hâlâ bekliyor"
+    "prepPending": "{count} hazırlık işi hâlâ bekliyor",
+    "conditionTitle": "Girişteki durum",
+    "conditionLead": {
+      "replace": "Bir veya daha fazla lastik değişim sınırında ya da altında. Müşteri gitmeden söylemekte fayda var.",
+      "fair": "Bir veya daha fazla lastik değişim sınırına yaklaşıyor. Gelecek sezon öncesi belirtmekte fayda var."
+    },
+    "treadHintUnmeasured": "Girişte ölçüm yapılmamış. Kaydetmek için son fırsat."
   },
   "relocate": {
     "title": "Lastikleri taşı",

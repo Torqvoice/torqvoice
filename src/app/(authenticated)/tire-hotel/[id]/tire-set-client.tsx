@@ -251,13 +251,8 @@ export function TireSetClient({
           <AppCard
             icon={Disc3}
             title={t('detail.conditionTitle')}
-            badge={
-              grade ? (
-                <Badge variant="outline" className={cn('text-xs', CONDITION_TOKENS[grade].badge)}>
-                  {t(`conditions.${grade}`)}
-                </Badge>
-              ) : undefined
-            }
+            // Bare content: the slot supplies its own pill.
+            badge={grade ? t(`conditions.${grade}`) : undefined}
             contentClassName="space-y-4"
           >
             {set.measurements.length === 0 ? (
@@ -400,6 +395,7 @@ export function TireSetClient({
         season={set.season}
         imperial={imperial}
         treatments={set.treatments}
+        latestMeasurements={latest}
       />
 
       <RelocateDialog

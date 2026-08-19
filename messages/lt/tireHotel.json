@@ -198,12 +198,17 @@
     "description": "Komplektas nuimamas nuo {code}.",
     "descriptionNoLocation": "Šis komplektas grąžinamas klientui.",
     "treadTitle": "Protektoriaus gylis atiduodant",
-    "treadHint": "Skirtumas nuo priėmimo matavimo – tai šio sezono dėvėjimasis.",
     "note": "Pastaba",
     "submit": "Atiduoti",
     "success": "Komplektas {reference} atiduotas",
     "failed": "Nepavyko atiduoti komplekto",
-    "prepPending": "Liko {count} paruošimo darbas (-ai)"
+    "prepPending": "Liko {count} paruošimo darbas (-ai)",
+    "conditionTitle": "Būklė priimant",
+    "conditionLead": {
+      "replace": "Viena ar daugiau padangų yra ties keitimo riba arba žemiau. Verta pasakyti klientui, kol jis neišvažiavo.",
+      "fair": "Viena ar daugiau padangų artėja prie keitimo ribos. Verta paminėti prieš kitą sezoną."
+    },
+    "treadHintUnmeasured": "Priimant matavimas nebuvo atliktas. Tai paskutinė proga jį užfiksuoti."
   },
   "relocate": {
     "title": "Perkelti padangas",

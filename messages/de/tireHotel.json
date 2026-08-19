@@ -198,12 +198,17 @@
     "description": "Der Satz wird von {code} genommen.",
     "descriptionNoLocation": "Dieser Satz geht an den Kunden zurück.",
     "treadTitle": "Profiltiefe bei der Ausgabe",
-    "treadHint": "Die Differenz zur Anlieferung ist der Verschleiß dieser Saison.",
     "note": "Notiz",
     "submit": "Auslagern",
     "success": "Satz {reference} zurückgegeben",
     "failed": "Auslagern fehlgeschlagen",
-    "prepPending": "{count} Vorbereitungsarbeit(en) offen"
+    "prepPending": "{count} Vorbereitungsarbeit(en) offen",
+    "conditionTitle": "Zustand bei Anlieferung",
+    "conditionLead": {
+      "replace": "Mindestens ein Reifen liegt auf oder unter Ihrer Ersatzgrenze. Sagen Sie es dem Kunden, bevor er losfährt.",
+      "fair": "Mindestens ein Reifen nähert sich Ihrer Ersatzgrenze. Vor der nächsten Saison ansprechen."
+    },
+    "treadHintUnmeasured": "Bei der Anlieferung wurde nicht gemessen. Dies ist die letzte Gelegenheit dafür."
   },
   "relocate": {
     "title": "Reifen umlagern",

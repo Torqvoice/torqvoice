@@ -198,12 +198,17 @@
     "description": "Se retira el juego de {code}.",
     "descriptionNoLocation": "Este juego vuelve al cliente.",
     "treadTitle": "Profundidad del dibujo a la salida",
-    "treadHint": "La diferencia con la medición de entrada es el desgaste de esta temporada.",
     "note": "Nota",
     "submit": "Entregar",
     "success": "Juego {reference} entregado",
     "failed": "No se ha podido entregar el juego",
-    "prepPending": "{count} tarea(s) de preparación pendiente(s)"
+    "prepPending": "{count} tarea(s) de preparación pendiente(s)",
+    "conditionTitle": "Estado a la entrada",
+    "conditionLead": {
+      "replace": "Uno o más neumáticos están en tu límite de sustitución o por debajo. Conviene decírselo al cliente antes de que se vaya.",
+      "fair": "Uno o más neumáticos se acercan a tu límite de sustitución. Conviene comentarlo antes de la próxima temporada."
+    },
+    "treadHintUnmeasured": "No se midió cuando entraron. Esta es la última oportunidad de registrarlo."
   },
   "relocate": {
     "title": "Mover neumáticos",

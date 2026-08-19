@@ -198,12 +198,17 @@
     "description": "De set wordt van {code} gehaald.",
     "descriptionNoLocation": "Deze set gaat terug naar de klant.",
     "treadTitle": "Profieldiepte bij teruggave",
-    "treadHint": "Het verschil met de meting bij binnenkomst is de slijtage dit seizoen.",
     "note": "Notitie",
     "submit": "Teruggeven",
     "success": "Set {reference} teruggegeven",
     "failed": "Teruggeven mislukt",
-    "prepPending": "{count} voorbereidingsklus(sen) open"
+    "prepPending": "{count} voorbereidingsklus(sen) open",
+    "conditionTitle": "Staat bij binnenkomst",
+    "conditionLead": {
+      "replace": "Een of meer banden zitten op of onder uw vervangingsgrens. Meld het de klant voordat hij wegrijdt.",
+      "fair": "Een of meer banden naderen uw vervangingsgrens. Voor het volgende seizoen even benoemen."
+    },
+    "treadHintUnmeasured": "Bij binnenkomst is niet gemeten. Dit is de laatste kans om dat te doen."
   },
   "relocate": {
     "title": "Banden verplaatsen",

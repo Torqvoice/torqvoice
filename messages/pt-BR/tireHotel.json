@@ -198,12 +198,17 @@
     "description": "O jogo será retirado de {code}.",
     "descriptionNoLocation": "Este jogo volta para o cliente.",
     "treadTitle": "Profundidade do sulco na saída",
-    "treadHint": "A diferença para a medição de entrada é o desgaste desta temporada.",
     "note": "Observação",
     "submit": "Devolver",
     "success": "Jogo {reference} devolvido",
     "failed": "Não foi possível devolver o jogo",
-    "prepPending": "{count} tarefa(s) de preparação pendente(s)"
+    "prepPending": "{count} tarefa(s) de preparação pendente(s)",
+    "conditionTitle": "Condição na entrada",
+    "conditionLead": {
+      "replace": "Um ou mais pneus estão no limite de troca ou abaixo. Vale avisar o cliente antes de ele sair.",
+      "fair": "Um ou mais pneus estão perto do limite de troca. Vale comentar antes da próxima temporada."
+    },
+    "treadHintUnmeasured": "Nenhuma medição foi feita na entrada. Esta é a última chance de registrar."
   },
   "relocate": {
     "title": "Mover pneus",

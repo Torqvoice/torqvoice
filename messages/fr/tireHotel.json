@@ -198,12 +198,17 @@
     "description": "Le jeu est retiré de {code}.",
     "descriptionNoLocation": "Ce jeu repart chez le client.",
     "treadTitle": "Profondeur de sculpture à la sortie",
-    "treadHint": "L’écart avec le relevé de réception correspond à l’usure de la saison.",
     "note": "Note",
     "submit": "Restituer",
     "success": "Jeu {reference} restitué",
     "failed": "Impossible de restituer le jeu",
-    "prepPending": "{count} tâche(s) de préparation en attente"
+    "prepPending": "{count} tâche(s) de préparation en attente",
+    "conditionTitle": "État à la réception",
+    "conditionLead": {
+      "replace": "Au moins un pneu est à votre limite de remplacement ou en dessous. À signaler au client avant son départ.",
+      "fair": "Au moins un pneu approche de votre limite de remplacement. À mentionner avant la saison prochaine."
+    },
+    "treadHintUnmeasured": "Aucun relevé n’a été fait à la réception. C’est la dernière occasion d’en faire un."
   },
   "relocate": {
     "title": "Déplacer les pneus",

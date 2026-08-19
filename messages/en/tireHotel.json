@@ -198,12 +198,17 @@
     "description": "Taking the set off {code}.",
     "descriptionNoLocation": "Returning this set to the customer.",
     "treadTitle": "Tread depth on the way out",
-    "treadHint": "The difference from the arrival reading is the wear over this season.",
     "note": "Note",
     "submit": "Check out",
     "success": "Set {reference} returned",
     "failed": "Could not check the set out",
-    "prepPending": "{count} prep job(s) still outstanding"
+    "prepPending": "{count} prep job(s) still outstanding",
+    "conditionTitle": "Condition on arrival",
+    "conditionLead": {
+      "replace": "One or more tires are at or below your replacement limit. Worth telling the customer before they drive off.",
+      "fair": "One or more tires are close to your replacement limit. Worth a word before next season."
+    },
+    "treadHintUnmeasured": "No reading was taken when these came in. This is the last chance to record one."
   },
   "relocate": {
     "title": "Move tires",

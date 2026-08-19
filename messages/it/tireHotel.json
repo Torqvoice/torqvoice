@@ -198,12 +198,17 @@
     "description": "Il treno viene tolto da {code}.",
     "descriptionNoLocation": "Questo treno torna al cliente.",
     "treadTitle": "Battistrada alla riconsegna",
-    "treadHint": "La differenza rispetto alla misurazione in accettazione è l’usura di questa stagione.",
     "note": "Nota",
     "submit": "Restituisci",
     "success": "Treno {reference} restituito",
     "failed": "Impossibile restituire il treno",
-    "prepPending": "{count} lavoro/i di preparazione in sospeso"
+    "prepPending": "{count} lavoro/i di preparazione in sospeso",
+    "conditionTitle": "Condizione all’accettazione",
+    "conditionLead": {
+      "replace": "Uno o più pneumatici sono al limite di sostituzione o sotto. Vale la pena dirlo al cliente prima che riparta.",
+      "fair": "Uno o più pneumatici si avvicinano al limite di sostituzione. Da segnalare prima della prossima stagione."
+    },
+    "treadHintUnmeasured": "Non è stata fatta alcuna misurazione all’accettazione. Questa è l’ultima occasione."
   },
   "relocate": {
     "title": "Sposta gli pneumatici",

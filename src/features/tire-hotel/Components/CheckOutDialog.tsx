@@ -18,15 +18,31 @@ import { Textarea } from '@/components/ui/textarea'
 import { Loader2, TriangleAlert } from 'lucide-react'
 import { TreadEntry, type TreadRow } from './TreadEntry'
 import { checkOutTireSet } from '../Actions/tireSetActions'
-import { TIRE_ROAD_POSITIONS, thirtySecondsToMm } from '../Lib/tireConstants'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import {
+  CONDITION_TOKENS,
+  TIRE_ROAD_POSITIONS,
+  mmToThirtySeconds,
+  thirtySecondsToMm,
+  worstCondition,
+  type TireCondition,
+} from '../Lib/tireConstants'
 import { pendingTreatments } from '../Lib/treatments'
 
 /**
  * Departure.
  *
- * Offers a second measurement round on the way out, because the difference
- * between the arrival reading and this one is the wear over a season — the
- * thing worth telling the customer while they are standing at the counter.
+ * Deliberately does not ask for tread again. Tires do not wear on a shelf:
+ * the wear happened on the car before they arrived, which is what the
+ * check-in reading captures. Measuring a second time would record the same
+ * numbers and imply a change that cannot have occurred.
+ *
+ * What is worth doing here is telling the customer what those tires are
+ * already known to be. A set that came in below the replacement limit is
+ * going back onto a car in that state, and the moment to say so is while
+ * they are standing at the counter — which is also the moment a shop sells
+ * the replacement.
  */
 export function CheckOutDialog({
   open,
@@ -37,6 +53,7 @@ export function CheckOutDialog({
   season,
   imperial,
   treatments = [],
+  latestMeasurements = [],
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -46,6 +63,8 @@ export function CheckOutDialog({
   season: string
   imperial: boolean
   treatments?: { type: string; status: string }[]
+  /** The most recent reading round, normally taken at check-in. */
+  latestMeasurements?: { position: string; treadDepthMm: number | null; condition: string }[]
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
@@ -62,6 +81,16 @@ export function CheckOutDialog({
   }, [open])
 
   const outstanding = pendingTreatments(treatments)
+
+  // Nothing was ever measured, so this is the last chance to record it before
+  // the tires leave the building.
+  const neverMeasured = latestMeasurements.length === 0
+  const worst = neverMeasured ? null : worstCondition(latestMeasurements.map((m) => m.condition))
+
+  const formatTread = (mm: number | null) => {
+    if (mm == null) return '-'
+    return imperial ? `${mmToThirtySeconds(mm).toFixed(1)}/32"` : `${mm.toFixed(1)} mm`
+  }
 
   const handleSubmit = async () => {
     setSaving(true)
@@ -120,11 +149,51 @@ export function CheckOutDialog({
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label>{t('checkOut.treadTitle')}</Label>
-            <p className="text-xs text-muted-foreground">{t('checkOut.treadHint')}</p>
-            <TreadEntry rows={treads} onChange={setTreads} imperial={imperial} season={season} />
-          </div>
+          {neverMeasured ? (
+            <div className="space-y-2">
+              <Label>{t('checkOut.treadTitle')}</Label>
+              <p className="text-xs text-muted-foreground">{t('checkOut.treadHintUnmeasured')}</p>
+              <TreadEntry rows={treads} onChange={setTreads} imperial={imperial} season={season} />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>{t('checkOut.conditionTitle')}</Label>
+              {worst !== 'good' && (
+                <p
+                  className={cn(
+                    'text-xs font-medium',
+                    worst === 'replace' ? 'text-red-600' : 'text-amber-600'
+                  )}
+                >
+                  {t(`checkOut.conditionLead.${worst}`)}
+                </p>
+              )}
+              <div className="grid gap-2 sm:grid-cols-2">
+                {latestMeasurements.map((m) => (
+                  <div
+                    key={m.position}
+                    className="flex items-center gap-2 rounded-lg border px-2.5 py-2"
+                  >
+                    <span className="w-20 shrink-0 text-xs text-muted-foreground">
+                      {t(`positions.${m.position}`)}
+                    </span>
+                    <span className="flex-1 text-sm tabular-nums">
+                      {formatTread(m.treadDepthMm)}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'shrink-0 text-[10px]',
+                        CONDITION_TOKENS[m.condition as TireCondition].badge
+                      )}
+                    >
+                      {t(`conditions.${m.condition}`)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="checkOutNote">{t('checkOut.note')}</Label>

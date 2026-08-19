@@ -198,12 +198,17 @@
     "description": "Tar settet av {code}.",
     "descriptionNoLocation": "Leverer dette settet tilbake til kunden.",
     "treadTitle": "Mønsterdybde ved utlevering",
-    "treadHint": "Forskjellen fra målingen ved innlevering er slitasjen denne sesongen.",
     "note": "Notat",
     "submit": "Lever ut",
     "success": "Sett {reference} levert ut",
     "failed": "Kunne ikke levere ut settet",
-    "prepPending": "{count} klargjøringsjobb(er) gjenstår"
+    "prepPending": "{count} klargjøringsjobb(er) gjenstår",
+    "conditionTitle": "Tilstand ved innlevering",
+    "conditionLead": {
+      "replace": "Ett eller flere dekk er på eller under bytte­grensen. Verdt å si fra til kunden før de kjører.",
+      "fair": "Ett eller flere dekk nærmer seg byttegrensen. Verdt en kommentar før neste sesong."
+    },
+    "treadHintUnmeasured": "Det ble ikke tatt måling da disse kom inn. Dette er siste sjanse til å registrere en."
   },
   "relocate": {
     "title": "Flytt dekk",

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
@@ -98,19 +97,14 @@ export function TreatmentCard({
     <AppCard
       icon={ClipboardList}
       title={t('treatments.title')}
+      // The slot draws its own pill, so it takes bare content — a Badge here
+      // nests one pill inside another.
       badge={
-        progress.pending > 0 ? (
-          <Badge variant="outline" className="border-amber-500/20 bg-amber-500/10 text-amber-600">
-            {t('treatments.pendingCount', { count: progress.pending })}
-          </Badge>
-        ) : progress.complete ? (
-          <Badge
-            variant="outline"
-            className="border-emerald-500/20 bg-emerald-500/10 text-emerald-600"
-          >
-            {t('treatments.allComplete')}
-          </Badge>
-        ) : undefined
+        progress.pending > 0
+          ? progress.pending
+          : progress.complete
+            ? t('treatments.allComplete')
+            : undefined
       }
       action={
         !editing && (
