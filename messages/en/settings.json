@@ -122,6 +122,10 @@
       "support": {
         "title": "Support",
         "description": "Contact support and manage the support button"
+      },
+      "tireHotel": {
+        "title": "Tire hotel",
+        "description": "Seasonal tire storage"
       }
     },
     "pro": "PRO"
@@ -1454,5 +1458,26 @@
     "unavailable": "This browser has not offered an install prompt. Open the browser menu and look for \"Install app\" or \"Add to Home Screen\".",
     "bannerHidden": "The install banner is hidden on this device.",
     "showBanner": "Show banner again"
+  },
+  "tireHotel": {
+    "title": "Tire hotel",
+    "description": "Store your customers’ seasonal tires and keep track of where every set sits.",
+    "cardTitle": "Tire storage",
+    "enable": "Enable tire hotel",
+    "enableHint": "Adds tire storage to the sidebar. Turning it off later hides it again without deleting anything.",
+    "defaultCapacity": "Default tires per shelf",
+    "defaultCapacityHint": "Prefilled when you add new shelves. You can change it per shelf.",
+    "warnPercent": "Warn when full (%)",
+    "warnPercentHint": "Flags the storage overview once this share of total capacity is in use.",
+    "treadTitle": "Replacement thresholds",
+    "treadHint": "Legal minimums differ by country, so set the limits your market uses. Tread below the limit is flagged for replacement.",
+    "summerLimit": "Summer limit ({unit})",
+    "winterLimit": "Winter limit ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "32nds",
+    "setupHint": "Next, set up your shelves.",
+    "setupLink": "Open storage layout",
+    "save": "Save tire hotel settings",
+    "saved": "Tire hotel settings saved"
   }
 }

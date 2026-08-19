@@ -122,6 +122,10 @@
       "support": {
         "title": "Support",
         "description": "Contact opnemen met support en de knop beheren"
+      },
+      "tireHotel": {
+        "title": "Bandenhotel",
+        "description": "Seizoensopslag van banden"
       }
     },
     "pro": "PRO"
@@ -1454,5 +1458,26 @@
     "unavailable": "Deze browser heeft geen installatie aangeboden. Open het browsermenu en zoek naar 'App installeren' of 'Zet op beginscherm'.",
     "bannerHidden": "De installatiebanner is verborgen op dit apparaat.",
     "showBanner": "Banner weer tonen"
+  },
+  "tireHotel": {
+    "title": "Bandenhotel",
+    "description": "Sla de seizoensbanden van uw klanten op en houd bij waar elke set staat.",
+    "cardTitle": "Bandenopslag",
+    "enable": "Bandenhotel inschakelen",
+    "enableHint": "Voegt bandenopslag toe aan de navigatie. Later uitzetten verbergt het weer zonder iets te verwijderen.",
+    "defaultCapacity": "Standaard banden per plank",
+    "defaultCapacityHint": "Vooraf ingevuld bij nieuwe planken. Per plank aanpasbaar.",
+    "warnPercent": "Waarschuwen bij vol (%)",
+    "warnPercentHint": "Markeert het opslagoverzicht zodra dit deel van de totale capaciteit in gebruik is.",
+    "treadTitle": "Vervangingsgrenzen",
+    "treadHint": "Wettelijke minima verschillen per land, stel dus de grenzen van uw markt in. Profiel onder de grens wordt gemarkeerd voor vervanging.",
+    "summerLimit": "Zomergrens ({unit})",
+    "winterLimit": "Wintergrens ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Stel daarna uw stellingen in.",
+    "setupLink": "Opslagindeling openen",
+    "save": "Bandenhotelinstellingen opslaan",
+    "saved": "Bandenhotelinstellingen opgeslagen"
   }
 }

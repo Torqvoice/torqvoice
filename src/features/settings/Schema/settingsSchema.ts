@@ -119,6 +119,19 @@ export const SETTING_KEYS = {
   WORKSHOP_LOCALE: 'workshop.locale',
   WORKSHOP_DEFAULT_COUNTRY_CODE: 'workshop.defaultCountryCode',
   FORCE_CUSTOMER_LOCALE: 'workshop.forceCustomerLocale',
+  /// Tire hotel is off until a workshop opts in. Everything about the module
+  /// — sidebar entry, routes, cron sweeps — keys off this one flag, so a shop
+  /// that does not store tires never sees it.
+  TIRE_HOTEL_ENABLED: 'tireHotel.enabled',
+  /// Tread depth below which a summer tire is flagged for replacement, in mm.
+  /// Legal minimums differ by country, so the workshop sets its own.
+  TIRE_HOTEL_SUMMER_REPLACE_MM: 'tireHotel.summerReplaceMm',
+  /// Same for winter tires, which lose grip well above the summer limit.
+  TIRE_HOTEL_WINTER_REPLACE_MM: 'tireHotel.winterReplaceMm',
+  /// Default number of tires a newly created shelf holds.
+  TIRE_HOTEL_DEFAULT_CAPACITY: 'tireHotel.defaultCapacity',
+  /// Warn in-app once the warehouse passes this fraction of total capacity.
+  TIRE_HOTEL_CAPACITY_WARN_PERCENT: 'tireHotel.capacityWarnPercent',
   DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
   DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
   DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',

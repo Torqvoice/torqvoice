@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Btw-tarief toegepast",
     "settings_convertToExclusive": "Prijzen omgezet naar exclusief btw",
     "settings_convertToInclusive": "Prijzen omgezet naar inclusief btw",
-    "organization_sampleDataRemove": "Voorbeeldgegevens verwijderd"
+    "organization_sampleDataRemove": "Voorbeeldgegevens verwijderd",
+    "tire_warehouse_create": "Bandenopslaglocatie aangemaakt",
+    "tire_warehouse_update": "Bandenopslaglocatie bijgewerkt",
+    "tire_warehouse_delete": "Bandenopslaglocatie verwijderd",
+    "tire_warehouse_archive": "Bandenopslaglocatie gearchiveerd",
+    "tire_location_create": "Bandenstelling aangemaakt",
+    "tire_location_bulk_create": "Bandenstellingen aangemaakt",
+    "tire_location_update": "Bandenstelling bijgewerkt",
+    "tire_location_delete": "Bandenstelling verwijderd",
+    "tire_set_check_in": "Bandenset ingenomen",
+    "tire_set_check_out": "Bandenset teruggegeven",
+    "tire_set_relocate": "Bandenset verplaatst",
+    "tire_set_update": "Bandenset bijgewerkt",
+    "tire_set_delete": "Bandenset verwijderd",
+    "tire_measurement_create": "Bandenmetingen vastgelegd"
   }
 }

@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Zastosowano stawkę podatku",
     "settings_convertToExclusive": "Przeliczono ceny na netto",
     "settings_convertToInclusive": "Przeliczono ceny na brutto",
-    "organization_sampleDataRemove": "Usunięto dane przykładowe"
+    "organization_sampleDataRemove": "Usunięto dane przykładowe",
+    "tire_warehouse_create": "Utworzono lokalizację magazynu opon",
+    "tire_warehouse_update": "Zaktualizowano lokalizację magazynu opon",
+    "tire_warehouse_delete": "Usunięto lokalizację magazynu opon",
+    "tire_warehouse_archive": "Zarchiwizowano lokalizację magazynu opon",
+    "tire_location_create": "Utworzono półkę na opony",
+    "tire_location_bulk_create": "Utworzono półki na opony",
+    "tire_location_update": "Zaktualizowano półkę na opony",
+    "tire_location_delete": "Usunięto półkę na opony",
+    "tire_set_check_in": "Przyjęto komplet opon",
+    "tire_set_check_out": "Wydano komplet opon",
+    "tire_set_relocate": "Przeniesiono komplet opon",
+    "tire_set_update": "Zaktualizowano komplet opon",
+    "tire_set_delete": "Usunięto komplet opon",
+    "tire_measurement_create": "Zapisano pomiary opon"
   }
 }

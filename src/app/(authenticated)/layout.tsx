@@ -22,6 +22,7 @@ import { ServiceTypeProvider } from "@/components/service-type-context";
 import { LicenseExpiryProvider } from "@/components/license-expiry-context";
 import { db } from "@/lib/db";
 import { isDemoMode } from "@/lib/demo";
+import { isTireHotelEnabled } from "@/features/tire-hotel/Lib/tireHotelSettings";
 
 export default async function DashboardLayout({
   children,
@@ -64,6 +65,10 @@ export default async function DashboardLayout({
     });
     telegramEnabled = tgSetting?.value === "true";
   }
+
+  // Tire hotel is opt-in, so the nav entry only exists once a workshop has
+  // switched the module on.
+  const tireHotelEnabled = await isTireHotelEnabled(data.organizationId);
 
   // Determine which subjects the user can access (for sidebar visibility)
   const isOwnerOrAdmin = data.role === "owner" || data.role === "admin" || data.role === "super_admin";
@@ -153,6 +158,7 @@ export default async function DashboardLayout({
           isSuperAdmin={data.isSuperAdmin}
           features={features}
           telegramEnabled={telegramEnabled}
+          tireHotelEnabled={tireHotelEnabled}
           visibleSubjects={visibleSubjects}
           isAdminOrOwner={isOwnerOrAdmin}
         />
@@ -167,7 +173,7 @@ export default async function DashboardLayout({
       </CurrencySettingsProvider>
       </DateSettingsProvider>
     </SidebarProvider>
-    <MobileBottomNav isSuperAdmin={data.isSuperAdmin} />
+    <MobileBottomNav isSuperAdmin={data.isSuperAdmin} tireHotelEnabled={tireHotelEnabled} />
     {supportEnabled && <SupportBubble />}
     </WhiteLabelCtaProvider>
     </LicenseExpiryProvider>

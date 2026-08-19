@@ -122,6 +122,10 @@
       "support": {
         "title": "Suporte",
         "description": "Falar com o suporte e gerenciar o botão"
+      },
+      "tireHotel": {
+        "title": "Hotel de pneus",
+        "description": "Armazenagem sazonal de pneus"
       }
     },
     "pro": "PRO"
@@ -1454,5 +1458,26 @@
     "unavailable": "Este navegador não ofereceu a instalação. Abra o menu do navegador e procure \"Instalar app\" ou \"Adicionar à Tela de Início\".",
     "bannerHidden": "O aviso de instalação está oculto neste dispositivo.",
     "showBanner": "Mostrar o aviso novamente"
+  },
+  "tireHotel": {
+    "title": "Hotel de pneus",
+    "description": "Guarde os pneus sazonais dos seus clientes e saiba onde cada jogo está.",
+    "cardTitle": "Armazenagem de pneus",
+    "enable": "Ativar hotel de pneus",
+    "enableHint": "Adiciona a armazenagem de pneus ao menu. Desativar depois oculta tudo sem excluir nada.",
+    "defaultCapacity": "Pneus por prateleira (padrão)",
+    "defaultCapacityHint": "Preenchido ao criar novas prateleiras. Ajustável em cada uma.",
+    "warnPercent": "Avisar quando cheio (%)",
+    "warnPercentHint": "Sinaliza o panorama da armazenagem quando essa fatia da capacidade total estiver ocupada.",
+    "treadTitle": "Limites de troca",
+    "treadHint": "Os mínimos legais variam por país, então defina os limites do seu mercado. Sulco abaixo do limite é sinalizado para troca.",
+    "summerLimit": "Limite verão ({unit})",
+    "winterLimit": "Limite inverno ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Em seguida, configure suas prateleiras.",
+    "setupLink": "Abrir layout da armazenagem",
+    "save": "Salvar configurações do hotel de pneus",
+    "saved": "Configurações do hotel de pneus salvas"
   }
 }

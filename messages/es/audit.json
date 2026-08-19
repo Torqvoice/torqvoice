@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Tipo impositivo aplicado",
     "settings_convertToExclusive": "Precios convertidos a sin impuestos",
     "settings_convertToInclusive": "Precios convertidos a con impuestos",
-    "organization_sampleDataRemove": "Datos de ejemplo eliminados"
+    "organization_sampleDataRemove": "Datos de ejemplo eliminados",
+    "tire_warehouse_create": "Ubicación de almacén de neumáticos creada",
+    "tire_warehouse_update": "Ubicación de almacén de neumáticos actualizada",
+    "tire_warehouse_delete": "Ubicación de almacén de neumáticos eliminada",
+    "tire_warehouse_archive": "Ubicación de almacén de neumáticos archivada",
+    "tire_location_create": "Estante de neumáticos creado",
+    "tire_location_bulk_create": "Estantes de neumáticos creados",
+    "tire_location_update": "Estante de neumáticos actualizado",
+    "tire_location_delete": "Estante de neumáticos eliminado",
+    "tire_set_check_in": "Juego de neumáticos recibido",
+    "tire_set_check_out": "Juego de neumáticos entregado",
+    "tire_set_relocate": "Juego de neumáticos movido",
+    "tire_set_update": "Juego de neumáticos actualizado",
+    "tire_set_delete": "Juego de neumáticos eliminado",
+    "tire_measurement_create": "Mediciones de neumáticos registradas"
   }
 }

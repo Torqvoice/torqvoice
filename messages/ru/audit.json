@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Применена налоговая ставка",
     "settings_convertToExclusive": "Цены переведены в без налога",
     "settings_convertToInclusive": "Цены переведены во с налогом",
-    "organization_sampleDataRemove": "Удалены демонстрационные данные"
+    "organization_sampleDataRemove": "Удалены демонстрационные данные",
+    "tire_warehouse_create": "Создан склад шин",
+    "tire_warehouse_update": "Обновлён склад шин",
+    "tire_warehouse_delete": "Удалён склад шин",
+    "tire_warehouse_archive": "Склад шин перемещён в архив",
+    "tire_location_create": "Создана полка для шин",
+    "tire_location_bulk_create": "Созданы полки для шин",
+    "tire_location_update": "Обновлена полка для шин",
+    "tire_location_delete": "Удалена полка для шин",
+    "tire_set_check_in": "Принят комплект шин",
+    "tire_set_check_out": "Выдан комплект шин",
+    "tire_set_relocate": "Перемещён комплект шин",
+    "tire_set_update": "Обновлён комплект шин",
+    "tire_set_delete": "Удалён комплект шин",
+    "tire_measurement_create": "Записаны замеры шин"
   }
 }

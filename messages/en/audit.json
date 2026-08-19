@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Applied Tax Rate",
     "settings_convertToExclusive": "Converted Prices to Tax Exclusive",
     "settings_convertToInclusive": "Converted Prices to Tax Inclusive",
-    "organization_sampleDataRemove": "Removed Sample Data"
+    "organization_sampleDataRemove": "Removed Sample Data",
+    "tire_warehouse_create": "Created tire storage location",
+    "tire_warehouse_update": "Updated tire storage location",
+    "tire_warehouse_delete": "Deleted tire storage location",
+    "tire_warehouse_archive": "Archived tire storage location",
+    "tire_location_create": "Created tire shelf",
+    "tire_location_bulk_create": "Created tire shelves",
+    "tire_location_update": "Updated tire shelf",
+    "tire_location_delete": "Deleted tire shelf",
+    "tire_set_check_in": "Checked in tire set",
+    "tire_set_check_out": "Checked out tire set",
+    "tire_set_relocate": "Moved tire set",
+    "tire_set_update": "Updated tire set",
+    "tire_set_delete": "Deleted tire set",
+    "tire_measurement_create": "Recorded tire measurements"
   }
 }

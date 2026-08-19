@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Aliquota applicata",
     "settings_convertToExclusive": "Prezzi convertiti in imponibile",
     "settings_convertToInclusive": "Prezzi convertiti in ivato",
-    "organization_sampleDataRemove": "Dati di esempio rimossi"
+    "organization_sampleDataRemove": "Dati di esempio rimossi",
+    "tire_warehouse_create": "Sede di deposito pneumatici creata",
+    "tire_warehouse_update": "Sede di deposito pneumatici aggiornata",
+    "tire_warehouse_delete": "Sede di deposito pneumatici eliminata",
+    "tire_warehouse_archive": "Sede di deposito pneumatici archiviata",
+    "tire_location_create": "Scaffale pneumatici creato",
+    "tire_location_bulk_create": "Scaffali pneumatici creati",
+    "tire_location_update": "Scaffale pneumatici aggiornato",
+    "tire_location_delete": "Scaffale pneumatici eliminato",
+    "tire_set_check_in": "Treno di pneumatici accettato",
+    "tire_set_check_out": "Treno di pneumatici restituito",
+    "tire_set_relocate": "Treno di pneumatici spostato",
+    "tire_set_update": "Treno di pneumatici aggiornato",
+    "tire_set_delete": "Treno di pneumatici eliminato",
+    "tire_measurement_create": "Misurazioni pneumatici registrate"
   }
 }

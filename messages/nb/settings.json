@@ -122,6 +122,10 @@
       "support": {
         "title": "Support",
         "description": "Kontakt support og styr supportknappen"
+      },
+      "tireHotel": {
+        "title": "Dekkhotell",
+        "description": "Sesonglagring av dekk"
       }
     },
     "pro": "PRO"
@@ -1454,5 +1458,26 @@
     "unavailable": "Denne nettleseren har ikke tilbudt installasjon. Åpne nettlesermenyen og se etter «Installer app» eller «Legg til på Hjem-skjerm».",
     "bannerHidden": "Installasjonsbanneret er skjult på denne enheten.",
     "showBanner": "Vis banner igjen"
+  },
+  "tireHotel": {
+    "title": "Dekkhotell",
+    "description": "Lagre kundenes sesongdekk og hold styr på hvor hvert sett står.",
+    "cardTitle": "Dekklagring",
+    "enable": "Aktiver dekkhotell",
+    "enableHint": "Legger dekklagring i menyen. Slår du det av igjen, skjules det uten at noe slettes.",
+    "defaultCapacity": "Standard dekk per hylle",
+    "defaultCapacityHint": "Fylles inn når du legger til nye hyller. Kan endres per hylle.",
+    "warnPercent": "Varsle når fullt (%)",
+    "warnPercentHint": "Markerer lageroversikten når denne andelen av total kapasitet er i bruk.",
+    "treadTitle": "Grenser for bytte",
+    "treadHint": "Lovkrav varierer mellom land, så sett grensene som gjelder i ditt marked. Mønsterdybde under grensen markeres for bytte.",
+    "summerLimit": "Sommergrense ({unit})",
+    "winterLimit": "Vintergrense ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Sett så opp hyllene dine.",
+    "setupLink": "Åpne lageroppsett",
+    "save": "Lagre innstillinger for dekkhotell",
+    "saved": "Innstillinger for dekkhotell lagret"
   }
 }

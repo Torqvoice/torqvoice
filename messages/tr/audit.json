@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Vergi oranı uygulandı",
     "settings_convertToExclusive": "Fiyatlar vergi hariç yapıldı",
     "settings_convertToInclusive": "Fiyatlar vergi dahil yapıldı",
-    "organization_sampleDataRemove": "Örnek veriler kaldırıldı"
+    "organization_sampleDataRemove": "Örnek veriler kaldırıldı",
+    "tire_warehouse_create": "Lastik depo yeri oluşturuldu",
+    "tire_warehouse_update": "Lastik depo yeri güncellendi",
+    "tire_warehouse_delete": "Lastik depo yeri silindi",
+    "tire_warehouse_archive": "Lastik depo yeri arşivlendi",
+    "tire_location_create": "Lastik rafı oluşturuldu",
+    "tire_location_bulk_create": "Lastik rafları oluşturuldu",
+    "tire_location_update": "Lastik rafı güncellendi",
+    "tire_location_delete": "Lastik rafı silindi",
+    "tire_set_check_in": "Lastik takımı kabul edildi",
+    "tire_set_check_out": "Lastik takımı teslim edildi",
+    "tire_set_relocate": "Lastik takımı taşındı",
+    "tire_set_update": "Lastik takımı güncellendi",
+    "tire_set_delete": "Lastik takımı silindi",
+    "tire_measurement_create": "Lastik ölçümleri kaydedildi"
   }
 }

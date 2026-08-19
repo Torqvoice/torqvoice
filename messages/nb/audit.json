@@ -109,6 +109,20 @@
     "settings_applyTaxRate": "Brukte avgiftssats",
     "settings_convertToExclusive": "Konverterte priser til eks. avgift",
     "settings_convertToInclusive": "Konverterte priser til inkl. avgift",
-    "organization_sampleDataRemove": "Fjernet eksempeldata"
+    "organization_sampleDataRemove": "Fjernet eksempeldata",
+    "tire_warehouse_create": "Opprettet lagersted for dekk",
+    "tire_warehouse_update": "Oppdaterte lagersted for dekk",
+    "tire_warehouse_delete": "Slettet lagersted for dekk",
+    "tire_warehouse_archive": "Arkiverte lagersted for dekk",
+    "tire_location_create": "Opprettet dekkhylle",
+    "tire_location_bulk_create": "Opprettet dekkhyller",
+    "tire_location_update": "Oppdaterte dekkhylle",
+    "tire_location_delete": "Slettet dekkhylle",
+    "tire_set_check_in": "Tok inn dekksett",
+    "tire_set_check_out": "Leverte ut dekksett",
+    "tire_set_relocate": "Flyttet dekksett",
+    "tire_set_update": "Oppdaterte dekksett",
+    "tire_set_delete": "Slettet dekksett",
+    "tire_measurement_create": "Registrerte dekkmålinger"
   }
 }

@@ -122,6 +122,10 @@
       "support": {
         "title": "Pagalba",
         "description": "Susisiekti su pagalba ir tvarkyti mygtuką"
+      },
+      "tireHotel": {
+        "title": "Padangų viešbutis",
+        "description": "Sezoninis padangų saugojimas"
       }
     },
     "pro": "PRO"
@@ -1454,5 +1458,26 @@
     "unavailable": "Ši naršyklė nepasiūlė įdiegimo. Atidarykite naršyklės meniu ir ieškokite „Įdiegti programą“ arba „Į pradžios ekraną“.",
     "bannerHidden": "Įdiegimo juosta šiame įrenginyje paslėpta.",
     "showBanner": "Vėl rodyti juostą"
+  },
+  "tireHotel": {
+    "title": "Padangų viešbutis",
+    "description": "Saugokite klientų sezonines padangas ir žinokite, kur guli kiekvienas komplektas.",
+    "cardTitle": "Padangų saugojimas",
+    "enable": "Įjungti padangų viešbutį",
+    "enableHint": "Prideda padangų saugojimą į meniu. Vėliau išjungus, jis paslepiamas nieko neištrinant.",
+    "defaultCapacity": "Numatytas padangų skaičius lentynoje",
+    "defaultCapacityHint": "Užpildoma kuriant naujas lentynas. Galima keisti kiekvienai lentynai.",
+    "warnPercent": "Įspėti užsipildžius (%)",
+    "warnPercentHint": "Pažymi saugyklos apžvalgą, kai užimta tokia bendros talpos dalis.",
+    "treadTitle": "Keitimo ribos",
+    "treadHint": "Teisiniai minimumai skiriasi pagal šalį, tad nustatykite savo rinkos ribas. Protektorius žemiau ribos žymimas keitimui.",
+    "summerLimit": "Vasaros riba ({unit})",
+    "winterLimit": "Žiemos riba ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Toliau sutvarkykite lentynas.",
+    "setupLink": "Atverti saugyklos išdėstymą",
+    "save": "Išsaugoti padangų viešbučio nustatymus",
+    "saved": "Padangų viešbučio nustatymai išsaugoti"
   }
 }

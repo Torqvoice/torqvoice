@@ -47,6 +47,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Columns3,
+  Disc3,
   FileText,
   History,
   Globe,
@@ -87,6 +88,7 @@ export function AppSidebar({
   isSuperAdmin,
   features,
   telegramEnabled = false,
+  tireHotelEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
   ...props
@@ -97,6 +99,7 @@ export function AppSidebar({
   isSuperAdmin?: boolean
   features?: PlanFeatures
   telegramEnabled?: boolean
+  tireHotelEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
 }) {
@@ -130,6 +133,10 @@ export function AppSidebar({
     { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck, subject: 'inspections' },
     { titleKey: 'sidebar.calendar' as const, url: '/calendar', icon: CalendarDays, subject: 'work_orders' },
     { titleKey: 'sidebar.workBoard' as const, url: '/work-board', icon: Columns3, subject: 'work_board' },
+    // Opt-in module: hidden entirely until the workshop turns it on in settings.
+    ...(tireHotelEnabled
+      ? [{ titleKey: 'sidebar.tireHotel' as const, url: '/tire-hotel', icon: Disc3, subject: 'tire_hotel' }]
+      : []),
   ].filter((item) => canAccess(item.subject))
 
   const businessItems = [
