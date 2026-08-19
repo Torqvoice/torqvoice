@@ -56,7 +56,8 @@
     "observations": "Obserwacje",
     "tireHotel": "Hotel opon",
     "allTireSets": "Wszystkie komplety",
-    "tireStorage": "Układ magazynu"
+    "tireStorage": "Układ magazynu",
+    "tireSetDetails": "Komplet opon"
   },
   "search": "Szukaj...",
   "shortcut": "Ctrl+K",

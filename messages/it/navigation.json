@@ -56,7 +56,8 @@
     "observations": "Osservazioni",
     "tireHotel": "Hotel pneumatici",
     "allTireSets": "Tutti i treni",
-    "tireStorage": "Disposizione del deposito"
+    "tireStorage": "Disposizione del deposito",
+    "tireSetDetails": "Treno di pneumatici"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",

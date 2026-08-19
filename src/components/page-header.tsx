@@ -150,8 +150,12 @@ export function PageHeader() {
   let segments = breadcrumbMap[pathname]
 
   if (!segments) {
+    // /tire-hotel/[id]
+    if (/^\/tire-hotel\/[^/]+$/.test(pathname)) {
+      segments = [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireSetDetails' }]
+    }
     // /quotes/[id]/edit
-    if (/^\/quotes\/[^/]+\/edit$/.test(pathname)) {
+    else if (/^\/quotes\/[^/]+\/edit$/.test(pathname)) {
       const quoteId = pathname.split('/')[2]
       segments = [
         { key: 'quotes', href: '/quotes' },

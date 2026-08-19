@@ -159,5 +159,48 @@
     "deleteLocationBody": "Das Regal muss zuerst leer sein.",
     "saveFailed": "Speichern fehlgeschlagen",
     "deleteFailed": "Löschen fehlgeschlagen"
+  },
+  "movements": {
+    "check_in": "Eingelagert",
+    "check_out": "Ausgelagert",
+    "relocate": "Umgelagert",
+    "dispose": "Entsorgt"
+  },
+  "detail": {
+    "move": "Umlagern",
+    "checkOut": "Auslagern",
+    "conditionTitle": "Zustand",
+    "noMeasurements": "Noch keine Messwerte erfasst.",
+    "historyTitle": "Verlauf",
+    "storageTitle": "Lagerung",
+    "shelf": "Fach",
+    "warehouse": "Lagerort",
+    "notStored": "Derzeit nicht eingelagert.",
+    "checkedIn": "Eingelagert",
+    "checkedOut": "Ausgelagert",
+    "tiresTitle": "Reifen",
+    "loadSpeed": "Last- und Geschwindigkeitsindex",
+    "ownerTitle": "Besitzer",
+    "phone": "Telefon"
+  },
+  "checkOut": {
+    "title": "Reifen auslagern",
+    "description": "Der Satz wird von {code} genommen.",
+    "descriptionNoLocation": "Dieser Satz geht an den Kunden zurück.",
+    "treadTitle": "Profiltiefe bei der Ausgabe",
+    "treadHint": "Die Differenz zur Anlieferung ist der Verschleiß dieser Saison.",
+    "note": "Notiz",
+    "submit": "Auslagern",
+    "success": "Satz {reference} zurückgegeben",
+    "failed": "Auslagern fehlgeschlagen"
+  },
+  "relocate": {
+    "title": "Reifen umlagern",
+    "description": "Wählen Sie das Fach, in das der Satz umzieht.",
+    "newLocation": "Neues Fach",
+    "note": "Notiz",
+    "submit": "Umlagern",
+    "success": "Satz {reference} umgelagert",
+    "failed": "Umlagern fehlgeschlagen"
   }
 }

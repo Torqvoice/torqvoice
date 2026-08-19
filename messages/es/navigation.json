@@ -56,7 +56,8 @@
     "observations": "Observaciones",
     "tireHotel": "Hotel de neumáticos",
     "allTireSets": "Todos los juegos",
-    "tireStorage": "Distribución del almacén"
+    "tireStorage": "Distribución del almacén",
+    "tireSetDetails": "Juego de neumáticos"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",

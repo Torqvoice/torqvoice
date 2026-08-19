@@ -56,7 +56,8 @@
     "observations": "Наблюдения",
     "tireHotel": "Шинный отель",
     "allTireSets": "Все комплекты",
-    "tireStorage": "Структура склада"
+    "tireStorage": "Структура склада",
+    "tireSetDetails": "Комплект шин"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",

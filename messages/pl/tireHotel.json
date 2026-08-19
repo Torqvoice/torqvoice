@@ -159,5 +159,48 @@
     "deleteLocationBody": "Półka musi być najpierw pusta.",
     "saveFailed": "Nie udało się zapisać",
     "deleteFailed": "Nie udało się usunąć"
+  },
+  "movements": {
+    "check_in": "Przyjęto",
+    "check_out": "Wydano",
+    "relocate": "Przeniesiono",
+    "dispose": "Zutylizowano"
+  },
+  "detail": {
+    "move": "Przenieś",
+    "checkOut": "Wydaj",
+    "conditionTitle": "Stan",
+    "noMeasurements": "Brak zapisanych pomiarów.",
+    "historyTitle": "Historia",
+    "storageTitle": "Magazyn",
+    "shelf": "Półka",
+    "warehouse": "Lokalizacja",
+    "notStored": "Obecnie nie w magazynie.",
+    "checkedIn": "Przyjęto",
+    "checkedOut": "Wydano",
+    "tiresTitle": "Opony",
+    "loadSpeed": "Indeks nośności i prędkości",
+    "ownerTitle": "Właściciel",
+    "phone": "Telefon"
+  },
+  "checkOut": {
+    "title": "Wydaj opony",
+    "description": "Komplet zostanie zdjęty z {code}.",
+    "descriptionNoLocation": "Ten komplet wraca do klienta.",
+    "treadTitle": "Głębokość bieżnika przy wydaniu",
+    "treadHint": "Różnica względem pomiaru przy przyjęciu to zużycie w tym sezonie.",
+    "note": "Notatka",
+    "submit": "Wydaj",
+    "success": "Komplet {reference} wydany",
+    "failed": "Nie udało się wydać kompletu"
+  },
+  "relocate": {
+    "title": "Przenieś opony",
+    "description": "Wybierz półkę docelową.",
+    "newLocation": "Nowa półka",
+    "note": "Notatka",
+    "submit": "Przenieś",
+    "success": "Komplet {reference} przeniesiony",
+    "failed": "Nie udało się przenieść kompletu"
   }
 }

@@ -159,5 +159,48 @@
     "deleteLocationBody": "Rafın önce boş olması gerekir.",
     "saveFailed": "Kaydedilemedi",
     "deleteFailed": "Silinemedi"
+  },
+  "movements": {
+    "check_in": "Kabul edildi",
+    "check_out": "Teslim edildi",
+    "relocate": "Taşındı",
+    "dispose": "Hurdaya ayrıldı"
+  },
+  "detail": {
+    "move": "Taşı",
+    "checkOut": "Teslim et",
+    "conditionTitle": "Durum",
+    "noMeasurements": "Henüz ölçüm kaydedilmedi.",
+    "historyTitle": "Geçmiş",
+    "storageTitle": "Depolama",
+    "shelf": "Raf",
+    "warehouse": "Depo yeri",
+    "notStored": "Şu anda depoda değil.",
+    "checkedIn": "Kabul edildi",
+    "checkedOut": "Teslim edildi",
+    "tiresTitle": "Lastikler",
+    "loadSpeed": "Yük ve hız endeksi",
+    "ownerTitle": "Sahibi",
+    "phone": "Telefon"
+  },
+  "checkOut": {
+    "title": "Lastikleri teslim et",
+    "description": "Takım {code} rafından alınıyor.",
+    "descriptionNoLocation": "Bu takım müşteriye geri veriliyor.",
+    "treadTitle": "Çıkıştaki diş derinliği",
+    "treadHint": "Giriş ölçümüyle arasındaki fark bu sezonki aşınmadır.",
+    "note": "Not",
+    "submit": "Teslim et",
+    "success": "{reference} numaralı takım teslim edildi",
+    "failed": "Takım teslim edilemedi"
+  },
+  "relocate": {
+    "title": "Lastikleri taşı",
+    "description": "Takımın taşınacağı rafı seçin.",
+    "newLocation": "Yeni raf",
+    "note": "Not",
+    "submit": "Taşı",
+    "success": "{reference} numaralı takım taşındı",
+    "failed": "Takım taşınamadı"
   }
 }

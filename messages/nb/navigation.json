@@ -56,7 +56,8 @@
     "observations": "Observasjoner",
     "tireHotel": "Dekkhotell",
     "allTireSets": "Alle dekksett",
-    "tireStorage": "Lageroppsett"
+    "tireStorage": "Lageroppsett",
+    "tireSetDetails": "Dekksett"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",

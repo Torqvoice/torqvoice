@@ -159,5 +159,48 @@
     "deleteLocationBody": "Lo scaffale deve prima essere vuoto.",
     "saveFailed": "Salvataggio non riuscito",
     "deleteFailed": "Eliminazione non riuscita"
+  },
+  "movements": {
+    "check_in": "Accettato",
+    "check_out": "Restituito",
+    "relocate": "Spostato",
+    "dispose": "Smaltito"
+  },
+  "detail": {
+    "move": "Sposta",
+    "checkOut": "Restituisci",
+    "conditionTitle": "Condizione",
+    "noMeasurements": "Nessuna misurazione registrata.",
+    "historyTitle": "Cronologia",
+    "storageTitle": "Deposito",
+    "shelf": "Scaffale",
+    "warehouse": "Sede",
+    "notStored": "Al momento non in deposito.",
+    "checkedIn": "Accettato",
+    "checkedOut": "Restituito",
+    "tiresTitle": "Pneumatici",
+    "loadSpeed": "Indici di carico e velocità",
+    "ownerTitle": "Proprietario",
+    "phone": "Telefono"
+  },
+  "checkOut": {
+    "title": "Restituire gli pneumatici",
+    "description": "Il treno viene tolto da {code}.",
+    "descriptionNoLocation": "Questo treno torna al cliente.",
+    "treadTitle": "Battistrada alla riconsegna",
+    "treadHint": "La differenza rispetto alla misurazione in accettazione è l’usura di questa stagione.",
+    "note": "Nota",
+    "submit": "Restituisci",
+    "success": "Treno {reference} restituito",
+    "failed": "Impossibile restituire il treno"
+  },
+  "relocate": {
+    "title": "Sposta gli pneumatici",
+    "description": "Scegli lo scaffale di destinazione.",
+    "newLocation": "Nuovo scaffale",
+    "note": "Nota",
+    "submit": "Sposta",
+    "success": "Treno {reference} spostato",
+    "failed": "Impossibile spostare il treno"
   }
 }

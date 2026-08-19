@@ -244,10 +244,13 @@ export function TireHotelClient({
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-20">{t('list.reference')}</TableHead>
+              <TableHead className="w-16">{t('list.reference')}</TableHead>
               <TableHead>{t('list.vehicle')}</TableHead>
-              <TableHead className="hidden w-[18%] lg:table-cell">{t('list.tires')}</TableHead>
-              <TableHead className="w-28">{t('list.location')}</TableHead>
+              <TableHead className="hidden w-[16%] lg:table-cell">{t('list.tires')}</TableHead>
+              {/* Shelf codes are workshop-defined and can run long
+                  ("Room B-Rack 04-Shelf 2"), so the cell truncates and carries
+                  the full code as its title. */}
+              <TableHead className="w-32">{t('list.location')}</TableHead>
               <TableHead className="w-24">{t('list.condition')}</TableHead>
               <TableHead className="w-24">{t('list.status')}</TableHead>
               <TableHead className="hidden w-24 lg:table-cell">{t('list.storedSince')}</TableHead>
@@ -268,7 +271,7 @@ export function TireHotelClient({
                       className="cursor-pointer"
                       {...interactiveRow(() => router.push(`/tire-hotel/${set.id}`))}
                     >
-                      <TableCell className="font-mono text-xs text-muted-foreground">
+                      <TableCell className="truncate font-mono text-xs text-muted-foreground">
                         {set.reference ?? '-'}
                       </TableCell>
                       <TableCell>
@@ -298,9 +301,11 @@ export function TireHotelClient({
                           {set.size ? ` · ${set.size}` : ''}
                         </span>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="truncate">
                         {set.location ? (
-                          <span className="font-mono text-xs">{set.location.code}</span>
+                          <span className="font-mono text-xs" title={set.location.code}>
+                            {set.location.code}
+                          </span>
                         ) : (
                           <span className="text-xs text-muted-foreground">-</span>
                         )}

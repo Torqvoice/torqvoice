@@ -159,5 +159,48 @@
     "deleteLocationBody": "Сначала полка должна быть пустой.",
     "saveFailed": "Не удалось сохранить",
     "deleteFailed": "Не удалось удалить"
+  },
+  "movements": {
+    "check_in": "Принят",
+    "check_out": "Выдан",
+    "relocate": "Перемещён",
+    "dispose": "Утилизирован"
+  },
+  "detail": {
+    "move": "Переместить",
+    "checkOut": "Выдать",
+    "conditionTitle": "Состояние",
+    "noMeasurements": "Замеры ещё не записаны.",
+    "historyTitle": "История",
+    "storageTitle": "Хранение",
+    "shelf": "Полка",
+    "warehouse": "Склад",
+    "notStored": "Сейчас не на хранении.",
+    "checkedIn": "Принят",
+    "checkedOut": "Выдан",
+    "tiresTitle": "Шины",
+    "loadSpeed": "Индексы нагрузки и скорости",
+    "ownerTitle": "Владелец",
+    "phone": "Телефон"
+  },
+  "checkOut": {
+    "title": "Выдать шины",
+    "description": "Комплект снимается с {code}.",
+    "descriptionNoLocation": "Этот комплект возвращается клиенту.",
+    "treadTitle": "Глубина протектора при выдаче",
+    "treadHint": "Разница с замером при приёмке — это износ за сезон.",
+    "note": "Заметка",
+    "submit": "Выдать",
+    "success": "Комплект {reference} выдан",
+    "failed": "Не удалось выдать комплект"
+  },
+  "relocate": {
+    "title": "Переместить шины",
+    "description": "Выберите полку, куда переедет комплект.",
+    "newLocation": "Новая полка",
+    "note": "Заметка",
+    "submit": "Переместить",
+    "success": "Комплект {reference} перемещён",
+    "failed": "Не удалось переместить комплект"
   }
 }

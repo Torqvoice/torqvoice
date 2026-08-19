@@ -159,5 +159,48 @@
     "deleteLocationBody": "A prateleira precisa estar vazia antes.",
     "saveFailed": "Não foi possível salvar",
     "deleteFailed": "Não foi possível excluir"
+  },
+  "movements": {
+    "check_in": "Recebido",
+    "check_out": "Devolvido",
+    "relocate": "Movido",
+    "dispose": "Descartado"
+  },
+  "detail": {
+    "move": "Mover",
+    "checkOut": "Devolver",
+    "conditionTitle": "Condição",
+    "noMeasurements": "Nenhuma medição registrada.",
+    "historyTitle": "Histórico",
+    "storageTitle": "Armazenagem",
+    "shelf": "Prateleira",
+    "warehouse": "Local",
+    "notStored": "No momento não está armazenado.",
+    "checkedIn": "Recebido",
+    "checkedOut": "Devolvido",
+    "tiresTitle": "Pneus",
+    "loadSpeed": "Índices de carga e velocidade",
+    "ownerTitle": "Proprietário",
+    "phone": "Telefone"
+  },
+  "checkOut": {
+    "title": "Devolver pneus",
+    "description": "O jogo será retirado de {code}.",
+    "descriptionNoLocation": "Este jogo volta para o cliente.",
+    "treadTitle": "Profundidade do sulco na saída",
+    "treadHint": "A diferença para a medição de entrada é o desgaste desta temporada.",
+    "note": "Observação",
+    "submit": "Devolver",
+    "success": "Jogo {reference} devolvido",
+    "failed": "Não foi possível devolver o jogo"
+  },
+  "relocate": {
+    "title": "Mover pneus",
+    "description": "Escolha a prateleira de destino.",
+    "newLocation": "Nova prateleira",
+    "note": "Observação",
+    "submit": "Mover",
+    "success": "Jogo {reference} movido",
+    "failed": "Não foi possível mover o jogo"
   }
 }

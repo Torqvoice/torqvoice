@@ -56,7 +56,8 @@
     "observations": "Gözlemler",
     "tireHotel": "Lastik oteli",
     "allTireSets": "Tüm lastik takımları",
-    "tireStorage": "Depo düzeni"
+    "tireStorage": "Depo düzeni",
+    "tireSetDetails": "Lastik takımı"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",

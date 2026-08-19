@@ -159,5 +159,48 @@
     "deleteLocationBody": "Pirmiausia lentyna turi būti tuščia.",
     "saveFailed": "Nepavyko išsaugoti",
     "deleteFailed": "Nepavyko ištrinti"
+  },
+  "movements": {
+    "check_in": "Priimta",
+    "check_out": "Atiduota",
+    "relocate": "Perkelta",
+    "dispose": "Utilizuota"
+  },
+  "detail": {
+    "move": "Perkelti",
+    "checkOut": "Atiduoti",
+    "conditionTitle": "Būklė",
+    "noMeasurements": "Matavimų dar nėra.",
+    "historyTitle": "Istorija",
+    "storageTitle": "Saugojimas",
+    "shelf": "Lentyna",
+    "warehouse": "Saugykla",
+    "notStored": "Šiuo metu nesaugoma.",
+    "checkedIn": "Priimta",
+    "checkedOut": "Atiduota",
+    "tiresTitle": "Padangos",
+    "loadSpeed": "Apkrovos ir greičio indeksai",
+    "ownerTitle": "Savininkas",
+    "phone": "Telefonas"
+  },
+  "checkOut": {
+    "title": "Atiduoti padangas",
+    "description": "Komplektas nuimamas nuo {code}.",
+    "descriptionNoLocation": "Šis komplektas grąžinamas klientui.",
+    "treadTitle": "Protektoriaus gylis atiduodant",
+    "treadHint": "Skirtumas nuo priėmimo matavimo – tai šio sezono dėvėjimasis.",
+    "note": "Pastaba",
+    "submit": "Atiduoti",
+    "success": "Komplektas {reference} atiduotas",
+    "failed": "Nepavyko atiduoti komplekto"
+  },
+  "relocate": {
+    "title": "Perkelti padangas",
+    "description": "Pasirinkite lentyną, į kurią perkeliama.",
+    "newLocation": "Nauja lentyna",
+    "note": "Pastaba",
+    "submit": "Perkelti",
+    "success": "Komplektas {reference} perkeltas",
+    "failed": "Nepavyko perkelti komplekto"
   }
 }

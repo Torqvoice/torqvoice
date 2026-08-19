@@ -56,7 +56,8 @@
     "observations": "Observations",
     "tireHotel": "Tire Hotel",
     "allTireSets": "All Tire Sets",
-    "tireStorage": "Storage Layout"
+    "tireStorage": "Storage Layout",
+    "tireSetDetails": "Tire Set"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",

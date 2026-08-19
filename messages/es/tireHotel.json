@@ -159,5 +159,48 @@
     "deleteLocationBody": "El estante tiene que estar vacío antes.",
     "saveFailed": "No se ha podido guardar",
     "deleteFailed": "No se ha podido eliminar"
+  },
+  "movements": {
+    "check_in": "Recibido",
+    "check_out": "Entregado",
+    "relocate": "Movido",
+    "dispose": "Desechado"
+  },
+  "detail": {
+    "move": "Mover",
+    "checkOut": "Entregar",
+    "conditionTitle": "Estado",
+    "noMeasurements": "Aún no hay mediciones registradas.",
+    "historyTitle": "Historial",
+    "storageTitle": "Almacenamiento",
+    "shelf": "Estante",
+    "warehouse": "Ubicación",
+    "notStored": "Ahora mismo no está en almacén.",
+    "checkedIn": "Recibido",
+    "checkedOut": "Entregado",
+    "tiresTitle": "Neumáticos",
+    "loadSpeed": "Índices de carga y velocidad",
+    "ownerTitle": "Propietario",
+    "phone": "Teléfono"
+  },
+  "checkOut": {
+    "title": "Entregar neumáticos",
+    "description": "Se retira el juego de {code}.",
+    "descriptionNoLocation": "Este juego vuelve al cliente.",
+    "treadTitle": "Profundidad del dibujo a la salida",
+    "treadHint": "La diferencia con la medición de entrada es el desgaste de esta temporada.",
+    "note": "Nota",
+    "submit": "Entregar",
+    "success": "Juego {reference} entregado",
+    "failed": "No se ha podido entregar el juego"
+  },
+  "relocate": {
+    "title": "Mover neumáticos",
+    "description": "Elige el estante al que se mueve este juego.",
+    "newLocation": "Nuevo estante",
+    "note": "Nota",
+    "submit": "Mover",
+    "success": "Juego {reference} movido",
+    "failed": "No se ha podido mover el juego"
   }
 }

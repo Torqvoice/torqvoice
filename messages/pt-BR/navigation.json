@@ -56,7 +56,8 @@
     "observations": "Observações",
     "tireHotel": "Hotel de pneus",
     "allTireSets": "Todos os jogos",
-    "tireStorage": "Layout da armazenagem"
+    "tireStorage": "Layout da armazenagem",
+    "tireSetDetails": "Jogo de pneus"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",

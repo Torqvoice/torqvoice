@@ -56,7 +56,8 @@
     "observations": "Beobachtungen",
     "tireHotel": "Reifenhotel",
     "allTireSets": "Alle Reifensätze",
-    "tireStorage": "Lagerstruktur"
+    "tireStorage": "Lagerstruktur",
+    "tireSetDetails": "Reifensatz"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",

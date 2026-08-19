@@ -159,5 +159,48 @@
     "deleteLocationBody": "Hyllen må være tom først.",
     "saveFailed": "Kunne ikke lagre",
     "deleteFailed": "Kunne ikke slette"
+  },
+  "movements": {
+    "check_in": "Tatt inn",
+    "check_out": "Levert ut",
+    "relocate": "Flyttet",
+    "dispose": "Kassert"
+  },
+  "detail": {
+    "move": "Flytt",
+    "checkOut": "Lever ut",
+    "conditionTitle": "Tilstand",
+    "noMeasurements": "Ingen målinger registrert ennå.",
+    "historyTitle": "Historikk",
+    "storageTitle": "Lagring",
+    "shelf": "Hylle",
+    "warehouse": "Lagersted",
+    "notStored": "Ikke på lager nå.",
+    "checkedIn": "Tatt inn",
+    "checkedOut": "Levert ut",
+    "tiresTitle": "Dekk",
+    "loadSpeed": "Last og hastighet",
+    "ownerTitle": "Eier",
+    "phone": "Telefon"
+  },
+  "checkOut": {
+    "title": "Lever ut dekk",
+    "description": "Tar settet av {code}.",
+    "descriptionNoLocation": "Leverer dette settet tilbake til kunden.",
+    "treadTitle": "Mønsterdybde ved utlevering",
+    "treadHint": "Forskjellen fra målingen ved innlevering er slitasjen denne sesongen.",
+    "note": "Notat",
+    "submit": "Lever ut",
+    "success": "Sett {reference} levert ut",
+    "failed": "Kunne ikke levere ut settet"
+  },
+  "relocate": {
+    "title": "Flytt dekk",
+    "description": "Velg hyllen settet skal flyttes til.",
+    "newLocation": "Ny hylle",
+    "note": "Notat",
+    "submit": "Flytt",
+    "success": "Sett {reference} flyttet",
+    "failed": "Kunne ikke flytte settet"
   }
 }

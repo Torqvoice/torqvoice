@@ -159,5 +159,48 @@
     "deleteLocationBody": "De stelling moet eerst leeg zijn.",
     "saveFailed": "Opslaan mislukt",
     "deleteFailed": "Verwijderen mislukt"
+  },
+  "movements": {
+    "check_in": "Ingenomen",
+    "check_out": "Teruggegeven",
+    "relocate": "Verplaatst",
+    "dispose": "Afgevoerd"
+  },
+  "detail": {
+    "move": "Verplaatsen",
+    "checkOut": "Teruggeven",
+    "conditionTitle": "Staat",
+    "noMeasurements": "Nog geen metingen vastgelegd.",
+    "historyTitle": "Geschiedenis",
+    "storageTitle": "Opslag",
+    "shelf": "Stelling",
+    "warehouse": "Locatie",
+    "notStored": "Momenteel niet in opslag.",
+    "checkedIn": "Ingenomen",
+    "checkedOut": "Teruggegeven",
+    "tiresTitle": "Banden",
+    "loadSpeed": "Draagvermogen en snelheid",
+    "ownerTitle": "Eigenaar",
+    "phone": "Telefoon"
+  },
+  "checkOut": {
+    "title": "Banden teruggeven",
+    "description": "De set wordt van {code} gehaald.",
+    "descriptionNoLocation": "Deze set gaat terug naar de klant.",
+    "treadTitle": "Profieldiepte bij teruggave",
+    "treadHint": "Het verschil met de meting bij binnenkomst is de slijtage dit seizoen.",
+    "note": "Notitie",
+    "submit": "Teruggeven",
+    "success": "Set {reference} teruggegeven",
+    "failed": "Teruggeven mislukt"
+  },
+  "relocate": {
+    "title": "Banden verplaatsen",
+    "description": "Kies de stelling waar deze set heen gaat.",
+    "newLocation": "Nieuwe stelling",
+    "note": "Notitie",
+    "submit": "Verplaatsen",
+    "success": "Set {reference} verplaatst",
+    "failed": "Verplaatsen mislukt"
   }
 }

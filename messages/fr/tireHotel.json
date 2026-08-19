@@ -159,5 +159,48 @@
     "deleteLocationBody": "L'étagère doit d'abord être vide.",
     "saveFailed": "Enregistrement impossible",
     "deleteFailed": "Suppression impossible"
+  },
+  "movements": {
+    "check_in": "Réceptionné",
+    "check_out": "Restitué",
+    "relocate": "Déplacé",
+    "dispose": "Mis au rebut"
+  },
+  "detail": {
+    "move": "Déplacer",
+    "checkOut": "Restituer",
+    "conditionTitle": "État",
+    "noMeasurements": "Aucun relevé enregistré.",
+    "historyTitle": "Historique",
+    "storageTitle": "Stockage",
+    "shelf": "Étagère",
+    "warehouse": "Site",
+    "notStored": "Pas en stock actuellement.",
+    "checkedIn": "Réceptionné",
+    "checkedOut": "Restitué",
+    "tiresTitle": "Pneus",
+    "loadSpeed": "Indices de charge et vitesse",
+    "ownerTitle": "Propriétaire",
+    "phone": "Téléphone"
+  },
+  "checkOut": {
+    "title": "Restituer les pneus",
+    "description": "Le jeu est retiré de {code}.",
+    "descriptionNoLocation": "Ce jeu repart chez le client.",
+    "treadTitle": "Profondeur de sculpture à la sortie",
+    "treadHint": "L’écart avec le relevé de réception correspond à l’usure de la saison.",
+    "note": "Note",
+    "submit": "Restituer",
+    "success": "Jeu {reference} restitué",
+    "failed": "Impossible de restituer le jeu"
+  },
+  "relocate": {
+    "title": "Déplacer les pneus",
+    "description": "Choisissez l’étagère de destination.",
+    "newLocation": "Nouvelle étagère",
+    "note": "Note",
+    "submit": "Déplacer",
+    "success": "Jeu {reference} déplacé",
+    "failed": "Impossible de déplacer le jeu"
   }
 }

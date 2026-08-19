@@ -71,7 +71,9 @@ export function LocationPicker({
 
   return (
     <div className="space-y-1.5">
-      <Popover open={open} onOpenChange={setOpen}>
+      {/* modal: without it a dialog's scroll lock swallows wheel events over
+          the portaled list, so a long shelf list cannot be scrolled. */}
+      <Popover open={open} onOpenChange={setOpen} modal>
         <PopoverTrigger asChild>
           <Button
             variant="outline"

@@ -56,7 +56,8 @@
     "observations": "Waarnemingen",
     "tireHotel": "Bandenhotel",
     "allTireSets": "Alle bandensets",
-    "tireStorage": "Opslagindeling"
+    "tireStorage": "Opslagindeling",
+    "tireSetDetails": "Bandenset"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",

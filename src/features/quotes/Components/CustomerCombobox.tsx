@@ -109,7 +109,11 @@ export function CustomerCombobox({
   }, [hasMore, search, options.length, loadOptions])
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    // modal: the content portals out of any dialog this sits in, and a
+    // dialog's scroll lock swallows wheel events over everything outside
+    // itself — which left the customer list unscrollable. Going modal gives
+    // the popover its own lock with its own content whitelisted.
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
           <span className="truncate">
