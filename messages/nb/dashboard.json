@@ -53,7 +53,8 @@
     "recentCompleted": "Nylig fullført",
     "activeJobs": "Aktive jobber",
     "recentObservations": "Nylige observasjoner",
-    "recentActivity": "Nylig aktivitet"
+    "recentActivity": "Nylig aktivitet",
+    "gettingStarted": "Kom i gang"
   },
   "maintenance": {
     "title": "Forventet vedlikehold",

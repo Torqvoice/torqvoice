@@ -53,7 +53,8 @@
     "recentCompleted": "Recent Completed",
     "activeJobs": "Active Jobs",
     "recentObservations": "Recent Observations",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "gettingStarted": "Getting Started"
   },
   "maintenance": {
     "title": "Predicted Maintenance Due",

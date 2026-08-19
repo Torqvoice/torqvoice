@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Sett opp verkstedet ditt",
+    "subtitle": "Skriv inn navnet på verkstedet for å komme i gang",
+    "workshopName": "Verkstedets navn",
+    "workshopNamePlaceholder": "Mitt Bilverksted",
+    "submit": "Kom i gang",
+    "sampleDataLabel": "Last inn eksempeldata",
+    "sampleDataDescription": "Legger til noen eksempelkunder, kjøretøy og jobber slik at du kan se deg rundt. Du kan fjerne dem igjen med ett klikk.",
+    "setupFailed": "Oppsettet mislyktes",
+    "couldNotCreate": "Kunne ikke opprette verkstedet",
+    "unexpectedError": "Det oppstod en uventet feil"
+  },
+  "sample": {
+    "prefix": "Eksempel:",
+    "oilService": "Olje- og filterskift",
+    "brakeJob": "Skifte av bremseklosser foran",
+    "annualService": "Årsservice",
+    "quoteTitle": "Overhaling av forstilling",
+    "inspectionNote": "Venstre framdekk er nær slitasjegrensen",
+    "parts": {
+      "oilFilter": "Oljefilter",
+      "engineOil": "Motorolje 5W-30",
+      "brakePads": "Bremseklossett foran",
+      "shockAbsorber": "Støtdemper"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Oljeskift",
+      "description": "Skift av motorolje og filter"
+    },
+    "frontBrakePads": {
+      "name": "Bremseklosser foran",
+      "description": "Skifte bremseklosser foran"
+    },
+    "tireSwap": {
+      "name": "Hjulskift",
+      "description": "Sesonghjulskift med momentkontroll"
+    },
+    "batteryReplacement": {
+      "name": "Batteribytte",
+      "description": "Bytte og registrere startbatteri"
+    },
+    "diagnostics": {
+      "name": "Diagnose",
+      "description": "Avlesing av feilkoder og førstediagnose"
+    },
+    "annualService": {
+      "name": "Årsservice",
+      "description": "Full årsservice etter serviceplan"
+    }
+  },
+  "checklist": {
+    "title": "Kom i gang",
+    "description": "Fire steg for å få verkstedet i gang",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Legg til en kunde",
+        "description": "Opprett din første kunde"
+      },
+      "vehicle": {
+        "title": "Legg til et kjøretøy",
+        "description": "Registrer et kjøretøy på en kunde"
+      },
+      "workOrder": {
+        "title": "Opprett en arbeidsordre",
+        "description": "Åpne din første jobb"
+      },
+      "invoice": {
+        "title": "Send eller last ned en faktura",
+        "description": "Del en faktura med en kunde eller last den ned som PDF"
+      }
+    },
+    "allDoneTitle": "Alt er klart",
+    "allDoneDescription": "Alle stegene er fullført og verkstedet ditt er i gang.",
+    "dismiss": "Skjul kortet",
+    "dismissAriaLabel": "Skjul denne sjekklisten"
+  },
+  "sampleData": {
+    "title": "Eksempeldata",
+    "description": "Verkstedet ditt inneholder fortsatt eksempelkundene, kjøretøyene og jobbene fra oppsettet. Fjerning sletter nøyaktig disse oppføringene og ingenting annet.",
+    "footerNote": "Eksempeldata er lastet inn",
+    "remove": "Fjern eksempeldata",
+    "removeConfirmTitle": "Fjerne eksempeldata?",
+    "removeConfirmDescription": "Dette sletter eksempelkundene, kjøretøyene, arbeidsordrene, tilbudet og kontrollen som ble opprettet under oppsettet. Dine egne data berøres ikke.",
+    "removed": "Eksempeldata fjernet",
+    "removeFailed": "Kunne ikke fjerne eksempeldata"
+  }
+}

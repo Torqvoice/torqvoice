@@ -53,7 +53,8 @@
     "recentCompleted": "Ostatnio ukończone",
     "activeJobs": "Aktywne zlecenia",
     "recentObservations": "Ostatnie obserwacje",
-    "recentActivity": "Ostatnia aktywność"
+    "recentActivity": "Ostatnia aktywność",
+    "gettingStarted": "Pierwsze kroki"
   },
   "maintenance": {
     "title": "Przewidywany termin konserwacji",

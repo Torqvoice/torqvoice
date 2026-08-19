@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Messaggio pianificato inviato",
     "settings_applyTaxRate": "Aliquota applicata",
     "settings_convertToExclusive": "Prezzi convertiti in imponibile",
-    "settings_convertToInclusive": "Prezzi convertiti in ivato"
+    "settings_convertToInclusive": "Prezzi convertiti in ivato",
+    "organization_sampleDataRemove": "Dati di esempio rimossi"
   }
 }

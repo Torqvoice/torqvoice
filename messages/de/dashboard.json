@@ -53,7 +53,8 @@
     "recentCompleted": "Kürzlich abgeschlossen",
     "activeJobs": "Aktive Aufträge",
     "recentObservations": "Aktuelle Beobachtungen",
-    "recentActivity": "Letzte Aktivitäten"
+    "recentActivity": "Letzte Aktivitäten",
+    "gettingStarted": "Erste Schritte"
   },
   "maintenance": {
     "title": "Voraussichtlich fällige Wartung",

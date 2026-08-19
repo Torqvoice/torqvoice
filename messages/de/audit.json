@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Geplante Nachricht gesendet",
     "settings_applyTaxRate": "Steuersatz angewendet",
     "settings_convertToExclusive": "Preise auf netto umgestellt",
-    "settings_convertToInclusive": "Preise auf brutto umgestellt"
+    "settings_convertToInclusive": "Preise auf brutto umgestellt",
+    "organization_sampleDataRemove": "Beispieldaten entfernt"
   }
 }

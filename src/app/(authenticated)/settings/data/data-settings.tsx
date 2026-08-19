@@ -17,6 +17,7 @@ import {
   isSupportBubbleHidden,
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
+import { SampleDataCard } from '@/features/onboarding/Components/SampleDataCard'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { deleteWorkshop } from '@/features/team/Actions/deleteWorkshop'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
@@ -91,11 +92,13 @@ export function DataSettings({
   lastBackupAt = null,
   workshopName = '',
   isOwner = false,
+  hasSampleData = false,
 }: {
   contentCounts: ContentCounts
   lastBackupAt?: string | null
   workshopName?: string
   isOwner?: boolean
+  hasSampleData?: boolean
 }) {
   const t = useTranslations('settings')
   const format = useFormatter()
@@ -565,6 +568,9 @@ export function DataSettings({
               </button>
             </div>
           </AppCard>
+
+        {/* Onboarding sample data removal */}
+        {hasSampleData && <SampleDataCard />}
       </ReadOnlyWrapper>
 
       {/* LubeLog Import Dialog */}

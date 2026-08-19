@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Sendte planlagt melding",
     "settings_applyTaxRate": "Brukte avgiftssats",
     "settings_convertToExclusive": "Konverterte priser til eks. avgift",
-    "settings_convertToInclusive": "Konverterte priser til inkl. avgift"
+    "settings_convertToInclusive": "Konverterte priser til inkl. avgift",
+    "organization_sampleDataRemove": "Fjernet eksempeldata"
   }
 }

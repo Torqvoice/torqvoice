@@ -1,76 +1,90 @@
-"use client";
+'use client'
 
-import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
-import { interactiveRow } from '@/lib/interactive-row';
-import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { interactiveRow } from '@/lib/interactive-row'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { useState, useCallback, useTransition } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useFormatDate } from "@/lib/use-format-date";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useCallback, useTransition } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useFormatDate } from '@/lib/use-format-date'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { TableContextMenuHint } from "@/components/table-context-menu-hint";
-import { TableCellLink } from "@/components/table-cell-link";
-import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
+} from '@/components/ui/context-menu'
+import { DataTablePagination } from '@/components/data-table-pagination'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Car,
+  ExternalLink,
+  Loader2,
+  Plus,
+  Search,
+} from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
 import {
   CONDITION_TOKENS,
   countConditions,
   type Condition,
   type SeverityScale,
-} from "@/features/inspections/Lib/conditions";
-import { useConditionLabels } from "@/features/inspections/Lib/useConditionLabels";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+} from '@/features/inspections/Lib/conditions'
+import { useConditionLabels } from '@/features/inspections/Lib/useConditionLabels'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 interface InspectionRecord {
-  id: string;
-  status: string;
-  mileage: number | null;
-  createdAt: Date;
-  completedAt: Date | null;
-  severityScale: string | null;
-  vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null };
-  template: { id: string; name: string; severityScale: string | null };
-  items: { id: string; condition: string }[];
+  id: string
+  status: string
+  mileage: number | null
+  createdAt: Date
+  completedAt: Date | null
+  severityScale: string | null
+  vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null }
+  template: { id: string; name: string; severityScale: string | null }
+  items: { id: string; condition: string }[]
 }
 
 interface PaginatedData {
-  records: InspectionRecord[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  statusCounts: Record<string, number>;
+  records: InspectionRecord[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+  statusCounts: Record<string, number>
 }
 
 interface TemplateOption {
-  id: string;
-  name: string;
-  isDefault: boolean;
+  id: string
+  name: string
+  isDefault: boolean
 }
 
 const statusTabs = [
-  { key: "all", labelKey: "tabAll" },
-  { key: "in_progress", labelKey: "tabInProgress" },
-  { key: "completed", labelKey: "tabCompleted" },
-] as const;
+  { key: 'all', labelKey: 'tabAll' },
+  { key: 'in_progress', labelKey: 'tabInProgress' },
+  { key: 'completed', labelKey: 'tabCompleted' },
+] as const
 
 const statusColors: Record<string, string> = {
-  in_progress: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  completed: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-};
+  in_progress: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  completed: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+}
 
 /**
  * The rail is a breakdown of the grades given, not a completion meter: a full
@@ -82,40 +96,47 @@ function InspectionProgress({
   items,
   scale,
 }: {
-  items: { condition: string }[];
-  scale: SeverityScale;
+  items: { condition: string }[]
+  scale: SeverityScale
 }) {
-  const t = useTranslations("inspections.list");
-  const { label: gradeLabel } = useConditionLabels(scale);
-  const counts = countConditions(items);
-  if (items.length === 0) return null;
+  const t = useTranslations('inspections.list')
+  const { label: gradeLabel } = useConditionLabels(scale)
+  const counts = countConditions(items)
+  if (items.length === 0) return null
 
-  const summary = t("progressTooltip", { graded: counts.inspected, total: counts.total });
-  const legend = ([
-    ["pass", counts.pass],
-    ["attention", counts.attention],
-    ["fail", counts.fail],
-    ["dangerous", counts.dangerous],
-    ["not_inspected", counts.notInspected],
-  ] as const).filter(([, value]) => value > 0);
+  const summary = t('progressTooltip', { graded: counts.inspected, total: counts.total })
+  const legend = (
+    [
+      ['pass', counts.pass],
+      ['attention', counts.attention],
+      ['fail', counts.fail],
+      ['dangerous', counts.dangerous],
+      ['not_inspected', counts.notInspected],
+    ] as const
+  ).filter(([, value]) => value > 0)
 
   return (
     <Tooltip>
-      <TooltipTrigger
-        className="group flex cursor-help items-center gap-1.5 rounded-sm focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
-        aria-label={summary}
-      >
-        <div className="ring-offset-background group-hover:ring-foreground/25 flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 ring-offset-1 transition-shadow group-hover:ring-2 dark:bg-gray-700">
-          {(["pass", "attention", "fail", "dangerous"] as const).map((c) => {
-            const pct = (counts[c] / items.length) * 100;
-            if (pct === 0) return null;
-            return (
-              <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />
-            );
-          })}
-        </div>
-        <span className="text-muted-foreground group-hover:text-foreground text-xs">
-          {counts.inspected}/{counts.total}
+      {/* asChild + span: the mobile list renders this inside a card <button>,
+          and a nested <button> is invalid HTML that breaks hydration. */}
+      <TooltipTrigger asChild>
+        <span
+          tabIndex={0}
+          aria-label={summary}
+          className="group flex cursor-help items-center gap-1.5 rounded-sm focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <div className="ring-offset-background group-hover:ring-foreground/25 flex h-2 w-20 overflow-hidden rounded-full bg-gray-200 ring-offset-1 transition-shadow group-hover:ring-2 dark:bg-gray-700">
+            {(['pass', 'attention', 'fail', 'dangerous'] as const).map((c) => {
+              const pct = (counts[c] / items.length) * 100
+              if (pct === 0) return null
+              return (
+                <div key={c} className={CONDITION_TOKENS[c].bar} style={{ width: `${pct}%` }} />
+              )
+            })}
+          </div>
+          <span className="text-muted-foreground group-hover:text-foreground text-xs">
+            {counts.inspected}/{counts.total}
+          </span>
         </span>
       </TooltipTrigger>
       <TooltipContent side="top" className="px-3 py-2">
@@ -125,7 +146,9 @@ function InspectionProgress({
             <li key={condition} className="flex items-center gap-2">
               <span
                 className={`h-2 w-2 shrink-0 rounded-full ${
-                  condition === "not_inspected" ? "bg-background/40" : CONDITION_TOKENS[condition].bar
+                  condition === 'not_inspected'
+                    ? 'bg-background/40'
+                    : CONDITION_TOKENS[condition].bar
                 }`}
                 aria-hidden="true"
               />
@@ -136,7 +159,7 @@ function InspectionProgress({
         </ul>
       </TooltipContent>
     </Tooltip>
-  );
+  )
 }
 
 export function InspectionsClient({
@@ -144,43 +167,43 @@ export function InspectionsClient({
   templates,
   search,
   statusFilter,
-  sortBy = "",
-  sortOrder = "desc",
+  sortBy = '',
+  sortOrder = 'desc',
 }: {
-  data: PaginatedData;
-  templates: TemplateOption[];
-  search: string;
-  statusFilter: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  data: PaginatedData
+  templates: TemplateOption[]
+  search: string
+  statusFilter: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }) {
-  const router = useRouter();
-  const { formatDate } = useFormatDate();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const tableNav = useTableKeyboardNav();
-  const [showNewDialog, setShowNewDialog] = useState(false);
-  const tcm = useTranslations("common.contextMenu");
-  const t = useTranslations("inspections.list");
+  const router = useRouter()
+  const { formatDate } = useFormatDate()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav()
+  const [showNewDialog, setShowNewDialog] = useState(false)
+  const tcm = useTranslations('common.contextMenu')
+  const t = useTranslations('inspections.list')
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === "") {
-          newParams.delete(key);
+        if (value === undefined || value === '') {
+          newParams.delete(key)
         } else {
-          newParams.set(key, String(value));
+          newParams.set(key, String(value))
         }
       }
-      if (!("page" in params)) newParams.delete("page");
+      if (!('page' in params)) newParams.delete('page')
       startTransition(() => {
-        router.push(`${pathname}?${newParams.toString()}`);
-      });
+        router.push(`${pathname}?${newParams.toString()}`)
+      })
     },
     [router, pathname, searchParams]
-  );
+  )
 
   // Live search: filters as you type, no Enter required. Submitting the
   // form (Enter) commits immediately, bypassing the debounce.
@@ -188,37 +211,39 @@ export function InspectionsClient({
     value: searchInput,
     setValue: setSearchInput,
     commitNow: handleSearch,
-  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const handleSort = useCallback(
     (column: string) => {
-      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
-      navigate({ sortBy: column, sortOrder: newOrder });
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
     },
     [navigate, sortBy, sortOrder]
-  );
+  )
 
   const SortIcon = ({ column }: { column: string }) => {
-    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
-    return sortOrder === "asc"
-      ? <ArrowUp className="ml-1 h-3 w-3" />
-      : <ArrowDown className="ml-1 h-3 w-3" />;
-  };
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
+  }
 
   return (
     <div className="space-y-4">
       {/* Status filters: one scrollable row on phones, wrapped above sm. */}
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
-          const isActive = statusFilter === tab.key;
-          const count = tab.key === "all" ? undefined : data.statusCounts[tab.key] || 0;
+          const isActive = statusFilter === tab.key
+          const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
           return (
             <Button
               key={tab.key}
-              variant={isActive ? "default" : "outline"}
+              variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: tab.key === "all" ? undefined : tab.key })}
+              onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
             >
               {t(tab.labelKey)}
               {count !== undefined && (
@@ -227,7 +252,7 @@ export function InspectionsClient({
                 </Badge>
               )}
             </Button>
-          );
+          )
         })}
       </div>
 
@@ -236,7 +261,7 @@ export function InspectionsClient({
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder={t("search")}
+              placeholder={t('search')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="h-9 pl-9"
@@ -248,12 +273,12 @@ export function InspectionsClient({
         <Button
           size="sm"
           onClick={() => setShowNewDialog(true)}
-          aria-label={t("new")}
-          title={t("new")}
+          aria-label={t('new')}
+          title={t('new')}
           className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
         >
           <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-          <span className="hidden md:inline">{t("new")}</span>
+          <span className="hidden md:inline">{t('new')}</span>
         </Button>
       </div>
 
@@ -261,7 +286,7 @@ export function InspectionsClient({
       <div className="space-y-2 md:hidden">
         {data.records.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {t("empty")}
+            {t('empty')}
           </div>
         ) : (
           data.records.map((insp) => (
@@ -277,9 +302,9 @@ export function InspectionsClient({
                 </span>
                 <Badge
                   variant="outline"
-                  className={`shrink-0 text-xs ${statusColors[insp.status] || ""}`}
+                  className={`shrink-0 text-xs ${statusColors[insp.status] || ''}`}
                 >
-                  {insp.status === "in_progress" ? t("statusInProgress") : t("statusCompleted")}
+                  {insp.status === 'in_progress' ? t('statusInProgress') : t('statusCompleted')}
                 </Badge>
               </div>
               <p className="truncate text-xs text-muted-foreground">
@@ -292,9 +317,7 @@ export function InspectionsClient({
                 <InspectionProgress
                   items={insp.items}
                   scale={
-                    (insp.severityScale ?? insp.template.severityScale) === "basic"
-                      ? "basic"
-                      : "eu"
+                    (insp.severityScale ?? insp.template.severityScale) === 'basic' ? 'basic' : 'eu'
                   }
                 />
                 <span className="font-mono text-xs text-muted-foreground">
@@ -313,24 +336,44 @@ export function InspectionsClient({
           <TableHeader>
             <TableRow>
               <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
-                  {t("vehicle")}<SortIcon column="vehicle" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('vehicle')}
+                >
+                  {t('vehicle')}
+                  <SortIcon column="vehicle" />
                 </button>
               </TableHead>
               <TableHead className="hidden w-[24%] md:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("template")}>
-                  {t("template")}<SortIcon column="template" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('template')}
+                >
+                  {t('template')}
+                  <SortIcon column="template" />
                 </button>
               </TableHead>
-              <TableHead className="w-32">{t("progress")}</TableHead>
+              <TableHead className="w-32">{t('progress')}</TableHead>
               <TableHead className="w-28">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("status")}>
-                  {t("status")}<SortIcon column="status" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('status')}
+                >
+                  {t('status')}
+                  <SortIcon column="status" />
                 </button>
               </TableHead>
               <TableHead className="w-24">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("createdAt")}>
-                  {t("date")}<SortIcon column="createdAt" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('createdAt')}
+                >
+                  {t('date')}
+                  <SortIcon column="createdAt" />
                 </button>
               </TableHead>
             </TableRow>
@@ -339,62 +382,67 @@ export function InspectionsClient({
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  {t("empty")}
+                  {t('empty')}
                 </TableCell>
               </TableRow>
             ) : (
               data.records.map((insp) => (
                 <ContextMenu key={insp.id} modal={false}>
-                <ContextMenuTrigger asChild>
-                <TableRow
-                  className="cursor-pointer"
-                  {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
-                >
-                  <TableCell>
-                    <TableCellLink href={`/vehicles/${insp.vehicle.id}`} block>
-                      <p className="truncate font-medium">
-                        {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
-                      </p>
-                      {insp.vehicle.licensePlate && (
-                        <p className="text-xs text-muted-foreground font-mono">
-                          {insp.vehicle.licensePlate}
-                        </p>
-                      )}
-                    </TableCellLink>
-                  </TableCell>
-                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                    {insp.template.name}
-                  </TableCell>
-                  <TableCell>
-                    <InspectionProgress
-                      items={insp.items}
-                      scale={
-                        (insp.severityScale ?? insp.template.severityScale) === "basic"
-                          ? "basic"
-                          : "eu"
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`text-xs ${statusColors[insp.status] || ""}`}>
-                      {insp.status === "in_progress" ? t("statusInProgress") : t("statusCompleted")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">
-                    {formatDate(new Date(insp.createdAt))}
-                  </TableCell>
-                </TableRow>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="min-w-52">
-                  <ContextMenuItem onClick={() => router.push(`/inspections/${insp.id}`)}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {tcm("open")}
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={() => router.push(`/vehicles/${insp.vehicle.id}`)}>
-                    <Car className="mr-2 h-4 w-4" />
-                    {tcm("openVehicle")}
-                  </ContextMenuItem>
-                </ContextMenuContent>
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      className="cursor-pointer"
+                      {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
+                    >
+                      <TableCell>
+                        <TableCellLink href={`/vehicles/${insp.vehicle.id}`} block>
+                          <p className="truncate font-medium">
+                            {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                          </p>
+                          {insp.vehicle.licensePlate && (
+                            <p className="text-xs text-muted-foreground font-mono">
+                              {insp.vehicle.licensePlate}
+                            </p>
+                          )}
+                        </TableCellLink>
+                      </TableCell>
+                      <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                        {insp.template.name}
+                      </TableCell>
+                      <TableCell>
+                        <InspectionProgress
+                          items={insp.items}
+                          scale={
+                            (insp.severityScale ?? insp.template.severityScale) === 'basic'
+                              ? 'basic'
+                              : 'eu'
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${statusColors[insp.status] || ''}`}
+                        >
+                          {insp.status === 'in_progress'
+                            ? t('statusInProgress')
+                            : t('statusCompleted')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {formatDate(new Date(insp.createdAt))}
+                      </TableCell>
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem onClick={() => router.push(`/inspections/${insp.id}`)}>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tcm('open')}
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => router.push(`/vehicles/${insp.vehicle.id}`)}>
+                      <Car className="mr-2 h-4 w-4" />
+                      {tcm('openVehicle')}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
                 </ContextMenu>
               ))
             )}
@@ -416,5 +464,5 @@ export function InspectionsClient({
         templates={templates}
       />
     </div>
-  );
+  )
 }

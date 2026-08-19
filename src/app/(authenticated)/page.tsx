@@ -13,6 +13,7 @@ import { getNotifications } from "@/features/notifications/Actions/notificationA
 import { getRecentAuditLogs } from "@/features/audit/Actions/auditActions";
 import { getRecentObservations } from "@/features/vehicles/Actions/findingActions";
 import { getMyActiveJobs } from "@/features/vehicles/Actions/getMyActiveJobs";
+import { getOnboardingChecklist } from "@/features/onboarding/Actions/checklistActions";
 import { DashboardClient } from "./dashboard-client";
 import { db } from "@/lib/db";
 import { sanitizeConfig, type CustomWidget } from "@/features/dashboard/custom-cards/registry";
@@ -24,7 +25,7 @@ export default async function DashboardPage() {
   const features = auth ? await getFeatures(auth.organizationId) : null;
   const smsEnabled = features?.sms ?? false;
 
-  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult, auditLogsResult, recentObservationsResult, myJobsResult] = await Promise.all([
+  const [result, settingsResult, remindersResult, maintenanceResult, dismissedMaintenanceResult, inProgressResult, completedResult, quoteRequestsResult, quoteResponsesResult, smsResult, notificationsResult, auditLogsResult, recentObservationsResult, myJobsResult, checklistResult] = await Promise.all([
     getDashboardStats(),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getUpcomingReminders(),
@@ -39,6 +40,7 @@ export default async function DashboardPage() {
     getRecentAuditLogs(10),
     getRecentObservations(),
     getMyActiveJobs(),
+    getOnboardingChecklist(),
   ]);
 
   const [layoutUser, widgetRows] = auth
@@ -83,6 +85,8 @@ export default async function DashboardPage() {
   const recentObservations = recentObservationsResult.success && recentObservationsResult.data ? recentObservationsResult.data : [];
 
   const myJobs = myJobsResult.success && myJobsResult.data ? myJobsResult.data : [];
+  const onboardingChecklist =
+    checklistResult.success && checklistResult.data ? checklistResult.data : null;
 
   return (
     <>
@@ -107,6 +111,7 @@ export default async function DashboardPage() {
           recentObservations={recentObservations}
           initialLayout={layoutUser?.dashboardLayout ?? null}
           customWidgets={customWidgets}
+          onboardingChecklist={onboardingChecklist}
         />
       </div>
     </>

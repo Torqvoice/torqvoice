@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Wysłano zaplanowaną wiadomość",
     "settings_applyTaxRate": "Zastosowano stawkę podatku",
     "settings_convertToExclusive": "Przeliczono ceny na netto",
-    "settings_convertToInclusive": "Przeliczono ceny na brutto"
+    "settings_convertToInclusive": "Przeliczono ceny na brutto",
+    "organization_sampleDataRemove": "Usunięto dane przykładowe"
   }
 }

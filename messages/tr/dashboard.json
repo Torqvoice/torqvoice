@@ -53,7 +53,8 @@
     "recentCompleted": "Son Tamamlananlar",
     "activeJobs": "Aktif İşler",
     "recentObservations": "Son Gözlemler",
-    "recentActivity": "Son Etkinlik"
+    "recentActivity": "Son Etkinlik",
+    "gettingStarted": "Başlarken"
   },
   "maintenance": {
     "title": "Tahmini Bakım Zamanı",

@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Stel uw werkplaats in",
+    "subtitle": "Voer de naam van uw werkplaats in om te beginnen",
+    "workshopName": "Naam van de werkplaats",
+    "workshopNamePlaceholder": "Mijn Autogarage",
+    "submit": "Aan de slag",
+    "sampleDataLabel": "Voorbeeldgegevens laden",
+    "sampleDataDescription": "Voegt enkele voorbeeldklanten, voertuigen en klussen toe zodat u kunt rondkijken. U kunt ze met één klik weer verwijderen.",
+    "setupFailed": "Instellen mislukt",
+    "couldNotCreate": "Kon de werkplaats niet aanmaken",
+    "unexpectedError": "Er is een onverwachte fout opgetreden"
+  },
+  "sample": {
+    "prefix": "Voorbeeld:",
+    "oilService": "Olie en filter vervangen",
+    "brakeJob": "Remblokken voor vervangen",
+    "annualService": "Jaarlijkse onderhoudsbeurt",
+    "quoteTitle": "Voorwielophanging reviseren",
+    "inspectionNote": "De linkervoorband zit dicht bij de slijtagegrens",
+    "parts": {
+      "oilFilter": "Oliefilter",
+      "engineOil": "Motorolie 5W-30",
+      "brakePads": "Set remblokken voor",
+      "shockAbsorber": "Schokdemper"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Olie verversen",
+      "description": "Motorolie en filter vervangen"
+    },
+    "frontBrakePads": {
+      "name": "Remblokken voor",
+      "description": "Remblokken voor vervangen"
+    },
+    "tireSwap": {
+      "name": "Wielen wisselen",
+      "description": "Seizoenswissel van de wielen met momentcontrole"
+    },
+    "batteryReplacement": {
+      "name": "Accu vervangen",
+      "description": "Startaccu vervangen en registreren"
+    },
+    "diagnostics": {
+      "name": "Diagnose",
+      "description": "Foutcodes uitlezen en eerste diagnose"
+    },
+    "annualService": {
+      "name": "Jaarlijkse onderhoudsbeurt",
+      "description": "Volledige jaarlijkse beurt volgens schema"
+    }
+  },
+  "checklist": {
+    "title": "Aan de slag",
+    "description": "Vier stappen om uw werkplaats op gang te brengen",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Voeg een klant toe",
+        "description": "Maak uw eerste klantkaart aan"
+      },
+      "vehicle": {
+        "title": "Voeg een voertuig toe",
+        "description": "Registreer een voertuig voor een klant"
+      },
+      "workOrder": {
+        "title": "Maak een werkorder aan",
+        "description": "Open uw eerste klus"
+      },
+      "invoice": {
+        "title": "Verstuur of download een factuur",
+        "description": "Deel een factuur met een klant of download deze als PDF"
+      }
+    },
+    "allDoneTitle": "Alles staat klaar",
+    "allDoneDescription": "Alle stappen zijn afgerond en uw werkplaats draait.",
+    "dismiss": "Kaart verbergen",
+    "dismissAriaLabel": "Deze checklist verbergen"
+  },
+  "sampleData": {
+    "title": "Voorbeeldgegevens",
+    "description": "Uw werkplaats bevat nog de voorbeeldklanten, voertuigen en klussen uit de installatie. Bij verwijderen worden precies die records gewist en niets anders.",
+    "footerNote": "Er zijn voorbeeldgegevens geladen",
+    "remove": "Voorbeeldgegevens verwijderen",
+    "removeConfirmTitle": "Voorbeeldgegevens verwijderen?",
+    "removeConfirmDescription": "Hiermee verwijdert u de voorbeeldklanten, voertuigen, werkorders, de offerte en de inspectie die bij de installatie zijn aangemaakt. Uw eigen gegevens blijven onaangetast.",
+    "removed": "Voorbeeldgegevens verwijderd",
+    "removeFailed": "Kon de voorbeeldgegevens niet verwijderen"
+  }
+}

@@ -53,7 +53,8 @@
     "recentCompleted": "Terminés récemment",
     "activeJobs": "Travaux en cours",
     "recentObservations": "Observations récentes",
-    "recentActivity": "Activité récente"
+    "recentActivity": "Activité récente",
+    "gettingStarted": "Premiers pas"
   },
   "maintenance": {
     "title": "Maintenance prévue à effectuer",

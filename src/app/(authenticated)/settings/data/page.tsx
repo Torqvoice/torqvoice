@@ -3,6 +3,11 @@ import { getContentCounts } from "@/features/settings/Actions/deleteContent";
 import { getBackupHeartbeat } from "@/lib/backup-heartbeat";
 import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
 import { db } from "@/lib/db";
+import {
+  SAMPLE_DATA_IDS_KEY,
+  hasAnySampleIds,
+  parseSampleDataIds,
+} from "@/features/onboarding/Lib/onboardingKeys";
 
 export default async function DataSettingsPage() {
   const heartbeat = await getBackupHeartbeat();
@@ -12,12 +17,22 @@ export default async function DataSettingsPage() {
   const session = await getCachedSession();
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null;
   const isOwner = membership?.role === "owner";
-  const org = membership
-    ? await db.organization.findUnique({
-        where: { id: membership.organizationId },
-        select: { name: true },
-      })
-    : null;
+  const [org, sampleRow] = membership
+    ? await Promise.all([
+        db.organization.findUnique({
+          where: { id: membership.organizationId },
+          select: { name: true },
+        }),
+        db.appSetting.findFirst({
+          where: {
+            organizationId: membership.organizationId,
+            key: SAMPLE_DATA_IDS_KEY,
+          },
+          select: { value: true },
+        }),
+      ])
+    : [null, null];
+  const hasSampleData = hasAnySampleIds(parseSampleDataIds(sampleRow?.value));
   const contentCounts = countsResult.success && countsResult.data
     ? countsResult.data
     : {
@@ -32,6 +47,7 @@ export default async function DataSettingsPage() {
       lastBackupAt={heartbeat?.at ?? null}
       workshopName={org?.name ?? ""}
       isOwner={isOwner}
+      hasSampleData={hasSampleData}
     />
   );
 }

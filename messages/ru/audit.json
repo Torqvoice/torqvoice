@@ -108,6 +108,7 @@
     "scheduled_message_send_now": "Отправлено запланированное сообщение",
     "settings_applyTaxRate": "Применена налоговая ставка",
     "settings_convertToExclusive": "Цены переведены в без налога",
-    "settings_convertToInclusive": "Цены переведены во с налогом"
+    "settings_convertToInclusive": "Цены переведены во с налогом",
+    "organization_sampleDataRemove": "Удалены демонстрационные данные"
   }
 }

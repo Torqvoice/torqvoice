@@ -53,7 +53,8 @@
     "recentCompleted": "Недавно завершённые",
     "activeJobs": "Активные работы",
     "recentObservations": "Недавние наблюдения",
-    "recentActivity": "Последняя активность"
+    "recentActivity": "Последняя активность",
+    "gettingStarted": "Первые шаги"
   },
   "maintenance": {
     "title": "Прогнозируемое техобслуживание",
