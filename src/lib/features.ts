@@ -23,6 +23,7 @@ export type PlanFeatures = {
   maxDocumentsPerService: number
   customerPortal: boolean
   ai: boolean
+  tireHotel: boolean
 }
 
 export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
@@ -46,6 +47,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxDocumentsPerService: 5,
     customerPortal: false,
     ai: true,
+    tireHotel: false,
   },
   pro: {
     maxOrganizations: 3,
@@ -67,6 +69,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxDocumentsPerService: 30,
     customerPortal: true,
     ai: true,
+    tireHotel: true,
   },
   enterprise: {
     maxOrganizations: 10,
@@ -88,6 +91,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxDocumentsPerService: 100,
     customerPortal: true,
     ai: true,
+    tireHotel: true,
   },
   'white-label': {
     maxOrganizations: 999999,
@@ -109,6 +113,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     maxDocumentsPerService: 999999,
     customerPortal: true,
     ai: true,
+    tireHotel: true,
   },
 }
 
@@ -140,14 +145,20 @@ export const getFeatures = cache(async (organizationId: string): Promise<PlanFea
     // Defense-in-depth: if the billing period has ended and grace has elapsed,
     // treat as expired even if status hasn't been updated yet (missed webhook).
     if (subscription.currentPeriodEnd) {
-      const graceDeadline = new Date(subscription.currentPeriodEnd.getTime() + SUBSCRIPTION_GRACE_MS)
+      const graceDeadline = new Date(
+        subscription.currentPeriodEnd.getTime() + SUBSCRIPTION_GRACE_MS
+      )
       if (new Date() > graceDeadline) {
         return PLAN_FEATURES.free
       }
     }
 
     const name = subscription.plan.name.toLowerCase()
-    const planName: Plan = name.includes('enterprise') ? 'enterprise' : name.includes('pro') ? 'pro' : 'free'
+    const planName: Plan = name.includes('enterprise')
+      ? 'enterprise'
+      : name.includes('pro')
+        ? 'pro'
+        : 'free'
     return PLAN_FEATURES[planName]
   }
 

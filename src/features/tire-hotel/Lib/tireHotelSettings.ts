@@ -1,15 +1,22 @@
 import { cache } from 'react'
 import { db } from '@/lib/db'
+import { getFeatures, FeatureGatedError } from '@/lib/features'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { DEFAULT_TREAD_THRESHOLDS_MM } from './tireConstants'
 
 /**
- * The tire hotel is opt-in. Every entry point — sidebar, routes, server
- * actions, cron sweeps — asks this before doing anything, so a workshop that
- * never turns it on carries none of it.
+ * The tire hotel needs two things to be live: a plan that includes it, and a
+ * workshop that has switched it on. Both are checked here so every entry
+ * point — sidebar, routes, server actions, cron sweeps — gets the same
+ * answer, and a plan downgrade hides the module without touching the
+ * organization's own setting.
  */
 export const isTireHotelEnabled = cache(async (organizationId: string): Promise<boolean> => {
   if (!organizationId) return false
+
+  const features = await getFeatures(organizationId)
+  if (!features.tireHotel) return false
+
   const setting = await db.appSetting.findUnique({
     where: { organizationId_key: { organizationId, key: SETTING_KEYS.TIRE_HOTEL_ENABLED } },
     select: { value: true },
@@ -42,6 +49,8 @@ export const getTireHotelSettings = cache(
   async (organizationId: string): Promise<TireHotelSettings> => {
     if (!organizationId) return { enabled: false, ...DEFAULTS }
 
+    const features = await getFeatures(organizationId)
+
     const rows = await db.appSetting.findMany({
       where: {
         organizationId,
@@ -61,7 +70,7 @@ export const getTireHotelSettings = cache(
     const map = new Map(rows.map((r) => [r.key, r.value]))
 
     return {
-      enabled: map.get(SETTING_KEYS.TIRE_HOTEL_ENABLED) === 'true',
+      enabled: features.tireHotel && map.get(SETTING_KEYS.TIRE_HOTEL_ENABLED) === 'true',
       summerReplaceMm: toNumber(
         map.get(SETTING_KEYS.TIRE_HOTEL_SUMMER_REPLACE_MM),
         DEFAULTS.summerReplaceMm
@@ -90,7 +99,15 @@ export class TireHotelDisabledError extends Error {
   }
 }
 
+/**
+ * Guards every tire hotel server action. Separates the two reasons it can be
+ * unavailable: a plan that does not include it raises the usual upgrade
+ * error, while a plan that does but a workshop that has not opted in raises
+ * a plain disabled error.
+ */
 export async function requireTireHotel(organizationId: string): Promise<void> {
+  const features = await getFeatures(organizationId)
+  if (!features.tireHotel) throw new FeatureGatedError('tireHotel')
   if (!(await isTireHotelEnabled(organizationId))) {
     throw new TireHotelDisabledError()
   }

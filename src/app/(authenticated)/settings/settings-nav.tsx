@@ -99,7 +99,7 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'workshop', href: '/settings/workshop', icon: Wrench },
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
       { key: 'alerts', href: '/settings/alerts', icon: BellRing },
-      { key: 'tireHotel', href: '/settings/tire-hotel', icon: Disc3 },
+      { key: 'tireHotel', href: '/settings/tire-hotel', icon: Disc3, gate: 'tireHotel' },
       { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
       { key: 'reportSchedule', href: '/settings/report-schedule', icon: CalendarClock, gate: 'reports' },
     ],

@@ -53,7 +53,10 @@
     "allReminders": "Все напоминания",
     "auditLog": "Журнал аудита",
     "aiAssistant": "ИИ-ассистент",
-    "observations": "Наблюдения"
+    "observations": "Наблюдения",
+    "tireHotel": "Шинный отель",
+    "allTireSets": "Все комплекты",
+    "tireStorage": "Структура склада"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",

@@ -53,7 +53,10 @@
     "allReminders": "Tüm hatırlatmalar",
     "auditLog": "Denetim günlüğü",
     "aiAssistant": "AI Asistanı",
-    "observations": "Gözlemler"
+    "observations": "Gözlemler",
+    "tireHotel": "Lastik oteli",
+    "allTireSets": "Tüm lastik takımları",
+    "tireStorage": "Depo düzeni"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",

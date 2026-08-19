@@ -53,7 +53,10 @@
     "allReminders": "Tutti i promemoria",
     "auditLog": "Registro attività",
     "aiAssistant": "Assistente IA",
-    "observations": "Osservazioni"
+    "observations": "Osservazioni",
+    "tireHotel": "Hotel pneumatici",
+    "allTireSets": "Tutti i treni",
+    "tireStorage": "Disposizione del deposito"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",

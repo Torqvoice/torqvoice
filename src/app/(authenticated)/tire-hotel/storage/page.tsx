@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStorageOverview } from '@/features/tire-hotel/Actions/storageActions'
+import { PageHeader } from '@/components/page-header'
 import { StorageClient } from './storage-client'
 
 export default async function TireStoragePage() {
@@ -17,5 +18,12 @@ export default async function TireStoragePage() {
   const result = await getStorageOverview()
   const warehouses = result.success && result.data ? result.data : []
 
-  return <StorageClient warehouses={warehouses} defaultCapacity={config.defaultCapacity} />
+  return (
+    <>
+      <PageHeader />
+      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <StorageClient warehouses={warehouses} defaultCapacity={config.defaultCapacity} />
+      </div>
+    </>
+  )
 }

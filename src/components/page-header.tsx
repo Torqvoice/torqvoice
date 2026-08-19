@@ -132,6 +132,9 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/ai': [{ key: 'aiAssistant' }],
   '/audit-log': [{ key: 'auditLog' }],
   '/observations': [{ key: 'observations' }],
+  '/tire-hotel': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'allTireSets' }],
+  '/tire-hotel/storage': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireStorage' }],
+  '/settings/tire-hotel': [{ key: 'settings', href: '/settings' }, { key: 'tireHotel' }],
 }
 
 export function PageHeader() {
@@ -187,75 +190,77 @@ export function PageHeader() {
 
   return (
     <>
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 bg-background px-4">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-      <Breadcrumb>
-        <BreadcrumbList>
-          {segments.map((segment, i) => {
-            const isLast = i === segments.length - 1
-            if (isLast) {
-              return (
-                <BreadcrumbItem key={i}>
-                  <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
-                </BreadcrumbItem>
-              )
-            }
-            return (
-              <Fragment key={i}>
-                <BreadcrumbItem className="hidden md:block">
-                  {segment.href ? (
-                    <BreadcrumbLink href={segment.href}>{t(segment.key)}</BreadcrumbLink>
-                  ) : (
+      <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 bg-background px-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            {segments.map((segment, i) => {
+              const isLast = i === segments.length - 1
+              if (isLast) {
+                return (
+                  <BreadcrumbItem key={i}>
                     <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
-                  )}
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-              </Fragment>
-            )
-          })}
-        </BreadcrumbList>
-      </Breadcrumb>
-      <div className="ml-auto flex items-center gap-2">
-        {docsHref && <DocsLink href={docsHref} className="hidden sm:inline" />}
-        <SearchTrigger />
-        <QuickCreateMenu />
-        {showWhiteLabelCta && (
-          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
-            <Link href="/settings/license">
-              <Zap className="mr-2 h-3 w-3" />
-              {tn('purchaseWhiteLabel')}
-            </Link>
-          </Button>
-        )}
-      </div>
-    </header>
-    {daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed && (
-      <div className={`flex items-center gap-2 px-4 py-2 text-sm ${
-        daysUntilExpiry <= 0
-          ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
-          : daysUntilExpiry <= 3
-            ? 'bg-red-500/10 text-red-600 border-b border-red-500/20'
-            : 'bg-amber-500/10 text-amber-600 border-b border-amber-500/20'
-      }`}>
-        <AlertTriangle className="h-4 w-4 shrink-0" />
-        <span>
-          {daysUntilExpiry <= 0
-            ? tn('licenseExpired')
-            : daysUntilExpiry === 1
-              ? tn('licenseExpiresTomorrow')
-              : tn('licenseExpiresDays', { days: daysUntilExpiry })}
-        </span>
-        <div className="ml-auto flex items-center gap-2 shrink-0">
-          <Link href="/settings/license" className="font-medium underline hover:no-underline">
-            {tn('licenseRenew')}
-          </Link>
-          <button type="button" onClick={dismiss} className="p-0.5 rounded hover:bg-black/10">
-            <X className="h-3.5 w-3.5" />
-          </button>
+                  </BreadcrumbItem>
+                )
+              }
+              return (
+                <Fragment key={i}>
+                  <BreadcrumbItem className="hidden md:block">
+                    {segment.href ? (
+                      <BreadcrumbLink href={segment.href}>{t(segment.key)}</BreadcrumbLink>
+                    ) : (
+                      <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
+                    )}
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                </Fragment>
+              )
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+        <div className="ml-auto flex items-center gap-2">
+          {docsHref && <DocsLink href={docsHref} className="hidden sm:inline" />}
+          <SearchTrigger />
+          <QuickCreateMenu />
+          {showWhiteLabelCta && (
+            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+              <Link href="/settings/license">
+                <Zap className="mr-2 h-3 w-3" />
+                {tn('purchaseWhiteLabel')}
+              </Link>
+            </Button>
+          )}
         </div>
-      </div>
-    )}
+      </header>
+      {daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed && (
+        <div
+          className={`flex items-center gap-2 px-4 py-2 text-sm ${
+            daysUntilExpiry <= 0
+              ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
+              : daysUntilExpiry <= 3
+                ? 'bg-red-500/10 text-red-600 border-b border-red-500/20'
+                : 'bg-amber-500/10 text-amber-600 border-b border-amber-500/20'
+          }`}
+        >
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>
+            {daysUntilExpiry <= 0
+              ? tn('licenseExpired')
+              : daysUntilExpiry === 1
+                ? tn('licenseExpiresTomorrow')
+                : tn('licenseExpiresDays', { days: daysUntilExpiry })}
+          </span>
+          <div className="ml-auto flex items-center gap-2 shrink-0">
+            <Link href="/settings/license" className="font-medium underline hover:no-underline">
+              {tn('licenseRenew')}
+            </Link>
+            <button type="button" onClick={dismiss} className="p-0.5 rounded hover:bg-black/10">
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </>
   )
 }

@@ -53,7 +53,10 @@
     "allReminders": "Todos los recordatorios",
     "auditLog": "Registro de auditoría",
     "aiAssistant": "Asistente IA",
-    "observations": "Observaciones"
+    "observations": "Observaciones",
+    "tireHotel": "Hotel de neumáticos",
+    "allTireSets": "Todos los juegos",
+    "tireStorage": "Distribución del almacén"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",

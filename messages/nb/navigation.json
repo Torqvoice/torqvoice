@@ -53,7 +53,10 @@
     "allReminders": "Alle påminnelser",
     "auditLog": "Aktivitetslogg",
     "aiAssistant": "AI-assistent",
-    "observations": "Observasjoner"
+    "observations": "Observasjoner",
+    "tireHotel": "Dekkhotell",
+    "allTireSets": "Alle dekksett",
+    "tireStorage": "Lageroppsett"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",

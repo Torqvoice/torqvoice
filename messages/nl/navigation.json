@@ -53,7 +53,10 @@
     "allReminders": "Alle herinneringen",
     "auditLog": "Activiteitenlog",
     "aiAssistant": "AI-assistent",
-    "observations": "Waarnemingen"
+    "observations": "Waarnemingen",
+    "tireHotel": "Bandenhotel",
+    "allTireSets": "Alle bandensets",
+    "tireStorage": "Opslagindeling"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",

@@ -53,7 +53,10 @@
     "allReminders": "Alle Erinnerungen",
     "auditLog": "Aktivitätsprotokoll",
     "aiAssistant": "KI-Assistent",
-    "observations": "Beobachtungen"
+    "observations": "Beobachtungen",
+    "tireHotel": "Reifenhotel",
+    "allTireSets": "Alle Reifensätze",
+    "tireStorage": "Lagerstruktur"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",

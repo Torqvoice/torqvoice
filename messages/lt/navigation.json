@@ -53,7 +53,10 @@
     "allReminders": "Visi priminimai",
     "auditLog": "Audito žurnalas",
     "aiAssistant": "DI asistentas",
-    "observations": "Pastebėjimai"
+    "observations": "Pastebėjimai",
+    "tireHotel": "Padangų viešbutis",
+    "allTireSets": "Visi komplektai",
+    "tireStorage": "Saugyklos išdėstymas"
   },
   "search": "Ieškoti...",
   "shortcut": "Ctrl+K",
