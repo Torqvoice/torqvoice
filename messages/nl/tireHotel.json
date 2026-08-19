@@ -63,7 +63,9 @@
     "studded": "Spijkerbanden",
     "roomLeft": "Ruimte voor {count}",
     "prep": "Voorb.",
-    "tabNeedsPrep": "Voorbereiding nodig"
+    "tabNeedsPrep": "Voorbereiding nodig",
+    "setUpShelves": "Stellingen instellen",
+    "emptyNoShelves": "Nog geen stellingen. Richt uw opslag in voordat u banden inneemt."
   },
   "checkIn": {
     "title": "Banden innemen",

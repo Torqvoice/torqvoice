@@ -100,6 +100,60 @@ CREATE TABLE "tire_movements" (
     CONSTRAINT "tire_movements_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tire_storage_agreements" (
+    "id" TEXT NOT NULL,
+    "billingModel" TEXT NOT NULL DEFAULT 'seasonal',
+    "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "extras" JSONB,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3),
+    "autoRenew" BOOLEAN NOT NULL DEFAULT false,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "notes" TEXT,
+    "tireSetId" TEXT NOT NULL,
+    "customerId" TEXT,
+    "organizationId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "tire_storage_agreements_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tire_storage_charges" (
+    "id" TEXT NOT NULL,
+    "periodStart" TIMESTAMP(3) NOT NULL,
+    "periodEnd" TIMESTAMP(3) NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "serviceRecordId" TEXT,
+    "invoicedAt" TIMESTAMP(3),
+    "agreementId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "tire_storage_charges_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tire_treatments" (
+    "id" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "notes" TEXT,
+    "tireSetId" TEXT NOT NULL,
+    "completedAt" TIMESTAMP(3),
+    "completedById" TEXT,
+    "organizationId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "tire_treatments_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "tire_warehouses_organizationId_idx" ON "tire_warehouses"("organizationId");
 
@@ -138,6 +192,30 @@ CREATE INDEX "tire_movements_tireSetId_createdAt_idx" ON "tire_movements"("tireS
 
 -- CreateIndex
 CREATE INDEX "tire_movements_organizationId_createdAt_idx" ON "tire_movements"("organizationId", "createdAt" DESC);
+
+-- CreateIndex
+CREATE INDEX "tire_storage_agreements_organizationId_status_idx" ON "tire_storage_agreements"("organizationId", "status");
+
+-- CreateIndex
+CREATE INDEX "tire_storage_agreements_tireSetId_idx" ON "tire_storage_agreements"("tireSetId");
+
+-- CreateIndex
+CREATE INDEX "tire_storage_agreements_customerId_idx" ON "tire_storage_agreements"("customerId");
+
+-- CreateIndex
+CREATE INDEX "tire_storage_charges_organizationId_status_idx" ON "tire_storage_charges"("organizationId", "status");
+
+-- CreateIndex
+CREATE INDEX "tire_storage_charges_serviceRecordId_idx" ON "tire_storage_charges"("serviceRecordId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tire_storage_charges_agreementId_periodStart_key" ON "tire_storage_charges"("agreementId", "periodStart");
+
+-- CreateIndex
+CREATE INDEX "tire_treatments_organizationId_status_idx" ON "tire_treatments"("organizationId", "status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tire_treatments_tireSetId_type_key" ON "tire_treatments"("tireSetId", "type");
 
 -- CreateIndex
 CREATE INDEX "stored_images_tireMeasurementId_idx" ON "stored_images"("tireMeasurementId");
@@ -195,3 +273,33 @@ ALTER TABLE "tire_movements" ADD CONSTRAINT "tire_movements_organizationId_fkey"
 
 -- AddForeignKey
 ALTER TABLE "tire_movements" ADD CONSTRAINT "tire_movements_performedById_fkey" FOREIGN KEY ("performedById") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_agreements" ADD CONSTRAINT "tire_storage_agreements_tireSetId_fkey" FOREIGN KEY ("tireSetId") REFERENCES "tire_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_agreements" ADD CONSTRAINT "tire_storage_agreements_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_agreements" ADD CONSTRAINT "tire_storage_agreements_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_agreements" ADD CONSTRAINT "tire_storage_agreements_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_serviceRecordId_fkey" FOREIGN KEY ("serviceRecordId") REFERENCES "service_records"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_agreementId_fkey" FOREIGN KEY ("agreementId") REFERENCES "tire_storage_agreements"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_treatments" ADD CONSTRAINT "tire_treatments_tireSetId_fkey" FOREIGN KEY ("tireSetId") REFERENCES "tire_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_treatments" ADD CONSTRAINT "tire_treatments_completedById_fkey" FOREIGN KEY ("completedById") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_treatments" ADD CONSTRAINT "tire_treatments_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;

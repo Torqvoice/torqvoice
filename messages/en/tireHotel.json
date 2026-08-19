@@ -63,7 +63,9 @@
     "studded": "Studded",
     "roomLeft": "Room for {count}",
     "prep": "Prep",
-    "tabNeedsPrep": "Needs prep"
+    "tabNeedsPrep": "Needs prep",
+    "setUpShelves": "Set up shelves",
+    "emptyNoShelves": "No shelves yet. Set up your storage layout before checking tires in."
   },
   "checkIn": {
     "title": "Check in tires",

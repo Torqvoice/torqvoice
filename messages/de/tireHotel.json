@@ -63,7 +63,9 @@
     "studded": "Spikes",
     "roomLeft": "Platz für {count}",
     "prep": "Vorb.",
-    "tabNeedsPrep": "Vorbereitung offen"
+    "tabNeedsPrep": "Vorbereitung offen",
+    "setUpShelves": "Regale einrichten",
+    "emptyNoShelves": "Noch keine Regale. Richten Sie Ihr Lager ein, bevor Sie Reifen einlagern."
   },
   "checkIn": {
     "title": "Reifen einlagern",

@@ -63,7 +63,9 @@
     "studded": "Su dygliais",
     "roomLeft": "Vietos {count}",
     "prep": "Paruoš.",
-    "tabNeedsPrep": "Reikia paruošti"
+    "tabNeedsPrep": "Reikia paruošti",
+    "setUpShelves": "Sukurti lentynas",
+    "emptyNoShelves": "Lentynų dar nėra. Sutvarkykite saugyklą prieš priimdami padangas."
   },
   "checkIn": {
     "title": "Priimti padangas",

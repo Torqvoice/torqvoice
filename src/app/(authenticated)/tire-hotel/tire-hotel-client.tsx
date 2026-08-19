@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -116,6 +117,11 @@ export function TireHotelClient({
   const tcm = useTranslations('common.contextMenu')
   const [showCheckIn, setShowCheckIn] = useState(false)
 
+  // Nothing can be checked in until somewhere exists to put it, so the page
+  // leads with setting that up rather than with a flow that dead-ends in an
+  // empty shelf picker.
+  const hasShelves = locations.length > 0
+
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -161,11 +167,20 @@ export function TireHotelClient({
           )
         })}
         {/* Free space sits with the filters rather than in a card: it is the
-            number staff glance at before answering a customer on the phone. */}
-        <Badge variant="outline" className="ml-auto h-9 gap-1.5 self-center px-3 sm:h-8">
-          <Warehouse className="h-3.5 w-3.5" />
-          <span className="tabular-nums">{t('list.roomLeft', { count: totalFree })}</span>
-        </Badge>
+            number staff glance at before answering a customer on the phone.
+            It doubles as the way into the shelf layout, since "how much room
+            is left" and "where are the shelves" are the same errand. */}
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="ml-auto h-9 shrink-0 self-center sm:h-8"
+        >
+          <Link href="/tire-hotel/storage">
+            <Warehouse className="mr-1.5 h-3.5 w-3.5" />
+            <span className="tabular-nums">{t('list.roomLeft', { count: totalFree })}</span>
+          </Link>
+        </Button>
       </div>
 
       <div className="flex items-center justify-between gap-2">
@@ -182,22 +197,31 @@ export function TireHotelClient({
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button
-          size="sm"
-          onClick={() => setShowCheckIn(true)}
-          aria-label={t('list.checkIn')}
-          title={t('list.checkIn')}
-          className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
-        >
-          <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-          <span className="hidden md:inline">{t('list.checkIn')}</span>
-        </Button>
+        {hasShelves ? (
+          <Button
+            size="sm"
+            onClick={() => setShowCheckIn(true)}
+            aria-label={t('list.checkIn')}
+            title={t('list.checkIn')}
+            className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+          >
+            <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+            <span className="hidden md:inline">{t('list.checkIn')}</span>
+          </Button>
+        ) : (
+          <Button asChild size="sm" className="h-9 shrink-0 md:h-8">
+            <Link href="/tire-hotel/storage">
+              <Warehouse className="mr-1.5 h-3.5 w-3.5" />
+              {t('list.setUpShelves')}
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Card list (phones and small tablets) */}
       <div className="space-y-2 md:hidden">
         {data.records.length === 0 ? (
-          <EmptyState message={t('list.empty')} />
+          <EmptyState message={hasShelves ? t('list.empty') : t('list.emptyNoShelves')} />
         ) : (
           data.records.map((set) => (
             <button
@@ -270,7 +294,7 @@ export function TireHotelClient({
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
-                  {t('list.empty')}
+                  {hasShelves ? t('list.empty') : t('list.emptyNoShelves')}
                 </TableCell>
               </TableRow>
             ) : (

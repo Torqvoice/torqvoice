@@ -63,7 +63,9 @@
     "studded": "Chiodati",
     "roomLeft": "Spazio per {count}",
     "prep": "Prep.",
-    "tabNeedsPrep": "Da preparare"
+    "tabNeedsPrep": "Da preparare",
+    "setUpShelves": "Configura gli scaffali",
+    "emptyNoShelves": "Nessuno scaffale. Configura il deposito prima di accettare pneumatici."
   },
   "checkIn": {
     "title": "Accettare pneumatici",

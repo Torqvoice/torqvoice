@@ -63,7 +63,9 @@
     "studded": "Con clavos",
     "roomLeft": "Sitio para {count}",
     "prep": "Prep.",
-    "tabNeedsPrep": "Pendiente de preparar"
+    "tabNeedsPrep": "Pendiente de preparar",
+    "setUpShelves": "Configurar estantes",
+    "emptyNoShelves": "Aún no hay estantes. Configura el almacén antes de recibir neumáticos."
   },
   "checkIn": {
     "title": "Recibir neumáticos",

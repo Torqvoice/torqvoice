@@ -63,7 +63,9 @@
     "studded": "Com cravos",
     "roomLeft": "Espaço para {count}",
     "prep": "Prep.",
-    "tabNeedsPrep": "A preparar"
+    "tabNeedsPrep": "A preparar",
+    "setUpShelves": "Configurar prateleiras",
+    "emptyNoShelves": "Nenhuma prateleira ainda. Configure a armazenagem antes de receber pneus."
   },
   "checkIn": {
     "title": "Receber pneus",

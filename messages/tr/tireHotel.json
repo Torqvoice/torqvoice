@@ -63,7 +63,9 @@
     "studded": "Çivili",
     "roomLeft": "{count} lastiklik yer",
     "prep": "Hazırlık",
-    "tabNeedsPrep": "Hazırlık bekliyor"
+    "tabNeedsPrep": "Hazırlık bekliyor",
+    "setUpShelves": "Rafları kur",
+    "emptyNoShelves": "Henüz raf yok. Lastik kabul etmeden önce deponuzu kurun."
   },
   "checkIn": {
     "title": "Lastik kabul et",

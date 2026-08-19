@@ -63,7 +63,9 @@
     "studded": "Z kolcami",
     "roomLeft": "Miejsce na {count}",
     "prep": "Przyg.",
-    "tabNeedsPrep": "Do przygotowania"
+    "tabNeedsPrep": "Do przygotowania",
+    "setUpShelves": "Skonfiguruj półki",
+    "emptyNoShelves": "Brak półek. Skonfiguruj magazyn, zanim przyjmiesz opony."
   },
   "checkIn": {
     "title": "Przyjmij opony",

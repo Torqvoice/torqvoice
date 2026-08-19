@@ -63,7 +63,9 @@
     "studded": "Piggdekk",
     "roomLeft": "Plass til {count}",
     "prep": "Klargjør",
-    "tabNeedsPrep": "Trenger klargjøring"
+    "tabNeedsPrep": "Trenger klargjøring",
+    "setUpShelves": "Sett opp hyller",
+    "emptyNoShelves": "Ingen hyller ennå. Sett opp lageret før du tar inn dekk."
   },
   "checkIn": {
     "title": "Ta inn dekk",

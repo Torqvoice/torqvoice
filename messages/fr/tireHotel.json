@@ -63,7 +63,9 @@
     "studded": "Cloutés",
     "roomLeft": "Place pour {count}",
     "prep": "Prép.",
-    "tabNeedsPrep": "À préparer"
+    "tabNeedsPrep": "À préparer",
+    "setUpShelves": "Configurer les étagères",
+    "emptyNoShelves": "Aucune étagère. Configurez votre stockage avant de réceptionner des pneus."
   },
   "checkIn": {
     "title": "Réceptionner des pneus",
