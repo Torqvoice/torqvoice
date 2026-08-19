@@ -87,7 +87,7 @@ export function AgreementDialog({
   const [extras, setExtras] = useState<Extra[]>([])
   const [startDate, setStartDate] = useState(toDateInput(new Date()))
   const [endDate, setEndDate] = useState('')
-  const [autoRenew, setAutoRenew] = useState(true)
+  const [autoRenew, setAutoRenew] = useState(false)
   const [notes, setNotes] = useState('')
   // Tracks whether the operator has touched the price, so switching billing
   // model can refill the default without overwriting a number they typed.
@@ -112,7 +112,7 @@ export function AgreementDialog({
       setExtras([])
       setStartDate(toDateInput(new Date()))
       setEndDate('')
-      setAutoRenew(true)
+      setAutoRenew(false)
       setNotes('')
       setPriceTouched(false)
     }

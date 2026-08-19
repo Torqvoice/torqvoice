@@ -334,9 +334,13 @@ export function DashboardClient({
   const excludedCard: DashboardCardId = smsEnabled ? 'notifications' : 'sms'
   // The getting-started card is offered only while the server says it should
   // show (new org, steps open or done state not yet dismissed).
-  const excludedIds = new Set<DashboardCardId>(
-    onboardingChecklist ? [excludedCard] : [excludedCard, 'gettingStarted']
-  )
+  // A card whose node renders null still reserves its grid slot, so anything
+  // conditional has to be excluded here rather than returned as null.
+  const excludedIds = new Set<DashboardCardId>([
+    excludedCard,
+    ...(onboardingChecklist ? [] : (['gettingStarted'] as const)),
+    ...(tireHotelSummary ? [] : (['tireHotel'] as const)),
+  ])
   const availableIds = DASHBOARD_CARD_IDS.filter((id) => !excludedIds.has(id))
   const hiddenSet = new Set<string>(layout.hidden)
   const visibleIds = [...availableIds, ...widgets.map((w) => customCardId(w.id))].filter(

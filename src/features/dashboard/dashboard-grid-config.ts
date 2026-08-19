@@ -46,8 +46,21 @@ export const CARD_MIN_H = 3
 const half = (x: 0 | 6, row: number, h = 5): CardLayout => ({ x, y: row, w: 6, h })
 const full = (row: number, h = 5): CardLayout => ({ x: 0, y: row, w: 12, h })
 
-/** Mirrors the original two-column dashboard order. Rows compact vertically,
- *  so hidden cards (e.g. sms vs notifications) leave no holes. */
+/**
+ * Two columns of half cards over two full-width rows.
+ *
+ * Compaction is vertical and per-column, so a half card with no partner
+ * leaves a visible hole beside it rather than closing up. That makes the
+ * pairing load-bearing: every row below needs an even number of halves above
+ * it, or the columns drift out of step and the gap lands somewhere different
+ * on every dashboard.
+ *
+ * `sms` and `notifications` are the case that breaks a naive layout. Exactly
+ * one of them is ever available, so giving them a column each leaves the
+ * right column permanently one card short and every later pair splits. They
+ * share the one slot here instead — they cannot collide, since only one is
+ * rendered — and `inspections` takes the partner position.
+ */
 export const DEFAULT_LAYOUT: DashboardLayout = {
   version: 1,
   hidden: [],
@@ -57,18 +70,20 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     gettingStarted: full(0, 4),
     maintenance: half(0, 4),
     reminders: half(6, 4),
+    // One slot, two candidates.
     sms: half(0, 9),
-    notifications: half(6, 9),
-    inspections: half(0, 14),
-    quoteRequests: half(6, 14),
-    quoteResponses: half(0, 19),
+    notifications: half(0, 9),
+    inspections: half(6, 9),
+    quoteRequests: half(0, 14),
+    quoteResponses: half(6, 14),
+    recentActivity: half(0, 19),
+    recentObservations: half(6, 19),
     recentCompleted: full(24),
     activeJobs: full(29),
-    recentActivity: half(0, 34),
-    recentObservations: half(6, 34),
-    // Opt-in module, so it sits last: shops without it never see a hole,
-    // since rows compact upward over hidden cards.
-    tireHotel: half(0, 39, 4),
+    // Opt-in, and the odd card out when it is on: last, where a lone half is
+    // least disruptive. Hidden entirely when the module is off, so a shop
+    // without it never reserves the slot.
+    tireHotel: half(0, 34),
   },
 }
 
