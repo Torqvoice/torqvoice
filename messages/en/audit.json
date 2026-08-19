@@ -132,6 +132,7 @@
     "tire_treatment_update": "Updated prep work",
     "tire_treatment_mark": "Marked prep work",
     "tire_treatment_complete_all": "Completed prep work",
-    "tire_agreement_delete": "Deleted storage agreement"
+    "tire_agreement_delete": "Deleted storage agreement",
+    "tire_set_message_customer": "Messaged a customer about a tire set"
   }
 }

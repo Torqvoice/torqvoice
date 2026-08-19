@@ -191,7 +191,9 @@
     "deleteTitle": "Eliminare questo treno di pneumatici?",
     "deleteBody": "Il treno e tutta la sua cronologia vengono rimossi. L’operazione non è reversibile.",
     "deleted": "Treno di pneumatici eliminato",
-    "deleteFailed": "Impossibile eliminare il treno"
+    "deleteFailed": "Impossibile eliminare il treno",
+    "belowLimit": "{count} pneumatico/i al limite di sostituzione o sotto.",
+    "belowLimitHint": "Vale la pena proporre un prezzo finché gli pneumatici sono ancora qui."
   },
   "checkOut": {
     "title": "Restituire gli pneumatici",
@@ -333,5 +335,39 @@
     "allDone": "Preparazione completata",
     "undo": "Rimetti in elenco",
     "saveFailed": "Impossibile salvare"
+  },
+  "messaging": {
+    "action": "Messaggio",
+    "title": "Scrivi al cliente",
+    "description": "A {name}.",
+    "noCustomer": "Nessun cliente su questo treno.",
+    "noCustomerBody": "Collega un cliente al treno prima di scrivergli.",
+    "channel": "Invia via",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "nessun recapito registrato",
+    "recipient": "Invia a",
+    "recipientPlaceholder": "Numero di telefono",
+    "subject": "Oggetto",
+    "message": "Messaggio",
+    "send": "Invia",
+    "sent": "Messaggio inviato",
+    "failed": "Impossibile inviare il messaggio",
+    "smsLong": "I messaggi lunghi possono essere divisi in più SMS.",
+    "subjects": {
+      "low_tread": "I tuoi pneumatici {season}",
+      "damage": "I tuoi pneumatici {season}",
+      "stored": "I tuoi pneumatici {season} sono in deposito",
+      "custom": "I tuoi pneumatici {season}"
+    },
+    "bodies": {
+      "low_tread": "Ciao {customer_name}, i tuoi pneumatici {season} sono da noi, {shop_name}. All’accettazione abbiamo misurato {tread} su {positions}: è al limite o sotto, non reggeranno un’altra stagione. Vuoi un preventivo per un treno nuovo? Nessuna fretta, qui sono al sicuro.",
+      "damage": "Ciao {customer_name}, i tuoi pneumatici {season} sono da noi, {shop_name}. All’accettazione abbiamo trovato un danno su {positions}. Chiamaci con calma e ne parliamo.",
+      "stored": "Ciao {customer_name}, i tuoi pneumatici {season} sono ora in deposito da {shop_name}. Ti contatteremo quando sarà il momento del cambio.",
+      "custom": "Ciao {customer_name}, riguardo ai tuoi pneumatici {season} in deposito da {shop_name}:"
+    }
   }
 }

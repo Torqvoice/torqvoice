@@ -191,7 +191,9 @@
     "deleteTitle": "Diesen Reifensatz löschen?",
     "deleteBody": "Der Satz und sein gesamter Verlauf werden entfernt. Das lässt sich nicht rückgängig machen.",
     "deleted": "Reifensatz gelöscht",
-    "deleteFailed": "Satz konnte nicht gelöscht werden"
+    "deleteFailed": "Satz konnte nicht gelöscht werden",
+    "belowLimit": "{count} Reifen auf oder unter Ihrer Ersatzgrenze.",
+    "belowLimitHint": "Bieten Sie dem Kunden einen Preis an, solange die Reifen noch hier sind."
   },
   "checkOut": {
     "title": "Reifen auslagern",
@@ -333,5 +335,39 @@
     "allDone": "Vorbereitung abgeschlossen",
     "undo": "Zurück auf die Liste",
     "saveFailed": "Speichern fehlgeschlagen"
+  },
+  "messaging": {
+    "action": "Nachricht",
+    "title": "Kunden benachrichtigen",
+    "description": "An {name}.",
+    "noCustomer": "Kein Kunde an diesem Satz.",
+    "noCustomerBody": "Verknüpfen Sie einen Kunden mit dem Satz, bevor Sie schreiben.",
+    "channel": "Senden per",
+    "channels": {
+      "email": "E-Mail",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "keine Adresse hinterlegt",
+    "recipient": "Senden an",
+    "recipientPlaceholder": "Telefonnummer",
+    "subject": "Betreff",
+    "message": "Nachricht",
+    "send": "Senden",
+    "sent": "Nachricht gesendet",
+    "failed": "Nachricht konnte nicht gesendet werden",
+    "smsLong": "Lange Nachrichten werden eventuell auf mehrere SMS verteilt.",
+    "subjects": {
+      "low_tread": "Ihre {season}reifen",
+      "damage": "Ihre {season}reifen",
+      "stored": "Ihre {season}reifen sind eingelagert",
+      "custom": "Ihre {season}reifen"
+    },
+    "bodies": {
+      "low_tread": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme haben wir an {positions} {tread} gemessen — das liegt auf oder unter der Grenze, eine weitere Saison halten sie nicht. Möchten Sie einen Preis für einen neuen Satz? Keine Eile, sie liegen sicher bei uns.",
+      "damage": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme haben wir an {positions} eine Beschädigung gefunden. Rufen Sie uns gelegentlich an, dann gehen wir es gemeinsam durch.",
+      "stored": "Hallo {customer_name}, Ihre {season}reifen sind jetzt bei {shop_name} eingelagert. Wir melden uns, wenn der Wechsel ansteht.",
+      "custom": "Hallo {customer_name}, zu Ihren bei {shop_name} eingelagerten {season}reifen:"
+    }
   }
 }

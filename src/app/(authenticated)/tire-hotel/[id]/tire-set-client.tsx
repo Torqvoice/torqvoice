@@ -16,6 +16,8 @@ import { EditTireSetDialog } from '@/features/tire-hotel/Components/EditTireSetD
 import { RelocateDialog } from '@/features/tire-hotel/Components/RelocateDialog'
 import { AgreementCard, type AgreementRow } from '@/features/tire-hotel/Components/AgreementCard'
 import { TreatmentCard, type TreatmentRow } from '@/features/tire-hotel/Components/TreatmentCard'
+import { MessageCustomerDialog } from '@/features/tire-hotel/Components/MessageCustomerDialog'
+import { reasonForCondition } from '@/features/tire-hotel/Lib/messageTemplates'
 import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
@@ -34,9 +36,11 @@ import {
   Disc3,
   Loader2,
   LogOut,
+  MessageSquare,
   MapPin,
   Pencil,
   Trash2,
+  TriangleAlert,
   User,
   Warehouse,
 } from 'lucide-react'
@@ -133,6 +137,7 @@ export function TireSetClient({
   const [showCheckOut, setShowCheckOut] = useState(false)
   const [showRelocate, setShowRelocate] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
+  const [showMessage, setShowMessage] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   // Deleting is only offered once the set is off the shelf: the action
@@ -170,6 +175,29 @@ export function TireSetClient({
   const formatPressure = (bar: number | null) => {
     if (bar == null) return null
     return imperial ? `${barToPsi(bar).toFixed(0)} psi` : `${bar.toFixed(1)} bar`
+  }
+
+  const lowPositions = latest.filter((m) => m.condition === 'replace')
+  const worstTread = latest.reduce<number | null>(
+    (lowest, m) =>
+      m.treadDepthMm == null
+        ? lowest
+        : lowest == null
+          ? m.treadDepthMm
+          : Math.min(lowest, m.treadDepthMm),
+    null
+  )
+  const messageVariables = {
+    customer_name: set.customer?.name ?? '',
+    vehicle: set.vehicle ? `${set.vehicle.make} ${set.vehicle.model}` : '',
+    plate: set.vehicle?.licensePlate ?? '',
+    season: t(`seasons.${set.season}`).toLowerCase(),
+    size: set.size ?? '',
+    tread: formatTread(worstTread),
+    positions: (lowPositions.length > 0 ? lowPositions : latest)
+      .map((m) => t(`positions.${m.position}`).toLowerCase())
+      .join(', '),
+    shelf: set.location?.code ?? '',
   }
 
   const title = set.vehicle
@@ -253,8 +281,35 @@ export function TireSetClient({
             title={t('detail.conditionTitle')}
             // Bare content: the slot supplies its own pill.
             badge={grade ? t(`conditions.${grade}`) : undefined}
+            action={
+              set.customer && (
+                <Button
+                  size="sm"
+                  variant={grade === 'replace' ? 'default' : 'ghost'}
+                  className="h-8"
+                  onClick={() => setShowMessage(true)}
+                >
+                  <MessageSquare className="mr-1.5 h-3.5 w-3.5" />
+                  {t('messaging.action')}
+                </Button>
+              )
+            }
             contentClassName="space-y-4"
           >
+            {/* A worn set going back on a car is worth a word, and this is
+                the moment the shop can act on it. */}
+            {grade === 'replace' && (
+              <div className="flex gap-2.5 rounded-lg border border-red-500/30 bg-red-500/5 p-3">
+                <TriangleAlert className="h-4 w-4 shrink-0 text-red-600" />
+                <p className="min-w-0 text-sm">
+                  <span className="font-medium text-red-700 dark:text-red-500">
+                    {t('detail.belowLimit', { count: lowPositions.length })}
+                  </span>{' '}
+                  <span className="text-muted-foreground">{t('detail.belowLimitHint')}</span>
+                </p>
+              </div>
+            )}
+
             {set.measurements.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t('detail.noMeasurements')}</p>
             ) : (
@@ -406,6 +461,14 @@ export function TireSetClient({
         quantity={set.quantity}
         currentLocationId={set.location?.id ?? null}
         locations={locations}
+      />
+
+      <MessageCustomerDialog
+        open={showMessage}
+        onOpenChange={setShowMessage}
+        tireSetId={set.id}
+        reason={reasonForCondition(grade)}
+        variables={messageVariables}
       />
 
       <EditTireSetDialog open={showEdit} onOpenChange={setShowEdit} set={set} vehicles={vehicles} />

@@ -191,7 +191,9 @@
     "deleteTitle": "Deze bandenset verwijderen?",
     "deleteBody": "De set en de volledige geschiedenis worden verwijderd. Dit kan niet ongedaan worden gemaakt.",
     "deleted": "Bandenset verwijderd",
-    "deleteFailed": "Kon de set niet verwijderen"
+    "deleteFailed": "Kon de set niet verwijderen",
+    "belowLimit": "{count} band(en) op of onder uw vervangingsgrens.",
+    "belowLimitHint": "Bied de klant een prijs aan nu de banden hier nog liggen."
   },
   "checkOut": {
     "title": "Banden teruggeven",
@@ -333,5 +335,39 @@
     "allDone": "Alle voorbereiding klaar",
     "undo": "Terug op de lijst",
     "saveFailed": "Kon niet opslaan"
+  },
+  "messaging": {
+    "action": "Bericht",
+    "title": "Klant een bericht sturen",
+    "description": "Aan {name}.",
+    "noCustomer": "Geen klant aan deze set.",
+    "noCustomerBody": "Koppel eerst een klant aan de set.",
+    "channel": "Versturen via",
+    "channels": {
+      "email": "E-mail",
+      "sms": "Sms",
+      "telegram": "Telegram"
+    },
+    "noAddress": "geen adres bekend",
+    "recipient": "Versturen naar",
+    "recipientPlaceholder": "Telefoonnummer",
+    "subject": "Onderwerp",
+    "message": "Bericht",
+    "send": "Versturen",
+    "sent": "Bericht verstuurd",
+    "failed": "Kon het bericht niet versturen",
+    "smsLong": "Lange berichten worden mogelijk over meerdere sms’jes verdeeld.",
+    "subjects": {
+      "low_tread": "Uw {season}banden",
+      "damage": "Uw {season}banden",
+      "stored": "Uw {season}banden staan opgeslagen",
+      "custom": "Uw {season}banden"
+    },
+    "bodies": {
+      "low_tread": "Hallo {customer_name}, uw {season}banden liggen bij ons bij {shop_name}. Bij het innemen maten we {tread} op {positions} — dat is op of onder de grens, dus een seizoen erbij halen ze niet. Wilt u een prijs voor een nieuwe set? Geen haast, ze staan veilig bij ons.",
+      "damage": "Hallo {customer_name}, uw {season}banden liggen bij ons bij {shop_name}. Bij het innemen vonden we schade op {positions}. Belt u ons gerust, dan lopen we het samen door.",
+      "stored": "Hallo {customer_name}, uw {season}banden liggen nu opgeslagen bij {shop_name}. We nemen contact op als het tijd is om te wisselen.",
+      "custom": "Hallo {customer_name}, over uw bij {shop_name} opgeslagen {season}banden:"
+    }
   }
 }

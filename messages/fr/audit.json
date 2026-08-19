@@ -132,6 +132,7 @@
     "tire_treatment_update": "Préparation modifiée",
     "tire_treatment_mark": "Préparation marquée",
     "tire_treatment_complete_all": "Préparation terminée",
-    "tire_agreement_delete": "Contrat de stockage supprimé"
+    "tire_agreement_delete": "Contrat de stockage supprimé",
+    "tire_set_message_customer": "Message envoyé au client au sujet d’un jeu de pneus"
   }
 }

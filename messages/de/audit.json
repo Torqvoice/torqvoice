@@ -132,6 +132,7 @@
     "tire_treatment_update": "Vorbereitung aktualisiert",
     "tire_treatment_mark": "Vorbereitung markiert",
     "tire_treatment_complete_all": "Vorbereitung abgeschlossen",
-    "tire_agreement_delete": "Lagervereinbarung gelöscht"
+    "tire_agreement_delete": "Lagervereinbarung gelöscht",
+    "tire_set_message_customer": "Kunde zu einem Reifensatz benachrichtigt"
   }
 }

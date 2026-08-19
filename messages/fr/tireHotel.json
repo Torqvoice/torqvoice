@@ -191,7 +191,9 @@
     "deleteTitle": "Supprimer ce jeu de pneus ?",
     "deleteBody": "Le jeu et tout son historique seront supprimés. Action irréversible.",
     "deleted": "Jeu de pneus supprimé",
-    "deleteFailed": "Impossible de supprimer le jeu"
+    "deleteFailed": "Impossible de supprimer le jeu",
+    "belowLimit": "{count} pneu(s) à votre limite de remplacement ou en dessous.",
+    "belowLimitHint": "À proposer au client tant que les pneus sont encore ici."
   },
   "checkOut": {
     "title": "Restituer les pneus",
@@ -333,5 +335,39 @@
     "allDone": "Préparation terminée",
     "undo": "Remettre dans la liste",
     "saveFailed": "Enregistrement impossible"
+  },
+  "messaging": {
+    "action": "Message",
+    "title": "Écrire au client",
+    "description": "À {name}.",
+    "noCustomer": "Aucun client sur ce jeu.",
+    "noCustomerBody": "Associez un client au jeu avant de lui écrire.",
+    "channel": "Envoyer par",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "aucune adresse enregistrée",
+    "recipient": "Envoyer à",
+    "recipientPlaceholder": "Numéro de téléphone",
+    "subject": "Objet",
+    "message": "Message",
+    "send": "Envoyer",
+    "sent": "Message envoyé",
+    "failed": "Impossible d’envoyer le message",
+    "smsLong": "Les messages longs peuvent être découpés en plusieurs SMS.",
+    "subjects": {
+      "low_tread": "Vos pneus {season}",
+      "damage": "Vos pneus {season}",
+      "stored": "Vos pneus {season} sont stockés",
+      "custom": "Vos pneus {season}"
+    },
+    "bodies": {
+      "low_tread": "Bonjour {customer_name}, vos pneus {season} sont chez nous, {shop_name}. À la réception nous avons mesuré {tread} sur {positions} — c’est à la limite ou en dessous, ils ne tiendront pas une saison de plus. Souhaitez-vous un prix pour un jeu neuf ? Rien ne presse, ils sont en sécurité ici.",
+      "damage": "Bonjour {customer_name}, vos pneus {season} sont chez nous, {shop_name}. À la réception nous avons constaté un dommage sur {positions}. Appelez-nous quand vous pourrez, nous vous expliquerons.",
+      "stored": "Bonjour {customer_name}, vos pneus {season} sont désormais stockés chez {shop_name}. Nous vous recontacterons au moment du changement.",
+      "custom": "Bonjour {customer_name}, au sujet de vos pneus {season} stockés chez {shop_name} :"
+    }
   }
 }

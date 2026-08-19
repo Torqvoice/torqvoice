@@ -191,7 +191,9 @@
     "deleteTitle": "Excluir este jogo de pneus?",
     "deleteBody": "O jogo e todo o histórico serão removidos. Não é possível desfazer.",
     "deleted": "Jogo de pneus excluído",
-    "deleteFailed": "Não foi possível excluir o jogo"
+    "deleteFailed": "Não foi possível excluir o jogo",
+    "belowLimit": "{count} pneu(s) no limite de troca ou abaixo.",
+    "belowLimitHint": "Vale oferecer um preço ao cliente enquanto os pneus ainda estão aqui."
   },
   "checkOut": {
     "title": "Devolver pneus",
@@ -333,5 +335,39 @@
     "allDone": "Preparação concluída",
     "undo": "Voltar para a lista",
     "saveFailed": "Não foi possível salvar"
+  },
+  "messaging": {
+    "action": "Mensagem",
+    "title": "Enviar mensagem ao cliente",
+    "description": "Para {name}.",
+    "noCustomer": "Nenhum cliente neste jogo.",
+    "noCustomerBody": "Vincule um cliente ao jogo antes de enviar mensagem.",
+    "channel": "Enviar por",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "sem endereço cadastrado",
+    "recipient": "Enviar para",
+    "recipientPlaceholder": "Número de telefone",
+    "subject": "Assunto",
+    "message": "Mensagem",
+    "send": "Enviar",
+    "sent": "Mensagem enviada",
+    "failed": "Não foi possível enviar a mensagem",
+    "smsLong": "Mensagens longas podem ser divididas em vários SMS.",
+    "subjects": {
+      "low_tread": "Seus pneus de {season}",
+      "damage": "Seus pneus de {season}",
+      "stored": "Seus pneus de {season} estão guardados",
+      "custom": "Seus pneus de {season}"
+    },
+    "bodies": {
+      "low_tread": "Olá {customer_name}, seus pneus de {season} estão conosco na {shop_name}. Na entrada medimos {tread} em {positions} — está no limite ou abaixo, então não aguentam mais uma temporada. Quer um orçamento para um jogo novo? Sem pressa, aqui eles estão seguros.",
+      "damage": "Olá {customer_name}, seus pneus de {season} estão conosco na {shop_name}. Na entrada encontramos um dano em {positions}. Ligue quando puder que explicamos tudo.",
+      "stored": "Olá {customer_name}, seus pneus de {season} já estão guardados na {shop_name}. Avisaremos quando for hora de trocar.",
+      "custom": "Olá {customer_name}, sobre seus pneus de {season} guardados na {shop_name}:"
+    }
   }
 }

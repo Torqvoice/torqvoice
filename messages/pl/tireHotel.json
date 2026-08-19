@@ -191,7 +191,9 @@
     "deleteTitle": "Usunąć ten komplet opon?",
     "deleteBody": "Komplet i cała jego historia zostaną usunięte. Tej operacji nie można cofnąć.",
     "deleted": "Usunięto komplet opon",
-    "deleteFailed": "Nie udało się usunąć kompletu"
+    "deleteFailed": "Nie udało się usunąć kompletu",
+    "belowLimit": "{count} opon(y) na granicy wymiany lub poniżej.",
+    "belowLimitHint": "Warto zaproponować klientowi cenę, póki opony są jeszcze u nas."
   },
   "checkOut": {
     "title": "Wydaj opony",
@@ -333,5 +335,39 @@
     "allDone": "Przygotowanie zakończone",
     "undo": "Wróć na listę",
     "saveFailed": "Nie udało się zapisać"
+  },
+  "messaging": {
+    "action": "Wiadomość",
+    "title": "Napisz do klienta",
+    "description": "Do {name}.",
+    "noCustomer": "Ten komplet nie ma klienta.",
+    "noCustomerBody": "Powiąż klienta z kompletem, zanim do niego napiszesz.",
+    "channel": "Wyślij przez",
+    "channels": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "brak zapisanego adresu",
+    "recipient": "Wyślij do",
+    "recipientPlaceholder": "Numer telefonu",
+    "subject": "Temat",
+    "message": "Wiadomość",
+    "send": "Wyślij",
+    "sent": "Wiadomość wysłana",
+    "failed": "Nie udało się wysłać wiadomości",
+    "smsLong": "Długie wiadomości mogą zostać podzielone na kilka SMS-ów.",
+    "subjects": {
+      "low_tread": "Twoje opony {season}",
+      "damage": "Twoje opony {season}",
+      "stored": "Twoje opony {season} są w magazynie",
+      "custom": "Twoje opony {season}"
+    },
+    "bodies": {
+      "low_tread": "Cześć {customer_name}, Twoje opony {season} są u nas w {shop_name}. Przy przyjęciu zmierzyliśmy {tread} na {positions} — to na granicy lub poniżej, więc kolejnego sezonu nie wytrzymają. Chcesz wycenę nowego kompletu? Bez pośpiechu, u nas są bezpieczne.",
+      "damage": "Cześć {customer_name}, Twoje opony {season} są u nas w {shop_name}. Przy przyjęciu znaleźliśmy uszkodzenie na {positions}. Zadzwoń, kiedy będziesz mieć chwilę, wszystko wyjaśnimy.",
+      "stored": "Cześć {customer_name}, Twoje opony {season} są już w magazynie w {shop_name}. Odezwiemy się, gdy przyjdzie czas na wymianę.",
+      "custom": "Cześć {customer_name}, w sprawie Twoich opon {season} przechowywanych w {shop_name}:"
+    }
   }
 }

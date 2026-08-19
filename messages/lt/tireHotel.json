@@ -191,7 +191,9 @@
     "deleteTitle": "Ištrinti šį padangų komplektą?",
     "deleteBody": "Komplektas ir visa jo istorija bus pašalinti. Atšaukti negalėsite.",
     "deleted": "Padangų komplektas ištrintas",
-    "deleteFailed": "Nepavyko ištrinti komplekto"
+    "deleteFailed": "Nepavyko ištrinti komplekto",
+    "belowLimit": "{count} padanga (-os) ties keitimo riba arba žemiau.",
+    "belowLimitHint": "Verta pasiūlyti klientui kainą, kol padangos dar čia."
   },
   "checkOut": {
     "title": "Atiduoti padangas",
@@ -333,5 +335,39 @@
     "allDone": "Paruošimas baigtas",
     "undo": "Grąžinti į sąrašą",
     "saveFailed": "Nepavyko išsaugoti"
+  },
+  "messaging": {
+    "action": "Žinutė",
+    "title": "Parašyti klientui",
+    "description": "Kam: {name}.",
+    "noCustomer": "Šis komplektas neturi kliento.",
+    "noCustomerBody": "Prieš rašydami susiekite komplektą su klientu.",
+    "channel": "Siųsti per",
+    "channels": {
+      "email": "El. paštas",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "adreso nėra",
+    "recipient": "Siųsti į",
+    "recipientPlaceholder": "Telefono numeris",
+    "subject": "Tema",
+    "message": "Žinutė",
+    "send": "Siųsti",
+    "sent": "Žinutė išsiųsta",
+    "failed": "Nepavyko išsiųsti žinutės",
+    "smsLong": "Ilgos žinutės gali būti suskaidytos į kelias SMS.",
+    "subjects": {
+      "low_tread": "Jūsų {season} padangos",
+      "damage": "Jūsų {season} padangos",
+      "stored": "Jūsų {season} padangos saugomos",
+      "custom": "Jūsų {season} padangos"
+    },
+    "bodies": {
+      "low_tread": "Sveiki, {customer_name}. Jūsų {season} padangos yra pas mus, {shop_name}. Priimdami išmatavome {tread} ties {positions} — tai ties riba arba žemiau, dar vieno sezono jos neištvers. Norėtumėte naujo komplekto kainos? Neskubu, pas mus jos saugios.",
+      "damage": "Sveiki, {customer_name}. Jūsų {season} padangos yra pas mus, {shop_name}. Priimdami radome pažeidimą ties {positions}. Paskambinkite, kai turėsite laiko, viską aptarsime.",
+      "stored": "Sveiki, {customer_name}. Jūsų {season} padangos jau saugomos {shop_name}. Susisieksime, kai ateis laikas keisti.",
+      "custom": "Sveiki, {customer_name}. Dėl jūsų {season} padangų, saugomų {shop_name}:"
+    }
   }
 }

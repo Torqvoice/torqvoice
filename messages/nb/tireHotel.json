@@ -191,7 +191,9 @@
     "deleteTitle": "Slette dette dekksettet?",
     "deleteBody": "Settet og hele historikken fjernes. Dette kan ikke angres.",
     "deleted": "Dekksett slettet",
-    "deleteFailed": "Kunne ikke slette settet"
+    "deleteFailed": "Kunne ikke slette settet",
+    "belowLimit": "{count} dekk på eller under byttegrensen.",
+    "belowLimitHint": "Verdt å tilby kunden pris mens dekkene fortsatt står her."
   },
   "checkOut": {
     "title": "Lever ut dekk",
@@ -333,5 +335,39 @@
     "allDone": "All klargjøring ferdig",
     "undo": "Legg tilbake på lista",
     "saveFailed": "Kunne ikke lagre"
+  },
+  "messaging": {
+    "action": "Send melding",
+    "title": "Send melding til kunden",
+    "description": "Til {name}.",
+    "noCustomer": "Ingen kunde på dette settet.",
+    "noCustomerBody": "Knytt en kunde til settet før du sender melding.",
+    "channel": "Send via",
+    "channels": {
+      "email": "E-post",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "ingen adresse registrert",
+    "recipient": "Send til",
+    "recipientPlaceholder": "Telefonnummer",
+    "subject": "Emne",
+    "message": "Melding",
+    "send": "Send",
+    "sent": "Melding sendt",
+    "failed": "Kunne ikke sende meldingen",
+    "smsLong": "Lange meldinger kan bli delt i flere SMS.",
+    "subjects": {
+      "low_tread": "Dekkene dine ({season})",
+      "damage": "Dekkene dine ({season})",
+      "stored": "{season}dekkene dine er lagret",
+      "custom": "Dekkene dine ({season})"
+    },
+    "bodies": {
+      "low_tread": "Hei {customer_name}, vi har {season}dekkene dine her hos {shop_name}. Da vi tok dem inn målte vi {tread} på {positions} — det er på eller under grensen, så de holder ikke en sesong til. Vil du ha pris på et nytt sett? Ingen hast, de står trygt hos oss til du bestemmer deg.",
+      "damage": "Hei {customer_name}, vi har {season}dekkene dine her hos {shop_name}. Da vi tok dem inn fant vi skade på {positions}. Ring oss når du har anledning, så går vi gjennom det sammen.",
+      "stored": "Hei {customer_name}, {season}dekkene dine er nå lagret hos {shop_name}. Vi tar kontakt når det er tid for å bytte tilbake.",
+      "custom": "Hei {customer_name}, angående {season}dekkene dine som står lagret hos {shop_name}:"
+    }
   }
 }

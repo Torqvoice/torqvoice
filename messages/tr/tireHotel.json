@@ -191,7 +191,9 @@
     "deleteTitle": "Bu lastik takımı silinsin mi?",
     "deleteBody": "Takım ve tüm geçmişi kaldırılır. Bu işlem geri alınamaz.",
     "deleted": "Lastik takımı silindi",
-    "deleteFailed": "Takım silinemedi"
+    "deleteFailed": "Takım silinemedi",
+    "belowLimit": "{count} lastik değişim sınırında ya da altında.",
+    "belowLimitHint": "Lastikler hâlâ buradayken müşteriye fiyat vermekte fayda var."
   },
   "checkOut": {
     "title": "Lastikleri teslim et",
@@ -333,5 +335,39 @@
     "allDone": "Hazırlık tamamlandı",
     "undo": "Listeye geri koy",
     "saveFailed": "Kaydedilemedi"
+  },
+  "messaging": {
+    "action": "Mesaj",
+    "title": "Müşteriye mesaj gönder",
+    "description": "{name} kişisine.",
+    "noCustomer": "Bu takımda müşteri yok.",
+    "noCustomerBody": "Mesaj göndermeden önce takıma bir müşteri bağlayın.",
+    "channel": "Şununla gönder",
+    "channels": {
+      "email": "E-posta",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "kayıtlı adres yok",
+    "recipient": "Şuraya gönder",
+    "recipientPlaceholder": "Telefon numarası",
+    "subject": "Konu",
+    "message": "Mesaj",
+    "send": "Gönder",
+    "sent": "Mesaj gönderildi",
+    "failed": "Mesaj gönderilemedi",
+    "smsLong": "Uzun mesajlar birkaç SMS’e bölünebilir.",
+    "subjects": {
+      "low_tread": "{season} lastikleriniz",
+      "damage": "{season} lastikleriniz",
+      "stored": "{season} lastikleriniz depoda",
+      "custom": "{season} lastikleriniz"
+    },
+    "bodies": {
+      "low_tread": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda. Kabul ederken {positions} üzerinde {tread} ölçtük — bu sınırda ya da altında, bir sezon daha çıkarmaz. Yeni takım için fiyat ister misiniz? Acelesi yok, burada güvendeler.",
+      "damage": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda. Kabul ederken {positions} üzerinde hasar bulduk. Müsait olduğunuzda arayın, birlikte değerlendirelim.",
+      "stored": "Merhaba {customer_name}, {season} lastikleriniz artık {shop_name} deposunda. Değişim zamanı geldiğinde haber vereceğiz.",
+      "custom": "Merhaba {customer_name}, {shop_name} deposundaki {season} lastikleriniz hakkında:"
+    }
   }
 }

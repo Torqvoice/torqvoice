@@ -132,6 +132,7 @@
     "tire_treatment_update": "Voorbereiding bijgewerkt",
     "tire_treatment_mark": "Voorbereiding gemarkeerd",
     "tire_treatment_complete_all": "Voorbereiding afgerond",
-    "tire_agreement_delete": "Opslagovereenkomst verwijderd"
+    "tire_agreement_delete": "Opslagovereenkomst verwijderd",
+    "tire_set_message_customer": "Klant bericht gestuurd over een bandenset"
   }
 }

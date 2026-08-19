@@ -191,7 +191,9 @@
     "deleteTitle": "Delete this tire set?",
     "deleteBody": "The set and its full history are removed. This cannot be undone.",
     "deleted": "Tire set deleted",
-    "deleteFailed": "Could not delete the set"
+    "deleteFailed": "Could not delete the set",
+    "belowLimit": "{count} tire(s) at or below your replacement limit.",
+    "belowLimitHint": "Worth offering the customer a price while the tires are still here."
   },
   "checkOut": {
     "title": "Check out tires",
@@ -333,5 +335,39 @@
     "allDone": "All prep work done",
     "undo": "Put back on the list",
     "saveFailed": "Could not save"
+  },
+  "messaging": {
+    "action": "Message",
+    "title": "Message the customer",
+    "description": "To {name}.",
+    "noCustomer": "No customer on this set.",
+    "noCustomerBody": "Link a customer to the set before messaging them.",
+    "channel": "Send by",
+    "channels": {
+      "email": "Email",
+      "sms": "SMS",
+      "telegram": "Telegram"
+    },
+    "noAddress": "no address on file",
+    "recipient": "Send to",
+    "recipientPlaceholder": "Phone number",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "sent": "Message sent",
+    "failed": "Could not send the message",
+    "smsLong": "Long messages may be split into several texts.",
+    "subjects": {
+      "low_tread": "Your {season} tires",
+      "damage": "Your {season} tires",
+      "stored": "Your {season} tires are stored",
+      "custom": "Your {season} tires"
+    },
+    "bodies": {
+      "low_tread": "Hi {customer_name}, we have your {season} tires here at {shop_name}. Checking them in, we measured {tread} on the {positions} — that is at or below the limit, so they will not see out another season. Would you like a price on a new set? No rush, they are safe with us until you decide.",
+      "damage": "Hi {customer_name}, we have your {season} tires here at {shop_name}. While checking them in we found damage on the {positions}. Give us a call when you have a moment and we will talk you through it.",
+      "stored": "Hi {customer_name}, your {season} tires are now stored with us at {shop_name}. We will be in touch when it is time to swap them back.",
+      "custom": "Hi {customer_name}, about your {season} tires stored with us at {shop_name}:"
+    }
   }
 }
