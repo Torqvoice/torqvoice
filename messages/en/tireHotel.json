@@ -61,7 +61,9 @@
     "storedSince": "Since",
     "tireCount": "{count} tires",
     "studded": "Studded",
-    "roomLeft": "Room for {count}"
+    "roomLeft": "Room for {count}",
+    "prep": "Prep",
+    "tabNeedsPrep": "Needs prep"
   },
   "checkIn": {
     "title": "Check in tires",
@@ -99,7 +101,8 @@
     "submit": "Check in",
     "success": "Set {reference} stored on {code}",
     "failed": "Could not check the set in",
-    "noVehiclesForCustomer": "This customer has no vehicles yet. Add one from their customer page first."
+    "noVehiclesForCustomer": "This customer has no vehicles yet. Add one from their customer page first.",
+    "treatmentsHint": "What should be done to this set before it is stored or refitted."
   },
   "storage": {
     "title": "Shelves",
@@ -197,7 +200,8 @@
     "note": "Note",
     "submit": "Check out",
     "success": "Set {reference} returned",
-    "failed": "Could not check the set out"
+    "failed": "Could not check the set out",
+    "prepPending": "{count} prep job(s) still outstanding"
   },
   "relocate": {
     "title": "Move tires",
@@ -279,6 +283,41 @@
     "endBody": "Billing stops. Invoices already raised are untouched.",
     "endBodyPending": "Billing stops and {count} unbilled period(s) will be waived. Invoices already raised are untouched.",
     "ended": "Agreement ended",
-    "endFailed": "Could not end the agreement"
+    "endFailed": "Could not end the agreement",
+    "invoiceTitle": "Invoice this period",
+    "invoiceDescription": "Adding {amount} for tire storage.",
+    "newInvoice": "New invoice",
+    "newInvoiceHint": "Storage gets its own document.",
+    "addToOpen": "Or add to an open job",
+    "noOpenInvoices": "No open jobs for this customer.",
+    "addLine": "Add to invoice",
+    "createInvoice": "Create invoice"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Wash tires",
+      "wash_rims": "Wash rims",
+      "balance": "Balance",
+      "tpms_service": "TPMS service",
+      "new_valves": "New valves",
+      "repair": "Repair"
+    },
+    "statuses": {
+      "pending": "To do",
+      "done": "Done",
+      "skipped": "Skipped"
+    },
+    "title": "Prep work",
+    "none": "Nothing to do on this set.",
+    "add": "Add prep work",
+    "pickHint": "Tick what this set needs before it goes back on the car.",
+    "pendingCount": "{count} to do",
+    "allComplete": "All done",
+    "ready": "Ready",
+    "markDone": "Done",
+    "completeAll": "Mark all {count} done",
+    "allDone": "All prep work done",
+    "undo": "Put back on the list",
+    "saveFailed": "Could not save"
   }
 }

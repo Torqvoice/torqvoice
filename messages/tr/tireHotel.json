@@ -61,7 +61,9 @@
     "storedSince": "Tarihten beri",
     "tireCount": "{count} lastik",
     "studded": "Çivili",
-    "roomLeft": "{count} lastiklik yer"
+    "roomLeft": "{count} lastiklik yer",
+    "prep": "Hazırlık",
+    "tabNeedsPrep": "Hazırlık bekliyor"
   },
   "checkIn": {
     "title": "Lastik kabul et",
@@ -99,7 +101,8 @@
     "submit": "Kabul et",
     "success": "{reference} numaralı takım {code} rafına kondu",
     "failed": "Takım kabul edilemedi",
-    "noVehiclesForCustomer": "Bu müşterinin henüz aracı yok. Önce müşteri sayfasından bir araç ekleyin."
+    "noVehiclesForCustomer": "Bu müşterinin henüz aracı yok. Önce müşteri sayfasından bir araç ekleyin.",
+    "treatmentsHint": "Bu takıma depolamadan veya takmadan önce ne yapılmalı."
   },
   "storage": {
     "title": "Raflar",
@@ -197,7 +200,8 @@
     "note": "Not",
     "submit": "Teslim et",
     "success": "{reference} numaralı takım teslim edildi",
-    "failed": "Takım teslim edilemedi"
+    "failed": "Takım teslim edilemedi",
+    "prepPending": "{count} hazırlık işi hâlâ bekliyor"
   },
   "relocate": {
     "title": "Lastikleri taşı",
@@ -279,6 +283,41 @@
     "endBody": "Faturalandırma durur. Halihazırda kesilen faturalar etkilenmez.",
     "endBodyPending": "Faturalandırma durur ve faturalandırılmamış {count} dönem muaf tutulur. Halihazırda kesilen faturalar etkilenmez.",
     "ended": "Sözleşme sonlandırıldı",
-    "endFailed": "Sözleşme sonlandırılamadı"
+    "endFailed": "Sözleşme sonlandırılamadı",
+    "invoiceTitle": "Bu dönemi faturalandır",
+    "invoiceDescription": "Lastik depolaması için {amount} ekleniyor.",
+    "newInvoice": "Yeni fatura",
+    "newInvoiceHint": "Depolama kendi belgesini alır.",
+    "addToOpen": "Veya açık bir işe ekle",
+    "noOpenInvoices": "Bu müşteri için açık iş yok.",
+    "addLine": "Faturaya ekle",
+    "createInvoice": "Fatura oluştur"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Lastikleri yıka",
+      "wash_rims": "Jantları yıka",
+      "balance": "Balans al",
+      "tpms_service": "TPMS servisi",
+      "new_valves": "Yeni sibop",
+      "repair": "Onarım"
+    },
+    "statuses": {
+      "pending": "Yapılacak",
+      "done": "Tamam",
+      "skipped": "Atlandı"
+    },
+    "title": "Hazırlık",
+    "none": "Bu takımda yapılacak bir şey yok.",
+    "add": "Hazırlık ekle",
+    "pickHint": "Bu takımın araca geri takılmadan önce nelere ihtiyacı olduğunu işaretleyin.",
+    "pendingCount": "{count} yapılacak",
+    "allComplete": "Hepsi tamam",
+    "ready": "Hazır",
+    "markDone": "Tamam",
+    "completeAll": "{count} işin hepsini tamam olarak işaretle",
+    "allDone": "Hazırlık tamamlandı",
+    "undo": "Listeye geri koy",
+    "saveFailed": "Kaydedilemedi"
   }
 }

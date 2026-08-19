@@ -61,7 +61,9 @@
     "storedSince": "Depuis",
     "tireCount": "{count} pneus",
     "studded": "Cloutés",
-    "roomLeft": "Place pour {count}"
+    "roomLeft": "Place pour {count}",
+    "prep": "Prép.",
+    "tabNeedsPrep": "À préparer"
   },
   "checkIn": {
     "title": "Réceptionner des pneus",
@@ -99,7 +101,8 @@
     "submit": "Réceptionner",
     "success": "Jeu {reference} rangé en {code}",
     "failed": "Impossible de réceptionner le jeu",
-    "noVehiclesForCustomer": "Ce client n’a pas encore de véhicule. Ajoutez-en un depuis sa fiche client."
+    "noVehiclesForCustomer": "Ce client n’a pas encore de véhicule. Ajoutez-en un depuis sa fiche client.",
+    "treatmentsHint": "Ce qu’il faut faire sur ce jeu avant stockage ou remontage."
   },
   "storage": {
     "title": "Étagères",
@@ -197,7 +200,8 @@
     "note": "Note",
     "submit": "Restituer",
     "success": "Jeu {reference} restitué",
-    "failed": "Impossible de restituer le jeu"
+    "failed": "Impossible de restituer le jeu",
+    "prepPending": "{count} tâche(s) de préparation en attente"
   },
   "relocate": {
     "title": "Déplacer les pneus",
@@ -279,6 +283,41 @@
     "endBody": "La facturation s’arrête. Les factures déjà émises ne changent pas.",
     "endBodyPending": "La facturation s’arrête et {count} période(s) non facturée(s) seront offertes. Les factures déjà émises ne changent pas.",
     "ended": "Contrat terminé",
-    "endFailed": "Impossible de terminer le contrat"
+    "endFailed": "Impossible de terminer le contrat",
+    "invoiceTitle": "Facturer cette période",
+    "invoiceDescription": "Ajout de {amount} pour le stockage de pneus.",
+    "newInvoice": "Nouvelle facture",
+    "newInvoiceHint": "Le stockage a son propre document.",
+    "addToOpen": "Ou ajouter à un ordre ouvert",
+    "noOpenInvoices": "Aucun ordre ouvert pour ce client.",
+    "addLine": "Ajouter à la facture",
+    "createInvoice": "Créer la facture"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Laver les pneus",
+      "wash_rims": "Laver les jantes",
+      "balance": "Équilibrer",
+      "tpms_service": "Service TPMS",
+      "new_valves": "Valves neuves",
+      "repair": "Réparation"
+    },
+    "statuses": {
+      "pending": "À faire",
+      "done": "Fait",
+      "skipped": "Ignoré"
+    },
+    "title": "Préparation",
+    "none": "Rien à faire sur ce jeu.",
+    "add": "Ajouter une préparation",
+    "pickHint": "Cochez ce dont ce jeu a besoin avant de retourner sur le véhicule.",
+    "pendingCount": "{count} à faire",
+    "allComplete": "Tout est fait",
+    "ready": "Prêt",
+    "markDone": "Fait",
+    "completeAll": "Tout marquer fait ({count})",
+    "allDone": "Préparation terminée",
+    "undo": "Remettre dans la liste",
+    "saveFailed": "Enregistrement impossible"
   }
 }

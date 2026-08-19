@@ -61,7 +61,9 @@
     "storedSince": "Sinds",
     "tireCount": "{count} banden",
     "studded": "Spijkerbanden",
-    "roomLeft": "Ruimte voor {count}"
+    "roomLeft": "Ruimte voor {count}",
+    "prep": "Voorb.",
+    "tabNeedsPrep": "Voorbereiding nodig"
   },
   "checkIn": {
     "title": "Banden innemen",
@@ -99,7 +101,8 @@
     "submit": "Innemen",
     "success": "Set {reference} opgeslagen op {code}",
     "failed": "Innemen mislukt",
-    "noVehiclesForCustomer": "Deze klant heeft nog geen voertuigen. Voeg er eerst een toe op de klantpagina."
+    "noVehiclesForCustomer": "Deze klant heeft nog geen voertuigen. Voeg er eerst een toe op de klantpagina.",
+    "treatmentsHint": "Wat er met deze set moet gebeuren voor opslag of montage."
   },
   "storage": {
     "title": "Stellingen",
@@ -197,7 +200,8 @@
     "note": "Notitie",
     "submit": "Teruggeven",
     "success": "Set {reference} teruggegeven",
-    "failed": "Teruggeven mislukt"
+    "failed": "Teruggeven mislukt",
+    "prepPending": "{count} voorbereidingsklus(sen) open"
   },
   "relocate": {
     "title": "Banden verplaatsen",
@@ -279,6 +283,41 @@
     "endBody": "De facturatie stopt. Reeds verstuurde facturen blijven ongemoeid.",
     "endBodyPending": "De facturatie stopt en {count} niet-gefactureerde periode(n) worden kwijtgescholden. Reeds verstuurde facturen blijven ongemoeid.",
     "ended": "Overeenkomst beëindigd",
-    "endFailed": "Kon de overeenkomst niet beëindigen"
+    "endFailed": "Kon de overeenkomst niet beëindigen",
+    "invoiceTitle": "Deze periode factureren",
+    "invoiceDescription": "{amount} voor bandenopslag toevoegen.",
+    "newInvoice": "Nieuwe factuur",
+    "newInvoiceHint": "Opslag krijgt een eigen document.",
+    "addToOpen": "Of toevoegen aan een open opdracht",
+    "noOpenInvoices": "Geen open opdrachten voor deze klant.",
+    "addLine": "Aan factuur toevoegen",
+    "createInvoice": "Factuur aanmaken"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Banden wassen",
+      "wash_rims": "Velgen wassen",
+      "balance": "Balanceren",
+      "tpms_service": "TPMS-service",
+      "new_valves": "Nieuwe ventielen",
+      "repair": "Reparatie"
+    },
+    "statuses": {
+      "pending": "Te doen",
+      "done": "Klaar",
+      "skipped": "Overgeslagen"
+    },
+    "title": "Voorbereiding",
+    "none": "Aan deze set hoeft niets te gebeuren.",
+    "add": "Voorbereiding toevoegen",
+    "pickHint": "Vink aan wat deze set nodig heeft voordat hij terug op de auto gaat.",
+    "pendingCount": "{count} te doen",
+    "allComplete": "Alles klaar",
+    "ready": "Klaar",
+    "markDone": "Klaar",
+    "completeAll": "Alle {count} als klaar markeren",
+    "allDone": "Alle voorbereiding klaar",
+    "undo": "Terug op de lijst",
+    "saveFailed": "Kon niet opslaan"
   }
 }

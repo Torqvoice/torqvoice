@@ -128,6 +128,9 @@
     "tire_agreement_update": "Обновлён договор хранения",
     "tire_agreement_end": "Завершён договор хранения",
     "tire_agreement_invoice": "Выставлен счёт за хранение шин",
-    "tire_agreement_waive": "Списан период хранения"
+    "tire_agreement_waive": "Списан период хранения",
+    "tire_treatment_update": "Обновлена подготовка",
+    "tire_treatment_mark": "Отмечена подготовка",
+    "tire_treatment_complete_all": "Подготовка завершена"
   }
 }

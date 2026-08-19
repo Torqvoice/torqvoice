@@ -113,7 +113,13 @@ export async function getTireSetsPaginated(params: {
 
       const where: Prisma.TireSetWhereInput = { organizationId }
 
-      if (params.status && params.status !== 'all') where.status = params.status
+      // "needs_prep" is not a set status but a question about its work list, so
+      // it filters on outstanding treatments and leaves the status alone.
+      if (params.status === 'needs_prep') {
+        where.treatments = { some: { status: 'pending' } }
+      } else if (params.status && params.status !== 'all') {
+        where.status = params.status
+      }
       if (params.season && params.season !== 'all') where.season = params.season
       if (params.warehouseId) where.location = { warehouseId: params.warehouseId }
 
@@ -151,7 +157,7 @@ export async function getTireSetsPaginated(params: {
         }
       })()
 
-      const [records, total, statusGroups] = await Promise.all([
+      const [records, total, statusGroups, needsPrepCount] = await Promise.all([
         db.tireSet.findMany({
           where,
           orderBy,
@@ -170,6 +176,7 @@ export async function getTireSetsPaginated(params: {
               take: 8,
               select: { condition: true, treadDepthMm: true, position: true, measuredAt: true },
             },
+            treatments: { select: { type: true, status: true } },
           },
         }),
         db.tireSet.count({ where }),
@@ -178,10 +185,14 @@ export async function getTireSetsPaginated(params: {
           where: { organizationId },
           _count: { _all: true },
         }),
+        db.tireSet.count({
+          where: { organizationId, treatments: { some: { status: 'pending' } } },
+        }),
       ])
 
       const statusCounts: Record<string, number> = {}
       for (const group of statusGroups) statusCounts[group.status] = group._count._all
+      statusCounts.needs_prep = needsPrepCount
 
       return {
         records,
@@ -233,6 +244,10 @@ export async function getTireSet(id: string) {
           movements: {
             orderBy: { createdAt: 'desc' },
             include: { performedBy: { select: { id: true, name: true } } },
+          },
+          treatments: {
+            orderBy: { createdAt: 'asc' },
+            include: { completedBy: { select: { id: true, name: true } } },
           },
         },
       })
@@ -313,6 +328,18 @@ export async function checkInTireSet(input: unknown) {
         if (rows) {
           await tx.tireMeasurement.createMany({
             data: rows.map((row) => ({ ...row, tireSetId: set.id, movementId: movement.id })),
+          })
+        }
+
+        if (data.treatments?.length) {
+          await tx.tireTreatment.createMany({
+            data: data.treatments.map((type) => ({
+              type,
+              status: 'pending',
+              tireSetId: set.id,
+              organizationId,
+            })),
+            skipDuplicates: true,
           })
         }
 

@@ -28,6 +28,7 @@ import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import { CheckInDialog } from '@/features/tire-hotel/Components/CheckInDialog'
+import { TreatmentChips } from '@/features/tire-hotel/Components/TreatmentChips'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
   CONDITION_TOKENS,
@@ -60,6 +61,7 @@ type TireSetRecord = {
   } | null
   customer: { id: string; name: string; phone: string | null } | null
   measurements: { condition: string; treadDepthMm: number | null }[]
+  treatments: { type: string; status: string }[]
 }
 
 type PaginatedData = {
@@ -75,6 +77,9 @@ const statusTabs = [
   { key: 'all', labelKey: 'tabAll' },
   { key: 'stored', labelKey: 'tabStored' },
   { key: 'released', labelKey: 'tabReleased' },
+  // The tire department's own view: everything still waiting on prep work,
+  // regardless of whether it is on a shelf or going back out.
+  { key: 'needs_prep', labelKey: 'tabNeedsPrep' },
 ] as const
 
 export function TireHotelClient({
@@ -232,6 +237,7 @@ export function TireHotelClient({
                   {t('list.tireCount', { count: set.quantity })}
                 </span>
                 <ConditionDot measurements={set.measurements} />
+                <TreatmentChips treatments={set.treatments} />
               </div>
             </button>
           ))
@@ -244,13 +250,17 @@ export function TireHotelClient({
         <Table className="table-fixed">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-16">{t('list.reference')}</TableHead>
-              <TableHead>{t('list.vehicle')}</TableHead>
+              <TableHead className="w-14">{t('list.reference')}</TableHead>
+              {/* Vehicle takes what is left rather than a share of the table:
+                  a plate and a model need far less room than an even split
+                  gives them, and the shelf code needs more than it got. */}
+              <TableHead className="w-[26%] min-w-0">{t('list.vehicle')}</TableHead>
               <TableHead className="hidden w-[16%] lg:table-cell">{t('list.tires')}</TableHead>
               {/* Shelf codes are workshop-defined and can run long
                   ("Room B-Rack 04-Shelf 2"), so the cell truncates and carries
                   the full code as its title. */}
-              <TableHead className="w-32">{t('list.location')}</TableHead>
+              <TableHead className="w-40">{t('list.location')}</TableHead>
+              <TableHead className="w-20">{t('list.prep')}</TableHead>
               <TableHead className="w-24">{t('list.condition')}</TableHead>
               <TableHead className="w-24">{t('list.status')}</TableHead>
               <TableHead className="hidden w-24 lg:table-cell">{t('list.storedSince')}</TableHead>
@@ -259,7 +269,7 @@ export function TireHotelClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                   {t('list.empty')}
                 </TableCell>
               </TableRow>
@@ -309,6 +319,9 @@ export function TireHotelClient({
                         ) : (
                           <span className="text-xs text-muted-foreground">-</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <TreatmentChips treatments={set.treatments} />
                       </TableCell>
                       <TableCell>
                         <ConditionDot measurements={set.measurements} />

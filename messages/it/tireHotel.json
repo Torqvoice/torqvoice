@@ -61,7 +61,9 @@
     "storedSince": "Dal",
     "tireCount": "{count} pneumatici",
     "studded": "Chiodati",
-    "roomLeft": "Spazio per {count}"
+    "roomLeft": "Spazio per {count}",
+    "prep": "Prep.",
+    "tabNeedsPrep": "Da preparare"
   },
   "checkIn": {
     "title": "Accettare pneumatici",
@@ -99,7 +101,8 @@
     "submit": "Accetta",
     "success": "Treno {reference} riposto in {code}",
     "failed": "Impossibile accettare il treno",
-    "noVehiclesForCustomer": "Questo cliente non ha ancora veicoli. Aggiungine uno dalla sua scheda cliente."
+    "noVehiclesForCustomer": "Questo cliente non ha ancora veicoli. Aggiungine uno dalla sua scheda cliente.",
+    "treatmentsHint": "Cosa fare su questo treno prima del deposito o del rimontaggio."
   },
   "storage": {
     "title": "Scaffali",
@@ -197,7 +200,8 @@
     "note": "Nota",
     "submit": "Restituisci",
     "success": "Treno {reference} restituito",
-    "failed": "Impossibile restituire il treno"
+    "failed": "Impossibile restituire il treno",
+    "prepPending": "{count} lavoro/i di preparazione in sospeso"
   },
   "relocate": {
     "title": "Sposta gli pneumatici",
@@ -279,6 +283,41 @@
     "endBody": "La fatturazione si ferma. Le fatture già emesse restano invariate.",
     "endBodyPending": "La fatturazione si ferma e {count} periodo/i non fatturato/i verranno stornati. Le fatture già emesse restano invariate.",
     "ended": "Contratto chiuso",
-    "endFailed": "Impossibile chiudere il contratto"
+    "endFailed": "Impossibile chiudere il contratto",
+    "invoiceTitle": "Fattura questo periodo",
+    "invoiceDescription": "Aggiunta di {amount} per il deposito pneumatici.",
+    "newInvoice": "Nuova fattura",
+    "newInvoiceHint": "Il deposito ha un documento a sé.",
+    "addToOpen": "Oppure aggiungi a un lavoro aperto",
+    "noOpenInvoices": "Nessun lavoro aperto per questo cliente.",
+    "addLine": "Aggiungi alla fattura",
+    "createInvoice": "Crea fattura"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Lavare pneumatici",
+      "wash_rims": "Lavare cerchi",
+      "balance": "Equilibrare",
+      "tpms_service": "Servizio TPMS",
+      "new_valves": "Valvole nuove",
+      "repair": "Riparazione"
+    },
+    "statuses": {
+      "pending": "Da fare",
+      "done": "Fatto",
+      "skipped": "Saltato"
+    },
+    "title": "Preparazione",
+    "none": "Su questo treno non c’è nulla da fare.",
+    "add": "Aggiungi preparazione",
+    "pickHint": "Spunta ciò che serve a questo treno prima di tornare sulla vettura.",
+    "pendingCount": "{count} da fare",
+    "allComplete": "Tutto fatto",
+    "ready": "Pronto",
+    "markDone": "Fatto",
+    "completeAll": "Segna tutti e {count} come fatti",
+    "allDone": "Preparazione completata",
+    "undo": "Rimetti in elenco",
+    "saveFailed": "Impossibile salvare"
   }
 }

@@ -61,7 +61,9 @@
     "storedSince": "Desde",
     "tireCount": "{count} pneus",
     "studded": "Com cravos",
-    "roomLeft": "Espaço para {count}"
+    "roomLeft": "Espaço para {count}",
+    "prep": "Prep.",
+    "tabNeedsPrep": "A preparar"
   },
   "checkIn": {
     "title": "Receber pneus",
@@ -99,7 +101,8 @@
     "submit": "Receber",
     "success": "Jogo {reference} guardado em {code}",
     "failed": "Não foi possível receber o jogo",
-    "noVehiclesForCustomer": "Este cliente ainda não tem veículos. Adicione um na página do cliente primeiro."
+    "noVehiclesForCustomer": "Este cliente ainda não tem veículos. Adicione um na página do cliente primeiro.",
+    "treatmentsHint": "O que fazer neste jogo antes de armazenar ou remontar."
   },
   "storage": {
     "title": "Prateleiras",
@@ -197,7 +200,8 @@
     "note": "Observação",
     "submit": "Devolver",
     "success": "Jogo {reference} devolvido",
-    "failed": "Não foi possível devolver o jogo"
+    "failed": "Não foi possível devolver o jogo",
+    "prepPending": "{count} tarefa(s) de preparação pendente(s)"
   },
   "relocate": {
     "title": "Mover pneus",
@@ -279,6 +283,41 @@
     "endBody": "A cobrança para. Faturas já emitidas não são alteradas.",
     "endBodyPending": "A cobrança para e {count} período(s) não faturado(s) serão dispensados. Faturas já emitidas não são alteradas.",
     "ended": "Contrato encerrado",
-    "endFailed": "Não foi possível encerrar o contrato"
+    "endFailed": "Não foi possível encerrar o contrato",
+    "invoiceTitle": "Faturar este período",
+    "invoiceDescription": "Adicionando {amount} pela armazenagem de pneus.",
+    "newInvoice": "Nova fatura",
+    "newInvoiceHint": "A armazenagem fica em documento próprio.",
+    "addToOpen": "Ou some a um serviço aberto",
+    "noOpenInvoices": "Nenhum serviço aberto para este cliente.",
+    "addLine": "Adicionar à fatura",
+    "createInvoice": "Criar fatura"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Lavar pneus",
+      "wash_rims": "Lavar rodas",
+      "balance": "Balancear",
+      "tpms_service": "Serviço TPMS",
+      "new_valves": "Válvulas novas",
+      "repair": "Reparo"
+    },
+    "statuses": {
+      "pending": "A fazer",
+      "done": "Feito",
+      "skipped": "Pulado"
+    },
+    "title": "Preparação",
+    "none": "Nada a fazer neste jogo.",
+    "add": "Adicionar preparação",
+    "pickHint": "Marque o que este jogo precisa antes de voltar para o carro.",
+    "pendingCount": "{count} a fazer",
+    "allComplete": "Tudo feito",
+    "ready": "Pronto",
+    "markDone": "Feito",
+    "completeAll": "Marcar os {count} como feitos",
+    "allDone": "Preparação concluída",
+    "undo": "Voltar para a lista",
+    "saveFailed": "Não foi possível salvar"
   }
 }

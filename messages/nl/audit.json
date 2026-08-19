@@ -128,6 +128,9 @@
     "tire_agreement_update": "Opslagovereenkomst bijgewerkt",
     "tire_agreement_end": "Opslagovereenkomst beëindigd",
     "tire_agreement_invoice": "Bandenopslag gefactureerd",
-    "tire_agreement_waive": "Opslagperiode kwijtgescholden"
+    "tire_agreement_waive": "Opslagperiode kwijtgescholden",
+    "tire_treatment_update": "Voorbereiding bijgewerkt",
+    "tire_treatment_mark": "Voorbereiding gemarkeerd",
+    "tire_treatment_complete_all": "Voorbereiding afgerond"
   }
 }

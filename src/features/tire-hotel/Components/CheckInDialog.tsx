@@ -29,6 +29,8 @@ import { Loader2, Warehouse } from 'lucide-react'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { LocationPicker, type PickerLocation } from './LocationPicker'
 import { TreadEntry, type TreadRow } from './TreadEntry'
+import { TreatmentPicker } from './TreatmentPicker'
+import { defaultTreatments, type TreatmentType } from '../Lib/treatments'
 import { checkInTireSet } from '../Actions/tireSetActions'
 import { TIRE_SEASONS, TIRE_ROAD_POSITIONS, thirtySecondsToMm } from '../Lib/tireConstants'
 
@@ -84,6 +86,9 @@ export function CheckInDialog({
   const [treads, setTreads] = useState<TreadRow[]>(() =>
     TIRE_ROAD_POSITIONS.map((position) => ({ position, tread: '', condition: 'good' }))
   )
+  const [treatments, setTreatments] = useState<TreatmentType[]>(() =>
+    defaultTreatments({ withRims: false })
+  )
 
   useEffect(() => {
     if (open) return
@@ -101,6 +106,7 @@ export function CheckInDialog({
     setLocationId(null)
     setNotes('')
     setTreads(TIRE_ROAD_POSITIONS.map((position) => ({ position, tread: '', condition: 'good' })))
+    setTreatments(defaultTreatments({ withRims: false }))
   }, [open, defaultQuantity])
 
   const qty = Math.max(1, Number(quantity) || 1)
@@ -167,6 +173,7 @@ export function CheckInDialog({
       locationId,
       notes,
       measurements,
+      treatments,
     })
 
     setSaving(false)
@@ -302,7 +309,23 @@ export function CheckInDialog({
 
           <div className="flex flex-wrap gap-6">
             <div className="flex items-center gap-2">
-              <Switch id="checkInRims" checked={withRims} onCheckedChange={setWithRims} />
+              <Switch
+                id="checkInRims"
+                checked={withRims}
+                onCheckedChange={(on) => {
+                  setWithRims(on)
+                  // Rims arriving almost always means the rims get washed too;
+                  // unticking removes it again rather than leaving a job for
+                  // parts that are not here.
+                  setTreatments((current) =>
+                    on
+                      ? current.includes('wash_rims')
+                        ? current
+                        : [...current, 'wash_rims']
+                      : current.filter((x) => x !== 'wash_rims')
+                  )
+                }}
+              />
               <Label htmlFor="checkInRims" className="font-normal">
                 {t('checkIn.withRims')}
               </Label>
@@ -335,6 +358,19 @@ export function CheckInDialog({
               value={locationId}
               onChange={setLocationId}
               quantity={qty}
+            />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label>{t('treatments.title')}</Label>
+            <p className="text-xs text-muted-foreground">{t('checkIn.treatmentsHint')}</p>
+            <TreatmentPicker
+              selected={treatments}
+              onChange={setTreatments}
+              withRims={withRims}
+              hasTpms={hasTpms}
             />
           </div>
 

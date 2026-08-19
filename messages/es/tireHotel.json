@@ -61,7 +61,9 @@
     "storedSince": "Desde",
     "tireCount": "{count} neumáticos",
     "studded": "Con clavos",
-    "roomLeft": "Sitio para {count}"
+    "roomLeft": "Sitio para {count}",
+    "prep": "Prep.",
+    "tabNeedsPrep": "Pendiente de preparar"
   },
   "checkIn": {
     "title": "Recibir neumáticos",
@@ -99,7 +101,8 @@
     "submit": "Recibir",
     "success": "Juego {reference} guardado en {code}",
     "failed": "No se ha podido recibir el juego",
-    "noVehiclesForCustomer": "Este cliente aún no tiene vehículos. Añade uno desde su ficha de cliente."
+    "noVehiclesForCustomer": "Este cliente aún no tiene vehículos. Añade uno desde su ficha de cliente.",
+    "treatmentsHint": "Qué hay que hacerle a este juego antes de guardarlo o montarlo."
   },
   "storage": {
     "title": "Estantes",
@@ -197,7 +200,8 @@
     "note": "Nota",
     "submit": "Entregar",
     "success": "Juego {reference} entregado",
-    "failed": "No se ha podido entregar el juego"
+    "failed": "No se ha podido entregar el juego",
+    "prepPending": "{count} tarea(s) de preparación pendiente(s)"
   },
   "relocate": {
     "title": "Mover neumáticos",
@@ -279,6 +283,41 @@
     "endBody": "La facturación se detiene. Las facturas ya emitidas no se tocan.",
     "endBodyPending": "La facturación se detiene y se condonarán {count} periodo(s) sin facturar. Las facturas ya emitidas no se tocan.",
     "ended": "Contrato finalizado",
-    "endFailed": "No se ha podido finalizar el contrato"
+    "endFailed": "No se ha podido finalizar el contrato",
+    "invoiceTitle": "Facturar este periodo",
+    "invoiceDescription": "Añadiendo {amount} por almacenaje de neumáticos.",
+    "newInvoice": "Factura nueva",
+    "newInvoiceHint": "El almacenaje tiene su propio documento.",
+    "addToOpen": "O añadir a un trabajo abierto",
+    "noOpenInvoices": "No hay trabajos abiertos para este cliente.",
+    "addLine": "Añadir a la factura",
+    "createInvoice": "Crear factura"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Lavar neumáticos",
+      "wash_rims": "Lavar llantas",
+      "balance": "Equilibrar",
+      "tpms_service": "Servicio TPMS",
+      "new_valves": "Válvulas nuevas",
+      "repair": "Reparación"
+    },
+    "statuses": {
+      "pending": "Por hacer",
+      "done": "Hecho",
+      "skipped": "Omitido"
+    },
+    "title": "Preparación",
+    "none": "No hay nada que hacer en este juego.",
+    "add": "Añadir preparación",
+    "pickHint": "Marca lo que necesita este juego antes de volver al coche.",
+    "pendingCount": "{count} por hacer",
+    "allComplete": "Todo hecho",
+    "ready": "Listo",
+    "markDone": "Hecho",
+    "completeAll": "Marcar los {count} como hechos",
+    "allDone": "Preparación terminada",
+    "undo": "Volver a la lista",
+    "saveFailed": "No se ha podido guardar"
   }
 }

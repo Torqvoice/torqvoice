@@ -48,6 +48,7 @@ model User {
   tireMeasurements       TireMeasurement[]
   tireMovements          TireMovement[]
   tireStorageAgreements  TireStorageAgreement[]
+  tireTreatments         TireTreatment[]
 
   @@map("users")
 }
@@ -834,6 +835,7 @@ model Organization {
   tireMovements          TireMovement[]
   tireStorageAgreements  TireStorageAgreement[]
   tireStorageCharges     TireStorageCharge[]
+  tireTreatments         TireTreatment[]
 
   @@map("organizations")
 }
@@ -1709,6 +1711,7 @@ model TireSet {
   measurements TireMeasurement[]
   movements    TireMovement[]
   agreements   TireStorageAgreement[]
+  treatments   TireTreatment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1899,4 +1902,43 @@ model TireStorageCharge {
   @@index([organizationId, status])
   @@index([serviceRecordId])
   @@map("tire_storage_charges")
+}
+
+/// Work a set needs before it goes back on the car, or before it goes on the
+/// shelf: washing, balancing, a TPMS service.
+///
+/// A task with a state rather than a flag on the set, because the tire
+/// department's real question is "what is left to do on this one", and a
+/// boolean cannot answer that once someone has started. Recording who
+/// finished it also settles the "was this washed?" conversation at pickup.
+model TireTreatment {
+  id String @id @default(cuid())
+
+  /// wash_tires | wash_rims | balance | tpms_service | new_valves | repair
+  /// — see TREATMENT_TYPES
+  type String
+
+  /// pending | done | skipped — see TREATMENT_STATUSES
+  status String @default("pending")
+
+  notes String?
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  completedAt   DateTime?
+  completedById String?
+  completedBy   User?     @relation(fields: [completedById], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One row per kind of work per set: asking for a wash twice is the same
+  /// request, not two.
+  @@unique([tireSetId, type])
+  @@index([organizationId, status])
+  @@map("tire_treatments")
 }

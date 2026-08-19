@@ -7,6 +7,7 @@ import {
   TIRE_SET_STATUSES,
 } from '../Lib/tireConstants'
 import { STORAGE_AGREEMENT_STATUSES, STORAGE_BILLING_MODELS } from '../Lib/billing'
+import { TREATMENT_TYPES } from '../Lib/treatments'
 
 const optionalText = z.string().trim().max(200).optional().or(z.literal(''))
 
@@ -108,6 +109,8 @@ export const tireSetSchema = z.object({
   notes: z.string().trim().max(2000).optional().or(z.literal('')),
   locationId: z.string().min(1).optional().nullable(),
   measurements: z.array(measurementSchema).max(20).optional(),
+  /// Prep work the set needs. Replaces the list wholesale.
+  treatments: z.array(z.enum(TREATMENT_TYPES)).max(TREATMENT_TYPES.length).optional(),
 })
 
 export const updateTireSetSchema = tireSetSchema.partial().extend({

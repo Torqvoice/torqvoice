@@ -61,7 +61,9 @@
     "storedSince": "Seit",
     "tireCount": "{count} Reifen",
     "studded": "Spikes",
-    "roomLeft": "Platz für {count}"
+    "roomLeft": "Platz für {count}",
+    "prep": "Vorb.",
+    "tabNeedsPrep": "Vorbereitung offen"
   },
   "checkIn": {
     "title": "Reifen einlagern",
@@ -99,7 +101,8 @@
     "submit": "Einlagern",
     "success": "Satz {reference} auf {code} eingelagert",
     "failed": "Einlagerung fehlgeschlagen",
-    "noVehiclesForCustomer": "Dieser Kunde hat noch keine Fahrzeuge. Legen Sie zuerst eines auf der Kundenseite an."
+    "noVehiclesForCustomer": "Dieser Kunde hat noch keine Fahrzeuge. Legen Sie zuerst eines auf der Kundenseite an.",
+    "treatmentsHint": "Was mit diesem Satz vor der Einlagerung oder Montage geschehen soll."
   },
   "storage": {
     "title": "Regale",
@@ -197,7 +200,8 @@
     "note": "Notiz",
     "submit": "Auslagern",
     "success": "Satz {reference} zurückgegeben",
-    "failed": "Auslagern fehlgeschlagen"
+    "failed": "Auslagern fehlgeschlagen",
+    "prepPending": "{count} Vorbereitungsarbeit(en) offen"
   },
   "relocate": {
     "title": "Reifen umlagern",
@@ -279,6 +283,41 @@
     "endBody": "Die Abrechnung stoppt. Bereits erstellte Rechnungen bleiben unberührt.",
     "endBodyPending": "Die Abrechnung stoppt und {count} nicht berechnete Periode(n) werden erlassen. Bereits erstellte Rechnungen bleiben unberührt.",
     "ended": "Vereinbarung beendet",
-    "endFailed": "Vereinbarung konnte nicht beendet werden"
+    "endFailed": "Vereinbarung konnte nicht beendet werden",
+    "invoiceTitle": "Diese Periode berechnen",
+    "invoiceDescription": "{amount} für Reifeneinlagerung hinzufügen.",
+    "newInvoice": "Neue Rechnung",
+    "newInvoiceHint": "Die Lagerung bekommt ein eigenes Dokument.",
+    "addToOpen": "Oder zu einem offenen Auftrag",
+    "noOpenInvoices": "Keine offenen Aufträge für diesen Kunden.",
+    "addLine": "Zur Rechnung hinzufügen",
+    "createInvoice": "Rechnung erstellen"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Reifen waschen",
+      "wash_rims": "Felgen waschen",
+      "balance": "Wuchten",
+      "tpms_service": "RDKS-Service",
+      "new_valves": "Neue Ventile",
+      "repair": "Reparatur"
+    },
+    "statuses": {
+      "pending": "Offen",
+      "done": "Erledigt",
+      "skipped": "Übersprungen"
+    },
+    "title": "Vorbereitung",
+    "none": "An diesem Satz ist nichts zu tun.",
+    "add": "Vorbereitung hinzufügen",
+    "pickHint": "Haken Sie an, was dieser Satz braucht, bevor er zurück ans Fahrzeug geht.",
+    "pendingCount": "{count} offen",
+    "allComplete": "Alles erledigt",
+    "ready": "Bereit",
+    "markDone": "Erledigt",
+    "completeAll": "Alle {count} als erledigt markieren",
+    "allDone": "Vorbereitung abgeschlossen",
+    "undo": "Zurück auf die Liste",
+    "saveFailed": "Speichern fehlgeschlagen"
   }
 }

@@ -61,7 +61,9 @@
     "storedSince": "Nuo",
     "tireCount": "{count} padangų",
     "studded": "Su dygliais",
-    "roomLeft": "Vietos {count}"
+    "roomLeft": "Vietos {count}",
+    "prep": "Paruoš.",
+    "tabNeedsPrep": "Reikia paruošti"
   },
   "checkIn": {
     "title": "Priimti padangas",
@@ -99,7 +101,8 @@
     "submit": "Priimti",
     "success": "Komplektas {reference} padėtas į {code}",
     "failed": "Nepavyko priimti komplekto",
-    "noVehiclesForCustomer": "Šis klientas dar neturi transporto priemonių. Pirmiausia pridėkite ją kliento puslapyje."
+    "noVehiclesForCustomer": "Šis klientas dar neturi transporto priemonių. Pirmiausia pridėkite ją kliento puslapyje.",
+    "treatmentsHint": "Ką reikia padaryti su šiuo komplektu prieš saugojimą ar montavimą."
   },
   "storage": {
     "title": "Lentynos",
@@ -197,7 +200,8 @@
     "note": "Pastaba",
     "submit": "Atiduoti",
     "success": "Komplektas {reference} atiduotas",
-    "failed": "Nepavyko atiduoti komplekto"
+    "failed": "Nepavyko atiduoti komplekto",
+    "prepPending": "Liko {count} paruošimo darbas (-ai)"
   },
   "relocate": {
     "title": "Perkelti padangas",
@@ -279,6 +283,41 @@
     "endBody": "Skaičiavimas sustoja. Jau išrašytos sąskaitos nekeičiamos.",
     "endBodyPending": "Skaičiavimas sustoja, o {count} neapmokestintas (-i) laikotarpis (-iai) bus nurašyti. Jau išrašytos sąskaitos nekeičiamos.",
     "ended": "Sutartis nutraukta",
-    "endFailed": "Nepavyko nutraukti sutarties"
+    "endFailed": "Nepavyko nutraukti sutarties",
+    "invoiceTitle": "Išrašyti už šį laikotarpį",
+    "invoiceDescription": "Pridedama {amount} už padangų saugojimą.",
+    "newInvoice": "Nauja sąskaita",
+    "newInvoiceHint": "Saugojimas gauna atskirą dokumentą.",
+    "addToOpen": "Arba pridėti prie atviro darbo",
+    "noOpenInvoices": "Šiam klientui atvirų darbų nėra.",
+    "addLine": "Pridėti į sąskaitą",
+    "createInvoice": "Sukurti sąskaitą"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Nuplauti padangas",
+      "wash_rims": "Nuplauti ratlankius",
+      "balance": "Balansuoti",
+      "tpms_service": "TPMS aptarnavimas",
+      "new_valves": "Nauji ventiliai",
+      "repair": "Remontas"
+    },
+    "statuses": {
+      "pending": "Reikia atlikti",
+      "done": "Atlikta",
+      "skipped": "Praleista"
+    },
+    "title": "Paruošimas",
+    "none": "Su šiuo komplektu nieko daryti nereikia.",
+    "add": "Pridėti paruošimo darbą",
+    "pickHint": "Pažymėkite, ko šiam komplektui reikia prieš grąžinant ant automobilio.",
+    "pendingCount": "Liko {count}",
+    "allComplete": "Viskas atlikta",
+    "ready": "Paruošta",
+    "markDone": "Atlikta",
+    "completeAll": "Pažymėti visus {count} kaip atliktus",
+    "allDone": "Paruošimas baigtas",
+    "undo": "Grąžinti į sąrašą",
+    "saveFailed": "Nepavyko išsaugoti"
   }
 }

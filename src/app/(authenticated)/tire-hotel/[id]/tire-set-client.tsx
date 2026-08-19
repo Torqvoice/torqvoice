@@ -15,6 +15,7 @@ import { CheckOutDialog } from '@/features/tire-hotel/Components/CheckOutDialog'
 import { EditTireSetDialog } from '@/features/tire-hotel/Components/EditTireSetDialog'
 import { RelocateDialog } from '@/features/tire-hotel/Components/RelocateDialog'
 import { AgreementCard, type AgreementRow } from '@/features/tire-hotel/Components/AgreementCard'
+import { TreatmentCard, type TreatmentRow } from '@/features/tire-hotel/Components/TreatmentCard'
 import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
@@ -91,6 +92,7 @@ type TireSet = {
   customer: { id: string; name: string; phone: string | null; email: string | null } | null
   measurements: Measurement[]
   movements: Movement[]
+  treatments: TreatmentRow[]
 }
 
 /**
@@ -109,7 +111,12 @@ export function TireSetClient({
   set: TireSet
   locations: PickerLocation[]
   agreements: AgreementRow[]
-  billing: { seasonalPrice: number; monthlyPrice: number; currency: string }
+  billing: {
+    seasonalPrice: number
+    monthlyPrice: number
+    currency: string
+    preferExistingInvoice: boolean
+  }
   vehicles: {
     id: string
     make: string
@@ -232,7 +239,16 @@ export function TireSetClient({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
-          {/* Latest condition first: it is what a customer asks about. */}
+          {/* Prep work leads: the tire department opens this page to find out
+              what is left to do, and everything else is reference. */}
+          <TreatmentCard
+            tireSetId={set.id}
+            treatments={set.treatments}
+            withRims={set.withRims}
+            hasTpms={set.hasTpms}
+          />
+
+          {/* Then condition: it is what a customer asks about. */}
           <AppCard
             icon={Disc3}
             title={t('detail.conditionTitle')}
@@ -263,6 +279,7 @@ export function TireSetClient({
             defaultSeasonalPrice={billing.seasonalPrice}
             defaultMonthlyPrice={billing.monthlyPrice}
             currency={billing.currency}
+            preferExistingInvoice={billing.preferExistingInvoice}
           />
 
           <AppCard icon={MapPin} title={t('detail.historyTitle')} contentClassName="space-y-0 p-0">
@@ -383,6 +400,7 @@ export function TireSetClient({
         locationCode={set.location?.code ?? null}
         season={set.season}
         imperial={imperial}
+        treatments={set.treatments}
       />
 
       <RelocateDialog

@@ -13,14 +13,7 @@ import {
   invoiceChargeSchema,
   updateAgreementSchema,
 } from '../Schema/tireHotelSchema'
-import {
-  duePeriods,
-  parseExtras,
-  periodAmount,
-  round2,
-  type InvoiceTarget,
-  type StorageBillingModel,
-} from '../Lib/billing'
+import { duePeriods, parseExtras, periodAmount, round2, type InvoiceTarget } from '../Lib/billing'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
@@ -107,6 +100,59 @@ export async function getAgreementsForSet(tireSetId: string) {
               },
             },
           },
+        },
+      })
+    },
+    { requiredPermissions: READ }
+  )
+}
+
+/**
+ * Open jobs a storage charge could be added to.
+ *
+ * Scoped to the paying customer and their vehicles, so the picker never
+ * offers someone else's invoice — appending to the wrong job is a mistake
+ * nobody notices until the customer queries the bill.
+ */
+export async function getOpenInvoicesForCharge(chargeId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+
+      const charge = await db.tireStorageCharge.findFirst({
+        where: { id: chargeId, organizationId },
+        select: {
+          agreement: {
+            select: { customerId: true, tireSet: { select: { vehicleId: true } } },
+          },
+        },
+      })
+      if (!charge) throw new Error('Charge not found')
+
+      const { customerId } = charge.agreement
+      const vehicleId = charge.agreement.tireSet.vehicleId
+      if (!customerId && !vehicleId) return []
+
+      return db.serviceRecord.findMany({
+        where: {
+          organizationId,
+          status: { in: ['pending', 'in_progress'] },
+          OR: [
+            ...(customerId ? [{ customerId }] : []),
+            ...(vehicleId ? [{ vehicleId }] : []),
+            ...(customerId ? [{ vehicle: { customerId } }] : []),
+          ],
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        select: {
+          id: true,
+          title: true,
+          invoiceNumber: true,
+          status: true,
+          totalAmount: true,
+          serviceDate: true,
+          vehicle: { select: { licensePlate: true, make: true, model: true } },
         },
       })
     },

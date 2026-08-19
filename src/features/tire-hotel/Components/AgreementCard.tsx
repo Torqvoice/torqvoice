@@ -14,7 +14,8 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { FileText, Loader2, Pencil, Plus, Receipt, Ban } from 'lucide-react'
 import { AgreementDialog, type EditableAgreement } from './AgreementDialog'
-import { endAgreement, invoiceCharge, waiveCharge } from '../Actions/agreementActions'
+import { InvoiceChargeDialog } from './InvoiceChargeDialog'
+import { endAgreement, waiveCharge } from '../Actions/agreementActions'
 import {
   AGREEMENT_STATUS_TOKENS,
   CHARGE_STATUS_TOKENS,
@@ -59,12 +60,14 @@ export function AgreementCard({
   defaultSeasonalPrice,
   defaultMonthlyPrice,
   currency,
+  preferExistingInvoice,
 }: {
   tireSetId: string
   agreements: AgreementRow[]
   defaultSeasonalPrice: number
   defaultMonthlyPrice: number
   currency: string
+  preferExistingInvoice: boolean
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -73,20 +76,9 @@ export function AgreementCard({
   const [showDialog, setShowDialog] = useState(false)
   const [editing, setEditing] = useState<AgreementRow | undefined>()
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [invoicing, setInvoicing] = useState<{ id: string; amount: number } | null>(null)
 
   const active = agreements.find((a) => a.status === 'active')
-
-  const handleInvoice = async (chargeId: string) => {
-    setBusyId(chargeId)
-    const result = await invoiceCharge({ chargeId })
-    setBusyId(null)
-    if (!result.success) {
-      toast.error(result.error ?? t('agreement.invoiceFailed'))
-      return
-    }
-    toast.success(t('agreement.invoiced', { number: result.data?.invoiceNumber ?? '' }))
-    router.refresh()
-  }
 
   const handleWaive = async (chargeId: string) => {
     const ok = await confirm({
@@ -258,14 +250,10 @@ export function AgreementCard({
                             <Button
                               size="sm"
                               className="h-7"
-                              onClick={() => handleInvoice(charge.id)}
+                              onClick={() => setInvoicing({ id: charge.id, amount: charge.amount })}
                               disabled={busyId === charge.id}
                             >
-                              {busyId === charge.id ? (
-                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                              ) : (
-                                <Receipt className="mr-1 h-3 w-3" />
-                              )}
+                              <Receipt className="mr-1 h-3 w-3" />
                               {t('agreement.invoice')}
                             </Button>
                             <Button
@@ -289,6 +277,17 @@ export function AgreementCard({
             </div>
           )
         })
+      )}
+
+      {invoicing && (
+        <InvoiceChargeDialog
+          open
+          onOpenChange={(open) => !open && setInvoicing(null)}
+          chargeId={invoicing.id}
+          amount={invoicing.amount}
+          currency={currency}
+          preferExisting={preferExistingInvoice}
+        />
       )}
 
       <AgreementDialog

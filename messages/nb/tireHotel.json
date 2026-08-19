@@ -61,7 +61,9 @@
     "storedSince": "Siden",
     "tireCount": "{count} dekk",
     "studded": "Piggdekk",
-    "roomLeft": "Plass til {count}"
+    "roomLeft": "Plass til {count}",
+    "prep": "Klargjør",
+    "tabNeedsPrep": "Trenger klargjøring"
   },
   "checkIn": {
     "title": "Ta inn dekk",
@@ -99,7 +101,8 @@
     "submit": "Ta inn",
     "success": "Sett {reference} lagret på {code}",
     "failed": "Kunne ikke ta inn settet",
-    "noVehiclesForCustomer": "Denne kunden har ingen kjøretøy ennå. Legg til ett på kundesiden først."
+    "noVehiclesForCustomer": "Denne kunden har ingen kjøretøy ennå. Legg til ett på kundesiden først.",
+    "treatmentsHint": "Hva som skal gjøres med dette settet før lagring eller montering."
   },
   "storage": {
     "title": "Hyller",
@@ -197,7 +200,8 @@
     "note": "Notat",
     "submit": "Lever ut",
     "success": "Sett {reference} levert ut",
-    "failed": "Kunne ikke levere ut settet"
+    "failed": "Kunne ikke levere ut settet",
+    "prepPending": "{count} klargjøringsjobb(er) gjenstår"
   },
   "relocate": {
     "title": "Flytt dekk",
@@ -279,6 +283,41 @@
     "endBody": "Faktureringen stopper. Fakturaer som allerede er sendt, berøres ikke.",
     "endBodyPending": "Faktureringen stopper og {count} ufakturert(e) periode(r) frafalles. Fakturaer som allerede er sendt, berøres ikke.",
     "ended": "Avtale avsluttet",
-    "endFailed": "Kunne ikke avslutte avtalen"
+    "endFailed": "Kunne ikke avslutte avtalen",
+    "invoiceTitle": "Fakturer denne perioden",
+    "invoiceDescription": "Legger til {amount} for dekklagring.",
+    "newInvoice": "Ny faktura",
+    "newInvoiceHint": "Lagringen får sitt eget dokument.",
+    "addToOpen": "Eller legg til på en åpen jobb",
+    "noOpenInvoices": "Ingen åpne jobber for denne kunden.",
+    "addLine": "Legg til på faktura",
+    "createInvoice": "Opprett faktura"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Vask dekk",
+      "wash_rims": "Vask felger",
+      "balance": "Balanser",
+      "tpms_service": "TPMS-service",
+      "new_valves": "Nye ventiler",
+      "repair": "Reparasjon"
+    },
+    "statuses": {
+      "pending": "Skal gjøres",
+      "done": "Ferdig",
+      "skipped": "Hoppet over"
+    },
+    "title": "Klargjøring",
+    "none": "Ingenting å gjøre på dette settet.",
+    "add": "Legg til klargjøring",
+    "pickHint": "Kryss av for hva dette settet trenger før det skal på bilen igjen.",
+    "pendingCount": "{count} igjen",
+    "allComplete": "Alt ferdig",
+    "ready": "Klar",
+    "markDone": "Ferdig",
+    "completeAll": "Merk alle {count} som ferdig",
+    "allDone": "All klargjøring ferdig",
+    "undo": "Legg tilbake på lista",
+    "saveFailed": "Kunne ikke lagre"
   }
 }

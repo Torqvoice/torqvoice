@@ -128,6 +128,9 @@
     "tire_agreement_update": "Contratto di deposito aggiornato",
     "tire_agreement_end": "Contratto di deposito chiuso",
     "tire_agreement_invoice": "Deposito pneumatici fatturato",
-    "tire_agreement_waive": "Periodo di deposito stornato"
+    "tire_agreement_waive": "Periodo di deposito stornato",
+    "tire_treatment_update": "Preparazione aggiornata",
+    "tire_treatment_mark": "Preparazione segnata",
+    "tire_treatment_complete_all": "Preparazione completata"
   }
 }

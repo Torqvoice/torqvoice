@@ -128,6 +128,9 @@
     "tire_agreement_update": "Depolama sözleşmesi güncellendi",
     "tire_agreement_end": "Depolama sözleşmesi sonlandırıldı",
     "tire_agreement_invoice": "Lastik depolaması faturalandı",
-    "tire_agreement_waive": "Depolama dönemi muaf tutuldu"
+    "tire_agreement_waive": "Depolama dönemi muaf tutuldu",
+    "tire_treatment_update": "Hazırlık güncellendi",
+    "tire_treatment_mark": "Hazırlık işaretlendi",
+    "tire_treatment_complete_all": "Hazırlık tamamlandı"
   }
 }

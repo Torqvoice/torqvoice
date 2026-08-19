@@ -128,6 +128,9 @@
     "tire_agreement_update": "Contrat de stockage modifié",
     "tire_agreement_end": "Contrat de stockage terminé",
     "tire_agreement_invoice": "Stockage de pneus facturé",
-    "tire_agreement_waive": "Période de stockage offerte"
+    "tire_agreement_waive": "Période de stockage offerte",
+    "tire_treatment_update": "Préparation modifiée",
+    "tire_treatment_mark": "Préparation marquée",
+    "tire_treatment_complete_all": "Préparation terminée"
   }
 }

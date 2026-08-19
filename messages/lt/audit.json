@@ -128,6 +128,9 @@
     "tire_agreement_update": "Atnaujinta saugojimo sutartis",
     "tire_agreement_end": "Nutraukta saugojimo sutartis",
     "tire_agreement_invoice": "Išrašyta sąskaita už padangų saugojimą",
-    "tire_agreement_waive": "Nurašytas saugojimo laikotarpis"
+    "tire_agreement_waive": "Nurašytas saugojimo laikotarpis",
+    "tire_treatment_update": "Atnaujintas paruošimas",
+    "tire_treatment_mark": "Pažymėtas paruošimas",
+    "tire_treatment_complete_all": "Paruošimas baigtas"
   }
 }

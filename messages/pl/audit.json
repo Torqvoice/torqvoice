@@ -128,6 +128,9 @@
     "tire_agreement_update": "Zaktualizowano umowę przechowywania",
     "tire_agreement_end": "Zakończono umowę przechowywania",
     "tire_agreement_invoice": "Zafakturowano przechowywanie opon",
-    "tire_agreement_waive": "Umorzono okres przechowywania"
+    "tire_agreement_waive": "Umorzono okres przechowywania",
+    "tire_treatment_update": "Zaktualizowano przygotowanie",
+    "tire_treatment_mark": "Oznaczono przygotowanie",
+    "tire_treatment_complete_all": "Ukończono przygotowanie"
   }
 }

@@ -15,10 +15,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2 } from 'lucide-react'
+import { Loader2, TriangleAlert } from 'lucide-react'
 import { TreadEntry, type TreadRow } from './TreadEntry'
 import { checkOutTireSet } from '../Actions/tireSetActions'
 import { TIRE_ROAD_POSITIONS, thirtySecondsToMm } from '../Lib/tireConstants'
+import { pendingTreatments } from '../Lib/treatments'
 
 /**
  * Departure.
@@ -35,6 +36,7 @@ export function CheckOutDialog({
   locationCode,
   season,
   imperial,
+  treatments = [],
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -43,6 +45,7 @@ export function CheckOutDialog({
   locationCode: string | null
   season: string
   imperial: boolean
+  treatments?: { type: string; status: string }[]
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
@@ -57,6 +60,8 @@ export function CheckOutDialog({
     setNote('')
     setTreads(TIRE_ROAD_POSITIONS.map((position) => ({ position, tread: '', condition: 'good' })))
   }, [open])
+
+  const outstanding = pendingTreatments(treatments)
 
   const handleSubmit = async () => {
     setSaving(true)
@@ -97,6 +102,24 @@ export function CheckOutDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Handing back tires that were never washed is the complaint this
+              module exists to prevent, so unfinished prep is surfaced here
+              rather than left for someone to notice. It warns and does not
+              block: the shop may have good reason to release them anyway. */}
+          {outstanding.length > 0 && (
+            <div className="flex gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+              <TriangleAlert className="h-4 w-4 shrink-0 text-amber-600" />
+              <div className="min-w-0 text-sm">
+                <p className="font-medium text-amber-700 dark:text-amber-500">
+                  {t('checkOut.prepPending', { count: outstanding.length })}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {outstanding.map((x) => t(`treatments.types.${x.type}`)).join(', ')}
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label>{t('checkOut.treadTitle')}</Label>
             <p className="text-xs text-muted-foreground">{t('checkOut.treadHint')}</p>

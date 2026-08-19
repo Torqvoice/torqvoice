@@ -128,6 +128,9 @@
     "tire_agreement_update": "Updated storage agreement",
     "tire_agreement_end": "Ended storage agreement",
     "tire_agreement_invoice": "Invoiced tire storage",
-    "tire_agreement_waive": "Waived a storage period"
+    "tire_agreement_waive": "Waived a storage period",
+    "tire_treatment_update": "Updated prep work",
+    "tire_treatment_mark": "Marked prep work",
+    "tire_treatment_complete_all": "Completed prep work"
   }
 }

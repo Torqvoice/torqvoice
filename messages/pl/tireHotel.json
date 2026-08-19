@@ -61,7 +61,9 @@
     "storedSince": "Od",
     "tireCount": "{count} opon",
     "studded": "Z kolcami",
-    "roomLeft": "Miejsce na {count}"
+    "roomLeft": "Miejsce na {count}",
+    "prep": "Przyg.",
+    "tabNeedsPrep": "Do przygotowania"
   },
   "checkIn": {
     "title": "Przyjmij opony",
@@ -99,7 +101,8 @@
     "submit": "Przyjmij",
     "success": "Komplet {reference} odłożony na {code}",
     "failed": "Nie udało się przyjąć kompletu",
-    "noVehiclesForCustomer": "Ten klient nie ma jeszcze pojazdów. Najpierw dodaj pojazd na jego stronie klienta."
+    "noVehiclesForCustomer": "Ten klient nie ma jeszcze pojazdów. Najpierw dodaj pojazd na jego stronie klienta.",
+    "treatmentsHint": "Co należy zrobić z tym kompletem przed magazynowaniem lub montażem."
   },
   "storage": {
     "title": "Półki",
@@ -197,7 +200,8 @@
     "note": "Notatka",
     "submit": "Wydaj",
     "success": "Komplet {reference} wydany",
-    "failed": "Nie udało się wydać kompletu"
+    "failed": "Nie udało się wydać kompletu",
+    "prepPending": "Pozostało {count} zadań przygotowania"
   },
   "relocate": {
     "title": "Przenieś opony",
@@ -279,6 +283,41 @@
     "endBody": "Rozliczanie się zatrzymuje. Wystawione już faktury pozostają bez zmian.",
     "endBodyPending": "Rozliczanie się zatrzymuje, a {count} nierozliczony(ch) okres(ów) zostanie umorzonych. Wystawione już faktury pozostają bez zmian.",
     "ended": "Umowa zakończona",
-    "endFailed": "Nie udało się zakończyć umowy"
+    "endFailed": "Nie udało się zakończyć umowy",
+    "invoiceTitle": "Rozlicz ten okres",
+    "invoiceDescription": "Dodawanie {amount} za przechowywanie opon.",
+    "newInvoice": "Nowa faktura",
+    "newInvoiceHint": "Przechowywanie dostaje własny dokument.",
+    "addToOpen": "Albo dodaj do otwartego zlecenia",
+    "noOpenInvoices": "Brak otwartych zleceń dla tego klienta.",
+    "addLine": "Dodaj do faktury",
+    "createInvoice": "Utwórz fakturę"
+  },
+  "treatments": {
+    "types": {
+      "wash_tires": "Umyć opony",
+      "wash_rims": "Umyć felgi",
+      "balance": "Wyważyć",
+      "tpms_service": "Serwis TPMS",
+      "new_valves": "Nowe zawory",
+      "repair": "Naprawa"
+    },
+    "statuses": {
+      "pending": "Do zrobienia",
+      "done": "Zrobione",
+      "skipped": "Pominięte"
+    },
+    "title": "Przygotowanie",
+    "none": "Przy tym komplecie nie ma nic do zrobienia.",
+    "add": "Dodaj przygotowanie",
+    "pickHint": "Zaznacz, czego ten komplet potrzebuje przed powrotem na auto.",
+    "pendingCount": "{count} do zrobienia",
+    "allComplete": "Wszystko gotowe",
+    "ready": "Gotowe",
+    "markDone": "Zrobione",
+    "completeAll": "Oznacz wszystkie {count} jako zrobione",
+    "allDone": "Przygotowanie zakończone",
+    "undo": "Wróć na listę",
+    "saveFailed": "Nie udało się zapisać"
   }
 }
