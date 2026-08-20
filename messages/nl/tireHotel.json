@@ -436,5 +436,9 @@
     "preview": "Voorbeeld",
     "previewScale": "Op printformaat weergegeven. De code scant ook vanaf het scherm.",
     "previewFailed": "Kon geen voorbeeld maken"
+  },
+  "vehicle": {
+    "title": "In bandenhotel",
+    "count": "{count} sets"
   }
 }

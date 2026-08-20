@@ -436,5 +436,9 @@
     "preview": "Forhåndsvisning",
     "previewScale": "Vist i utskriftsstørrelse. Koden kan skannes rett fra skjermen.",
     "previewFailed": "Kunne ikke lage forhåndsvisning"
+  },
+  "vehicle": {
+    "title": "På dekkhotell",
+    "count": "{count} sett"
   }
 }

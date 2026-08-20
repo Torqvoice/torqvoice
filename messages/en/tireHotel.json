@@ -436,5 +436,9 @@
     "preview": "Preview",
     "previewScale": "Shown at print size. Scanning the code on screen works too.",
     "previewFailed": "Could not build a preview"
+  },
+  "vehicle": {
+    "title": "In tire hotel",
+    "count": "{count} sets"
   }
 }

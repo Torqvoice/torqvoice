@@ -183,9 +183,11 @@ export function VehiclesClient({
 
   const SortIcon = ({ column }: { column: string }) => {
     if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
-    return sortOrder === 'asc'
-      ? <ArrowUp className="ml-1 h-3 w-3" />
-      : <ArrowDown className="ml-1 h-3 w-3" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
   }
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -262,7 +264,8 @@ export function VehiclesClient({
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {t('archived')}{archivedCount > 0 ? ` (${archivedCount})` : ''}
+              {t('archived')}
+              {archivedCount > 0 ? ` (${archivedCount})` : ''}
             </button>
           </div>
           <div className="relative flex-1 min-w-0 sm:max-w-sm">
@@ -328,258 +331,297 @@ export function VehiclesClient({
         </div>
       ) : view === 'table' ? (
         <>
-        {/* Card list (phones + small tablets) */}
-        <div className="space-y-2 md:hidden">
-          {data.vehicles.map((v) => (
-            <div key={v.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-left"
-                onClick={() => router.push(`/vehicles/${v.id}`)}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="min-w-0 flex-1 truncate font-medium">
-                    {v.year} {v.make} {v.model}
-                  </span>
-                  {v.licensePlate && (
-                    <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
-                  )}
-                </div>
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  {v.customer && <span className="truncate">{v.customer.name}</span>}
-                  <span className="font-mono">
-                    {new Intl.NumberFormat('en-US').format(v.mileage)}
-                  </span>
-                  <span>
-                    {t('table.services')}: {v._count.serviceRecords}
-                  </span>
-                </div>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 h-9 w-9 shrink-0"
-                    aria-label={t('openMenu')}
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {!isArchived && (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditVehicle(v)
-                        setShowForm(true)
-                      }}
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      {t('edit')}
-                    </DropdownMenuItem>
-                  )}
-                  {isArchived ? (
-                    <DropdownMenuItem
-                      onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
-                    >
-                      <ArchiveRestore className="mr-2 h-4 w-4" />
-                      {t('unarchive')}
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem
-                      onClick={() =>
-                        setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
-                      }
-                    >
-                      <Archive className="mr-2 h-4 w-4" />
-                      {t('archive')}
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {t('delete')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ))}
-        </div>
-
-        {/* Table (md and up) */}
-        <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
-          <TableContextMenuHint />
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[120px]">
-                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('plate')}>
-                    {t('table.plate')}<SortIcon column="plate" />
-                  </button>
-                </TableHead>
-                <TableHead>
-                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('vehicle')}>
-                    {t('table.vehicle')}<SortIcon column="vehicle" />
-                  </button>
-                </TableHead>
-                <TableHead className="hidden w-[24%] sm:table-cell">
-                  <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
-                    {t('table.customer')}<SortIcon column="customer" />
-                  </button>
-                </TableHead>
-                <TableHead className="hidden md:table-cell w-[100px]">
-                  <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort('mileage')}>
-                    {serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}<SortIcon column="mileage" />
-                  </button>
-                </TableHead>
-                <TableHead className="w-[80px]">
-                  <button type="button" className="mx-auto flex items-center hover:text-foreground" onClick={() => handleSort('services')}>
-                    {t('table.services')}<SortIcon column="services" />
-                  </button>
-                </TableHead>
-                <TableHead className="w-[50px]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.vehicles.map((v) => (
-                <ContextMenu key={v.id} modal={false}>
-                <ContextMenuTrigger asChild>
-                <TableRow
-                  className="cursor-pointer"
-                  {...interactiveRow(() => router.push(`/vehicles/${v.id}`))}
+          {/* Card list (phones + small tablets) */}
+          <div className="space-y-2 md:hidden">
+            {data.vehicles.map((v) => (
+              <div key={v.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 text-left"
+                  onClick={() => router.push(`/vehicles/${v.id}`)}
                 >
-                  <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
-                  <TableCell className="truncate">
-                    <span className="font-medium">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">
                       {v.year} {v.make} {v.model}
                     </span>
-                  </TableCell>
-                  <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
-                    {v.customer ? (
-                      <TableCellLink href={`/customers/${v.customer.id}`}>
-                        {v.customer.name}
-                      </TableCellLink>
-                    ) : (
-                      '-'
+                    {v.licensePlate && (
+                      <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
                     )}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-right font-mono text-sm">
-                    {new Intl.NumberFormat('en-US').format(v.mileage)}
-                  </TableCell>
-                  <TableCell className="text-center">{v._count.serviceRecords}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {!isArchived && (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setEditVehicle(v)
-                              setShowForm(true)
-                            }}
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            {t('edit')}
-                          </DropdownMenuItem>
-                        )}
-                        {isArchived ? (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
-                            }}
-                          >
-                            <ArchiveRestore className="mr-2 h-4 w-4" />
-                            {t('unarchive')}
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
-                            }}
-                          >
-                            <Archive className="mr-2 h-4 w-4" />
-                            {t('archive')}
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    {v.customer && <span className="truncate">{v.customer.name}</span>}
+                    <span className="font-mono">
+                      {new Intl.NumberFormat('en-US').format(v.mileage)}
+                    </span>
+                    <span>
+                      {t('table.services')}: {v._count.serviceRecords}
+                    </span>
+                  </div>
+                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="-mr-1 h-9 w-9 shrink-0"
+                      aria-label={t('openMenu')}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {!isArchived && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setEditVehicle(v)
+                          setShowForm(true)
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        {t('edit')}
+                      </DropdownMenuItem>
+                    )}
+                    {isArchived ? (
+                      <DropdownMenuItem
+                        onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                      >
+                        <ArchiveRestore className="mr-2 h-4 w-4" />
+                        {t('unarchive')}
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem
+                        onClick={() =>
+                          setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
+                        }
+                      >
+                        <Archive className="mr-2 h-4 w-4" />
+                        {t('archive')}
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t('delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ))}
+          </div>
+
+          {/* Table (md and up) */}
+          <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+            <TableContextMenuHint />
+            <Table className="table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[120px]">
+                    <button
+                      type="button"
+                      className="flex items-center hover:text-foreground"
+                      onClick={() => handleSort('plate')}
+                    >
+                      {t('table.plate')}
+                      <SortIcon column="plate" />
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      className="flex items-center hover:text-foreground"
+                      onClick={() => handleSort('vehicle')}
+                    >
+                      {t('table.vehicle')}
+                      <SortIcon column="vehicle" />
+                    </button>
+                  </TableHead>
+                  <TableHead className="hidden w-[24%] sm:table-cell">
+                    <button
+                      type="button"
+                      className="flex items-center hover:text-foreground"
+                      onClick={() => handleSort('customer')}
+                    >
+                      {t('table.customer')}
+                      <SortIcon column="customer" />
+                    </button>
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell w-[100px]">
+                    <button
+                      type="button"
+                      className="ml-auto flex items-center hover:text-foreground"
+                      onClick={() => handleSort('mileage')}
+                    >
+                      {serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}
+                      <SortIcon column="mileage" />
+                    </button>
+                  </TableHead>
+                  <TableHead className="w-[80px]">
+                    <button
+                      type="button"
+                      className="mx-auto flex items-center hover:text-foreground"
+                      onClick={() => handleSort('services')}
+                    >
+                      {t('table.services')}
+                      <SortIcon column="services" />
+                    </button>
+                  </TableHead>
+                  <TableHead className="w-[50px]" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.vehicles.map((v) => (
+                  <ContextMenu key={v.id} modal={false}>
+                    <ContextMenuTrigger asChild>
+                      <TableRow
+                        className="cursor-pointer"
+                        {...interactiveRow(() => router.push(`/vehicles/${v.id}`))}
+                      >
+                        <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
+                        <TableCell className="truncate">
+                          <span className="font-medium">
+                            {v.year} {v.make} {v.model}
+                          </span>
+                        </TableCell>
+                        <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
+                          {v.customer ? (
+                            <TableCellLink href={`/customers/${v.customer.id}`}>
+                              {v.customer.name}
+                            </TableCellLink>
+                          ) : (
+                            '-'
+                          )}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-right font-mono text-sm">
+                          {new Intl.NumberFormat('en-US').format(v.mileage)}
+                        </TableCell>
+                        <TableCell className="text-center">{v._count.serviceRecords}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                aria-label={t('openMenu')}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {!isArchived && (
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setEditVehicle(v)
+                                    setShowForm(true)
+                                  }}
+                                >
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  {t('edit')}
+                                </DropdownMenuItem>
+                              )}
+                              {isArchived ? (
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
+                                  }}
+                                >
+                                  <ArchiveRestore className="mr-2 h-4 w-4" />
+                                  {t('unarchive')}
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setArchiveTarget({
+                                      id: v.id,
+                                      name: `${v.year} ${v.make} ${v.model}`,
+                                    })
+                                  }}
+                                >
+                                  <Archive className="mr-2 h-4 w-4" />
+                                  {t('archive')}
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {t('delete')}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="min-w-52">
+                      <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        {tcm('open')}
+                      </ContextMenuItem>
+                      {v.customer && (
+                        <ContextMenuItem
+                          onClick={() => router.push(`/customers/${v.customer?.id}`)}
+                        >
+                          <Users className="mr-2 h-4 w-4" />
+                          {tcm('openCustomer')}
+                        </ContextMenuItem>
+                      )}
+                      <ContextMenuSeparator />
+                      {!isArchived && (
+                        <ContextMenuItem
+                          onClick={() => {
+                            setEditVehicle(v)
+                            setShowForm(true)
                           }}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {t('delete')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="min-w-52">
-                  <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {tcm('open')}
-                  </ContextMenuItem>
-                  {v.customer && (
-                    <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
-                      <Users className="mr-2 h-4 w-4" />
-                      {tcm('openCustomer')}
-                    </ContextMenuItem>
-                  )}
-                  <ContextMenuSeparator />
-                  {!isArchived && (
-                    <ContextMenuItem
-                      onClick={() => {
-                        setEditVehicle(v)
-                        setShowForm(true)
-                      }}
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      {t('edit')}
-                    </ContextMenuItem>
-                  )}
-                  {isArchived ? (
-                    <ContextMenuItem
-                      onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
-                    >
-                      <ArchiveRestore className="mr-2 h-4 w-4" />
-                      {t('unarchive')}
-                    </ContextMenuItem>
-                  ) : (
-                    <ContextMenuItem
-                      onClick={() => setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })}
-                    >
-                      <Archive className="mr-2 h-4 w-4" />
-                      {t('archive')}
-                    </ContextMenuItem>
-                  )}
-                  <ContextMenuItem
-                    variant="destructive"
-                    onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {t('delete')}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-                </ContextMenu>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          {t('edit')}
+                        </ContextMenuItem>
+                      )}
+                      {isArchived ? (
+                        <ContextMenuItem
+                          onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                        >
+                          <ArchiveRestore className="mr-2 h-4 w-4" />
+                          {t('unarchive')}
+                        </ContextMenuItem>
+                      ) : (
+                        <ContextMenuItem
+                          onClick={() =>
+                            setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
+                          }
+                        >
+                          <Archive className="mr-2 h-4 w-4" />
+                          {t('archive')}
+                        </ContextMenuItem>
+                      )}
+                      <ContextMenuItem
+                        variant="destructive"
+                        onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t('delete')}
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </>
       ) : isPending ? (
         /* Grid skeleton */
-        <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
+        <div
+          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+        >
           {Array.from({ length: view === 'grid6' ? 12 : 6 }).map((_, i) => (
             <Card key={i} className="overflow-hidden border-0 py-0 gap-0 shadow-sm">
               <Skeleton className="aspect-[16/10] rounded-none" />
@@ -592,149 +634,181 @@ export function VehiclesClient({
         </div>
       ) : (
         /* Grid view */
-        <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}>
+        <div
+          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+        >
           {data.vehicles.map((v) => (
             <ContextMenu key={v.id} modal={false}>
-            <ContextMenuTrigger asChild>
-            <Card
-              className="group overflow-hidden border-0 py-0 gap-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5"
-            >
-              <Link href={`/vehicles/${v.id}`}>
-                <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-                  <Image
-                    src={v.imageUrl || '/car_placeholder.avif'}
-                    alt={`${v.year} ${v.make} ${v.model}`}
-                    fill
-                    unoptimized
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className={`absolute inset-x-0 bottom-0 ${view === 'grid6' ? 'p-2' : 'p-4'}`}>
-                    <h3 className={`font-bold text-white drop-shadow-sm ${view === 'grid6' ? 'text-sm' : 'text-lg'}`}>
-                      {v.year} {v.make} {v.model}
-                    </h3>
-                    {v.licensePlate && (
-                      <p className={`font-mono text-white/80 ${view === 'grid6' ? 'text-[10px]' : 'mt-0.5 text-xs'}`}>{v.licensePlate}</p>
-                    )}
-                  </div>
-                  {/* Action menu - desktop only */}
-                  <div className="absolute right-2 top-2 hidden sm:block opacity-0 transition-opacity group-hover:opacity-100">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                        <Button variant="secondary" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {!isArchived && (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setEditVehicle(v)
-                              setShowForm(true)
-                            }}
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            {t('edit')}
-                          </DropdownMenuItem>
-                        )}
-                        {isArchived ? (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.preventDefault()
-                              handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
-                            }}
-                          >
-                            <ArchiveRestore className="mr-2 h-4 w-4" />
-                            {t('unarchive')}
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
-                            }}
-                          >
-                            <Archive className="mr-2 h-4 w-4" />
-                            {t('archive')}
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)
-                          }}
+              <ContextMenuTrigger asChild>
+                <Card className="group overflow-hidden border-0 py-0 gap-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5">
+                  <Link href={`/vehicles/${v.id}`}>
+                    <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                      <Image
+                        src={v.imageUrl || '/car_placeholder.avif'}
+                        alt={`${v.year} ${v.make} ${v.model}`}
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div
+                        className={`absolute inset-x-0 bottom-0 ${view === 'grid6' ? 'p-2' : 'p-4'}`}
+                      >
+                        <h3
+                          className={`font-bold text-white drop-shadow-sm ${view === 'grid6' ? 'text-sm' : 'text-lg'}`}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {t('delete')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                <CardContent className={`flex items-center justify-between ${view === 'grid6' ? 'px-2 py-1.5 text-xs' : 'px-4 py-2 text-sm'}`}>
-                  <div className="flex items-center gap-1.5 text-foreground">
-                    <Gauge className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
-                    <span className="font-medium">{new Intl.NumberFormat('en-US').format(v.mileage)}</span>
-                  </div>
-                  <div className={`flex items-center ${view === 'grid6' ? 'gap-2' : 'gap-3'} text-foreground`}>
-                    {v.customer && <span className={view === 'grid6' ? 'text-[10px] hidden xl:inline' : 'text-xs'}>{v.customer.name}</span>}
-                    <div className="flex items-center gap-1">
-                      <Wrench className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
-                      <span>{v._count.serviceRecords}</span>
+                          {v.year} {v.make} {v.model}
+                        </h3>
+                        {v.licensePlate && (
+                          <p
+                            className={`font-mono text-white/80 ${view === 'grid6' ? 'text-[10px]' : 'mt-0.5 text-xs'}`}
+                          >
+                            {v.licensePlate}
+                          </p>
+                        )}
+                      </div>
+                      {/* Action menu - desktop only */}
+                      <div className="absolute right-2 top-2 hidden sm:block opacity-0 transition-opacity group-hover:opacity-100">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              className="h-8 w-8"
+                              aria-label={t('openMenu')}
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {!isArchived && (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  setEditVehicle(v)
+                                  setShowForm(true)
+                                }}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                {t('edit')}
+                              </DropdownMenuItem>
+                            )}
+                            {isArchived ? (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
+                                }}
+                              >
+                                <ArchiveRestore className="mr-2 h-4 w-4" />
+                                {t('unarchive')}
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  setArchiveTarget({
+                                    id: v.id,
+                                    name: `${v.year} ${v.make} ${v.model}`,
+                                  })
+                                }}
+                              >
+                                <Archive className="mr-2 h-4 w-4" />
+                                {t('archive')}
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)
+                              }}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              {t('delete')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Link>
-            </Card>
-            </ContextMenuTrigger>
-            <ContextMenuContent className="min-w-52">
-              <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
-                <ExternalLink className="mr-2 h-4 w-4" />
-                {tcm('open')}
-              </ContextMenuItem>
-              {v.customer && (
-                <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
-                  <Users className="mr-2 h-4 w-4" />
-                  {tcm('openCustomer')}
+                    <CardContent
+                      className={`flex items-center justify-between ${view === 'grid6' ? 'px-2 py-1.5 text-xs' : 'px-4 py-2 text-sm'}`}
+                    >
+                      <div className="flex items-center gap-1.5 text-foreground">
+                        <Gauge className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
+                        <span className="font-medium">
+                          {new Intl.NumberFormat('en-US').format(v.mileage)}
+                        </span>
+                      </div>
+                      <div
+                        className={`flex items-center ${view === 'grid6' ? 'gap-2' : 'gap-3'} text-foreground`}
+                      >
+                        {v.customer && (
+                          <span
+                            className={
+                              view === 'grid6' ? 'text-[10px] hidden xl:inline' : 'text-xs'
+                            }
+                          >
+                            {v.customer.name}
+                          </span>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <Wrench className={view === 'grid6' ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
+                          <span>{v._count.serviceRecords}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Link>
+                </Card>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="min-w-52">
+                <ContextMenuItem onClick={() => router.push(`/vehicles/${v.id}`)}>
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  {tcm('open')}
                 </ContextMenuItem>
-              )}
-              <ContextMenuSeparator />
-              {!isArchived && (
+                {v.customer && (
+                  <ContextMenuItem onClick={() => router.push(`/customers/${v.customer?.id}`)}>
+                    <Users className="mr-2 h-4 w-4" />
+                    {tcm('openCustomer')}
+                  </ContextMenuItem>
+                )}
+                <ContextMenuSeparator />
+                {!isArchived && (
+                  <ContextMenuItem
+                    onClick={() => {
+                      setEditVehicle(v)
+                      setShowForm(true)
+                    }}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    {t('edit')}
+                  </ContextMenuItem>
+                )}
+                {isArchived ? (
+                  <ContextMenuItem
+                    onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
+                  >
+                    <ArchiveRestore className="mr-2 h-4 w-4" />
+                    {t('unarchive')}
+                  </ContextMenuItem>
+                ) : (
+                  <ContextMenuItem
+                    onClick={() =>
+                      setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
+                    }
+                  >
+                    <Archive className="mr-2 h-4 w-4" />
+                    {t('archive')}
+                  </ContextMenuItem>
+                )}
                 <ContextMenuItem
-                  onClick={() => {
-                    setEditVehicle(v)
-                    setShowForm(true)
-                  }}
+                  variant="destructive"
+                  onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
                 >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  {t('edit')}
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t('delete')}
                 </ContextMenuItem>
-              )}
-              {isArchived ? (
-                <ContextMenuItem
-                  onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
-                >
-                  <ArchiveRestore className="mr-2 h-4 w-4" />
-                  {t('unarchive')}
-                </ContextMenuItem>
-              ) : (
-                <ContextMenuItem
-                  onClick={() => setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })}
-                >
-                  <Archive className="mr-2 h-4 w-4" />
-                  {t('archive')}
-                </ContextMenuItem>
-              )}
-              <ContextMenuItem
-                variant="destructive"
-                onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                {t('delete')}
-              </ContextMenuItem>
-            </ContextMenuContent>
+              </ContextMenuContent>
             </ContextMenu>
           ))}
         </div>

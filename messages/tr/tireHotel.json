@@ -436,5 +436,9 @@
     "preview": "Önizleme",
     "previewScale": "Baskı boyutunda gösterilir. Kod ekrandan da okutulabilir.",
     "previewFailed": "Önizleme oluşturulamadı"
+  },
+  "vehicle": {
+    "title": "Lastik otelinde",
+    "count": "{count} takım"
   }
 }

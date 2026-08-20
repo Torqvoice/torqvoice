@@ -436,5 +436,9 @@
     "preview": "Podgląd",
     "previewScale": "Pokazany w rozmiarze wydruku. Kod można zeskanować także z ekranu.",
     "previewFailed": "Nie udało się utworzyć podglądu"
+  },
+  "vehicle": {
+    "title": "W hotelu opon",
+    "count": "{count} kompletów"
   }
 }

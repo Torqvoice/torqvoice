@@ -436,5 +436,9 @@
     "preview": "Aperçu",
     "previewScale": "Affiché à la taille d’impression. Le code se scanne aussi depuis l’écran.",
     "previewFailed": "Aperçu impossible"
+  },
+  "vehicle": {
+    "title": "À l’hôtel à pneus",
+    "count": "{count} jeux"
   }
 }

@@ -436,5 +436,9 @@
     "preview": "Vorschau",
     "previewScale": "In Druckgröße dargestellt. Der Code lässt sich auch vom Bildschirm scannen.",
     "previewFailed": "Vorschau nicht möglich"
+  },
+  "vehicle": {
+    "title": "Im Reifenhotel",
+    "count": "{count} Sätze"
   }
 }

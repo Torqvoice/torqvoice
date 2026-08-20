@@ -436,5 +436,9 @@
     "preview": "Anteprima",
     "previewScale": "Mostrata a dimensione di stampa. Il codice si scansiona anche dallo schermo.",
     "previewFailed": "Impossibile creare l’anteprima"
+  },
+  "vehicle": {
+    "title": "In hotel pneumatici",
+    "count": "{count} treni"
   }
 }

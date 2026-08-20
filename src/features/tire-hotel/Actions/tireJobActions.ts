@@ -13,7 +13,7 @@ import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize } from '../Lib/tireMatching'
 import { billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { requireTireHotel } from '../Lib/tireHotelSettings'
+import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const QUOTE = [
@@ -492,6 +492,45 @@ export async function addTireSetToWorkOrder(input: unknown) {
         metadata: { tireSetId: result.tireSetId },
       }),
     }
+  )
+}
+
+/**
+ * Stored sets belonging to one vehicle.
+ *
+ * Returns nothing when the module is off rather than throwing, since the
+ * vehicle page is not a tire hotel screen and should not fail because a
+ * feature it does not depend on is disabled.
+ */
+export async function getTireSetsForVehicle(vehicleId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      if (!(await isTireHotelEnabled(organizationId))) return []
+
+      return db.tireSet.findMany({
+        where: { vehicleId, organizationId },
+        // Stored first: a released set is history, and the question on a
+        // vehicle page is almost always about tires that are still here.
+        orderBy: [{ status: 'asc' }, { updatedAt: 'desc' }],
+        take: 10,
+        select: {
+          id: true,
+          reference: true,
+          season: true,
+          size: true,
+          quantity: true,
+          status: true,
+          location: { select: { code: true } },
+          measurements: {
+            orderBy: { measuredAt: 'desc' },
+            take: 8,
+            select: { condition: true },
+          },
+          treatments: { select: { type: true, status: true } },
+        },
+      })
+    },
+    { requiredPermissions: READ }
   )
 }
 

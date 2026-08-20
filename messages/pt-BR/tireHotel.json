@@ -436,5 +436,9 @@
     "preview": "Prévia",
     "previewScale": "Exibida no tamanho de impressão. O código também lê direto da tela.",
     "previewFailed": "Não foi possível gerar a prévia"
+  },
+  "vehicle": {
+    "title": "No hotel de pneus",
+    "count": "{count} jogos"
   }
 }
