@@ -9,6 +9,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
+import { addTireLineToRecord } from '../Lib/addTireLine'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
 import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
@@ -435,33 +437,35 @@ export async function createWorkOrderFromTireSet(input: unknown) {
       const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
 
-      // The tires themselves, which a quote and an add-to-existing already
-      // put on the job. Without this the operator picks a tire and a price
-      // and gets a work order with nothing but the prep on it.
-      if (data.includeTires) {
-        await db.servicePart.create({
-          data: {
+      await db.$transaction(async (tx) => {
+        // The tires themselves, which a quote and an add-to-existing already
+        // put on the job. Without this the operator picks a tire and a price
+        // and gets a work order with nothing but the prep on it.
+        if (data.includeTires) {
+          await addTireLineToRecord(tx, organizationId, userId, {
             serviceRecordId: record.id,
             name: part?.name ?? describeSet(set),
             partNumber: part?.partNumber ?? null,
             quantity: lineQuantity,
             unitPrice,
             unitCost: part?.unitCost ?? 0,
-            total: Math.round(unitPrice * lineQuantity * 100) / 100,
             inventoryPartId: part?.id ?? null,
-          },
-        })
-      }
+            recordLabel: record.invoiceNumber || describeSet(set),
+          })
+        }
 
-      if (labor.length > 0) {
-        await db.serviceLabor.createMany({
-          data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
-        })
-      }
+        if (labor.length > 0) {
+          await tx.serviceLabor.createMany({
+            data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
+          })
+        }
 
-      if (data.includeTires || labor.length > 0) {
-        await retotalServiceRecord(record.id)
-      }
+        if (data.includeTires || labor.length > 0) {
+          await retotalServiceRecord(record.id, tx)
+        }
+      })
+
+      if (data.includeTires && part) await onInventoryChanged(organizationId)
 
       const shelf = set.location
         ? `${set.location.code} (${set.location.warehouse.name})`
@@ -553,7 +557,7 @@ export async function getOpenWorkOrdersForSet(tireSetId: string) {
  */
 export async function addTireSetToWorkOrder(input: unknown) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
       const data = fromSetSchema.extend({ serviceRecordId: z.string().min(1) }).parse(input)
       const set = await loadSet(organizationId, data.tireSetId)
@@ -580,17 +584,15 @@ export async function addTireSetToWorkOrder(input: unknown) {
 
       await db.$transaction(async (tx) => {
         if (data.includeTires) {
-          await tx.servicePart.create({
-            data: {
-              serviceRecordId: record.id,
-              name: part?.name ?? describeSet(set),
-              partNumber: part?.partNumber ?? null,
-              quantity: lineQuantity,
-              unitPrice,
-              unitCost: part?.unitCost ?? 0,
-              total: Math.round(unitPrice * lineQuantity * 100) / 100,
-              inventoryPartId: part?.id ?? null,
-            },
+          await addTireLineToRecord(tx, organizationId, userId, {
+            serviceRecordId: record.id,
+            name: part?.name ?? describeSet(set),
+            partNumber: part?.partNumber ?? null,
+            quantity: lineQuantity,
+            unitPrice,
+            unitCost: part?.unitCost ?? 0,
+            inventoryPartId: part?.id ?? null,
+            recordLabel: record.invoiceNumber || describeSet(set),
           })
         }
         if (labor.length > 0) {
@@ -610,6 +612,8 @@ export async function addTireSetToWorkOrder(input: unknown) {
 
         await retotalServiceRecord(record.id, tx)
       })
+
+      if (data.includeTires && part) await onInventoryChanged(organizationId)
 
       revalidatePath(`/tire-hotel/${set.id}`)
       if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
