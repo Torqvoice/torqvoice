@@ -8,8 +8,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "back": "Back",
-    "next": "Next",
-    "clear": "Clear"
+    "next": "Next"
   },
   "seasons": {
     "summer": "Summer",
@@ -419,7 +418,7 @@
     "otherSize": "Other size",
     "inSize": "{count} in {size}",
     "quantity": "Qty",
-    "change": "Change"
+    "noStockItem": "No stock item, priced by hand"
   },
   "label": {
     "action": "Labels",

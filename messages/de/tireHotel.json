@@ -8,8 +8,7 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "back": "Zurück",
-    "next": "Weiter",
-    "clear": "Leeren"
+    "next": "Weiter"
   },
   "seasons": {
     "summer": "Sommer",
@@ -419,7 +418,7 @@
     "otherSize": "Andere Größe",
     "inSize": "{count} in {size}",
     "quantity": "Anz.",
-    "change": "Ändern"
+    "noStockItem": "Kein Lagerartikel, Preis von Hand"
   },
   "label": {
     "action": "Etiketten",

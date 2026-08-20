@@ -8,8 +8,7 @@
     "delete": "Slett",
     "edit": "Rediger",
     "back": "Tilbake",
-    "next": "Neste",
-    "clear": "Tøm"
+    "next": "Neste"
   },
   "seasons": {
     "summer": "Sommer",
@@ -419,7 +418,7 @@
     "otherSize": "Annen dimensjon",
     "inSize": "{count} i {size}",
     "quantity": "Ant.",
-    "change": "Endre"
+    "noStockItem": "Ingen lagervare, pris settes manuelt"
   },
   "label": {
     "action": "Etiketter",

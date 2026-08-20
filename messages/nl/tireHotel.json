@@ -8,8 +8,7 @@
     "delete": "Verwijderen",
     "edit": "Bewerken",
     "back": "Terug",
-    "next": "Volgende",
-    "clear": "Wissen"
+    "next": "Volgende"
   },
   "seasons": {
     "summer": "Zomer",
@@ -419,7 +418,7 @@
     "otherSize": "Andere maat",
     "inSize": "{count} in {size}",
     "quantity": "Aantal",
-    "change": "Wijzigen"
+    "noStockItem": "Geen voorraadartikel, prijs handmatig"
   },
   "label": {
     "action": "Labels",

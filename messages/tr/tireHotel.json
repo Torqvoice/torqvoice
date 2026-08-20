@@ -8,8 +8,7 @@
     "delete": "Sil",
     "edit": "Düzenle",
     "back": "Geri",
-    "next": "İleri",
-    "clear": "Temizle"
+    "next": "İleri"
   },
   "seasons": {
     "summer": "Yaz",
@@ -419,7 +418,7 @@
     "otherSize": "Farklı ebat",
     "inSize": "{size} ebadında {count} adet",
     "quantity": "Adet",
-    "change": "Değiştir"
+    "noStockItem": "Stok kalemi yok, fiyat elle girilir"
   },
   "label": {
     "action": "Etiketler",

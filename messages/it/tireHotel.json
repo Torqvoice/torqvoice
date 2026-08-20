@@ -8,8 +8,7 @@
     "delete": "Elimina",
     "edit": "Modifica",
     "back": "Indietro",
-    "next": "Avanti",
-    "clear": "Cancella"
+    "next": "Avanti"
   },
   "seasons": {
     "summer": "Estivi",
@@ -419,7 +418,7 @@
     "otherSize": "Altra misura",
     "inSize": "{count} in {size}",
     "quantity": "Qtà",
-    "change": "Cambia"
+    "noStockItem": "Nessun articolo a magazzino, prezzo manuale"
   },
   "label": {
     "action": "Etichette",

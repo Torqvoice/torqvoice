@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -13,21 +13,21 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
-import {
-  ArrowLeft,
-  Check,
-  ClipboardList,
-  FilePlus2,
-  Loader2,
-  PackageX,
-  Search,
-  X,
-} from 'lucide-react'
+import { ArrowLeft, Check, ChevronsUpDown, ClipboardList, FilePlus2, Loader2 } from 'lucide-react'
 import {
   addTireSetToWorkOrder,
   createQuoteFromTireSet,
@@ -91,11 +91,10 @@ export function NewTireJobDialog({
   // replacing two of four should not have to fix the line afterwards.
   const [qty, setQty] = useState('')
   const [query, setQuery] = useState('')
-  // The picker is only open while the operator is choosing. Once a tire is
-  // chosen the section shows that one line, because that is what goes on the
-  // job, and a list of alternatives underneath reads as more than one tire.
+  // The picker floats over the dialog rather than growing inside it: a list
+  // that opens in the layout pushes the prep, the total and the buttons down
+  // the screen, and one that resizes per keystroke moves them again.
   const [browsing, setBrowsing] = useState(false)
-  const searchRef = useRef<HTMLInputElement>(null)
   const [hits, setHits] = useState<SearchHits | null>(null)
   const [searching, setSearching] = useState(false)
   // Everything billable starts ticked, since that is the usual job. The point
@@ -137,9 +136,6 @@ export function NewTireJobDialog({
         setPicked(best)
         setPrice(String(best.sellPrice))
       }
-      // Nothing to preselect, so open on the search rather than on an empty
-      // box the operator has to work out how to fill.
-      if (!best) setBrowsing(true)
       setIncludePrep((value?.prep ?? []).map((line) => line.type))
 
       const rows = jobs?.success && jobs.data ? jobs.data : []
@@ -179,13 +175,6 @@ export function NewTireJobDialog({
   // Every match in the size, not a top few: a shop can carry a dozen brands
   // in one fitment and the cheapest is not always the one being sold.
   const suggestions: StockRow[] = searchActive ? (hits ?? []) : (data?.matches ?? [])
-  // The chosen tire sits at the top whatever the search says: it stays
-  // visible when the box is cleared, and it does not hide somewhere down a
-  // scrolled list once the results collapse.
-  const rows: StockRow[] = picked
-    ? [picked, ...suggestions.filter((row) => row.id !== picked.id)]
-    : suggestions
-
   const pick = (row: StockRow) => {
     setPicked(row)
     setPrice(String(row.sellPrice))
@@ -216,9 +205,13 @@ export function NewTireJobDialog({
     )
   }
 
-  const startBrowsing = () => {
-    setBrowsing(true)
-    requestAnimationFrame(() => searchRef.current?.focus())
+  const toggleBrowsing = (next: boolean) => {
+    setBrowsing(next)
+    // A search left over from last time is not the next question being asked.
+    if (!next) {
+      setQuery('')
+      setHits(null)
+    }
   }
 
   const quantity = Math.max(1, Math.min(99, Math.round(Number(qty) || 0)))
@@ -333,136 +326,104 @@ export function NewTireJobDialog({
                 <p className="rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
                   {t('job.tiresSkipped')}
                 </p>
-              ) : picked && !browsing ? (
-                // One line, because one tire goes on the job. Leaving the
-                // alternatives listed underneath reads as more than one tire
-                // being added, which is what it looked like.
-                <div className="flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5">
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm">{picked.name}</span>
-                    {stockMeta(picked)}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={startBrowsing}
-                    className="h-7 shrink-0 px-2 text-xs"
-                  >
-                    {t('job.change')}
-                  </Button>
-                </div>
               ) : (
-                <div className="space-y-2">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <div className="relative min-w-0 flex-1">
-                      <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                      <Input
+                // modal: the content portals out of the dialog, and a dialog's
+                // scroll lock swallows wheel events over everything outside
+                // itself, which would leave this list unscrollable.
+                <Popover open={browsing} onOpenChange={toggleBrowsing} modal>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors hover:bg-muted/60 focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+                    >
+                      <span className="min-w-0 flex-1">
+                        {picked ? (
+                          <>
+                            <span className="block truncate text-sm">{picked.name}</span>
+                            {stockMeta(picked)}
+                          </>
+                        ) : (
+                          <>
+                            {/* No stock item is a real answer, and the line
+                                still gets made. It reads as the set itself,
+                                which is exactly what the server will name it. */}
+                            <span className="block truncate text-sm">
+                              {data?.description ?? ''}
+                            </span>
+                            <span className="block truncate text-[11px] text-muted-foreground">
+                              {t('job.noStockItem')}
+                            </span>
+                          </>
+                        )}
+                      </span>
+                      <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
+                    <Command shouldFilter={false}>
+                      <CommandInput
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        ref={searchRef}
+                        onValueChange={setQuery}
                         placeholder={t('job.searchStock')}
-                        className="h-8 pr-8 pl-8 text-sm"
                       />
-                      {query && (
-                        <button
-                          type="button"
-                          onClick={() => setQuery('')}
-                          aria-label={t('common.clear')}
-                          className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </div>
-                    {/* A way back out for someone who opened the picker by
-                      mistake, rather than making them re-pick what they had. */}
-                    {picked && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setBrowsing(false)
-                          setQuery('')
-                          setHits(null)
-                        }}
-                        className="h-8 shrink-0 px-2 text-xs"
-                      >
-                        {t('common.cancel')}
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* The line is always here, empty or not: a caption that
-                      comes and goes with the search moves everything below
-                      it by its own height on every keystroke. */}
-                  <p className="h-4 px-0.5 text-xs text-muted-foreground">
-                    {!searchActive && data?.parsedSize && rows.length > 0
-                      ? // The suggestions, not the rows: a pick hoisted to the
-                        // top may be a tire in another size.
-                        t('job.inSize', { count: suggestions.length, size: data.parsedSize })
-                      : ''}
-                  </p>
-
-                  {/* Fixed height, not max height. The list is one to twenty
-                      rows depending on what was typed last, and a panel that
-                      resizes with the result count walks the whole dialog up
-                      and down the screen while somebody is still typing. */}
-                  <div className="h-56 overflow-x-hidden overflow-y-auto rounded-lg border">
-                    {searching && rows.length === 0 ? (
-                      <div className="flex h-full items-center justify-center">
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      </div>
-                    ) : rows.length === 0 ? (
-                      // Nothing matched, which is normal for an unusual size
-                      // or a shop that does not stock tires. The line still
-                      // gets made, priced by hand.
-                      <div className="flex h-full items-center justify-center gap-2.5 px-4 text-center">
-                        <PackageX className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <p className="text-xs text-muted-foreground">
-                          {searchActive
-                            ? t('job.noSearchHits', { query: query.trim() })
-                            : data?.parsedSize
-                              ? t('job.noMatch', { size: data.parsedSize })
-                              : t('job.noSize')}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="divide-y">
-                        {rows.map((match) => {
-                          const isOn = picked?.id === match.id
-                          return (
-                            <button
-                              key={match.id}
-                              type="button"
-                              onClick={() => pick(match)}
-                              aria-pressed={isOn}
-                              className={cn(
-                                'flex w-full min-w-0 items-center gap-2 px-2.5 py-1.5 text-left transition-colors',
-                                'focus-visible:ring-ring focus-visible:ring-inset focus-visible:ring-2 focus-visible:outline-none',
-                                isOn ? 'bg-primary/5' : 'hover:bg-muted/60'
-                              )}
-                            >
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-sm">{match.name}</span>
-                                {stockMeta(match)}
-                              </span>
-                              <span className="shrink-0 text-sm tabular-nums">
-                                {formatCurrency(match.sellPrice, currencyCode)}
-                              </span>
-                              {/* The slot is always there, so picking a row
-                                  does not shift every price sideways. */}
-                              <span className="w-3.5 shrink-0">
-                                {isOn && <Check className="h-3.5 w-3.5 text-primary" />}
-                              </span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                      <CommandList className="max-h-56">
+                        {searching && suggestions.length === 0 ? (
+                          <div className="flex items-center justify-center py-6">
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                          </div>
+                        ) : (
+                          <CommandEmpty>
+                            {/* Nothing matched, which is normal for an unusual
+                                size or a shop that does not stock tires. */}
+                            {searchActive
+                              ? t('job.noSearchHits', { query: query.trim() })
+                              : data?.parsedSize
+                                ? t('job.noMatch', { size: data.parsedSize })
+                                : t('job.noSize')}
+                          </CommandEmpty>
+                        )}
+                        {suggestions.length > 0 && (
+                          <CommandGroup
+                            heading={
+                              !searchActive && data?.parsedSize
+                                ? t('job.inSize', {
+                                    count: suggestions.length,
+                                    size: data.parsedSize,
+                                  })
+                                : undefined
+                            }
+                          >
+                            {suggestions.map((match) => {
+                              const isOn = picked?.id === match.id
+                              return (
+                                <CommandItem
+                                  key={match.id}
+                                  value={match.id}
+                                  onSelect={() => pick(match)}
+                                >
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block truncate text-sm">{match.name}</span>
+                                    {stockMeta(match)}
+                                  </span>
+                                  <span className="shrink-0 text-sm tabular-nums">
+                                    {formatCurrency(match.sellPrice, currencyCode)}
+                                  </span>
+                                  {/* The slot is always there, so highlighting
+                                      a row does not shift the prices sideways. */}
+                                  <span className="w-3.5 shrink-0">
+                                    {/* size-, not h-/w-: CommandItem forces
+                                        size-4 on any svg without one. */}
+                                    {isOn && <Check className="size-3.5 text-primary" />}
+                                  </span>
+                                </CommandItem>
+                              )
+                            })}
+                          </CommandGroup>
+                        )}
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               )}
 
               {includeTires && (

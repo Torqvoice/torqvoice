@@ -8,8 +8,7 @@
     "delete": "Ištrinti",
     "edit": "Redaguoti",
     "back": "Atgal",
-    "next": "Toliau",
-    "clear": "Išvalyti"
+    "next": "Toliau"
   },
   "seasons": {
     "summer": "Vasarinės",
@@ -419,7 +418,7 @@
     "otherSize": "Kitas dydis",
     "inSize": "{count} dydžio {size}",
     "quantity": "Kiekis",
-    "change": "Keisti"
+    "noStockItem": "Nėra sandėlio prekės, kaina įvedama ranka"
   },
   "label": {
     "action": "Etiketės",
