@@ -77,6 +77,8 @@
     "enterBarcode": "Digitar código de barras…",
     "scanHint": "Aponte a câmera para um código de barras ou digite-o manualmente",
     "iosInstallHint": "Toque em Compartilhar > Adicionar à Tela de Início",
-    "installDescription": "Adicione à tela de início para acesso rápido"
+    "installDescription": "Adicione à tela de início para acesso rápido",
+    "enterFullscreen": "Tela cheia",
+    "exitFullscreen": "Sair da tela cheia"
   }
 }

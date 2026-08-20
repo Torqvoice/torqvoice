@@ -77,6 +77,8 @@
     "enterBarcode": "Inserisci codice a barre…",
     "scanHint": "Punta la fotocamera su un codice a barre oppure inseriscilo manualmente",
     "iosInstallHint": "Tocca Condividi > Aggiungi a Home",
-    "installDescription": "Aggiungila alla schermata Home per un accesso rapido"
+    "installDescription": "Aggiungila alla schermata Home per un accesso rapido",
+    "enterFullscreen": "Schermo intero",
+    "exitFullscreen": "Esci da schermo intero"
   }
 }

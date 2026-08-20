@@ -81,6 +81,7 @@ import {
   NotificationPanel,
 } from '@/features/notifications/Components/NotificationPanel'
 import { SidebarInstallButton } from '@/components/pwa-install-prompt'
+import { FullscreenToggle } from '@/components/fullscreen-toggle'
 import { FeatureHint } from '@/components/feature-hint'
 import { cn } from '@/lib/utils'
 
@@ -453,6 +454,7 @@ export function AppSidebar({
           </SidebarGroup>
         )}
         <SidebarInstallButton />
+        <FullscreenToggle />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

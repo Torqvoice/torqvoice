@@ -77,6 +77,8 @@
     "enterBarcode": "Saisir un code-barres…",
     "scanHint": "Pointez la caméra vers un code-barres ou saisissez-le manuellement",
     "iosInstallHint": "Touchez Partager > Sur l'écran d'accueil",
-    "installDescription": "Ajoutez-la à votre écran d'accueil pour un accès rapide"
+    "installDescription": "Ajoutez-la à votre écran d'accueil pour un accès rapide",
+    "enterFullscreen": "Plein écran",
+    "exitFullscreen": "Quitter le plein écran"
   }
 }

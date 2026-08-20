@@ -77,6 +77,8 @@
     "enterBarcode": "Enter barcode...",
     "scanHint": "Point your camera at a barcode or enter it manually",
     "iosInstallHint": "Tap Share > Add to Home Screen",
-    "installDescription": "Add to your home screen for quick access"
+    "installDescription": "Add to your home screen for quick access",
+    "enterFullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen"
   }
 }

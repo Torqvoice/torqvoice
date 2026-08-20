@@ -77,6 +77,8 @@
     "enterBarcode": "Introducir código de barras…",
     "scanHint": "Apunte la cámara a un código de barras o introdúzcalo manualmente",
     "iosInstallHint": "Toque Compartir > Añadir a inicio",
-    "installDescription": "Añádela a tu pantalla de inicio para acceder rápido"
+    "installDescription": "Añádela a tu pantalla de inicio para acceder rápido",
+    "enterFullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
   }
 }

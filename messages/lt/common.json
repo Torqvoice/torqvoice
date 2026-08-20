@@ -77,6 +77,8 @@
     "enterBarcode": "Įveskite brūkšninį kodą…",
     "scanHint": "Nukreipkite kamerą į brūkšninį kodą arba įveskite jį ranka",
     "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną",
-    "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau"
+    "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau",
+    "enterFullscreen": "Visas ekranas",
+    "exitFullscreen": "Išjungti visą ekraną"
   }
 }

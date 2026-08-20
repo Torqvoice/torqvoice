@@ -77,6 +77,8 @@
     "enterBarcode": "Skriv inn strekkode…",
     "scanHint": "Rett kameraet mot en strekkode, eller skriv den inn manuelt",
     "iosInstallHint": "Trykk Del > Legg til på Hjem-skjerm",
-    "installDescription": "Legg den til på hjem-skjermen for rask tilgang"
+    "installDescription": "Legg den til på hjem-skjermen for rask tilgang",
+    "enterFullscreen": "Fullskjerm",
+    "exitFullscreen": "Avslutt fullskjerm"
   }
 }
