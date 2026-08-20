@@ -165,12 +165,21 @@ export function NewTireJobDialog({
   // Every match in the size, not a top few: a shop can carry a dozen brands
   // in one fitment and the cheapest is not always the one being sold.
   const suggestions: StockRow[] = searchActive ? (hits ?? []) : (data?.matches ?? [])
-  // The chosen tire stays in the list whatever the search says, so clearing
-  // the box cannot quietly drop what the operator already picked.
-  const rows: StockRow[] =
-    picked && !suggestions.some((row) => row.id === picked.id)
-      ? [picked, ...suggestions]
-      : suggestions
+  // The chosen tire sits at the top whatever the search says: it stays
+  // visible when the box is cleared, and it does not hide somewhere down a
+  // scrolled list once the results collapse.
+  const rows: StockRow[] = picked
+    ? [picked, ...suggestions.filter((row) => row.id !== picked.id)]
+    : suggestions
+
+  const pick = (row: StockRow) => {
+    setPicked(row)
+    setPrice(String(row.sellPrice))
+    // Picking is the end of the search. Leaving the results open would hide
+    // the prep list and the total behind a list nobody is reading any more.
+    setQuery('')
+    setHits(null)
+  }
 
   const quantity = data?.quantity ?? 0
   const unit = Number(price) || 0
@@ -310,7 +319,9 @@ export function NewTireJobDialog({
 
                   {!searchActive && data?.parsedSize && rows.length > 0 && (
                     <p className="px-0.5 text-xs text-muted-foreground">
-                      {t('job.inSize', { count: rows.length, size: data.parsedSize })}
+                      {/* The suggestions, not the rows: a pick hoisted to the
+                          top may be a tire in another size. */}
+                      {t('job.inSize', { count: suggestions.length, size: data.parsedSize })}
                     </p>
                   )}
 
@@ -343,10 +354,7 @@ export function NewTireJobDialog({
                           <button
                             key={match.id}
                             type="button"
-                            onClick={() => {
-                              setPicked(match)
-                              setPrice(String(match.sellPrice))
-                            }}
+                            onClick={() => pick(match)}
                             aria-pressed={isOn}
                             className={cn(
                               'flex w-full min-w-0 items-center gap-2 px-2.5 py-1.5 text-left transition-colors',
