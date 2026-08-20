@@ -10,7 +10,8 @@
     "back": "Tilbake",
     "confirm": "Bekreft",
     "edit": "Rediger",
-    "add": "Legg til"
+    "add": "Legg til",
+    "gotIt": "Skjønner"
   },
   "contextMenu": {
     "hint": "Tips: høyreklikk på en rad for handlinger",

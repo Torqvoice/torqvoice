@@ -76,8 +76,13 @@ import type { PlanFeatures } from '@/lib/features'
 import { useTheme } from '@/components/theme-provider'
 import { THEMES, type ThemePreference } from '@/lib/themes'
 import { useServiceType } from '@/components/service-type-context'
-import { NotificationBell, NotificationPanel } from '@/features/notifications/Components/NotificationPanel'
+import {
+  NotificationBell,
+  NotificationPanel,
+} from '@/features/notifications/Components/NotificationPanel'
 import { SidebarInstallButton } from '@/components/pwa-install-prompt'
+import { FeatureHint } from '@/components/feature-hint'
+import { cn } from '@/lib/utils'
 
 type OrgInfo = { id: string; name: string; role: string }
 
@@ -110,6 +115,7 @@ export function AppSidebar({
   const { setOpenMobile, isMobile } = useSidebar()
   const currentLocale = useLocale()
   const t = useTranslations('navigation')
+  const tHint = useTranslations('featureHints')
   const tSettings = useTranslations('settings')
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
@@ -121,49 +127,156 @@ export function AppSidebar({
   const canAccess = (subject: string) => !visibleSubjects || visibleSubjects.includes(subject)
 
   const clientItems = [
-    { titleKey: 'sidebar.customers' as const, url: '/customers', icon: Users, subject: 'customers' },
-    { titleKey: 'sidebar.messages' as const, url: '/messages', icon: MessageSquare, subject: 'customers' },
-    ...(telegramEnabled ? [{ titleKey: 'sidebar.telegram' as const, url: '/telegram', icon: Send, subject: 'customers' }] : []),
+    {
+      titleKey: 'sidebar.customers' as const,
+      url: '/customers',
+      icon: Users,
+      subject: 'customers',
+    },
+    {
+      titleKey: 'sidebar.messages' as const,
+      url: '/messages',
+      icon: MessageSquare,
+      subject: 'customers',
+    },
+    ...(telegramEnabled
+      ? [
+          {
+            titleKey: 'sidebar.telegram' as const,
+            url: '/telegram',
+            icon: Send,
+            subject: 'customers',
+          },
+        ]
+      : []),
   ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [
-    { titleKey: isMarine ? 'sidebar.vessels' as const : 'sidebar.vehicles' as const, url: '/vehicles', icon: isMarine ? Ship : Car, subject: 'vehicles' },
+    {
+      titleKey: isMarine ? ('sidebar.vessels' as const) : ('sidebar.vehicles' as const),
+      url: '/vehicles',
+      icon: isMarine ? Ship : Car,
+      subject: 'vehicles',
+    },
     { titleKey: 'sidebar.reminders' as const, url: '/reminders', icon: Bell, subject: 'vehicles' },
-    { titleKey: 'sidebar.workOrders' as const, url: '/work-orders', icon: ClipboardList, subject: 'work_orders' },
-    { titleKey: 'sidebar.inspections' as const, url: '/inspections', icon: ClipboardCheck, subject: 'inspections' },
-    { titleKey: 'sidebar.calendar' as const, url: '/calendar', icon: CalendarDays, subject: 'work_orders' },
-    { titleKey: 'sidebar.workBoard' as const, url: '/work-board', icon: Columns3, subject: 'work_board' },
-    // Opt-in module: hidden entirely until the workshop turns it on in settings.
+    {
+      titleKey: 'sidebar.workOrders' as const,
+      url: '/work-orders',
+      icon: ClipboardList,
+      subject: 'work_orders',
+    },
+    {
+      titleKey: 'sidebar.inspections' as const,
+      url: '/inspections',
+      icon: ClipboardCheck,
+      subject: 'inspections',
+    },
+    {
+      titleKey: 'sidebar.calendar' as const,
+      url: '/calendar',
+      icon: CalendarDays,
+      subject: 'work_orders',
+    },
+    {
+      titleKey: 'sidebar.workBoard' as const,
+      url: '/work-board',
+      icon: Columns3,
+      subject: 'work_board',
+    },
+    // Opt-in module: hidden entirely until the workshop turns it on in
+    // settings, and pointed out once when it appears, since a link that shows
+    // up on its own is easy to miss.
     ...(tireHotelEnabled
-      ? [{ titleKey: 'sidebar.tireHotel' as const, url: '/tire-hotel', icon: Disc3, subject: 'tire_hotel' }]
+      ? [
+          {
+            titleKey: 'sidebar.tireHotel' as const,
+            url: '/tire-hotel',
+            icon: Disc3,
+            subject: 'tire_hotel',
+            hint: 'tire-hotel.v1',
+          },
+        ]
       : []),
   ].filter((item) => canAccess(item.subject))
 
   const businessItems = [
     { titleKey: 'sidebar.quotes' as const, url: '/quotes', icon: FileText, subject: 'quotes' },
     { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt, subject: 'billing' },
-    { titleKey: 'sidebar.inventory' as const, url: '/inventory', icon: Package, subject: 'inventory' },
-    { titleKey: 'sidebar.laborPresets' as const, url: '/labor-presets', icon: Layers, subject: 'labor_presets' },
-    ...(features?.reports !== false && canAccess('reports') ? [{ titleKey: 'sidebar.reports' as const, url: '/reports', icon: BarChart3, subject: 'reports' }] : []),
-    { titleKey: 'sidebar.auditLog' as const, url: '/audit-log', icon: History, subject: 'settings' },
+    {
+      titleKey: 'sidebar.inventory' as const,
+      url: '/inventory',
+      icon: Package,
+      subject: 'inventory',
+    },
+    {
+      titleKey: 'sidebar.laborPresets' as const,
+      url: '/labor-presets',
+      icon: Layers,
+      subject: 'labor_presets',
+    },
+    ...(features?.reports !== false && canAccess('reports')
+      ? [
+          {
+            titleKey: 'sidebar.reports' as const,
+            url: '/reports',
+            icon: BarChart3,
+            subject: 'reports',
+          },
+        ]
+      : []),
+    {
+      titleKey: 'sidebar.auditLog' as const,
+      url: '/audit-log',
+      icon: History,
+      subject: 'settings',
+    },
   ].filter((item) => canAccess(item.subject))
 
   const closeMobileSidebar = () => {
     if (isMobile) setOpenMobile(false)
   }
 
-  const renderNavGroup = (items: { titleKey: string; url: string; icon: React.ComponentType<{ className?: string }> }[]) =>
+  const renderNavGroup = (
+    items: {
+      titleKey: string
+      url: string
+      icon: React.ComponentType<{ className?: string }>
+      /** Set to point a one-time note at this link the first time it appears. */
+      hint?: string
+    }[]
+  ) =>
     items.map((item) => {
       const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
-      return (
+      const row = (highlighted: boolean) => (
         <SidebarMenuItem key={item.titleKey}>
-          <SidebarMenuButton asChild isActive={isActive}>
+          <SidebarMenuButton
+            asChild
+            isActive={isActive}
+            // Marked while the card is up, so it is obvious which of a dozen
+            // links the card is talking about.
+            className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
+          >
             <Link href={item.url} className="font-medium" onClick={closeMobileSidebar}>
               <item.icon className="size-4" />
               {t(item.titleKey)}
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
+      )
+
+      if (!item.hint) return row(false)
+
+      return (
+        <FeatureHint
+          key={item.titleKey}
+          id={item.hint}
+          eligible
+          title={tHint(`${item.hint.split('.')[0]}.title`)}
+          body={tHint(`${item.hint.split('.')[0]}.body`)}
+          side={isMobile ? 'bottom' : 'right'}
+        >
+          {(open) => row(open)}
+        </FeatureHint>
       )
     })
 
@@ -285,9 +398,7 @@ export function AppSidebar({
         {clientItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.clients')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">
-              {renderNavGroup(clientItems)}
-            </SidebarMenu>
+            <SidebarMenu className="gap-2">{renderNavGroup(clientItems)}</SidebarMenu>
           </SidebarGroup>
         )}
 
@@ -295,9 +406,7 @@ export function AppSidebar({
         {workshopItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.workshop')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">
-              {renderNavGroup(workshopItems)}
-            </SidebarMenu>
+            <SidebarMenu className="gap-2">{renderNavGroup(workshopItems)}</SidebarMenu>
           </SidebarGroup>
         )}
 
@@ -305,9 +414,7 @@ export function AppSidebar({
         {businessItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.business')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">
-              {renderNavGroup(businessItems)}
-            </SidebarMenu>
+            <SidebarMenu className="gap-2">{renderNavGroup(businessItems)}</SidebarMenu>
           </SidebarGroup>
         )}
 

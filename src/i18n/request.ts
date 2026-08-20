@@ -70,6 +70,7 @@ export default getRequestConfig(async () => {
   const tireHotel = (await import(`../../messages/${locale}/tireHotel.json`)).default
   const search = (await import(`../../messages/${locale}/search.json`)).default
   const permissions = (await import(`../../messages/${locale}/permissions.json`)).default
+  const featureHints = (await import(`../../messages/${locale}/featureHints.json`)).default
 
   return {
     locale,
@@ -109,6 +110,7 @@ export default getRequestConfig(async () => {
       tireHotel,
       search,
       permissions,
+      featureHints,
     },
   }
 })

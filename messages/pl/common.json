@@ -10,7 +10,8 @@
     "confirm": "Potwierdź",
     "saveChanges": "Zapisz zmiany",
     "edit": "Edytuj",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "gotIt": "Rozumiem"
   },
   "contextMenu": {
     "hint": "Wskazówka: kliknij wiersz prawym przyciskiem, aby zobaczyć akcje",

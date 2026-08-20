@@ -119,6 +119,12 @@ export const SETTING_KEYS = {
   WORKSHOP_LOCALE: 'workshop.locale',
   WORKSHOP_DEFAULT_COUNTRY_CODE: 'workshop.defaultCountryCode',
   FORCE_CUSTOMER_LOCALE: 'workshop.forceCustomerLocale',
+  /// Feature hints the workshop has already been shown, as a JSON array of
+  /// ids. Kept per workshop rather than per person: the hint announces that
+  /// something appeared in this workshop's sidebar, and once somebody here
+  /// has seen it, the workshop has been told.
+  FEATURE_HINTS_SEEN: 'featureHints.seen',
+
   /// Tire hotel is off until a workshop opts in. Everything about the module
   /// — sidebar entry, routes, cron sweeps — keys off this one flag, so a shop
   /// that does not store tires never sees it.
