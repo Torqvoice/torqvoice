@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32esimi",
-    "inputLabel": "Profondità del battistrada, {position}"
+    "inputLabel": "Profondità del battistrada, {position}",
+    "lastTime": "era {value}",
+    "worn": "{value} di usura"
   },
   "list": {
     "tabAll": "Tutti",
@@ -67,7 +69,8 @@
     "prep": "Prep.",
     "tabNeedsPrep": "Da preparare",
     "setUpShelves": "Configura gli scaffali",
-    "emptyNoShelves": "Nessuno scaffale. Configura il deposito prima di accettare pneumatici."
+    "emptyNoShelves": "Nessuno scaffale. Configura il deposito prima di accettare pneumatici.",
+    "tabDisposed": "Dismessi"
   },
   "checkIn": {
     "title": "Accettare pneumatici",
@@ -106,7 +109,15 @@
     "success": "Treno {reference} riposto in {code}",
     "failed": "Impossibile accettare il treno",
     "noVehiclesForCustomer": "Questo cliente non ha ancora veicoli. Aggiungine uno dalla sua scheda cliente.",
-    "treatmentsHint": "Cosa fare su questo treno prima del deposito o del rimontaggio."
+    "treatmentsHint": "Cosa fare su questo treno prima del deposito o del rimontaggio.",
+    "storedBefore": "Già in deposito qui",
+    "storedBeforeHint": "Tornano gli stessi pneumatici? Scegli il treno e la stagione entra nel suo storico.",
+    "sameSet": "Stesso treno di prima",
+    "pieces": "{count} pz",
+    "lastOut": "Ritirato il {date}",
+    "notStored": "Al momento non in deposito",
+    "returned": "Il treno {reference} è di nuovo su {code}",
+    "submitReturn": "Metti di nuovo in deposito"
   },
   "storage": {
     "title": "Scaffali",
@@ -195,7 +206,12 @@
     "deleted": "Treno di pneumatici eliminato",
     "deleteFailed": "Impossibile eliminare il treno",
     "belowLimit": "{count} pneumatico/i al limite di sostituzione o sotto.",
-    "belowLimitHint": "Vale la pena proporre un prezzo finché gli pneumatici sono ancora qui."
+    "belowLimitHint": "Vale la pena proporre un prezzo finché gli pneumatici sono ancora qui.",
+    "dispose": "Dismetti",
+    "disposeTitle": "Dismettere questo treno?",
+    "disposeBody": "La scheda e lo storico restano. Non verrà più proposto come lo stesso treno la prossima stagione.",
+    "disposed": "Treno dismesso",
+    "disposeFailed": "Impossibile dismettere il treno"
   },
   "checkOut": {
     "title": "Restituire gli pneumatici",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "in {code}",
     "inStorage": "in hotel"
+  },
+  "wear": {
+    "summary": "{value} di usura tra il {from} e il {to}",
+    "perSeason": "Circa {value} a stagione",
+    "seasonsLeft": "{count, plural, =0 {Già al limite} one {Circa una stagione ancora} other {Circa # stagioni ancora}}",
+    "since": "-{value}"
   }
 }

@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32-deler",
-    "inputLabel": "Mønsterdybde, {position}"
+    "inputLabel": "Mønsterdybde, {position}",
+    "lastTime": "var {value}",
+    "worn": "{value} slitt"
   },
   "list": {
     "tabAll": "Alle",
@@ -67,7 +69,8 @@
     "prep": "Klargjør",
     "tabNeedsPrep": "Trenger klargjøring",
     "setUpShelves": "Sett opp hyller",
-    "emptyNoShelves": "Ingen hyller ennå. Sett opp lageret før du tar inn dekk."
+    "emptyNoShelves": "Ingen hyller ennå. Sett opp lageret før du tar inn dekk.",
+    "tabDisposed": "Kassert"
   },
   "checkIn": {
     "title": "Ta inn dekk",
@@ -106,7 +109,15 @@
     "success": "Sett {reference} lagret på {code}",
     "failed": "Kunne ikke ta inn settet",
     "noVehiclesForCustomer": "Denne kunden har ingen kjøretøy ennå. Legg til ett på kundesiden først.",
-    "treatmentsHint": "Hva som skal gjøres med dette settet før lagring eller montering."
+    "treatmentsHint": "Hva som skal gjøres med dette settet før lagring eller montering.",
+    "storedBefore": "Lagret her før",
+    "storedBeforeHint": "Kommer de samme dekkene tilbake? Velg settet, så føyes sesongen til historikken.",
+    "sameSet": "Samme sett som før",
+    "pieces": "{count} stk",
+    "lastOut": "Hentet {date}",
+    "notStored": "Ikke på lager nå",
+    "returned": "Sett {reference} står på {code} igjen",
+    "submitReturn": "Lagre igjen"
   },
   "storage": {
     "title": "Hyller",
@@ -195,7 +206,12 @@
     "deleted": "Dekksett slettet",
     "deleteFailed": "Kunne ikke slette settet",
     "belowLimit": "{count} dekk på eller under byttegrensen.",
-    "belowLimitHint": "Verdt å tilby kunden pris mens dekkene fortsatt står her."
+    "belowLimitHint": "Verdt å tilby kunden pris mens dekkene fortsatt står her.",
+    "dispose": "Kasser",
+    "disposeTitle": "Kassere dette settet?",
+    "disposeBody": "Oppføringen og historikken blir stående. Det foreslås ikke som samme dekk neste sesong.",
+    "disposed": "Settet er kassert",
+    "disposeFailed": "Kunne ikke kassere settet"
   },
   "checkOut": {
     "title": "Lever ut dekk",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "på {code}",
     "inStorage": "på dekkhotell"
+  },
+  "wear": {
+    "summary": "Slitt {value} mellom {from} og {to}",
+    "perSeason": "Rundt {value} per sesong",
+    "seasonsLeft": "{count, plural, =0 {På grensen nå} one {Omtrent én sesong igjen} other {Omtrent # sesonger igjen}}",
+    "since": "-{value}"
   }
 }

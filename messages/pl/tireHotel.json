@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "1/32 cala",
-    "inputLabel": "Głębokość bieżnika, {position}"
+    "inputLabel": "Głębokość bieżnika, {position}",
+    "lastTime": "było {value}",
+    "worn": "zużycie {value}"
   },
   "list": {
     "tabAll": "Wszystkie",
@@ -67,7 +69,8 @@
     "prep": "Przyg.",
     "tabNeedsPrep": "Do przygotowania",
     "setUpShelves": "Skonfiguruj półki",
-    "emptyNoShelves": "Brak półek. Skonfiguruj magazyn, zanim przyjmiesz opony."
+    "emptyNoShelves": "Brak półek. Skonfiguruj magazyn, zanim przyjmiesz opony.",
+    "tabDisposed": "Spisane"
   },
   "checkIn": {
     "title": "Przyjmij opony",
@@ -106,7 +109,15 @@
     "success": "Komplet {reference} odłożony na {code}",
     "failed": "Nie udało się przyjąć kompletu",
     "noVehiclesForCustomer": "Ten klient nie ma jeszcze pojazdów. Najpierw dodaj pojazd na jego stronie klienta.",
-    "treatmentsHint": "Co należy zrobić z tym kompletem przed magazynowaniem lub montażem."
+    "treatmentsHint": "Co należy zrobić z tym kompletem przed magazynowaniem lub montażem.",
+    "storedBefore": "Już tu przechowywane",
+    "storedBeforeHint": "Wracają te same opony? Wybierz komplet, a sezon dołączy do jego historii.",
+    "sameSet": "Ten sam komplet co wcześniej",
+    "pieces": "{count} szt.",
+    "lastOut": "Odebrano {date}",
+    "notStored": "Obecnie nieprzechowywany",
+    "returned": "Komplet {reference} znów leży na {code}",
+    "submitReturn": "Przyjmij ponownie"
   },
   "storage": {
     "title": "Półki",
@@ -195,7 +206,12 @@
     "deleted": "Usunięto komplet opon",
     "deleteFailed": "Nie udało się usunąć kompletu",
     "belowLimit": "{count} opon(y) na granicy wymiany lub poniżej.",
-    "belowLimitHint": "Warto zaproponować klientowi cenę, póki opony są jeszcze u nas."
+    "belowLimitHint": "Warto zaproponować klientowi cenę, póki opony są jeszcze u nas.",
+    "dispose": "Spisz",
+    "disposeTitle": "Spisać ten komplet?",
+    "disposeBody": "Wpis i historia zostają. Komplet nie będzie proponowany w kolejnym sezonie.",
+    "disposed": "Komplet spisany",
+    "disposeFailed": "Nie udało się spisać kompletu"
   },
   "checkOut": {
     "title": "Wydaj opony",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "na {code}",
     "inStorage": "w hotelu opon"
+  },
+  "wear": {
+    "summary": "Zużycie {value} między {from} a {to}",
+    "perSeason": "Około {value} na sezon",
+    "seasonsLeft": "{count, plural, =0 {Już na granicy} one {Jeszcze około jednego sezonu} other {Jeszcze około # sezonów}}",
+    "since": "-{value}"
   }
 }

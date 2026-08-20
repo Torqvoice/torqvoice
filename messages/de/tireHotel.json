@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32stel",
-    "inputLabel": "Profiltiefe, {position}"
+    "inputLabel": "Profiltiefe, {position}",
+    "lastTime": "war {value}",
+    "worn": "{value} abgefahren"
   },
   "list": {
     "tabAll": "Alle",
@@ -67,7 +69,8 @@
     "prep": "Vorb.",
     "tabNeedsPrep": "Vorbereitung offen",
     "setUpShelves": "Regale einrichten",
-    "emptyNoShelves": "Noch keine Regale. Richten Sie Ihr Lager ein, bevor Sie Reifen einlagern."
+    "emptyNoShelves": "Noch keine Regale. Richten Sie Ihr Lager ein, bevor Sie Reifen einlagern.",
+    "tabDisposed": "Ausgemustert"
   },
   "checkIn": {
     "title": "Reifen einlagern",
@@ -106,7 +109,15 @@
     "success": "Satz {reference} auf {code} eingelagert",
     "failed": "Einlagerung fehlgeschlagen",
     "noVehiclesForCustomer": "Dieser Kunde hat noch keine Fahrzeuge. Legen Sie zuerst eines auf der Kundenseite an.",
-    "treatmentsHint": "Was mit diesem Satz vor der Einlagerung oder Montage geschehen soll."
+    "treatmentsHint": "Was mit diesem Satz vor der Einlagerung oder Montage geschehen soll.",
+    "storedBefore": "Schon einmal eingelagert",
+    "storedBeforeHint": "Kommen dieselben Reifen zurück? Satz wählen, dann gehört die Saison zur Historie.",
+    "sameSet": "Derselbe Satz wie zuvor",
+    "pieces": "{count} Stk.",
+    "lastOut": "Abgeholt {date}",
+    "notStored": "Derzeit nicht eingelagert",
+    "returned": "Satz {reference} liegt wieder auf {code}",
+    "submitReturn": "Erneut einlagern"
   },
   "storage": {
     "title": "Regale",
@@ -195,7 +206,12 @@
     "deleted": "Reifensatz gelöscht",
     "deleteFailed": "Satz konnte nicht gelöscht werden",
     "belowLimit": "{count} Reifen auf oder unter Ihrer Ersatzgrenze.",
-    "belowLimitHint": "Bieten Sie dem Kunden einen Preis an, solange die Reifen noch hier sind."
+    "belowLimitHint": "Bieten Sie dem Kunden einen Preis an, solange die Reifen noch hier sind.",
+    "dispose": "Ausmustern",
+    "disposeTitle": "Diesen Satz ausmustern?",
+    "disposeBody": "Der Eintrag und seine Historie bleiben. Er wird nächste Saison nicht mehr als dieselben Reifen vorgeschlagen.",
+    "disposed": "Satz ausgemustert",
+    "disposeFailed": "Satz konnte nicht ausgemustert werden"
   },
   "checkOut": {
     "title": "Reifen auslagern",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "auf {code}",
     "inStorage": "im Reifenhotel"
+  },
+  "wear": {
+    "summary": "{value} abgefahren zwischen {from} und {to}",
+    "perSeason": "Etwa {value} pro Saison",
+    "seasonsLeft": "{count, plural, =0 {Jetzt an der Grenze} one {Noch etwa eine Saison} other {Noch etwa # Saisons}}",
+    "since": "-{value}"
   }
 }

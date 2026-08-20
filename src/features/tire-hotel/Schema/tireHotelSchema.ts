@@ -128,6 +128,32 @@ export const checkInSchema = tireSetSchema.extend({
   serviceRecordId: z.string().min(1).optional().nullable(),
 })
 
+/**
+ * A set the shop has held before, going back on a shelf.
+ *
+ * Deliberately thin. These are the same physical tires, so what they are was
+ * settled the first time; what changes each season is where they go, what
+ * they measure and what prep they need. Anything else that genuinely changed,
+ * a replaced tire, new valves, is an edit to the set.
+ */
+export const returnSetSchema = z.object({
+  id: z.string().min(1),
+  locationId: z.string().min(1, 'Choose where the tires go'),
+  /// A set can come back one tire short, or with a fifth. Capacity depends on
+  /// it, so it is asked rather than assumed.
+  quantity: z.coerce.number().int().min(1, 'A set needs at least one tire').max(20).optional(),
+  note: z.string().trim().max(500).optional().or(z.literal('')),
+  measurements: z.array(measurementSchema).max(20).optional(),
+  treatments: z.array(z.enum(TREATMENT_TYPES)).max(TREATMENT_TYPES.length).optional(),
+  serviceRecordId: z.string().min(1).optional().nullable(),
+})
+
+/** Taking a set out of circulation for good. */
+export const disposeSetSchema = z.object({
+  id: z.string().min(1),
+  note: z.string().trim().max(500).optional().or(z.literal('')),
+})
+
 export const checkOutSchema = z.object({
   id: z.string().min(1),
   note: z.string().trim().max(500).optional().or(z.literal('')),
@@ -211,5 +237,7 @@ export type LocationInput = z.infer<typeof locationSchema>
 export type BulkLocationInput = z.infer<typeof bulkLocationSchema>
 export type TireSetInput = z.infer<typeof tireSetSchema>
 export type CheckInInput = z.infer<typeof checkInSchema>
+export type ReturnSetInput = z.infer<typeof returnSetSchema>
+export type DisposeSetInput = z.infer<typeof disposeSetSchema>
 export type CheckOutInput = z.infer<typeof checkOutSchema>
 export type MeasurementInput = z.infer<typeof measurementSchema>

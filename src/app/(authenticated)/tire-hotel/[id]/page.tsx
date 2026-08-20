@@ -87,6 +87,10 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
           jobs={jobs}
           billing={billing}
           imperial={imperial}
+          thresholds={{
+            summerReplace: config.summerReplaceMm,
+            winterReplace: config.winterReplaceMm,
+          }}
         />
       </div>
     </>

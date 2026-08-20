@@ -25,14 +25,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Warehouse } from 'lucide-react'
+import { Check, Loader2, Warehouse } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useFormatDate } from '@/lib/use-format-date'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { LocationPicker, type PickerLocation } from './LocationPicker'
 import { TreadEntry, type TreadRow } from './TreadEntry'
 import { TreatmentPicker } from './TreatmentPicker'
 import { defaultTreatments, type TreatmentType } from '../Lib/treatments'
-import { checkInTireSet } from '../Actions/tireSetActions'
+import { checkInTireSet, getReturningSets, returnTireSet } from '../Actions/tireSetActions'
+import { groupRounds } from '../Lib/wear'
 import { TIRE_SEASONS, TIRE_ROAD_POSITIONS, thirtySecondsToMm } from '../Lib/tireConstants'
+
+type ReturningSet = NonNullable<Awaited<ReturnType<typeof getReturningSets>>['data']>[number]
 
 type VehicleOption = {
   id: string
@@ -85,10 +90,16 @@ export function CheckInDialog({
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
+  const { formatDate } = useFormatDate()
   const [saving, setSaving] = useState(false)
 
   const [customerId, setCustomerId] = useState('')
   const [vehicleId, setVehicleId] = useState('')
+  // Sets this customer has left with before. The ordinary year at a tire
+  // hotel is the same tires coming back, so the question is which of theirs
+  // these are, not what they are.
+  const [previousSets, setPreviousSets] = useState<ReturningSet[]>([])
+  const [returning, setReturning] = useState<ReturningSet | null>(null)
   const [season, setSeason] = useState<string>('winter')
   const [studded, setStudded] = useState(false)
   const [brand, setBrand] = useState('')
@@ -126,7 +137,69 @@ export function CheckInDialog({
     setTreatments(defaultTreatments({ withRims: false }))
     setVehicleId(lockedVehicle?.id ?? '')
     setCustomerId(lockedVehicle?.customerId ?? '')
+    setPreviousSets([])
+    setReturning(null)
   }, [open, defaultQuantity, lockedVehicle])
+
+  // Look for their earlier sets as soon as there is somebody to look under.
+  useEffect(() => {
+    if (!open || (!customerId && !vehicleId)) {
+      setPreviousSets([])
+      return
+    }
+    let cancelled = false
+    // Opened from a job, the car is decided, so only that car's sets are
+    // offered. Widening to the customer would put their other vehicle's tires
+    // one click from being filed against this one.
+    getReturningSets(
+      lockedVehicle
+        ? { vehicleId: lockedVehicle.id }
+        : { customerId: customerId || null, vehicleId: vehicleId || null }
+    ).then((result) => {
+      if (cancelled) return
+      setPreviousSets(result.success && result.data ? result.data : [])
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, customerId, vehicleId, lockedVehicle])
+
+  /**
+   * Switches the form to a set the shop already holds a record of.
+   *
+   * The tire details come along even though they are no longer editable here:
+   * the treatment picker needs to know about rims and sensors, and the tread
+   * grading needs the season, and both would otherwise grade against whatever
+   * the blank form happened to be showing.
+   */
+  const pickReturning = (set: ReturningSet | null) => {
+    setReturning(set)
+    if (!set) return
+    setSeason(set.season)
+    setStudded(set.studded)
+    setBrand(set.brand ?? '')
+    setModel(set.model ?? '')
+    setSize(set.size ?? '')
+    setWithRims(set.withRims)
+    setHasTpms(set.hasTpms)
+    setQuantity(String(set.quantity))
+    // Never repoints a car the job already decided.
+    if (!lockedVehicle) {
+      if (set.customerId) setCustomerId(set.customerId)
+      if (set.vehicleId) setVehicleId(set.vehicleId)
+    }
+    setTreatments(defaultTreatments({ withRims: set.withRims }))
+  }
+
+  /** Last season's readings, per position, for the set being brought back. */
+  const lastReadings = (() => {
+    if (!returning) return undefined
+    const rounds = groupRounds(returning.measurements)
+    if (rounds.length === 0) return undefined
+    const out: Record<string, number | null> = {}
+    for (const row of rounds[0].rows) out[row.position] = row.treadDepthMm
+    return out
+  })()
 
   const qty = Math.max(1, Number(quantity) || 1)
 
@@ -177,24 +250,36 @@ export function CheckInDialog({
         }
       })
 
-    const result = await checkInTireSet({
-      serviceRecordId: serviceRecordId ?? null,
-      customerId: customerId || null,
-      vehicleId: vehicleId || null,
-      season,
-      studded,
-      brand,
-      model,
-      size,
-      dotCode,
-      withRims,
-      hasTpms,
-      quantity: qty,
-      locationId,
-      notes,
-      measurements,
-      treatments,
-    })
+    // The same rubber goes back on the same record. A second record every
+    // season would split one set's history in two and lose the wear.
+    const result = returning
+      ? await returnTireSet({
+          id: returning.id,
+          locationId,
+          quantity: qty,
+          note: notes,
+          measurements,
+          treatments,
+          serviceRecordId: serviceRecordId ?? null,
+        })
+      : await checkInTireSet({
+          serviceRecordId: serviceRecordId ?? null,
+          customerId: customerId || null,
+          vehicleId: vehicleId || null,
+          season,
+          studded,
+          brand,
+          model,
+          size,
+          dotCode,
+          withRims,
+          hasTpms,
+          quantity: qty,
+          locationId,
+          notes,
+          measurements,
+          treatments,
+        })
 
     setSaving(false)
 
@@ -203,7 +288,7 @@ export function CheckInDialog({
       return
     }
     toast.success(
-      t('checkIn.success', {
+      t(returning ? 'checkIn.returned' : 'checkIn.success', {
         reference: result.data?.reference ?? '',
         code: result.data?.locationCode ?? '',
       })
@@ -282,24 +367,102 @@ export function CheckInDialog({
             </div>
           )}
 
+          {previousSets.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-2">
+                <Label>{t('checkIn.storedBefore')}</Label>
+                <p className="text-xs text-muted-foreground">{t('checkIn.storedBeforeHint')}</p>
+                <div className="divide-y rounded-lg border">
+                  {previousSets.map((set) => {
+                    const isOn = returning?.id === set.id
+                    return (
+                      <button
+                        key={set.id}
+                        type="button"
+                        onClick={() => pickReturning(isOn ? null : set)}
+                        aria-pressed={isOn}
+                        className={cn(
+                          'flex w-full min-w-0 items-center gap-2 px-2.5 py-1.5 text-left transition-colors',
+                          'focus-visible:ring-ring focus-visible:ring-inset focus-visible:ring-2 focus-visible:outline-none',
+                          isOn ? 'bg-primary/5' : 'hover:bg-muted/60'
+                        )}
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm">
+                            {[
+                              t(`seasons.${set.season}`),
+                              set.brand,
+                              set.size,
+                              t('checkIn.pieces', { count: set.quantity }),
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </span>
+                          <span className="block truncate text-[11px] text-muted-foreground">
+                            {set.reference ? `${set.reference} · ` : ''}
+                            {/* Which car, since a customer with two of them
+                                has two sets on this list and they are not
+                                interchangeable. */}
+                            {set.vehicle?.licensePlate ? `${set.vehicle.licensePlate} · ` : ''}
+                            {set.checkedOutAt
+                              ? t('checkIn.lastOut', {
+                                  date: formatDate(new Date(set.checkedOutAt)),
+                                })
+                              : t('checkIn.notStored')}
+                          </span>
+                        </span>
+                        <span className="w-3.5 shrink-0">
+                          {isOn && <Check className="size-3.5 text-primary" />}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
           <Separator />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="checkInSeason">{t('checkIn.season')}</Label>
-              <Select value={season} onValueChange={setSeason}>
-                <SelectTrigger id="checkInSeason">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TIRE_SEASONS.map((value) => (
-                    <SelectItem key={value} value={value}>
-                      {t(`seasons.${value}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {returning ? (
+            // Settled the first time these tires came in. What changes each
+            // season is where they go and what they measure, and offering the
+            // brand for editing here invites a typo that quietly turns one
+            // set's history into another's.
+            <div className="rounded-lg border bg-muted/40 px-3 py-2">
+              <p className="text-xs text-muted-foreground">{t('checkIn.sameSet')}</p>
+              <p className="truncate text-sm font-medium">
+                {[
+                  t(`seasons.${returning.season}`),
+                  returning.brand,
+                  returning.model,
+                  returning.size,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
             </div>
+          ) : null}
+
+          <div className={cn('grid gap-4 sm:grid-cols-2', returning && 'sm:grid-cols-1')}>
+            {!returning && (
+              <div className="space-y-2">
+                <Label htmlFor="checkInSeason">{t('checkIn.season')}</Label>
+                <Select value={season} onValueChange={setSeason}>
+                  <SelectTrigger id="checkInSeason">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TIRE_SEASONS.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {t(`seasons.${value}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="checkInQuantity">{t('checkIn.quantity')}</Label>
               <Input
@@ -314,81 +477,85 @@ export function CheckInDialog({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="checkInBrand">{t('checkIn.brand')}</Label>
-              <Input
-                id="checkInBrand"
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-                placeholder={t('checkIn.brandPlaceholder')}
-              />
+          {!returning && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="checkInBrand">{t('checkIn.brand')}</Label>
+                <Input
+                  id="checkInBrand"
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
+                  placeholder={t('checkIn.brandPlaceholder')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="checkInModel">{t('checkIn.model')}</Label>
+                <Input id="checkInModel" value={model} onChange={(e) => setModel(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="checkInSize">{t('checkIn.size')}</Label>
+                <Input
+                  id="checkInSize"
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  placeholder={t('checkIn.sizePlaceholder')}
+                  className="font-mono"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="checkInDot">{t('checkIn.dotCode')}</Label>
+                <Input
+                  id="checkInDot"
+                  value={dotCode}
+                  onChange={(e) => setDotCode(e.target.value)}
+                  placeholder={t('checkIn.dotPlaceholder')}
+                  className="font-mono"
+                />
+                <p className="text-xs text-muted-foreground">{t('checkIn.dotHint')}</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkInModel">{t('checkIn.model')}</Label>
-              <Input id="checkInModel" value={model} onChange={(e) => setModel(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkInSize">{t('checkIn.size')}</Label>
-              <Input
-                id="checkInSize"
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-                placeholder={t('checkIn.sizePlaceholder')}
-                className="font-mono"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkInDot">{t('checkIn.dotCode')}</Label>
-              <Input
-                id="checkInDot"
-                value={dotCode}
-                onChange={(e) => setDotCode(e.target.value)}
-                placeholder={t('checkIn.dotPlaceholder')}
-                className="font-mono"
-              />
-              <p className="text-xs text-muted-foreground">{t('checkIn.dotHint')}</p>
-            </div>
-          </div>
+          )}
 
-          <div className="flex flex-wrap gap-6">
-            <div className="flex items-center gap-2">
-              <Switch
-                id="checkInRims"
-                checked={withRims}
-                onCheckedChange={(on) => {
-                  setWithRims(on)
-                  // Rims arriving almost always means the rims get washed too;
-                  // unticking removes it again rather than leaving a job for
-                  // parts that are not here.
-                  setTreatments((current) =>
-                    on
-                      ? current.includes('wash_rims')
-                        ? current
-                        : [...current, 'wash_rims']
-                      : current.filter((x) => x !== 'wash_rims')
-                  )
-                }}
-              />
-              <Label htmlFor="checkInRims" className="font-normal">
-                {t('checkIn.withRims')}
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch id="checkInTpms" checked={hasTpms} onCheckedChange={setHasTpms} />
-              <Label htmlFor="checkInTpms" className="font-normal">
-                {t('checkIn.hasTpms')}
-              </Label>
-            </div>
-            {season === 'winter' && (
+          {!returning && (
+            <div className="flex flex-wrap gap-6">
               <div className="flex items-center gap-2">
-                <Switch id="checkInStudded" checked={studded} onCheckedChange={setStudded} />
-                <Label htmlFor="checkInStudded" className="font-normal">
-                  {t('checkIn.studded')}
+                <Switch
+                  id="checkInRims"
+                  checked={withRims}
+                  onCheckedChange={(on) => {
+                    setWithRims(on)
+                    // Rims arriving almost always means the rims get washed too;
+                    // unticking removes it again rather than leaving a job for
+                    // parts that are not here.
+                    setTreatments((current) =>
+                      on
+                        ? current.includes('wash_rims')
+                          ? current
+                          : [...current, 'wash_rims']
+                        : current.filter((x) => x !== 'wash_rims')
+                    )
+                  }}
+                />
+                <Label htmlFor="checkInRims" className="font-normal">
+                  {t('checkIn.withRims')}
                 </Label>
               </div>
-            )}
-          </div>
+              <div className="flex items-center gap-2">
+                <Switch id="checkInTpms" checked={hasTpms} onCheckedChange={setHasTpms} />
+                <Label htmlFor="checkInTpms" className="font-normal">
+                  {t('checkIn.hasTpms')}
+                </Label>
+              </div>
+              {season === 'winter' && (
+                <div className="flex items-center gap-2">
+                  <Switch id="checkInStudded" checked={studded} onCheckedChange={setStudded} />
+                  <Label htmlFor="checkInStudded" className="font-normal">
+                    {t('checkIn.studded')}
+                  </Label>
+                </div>
+              )}
+            </div>
+          )}
 
           <Separator />
 
@@ -423,7 +590,13 @@ export function CheckInDialog({
           <div className="space-y-2">
             <Label>{t('checkIn.treadTitle')}</Label>
             <p className="text-xs text-muted-foreground">{t('checkIn.treadHint')}</p>
-            <TreadEntry rows={treads} onChange={setTreads} imperial={imperial} season={season} />
+            <TreadEntry
+              rows={treads}
+              onChange={setTreads}
+              imperial={imperial}
+              season={season}
+              previous={lastReadings}
+            />
           </div>
 
           <div className="space-y-2">
@@ -443,7 +616,7 @@ export function CheckInDialog({
           </Button>
           <Button onClick={handleSubmit} disabled={saving || !locationId}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('checkIn.submit')}
+            {t(returning ? 'checkIn.submitReturn' : 'checkIn.submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

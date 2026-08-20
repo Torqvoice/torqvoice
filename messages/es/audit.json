@@ -138,6 +138,8 @@
     "tire_set_create_work_order": "Orden creada desde un juego de neumáticos",
     "tire_set_add_to_work_order": "Juego de neumáticos añadido a una orden",
     "tire_set_unlink_work_order": "Juego de neumáticos desvinculado de una orden",
-    "tire_agreement_charge": "Cargo de almacenaje creado"
+    "tire_agreement_charge": "Cargo de almacenaje creado",
+    "tire_set_return": "Juego almacenado de nuevo",
+    "tire_set_dispose": "Juego de neumáticos dado de baja"
   }
 }

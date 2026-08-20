@@ -8,7 +8,9 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import {
   checkInSchema,
   checkOutSchema,
+  disposeSetSchema,
   relocateSchema,
+  returnSetSchema,
   updateTireSetSchema,
 } from '../Schema/tireHotelSchema'
 import type { MeasurementInput } from '../Schema/tireHotelSchema'
@@ -117,8 +119,14 @@ export async function getTireSetsPaginated(params: {
       // it filters on outstanding treatments and leaves the status alone.
       if (params.status === 'needs_prep') {
         where.treatments = { some: { status: 'pending' } }
+        where.status = { not: 'disposed' }
       } else if (params.status && params.status !== 'all') {
         where.status = params.status
+      } else {
+        // A written-off set is history. After a few years a shop would have
+        // more scrapped sets than live ones, and the default view is meant to
+        // answer what is here now.
+        where.status = { not: 'disposed' }
       }
       if (params.season && params.season !== 'all') where.season = params.season
       if (params.warehouseId) where.location = { warehouseId: params.warehouseId }
@@ -372,6 +380,240 @@ export async function checkInTireSet(input: unknown) {
         action: 'tire_set.check_in',
         message: `Checked in tire set ${result.reference} to ${result.locationCode}`,
         metadata: { tireSetId: result.id, quantity: result.quantity },
+      }),
+    }
+  )
+}
+
+/**
+ * Sets this customer has left with, which could be coming back.
+ *
+ * A tire hotel's ordinary year is the same four tires arriving twice: the
+ * winter set in spring, the summer set in autumn. Typing them in again each
+ * time produces a second record of the same physical tires, which loses the
+ * one thing the shop is uniquely able to tell the customer, how fast they are
+ * actually wearing.
+ *
+ * Disposed sets never appear. They were scrapped or replaced, and offering
+ * them is how a new set ends up filed under the old one's history.
+ */
+export async function getReturningSets(input: {
+  customerId?: string | null
+  vehicleId?: string | null
+}) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+
+      const { customerId, vehicleId } = input
+      if (!customerId && !vehicleId) return []
+
+      return db.tireSet.findMany({
+        where: {
+          organizationId,
+          status: 'released',
+          OR: [...(vehicleId ? [{ vehicleId }] : []), ...(customerId ? [{ customerId }] : [])],
+        },
+        orderBy: { checkedOutAt: 'desc' },
+        take: 12,
+        select: {
+          id: true,
+          reference: true,
+          season: true,
+          studded: true,
+          brand: true,
+          model: true,
+          size: true,
+          quantity: true,
+          withRims: true,
+          hasTpms: true,
+          checkedOutAt: true,
+          vehicleId: true,
+          customerId: true,
+          vehicle: { select: { make: true, model: true, year: true, licensePlate: true } },
+          measurements: {
+            orderBy: { measuredAt: 'desc' },
+            take: 8,
+            select: {
+              position: true,
+              treadDepthMm: true,
+              condition: true,
+              measuredAt: true,
+              movementId: true,
+            },
+          },
+        },
+      })
+    },
+    { requiredPermissions: READ }
+  )
+}
+
+/**
+ * The same tires, back on a shelf for another season.
+ *
+ * Reuses the record rather than creating a second one, because it is the same
+ * rubber: the measurements, the movements and the wear all belong to one
+ * history. A new record every season would make the shop's best answer to
+ * "how long have these got left" impossible to give.
+ */
+export async function returnTireSet(input: unknown) {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      await requireTireHotel(organizationId)
+      const data = returnSetSchema.parse(input)
+
+      const returned = await db.$transaction(async (tx) => {
+        const set = await tx.tireSet.findFirst({
+          where: { id: data.id, organizationId },
+          select: { id: true, reference: true, status: true, quantity: true, vehicleId: true },
+        })
+        if (!set) throw new Error('Tire set not found')
+        if (set.status === 'stored') throw new Error('This set is already in storage')
+        if (set.status === 'disposed') {
+          throw new Error('This set was written off and cannot be stored again')
+        }
+
+        const quantity = data.quantity ?? set.quantity
+        const location = await assertRoom(tx, data.locationId, organizationId, quantity)
+
+        const movement = await tx.tireMovement.create({
+          data: {
+            type: 'check_in',
+            toLocationId: location.id,
+            toCode: location.code,
+            note: data.note || null,
+            tireSetId: set.id,
+            organizationId,
+            performedById: userId,
+          },
+        })
+
+        const rows = measurementRows(data.measurements, userId)
+        if (rows) {
+          await tx.tireMeasurement.createMany({
+            data: rows.map((row) => ({ ...row, tireSetId: set.id, movementId: movement.id })),
+          })
+        }
+
+        if (data.treatments?.length) {
+          // A wash asked for this season is a new request, even if the same
+          // work was finished last season. One row per kind of work per set is
+          // the model, so the settled row is reopened rather than duplicated.
+          await tx.tireTreatment.updateMany({
+            where: { tireSetId: set.id, type: { in: data.treatments } },
+            data: { status: 'pending', completedAt: null, completedById: null },
+          })
+          await tx.tireTreatment.createMany({
+            data: data.treatments.map((type) => ({
+              type,
+              status: 'pending',
+              tireSetId: set.id,
+              organizationId,
+            })),
+            skipDuplicates: true,
+          })
+        }
+
+        if (data.serviceRecordId) {
+          const record = await tx.serviceRecord.findFirst({
+            where: { id: data.serviceRecordId, organizationId },
+            select: { id: true, tireSetId: true },
+          })
+          if (record && !record.tireSetId) {
+            await tx.serviceRecord.update({
+              where: { id: record.id },
+              data: { tireSetId: set.id },
+            })
+          }
+        }
+
+        const updated = await tx.tireSet.update({
+          where: { id: set.id },
+          data: {
+            status: 'stored',
+            locationId: location.id,
+            quantity,
+            checkedInAt: new Date(),
+            checkedOutAt: null,
+          },
+        })
+
+        return { ...updated, locationCode: location.code }
+      })
+
+      revalidateTireHotel()
+      if (returned.vehicleId) revalidatePath(`/vehicles/${returned.vehicleId}`)
+      return returned
+    },
+    {
+      requiredPermissions: UPDATE,
+      audit: ({ result }) => ({
+        action: 'tire_set.return',
+        message: `Stored tire set ${result.reference} again, on ${result.locationCode}`,
+        metadata: { tireSetId: result.id, quantity: result.quantity },
+      }),
+    }
+  )
+}
+
+/**
+ * Writes a set off: scrapped, sold, or replaced by new tires.
+ *
+ * Kept rather than deleted, because the history is worth having and an
+ * invoice may point at it. What changes is that it stops being offered as
+ * "the same tires again" next season, which is the whole point: a customer
+ * who bought new tires should not have last year's set suggested back to
+ * them, with last year's wear attached to it.
+ */
+export async function disposeTireSet(input: unknown) {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      await requireTireHotel(organizationId)
+      const data = disposeSetSchema.parse(input)
+
+      const disposed = await db.$transaction(async (tx) => {
+        const set = await tx.tireSet.findFirst({
+          where: { id: data.id, organizationId },
+          include: { location: { select: { id: true, code: true } } },
+        })
+        if (!set) throw new Error('Tire set not found')
+        if (set.status === 'disposed') throw new Error('This set is already written off')
+
+        await tx.tireMovement.create({
+          data: {
+            type: 'dispose',
+            // Freeing a shelf is worth recording as coming off it, so the
+            // rack history still explains where the space went.
+            fromLocationId: set.location?.id ?? null,
+            fromCode: set.location?.code ?? null,
+            note: data.note || null,
+            tireSetId: set.id,
+            organizationId,
+            performedById: userId,
+          },
+        })
+
+        return tx.tireSet.update({
+          where: { id: set.id },
+          data: {
+            status: 'disposed',
+            locationId: null,
+            checkedOutAt: set.checkedOutAt ?? new Date(),
+          },
+        })
+      })
+
+      revalidateTireHotel()
+      if (disposed.vehicleId) revalidatePath(`/vehicles/${disposed.vehicleId}`)
+      return disposed
+    },
+    {
+      requiredPermissions: UPDATE,
+      audit: ({ result }) => ({
+        action: 'tire_set.dispose',
+        message: `Wrote off tire set ${result.reference}`,
+        metadata: { tireSetId: result.id },
       }),
     }
   )

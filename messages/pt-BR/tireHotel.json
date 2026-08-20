@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32 avos",
-    "inputLabel": "Profundidade do sulco, {position}"
+    "inputLabel": "Profundidade do sulco, {position}",
+    "lastTime": "era {value}",
+    "worn": "{value} de desgaste"
   },
   "list": {
     "tabAll": "Todos",
@@ -67,7 +69,8 @@
     "prep": "Prep.",
     "tabNeedsPrep": "A preparar",
     "setUpShelves": "Configurar prateleiras",
-    "emptyNoShelves": "Nenhuma prateleira ainda. Configure a armazenagem antes de receber pneus."
+    "emptyNoShelves": "Nenhuma prateleira ainda. Configure a armazenagem antes de receber pneus.",
+    "tabDisposed": "Baixados"
   },
   "checkIn": {
     "title": "Receber pneus",
@@ -106,7 +109,15 @@
     "success": "Jogo {reference} guardado em {code}",
     "failed": "Não foi possível receber o jogo",
     "noVehiclesForCustomer": "Este cliente ainda não tem veículos. Adicione um na página do cliente primeiro.",
-    "treatmentsHint": "O que fazer neste jogo antes de armazenar ou remontar."
+    "treatmentsHint": "O que fazer neste jogo antes de armazenar ou remontar.",
+    "storedBefore": "Já guardado aqui",
+    "storedBeforeHint": "São os mesmos pneus? Escolha o jogo para esta temporada entrar no histórico dele.",
+    "sameSet": "O mesmo jogo de antes",
+    "pieces": "{count} pçs",
+    "lastOut": "Retirado em {date}",
+    "notStored": "Não está guardado agora",
+    "returned": "O jogo {reference} está de volta em {code}",
+    "submitReturn": "Guardar de novo"
   },
   "storage": {
     "title": "Prateleiras",
@@ -195,7 +206,12 @@
     "deleted": "Jogo de pneus excluído",
     "deleteFailed": "Não foi possível excluir o jogo",
     "belowLimit": "{count} pneu(s) no limite de troca ou abaixo.",
-    "belowLimitHint": "Vale oferecer um preço ao cliente enquanto os pneus ainda estão aqui."
+    "belowLimitHint": "Vale oferecer um preço ao cliente enquanto os pneus ainda estão aqui.",
+    "dispose": "Dar baixa",
+    "disposeTitle": "Dar baixa neste jogo?",
+    "disposeBody": "O registro e o histórico permanecem. Ele deixa de ser sugerido como os mesmos pneus na próxima temporada.",
+    "disposed": "Jogo baixado",
+    "disposeFailed": "Não foi possível dar baixa no jogo"
   },
   "checkOut": {
     "title": "Devolver pneus",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "em {code}",
     "inStorage": "no hotel de pneus"
+  },
+  "wear": {
+    "summary": "{value} de desgaste entre {from} e {to}",
+    "perSeason": "Cerca de {value} por temporada",
+    "seasonsLeft": "{count, plural, =0 {Já no limite} one {Cerca de mais uma temporada} other {Cerca de mais # temporadas}}",
+    "since": "-{value}"
   }
 }

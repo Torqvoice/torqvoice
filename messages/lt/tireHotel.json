@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "1/32 colio",
-    "inputLabel": "Protektoriaus gylis, {position}"
+    "inputLabel": "Protektoriaus gylis, {position}",
+    "lastTime": "buvo {value}",
+    "worn": "nusidėvėjo {value}"
   },
   "list": {
     "tabAll": "Visos",
@@ -67,7 +69,8 @@
     "prep": "Paruoš.",
     "tabNeedsPrep": "Reikia paruošti",
     "setUpShelves": "Sukurti lentynas",
-    "emptyNoShelves": "Lentynų dar nėra. Sutvarkykite saugyklą prieš priimdami padangas."
+    "emptyNoShelves": "Lentynų dar nėra. Sutvarkykite saugyklą prieš priimdami padangas.",
+    "tabDisposed": "Nurašyti"
   },
   "checkIn": {
     "title": "Priimti padangas",
@@ -106,7 +109,15 @@
     "success": "Komplektas {reference} padėtas į {code}",
     "failed": "Nepavyko priimti komplekto",
     "noVehiclesForCustomer": "Šis klientas dar neturi transporto priemonių. Pirmiausia pridėkite ją kliento puslapyje.",
-    "treatmentsHint": "Ką reikia padaryti su šiuo komplektu prieš saugojimą ar montavimą."
+    "treatmentsHint": "Ką reikia padaryti su šiuo komplektu prieš saugojimą ar montavimą.",
+    "storedBefore": "Jau buvo saugoma čia",
+    "storedBeforeHint": "Grįžta tos pačios padangos? Pasirinkite komplektą, kad sezonas prisidėtų prie jo istorijos.",
+    "sameSet": "Tas pats komplektas kaip anksčiau",
+    "pieces": "{count} vnt.",
+    "lastOut": "Atsiimta {date}",
+    "notStored": "Šiuo metu nesaugoma",
+    "returned": "Komplektas {reference} vėl ant {code}",
+    "submitReturn": "Saugoti vėl"
   },
   "storage": {
     "title": "Lentynos",
@@ -195,7 +206,12 @@
     "deleted": "Padangų komplektas ištrintas",
     "deleteFailed": "Nepavyko ištrinti komplekto",
     "belowLimit": "{count} padanga (-os) ties keitimo riba arba žemiau.",
-    "belowLimitHint": "Verta pasiūlyti klientui kainą, kol padangos dar čia."
+    "belowLimitHint": "Verta pasiūlyti klientui kainą, kol padangos dar čia.",
+    "dispose": "Nurašyti",
+    "disposeTitle": "Nurašyti šį komplektą?",
+    "disposeBody": "Įrašas ir istorija lieka. Kitą sezoną jis nebebus siūlomas kaip tos pačios padangos.",
+    "disposed": "Komplektas nurašytas",
+    "disposeFailed": "Nepavyko nurašyti komplekto"
   },
   "checkOut": {
     "title": "Atiduoti padangas",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "{code} lentynoje",
     "inStorage": "padangų viešbutyje"
+  },
+  "wear": {
+    "summary": "Nusidėvėjo {value} nuo {from} iki {to}",
+    "perSeason": "Maždaug {value} per sezoną",
+    "seasonsLeft": "{count, plural, =0 {Jau ties riba} one {Maždaug dar vienas sezonas} other {Maždaug dar # sezonai}}",
+    "since": "-{value}"
   }
 }

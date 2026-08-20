@@ -138,6 +138,8 @@
     "tire_set_create_work_order": "Ordine creato da un treno di pneumatici",
     "tire_set_add_to_work_order": "Treno di pneumatici aggiunto a un ordine",
     "tire_set_unlink_work_order": "Treno di pneumatici scollegato da un ordine",
-    "tire_agreement_charge": "Addebito di deposito creato"
+    "tire_agreement_charge": "Addebito di deposito creato",
+    "tire_set_return": "Treno di nuovo in deposito",
+    "tire_set_dispose": "Treno di pneumatici dismesso"
   }
 }

@@ -81,6 +81,9 @@ const statusTabs = [
   // The tire department's own view: everything still waiting on prep work,
   // regardless of whether it is on a shelf or going back out.
   { key: 'needs_prep', labelKey: 'tabNeedsPrep' },
+  // Its own tab rather than a share of "all": written off is history, and
+  // history should be findable without crowding what is on the racks.
+  { key: 'disposed', labelKey: 'tabDisposed' },
 ] as const
 
 export function TireHotelClient({

@@ -138,6 +138,8 @@
     "tire_set_create_work_order": "Auftrag aus einem Reifensatz erstellt",
     "tire_set_add_to_work_order": "Reifensatz zu einem Auftrag hinzugefügt",
     "tire_set_unlink_work_order": "Reifensatz von einem Auftrag gelöst",
-    "tire_agreement_charge": "Lagergebühr erstellt"
+    "tire_agreement_charge": "Lagergebühr erstellt",
+    "tire_set_return": "Satz erneut eingelagert",
+    "tire_set_dispose": "Reifensatz ausgemustert"
   }
 }

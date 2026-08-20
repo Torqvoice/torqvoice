@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32sten",
-    "inputLabel": "Profieldiepte, {position}"
+    "inputLabel": "Profieldiepte, {position}",
+    "lastTime": "was {value}",
+    "worn": "{value} versleten"
   },
   "list": {
     "tabAll": "Alle",
@@ -67,7 +69,8 @@
     "prep": "Voorb.",
     "tabNeedsPrep": "Voorbereiding nodig",
     "setUpShelves": "Stellingen instellen",
-    "emptyNoShelves": "Nog geen stellingen. Richt uw opslag in voordat u banden inneemt."
+    "emptyNoShelves": "Nog geen stellingen. Richt uw opslag in voordat u banden inneemt.",
+    "tabDisposed": "Afgeschreven"
   },
   "checkIn": {
     "title": "Banden innemen",
@@ -106,7 +109,15 @@
     "success": "Set {reference} opgeslagen op {code}",
     "failed": "Innemen mislukt",
     "noVehiclesForCustomer": "Deze klant heeft nog geen voertuigen. Voeg er eerst een toe op de klantpagina.",
-    "treatmentsHint": "Wat er met deze set moet gebeuren voor opslag of montage."
+    "treatmentsHint": "Wat er met deze set moet gebeuren voor opslag of montage.",
+    "storedBefore": "Eerder hier opgeslagen",
+    "storedBeforeHint": "Komen dezelfde banden terug? Kies de set, dan hoort dit seizoen bij de historie.",
+    "sameSet": "Dezelfde set als eerder",
+    "pieces": "{count} st.",
+    "lastOut": "Opgehaald {date}",
+    "notStored": "Nu niet opgeslagen",
+    "returned": "Set {reference} ligt weer op {code}",
+    "submitReturn": "Opnieuw opslaan"
   },
   "storage": {
     "title": "Stellingen",
@@ -195,7 +206,12 @@
     "deleted": "Bandenset verwijderd",
     "deleteFailed": "Kon de set niet verwijderen",
     "belowLimit": "{count} band(en) op of onder uw vervangingsgrens.",
-    "belowLimitHint": "Bied de klant een prijs aan nu de banden hier nog liggen."
+    "belowLimitHint": "Bied de klant een prijs aan nu de banden hier nog liggen.",
+    "dispose": "Afschrijven",
+    "disposeTitle": "Deze set afschrijven?",
+    "disposeBody": "Het record en de historie blijven staan. Volgend seizoen wordt de set niet meer voorgesteld.",
+    "disposed": "Set afgeschreven",
+    "disposeFailed": "Kon de set niet afschrijven"
   },
   "checkOut": {
     "title": "Banden teruggeven",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "op {code}",
     "inStorage": "in bandenhotel"
+  },
+  "wear": {
+    "summary": "{value} versleten tussen {from} en {to}",
+    "perSeason": "Ongeveer {value} per seizoen",
+    "seasonsLeft": "{count, plural, =0 {Nu op de grens} one {Nog ongeveer één seizoen} other {Nog ongeveer # seizoenen}}",
+    "since": "-{value}"
   }
 }

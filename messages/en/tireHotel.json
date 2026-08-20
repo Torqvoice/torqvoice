@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32nds",
-    "inputLabel": "Tread depth, {position}"
+    "inputLabel": "Tread depth, {position}",
+    "lastTime": "was {value}",
+    "worn": "{value} worn"
   },
   "list": {
     "tabAll": "All",
@@ -67,7 +69,8 @@
     "prep": "Prep",
     "tabNeedsPrep": "Needs prep",
     "setUpShelves": "Set up shelves",
-    "emptyNoShelves": "No shelves yet. Set up your storage layout before checking tires in."
+    "emptyNoShelves": "No shelves yet. Set up your storage layout before checking tires in.",
+    "tabDisposed": "Written off"
   },
   "checkIn": {
     "title": "Check in tires",
@@ -106,7 +109,15 @@
     "success": "Set {reference} stored on {code}",
     "failed": "Could not check the set in",
     "noVehiclesForCustomer": "This customer has no vehicles yet. Add one from their customer page first.",
-    "treatmentsHint": "What should be done to this set before it is stored or refitted."
+    "treatmentsHint": "What should be done to this set before it is stored or refitted.",
+    "storedBefore": "Stored here before",
+    "storedBeforeHint": "Bringing the same tires back? Pick the set so this season joins its history.",
+    "sameSet": "Same set as before",
+    "pieces": "{count} pcs",
+    "lastOut": "Left {date}",
+    "notStored": "Not currently stored",
+    "returned": "Set {reference} is back on {code}",
+    "submitReturn": "Store again"
   },
   "storage": {
     "title": "Shelves",
@@ -195,7 +206,12 @@
     "deleted": "Tire set deleted",
     "deleteFailed": "Could not delete the set",
     "belowLimit": "{count} tire(s) at or below your replacement limit.",
-    "belowLimitHint": "Worth offering the customer a price while the tires are still here."
+    "belowLimitHint": "Worth offering the customer a price while the tires are still here.",
+    "dispose": "Write off",
+    "disposeTitle": "Write this set off?",
+    "disposeBody": "The record and its history stay. It stops being offered as the same tires next season.",
+    "disposed": "Set written off",
+    "disposeFailed": "Could not write the set off"
   },
   "checkOut": {
     "title": "Check out tires",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "on {code}",
     "inStorage": "in tire hotel"
+  },
+  "wear": {
+    "summary": "Worn {value} between {from} and {to}",
+    "perSeason": "About {value} a season",
+    "seasonsLeft": "{count, plural, =0 {At the limit now} one {Roughly one more season} other {Roughly # more seasons}}",
+    "since": "-{value}"
   }
 }

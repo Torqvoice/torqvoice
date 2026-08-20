@@ -138,6 +138,8 @@
     "tire_set_create_work_order": "Utworzono zlecenie z kompletu opon",
     "tire_set_add_to_work_order": "Dodano komplet opon do zlecenia",
     "tire_set_unlink_work_order": "Odłączono komplet opon od zlecenia",
-    "tire_agreement_charge": "Utworzono opłatę za przechowywanie"
+    "tire_agreement_charge": "Utworzono opłatę za przechowywanie",
+    "tire_set_return": "Ponownie przyjęto komplet",
+    "tire_set_dispose": "Spisano komplet opon"
   }
 }

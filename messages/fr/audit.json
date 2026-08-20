@@ -138,6 +138,8 @@
     "tire_set_create_work_order": "Ordre créé depuis un jeu de pneus",
     "tire_set_add_to_work_order": "Jeu de pneus ajouté à un ordre",
     "tire_set_unlink_work_order": "Jeu de pneus dissocié d’un ordre",
-    "tire_agreement_charge": "Frais de stockage créés"
+    "tire_agreement_charge": "Frais de stockage créés",
+    "tire_set_return": "Jeu de nouveau stocké",
+    "tire_set_dispose": "Jeu de pneus mis au rebut"
   }
 }

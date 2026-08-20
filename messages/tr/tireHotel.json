@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "1/32 inç",
-    "inputLabel": "Diş derinliği, {position}"
+    "inputLabel": "Diş derinliği, {position}",
+    "lastTime": "önceki {value}",
+    "worn": "{value} aşınma"
   },
   "list": {
     "tabAll": "Tümü",
@@ -67,7 +69,8 @@
     "prep": "Hazırlık",
     "tabNeedsPrep": "Hazırlık bekliyor",
     "setUpShelves": "Rafları kur",
-    "emptyNoShelves": "Henüz raf yok. Lastik kabul etmeden önce deponuzu kurun."
+    "emptyNoShelves": "Henüz raf yok. Lastik kabul etmeden önce deponuzu kurun.",
+    "tabDisposed": "Hurdaya ayrılan"
   },
   "checkIn": {
     "title": "Lastik kabul et",
@@ -106,7 +109,15 @@
     "success": "{reference} numaralı takım {code} rafına kondu",
     "failed": "Takım kabul edilemedi",
     "noVehiclesForCustomer": "Bu müşterinin henüz aracı yok. Önce müşteri sayfasından bir araç ekleyin.",
-    "treatmentsHint": "Bu takıma depolamadan veya takmadan önce ne yapılmalı."
+    "treatmentsHint": "Bu takıma depolamadan veya takmadan önce ne yapılmalı.",
+    "storedBefore": "Daha önce burada duruyordu",
+    "storedBeforeHint": "Aynı lastikler mi geliyor? Takımı seçin, bu sezon geçmişine eklensin.",
+    "sameSet": "Öncekiyle aynı takım",
+    "pieces": "{count} adet",
+    "lastOut": "{date} tarihinde alındı",
+    "notStored": "Şu anda depoda değil",
+    "returned": "{reference} takımı yeniden {code} rafında",
+    "submitReturn": "Yeniden depola"
   },
   "storage": {
     "title": "Raflar",
@@ -195,7 +206,12 @@
     "deleted": "Lastik takımı silindi",
     "deleteFailed": "Takım silinemedi",
     "belowLimit": "{count} lastik değişim sınırında ya da altında.",
-    "belowLimitHint": "Lastikler hâlâ buradayken müşteriye fiyat vermekte fayda var."
+    "belowLimitHint": "Lastikler hâlâ buradayken müşteriye fiyat vermekte fayda var.",
+    "dispose": "Hurdaya ayır",
+    "disposeTitle": "Bu takım hurdaya ayrılsın mı?",
+    "disposeBody": "Kayıt ve geçmişi kalır. Gelecek sezon aynı lastikler olarak önerilmez.",
+    "disposed": "Takım hurdaya ayrıldı",
+    "disposeFailed": "Takım hurdaya ayrılamadı"
   },
   "checkOut": {
     "title": "Lastikleri teslim et",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "{code} rafında",
     "inStorage": "lastik otelinde"
+  },
+  "wear": {
+    "summary": "{from} ile {to} arasında {value} aşınma",
+    "perSeason": "Sezon başına yaklaşık {value}",
+    "seasonsLeft": "{count, plural, =0 {Şu anda sınırda} one {Yaklaşık bir sezon daha} other {Yaklaşık # sezon daha}}",
+    "since": "-{value}"
   }
 }

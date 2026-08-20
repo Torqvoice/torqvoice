@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32e",
-    "inputLabel": "Profondeur de sculpture, {position}"
+    "inputLabel": "Profondeur de sculpture, {position}",
+    "lastTime": "était {value}",
+    "worn": "{value} d’usure"
   },
   "list": {
     "tabAll": "Tous",
@@ -67,7 +69,8 @@
     "prep": "Prép.",
     "tabNeedsPrep": "À préparer",
     "setUpShelves": "Configurer les étagères",
-    "emptyNoShelves": "Aucune étagère. Configurez votre stockage avant de réceptionner des pneus."
+    "emptyNoShelves": "Aucune étagère. Configurez votre stockage avant de réceptionner des pneus.",
+    "tabDisposed": "Au rebut"
   },
   "checkIn": {
     "title": "Réceptionner des pneus",
@@ -106,7 +109,15 @@
     "success": "Jeu {reference} rangé en {code}",
     "failed": "Impossible de réceptionner le jeu",
     "noVehiclesForCustomer": "Ce client n’a pas encore de véhicule. Ajoutez-en un depuis sa fiche client.",
-    "treatmentsHint": "Ce qu’il faut faire sur ce jeu avant stockage ou remontage."
+    "treatmentsHint": "Ce qu’il faut faire sur ce jeu avant stockage ou remontage.",
+    "storedBefore": "Déjà stocké ici",
+    "storedBeforeHint": "Ce sont les mêmes pneus ? Choisissez le jeu, la saison rejoindra son historique.",
+    "sameSet": "Même jeu que la dernière fois",
+    "pieces": "{count} pcs",
+    "lastOut": "Repris le {date}",
+    "notStored": "Pas en stock actuellement",
+    "returned": "Le jeu {reference} est de nouveau en {code}",
+    "submitReturn": "Stocker à nouveau"
   },
   "storage": {
     "title": "Étagères",
@@ -195,7 +206,12 @@
     "deleted": "Jeu de pneus supprimé",
     "deleteFailed": "Impossible de supprimer le jeu",
     "belowLimit": "{count} pneu(s) à votre limite de remplacement ou en dessous.",
-    "belowLimitHint": "À proposer au client tant que les pneus sont encore ici."
+    "belowLimitHint": "À proposer au client tant que les pneus sont encore ici.",
+    "dispose": "Mettre au rebut",
+    "disposeTitle": "Mettre ce jeu au rebut ?",
+    "disposeBody": "La fiche et son historique restent. Le jeu ne sera plus proposé la saison prochaine.",
+    "disposed": "Jeu mis au rebut",
+    "disposeFailed": "Impossible de mettre le jeu au rebut"
   },
   "checkOut": {
     "title": "Restituer les pneus",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "en {code}",
     "inStorage": "à l’hôtel à pneus"
+  },
+  "wear": {
+    "summary": "{value} d’usure entre le {from} et le {to}",
+    "perSeason": "Environ {value} par saison",
+    "seasonsLeft": "{count, plural, =0 {À la limite} one {Encore une saison environ} other {Encore # saisons environ}}",
+    "since": "-{value}"
   }
 }

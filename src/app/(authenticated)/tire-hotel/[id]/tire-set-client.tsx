@@ -25,7 +25,8 @@ import { NewTireJobDialog } from '@/features/tire-hotel/Components/NewTireJobDia
 import { PrintLabelsDialog } from '@/features/tire-hotel/Components/PrintLabelsDialog'
 import { TireJobsCard, type TireJobs } from '@/features/tire-hotel/Components/TireJobsCard'
 import { reasonForCondition } from '@/features/tire-hotel/Lib/messageTemplates'
-import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
+import { deleteTireSet, disposeTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
+import { groupRounds, wearSummary, seasonsLeft } from '@/features/tire-hotel/Lib/wear'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
   CONDITION_TOKENS,
@@ -46,6 +47,7 @@ import {
   MessageSquare,
   MapPin,
   Pencil,
+  Ban,
   Printer,
   Trash2,
   TriangleAlert,
@@ -121,6 +123,7 @@ export function TireSetClient({
   jobs,
   billing,
   imperial,
+  thresholds,
 }: {
   set: TireSet
   locations: PickerLocation[]
@@ -132,6 +135,8 @@ export function TireSetClient({
     monthlyPrice: number
     currency: string
   }
+  /** The workshop's own replacement limits, which decide the projection. */
+  thresholds: { summerReplace: number; winterReplace: number }
   vehicles: {
     id: string
     make: string
@@ -159,6 +164,7 @@ export function TireSetClient({
     if (searchParams.get('print') === '1') setShowLabels(true)
   }, [searchParams])
   const [deleting, setDeleting] = useState(false)
+  const [disposing, setDisposing] = useState(false)
 
   // Deleting is only offered once the set is off the shelf: the action
   // refuses a stored set, so the shelf count can never drift from reality.
@@ -181,7 +187,35 @@ export function TireSetClient({
     router.push('/tire-hotel')
   }
 
+  /**
+   * Writing a set off, when the customer has bought new tires.
+   *
+   * Kept rather than deleted: the history and any invoice pointing at it are
+   * worth having. What stops is being offered as "the same tires again" next
+   * season, which is the point, since the wear on this record belongs to
+   * rubber that is now in a skip.
+   */
+  const handleDispose = async () => {
+    const ok = await confirm({
+      title: t('detail.disposeTitle'),
+      description: t('detail.disposeBody'),
+      confirmLabel: t('detail.dispose'),
+      destructive: true,
+    })
+    if (!ok) return
+    setDisposing(true)
+    const result = await disposeTireSet({ id: set.id })
+    setDisposing(false)
+    if (!result.success) {
+      toast.error(result.error ?? t('detail.disposeFailed'))
+      return
+    }
+    toast.success(t('detail.disposed'))
+    router.refresh()
+  }
+
   const isStored = set.status === 'stored'
+  const isDisposed = set.status === 'disposed'
   const latestRound = set.measurements.length > 0 ? set.measurements[0].measuredAt : null
   const latest = set.measurements.filter(
     (m) => latestRound && m.measuredAt.getTime() === latestRound.getTime()
@@ -270,20 +304,32 @@ export function TireSetClient({
               </Button>
             </>
           ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDelete}
-              disabled={deleting}
-              className="text-destructive hover:text-destructive"
-            >
-              {deleting ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+            <>
+              {!isDisposed && (
+                <Button variant="outline" size="sm" onClick={handleDispose} disabled={disposing}>
+                  {disposing ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Ban className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  {t('detail.dispose')}
+                </Button>
               )}
-              {t('common.delete')}
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="text-destructive hover:text-destructive"
+              >
+                {deleting ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                {t('common.delete')}
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -342,6 +388,9 @@ export function TireSetClient({
                 formatTread={formatTread}
                 formatPressure={formatPressure}
                 formatDate={formatDate}
+                replaceLimitMm={
+                  set.season === 'winter' ? thresholds.winterReplace : thresholds.summerReplace
+                }
               />
             )}
           </AppCard>
@@ -545,74 +594,103 @@ function MeasurementHistory({
   formatTread,
   formatPressure,
   formatDate,
+  replaceLimitMm,
 }: {
   measurements: Measurement[]
   formatTread: (mm: number | null) => string
   formatPressure: (bar: number | null) => string | null
   formatDate: (d: Date) => string
+  /** The workshop's own replacement threshold for this set's season. */
+  replaceLimitMm: number
 }) {
   const t = useTranslations('tireHotel')
 
-  const rounds = new Map<number, Measurement[]>()
-  for (const m of measurements) {
-    const key = new Date(m.measuredAt).getTime()
-    const list = rounds.get(key) ?? []
-    list.push(m)
-    rounds.set(key, list)
-  }
+  const rounds = groupRounds(measurements)
+  const summary = wearSummary(rounds)
+  const projection = seasonsLeft(rounds, replaceLimitMm)
+  const remaining = projection ? projection.seasons : null
 
   return (
     <div className="space-y-4">
-      {[...rounds.entries()].map(([time, rows]) => (
-        <div key={time}>
-          <div className="mb-2 flex items-baseline justify-between gap-2">
-            <span className="text-xs font-medium text-muted-foreground">
-              {formatDate(new Date(time))}
-            </span>
-            {rows[0].measuredBy && (
-              <span className="text-xs text-muted-foreground">{rows[0].measuredBy.name}</span>
+      {/* What the shop is uniquely able to tell this customer: nobody else has
+          held the same four tires across seasons with a gauge in hand. */}
+      {summary && (
+        <div className="rounded-lg border bg-muted/40 px-3 py-2">
+          <p className="text-sm">
+            {t('wear.summary', {
+              value: formatTread(summary.mm),
+              from: formatDate(summary.from),
+              to: formatDate(summary.to),
+            })}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {t('wear.perSeason', { value: formatTread(summary.perSeason) })}
+            {remaining !== null && <span> · {t('wear.seasonsLeft', { count: remaining })}</span>}
+          </p>
+        </div>
+      )}
+
+      {rounds.map((round) => {
+        const rows = round.rows
+        return (
+          <div key={round.key}>
+            <div className="mb-2 flex items-baseline justify-between gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                {formatDate(round.at)}
+              </span>
+              {rows[0].measuredBy && (
+                <span className="text-xs text-muted-foreground">{rows[0].measuredBy.name}</span>
+              )}
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {rows.map((m) => {
+                const pressure = formatPressure(m.pressureBar)
+                const worn = round.worn[m.position]
+                return (
+                  <div key={m.id} className="flex items-center gap-2 rounded-lg border p-2">
+                    <span className="w-20 shrink-0 text-xs text-muted-foreground">
+                      {t(`positions.${m.position}`)}
+                    </span>
+                    <span className="flex-1 text-sm tabular-nums">
+                      {formatTread(m.treadDepthMm)}
+                      {/* The change since the visit before, which is the part a
+                        customer actually reacts to. */}
+                      {typeof worn === 'number' && worn > 0 && (
+                        <span className="ml-2 text-xs text-amber-600">
+                          {t('wear.since', { value: formatTread(worn) })}
+                        </span>
+                      )}
+                      {pressure && (
+                        <span className="ml-2 text-xs text-muted-foreground">{pressure}</span>
+                      )}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'shrink-0 text-[10px]',
+                        CONDITION_TOKENS[m.condition as TireCondition].badge
+                      )}
+                    >
+                      {t(`conditions.${m.condition}`)}
+                    </Badge>
+                  </div>
+                )
+              })}
+            </div>
+            {rows.some((m) => m.damage) && (
+              <ul className="mt-2 space-y-1">
+                {rows
+                  .filter((m) => m.damage)
+                  .map((m) => (
+                    <li key={m.id} className="text-xs text-muted-foreground">
+                      {t(`positions.${m.position}`)}: {m.damage}
+                    </li>
+                  ))}
+              </ul>
             )}
           </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {rows.map((m) => {
-              const pressure = formatPressure(m.pressureBar)
-              return (
-                <div key={m.id} className="flex items-center gap-2 rounded-lg border p-2">
-                  <span className="w-20 shrink-0 text-xs text-muted-foreground">
-                    {t(`positions.${m.position}`)}
-                  </span>
-                  <span className="flex-1 text-sm tabular-nums">
-                    {formatTread(m.treadDepthMm)}
-                    {pressure && (
-                      <span className="ml-2 text-xs text-muted-foreground">{pressure}</span>
-                    )}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      'shrink-0 text-[10px]',
-                      CONDITION_TOKENS[m.condition as TireCondition].badge
-                    )}
-                  >
-                    {t(`conditions.${m.condition}`)}
-                  </Badge>
-                </div>
-              )
-            })}
-          </div>
-          {rows.some((m) => m.damage) && (
-            <ul className="mt-2 space-y-1">
-              {rows
-                .filter((m) => m.damage)
-                .map((m) => (
-                  <li key={m.id} className="text-xs text-muted-foreground">
-                    {t(`positions.${m.position}`)}: {m.damage}
-                  </li>
-                ))}
-            </ul>
-          )}
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

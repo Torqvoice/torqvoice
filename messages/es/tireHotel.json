@@ -44,7 +44,9 @@
   "tread": {
     "placeholderMm": "mm",
     "placeholder32": "32avos",
-    "inputLabel": "Profundidad del dibujo, {position}"
+    "inputLabel": "Profundidad del dibujo, {position}",
+    "lastTime": "era {value}",
+    "worn": "{value} de desgaste"
   },
   "list": {
     "tabAll": "Todos",
@@ -67,7 +69,8 @@
     "prep": "Prep.",
     "tabNeedsPrep": "Pendiente de preparar",
     "setUpShelves": "Configurar estantes",
-    "emptyNoShelves": "Aún no hay estantes. Configura el almacén antes de recibir neumáticos."
+    "emptyNoShelves": "Aún no hay estantes. Configura el almacén antes de recibir neumáticos.",
+    "tabDisposed": "Dados de baja"
   },
   "checkIn": {
     "title": "Recibir neumáticos",
@@ -106,7 +109,15 @@
     "success": "Juego {reference} guardado en {code}",
     "failed": "No se ha podido recibir el juego",
     "noVehiclesForCustomer": "Este cliente aún no tiene vehículos. Añade uno desde su ficha de cliente.",
-    "treatmentsHint": "Qué hay que hacerle a este juego antes de guardarlo o montarlo."
+    "treatmentsHint": "Qué hay que hacerle a este juego antes de guardarlo o montarlo.",
+    "storedBefore": "Ya almacenado aquí",
+    "storedBeforeHint": "¿Vuelven los mismos neumáticos? Elige el juego y la temporada se sumará a su historial.",
+    "sameSet": "El mismo juego que antes",
+    "pieces": "{count} uds",
+    "lastOut": "Retirado el {date}",
+    "notStored": "Ahora no está almacenado",
+    "returned": "El juego {reference} vuelve a estar en {code}",
+    "submitReturn": "Almacenar de nuevo"
   },
   "storage": {
     "title": "Estantes",
@@ -195,7 +206,12 @@
     "deleted": "Juego de neumáticos eliminado",
     "deleteFailed": "No se ha podido eliminar el juego",
     "belowLimit": "{count} neumático(s) en tu límite de sustitución o por debajo.",
-    "belowLimitHint": "Conviene ofrecer precio al cliente mientras los neumáticos siguen aquí."
+    "belowLimitHint": "Conviene ofrecer precio al cliente mientras los neumáticos siguen aquí.",
+    "dispose": "Dar de baja",
+    "disposeTitle": "¿Dar de baja este juego?",
+    "disposeBody": "La ficha y su historial se mantienen. Deja de ofrecerse como los mismos neumáticos la próxima temporada.",
+    "disposed": "Juego dado de baja",
+    "disposeFailed": "No se pudo dar de baja el juego"
   },
   "checkOut": {
     "title": "Entregar neumáticos",
@@ -459,5 +475,11 @@
   "vehicle": {
     "oneOnShelf": "en {code}",
     "inStorage": "en el hotel"
+  },
+  "wear": {
+    "summary": "{value} de desgaste entre {from} y {to}",
+    "perSeason": "Unos {value} por temporada",
+    "seasonsLeft": "{count, plural, =0 {Ya en el límite} one {Alrededor de una temporada más} other {Alrededor de # temporadas más}}",
+    "since": "-{value}"
   }
 }
