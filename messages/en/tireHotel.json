@@ -425,7 +425,8 @@
     "otherSize": "Other size",
     "inSize": "{count} in {size}",
     "quantity": "Qty",
-    "noStockItem": "No stock item, priced by hand"
+    "noStockItem": "No stock item, priced by hand",
+    "storeTires": "Store tires"
   },
   "label": {
     "action": "Labels",

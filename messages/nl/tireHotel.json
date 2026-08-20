@@ -425,7 +425,8 @@
     "otherSize": "Andere maat",
     "inSize": "{count} in {size}",
     "quantity": "Aantal",
-    "noStockItem": "Geen voorraadartikel, prijs handmatig"
+    "noStockItem": "Geen voorraadartikel, prijs handmatig",
+    "storeTires": "Banden opslaan"
   },
   "label": {
     "action": "Labels",

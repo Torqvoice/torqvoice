@@ -425,7 +425,8 @@
     "otherSize": "Altra misura",
     "inSize": "{count} in {size}",
     "quantity": "Qtà",
-    "noStockItem": "Nessun articolo a magazzino, prezzo manuale"
+    "noStockItem": "Nessun articolo a magazzino, prezzo manuale",
+    "storeTires": "Deposita gli pneumatici"
   },
   "label": {
     "action": "Etichette",

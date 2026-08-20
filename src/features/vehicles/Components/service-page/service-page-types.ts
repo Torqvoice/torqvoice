@@ -59,6 +59,8 @@ export interface ServicePageClientProps {
   emailEnabled?: boolean
   telegramEnabled?: boolean
   aiEnabled?: boolean
+  /** Gates the "Store tires" action, by plan and by the org's own switch. */
+  tireHotelEnabled?: boolean
   defaultDueDays?: number
   defaultMarkupPercent?: number
   markupAppliesToInventory?: boolean

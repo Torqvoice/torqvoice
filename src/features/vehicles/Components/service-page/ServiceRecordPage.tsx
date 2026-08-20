@@ -8,6 +8,7 @@ import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPrese
 import { getTechnicians, getOrgMembers } from '@/features/workboard/Actions/technicianActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
+import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { db } from '@/lib/db'
@@ -107,7 +108,7 @@ export async function ServiceRecordPage({
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
 
-  const [currentUser, features, aiSettings] = await Promise.all([
+  const [currentUser, features, aiSettings, tireHotelEnabled] = await Promise.all([
     session?.user?.id
       ? db.user.findUnique({
           where: { id: session.user.id },
@@ -124,6 +125,7 @@ export async function ServiceRecordPage({
           select: { key: true, value: true },
         })
       : Promise.resolve([]),
+    orgId ? isTireHotelEnabled(orgId) : Promise.resolve(false),
   ])
 
   const currentUserName = currentUser?.name || ''
@@ -266,6 +268,7 @@ export async function ServiceRecordPage({
         emailEnabled={features?.smtp ?? false}
         telegramEnabled={features?.telegram ?? false}
         aiEnabled={aiEnabled}
+        tireHotelEnabled={tireHotelEnabled}
         defaultDueDays={defaultDueDays}
         defaultMarkupPercent={defaultMarkupPercent}
         markupAppliesToInventory={markupAppliesToInventory}

@@ -122,6 +122,10 @@ export const checkInSchema = tireSetSchema.extend({
   /// Required on check-in: a set that arrives has to land somewhere.
   locationId: z.string().min(1, 'Choose where the tires go'),
   note: z.string().trim().max(500).optional().or(z.literal('')),
+  /// The job the tires arrived on, when check-in was started from one. Links
+  /// the new set to that work order so the technician sees the shelf without
+  /// anyone going looking for it.
+  serviceRecordId: z.string().min(1).optional().nullable(),
 })
 
 export const checkOutSchema = z.object({

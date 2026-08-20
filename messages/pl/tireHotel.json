@@ -425,7 +425,8 @@
     "otherSize": "Inny rozmiar",
     "inSize": "{count} w {size}",
     "quantity": "Ilość",
-    "noStockItem": "Brak pozycji magazynowej, cena ręczna"
+    "noStockItem": "Brak pozycji magazynowej, cena ręczna",
+    "storeTires": "Przechowaj opony"
   },
   "label": {
     "action": "Etykiety",

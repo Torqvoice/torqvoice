@@ -425,7 +425,8 @@
     "otherSize": "Annen dimensjon",
     "inSize": "{count} i {size}",
     "quantity": "Ant.",
-    "noStockItem": "Ingen lagervare, pris settes manuelt"
+    "noStockItem": "Ingen lagervare, pris settes manuelt",
+    "storeTires": "Legg dekk på hotell"
   },
   "label": {
     "action": "Etiketter",

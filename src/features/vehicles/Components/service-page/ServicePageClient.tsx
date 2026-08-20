@@ -57,6 +57,7 @@ export function ServicePageClient({
   organizationId,
   currencyCode,
   unitSystem,
+  tireHotelEnabled = false,
   defaultTaxRate,
   taxEnabled,
   defaultLaborRate,
@@ -344,6 +345,8 @@ export function ServicePageClient({
                   actions={actions}
                   record={record}
                   tireSet={record.tireSet ?? null}
+                  tireHotelEnabled={tireHotelEnabled}
+                  unitSystem={unitSystem}
                   currencyCode={currencyCode}
                   defaultLaborRate={defaultLaborRate}
                   inventoryParts={inventoryParts}

@@ -425,7 +425,8 @@
     "otherSize": "Outra medida",
     "inSize": "{count} em {size}",
     "quantity": "Qtd",
-    "noStockItem": "Sem item de estoque, preço manual"
+    "noStockItem": "Sem item de estoque, preço manual",
+    "storeTires": "Guardar pneus"
   },
   "label": {
     "action": "Etiquetas",

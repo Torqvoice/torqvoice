@@ -425,7 +425,8 @@
     "otherSize": "Farklı ebat",
     "inSize": "{size} ebadında {count} adet",
     "quantity": "Adet",
-    "noStockItem": "Stok kalemi yok, fiyat elle girilir"
+    "noStockItem": "Stok kalemi yok, fiyat elle girilir",
+    "storeTires": "Lastikleri depola"
   },
   "label": {
     "action": "Etiketler",

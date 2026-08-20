@@ -58,6 +58,9 @@ export function CheckInDialog({
   vehicles,
   imperial,
   defaultQuantity = 4,
+  lockedVehicle,
+  serviceRecordId,
+  onCheckedIn,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -65,6 +68,20 @@ export function CheckInDialog({
   vehicles: VehicleOption[]
   imperial: boolean
   defaultQuantity?: number
+  /**
+   * Set when check-in starts from a job. The car is already on the ramp and
+   * the job already says whose it is, so asking again is a question with a
+   * known answer, and a chance to pick the wrong one.
+   */
+  lockedVehicle?: VehicleOption
+  /** The job these tires came in on. Linked to the new set on save. */
+  serviceRecordId?: string
+  /**
+   * Called instead of navigating to the new set. Check-in from the tire hotel
+   * goes straight to the labels; check-in from a job should not drag the desk
+   * off the job they are still writing.
+   */
+  onCheckedIn?: (set: { id: string; quantity: number }) => void
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
@@ -107,7 +124,9 @@ export function CheckInDialog({
     setNotes('')
     setTreads(TIRE_ROAD_POSITIONS.map((position) => ({ position, tread: '', condition: 'good' })))
     setTreatments(defaultTreatments({ withRims: false }))
-  }, [open, defaultQuantity])
+    setVehicleId(lockedVehicle?.id ?? '')
+    setCustomerId(lockedVehicle?.customerId ?? '')
+  }, [open, defaultQuantity, lockedVehicle])
 
   const qty = Math.max(1, Number(quantity) || 1)
 
@@ -159,6 +178,7 @@ export function CheckInDialog({
       })
 
     const result = await checkInTireSet({
+      serviceRecordId: serviceRecordId ?? null,
       customerId: customerId || null,
       vehicleId: vehicleId || null,
       season,
@@ -189,6 +209,11 @@ export function CheckInDialog({
       })
     )
     onOpenChange(false)
+    if (onCheckedIn && result.data?.id) {
+      onCheckedIn({ id: result.data.id, quantity: qty })
+      router.refresh()
+      return
+    }
     // Straight to the set with the label dialog open: the tech is holding the
     // tires right now, and the sticker has to go on before they reach the
     // shelf. Coming back for it later is how sets end up unlabelled.
@@ -208,42 +233,54 @@ export function CheckInDialog({
         </DialogHeader>
 
         <div className="space-y-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>{t('checkIn.customer')}</Label>
-              <CustomerCombobox
-                value={customerId}
-                onChange={handleCustomer}
-                placeholder={t('checkIn.selectCustomer')}
-                noneLabel={t('checkIn.noCustomer')}
-              />
+          {lockedVehicle ? (
+            // The job already answered this. Shown rather than asked, so the
+            // desk can see the tires are going against the right car.
+            <div className="rounded-lg border bg-muted/40 px-3 py-2">
+              <p className="text-xs text-muted-foreground">{t('checkIn.vehicle')}</p>
+              <p className="truncate text-sm font-medium">
+                {lockedVehicle.licensePlate ? `${lockedVehicle.licensePlate} - ` : ''}
+                {lockedVehicle.year} {lockedVehicle.make} {lockedVehicle.model}
+              </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkInVehicle">{t('checkIn.vehicle')}</Label>
-              <Select
-                value={vehicleId}
-                onValueChange={handleVehicle}
-                disabled={visibleVehicles.length === 0}
-              >
-                <SelectTrigger id="checkInVehicle">
-                  <SelectValue placeholder={t('checkIn.selectVehicle')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {visibleVehicles.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}
-                      {vehicle.year} {vehicle.make} {vehicle.model}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {customerId && visibleVehicles.length === 0 && (
-                <p className="text-xs text-muted-foreground">
-                  {t('checkIn.noVehiclesForCustomer')}
-                </p>
-              )}
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>{t('checkIn.customer')}</Label>
+                <CustomerCombobox
+                  value={customerId}
+                  onChange={handleCustomer}
+                  placeholder={t('checkIn.selectCustomer')}
+                  noneLabel={t('checkIn.noCustomer')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="checkInVehicle">{t('checkIn.vehicle')}</Label>
+                <Select
+                  value={vehicleId}
+                  onValueChange={handleVehicle}
+                  disabled={visibleVehicles.length === 0}
+                >
+                  <SelectTrigger id="checkInVehicle">
+                    <SelectValue placeholder={t('checkIn.selectVehicle')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {visibleVehicles.map((vehicle) => (
+                      <SelectItem key={vehicle.id} value={vehicle.id}>
+                        {vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}
+                        {vehicle.year} {vehicle.make} {vehicle.model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {customerId && visibleVehicles.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('checkIn.noVehiclesForCustomer')}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <Separator />
 

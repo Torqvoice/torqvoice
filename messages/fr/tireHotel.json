@@ -425,7 +425,8 @@
     "otherSize": "Autre dimension",
     "inSize": "{count} en {size}",
     "quantity": "Qté",
-    "noStockItem": "Pas d’article en stock, prix saisi à la main"
+    "noStockItem": "Pas d’article en stock, prix saisi à la main",
+    "storeTires": "Stocker les pneus"
   },
   "label": {
     "action": "Étiquettes",

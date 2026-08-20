@@ -11,6 +11,7 @@ import {
   TireSetBanner,
   type TireSetBannerData,
 } from '@/features/tire-hotel/Components/TireSetBanner'
+import { StoreTiresButton } from '@/features/tire-hotel/Components/StoreTiresButton'
 import type { InventoryPartOption } from '../service-edit/form-types'
 
 interface DetailsLeftColumnProps {
@@ -19,6 +20,8 @@ interface DetailsLeftColumnProps {
   record: ServiceDetail
   /** Present only when the job came out of the tire hotel. */
   tireSet?: TireSetBannerData | null
+  tireHotelEnabled?: boolean
+  unitSystem?: 'metric' | 'imperial'
   currencyCode: string
   defaultLaborRate: number
   inventoryParts: InventoryPartOption[]
@@ -53,6 +56,8 @@ export function DetailsLeftColumn({
   actions,
   record,
   tireSet = null,
+  tireHotelEnabled = false,
+  unitSystem = 'metric',
   currencyCode,
   defaultLaborRate,
   inventoryParts,
@@ -74,7 +79,30 @@ export function DetailsLeftColumn({
       {/* Above the parts, inside the working column: the tires are the first
           thing this job needs and the last thing the invoice sidebar cares
           about, so it belongs here rather than spanning both. */}
-      {tireSet && <TireSetBanner set={tireSet} serviceRecordId={record.id} />}
+      {tireSet ? (
+        <TireSetBanner set={tireSet} serviceRecordId={record.id} />
+      ) : (
+        // No set on this job yet. The tires that came off the car are standing
+        // in the corner while the desk writes it up, so the offer to store
+        // them belongs here rather than three screens away.
+        tireHotelEnabled &&
+        record.vehicle && (
+          <div className="flex justify-end">
+            <StoreTiresButton
+              serviceRecordId={record.id}
+              vehicle={{
+                id: record.vehicle.id,
+                make: record.vehicle.make,
+                model: record.vehicle.model,
+                year: record.vehicle.year,
+                licensePlate: record.vehicle.licensePlate ?? null,
+                customerId: record.customer?.id ?? null,
+              }}
+              imperial={unitSystem === 'imperial'}
+            />
+          </div>
+        )
+      )}
 
       <PartsEditor
         partItems={formState.partItems}

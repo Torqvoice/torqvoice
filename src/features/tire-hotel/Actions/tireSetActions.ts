@@ -343,10 +343,27 @@ export async function checkInTireSet(input: unknown) {
           })
         }
 
+        // Started from a work order, so that job is what these tires came in
+        // on. Only claimed when the job is not already about another set, so
+        // storing a second set never quietly rewrites the first one's link.
+        if (data.serviceRecordId) {
+          const record = await tx.serviceRecord.findFirst({
+            where: { id: data.serviceRecordId, organizationId },
+            select: { id: true, tireSetId: true },
+          })
+          if (record && !record.tireSetId) {
+            await tx.serviceRecord.update({
+              where: { id: record.id },
+              data: { tireSetId: set.id },
+            })
+          }
+        }
+
         return { ...set, locationCode: location.code }
       })
 
       revalidateTireHotel()
+      if (data.serviceRecordId) revalidatePath(`/vehicles/${created.vehicleId}`)
       return created
     },
     {

@@ -425,7 +425,8 @@
     "otherSize": "Kitas dydis",
     "inSize": "{count} dydžio {size}",
     "quantity": "Kiekis",
-    "noStockItem": "Nėra sandėlio prekės, kaina įvedama ranka"
+    "noStockItem": "Nėra sandėlio prekės, kaina įvedama ranka",
+    "storeTires": "Padėti padangas saugoti"
   },
   "label": {
     "action": "Etiketės",

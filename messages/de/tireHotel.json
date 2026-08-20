@@ -425,7 +425,8 @@
     "otherSize": "Andere Größe",
     "inSize": "{count} in {size}",
     "quantity": "Anz.",
-    "noStockItem": "Kein Lagerartikel, Preis von Hand"
+    "noStockItem": "Kein Lagerartikel, Preis von Hand",
+    "storeTires": "Reifen einlagern"
   },
   "label": {
     "action": "Etiketten",
