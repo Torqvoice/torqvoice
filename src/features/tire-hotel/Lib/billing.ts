@@ -2,8 +2,8 @@
  * Storage billing.
  *
  * Two shapes cover how tire hotels actually charge worldwide: a flat fee for
- * a season, and a smaller sum every month. Everything else workshops do —
- * annual rates, half-year rates, per-tire pricing — is one of those two with
+ * a season, and a smaller sum every month. Everything else workshops do
+ * (annual rates, half-year rates, per-tire pricing) is one of those two with
  * a different number in it, so the model stays at two rather than growing a
  * case per market.
  */
@@ -42,7 +42,7 @@ export const CHARGE_STATUS_TOKENS: Record<StorageChargeStatus, string> = {
 export type Extra = { label: string; price: number }
 
 /**
- * Extras are stored as JSON, so anything could be in the column — a hand-run
+ * Extras are stored as JSON, so anything could be in the column: a hand-run
  * SQL update, an older shape, a null. Parsing defensively keeps one bad row
  * from taking down the page that lists it.
  */

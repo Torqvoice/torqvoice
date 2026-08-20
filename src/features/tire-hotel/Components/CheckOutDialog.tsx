@@ -41,7 +41,7 @@ import { pendingTreatments } from '../Lib/treatments'
  * What is worth doing here is telling the customer what those tires are
  * already known to be. A set that came in below the replacement limit is
  * going back onto a car in that state, and the moment to say so is while
- * they are standing at the counter — which is also the moment a shop sells
+ * they are standing at the counter, which is also the moment a shop sells
  * the replacement.
  */
 export function CheckOutDialog({

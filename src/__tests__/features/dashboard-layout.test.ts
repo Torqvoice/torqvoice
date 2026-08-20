@@ -9,8 +9,8 @@ import {
 /**
  * The dashboard grid compacts vertically and per-column, so a half card with
  * no partner leaves a hole beside it rather than closing up. Which cards are
- * present varies — sms and notifications are mutually exclusive, and both the
- * getting-started and tire hotel cards are conditional — so the default
+ * present varies. Sms and notifications are mutually exclusive, and both the
+ * getting-started and tire hotel cards are conditional, so the default
  * layout has to stay paired across every combination, not just the one the
  * author had in mind.
  */

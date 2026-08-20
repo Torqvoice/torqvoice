@@ -364,10 +364,10 @@
       "custom": "Dekkene dine ({season})"
     },
     "bodies": {
-      "low_tread": "Hei {customer_name}, vi har {season}dekkene dine her hos {shop_name}. Da vi tok dem inn målte vi {tread} på {positions} — det er på eller under grensen, så de holder ikke en sesong til. Vil du ha pris på et nytt sett? Ingen hast, de står trygt hos oss til du bestemmer deg.",
-      "damage": "Hei {customer_name}, vi har {season}dekkene dine her hos {shop_name}. Da vi tok dem inn fant vi skade på {positions}. Ring oss når du har anledning, så går vi gjennom det sammen.",
-      "stored": "Hei {customer_name}, {season}dekkene dine er nå lagret hos {shop_name}. Vi tar kontakt når det er tid for å bytte tilbake.",
-      "custom": "Hei {customer_name}, angående {season}dekkene dine som står lagret hos {shop_name}:"
+      "low_tread": "Hei {customer_name}, {season}dekkene dine står lagret hos oss på {shop_name}. Da vi tok dem inn målte {positions} {tread}, som er under grensen. De klarer ikke en sesong til. Vil du ha pris på et nytt sett?",
+      "damage": "Hei {customer_name}, {season}dekkene dine står lagret hos oss på {shop_name}. Vi fant skade på {positions} da vi tok dem inn. Ring oss når du har anledning, så går vi gjennom det sammen.",
+      "stored": "Hei {customer_name}, {season}dekkene dine står nå lagret hos oss på {shop_name}. Vi sier fra når det er tid for å bytte tilbake.",
+      "custom": "Hei {customer_name}, angående {season}dekkene dine som står lagret hos oss på {shop_name}:"
     }
   }
 }

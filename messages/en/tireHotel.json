@@ -364,9 +364,9 @@
       "custom": "Your {season} tires"
     },
     "bodies": {
-      "low_tread": "Hi {customer_name}, we have your {season} tires here at {shop_name}. Checking them in, we measured {tread} on the {positions} — that is at or below the limit, so they will not see out another season. Would you like a price on a new set? No rush, they are safe with us until you decide.",
-      "damage": "Hi {customer_name}, we have your {season} tires here at {shop_name}. While checking them in we found damage on the {positions}. Give us a call when you have a moment and we will talk you through it.",
-      "stored": "Hi {customer_name}, your {season} tires are now stored with us at {shop_name}. We will be in touch when it is time to swap them back.",
+      "low_tread": "Hi {customer_name}, your {season} tires are stored with us at {shop_name}. When we checked them in, the {positions} measured {tread}, which is under the limit. They won't get through another season. Want a price on a new set?",
+      "damage": "Hi {customer_name}, your {season} tires are stored with us at {shop_name}. We found damage on the {positions} when we checked them in. Give us a call when you get a chance and we'll go through it with you.",
+      "stored": "Hi {customer_name}, your {season} tires are now in storage with us at {shop_name}. We'll let you know when it's time to swap them back.",
       "custom": "Hi {customer_name}, about your {season} tires stored with us at {shop_name}:"
     }
   }

@@ -81,8 +81,8 @@ export function warehouseCapacity(warehouse: {
  *
  * Best fit means the tightest shelf that still has room, so storage stays
  * dense and half-empty shelves get filled before new ones are opened. A
- * technician who ignores the order and picks any location is not blocked —
- * this ranks suggestions, it does not enforce them.
+ * technician who ignores the order and picks any location is not blocked.
+ * This ranks suggestions, it does not enforce them.
  */
 export function locationsWithRoom(
   locations: LocationCapacity[],

@@ -60,8 +60,8 @@ export const STATUS_TOKENS: Record<TireSetStatus, string> = {
 
 /**
  * Occupancy bands for the shelf overview. A location past `full` is over its
- * stated capacity, which is legal but worth flagging — it usually means a set
- * was placed without checking, or the capacity was set too low.
+ * stated capacity. That is legal but worth flagging, since it usually means
+ * a set was placed without checking, or the capacity was set too low.
  */
 export const OCCUPANCY_BANDS = {
   empty: 0,
@@ -133,7 +133,7 @@ export type TreadThresholds = {
   summerReplace: number
   /** Winter tires lose grip well above the summer limit. */
   winterReplace: number
-  /** Approaching the limit — worth telling the customer at pickup. */
+  /** Approaching the limit, so worth telling the customer at pickup. */
   warnMargin: number
 }
 

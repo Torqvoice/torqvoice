@@ -58,8 +58,8 @@ const full = (row: number, h = 5): CardLayout => ({ x: 0, y: row, w: 12, h })
  * `sms` and `notifications` are the case that breaks a naive layout. Exactly
  * one of them is ever available, so giving them a column each leaves the
  * right column permanently one card short and every later pair splits. They
- * share the one slot here instead — they cannot collide, since only one is
- * rendered — and `inspections` takes the partner position.
+ * share the one slot here instead, since only one is ever rendered and they
+ * cannot collide, and `inspections` takes the partner position.
  */
 export const DEFAULT_LAYOUT: DashboardLayout = {
   version: 1,

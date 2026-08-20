@@ -364,10 +364,10 @@
       "custom": "Uw {season}banden"
     },
     "bodies": {
-      "low_tread": "Hallo {customer_name}, uw {season}banden liggen bij ons bij {shop_name}. Bij het innemen maten we {tread} op {positions} — dat is op of onder de grens, dus een seizoen erbij halen ze niet. Wilt u een prijs voor een nieuwe set? Geen haast, ze staan veilig bij ons.",
-      "damage": "Hallo {customer_name}, uw {season}banden liggen bij ons bij {shop_name}. Bij het innemen vonden we schade op {positions}. Belt u ons gerust, dan lopen we het samen door.",
-      "stored": "Hallo {customer_name}, uw {season}banden liggen nu opgeslagen bij {shop_name}. We nemen contact op als het tijd is om te wisselen.",
-      "custom": "Hallo {customer_name}, over uw bij {shop_name} opgeslagen {season}banden:"
+      "low_tread": "Hallo {customer_name}, uw {season}banden liggen bij ons opgeslagen bij {shop_name}. Bij het innemen maten {positions} nog {tread}, dat is onder de grens. Ze halen geen seizoen meer. Zullen we een prijs maken voor een nieuwe set?",
+      "damage": "Hallo {customer_name}, uw {season}banden liggen bij ons opgeslagen bij {shop_name}. Bij het innemen vonden we schade op {positions}. Bel ons wanneer het uitkomt, dan lopen we het samen door.",
+      "stored": "Hallo {customer_name}, uw {season}banden liggen nu bij ons opgeslagen bij {shop_name}. We laten het weten wanneer het tijd is om te wisselen.",
+      "custom": "Hallo {customer_name}, over uw {season}banden die bij ons liggen bij {shop_name}:"
     }
   }
 }

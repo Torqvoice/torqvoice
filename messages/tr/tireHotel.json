@@ -364,9 +364,9 @@
       "custom": "{season} lastikleriniz"
     },
     "bodies": {
-      "low_tread": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda. Kabul ederken {positions} üzerinde {tread} ölçtük — bu sınırda ya da altında, bir sezon daha çıkarmaz. Yeni takım için fiyat ister misiniz? Acelesi yok, burada güvendeler.",
-      "damage": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda. Kabul ederken {positions} üzerinde hasar bulduk. Müsait olduğunuzda arayın, birlikte değerlendirelim.",
-      "stored": "Merhaba {customer_name}, {season} lastikleriniz artık {shop_name} deposunda. Değişim zamanı geldiğinde haber vereceğiz.",
+      "low_tread": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda duruyor. Kabul ederken {positions} {tread} ölçtü, sınırın altında. Bir sezon daha çıkarmazlar. Yeni takım için fiyat çıkaralım mı?",
+      "damage": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda duruyor. Kabul ederken {positions} üzerinde hasar bulduk. Uygun olduğunuzda arayın, birlikte bakalım.",
+      "stored": "Merhaba {customer_name}, {season} lastikleriniz artık {shop_name} deposunda. Değişim zamanı gelince haber veririz.",
       "custom": "Merhaba {customer_name}, {shop_name} deposundaki {season} lastikleriniz hakkında:"
     }
   }

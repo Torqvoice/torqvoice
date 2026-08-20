@@ -364,9 +364,9 @@
       "custom": "Ihre {season}reifen"
     },
     "bodies": {
-      "low_tread": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme haben wir an {positions} {tread} gemessen — das liegt auf oder unter der Grenze, eine weitere Saison halten sie nicht. Möchten Sie einen Preis für einen neuen Satz? Keine Eile, sie liegen sicher bei uns.",
-      "damage": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme haben wir an {positions} eine Beschädigung gefunden. Rufen Sie uns gelegentlich an, dann gehen wir es gemeinsam durch.",
-      "stored": "Hallo {customer_name}, Ihre {season}reifen sind jetzt bei {shop_name} eingelagert. Wir melden uns, wenn der Wechsel ansteht.",
+      "low_tread": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme hatten {positions} noch {tread}, das ist unter der Grenze. Eine weitere Saison halten sie nicht durch. Sollen wir Ihnen einen Preis für einen neuen Satz machen?",
+      "damage": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme haben wir an {positions} eine Beschädigung gefunden. Rufen Sie uns an, wenn es passt, dann gehen wir es zusammen durch.",
+      "stored": "Hallo {customer_name}, Ihre {season}reifen liegen jetzt bei uns bei {shop_name}. Wir melden uns, wenn der Wechsel ansteht.",
       "custom": "Hallo {customer_name}, zu Ihren bei {shop_name} eingelagerten {season}reifen:"
     }
   }

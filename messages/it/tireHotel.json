@@ -364,10 +364,10 @@
       "custom": "I tuoi pneumatici {season}"
     },
     "bodies": {
-      "low_tread": "Ciao {customer_name}, i tuoi pneumatici {season} sono da noi, {shop_name}. All’accettazione abbiamo misurato {tread} su {positions}: è al limite o sotto, non reggeranno un’altra stagione. Vuoi un preventivo per un treno nuovo? Nessuna fretta, qui sono al sicuro.",
-      "damage": "Ciao {customer_name}, i tuoi pneumatici {season} sono da noi, {shop_name}. All’accettazione abbiamo trovato un danno su {positions}. Chiamaci con calma e ne parliamo.",
-      "stored": "Ciao {customer_name}, i tuoi pneumatici {season} sono ora in deposito da {shop_name}. Ti contatteremo quando sarà il momento del cambio.",
-      "custom": "Ciao {customer_name}, riguardo ai tuoi pneumatici {season} in deposito da {shop_name}:"
+      "low_tread": "Ciao {customer_name}, i tuoi pneumatici {season} sono in deposito da noi, {shop_name}. All'accettazione {positions} misuravano {tread}, sotto il limite. Un'altra stagione non la reggono. Ti facciamo un prezzo per un treno nuovo?",
+      "damage": "Ciao {customer_name}, i tuoi pneumatici {season} sono in deposito da noi, {shop_name}. All'accettazione abbiamo trovato un danno su {positions}. Chiamaci quando puoi e lo vediamo insieme.",
+      "stored": "Ciao {customer_name}, i tuoi pneumatici {season} sono ora in deposito da noi, {shop_name}. Ti avvisiamo quando sarà il momento del cambio.",
+      "custom": "Ciao {customer_name}, riguardo ai tuoi pneumatici {season} in deposito da noi, {shop_name}:"
     }
   }
 }

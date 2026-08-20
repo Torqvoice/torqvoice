@@ -74,8 +74,8 @@ export async function getStorageOverview() {
 /**
  * Flat list of locations with free space, for the check-in location picker.
  * Returns every location rather than only the ones that fit, so the picker
- * can grey out the full shelves instead of hiding them — a technician looking
- * for shelf B-04 should see it and see why it is unavailable.
+ * can grey out the full shelves instead of hiding them. A technician looking
+ * for shelf B-04 should see it, and see why it is unavailable.
  */
 export async function getLocationOptions() {
   return withAuth(
@@ -194,7 +194,7 @@ export async function updateWarehouse(input: unknown) {
 /**
  * Archives rather than deletes when tires are still stored, so history and
  * the physical reality stay in agreement. An empty warehouse is deleted
- * outright — there is nothing to preserve.
+ * outright, since there is nothing to preserve.
  */
 export async function deleteWarehouse(id: string) {
   return withAuth(

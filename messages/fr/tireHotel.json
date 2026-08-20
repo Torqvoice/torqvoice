@@ -364,10 +364,10 @@
       "custom": "Vos pneus {season}"
     },
     "bodies": {
-      "low_tread": "Bonjour {customer_name}, vos pneus {season} sont chez nous, {shop_name}. À la réception nous avons mesuré {tread} sur {positions} — c’est à la limite ou en dessous, ils ne tiendront pas une saison de plus. Souhaitez-vous un prix pour un jeu neuf ? Rien ne presse, ils sont en sécurité ici.",
-      "damage": "Bonjour {customer_name}, vos pneus {season} sont chez nous, {shop_name}. À la réception nous avons constaté un dommage sur {positions}. Appelez-nous quand vous pourrez, nous vous expliquerons.",
-      "stored": "Bonjour {customer_name}, vos pneus {season} sont désormais stockés chez {shop_name}. Nous vous recontacterons au moment du changement.",
-      "custom": "Bonjour {customer_name}, au sujet de vos pneus {season} stockés chez {shop_name} :"
+      "low_tread": "Bonjour {customer_name}, vos pneus {season} sont stockés chez nous, {shop_name}. À la réception, {positions} mesuraient {tread}, ce qui est sous la limite. Ils ne tiendront pas une saison de plus. On vous fait un prix pour un jeu neuf ?",
+      "damage": "Bonjour {customer_name}, vos pneus {season} sont stockés chez nous, {shop_name}. À la réception, nous avons trouvé un dommage sur {positions}. Appelez-nous quand vous pouvez, on regarde ça ensemble.",
+      "stored": "Bonjour {customer_name}, vos pneus {season} sont maintenant stockés chez nous, {shop_name}. On vous prévient quand ce sera le moment de les remonter.",
+      "custom": "Bonjour {customer_name}, au sujet de vos pneus {season} stockés chez nous, {shop_name} :"
     }
   }
 }

@@ -27,8 +27,8 @@ export type TreatmentRow = {
  *
  * Outstanding jobs come first and are the only ones with a big tick target,
  * because that is the whole interaction: read what is left, do it, tick it.
- * Finished jobs stay visible but recede, carrying who did them and when — the
- * answer to "was this actually washed?" at pickup.
+ * Finished jobs stay visible but recede, carrying who did them and when.
+ * That is the answer to "was this actually washed?" at pickup.
  */
 export function TreatmentCard({
   tireSetId,
@@ -97,7 +97,7 @@ export function TreatmentCard({
     <AppCard
       icon={ClipboardList}
       title={t('treatments.title')}
-      // The slot draws its own pill, so it takes bare content — a Badge here
+      // The slot draws its own pill, so it takes bare content. A Badge here
       // nests one pill inside another.
       badge={
         progress.pending > 0

@@ -364,10 +364,10 @@
       "custom": "Tus neumáticos de {season}"
     },
     "bodies": {
-      "low_tread": "Hola {customer_name}, tenemos tus neumáticos de {season} aquí en {shop_name}. Al recibirlos medimos {tread} en {positions}: está en el límite o por debajo, así que no aguantarán otra temporada. ¿Quieres precio de un juego nuevo? Sin prisa, aquí están seguros.",
-      "damage": "Hola {customer_name}, tenemos tus neumáticos de {season} aquí en {shop_name}. Al recibirlos vimos daños en {positions}. Llámanos cuando puedas y te lo explicamos.",
-      "stored": "Hola {customer_name}, tus neumáticos de {season} ya están guardados en {shop_name}. Te avisaremos cuando toque el cambio.",
-      "custom": "Hola {customer_name}, sobre tus neumáticos de {season} guardados en {shop_name}:"
+      "low_tread": "Hola {customer_name}, tus neumáticos de {season} están guardados con nosotros en {shop_name}. Al recibirlos, {positions} marcaban {tread}, que está por debajo del límite. No aguantan otra temporada. ¿Te preparamos precio de un juego nuevo?",
+      "damage": "Hola {customer_name}, tus neumáticos de {season} están guardados con nosotros en {shop_name}. Al recibirlos vimos daños en {positions}. Llámanos cuando puedas y lo vemos juntos.",
+      "stored": "Hola {customer_name}, tus neumáticos de {season} ya están guardados con nosotros en {shop_name}. Te avisamos cuando toque el cambio.",
+      "custom": "Hola {customer_name}, sobre tus neumáticos de {season} guardados con nosotros en {shop_name}:"
     }
   }
 }

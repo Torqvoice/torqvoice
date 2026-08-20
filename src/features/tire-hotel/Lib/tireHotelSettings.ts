@@ -7,7 +7,7 @@ import { DEFAULT_TREAD_THRESHOLDS_MM } from './tireConstants'
 /**
  * The tire hotel needs two things to be live: a plan that includes it, and a
  * workshop that has switched it on. Both are checked here so every entry
- * point — sidebar, routes, server actions, cron sweeps — gets the same
+ * point (sidebar, routes, server actions, cron sweeps) gets the same
  * answer, and a plan downgrade hides the module without touching the
  * organization's own setting.
  */

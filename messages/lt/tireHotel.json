@@ -364,10 +364,10 @@
       "custom": "Jūsų {season} padangos"
     },
     "bodies": {
-      "low_tread": "Sveiki, {customer_name}. Jūsų {season} padangos yra pas mus, {shop_name}. Priimdami išmatavome {tread} ties {positions} — tai ties riba arba žemiau, dar vieno sezono jos neištvers. Norėtumėte naujo komplekto kainos? Neskubu, pas mus jos saugios.",
-      "damage": "Sveiki, {customer_name}. Jūsų {season} padangos yra pas mus, {shop_name}. Priimdami radome pažeidimą ties {positions}. Paskambinkite, kai turėsite laiko, viską aptarsime.",
-      "stored": "Sveiki, {customer_name}. Jūsų {season} padangos jau saugomos {shop_name}. Susisieksime, kai ateis laikas keisti.",
-      "custom": "Sveiki, {customer_name}. Dėl jūsų {season} padangų, saugomų {shop_name}:"
+      "low_tread": "Sveiki, {customer_name}. Jūsų {season} padangos saugomos pas mus, {shop_name}. Priimant {positions} rodė {tread}, tai žemiau ribos. Dar vieno sezono jos neištvers. Paskaičiuoti naujo komplekto kainą?",
+      "damage": "Sveiki, {customer_name}. Jūsų {season} padangos saugomos pas mus, {shop_name}. Priimdami radome pažeidimą ties {positions}. Paskambinkite, kai bus patogu, viską kartu apžiūrėsime.",
+      "stored": "Sveiki, {customer_name}. Jūsų {season} padangos jau saugomos pas mus, {shop_name}. Pranešime, kai ateis laikas keisti.",
+      "custom": "Sveiki, {customer_name}. Dėl jūsų {season} padangų, saugomų pas mus, {shop_name}:"
     }
   }
 }

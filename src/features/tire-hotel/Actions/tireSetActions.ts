@@ -260,7 +260,7 @@ export async function getTireSet(id: string) {
 
 /**
  * Arrival. Creates the set, records the intake measurements, logs the
- * movement and claims shelf space — all in one transaction, because a set
+ * movement and claims shelf space, all in one transaction, because a set
  * that exists without a location or without its arrival logged is a set
  * nobody can find later.
  */

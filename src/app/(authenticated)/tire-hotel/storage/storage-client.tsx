@@ -63,7 +63,7 @@ type WarehouseRow = {
  * The shelf overview. A workshop sets its geography up here once, then reads
  * this page whenever it needs to know whether another set will fit. The unit
  * throughout is individual tires, because that is what actually occupies a
- * shelf — a set can be two tires or five.
+ * shelf, since a set can be two tires or five.
  */
 export function StorageClient({
   warehouses,

@@ -364,10 +364,10 @@
       "custom": "Twoje opony {season}"
     },
     "bodies": {
-      "low_tread": "Cześć {customer_name}, Twoje opony {season} są u nas w {shop_name}. Przy przyjęciu zmierzyliśmy {tread} na {positions} — to na granicy lub poniżej, więc kolejnego sezonu nie wytrzymają. Chcesz wycenę nowego kompletu? Bez pośpiechu, u nas są bezpieczne.",
-      "damage": "Cześć {customer_name}, Twoje opony {season} są u nas w {shop_name}. Przy przyjęciu znaleźliśmy uszkodzenie na {positions}. Zadzwoń, kiedy będziesz mieć chwilę, wszystko wyjaśnimy.",
-      "stored": "Cześć {customer_name}, Twoje opony {season} są już w magazynie w {shop_name}. Odezwiemy się, gdy przyjdzie czas na wymianę.",
-      "custom": "Cześć {customer_name}, w sprawie Twoich opon {season} przechowywanych w {shop_name}:"
+      "low_tread": "Cześć {customer_name}, Twoje opony {season} leżą u nas w {shop_name}. Przy przyjęciu {positions} miały {tread}, czyli poniżej granicy. Kolejnego sezonu nie wytrzymają. Przygotować wycenę nowego kompletu?",
+      "damage": "Cześć {customer_name}, Twoje opony {season} leżą u nas w {shop_name}. Przy przyjęciu znaleźliśmy uszkodzenie na {positions}. Zadzwoń, kiedy będziesz mieć chwilę, przejdziemy przez to razem.",
+      "stored": "Cześć {customer_name}, Twoje opony {season} są już u nas w magazynie w {shop_name}. Odezwiemy się, gdy przyjdzie czas na wymianę.",
+      "custom": "Cześć {customer_name}, w sprawie Twoich opon {season}, które leżą u nas w {shop_name}:"
     }
   }
 }

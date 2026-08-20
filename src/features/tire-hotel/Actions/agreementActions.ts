@@ -100,7 +100,7 @@ export async function getAgreementsForSet(tireSetId: string) {
  * Open jobs a storage charge could be added to.
  *
  * Scoped to the paying customer and their vehicles, so the picker never
- * offers someone else's invoice — appending to the wrong job is a mistake
+ * offers someone else's invoice. Appending to the wrong job is a mistake
  * nobody notices until the customer queries the bill.
  */
 export async function getOpenInvoicesForCharge(chargeId: string) {
@@ -321,8 +321,9 @@ export async function endAgreement(id: string) {
  *
  * Only when nothing it produced ever reached an invoice. A period that has
  * been billed is a document the customer holds, and the charge row is what
- * ties that line back to a reason — deleting it would leave an unexplained
- * amount on a real invoice. Those agreements are ended, not deleted.
+ * ties that line back to a reason, so deleting it would leave an
+ * unexplained amount on a real invoice. Those agreements are ended, not
+ * deleted.
  *
  * Everything else is a mistake or a trial, and a shop should be able to tidy
  * it away rather than read past it forever.
