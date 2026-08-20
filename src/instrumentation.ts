@@ -13,6 +13,7 @@ export async function register() {
       checkLowStock,
       checkDueReminders,
       processScheduledMessages,
+      checkStorageCharges,
     } = await import('./cronTasks')
     checkLicenses()
     checkSubscriptions()
@@ -26,5 +27,6 @@ export async function register() {
     checkLowStock()
     checkDueReminders()
     processScheduledMessages()
+    checkStorageCharges()
   }
 }

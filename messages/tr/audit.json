@@ -137,6 +137,7 @@
     "tire_set_create_quote": "Lastik takımından teklif oluşturuldu",
     "tire_set_create_work_order": "Lastik takımından iş emri oluşturuldu",
     "tire_set_add_to_work_order": "Lastik takımı bir iş emrine eklendi",
-    "tire_set_unlink_work_order": "Lastik takımı bir iş emrinden ayrıldı"
+    "tire_set_unlink_work_order": "Lastik takımı bir iş emrinden ayrıldı",
+    "tire_agreement_charge": "Depolama ücreti oluşturuldu"
   }
 }

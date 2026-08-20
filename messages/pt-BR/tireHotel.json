@@ -309,7 +309,14 @@
     "deleteTitle": "Excluir este contrato?",
     "deleteBody": "Nada foi faturado nele, então o contrato e seus períodos não faturados são removidos. Não é possível desfazer.",
     "deleted": "Contrato excluído",
-    "deleteFailed": "Não foi possível excluir o contrato"
+    "deleteFailed": "Não foi possível excluir o contrato",
+    "charge": "Cobrar armazenagem",
+    "oneOff": "Cobranças avulsas",
+    "chargeTitle": "Cobrança de armazenagem",
+    "chargeBody": "Um valor único para este jogo. Nada se renova e nada gera a próxima.",
+    "chargeCreate": "Criar cobrança",
+    "chargeCreated": "Cobrança de armazenagem criada",
+    "chargeFailed": "Não foi possível criar a cobrança"
   },
   "treatments": {
     "types": {

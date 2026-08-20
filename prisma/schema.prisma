@@ -1724,6 +1724,8 @@ model TireSet {
   movements    TireMovement[]
   agreements   TireStorageAgreement[]
   treatments   TireTreatment[]
+  /// One-off storage fees, the ones raised without an agreement behind them.
+  charges      TireStorageCharge[]
   quotes       Quote[]
   serviceRecords ServiceRecord[]
 
@@ -1903,8 +1905,17 @@ model TireStorageCharge {
 
   invoicedAt DateTime?
 
-  agreementId String
-  agreement   TireStorageAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+  /// The agreement that raised this period, when one did. Null on a one-off
+  /// charge: plenty of shops take a fee for the season without wanting a
+  /// standing arrangement, and forcing an agreement on them would leave the
+  /// set carrying paperwork that renews nothing.
+  agreementId String?
+  agreement   TireStorageAgreement? @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  /// The set being stored, on a one-off charge. An agreement charge reaches
+  /// its set through the agreement, so exactly one of these two is set.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -1915,6 +1926,7 @@ model TireStorageCharge {
   @@unique([agreementId, periodStart])
   @@index([organizationId, status])
   @@index([serviceRecordId])
+  @@index([tireSetId])
   @@map("tire_storage_charges")
 }
 

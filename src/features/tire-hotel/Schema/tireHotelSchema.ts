@@ -167,6 +167,25 @@ export const updateAgreementSchema = agreementSchema
     status: z.enum(STORAGE_AGREEMENT_STATUSES).optional(),
   })
 
+/**
+ * A storage fee raised by hand, with no agreement behind it.
+ *
+ * The period is still recorded because it prints on the invoice line and
+ * answers "what was this for" a year later, but nothing renews it and nothing
+ * raises the next one.
+ */
+export const oneOffChargeSchema = z
+  .object({
+    tireSetId: z.string().min(1),
+    amount: z.coerce.number().min(0, 'Price cannot be negative').max(1_000_000),
+    periodStart: z.coerce.date(),
+    periodEnd: z.coerce.date(),
+  })
+  .refine((v) => v.periodEnd >= v.periodStart, {
+    message: 'The period cannot end before it starts',
+    path: ['periodEnd'],
+  })
+
 export const invoiceChargeSchema = z
   .object({
     chargeId: z.string().min(1),
@@ -180,6 +199,7 @@ export const invoiceChargeSchema = z
   })
 
 export type AgreementInput = z.infer<typeof agreementSchema>
+export type OneOffChargeInput = z.infer<typeof oneOffChargeSchema>
 export type ExtraInput = z.infer<typeof extraSchema>
 
 export type WarehouseInput = z.infer<typeof warehouseSchema>

@@ -10,9 +10,11 @@ import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceReco
 import {
   agreementSchema,
   invoiceChargeSchema,
+  oneOffChargeSchema,
   updateAgreementSchema,
 } from '../Schema/tireHotelSchema'
-import { duePeriods, parseExtras, periodAmount, round2 } from '../Lib/billing'
+import { parseExtras, periodAmount, round2 } from '../Lib/billing'
+import { syncCharges } from '../Lib/syncCharges'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
@@ -23,52 +25,55 @@ const BILL = [
   { action: PermissionAction.CREATE, subject: PermissionSubject.BILLING },
 ]
 
+/**
+ * Who a charge is for, whichever way it was raised.
+ *
+ * An agreement charge reaches the set through the agreement; a one-off hangs
+ * off the set directly. Everything downstream, the invoice picker, the line
+ * description, the work-order option, only cares about the answer, so the
+ * two shapes are collapsed here rather than at every call site.
+ */
+function chargeSubject(charge: {
+  agreement: {
+    customerId: string | null
+    customer?: { id: string; taxExempt: boolean } | null
+    tireSet: TireSetForCharge
+  } | null
+  tireSet: (TireSetForCharge & { customer?: { id: string; taxExempt: boolean } | null }) | null
+}) {
+  const tireSet = charge.agreement?.tireSet ?? charge.tireSet
+  if (!tireSet) throw new Error('This charge is not attached to a tire set')
+
+  const customer = charge.agreement ? charge.agreement.customer : charge.tireSet?.customer
+  const customerId = charge.agreement ? charge.agreement.customerId : (customer?.id ?? null)
+
+  return { tireSet, customer: customer ?? null, customerId }
+}
+
+const SET_FOR_CHARGE = {
+  id: true,
+  reference: true,
+  season: true,
+  size: true,
+  quantity: true,
+  vehicleId: true,
+} as const
+
+const CUSTOMER_FOR_CHARGE = { select: { id: true, taxExempt: true } } as const
+
+type TireSetForCharge = {
+  id: string
+  reference: string | null
+  season: string
+  size: string | null
+  quantity: number
+  vehicleId: string | null
+}
+
 function revalidateBilling(tireSetId?: string) {
   revalidatePath('/tire-hotel')
   if (tireSetId) revalidatePath(`/tire-hotel/${tireSetId}`)
   revalidatePath('/billing')
-}
-
-/**
- * Creates the charge rows for every period that has fallen due but has none.
- *
- * Driven by what is already recorded rather than a cursor on the agreement,
- * so running it twice, or late after downtime, still bills each period once.
- */
-async function syncCharges(
-  tx: Prisma.TransactionClient,
-  agreementId: string,
-  organizationId: string
-): Promise<number> {
-  const agreement = await tx.tireStorageAgreement.findFirst({
-    where: { id: agreementId, organizationId },
-    include: { charges: { select: { periodStart: true } } },
-  })
-  if (!agreement) return 0
-
-  const extras = parseExtras(agreement.extras)
-  const amount = periodAmount(agreement.price, extras)
-
-  const due = duePeriods(
-    agreement,
-    agreement.charges.map((c) => c.periodStart),
-    new Date()
-  )
-  if (due.length === 0) return 0
-
-  await tx.tireStorageCharge.createMany({
-    data: due.map((period) => ({
-      agreementId: agreement.id,
-      organizationId,
-      periodStart: period.periodStart,
-      periodEnd: period.periodEnd,
-      amount,
-      status: 'pending',
-    })),
-    skipDuplicates: true,
-  })
-
-  return due.length
 }
 
 export async function getAgreementsForSet(tireSetId: string) {
@@ -111,15 +116,14 @@ export async function getOpenInvoicesForCharge(chargeId: string) {
       const charge = await db.tireStorageCharge.findFirst({
         where: { id: chargeId, organizationId },
         select: {
-          agreement: {
-            select: { customerId: true, tireSet: { select: { vehicleId: true } } },
-          },
+          agreement: { select: { customerId: true, tireSet: { select: SET_FOR_CHARGE } } },
+          tireSet: { select: { ...SET_FOR_CHARGE, customer: CUSTOMER_FOR_CHARGE } },
         },
       })
       if (!charge) throw new Error('Charge not found')
 
-      const { customerId } = charge.agreement
-      const vehicleId = charge.agreement.tireSet.vehicleId
+      const { customerId, tireSet } = chargeSubject(charge)
+      const vehicleId = tireSet.vehicleId
       if (!customerId && !vehicleId) return []
 
       return db.serviceRecord.findMany({
@@ -409,26 +413,17 @@ export async function invoiceCharge(input: unknown) {
           include: {
             agreement: {
               include: {
-                customer: { select: { id: true, taxExempt: true } },
-                tireSet: {
-                  select: {
-                    id: true,
-                    reference: true,
-                    season: true,
-                    size: true,
-                    quantity: true,
-                    vehicleId: true,
-                  },
-                },
+                customer: CUSTOMER_FOR_CHARGE,
+                tireSet: { select: SET_FOR_CHARGE },
               },
             },
+            tireSet: { select: { ...SET_FOR_CHARGE, customer: CUSTOMER_FOR_CHARGE } },
           },
         })
         if (!charge) throw new Error('Charge not found')
         if (charge.status === 'invoiced') throw new Error('This period is already invoiced')
 
-        const { agreement } = charge
-        const { tireSet } = agreement
+        const { tireSet, customer, customerId } = chargeSubject(charge)
 
         let record: { id: string; invoiceNumber: string | null } | null = null
 
@@ -451,8 +446,8 @@ export async function invoiceCharge(input: unknown) {
             { organizationId, userId },
             {
               vehicleId: asWorkOrder ? tireSet.vehicleId : null,
-              customerId: asWorkOrder ? null : agreement.customerId,
-              customerExempt: agreement.customer?.taxExempt ?? false,
+              customerId: asWorkOrder ? null : customerId,
+              customerExempt: customer?.taxExempt ?? false,
               title: `Tire storage${tireSet.reference ? ` #${tireSet.reference}` : ''}`,
             }
           )
@@ -515,6 +510,80 @@ export async function invoiceCharge(input: unknown) {
   )
 }
 
+/**
+ * Storage fees on a set that has no standing arrangement.
+ *
+ * Listed beside the agreements rather than instead of them: a set can start
+ * with a one-off fee and gain an agreement later, and both belong in the same
+ * answer to "what has this customer been billed for storage".
+ */
+export async function getOneOffChargesForSet(tireSetId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+
+      return db.tireStorageCharge.findMany({
+        where: { tireSetId, organizationId, agreementId: null },
+        orderBy: { periodStart: 'desc' },
+        include: {
+          serviceRecord: {
+            select: { id: true, invoiceNumber: true, status: true, totalAmount: true },
+          },
+        },
+      })
+    },
+    { requiredPermissions: READ }
+  )
+}
+
+/**
+ * Raises a single storage fee, with nothing behind it that will renew.
+ *
+ * The common case at a counter: the customer pays for the winter, the tires
+ * go on a shelf, and neither side wants a standing arrangement. Making them
+ * create an agreement for that would leave the set carrying terms that renew
+ * nothing and a card implying a relationship nobody agreed to.
+ *
+ * It becomes a charge row like any other, so it invoices, waives and reports
+ * through exactly the same path as an agreement's periods.
+ */
+export async function createOneOffCharge(input: unknown) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+      const data = oneOffChargeSchema.parse(input)
+
+      const set = await db.tireSet.findFirst({
+        where: { id: data.tireSetId, organizationId },
+        select: { id: true, reference: true },
+      })
+      if (!set) throw new Error('Tire set not found')
+
+      const charge = await db.tireStorageCharge.create({
+        data: {
+          tireSetId: set.id,
+          organizationId,
+          periodStart: data.periodStart,
+          periodEnd: data.periodEnd,
+          amount: round2(data.amount),
+          status: 'pending',
+        },
+      })
+
+      revalidateBilling(set.id)
+      return { ...charge, reference: set.reference }
+    },
+    {
+      requiredPermissions: UPDATE,
+      audit: ({ result }) => ({
+        action: 'tire_agreement.charge',
+        message: `Raised a storage charge for tire set ${result.reference ?? result.tireSetId}`,
+        metadata: { chargeId: result.id, amount: result.amount },
+      }),
+    }
+  )
+}
+
 /** Drops a period without billing it, e.g. a goodwill season. */
 export async function waiveCharge(chargeId: string) {
   return withAuth(
@@ -531,8 +600,9 @@ export async function waiveCharge(chargeId: string) {
       }
 
       await db.tireStorageCharge.update({ where: { id: chargeId }, data: { status: 'waived' } })
-      revalidateBilling(charge.agreement.tireSetId)
-      return { id: chargeId, tireSetId: charge.agreement.tireSetId }
+      const tireSetId = charge.agreement?.tireSetId ?? charge.tireSetId ?? undefined
+      revalidateBilling(tireSetId)
+      return { id: chargeId, tireSetId }
     },
     {
       requiredPermissions: UPDATE,

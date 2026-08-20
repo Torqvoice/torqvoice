@@ -1000,6 +1000,32 @@ export async function POST(request: NextRequest) {
             })
           }
 
+          // Storage fees raised by hand, which belong to the set itself.
+          const oneOff = set.charges as Record<string, unknown>[] | undefined
+          if (oneOff?.length) {
+            await tx.tireStorageCharge.createMany({
+              data: oneOff
+                .filter(
+                  (ch) =>
+                    !!toSafeDate(ch.periodStart as string) && !!toSafeDate(ch.periodEnd as string)
+                )
+                .map((ch) => ({
+                  id: ch.id as string,
+                  periodStart: toSafeDate(ch.periodStart as string)!,
+                  periodEnd: toSafeDate(ch.periodEnd as string)!,
+                  amount: (ch.amount as number) || 0,
+                  status: (ch.status as string) || 'pending',
+                  invoicedAt: ch.invoicedAt ? toSafeDate(ch.invoicedAt as string) : null,
+                  createdAt: toSafeDate(ch.createdAt as string),
+                  updatedAt: toSafeDate(ch.updatedAt as string),
+                  tireSetId: set.id as string,
+                  agreementId: null,
+                  serviceRecordId: null,
+                  organizationId: ctx.organizationId,
+                })),
+            })
+          }
+
           const agreements = set.agreements as Record<string, unknown>[] | undefined
           if (agreements?.length) {
             for (const ag of agreements) {

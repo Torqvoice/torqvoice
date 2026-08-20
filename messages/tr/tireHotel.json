@@ -309,7 +309,14 @@
     "deleteTitle": "Bu sözleşme silinsin mi?",
     "deleteBody": "Altında hiçbir şey faturalandırılmadı, bu yüzden sözleşme ve faturalanmamış dönemleri kaldırılır. Bu işlem geri alınamaz.",
     "deleted": "Sözleşme silindi",
-    "deleteFailed": "Sözleşme silinemedi"
+    "deleteFailed": "Sözleşme silinemedi",
+    "charge": "Depolamayı faturala",
+    "oneOff": "Tek seferlik ücretler",
+    "chargeTitle": "Depolama ücreti",
+    "chargeBody": "Bu takım için tek bir ücret. Hiçbir şey yenilenmez, bir sonraki de oluşmaz.",
+    "chargeCreate": "Ücret oluştur",
+    "chargeCreated": "Depolama ücreti oluşturuldu",
+    "chargeFailed": "Ücret oluşturulamadı"
   },
   "treatments": {
     "types": {

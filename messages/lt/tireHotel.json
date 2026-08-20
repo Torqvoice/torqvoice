@@ -309,7 +309,14 @@
     "deleteTitle": "Ištrinti šią sutartį?",
     "deleteBody": "Pagal ją nieko nebuvo išrašyta, todėl sutartis ir jos neapmokestinti laikotarpiai bus pašalinti. Atšaukti negalėsite.",
     "deleted": "Sutartis ištrinta",
-    "deleteFailed": "Nepavyko ištrinti sutarties"
+    "deleteFailed": "Nepavyko ištrinti sutarties",
+    "charge": "Apmokestinti saugojimą",
+    "oneOff": "Vienkartiniai mokesčiai",
+    "chargeTitle": "Mokestis už saugojimą",
+    "chargeBody": "Vienas mokestis už šį komplektą. Niekas neatsinaujina ir kitas nesukuriamas.",
+    "chargeCreate": "Sukurti mokestį",
+    "chargeCreated": "Saugojimo mokestis sukurtas",
+    "chargeFailed": "Nepavyko sukurti mokesčio"
   },
   "treatments": {
     "types": {

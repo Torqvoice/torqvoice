@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useConfirm } from '@/components/confirm-dialog'
+import { OneOffChargeDialog } from './OneOffChargeDialog'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { Ban, FileText, Loader2, Pencil, Plus, Receipt, Trash2 } from 'lucide-react'
@@ -40,6 +41,9 @@ type Charge = {
   } | null
 }
 
+/** A storage fee raised by hand: same row, no agreement behind it. */
+export type OneOffCharge = Charge
+
 export type AgreementRow = EditableAgreement & {
   status: string
   customer: { id: string; name: string } | null
@@ -57,6 +61,7 @@ export type AgreementRow = EditableAgreement & {
 export function AgreementCard({
   tireSetId,
   agreements,
+  oneOffCharges,
   defaultSeasonalPrice,
   defaultMonthlyPrice,
   currency,
@@ -64,6 +69,8 @@ export function AgreementCard({
 }: {
   tireSetId: string
   agreements: AgreementRow[]
+  /** Fees raised by hand, listed beside the agreements rather than instead. */
+  oneOffCharges: OneOffCharge[]
   defaultSeasonalPrice: number
   defaultMonthlyPrice: number
   currency: string
@@ -77,8 +84,71 @@ export function AgreementCard({
   const [editing, setEditing] = useState<AgreementRow | undefined>()
   const [busyId, setBusyId] = useState<string | null>(null)
   const [invoicing, setInvoicing] = useState<{ id: string; amount: number } | null>(null)
+  const [charging, setCharging] = useState(false)
 
   const active = agreements.find((a) => a.status === 'active')
+
+  /**
+   * One period, whether an agreement raised it or somebody typed it in.
+   * Shared rather than duplicated: a hand-raised fee that looked different
+   * from a billed season would read as a different kind of thing, and it is
+   * not, it invoices and waives through exactly the same path.
+   */
+  const chargeRow = (charge: Charge) => (
+    <li
+      key={charge.id}
+      className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-lg border p-2 text-sm"
+    >
+      <span className="min-w-0 flex-1 text-xs text-muted-foreground">
+        {formatDate(new Date(charge.periodStart))} - {formatDate(new Date(charge.periodEnd))}
+      </span>
+      <span className="shrink-0 font-medium tabular-nums">
+        {charge.amount.toFixed(2)} {currency}
+      </span>
+      <Badge
+        variant="outline"
+        className={cn(
+          'shrink-0 text-[10px]',
+          CHARGE_STATUS_TOKENS[charge.status as StorageChargeStatus]
+        )}
+      >
+        {t(`agreement.chargeStatuses.${charge.status}`)}
+      </Badge>
+
+      {charge.serviceRecord ? (
+        <Link
+          href={`/sales/${charge.serviceRecord.id}`}
+          className="shrink-0 text-xs text-primary hover:underline"
+        >
+          <FileText className="mr-1 inline h-3 w-3" />
+          {charge.serviceRecord.invoiceNumber ?? t('agreement.openInvoice')}
+        </Link>
+      ) : charge.status === 'pending' ? (
+        <div className="flex shrink-0 gap-1">
+          <Button
+            size="sm"
+            className="h-7"
+            onClick={() => setInvoicing({ id: charge.id, amount: charge.amount })}
+            disabled={busyId === charge.id}
+          >
+            <Receipt className="mr-1 h-3 w-3" />
+            {t('agreement.invoice')}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0"
+            onClick={() => handleWaive(charge.id)}
+            disabled={busyId === charge.id}
+            aria-label={t('agreement.waive')}
+            title={t('agreement.waive')}
+          >
+            <Ban className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ) : null}
+    </li>
+  )
 
   const handleWaive = async (chargeId: string) => {
     const ok = await confirm({
@@ -143,23 +213,31 @@ export function AgreementCard({
       icon={Receipt}
       title={t('agreement.title')}
       action={
-        !active && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              setEditing(undefined)
-              setShowDialog(true)
-            }}
-          >
-            <Plus className="mr-1 h-3.5 w-3.5" />
-            {t('agreement.add')}
+        <div className="flex gap-2">
+          {/* Always offered, agreement or not: a shop that bills the season on
+              the way in should not have to set up terms to do it. */}
+          <Button size="sm" variant="outline" onClick={() => setCharging(true)}>
+            <Receipt className="mr-1 h-3.5 w-3.5" />
+            {t('agreement.charge')}
           </Button>
-        )
+          {!active && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setEditing(undefined)
+                setShowDialog(true)
+              }}
+            >
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {t('agreement.add')}
+            </Button>
+          )}
+        </div>
       }
       contentClassName="space-y-4"
     >
-      {agreements.length === 0 ? (
+      {agreements.length === 0 && oneOffCharges.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t('agreement.none')}</p>
       ) : (
         agreements.map((agreement) => {
@@ -253,68 +331,31 @@ export function AgreementCard({
                 <>
                   <Separator />
                   <ul className="space-y-1.5">
-                    {agreement.charges.map((charge) => (
-                      <li
-                        key={charge.id}
-                        className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-lg border p-2 text-sm"
-                      >
-                        <span className="min-w-0 flex-1 text-xs text-muted-foreground">
-                          {formatDate(new Date(charge.periodStart))} -{' '}
-                          {formatDate(new Date(charge.periodEnd))}
-                        </span>
-                        <span className="shrink-0 font-medium tabular-nums">
-                          {charge.amount.toFixed(2)} {currency}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            'shrink-0 text-[10px]',
-                            CHARGE_STATUS_TOKENS[charge.status as StorageChargeStatus]
-                          )}
-                        >
-                          {t(`agreement.chargeStatuses.${charge.status}`)}
-                        </Badge>
-
-                        {charge.serviceRecord ? (
-                          <Link
-                            href={`/sales/${charge.serviceRecord.id}`}
-                            className="shrink-0 text-xs text-primary hover:underline"
-                          >
-                            <FileText className="mr-1 inline h-3 w-3" />
-                            {charge.serviceRecord.invoiceNumber ?? t('agreement.openInvoice')}
-                          </Link>
-                        ) : charge.status === 'pending' ? (
-                          <div className="flex shrink-0 gap-1">
-                            <Button
-                              size="sm"
-                              className="h-7"
-                              onClick={() => setInvoicing({ id: charge.id, amount: charge.amount })}
-                              disabled={busyId === charge.id}
-                            >
-                              <Receipt className="mr-1 h-3 w-3" />
-                              {t('agreement.invoice')}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-7 w-7 p-0"
-                              onClick={() => handleWaive(charge.id)}
-                              disabled={busyId === charge.id}
-                              aria-label={t('agreement.waive')}
-                              title={t('agreement.waive')}
-                            >
-                              <Ban className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        ) : null}
-                      </li>
-                    ))}
+                    {agreement.charges.map((charge) => chargeRow(charge))}
                   </ul>
                 </>
               )}
             </div>
           )
         })
+      )}
+
+      {oneOffCharges.length > 0 && (
+        <div className="space-y-1.5">
+          {agreements.length > 0 && <Separator />}
+          <p className="text-xs font-medium text-muted-foreground">{t('agreement.oneOff')}</p>
+          <ul className="space-y-1.5">{oneOffCharges.map((charge) => chargeRow(charge))}</ul>
+        </div>
+      )}
+
+      {charging && (
+        <OneOffChargeDialog
+          open={charging}
+          onOpenChange={setCharging}
+          tireSetId={tireSetId}
+          defaultPrice={defaultSeasonalPrice}
+          currency={currency}
+        />
       )}
 
       {invoicing && (

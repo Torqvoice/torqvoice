@@ -309,7 +309,14 @@
     "deleteTitle": "Diese Vereinbarung löschen?",
     "deleteBody": "Darunter wurde nichts berechnet, also werden die Vereinbarung und ihre offenen Perioden entfernt. Das lässt sich nicht rückgängig machen.",
     "deleted": "Vereinbarung gelöscht",
-    "deleteFailed": "Vereinbarung konnte nicht gelöscht werden"
+    "deleteFailed": "Vereinbarung konnte nicht gelöscht werden",
+    "charge": "Lagerung berechnen",
+    "oneOff": "Einmalige Gebühren",
+    "chargeTitle": "Gebühr für die Lagerung",
+    "chargeBody": "Eine einmalige Gebühr für diesen Satz. Nichts verlängert sich, nichts erzeugt die nächste.",
+    "chargeCreate": "Gebühr erstellen",
+    "chargeCreated": "Lagergebühr erstellt",
+    "chargeFailed": "Gebühr konnte nicht erstellt werden"
   },
   "treatments": {
     "types": {

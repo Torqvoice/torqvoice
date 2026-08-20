@@ -309,7 +309,14 @@
     "deleteTitle": "¿Eliminar este contrato?",
     "deleteBody": "No se ha facturado nada con él, así que se eliminan el contrato y sus periodos sin facturar. Esto no se puede deshacer.",
     "deleted": "Contrato eliminado",
-    "deleteFailed": "No se ha podido eliminar el contrato"
+    "deleteFailed": "No se ha podido eliminar el contrato",
+    "charge": "Cobrar almacenaje",
+    "oneOff": "Cargos puntuales",
+    "chargeTitle": "Cargo por almacenaje",
+    "chargeBody": "Un único importe para este juego. No se renueva nada ni se genera el siguiente.",
+    "chargeCreate": "Crear cargo",
+    "chargeCreated": "Cargo de almacenaje creado",
+    "chargeFailed": "No se pudo crear el cargo"
   },
   "treatments": {
     "types": {

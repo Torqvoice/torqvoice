@@ -309,7 +309,14 @@
     "deleteTitle": "Eliminare questo contratto?",
     "deleteBody": "Non è stato fatturato nulla, quindi il contratto e i suoi periodi non fatturati vengono rimossi. L’operazione non è reversibile.",
     "deleted": "Contratto eliminato",
-    "deleteFailed": "Impossibile eliminare il contratto"
+    "deleteFailed": "Impossibile eliminare il contratto",
+    "charge": "Addebita il deposito",
+    "oneOff": "Addebiti singoli",
+    "chargeTitle": "Addebito per il deposito",
+    "chargeBody": "Un solo importo per questo treno. Nulla si rinnova e nulla genera il successivo.",
+    "chargeCreate": "Crea addebito",
+    "chargeCreated": "Addebito di deposito creato",
+    "chargeFailed": "Impossibile creare l’addebito"
   },
   "treatments": {
     "types": {

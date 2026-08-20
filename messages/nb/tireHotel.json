@@ -309,7 +309,14 @@
     "deleteTitle": "Slette denne avtalen?",
     "deleteBody": "Ingenting er fakturert på den, så avtalen og de ufakturerte periodene fjernes. Dette kan ikke angres.",
     "deleted": "Avtale slettet",
-    "deleteFailed": "Kunne ikke slette avtalen"
+    "deleteFailed": "Kunne ikke slette avtalen",
+    "charge": "Fakturer lagring",
+    "oneOff": "Enkeltgebyrer",
+    "chargeTitle": "Gebyr for lagring",
+    "chargeBody": "Et enkelt gebyr for dette settet. Ingenting fornyes, og ingenting oppretter det neste.",
+    "chargeCreate": "Opprett gebyr",
+    "chargeCreated": "Lagringsgebyr opprettet",
+    "chargeFailed": "Kunne ikke opprette gebyret"
   },
   "treatments": {
     "types": {

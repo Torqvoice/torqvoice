@@ -137,6 +137,7 @@
     "tire_set_create_quote": "Создана смета по комплекту шин",
     "tire_set_create_work_order": "Создан заказ-наряд по комплекту шин",
     "tire_set_add_to_work_order": "Комплект шин добавлен в заказ-наряд",
-    "tire_set_unlink_work_order": "Комплект шин отвязан от заказа-наряда"
+    "tire_set_unlink_work_order": "Комплект шин отвязан от заказа-наряда",
+    "tire_agreement_charge": "Создан счёт за хранение"
   }
 }

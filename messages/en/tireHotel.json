@@ -309,7 +309,14 @@
     "deleteTitle": "Delete this agreement?",
     "deleteBody": "Nothing was invoiced under it, so the agreement and its unbilled periods are removed. This cannot be undone.",
     "deleted": "Agreement deleted",
-    "deleteFailed": "Could not delete the agreement"
+    "deleteFailed": "Could not delete the agreement",
+    "charge": "Charge storage",
+    "oneOff": "One-off charges",
+    "chargeTitle": "Charge for storage",
+    "chargeBody": "A single fee for this set. Nothing renews and nothing raises the next one.",
+    "chargeCreate": "Raise charge",
+    "chargeCreated": "Storage charge raised",
+    "chargeFailed": "Could not raise the charge"
   },
   "treatments": {
     "types": {

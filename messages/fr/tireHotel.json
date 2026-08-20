@@ -309,7 +309,14 @@
     "deleteTitle": "Supprimer ce contrat ?",
     "deleteBody": "Rien n’a été facturé dessus, donc le contrat et ses périodes non facturées sont supprimés. Action irréversible.",
     "deleted": "Contrat supprimé",
-    "deleteFailed": "Impossible de supprimer le contrat"
+    "deleteFailed": "Impossible de supprimer le contrat",
+    "charge": "Facturer le stockage",
+    "oneOff": "Frais ponctuels",
+    "chargeTitle": "Frais de stockage",
+    "chargeBody": "Un seul montant pour ce jeu. Rien ne se renouvelle et rien ne crée le suivant.",
+    "chargeCreate": "Créer les frais",
+    "chargeCreated": "Frais de stockage créés",
+    "chargeFailed": "Impossible de créer les frais"
   },
   "treatments": {
     "types": {

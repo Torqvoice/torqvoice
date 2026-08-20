@@ -137,6 +137,7 @@
     "tire_set_create_quote": "Orçamento criado a partir de um jogo de pneus",
     "tire_set_create_work_order": "Ordem criada a partir de um jogo de pneus",
     "tire_set_add_to_work_order": "Jogo de pneus somado a uma ordem",
-    "tire_set_unlink_work_order": "Jogo de pneus desvinculado de uma ordem"
+    "tire_set_unlink_work_order": "Jogo de pneus desvinculado de uma ordem",
+    "tire_agreement_charge": "Cobrança de armazenagem criada"
   }
 }

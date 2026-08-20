@@ -137,6 +137,7 @@
     "tire_set_create_quote": "Opprettet tilbud fra et dekksett",
     "tire_set_create_work_order": "Opprettet arbeidsordre fra et dekksett",
     "tire_set_add_to_work_order": "La et dekksett til en arbeidsordre",
-    "tire_set_unlink_work_order": "Koblet et dekksett fra en arbeidsordre"
+    "tire_set_unlink_work_order": "Koblet et dekksett fra en arbeidsordre",
+    "tire_agreement_charge": "Opprettet lagringsgebyr"
   }
 }

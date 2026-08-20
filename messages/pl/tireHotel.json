@@ -309,7 +309,14 @@
     "deleteTitle": "Usunąć tę umowę?",
     "deleteBody": "Nic na niej nie zafakturowano, więc umowa i jej nierozliczone okresy zostaną usunięte. Tej operacji nie można cofnąć.",
     "deleted": "Umowa usunięta",
-    "deleteFailed": "Nie udało się usunąć umowy"
+    "deleteFailed": "Nie udało się usunąć umowy",
+    "charge": "Obciąż za przechowywanie",
+    "oneOff": "Opłaty jednorazowe",
+    "chargeTitle": "Opłata za przechowywanie",
+    "chargeBody": "Jedna opłata za ten komplet. Nic się nie odnawia i nic nie tworzy kolejnej.",
+    "chargeCreate": "Utwórz opłatę",
+    "chargeCreated": "Utworzono opłatę za przechowywanie",
+    "chargeFailed": "Nie udało się utworzyć opłaty"
   },
   "treatments": {
     "types": {

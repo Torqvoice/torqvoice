@@ -309,7 +309,14 @@
     "deleteTitle": "Deze overeenkomst verwijderen?",
     "deleteBody": "Er is niets onder gefactureerd, dus de overeenkomst en de niet-gefactureerde periodes worden verwijderd. Dit kan niet ongedaan worden gemaakt.",
     "deleted": "Overeenkomst verwijderd",
-    "deleteFailed": "Kon de overeenkomst niet verwijderen"
+    "deleteFailed": "Kon de overeenkomst niet verwijderen",
+    "charge": "Opslag factureren",
+    "oneOff": "Eenmalige kosten",
+    "chargeTitle": "Kosten voor opslag",
+    "chargeBody": "Eén bedrag voor deze set. Er wordt niets verlengd en er volgt geen volgende.",
+    "chargeCreate": "Kosten aanmaken",
+    "chargeCreated": "Opslagkosten aangemaakt",
+    "chargeFailed": "Kon de kosten niet aanmaken"
   },
   "treatments": {
     "types": {
