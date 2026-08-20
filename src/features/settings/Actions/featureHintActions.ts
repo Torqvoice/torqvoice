@@ -3,19 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { SETTING_KEYS } from '../Schema/settingsSchema'
-
-/** Reads the ids the workshop has already been shown. */
-export function parseSeenHints(value: string | null | undefined): string[] {
-  if (!value) return []
-  try {
-    const parsed = JSON.parse(value)
-    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : []
-  } catch {
-    // Hand-edited, or written by something older. An unreadable list means
-    // nothing has been seen, which shows a hint again at worst.
-    return []
-  }
-}
+import { parseSeenHints } from '../Lib/featureHints'
 
 /**
  * Marks a feature hint as shown, for the whole workshop.

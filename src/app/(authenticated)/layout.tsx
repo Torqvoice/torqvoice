@@ -8,7 +8,7 @@ import { NotificationInitializer } from '@/features/notifications/Components/Not
 import { ConfirmProvider } from '@/components/confirm-dialog'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { parseSeenHints } from '@/features/settings/Actions/featureHintActions'
+import { parseSeenHints } from '@/features/settings/Lib/featureHints'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { WhiteLabelCtaProvider } from '@/components/white-label-cta-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
