@@ -184,7 +184,8 @@
     "check_in": "Réceptionné",
     "check_out": "Restitué",
     "relocate": "Déplacé",
-    "dispose": "Mis au rebut"
+    "dispose": "Mis au rebut",
+    "measure": "Mesuré"
   },
   "detail": {
     "move": "Déplacer",
@@ -247,7 +248,8 @@
     "rimType": "Type de jante",
     "rimTypePlaceholder": "Alliage, tôle",
     "success": "Jeu de pneus mis à jour",
-    "failed": "Impossible d’enregistrer les modifications"
+    "failed": "Impossible d’enregistrer les modifications",
+    "treadHint": "Une valeur modifiée est enregistrée comme un nouveau relevé dans l’historique, sans écraser l’ancien."
   },
   "treatments": {
     "types": {

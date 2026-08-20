@@ -184,7 +184,8 @@
     "check_in": "Ingenomen",
     "check_out": "Teruggegeven",
     "relocate": "Verplaatst",
-    "dispose": "Afgevoerd"
+    "dispose": "Afgevoerd",
+    "measure": "Gemeten"
   },
   "detail": {
     "move": "Verplaatsen",
@@ -247,7 +248,8 @@
     "rimType": "Velgtype",
     "rimTypePlaceholder": "Lichtmetaal, staal",
     "success": "Bandenset bijgewerkt",
-    "failed": "Kon de wijzigingen niet opslaan"
+    "failed": "Kon de wijzigingen niet opslaan",
+    "treadHint": "Een gewijzigde meting wordt als nieuwe meting in de historie vastgelegd in plaats van de oude te overschrijven."
   },
   "treatments": {
     "types": {

@@ -29,7 +29,15 @@ export const TIRE_ROAD_POSITIONS = ['front_left', 'front_right', 'rear_left', 'r
 export const TIRE_CONDITIONS = ['good', 'fair', 'replace'] as const
 export type TireCondition = (typeof TIRE_CONDITIONS)[number]
 
-export const TIRE_MOVEMENT_TYPES = ['check_in', 'check_out', 'relocate', 'dispose'] as const
+/// `measure` covers a set measured again without arriving or leaving, which
+/// is what correcting or re-taking the readings amounts to.
+export const TIRE_MOVEMENT_TYPES = [
+  'check_in',
+  'check_out',
+  'relocate',
+  'dispose',
+  'measure',
+] as const
 export type TireMovementType = (typeof TIRE_MOVEMENT_TYPES)[number]
 
 /** Tailwind token per condition, so the grade reads the same everywhere. */

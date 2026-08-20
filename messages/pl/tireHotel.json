@@ -184,7 +184,8 @@
     "check_in": "Przyjęto",
     "check_out": "Wydano",
     "relocate": "Przeniesiono",
-    "dispose": "Zutylizowano"
+    "dispose": "Zutylizowano",
+    "measure": "Zmierzono"
   },
   "detail": {
     "move": "Przenieś",
@@ -247,7 +248,8 @@
     "rimType": "Rodzaj felgi",
     "rimTypePlaceholder": "Aluminiowa, stalowa",
     "success": "Zaktualizowano komplet opon",
-    "failed": "Nie udało się zapisać zmian"
+    "failed": "Nie udało się zapisać zmian",
+    "treadHint": "Zmiana pomiaru zapisuje go jako nowy odczyt w historii, zamiast nadpisywać poprzedni."
   },
   "treatments": {
     "types": {

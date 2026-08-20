@@ -184,7 +184,8 @@
     "check_in": "Eingelagert",
     "check_out": "Ausgelagert",
     "relocate": "Umgelagert",
-    "dispose": "Entsorgt"
+    "dispose": "Entsorgt",
+    "measure": "Gemessen"
   },
   "detail": {
     "move": "Umlagern",
@@ -247,7 +248,8 @@
     "rimType": "Felgentyp",
     "rimTypePlaceholder": "Alu, Stahl",
     "success": "Reifensatz aktualisiert",
-    "failed": "Änderungen konnten nicht gespeichert werden"
+    "failed": "Änderungen konnten nicht gespeichert werden",
+    "treadHint": "Eine geänderte Messung wird als neue Messung in der Historie festgehalten, statt die alte zu überschreiben."
   },
   "treatments": {
     "types": {

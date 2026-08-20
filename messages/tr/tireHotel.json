@@ -184,7 +184,8 @@
     "check_in": "Kabul edildi",
     "check_out": "Teslim edildi",
     "relocate": "Taşındı",
-    "dispose": "Hurdaya ayrıldı"
+    "dispose": "Hurdaya ayrıldı",
+    "measure": "Ölçüldü"
   },
   "detail": {
     "move": "Taşı",
@@ -247,7 +248,8 @@
     "rimType": "Jant tipi",
     "rimTypePlaceholder": "Alaşım, çelik",
     "success": "Lastik takımı güncellendi",
-    "failed": "Değişiklikler kaydedilemedi"
+    "failed": "Değişiklikler kaydedilemedi",
+    "treadHint": "Bir ölçümü değiştirmek, eskisinin üzerine yazmak yerine geçmişe yeni bir ölçüm olarak kaydedilir."
   },
   "treatments": {
     "types": {

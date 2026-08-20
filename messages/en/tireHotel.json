@@ -184,7 +184,8 @@
     "check_in": "Checked in",
     "check_out": "Checked out",
     "relocate": "Moved",
-    "dispose": "Disposed"
+    "dispose": "Disposed",
+    "measure": "Measured"
   },
   "detail": {
     "move": "Move",
@@ -247,7 +248,8 @@
     "rimType": "Rim type",
     "rimTypePlaceholder": "Alloy, steel",
     "success": "Tire set updated",
-    "failed": "Could not save the changes"
+    "failed": "Could not save the changes",
+    "treadHint": "Changing a reading records a new measurement in the history rather than rewriting the old one."
   },
   "treatments": {
     "types": {

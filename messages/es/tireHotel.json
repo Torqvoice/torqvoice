@@ -184,7 +184,8 @@
     "check_in": "Recibido",
     "check_out": "Entregado",
     "relocate": "Movido",
-    "dispose": "Desechado"
+    "dispose": "Desechado",
+    "measure": "Medido"
   },
   "detail": {
     "move": "Mover",
@@ -247,7 +248,8 @@
     "rimType": "Tipo de llanta",
     "rimTypePlaceholder": "Aleación, acero",
     "success": "Juego de neumáticos actualizado",
-    "failed": "No se han podido guardar los cambios"
+    "failed": "No se han podido guardar los cambios",
+    "treadHint": "Cambiar una medición la registra como una nueva lectura en el historial en lugar de sobrescribir la anterior."
   },
   "treatments": {
     "types": {

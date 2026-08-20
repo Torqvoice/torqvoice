@@ -184,7 +184,8 @@
     "check_in": "Tatt inn",
     "check_out": "Levert ut",
     "relocate": "Flyttet",
-    "dispose": "Kassert"
+    "dispose": "Kassert",
+    "measure": "Målt"
   },
   "detail": {
     "move": "Flytt",
@@ -247,7 +248,8 @@
     "rimType": "Felgtype",
     "rimTypePlaceholder": "Alu, stål",
     "success": "Dekksett oppdatert",
-    "failed": "Kunne ikke lagre endringene"
+    "failed": "Kunne ikke lagre endringene",
+    "treadHint": "Endrer du en måling, registreres den som en ny måling i historikken i stedet for å overskrive den gamle."
   },
   "treatments": {
     "types": {

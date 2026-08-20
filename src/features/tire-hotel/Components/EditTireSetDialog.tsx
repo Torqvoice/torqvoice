@@ -27,11 +27,19 @@ import {
 } from '@/components/ui/select'
 import { Loader2 } from 'lucide-react'
 import { OwnerVehicleFields, type VehicleOption } from './OwnerVehicleFields'
+import { TreadEntry, type TreadRow } from './TreadEntry'
 import { updateTireSet } from '../Actions/tireSetActions'
-import { TIRE_SEASONS } from '../Lib/tireConstants'
+import {
+  TIRE_ROAD_POSITIONS,
+  TIRE_SEASONS,
+  mmToThirtySeconds,
+  thirtySecondsToMm,
+} from '../Lib/tireConstants'
 
 export type EditableTireSet = {
   id: string
+  /** The most recent readings, so a mistyped depth can be put right. */
+  measurements?: { position: string; treadDepthMm: number | null; condition: string }[]
   season: string
   studded: boolean
   brand: string | null
@@ -62,11 +70,16 @@ export function EditTireSetDialog({
   onOpenChange,
   set,
   vehicles,
+  imperial = false,
+  thresholds,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   set: EditableTireSet
   vehicles: VehicleOption[]
+  imperial?: boolean
+  /** The workshop's own limits, so a corrected reading grades correctly. */
+  thresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
@@ -86,6 +99,9 @@ export function EditTireSetDialog({
   const [hasTpms, setHasTpms] = useState(false)
   const [quantity, setQuantity] = useState('4')
   const [notes, setNotes] = useState('')
+  const [treads, setTreads] = useState<TreadRow[]>(() =>
+    TIRE_ROAD_POSITIONS.map((position) => ({ position, tread: '', condition: 'good' }))
+  )
 
   // Re-seed on every open, so a cancelled edit never leaks into the next one.
   useEffect(() => {
@@ -104,6 +120,27 @@ export function EditTireSetDialog({
     setHasTpms(set.hasTpms)
     setQuantity(String(set.quantity))
     setNotes(set.notes ?? '')
+    // Seeded from the latest reading per position, in the workshop's unit,
+    // so an edit starts from what is on file rather than from blanks.
+    // Readings arrive newest first, and Map keeps the last value written for
+    // a key, so the first sighting of each position is the one to keep.
+    const rows = set.measurements ?? []
+    const latest = new Map<string, (typeof rows)[number]>()
+    for (const row of rows) {
+      if (!latest.has(row.position)) latest.set(row.position, row)
+    }
+    setTreads(
+      TIRE_ROAD_POSITIONS.map((position) => {
+        const row = latest.get(position)
+        const mm = row?.treadDepthMm ?? null
+        return {
+          position,
+          tread:
+            mm == null ? '' : String(Math.round((imperial ? mmToThirtySeconds(mm) : mm) * 10) / 10),
+          condition: (row?.condition ?? 'good') as TreadRow['condition'],
+        }
+      })
+    )
   }, [open, set])
 
   const handleSubmit = async () => {
@@ -124,6 +161,20 @@ export function EditTireSetDialog({
       hasTpms,
       quantity: Math.max(1, Number(quantity) || 1),
       notes,
+      measurements: treads
+        .filter((row) => row.tread.trim() !== '' || row.condition !== 'good')
+        .map((row) => {
+          const entered = Number(row.tread)
+          return {
+            position: row.position,
+            treadDepthMm: Number.isFinite(entered)
+              ? imperial
+                ? Number(thirtySecondsToMm(entered).toFixed(2))
+                : entered
+              : null,
+            condition: row.condition,
+          }
+        }),
     })
     setSaving(false)
 
@@ -264,6 +315,22 @@ export function EditTireSetDialog({
                 </Label>
               </div>
             )}
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label>{t('checkIn.treadTitle')}</Label>
+            {/* Changing a reading records a new round rather than rewriting
+                the old one, so the history says when it was measured again. */}
+            <p className="text-xs text-muted-foreground">{t('edit.treadHint')}</p>
+            <TreadEntry
+              rows={treads}
+              onChange={setTreads}
+              imperial={imperial}
+              season={season}
+              thresholds={thresholds}
+            />
           </div>
 
           <div className="space-y-2">

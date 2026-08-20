@@ -184,7 +184,8 @@
     "check_in": "Priimta",
     "check_out": "Atiduota",
     "relocate": "Perkelta",
-    "dispose": "Utilizuota"
+    "dispose": "Utilizuota",
+    "measure": "Išmatuota"
   },
   "detail": {
     "move": "Perkelti",
@@ -247,7 +248,8 @@
     "rimType": "Ratlankio tipas",
     "rimTypePlaceholder": "Lydinio, plieno",
     "success": "Padangų komplektas atnaujintas",
-    "failed": "Nepavyko išsaugoti pakeitimų"
+    "failed": "Nepavyko išsaugoti pakeitimų",
+    "treadHint": "Pakeistas matavimas įrašomas į istoriją kaip naujas, o ne perrašo ankstesnį."
   },
   "treatments": {
     "types": {

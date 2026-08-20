@@ -184,7 +184,8 @@
     "check_in": "Accettato",
     "check_out": "Restituito",
     "relocate": "Spostato",
-    "dispose": "Smaltito"
+    "dispose": "Smaltito",
+    "measure": "Misurato"
   },
   "detail": {
     "move": "Sposta",
@@ -247,7 +248,8 @@
     "rimType": "Tipo di cerchio",
     "rimTypePlaceholder": "Lega, acciaio",
     "success": "Treno di pneumatici aggiornato",
-    "failed": "Impossibile salvare le modifiche"
+    "failed": "Impossibile salvare le modifiche",
+    "treadHint": "Una misura modificata viene registrata come nuova rilevazione nello storico, senza sovrascrivere la precedente."
   },
   "treatments": {
     "types": {

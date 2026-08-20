@@ -791,15 +791,59 @@ export async function relocateTireSet(input: unknown) {
 
 export async function updateTireSet(input: unknown) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
-      const { id, measurements: _measurements, ...data } = updateTireSetSchema.parse(input)
+      const { id, measurements, ...data } = updateTireSetSchema.parse(input)
 
       const updated = await db.$transaction(async (tx) => {
         const set = await tx.tireSet.findFirst({ where: { id, organizationId } })
         if (!set) throw new Error('Tire set not found')
 
         // Growing the set has to fit where it already sits.
+        // New readings are recorded as a fresh round, under a movement of
+        // their own, so the history says when somebody measured again rather
+        // than quietly rewriting what was recorded at check-in.
+        if (measurements?.length) {
+          const rows = measurementRows(measurements, userId)
+          const latest = await tx.tireMeasurement.findMany({
+            where: { tireSetId: set.id },
+            orderBy: { measuredAt: 'desc' },
+            take: 8,
+            select: { position: true, treadDepthMm: true, condition: true, measuredAt: true },
+          })
+          const newest = latest[0]?.measuredAt?.getTime()
+          const current = new Map(
+            latest
+              .filter((m) => m.measuredAt.getTime() === newest)
+              .map((m) => [m.position, `${m.treadDepthMm ?? ''}|${m.condition}`])
+          )
+          // Only when something actually differs. Saving the dialog without
+          // touching a reading should not litter the history with rounds
+          // identical to the one above them.
+          const changed =
+            !rows ||
+            rows.length !== current.size ||
+            rows.some(
+              (row) => current.get(row.position) !== `${row.treadDepthMm ?? ''}|${row.condition}`
+            )
+
+          if (rows && changed) {
+            const movement = await tx.tireMovement.create({
+              data: {
+                type: 'measure',
+                toLocationId: set.locationId,
+                toCode: null,
+                tireSetId: set.id,
+                organizationId,
+                performedById: userId,
+              },
+            })
+            await tx.tireMeasurement.createMany({
+              data: rows.map((row) => ({ ...row, tireSetId: set.id, movementId: movement.id })),
+            })
+          }
+        }
+
         if (data.quantity !== undefined && data.quantity > set.quantity && set.locationId) {
           await assertRoom(tx, set.locationId, organizationId, data.quantity - set.quantity, set.id)
         }

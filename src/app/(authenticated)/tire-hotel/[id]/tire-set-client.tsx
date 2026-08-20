@@ -576,7 +576,14 @@ export function TireSetClient({
         variables={messageVariables}
       />
 
-      <EditTireSetDialog open={showEdit} onOpenChange={setShowEdit} set={set} vehicles={vehicles} />
+      <EditTireSetDialog
+        open={showEdit}
+        onOpenChange={setShowEdit}
+        set={set}
+        vehicles={vehicles}
+        imperial={imperial}
+        thresholds={{ ...thresholds, warnMargin: 1 }}
+      />
     </div>
   )
 }
