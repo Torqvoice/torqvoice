@@ -239,6 +239,7 @@ export async function POST(request: NextRequest) {
             measurements: true,
             movements: true,
             treatments: true,
+            attachments: true,
           },
         })
         .then((result) => {

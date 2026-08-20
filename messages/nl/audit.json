@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Bandenset aan een werkorder toegevoegd",
     "tire_set_unlink_work_order": "Bandenset van een werkorder ontkoppeld",
     "tire_set_return": "Set opnieuw opgeslagen",
-    "tire_set_dispose": "Bandenset afgeschreven"
+    "tire_set_dispose": "Bandenset afgeschreven",
+    "tire_set_attach": "Bestanden aan een bandenset toegevoegd",
+    "tire_set_detach": "Bestand van een bandenset verwijderd"
   }
 }

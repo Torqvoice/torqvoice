@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "La et dekksett til en arbeidsordre",
     "tire_set_unlink_work_order": "Koblet et dekksett fra en arbeidsordre",
     "tire_set_return": "Lagret et sett på nytt",
-    "tire_set_dispose": "Kasserte et dekksett"
+    "tire_set_dispose": "Kasserte et dekksett",
+    "tire_set_attach": "La til filer på et dekksett",
+    "tire_set_detach": "Fjernet en fil fra et dekksett"
   }
 }

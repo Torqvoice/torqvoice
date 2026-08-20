@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Collected",
     "storageOpenEnded": "Open",
     "storagePeriodHint": "Prints on the invoice line so the customer can see what the fee covers. Leave the end blank until you know when they are collecting.",
-    "pricesHint": "Prep prices come from settings. Every line can still be edited after this is created."
+    "pricesHint": "Prep prices come from settings. Every line can still be edited after this is created.",
+    "files": "Photos and files",
+    "filesCount": "{count} on the invoice"
   },
   "label": {
     "action": "Labels",
@@ -455,5 +457,17 @@
     "onRims": "On rims",
     "tiresOnly": "Tires only",
     "tpms": "Has TPMS sensors"
+  },
+  "files": {
+    "title": "Photos and files",
+    "add": "Add files",
+    "none": "Nothing attached yet. Photograph a kerbed rim or damage while the tires are in front of you.",
+    "captionPlaceholder": "What does this show?",
+    "onInvoice": "On the invoice",
+    "invoiceHint": "Files marked for the invoice are copied onto the work order or invoice when this set is billed.",
+    "deleteTitle": "Remove this file?",
+    "deleteBody": "{name} is removed from this set. Anything already copied onto an invoice stays there.",
+    "failed": "Could not save that",
+    "someFailed": "{count, plural, one {# file could not be uploaded} other {# files could not be uploaded}}"
   }
 }

@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Abgeholt",
     "storageOpenEnded": "Offen",
     "storagePeriodHint": "Erscheint auf der Rechnungsposition, damit der Kunde sieht, wofür die Gebühr gilt. Enddatum offen lassen, bis der Abholtermin feststeht.",
-    "pricesHint": "Die Preise für die Vorbereitung stammen aus den Einstellungen. Jede Position lässt sich danach noch ändern."
+    "pricesHint": "Die Preise für die Vorbereitung stammen aus den Einstellungen. Jede Position lässt sich danach noch ändern.",
+    "files": "Fotos und Dateien",
+    "filesCount": "{count} auf der Rechnung"
   },
   "label": {
     "action": "Etiketten",
@@ -455,5 +457,17 @@
     "onRims": "Auf Felgen",
     "tiresOnly": "Nur Reifen",
     "tpms": "Mit RDKS-Sensoren"
+  },
+  "files": {
+    "title": "Fotos und Dateien",
+    "add": "Dateien hinzufügen",
+    "none": "Noch nichts angehängt. Fotografieren Sie eine beschädigte Felge, solange die Reifen vor Ihnen liegen.",
+    "captionPlaceholder": "Was ist darauf zu sehen?",
+    "onInvoice": "Auf der Rechnung",
+    "invoiceHint": "Für die Rechnung markierte Dateien werden beim Abrechnen auf den Auftrag oder die Rechnung kopiert.",
+    "deleteTitle": "Diese Datei entfernen?",
+    "deleteBody": "{name} wird vom Satz entfernt. Bereits auf eine Rechnung kopierte Dateien bleiben dort.",
+    "failed": "Konnte nicht gespeichert werden",
+    "someFailed": "{count, plural, one {# Datei konnte nicht hochgeladen werden} other {# Dateien konnten nicht hochgeladen werden}}"
   }
 }

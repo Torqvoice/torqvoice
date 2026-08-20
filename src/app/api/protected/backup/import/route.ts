@@ -982,6 +982,27 @@ export async function POST(request: NextRequest) {
             })
           }
 
+          const attachments = set.attachments as Record<string, unknown>[] | undefined
+          if (attachments?.length) {
+            await tx.tireSetAttachment.createMany({
+              data: attachments.map((att) => ({
+                id: att.id as string,
+                fileName: (att.fileName as string) || 'file',
+                fileUrl: (att.fileUrl as string) || '',
+                fileType: (att.fileType as string) || 'application/octet-stream',
+                fileSize: (att.fileSize as number) || 0,
+                description: (att.description as string) || null,
+                includeInInvoice: att.includeInInvoice !== false,
+                sortOrder: (att.sortOrder as number) || 0,
+                createdAt: toSafeDate(att.createdAt as string),
+                tireSetId: set.id as string,
+                organizationId: ctx.organizationId,
+                // The uploader may not exist in the target organization.
+                uploadedById: null,
+              })),
+            })
+          }
+
           const treatments = set.treatments as Record<string, unknown>[] | undefined
           if (treatments?.length) {
             await tx.tireTreatment.createMany({

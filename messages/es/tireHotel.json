@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Retirado",
     "storageOpenEnded": "Abierto",
     "storagePeriodHint": "Aparece en la línea de la factura para que el cliente vea qué cubre el importe. Deja el final en blanco hasta saber cuándo lo retiran.",
-    "pricesHint": "Los precios de preparación vienen de los ajustes. Cada línea se puede editar después de crearlo."
+    "pricesHint": "Los precios de preparación vienen de los ajustes. Cada línea se puede editar después de crearlo.",
+    "files": "Fotos y archivos",
+    "filesCount": "{count} en la factura"
   },
   "label": {
     "action": "Etiquetas",
@@ -455,5 +457,17 @@
     "onRims": "Con llantas",
     "tiresOnly": "Solo neumáticos",
     "tpms": "Con sensores TPMS"
+  },
+  "files": {
+    "title": "Fotos y archivos",
+    "add": "Añadir archivos",
+    "none": "Todavía no hay nada adjunto. Fotografía una llanta rozada mientras tienes los neumáticos delante.",
+    "captionPlaceholder": "¿Qué se ve aquí?",
+    "onInvoice": "En la factura",
+    "invoiceHint": "Los archivos marcados para la factura se copian a la orden o a la factura al facturar el juego.",
+    "deleteTitle": "¿Quitar este archivo?",
+    "deleteBody": "{name} se quita del juego. Lo que ya se copió a una factura se mantiene.",
+    "failed": "No se pudo guardar",
+    "someFailed": "{count, plural, one {no se pudo subir # archivo} other {no se pudieron subir # archivos}}"
   }
 }

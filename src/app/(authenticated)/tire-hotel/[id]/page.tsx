@@ -6,6 +6,7 @@ import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSetting
 import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
 import { getJobsForSet } from '@/features/tire-hotel/Actions/tireJobActions'
+import { getAttachmentsForSet } from '@/features/tire-hotel/Actions/attachmentActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
@@ -25,36 +26,39 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
 
   const { id } = await params
 
-  const [setResult, locationResult, jobsResult, settingsResult, vehicles] = await Promise.all([
-    getTireSet(id),
-    getLocationOptions(),
-    getJobsForSet(id),
-    getSettings([
-      SETTING_KEYS.UNIT_SYSTEM,
-      SETTING_KEYS.CURRENCY_CODE,
-      SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE,
-    ]),
-    db.vehicle.findMany({
-      where: { organizationId, isArchived: false },
-      orderBy: { updatedAt: 'desc' },
-      take: 500,
-      select: {
-        id: true,
-        make: true,
-        model: true,
-        year: true,
-        licensePlate: true,
-        customerId: true,
-        // The owner travels with the car, because the check-in form derives
-        // the customer from the vehicle and has to be able to show who it is.
-        customer: { select: { id: true, name: true } },
-      },
-    }),
-  ])
+  const [setResult, locationResult, jobsResult, attachmentResult, settingsResult, vehicles] =
+    await Promise.all([
+      getTireSet(id),
+      getLocationOptions(),
+      getJobsForSet(id),
+      getAttachmentsForSet(id),
+      getSettings([
+        SETTING_KEYS.UNIT_SYSTEM,
+        SETTING_KEYS.CURRENCY_CODE,
+        SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE,
+      ]),
+      db.vehicle.findMany({
+        where: { organizationId, isArchived: false },
+        orderBy: { updatedAt: 'desc' },
+        take: 500,
+        select: {
+          id: true,
+          make: true,
+          model: true,
+          year: true,
+          licensePlate: true,
+          customerId: true,
+          // The owner travels with the car, because the check-in form derives
+          // the customer from the vehicle and has to be able to show who it is.
+          customer: { select: { id: true, name: true } },
+        },
+      }),
+    ])
 
   if (!setResult.success || !setResult.data) notFound()
 
   const locations = locationResult.success && locationResult.data ? locationResult.data : []
+  const attachments = attachmentResult.success && attachmentResult.data ? attachmentResult.data : []
   const jobs =
     jobsResult.success && jobsResult.data ? jobsResult.data : { quotes: [], workOrders: [] }
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
@@ -73,6 +77,7 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
           locations={locations}
           vehicles={vehicles}
           jobs={jobs}
+          attachments={attachments}
           billing={billing}
           imperial={imperial}
           canEditSettings={canChangeSettings}

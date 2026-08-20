@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Padangų komplektas pridėtas prie darbo užsakymo",
     "tire_set_unlink_work_order": "Padangų komplektas atsietas nuo darbo užsakymo",
     "tire_set_return": "Komplektas vėl saugomas",
-    "tire_set_dispose": "Padangų komplektas nurašytas"
+    "tire_set_dispose": "Padangų komplektas nurašytas",
+    "tire_set_attach": "Prie padangų komplekto pridėta failų",
+    "tire_set_detach": "Failas pašalintas iš padangų komplekto"
   }
 }

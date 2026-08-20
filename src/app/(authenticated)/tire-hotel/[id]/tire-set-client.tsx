@@ -19,6 +19,10 @@ import { MessageCustomerDialog } from '@/features/tire-hotel/Components/MessageC
 import { NewTireJobDialog } from '@/features/tire-hotel/Components/NewTireJobDialog'
 import { PrintLabelsDialog } from '@/features/tire-hotel/Components/PrintLabelsDialog'
 import { TireJobsCard, type TireJobs } from '@/features/tire-hotel/Components/TireJobsCard'
+import {
+  TireAttachmentsCard,
+  type TireAttachment,
+} from '@/features/tire-hotel/Components/TireAttachmentsCard'
 import { reasonForCondition } from '@/features/tire-hotel/Lib/messageTemplates'
 import { deleteTireSet, disposeTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { groupRounds, wearSummary, seasonsLeft } from '@/features/tire-hotel/Lib/wear'
@@ -116,6 +120,7 @@ export function TireSetClient({
   locations,
   vehicles,
   jobs,
+  attachments,
   billing,
   imperial,
   thresholds,
@@ -124,6 +129,7 @@ export function TireSetClient({
   set: TireSet
   locations: PickerLocation[]
   jobs: TireJobs
+  attachments: TireAttachment[]
   billing: {
     seasonalPrice: number
     currency: string
@@ -412,6 +418,8 @@ export function TireSetClient({
               />
             )}
           </AppCard>
+
+          <TireAttachmentsCard tireSetId={set.id} attachments={attachments} />
 
           <TireJobsCard
             tireSetId={set.id}

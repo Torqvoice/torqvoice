@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Jeu de pneus ajouté à un ordre",
     "tire_set_unlink_work_order": "Jeu de pneus dissocié d’un ordre",
     "tire_set_return": "Jeu de nouveau stocké",
-    "tire_set_dispose": "Jeu de pneus mis au rebut"
+    "tire_set_dispose": "Jeu de pneus mis au rebut",
+    "tire_set_attach": "Fichiers ajoutés à un jeu de pneus",
+    "tire_set_detach": "Fichier retiré d’un jeu de pneus"
   }
 }

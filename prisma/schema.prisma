@@ -45,6 +45,7 @@ model User {
   stockMovements         StockMovement[]
   tireWarehouses         TireWarehouse[]
   tireSets               TireSet[]
+  tireSetAttachments     TireSetAttachment[]
   tireMeasurements       TireMeasurement[]
   tireMovements          TireMovement[]
   tireTreatments         TireTreatment[]
@@ -841,6 +842,7 @@ model Organization {
   tireWarehouses         TireWarehouse[]
   tireLocations          TireLocation[]
   tireSets               TireSet[]
+  tireSetAttachments     TireSetAttachment[]
   tireMovements          TireMovement[]
   tireTreatments         TireTreatment[]
 
@@ -1718,6 +1720,7 @@ model TireSet {
   measurements TireMeasurement[]
   movements    TireMovement[]
   treatments   TireTreatment[]
+  attachments  TireSetAttachment[]
   quotes       Quote[]
   serviceRecords ServiceRecord[]
 
@@ -1735,6 +1738,46 @@ model TireSet {
 /// Condition of one tire at one moment. Kept as history rather than current
 /// state so wear between seasons is visible, and so a damage dispute has a
 /// dated record behind it.
+/// A photo or document held against a stored set: a picture of a kerbed rim,
+/// a damage report, the customer's written agreement to store them.
+///
+/// Deliberately the same shape as ServiceAttachment, because that is where
+/// these end up when the set is billed. Copying a row between two models with
+/// the same fields cannot lose anything in translation, and the invoice PDF
+/// already knows how to render one.
+model TireSetAttachment {
+  id       String @id @default(cuid())
+  fileName String
+  fileUrl  String
+  fileType String
+  fileSize Int
+
+  /// What the technician wants said about it, e.g. "kerbing on the near side".
+  /// Travels onto the invoice as the caption under the image.
+  description String?
+
+  /// Whether it should reach the customer's invoice when this set is billed.
+  /// On by default: a photo taken at check-in is usually taken to be shown.
+  includeInInvoice Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([tireSetId])
+  @@index([organizationId])
+  @@map("tire_set_attachments")
+}
+
 model TireMeasurement {
   id String @id @default(cuid())
 

@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Lastik takımı bir iş emrine eklendi",
     "tire_set_unlink_work_order": "Lastik takımı bir iş emrinden ayrıldı",
     "tire_set_return": "Takım yeniden depolandı",
-    "tire_set_dispose": "Lastik takımı hurdaya ayrıldı"
+    "tire_set_dispose": "Lastik takımı hurdaya ayrıldı",
+    "tire_set_attach": "Lastik takımına dosya eklendi",
+    "tire_set_detach": "Lastik takımından dosya kaldırıldı"
   }
 }

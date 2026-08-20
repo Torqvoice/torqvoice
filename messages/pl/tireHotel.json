@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Odebrano",
     "storageOpenEnded": "Otwarty",
     "storagePeriodHint": "Widnieje na pozycji faktury, więc klient widzi, co obejmuje opłata. Zostaw koniec pusty, dopóki nie wiesz, kiedy odbiorą.",
-    "pricesHint": "Ceny przygotowania pochodzą z ustawień. Każdą pozycję można zmienić po utworzeniu dokumentu."
+    "pricesHint": "Ceny przygotowania pochodzą z ustawień. Każdą pozycję można zmienić po utworzeniu dokumentu.",
+    "files": "Zdjęcia i pliki",
+    "filesCount": "{count} na fakturze"
   },
   "label": {
     "action": "Etykiety",
@@ -455,5 +457,17 @@
     "onRims": "Na felgach",
     "tiresOnly": "Same opony",
     "tpms": "Z czujnikami TPMS"
+  },
+  "files": {
+    "title": "Zdjęcia i pliki",
+    "add": "Dodaj pliki",
+    "none": "Nic jeszcze nie dołączono. Zrób zdjęcie otartej felgi, póki opony masz przed sobą.",
+    "captionPlaceholder": "Co widać na zdjęciu?",
+    "onInvoice": "Na fakturze",
+    "invoiceHint": "Pliki oznaczone do faktury są kopiowane na zlecenie lub fakturę przy rozliczaniu kompletu.",
+    "deleteTitle": "Usunąć ten plik?",
+    "deleteBody": "{name} zostanie usunięty z kompletu. To, co już trafiło na fakturę, tam zostaje.",
+    "failed": "Nie udało się zapisać",
+    "someFailed": "{count, plural, one {nie udało się przesłać # pliku} other {nie udało się przesłać # plików}}"
   }
 }

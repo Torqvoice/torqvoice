@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Dodano komplet opon do zlecenia",
     "tire_set_unlink_work_order": "Odłączono komplet opon od zlecenia",
     "tire_set_return": "Ponownie przyjęto komplet",
-    "tire_set_dispose": "Spisano komplet opon"
+    "tire_set_dispose": "Spisano komplet opon",
+    "tire_set_attach": "Dodano pliki do kompletu opon",
+    "tire_set_detach": "Usunięto plik z kompletu opon"
   }
 }

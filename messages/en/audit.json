@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Added a tire set to a work order",
     "tire_set_unlink_work_order": "Unlinked a tire set from a work order",
     "tire_set_return": "Stored a set again",
-    "tire_set_dispose": "Wrote off a tire set"
+    "tire_set_dispose": "Wrote off a tire set",
+    "tire_set_attach": "Added files to a tire set",
+    "tire_set_detach": "Removed a file from a tire set"
   }
 }

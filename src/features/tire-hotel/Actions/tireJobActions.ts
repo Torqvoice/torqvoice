@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { db } from '@/lib/db'
+import type { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { calculateTotals } from '@/lib/tax'
@@ -44,6 +45,9 @@ const fromSetSchema = z.object({
   /// a schedule of its own. The period is not a rule, it is what prints on
   /// the line so the customer can see what they paid for.
   includeStorage: z.boolean().default(false),
+  /// Copies the set's photos and documents onto the job, so they reach the
+  /// invoice PDF the way any other attachment does.
+  includeAttachments: z.boolean().default(true),
   /// Bills the customer directly instead of raising a job on a vehicle, for
   /// the customer who only ever stores tires and never brings the car in.
   asInvoice: z.boolean().default(false),
@@ -75,6 +79,19 @@ async function loadSet(organizationId: string, tireSetId: string) {
       location: { select: { code: true, warehouse: { select: { name: true } } } },
       customer: { select: { id: true, taxExempt: true } },
       treatments: { select: { type: true, status: true } },
+      // Copied onto the job when the set is billed, so the invoice carries the
+      // photos the technician took.
+      attachments: {
+        where: { includeInInvoice: true },
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+        select: {
+          fileName: true,
+          fileUrl: true,
+          fileType: true,
+          fileSize: true,
+          description: true,
+        },
+      },
     },
   })
   if (!set) throw new Error('Tire set not found')
@@ -207,6 +224,41 @@ async function storageLine(
   }
 }
 
+/**
+ * Copies the set's files onto a job, so the invoice shows what the technician
+ * saw.
+ *
+ * Pointing at the same files rather than duplicating the bytes: a photo of a
+ * kerbed rim is one photo, and copying it would double the disk for every
+ * season a set is billed. Removing it from the set later leaves the invoice
+ * intact, which is the right way round for a document a customer may hold.
+ */
+async function copyAttachments(
+  tx: Prisma.TransactionClient,
+  serviceRecordId: string,
+  files: {
+    fileName: string
+    fileUrl: string
+    fileType: string
+    fileSize: number
+    description: string | null
+  }[]
+) {
+  if (files.length === 0) return
+  await tx.serviceAttachment.createMany({
+    data: files.map((file) => ({
+      serviceRecordId,
+      fileName: file.fileName,
+      fileUrl: file.fileUrl,
+      fileType: file.fileType,
+      fileSize: file.fileSize,
+      description: file.description,
+      category: 'tire_hotel',
+      includeInInvoice: true,
+    })),
+  })
+}
+
 async function billablePrep(
   organizationId: string,
   treatments: { type: string; status: string }[]
@@ -314,6 +366,9 @@ export async function getJobDraftForSet(tireSetId: string) {
         // What the prep would add, so the dialog can list it and let the
         // operator drop any of it before it lands on the job.
         prep: await billablePrep(organizationId, set.treatments),
+        // What would travel onto the document, so the dialog can say so and
+        // let it be left off.
+        attachments: set.attachments.length,
       }
     },
     { requiredPermissions: READ }
@@ -510,6 +565,12 @@ export async function createWorkOrderFromTireSet(input: unknown) {
           })
         }
 
+        // Independent of the lines: a job can carry the photos without
+        // carrying a charge, which is what an inspection amounts to.
+        if (data.includeAttachments) {
+          await copyAttachments(tx, record.id, set.attachments)
+        }
+
         if (labor.length > 0) {
           await tx.serviceLabor.createMany({
             data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
@@ -657,6 +718,12 @@ export async function addTireSetToWorkOrder(input: unknown) {
             recordLabel: record.invoiceNumber || describeSet(set, seasons),
           })
         }
+        // Independent of the lines: a job can carry the photos without
+        // carrying a charge, which is what an inspection amounts to.
+        if (data.includeAttachments) {
+          await copyAttachments(tx, record.id, set.attachments)
+        }
+
         if (labor.length > 0) {
           await tx.serviceLabor.createMany({
             data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),

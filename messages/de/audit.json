@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Reifensatz zu einem Auftrag hinzugefügt",
     "tire_set_unlink_work_order": "Reifensatz von einem Auftrag gelöst",
     "tire_set_return": "Satz erneut eingelagert",
-    "tire_set_dispose": "Reifensatz ausgemustert"
+    "tire_set_dispose": "Reifensatz ausgemustert",
+    "tire_set_attach": "Dateien zu einem Reifensatz hinzugefügt",
+    "tire_set_detach": "Datei von einem Reifensatz entfernt"
   }
 }

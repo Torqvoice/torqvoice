@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Ritirato",
     "storageOpenEnded": "Aperto",
     "storagePeriodHint": "Compare sulla riga della fattura, così il cliente vede cosa copre l’importo. Lascia la fine vuota finché non sai quando ritirano.",
-    "pricesHint": "I prezzi della preparazione vengono dalle impostazioni. Ogni riga resta modificabile dopo la creazione."
+    "pricesHint": "I prezzi della preparazione vengono dalle impostazioni. Ogni riga resta modificabile dopo la creazione.",
+    "files": "Foto e file",
+    "filesCount": "{count} in fattura"
   },
   "label": {
     "action": "Etichette",
@@ -455,5 +457,17 @@
     "onRims": "Su cerchi",
     "tiresOnly": "Solo pneumatici",
     "tpms": "Con sensori TPMS"
+  },
+  "files": {
+    "title": "Foto e file",
+    "add": "Aggiungi file",
+    "none": "Ancora nulla in allegato. Fotografa un cerchio segnato mentre hai gli pneumatici davanti.",
+    "captionPlaceholder": "Che cosa mostra?",
+    "onInvoice": "In fattura",
+    "invoiceHint": "I file marcati per la fattura vengono copiati sull’ordine o sulla fattura quando il treno viene fatturato.",
+    "deleteTitle": "Rimuovere questo file?",
+    "deleteBody": "{name} viene rimosso dal treno. Ciò che è già stato copiato su una fattura resta lì.",
+    "failed": "Impossibile salvare",
+    "someFailed": "{count, plural, one {# file non è stato caricato} other {# file non sono stati caricati}}"
   }
 }

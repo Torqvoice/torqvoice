@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Retirado",
     "storageOpenEnded": "Aberto",
     "storagePeriodHint": "Aparece na linha da nota para o cliente ver o que o valor cobre. Deixe o fim em branco até saber quando vão retirar.",
-    "pricesHint": "Os preços de preparação vêm das configurações. Cada linha ainda pode ser editada depois de criado."
+    "pricesHint": "Os preços de preparação vêm das configurações. Cada linha ainda pode ser editada depois de criado.",
+    "files": "Fotos e arquivos",
+    "filesCount": "{count} na fatura"
   },
   "label": {
     "action": "Etiquetas",
@@ -455,5 +457,17 @@
     "onRims": "Com rodas",
     "tiresOnly": "Somente pneus",
     "tpms": "Com sensores TPMS"
+  },
+  "files": {
+    "title": "Fotos e arquivos",
+    "add": "Adicionar arquivos",
+    "none": "Nada anexado ainda. Fotografe uma roda raspada enquanto os pneus estão na sua frente.",
+    "captionPlaceholder": "O que aparece aqui?",
+    "onInvoice": "Na fatura",
+    "invoiceHint": "Arquivos marcados para a fatura são copiados para a ordem ou a fatura quando o jogo é cobrado.",
+    "deleteTitle": "Remover este arquivo?",
+    "deleteBody": "{name} sai deste jogo. O que já foi copiado para uma fatura continua lá.",
+    "failed": "Não foi possível salvar",
+    "someFailed": "{count, plural, one {não foi possível enviar # arquivo} other {não foi possível enviar # arquivos}}"
   }
 }

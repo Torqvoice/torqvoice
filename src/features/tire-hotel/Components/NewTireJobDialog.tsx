@@ -91,6 +91,7 @@ export function NewTireJobDialog({
   // Storage is billed here, on the same document as the work, rather than on
   // a schedule of its own. One place to charge a customer, not two.
   const [includeStorage, setIncludeStorage] = useState(true)
+  const [includeFiles, setIncludeFiles] = useState(true)
   const [storageAmount, setStorageAmount] = useState('')
   const [storageFrom, setStorageFrom] = useState('')
   const [storageTo, setStorageTo] = useState('')
@@ -129,6 +130,7 @@ export function NewTireJobDialog({
       setOpenJobs([])
       setDestination(hasVehicle ? 'new' : 'invoice')
       setIncludeStorage(true)
+      setIncludeFiles(true)
       setIncludeTires(true)
       setIncludePrep([])
       return
@@ -261,6 +263,7 @@ export function NewTireJobDialog({
       includeTires,
       includeTreatments: includePrep,
       includeStorage,
+      includeAttachments: includeFiles,
       storageAmount: storage,
       storageFrom: storageFrom || undefined,
       storageTo: storageTo || undefined,
@@ -495,6 +498,21 @@ export function NewTireJobDialog({
                       says where they come from and that nothing is final. */}
                   <p className="text-xs text-muted-foreground">{t('job.pricesHint')}</p>
                 </div>
+              )}
+
+              {/* Photos and documents from the set. They ride along by default,
+                because a picture of a kerbed rim is taken to be shown. */}
+              {(data?.attachments ?? 0) > 0 && (
+                <label className="flex min-w-0 cursor-pointer items-center gap-2.5">
+                  <Checkbox
+                    checked={includeFiles}
+                    onCheckedChange={(value) => setIncludeFiles(value === true)}
+                  />
+                  <span className="min-w-0 flex-1 text-sm font-medium">{t('job.files')}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {t('job.filesCount', { count: data?.attachments ?? 0 })}
+                  </span>
+                </label>
               )}
 
               {/* The storage fee, on the same bill as the work. There is no

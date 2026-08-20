@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Opgehaald",
     "storageOpenEnded": "Open",
     "storagePeriodHint": "Staat op de factuurregel zodat de klant ziet waarvoor de kosten gelden. Laat het einde leeg tot u weet wanneer ze ophalen.",
-    "pricesHint": "Prijzen voor voorbereiding komen uit de instellingen. Elke regel is achteraf nog aan te passen."
+    "pricesHint": "Prijzen voor voorbereiding komen uit de instellingen. Elke regel is achteraf nog aan te passen.",
+    "files": "Foto’s en bestanden",
+    "filesCount": "{count} op de factuur"
   },
   "label": {
     "action": "Labels",
@@ -455,5 +457,17 @@
     "onRims": "Op velgen",
     "tiresOnly": "Alleen banden",
     "tpms": "Heeft TPMS-sensoren"
+  },
+  "files": {
+    "title": "Foto’s en bestanden",
+    "add": "Bestanden toevoegen",
+    "none": "Nog niets toegevoegd. Fotografeer een beschadigde velg terwijl de banden voor u liggen.",
+    "captionPlaceholder": "Wat is hierop te zien?",
+    "onInvoice": "Op de factuur",
+    "invoiceHint": "Bestanden gemarkeerd voor de factuur worden bij het factureren naar de werkorder of factuur gekopieerd.",
+    "deleteTitle": "Dit bestand verwijderen?",
+    "deleteBody": "{name} wordt van de set verwijderd. Wat al naar een factuur is gekopieerd, blijft staan.",
+    "failed": "Kon dat niet opslaan",
+    "someFailed": "{count, plural, one {# bestand kon niet worden geüpload} other {# bestanden konden niet worden geüpload}}"
   }
 }

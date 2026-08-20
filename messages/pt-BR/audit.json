@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Jogo de pneus somado a uma ordem",
     "tire_set_unlink_work_order": "Jogo de pneus desvinculado de uma ordem",
     "tire_set_return": "Jogo armazenado novamente",
-    "tire_set_dispose": "Jogo de pneus baixado"
+    "tire_set_dispose": "Jogo de pneus baixado",
+    "tire_set_attach": "Arquivos adicionados a um jogo de pneus",
+    "tire_set_detach": "Arquivo removido de um jogo de pneus"
   }
 }

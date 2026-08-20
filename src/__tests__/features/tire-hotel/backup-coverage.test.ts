@@ -36,6 +36,7 @@ describe('tire hotel models', () => {
       'TireMeasurement',
       'TireMovement',
       'TireSet',
+      'TireSetAttachment',
       'TireTreatment',
       'TireWarehouse',
     ])
@@ -73,6 +74,7 @@ describe('import', () => {
     'tx.tireMeasurement',
     'tx.tireMovement',
     'tx.tireTreatment',
+    'tx.tireSetAttachment',
   ])('restores through %s', (call) => {
     expect(importSource).toContain(call)
   })

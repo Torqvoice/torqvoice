@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Atsiimta",
     "storageOpenEnded": "Atvira",
     "storagePeriodHint": "Rodoma sąskaitos eilutėje, kad klientas matytų, už ką mokestis. Palikite pabaigą tuščią, kol nežinote, kada atsiims.",
-    "pricesHint": "Paruošimo kainos imamos iš nustatymų. Kiekvieną eilutę galima redaguoti ir sukūrus dokumentą."
+    "pricesHint": "Paruošimo kainos imamos iš nustatymų. Kiekvieną eilutę galima redaguoti ir sukūrus dokumentą.",
+    "files": "Nuotraukos ir failai",
+    "filesCount": "{count} sąskaitoje"
   },
   "label": {
     "action": "Etiketės",
@@ -455,5 +457,17 @@
     "onRims": "Su ratlankiais",
     "tiresOnly": "Tik padangos",
     "tpms": "Su TPMS jutikliais"
+  },
+  "files": {
+    "title": "Nuotraukos ir failai",
+    "add": "Pridėti failų",
+    "none": "Kol kas nieko nepridėta. Nufotografuokite subraižytą ratlankį, kol padangos prieš jus.",
+    "captionPlaceholder": "Kas čia matyti?",
+    "onInvoice": "Sąskaitoje",
+    "invoiceHint": "Sąskaitai pažymėti failai nukopijuojami į darbo užsakymą ar sąskaitą apmokestinant komplektą.",
+    "deleteTitle": "Pašalinti šį failą?",
+    "deleteBody": "{name} pašalinamas iš komplekto. Tai, kas jau nukopijuota į sąskaitą, lieka.",
+    "failed": "Nepavyko išsaugoti",
+    "someFailed": "{count, plural, one {nepavyko įkelti # failo} other {nepavyko įkelti # failų}}"
   }
 }

@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Hentet",
     "storageOpenEnded": "Åpen",
     "storagePeriodHint": "Står på fakturalinjen så kunden ser hva gebyret dekker. La sluttdatoen stå tom til du vet når de henter.",
-    "pricesHint": "Prisene for klargjøring hentes fra innstillingene. Alle linjer kan endres etter at dette er opprettet."
+    "pricesHint": "Prisene for klargjøring hentes fra innstillingene. Alle linjer kan endres etter at dette er opprettet.",
+    "files": "Bilder og filer",
+    "filesCount": "{count} på fakturaen"
   },
   "label": {
     "action": "Etiketter",
@@ -455,5 +457,17 @@
     "onRims": "På felg",
     "tiresOnly": "Kun dekk",
     "tpms": "Har TPMS-sensorer"
+  },
+  "files": {
+    "title": "Bilder og filer",
+    "add": "Legg til filer",
+    "none": "Ingenting lagt ved ennå. Ta bilde av en skadet felg mens dekkene står foran deg.",
+    "captionPlaceholder": "Hva viser dette?",
+    "onInvoice": "På fakturaen",
+    "invoiceHint": "Filer merket for faktura kopieres til arbeidsordren eller fakturaen når settet faktureres.",
+    "deleteTitle": "Fjerne denne filen?",
+    "deleteBody": "{name} fjernes fra settet. Det som allerede er kopiert til en faktura, blir stående.",
+    "failed": "Kunne ikke lagre",
+    "someFailed": "{count, plural, one {# fil kunne ikke lastes opp} other {# filer kunne ikke lastes opp}}"
   }
 }

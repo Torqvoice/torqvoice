@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Teslim alındı",
     "storageOpenEnded": "Açık",
     "storagePeriodHint": "Fatura satırında görünür, böylece müşteri ücretin neyi kapsadığını görür. Ne zaman alacakları belli olana kadar bitişi boş bırakın.",
-    "pricesHint": "Hazırlık fiyatları ayarlardan gelir. Oluşturulduktan sonra her satır yine de düzenlenebilir."
+    "pricesHint": "Hazırlık fiyatları ayarlardan gelir. Oluşturulduktan sonra her satır yine de düzenlenebilir.",
+    "files": "Fotoğraflar ve dosyalar",
+    "filesCount": "faturada {count}"
   },
   "label": {
     "action": "Etiketler",
@@ -455,5 +457,17 @@
     "onRims": "Jantlı",
     "tiresOnly": "Sadece lastik",
     "tpms": "TPMS sensörlü"
+  },
+  "files": {
+    "title": "Fotoğraflar ve dosyalar",
+    "add": "Dosya ekle",
+    "none": "Henüz ek yok. Lastikler önünüzdeyken çizilmiş bir janta fotoğraf çekin.",
+    "captionPlaceholder": "Bu ne gösteriyor?",
+    "onInvoice": "Faturada",
+    "invoiceHint": "Fatura için işaretlenen dosyalar, takım faturalanırken iş emrine veya faturaya kopyalanır.",
+    "deleteTitle": "Bu dosya kaldırılsın mı?",
+    "deleteBody": "{name} bu takımdan kaldırılır. Faturaya kopyalanmış olanlar orada kalır.",
+    "failed": "Kaydedilemedi",
+    "someFailed": "{count, plural, one {# dosya yüklenemedi} other {# dosya yüklenemedi}}"
   }
 }

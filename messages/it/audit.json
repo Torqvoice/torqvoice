@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Treno di pneumatici aggiunto a un ordine",
     "tire_set_unlink_work_order": "Treno di pneumatici scollegato da un ordine",
     "tire_set_return": "Treno di nuovo in deposito",
-    "tire_set_dispose": "Treno di pneumatici dismesso"
+    "tire_set_dispose": "Treno di pneumatici dismesso",
+    "tire_set_attach": "File aggiunti a un treno di pneumatici",
+    "tire_set_detach": "File rimosso da un treno di pneumatici"
   }
 }

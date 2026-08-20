@@ -369,7 +369,9 @@
     "storagePeriodEnd": "Repris",
     "storageOpenEnded": "Ouvert",
     "storagePeriodHint": "Apparaît sur la ligne de facture pour que le client voie ce que couvrent les frais. Laissez la fin vide tant que la date de reprise est inconnue.",
-    "pricesHint": "Les tarifs de préparation viennent des paramètres. Chaque ligne reste modifiable une fois le document créé."
+    "pricesHint": "Les tarifs de préparation viennent des paramètres. Chaque ligne reste modifiable une fois le document créé.",
+    "files": "Photos et fichiers",
+    "filesCount": "{count} sur la facture"
   },
   "label": {
     "action": "Étiquettes",
@@ -455,5 +457,17 @@
     "onRims": "Sur jantes",
     "tiresOnly": "Pneus seuls",
     "tpms": "Capteurs TPMS"
+  },
+  "files": {
+    "title": "Photos et fichiers",
+    "add": "Ajouter des fichiers",
+    "none": "Rien de joint pour l’instant. Photographiez une jante frottée pendant que les pneus sont devant vous.",
+    "captionPlaceholder": "Que montre cette image ?",
+    "onInvoice": "Sur la facture",
+    "invoiceHint": "Les fichiers marqués pour la facture sont copiés sur l’ordre ou la facture au moment de facturer.",
+    "deleteTitle": "Retirer ce fichier ?",
+    "deleteBody": "{name} est retiré du jeu. Ce qui a déjà été copié sur une facture y reste.",
+    "failed": "Impossible d’enregistrer",
+    "someFailed": "{count, plural, one {# fichier n’a pas pu être envoyé} other {# fichiers n’ont pas pu être envoyés}}"
   }
 }

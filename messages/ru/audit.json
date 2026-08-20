@@ -133,6 +133,8 @@
     "tire_set_add_to_work_order": "Комплект шин добавлен в заказ-наряд",
     "tire_set_unlink_work_order": "Комплект шин отвязан от заказа-наряда",
     "tire_set_return": "Комплект снова на хранении",
-    "tire_set_dispose": "Комплект шин списан"
+    "tire_set_dispose": "Комплект шин списан",
+    "tire_set_attach": "Файлы добавлены к комплекту шин",
+    "tire_set_detach": "Файл удалён из комплекта шин"
   }
 }
