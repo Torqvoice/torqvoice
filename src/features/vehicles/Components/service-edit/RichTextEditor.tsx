@@ -3,9 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
-import Link from '@tiptap/extension-link'
 import { Button } from '@/components/ui/button'
 import {
   Bold,
@@ -34,17 +32,20 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
+      // Link and underline come bundled with StarterKit from v3, so they are
+      // configured through it rather than added again. Registering them
+      // twice leaves two extensions answering to the same name, which tiptap
+      // warns about and which makes the toolbar's active state unreliable.
       StarterKit.configure({
         heading: { levels: [2, 3] },
-      }),
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: {
-          rel: 'noopener noreferrer',
-          target: '_blank',
+        link: {
+          openOnClick: false,
+          autolink: true,
+          linkOnPaste: true,
+          HTMLAttributes: {
+            rel: 'noopener noreferrer',
+            target: '_blank',
+          },
         },
       }),
       Placeholder.configure({
