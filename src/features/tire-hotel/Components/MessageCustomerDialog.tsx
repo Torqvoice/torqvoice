@@ -23,6 +23,18 @@ import { SMS_SOFT_LIMIT, interpolate, type TireMessageReason } from '../Lib/mess
 
 type Context = NonNullable<Awaited<ReturnType<typeof getMessageContext>>['data']>
 
+/**
+ * A message template as written, before any substitution.
+ *
+ * Falls back to an empty string rather than the key: a missing template
+ * should leave the composer blank for the tech to write in, not paste
+ * "messaging.bodies.low_tread" into a customer's inbox.
+ */
+function rawMessage(t: ReturnType<typeof useTranslations>, key: string): string {
+  const value = t.raw(key)
+  return typeof value === 'string' ? value : ''
+}
+
 const CHANNEL_ICONS = {
   email: Mail,
   sms: MessageSquare,
@@ -74,9 +86,12 @@ export function MessageCustomerDialog({
       const data = result.success && result.data ? result.data : null
       setContext(data)
 
+      // t.raw, not t: these templates carry {placeholders} that this dialog
+      // substitutes itself, and next-intl would otherwise parse them as ICU
+      // arguments and throw for every one it was not handed.
       const merged = { ...variables, shop_name: data?.shopName ?? '' }
-      setSubject(interpolate(t(`messaging.subjects.${reason}`), merged))
-      setBody(interpolate(t(`messaging.bodies.${reason}`), merged))
+      setSubject(interpolate(rawMessage(t, `messaging.subjects.${reason}`), merged))
+      setBody(interpolate(rawMessage(t, `messaging.bodies.${reason}`), merged))
 
       // Open on a channel that can actually reach them, preferring the one a
       // customer is most likely to read quickly.
