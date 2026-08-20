@@ -11,7 +11,7 @@ import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize } from '../Lib/tireMatching'
-import { billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
+import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 
@@ -27,6 +27,11 @@ const JOB = [
 
 const fromSetSchema = z.object({
   tireSetId: z.string().min(1),
+  /// The operator ticks the lines they want. Everything billable is ticked
+  /// when the dialog opens, but a swap where the customer supplies the tires,
+  /// or where the wash is a goodwill, should not force a line onto the job.
+  includeTires: z.boolean().default(true),
+  includeTreatments: z.array(z.enum(TREATMENT_TYPES)).optional(),
   /// Stocked part to quote, chosen by the operator from the matches. Omitted
   /// when nothing matched, which leaves a blank priced line to fill in.
   inventoryPartId: z.string().min(1).optional().nullable(),
@@ -84,7 +89,7 @@ async function treatmentNames(): Promise<Record<string, string>> {
   }
 }
 
-async function treatmentLines(
+async function billablePrep(
   organizationId: string,
   treatments: { type: string; status: string }[]
 ) {
@@ -94,18 +99,29 @@ async function treatmentLines(
     },
     select: { value: true },
   })
+  return billableTreatments(treatments, parseTreatmentPrices(setting?.value))
+}
 
+async function treatmentLines(
+  organizationId: string,
+  treatments: { type: string; status: string }[],
+  only?: string[]
+) {
   const names = await treatmentNames()
+  const billable = await billablePrep(organizationId, treatments)
+  const wanted = only ? new Set(only) : null
 
-  return billableTreatments(treatments, parseTreatmentPrices(setting?.value)).map((line) => ({
-    description: names[line.type] ?? line.type,
-    // A flat service line, not hours: prep is priced per job, and an hourly
-    // line would invite someone to multiply it by a duration nobody tracked.
-    hours: 1,
-    rate: line.price,
-    total: line.price,
-    pricingType: 'service' as const,
-  }))
+  return billable
+    .filter((line) => !wanted || wanted.has(line.type))
+    .map((line) => ({
+      description: names[line.type] ?? line.type,
+      // A flat service line, not hours: prep is priced per job, and an hourly
+      // line would invite someone to multiply it by a duration nobody tracked.
+      hours: 1,
+      rate: line.price,
+      total: line.price,
+      pricingType: 'service' as const,
+    }))
 }
 
 /** Human label for the tires, used as the quote line and the job title. */
@@ -124,7 +140,7 @@ function describeSet(set: {
  * Stocked tires that fit the stored set, so the operator can quote from what
  * the shop actually has rather than retyping the size into a search.
  */
-export async function getStockMatchesForSet(tireSetId: string) {
+export async function getJobDraftForSet(tireSetId: string) {
   return withAuth(
     async ({ organizationId }) => {
       await requireTireHotel(organizationId)
@@ -164,6 +180,9 @@ export async function getStockMatchesForSet(tireSetId: string) {
         quantity: set.quantity,
         description: describeSet(set),
         matches: matchStock(candidates, set.size, set.quantity),
+        // What the prep would add, so the dialog can list it and let the
+        // operator drop any of it before it lands on the job.
+        prep: await billablePrep(organizationId, set.treatments),
       }
     },
     { requiredPermissions: READ }
@@ -227,8 +246,8 @@ export async function createQuoteFromTireSet(input: unknown) {
       validUntil.setDate(validUntil.getDate() + validDays)
 
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
-      const lineTotal = Math.round(unitPrice * set.quantity * 100) / 100
-      const labor = await treatmentLines(organizationId, set.treatments)
+      const lineTotal = data.includeTires ? Math.round(unitPrice * set.quantity * 100) / 100 : 0
+      const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
       const laborTotal = labor.reduce((sum, line) => sum + line.total, 0)
       const subtotal = Math.round((lineTotal + laborTotal) * 100) / 100
       const { taxAmount, totalAmount } = calculateTotals({
@@ -254,19 +273,23 @@ export async function createQuoteFromTireSet(input: unknown) {
           tireSetId: set.id,
           organizationId,
           userId,
-          partItems: {
-            create: [
-              {
-                name: part?.name ?? describeSet(set),
-                partNumber: part?.partNumber ?? null,
-                quantity: set.quantity,
-                unitCost: part?.unitCost ?? 0,
-                unitPrice,
-                total: lineTotal,
-                inventoryPartId: part?.id ?? null,
-              },
-            ],
-          },
+          ...(data.includeTires
+            ? {
+                partItems: {
+                  create: [
+                    {
+                      name: part?.name ?? describeSet(set),
+                      partNumber: part?.partNumber ?? null,
+                      quantity: set.quantity,
+                      unitCost: part?.unitCost ?? 0,
+                      unitPrice,
+                      total: lineTotal,
+                      inventoryPartId: part?.id ?? null,
+                    },
+                  ],
+                },
+              }
+            : {}),
           ...(labor.length > 0 ? { laborItems: { create: labor } } : {}),
         },
       })
@@ -317,7 +340,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         }
       )
 
-      const labor = await treatmentLines(organizationId, set.treatments)
+      const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
       if (labor.length > 0) {
         await db.serviceLabor.createMany({
           data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
@@ -437,10 +460,10 @@ export async function addTireSetToWorkOrder(input: unknown) {
         : null
 
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
-      const labor = await treatmentLines(organizationId, set.treatments)
+      const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
 
       await db.$transaction(async (tx) => {
-        if (unitPrice > 0 || part) {
+        if (data.includeTires) {
           await tx.servicePart.create({
             data: {
               serviceRecordId: record.id,

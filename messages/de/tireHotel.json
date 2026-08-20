@@ -370,7 +370,8 @@
       "damage": "Hallo {customer_name}, Ihre {season}reifen liegen bei uns bei {shop_name}. Bei der Annahme haben wir an {positions} eine Beschädigung gefunden. Rufen Sie uns an, wenn es passt, dann gehen wir es zusammen durch.",
       "stored": "Hallo {customer_name}, Ihre {season}reifen liegen jetzt bei uns bei {shop_name}. Wir melden uns, wenn der Wechsel ansteht.",
       "custom": "Hallo {customer_name}, zu Ihren bei {shop_name} eingelagerten {season}reifen:"
-    }
+    },
+    "enableInSettings": "Noch nicht eingerichtet. In den Einstellungen aktivieren."
   },
   "job": {
     "cardTitle": "Angebote und Aufträge",
@@ -388,7 +389,6 @@
     "noMatch": "Nichts auf Lager passt zu {size}. Die Position wird mit Ihrem Preis angelegt.",
     "noSize": "Für diesen Satz ist keine Größe erfasst, daher kein Lagerabgleich. Die Position wird mit Ihrem Preis angelegt.",
     "unitPrice": "Preis pro Reifen",
-    "lineTotal": "Positionssumme",
     "quantityNote": "für {count} Reifen",
     "createQuote": "Angebot erstellen",
     "createWorkOrder": "Auftrag erstellen",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Diese Reifen vom Auftrag lösen?",
     "unlinkBody": "Der Auftrag verweist nicht mehr auf den Reifensatz. Bereits erfasste Teile und Arbeitspositionen bleiben stehen; entfernen Sie sie separat, wenn sie nicht berechnet werden sollen.",
     "unlinked": "Reifen gelöst",
-    "unlinkFailed": "Verknüpfung konnte nicht gelöst werden"
+    "unlinkFailed": "Verknüpfung konnte nicht gelöst werden",
+    "prep": "Vorbereitung",
+    "tiresSkipped": "Keine Reifenposition wird hinzugefügt.",
+    "total": "Gesamt"
   },
   "label": {
     "action": "Etiketten",

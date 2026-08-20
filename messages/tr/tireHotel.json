@@ -370,7 +370,8 @@
       "damage": "Merhaba {customer_name}, {season} lastikleriniz {shop_name} deposunda duruyor. Kabul ederken {positions} üzerinde hasar bulduk. Uygun olduğunuzda arayın, birlikte bakalım.",
       "stored": "Merhaba {customer_name}, {season} lastikleriniz artık {shop_name} deposunda. Değişim zamanı gelince haber veririz.",
       "custom": "Merhaba {customer_name}, {shop_name} deposundaki {season} lastikleriniz hakkında:"
-    }
+    },
+    "enableInSettings": "Henüz kurulmadı. Ayarlar bölümünden açın."
   },
   "job": {
     "cardTitle": "Teklifler ve işler",
@@ -388,7 +389,6 @@
     "noMatch": "Stokta {size} ölçüsüne uyan bir şey yok. Satır belirlediğiniz fiyatla eklenir.",
     "noSize": "Bu takımın ölçüsü kayıtlı değil, stok eşleştirilemez. Satır sizin fiyatınızla eklenir.",
     "unitPrice": "Lastik başına fiyat",
-    "lineTotal": "Satır toplamı",
     "quantityNote": "{count} lastik için",
     "createQuote": "Teklif oluştur",
     "createWorkOrder": "İş emri oluştur",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Bu lastikler işten ayrılsın mı?",
     "unlinkBody": "İş artık lastik takımını göstermez. Üzerindeki parça ve işçilik satırları kalır; faturalanmaması gerekiyorsa ayrıca silin.",
     "unlinked": "Lastik bağlantısı kaldırıldı",
-    "unlinkFailed": "Bağlantı kaldırılamadı"
+    "unlinkFailed": "Bağlantı kaldırılamadı",
+    "prep": "Hazırlık",
+    "tiresSkipped": "Lastik satırı eklenmeyecek.",
+    "total": "Toplam"
   },
   "label": {
     "action": "Etiketler",

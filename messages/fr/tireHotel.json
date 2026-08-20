@@ -370,7 +370,8 @@
       "damage": "Bonjour {customer_name}, vos pneus {season} sont stockés chez nous, {shop_name}. À la réception, nous avons trouvé un dommage sur {positions}. Appelez-nous quand vous pouvez, on regarde ça ensemble.",
       "stored": "Bonjour {customer_name}, vos pneus {season} sont maintenant stockés chez nous, {shop_name}. On vous prévient quand ce sera le moment de les remonter.",
       "custom": "Bonjour {customer_name}, au sujet de vos pneus {season} stockés chez nous, {shop_name} :"
-    }
+    },
+    "enableInSettings": "Pas encore configuré. Activez-le dans les Paramètres."
   },
   "job": {
     "cardTitle": "Devis et ordres",
@@ -388,7 +389,6 @@
     "noMatch": "Rien en stock ne correspond à {size}. La ligne est ajoutée au prix que vous saisissez.",
     "noSize": "Ce jeu n’a pas de dimension, le stock ne peut pas être comparé. La ligne est ajoutée à votre prix.",
     "unitPrice": "Prix par pneu",
-    "lineTotal": "Total ligne",
     "quantityNote": "pour {count} pneus",
     "createQuote": "Créer le devis",
     "createWorkOrder": "Créer l’ordre",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Dissocier ces pneus de l’ordre ?",
     "unlinkBody": "L’ordre ne renvoie plus au jeu de pneus. Les pièces et la main-d’œuvre déjà saisies restent ; retirez-les séparément si elles ne doivent pas être facturées.",
     "unlinked": "Pneus dissociés",
-    "unlinkFailed": "Impossible de dissocier les pneus"
+    "unlinkFailed": "Impossible de dissocier les pneus",
+    "prep": "Préparation",
+    "tiresSkipped": "Aucune ligne de pneus ne sera ajoutée.",
+    "total": "Total"
   },
   "label": {
     "action": "Étiquettes",

@@ -29,6 +29,9 @@ const messageSchema = z
     path: ['subject'],
   })
 
+/// The channels this composer offers, in the order the picker shows them.
+const CUSTOMER_CHANNELS = ['email', 'sms', 'telegram'] as const
+
 /**
  * What the composer needs to open: who the customer is, how they can be
  * reached, and which of those the workshop has actually configured.
@@ -64,19 +67,23 @@ export async function getMessageContext(tireSetId: string) {
       ])
 
       const customer = set.customer
-      // in_app notifies the workshop, not the customer, so it is not offered
-      // here: this composer exists to reach the person who owns the tires.
-      const channels = available
-        .filter((channel) => channel !== 'in_app')
-        .map((channel) => ({
-          channel,
-          reachable:
-            channel === 'email'
-              ? !!customer?.email
-              : channel === 'sms'
-                ? !!customer?.phone
-                : !!customer?.telegramChatId,
-        }))
+      // Every channel that can reach a customer is listed, including the ones
+      // this workshop has not set up. Hiding SMS from a shop that never
+      // configured a provider reads as the feature not existing; showing it
+      // greyed out with a pointer to settings reads as a switch to flip.
+      //
+      // in_app notifies the workshop, not the customer, so it stays out: this
+      // composer exists to reach the person who owns the tires.
+      const channels = CUSTOMER_CHANNELS.map((channel) => ({
+        channel,
+        configured: available.includes(channel),
+        reachable:
+          channel === 'email'
+            ? !!customer?.email
+            : channel === 'sms'
+              ? !!customer?.phone
+              : !!customer?.telegramChatId,
+      }))
 
       return {
         tireSetId: set.id,
@@ -129,6 +136,14 @@ export async function messageCustomerAboutTireSet(input: unknown) {
         },
       })
       if (!set) throw new Error('Tire set not found')
+
+      // The picker greys out channels the shop has not set up, so this only
+      // catches a request that skipped it. Better to refuse than to file a
+      // message that was never going to leave the building.
+      const configured = await getAvailableChannels(organizationId)
+      if (!configured.includes(data.channel)) {
+        throw new Error('That channel is not set up for this workshop')
+      }
 
       const override = data.recipient?.trim()
       const onFile =

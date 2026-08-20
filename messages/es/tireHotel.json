@@ -370,7 +370,8 @@
       "damage": "Hola {customer_name}, tus neumáticos de {season} están guardados con nosotros en {shop_name}. Al recibirlos vimos daños en {positions}. Llámanos cuando puedas y lo vemos juntos.",
       "stored": "Hola {customer_name}, tus neumáticos de {season} ya están guardados con nosotros en {shop_name}. Te avisamos cuando toque el cambio.",
       "custom": "Hola {customer_name}, sobre tus neumáticos de {season} guardados con nosotros en {shop_name}:"
-    }
+    },
+    "enableInSettings": "Aún no está configurado. Actívalo en Ajustes."
   },
   "job": {
     "cardTitle": "Presupuestos y órdenes",
@@ -388,7 +389,6 @@
     "noMatch": "Nada en stock coincide con {size}. La línea se añade con el precio que pongas.",
     "noSize": "Este juego no tiene medida, así que no se puede cruzar con el stock. La línea se añade con tu precio.",
     "unitPrice": "Precio por neumático",
-    "lineTotal": "Total línea",
     "quantityNote": "para {count} neumáticos",
     "createQuote": "Crear presupuesto",
     "createWorkOrder": "Crear orden",
@@ -410,7 +410,10 @@
     "unlinkTitle": "¿Desvincular estos neumáticos de la orden?",
     "unlinkBody": "La orden deja de apuntar al juego de neumáticos. Las piezas y la mano de obra que ya están se quedan; quítalas aparte si no se deben cobrar.",
     "unlinked": "Neumáticos desvinculados",
-    "unlinkFailed": "No se han podido desvincular"
+    "unlinkFailed": "No se han podido desvincular",
+    "prep": "Preparación",
+    "tiresSkipped": "No se añadirá ninguna línea de neumáticos.",
+    "total": "Total"
   },
   "label": {
     "action": "Etiquetas",

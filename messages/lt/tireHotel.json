@@ -370,7 +370,8 @@
       "damage": "Sveiki, {customer_name}. Jūsų {season} padangos saugomos pas mus, {shop_name}. Priimdami radome pažeidimą ties {positions}. Paskambinkite, kai bus patogu, viską kartu apžiūrėsime.",
       "stored": "Sveiki, {customer_name}. Jūsų {season} padangos jau saugomos pas mus, {shop_name}. Pranešime, kai ateis laikas keisti.",
       "custom": "Sveiki, {customer_name}. Dėl jūsų {season} padangų, saugomų pas mus, {shop_name}:"
-    }
+    },
+    "enableInSettings": "Dar nesukonfigūruota. Įjunkite nustatymuose."
   },
   "job": {
     "cardTitle": "Pasiūlymai ir darbai",
@@ -388,7 +389,6 @@
     "noMatch": "Sandėlyje nieko nėra pagal {size}. Eilutė bus pridėta su jūsų nurodyta kaina.",
     "noSize": "Šiam komplektui nenurodytas dydis, todėl sandėlio sugretinti negalima. Eilutė naudos jūsų kainą.",
     "unitPrice": "Kaina už padangą",
-    "lineTotal": "Eilutės suma",
     "quantityNote": "už {count} padangų",
     "createQuote": "Sukurti pasiūlymą",
     "createWorkOrder": "Sukurti darbo užsakymą",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Atsieti šias padangas nuo darbo?",
     "unlinkBody": "Darbas neberodys į padangų komplektą. Jau įtrauktos dalių ir darbo eilutės lieka, tad pašalinkite jas atskirai, jei jų apmokestinti nereikia.",
     "unlinked": "Padangos atsietos",
-    "unlinkFailed": "Nepavyko atsieti padangų"
+    "unlinkFailed": "Nepavyko atsieti padangų",
+    "prep": "Paruošimas",
+    "tiresSkipped": "Padangų eilutė nebus pridėta.",
+    "total": "Iš viso"
   },
   "label": {
     "action": "Etiketės",

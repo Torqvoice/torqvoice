@@ -370,7 +370,8 @@
       "damage": "Olá {customer_name}, seus pneus de {season} estão guardados conosco na {shop_name}. Na entrada encontramos um dano em {positions}. Ligue quando puder que a gente vê isso junto.",
       "stored": "Olá {customer_name}, seus pneus de {season} já estão guardados conosco na {shop_name}. A gente avisa quando for hora de trocar.",
       "custom": "Olá {customer_name}, sobre seus pneus de {season} guardados conosco na {shop_name}:"
-    }
+    },
+    "enableInSettings": "Ainda não configurado. Ative em Configurações."
   },
   "job": {
     "cardTitle": "Orçamentos e ordens",
@@ -388,7 +389,6 @@
     "noMatch": "Nada no estoque corresponde a {size}. A linha entra com o preço que você definir.",
     "noSize": "Este jogo não tem medida, então não dá para cruzar com o estoque. A linha usa seu preço.",
     "unitPrice": "Preço por pneu",
-    "lineTotal": "Total da linha",
     "quantityNote": "para {count} pneus",
     "createQuote": "Criar orçamento",
     "createWorkOrder": "Criar ordem",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Desvincular estes pneus da ordem?",
     "unlinkBody": "A ordem deixa de apontar para o jogo de pneus. Peças e mão de obra já lançadas permanecem; remova-as à parte se não devem ser cobradas.",
     "unlinked": "Pneus desvinculados",
-    "unlinkFailed": "Não foi possível desvincular"
+    "unlinkFailed": "Não foi possível desvincular",
+    "prep": "Preparação",
+    "tiresSkipped": "Nenhuma linha de pneus será adicionada.",
+    "total": "Total"
   },
   "label": {
     "action": "Etiquetas",

@@ -370,7 +370,8 @@
       "damage": "Hei {customer_name}, {season}dekkene dine står lagret hos oss på {shop_name}. Vi fant skade på {positions} da vi tok dem inn. Ring oss når du har anledning, så går vi gjennom det sammen.",
       "stored": "Hei {customer_name}, {season}dekkene dine står nå lagret hos oss på {shop_name}. Vi sier fra når det er tid for å bytte tilbake.",
       "custom": "Hei {customer_name}, angående {season}dekkene dine som står lagret hos oss på {shop_name}:"
-    }
+    },
+    "enableInSettings": "Ikke satt opp ennå. Slå det på i Innstillinger."
   },
   "job": {
     "cardTitle": "Tilbud og jobber",
@@ -388,7 +389,6 @@
     "noMatch": "Ingenting på lager passer {size}. Linjen legges inn med prisen du setter.",
     "noSize": "Dette settet mangler dimensjon, så lageret kan ikke matches. Linjen legges inn med prisen du setter.",
     "unitPrice": "Pris per dekk",
-    "lineTotal": "Sum linje",
     "quantityNote": "for {count} dekk",
     "createQuote": "Opprett tilbud",
     "createWorkOrder": "Opprett arbeidsordre",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Koble disse dekkene fra jobben?",
     "unlinkBody": "Jobben peker ikke lenger på dekksettet. Deler og arbeidslinjer som allerede ligger der blir stående, så fjern dem separat hvis de ikke skal faktureres.",
     "unlinked": "Dekkene koblet fra",
-    "unlinkFailed": "Kunne ikke koble fra dekkene"
+    "unlinkFailed": "Kunne ikke koble fra dekkene",
+    "prep": "Klargjøring",
+    "tiresSkipped": "Ingen dekklinje legges til.",
+    "total": "Totalt"
   },
   "label": {
     "action": "Etiketter",

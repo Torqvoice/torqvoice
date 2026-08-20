@@ -370,7 +370,8 @@
       "damage": "Hi {customer_name}, your {season} tires are stored with us at {shop_name}. We found damage on the {positions} when we checked them in. Give us a call when you get a chance and we'll go through it with you.",
       "stored": "Hi {customer_name}, your {season} tires are now in storage with us at {shop_name}. We'll let you know when it's time to swap them back.",
       "custom": "Hi {customer_name}, about your {season} tires stored with us at {shop_name}:"
-    }
+    },
+    "enableInSettings": "Not set up yet. Turn it on in Settings."
   },
   "job": {
     "cardTitle": "Quotes and jobs",
@@ -388,7 +389,6 @@
     "noMatch": "Nothing in stock matches {size}. The line is added at the price you set.",
     "noSize": "This set has no size recorded, so stock cannot be matched. The line is added at the price you set.",
     "unitPrice": "Price per tire",
-    "lineTotal": "Line total",
     "quantityNote": "for {count} tires",
     "createQuote": "Create quote",
     "createWorkOrder": "Create work order",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Unlink these tires from the job?",
     "unlinkBody": "The job stops pointing at the tire set. The parts and labour lines already on it stay, so remove them separately if they should not be billed.",
     "unlinked": "Tires unlinked",
-    "unlinkFailed": "Could not unlink the tires"
+    "unlinkFailed": "Could not unlink the tires",
+    "prep": "Prep work",
+    "tiresSkipped": "No tire line added.",
+    "total": "Total"
   },
   "label": {
     "action": "Labels",

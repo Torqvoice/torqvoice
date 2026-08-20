@@ -370,7 +370,8 @@
       "damage": "Cześć {customer_name}, Twoje opony {season} leżą u nas w {shop_name}. Przy przyjęciu znaleźliśmy uszkodzenie na {positions}. Zadzwoń, kiedy będziesz mieć chwilę, przejdziemy przez to razem.",
       "stored": "Cześć {customer_name}, Twoje opony {season} są już u nas w magazynie w {shop_name}. Odezwiemy się, gdy przyjdzie czas na wymianę.",
       "custom": "Cześć {customer_name}, w sprawie Twoich opon {season}, które leżą u nas w {shop_name}:"
-    }
+    },
+    "enableInSettings": "Jeszcze nieskonfigurowane. Włącz w Ustawieniach."
   },
   "job": {
     "cardTitle": "Wyceny i zlecenia",
@@ -388,7 +389,6 @@
     "noMatch": "Nic na stanie nie pasuje do {size}. Pozycja zostanie dodana z ceną, którą podasz.",
     "noSize": "Ten komplet nie ma rozmiaru, więc nie da się dopasować stanu. Pozycja użyje Twojej ceny.",
     "unitPrice": "Cena za oponę",
-    "lineTotal": "Suma pozycji",
     "quantityNote": "za {count} opon",
     "createQuote": "Utwórz wycenę",
     "createWorkOrder": "Utwórz zlecenie",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Odłączyć te opony od zlecenia?",
     "unlinkBody": "Zlecenie przestaje wskazywać komplet opon. Części i robocizna, które już na nim są, zostają, więc usuń je osobno, jeśli nie mają być fakturowane.",
     "unlinked": "Odłączono opony",
-    "unlinkFailed": "Nie udało się odłączyć opon"
+    "unlinkFailed": "Nie udało się odłączyć opon",
+    "prep": "Przygotowanie",
+    "tiresSkipped": "Pozycja z oponami nie zostanie dodana.",
+    "total": "Razem"
   },
   "label": {
     "action": "Etykiety",

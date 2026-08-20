@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { Loader2, Mail, MessageSquare, Send, TriangleAlert } from 'lucide-react'
 import { getMessageContext, messageCustomerAboutTireSet } from '../Actions/messageCustomerActions'
@@ -93,12 +94,15 @@ export function MessageCustomerDialog({
       setSubject(interpolate(rawMessage(t, `messaging.subjects.${reason}`), merged))
       setBody(interpolate(rawMessage(t, `messaging.bodies.${reason}`), merged))
 
-      // Open on a channel that can actually reach them, preferring the one a
-      // customer is most likely to read quickly.
-      const reachable = data?.channels.filter((c) => c.reachable) ?? []
-      const preferred = (['sms', 'telegram', 'email'] as const).find((c) =>
-        reachable.some((r) => r.channel === c)
-      )
+      // Open on a channel that can actually carry the message, preferring the
+      // one a customer is most likely to read quickly. A channel the shop has
+      // not configured is never opened on, even when the customer has an
+      // address for it, since the send would only fail.
+      const usable = data?.channels.filter((c) => c.configured) ?? []
+      const order = ['sms', 'telegram', 'email'] as const
+      const preferred =
+        order.find((c) => usable.some((u) => u.channel === c && u.reachable)) ??
+        order.find((c) => usable.some((u) => u.channel === c))
       if (preferred) setChannel(preferred)
       setLoading(false)
     })
@@ -109,7 +113,8 @@ export function MessageCustomerDialog({
 
   const channels = context?.channels ?? []
   const active = channels.find((c) => c.channel === channel)
-  const needsRecipient = !!active && !active.reachable
+  const needsRecipient = !!active && active.configured && !active.reachable
+  const notConfigured = !!active && !active.configured
   const overLimit = channel === 'sms' && body.length > SMS_SOFT_LIMIT
 
   const handleSend = async () => {
@@ -135,132 +140,152 @@ export function MessageCustomerDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t('messaging.title')}</DialogTitle>
-          <DialogDescription>
-            {context?.customer
-              ? t('messaging.description', { name: context.customer.name })
-              : t('messaging.noCustomer')}
-          </DialogDescription>
-        </DialogHeader>
+        <TooltipProvider>
+          <DialogHeader>
+            <DialogTitle>{t('messaging.title')}</DialogTitle>
+            <DialogDescription>
+              {context?.customer
+                ? t('messaging.description', { name: context.customer.name })
+                : t('messaging.noCustomer')}
+            </DialogDescription>
+          </DialogHeader>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-10">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-          </div>
-        ) : !context?.customer ? (
-          <p className="py-4 text-sm text-muted-foreground">{t('messaging.noCustomerBody')}</p>
-        ) : (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>{t('messaging.channel')}</Label>
-              <div className="flex flex-wrap gap-2">
-                {channels.map(({ channel: value, reachable }) => {
-                  const Icon = CHANNEL_ICONS[value as keyof typeof CHANNEL_ICONS]
-                  const isOn = channel === value
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setChannel(value as 'email' | 'sms' | 'telegram')}
-                      aria-pressed={isOn}
-                      className={cn(
-                        'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors',
-                        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
-                        isOn
-                          ? 'border-primary/40 bg-primary/10'
-                          : 'text-muted-foreground hover:bg-muted/60'
-                      )}
-                    >
-                      {Icon && <Icon className={cn('h-4 w-4', isOn && 'text-primary')} />}
-                      {t(`messaging.channels.${value}`)}
-                      {/* An address the workshop does not hold is a different
+          {loading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : !context?.customer ? (
+            <p className="py-4 text-sm text-muted-foreground">{t('messaging.noCustomerBody')}</p>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t('messaging.channel')}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {channels.map(({ channel: value, reachable, configured }) => {
+                    const Icon = CHANNEL_ICONS[value as keyof typeof CHANNEL_ICONS]
+                    const isOn = channel === value
+                    const button = (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setChannel(value as 'email' | 'sms' | 'telegram')}
+                        disabled={!configured}
+                        aria-pressed={isOn}
+                        className={cn(
+                          'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors',
+                          'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
+                          !configured
+                            ? 'cursor-not-allowed text-muted-foreground opacity-50'
+                            : isOn
+                              ? 'border-primary/40 bg-primary/10'
+                              : 'text-muted-foreground hover:bg-muted/60'
+                        )}
+                      >
+                        {Icon && <Icon className={cn('h-4 w-4', isOn && 'text-primary')} />}
+                        {t(`messaging.channels.${value}`)}
+                        {/* An address the workshop does not hold is a different
                           problem from a channel it has not configured, so the
                           row stays selectable and says which it is. */}
-                      {!reachable && (
-                        <span className="text-[10px] text-amber-600">
-                          {t('messaging.noAddress')}
-                        </span>
+                        {configured && !reachable && (
+                          <span className="text-[10px] text-amber-600">
+                            {t('messaging.noAddress')}
+                          </span>
+                        )}
+                      </button>
+                    )
+
+                    // A channel nobody has set up still shows, so the option is
+                    // known to exist. The tooltip says where to turn it on,
+                    // wrapped because a disabled button fires no hover events.
+                    return configured ? (
+                      button
+                    ) : (
+                      <Tooltip key={value}>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex">{button}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('messaging.enableInSettings')}</TooltipContent>
+                      </Tooltip>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {needsRecipient && (
+                <div className="space-y-2">
+                  <Label htmlFor="tireMsgRecipient">{t('messaging.recipient')}</Label>
+                  <Input
+                    id="tireMsgRecipient"
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                    placeholder={
+                      channel === 'email' ? 'name@example.com' : t('messaging.recipientPlaceholder')
+                    }
+                  />
+                </div>
+              )}
+
+              {channel === 'email' && (
+                <div className="space-y-2">
+                  <Label htmlFor="tireMsgSubject">{t('messaging.subject')}</Label>
+                  <Input
+                    id="tireMsgSubject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <div className="flex items-baseline justify-between">
+                  <Label htmlFor="tireMsgBody">{t('messaging.message')}</Label>
+                  {channel === 'sms' && (
+                    <span
+                      className={cn(
+                        'text-xs tabular-nums',
+                        overLimit ? 'text-amber-600' : 'text-muted-foreground'
                       )}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {needsRecipient && (
-              <div className="space-y-2">
-                <Label htmlFor="tireMsgRecipient">{t('messaging.recipient')}</Label>
-                <Input
-                  id="tireMsgRecipient"
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
-                  placeholder={
-                    channel === 'email' ? 'name@example.com' : t('messaging.recipientPlaceholder')
-                  }
+                    >
+                      {body.length}/{SMS_SOFT_LIMIT}
+                    </span>
+                  )}
+                </div>
+                <Textarea
+                  id="tireMsgBody"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  rows={6}
                 />
-              </div>
-            )}
-
-            {channel === 'email' && (
-              <div className="space-y-2">
-                <Label htmlFor="tireMsgSubject">{t('messaging.subject')}</Label>
-                <Input
-                  id="tireMsgSubject"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                />
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <div className="flex items-baseline justify-between">
-                <Label htmlFor="tireMsgBody">{t('messaging.message')}</Label>
-                {channel === 'sms' && (
-                  <span
-                    className={cn(
-                      'text-xs tabular-nums',
-                      overLimit ? 'text-amber-600' : 'text-muted-foreground'
-                    )}
-                  >
-                    {body.length}/{SMS_SOFT_LIMIT}
-                  </span>
+                {overLimit && (
+                  <p className="flex items-center gap-1.5 text-xs text-amber-600">
+                    <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
+                    {t('messaging.smsLong')}
+                  </p>
                 )}
               </div>
-              <Textarea
-                id="tireMsgBody"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                rows={6}
-              />
-              {overLimit && (
-                <p className="flex items-center gap-1.5 text-xs text-amber-600">
-                  <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
-                  {t('messaging.smsLong')}
-                </p>
-              )}
             </div>
-          </div>
-        )}
+          )}
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
-            {t('common.cancel')}
-          </Button>
-          <Button
-            onClick={handleSend}
-            disabled={
-              sending ||
-              loading ||
-              !context?.customer ||
-              !body.trim() ||
-              (needsRecipient && !recipient.trim())
-            }
-          >
-            {sending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('messaging.send')}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handleSend}
+              disabled={
+                sending ||
+                loading ||
+                !context?.customer ||
+                !body.trim() ||
+                notConfigured ||
+                (needsRecipient && !recipient.trim())
+              }
+            >
+              {sending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('messaging.send')}
+            </Button>
+          </DialogFooter>
+        </TooltipProvider>
       </DialogContent>
     </Dialog>
   )

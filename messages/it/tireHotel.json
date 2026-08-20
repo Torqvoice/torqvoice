@@ -370,7 +370,8 @@
       "damage": "Ciao {customer_name}, i tuoi pneumatici {season} sono in deposito da noi, {shop_name}. All'accettazione abbiamo trovato un danno su {positions}. Chiamaci quando puoi e lo vediamo insieme.",
       "stored": "Ciao {customer_name}, i tuoi pneumatici {season} sono ora in deposito da noi, {shop_name}. Ti avvisiamo quando sarà il momento del cambio.",
       "custom": "Ciao {customer_name}, riguardo ai tuoi pneumatici {season} in deposito da noi, {shop_name}:"
-    }
+    },
+    "enableInSettings": "Non ancora configurato. Attivalo nelle Impostazioni."
   },
   "job": {
     "cardTitle": "Preventivi e ordini",
@@ -388,7 +389,6 @@
     "noMatch": "Niente a magazzino corrisponde a {size}. La riga viene aggiunta al prezzo che indichi.",
     "noSize": "Questo treno non ha misura, quindi il magazzino non si può confrontare. La riga usa il tuo prezzo.",
     "unitPrice": "Prezzo per pneumatico",
-    "lineTotal": "Totale riga",
     "quantityNote": "per {count} pneumatici",
     "createQuote": "Crea preventivo",
     "createWorkOrder": "Crea ordine",
@@ -410,7 +410,10 @@
     "unlinkTitle": "Scollegare questi pneumatici dall’ordine?",
     "unlinkBody": "L’ordine non punta più al treno di pneumatici. Ricambi e manodopera già inseriti restano: rimuovili separatamente se non vanno fatturati.",
     "unlinked": "Pneumatici scollegati",
-    "unlinkFailed": "Impossibile scollegare gli pneumatici"
+    "unlinkFailed": "Impossibile scollegare gli pneumatici",
+    "prep": "Preparazione",
+    "tiresSkipped": "Nessuna riga pneumatici verrà aggiunta.",
+    "total": "Totale"
   },
   "label": {
     "action": "Etichette",

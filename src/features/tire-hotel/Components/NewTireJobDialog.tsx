@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
 import { ArrowLeft, Check, ClipboardList, FilePlus2, Loader2, PackageX } from 'lucide-react'
@@ -24,11 +25,11 @@ import {
   createQuoteFromTireSet,
   createWorkOrderFromTireSet,
   getOpenWorkOrdersForSet,
-  getStockMatchesForSet,
+  getJobDraftForSet,
 } from '../Actions/tireJobActions'
 import { useFormatDate } from '@/lib/use-format-date'
 
-type Matches = NonNullable<Awaited<ReturnType<typeof getStockMatchesForSet>>['data']>
+type Matches = NonNullable<Awaited<ReturnType<typeof getJobDraftForSet>>['data']>
 type OpenJobs = NonNullable<Awaited<ReturnType<typeof getOpenWorkOrdersForSet>>['data']>
 
 /**
@@ -71,6 +72,11 @@ export function NewTireJobDialog({
   const [saving, setSaving] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
   const [price, setPrice] = useState('')
+  // Everything billable starts ticked, since that is the usual job. The point
+  // of the list is that a swap on customer-supplied tires, or a wash given
+  // as goodwill, can be dropped without editing the invoice afterwards.
+  const [includeTires, setIncludeTires] = useState(true)
+  const [includePrep, setIncludePrep] = useState<string[]>([])
 
   useEffect(() => {
     if (!open) {
@@ -79,13 +85,15 @@ export function NewTireJobDialog({
       setPrice('')
       setOpenJobs([])
       setTarget(null)
+      setIncludeTires(true)
+      setIncludePrep([])
       setStep(mode === 'quote' ? 'lines' : 'target')
       return
     }
     let cancelled = false
     setLoading(true)
     Promise.all([
-      getStockMatchesForSet(tireSetId),
+      getJobDraftForSet(tireSetId),
       mode === 'workOrder' ? getOpenWorkOrdersForSet(tireSetId) : Promise.resolve(null),
     ]).then(([stock, jobs]) => {
       if (cancelled) return
@@ -98,6 +106,7 @@ export function NewTireJobDialog({
         setSelected(best.id)
         setPrice(String(best.sellPrice))
       }
+      setIncludePrep((value?.prep ?? []).map((line) => line.type))
 
       const rows = jobs?.success && jobs.data ? jobs.data : []
       setOpenJobs(rows)
@@ -114,9 +123,29 @@ export function NewTireJobDialog({
   const unit = Number(price) || 0
   const total = Math.round(unit * quantity * 100) / 100
 
+  const prep = data?.prep ?? []
+  const prepTotal = prep
+    .filter((line) => includePrep.includes(line.type))
+    .reduce((sum, line) => sum + line.price, 0)
+  const jobTotal = Math.round(((includeTires ? total : 0) + prepTotal) * 100) / 100
+  // A job with nothing on it is not worth raising, and an empty quote reads
+  // as a bug rather than as a choice.
+  const nothingPicked = !includeTires && includePrep.length === 0
+
+  const togglePrep = (type: string) =>
+    setIncludePrep((current) =>
+      current.includes(type) ? current.filter((t) => t !== type) : [...current, type]
+    )
+
   const handleSubmit = async () => {
     setSaving(true)
-    const payload = { tireSetId, inventoryPartId: selected, unitPrice: unit }
+    const payload = {
+      tireSetId,
+      inventoryPartId: selected,
+      unitPrice: unit,
+      includeTires,
+      includeTreatments: includePrep,
+    }
     const result =
       mode === 'quote'
         ? await createQuoteFromTireSet(payload)
@@ -187,8 +216,24 @@ export function NewTireJobDialog({
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>{t('job.tires')}</Label>
-              {data && data.matches.length > 0 ? (
+              <label className="flex cursor-pointer items-center gap-2.5">
+                <Checkbox
+                  checked={includeTires}
+                  onCheckedChange={(value) => setIncludeTires(value === true)}
+                />
+                <span className="text-sm font-medium">{t('job.tires')}</span>
+                <span className="text-xs text-muted-foreground">
+                  {t('job.quantityNote', { count: quantity })}
+                </span>
+              </label>
+
+              {!includeTires ? (
+                // The customer brought their own, or they are already on the
+                // job. Say so, rather than leaving a blank where the picker was.
+                <p className="rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
+                  {t('job.tiresSkipped')}
+                </p>
+              ) : data && data.matches.length > 0 ? (
                 <div className="space-y-2">
                   {data.matches.slice(0, 6).map((match) => {
                     const isOn = selected === match.id
@@ -245,30 +290,60 @@ export function NewTireJobDialog({
                   </p>
                 </div>
               )}
+
+              {includeTires && (
+                <div className="flex items-end gap-3 pt-1">
+                  <div className="w-40 space-y-1.5">
+                    <Label htmlFor="tireJobPrice" className="text-xs">
+                      {t('job.unitPrice')}
+                    </Label>
+                    <Input
+                      id="tireJobPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="tabular-nums"
+                    />
+                  </div>
+                  <p className="flex h-9 flex-1 items-center justify-end text-sm font-medium tabular-nums">
+                    {formatCurrency(total, currencyCode)}
+                  </p>
+                </div>
+              )}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            {prep.length > 0 && (
               <div className="space-y-2">
-                <Label htmlFor="tireJobPrice">{t('job.unitPrice')}</Label>
-                <Input
-                  id="tireJobPrice"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="tabular-nums"
-                />
+                <Label>{t('job.prep')}</Label>
+                <div className="rounded-lg border">
+                  {prep.map((line) => (
+                    <label
+                      key={line.type}
+                      className="flex cursor-pointer items-center gap-2.5 border-b p-3 last:border-b-0 hover:bg-muted/50"
+                    >
+                      <Checkbox
+                        checked={includePrep.includes(line.type)}
+                        onCheckedChange={() => togglePrep(line.type)}
+                      />
+                      <span className="min-w-0 flex-1 truncate text-sm">
+                        {t(`treatments.types.${line.type}`)}
+                      </span>
+                      <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
+                        {formatCurrency(line.price, currencyCode)}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>{t('job.lineTotal')}</Label>
-                <p className="flex h-9 items-center text-lg font-semibold tabular-nums">
-                  {formatCurrency(total, currencyCode)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t('job.quantityNote', { count: quantity })}
-                </p>
-              </div>
+            )}
+
+            <div className="flex items-center justify-between border-t pt-3">
+              <span className="text-sm text-muted-foreground">{t('job.total')}</span>
+              <span className="text-lg font-semibold tabular-nums">
+                {formatCurrency(jobTotal, currencyCode)}
+              </span>
             </div>
           </div>
         )}
@@ -292,7 +367,7 @@ export function NewTireJobDialog({
           ) : (
             <Button
               onClick={handleSubmit}
-              disabled={saving || loading || (mode === 'workOrder' && !hasVehicle)}
+              disabled={saving || loading || nothingPicked || (mode === 'workOrder' && !hasVehicle)}
             >
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {mode === 'quote'
