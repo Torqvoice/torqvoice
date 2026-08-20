@@ -82,7 +82,7 @@ export function DetailsLeftColumn({
           thing this job needs and the last thing the invoice sidebar cares
           about, so it belongs here rather than spanning both. */}
       {tireSet ? (
-        <TireSetBanner set={tireSet} serviceRecordId={record.id} />
+        <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />
       ) : (
         // No set on this job yet. The tires that came off the car are standing
         // in the corner while the desk writes it up, so the offer to store

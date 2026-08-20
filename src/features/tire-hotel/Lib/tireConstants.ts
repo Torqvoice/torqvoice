@@ -180,6 +180,29 @@ export function buildLocationCode(parts: {
     .join('-')
 }
 
+/**
+ * The grade to show beside a reading.
+ *
+ * Derived from the depth against the workshop's current limits rather than
+ * read off the row. The stored grade was worked out with whatever limits were
+ * in force when somebody typed the number, so a shop that lowers its winter
+ * limit would otherwise keep seeing old readings condemned, and a badge that
+ * contradicts the millimetres printed next to it is worse than no badge.
+ *
+ * Falls back to the stored value only where there is no depth to judge, which
+ * is a tire somebody graded by eye.
+ */
+export function shownCondition(
+  measurement: { treadDepthMm: number | null; condition: string },
+  season: string,
+  thresholds?: TreadThresholds
+): TireCondition {
+  return (
+    gradeTread(measurement.treadDepthMm, season, thresholds) ??
+    (measurement.condition as TireCondition)
+  )
+}
+
 /** Worst condition across a set of readings, for the set-level badge. */
 export function worstCondition(conditions: string[]): TireCondition {
   if (conditions.includes('replace')) return 'replace'

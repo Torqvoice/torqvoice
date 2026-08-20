@@ -9,7 +9,11 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { gradeTread, DEFAULT_TREAD_THRESHOLDS_MM } from '@/features/tire-hotel/Lib/tireConstants'
+import {
+  gradeTread,
+  shownCondition,
+  DEFAULT_TREAD_THRESHOLDS_MM,
+} from '@/features/tire-hotel/Lib/tireConstants'
 
 const SHOP = { summerReplace: 3, winterReplace: 3, warnMargin: 1 }
 
@@ -50,5 +54,27 @@ describe('the built-in fallback', () => {
     expect(DEFAULT_TREAD_THRESHOLDS_MM.winterReplace).toBeGreaterThan(SHOP.winterReplace)
     expect(gradeTread(3.5, 'winter')).toBe('replace')
     expect(gradeTread(3.5, 'winter', SHOP)).toBe('fair')
+  })
+})
+
+describe('the grade shown beside a reading', () => {
+  it('comes from the depth, not from what was stored', () => {
+    // The reported bug in its second form: the reading was graded and saved
+    // when the limits were different, and every screen printed that stale
+    // word beside a number that disagreed with it.
+    const stale = { treadDepthMm: 3.5, condition: 'replace' }
+    expect(shownCondition(stale, 'winter', SHOP)).toBe('fair')
+  })
+
+  it('regrades the whole history when a shop changes its limit', () => {
+    const reading = { treadDepthMm: 3.5, condition: 'good' }
+    expect(shownCondition(reading, 'winter', { ...SHOP, winterReplace: 4 })).toBe('replace')
+    expect(shownCondition(reading, 'winter', { ...SHOP, winterReplace: 3 })).toBe('fair')
+  })
+
+  it('keeps the stored word when there is no depth to judge', () => {
+    // Graded by eye, e.g. a sidewall somebody condemned without a gauge.
+    const byEye = { treadDepthMm: null, condition: 'replace' }
+    expect(shownCondition(byEye, 'winter', SHOP)).toBe('replace')
   })
 })

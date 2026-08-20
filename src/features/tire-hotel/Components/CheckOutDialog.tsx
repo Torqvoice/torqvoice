@@ -25,6 +25,7 @@ import {
   TIRE_ROAD_POSITIONS,
   mmToThirtySeconds,
   thirtySecondsToMm,
+  shownCondition,
   worstCondition,
   type TireCondition,
 } from '../Lib/tireConstants'
@@ -88,7 +89,9 @@ export function CheckOutDialog({
   // Nothing was ever measured, so this is the last chance to record it before
   // the tires leave the building.
   const neverMeasured = latestMeasurements.length === 0
-  const worst = neverMeasured ? null : worstCondition(latestMeasurements.map((m) => m.condition))
+  const gradeOf = (m: { treadDepthMm: number | null; condition: string }) =>
+    shownCondition(m, season, thresholds)
+  const worst = neverMeasured ? null : worstCondition(latestMeasurements.map(gradeOf))
 
   const formatTread = (mm: number | null) => {
     if (mm == null) return '-'
@@ -191,12 +194,9 @@ export function CheckOutDialog({
                     </span>
                     <Badge
                       variant="outline"
-                      className={cn(
-                        'shrink-0 text-[10px]',
-                        CONDITION_TOKENS[m.condition as TireCondition].badge
-                      )}
+                      className={cn('shrink-0 text-[10px]', CONDITION_TOKENS[gradeOf(m)].badge)}
                     >
-                      {t(`conditions.${m.condition}`)}
+                      {t(`conditions.${gradeOf(m)}`)}
                     </Badge>
                   </div>
                 ))}

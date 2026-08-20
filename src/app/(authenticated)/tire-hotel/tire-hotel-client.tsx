@@ -34,6 +34,7 @@ import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPi
 import {
   CONDITION_TOKENS,
   STATUS_TOKENS,
+  shownCondition,
   worstCondition,
   type TireSetStatus,
 } from '@/features/tire-hotel/Lib/tireConstants'
@@ -280,7 +281,11 @@ export function TireHotelClient({
                 <span className="text-muted-foreground tabular-nums">
                   {t('list.tireCount', { count: set.quantity })}
                 </span>
-                <ConditionDot measurements={set.measurements} />
+                <ConditionDot
+                  season={set.season}
+                  thresholds={thresholds}
+                  measurements={set.measurements}
+                />
                 <TreatmentChips treatments={set.treatments} />
               </div>
             </button>
@@ -368,7 +373,11 @@ export function TireHotelClient({
                         <TreatmentChips treatments={set.treatments} />
                       </TableCell>
                       <TableCell>
-                        <ConditionDot measurements={set.measurements} />
+                        <ConditionDot
+                          season={set.season}
+                          thresholds={thresholds}
+                          measurements={set.measurements}
+                        />
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -431,12 +440,22 @@ function EmptyState({ message }: { message: string }) {
 }
 
 /** Worst grade across the latest readings, as one dot plus a word. */
-function ConditionDot({ measurements }: { measurements: { condition: string }[] }) {
+function ConditionDot({
+  measurements,
+  season,
+  thresholds,
+}: {
+  measurements: { treadDepthMm: number | null; condition: string }[]
+  season: string
+  thresholds: { summerReplace: number; winterReplace: number; warnMargin: number }
+}) {
   const t = useTranslations('tireHotel')
   if (measurements.length === 0) {
     return <span className="text-xs text-muted-foreground">-</span>
   }
-  const grade = worstCondition(measurements.map((m) => m.condition))
+  // Graded from the depths against the workshop's limits, not from whatever
+  // was stored when the reading was typed.
+  const grade = worstCondition(measurements.map((m) => shownCondition(m, season, thresholds)))
   return (
     <span className="flex items-center gap-1.5 text-xs">
       <span className={cn('h-2 w-2 shrink-0 rounded-full', CONDITION_TOKENS[grade].dot)} />

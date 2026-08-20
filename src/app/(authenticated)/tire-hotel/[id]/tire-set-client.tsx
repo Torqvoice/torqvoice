@@ -29,6 +29,7 @@ import {
   STATUS_TOKENS,
   barToPsi,
   mmToThirtySeconds,
+  shownCondition,
   worstCondition,
   type TireCondition,
   type TireSetStatus,
@@ -223,7 +224,12 @@ export function TireSetClient({
   const latest = set.measurements.filter(
     (m) => latestRound && m.measuredAt.getTime() === latestRound.getTime()
   )
-  const grade = latest.length > 0 ? worstCondition(latest.map((m) => m.condition)) : null
+  // Graded from the millimetres against this workshop's limits, so the badge
+  // can never contradict the number beside it.
+  const limits = { ...thresholds, warnMargin: 1 }
+  const gradeOf = (m: { treadDepthMm: number | null; condition: string }) =>
+    shownCondition(m, set.season, limits)
+  const grade = latest.length > 0 ? worstCondition(latest.map(gradeOf)) : null
 
   const formatTread = (mm: number | null) => {
     if (mm == null) return '-'
@@ -234,7 +240,7 @@ export function TireSetClient({
     return imperial ? `${barToPsi(bar).toFixed(0)} psi` : `${bar.toFixed(1)} bar`
   }
 
-  const lowPositions = latest.filter((m) => m.condition === 'replace')
+  const lowPositions = latest.filter((m) => gradeOf(m) === 'replace')
   const worstTread = latest.reduce<number | null>(
     (lowest, m) =>
       m.treadDepthMm == null
@@ -399,6 +405,7 @@ export function TireSetClient({
                 formatTread={formatTread}
                 formatPressure={formatPressure}
                 formatDate={formatDate}
+                gradeOf={gradeOf}
                 replaceLimitMm={
                   set.season === 'winter' ? thresholds.winterReplace : thresholds.summerReplace
                 }
@@ -606,12 +613,15 @@ function MeasurementHistory({
   formatTread,
   formatPressure,
   formatDate,
+  gradeOf,
   replaceLimitMm,
 }: {
   measurements: Measurement[]
   formatTread: (mm: number | null) => string
   formatPressure: (bar: number | null) => string | null
   formatDate: (d: Date) => string
+  /** Grades a reading against the workshop's limits rather than the stored value. */
+  gradeOf: (m: { treadDepthMm: number | null; condition: string }) => TireCondition
   /** The workshop's own replacement threshold for this set's season. */
   replaceLimitMm: number
 }) {

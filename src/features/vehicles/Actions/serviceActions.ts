@@ -224,7 +224,9 @@ export async function getServiceRecord(recordId: string) {
               measurements: {
                 orderBy: { measuredAt: 'desc' },
                 take: 8,
-                select: { condition: true },
+                // The depth too: the banner grades from the millimetres
+                // rather than from the stored word.
+                select: { treadDepthMm: true, condition: true },
               },
               treatments: { select: { type: true, status: true } },
             },

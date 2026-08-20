@@ -11,7 +11,12 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { cn } from '@/lib/utils'
 import { ChevronRight, Disc3, Loader2, TriangleAlert, Unlink } from 'lucide-react'
 import { unlinkTireSetFromWorkOrder } from '../Actions/tireJobActions'
-import { CONDITION_TOKENS, worstCondition, type TireCondition } from '../Lib/tireConstants'
+import {
+  CONDITION_TOKENS,
+  shownCondition,
+  worstCondition,
+  type TireCondition,
+} from '../Lib/tireConstants'
 import { pendingTreatments } from '../Lib/treatments'
 
 export type TireSetBannerData = {
@@ -26,7 +31,7 @@ export type TireSetBannerData = {
   hasTpms: boolean
   status: string
   location: { code: string; warehouse: { name: string } } | null
-  measurements: { condition: string }[]
+  measurements: { treadDepthMm: number | null; condition: string }[]
   treatments: { type: string; status: string }[]
 }
 
@@ -46,10 +51,13 @@ export type TireSetBannerData = {
 export function TireSetBanner({
   set,
   serviceRecordId,
+  thresholds,
 }: {
   set: TireSetBannerData
   /** Present on a work order, where the link can be undone. */
   serviceRecordId?: string
+  /** The workshop's tread limits, so the grade matches the set's own page. */
+  thresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -76,7 +84,9 @@ export function TireSetBanner({
     router.refresh()
   }
   const grade =
-    set.measurements.length > 0 ? worstCondition(set.measurements.map((m) => m.condition)) : null
+    set.measurements.length > 0
+      ? worstCondition(set.measurements.map((m) => shownCondition(m, set.season, thresholds)))
+      : null
   const outstanding = pendingTreatments(set.treatments)
 
   return (
