@@ -405,7 +405,12 @@
     "targetExisting": "Of toevoegen aan een opdracht die al open staat voor dit voertuig",
     "addToWorkOrder": "Aan werkorder toevoegen",
     "workOrderUpdated": "Toegevoegd aan de werkorder",
-    "prepLines": "Voorbereiding op deze opdracht"
+    "prepLines": "Voorbereiding op deze opdracht",
+    "unlink": "Ontkoppelen",
+    "unlinkTitle": "Deze banden van de opdracht ontkoppelen?",
+    "unlinkBody": "De opdracht verwijst niet langer naar de bandenset. Onderdelen en arbeidsregels die er al op staan blijven staan; verwijder ze apart als ze niet gefactureerd moeten worden.",
+    "unlinked": "Banden ontkoppeld",
+    "unlinkFailed": "Kon de banden niet ontkoppelen"
   },
   "label": {
     "action": "Labels",

@@ -136,6 +136,7 @@
     "tire_set_message_customer": "Kunde zu einem Reifensatz benachrichtigt",
     "tire_set_create_quote": "Angebot aus einem Reifensatz erstellt",
     "tire_set_create_work_order": "Auftrag aus einem Reifensatz erstellt",
-    "tire_set_add_to_work_order": "Reifensatz zu einem Auftrag hinzugefügt"
+    "tire_set_add_to_work_order": "Reifensatz zu einem Auftrag hinzugefügt",
+    "tire_set_unlink_work_order": "Reifensatz von einem Auftrag gelöst"
   }
 }

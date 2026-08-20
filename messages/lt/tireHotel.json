@@ -405,7 +405,12 @@
     "targetExisting": "Arba pridėti prie jau atviro šios transporto priemonės darbo",
     "addToWorkOrder": "Pridėti prie darbo užsakymo",
     "workOrderUpdated": "Pridėta prie darbo užsakymo",
-    "prepLines": "Paruošimas šiame darbe"
+    "prepLines": "Paruošimas šiame darbe",
+    "unlink": "Atsieti",
+    "unlinkTitle": "Atsieti šias padangas nuo darbo?",
+    "unlinkBody": "Darbas neberodys į padangų komplektą. Jau įtrauktos dalių ir darbo eilutės lieka, tad pašalinkite jas atskirai, jei jų apmokestinti nereikia.",
+    "unlinked": "Padangos atsietos",
+    "unlinkFailed": "Nepavyko atsieti padangų"
   },
   "label": {
     "action": "Etiketės",

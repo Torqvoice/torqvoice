@@ -496,6 +496,63 @@ export async function addTireSetToWorkOrder(input: unknown) {
 }
 
 /**
+ * Takes the tire set off a job.
+ *
+ * Only the link goes. The parts and labour lines stay, because they are what
+ * is being charged and someone may have edited them since; deciding on the
+ * operator's behalf that a billed line should vanish would be a worse
+ * surprise than leaving it visible for them to remove.
+ *
+ * The shelf written into the job notes also stays. It is free text by now and
+ * may have been added to, so rewriting it is not this action's business.
+ */
+export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const record = await db.serviceRecord.findFirst({
+        where: { id: serviceRecordId, organizationId },
+        select: {
+          id: true,
+          invoiceNumber: true,
+          vehicleId: true,
+          tireSet: { select: { id: true, reference: true } },
+        },
+      })
+      if (!record) throw new Error('Work order not found')
+      if (!record.tireSet) throw new Error('This job is not linked to a tire set')
+
+      await db.serviceRecord.update({
+        where: { id: record.id },
+        data: { tireSetId: null },
+      })
+
+      revalidatePath(`/tire-hotel/${record.tireSet.id}`)
+      if (record.vehicleId) {
+        revalidatePath(`/vehicles/${record.vehicleId}/service/${record.id}`)
+      }
+      return {
+        id: record.id,
+        invoiceNumber: record.invoiceNumber,
+        tireSetId: record.tireSet.id,
+        reference: record.tireSet.reference,
+      }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'tire_set.unlink_work_order',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        message: `Unlinked tire set ${result.reference ?? result.tireSetId} from work order ${result.invoiceNumber ?? result.id}`,
+        metadata: { tireSetId: result.tireSetId },
+      }),
+    }
+  )
+}
+
+/**
  * Stored sets belonging to one vehicle.
  *
  * Returns nothing when the module is off rather than throwing, since the

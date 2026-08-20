@@ -405,7 +405,12 @@
     "targetExisting": "Ou ajouter à un ordre déjà ouvert pour ce véhicule",
     "addToWorkOrder": "Ajouter à l’ordre",
     "workOrderUpdated": "Ajouté à l’ordre",
-    "prepLines": "Préparation sur cet ordre"
+    "prepLines": "Préparation sur cet ordre",
+    "unlink": "Dissocier",
+    "unlinkTitle": "Dissocier ces pneus de l’ordre ?",
+    "unlinkBody": "L’ordre ne renvoie plus au jeu de pneus. Les pièces et la main-d’œuvre déjà saisies restent ; retirez-les séparément si elles ne doivent pas être facturées.",
+    "unlinked": "Pneus dissociés",
+    "unlinkFailed": "Impossible de dissocier les pneus"
   },
   "label": {
     "action": "Étiquettes",

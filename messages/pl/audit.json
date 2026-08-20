@@ -136,6 +136,7 @@
     "tire_set_message_customer": "Wysłano wiadomość do klienta o komplecie opon",
     "tire_set_create_quote": "Utworzono wycenę z kompletu opon",
     "tire_set_create_work_order": "Utworzono zlecenie z kompletu opon",
-    "tire_set_add_to_work_order": "Dodano komplet opon do zlecenia"
+    "tire_set_add_to_work_order": "Dodano komplet opon do zlecenia",
+    "tire_set_unlink_work_order": "Odłączono komplet opon od zlecenia"
   }
 }

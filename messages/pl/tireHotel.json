@@ -405,7 +405,12 @@
     "targetExisting": "Albo dodaj do zlecenia już otwartego dla tego pojazdu",
     "addToWorkOrder": "Dodaj do zlecenia",
     "workOrderUpdated": "Dodano do zlecenia",
-    "prepLines": "Przygotowanie w tym zleceniu"
+    "prepLines": "Przygotowanie w tym zleceniu",
+    "unlink": "Odłącz",
+    "unlinkTitle": "Odłączyć te opony od zlecenia?",
+    "unlinkBody": "Zlecenie przestaje wskazywać komplet opon. Części i robocizna, które już na nim są, zostają, więc usuń je osobno, jeśli nie mają być fakturowane.",
+    "unlinked": "Odłączono opony",
+    "unlinkFailed": "Nie udało się odłączyć opon"
   },
   "label": {
     "action": "Etykiety",

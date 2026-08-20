@@ -136,6 +136,7 @@
     "tire_set_message_customer": "Klant bericht gestuurd over een bandenset",
     "tire_set_create_quote": "Offerte aangemaakt vanuit een bandenset",
     "tire_set_create_work_order": "Werkorder aangemaakt vanuit een bandenset",
-    "tire_set_add_to_work_order": "Bandenset aan een werkorder toegevoegd"
+    "tire_set_add_to_work_order": "Bandenset aan een werkorder toegevoegd",
+    "tire_set_unlink_work_order": "Bandenset van een werkorder ontkoppeld"
   }
 }

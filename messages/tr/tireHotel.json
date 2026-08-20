@@ -405,7 +405,12 @@
     "targetExisting": "Veya bu araç için açık olan bir işe ekle",
     "addToWorkOrder": "İş emrine ekle",
     "workOrderUpdated": "İş emrine eklendi",
-    "prepLines": "Bu işteki hazırlık"
+    "prepLines": "Bu işteki hazırlık",
+    "unlink": "Bağlantıyı kaldır",
+    "unlinkTitle": "Bu lastikler işten ayrılsın mı?",
+    "unlinkBody": "İş artık lastik takımını göstermez. Üzerindeki parça ve işçilik satırları kalır; faturalanmaması gerekiyorsa ayrıca silin.",
+    "unlinked": "Lastik bağlantısı kaldırıldı",
+    "unlinkFailed": "Bağlantı kaldırılamadı"
   },
   "label": {
     "action": "Etiketler",

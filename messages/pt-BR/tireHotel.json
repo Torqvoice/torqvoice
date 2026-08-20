@@ -405,7 +405,12 @@
     "targetExisting": "Ou some a uma ordem já aberta para este veículo",
     "addToWorkOrder": "Somar à ordem",
     "workOrderUpdated": "Somado à ordem",
-    "prepLines": "Preparação nesta ordem"
+    "prepLines": "Preparação nesta ordem",
+    "unlink": "Desvincular",
+    "unlinkTitle": "Desvincular estes pneus da ordem?",
+    "unlinkBody": "A ordem deixa de apontar para o jogo de pneus. Peças e mão de obra já lançadas permanecem; remova-as à parte se não devem ser cobradas.",
+    "unlinked": "Pneus desvinculados",
+    "unlinkFailed": "Não foi possível desvincular"
   },
   "label": {
     "action": "Etiquetas",

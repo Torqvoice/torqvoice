@@ -1,10 +1,16 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useConfirm } from '@/components/confirm-dialog'
 import { cn } from '@/lib/utils'
-import { ChevronRight, Disc3, TriangleAlert } from 'lucide-react'
+import { ChevronRight, Disc3, Loader2, TriangleAlert, Unlink } from 'lucide-react'
+import { unlinkTireSetFromWorkOrder } from '../Actions/tireJobActions'
 import { CONDITION_TOKENS, worstCondition, type TireCondition } from '../Lib/tireConstants'
 import { pendingTreatments } from '../Lib/treatments'
 
@@ -37,8 +43,38 @@ export type TireSetBannerData = {
  * only the tire hotel knows: which shelf, what state they came in, and
  * whether anything is still owed on them before they go on the car.
  */
-export function TireSetBanner({ set }: { set: TireSetBannerData }) {
+export function TireSetBanner({
+  set,
+  serviceRecordId,
+}: {
+  set: TireSetBannerData
+  /** Present on a work order, where the link can be undone. */
+  serviceRecordId?: string
+}) {
   const t = useTranslations('tireHotel')
+  const router = useRouter()
+  const confirm = useConfirm()
+  const [unlinking, setUnlinking] = useState(false)
+
+  const handleUnlink = async () => {
+    if (!serviceRecordId) return
+    const ok = await confirm({
+      title: t('job.unlinkTitle'),
+      description: t('job.unlinkBody'),
+      confirmLabel: t('job.unlink'),
+      destructive: true,
+    })
+    if (!ok) return
+    setUnlinking(true)
+    const result = await unlinkTireSetFromWorkOrder(serviceRecordId)
+    setUnlinking(false)
+    if (!result.success) {
+      toast.error(result.error ?? t('job.unlinkFailed'))
+      return
+    }
+    toast.success(t('job.unlinked'))
+    router.refresh()
+  }
   const grade =
     set.measurements.length > 0 ? worstCondition(set.measurements.map((m) => m.condition)) : null
   const outstanding = pendingTreatments(set.treatments)
@@ -103,13 +139,32 @@ export function TireSetBanner({ set }: { set: TireSetBannerData }) {
           )}
         </div>
 
-        <Link
-          href={`/tire-hotel/${set.id}`}
-          className="ml-auto flex shrink-0 items-center gap-0.5 text-xs text-primary hover:underline"
-        >
-          {t('job.openSet')}
-          <ChevronRight className="h-3.5 w-3.5" />
-        </Link>
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          <Link
+            href={`/tire-hotel/${set.id}`}
+            className="flex items-center gap-0.5 text-xs text-primary hover:underline"
+          >
+            {t('job.openSet')}
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+          {serviceRecordId && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+              onClick={handleUnlink}
+              disabled={unlinking}
+              aria-label={t('job.unlink')}
+              title={t('job.unlink')}
+            >
+              {unlinking ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Unlink className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Discovered at the car, this is a second trip. Inline rather than in

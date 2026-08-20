@@ -405,7 +405,12 @@
     "targetExisting": "Eller legg til på en jobb som allerede er åpen for dette kjøretøyet",
     "addToWorkOrder": "Legg til på arbeidsordre",
     "workOrderUpdated": "Lagt til på arbeidsordren",
-    "prepLines": "Klargjøring på denne jobben"
+    "prepLines": "Klargjøring på denne jobben",
+    "unlink": "Koble fra",
+    "unlinkTitle": "Koble disse dekkene fra jobben?",
+    "unlinkBody": "Jobben peker ikke lenger på dekksettet. Deler og arbeidslinjer som allerede ligger der blir stående, så fjern dem separat hvis de ikke skal faktureres.",
+    "unlinked": "Dekkene koblet fra",
+    "unlinkFailed": "Kunne ikke koble fra dekkene"
   },
   "label": {
     "action": "Etiketter",

@@ -136,6 +136,7 @@
     "tire_set_message_customer": "Messaged a customer about a tire set",
     "tire_set_create_quote": "Created a quote from a tire set",
     "tire_set_create_work_order": "Created a work order from a tire set",
-    "tire_set_add_to_work_order": "Added a tire set to a work order"
+    "tire_set_add_to_work_order": "Added a tire set to a work order",
+    "tire_set_unlink_work_order": "Unlinked a tire set from a work order"
   }
 }

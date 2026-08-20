@@ -405,7 +405,12 @@
     "targetExisting": "Or add to a job already open for this vehicle",
     "addToWorkOrder": "Add to work order",
     "workOrderUpdated": "Added to the work order",
-    "prepLines": "Prep on this job"
+    "prepLines": "Prep on this job",
+    "unlink": "Unlink",
+    "unlinkTitle": "Unlink these tires from the job?",
+    "unlinkBody": "The job stops pointing at the tire set. The parts and labour lines already on it stay, so remove them separately if they should not be billed.",
+    "unlinked": "Tires unlinked",
+    "unlinkFailed": "Could not unlink the tires"
   },
   "label": {
     "action": "Labels",

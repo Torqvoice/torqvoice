@@ -405,7 +405,12 @@
     "targetExisting": "Oppure aggiungi a un ordine già aperto per questo veicolo",
     "addToWorkOrder": "Aggiungi all’ordine",
     "workOrderUpdated": "Aggiunto all’ordine",
-    "prepLines": "Preparazione su questo ordine"
+    "prepLines": "Preparazione su questo ordine",
+    "unlink": "Scollega",
+    "unlinkTitle": "Scollegare questi pneumatici dall’ordine?",
+    "unlinkBody": "L’ordine non punta più al treno di pneumatici. Ricambi e manodopera già inseriti restano: rimuovili separatamente se non vanno fatturati.",
+    "unlinked": "Pneumatici scollegati",
+    "unlinkFailed": "Impossibile scollegare gli pneumatici"
   },
   "label": {
     "action": "Etichette",

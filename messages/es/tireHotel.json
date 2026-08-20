@@ -405,7 +405,12 @@
     "targetExisting": "O añadir a una orden ya abierta para este vehículo",
     "addToWorkOrder": "Añadir a la orden",
     "workOrderUpdated": "Añadido a la orden",
-    "prepLines": "Preparación en esta orden"
+    "prepLines": "Preparación en esta orden",
+    "unlink": "Desvincular",
+    "unlinkTitle": "¿Desvincular estos neumáticos de la orden?",
+    "unlinkBody": "La orden deja de apuntar al juego de neumáticos. Las piezas y la mano de obra que ya están se quedan; quítalas aparte si no se deben cobrar.",
+    "unlinked": "Neumáticos desvinculados",
+    "unlinkFailed": "No se han podido desvincular"
   },
   "label": {
     "action": "Etiquetas",

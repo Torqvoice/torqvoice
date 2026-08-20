@@ -136,6 +136,7 @@
     "tire_set_message_customer": "Messaggio inviato al cliente su un treno di pneumatici",
     "tire_set_create_quote": "Preventivo creato da un treno di pneumatici",
     "tire_set_create_work_order": "Ordine creato da un treno di pneumatici",
-    "tire_set_add_to_work_order": "Treno di pneumatici aggiunto a un ordine"
+    "tire_set_add_to_work_order": "Treno di pneumatici aggiunto a un ordine",
+    "tire_set_unlink_work_order": "Treno di pneumatici scollegato da un ordine"
   }
 }

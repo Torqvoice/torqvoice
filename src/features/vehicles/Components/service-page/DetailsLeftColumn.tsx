@@ -74,7 +74,7 @@ export function DetailsLeftColumn({
       {/* Above the parts, inside the working column: the tires are the first
           thing this job needs and the last thing the invoice sidebar cares
           about, so it belongs here rather than spanning both. */}
-      {tireSet && <TireSetBanner set={tireSet} />}
+      {tireSet && <TireSetBanner set={tireSet} serviceRecordId={record.id} />}
 
       <PartsEditor
         partItems={formState.partItems}
