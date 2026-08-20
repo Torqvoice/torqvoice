@@ -374,8 +374,6 @@
   },
   "job": {
     "cardTitle": "Angebote und Aufträge",
-    "newQuote": "Neues Angebot",
-    "newWorkOrder": "Neuer Auftrag",
     "none": "Für diesen Satz wurde noch nichts angelegt.",
     "quote": "Angebot",
     "workOrder": "Auftrag",

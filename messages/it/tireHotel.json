@@ -374,8 +374,6 @@
   },
   "job": {
     "cardTitle": "Preventivi e ordini",
-    "newQuote": "Nuovo preventivo",
-    "newWorkOrder": "Nuovo ordine",
     "none": "Per questo treno non è stato creato nulla.",
     "quote": "Preventivo",
     "workOrder": "Ordine",

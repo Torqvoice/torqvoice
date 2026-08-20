@@ -374,8 +374,6 @@
   },
   "job": {
     "cardTitle": "Presupuestos y órdenes",
-    "newQuote": "Nuevo presupuesto",
-    "newWorkOrder": "Nueva orden",
     "none": "Aún no se ha creado nada para este juego.",
     "quote": "Presupuesto",
     "workOrder": "Orden",

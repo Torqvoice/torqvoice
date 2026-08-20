@@ -374,8 +374,6 @@
   },
   "job": {
     "cardTitle": "Devis et ordres",
-    "newQuote": "Nouveau devis",
-    "newWorkOrder": "Nouvel ordre",
     "none": "Rien de créé pour ce jeu.",
     "quote": "Devis",
     "workOrder": "Ordre",

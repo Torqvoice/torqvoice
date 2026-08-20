@@ -77,7 +77,7 @@ export function TireJobsCard({
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="outline" onClick={() => onCreate('quote')}>
           <FileText className="mr-1.5 h-3.5 w-3.5" />
-          {t('job.newQuote')}
+          {t('job.quote')}
         </Button>
         <Button
           size="sm"
@@ -87,7 +87,7 @@ export function TireJobsCard({
           title={hasVehicle ? undefined : t('job.needsVehicle')}
         >
           <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
-          {t('job.newWorkOrder')}
+          {t('job.workOrder')}
         </Button>
       </div>
 

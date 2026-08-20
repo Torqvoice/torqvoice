@@ -374,8 +374,6 @@
   },
   "job": {
     "cardTitle": "Teklifler ve işler",
-    "newQuote": "Yeni teklif",
-    "newWorkOrder": "Yeni iş emri",
     "none": "Bu takım için henüz bir şey oluşturulmadı.",
     "quote": "Teklif",
     "workOrder": "İş emri",

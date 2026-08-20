@@ -374,8 +374,6 @@
   },
   "job": {
     "cardTitle": "Pasiūlymai ir darbai",
-    "newQuote": "Naujas pasiūlymas",
-    "newWorkOrder": "Naujas darbo užsakymas",
     "none": "Šiam komplektui dar nieko nesukurta.",
     "quote": "Pasiūlymas",
     "workOrder": "Darbo užsakymas",
