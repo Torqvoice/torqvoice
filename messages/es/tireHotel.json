@@ -400,5 +400,30 @@
     "openSet": "Abrir juego",
     "prepPending": "Pendiente antes de montar: {jobs}",
     "notOnShelf": "Este juego ya no está guardado."
+  },
+  "label": {
+    "action": "Etiquetas",
+    "title": "Imprimir etiquetas",
+    "description": "Una pegatina por neumático, con un QR que abre este juego.",
+    "format": "Tamaño",
+    "formats": {
+      "dymo_small": "Rollo pequeño",
+      "dymo_standard": "Rollo estándar",
+      "thermal_large": "Rollo grande",
+      "sheet_a4": "Hoja A4"
+    },
+    "perSheet": "{count} por hoja",
+    "copies": "Cuántas",
+    "copiesHint": "una por neumático ({count})",
+    "fewer": "Una menos",
+    "more": "Una más",
+    "print": "Imprimir",
+    "shelfNote": "El estante no se imprime a propósito. Los juegos se mueven, y un estante impreso quedaría mal. El QR siempre muestra dónde está ahora.",
+    "reference": "Ref",
+    "quantity": "{count} neumáticos",
+    "withRims": "Con llantas",
+    "tpms": "TPMS",
+    "studded": "Con clavos",
+    "unassigned": "Sin asignar"
   }
 }

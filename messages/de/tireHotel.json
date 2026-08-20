@@ -400,5 +400,30 @@
     "openSet": "Reifensatz öffnen",
     "prepPending": "Vor der Montage offen: {jobs}",
     "notOnShelf": "Dieser Satz ist nicht mehr eingelagert."
+  },
+  "label": {
+    "action": "Etiketten",
+    "title": "Reifenetiketten drucken",
+    "description": "Aufkleber für jeden Reifen, mit QR-Code zu diesem Satz.",
+    "format": "Etikettengröße",
+    "formats": {
+      "dymo_small": "Kleine Rolle",
+      "dymo_standard": "Standardrolle",
+      "thermal_large": "Große Rolle",
+      "sheet_a4": "A4-Bogen"
+    },
+    "perSheet": "{count} pro Bogen",
+    "copies": "Wie viele",
+    "copiesHint": "einer pro Reifen ({count})",
+    "fewer": "Einer weniger",
+    "more": "Einer mehr",
+    "print": "Drucken",
+    "shelfNote": "Das Fach steht bewusst nicht auf dem Etikett. Sätze werden umgelagert, und ein gedrucktes Fach wäre dann falsch. Der QR-Code zeigt immer den aktuellen Platz.",
+    "reference": "Ref",
+    "quantity": "{count} Reifen",
+    "withRims": "Auf Felgen",
+    "tpms": "RDKS",
+    "studded": "Spikes",
+    "unassigned": "Nicht zugeordnet"
   }
 }

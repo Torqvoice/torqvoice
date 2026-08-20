@@ -400,5 +400,30 @@
     "openSet": "Bandenset openen",
     "prepPending": "Nog te doen voor montage: {jobs}",
     "notOnShelf": "Deze set ligt niet meer in opslag."
+  },
+  "label": {
+    "action": "Labels",
+    "title": "Bandenlabels printen",
+    "description": "Stickers voor elke band, met een QR die deze set opent.",
+    "format": "Labelformaat",
+    "formats": {
+      "dymo_small": "Kleine rol",
+      "dymo_standard": "Standaardrol",
+      "thermal_large": "Grote rol",
+      "sheet_a4": "A4-vel"
+    },
+    "perSheet": "{count} per vel",
+    "copies": "Hoeveel",
+    "copiesHint": "één per band ({count})",
+    "fewer": "Eén minder",
+    "more": "Eén meer",
+    "print": "Printen",
+    "shelfNote": "De stelling staat er bewust niet op. Sets worden verplaatst en een geprinte stelling klopt dan niet meer. De QR laat altijd de actuele plek zien.",
+    "reference": "Ref",
+    "quantity": "{count} banden",
+    "withRims": "Op velgen",
+    "tpms": "TPMS",
+    "studded": "Spijkers",
+    "unassigned": "Niet toegewezen"
   }
 }

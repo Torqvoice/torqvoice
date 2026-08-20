@@ -400,5 +400,30 @@
     "openSet": "Åpne dekksett",
     "prepPending": "Gjenstår før montering: {jobs}",
     "notOnShelf": "Dette settet står ikke lenger på lager."
+  },
+  "label": {
+    "action": "Etiketter",
+    "title": "Skriv ut dekketiketter",
+    "description": "Klistremerker til hvert dekk, med QR som åpner dette settet.",
+    "format": "Etikettstørrelse",
+    "formats": {
+      "dymo_small": "Liten rull",
+      "dymo_standard": "Standard rull",
+      "thermal_large": "Stor rull",
+      "sheet_a4": "A4-ark"
+    },
+    "perSheet": "{count} per ark",
+    "copies": "Hvor mange",
+    "copiesHint": "ett per dekk ({count})",
+    "fewer": "Én færre",
+    "more": "Én til",
+    "print": "Skriv ut",
+    "shelfNote": "Hyllen står med vilje ikke på etiketten. Sett blir flyttet, og en trykt hylle ville da vært feil. QR-koden viser alltid hvor settet står nå.",
+    "reference": "Ref",
+    "quantity": "{count} dekk",
+    "withRims": "På felg",
+    "tpms": "TPMS",
+    "studded": "Pigg",
+    "unassigned": "Uten eier"
   }
 }

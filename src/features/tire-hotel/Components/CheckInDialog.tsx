@@ -189,6 +189,13 @@ export function CheckInDialog({
       })
     )
     onOpenChange(false)
+    // Straight to the set with the label dialog open: the tech is holding the
+    // tires right now, and the sticker has to go on before they reach the
+    // shelf. Coming back for it later is how sets end up unlabelled.
+    if (result.data?.id) {
+      router.push(`/tire-hotel/${result.data.id}?print=1`)
+      return
+    }
     router.refresh()
   }
 

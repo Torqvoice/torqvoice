@@ -400,5 +400,30 @@
     "openSet": "Atverti komplektą",
     "prepPending": "Prieš montuojant liko: {jobs}",
     "notOnShelf": "Šis komplektas nebėra saugykloje."
+  },
+  "label": {
+    "action": "Etiketės",
+    "title": "Spausdinti etiketes",
+    "description": "Lipdukas kiekvienai padangai su QR, atveriančiu šį komplektą.",
+    "format": "Etiketės dydis",
+    "formats": {
+      "dymo_small": "Maža ritė",
+      "dymo_standard": "Standartinė ritė",
+      "thermal_large": "Didelė ritė",
+      "sheet_a4": "A4 lapas"
+    },
+    "perSheet": "{count} lape",
+    "copies": "Kiek",
+    "copiesHint": "po vieną padangai ({count})",
+    "fewer": "Viena mažiau",
+    "more": "Viena daugiau",
+    "print": "Spausdinti",
+    "shelfNote": "Lentyna sąmoningai nespausdinama. Komplektai perkeliami, o atspausdinta lentyna taptų neteisinga. QR visada rodo dabartinę vietą.",
+    "reference": "Nr.",
+    "quantity": "{count} padangų",
+    "withRims": "Ant ratlankių",
+    "tpms": "TPMS",
+    "studded": "Su dygliais",
+    "unassigned": "Nepriskirta"
   }
 }

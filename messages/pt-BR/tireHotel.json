@@ -400,5 +400,30 @@
     "openSet": "Abrir jogo",
     "prepPending": "A fazer antes de montar: {jobs}",
     "notOnShelf": "Este jogo não está mais armazenado."
+  },
+  "label": {
+    "action": "Etiquetas",
+    "title": "Imprimir etiquetas",
+    "description": "Um adesivo por pneu, com QR que abre este jogo.",
+    "format": "Tamanho",
+    "formats": {
+      "dymo_small": "Rolo pequeno",
+      "dymo_standard": "Rolo padrão",
+      "thermal_large": "Rolo grande",
+      "sheet_a4": "Folha A4"
+    },
+    "perSheet": "{count} por folha",
+    "copies": "Quantas",
+    "copiesHint": "uma por pneu ({count})",
+    "fewer": "Uma a menos",
+    "more": "Uma a mais",
+    "print": "Imprimir",
+    "shelfNote": "A prateleira não é impressa de propósito. Jogos são movidos, e uma prateleira impressa ficaria errada. O QR sempre mostra onde está agora.",
+    "reference": "Ref",
+    "quantity": "{count} pneus",
+    "withRims": "Com rodas",
+    "tpms": "TPMS",
+    "studded": "Com cravos",
+    "unassigned": "Sem vínculo"
   }
 }

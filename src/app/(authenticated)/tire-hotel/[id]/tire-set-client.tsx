@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -18,6 +18,7 @@ import { AgreementCard, type AgreementRow } from '@/features/tire-hotel/Componen
 import { TreatmentCard, type TreatmentRow } from '@/features/tire-hotel/Components/TreatmentCard'
 import { MessageCustomerDialog } from '@/features/tire-hotel/Components/MessageCustomerDialog'
 import { NewTireJobDialog } from '@/features/tire-hotel/Components/NewTireJobDialog'
+import { PrintLabelsDialog } from '@/features/tire-hotel/Components/PrintLabelsDialog'
 import { TireJobsCard, type TireJobs } from '@/features/tire-hotel/Components/TireJobsCard'
 import { reasonForCondition } from '@/features/tire-hotel/Lib/messageTemplates'
 import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
@@ -41,6 +42,7 @@ import {
   MessageSquare,
   MapPin,
   Pencil,
+  Printer,
   Trash2,
   TriangleAlert,
   User,
@@ -143,6 +145,13 @@ export function TireSetClient({
   const [showEdit, setShowEdit] = useState(false)
   const [showMessage, setShowMessage] = useState(false)
   const [jobMode, setJobMode] = useState<'quote' | 'workOrder' | null>(null)
+  const [showLabels, setShowLabels] = useState(false)
+
+  // Arriving straight from check-in, with the tires still in hand.
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    if (searchParams.get('print') === '1') setShowLabels(true)
+  }, [searchParams])
   const [deleting, setDeleting] = useState(false)
 
   // Deleting is only offered once the set is off the shelf: the action
@@ -235,6 +244,10 @@ export function TireSetClient({
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowLabels(true)}>
+            <Printer className="mr-1.5 h-3.5 w-3.5" />
+            {t('label.action')}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
             {t('common.edit')}
@@ -486,6 +499,13 @@ export function TireSetClient({
           currencyCode={billing.currency}
         />
       )}
+
+      <PrintLabelsDialog
+        open={showLabels}
+        onOpenChange={setShowLabels}
+        tireSetId={set.id}
+        quantity={set.quantity}
+      />
 
       <MessageCustomerDialog
         open={showMessage}

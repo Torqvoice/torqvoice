@@ -400,5 +400,30 @@
     "openSet": "Otwórz komplet",
     "prepPending": "Do zrobienia przed montażem: {jobs}",
     "notOnShelf": "Ten komplet nie jest już w magazynie."
+  },
+  "label": {
+    "action": "Etykiety",
+    "title": "Drukuj etykiety",
+    "description": "Naklejka na każdą oponę, z kodem QR otwierającym ten komplet.",
+    "format": "Rozmiar",
+    "formats": {
+      "dymo_small": "Mała rolka",
+      "dymo_standard": "Standardowa rolka",
+      "thermal_large": "Duża rolka",
+      "sheet_a4": "Arkusz A4"
+    },
+    "perSheet": "{count} na arkusz",
+    "copies": "Ile",
+    "copiesHint": "jedna na oponę ({count})",
+    "fewer": "O jedną mniej",
+    "more": "O jedną więcej",
+    "print": "Drukuj",
+    "shelfNote": "Półka celowo nie jest drukowana. Komplety bywają przenoszone, a wydrukowana półka byłaby wtedy błędna. Kod QR zawsze pokazuje aktualne miejsce.",
+    "reference": "Nr",
+    "quantity": "{count} opon",
+    "withRims": "Na felgach",
+    "tpms": "TPMS",
+    "studded": "Z kolcami",
+    "unassigned": "Nieprzypisane"
   }
 }

@@ -400,5 +400,30 @@
     "openSet": "Apri il treno",
     "prepPending": "Da fare prima del montaggio: {jobs}",
     "notOnShelf": "Questo treno non è più in deposito."
+  },
+  "label": {
+    "action": "Etichette",
+    "title": "Stampa le etichette",
+    "description": "Un adesivo per pneumatico, con QR che apre questo treno.",
+    "format": "Formato",
+    "formats": {
+      "dymo_small": "Rotolo piccolo",
+      "dymo_standard": "Rotolo standard",
+      "thermal_large": "Rotolo grande",
+      "sheet_a4": "Foglio A4"
+    },
+    "perSheet": "{count} per foglio",
+    "copies": "Quante",
+    "copiesHint": "una per pneumatico ({count})",
+    "fewer": "Una in meno",
+    "more": "Una in più",
+    "print": "Stampa",
+    "shelfNote": "Lo scaffale non viene stampato di proposito. I treni vengono spostati, e uno scaffale stampato risulterebbe sbagliato. Il QR mostra sempre la posizione attuale.",
+    "reference": "Rif",
+    "quantity": "{count} pneumatici",
+    "withRims": "Su cerchi",
+    "tpms": "TPMS",
+    "studded": "Chiodati",
+    "unassigned": "Non assegnato"
   }
 }

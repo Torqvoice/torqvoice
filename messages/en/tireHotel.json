@@ -400,5 +400,30 @@
     "openSet": "Open tire set",
     "prepPending": "Still to do before fitting: {jobs}",
     "notOnShelf": "This set is no longer in storage."
+  },
+  "label": {
+    "action": "Labels",
+    "title": "Print tire labels",
+    "description": "Stickers for each tire, with a QR that opens this set.",
+    "format": "Label size",
+    "formats": {
+      "dymo_small": "Small roll",
+      "dymo_standard": "Standard roll",
+      "thermal_large": "Large roll",
+      "sheet_a4": "A4 sheet"
+    },
+    "perSheet": "{count} per sheet",
+    "copies": "How many",
+    "copiesHint": "one per tire ({count})",
+    "fewer": "One fewer",
+    "more": "One more",
+    "print": "Print",
+    "shelfNote": "The shelf is not printed on purpose. Sets get moved, and a printed shelf would then be wrong. Scanning the QR always shows where it is now.",
+    "reference": "Ref",
+    "quantity": "{count} tires",
+    "withRims": "On rims",
+    "tpms": "TPMS",
+    "studded": "Studded",
+    "unassigned": "Unassigned"
   }
 }

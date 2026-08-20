@@ -400,5 +400,30 @@
     "openSet": "Ouvrir le jeu",
     "prepPending": "À faire avant montage : {jobs}",
     "notOnShelf": "Ce jeu n’est plus en stockage."
+  },
+  "label": {
+    "action": "Étiquettes",
+    "title": "Imprimer les étiquettes",
+    "description": "Une étiquette par pneu, avec un QR qui ouvre ce jeu.",
+    "format": "Format",
+    "formats": {
+      "dymo_small": "Petit rouleau",
+      "dymo_standard": "Rouleau standard",
+      "thermal_large": "Grand rouleau",
+      "sheet_a4": "Planche A4"
+    },
+    "perSheet": "{count} par planche",
+    "copies": "Combien",
+    "copiesHint": "une par pneu ({count})",
+    "fewer": "Une de moins",
+    "more": "Une de plus",
+    "print": "Imprimer",
+    "shelfNote": "L’étagère n’est volontairement pas imprimée. Les jeux sont déplacés, et une étagère imprimée serait alors fausse. Le QR indique toujours l’emplacement actuel.",
+    "reference": "Réf",
+    "quantity": "{count} pneus",
+    "withRims": "Sur jantes",
+    "tpms": "TPMS",
+    "studded": "Cloutés",
+    "unassigned": "Non attribué"
   }
 }

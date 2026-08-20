@@ -400,5 +400,30 @@
     "openSet": "Lastik takımını aç",
     "prepPending": "Takmadan önce yapılacaklar: {jobs}",
     "notOnShelf": "Bu takım artık depoda değil."
+  },
+  "label": {
+    "action": "Etiketler",
+    "title": "Lastik etiketi yazdır",
+    "description": "Her lastik için etiket, bu takımı açan QR koduyla.",
+    "format": "Etiket boyutu",
+    "formats": {
+      "dymo_small": "Küçük rulo",
+      "dymo_standard": "Standart rulo",
+      "thermal_large": "Büyük rulo",
+      "sheet_a4": "A4 sayfa"
+    },
+    "perSheet": "sayfa başına {count}",
+    "copies": "Kaç adet",
+    "copiesHint": "lastik başına bir ({count})",
+    "fewer": "Bir eksik",
+    "more": "Bir fazla",
+    "print": "Yazdır",
+    "shelfNote": "Raf bilerek yazdırılmıyor. Takımlar yer değiştirir ve basılı raf yanlış kalır. QR her zaman güncel yeri gösterir.",
+    "reference": "Ref",
+    "quantity": "{count} lastik",
+    "withRims": "Jantlı",
+    "tpms": "TPMS",
+    "studded": "Çivili",
+    "unassigned": "Atanmamış"
   }
 }
