@@ -394,68 +394,74 @@ export function NewTireJobDialog({
                     )}
                   </div>
 
-                  {!searchActive && data?.parsedSize && rows.length > 0 && (
-                    <p className="px-0.5 text-xs text-muted-foreground">
-                      {/* The suggestions, not the rows: a pick hoisted to the
-                          top may be a tire in another size. */}
-                      {t('job.inSize', { count: suggestions.length, size: data.parsedSize })}
-                    </p>
-                  )}
+                  {/* The line is always here, empty or not: a caption that
+                      comes and goes with the search moves everything below
+                      it by its own height on every keystroke. */}
+                  <p className="h-4 px-0.5 text-xs text-muted-foreground">
+                    {!searchActive && data?.parsedSize && rows.length > 0
+                      ? // The suggestions, not the rows: a pick hoisted to the
+                        // top may be a tire in another size.
+                        t('job.inSize', { count: suggestions.length, size: data.parsedSize })
+                      : ''}
+                  </p>
 
-                  {searching && rows.length === 0 ? (
-                    <div className="flex items-center justify-center py-6">
-                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : rows.length === 0 ? (
-                    // Nothing matched, which is normal for an unusual size or
-                    // a shop that does not stock tires. The line still gets
-                    // made, priced by hand.
-                    <div className="flex items-start gap-2.5 rounded-lg border border-dashed p-3">
-                      <PackageX className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <p className="text-xs text-muted-foreground">
-                        {searchActive
-                          ? t('job.noSearchHits', { query: query.trim() })
-                          : data?.parsedSize
-                            ? t('job.noMatch', { size: data.parsedSize })
-                            : t('job.noSize')}
-                      </p>
-                    </div>
-                  ) : (
-                    // One bordered list rather than a stack of cards: this is
-                    // a table of stock, and a tech scanning a dozen brands in
-                    // one size wants them close enough to compare at a glance.
-                    <div className="max-h-56 divide-y overflow-x-hidden overflow-y-auto rounded-lg border">
-                      {rows.map((match) => {
-                        const isOn = picked?.id === match.id
-                        return (
-                          <button
-                            key={match.id}
-                            type="button"
-                            onClick={() => pick(match)}
-                            aria-pressed={isOn}
-                            className={cn(
-                              'flex w-full min-w-0 items-center gap-2 px-2.5 py-1.5 text-left transition-colors',
-                              'focus-visible:ring-ring focus-visible:ring-inset focus-visible:ring-2 focus-visible:outline-none',
-                              isOn ? 'bg-primary/5' : 'hover:bg-muted/60'
-                            )}
-                          >
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-sm">{match.name}</span>
-                              {stockMeta(match)}
-                            </span>
-                            <span className="shrink-0 text-sm tabular-nums">
-                              {formatCurrency(match.sellPrice, currencyCode)}
-                            </span>
-                            {/* The slot is always there, so picking a row does
-                                not shift every price in the list sideways. */}
-                            <span className="w-3.5 shrink-0">
-                              {isOn && <Check className="h-3.5 w-3.5 text-primary" />}
-                            </span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
+                  {/* Fixed height, not max height. The list is one to twenty
+                      rows depending on what was typed last, and a panel that
+                      resizes with the result count walks the whole dialog up
+                      and down the screen while somebody is still typing. */}
+                  <div className="h-56 overflow-x-hidden overflow-y-auto rounded-lg border">
+                    {searching && rows.length === 0 ? (
+                      <div className="flex h-full items-center justify-center">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : rows.length === 0 ? (
+                      // Nothing matched, which is normal for an unusual size
+                      // or a shop that does not stock tires. The line still
+                      // gets made, priced by hand.
+                      <div className="flex h-full items-center justify-center gap-2.5 px-4 text-center">
+                        <PackageX className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">
+                          {searchActive
+                            ? t('job.noSearchHits', { query: query.trim() })
+                            : data?.parsedSize
+                              ? t('job.noMatch', { size: data.parsedSize })
+                              : t('job.noSize')}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {rows.map((match) => {
+                          const isOn = picked?.id === match.id
+                          return (
+                            <button
+                              key={match.id}
+                              type="button"
+                              onClick={() => pick(match)}
+                              aria-pressed={isOn}
+                              className={cn(
+                                'flex w-full min-w-0 items-center gap-2 px-2.5 py-1.5 text-left transition-colors',
+                                'focus-visible:ring-ring focus-visible:ring-inset focus-visible:ring-2 focus-visible:outline-none',
+                                isOn ? 'bg-primary/5' : 'hover:bg-muted/60'
+                              )}
+                            >
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-sm">{match.name}</span>
+                                {stockMeta(match)}
+                              </span>
+                              <span className="shrink-0 text-sm tabular-nums">
+                                {formatCurrency(match.sellPrice, currencyCode)}
+                              </span>
+                              {/* The slot is always there, so picking a row
+                                  does not shift every price sideways. */}
+                              <span className="w-3.5 shrink-0">
+                                {isOn && <Check className="h-3.5 w-3.5 text-primary" />}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
