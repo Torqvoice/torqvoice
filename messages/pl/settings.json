@@ -1482,9 +1482,8 @@
     "save": "Zapisz ustawienia hotelu opon",
     "saved": "Zapisano ustawienia hotelu opon",
     "billingTitle": "Rozliczenie przechowywania",
-    "billingHint": "Wypełniane przy tworzeniu nowej umowy. Każda umowa może to zmienić.",
-    "seasonalPrice": "Domyślna cena za sezon",
-    "monthlyPrice": "Domyślna cena za miesiąc",
+    "billingHint": "Wstawiane w pozycji przechowywania przy rozliczaniu kompletu. Można je zmienić na fakturze.",
+    "seasonalPrice": "Domyślna cena przechowywania",
     "prepTitle": "Ceny przygotowania",
     "prepHint": "Ile kosztuje każdy rodzaj przygotowania. Puste pole oznacza, że nigdy nie jest fakturowane, co pasuje warsztatom mającym mycie w cenie przechowywania. Wycenione trafiają automatycznie na wycenę i zlecenie.",
     "prepNotCharged": "nie naliczane"

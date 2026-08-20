@@ -33,7 +33,6 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE,
-      SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE,
     ]),
     db.vehicle.findMany({
       where: { organizationId, isArchived: false },
@@ -62,7 +61,6 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
   const imperial = settings[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'
   const billing = {
     seasonalPrice: Number(settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE]) || 0,
-    monthlyPrice: Number(settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE]) || 0,
     currency: settings[SETTING_KEYS.CURRENCY_CODE] || 'USD',
   }
 

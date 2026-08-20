@@ -1482,9 +1482,8 @@
     "save": "Salva impostazioni hotel pneumatici",
     "saved": "Impostazioni hotel pneumatici salvate",
     "billingTitle": "Fatturazione del deposito",
-    "billingHint": "Precompilato quando crei un nuovo contratto. Ogni contratto può modificarlo.",
-    "seasonalPrice": "Prezzo predefinito a stagione",
-    "monthlyPrice": "Prezzo predefinito al mese",
+    "billingHint": "Precompilato sulla riga di deposito quando fatturi un treno. Modificabile sulla fattura.",
+    "seasonalPrice": "Prezzo di deposito predefinito",
     "prepTitle": "Prezzi della preparazione",
     "prepHint": "Quanto costa ogni tipo di preparazione. Lasciandolo vuoto non viene mai fatturata, come serve a chi include il lavaggio nel deposito. Quelle con un prezzo finiscono da sole su preventivo e ordine.",
     "prepNotCharged": "non addebitato"

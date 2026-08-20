@@ -1482,9 +1482,8 @@
     "save": "Lagre innstillinger for dekkhotell",
     "saved": "Innstillinger for dekkhotell lagret",
     "billingTitle": "Lagerfakturering",
-    "billingHint": "Fylles inn når du oppretter en ny avtale. Hver avtale kan overstyre det.",
-    "seasonalPrice": "Standardpris per sesong",
-    "monthlyPrice": "Standardpris per måned",
+    "billingHint": "Fylles inn på lagringslinjen når du fakturerer et sett. Kan endres på fakturaen.",
+    "seasonalPrice": "Standard lagringspris",
     "prepTitle": "Priser for klargjøring",
     "prepHint": "Hva hver type klargjøring koster. La en stå tom, så faktureres den aldri, som passer for verksteder som har vask inkludert i lagerprisen. De med pris legges automatisk på tilbud og arbeidsordre.",
     "prepNotCharged": "ikke fakturert"

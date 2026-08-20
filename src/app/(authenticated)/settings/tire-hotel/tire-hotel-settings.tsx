@@ -48,9 +48,6 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
   const [seasonalPrice, setSeasonalPrice] = useState(
     settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE] || '0'
   )
-  const [monthlyPrice, setMonthlyPrice] = useState(
-    settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE] || '0'
-  )
   // Kept as typed text rather than numbers so a half-entered price does not
   // snap back to 0 between keystrokes.
   const [treatmentPrices, setTreatmentPrices] = useState<Record<string, string>>(() => {
@@ -94,9 +91,6 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
       ),
       [SETTING_KEYS.TIRE_HOTEL_DEFAULT_SEASONAL_PRICE]: String(
         Math.max(0, Number(seasonalPrice) || 0)
-      ),
-      [SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE]: String(
-        Math.max(0, Number(monthlyPrice) || 0)
       ),
       [SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES]: serializeTreatmentPrices(
         Object.fromEntries(
@@ -208,31 +202,20 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
                 <p className="text-xs text-muted-foreground">{t('tireHotel.billingHint')}</p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="tireHotelSeasonal">{t('tireHotel.seasonalPrice')}</Label>
-                  <Input
-                    id="tireHotelSeasonal"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={seasonalPrice}
-                    onChange={(e) => setSeasonalPrice(e.target.value)}
-                    className="tabular-nums"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="tireHotelMonthly">{t('tireHotel.monthlyPrice')}</Label>
-                  <Input
-                    id="tireHotelMonthly"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={monthlyPrice}
-                    onChange={(e) => setMonthlyPrice(e.target.value)}
-                    className="tabular-nums"
-                  />
-                </div>
+              {/* One number. There is no billing model to choose between any
+                  more: this is what the storage line opens at, and it stays
+                  editable on the bill. */}
+              <div className="max-w-xs space-y-2">
+                <Label htmlFor="tireHotelSeasonal">{t('tireHotel.seasonalPrice')}</Label>
+                <Input
+                  id="tireHotelSeasonal"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={seasonalPrice}
+                  onChange={(e) => setSeasonalPrice(e.target.value)}
+                  className="tabular-nums"
+                />
               </div>
 
               <Separator />

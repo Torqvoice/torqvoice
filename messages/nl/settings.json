@@ -1482,9 +1482,8 @@
     "save": "Bandenhotelinstellingen opslaan",
     "saved": "Bandenhotelinstellingen opgeslagen",
     "billingTitle": "Opslagfacturatie",
-    "billingHint": "Vooraf ingevuld bij een nieuwe overeenkomst. Elke overeenkomst kan hiervan afwijken.",
-    "seasonalPrice": "Standaardprijs per seizoen",
-    "monthlyPrice": "Standaardprijs per maand",
+    "billingHint": "Wordt ingevuld op de opslagregel bij het factureren van een set. Blijft aanpasbaar.",
+    "seasonalPrice": "Standaard opslagprijs",
     "prepTitle": "Prijzen voorbereiding",
     "prepHint": "Wat elk soort voorbereiding kost. Laat er een leeg en die wordt nooit gefactureerd, wat past bij een bedrijf dat wassen in de opslagprijs meeneemt. Beprijsde komen automatisch op offerte en werkorder.",
     "prepNotCharged": "niet in rekening"

@@ -1482,9 +1482,8 @@
     "save": "Lastik oteli ayarlarını kaydet",
     "saved": "Lastik oteli ayarları kaydedildi",
     "billingTitle": "Depolama faturalandırması",
-    "billingHint": "Yeni sözleşme oluştururken önceden doldurulur. Her sözleşme bunu değiştirebilir.",
-    "seasonalPrice": "Sezon başına varsayılan fiyat",
-    "monthlyPrice": "Ay başına varsayılan fiyat",
+    "billingHint": "Bir takımı faturalarken depolama satırına önceden yazılır. Faturada değiştirilebilir.",
+    "seasonalPrice": "Varsayılan depolama ücreti",
     "prepTitle": "Hazırlık fiyatları",
     "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
     "prepNotCharged": "ücretlendirilmiyor"

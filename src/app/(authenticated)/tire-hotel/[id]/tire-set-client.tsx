@@ -125,7 +125,6 @@ export function TireSetClient({
   jobs: TireJobs
   billing: {
     seasonalPrice: number
-    monthlyPrice: number
     currency: string
   }
   /** The workshop's own replacement limits, which decide the projection. */

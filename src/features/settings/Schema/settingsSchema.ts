@@ -140,7 +140,6 @@ export const SETTING_KEYS = {
   TIRE_HOTEL_CAPACITY_WARN_PERCENT: 'tireHotel.capacityWarnPercent',
   /// Prefilled storage fee, offered when a set is billed.
   TIRE_HOTEL_DEFAULT_SEASONAL_PRICE: 'tireHotel.defaultSeasonalPrice',
-  TIRE_HOTEL_DEFAULT_MONTHLY_PRICE: 'tireHotel.defaultMonthlyPrice',
   /// What each kind of prep work is charged at, as JSON keyed by treatment
   /// type. A type with no price here produces no line, which is how a shop
   /// that folds washing into the storage fee keeps it off the invoice.
