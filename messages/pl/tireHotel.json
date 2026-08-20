@@ -369,5 +369,36 @@
       "stored": "Cześć {customer_name}, Twoje opony {season} są już u nas w magazynie w {shop_name}. Odezwiemy się, gdy przyjdzie czas na wymianę.",
       "custom": "Cześć {customer_name}, w sprawie Twoich opon {season}, które leżą u nas w {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Wyceny i zlecenia",
+    "newQuote": "Nowa wycena",
+    "newWorkOrder": "Nowe zlecenie",
+    "none": "Dla tego kompletu nic jeszcze nie utworzono.",
+    "quote": "Wycena",
+    "workOrder": "Zlecenie",
+    "converted": "przekształcono",
+    "quoteTitle": "Wyceń nowy komplet",
+    "workOrderTitle": "Zaplanuj wymianę",
+    "loadingSet": "Wczytywanie kompletu",
+    "tires": "Opony",
+    "inStock": "{count} na stanie",
+    "shortStock": "tylko {count} na stanie",
+    "order": "do zamówienia",
+    "noMatch": "Nic na stanie nie pasuje do {size}. Pozycja zostanie dodana z ceną, którą podasz.",
+    "noSize": "Ten komplet nie ma rozmiaru, więc nie da się dopasować stanu. Pozycja użyje Twojej ceny.",
+    "unitPrice": "Cena za oponę",
+    "lineTotal": "Suma pozycji",
+    "quantityNote": "za {count} opon",
+    "createQuote": "Utwórz wycenę",
+    "createWorkOrder": "Utwórz zlecenie",
+    "quoteCreated": "Utworzono wycenę {number}",
+    "workOrderCreated": "Utworzono zlecenie",
+    "needsVehicle": "Powiąż pojazd z kompletem, zanim utworzysz zlecenie.",
+    "failed": "Nie udało się utworzyć",
+    "bannerTitle": "Odbiór z",
+    "openSet": "Otwórz komplet",
+    "prepPending": "Do zrobienia przed montażem: {jobs}",
+    "notOnShelf": "Ten komplet nie jest już w magazynie."
   }
 }

@@ -40,6 +40,7 @@ import { ServiceVideoManager } from '../service-video-manager'
 import { ServiceDocumentsManager } from '../service-documents-manager'
 import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
 import { UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
+import { TireSetBanner } from '@/features/tire-hotel/Components/TireSetBanner'
 
 import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
@@ -327,6 +328,15 @@ export function ServicePageClient({
         onNotifyCustomer={handleNotifyCustomer}
         hasCustomer={!!customer}
       />
+
+      {/* Above the tabs, not inside one: fetching the tires is the first
+          thing that happens on this job, and it should not depend on which
+          tab someone happens to be looking at. */}
+      {record.tireSet && (
+        <div className="shrink-0 px-4 pt-4">
+          <TireSetBanner set={record.tireSet} />
+        </div>
+      )}
 
       {activeTab === 'details' && (
         <>

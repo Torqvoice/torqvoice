@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -9,66 +9,60 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { searchVehicles } from "@/features/vehicles/Actions/vehicleActions";
+} from '@/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
 
 interface VehicleOption {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  customerId: string | null;
-  customer: { id: string; name: string } | null;
+  id: string
+  make: string
+  model: string
+  year: number
+  licensePlate: string | null
+  customerId: string | null
+  customer: { id: string; name: string } | null
 }
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 50
 
 interface VehicleComboboxProps {
-  value: string;
-  onChange: (id: string, vehicle: VehicleOption | null) => void;
-  initialVehicle?: VehicleOption | null;
-  placeholder?: string;
-  noneLabel?: string;
+  value: string
+  onChange: (id: string, vehicle: VehicleOption | null) => void
+  initialVehicle?: VehicleOption | null
+  placeholder?: string
+  noneLabel?: string
   /** When set, only this customer's vehicles are offered */
-  customerId?: string;
+  customerId?: string
 }
 
 function formatVehicle(v: VehicleOption) {
-  return `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ""}`;
+  return `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
 }
 
 export function VehicleCombobox({
   value,
   onChange,
   initialVehicle,
-  placeholder = "Select vehicle...",
-  noneLabel = "None",
+  placeholder = 'Select vehicle...',
+  noneLabel = 'None',
   customerId,
 }: VehicleComboboxProps) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [options, setOptions] = useState<VehicleOption[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [selected, setSelected] = useState<VehicleOption | null>(
-    initialVehicle ?? null
-  );
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const loadingMoreRef = useRef(false);
-  const valueRef = useRef(value);
-  valueRef.current = value;
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const [options, setOptions] = useState<VehicleOption[]>([])
+  const [searching, setSearching] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [selected, setSelected] = useState<VehicleOption | null>(initialVehicle ?? null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const loadingMoreRef = useRef(false)
+  const valueRef = useRef(value)
+  valueRef.current = value
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
 
   const mapVehicle = (v: VehicleOption) => ({
     id: v.id,
@@ -78,114 +72,106 @@ export function VehicleCombobox({
     licensePlate: v.licensePlate,
     customerId: v.customerId,
     customer: v.customer,
-  });
+  })
 
   const loadOptions = useCallback(
     async (query?: string, offset = 0, append = false) => {
-      if (offset === 0) setSearching(true);
+      if (offset === 0) setSearching(true)
       else {
-        setLoadingMore(true);
-        loadingMoreRef.current = true;
+        setLoadingMore(true)
+        loadingMoreRef.current = true
       }
 
-      const result = await searchVehicles(query || undefined, PAGE_SIZE, offset, customerId || undefined);
+      const result = await searchVehicles(
+        query || undefined,
+        PAGE_SIZE,
+        offset,
+        customerId || undefined
+      )
 
-      let mapped: VehicleOption[] = [];
+      let mapped: VehicleOption[] = []
       if (result.success && result.data) {
-        mapped = result.data.map(mapVehicle);
+        mapped = result.data.map(mapVehicle)
         if (append) {
-          setOptions((prev) => [...prev, ...mapped]);
+          setOptions((prev) => [...prev, ...mapped])
         } else {
-          setOptions(mapped);
+          setOptions(mapped)
         }
-        setHasMore(result.data.length === PAGE_SIZE);
+        setHasMore(result.data.length === PAGE_SIZE)
       }
 
-      setSearching(false);
-      setLoadingMore(false);
-      loadingMoreRef.current = false;
-      return mapped;
+      setSearching(false)
+      setLoadingMore(false)
+      loadingMoreRef.current = false
+      return mapped
     },
     [customerId]
-  );
+  )
 
   // Prefetch on mount and whenever the customer filter changes. When a
   // customer filter is active and they own exactly one vehicle, select it
   // automatically so the user doesn't have to.
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false
     loadOptions().then((opts) => {
-      if (cancelled || !customerId) return;
+      if (cancelled || !customerId) return
       if (opts.length === 1 && !valueRef.current) {
-        setSelected(opts[0]);
-        onChangeRef.current(opts[0].id, opts[0]);
+        setSelected(opts[0])
+        onChangeRef.current(opts[0].id, opts[0])
       }
-    });
+    })
     return () => {
-      cancelled = true;
-    };
-  }, [loadOptions, customerId]);
+      cancelled = true
+    }
+  }, [loadOptions, customerId])
 
   // Debounced search — resets to page 0
   useEffect(() => {
-    if (!open) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!open) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
     if (!search) {
-      loadOptions();
-      return;
+      loadOptions()
+      return
     }
     debounceRef.current = setTimeout(() => {
-      loadOptions(search);
-    }, 300);
+      loadOptions(search)
+    }, 300)
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [search, open, loadOptions]);
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [search, open, loadOptions])
 
   useEffect(() => {
-    if (initialVehicle) setSelected(initialVehicle);
-  }, [initialVehicle]);
+    if (initialVehicle) setSelected(initialVehicle)
+  }, [initialVehicle])
 
   // Parent can clear the selection (e.g. customer changed); drop the label too
   useEffect(() => {
-    if (!value) setSelected(null);
-  }, [value]);
+    if (!value) setSelected(null)
+  }, [value])
 
   // Infinite scroll
   const handleScroll = useCallback(() => {
-    const el = listRef.current;
-    if (!el || !hasMore || loadingMoreRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
+    const el = listRef.current
+    if (!el || !hasMore || loadingMoreRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = el
     if (scrollHeight - scrollTop - clientHeight < 50) {
-      loadOptions(search || undefined, options.length, true);
+      loadOptions(search || undefined, options.length, true)
     }
-  }, [hasMore, search, options.length, loadOptions]);
+  }, [hasMore, search, options.length, loadOptions])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          className="w-full justify-between font-normal"
-        >
-          <span className="truncate">
-            {selected ? formatVehicle(selected) : placeholder}
-          </span>
+        <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
+          <span className="truncate">{selected ? formatVehicle(selected) : placeholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
         <Command shouldFilter={false}>
-          <CommandInput
-            placeholder={placeholder}
-            value={search}
-            onValueChange={setSearch}
-          />
-          <CommandList
-            ref={listRef}
-            onScroll={handleScroll}
-          >
+          <CommandInput placeholder={placeholder} value={search} onValueChange={setSearch} />
+          <CommandList ref={listRef} onScroll={handleScroll}>
             {searching && options.length === 0 && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -195,47 +181,35 @@ export function VehicleCombobox({
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
-                  onChange("", null);
-                  setSelected(null);
-                  setOpen(false);
+                  onChange('', null)
+                  setSelected(null)
+                  setOpen(false)
                 }}
               >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    !value ? "opacity-100" : "opacity-0"
-                  )}
-                />
+                <Check className={cn('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
                 {noneLabel}
               </CommandItem>
               {options.map((v) => (
                 <CommandItem
                   key={v.id}
                   onSelect={() => {
-                    onChange(v.id, v);
-                    setSelected(v);
-                    setOpen(false);
+                    onChange(v.id, v)
+                    setSelected(v)
+                    setOpen(false)
                   }}
                 >
                   <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === v.id ? "opacity-100" : "opacity-0"
-                    )}
+                    className={cn('mr-2 h-4 w-4', value === v.id ? 'opacity-100' : 'opacity-0')}
                   />
                   <div>
                     <p className="text-sm">
                       {v.year} {v.make} {v.model}
                       {v.licensePlate && (
-                        <span className="ml-1.5 text-muted-foreground">
-                          · {v.licensePlate}
-                        </span>
+                        <span className="ml-1.5 text-muted-foreground">· {v.licensePlate}</span>
                       )}
                     </p>
                     {v.customer?.name && (
-                      <p className="text-xs text-muted-foreground">
-                        {v.customer.name}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{v.customer.name}</p>
                     )}
                   </div>
                 </CommandItem>
@@ -250,5 +224,5 @@ export function VehicleCombobox({
         </Command>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

@@ -369,5 +369,36 @@
       "stored": "Hola {customer_name}, tus neumáticos de {season} ya están guardados con nosotros en {shop_name}. Te avisamos cuando toque el cambio.",
       "custom": "Hola {customer_name}, sobre tus neumáticos de {season} guardados con nosotros en {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Presupuestos y órdenes",
+    "newQuote": "Nuevo presupuesto",
+    "newWorkOrder": "Nueva orden",
+    "none": "Aún no se ha creado nada para este juego.",
+    "quote": "Presupuesto",
+    "workOrder": "Orden",
+    "converted": "convertido",
+    "quoteTitle": "Presupuestar un juego nuevo",
+    "workOrderTitle": "Programar el cambio",
+    "loadingSet": "Cargando el juego",
+    "tires": "Neumáticos",
+    "inStock": "{count} en stock",
+    "shortStock": "solo {count} en stock",
+    "order": "pedir",
+    "noMatch": "Nada en stock coincide con {size}. La línea se añade con el precio que pongas.",
+    "noSize": "Este juego no tiene medida, así que no se puede cruzar con el stock. La línea se añade con tu precio.",
+    "unitPrice": "Precio por neumático",
+    "lineTotal": "Total línea",
+    "quantityNote": "para {count} neumáticos",
+    "createQuote": "Crear presupuesto",
+    "createWorkOrder": "Crear orden",
+    "quoteCreated": "Presupuesto {number} creado",
+    "workOrderCreated": "Orden creada",
+    "needsVehicle": "Vincula un vehículo al juego antes de crear una orden.",
+    "failed": "No se ha podido crear",
+    "bannerTitle": "Recoger en",
+    "openSet": "Abrir juego",
+    "prepPending": "Pendiente antes de montar: {jobs}",
+    "notOnShelf": "Este juego ya no está guardado."
   }
 }

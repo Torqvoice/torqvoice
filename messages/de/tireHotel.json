@@ -369,5 +369,36 @@
       "stored": "Hallo {customer_name}, Ihre {season}reifen liegen jetzt bei uns bei {shop_name}. Wir melden uns, wenn der Wechsel ansteht.",
       "custom": "Hallo {customer_name}, zu Ihren bei {shop_name} eingelagerten {season}reifen:"
     }
+  },
+  "job": {
+    "cardTitle": "Angebote und Aufträge",
+    "newQuote": "Neues Angebot",
+    "newWorkOrder": "Neuer Auftrag",
+    "none": "Für diesen Satz wurde noch nichts angelegt.",
+    "quote": "Angebot",
+    "workOrder": "Auftrag",
+    "converted": "umgewandelt",
+    "quoteTitle": "Neuen Satz anbieten",
+    "workOrderTitle": "Reifenwechsel einplanen",
+    "loadingSet": "Satz wird geladen",
+    "tires": "Reifen",
+    "inStock": "{count} auf Lager",
+    "shortStock": "nur {count} auf Lager",
+    "order": "zu bestellen",
+    "noMatch": "Nichts auf Lager passt zu {size}. Die Position wird mit Ihrem Preis angelegt.",
+    "noSize": "Für diesen Satz ist keine Größe erfasst, daher kein Lagerabgleich. Die Position wird mit Ihrem Preis angelegt.",
+    "unitPrice": "Preis pro Reifen",
+    "lineTotal": "Positionssumme",
+    "quantityNote": "für {count} Reifen",
+    "createQuote": "Angebot erstellen",
+    "createWorkOrder": "Auftrag erstellen",
+    "quoteCreated": "Angebot {number} erstellt",
+    "workOrderCreated": "Auftrag erstellt",
+    "needsVehicle": "Verknüpfen Sie ein Fahrzeug, bevor Sie einen Auftrag anlegen.",
+    "failed": "Konnte nicht angelegt werden",
+    "bannerTitle": "Holen von",
+    "openSet": "Reifensatz öffnen",
+    "prepPending": "Vor der Montage offen: {jobs}",
+    "notOnShelf": "Dieser Satz ist nicht mehr eingelagert."
   }
 }

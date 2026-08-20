@@ -369,5 +369,36 @@
       "stored": "Hallo {customer_name}, uw {season}banden liggen nu bij ons opgeslagen bij {shop_name}. We laten het weten wanneer het tijd is om te wisselen.",
       "custom": "Hallo {customer_name}, over uw {season}banden die bij ons liggen bij {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Offertes en opdrachten",
+    "newQuote": "Nieuwe offerte",
+    "newWorkOrder": "Nieuwe werkorder",
+    "none": "Voor deze set is nog niets aangemaakt.",
+    "quote": "Offerte",
+    "workOrder": "Werkorder",
+    "converted": "omgezet",
+    "quoteTitle": "Nieuwe set offreren",
+    "workOrderTitle": "Bandenwissel inplannen",
+    "loadingSet": "Set wordt geladen",
+    "tires": "Banden",
+    "inStock": "{count} op voorraad",
+    "shortStock": "maar {count} op voorraad",
+    "order": "te bestellen",
+    "noMatch": "Niets op voorraad past bij {size}. De regel komt erin met de prijs die u invult.",
+    "noSize": "Deze set heeft geen maat, dus voorraad kan niet gematcht worden. De regel komt erin met uw prijs.",
+    "unitPrice": "Prijs per band",
+    "lineTotal": "Regeltotaal",
+    "quantityNote": "voor {count} banden",
+    "createQuote": "Offerte aanmaken",
+    "createWorkOrder": "Werkorder aanmaken",
+    "quoteCreated": "Offerte {number} aangemaakt",
+    "workOrderCreated": "Werkorder aangemaakt",
+    "needsVehicle": "Koppel een voertuig aan de set voordat u een opdracht maakt.",
+    "failed": "Kon dit niet aanmaken",
+    "bannerTitle": "Ophalen van",
+    "openSet": "Bandenset openen",
+    "prepPending": "Nog te doen voor montage: {jobs}",
+    "notOnShelf": "Deze set ligt niet meer in opslag."
   }
 }

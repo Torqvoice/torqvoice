@@ -236,6 +236,12 @@ model ServiceRecord {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  /// The stored set this job is about, when it came out of the tire hotel.
+  /// Without it a tire-change work order says nothing about which tires, and
+  /// the technician has to go and ask.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
+
   /// Null for parts-only / counter sales; such records use customerId
   /// (or neither, for anonymous walk-in sales)
   vehicleId String?
@@ -669,6 +675,12 @@ model Quote {
 
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  /// The stored set this quote is about, when it came out of the tire hotel.
+  /// SetNull rather than Cascade: a quote already sent is a document the
+  /// customer holds, and deleting the set must not erase it.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
 
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
@@ -1712,6 +1724,8 @@ model TireSet {
   movements    TireMovement[]
   agreements   TireStorageAgreement[]
   treatments   TireTreatment[]
+  quotes       Quote[]
+  serviceRecords ServiceRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

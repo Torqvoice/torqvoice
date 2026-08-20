@@ -133,6 +133,8 @@
     "tire_treatment_mark": "Merket klargjøring",
     "tire_treatment_complete_all": "Fullførte klargjøring",
     "tire_agreement_delete": "Slettet lagringsavtale",
-    "tire_set_message_customer": "Sendte melding til kunde om et dekksett"
+    "tire_set_message_customer": "Sendte melding til kunde om et dekksett",
+    "tire_set_create_quote": "Opprettet tilbud fra et dekksett",
+    "tire_set_create_work_order": "Opprettet arbeidsordre fra et dekksett"
   }
 }

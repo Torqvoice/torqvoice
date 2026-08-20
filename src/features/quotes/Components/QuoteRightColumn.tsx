@@ -329,10 +329,22 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
       {(() => {
         // Universal display: net per category, net subtotal, net discount, tax, gross total.
         // Same layout as the quote PDF/share view so the user always sees the breakdown.
-        const displayPartsSubtotal = netLineTotal(state.partsSubtotal, state.taxRate, state.taxInclusive)
-        const displayLaborSubtotal = netLineTotal(state.laborSubtotal, state.taxRate, state.taxInclusive)
+        const displayPartsSubtotal = netLineTotal(
+          state.partsSubtotal,
+          state.taxRate,
+          state.taxInclusive
+        )
+        const displayLaborSubtotal = netLineTotal(
+          state.laborSubtotal,
+          state.taxRate,
+          state.taxInclusive
+        )
         const displaySubtotal = netLineTotal(state.subtotal, state.taxRate, state.taxInclusive)
-        const displayDiscountAmount = netLineTotal(state.discountAmount, state.taxRate, state.taxInclusive)
+        const displayDiscountAmount = netLineTotal(
+          state.discountAmount,
+          state.taxRate,
+          state.taxInclusive
+        )
         return (
           <div className="rounded-lg border p-3 space-y-2">
             <h3 className="text-sm font-semibold">{t('totals.title')}</h3>

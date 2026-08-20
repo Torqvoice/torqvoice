@@ -17,6 +17,8 @@ import { RelocateDialog } from '@/features/tire-hotel/Components/RelocateDialog'
 import { AgreementCard, type AgreementRow } from '@/features/tire-hotel/Components/AgreementCard'
 import { TreatmentCard, type TreatmentRow } from '@/features/tire-hotel/Components/TreatmentCard'
 import { MessageCustomerDialog } from '@/features/tire-hotel/Components/MessageCustomerDialog'
+import { NewTireJobDialog } from '@/features/tire-hotel/Components/NewTireJobDialog'
+import { TireJobsCard, type TireJobs } from '@/features/tire-hotel/Components/TireJobsCard'
 import { reasonForCondition } from '@/features/tire-hotel/Lib/messageTemplates'
 import { deleteTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
@@ -109,12 +111,14 @@ export function TireSetClient({
   locations,
   vehicles,
   agreements,
+  jobs,
   billing,
   imperial,
 }: {
   set: TireSet
   locations: PickerLocation[]
   agreements: AgreementRow[]
+  jobs: TireJobs
   billing: {
     seasonalPrice: number
     monthlyPrice: number
@@ -138,6 +142,7 @@ export function TireSetClient({
   const [showRelocate, setShowRelocate] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [showMessage, setShowMessage] = useState(false)
+  const [jobMode, setJobMode] = useState<'quote' | 'workOrder' | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   // Deleting is only offered once the set is off the shelf: the action
@@ -322,6 +327,14 @@ export function TireSetClient({
             )}
           </AppCard>
 
+          <TireJobsCard
+            tireSetId={set.id}
+            jobs={jobs}
+            hasVehicle={!!set.vehicle}
+            currencyCode={billing.currency}
+            onCreate={setJobMode}
+          />
+
           <AgreementCard
             tireSetId={set.id}
             agreements={agreements}
@@ -462,6 +475,17 @@ export function TireSetClient({
         currentLocationId={set.location?.id ?? null}
         locations={locations}
       />
+
+      {jobMode && (
+        <NewTireJobDialog
+          open
+          onOpenChange={(open) => !open && setJobMode(null)}
+          tireSetId={set.id}
+          mode={jobMode}
+          hasVehicle={!!set.vehicle}
+          currencyCode={billing.currency}
+        />
+      )}
 
       <MessageCustomerDialog
         open={showMessage}

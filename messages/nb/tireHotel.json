@@ -369,5 +369,36 @@
       "stored": "Hei {customer_name}, {season}dekkene dine står nå lagret hos oss på {shop_name}. Vi sier fra når det er tid for å bytte tilbake.",
       "custom": "Hei {customer_name}, angående {season}dekkene dine som står lagret hos oss på {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Tilbud og jobber",
+    "newQuote": "Nytt tilbud",
+    "newWorkOrder": "Ny arbeidsordre",
+    "none": "Ingenting opprettet for dette settet ennå.",
+    "quote": "Tilbud",
+    "workOrder": "Arbeidsordre",
+    "converted": "konvertert",
+    "quoteTitle": "Gi pris på nytt sett",
+    "workOrderTitle": "Book dekkskiftet",
+    "loadingSet": "Henter settet",
+    "tires": "Dekk",
+    "inStock": "{count} på lager",
+    "shortStock": "bare {count} på lager",
+    "order": "må bestilles",
+    "noMatch": "Ingenting på lager passer {size}. Linjen legges inn med prisen du setter.",
+    "noSize": "Dette settet mangler dimensjon, så lageret kan ikke matches. Linjen legges inn med prisen du setter.",
+    "unitPrice": "Pris per dekk",
+    "lineTotal": "Sum linje",
+    "quantityNote": "for {count} dekk",
+    "createQuote": "Opprett tilbud",
+    "createWorkOrder": "Opprett arbeidsordre",
+    "quoteCreated": "Tilbud {number} opprettet",
+    "workOrderCreated": "Arbeidsordre opprettet",
+    "needsVehicle": "Knytt et kjøretøy til settet før du oppretter jobb.",
+    "failed": "Kunne ikke opprette",
+    "bannerTitle": "Hentes fra",
+    "openSet": "Åpne dekksett",
+    "prepPending": "Gjenstår før montering: {jobs}",
+    "notOnShelf": "Dette settet står ikke lenger på lager."
   }
 }

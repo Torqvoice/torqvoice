@@ -369,5 +369,36 @@
       "stored": "Sveiki, {customer_name}. Jūsų {season} padangos jau saugomos pas mus, {shop_name}. Pranešime, kai ateis laikas keisti.",
       "custom": "Sveiki, {customer_name}. Dėl jūsų {season} padangų, saugomų pas mus, {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Pasiūlymai ir darbai",
+    "newQuote": "Naujas pasiūlymas",
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "none": "Šiam komplektui dar nieko nesukurta.",
+    "quote": "Pasiūlymas",
+    "workOrder": "Darbo užsakymas",
+    "converted": "konvertuota",
+    "quoteTitle": "Pasiūlymas naujam komplektui",
+    "workOrderTitle": "Suplanuoti keitimą",
+    "loadingSet": "Kraunamas komplektas",
+    "tires": "Padangos",
+    "inStock": "{count} sandėlyje",
+    "shortStock": "sandėlyje tik {count}",
+    "order": "užsakyti",
+    "noMatch": "Sandėlyje nieko nėra pagal {size}. Eilutė bus pridėta su jūsų nurodyta kaina.",
+    "noSize": "Šiam komplektui nenurodytas dydis, todėl sandėlio sugretinti negalima. Eilutė naudos jūsų kainą.",
+    "unitPrice": "Kaina už padangą",
+    "lineTotal": "Eilutės suma",
+    "quantityNote": "už {count} padangų",
+    "createQuote": "Sukurti pasiūlymą",
+    "createWorkOrder": "Sukurti darbo užsakymą",
+    "quoteCreated": "Sukurtas pasiūlymas {number}",
+    "workOrderCreated": "Sukurtas darbo užsakymas",
+    "needsVehicle": "Prieš kurdami darbą, susiekite komplektą su transporto priemone.",
+    "failed": "Nepavyko sukurti",
+    "bannerTitle": "Paimti iš",
+    "openSet": "Atverti komplektą",
+    "prepPending": "Prieš montuojant liko: {jobs}",
+    "notOnShelf": "Šis komplektas nebėra saugykloje."
   }
 }

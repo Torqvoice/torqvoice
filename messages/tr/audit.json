@@ -133,6 +133,8 @@
     "tire_treatment_mark": "Hazırlık işaretlendi",
     "tire_treatment_complete_all": "Hazırlık tamamlandı",
     "tire_agreement_delete": "Depolama sözleşmesi silindi",
-    "tire_set_message_customer": "Lastik takımı hakkında müşteriye mesaj gönderildi"
+    "tire_set_message_customer": "Lastik takımı hakkında müşteriye mesaj gönderildi",
+    "tire_set_create_quote": "Lastik takımından teklif oluşturuldu",
+    "tire_set_create_work_order": "Lastik takımından iş emri oluşturuldu"
   }
 }

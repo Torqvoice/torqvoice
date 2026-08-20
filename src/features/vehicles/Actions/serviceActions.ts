@@ -205,6 +205,30 @@ export async function getServiceRecord(recordId: string) {
           laborItems: true,
           attachments: true,
           payments: { orderBy: { date: 'desc' } },
+          // A tire job is meaningless without knowing which set and which
+          // shelf, so it travels with the record rather than being fetched
+          // separately by whatever screen happens to need it.
+          tireSet: {
+            select: {
+              id: true,
+              reference: true,
+              season: true,
+              studded: true,
+              size: true,
+              brand: true,
+              quantity: true,
+              withRims: true,
+              hasTpms: true,
+              status: true,
+              location: { select: { code: true, warehouse: { select: { name: true } } } },
+              measurements: {
+                orderBy: { measuredAt: 'desc' },
+                take: 8,
+                select: { condition: true },
+              },
+              treatments: { select: { type: true, status: true } },
+            },
+          },
           customer: {
             select: {
               id: true,

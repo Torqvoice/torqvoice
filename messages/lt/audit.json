@@ -133,6 +133,8 @@
     "tire_treatment_mark": "Pažymėtas paruošimas",
     "tire_treatment_complete_all": "Paruošimas baigtas",
     "tire_agreement_delete": "Ištrinta saugojimo sutartis",
-    "tire_set_message_customer": "Klientui išsiųsta žinutė apie padangų komplektą"
+    "tire_set_message_customer": "Klientui išsiųsta žinutė apie padangų komplektą",
+    "tire_set_create_quote": "Sukurtas pasiūlymas iš padangų komplekto",
+    "tire_set_create_work_order": "Sukurtas darbo užsakymas iš padangų komplekto"
   }
 }

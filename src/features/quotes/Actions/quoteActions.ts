@@ -1,526 +1,585 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { createQuoteSchema, updateQuoteSchema } from "../Schema/quoteSchema";
-import { revalidatePath } from "next/cache";
-import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
-import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
-import { copyFile, mkdir } from "fs/promises";
-import path from "path";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { createQuoteSchema, updateQuoteSchema } from '../Schema/quoteSchema'
+import { revalidatePath } from 'next/cache'
+import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
+import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
+import { copyFile, mkdir } from 'fs/promises'
+import path from 'path'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
  * (30 when unset). An explicit 0 or negative disables the prefill.
  */
 function defaultValidUntil(validDaysSetting: string | undefined): Date | undefined {
-  const days = validDaysSetting === undefined ? 30 : Number.parseInt(validDaysSetting, 10);
-  if (!Number.isFinite(days) || days <= 0) return undefined;
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d;
+  const days = validDaysSetting === undefined ? 30 : Number.parseInt(validDaysSetting, 10)
+  if (!Number.isFinite(days) || days <= 0) return undefined
+  const d = new Date()
+  d.setDate(d.getDate() + days)
+  return d
 }
 
 export async function getQuotesPaginated(params: {
-  page?: number;
-  pageSize?: number;
-  search?: string;
-  status?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  page?: number
+  pageSize?: number
+  search?: string
+  status?: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const page = params.page || 1;
-    const pageSize = params.pageSize || 20;
-    const skip = (page - 1) * pageSize;
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const page = params.page || 1
+      const pageSize = params.pageSize || 20
+      const skip = (page - 1) * pageSize
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: any = { organizationId };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const where: any = { organizationId }
 
-    if (params.status && params.status !== "all") {
-      where.status = params.status;
-    }
+      if (params.status && params.status !== 'all') {
+        where.status = params.status
+      }
 
-    if (params.search) {
-      where.OR = [
-        { title: { contains: params.search, mode: "insensitive" } },
-        { quoteNumber: { contains: params.search, mode: "insensitive" } },
-        { customer: { name: { contains: params.search, mode: "insensitive" } } },
-      ];
-    }
+      if (params.search) {
+        where.OR = [
+          { title: { contains: params.search, mode: 'insensitive' } },
+          { quoteNumber: { contains: params.search, mode: 'insensitive' } },
+          { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+        ]
+      }
 
-    const [records, total, statusCounts] = await Promise.all([
-      db.quote.findMany({
-        where,
-        include: {
-          customer: { select: { id: true, name: true } },
-          vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
-        },
-        orderBy: (() => {
-          const dir = params.sortOrder || "desc";
-          switch (params.sortBy) {
-            case "quoteNumber": return { quoteNumber: { sort: dir, nulls: "last" as const } };
-            case "title": return { title: dir };
-            case "customer": return { customer: { name: dir } };
-            // Column shows "year make model"; sort make, model, year so
-            // identical models group together
-            case "vehicle": return [
-              { vehicle: { make: dir } },
-              { vehicle: { model: dir } },
-              { vehicle: { year: dir } },
-            ];
-            case "status": return { status: dir };
-            case "totalAmount": return { totalAmount: dir };
-            case "createdAt": return { createdAt: dir };
-            default: return { createdAt: "desc" as const };
-          }
-        })(),
-        skip,
-        take: pageSize,
-      }),
-      db.quote.count({ where }),
-      db.quote.groupBy({
-        by: ["status"],
-        where: { organizationId },
-        _count: true,
-      }),
-    ]);
+      const [records, total, statusCounts] = await Promise.all([
+        db.quote.findMany({
+          where,
+          include: {
+            customer: { select: { id: true, name: true } },
+            vehicle: {
+              select: { id: true, make: true, model: true, year: true, licensePlate: true },
+            },
+          },
+          orderBy: (() => {
+            const dir = params.sortOrder || 'desc'
+            switch (params.sortBy) {
+              case 'quoteNumber':
+                return { quoteNumber: { sort: dir, nulls: 'last' as const } }
+              case 'title':
+                return { title: dir }
+              case 'customer':
+                return { customer: { name: dir } }
+              // Column shows "year make model"; sort make, model, year so
+              // identical models group together
+              case 'vehicle':
+                return [
+                  { vehicle: { make: dir } },
+                  { vehicle: { model: dir } },
+                  { vehicle: { year: dir } },
+                ]
+              case 'status':
+                return { status: dir }
+              case 'totalAmount':
+                return { totalAmount: dir }
+              case 'createdAt':
+                return { createdAt: dir }
+              default:
+                return { createdAt: 'desc' as const }
+            }
+          })(),
+          skip,
+          take: pageSize,
+        }),
+        db.quote.count({ where }),
+        db.quote.groupBy({
+          by: ['status'],
+          where: { organizationId },
+          _count: true,
+        }),
+      ])
 
-    const counts: Record<string, number> = {};
-    for (const g of statusCounts) {
-      counts[g.status] = g._count;
-    }
+      const counts: Record<string, number> = {}
+      for (const g of statusCounts) {
+        counts[g.status] = g._count
+      }
 
-    return {
-      records,
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-      statusCounts: counts,
-    };
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
+      return {
+        records,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+        statusCounts: counts,
+      }
+    },
+    { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
+  )
 }
 
 export async function getVehicleQuotes(vehicleId: string) {
-  return withAuth(async ({ organizationId }) => {
-    return db.quote.findMany({
-      where: { vehicleId, organizationId },
-      select: {
-        id: true,
-        quoteNumber: true,
-        title: true,
-        status: true,
-        totalAmount: true,
-        createdAt: true,
-        validUntil: true,
-        customer: { select: { id: true, name: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
+  return withAuth(
+    async ({ organizationId }) => {
+      return db.quote.findMany({
+        where: { vehicleId, organizationId },
+        select: {
+          id: true,
+          quoteNumber: true,
+          title: true,
+          status: true,
+          totalAmount: true,
+          createdAt: true,
+          validUntil: true,
+          customer: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+    },
+    { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
+  )
 }
 
 export async function getQuote(quoteId: string) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const quote = await db.quote.findFirst({
-      where: { id: quoteId, organizationId },
-      include: {
-        partItems: true,
-        laborItems: true,
-        attachments: true,
-        customer: {
-          select: { id: true, name: true, email: true, phone: true, address: true, company: true },
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const quote = await db.quote.findFirst({
+        where: { id: quoteId, organizationId },
+        include: {
+          partItems: true,
+          laborItems: true,
+          attachments: true,
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              phone: true,
+              address: true,
+              company: true,
+            },
+          },
+          vehicle: {
+            select: {
+              id: true,
+              make: true,
+              model: true,
+              year: true,
+              vin: true,
+              licensePlate: true,
+              mileage: true,
+            },
+          },
+          inspection: {
+            select: { id: true },
+          },
         },
-        vehicle: {
-          select: { id: true, make: true, model: true, year: true, vin: true, licensePlate: true, mileage: true },
-        },
-        inspection: {
-          select: { id: true },
-        },
-      },
-    });
-    // Missing or foreign-org quote yields null rather than an error: the page
-    // renders its not-found state, and this also runs during the post-delete
-    // re-render of the quote route.
-    return quote;
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] });
+      })
+      // Missing or foreign-org quote yields null rather than an error: the page
+      // renders its not-found state, and this also runs during the post-delete
+      // re-render of the quote route.
+      return quote
+    },
+    { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
+  )
 }
 
 export async function createQuote(input: unknown) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const data = createQuoteSchema.parse(input);
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const data = createQuoteSchema.parse(input)
 
-    // Generate quote number
-    const settings = await db.appSetting.findMany({
-      where: {
-        organizationId,
-        key: {
-          in: [
-            "workshop.quotePrefix",
-            "workshop.quoteValidDays",
-            "workshop.defaultTaxRate",
-            "workshop.taxEnabled",
-            "workshop.taxInclusive",
-          ],
-        },
-      },
-    });
-    const settingsMap: Record<string, string> = {};
-    for (const s of settings) settingsMap[s.key] = s.value;
-    const prefix = resolveInvoicePrefix(settingsMap["workshop.quotePrefix"] ?? "QT-");
-
-    // Apply default tax rate from settings when the caller hasn't set one.
-    // All current call sites send taxRate: 0 at creation, so 0 means "unset".
-    const taxEnabled = settingsMap["workshop.taxEnabled"] !== "false";
-    let defaultTaxRate = taxEnabled
-      ? Number(settingsMap["workshop.defaultTaxRate"]) || 0
-      : 0;
-    const taxInclusive = settingsMap["workshop.taxInclusive"] === "true";
-
-    // Tax-exempt customer: force the rate to 0 regardless of org default.
-    if (data.customerId) {
-      const customer = await db.customer.findFirst({
-        where: { id: data.customerId, organizationId },
-        select: { taxExempt: true },
-      });
-      if (customer?.taxExempt) {
-        defaultTaxRate = 0;
-        data.taxRate = 0;
-        data.taxAmount = 0;
-      }
-    }
-
-    const lastQuote = await db.quote.findFirst({
-      where: { organizationId },
-      orderBy: { createdAt: "desc" },
-      select: { quoteNumber: true },
-    });
-    let nextNum = 1001;
-    if (lastQuote?.quoteNumber) {
-      const match = lastQuote.quoteNumber.match(/(\d+)$/);
-      if (match) nextNum = parseInt(match[1], 10) + 1;
-    }
-    const quoteNumber = `${prefix}${nextNum}`;
-
-    const { partItems, laborItems, ...quoteData } = data;
-
-    const quote = await db.$transaction(async (tx) => {
-      const created = await tx.quote.create({
-        data: {
-          ...quoteData,
-          quoteNumber,
-          userId,
+      // Generate quote number
+      const settings = await db.appSetting.findMany({
+        where: {
           organizationId,
-          taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
-          taxInclusive,
-          validUntil:
-            toSafeDate(quoteData.validUntil) ??
-            defaultValidUntil(settingsMap["workshop.quoteValidDays"]),
-          discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
+          key: {
+            in: [
+              'workshop.quotePrefix',
+              'workshop.quoteValidDays',
+              'workshop.defaultTaxRate',
+              'workshop.taxEnabled',
+              'workshop.taxInclusive',
+            ],
+          },
         },
-      });
+      })
+      const settingsMap: Record<string, string> = {}
+      for (const s of settings) settingsMap[s.key] = s.value
+      const prefix = resolveInvoicePrefix(settingsMap['workshop.quotePrefix'] ?? 'QT-')
 
-      if (partItems && partItems.length > 0) {
-        await tx.quotePart.createMany({
-          data: partItems.map((p) => ({ ...p, quoteId: created.id })),
-        });
+      // Apply default tax rate from settings when the caller hasn't set one.
+      // All current call sites send taxRate: 0 at creation, so 0 means "unset".
+      const taxEnabled = settingsMap['workshop.taxEnabled'] !== 'false'
+      let defaultTaxRate = taxEnabled ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0
+      const taxInclusive = settingsMap['workshop.taxInclusive'] === 'true'
+
+      // Tax-exempt customer: force the rate to 0 regardless of org default.
+      if (data.customerId) {
+        const customer = await db.customer.findFirst({
+          where: { id: data.customerId, organizationId },
+          select: { taxExempt: true },
+        })
+        if (customer?.taxExempt) {
+          defaultTaxRate = 0
+          data.taxRate = 0
+          data.taxAmount = 0
+        }
       }
 
-      if (laborItems && laborItems.length > 0) {
-        await tx.quoteLabor.createMany({
-          data: laborItems.map((l) => ({ ...l, quoteId: created.id })),
-        });
+      const lastQuote = await db.quote.findFirst({
+        where: { organizationId },
+        orderBy: { createdAt: 'desc' },
+        select: { quoteNumber: true },
+      })
+      let nextNum = 1001
+      if (lastQuote?.quoteNumber) {
+        const match = lastQuote.quoteNumber.match(/(\d+)$/)
+        if (match) nextNum = parseInt(match[1], 10) + 1
       }
+      const quoteNumber = `${prefix}${nextNum}`
 
-      return created;
-    });
+      const { partItems, laborItems, ...quoteData } = data
 
-    revalidatePath("/quotes");
-    return quote;
-  }, {
-    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.QUOTES }],
-    audit: ({ result }) => ({
-      action: "quote.create",
-      entity: "Quote",
-      entityId: result.id,
-      message: `Created quote ${result.quoteNumber || result.id}`,
-      metadata: { quoteId: result.id },
-    }),
-  });
+      const quote = await db.$transaction(async (tx) => {
+        const created = await tx.quote.create({
+          data: {
+            ...quoteData,
+            quoteNumber,
+            userId,
+            organizationId,
+            taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
+            taxInclusive,
+            validUntil:
+              toSafeDate(quoteData.validUntil) ??
+              defaultValidUntil(settingsMap['workshop.quoteValidDays']),
+            discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
+          },
+        })
+
+        if (partItems && partItems.length > 0) {
+          await tx.quotePart.createMany({
+            data: partItems.map((p) => ({ ...p, quoteId: created.id })),
+          })
+        }
+
+        if (laborItems && laborItems.length > 0) {
+          await tx.quoteLabor.createMany({
+            data: laborItems.map((l) => ({ ...l, quoteId: created.id })),
+          })
+        }
+
+        return created
+      })
+
+      revalidatePath('/quotes')
+      return quote
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.QUOTES }],
+      audit: ({ result }) => ({
+        action: 'quote.create',
+        entity: 'Quote',
+        entityId: result.id,
+        message: `Created quote ${result.quoteNumber || result.id}`,
+        metadata: { quoteId: result.id },
+      }),
+    }
+  )
 }
 
 export async function updateQuote(input: unknown) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const data = updateQuoteSchema.parse(input);
-    const existing = await db.quote.findFirst({
-      where: { id: data.id, organizationId },
-    });
-    if (!existing) throw new Error("Quote not found");
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const data = updateQuoteSchema.parse(input)
+      const existing = await db.quote.findFirst({
+        where: { id: data.id, organizationId },
+      })
+      if (!existing) throw new Error('Quote not found')
 
-    const { id, partItems, laborItems, ...quoteData } = data;
+      const { id, partItems, laborItems, ...quoteData } = data
 
-    const quote = await db.$transaction(async (tx) => {
-      const updated = await tx.quote.update({
-        where: { id },
-        data: {
-          ...quoteData,
-          validUntil: toSafeDate(quoteData.validUntil),
-          discountType: quoteData.discountType === "none" ? null : quoteData.discountType,
-        },
-      });
+      const quote = await db.$transaction(async (tx) => {
+        const updated = await tx.quote.update({
+          where: { id },
+          data: {
+            ...quoteData,
+            validUntil: toSafeDate(quoteData.validUntil),
+            discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
+          },
+        })
 
-      if (partItems !== undefined) {
-        await tx.quotePart.deleteMany({ where: { quoteId: id } });
-        if (partItems.length > 0) {
-          await tx.quotePart.createMany({
-            data: partItems.map((p) => ({ ...p, quoteId: id })),
-          });
+        if (partItems !== undefined) {
+          await tx.quotePart.deleteMany({ where: { quoteId: id } })
+          if (partItems.length > 0) {
+            await tx.quotePart.createMany({
+              data: partItems.map((p) => ({ ...p, quoteId: id })),
+            })
+          }
         }
-      }
 
-      if (laborItems !== undefined) {
-        await tx.quoteLabor.deleteMany({ where: { quoteId: id } });
-        if (laborItems.length > 0) {
-          await tx.quoteLabor.createMany({
-            data: laborItems.map((l) => ({ ...l, quoteId: id })),
-          });
+        if (laborItems !== undefined) {
+          await tx.quoteLabor.deleteMany({ where: { quoteId: id } })
+          if (laborItems.length > 0) {
+            await tx.quoteLabor.createMany({
+              data: laborItems.map((l) => ({ ...l, quoteId: id })),
+            })
+          }
         }
-      }
 
-      return updated;
-    });
+        return updated
+      })
 
-    revalidatePath("/quotes");
-    revalidatePath(`/quotes/${id}`);
-    return quote;
-  }, {
-    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
-    audit: ({ result }) => ({
-      action: "quote.update",
-      entity: "Quote",
-      entityId: result.id,
-      message: `Updated quote ${result.id}`,
-      metadata: { quoteId: result.id },
-    }),
-  });
+      revalidatePath('/quotes')
+      revalidatePath(`/quotes/${id}`)
+      return quote
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
+      audit: ({ result }) => ({
+        action: 'quote.update',
+        entity: 'Quote',
+        entityId: result.id,
+        message: `Updated quote ${result.id}`,
+        metadata: { quoteId: result.id },
+      }),
+    }
+  )
 }
 
 export async function updateQuoteStatus(quoteId: string, status: string) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const quote = await db.quote.findFirst({
-      where: { id: quoteId, organizationId },
-    });
-    if (!quote) throw new Error("Quote not found");
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const quote = await db.quote.findFirst({
+        where: { id: quoteId, organizationId },
+      })
+      if (!quote) throw new Error('Quote not found')
 
-    await db.quote.updateMany({
-      where: { id: quoteId, organizationId },
-      data: { status },
-    });
+      await db.quote.updateMany({
+        where: { id: quoteId, organizationId },
+        data: { status },
+      })
 
-    revalidatePath("/quotes");
-    revalidatePath(`/quotes/${quoteId}`);
-    return { success: true, quoteId, status };
-  }, {
-    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
-    audit: ({ result }) => ({
-      action: "quote.status",
-      entity: "Quote",
-      entityId: result.quoteId,
-      message: `Changed quote status to ${result.status}`,
-      metadata: { quoteId: result.quoteId, status: result.status },
-    }),
-  });
+      revalidatePath('/quotes')
+      revalidatePath(`/quotes/${quoteId}`)
+      return { success: true, quoteId, status }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES }],
+      audit: ({ result }) => ({
+        action: 'quote.status',
+        entity: 'Quote',
+        entityId: result.quoteId,
+        message: `Changed quote status to ${result.status}`,
+        metadata: { quoteId: result.quoteId, status: result.status },
+      }),
+    }
+  )
 }
 
 export async function deleteQuote(quoteId: string) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const quote = await db.quote.findFirst({
-      where: { id: quoteId, organizationId },
-    });
-    if (!quote) throw new Error("Quote not found");
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const quote = await db.quote.findFirst({
+        where: { id: quoteId, organizationId },
+      })
+      if (!quote) throw new Error('Quote not found')
 
-    await db.quote.deleteMany({ where: { id: quoteId, organizationId } });
-    revalidatePath("/quotes");
-    return { quoteId };
-  }, {
-    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.QUOTES }],
-    audit: ({ result }) => ({
-      action: "quote.delete",
-      entity: "Quote",
-      entityId: result.quoteId,
-      message: `Deleted quote ${result.quoteId}`,
-      metadata: { quoteId: result.quoteId },
-    }),
-  });
+      await db.quote.deleteMany({ where: { id: quoteId, organizationId } })
+      revalidatePath('/quotes')
+      return { quoteId }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.QUOTES }],
+      audit: ({ result }) => ({
+        action: 'quote.delete',
+        entity: 'Quote',
+        entityId: result.quoteId,
+        message: `Deleted quote ${result.quoteId}`,
+        metadata: { quoteId: result.quoteId },
+      }),
+    }
+  )
 }
 
 export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: string) {
-  return withAuth(async ({ userId, organizationId }) => {
-    const quote = await db.quote.findFirst({
-      where: { id: quoteId, organizationId },
-      include: { partItems: true, laborItems: true, attachments: true },
-    });
-    if (!quote) throw new Error("Quote not found");
+  return withAuth(
+    async ({ userId, organizationId }) => {
+      const quote = await db.quote.findFirst({
+        where: { id: quoteId, organizationId },
+        include: { partItems: true, laborItems: true, attachments: true },
+      })
+      if (!quote) throw new Error('Quote not found')
 
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: vehicleId, organizationId },
-    });
-    if (!vehicle) throw new Error("Vehicle not found");
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, organizationId },
+      })
+      if (!vehicle) throw new Error('Vehicle not found')
 
-    // Get settings for invoice number
-    const [settings, org] = await Promise.all([
-      db.appSetting.findMany({
-        where: { organizationId, key: { in: ["workshop.invoicePrefix"] } },
-      }),
-      db.organization.findUnique({
-        where: { id: organizationId },
-        select: { name: true },
-      }),
-    ]);
-    const settingsMap: Record<string, string> = {};
-    for (const s of settings) settingsMap[s.key] = s.value;
-    const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] ?? "{year}-");
+      // Get settings for invoice number
+      const [settings, org] = await Promise.all([
+        db.appSetting.findMany({
+          where: { organizationId, key: { in: ['workshop.invoicePrefix'] } },
+        }),
+        db.organization.findUnique({
+          where: { id: organizationId },
+          select: { name: true },
+        }),
+      ])
+      const settingsMap: Record<string, string> = {}
+      for (const s of settings) settingsMap[s.key] = s.value
+      const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
 
-    const lastRecord = await db.serviceRecord.findFirst({
-      where: { organizationId },
-      orderBy: { createdAt: "desc" },
-      select: { invoiceNumber: true },
-    });
-    let nextNum = 1001;
-    if (lastRecord?.invoiceNumber) {
-      const match = lastRecord.invoiceNumber.match(/(\d+)$/);
-      if (match) nextNum = parseInt(match[1], 10) + 1;
-    }
-    const invoiceNumber = `${prefix}${nextNum}`;
-
-    const record = await db.$transaction(async (tx) => {
-      const created = await tx.serviceRecord.create({
-        data: {
-          organizationId,
-          title: quote.title,
-          description: quote.description,
-          type: "repair",
-          status: "pending",
-          vehicleId,
-          shopName: org?.name || undefined,
-          invoiceNumber,
-          subtotal: quote.subtotal,
-          taxRate: quote.taxRate,
-          taxAmount: quote.taxAmount,
-          taxInclusive: quote.taxInclusive,
-          totalAmount: quote.totalAmount,
-          cost: quote.totalAmount,
-          discountType: quote.discountType,
-          discountValue: quote.discountValue,
-          discountAmount: quote.discountAmount,
-          serviceDate: new Date(),
-          startDateTime: new Date(),
-        },
-      });
-
-      const includedParts = quote.partItems.filter((p) => !p.excluded);
-      if (includedParts.length > 0) {
-        await tx.servicePart.createMany({
-          data: includedParts.map((p) => ({
-            partNumber: p.partNumber,
-            name: p.name,
-            quantity: p.quantity,
-            unitCost: p.unitCost,
-            markupPercent: p.markupPercent,
-            unitPrice: p.unitPrice,
-            total: p.total,
-            // Preserve the stock link so the job — and any later edit or
-            // deletion of it — reconciles against the right inventory item.
-            inventoryPartId: p.inventoryPartId,
-            serviceRecordId: created.id,
-          })),
-        });
-
-        // The quote itself never moved stock (it is only an estimate). The
-        // conversion is the point of consumption, so deduct here — exactly
-        // once, inside the same transaction that creates the job.
-        await reconcileInventoryForParts(tx, organizationId, [], includedParts, {
-          reason: "quote_conversion",
-          userId,
-          serviceRecordId: created.id,
-          serviceRecordLabel: created.invoiceNumber || created.title,
-          note: `Converted from quote ${quote.quoteNumber ?? quote.id}`,
-        });
+      const lastRecord = await db.serviceRecord.findFirst({
+        where: { organizationId },
+        orderBy: { createdAt: 'desc' },
+        select: { invoiceNumber: true },
+      })
+      let nextNum = 1001
+      if (lastRecord?.invoiceNumber) {
+        const match = lastRecord.invoiceNumber.match(/(\d+)$/)
+        if (match) nextNum = parseInt(match[1], 10) + 1
       }
+      const invoiceNumber = `${prefix}${nextNum}`
 
-      const includedLabor = quote.laborItems.filter((l) => !l.excluded);
-      if (includedLabor.length > 0) {
-        await tx.serviceLabor.createMany({
-          data: includedLabor.map((l) => ({
-            description: l.description,
-            hours: l.hours,
-            rate: l.rate,
-            total: l.total,
-            pricingType: l.pricingType || "hourly",
+      const record = await db.$transaction(async (tx) => {
+        const created = await tx.serviceRecord.create({
+          data: {
+            organizationId,
+            title: quote.title,
+            description: quote.description,
+            type: 'repair',
+            status: 'pending',
+            vehicleId,
+            // Carried across so a job born from a tire hotel quote still knows
+            // which set it is for, and which shelf it sits on. Losing it here
+            // would put the technician back to asking.
+            tireSetId: quote.tireSetId,
+            shopName: org?.name || undefined,
+            invoiceNumber,
+            subtotal: quote.subtotal,
+            taxRate: quote.taxRate,
+            taxAmount: quote.taxAmount,
+            taxInclusive: quote.taxInclusive,
+            totalAmount: quote.totalAmount,
+            cost: quote.totalAmount,
+            discountType: quote.discountType,
+            discountValue: quote.discountValue,
+            discountAmount: quote.discountAmount,
+            serviceDate: new Date(),
+            startDateTime: new Date(),
+          },
+        })
+
+        const includedParts = quote.partItems.filter((p) => !p.excluded)
+        if (includedParts.length > 0) {
+          await tx.servicePart.createMany({
+            data: includedParts.map((p) => ({
+              partNumber: p.partNumber,
+              name: p.name,
+              quantity: p.quantity,
+              unitCost: p.unitCost,
+              markupPercent: p.markupPercent,
+              unitPrice: p.unitPrice,
+              total: p.total,
+              // Preserve the stock link so the job — and any later edit or
+              // deletion of it — reconciles against the right inventory item.
+              inventoryPartId: p.inventoryPartId,
+              serviceRecordId: created.id,
+            })),
+          })
+
+          // The quote itself never moved stock (it is only an estimate). The
+          // conversion is the point of consumption, so deduct here — exactly
+          // once, inside the same transaction that creates the job.
+          await reconcileInventoryForParts(tx, organizationId, [], includedParts, {
+            reason: 'quote_conversion',
+            userId,
             serviceRecordId: created.id,
-          })),
-        });
-      }
+            serviceRecordLabel: created.invoiceNumber || created.title,
+            note: `Converted from quote ${quote.quoteNumber ?? quote.id}`,
+          })
+        }
 
-      // Copy attachments from quote to service record
-      if (quote.attachments.length > 0) {
-        const quotesDir = path.join(process.cwd(), "data", "uploads", organizationId, "quotes");
-        const servicesDir = path.join(process.cwd(), "data", "uploads", organizationId, "services");
-        await mkdir(servicesDir, { recursive: true });
+        const includedLabor = quote.laborItems.filter((l) => !l.excluded)
+        if (includedLabor.length > 0) {
+          await tx.serviceLabor.createMany({
+            data: includedLabor.map((l) => ({
+              description: l.description,
+              hours: l.hours,
+              rate: l.rate,
+              total: l.total,
+              pricingType: l.pricingType || 'hourly',
+              serviceRecordId: created.id,
+            })),
+          })
+        }
 
-        for (const att of quote.attachments) {
-          try {
-            // Extract filename from URL and build paths
-            const filename = att.fileUrl.split("/").pop()!;
-            const srcPath = path.join(quotesDir, filename);
-            const destPath = path.join(servicesDir, filename);
-            await copyFile(srcPath, destPath);
+        // Copy attachments from quote to service record
+        if (quote.attachments.length > 0) {
+          const quotesDir = path.join(process.cwd(), 'data', 'uploads', organizationId, 'quotes')
+          const servicesDir = path.join(
+            process.cwd(),
+            'data',
+            'uploads',
+            organizationId,
+            'services'
+          )
+          await mkdir(servicesDir, { recursive: true })
 
-            const newUrl = att.fileUrl.replace("/quotes/", "/services/");
-            await tx.serviceAttachment.create({
-              data: {
-                fileName: att.fileName,
-                fileUrl: newUrl,
-                fileType: att.fileType,
-                fileSize: att.fileSize,
-                category: att.category === "document" ? "document" : "image",
-                description: att.description,
-                includeInInvoice: att.includeInInvoice,
-                serviceRecordId: created.id,
-              },
-            });
-          } catch (err) {
-            console.warn(`[convertQuote] Failed to copy attachment "${att.fileName}":`, err);
+          for (const att of quote.attachments) {
+            try {
+              // Extract filename from URL and build paths
+              const filename = att.fileUrl.split('/').pop()!
+              const srcPath = path.join(quotesDir, filename)
+              const destPath = path.join(servicesDir, filename)
+              await copyFile(srcPath, destPath)
+
+              const newUrl = att.fileUrl.replace('/quotes/', '/services/')
+              await tx.serviceAttachment.create({
+                data: {
+                  fileName: att.fileName,
+                  fileUrl: newUrl,
+                  fileType: att.fileType,
+                  fileSize: att.fileSize,
+                  category: att.category === 'document' ? 'document' : 'image',
+                  description: att.description,
+                  includeInInvoice: att.includeInInvoice,
+                  serviceRecordId: created.id,
+                },
+              })
+            } catch (err) {
+              console.warn(`[convertQuote] Failed to copy attachment "${att.fileName}":`, err)
+            }
           }
         }
-      }
 
-      // Mark quote as converted
-      await tx.quote.updateMany({
-        where: { id: quoteId, organizationId },
-        data: { status: "converted", convertedToId: created.id },
-      });
+        // Mark quote as converted
+        await tx.quote.updateMany({
+          where: { id: quoteId, organizationId },
+          data: { status: 'converted', convertedToId: created.id },
+        })
 
-      return created;
-    });
+        return created
+      })
 
-    revalidatePath("/quotes");
-    revalidatePath("/work-orders");
-    revalidatePath(`/vehicles/${vehicleId}`);
-    // Conversion consumed stock for any inventory-linked quote lines.
-    await onInventoryChanged(organizationId);
-    return { ...record, convertedFromQuoteId: quoteId };
-  }, {
-    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES }],
-    audit: ({ result }) => ({
-      action: "quote.convert",
-      entity: "Quote",
-      entityId: result.convertedFromQuoteId,
-      message: `Converted quote ${result.convertedFromQuoteId} to service record ${result.id}`,
-      metadata: { quoteId: result.convertedFromQuoteId, serviceRecordId: result.id },
-    }),
-  });
+      revalidatePath('/quotes')
+      revalidatePath('/work-orders')
+      revalidatePath(`/vehicles/${vehicleId}`)
+      // Conversion consumed stock for any inventory-linked quote lines.
+      await onInventoryChanged(organizationId)
+      return { ...record, convertedFromQuoteId: quoteId }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
+      ],
+      audit: ({ result }) => ({
+        action: 'quote.convert',
+        entity: 'Quote',
+        entityId: result.convertedFromQuoteId,
+        message: `Converted quote ${result.convertedFromQuoteId} to service record ${result.id}`,
+        metadata: { quoteId: result.convertedFromQuoteId, serviceRecordId: result.id },
+      }),
+    }
+  )
 }

@@ -369,5 +369,36 @@
       "stored": "Bonjour {customer_name}, vos pneus {season} sont maintenant stockés chez nous, {shop_name}. On vous prévient quand ce sera le moment de les remonter.",
       "custom": "Bonjour {customer_name}, au sujet de vos pneus {season} stockés chez nous, {shop_name} :"
     }
+  },
+  "job": {
+    "cardTitle": "Devis et ordres",
+    "newQuote": "Nouveau devis",
+    "newWorkOrder": "Nouvel ordre",
+    "none": "Rien de créé pour ce jeu.",
+    "quote": "Devis",
+    "workOrder": "Ordre",
+    "converted": "converti",
+    "quoteTitle": "Chiffrer un jeu neuf",
+    "workOrderTitle": "Planifier le montage",
+    "loadingSet": "Chargement du jeu",
+    "tires": "Pneus",
+    "inStock": "{count} en stock",
+    "shortStock": "seulement {count} en stock",
+    "order": "à commander",
+    "noMatch": "Rien en stock ne correspond à {size}. La ligne est ajoutée au prix que vous saisissez.",
+    "noSize": "Ce jeu n’a pas de dimension, le stock ne peut pas être comparé. La ligne est ajoutée à votre prix.",
+    "unitPrice": "Prix par pneu",
+    "lineTotal": "Total ligne",
+    "quantityNote": "pour {count} pneus",
+    "createQuote": "Créer le devis",
+    "createWorkOrder": "Créer l’ordre",
+    "quoteCreated": "Devis {number} créé",
+    "workOrderCreated": "Ordre créé",
+    "needsVehicle": "Associez un véhicule au jeu avant de créer un ordre.",
+    "failed": "Création impossible",
+    "bannerTitle": "À récupérer en",
+    "openSet": "Ouvrir le jeu",
+    "prepPending": "À faire avant montage : {jobs}",
+    "notOnShelf": "Ce jeu n’est plus en stockage."
   }
 }

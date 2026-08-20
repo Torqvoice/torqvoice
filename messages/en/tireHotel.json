@@ -369,5 +369,36 @@
       "stored": "Hi {customer_name}, your {season} tires are now in storage with us at {shop_name}. We'll let you know when it's time to swap them back.",
       "custom": "Hi {customer_name}, about your {season} tires stored with us at {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Quotes and jobs",
+    "newQuote": "New quote",
+    "newWorkOrder": "New work order",
+    "none": "Nothing raised for this set yet.",
+    "quote": "Quote",
+    "workOrder": "Work order",
+    "converted": "converted",
+    "quoteTitle": "Quote a new set",
+    "workOrderTitle": "Book the tire change",
+    "loadingSet": "Loading the set",
+    "tires": "Tires",
+    "inStock": "{count} in stock",
+    "shortStock": "only {count} in stock",
+    "order": "to order",
+    "noMatch": "Nothing in stock matches {size}. The line is added at the price you set.",
+    "noSize": "This set has no size recorded, so stock cannot be matched. The line is added at the price you set.",
+    "unitPrice": "Price per tire",
+    "lineTotal": "Line total",
+    "quantityNote": "for {count} tires",
+    "createQuote": "Create quote",
+    "createWorkOrder": "Create work order",
+    "quoteCreated": "Quote {number} created",
+    "workOrderCreated": "Work order created",
+    "needsVehicle": "Link a vehicle to this set before booking a job.",
+    "failed": "Could not create that",
+    "bannerTitle": "Fetch from",
+    "openSet": "Open tire set",
+    "prepPending": "Still to do before fitting: {jobs}",
+    "notOnShelf": "This set is no longer in storage."
   }
 }

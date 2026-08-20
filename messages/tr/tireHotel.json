@@ -369,5 +369,36 @@
       "stored": "Merhaba {customer_name}, {season} lastikleriniz artık {shop_name} deposunda. Değişim zamanı gelince haber veririz.",
       "custom": "Merhaba {customer_name}, {shop_name} deposundaki {season} lastikleriniz hakkında:"
     }
+  },
+  "job": {
+    "cardTitle": "Teklifler ve işler",
+    "newQuote": "Yeni teklif",
+    "newWorkOrder": "Yeni iş emri",
+    "none": "Bu takım için henüz bir şey oluşturulmadı.",
+    "quote": "Teklif",
+    "workOrder": "İş emri",
+    "converted": "dönüştürüldü",
+    "quoteTitle": "Yeni takım için teklif",
+    "workOrderTitle": "Lastik değişimini planla",
+    "loadingSet": "Takım yükleniyor",
+    "tires": "Lastikler",
+    "inStock": "{count} stokta",
+    "shortStock": "stokta yalnızca {count}",
+    "order": "sipariş",
+    "noMatch": "Stokta {size} ölçüsüne uyan bir şey yok. Satır belirlediğiniz fiyatla eklenir.",
+    "noSize": "Bu takımın ölçüsü kayıtlı değil, stok eşleştirilemez. Satır sizin fiyatınızla eklenir.",
+    "unitPrice": "Lastik başına fiyat",
+    "lineTotal": "Satır toplamı",
+    "quantityNote": "{count} lastik için",
+    "createQuote": "Teklif oluştur",
+    "createWorkOrder": "İş emri oluştur",
+    "quoteCreated": "{number} numaralı teklif oluşturuldu",
+    "workOrderCreated": "İş emri oluşturuldu",
+    "needsVehicle": "İş oluşturmadan önce takıma bir araç bağlayın.",
+    "failed": "Oluşturulamadı",
+    "bannerTitle": "Şuradan alınacak",
+    "openSet": "Lastik takımını aç",
+    "prepPending": "Takmadan önce yapılacaklar: {jobs}",
+    "notOnShelf": "Bu takım artık depoda değil."
   }
 }

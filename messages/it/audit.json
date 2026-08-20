@@ -133,6 +133,8 @@
     "tire_treatment_mark": "Preparazione segnata",
     "tire_treatment_complete_all": "Preparazione completata",
     "tire_agreement_delete": "Contratto di deposito eliminato",
-    "tire_set_message_customer": "Messaggio inviato al cliente su un treno di pneumatici"
+    "tire_set_message_customer": "Messaggio inviato al cliente su un treno di pneumatici",
+    "tire_set_create_quote": "Preventivo creato da un treno di pneumatici",
+    "tire_set_create_work_order": "Ordine creato da un treno di pneumatici"
   }
 }

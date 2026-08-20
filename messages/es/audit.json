@@ -133,6 +133,8 @@
     "tire_treatment_mark": "Preparación marcada",
     "tire_treatment_complete_all": "Preparación completada",
     "tire_agreement_delete": "Contrato de almacenaje eliminado",
-    "tire_set_message_customer": "Mensaje enviado al cliente sobre un juego de neumáticos"
+    "tire_set_message_customer": "Mensaje enviado al cliente sobre un juego de neumáticos",
+    "tire_set_create_quote": "Presupuesto creado desde un juego de neumáticos",
+    "tire_set_create_work_order": "Orden creada desde un juego de neumáticos"
   }
 }

@@ -1,3 +1,5 @@
+import type { TireSetBannerData } from '@/features/tire-hotel/Components/TireSetBanner'
+
 export const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
   'in-progress': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -18,6 +20,9 @@ export const paymentStatusLabels: Record<string, string> = {
 
 export interface ServiceDetail {
   id: string
+  /** Set when the job came out of the tire hotel, so the job sheet can say
+   *  which tires and which shelf. */
+  tireSet?: TireSetBannerData | null
   title: string
   description: string | null
   type: string

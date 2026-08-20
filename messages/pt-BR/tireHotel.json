@@ -369,5 +369,36 @@
       "stored": "Olá {customer_name}, seus pneus de {season} já estão guardados conosco na {shop_name}. A gente avisa quando for hora de trocar.",
       "custom": "Olá {customer_name}, sobre seus pneus de {season} guardados conosco na {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Orçamentos e ordens",
+    "newQuote": "Novo orçamento",
+    "newWorkOrder": "Nova ordem",
+    "none": "Nada criado para este jogo ainda.",
+    "quote": "Orçamento",
+    "workOrder": "Ordem",
+    "converted": "convertido",
+    "quoteTitle": "Orçar um jogo novo",
+    "workOrderTitle": "Agendar a troca",
+    "loadingSet": "Carregando o jogo",
+    "tires": "Pneus",
+    "inStock": "{count} em estoque",
+    "shortStock": "apenas {count} em estoque",
+    "order": "a pedir",
+    "noMatch": "Nada no estoque corresponde a {size}. A linha entra com o preço que você definir.",
+    "noSize": "Este jogo não tem medida, então não dá para cruzar com o estoque. A linha usa seu preço.",
+    "unitPrice": "Preço por pneu",
+    "lineTotal": "Total da linha",
+    "quantityNote": "para {count} pneus",
+    "createQuote": "Criar orçamento",
+    "createWorkOrder": "Criar ordem",
+    "quoteCreated": "Orçamento {number} criado",
+    "workOrderCreated": "Ordem criada",
+    "needsVehicle": "Vincule um veículo ao jogo antes de criar uma ordem.",
+    "failed": "Não foi possível criar",
+    "bannerTitle": "Buscar em",
+    "openSet": "Abrir jogo",
+    "prepPending": "A fazer antes de montar: {jobs}",
+    "notOnShelf": "Este jogo não está mais armazenado."
   }
 }

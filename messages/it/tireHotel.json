@@ -369,5 +369,36 @@
       "stored": "Ciao {customer_name}, i tuoi pneumatici {season} sono ora in deposito da noi, {shop_name}. Ti avvisiamo quando sarà il momento del cambio.",
       "custom": "Ciao {customer_name}, riguardo ai tuoi pneumatici {season} in deposito da noi, {shop_name}:"
     }
+  },
+  "job": {
+    "cardTitle": "Preventivi e ordini",
+    "newQuote": "Nuovo preventivo",
+    "newWorkOrder": "Nuovo ordine",
+    "none": "Per questo treno non è stato creato nulla.",
+    "quote": "Preventivo",
+    "workOrder": "Ordine",
+    "converted": "convertito",
+    "quoteTitle": "Preventiva un treno nuovo",
+    "workOrderTitle": "Programma il cambio",
+    "loadingSet": "Caricamento del treno",
+    "tires": "Pneumatici",
+    "inStock": "{count} disponibili",
+    "shortStock": "solo {count} disponibili",
+    "order": "da ordinare",
+    "noMatch": "Niente a magazzino corrisponde a {size}. La riga viene aggiunta al prezzo che indichi.",
+    "noSize": "Questo treno non ha misura, quindi il magazzino non si può confrontare. La riga usa il tuo prezzo.",
+    "unitPrice": "Prezzo per pneumatico",
+    "lineTotal": "Totale riga",
+    "quantityNote": "per {count} pneumatici",
+    "createQuote": "Crea preventivo",
+    "createWorkOrder": "Crea ordine",
+    "quoteCreated": "Preventivo {number} creato",
+    "workOrderCreated": "Ordine creato",
+    "needsVehicle": "Collega un veicolo al treno prima di creare un ordine.",
+    "failed": "Creazione non riuscita",
+    "bannerTitle": "Da prelevare in",
+    "openSet": "Apri il treno",
+    "prepPending": "Da fare prima del montaggio: {jobs}",
+    "notOnShelf": "Questo treno non è più in deposito."
   }
 }

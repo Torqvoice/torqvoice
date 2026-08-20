@@ -133,6 +133,8 @@
     "tire_treatment_mark": "Отмечена подготовка",
     "tire_treatment_complete_all": "Подготовка завершена",
     "tire_agreement_delete": "Удалён договор хранения",
-    "tire_set_message_customer": "Клиенту отправлено сообщение о комплекте шин"
+    "tire_set_message_customer": "Клиенту отправлено сообщение о комплекте шин",
+    "tire_set_create_quote": "Создана смета по комплекту шин",
+    "tire_set_create_work_order": "Создан заказ-наряд по комплекту шин"
   }
 }
