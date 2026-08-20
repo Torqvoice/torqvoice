@@ -3,6 +3,7 @@ import React from 'react'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { cookies } from 'next/headers'
+import { createTranslator } from 'next-intl'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { generateQrDataUri } from '@/lib/qr'
@@ -77,10 +78,24 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const value = messages[key]
       return value && typeof value === 'object' ? (value as Record<string, string>) : {}
     }
+    // Through next-intl rather than a string replace, so a plural rule is a
+    // plural rule. "4 opon" is what a raw substitution prints in Polish, and
+    // it is wrong on a sticker somebody has to read.
+    // Cast because the messages are read loosely here, which leaves next-intl
+    // with no key union to check against.
+    const translate = createTranslator({
+      locale,
+      messages,
+      namespace: 'label',
+    } as Parameters<typeof createTranslator>[0]) as unknown as (
+      key: string,
+      values?: Record<string, unknown>
+    ) => string
+
     const label = group('label')
     const labels: LabelLabels = {
       reference: label.reference ?? 'Ref',
-      quantity: label.quantity ?? '{count} tires',
+      quantity: translate('quantity', { count: set.quantity }),
       withRims: label.withRims ?? 'On rims',
       tpms: label.tpms ?? 'TPMS',
       studded: label.studded ?? 'Studded',

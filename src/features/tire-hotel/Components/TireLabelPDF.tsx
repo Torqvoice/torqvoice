@@ -99,7 +99,8 @@ function Label({
         <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 3 }}>{tireLine}</Text>
         {layout.showQuantity && (
           <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 3 }}>
-            {labels.quantity.replace('{count}', String(data.quantity))}
+            {/* Already rendered by the route, plural rule and all. */}
+            {labels.quantity}
           </Text>
         )}
         <Flags flags={flags} layout={layout} />
