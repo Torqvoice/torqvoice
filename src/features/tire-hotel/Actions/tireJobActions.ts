@@ -1,14 +1,18 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
+import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize } from '../Lib/tireMatching'
+import { billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
@@ -47,10 +51,61 @@ async function loadSet(organizationId: string, tireSetId: string) {
       vehicleId: true,
       location: { select: { code: true, warehouse: { select: { name: true } } } },
       customer: { select: { id: true, taxExempt: true } },
+      treatments: { select: { type: true, status: true } },
     },
   })
   if (!set) throw new Error('Tire set not found')
   return set
+}
+
+/**
+ * Prep lines for a job, priced from settings.
+ *
+ * The work was agreed when the set was checked in, so it should reach the
+ * bill without anyone retyping it. Only treatments the shop has put a price
+ * against produce a line, which keeps washing off the invoice at shops that
+ * fold it into the storage fee.
+ */
+/**
+ * Treatment names in the reader's language.
+ *
+ * Loaded here rather than passed in from the browser: this text ends up on an
+ * invoice, and invoice wording should not be whatever a client happened to
+ * send.
+ */
+async function treatmentNames(): Promise<Record<string, string>> {
+  const locale = (await cookies()).get('locale')?.value || 'en'
+  try {
+    const messages = (await import(`../../../../messages/${locale}/tireHotel.json`)).default
+    return messages?.treatments?.types ?? {}
+  } catch {
+    const messages = (await import('../../../../messages/en/tireHotel.json')).default
+    return messages?.treatments?.types ?? {}
+  }
+}
+
+async function treatmentLines(
+  organizationId: string,
+  treatments: { type: string; status: string }[]
+) {
+  const setting = await db.appSetting.findUnique({
+    where: {
+      organizationId_key: { organizationId, key: SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES },
+    },
+    select: { value: true },
+  })
+
+  const names = await treatmentNames()
+
+  return billableTreatments(treatments, parseTreatmentPrices(setting?.value)).map((line) => ({
+    description: names[line.type] ?? line.type,
+    // A flat service line, not hours: prep is priced per job, and an hourly
+    // line would invite someone to multiply it by a duration nobody tracked.
+    hours: 1,
+    rate: line.price,
+    total: line.price,
+    pricingType: 'service' as const,
+  }))
 }
 
 /** Human label for the tires, used as the quote line and the job title. */
@@ -173,8 +228,11 @@ export async function createQuoteFromTireSet(input: unknown) {
 
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
       const lineTotal = Math.round(unitPrice * set.quantity * 100) / 100
+      const labor = await treatmentLines(organizationId, set.treatments)
+      const laborTotal = labor.reduce((sum, line) => sum + line.total, 0)
+      const subtotal = Math.round((lineTotal + laborTotal) * 100) / 100
       const { taxAmount, totalAmount } = calculateTotals({
-        subtotal: lineTotal,
+        subtotal,
         discountAmount: 0,
         taxRate,
         taxInclusive,
@@ -186,7 +244,7 @@ export async function createQuoteFromTireSet(input: unknown) {
           title: describeSet(set),
           status: 'draft',
           validUntil,
-          subtotal: lineTotal,
+          subtotal,
           taxRate,
           taxAmount,
           taxInclusive,
@@ -209,6 +267,7 @@ export async function createQuoteFromTireSet(input: unknown) {
               },
             ],
           },
+          ...(labor.length > 0 ? { laborItems: { create: labor } } : {}),
         },
       })
 
@@ -258,6 +317,14 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         }
       )
 
+      const labor = await treatmentLines(organizationId, set.treatments)
+      if (labor.length > 0) {
+        await db.serviceLabor.createMany({
+          data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
+        })
+        await retotalServiceRecord(record.id)
+      }
+
       const shelf = set.location
         ? `${set.location.code} (${set.location.warehouse.name})`
         : 'not on a shelf'
@@ -296,6 +363,132 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         entity: 'ServiceRecord',
         entityId: result.id,
         message: `Created work order ${result.invoiceNumber ?? result.id} from a tire set`,
+        metadata: { tireSetId: result.tireSetId },
+      }),
+    }
+  )
+}
+
+/**
+ * Open jobs this set could be added to.
+ *
+ * Scoped to the set's own vehicle: a tire change belongs on the job for the
+ * car the tires go on, and offering another vehicle's job would put the line
+ * on a bill the wrong customer receives.
+ */
+export async function getOpenWorkOrdersForSet(tireSetId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+      const set = await loadSet(organizationId, tireSetId)
+      if (!set.vehicleId) return []
+
+      return db.serviceRecord.findMany({
+        where: {
+          organizationId,
+          vehicleId: set.vehicleId,
+          status: { in: ['pending', 'in_progress'] },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        select: {
+          id: true,
+          title: true,
+          invoiceNumber: true,
+          status: true,
+          totalAmount: true,
+          serviceDate: true,
+          tireSetId: true,
+        },
+      })
+    },
+    { requiredPermissions: READ }
+  )
+}
+
+/**
+ * Puts the tires and their prep onto a job that already exists.
+ *
+ * The common case is a car already booked in for something else: the customer
+ * mentions the swap while it is on the ramp, and raising a second job for it
+ * would split one visit across two invoices.
+ */
+export async function addTireSetToWorkOrder(input: unknown) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+      const data = fromSetSchema.extend({ serviceRecordId: z.string().min(1) }).parse(input)
+      const set = await loadSet(organizationId, data.tireSetId)
+
+      const record = await db.serviceRecord.findFirst({
+        where: { id: data.serviceRecordId, organizationId },
+        select: { id: true, invoiceNumber: true, vehicleId: true, tireSetId: true },
+      })
+      if (!record) throw new Error('That job no longer exists')
+      if (set.vehicleId && record.vehicleId && record.vehicleId !== set.vehicleId) {
+        throw new Error('That job is for a different vehicle')
+      }
+
+      const part = data.inventoryPartId
+        ? await db.inventoryPart.findFirst({
+            where: { id: data.inventoryPartId, organizationId, isArchived: false },
+            select: { id: true, name: true, partNumber: true, unitCost: true, sellPrice: true },
+          })
+        : null
+
+      const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
+      const labor = await treatmentLines(organizationId, set.treatments)
+
+      await db.$transaction(async (tx) => {
+        if (unitPrice > 0 || part) {
+          await tx.servicePart.create({
+            data: {
+              serviceRecordId: record.id,
+              name: part?.name ?? describeSet(set),
+              partNumber: part?.partNumber ?? null,
+              quantity: set.quantity,
+              unitPrice,
+              unitCost: part?.unitCost ?? 0,
+              total: Math.round(unitPrice * set.quantity * 100) / 100,
+              inventoryPartId: part?.id ?? null,
+            },
+          })
+        }
+        if (labor.length > 0) {
+          await tx.serviceLabor.createMany({
+            data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
+          })
+        }
+
+        // Only claim the job if it is not already about another set, so
+        // adding a second set never quietly rewrites the first one's link.
+        if (!record.tireSetId) {
+          await tx.serviceRecord.update({
+            where: { id: record.id },
+            data: { tireSetId: set.id },
+          })
+        }
+
+        await retotalServiceRecord(record.id, tx)
+      })
+
+      revalidatePath(`/tire-hotel/${set.id}`)
+      if (record.vehicleId) revalidatePath(`/vehicles/${record.vehicleId}`)
+      return {
+        id: record.id,
+        invoiceNumber: record.invoiceNumber,
+        vehicleId: record.vehicleId,
+        tireSetId: set.id,
+        reference: set.reference,
+      }
+    },
+    {
+      requiredPermissions: JOB,
+      audit: ({ result }) => ({
+        action: 'tire_set.add_to_work_order',
+        entity: 'ServiceRecord',
+        entityId: result.id,
+        message: `Added tire set ${result.reference ?? result.tireSetId} to work order ${result.invoiceNumber ?? result.id}`,
         metadata: { tireSetId: result.tireSetId },
       }),
     }

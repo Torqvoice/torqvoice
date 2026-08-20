@@ -6,7 +6,9 @@
     "save": "Opslaan",
     "create": "Aanmaken",
     "delete": "Verwijderen",
-    "edit": "Bewerken"
+    "edit": "Bewerken",
+    "back": "Terug",
+    "next": "Volgende"
   },
   "seasons": {
     "summer": "Zomer",
@@ -399,7 +401,13 @@
     "bannerTitle": "Ophalen van",
     "openSet": "Bandenset openen",
     "prepPending": "Nog te doen voor montage: {jobs}",
-    "notOnShelf": "Deze set ligt niet meer in opslag."
+    "notOnShelf": "Deze set ligt niet meer in opslag.",
+    "targetNew": "Nieuwe werkorder",
+    "targetNewHint": "Een opdracht alleen voor deze banden.",
+    "targetExisting": "Of toevoegen aan een opdracht die al open staat voor dit voertuig",
+    "addToWorkOrder": "Aan werkorder toevoegen",
+    "workOrderUpdated": "Toegevoegd aan de werkorder",
+    "prepLines": "Voorbereiding op deze opdracht"
   },
   "label": {
     "action": "Labels",

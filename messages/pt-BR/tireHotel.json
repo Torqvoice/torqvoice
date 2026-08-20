@@ -6,7 +6,9 @@
     "save": "Salvar",
     "create": "Criar",
     "delete": "Excluir",
-    "edit": "Editar"
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Avançar"
   },
   "seasons": {
     "summer": "Verão",
@@ -399,7 +401,13 @@
     "bannerTitle": "Buscar em",
     "openSet": "Abrir jogo",
     "prepPending": "A fazer antes de montar: {jobs}",
-    "notOnShelf": "Este jogo não está mais armazenado."
+    "notOnShelf": "Este jogo não está mais armazenado.",
+    "targetNew": "Nova ordem",
+    "targetNewHint": "Criar uma ordem só para estes pneus.",
+    "targetExisting": "Ou some a uma ordem já aberta para este veículo",
+    "addToWorkOrder": "Somar à ordem",
+    "workOrderUpdated": "Somado à ordem",
+    "prepLines": "Preparação nesta ordem"
   },
   "label": {
     "action": "Etiquetas",

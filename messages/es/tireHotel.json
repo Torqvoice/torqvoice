@@ -6,7 +6,9 @@
     "save": "Guardar",
     "create": "Crear",
     "delete": "Eliminar",
-    "edit": "Editar"
+    "edit": "Editar",
+    "back": "Atrás",
+    "next": "Siguiente"
   },
   "seasons": {
     "summer": "Verano",
@@ -399,7 +401,13 @@
     "bannerTitle": "Recoger en",
     "openSet": "Abrir juego",
     "prepPending": "Pendiente antes de montar: {jobs}",
-    "notOnShelf": "Este juego ya no está guardado."
+    "notOnShelf": "Este juego ya no está guardado.",
+    "targetNew": "Nueva orden",
+    "targetNewHint": "Crear una orden solo para estos neumáticos.",
+    "targetExisting": "O añadir a una orden ya abierta para este vehículo",
+    "addToWorkOrder": "Añadir a la orden",
+    "workOrderUpdated": "Añadido a la orden",
+    "prepLines": "Preparación en esta orden"
   },
   "label": {
     "action": "Etiquetas",

@@ -1484,6 +1484,9 @@
     "billingTitle": "Cobrança da armazenagem",
     "billingHint": "Preenchido ao criar um novo contrato. Cada contrato pode alterar.",
     "seasonalPrice": "Preço padrão por temporada",
-    "monthlyPrice": "Preço padrão por mês"
+    "monthlyPrice": "Preço padrão por mês",
+    "prepTitle": "Preços da preparação",
+    "prepHint": "Quanto custa cada tipo de preparação. Deixe em branco e nunca é cobrado, que é o que quer a oficina que inclui a lavagem na armazenagem. Os com preço entram sozinhos no orçamento e na ordem.",
+    "prepNotCharged": "não cobrado"
   }
 }

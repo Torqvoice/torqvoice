@@ -5,8 +5,8 @@ import { db } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
+import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import {
   agreementSchema,
   invoiceChargeSchema,
@@ -481,7 +481,7 @@ export async function invoiceCharge(input: unknown) {
           },
         })
 
-        await recalculateRecord(tx, record.id)
+        await retotalServiceRecord(record.id, tx)
 
         await tx.tireStorageCharge.update({
           where: { id: charge.id },
@@ -548,42 +548,4 @@ export async function waiveCharge(chargeId: string) {
 function formatPeriod(start: Date, end: Date): string {
   const iso = (d: Date) => d.toISOString().slice(0, 10)
   return `${iso(start)} - ${iso(end)}`
-}
-
-/**
- * Re-totals a record from its line items, using the same helper and the same
- * discount rules as adding a part does. Rolling our own arithmetic here would
- * let a storage line and a parts line disagree about what inclusive tax means.
- */
-async function recalculateRecord(tx: Prisma.TransactionClient, serviceRecordId: string) {
-  const record = await tx.serviceRecord.findUnique({
-    where: { id: serviceRecordId },
-    select: { discountType: true, discountValue: true, taxRate: true, taxInclusive: true },
-  })
-  if (!record) return
-
-  const [partsAgg, laborAgg] = await Promise.all([
-    tx.servicePart.aggregate({ where: { serviceRecordId }, _sum: { total: true } }),
-    tx.serviceLabor.aggregate({ where: { serviceRecordId }, _sum: { total: true } }),
-  ])
-
-  const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
-  const discountAmount =
-    record.discountType === 'percentage'
-      ? subtotal * ((record.discountValue ?? 0) / 100)
-      : record.discountType === 'fixed'
-        ? Math.min(record.discountValue ?? 0, subtotal)
-        : 0
-
-  const { taxAmount, totalAmount } = calculateTotals({
-    subtotal,
-    discountAmount,
-    taxRate: record.taxRate,
-    taxInclusive: record.taxInclusive,
-  })
-
-  await tx.serviceRecord.update({
-    where: { id: serviceRecordId },
-    data: { subtotal, taxAmount, totalAmount },
-  })
 }

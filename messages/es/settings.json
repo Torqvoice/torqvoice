@@ -1484,6 +1484,9 @@
     "billingTitle": "Facturación del almacenaje",
     "billingHint": "Se rellena al crear un contrato nuevo. Cada contrato puede cambiarlo.",
     "seasonalPrice": "Precio por defecto por temporada",
-    "monthlyPrice": "Precio por defecto por mes"
+    "monthlyPrice": "Precio por defecto por mes",
+    "prepTitle": "Precios de preparación",
+    "prepHint": "Lo que cuesta cada tipo de preparación. Déjalo en blanco y no se factura nunca, que es lo que quiere un taller que incluye el lavado en el almacenaje. Las que tienen precio se añaden solas al presupuesto y a la orden.",
+    "prepNotCharged": "no se cobra"
   }
 }

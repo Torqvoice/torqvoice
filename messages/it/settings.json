@@ -1484,6 +1484,9 @@
     "billingTitle": "Fatturazione del deposito",
     "billingHint": "Precompilato quando crei un nuovo contratto. Ogni contratto può modificarlo.",
     "seasonalPrice": "Prezzo predefinito a stagione",
-    "monthlyPrice": "Prezzo predefinito al mese"
+    "monthlyPrice": "Prezzo predefinito al mese",
+    "prepTitle": "Prezzi della preparazione",
+    "prepHint": "Quanto costa ogni tipo di preparazione. Lasciandolo vuoto non viene mai fatturata, come serve a chi include il lavaggio nel deposito. Quelle con un prezzo finiscono da sole su preventivo e ordine.",
+    "prepNotCharged": "non addebitato"
   }
 }

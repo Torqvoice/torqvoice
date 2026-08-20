@@ -6,7 +6,9 @@
     "save": "Speichern",
     "create": "Erstellen",
     "delete": "Löschen",
-    "edit": "Bearbeiten"
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "next": "Weiter"
   },
   "seasons": {
     "summer": "Sommer",
@@ -399,7 +401,13 @@
     "bannerTitle": "Holen von",
     "openSet": "Reifensatz öffnen",
     "prepPending": "Vor der Montage offen: {jobs}",
-    "notOnShelf": "Dieser Satz ist nicht mehr eingelagert."
+    "notOnShelf": "Dieser Satz ist nicht mehr eingelagert.",
+    "targetNew": "Neuer Auftrag",
+    "targetNewHint": "Einen Auftrag nur für diese Reifen anlegen.",
+    "targetExisting": "Oder zu einem bereits offenen Auftrag für dieses Fahrzeug",
+    "addToWorkOrder": "Zum Auftrag hinzufügen",
+    "workOrderUpdated": "Zum Auftrag hinzugefügt",
+    "prepLines": "Vorbereitung auf diesem Auftrag"
   },
   "label": {
     "action": "Etiketten",

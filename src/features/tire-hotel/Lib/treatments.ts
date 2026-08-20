@@ -91,3 +91,63 @@ export const TREATMENT_STATUS_TOKENS: Record<TreatmentStatus, string> = {
   done: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
   skipped: 'bg-muted text-muted-foreground border-border',
 }
+
+/**
+ * What a shop charges for each kind of prep.
+ *
+ * Stored as one JSON setting rather than a key per treatment: they are edited
+ * together on one screen and read together when a job is raised, so splitting
+ * them would only mean six round trips to say one thing.
+ */
+export type TreatmentPrices = Partial<Record<TreatmentType, number>>
+
+export function parseTreatmentPrices(raw: string | null | undefined): TreatmentPrices {
+  if (!raw) return {}
+  try {
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return {}
+    const prices: TreatmentPrices = {}
+    for (const type of TREATMENT_TYPES) {
+      const value = Number((parsed as Record<string, unknown>)[type])
+      if (Number.isFinite(value) && value > 0) prices[type] = value
+    }
+    return prices
+  } catch {
+    // A hand-edited or older value should not stop a job being raised; it
+    // just means nothing is prefilled.
+    return {}
+  }
+}
+
+export function serializeTreatmentPrices(prices: TreatmentPrices): string {
+  const clean: Record<string, number> = {}
+  for (const type of TREATMENT_TYPES) {
+    const value = prices[type]
+    if (Number.isFinite(value) && (value as number) > 0) clean[type] = value as number
+  }
+  return JSON.stringify(clean)
+}
+
+/**
+ * The prep worth putting on a bill, with what to charge for it.
+ *
+ * Skipped work is left off: someone looked at it and decided against doing
+ * it, so there is nothing to charge for. Work already done stays on, because
+ * it happened and the customer is paying for it.
+ *
+ * A treatment with no price configured produces no line at all. Plenty of
+ * shops fold washing into the storage fee, and for them a zero-priced line
+ * on every invoice would be noise they have to delete each time. Setting a
+ * price is what opts a treatment in.
+ */
+export function billableTreatments(
+  treatments: TreatmentLike[],
+  prices: TreatmentPrices
+): { type: TreatmentType; price: number }[] {
+  const order = new Map(TREATMENT_TYPES.map((type, index) => [type, index]))
+  return treatments
+    .filter((t) => t.status !== 'skipped')
+    .map((t) => ({ type: t.type as TreatmentType, price: prices[t.type as TreatmentType] ?? 0 }))
+    .filter((t) => t.price > 0)
+    .sort((a, b) => (order.get(a.type) ?? 99) - (order.get(b.type) ?? 99))
+}

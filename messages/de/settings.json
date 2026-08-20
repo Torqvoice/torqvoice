@@ -1484,6 +1484,9 @@
     "billingTitle": "Lagerabrechnung",
     "billingHint": "Wird beim Anlegen einer neuen Vereinbarung vorausgefüllt. Jede Vereinbarung kann davon abweichen.",
     "seasonalPrice": "Standardpreis pro Saison",
-    "monthlyPrice": "Standardpreis pro Monat"
+    "monthlyPrice": "Standardpreis pro Monat",
+    "prepTitle": "Preise für Vorbereitung",
+    "prepHint": "Was jede Art von Vorbereitung kostet. Leer bedeutet, sie wird nie berechnet, was zu Betrieben passt, die das Waschen in der Lagergebühr enthalten haben. Bepreiste werden automatisch auf Angebot und Auftrag gesetzt.",
+    "prepNotCharged": "nicht berechnet"
   }
 }

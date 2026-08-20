@@ -16,6 +16,12 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Loader2, Save, Warehouse } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { mmToThirtySeconds, thirtySecondsToMm } from '@/features/tire-hotel/Lib/tireConstants'
+import {
+  TREATMENT_TYPES,
+  parseTreatmentPrices,
+  serializeTreatmentPrices,
+  type TreatmentPrices,
+} from '@/features/tire-hotel/Lib/treatments'
 
 /**
  * Tire hotel is off until a workshop switches it on, because most shops that
@@ -26,6 +32,7 @@ import { mmToThirtySeconds, thirtySecondsToMm } from '@/features/tire-hotel/Lib/
 export function TireHotelSettings({ settings }: { settings: Record<string, string> }) {
   const router = useRouter()
   const t = useTranslations('settings')
+  const tTire = useTranslations('tireHotel')
   const [saving, setSaving] = useState(false)
 
   const imperial = settings[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'
@@ -43,6 +50,14 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
   const [monthlyPrice, setMonthlyPrice] = useState(
     settings[SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE] || '0'
   )
+  // Kept as typed text rather than numbers so a half-entered price does not
+  // snap back to 0 between keystrokes.
+  const [treatmentPrices, setTreatmentPrices] = useState<Record<string, string>>(() => {
+    const parsed = parseTreatmentPrices(settings[SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES])
+    return Object.fromEntries(
+      TREATMENT_TYPES.map((type) => [type, parsed[type] ? String(parsed[type]) : ''])
+    )
+  })
 
   // Thresholds are stored in mm. Workshops on imperial units type 32nds, so
   // the field converts on the way in and out and the stored number keeps one
@@ -81,6 +96,11 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
       ),
       [SETTING_KEYS.TIRE_HOTEL_DEFAULT_MONTHLY_PRICE]: String(
         Math.max(0, Number(monthlyPrice) || 0)
+      ),
+      [SETTING_KEYS.TIRE_HOTEL_TREATMENT_PRICES]: serializeTreatmentPrices(
+        Object.fromEntries(
+          Object.entries(treatmentPrices).map(([type, value]) => [type, Number(value) || 0])
+        ) as TreatmentPrices
       ),
     })
     setSaving(false)
@@ -209,6 +229,37 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
                     className="tabular-nums"
                   />
                 </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <p className="text-sm font-medium">{t('tireHotel.prepTitle')}</p>
+                <p className="text-xs text-muted-foreground">{t('tireHotel.prepHint')}</p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {TREATMENT_TYPES.map((type) => (
+                  <div key={type} className="flex items-center gap-3">
+                    <Label htmlFor={`prep-${type}`} className="min-w-0 flex-1 truncate font-normal">
+                      {tTire(`treatments.types.${type}`)}
+                    </Label>
+                    <Input
+                      id={`prep-${type}`}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={treatmentPrices[type] ?? ''}
+                      onChange={(e) =>
+                        setTreatmentPrices((prev) => ({ ...prev, [type]: e.target.value }))
+                      }
+                      // Empty rather than 0, so "not charged" and "free" are
+                      // not the same keystroke.
+                      placeholder={t('tireHotel.prepNotCharged')}
+                      className="w-32 tabular-nums"
+                    />
+                  </div>
+                ))}
               </div>
 
               <p className="text-xs text-muted-foreground">

@@ -6,7 +6,9 @@
     "save": "Zapisz",
     "create": "Utwórz",
     "delete": "Usuń",
-    "edit": "Edytuj"
+    "edit": "Edytuj",
+    "back": "Wstecz",
+    "next": "Dalej"
   },
   "seasons": {
     "summer": "Letnie",
@@ -399,7 +401,13 @@
     "bannerTitle": "Odbiór z",
     "openSet": "Otwórz komplet",
     "prepPending": "Do zrobienia przed montażem: {jobs}",
-    "notOnShelf": "Ten komplet nie jest już w magazynie."
+    "notOnShelf": "Ten komplet nie jest już w magazynie.",
+    "targetNew": "Nowe zlecenie",
+    "targetNewHint": "Utwórz zlecenie tylko dla tych opon.",
+    "targetExisting": "Albo dodaj do zlecenia już otwartego dla tego pojazdu",
+    "addToWorkOrder": "Dodaj do zlecenia",
+    "workOrderUpdated": "Dodano do zlecenia",
+    "prepLines": "Przygotowanie w tym zleceniu"
   },
   "label": {
     "action": "Etykiety",

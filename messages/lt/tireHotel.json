@@ -6,7 +6,9 @@
     "save": "Išsaugoti",
     "create": "Sukurti",
     "delete": "Ištrinti",
-    "edit": "Redaguoti"
+    "edit": "Redaguoti",
+    "back": "Atgal",
+    "next": "Toliau"
   },
   "seasons": {
     "summer": "Vasarinės",
@@ -399,7 +401,13 @@
     "bannerTitle": "Paimti iš",
     "openSet": "Atverti komplektą",
     "prepPending": "Prieš montuojant liko: {jobs}",
-    "notOnShelf": "Šis komplektas nebėra saugykloje."
+    "notOnShelf": "Šis komplektas nebėra saugykloje.",
+    "targetNew": "Naujas darbo užsakymas",
+    "targetNewHint": "Sukurti darbą tik šioms padangoms.",
+    "targetExisting": "Arba pridėti prie jau atviro šios transporto priemonės darbo",
+    "addToWorkOrder": "Pridėti prie darbo užsakymo",
+    "workOrderUpdated": "Pridėta prie darbo užsakymo",
+    "prepLines": "Paruošimas šiame darbe"
   },
   "label": {
     "action": "Etiketės",

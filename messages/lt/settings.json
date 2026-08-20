@@ -1484,6 +1484,9 @@
     "billingTitle": "Saugojimo apmokėjimas",
     "billingHint": "Užpildoma kuriant naują sutartį. Kiekviena sutartis gali tai pakeisti.",
     "seasonalPrice": "Numatytoji kaina už sezoną",
-    "monthlyPrice": "Numatytoji kaina už mėnesį"
+    "monthlyPrice": "Numatytoji kaina už mėnesį",
+    "prepTitle": "Paruošimo kainos",
+    "prepHint": "Kiek kainuoja kiekvienas paruošimo darbas. Palikus tuščią, jis niekada neapmokestinamas, o to ir reikia dirbtuvėms, kurios plovimą įskaičiuoja į saugojimą. Turintys kainą patys atsiranda pasiūlyme ir darbo užsakyme.",
+    "prepNotCharged": "neapmokestinama"
   }
 }

@@ -18,14 +18,18 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
-import { Check, Loader2, PackageX } from 'lucide-react'
+import { ArrowLeft, Check, ClipboardList, FilePlus2, Loader2, PackageX } from 'lucide-react'
 import {
+  addTireSetToWorkOrder,
   createQuoteFromTireSet,
   createWorkOrderFromTireSet,
+  getOpenWorkOrdersForSet,
   getStockMatchesForSet,
 } from '../Actions/tireJobActions'
+import { useFormatDate } from '@/lib/use-format-date'
 
 type Matches = NonNullable<Awaited<ReturnType<typeof getStockMatchesForSet>>['data']>
+type OpenJobs = NonNullable<Awaited<ReturnType<typeof getOpenWorkOrdersForSet>>['data']>
 
 /**
  * Turning a stored set into work.
@@ -56,6 +60,12 @@ export function NewTireJobDialog({
   const t = useTranslations('tireHotel')
   const router = useRouter()
   const formatCurrency = useFormatCurrency()
+  const { formatDate } = useFormatDate()
+  // Work orders ask where the lines go before asking what they are; a quote
+  // has nowhere else to go, so it skips straight to the tires.
+  const [step, setStep] = useState<'target' | 'lines'>(mode === 'quote' ? 'lines' : 'target')
+  const [openJobs, setOpenJobs] = useState<OpenJobs>([])
+  const [target, setTarget] = useState<string | null>(null)
   const [data, setData] = useState<Matches | null>(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -67,13 +77,19 @@ export function NewTireJobDialog({
       setData(null)
       setSelected(null)
       setPrice('')
+      setOpenJobs([])
+      setTarget(null)
+      setStep(mode === 'quote' ? 'lines' : 'target')
       return
     }
     let cancelled = false
     setLoading(true)
-    getStockMatchesForSet(tireSetId).then((result) => {
+    Promise.all([
+      getStockMatchesForSet(tireSetId),
+      mode === 'workOrder' ? getOpenWorkOrdersForSet(tireSetId) : Promise.resolve(null),
+    ]).then(([stock, jobs]) => {
       if (cancelled) return
-      const value = result.success && result.data ? result.data : null
+      const value = stock.success && stock.data ? stock.data : null
       setData(value)
       // Preselect the best match, which is the cheapest that covers the whole
       // set. Anything else and the operator is choosing from a list of one.
@@ -82,12 +98,17 @@ export function NewTireJobDialog({
         setSelected(best.id)
         setPrice(String(best.sellPrice))
       }
+
+      const rows = jobs?.success && jobs.data ? jobs.data : []
+      setOpenJobs(rows)
+      // Nothing to choose between, so the question is not worth asking.
+      if (mode === 'workOrder' && rows.length === 0) setStep('lines')
       setLoading(false)
     })
     return () => {
       cancelled = true
     }
-  }, [open, tireSetId])
+  }, [open, tireSetId, mode])
 
   const quantity = data?.quantity ?? 0
   const unit = Number(price) || 0
@@ -99,7 +120,9 @@ export function NewTireJobDialog({
     const result =
       mode === 'quote'
         ? await createQuoteFromTireSet(payload)
-        : await createWorkOrderFromTireSet(payload)
+        : target
+          ? await addTireSetToWorkOrder({ ...payload, serviceRecordId: target })
+          : await createWorkOrderFromTireSet(payload)
     setSaving(false)
 
     if (!result.success) {
@@ -114,7 +137,7 @@ export function NewTireJobDialog({
       return
     }
     if (result.data && 'vehicleId' in result.data) {
-      toast.success(t('job.workOrderCreated'))
+      toast.success(target ? t('job.workOrderUpdated') : t('job.workOrderCreated'))
       router.push(`/vehicles/${result.data.vehicleId}/service/${result.data.id}`)
     }
   }
@@ -132,6 +155,34 @@ export function NewTireJobDialog({
         ) : loading ? (
           <div className="flex items-center justify-center py-10">
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          </div>
+        ) : step === 'target' ? (
+          <div className="space-y-2">
+            <TargetOption
+              selected={target === null}
+              onSelect={() => setTarget(null)}
+              icon={<FilePlus2 className="h-4 w-4" />}
+              title={t('job.targetNew')}
+              subtitle={t('job.targetNewHint')}
+            />
+            <p className="px-1 pt-2 text-xs font-medium text-muted-foreground">
+              {t('job.targetExisting')}
+            </p>
+            {openJobs.map((job) => (
+              <TargetOption
+                key={job.id}
+                selected={target === job.id}
+                onSelect={() => setTarget(job.id)}
+                icon={<ClipboardList className="h-4 w-4" />}
+                title={job.invoiceNumber ?? job.title}
+                subtitle={`${job.title} · ${formatDate(new Date(job.serviceDate))}`}
+                trailing={
+                  <span className="text-xs tabular-nums text-muted-foreground">
+                    {formatCurrency(job.totalAmount, currencyCode)}
+                  </span>
+                }
+              />
+            ))}
           </div>
         ) : (
           <div className="space-y-4">
@@ -223,18 +274,77 @@ export function NewTireJobDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
-            {t('common.cancel')}
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={saving || loading || (mode === 'workOrder' && !hasVehicle)}
-          >
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t(mode === 'quote' ? 'job.createQuote' : 'job.createWorkOrder')}
-          </Button>
+          {step === 'lines' && mode === 'workOrder' && openJobs.length > 0 ? (
+            <Button variant="ghost" onClick={() => setStep('target')} disabled={saving}>
+              <ArrowLeft className="mr-1.5 h-4 w-4" />
+              {t('common.back')}
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+              {t('common.cancel')}
+            </Button>
+          )}
+
+          {step === 'target' ? (
+            <Button onClick={() => setStep('lines')} disabled={loading}>
+              {t('common.next')}
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={saving || loading || (mode === 'workOrder' && !hasVehicle)}
+            >
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {mode === 'quote'
+                ? t('job.createQuote')
+                : target
+                  ? t('job.addToWorkOrder')
+                  : t('job.createWorkOrder')}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function TargetOption({
+  selected,
+  onSelect,
+  icon,
+  title,
+  subtitle,
+  trailing,
+}: {
+  selected: boolean
+  onSelect: () => void
+  icon: React.ReactNode
+  title: string
+  subtitle?: string
+  trailing?: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={cn(
+        'flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors',
+        'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
+        selected ? 'border-primary/50 bg-primary/5' : 'hover:bg-muted/60'
+      )}
+    >
+      <span className={cn('shrink-0', selected ? 'text-primary' : 'text-muted-foreground')}>
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-medium">{title}</span>
+        {subtitle && (
+          <span className="block truncate text-xs text-muted-foreground">{subtitle}</span>
+        )}
+      </span>
+      {trailing}
+      {selected && <Check className="h-4 w-4 shrink-0 text-primary" />}
+    </button>
   )
 }

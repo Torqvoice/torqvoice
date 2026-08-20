@@ -6,7 +6,9 @@
     "save": "Salva",
     "create": "Crea",
     "delete": "Elimina",
-    "edit": "Modifica"
+    "edit": "Modifica",
+    "back": "Indietro",
+    "next": "Avanti"
   },
   "seasons": {
     "summer": "Estivi",
@@ -399,7 +401,13 @@
     "bannerTitle": "Da prelevare in",
     "openSet": "Apri il treno",
     "prepPending": "Da fare prima del montaggio: {jobs}",
-    "notOnShelf": "Questo treno non è più in deposito."
+    "notOnShelf": "Questo treno non è più in deposito.",
+    "targetNew": "Nuovo ordine",
+    "targetNewHint": "Crea un ordine solo per questi pneumatici.",
+    "targetExisting": "Oppure aggiungi a un ordine già aperto per questo veicolo",
+    "addToWorkOrder": "Aggiungi all’ordine",
+    "workOrderUpdated": "Aggiunto all’ordine",
+    "prepLines": "Preparazione su questo ordine"
   },
   "label": {
     "action": "Etichette",

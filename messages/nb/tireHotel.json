@@ -6,7 +6,9 @@
     "save": "Lagre",
     "create": "Opprett",
     "delete": "Slett",
-    "edit": "Rediger"
+    "edit": "Rediger",
+    "back": "Tilbake",
+    "next": "Neste"
   },
   "seasons": {
     "summer": "Sommer",
@@ -399,7 +401,13 @@
     "bannerTitle": "Hentes fra",
     "openSet": "Åpne dekksett",
     "prepPending": "Gjenstår før montering: {jobs}",
-    "notOnShelf": "Dette settet står ikke lenger på lager."
+    "notOnShelf": "Dette settet står ikke lenger på lager.",
+    "targetNew": "Ny arbeidsordre",
+    "targetNewHint": "Opprett en jobb bare for disse dekkene.",
+    "targetExisting": "Eller legg til på en jobb som allerede er åpen for dette kjøretøyet",
+    "addToWorkOrder": "Legg til på arbeidsordre",
+    "workOrderUpdated": "Lagt til på arbeidsordren",
+    "prepLines": "Klargjøring på denne jobben"
   },
   "label": {
     "action": "Etiketter",

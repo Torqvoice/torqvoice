@@ -6,7 +6,9 @@
     "save": "Kaydet",
     "create": "Oluştur",
     "delete": "Sil",
-    "edit": "Düzenle"
+    "edit": "Düzenle",
+    "back": "Geri",
+    "next": "İleri"
   },
   "seasons": {
     "summer": "Yaz",
@@ -399,7 +401,13 @@
     "bannerTitle": "Şuradan alınacak",
     "openSet": "Lastik takımını aç",
     "prepPending": "Takmadan önce yapılacaklar: {jobs}",
-    "notOnShelf": "Bu takım artık depoda değil."
+    "notOnShelf": "Bu takım artık depoda değil.",
+    "targetNew": "Yeni iş emri",
+    "targetNewHint": "Sadece bu lastikler için iş emri aç.",
+    "targetExisting": "Veya bu araç için açık olan bir işe ekle",
+    "addToWorkOrder": "İş emrine ekle",
+    "workOrderUpdated": "İş emrine eklendi",
+    "prepLines": "Bu işteki hazırlık"
   },
   "label": {
     "action": "Etiketler",

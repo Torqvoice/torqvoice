@@ -6,7 +6,9 @@
     "save": "Save",
     "create": "Create",
     "delete": "Delete",
-    "edit": "Edit"
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next"
   },
   "seasons": {
     "summer": "Summer",
@@ -399,7 +401,13 @@
     "bannerTitle": "Fetch from",
     "openSet": "Open tire set",
     "prepPending": "Still to do before fitting: {jobs}",
-    "notOnShelf": "This set is no longer in storage."
+    "notOnShelf": "This set is no longer in storage.",
+    "targetNew": "New work order",
+    "targetNewHint": "Raise a job just for these tires.",
+    "targetExisting": "Or add to a job already open for this vehicle",
+    "addToWorkOrder": "Add to work order",
+    "workOrderUpdated": "Added to the work order",
+    "prepLines": "Prep on this job"
   },
   "label": {
     "action": "Labels",

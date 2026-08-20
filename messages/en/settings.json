@@ -1484,6 +1484,9 @@
     "billingTitle": "Storage billing",
     "billingHint": "Prefilled when you create a new agreement. Each agreement can override it.",
     "seasonalPrice": "Default price per season",
-    "monthlyPrice": "Default price per month"
+    "monthlyPrice": "Default price per month",
+    "prepTitle": "Prep pricing",
+    "prepHint": "What each kind of prep costs. Leave one blank and it is never billed, which is what a shop that includes washing in the storage fee wants. Priced ones are added to a quote or work order automatically.",
+    "prepNotCharged": "not charged"
   }
 }

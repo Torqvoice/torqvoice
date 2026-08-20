@@ -1484,6 +1484,9 @@
     "billingTitle": "Facturation du stockage",
     "billingHint": "Prérempli à la création d’un contrat. Chaque contrat peut le remplacer.",
     "seasonalPrice": "Prix par défaut par saison",
-    "monthlyPrice": "Prix par défaut par mois"
+    "monthlyPrice": "Prix par défaut par mois",
+    "prepTitle": "Prix de la préparation",
+    "prepHint": "Ce que coûte chaque type de préparation. Laissez vide et rien n’est facturé, ce qui convient aux ateliers qui incluent le lavage dans le stockage. Les prestations chiffrées sont ajoutées automatiquement au devis et à l’ordre.",
+    "prepNotCharged": "non facturé"
   }
 }

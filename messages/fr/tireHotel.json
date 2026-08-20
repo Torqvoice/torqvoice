@@ -6,7 +6,9 @@
     "save": "Enregistrer",
     "create": "Créer",
     "delete": "Supprimer",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant"
   },
   "seasons": {
     "summer": "Été",
@@ -399,7 +401,13 @@
     "bannerTitle": "À récupérer en",
     "openSet": "Ouvrir le jeu",
     "prepPending": "À faire avant montage : {jobs}",
-    "notOnShelf": "Ce jeu n’est plus en stockage."
+    "notOnShelf": "Ce jeu n’est plus en stockage.",
+    "targetNew": "Nouvel ordre",
+    "targetNewHint": "Créer un ordre uniquement pour ces pneus.",
+    "targetExisting": "Ou ajouter à un ordre déjà ouvert pour ce véhicule",
+    "addToWorkOrder": "Ajouter à l’ordre",
+    "workOrderUpdated": "Ajouté à l’ordre",
+    "prepLines": "Préparation sur cet ordre"
   },
   "label": {
     "action": "Étiquettes",

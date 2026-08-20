@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import {
   applicableTreatments,
+  billableTreatments,
+  parseTreatmentPrices,
+  serializeTreatmentPrices,
   defaultTreatments,
   pendingTreatments,
   treatmentProgress,
@@ -76,5 +79,80 @@ describe('outstanding work', () => {
     // An empty list means nobody asked for work, which is different from
     // work that has been finished.
     expect(treatmentProgress([]).complete).toBe(false)
+  })
+})
+
+describe('treatment prices', () => {
+  it('reads back what it wrote', () => {
+    const prices = { wash_tires: 200, balance: 350 }
+    expect(parseTreatmentPrices(serializeTreatmentPrices(prices))).toEqual(prices)
+  })
+
+  it('drops zero and negative prices on the way in and out', () => {
+    // A zero price means "not charged", which is the absence of an entry.
+    expect(parseTreatmentPrices('{"wash_tires":0,"balance":-5}')).toEqual({})
+    expect(serializeTreatmentPrices({ wash_tires: 0 })).toBe('{}')
+  })
+
+  it('ignores keys that are not treatments', () => {
+    expect(parseTreatmentPrices('{"wash_tires":100,"coffee":50}')).toEqual({ wash_tires: 100 })
+  })
+
+  it('survives a value that is not JSON', () => {
+    // Hand-edited or from an older shape. It should mean "nothing prefilled",
+    // not "the job cannot be raised".
+    expect(parseTreatmentPrices('not json')).toEqual({})
+    expect(parseTreatmentPrices('[1,2,3]')).toEqual({})
+    expect(parseTreatmentPrices(null)).toEqual({})
+  })
+})
+
+describe('what reaches the bill', () => {
+  const prices = { wash_tires: 200, wash_rims: 150, balance: 350 }
+
+  it('bills work that is still to do', () => {
+    const lines = billableTreatments([{ type: 'wash_tires', status: 'pending' }], prices)
+    expect(lines).toEqual([{ type: 'wash_tires', price: 200 }])
+  })
+
+  it('still bills work already finished', () => {
+    // It happened, so the customer is paying for it. Ticking it off before
+    // raising the job must not lose the charge.
+    const lines = billableTreatments([{ type: 'wash_tires', status: 'done' }], prices)
+    expect(lines).toHaveLength(1)
+  })
+
+  it('does not bill work that was skipped', () => {
+    // Someone looked at it and decided against doing it.
+    expect(billableTreatments([{ type: 'wash_tires', status: 'skipped' }], prices)).toEqual([])
+  })
+
+  it('leaves out anything with no price set', () => {
+    // How a shop that folds washing into the storage fee keeps it off the
+    // invoice, rather than deleting a zero line every time.
+    const lines = billableTreatments(
+      [
+        { type: 'wash_tires', status: 'pending' },
+        { type: 'new_valves', status: 'pending' },
+      ],
+      prices
+    )
+    expect(lines.map((l) => l.type)).toEqual(['wash_tires'])
+  })
+
+  it('orders lines the way the treatment list is declared', () => {
+    const lines = billableTreatments(
+      [
+        { type: 'balance', status: 'pending' },
+        { type: 'wash_rims', status: 'pending' },
+        { type: 'wash_tires', status: 'pending' },
+      ],
+      prices
+    )
+    expect(lines.map((l) => l.type)).toEqual(['wash_tires', 'wash_rims', 'balance'])
+  })
+
+  it('bills nothing when no prices are configured at all', () => {
+    expect(billableTreatments([{ type: 'wash_tires', status: 'pending' }], {})).toEqual([])
   })
 })

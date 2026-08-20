@@ -135,6 +135,10 @@ export const SETTING_KEYS = {
   /// Prefilled price for a new agreement, per billing model.
   TIRE_HOTEL_DEFAULT_SEASONAL_PRICE: 'tireHotel.defaultSeasonalPrice',
   TIRE_HOTEL_DEFAULT_MONTHLY_PRICE: 'tireHotel.defaultMonthlyPrice',
+  /// What each kind of prep work is charged at, as JSON keyed by treatment
+  /// type. A type with no price here produces no line, which is how a shop
+  /// that folds washing into the storage fee keeps it off the invoice.
+  TIRE_HOTEL_TREATMENT_PRICES: 'tireHotel.treatmentPrices',
   DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
   DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
   DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',

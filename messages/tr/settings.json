@@ -1484,6 +1484,9 @@
     "billingTitle": "Depolama faturalandırması",
     "billingHint": "Yeni sözleşme oluştururken önceden doldurulur. Her sözleşme bunu değiştirebilir.",
     "seasonalPrice": "Sezon başına varsayılan fiyat",
-    "monthlyPrice": "Ay başına varsayılan fiyat"
+    "monthlyPrice": "Ay başına varsayılan fiyat",
+    "prepTitle": "Hazırlık fiyatları",
+    "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
+    "prepNotCharged": "ücretlendirilmiyor"
   }
 }
