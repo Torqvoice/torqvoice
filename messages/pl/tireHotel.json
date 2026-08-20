@@ -8,7 +8,8 @@
     "delete": "Usuń",
     "edit": "Edytuj",
     "back": "Wstecz",
-    "next": "Dalej"
+    "next": "Dalej",
+    "clear": "Wyczyść"
   },
   "seasons": {
     "summer": "Letnie",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Nie udało się odłączyć opon",
     "prep": "Przygotowanie",
     "tiresSkipped": "Pozycja z oponami nie zostanie dodana.",
-    "total": "Razem"
+    "total": "Razem",
+    "searchStock": "Szukaj w magazynie według marki, rozmiaru lub numeru części",
+    "noSearchHits": "Nic w magazynie nie pasuje do \"{query}\".",
+    "otherSize": "Inny rozmiar",
+    "inSize": "{count} w {size}"
   },
   "label": {
     "action": "Etykiety",

@@ -19,18 +19,32 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, Check, ClipboardList, FilePlus2, Loader2, PackageX } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  ClipboardList,
+  FilePlus2,
+  Loader2,
+  PackageX,
+  Search,
+  X,
+} from 'lucide-react'
 import {
   addTireSetToWorkOrder,
   createQuoteFromTireSet,
   createWorkOrderFromTireSet,
   getOpenWorkOrdersForSet,
   getJobDraftForSet,
+  searchTireStock,
 } from '../Actions/tireJobActions'
 import { useFormatDate } from '@/lib/use-format-date'
 
 type Matches = NonNullable<Awaited<ReturnType<typeof getJobDraftForSet>>['data']>
 type OpenJobs = NonNullable<Awaited<ReturnType<typeof getOpenWorkOrdersForSet>>['data']>
+type SearchHits = NonNullable<Awaited<ReturnType<typeof searchTireStock>>['data']>
+/// A row in the picker. Search hits carry whether they are the stored size;
+/// the fitment matches are that size by definition.
+type StockRow = SearchHits[number] | (Matches['matches'][number] & { fits?: boolean })
 
 /**
  * Turning a stored set into work.
@@ -70,8 +84,13 @@ export function NewTireJobDialog({
   const [data, setData] = useState<Matches | null>(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [selected, setSelected] = useState<string | null>(null)
+  // The whole part is kept, not just its id, so a pick made from a search
+  // stays visible after the search is cleared.
+  const [picked, setPicked] = useState<StockRow | null>(null)
   const [price, setPrice] = useState('')
+  const [query, setQuery] = useState('')
+  const [hits, setHits] = useState<SearchHits | null>(null)
+  const [searching, setSearching] = useState(false)
   // Everything billable starts ticked, since that is the usual job. The point
   // of the list is that a swap on customer-supplied tires, or a wash given
   // as goodwill, can be dropped without editing the invoice afterwards.
@@ -81,8 +100,10 @@ export function NewTireJobDialog({
   useEffect(() => {
     if (!open) {
       setData(null)
-      setSelected(null)
+      setPicked(null)
       setPrice('')
+      setQuery('')
+      setHits(null)
       setOpenJobs([])
       setTarget(null)
       setIncludeTires(true)
@@ -103,7 +124,7 @@ export function NewTireJobDialog({
       // set. Anything else and the operator is choosing from a list of one.
       const best = value?.matches[0]
       if (best) {
-        setSelected(best.id)
+        setPicked(best)
         setPrice(String(best.sellPrice))
       }
       setIncludePrep((value?.prep ?? []).map((line) => line.type))
@@ -118,6 +139,39 @@ export function NewTireJobDialog({
       cancelled = true
     }
   }, [open, tireSetId, mode])
+
+  // Two characters is where a search stops meaning "most of the catalogue".
+  const searchActive = query.trim().length >= 2
+
+  useEffect(() => {
+    if (!open || !searchActive) {
+      setHits(null)
+      return
+    }
+    let cancelled = false
+    setSearching(true)
+    // Typing a brand name should not fire a query per keystroke.
+    const timer = setTimeout(async () => {
+      const result = await searchTireStock({ tireSetId, query })
+      if (cancelled) return
+      setHits(result.success && result.data ? result.data : [])
+      setSearching(false)
+    }, 250)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [open, tireSetId, query, searchActive])
+
+  // Every match in the size, not a top few: a shop can carry a dozen brands
+  // in one fitment and the cheapest is not always the one being sold.
+  const suggestions: StockRow[] = searchActive ? (hits ?? []) : (data?.matches ?? [])
+  // The chosen tire stays in the list whatever the search says, so clearing
+  // the box cannot quietly drop what the operator already picked.
+  const rows: StockRow[] =
+    picked && !suggestions.some((row) => row.id === picked.id)
+      ? [picked, ...suggestions]
+      : suggestions
 
   const quantity = data?.quantity ?? 0
   const unit = Number(price) || 0
@@ -141,7 +195,7 @@ export function NewTireJobDialog({
     setSaving(true)
     const payload = {
       tireSetId,
-      inventoryPartId: selected,
+      inventoryPartId: picked?.id ?? null,
       unitPrice: unit,
       includeTires,
       includeTreatments: includePrep,
@@ -233,61 +287,109 @@ export function NewTireJobDialog({
                 <p className="rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
                   {t('job.tiresSkipped')}
                 </p>
-              ) : data && data.matches.length > 0 ? (
-                <div className="space-y-2">
-                  {data.matches.slice(0, 6).map((match) => {
-                    const isOn = selected === match.id
-                    return (
-                      <button
-                        key={match.id}
-                        type="button"
-                        onClick={() => {
-                          setSelected(match.id)
-                          setPrice(String(match.sellPrice))
-                        }}
-                        aria-pressed={isOn}
-                        className={cn(
-                          'flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors',
-                          'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
-                          isOn ? 'border-primary/50 bg-primary/5' : 'hover:bg-muted/60'
-                        )}
-                      >
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-medium">{match.name}</span>
-                          <span className="block truncate text-xs text-muted-foreground">
-                            {match.partNumber ? `${match.partNumber} · ` : ''}
-                            {match.inStock
-                              ? t('job.inStock', { count: match.quantity })
-                              : t('job.shortStock', { count: match.quantity })}
-                          </span>
-                        </span>
-                        {!match.inStock && (
-                          <Badge
-                            variant="outline"
-                            className="shrink-0 border-amber-500/20 bg-amber-500/10 text-[10px] text-amber-600"
-                          >
-                            {t('job.order')}
-                          </Badge>
-                        )}
-                        <span className="shrink-0 text-sm tabular-nums">
-                          {formatCurrency(match.sellPrice, currencyCode)}
-                        </span>
-                        {isOn && <Check className="h-4 w-4 shrink-0 text-primary" />}
-                      </button>
-                    )
-                  })}
-                </div>
               ) : (
-                // Nothing matched, which is normal for an unusual size or a
-                // shop that does not stock tires. The line still gets made,
-                // priced by hand.
-                <div className="flex items-start gap-2.5 rounded-lg border border-dashed p-3">
-                  <PackageX className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">
-                    {data?.parsedSize
-                      ? t('job.noMatch', { size: data.parsedSize })
-                      : t('job.noSize')}
-                  </p>
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={t('job.searchStock')}
+                      className="h-9 pr-8 pl-8"
+                    />
+                    {query && (
+                      <button
+                        type="button"
+                        onClick={() => setQuery('')}
+                        aria-label={t('common.clear')}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {!searchActive && data?.parsedSize && rows.length > 0 && (
+                    <p className="px-0.5 text-xs text-muted-foreground">
+                      {t('job.inSize', { count: rows.length, size: data.parsedSize })}
+                    </p>
+                  )}
+
+                  {searching && rows.length === 0 ? (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : rows.length === 0 ? (
+                    // Nothing matched, which is normal for an unusual size or
+                    // a shop that does not stock tires. The line still gets
+                    // made, priced by hand.
+                    <div className="flex items-start gap-2.5 rounded-lg border border-dashed p-3">
+                      <PackageX className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground">
+                        {searchActive
+                          ? t('job.noSearchHits', { query: query.trim() })
+                          : data?.parsedSize
+                            ? t('job.noMatch', { size: data.parsedSize })
+                            : t('job.noSize')}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="max-h-64 space-y-2 overflow-y-auto">
+                      {rows.map((match) => {
+                        const isOn = picked?.id === match.id
+                        return (
+                          <button
+                            key={match.id}
+                            type="button"
+                            onClick={() => {
+                              setPicked(match)
+                              setPrice(String(match.sellPrice))
+                            }}
+                            aria-pressed={isOn}
+                            className={cn(
+                              'flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors',
+                              'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
+                              isOn ? 'border-primary/50 bg-primary/5' : 'hover:bg-muted/60'
+                            )}
+                          >
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-medium">
+                                {match.name}
+                              </span>
+                              <span className="block truncate text-xs text-muted-foreground">
+                                {match.partNumber ? `${match.partNumber} · ` : ''}
+                                {match.inStock
+                                  ? t('job.inStock', { count: match.quantity })
+                                  : t('job.shortStock', { count: match.quantity })}
+                              </span>
+                            </span>
+                            {/* Selling a size other than the one on the shelf is
+                            allowed, it just should not happen by accident. */}
+                            {match.fits === false && (
+                              <Badge
+                                variant="outline"
+                                className="shrink-0 border-amber-500/20 bg-amber-500/10 text-[10px] text-amber-600"
+                              >
+                                {t('job.otherSize')}
+                              </Badge>
+                            )}
+                            {!match.inStock && (
+                              <Badge
+                                variant="outline"
+                                className="shrink-0 border-amber-500/20 bg-amber-500/10 text-[10px] text-amber-600"
+                              >
+                                {t('job.order')}
+                              </Badge>
+                            )}
+                            <span className="shrink-0 text-sm tabular-nums">
+                              {formatCurrency(match.sellPrice, currencyCode)}
+                            </span>
+                            {isOn && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 

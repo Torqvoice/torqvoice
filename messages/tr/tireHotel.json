@@ -8,7 +8,8 @@
     "delete": "Sil",
     "edit": "Düzenle",
     "back": "Geri",
-    "next": "İleri"
+    "next": "İleri",
+    "clear": "Temizle"
   },
   "seasons": {
     "summer": "Yaz",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Bağlantı kaldırılamadı",
     "prep": "Hazırlık",
     "tiresSkipped": "Lastik satırı eklenmeyecek.",
-    "total": "Toplam"
+    "total": "Toplam",
+    "searchStock": "Stokta markaya, ebada veya parça numarasına göre ara",
+    "noSearchHits": "Stokta \"{query}\" ile eşleşen bir şey yok.",
+    "otherSize": "Farklı ebat",
+    "inSize": "{size} ebadında {count} adet"
   },
   "label": {
     "action": "Etiketler",

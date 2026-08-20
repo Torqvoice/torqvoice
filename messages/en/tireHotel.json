@@ -8,7 +8,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "clear": "Clear"
   },
   "seasons": {
     "summer": "Summer",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Could not unlink the tires",
     "prep": "Prep work",
     "tiresSkipped": "No tire line added.",
-    "total": "Total"
+    "total": "Total",
+    "searchStock": "Search inventory by brand, size or part number",
+    "noSearchHits": "Nothing in inventory matches \"{query}\".",
+    "otherSize": "Other size",
+    "inSize": "{count} in {size}"
   },
   "label": {
     "action": "Labels",

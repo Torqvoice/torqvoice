@@ -8,7 +8,8 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "back": "Retour",
-    "next": "Suivant"
+    "next": "Suivant",
+    "clear": "Effacer"
   },
   "seasons": {
     "summer": "Été",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Impossible de dissocier les pneus",
     "prep": "Préparation",
     "tiresSkipped": "Aucune ligne de pneus ne sera ajoutée.",
-    "total": "Total"
+    "total": "Total",
+    "searchStock": "Rechercher dans le stock par marque, dimension ou référence",
+    "noSearchHits": "Rien dans le stock ne correspond à \"{query}\".",
+    "otherSize": "Autre dimension",
+    "inSize": "{count} en {size}"
   },
   "label": {
     "action": "Étiquettes",

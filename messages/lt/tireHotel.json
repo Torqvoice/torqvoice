@@ -8,7 +8,8 @@
     "delete": "Ištrinti",
     "edit": "Redaguoti",
     "back": "Atgal",
-    "next": "Toliau"
+    "next": "Toliau",
+    "clear": "Išvalyti"
   },
   "seasons": {
     "summer": "Vasarinės",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Nepavyko atsieti padangų",
     "prep": "Paruošimas",
     "tiresSkipped": "Padangų eilutė nebus pridėta.",
-    "total": "Iš viso"
+    "total": "Iš viso",
+    "searchStock": "Ieškoti sandėlyje pagal markę, dydį ar dalies numerį",
+    "noSearchHits": "Sandėlyje nieko neatitinka \"{query}\".",
+    "otherSize": "Kitas dydis",
+    "inSize": "{count} dydžio {size}"
   },
   "label": {
     "action": "Etiketės",

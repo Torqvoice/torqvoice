@@ -8,7 +8,8 @@
     "delete": "Slett",
     "edit": "Rediger",
     "back": "Tilbake",
-    "next": "Neste"
+    "next": "Neste",
+    "clear": "Tøm"
   },
   "seasons": {
     "summer": "Sommer",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Kunne ikke koble fra dekkene",
     "prep": "Klargjøring",
     "tiresSkipped": "Ingen dekklinje legges til.",
-    "total": "Totalt"
+    "total": "Totalt",
+    "searchStock": "Søk i lageret på merke, dimensjon eller varenummer",
+    "noSearchHits": "Ingenting på lageret passer \"{query}\".",
+    "otherSize": "Annen dimensjon",
+    "inSize": "{count} i {size}"
   },
   "label": {
     "action": "Etiketter",

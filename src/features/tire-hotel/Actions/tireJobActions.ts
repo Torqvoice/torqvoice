@@ -10,7 +10,7 @@ import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
-import { matchStock, parseTireSize, formatTireSize } from '../Lib/tireMatching'
+import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
 import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
@@ -61,6 +61,85 @@ async function loadSet(organizationId: string, tireSetId: string) {
   })
   if (!set) throw new Error('Tire set not found')
   return set
+}
+
+const searchSchema = z.object({
+  tireSetId: z.string().min(1),
+  query: z.string().trim().max(120),
+})
+
+/**
+ * Free search of the parts catalogue from inside the job dialog.
+ *
+ * The fitment matches are a shortcut, not the answer. A shop carries a dozen
+ * brands in the same size, sells a wider tire on request, and sometimes has
+ * the right tire filed under a name no size parser will ever recognise, so
+ * the operator needs to be able to go and find it.
+ *
+ * Terms are ANDed, which is how people search: "michelin 225" should mean
+ * both, not either.
+ */
+export async function searchTireStock(input: unknown) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+      const data = searchSchema.parse(input)
+      // One character matches most of the catalogue, which is not a search.
+      if (data.query.length < 2) return []
+
+      const set = await loadSet(organizationId, data.tireSetId)
+      const terms = data.query.split(/\s+/).filter(Boolean).slice(0, 5)
+
+      const parts = await db.inventoryPart.findMany({
+        where: {
+          organizationId,
+          isArchived: false,
+          AND: terms.map((term) => ({
+            OR: [
+              { name: { contains: term, mode: 'insensitive' as const } },
+              { partNumber: { contains: term, mode: 'insensitive' as const } },
+              { description: { contains: term, mode: 'insensitive' as const } },
+            ],
+          })),
+        },
+        select: {
+          id: true,
+          name: true,
+          partNumber: true,
+          description: true,
+          category: true,
+          quantity: true,
+          unitCost: true,
+          sellPrice: true,
+        },
+        take: 40,
+      })
+
+      const target = parseTireSize(set.size)
+      return parts
+        .map((part) => ({
+          ...part,
+          inStock: part.quantity >= set.quantity,
+          // Whether it is the size on the shelf. Not a filter: selling the
+          // customer something else is allowed, it just should not happen by
+          // accident, so a mismatch is labelled rather than hidden. A set with
+          // no size recorded has nothing to disagree with, so nothing is
+          // flagged rather than everything.
+          fits:
+            !target ||
+            sizesMatch(parseTireSize(part.name), target) ||
+            sizesMatch(parseTireSize(part.partNumber), target) ||
+            sizesMatch(parseTireSize(part.description), target),
+        }))
+        .sort((a, b) => {
+          if (a.fits !== b.fits) return a.fits ? -1 : 1
+          if (a.inStock !== b.inStock) return a.inStock ? -1 : 1
+          return a.sellPrice - b.sellPrice
+        })
+        .slice(0, 20)
+    },
+    { requiredPermissions: READ }
+  )
 }
 
 /**

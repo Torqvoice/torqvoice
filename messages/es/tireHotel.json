@@ -8,7 +8,8 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "back": "Atrás",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "clear": "Borrar"
   },
   "seasons": {
     "summer": "Verano",
@@ -413,7 +414,11 @@
     "unlinkFailed": "No se han podido desvincular",
     "prep": "Preparación",
     "tiresSkipped": "No se añadirá ninguna línea de neumáticos.",
-    "total": "Total"
+    "total": "Total",
+    "searchStock": "Buscar en el inventario por marca, medida o número de pieza",
+    "noSearchHits": "Nada en el inventario coincide con \"{query}\".",
+    "otherSize": "Otra medida",
+    "inSize": "{count} en {size}"
   },
   "label": {
     "action": "Etiquetas",

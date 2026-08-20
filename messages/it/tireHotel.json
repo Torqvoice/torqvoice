@@ -8,7 +8,8 @@
     "delete": "Elimina",
     "edit": "Modifica",
     "back": "Indietro",
-    "next": "Avanti"
+    "next": "Avanti",
+    "clear": "Cancella"
   },
   "seasons": {
     "summer": "Estivi",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Impossibile scollegare gli pneumatici",
     "prep": "Preparazione",
     "tiresSkipped": "Nessuna riga pneumatici verrà aggiunta.",
-    "total": "Totale"
+    "total": "Totale",
+    "searchStock": "Cerca in magazzino per marca, misura o codice articolo",
+    "noSearchHits": "Niente in magazzino corrisponde a \"{query}\".",
+    "otherSize": "Altra misura",
+    "inSize": "{count} in {size}"
   },
   "label": {
     "action": "Etichette",

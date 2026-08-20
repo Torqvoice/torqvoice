@@ -8,7 +8,8 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "back": "Zurück",
-    "next": "Weiter"
+    "next": "Weiter",
+    "clear": "Leeren"
   },
   "seasons": {
     "summer": "Sommer",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Verknüpfung konnte nicht gelöst werden",
     "prep": "Vorbereitung",
     "tiresSkipped": "Keine Reifenposition wird hinzugefügt.",
-    "total": "Gesamt"
+    "total": "Gesamt",
+    "searchStock": "Lager nach Marke, Größe oder Artikelnummer durchsuchen",
+    "noSearchHits": "Nichts im Lager passt zu \"{query}\".",
+    "otherSize": "Andere Größe",
+    "inSize": "{count} in {size}"
   },
   "label": {
     "action": "Etiketten",

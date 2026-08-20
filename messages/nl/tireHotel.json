@@ -8,7 +8,8 @@
     "delete": "Verwijderen",
     "edit": "Bewerken",
     "back": "Terug",
-    "next": "Volgende"
+    "next": "Volgende",
+    "clear": "Wissen"
   },
   "seasons": {
     "summer": "Zomer",
@@ -413,7 +414,11 @@
     "unlinkFailed": "Kon de banden niet ontkoppelen",
     "prep": "Voorbereiding",
     "tiresSkipped": "Er wordt geen bandenregel toegevoegd.",
-    "total": "Totaal"
+    "total": "Totaal",
+    "searchStock": "Zoek in voorraad op merk, maat of artikelnummer",
+    "noSearchHits": "Niets in de voorraad komt overeen met \"{query}\".",
+    "otherSize": "Andere maat",
+    "inSize": "{count} in {size}"
   },
   "label": {
     "action": "Labels",
