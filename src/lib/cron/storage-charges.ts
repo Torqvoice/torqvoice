@@ -55,9 +55,7 @@ export async function processStorageCharges(now: Date = new Date()): Promise<num
 
     for (const agreement of agreements) {
       try {
-        raised += await db.$transaction((tx) =>
-          syncCharges(tx, agreement.id, organizationId, now)
-        )
+        raised += await db.$transaction((tx) => syncCharges(tx, agreement.id, organizationId, now))
       } catch (error) {
         console.error(`${LOG_PREFIX} agreement ${agreement.id} failed:`, error)
       }
