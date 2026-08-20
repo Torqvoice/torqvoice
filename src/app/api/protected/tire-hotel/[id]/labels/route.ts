@@ -138,7 +138,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       copies,
       labels,
       seasonLabel,
-      // biome-ignore lint/suspicious/noExplicitAny: react-pdf element typing
+      // Cast because react-pdf's element typing does not describe this.
     }) as any
     const buffer = await renderToBuffer(element)
 

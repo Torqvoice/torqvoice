@@ -11,11 +11,15 @@ type FeatureHintContext = {
   dismiss: (id: string) => void
 }
 
+/** No provider above: nothing registers, so nothing ever shows. */
+// biome-ignore lint/suspicious/noEmptyBlockStatements: default noop
+const noop = () => {}
+
 const Context = createContext<FeatureHintContext>({
   active: null,
-  register: () => {},
-  unregister: () => {},
-  dismiss: () => {},
+  register: noop,
+  unregister: noop,
+  dismiss: noop,
 })
 
 /**

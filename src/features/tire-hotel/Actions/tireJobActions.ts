@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'

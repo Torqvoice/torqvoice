@@ -27,7 +27,6 @@ import {
   thirtySecondsToMm,
   shownCondition,
   worstCondition,
-  type TireCondition,
 } from '../Lib/tireConstants'
 import { pendingTreatments } from '../Lib/treatments'
 

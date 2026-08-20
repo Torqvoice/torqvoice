@@ -180,7 +180,7 @@ export function TireLabelPDF({
         {Array.from({ length: pages }, (_, page) => {
           const onThisPage = Math.min(perPage, copies - page * perPage)
           return (
-            // biome-ignore lint/suspicious/noArrayIndexKey: pages are ordinal
+            // Keyed by index: sheets are ordinal and never reorder.
             <Page
               key={page}
               size="A4"
@@ -193,7 +193,6 @@ export function TireLabelPDF({
             >
               {Array.from({ length: onThisPage }, (_, i) => (
                 <View
-                  // biome-ignore lint/suspicious/noArrayIndexKey: cells are ordinal
                   key={i}
                   style={{
                     width: spec.width,
@@ -217,7 +216,6 @@ export function TireLabelPDF({
   return (
     <Document>
       {Array.from({ length: copies }, (_, i) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: copies are ordinal
         <Page key={i} size={{ width: spec.width, height: spec.height }}>
           <Label data={data} spec={spec} labels={labels} seasonLabel={seasonLabel} />
         </Page>
