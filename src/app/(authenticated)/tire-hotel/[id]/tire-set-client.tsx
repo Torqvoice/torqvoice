@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -164,9 +164,18 @@ export function TireSetClient({
 
   // Arriving straight from check-in, with the tires still in hand.
   const searchParams = useSearchParams()
+  const pathname = usePathname()
   useEffect(() => {
-    if (searchParams.get('print') === '1') setShowLabels(true)
-  }, [searchParams])
+    if (searchParams.get('print') !== '1') return
+    setShowLabels(true)
+    // Consumed, and taken back out of the URL. Left there it fires again on
+    // every refresh, so writing a set off or editing it would pop the label
+    // dialog back up over the thing you just did.
+    const rest = new URLSearchParams(searchParams.toString())
+    rest.delete('print')
+    const query = rest.toString()
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+  }, [searchParams, pathname, router])
   const [deleting, setDeleting] = useState(false)
   const [disposing, setDisposing] = useState(false)
 
@@ -288,10 +297,13 @@ export function TireSetClient({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => setShowLabels(true)}>
-            <Printer className="mr-1.5 h-3.5 w-3.5" />
-            {t('label.action')}
-          </Button>
+          {/* Nothing to stick a label on once the set is in a skip. */}
+          {!isDisposed && (
+            <Button variant="outline" size="sm" onClick={() => setShowLabels(true)}>
+              <Printer className="mr-1.5 h-3.5 w-3.5" />
+              {t('label.action')}
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={() => setShowEdit(true)}>
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
             {t('common.edit')}
