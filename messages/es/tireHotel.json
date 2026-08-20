@@ -481,5 +481,12 @@
     "perSeason": "Unos {value} por temporada",
     "seasonsLeft": "{count, plural, =0 {Ya en el límite} one {Alrededor de una temporada más} other {Alrededor de # temporadas más}}",
     "since": "-{value}"
+  },
+  "settings": {
+    "change": "Cambiar en ajustes",
+    "prepPrices": "Precios de preparación",
+    "storagePrices": "Precios de almacenaje",
+    "treadLimits": "Cambiar el límite",
+    "defaultCapacity": "Capacidad por defecto"
   }
 }

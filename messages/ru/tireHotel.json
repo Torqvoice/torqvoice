@@ -481,5 +481,12 @@
     "perSeason": "Около {value} за сезон",
     "seasonsLeft": "{count, plural, =0 {Уже на пределе} one {Примерно ещё один сезон} other {Примерно ещё # сезона}}",
     "since": "-{value}"
+  },
+  "settings": {
+    "change": "Изменить в настройках",
+    "prepPrices": "Цены на подготовку",
+    "storagePrices": "Цены на хранение",
+    "treadLimits": "Изменить порог",
+    "defaultCapacity": "Вместимость по умолчанию"
   }
 }

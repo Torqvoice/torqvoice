@@ -37,6 +37,7 @@ import {
   searchTireStock,
 } from '../Actions/tireJobActions'
 import { useFormatDate } from '@/lib/use-format-date'
+import { SettingsLink } from './SettingsLink'
 
 type Matches = NonNullable<Awaited<ReturnType<typeof getJobDraftForSet>>['data']>
 type OpenJobs = NonNullable<Awaited<ReturnType<typeof getOpenWorkOrdersForSet>>['data']>
@@ -63,6 +64,7 @@ export function NewTireJobDialog({
   mode,
   hasVehicle,
   currencyCode,
+  canEditSettings = false,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -70,6 +72,8 @@ export function NewTireJobDialog({
   mode: 'quote' | 'workOrder'
   hasVehicle: boolean
   currencyCode: string
+  /** Whether to offer a way to the prices these lines are drawn from. */
+  canEditSettings?: boolean
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -462,7 +466,12 @@ export function NewTireJobDialog({
 
             {prep.length > 0 && (
               <div className="min-w-0 space-y-1.5">
-                <p className="text-sm font-medium">{t('job.prep')}</p>
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm font-medium">{t('job.prep')}</p>
+                  {/* These prices are a setting, and this list is where a shop
+                      notices one is wrong or missing. */}
+                  <SettingsLink can={canEditSettings} labelKey="settings.prepPrices" />
+                </div>
                 <div className="divide-y rounded-lg border">
                   {prep.map((line) => (
                     <label

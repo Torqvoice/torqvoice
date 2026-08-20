@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
+import { canEditSettings } from '@/lib/settings-access'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStorageOverview } from '@/features/tire-hotel/Actions/storageActions'
 import { PageHeader } from '@/components/page-header'
@@ -15,6 +16,7 @@ export default async function TireStoragePage() {
   const config = await getTireHotelSettings(organizationId)
   if (!config.enabled) notFound()
 
+  const canChangeSettings = await canEditSettings(session?.user?.id ?? '', membership?.role)
   const result = await getStorageOverview()
   const warehouses = result.success && result.data ? result.data : []
 
@@ -22,7 +24,11 @@ export default async function TireStoragePage() {
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <StorageClient warehouses={warehouses} defaultCapacity={config.defaultCapacity} />
+        <StorageClient
+          warehouses={warehouses}
+          defaultCapacity={config.defaultCapacity}
+          canEditSettings={canChangeSettings}
+        />
       </div>
     </>
   )

@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Loader2 } from 'lucide-react'
 import { createLocation, createLocationsBulk, updateLocation } from '../Actions/storageActions'
 import { buildLocationCode } from '../Lib/tireConstants'
+import { SettingsLink } from './SettingsLink'
 
 export type EditableLocation = {
   id: string
@@ -45,6 +46,7 @@ export function LocationFormDialog({
   warehouseName,
   location,
   defaultCapacity,
+  canEditSettings = false,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -52,6 +54,7 @@ export function LocationFormDialog({
   warehouseName: string
   location?: EditableLocation
   defaultCapacity: number
+  canEditSettings?: boolean
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
@@ -186,6 +189,7 @@ export function LocationFormDialog({
               setCode,
               capacity,
               setCapacity,
+              canEditSettings,
               notes,
               setNotes,
               effectiveCode,
@@ -294,6 +298,7 @@ export function LocationFormDialog({
                   setCode,
                   capacity,
                   setCapacity,
+                  canEditSettings,
                   notes,
                   setNotes,
                   effectiveCode,
@@ -344,6 +349,7 @@ function SingleFields({
   notes,
   setNotes,
   effectiveCode,
+  canEditSettings,
 }: {
   zone: string
   setZone: (v: string) => void
@@ -360,6 +366,7 @@ function SingleFields({
   notes: string
   setNotes: (v: string) => void
   effectiveCode: string
+  canEditSettings: boolean
 }) {
   const t = useTranslations('tireHotel')
 
@@ -425,7 +432,12 @@ function SingleFields({
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
           />
-          <p className="text-xs text-muted-foreground">{t('storage.capacityHint')}</p>
+          <p className="text-xs text-muted-foreground">
+            {t('storage.capacityHint')}{' '}
+            {/* The number this field opens on comes from settings, and filling
+                a rack is when a shop discovers the default is wrong. */}
+            <SettingsLink can={canEditSettings} labelKey="settings.defaultCapacity" />
+          </p>
         </div>
       </div>
 

@@ -27,6 +27,7 @@ import { TireJobsCard, type TireJobs } from '@/features/tire-hotel/Components/Ti
 import { reasonForCondition } from '@/features/tire-hotel/Lib/messageTemplates'
 import { deleteTireSet, disposeTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { groupRounds, wearSummary, seasonsLeft } from '@/features/tire-hotel/Lib/wear'
+import { SettingsLink } from '@/features/tire-hotel/Components/SettingsLink'
 import type { PickerLocation } from '@/features/tire-hotel/Components/LocationPicker'
 import {
   CONDITION_TOKENS,
@@ -124,6 +125,7 @@ export function TireSetClient({
   billing,
   imperial,
   thresholds,
+  canEditSettings,
 }: {
   set: TireSet
   locations: PickerLocation[]
@@ -137,6 +139,8 @@ export function TireSetClient({
   }
   /** The workshop's own replacement limits, which decide the projection. */
   thresholds: { summerReplace: number; winterReplace: number }
+  /** Whether to offer a way into the settings behind these numbers. */
+  canEditSettings: boolean
   vehicles: {
     id: string
     make: string
@@ -343,6 +347,7 @@ export function TireSetClient({
             treatments={set.treatments}
             withRims={set.withRims}
             hasTpms={set.hasTpms}
+            canEditSettings={canEditSettings}
           />
 
           {/* Then condition: it is what a customer asks about. */}
@@ -375,7 +380,10 @@ export function TireSetClient({
                   <span className="font-medium text-red-700 dark:text-red-500">
                     {t('detail.belowLimit', { count: lowPositions.length })}
                   </span>{' '}
-                  <span className="text-muted-foreground">{t('detail.belowLimitHint')}</span>
+                  <span className="text-muted-foreground">{t('detail.belowLimitHint')}</span>{' '}
+                  {/* Which limit is a setting, and this warning is where a
+                      shop finds out theirs is set to somebody else's rules. */}
+                  <SettingsLink can={canEditSettings} labelKey="settings.treadLimits" />
                 </p>
               </div>
             )}
@@ -407,6 +415,7 @@ export function TireSetClient({
             tireSetId={set.id}
             agreements={agreements}
             oneOffCharges={oneOffCharges}
+            canEditSettings={canEditSettings}
             defaultSeasonalPrice={billing.seasonalPrice}
             defaultMonthlyPrice={billing.monthlyPrice}
             currency={billing.currency}
@@ -553,6 +562,7 @@ export function TireSetClient({
           mode={jobMode}
           hasVehicle={!!set.vehicle}
           currencyCode={billing.currency}
+          canEditSettings={canEditSettings}
         />
       )}
 

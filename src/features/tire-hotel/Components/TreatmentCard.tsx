@@ -10,6 +10,7 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { Check, CheckCheck, ClipboardList, Loader2, Pencil, Undo2 } from 'lucide-react'
 import { TREATMENT_ICON_MAP, TreatmentPicker } from './TreatmentPicker'
+import { SettingsLink } from './SettingsLink'
 import { completeAllTreatments, markTreatment, setTreatments } from '../Actions/treatmentActions'
 import { treatmentProgress, type TreatmentType } from '../Lib/treatments'
 
@@ -35,11 +36,13 @@ export function TreatmentCard({
   treatments,
   withRims,
   hasTpms,
+  canEditSettings = false,
 }: {
   tireSetId: string
   treatments: TreatmentRow[]
   withRims: boolean
   hasTpms: boolean
+  canEditSettings?: boolean
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -113,6 +116,11 @@ export function TreatmentCard({
             {t('common.edit')}
           </Button>
         )
+      }
+      footer={
+        // What this work is charged at is a setting, and this card is where
+        // somebody notices the figure is wrong.
+        <SettingsLink can={canEditSettings} labelKey="settings.prepPrices" />
       }
       contentClassName="space-y-3"
     >

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
+import { canEditSettings } from '@/lib/settings-access'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
@@ -21,6 +22,10 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
 
   const config = await getTireHotelSettings(organizationId)
   if (!config.enabled) notFound()
+
+  // Decides whether the prices and limits on this page offer a way to change
+  // them. Someone who cannot is better off not seeing the link at all.
+  const canChangeSettings = await canEditSettings(session?.user?.id ?? '', membership?.role)
 
   const { id } = await params
 
@@ -87,6 +92,7 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
           jobs={jobs}
           billing={billing}
           imperial={imperial}
+          canEditSettings={canChangeSettings}
           thresholds={{
             summerReplace: config.summerReplaceMm,
             winterReplace: config.winterReplaceMm,

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useConfirm } from '@/components/confirm-dialog'
 import { OneOffChargeDialog } from './OneOffChargeDialog'
+import { SettingsLink } from './SettingsLink'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { Ban, FileText, Loader2, Pencil, Plus, Receipt, Trash2 } from 'lucide-react'
@@ -66,6 +67,7 @@ export function AgreementCard({
   defaultMonthlyPrice,
   currency,
   hasVehicle,
+  canEditSettings = false,
 }: {
   tireSetId: string
   agreements: AgreementRow[]
@@ -75,6 +77,7 @@ export function AgreementCard({
   defaultMonthlyPrice: number
   currency: string
   hasVehicle: boolean
+  canEditSettings?: boolean
 }) {
   const t = useTranslations('tireHotel')
   const router = useRouter()
@@ -236,6 +239,7 @@ export function AgreementCard({
         </div>
       }
       contentClassName="space-y-4"
+      footer={<SettingsLink can={canEditSettings} labelKey="settings.storagePrices" />}
     >
       {agreements.length === 0 && oneOffCharges.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t('agreement.none')}</p>

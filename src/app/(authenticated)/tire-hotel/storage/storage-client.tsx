@@ -68,9 +68,11 @@ type WarehouseRow = {
 export function StorageClient({
   warehouses,
   defaultCapacity,
+  canEditSettings,
 }: {
   warehouses: WarehouseRow[]
   defaultCapacity: number
+  canEditSettings: boolean
 }) {
   const router = useRouter()
   const t = useTranslations('tireHotel')
@@ -370,6 +372,7 @@ export function StorageClient({
           warehouseName={locationDialog.warehouseName}
           location={locationDialog.location}
           defaultCapacity={defaultCapacity}
+          canEditSettings={canEditSettings}
         />
       )}
     </div>
