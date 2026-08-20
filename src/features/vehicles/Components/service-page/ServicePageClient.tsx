@@ -331,9 +331,10 @@ export function ServicePageClient({
 
       {/* Above the tabs, not inside one: fetching the tires is the first
           thing that happens on this job, and it should not depend on which
-          tab someone happens to be looking at. */}
+          tab someone happens to be looking at. Kept tight against the
+          content below, since it is a header strip and not a card. */}
       {record.tireSet && (
-        <div className="shrink-0 px-4 pt-4">
+        <div className="shrink-0 px-4 pt-3">
           <TireSetBanner set={record.tireSet} />
         </div>
       )}
