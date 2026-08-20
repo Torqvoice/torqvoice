@@ -508,5 +508,9 @@
     "rate": "{value} per seizoen",
     "caveat": "Sets op de grens zijn gemeten. De rest is doorgerekend vanuit de slijtage van één klant over één periode: bruikbaar om te plannen, niet om op te bestellen.",
     "unmeasured": "{count, plural, one {# set heeft te weinig historie en telt niet mee} other {# sets hebben te weinig historie en tellen niet mee}}"
+  },
+  "invoiceLine": {
+    "storage": "Bandenopslag",
+    "pieces": "st."
   }
 }

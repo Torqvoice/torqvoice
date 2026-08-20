@@ -508,5 +508,9 @@
     "rate": "{value} per sezoną",
     "caveat": "Komplektai ties riba yra išmatuoti. Likusi dalis apskaičiuota pagal vieno kliento nusidėvėjimą per vieną intervalą: planavimui, ne užsakymui.",
     "unmeasured": "{count, plural, one {# komplektas turi per mažai istorijos ir neįskaičiuotas} other {# komplektai turi per mažai istorijos ir neįskaičiuoti}}"
+  },
+  "invoiceLine": {
+    "storage": "Padangų saugojimas",
+    "pieces": "vnt."
   }
 }

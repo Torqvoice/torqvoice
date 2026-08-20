@@ -508,5 +508,9 @@
     "rate": "{value} a stagione",
     "caveat": "I treni al limite sono misurati. Il resto è estrapolato dall’usura di un cliente su un intervallo: utile per pianificare, non per ordinare.",
     "unmeasured": "{count, plural, one {# treno ha poco storico e non viene conteggiato} other {# treni hanno poco storico e non vengono conteggiati}}"
+  },
+  "invoiceLine": {
+    "storage": "Deposito pneumatici",
+    "pieces": "pz"
   }
 }

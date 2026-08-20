@@ -508,5 +508,9 @@
     "rate": "{value} pro Saison",
     "caveat": "Sätze an der Grenze sind gemessen. Der Rest ist aus dem Verschleiß eines Kunden über ein Intervall hochgerechnet: gut zur Planung, nicht als Bestellung.",
     "unmeasured": "{count, plural, one {# Satz hat zu wenig Historie und wird nicht gezählt} other {# Sätze haben zu wenig Historie und werden nicht gezählt}}"
+  },
+  "invoiceLine": {
+    "storage": "Reifeneinlagerung",
+    "pieces": "Stk."
   }
 }

@@ -508,5 +508,9 @@
     "rate": "{value} por temporada",
     "caveat": "Os jogos no limite estão medidos. O resto é extrapolado do desgaste de um cliente em um intervalo: use para planejar, não para comprar.",
     "unmeasured": "{count, plural, one {# jogo tem pouco histórico e não é contado} other {# jogos têm pouco histórico e não são contados}}"
+  },
+  "invoiceLine": {
+    "storage": "Guarda de pneus",
+    "pieces": "pçs"
   }
 }

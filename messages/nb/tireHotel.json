@@ -508,5 +508,9 @@
     "rate": "{value} per sesong",
     "caveat": "Sett som allerede er på grensen, er målt. Resten er beregnet ut fra én kundes slitasje over ett intervall, så bruk det til å planlegge, ikke til å bestille direkte.",
     "unmeasured": "{count, plural, one {# sett har for lite historikk til å vurderes og telles ikke med} other {# sett har for lite historikk til å vurderes og telles ikke med}}"
+  },
+  "invoiceLine": {
+    "storage": "Dekklagring",
+    "pieces": "stk"
   }
 }

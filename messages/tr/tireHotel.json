@@ -508,5 +508,9 @@
     "rate": "sezonda {value}",
     "caveat": "Sınırdaki takımlar ölçülmüştür. Gerisi tek bir müşterinin tek aralıktaki aşınmasından türetilmiştir: planlama içindir, sipariş için değil.",
     "unmeasured": "{count, plural, one {# takımın geçmişi yetersiz, sayılmadı} other {# takımın geçmişi yetersiz, sayılmadı}}"
+  },
+  "invoiceLine": {
+    "storage": "Lastik depolama",
+    "pieces": "adet"
   }
 }
