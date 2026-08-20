@@ -117,7 +117,10 @@
     "lastOut": "Opgehaald {date}",
     "notStored": "Nu niet opgeslagen",
     "returned": "Set {reference} ligt weer op {code}",
-    "submitReturn": "Opnieuw opslaan"
+    "submitReturn": "Opnieuw opslaan",
+    "ownerFromVehicle": "Overgenomen van het voertuig",
+    "vehicleOwner": "De eigenaar van het voertuig",
+    "clearVehicle": "Voertuig wissen"
   },
   "storage": {
     "title": "Stellingen",

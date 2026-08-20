@@ -117,7 +117,10 @@
     "lastOut": "Left {date}",
     "notStored": "Not currently stored",
     "returned": "Set {reference} is back on {code}",
-    "submitReturn": "Store again"
+    "submitReturn": "Store again",
+    "ownerFromVehicle": "Taken from the vehicle",
+    "vehicleOwner": "The vehicle owner",
+    "clearVehicle": "Clear the vehicle"
   },
   "storage": {
     "title": "Shelves",

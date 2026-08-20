@@ -117,7 +117,10 @@
     "lastOut": "Odebrano {date}",
     "notStored": "Obecnie nieprzechowywany",
     "returned": "Komplet {reference} znów leży na {code}",
-    "submitReturn": "Przyjmij ponownie"
+    "submitReturn": "Przyjmij ponownie",
+    "ownerFromVehicle": "Pobrane z pojazdu",
+    "vehicleOwner": "Właściciel pojazdu",
+    "clearVehicle": "Wyczyść pojazd"
   },
   "storage": {
     "title": "Półki",

@@ -117,7 +117,10 @@
     "lastOut": "Abgeholt {date}",
     "notStored": "Derzeit nicht eingelagert",
     "returned": "Satz {reference} liegt wieder auf {code}",
-    "submitReturn": "Erneut einlagern"
+    "submitReturn": "Erneut einlagern",
+    "ownerFromVehicle": "Vom Fahrzeug übernommen",
+    "vehicleOwner": "Der Fahrzeughalter",
+    "clearVehicle": "Fahrzeug entfernen"
   },
   "storage": {
     "title": "Regale",

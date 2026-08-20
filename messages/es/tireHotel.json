@@ -117,7 +117,10 @@
     "lastOut": "Retirado el {date}",
     "notStored": "Ahora no está almacenado",
     "returned": "El juego {reference} vuelve a estar en {code}",
-    "submitReturn": "Almacenar de nuevo"
+    "submitReturn": "Almacenar de nuevo",
+    "ownerFromVehicle": "Tomado del vehículo",
+    "vehicleOwner": "El propietario del vehículo",
+    "clearVehicle": "Quitar el vehículo"
   },
   "storage": {
     "title": "Estantes",

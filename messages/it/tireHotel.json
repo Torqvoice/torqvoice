@@ -117,7 +117,10 @@
     "lastOut": "Ritirato il {date}",
     "notStored": "Al momento non in deposito",
     "returned": "Il treno {reference} è di nuovo su {code}",
-    "submitReturn": "Metti di nuovo in deposito"
+    "submitReturn": "Metti di nuovo in deposito",
+    "ownerFromVehicle": "Preso dal veicolo",
+    "vehicleOwner": "Il proprietario del veicolo",
+    "clearVehicle": "Rimuovi il veicolo"
   },
   "storage": {
     "title": "Scaffali",

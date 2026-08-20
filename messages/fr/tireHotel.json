@@ -117,7 +117,10 @@
     "lastOut": "Repris le {date}",
     "notStored": "Pas en stock actuellement",
     "returned": "Le jeu {reference} est de nouveau en {code}",
-    "submitReturn": "Stocker à nouveau"
+    "submitReturn": "Stocker à nouveau",
+    "ownerFromVehicle": "Repris du véhicule",
+    "vehicleOwner": "Le propriétaire du véhicule",
+    "clearVehicle": "Retirer le véhicule"
   },
   "storage": {
     "title": "Étagères",

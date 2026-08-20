@@ -117,7 +117,10 @@
     "lastOut": "Retirado em {date}",
     "notStored": "Não está guardado agora",
     "returned": "O jogo {reference} está de volta em {code}",
-    "submitReturn": "Guardar de novo"
+    "submitReturn": "Guardar de novo",
+    "ownerFromVehicle": "Obtido do veículo",
+    "vehicleOwner": "O proprietário do veículo",
+    "clearVehicle": "Limpar o veículo"
   },
   "storage": {
     "title": "Prateleiras",

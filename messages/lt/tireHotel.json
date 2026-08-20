@@ -117,7 +117,10 @@
     "lastOut": "Atsiimta {date}",
     "notStored": "Šiuo metu nesaugoma",
     "returned": "Komplektas {reference} vėl ant {code}",
-    "submitReturn": "Saugoti vėl"
+    "submitReturn": "Saugoti vėl",
+    "ownerFromVehicle": "Paimta iš transporto priemonės",
+    "vehicleOwner": "Transporto priemonės savininkas",
+    "clearVehicle": "Išvalyti transporto priemonę"
   },
   "storage": {
     "title": "Lentynos",

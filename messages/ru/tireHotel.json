@@ -117,7 +117,10 @@
     "lastOut": "Забрали {date}",
     "notStored": "Сейчас не на хранении",
     "returned": "Комплект {reference} снова на {code}",
-    "submitReturn": "Принять снова"
+    "submitReturn": "Принять снова",
+    "ownerFromVehicle": "Взято из автомобиля",
+    "vehicleOwner": "Владелец автомобиля",
+    "clearVehicle": "Очистить автомобиль"
   },
   "storage": {
     "title": "Полки",

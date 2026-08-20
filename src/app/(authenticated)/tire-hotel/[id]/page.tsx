@@ -60,6 +60,9 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
         year: true,
         licensePlate: true,
         customerId: true,
+        // The owner travels with the car, because the check-in form derives
+        // the customer from the vehicle and has to be able to show who it is.
+        customer: { select: { id: true, name: true } },
       },
     }),
   ])

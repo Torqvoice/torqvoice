@@ -117,7 +117,10 @@
     "lastOut": "Hentet {date}",
     "notStored": "Ikke på lager nå",
     "returned": "Sett {reference} står på {code} igjen",
-    "submitReturn": "Lagre igjen"
+    "submitReturn": "Lagre igjen",
+    "ownerFromVehicle": "Hentet fra kjøretøyet",
+    "vehicleOwner": "Eieren av kjøretøyet",
+    "clearVehicle": "Fjern kjøretøyet"
   },
   "storage": {
     "title": "Hyller",

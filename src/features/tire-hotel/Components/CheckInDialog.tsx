@@ -29,8 +29,8 @@ import { Check, Loader2, Warehouse } from 'lucide-react'
 import { DocsLink } from '@/components/docs-link'
 import { cn } from '@/lib/utils'
 import { useFormatDate } from '@/lib/use-format-date'
-import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { LocationPicker, type PickerLocation } from './LocationPicker'
+import { OwnerVehicleFields, type VehicleOption } from './OwnerVehicleFields'
 import { TreadEntry, type TreadRow } from './TreadEntry'
 import { TreatmentPicker } from './TreatmentPicker'
 import { defaultTreatments, type TreatmentType } from '../Lib/treatments'
@@ -39,15 +39,6 @@ import { groupRounds } from '../Lib/wear'
 import { TIRE_SEASONS, TIRE_ROAD_POSITIONS, thirtySecondsToMm } from '../Lib/tireConstants'
 
 type ReturningSet = NonNullable<Awaited<ReturnType<typeof getReturningSets>>['data']>[number]
-
-type VehicleOption = {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customerId: string | null
-}
 
 /**
  * Arrival, in one pass.
@@ -204,35 +195,6 @@ export function CheckInDialog({
 
   const qty = Math.max(1, Number(quantity) || 1)
 
-  // Naming the customer narrows the vehicle list to theirs. Without a
-  // customer the full list stays available, so staff can still start from
-  // the plate.
-  const visibleVehicles = customerId
-    ? vehicles.filter((v) => v.customerId === customerId)
-    : vehicles
-
-  // Picking the vehicle names its owner, which is the common case at the
-  // counter: staff scan a plate, not a customer record.
-  const handleVehicle = (id: string) => {
-    setVehicleId(id)
-    // A set chosen under the old vehicle is not this vehicle's set. Left
-    // selected, the form would show one car and file the tires against
-    // another.
-    setReturning(null)
-    const vehicle = vehicles.find((v) => v.id === id)
-    if (vehicle?.customerId && !customerId) setCustomerId(vehicle.customerId)
-  }
-
-  // Cleared here rather than in an effect: a vehicle owned by someone else
-  // has just dropped out of the list, and leaving it selected would submit a
-  // pairing the form no longer shows.
-  const handleCustomer = (id: string) => {
-    setCustomerId(id)
-    setReturning(null)
-    const current = vehicles.find((v) => v.id === vehicleId)
-    if (id && current && current.customerId !== id) setVehicleId('')
-  }
-
   const handleSubmit = async () => {
     if (!locationId) {
       toast.error(t('checkIn.pickLocationFirst'))
@@ -336,42 +298,16 @@ export function CheckInDialog({
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>{t('checkIn.customer')}</Label>
-                <CustomerCombobox
-                  value={customerId}
-                  onChange={handleCustomer}
-                  placeholder={t('checkIn.selectCustomer')}
-                  noneLabel={t('checkIn.noCustomer')}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="checkInVehicle">{t('checkIn.vehicle')}</Label>
-                <Select
-                  value={vehicleId}
-                  onValueChange={handleVehicle}
-                  disabled={visibleVehicles.length === 0}
-                >
-                  <SelectTrigger id="checkInVehicle">
-                    <SelectValue placeholder={t('checkIn.selectVehicle')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {visibleVehicles.map((vehicle) => (
-                      <SelectItem key={vehicle.id} value={vehicle.id}>
-                        {vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}
-                        {vehicle.year} {vehicle.make} {vehicle.model}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {customerId && visibleVehicles.length === 0 && (
-                  <p className="text-xs text-muted-foreground">
-                    {t('checkIn.noVehiclesForCustomer')}
-                  </p>
-                )}
-              </div>
-            </div>
+            <OwnerVehicleFields
+              vehicles={vehicles}
+              customerId={customerId}
+              onCustomerChange={setCustomerId}
+              vehicleId={vehicleId}
+              onVehicleChange={setVehicleId}
+              // A set chosen under the old pairing is not this pairing's set.
+              onPairChanged={() => setReturning(null)}
+              idPrefix="checkIn"
+            />
           )}
 
           {previousSets.length > 0 && (

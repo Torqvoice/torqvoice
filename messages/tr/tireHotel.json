@@ -117,7 +117,10 @@
     "lastOut": "{date} tarihinde alındı",
     "notStored": "Şu anda depoda değil",
     "returned": "{reference} takımı yeniden {code} rafında",
-    "submitReturn": "Yeniden depola"
+    "submitReturn": "Yeniden depola",
+    "ownerFromVehicle": "Araçtan alındı",
+    "vehicleOwner": "Aracın sahibi",
+    "clearVehicle": "Aracı temizle"
   },
   "storage": {
     "title": "Raflar",
