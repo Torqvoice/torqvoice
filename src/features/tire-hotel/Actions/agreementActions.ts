@@ -7,6 +7,7 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import {
   agreementSchema,
   invoiceChargeSchema,
@@ -130,7 +131,7 @@ export async function getOpenInvoicesForCharge(chargeId: string) {
       return db.serviceRecord.findMany({
         where: {
           organizationId,
-          status: { in: ['pending', 'in_progress'] },
+          status: { in: [...OPEN_SERVICE_STATUSES] },
           OR: [
             ...(customerId ? [{ customerId }] : []),
             ...(vehicleId ? [{ vehicleId }] : []),

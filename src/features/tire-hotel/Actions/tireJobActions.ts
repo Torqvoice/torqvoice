@@ -9,6 +9,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { calculateTotals } from '@/lib/tax'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { addTireLineToRecord } from '../Lib/addTireLine'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
@@ -537,7 +538,7 @@ export async function getOpenWorkOrdersForSet(tireSetId: string) {
         where: {
           organizationId,
           vehicleId: set.vehicleId,
-          status: { in: ['pending', 'in_progress'] },
+          status: { in: [...OPEN_SERVICE_STATUSES] },
         },
         orderBy: { createdAt: 'desc' },
         take: 20,
