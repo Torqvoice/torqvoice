@@ -1,0 +1,9 @@
+{
+  "title": "Buscar",
+  "description": "Busca vehículos, clientes, trabajos y ajustes",
+  "placeholder": "Buscar por nombre, matrícula, teléfono, VIN, factura…",
+  "noResults": "Sin resultados.",
+  "recentCustomers": "Clientes recientes",
+  "services": "Historial de servicio",
+  "toClose": "para cerrar"
+}

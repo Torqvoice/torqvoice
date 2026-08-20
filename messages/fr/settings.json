@@ -122,6 +122,10 @@
       "support": {
         "title": "Assistance",
         "description": "Contacter l'assistance et gérer le bouton"
+      },
+      "tireHotel": {
+        "title": "Hôtel à pneus",
+        "description": "Stockage saisonnier des pneus"
       }
     },
     "pro": "PRO"
@@ -974,7 +978,9 @@
       "lastBackup": "Dernière sauvegarde :",
       "supportPrompt": "Pour toute question sur la protection de vos données,",
       "supportAction": "contactez notre équipe d'assistance."
-    }
+    },
+    "optTireHotel": "Hôtel à pneus",
+    "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage"
   },
   "license": {
     "title": "Licence marque blanche",
@@ -1454,5 +1460,32 @@
     "unavailable": "Ce navigateur n'a pas proposé d'installation. Ouvrez le menu du navigateur et cherchez « Installer l'application » ou « Sur l'écran d'accueil ».",
     "bannerHidden": "La bannière d'installation est masquée sur cet appareil.",
     "showBanner": "Afficher à nouveau la bannière"
+  },
+  "tireHotel": {
+    "title": "Hôtel à pneus",
+    "description": "Stockez les pneus saisonniers de vos clients et sachez où se trouve chaque jeu.",
+    "cardTitle": "Stockage des pneus",
+    "enable": "Activer l’hôtel à pneus",
+    "enableHint": "Ajoute le stockage des pneus au menu. Le désactiver plus tard le masque sans rien supprimer.",
+    "defaultCapacity": "Pneus par niveau par défaut",
+    "defaultCapacityHint": "Prérempli à la création de nouveaux niveaux. Modifiable niveau par niveau.",
+    "warnPercent": "Alerter à partir de (%)",
+    "warnPercentHint": "Signale la vue du stockage dès que cette part de la capacité totale est occupée.",
+    "treadTitle": "Seuils de remplacement",
+    "treadHint": "Les minimums légaux varient selon les pays, réglez donc les seuils de votre marché. Une sculpture sous le seuil est signalée à remplacer.",
+    "summerLimit": "Seuil été ({unit})",
+    "winterLimit": "Seuil hiver ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Configurez ensuite vos étagères.",
+    "setupLink": "Ouvrir l’organisation du stockage",
+    "save": "Enregistrer les réglages",
+    "saved": "Réglages de l’hôtel à pneus enregistrés",
+    "billingTitle": "Facturation du stockage",
+    "billingHint": "Prérempli sur la ligne de stockage lors de la facturation d’un jeu. Modifiable sur la facture.",
+    "seasonalPrice": "Tarif de stockage par défaut",
+    "prepTitle": "Prix de la préparation",
+    "prepHint": "Ce que coûte chaque type de préparation. Laissez vide et rien n’est facturé, ce qui convient aux ateliers qui incluent le lavage dans le stockage. Les prestations chiffrées sont ajoutées automatiquement au devis et à l’ordre.",
+    "prepNotCharged": "non facturé"
   }
 }

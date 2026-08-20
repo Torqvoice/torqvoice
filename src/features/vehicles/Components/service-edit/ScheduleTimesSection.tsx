@@ -18,10 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
-import {
-  assignTechnician,
-  updateServiceTimes,
-} from '@/features/workboard/Actions/boardActions'
+import { assignTechnician, updateServiceTimes } from '@/features/workboard/Actions/boardActions'
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -67,14 +64,16 @@ export function ScheduleTimesSection({
   const [creating, setCreating] = useState(false)
   const [showNewInput, setShowNewInput] = useState(false)
   const [mounted, setMounted] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   const [newTechName, setNewTechName] = useState('')
 
   const [startDateTime, setStartDateTime] = useState<Date | undefined>(
-    initialStartDateTime ? new Date(initialStartDateTime) : new Date(),
+    initialStartDateTime ? new Date(initialStartDateTime) : new Date()
   )
   const [endDateTime, setEndDateTime] = useState<Date | undefined>(
-    initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000),
+    initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000)
   )
 
   const saveTimes = async (start: Date, end: Date) => {
@@ -167,9 +166,10 @@ export function ScheduleTimesSection({
   const searchLower = techSearch.toLowerCase()
   const exactMatch = technicians.some((t) => t.name.toLowerCase() === searchLower)
 
-  const currentHours = startDateTime && endDateTime
-    ? Math.round((endDateTime.getTime() - startDateTime.getTime()) / 3600000)
-    : null
+  const currentHours =
+    startDateTime && endDateTime
+      ? Math.round((endDateTime.getTime() - startDateTime.getTime()) / 3600000)
+      : null
 
   return (
     <div className="rounded-lg border p-3 space-y-3">
@@ -208,9 +208,7 @@ export function ScheduleTimesSection({
               aria-expanded={techOpen}
               className="w-full justify-between font-normal"
             >
-              <span className="truncate">
-                {selectedTechName || t('selectTechnician')}
-              </span>
+              <span className="truncate">{selectedTechName || t('selectTechnician')}</span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -235,7 +233,7 @@ export function ScheduleTimesSection({
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0',
+                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         {tech.name}
@@ -250,7 +248,9 @@ export function ScheduleTimesSection({
                       >
                         <Check className="mr-2 h-4 w-4 opacity-0" />
                         {member.name}
-                        <span className="ml-auto text-[10px] text-muted-foreground">{member.email}</span>
+                        <span className="ml-auto text-[10px] text-muted-foreground">
+                          {member.email}
+                        </span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -267,7 +267,7 @@ export function ScheduleTimesSection({
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0',
+                            selectedTechId === tech.id ? 'opacity-100' : 'opacity-0'
                           )}
                         />
                         {tech.name}
@@ -283,14 +283,19 @@ export function ScheduleTimesSection({
                       disabled={creating}
                     >
                       <Plus className="mr-2 h-4 w-4" />
-                      {creating ? t('creating') : t('createTechnician', { name: techSearch.trim() })}
+                      {creating
+                        ? t('creating')
+                        : t('createTechnician', { name: techSearch.trim() })}
                     </CommandItem>
                   </CommandGroup>
                 )}
                 <CommandSeparator />
                 <CommandGroup>
                   {showNewInput ? (
-                    <div className="flex items-center gap-1.5 px-2 py-1.5" onKeyDown={(e) => e.stopPropagation()}>
+                    <div
+                      className="flex items-center gap-1.5 px-2 py-1.5"
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
                       <Input
                         autoFocus
                         placeholder={t('newTechPlaceholder')}
@@ -320,10 +325,7 @@ export function ScheduleTimesSection({
                       </Button>
                     </div>
                   ) : (
-                    <CommandItem
-                      value="__add_new__"
-                      onSelect={() => setShowNewInput(true)}
-                    >
+                    <CommandItem value="__add_new__" onSelect={() => setShowNewInput(true)}>
                       <Plus className="mr-2 h-4 w-4" />
                       {t('addNew')}
                     </CommandItem>
@@ -341,17 +343,17 @@ export function ScheduleTimesSection({
           <DateTimePicker
             value={startDateTime}
             onChange={(d) => {
-              setStartDateTime(d);
+              setStartDateTime(d)
               if (d) {
-                const newEnd = new Date(d.getTime() + 3600000);
-                setEndDateTime(newEnd);
-                saveTimes(d, newEnd);
+                const newEnd = new Date(d.getTime() + 3600000)
+                setEndDateTime(newEnd)
+                saveTimes(d, newEnd)
               }
             }}
             granularity="minute"
             hourCycle={24}
             placeholder={t('startTime')}
-            displayFormat={{ hour24: "PPP HH:mm" }}
+            displayFormat={{ hour24: 'PPP HH:mm' }}
           />
         ) : (
           <div className="h-9 rounded-md border" />
@@ -364,13 +366,13 @@ export function ScheduleTimesSection({
           <DateTimePicker
             value={endDateTime}
             onChange={(d) => {
-              setEndDateTime(d);
-              if (d && startDateTime) saveTimes(startDateTime, d);
+              setEndDateTime(d)
+              if (d && startDateTime) saveTimes(startDateTime, d)
             }}
             granularity="minute"
             hourCycle={24}
             placeholder={t('endTime')}
-            displayFormat={{ hour24: "PPP HH:mm" }}
+            displayFormat={{ hour24: 'PPP HH:mm' }}
           />
         ) : (
           <div className="h-9 rounded-md border" />
@@ -386,10 +388,10 @@ export function ScheduleTimesSection({
               type="button"
               onClick={() => handlePreset(h)}
               className={cn(
-                "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+                'rounded-md border px-2.5 py-1 text-xs font-medium transition-colors',
                 currentHours === h
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-background text-foreground hover:bg-muted",
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-background text-foreground hover:bg-muted'
               )}
             >
               {h}h
@@ -397,7 +399,6 @@ export function ScheduleTimesSection({
           ))}
         </div>
       </div>
-
     </div>
   )
 }

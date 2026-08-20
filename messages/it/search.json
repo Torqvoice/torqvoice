@@ -1,0 +1,9 @@
+{
+  "title": "Cerca",
+  "description": "Cerca veicoli, clienti, interventi e impostazioni",
+  "placeholder": "Cerca per nome, targa, telefono, telaio, fattura…",
+  "noResults": "Nessun risultato.",
+  "recentCustomers": "Clienti recenti",
+  "services": "Interventi",
+  "toClose": "per chiudere"
+}

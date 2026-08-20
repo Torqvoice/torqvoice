@@ -1,0 +1,9 @@
+{
+  "title": "Ara",
+  "description": "Araç, müşteri, iş emri ve ayarlarda arayın",
+  "placeholder": "İsim, plaka, telefon, şasi, fatura ara…",
+  "noResults": "Sonuç yok.",
+  "recentCustomers": "Son müşteriler",
+  "services": "Servis kayıtları",
+  "toClose": "kapatmak için"
+}

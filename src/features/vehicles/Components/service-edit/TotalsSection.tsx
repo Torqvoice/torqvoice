@@ -103,13 +103,13 @@ export function TotalsSection({
                 min="0"
                 step="0.01"
                 value={discountValue}
-                onChange={(e) => setDiscountValue(e.target.value === "" ? 0 : Number(e.target.value))}
+                onChange={(e) =>
+                  setDiscountValue(e.target.value === '' ? 0 : Number(e.target.value))
+                }
                 className="h-7 w-20 text-right text-xs"
               />
             )}
-            {discountType === 'percentage' && (
-              <span className="text-muted-foreground">%</span>
-            )}
+            {discountType === 'percentage' && <span className="text-muted-foreground">%</span>}
           </div>
           {displayDiscountAmount > 0 && (
             <span className="text-destructive">
@@ -127,7 +127,7 @@ export function TotalsSection({
                 min="0"
                 step="0.1"
                 value={taxRate}
-                onChange={(e) => setTaxRate(e.target.value === "" ? 0 : Number(e.target.value))}
+                onChange={(e) => setTaxRate(e.target.value === '' ? 0 : Number(e.target.value))}
                 className="h-7 w-20 text-right text-xs"
               />
               <span className="text-muted-foreground">%</span>
@@ -141,9 +141,7 @@ export function TotalsSection({
           <span>{formatCurrency(totalAmount, currencyCode)}</span>
         </div>
         {taxInclusive && (
-          <p className="text-xs text-muted-foreground italic">
-            {t('inclusiveModeHint')}
-          </p>
+          <p className="text-xs text-muted-foreground italic">{t('inclusiveModeHint')}</p>
         )}
       </div>
     </div>

@@ -32,7 +32,10 @@ import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { statusColors } from './quote-page-types'
 import { useQuoteFormState } from './useQuoteFormState'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
-import { LaborPresetPickerDialog, type LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
+import {
+  LaborPresetPickerDialog,
+  type LaborPresetOption,
+} from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import { QuotePartsEditor } from './QuotePartsEditor'
 import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
 import { QuoteLaborEditor } from './QuoteLaborEditor'
@@ -111,9 +114,11 @@ export function QuotePageClient({
       const newItems = preset.items.map((item) => ({
         description: item.description,
         hours: item.hours,
-        rate: item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate),
-        total: item.hours * (item.rate > 0 ? item.rate : (item.pricingType === 'service' ? 0 : defaultLaborRate)),
-        pricingType: (item.pricingType as "hourly" | "service") || "hourly",
+        rate: item.rate > 0 ? item.rate : item.pricingType === 'service' ? 0 : defaultLaborRate,
+        total:
+          item.hours *
+          (item.rate > 0 ? item.rate : item.pricingType === 'service' ? 0 : defaultLaborRate),
+        pricingType: (item.pricingType as 'hourly' | 'service') || 'hourly',
         excluded: false,
       }))
       state.addLaborBulk(newItems)
@@ -469,7 +474,6 @@ export function QuotePageClient({
           </div>
         </DialogContent>
       </Dialog>
-
     </div>
   )
 }

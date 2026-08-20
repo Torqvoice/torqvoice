@@ -6,10 +6,7 @@ import { isCustomFieldId, getOrderedFieldIds } from '@/features/settings/Schema/
 import { formatFieldValue } from './CustomFields'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
 interface CustomFieldEntry {
@@ -25,21 +22,21 @@ interface CustomFieldEntry {
 function renderCustomFields(
   customFields: CustomFieldEntry[] | undefined,
   visibleFields: Set<string> | null | undefined,
-  styles: Record<string, Style>,
+  styles: Record<string, Style>
 ) {
   if (!customFields || customFields.length === 0) return null
 
   let ordered = customFields
   if (visibleFields) {
-    const cfOrder = [...visibleFields].filter(id => isCustomFieldId(id))
-    const cfMap = new Map(customFields.map(cf => [`cf_${cf.fieldId}`, cf]))
-    ordered = cfOrder.map(id => cfMap.get(id)).filter(Boolean) as CustomFieldEntry[]
+    const cfOrder = [...visibleFields].filter((id) => isCustomFieldId(id))
+    const cfMap = new Map(customFields.map((cf) => [`cf_${cf.fieldId}`, cf]))
+    ordered = cfOrder.map((id) => cfMap.get(id)).filter(Boolean) as CustomFieldEntry[]
   }
 
   return (
     <>
       {ordered
-        .filter(cf => cf.value !== '' && cf.value != null)
+        .filter((cf) => cf.value !== '' && cf.value != null)
         .map((cf, i) => (
           <Text key={`cf-${i}`} style={styles.infoTextSmall}>
             {cf.label}: {formatFieldValue(cf.value, cf.fieldType)}
@@ -66,19 +63,39 @@ function renderCustomerField(fieldId: string, ctx: CustomerRenderCtx): React.Rea
 
   switch (fieldId) {
     case 'customer_name':
-      return <Text key={fieldId} style={styles.infoTextBold}>{c.name}</Text>
+      return (
+        <Text key={fieldId} style={styles.infoTextBold}>
+          {c.name}
+        </Text>
+      )
     case 'customer_company':
-      return c.company ? <Text key={fieldId} style={styles.infoText}>{c.company}</Text> : null
+      return c.company ? (
+        <Text key={fieldId} style={styles.infoText}>
+          {c.company}
+        </Text>
+      ) : null
     case 'customer_address':
-      return c.address ? <Text key={fieldId} style={styles.infoTextSmall}>{c.address}</Text> : null
+      return c.address ? (
+        <Text key={fieldId} style={styles.infoTextSmall}>
+          {c.address}
+        </Text>
+      ) : null
     case 'customer_email':
-      return c.email ? <Text key={fieldId} style={styles.infoTextSmall}>{c.email}</Text> : null
+      return c.email ? (
+        <Text key={fieldId} style={styles.infoTextSmall}>
+          {c.email}
+        </Text>
+      ) : null
     case 'customer_phone':
-      return c.phone ? <Text key={fieldId} style={styles.infoTextSmall}>{c.phone}</Text> : null
+      return c.phone ? (
+        <Text key={fieldId} style={styles.infoTextSmall}>
+          {c.phone}
+        </Text>
+      ) : null
     case 'customer_tax_id':
       return c.taxId ? (
         <Text key={fieldId} style={styles.infoTextSmall}>
-          {(labels.customerTaxId || 'Tax ID')}: {c.taxId}
+          {labels.customerTaxId || 'Tax ID'}: {c.taxId}
         </Text>
       ) : null
     default:
@@ -100,24 +117,34 @@ function renderVehicleField(fieldId: string, ctx: VehicleRenderCtx): React.React
 
   switch (fieldId) {
     case 'vehicle_name':
-      return <Text key={fieldId} style={styles.infoTextBold}>{vehicleName}</Text>
+      return (
+        <Text key={fieldId} style={styles.infoTextBold}>
+          {vehicleName}
+        </Text>
+      )
     case 'vin':
       return data.vehicle.vin ? (
         <Text key={fieldId} style={styles.infoTextSmall}>
-          {labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}
+          {labels.vin
+            ? fillTemplate(labels.vin, { vin: data.vehicle.vin })
+            : `VIN: ${data.vehicle.vin}`}
         </Text>
       ) : null
     case 'license_plate':
       return data.vehicle.licensePlate ? (
         <Text key={fieldId} style={styles.infoTextSmall}>
-          {labels.plate ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate }) : `Plate: ${data.vehicle.licensePlate}`}
+          {labels.plate
+            ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
+            : `Plate: ${data.vehicle.licensePlate}`}
         </Text>
       ) : null
     case 'mileage':
       return data.mileage ? (
         <Text key={fieldId} style={styles.infoTextSmall}>
-          {labels.mileage ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() }) : `Mileage: ${data.mileage.toLocaleString()}`}{' '}
-          {invoiceSettings?.unitSystem === 'metric' ? (labels.km || 'km') : (labels.mi || 'mi')}
+          {labels.mileage
+            ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() })
+            : `Mileage: ${data.mileage.toLocaleString()}`}{' '}
+          {invoiceSettings?.unitSystem === 'metric' ? labels.km || 'km' : labels.mi || 'mi'}
         </Text>
       ) : null
     default:
@@ -136,7 +163,11 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
 
   switch (fieldId) {
     case 'service_title':
-      return <Text key={fieldId} style={styles.infoTextBold}>{data.title}</Text>
+      return (
+        <Text key={fieldId} style={styles.infoTextBold}>
+          {data.title}
+        </Text>
+      )
     case 'service_type':
       // Counter sales (no vehicle) aren't a service — the default
       // "maintenance" type would just be noise on the invoice.
@@ -166,7 +197,14 @@ function renderServiceField(fieldId: string, ctx: ServiceRenderCtx): React.React
 // Default field orders (used when no layout config / visibleFields)
 // ---------------------------------------------------------------------------
 
-const DEFAULT_CUSTOMER_FIELDS = ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id']
+const DEFAULT_CUSTOMER_FIELDS = [
+  'customer_name',
+  'customer_company',
+  'customer_address',
+  'customer_email',
+  'customer_phone',
+  'customer_tax_id',
+]
 const DEFAULT_VEHICLE_FIELDS = ['vehicle_name', 'vin', 'license_plate', 'mileage']
 const DEFAULT_SERVICE_FIELDS = ['service_title', 'service_type', 'tech_name']
 
@@ -194,14 +232,15 @@ export function CustomerSection({
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_CUSTOMER_FIELDS)
 
   const invoiceCustomer = data.customer ?? data.vehicle?.customer
-  const hasCustomer = invoiceCustomer &&
+  const hasCustomer =
+    invoiceCustomer &&
     (show('customer_name') ||
       (show('customer_company') && invoiceCustomer.company) ||
       (show('customer_address') && invoiceCustomer.address) ||
       (show('customer_email') && invoiceCustomer.email) ||
       (show('customer_phone') && invoiceCustomer.phone))
 
-  const hasCf = customFields?.some(cf => cf.value !== '' && cf.value != null)
+  const hasCf = customFields?.some((cf) => cf.value !== '' && cf.value != null)
 
   if (!hasCustomer && !hasCf) return null
 
@@ -211,9 +250,7 @@ export function CustomerSection({
     <View style={styles.infoBox}>
       <Text style={styles.infoLabel}>{labels.billTo || 'Bill To'}</Text>
       {invoiceCustomer && (
-        <>
-          {fieldOrder.filter(id => show(id)).map(id => renderCustomerField(id, ctx))}
-        </>
+        <>{fieldOrder.filter((id) => show(id)).map((id) => renderCustomerField(id, ctx))}</>
       )}
       {renderCustomFields(customFields, visibleFields, styles)}
     </View>
@@ -251,7 +288,7 @@ export function VehicleSection({
     (show('license_plate') && data.vehicle.licensePlate) ||
     (show('mileage') && data.mileage)
 
-  const hasCf = customFields?.some(cf => cf.value !== '' && cf.value != null)
+  const hasCf = customFields?.some((cf) => cf.value !== '' && cf.value != null)
 
   if (!hasVehicle && !hasCf) return null
 
@@ -260,13 +297,19 @@ export function VehicleSection({
   return (
     <View style={styles.infoBox}>
       <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-      {fieldOrder.filter(id => show(id)).map(id => renderVehicleField(id, ctx))}
+      {fieldOrder.filter((id) => show(id)).map((id) => renderVehicleField(id, ctx))}
       {renderCustomFields(customFields, visibleFields, styles)}
     </View>
   )
 }
 
-export function ServiceSection({ data, styles, labels, visibleFields, customFields }: {
+export function ServiceSection({
+  data,
+  styles,
+  labels,
+  visibleFields,
+  customFields,
+}: {
   data: InvoiceData
   vehicleName?: string
   invoiceSettings?: InvoiceSettingsProps
@@ -279,11 +322,10 @@ export function ServiceSection({ data, styles, labels, visibleFields, customFiel
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_SERVICE_FIELDS)
 
   const hasBuiltinContent =
-    show('service_title') ||
-    show('service_type') ||
-    (show('tech_name') && data.techName)
+    show('service_title') || show('service_type') || (show('tech_name') && data.techName)
 
-  const hasCfContent = customFields && customFields.some(cf => cf.value !== '' && cf.value != null)
+  const hasCfContent =
+    customFields && customFields.some((cf) => cf.value !== '' && cf.value != null)
 
   if (!hasBuiltinContent && !hasCfContent) return null
 
@@ -292,7 +334,7 @@ export function ServiceSection({ data, styles, labels, visibleFields, customFiel
   return (
     <View style={styles.infoBox}>
       <Text style={styles.infoLabel}>{labels.service || 'Service'}</Text>
-      {fieldOrder.filter(id => show(id)).map(id => renderServiceField(id, ctx))}
+      {fieldOrder.filter((id) => show(id)).map((id) => renderServiceField(id, ctx))}
       {renderCustomFields(customFields, visibleFields, styles)}
     </View>
   )

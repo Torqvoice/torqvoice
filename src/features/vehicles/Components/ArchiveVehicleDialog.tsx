@@ -62,7 +62,10 @@ export function ArchiveVehicleDialog({
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            {t.rich('description', { name: vehicleName, span: (chunks) => <span className="font-medium">{chunks}</span> })}
+            {t.rich('description', {
+              name: vehicleName,
+              span: (chunks) => <span className="font-medium">{chunks}</span>,
+            })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">

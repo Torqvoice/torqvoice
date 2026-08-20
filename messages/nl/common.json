@@ -10,7 +10,8 @@
     "confirm": "Bevestigen",
     "saveChanges": "Wijzigingen opslaan",
     "edit": "Bewerken",
-    "add": "Toevoegen"
+    "add": "Toevoegen",
+    "gotIt": "Duidelijk"
   },
   "contextMenu": {
     "hint": "Tip: rechtsklik op een rij voor acties",

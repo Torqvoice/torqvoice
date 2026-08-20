@@ -1,0 +1,9 @@
+{
+  "title": "Søk",
+  "description": "Søk etter kjøretøy, kunder, jobber og innstillinger",
+  "placeholder": "Søk på navn, skilt, telefon, VIN, faktura…",
+  "noResults": "Ingen treff.",
+  "recentCustomers": "Nylige kunder",
+  "services": "Servicehistorikk",
+  "toClose": "for å lukke"
+}

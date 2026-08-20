@@ -1,4 +1,4 @@
-import type { InvoiceLayoutConfig } from "@/features/settings/Schema/invoiceLayoutSchema";
+import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 export interface TemplateConfig {
   primaryColor?: string
@@ -49,12 +49,12 @@ export interface InvoiceData {
     total: number
     pricingType?: string
   }[]
-  customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>;
-  findings?: Array<{ description: string; severity: string; notes: string | null }>;
-  warrantyMonths?: number | null;
-  warrantyMileage?: number | null;
-  warrantyExpiresAt?: Date | string | null;
-  warrantyNotes?: string | null;
+  customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
+  findings?: Array<{ description: string; severity: string; notes: string | null }>
+  warrantyMonths?: number | null
+  warrantyMileage?: number | null
+  warrantyExpiresAt?: Date | string | null
+  warrantyNotes?: string | null
   customer?: {
     name: string
     email: string | null

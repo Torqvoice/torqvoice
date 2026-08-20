@@ -5,13 +5,17 @@ import type { Style } from '@react-pdf/types'
 import { getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
-const DEFAULT_HEADER_FIELD_ORDER = ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']
+const DEFAULT_HEADER_FIELD_ORDER = [
+  'logo',
+  'company_name',
+  'company_address',
+  'company_phone',
+  'company_email',
+  'company_org_number',
+]
 
 interface HeaderProps {
   headerStyle: string
@@ -75,30 +79,51 @@ export function Header({
             <Image
               key="logo"
               src={logoDataUri}
-              style={{ maxWidth: 40 * scale, maxHeight: 40 * scale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }}
+              style={{
+                maxWidth: 40 * scale,
+                maxHeight: 40 * scale,
+                borderRadius: 4,
+                objectFit: 'contain',
+                marginBottom: 4,
+              }}
             />
           ) : null
         case 'company_name':
           return showCompanyName ? (
-            <Text key="company_name" style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>
+            <Text
+              key="company_name"
+              style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}
+            >
               {shopDisplayName}
             </Text>
           ) : null
         case 'company_address':
           return workshop?.address ? (
-            <Text key="company_address" style={{ fontSize: 8, color: gray }}>{workshop.address}</Text>
+            <Text key="company_address" style={{ fontSize: 8, color: gray }}>
+              {workshop.address}
+            </Text>
           ) : null
         case 'company_phone':
           return workshop?.phone ? (
-            <Text key="company_phone" style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
+            <Text key="company_phone" style={{ fontSize: 8, color: gray }}>
+              {labels.tel
+                ? fillTemplate(labels.tel, { phone: workshop.phone })
+                : `Tel: ${workshop.phone}`}
+            </Text>
           ) : null
         case 'company_email':
           return workshop?.email ? (
-            <Text key="company_email" style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>
+            <Text key="company_email" style={{ fontSize: 8, color: gray }}>
+              {workshop.email}
+            </Text>
           ) : null
         case 'company_org_number':
           return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
-            <Text key="company_org_number" style={{ fontSize: 8, color: gray }}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
+            <Text key="company_org_number" style={{ fontSize: 8, color: gray }}>
+              {labels.org
+                ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber })
+                : `Org: ${invoiceSettings.orgNumber}`}
+            </Text>
           ) : null
         default:
           return null
@@ -117,14 +142,16 @@ export function Header({
             borderBottomColor: '#e5e7eb',
           }}
         >
-          <View>
-            {fieldOrder.map(renderCompactField)}
-          </View>
+          <View>{fieldOrder.map(renderCompactField)}</View>
           <View style={{ alignItems: 'flex-end' }}>
             <Text style={{ fontSize: 14, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
             <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{invoiceNum}</Text>
             <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
-            {dueDate && <Text style={{ fontSize: 9, color: gray }}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
+            {dueDate && (
+              <Text style={{ fontSize: 9, color: gray }}>
+                {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
+              </Text>
+            )}
           </View>
         </View>
         {torqvoiceLogoDataUri && (
@@ -171,26 +198,42 @@ export function Header({
           ) : null
         case 'company_address':
           return workshop?.address ? (
-            <Text key="company_address" style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+            <Text
+              key="company_address"
+              style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}
+            >
               {workshop.address}
             </Text>
           ) : null
         case 'company_phone':
           return workshop?.phone ? (
-            <Text key="company_phone" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
-              {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
+            <Text
+              key="company_phone"
+              style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}
+            >
+              {labels.tel
+                ? fillTemplate(labels.tel, { phone: workshop.phone })
+                : `Tel: ${workshop.phone}`}
             </Text>
           ) : null
         case 'company_email':
           return workshop?.email ? (
-            <Text key="company_email" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
+            <Text
+              key="company_email"
+              style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}
+            >
               {workshop.email}
             </Text>
           ) : null
         case 'company_org_number':
           return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
-            <Text key="company_org_number" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>
-              {labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}
+            <Text
+              key="company_org_number"
+              style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}
+            >
+              {labels.org
+                ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber })
+                : `Org: ${invoiceSettings.orgNumber}`}
             </Text>
           ) : null
         default:
@@ -208,9 +251,7 @@ export function Header({
             marginHorizontal: -10,
           }}
         >
-          <View style={{ alignItems: 'center' }}>
-            {fieldOrder.map(renderModernField)}
-          </View>
+          <View style={{ alignItems: 'center' }}>{fieldOrder.map(renderModernField)}</View>
           {torqvoiceLogoDataUri && (
             <View
               style={{
@@ -241,7 +282,11 @@ export function Header({
           <View style={{ flexDirection: 'row', gap: 16 }}>
             <Text style={{ fontSize: 9, color: gray }}>{invoiceNum}</Text>
             <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
-            {dueDate && <Text style={{ fontSize: 9, color: gray }}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
+            {dueDate && (
+              <Text style={{ fontSize: 9, color: gray }}>
+                {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
+              </Text>
+            )}
           </View>
         </View>
       </View>
@@ -267,24 +312,42 @@ export function Header({
           />
         ) : null
       case 'company_name':
-        return showCompanyName ? <Text key="company_name" style={styles.brandName}>{shopDisplayName}</Text> : null
+        return showCompanyName ? (
+          <Text key="company_name" style={styles.brandName}>
+            {shopDisplayName}
+          </Text>
+        ) : null
       case 'company_address':
         return workshop?.address ? (
-          <Text key="company_address" style={styles.brandSub}>{workshop.address}</Text>
+          <Text key="company_address" style={styles.brandSub}>
+            {workshop.address}
+          </Text>
         ) : (
-          <Text key="company_address" style={styles.brandSub}>{labels.professionalWorkshop || 'Professional Workshop Management'}</Text>
+          <Text key="company_address" style={styles.brandSub}>
+            {labels.professionalWorkshop || 'Professional Workshop Management'}
+          </Text>
         )
       case 'company_phone':
         return workshop?.phone ? (
-          <Text key="company_phone" style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
+          <Text key="company_phone" style={styles.brandContact}>
+            {labels.tel
+              ? fillTemplate(labels.tel, { phone: workshop.phone })
+              : `Tel: ${workshop.phone}`}
+          </Text>
         ) : null
       case 'company_email':
         return workshop?.email ? (
-          <Text key="company_email" style={styles.brandContact}>{workshop.email}</Text>
+          <Text key="company_email" style={styles.brandContact}>
+            {workshop.email}
+          </Text>
         ) : null
       case 'company_org_number':
         return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
-          <Text key="company_org_number" style={styles.brandContact}>{labels.org ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber }) : `Org: ${invoiceSettings.orgNumber}`}</Text>
+          <Text key="company_org_number" style={styles.brandContact}>
+            {labels.org
+              ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber })
+              : `Org: ${invoiceSettings.orgNumber}`}
+          </Text>
         ) : null
       default:
         return null
@@ -314,7 +377,11 @@ export function Header({
         <Text style={styles.invoiceTitle}>{labels.title || 'INVOICE'}</Text>
         <Text style={styles.invoiceNumber}>{invoiceNum}</Text>
         <Text style={styles.invoiceNumber}>{serviceDate}</Text>
-        {dueDate && <Text style={styles.invoiceNumber}>{labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}</Text>}
+        {dueDate && (
+          <Text style={styles.invoiceNumber}>
+            {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
+          </Text>
+        )}
       </View>
     </View>
   )

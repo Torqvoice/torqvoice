@@ -122,6 +122,10 @@
       "support": {
         "title": "Soporte",
         "description": "Contactar con soporte y gestionar el botón"
+      },
+      "tireHotel": {
+        "title": "Hotel de neumáticos",
+        "description": "Almacenamiento estacional de neumáticos"
       }
     },
     "pro": "PRO"
@@ -974,7 +978,9 @@
       "lastBackup": "Última copia de seguridad:",
       "supportPrompt": "Si tiene alguna pregunta sobre cómo se protegen sus datos,",
       "supportAction": "contacte con nuestro equipo de soporte."
-    }
+    },
+    "optTireHotel": "Hotel de neumáticos",
+    "optTireHotelDesc": "Juegos guardados, estantes, preparación y contratos de almacenaje"
   },
   "license": {
     "title": "Licencia marca blanca",
@@ -1454,5 +1460,32 @@
     "unavailable": "Este navegador no ha ofrecido la instalación. Abre el menú del navegador y busca «Instalar app» o «Añadir a pantalla de inicio».",
     "bannerHidden": "El aviso de instalación está oculto en este dispositivo.",
     "showBanner": "Mostrar el aviso de nuevo"
+  },
+  "tireHotel": {
+    "title": "Hotel de neumáticos",
+    "description": "Guarda los neumáticos de temporada de tus clientes y controla dónde está cada juego.",
+    "cardTitle": "Almacenamiento de neumáticos",
+    "enable": "Activar hotel de neumáticos",
+    "enableHint": "Añade el almacenamiento de neumáticos al menú. Desactivarlo después lo oculta sin borrar nada.",
+    "defaultCapacity": "Neumáticos por balda por defecto",
+    "defaultCapacityHint": "Se rellena al crear baldas nuevas. Se puede cambiar en cada balda.",
+    "warnPercent": "Avisar al llenarse (%)",
+    "warnPercentHint": "Marca el resumen del almacén cuando se ocupa esta parte de la capacidad total.",
+    "treadTitle": "Límites de sustitución",
+    "treadHint": "Los mínimos legales cambian según el país, así que fija los límites de tu mercado. El dibujo por debajo del límite se marca para sustituir.",
+    "summerLimit": "Límite verano ({unit})",
+    "winterLimit": "Límite invierno ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "A continuación, configura tus estantes.",
+    "setupLink": "Abrir distribución del almacén",
+    "save": "Guardar ajustes del hotel de neumáticos",
+    "saved": "Ajustes del hotel de neumáticos guardados",
+    "billingTitle": "Facturación del almacenaje",
+    "billingHint": "Se rellena en la línea de almacenaje al facturar un juego. Editable en la factura.",
+    "seasonalPrice": "Precio de almacenaje por defecto",
+    "prepTitle": "Precios de preparación",
+    "prepHint": "Lo que cuesta cada tipo de preparación. Déjalo en blanco y no se factura nunca, que es lo que quiere un taller que incluye el lavado en el almacenaje. Las que tienen precio se añaden solas al presupuesto y a la orden.",
+    "prepNotCharged": "no se cobra"
   }
 }

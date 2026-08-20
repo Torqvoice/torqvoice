@@ -63,7 +63,9 @@ export function WarrantySection({
           <Shield className="h-3.5 w-3.5 text-muted-foreground" />
           <h3 className="text-sm font-semibold">{t('title')}</h3>
           {!open && hasValues && (
-            <span className="text-xs text-muted-foreground">{warrantyMonths ? `${warrantyMonths} mo` : ''}</span>
+            <span className="text-xs text-muted-foreground">
+              {warrantyMonths ? `${warrantyMonths} mo` : ''}
+            </span>
           )}
         </button>
         {hasValues && (

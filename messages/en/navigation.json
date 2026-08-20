@@ -53,7 +53,12 @@
     "allReminders": "All Reminders",
     "auditLog": "Audit Log",
     "aiAssistant": "AI Assistant",
-    "observations": "Observations"
+    "observations": "Observations",
+    "tireHotel": "Tire Hotel",
+    "allTireSets": "All Tire Sets",
+    "tireStorage": "Storage Layout",
+    "tireSetDetails": "Tire Set",
+    "tireForecast": "Next season"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",
@@ -107,6 +112,7 @@
     "signOut": "Sign Out",
     "more": "More",
     "auditLog": "Audit Log",
-    "aiAssistant": "AI Assistant"
+    "aiAssistant": "AI Assistant",
+    "tireHotel": "Tire hotel"
   }
 }

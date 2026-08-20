@@ -10,7 +10,8 @@
     "back": "Back",
     "confirm": "Confirm",
     "edit": "Edit",
-    "add": "Add"
+    "add": "Add",
+    "gotIt": "Got it"
   },
   "contextMenu": {
     "hint": "Tip: right-click a row for actions",

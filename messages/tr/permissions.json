@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Panel",
+    "vehicles": "Araçlar",
+    "customers": "Müşteriler",
+    "work_orders": "İş emirleri",
+    "quotes": "Teklifler",
+    "services": "Servis kayıtları",
+    "billing": "Faturalama",
+    "inventory": "Stok",
+    "labor_presets": "İşçilik şablonları",
+    "inspections": "Muayeneler",
+    "tire_hotel": "Lastik oteli",
+    "reports": "Raporlar",
+    "work_board": "İş panosu",
+    "ai_assistant": "Yapay zekâ asistanı",
+    "settings": "Ayarlar"
+  },
+  "actions": {
+    "create": "Oluşturma",
+    "read": "Görüntüleme",
+    "update": "Düzenleme",
+    "delete": "Silme",
+    "manage": "Yönetme",
+    "manage_storage": "Depo düzenini yönetme"
+  }
+}

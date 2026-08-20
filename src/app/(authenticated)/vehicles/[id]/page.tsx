@@ -13,6 +13,7 @@ import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
 import { getFeatures } from '@/lib/features'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
+import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
 import { VehicleDetailClient } from './vehicle-detail-client'
 import { PageHeader } from '@/components/page-header'
 
@@ -47,6 +48,7 @@ export default async function VehicleDetailPage({
     templatesResult,
     quotesResult,
     findingsResult,
+    tireSetsResult,
   ] = await Promise.all([
     getVehicle(id),
     getCustomersList(),
@@ -62,6 +64,7 @@ export default async function VehicleDetailPage({
     getTemplates(),
     getVehicleQuotes(id),
     getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
+    getTireSetsForVehicle(id),
   ])
 
   if (!result.success || !result.data) {
@@ -196,6 +199,7 @@ export default async function VehicleDetailPage({
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
           aiEnabled={aiEnabled}
           paginatedFindings={paginatedFindings}
+          tireSets={tireSetsResult.success && tireSetsResult.data ? tireSetsResult.data : []}
         />
       </div>
     </>

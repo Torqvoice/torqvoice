@@ -10,7 +10,8 @@
     "confirm": "Bestätigen",
     "saveChanges": "Änderungen speichern",
     "edit": "Bearbeiten",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "gotIt": "Verstanden"
   },
   "contextMenu": {
     "hint": "Tipp: Rechtsklick auf eine Zeile für Aktionen",

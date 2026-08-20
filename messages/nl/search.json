@@ -1,0 +1,9 @@
+{
+  "title": "Zoeken",
+  "description": "Zoek naar voertuigen, klanten, werkorders en instellingen",
+  "placeholder": "Zoek op naam, kenteken, telefoon, VIN, factuur…",
+  "noResults": "Geen resultaten.",
+  "recentCustomers": "Recente klanten",
+  "services": "Serviceregistraties",
+  "toClose": "om te sluiten"
+}

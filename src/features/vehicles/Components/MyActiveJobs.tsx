@@ -24,12 +24,7 @@ import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   Drawer,
   DrawerContent,
@@ -113,7 +108,10 @@ export function MyActiveJobs({
   const [statusReportJobId, setStatusReportJobId] = useState<string | null>(null)
   const [sendReportId, setSendReportId] = useState<string | null>(null)
   const [sendReportJobId, setSendReportJobId] = useState<string | null>(null)
-  const [observationTarget, setObservationTarget] = useState<{ vehicleId: string; serviceRecordId: string } | null>(null)
+  const [observationTarget, setObservationTarget] = useState<{
+    vehicleId: string
+    serviceRecordId: string
+  } | null>(null)
 
   if (jobs.length === 0) return null
 
@@ -311,137 +309,47 @@ export function MyActiveJobs({
         badge={jobs.length || undefined}
         contentClassName="p-0"
       >
-          <div className="divide-y" {...tableNav.containerProps}>
-            {jobs.map((job) => {
-              const StatusIcon = STATUS_ICON[job.status] || Wrench
-              const statusColor = STATUS_COLOR[job.status] || 'bg-muted text-muted-foreground'
-              const isUploadingPhoto = uploading?.jobId === job.id && uploading.type === 'photo'
-              const isUploadingVideo = uploading?.jobId === job.id && uploading.type === 'video'
-              const isUploading = uploading?.jobId === job.id
-              const imgCount = imageCounts[job.id] || 0
-              const vidCount = videoCounts[job.id] || 0
-              const prtCount = partCounts[job.id] || 0
+        <div className="divide-y" {...tableNav.containerProps}>
+          {jobs.map((job) => {
+            const StatusIcon = STATUS_ICON[job.status] || Wrench
+            const statusColor = STATUS_COLOR[job.status] || 'bg-muted text-muted-foreground'
+            const isUploadingPhoto = uploading?.jobId === job.id && uploading.type === 'photo'
+            const isUploadingVideo = uploading?.jobId === job.id && uploading.type === 'video'
+            const isUploading = uploading?.jobId === job.id
+            const imgCount = imageCounts[job.id] || 0
+            const vidCount = videoCounts[job.id] || 0
+            const prtCount = partCounts[job.id] || 0
 
-              return (
-                <div key={job.id} className="px-4 py-2">
-                  <div className="flex items-center justify-between">
+            return (
+              <div key={job.id} className="px-4 py-2">
+                <div className="flex items-center justify-between">
+                  <div
+                    className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
+                    {...interactiveRow(() =>
+                      router.push(
+                        job.vehicleId
+                          ? `/vehicles/${job.vehicleId}/service/${job.id}`
+                          : `/sales/${job.id}`
+                      )
+                    )}
+                  >
                     <div
-                      className="flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80"
-                      {...interactiveRow(() => router.push(job.vehicleId ? `/vehicles/${job.vehicleId}/service/${job.id}` : `/sales/${job.id}`))}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${statusColor}`}
                     >
-                      <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${statusColor}`}
-                      >
-                        <StatusIcon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">{job.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {job.vehicle
-                            ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}${job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}`
-                            : job.customer?.name ?? ''}
-                        </p>
-                      </div>
+                      <StatusIcon className="h-4 w-4" />
                     </div>
-                    {/* Desktop: inline buttons */}
-                    <div className="shrink-0 ml-3 hidden sm:flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        {imgCount > 0 && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="flex items-center gap-0.5">
-                                <ImageIcon className="h-3 w-3" />
-                                {imgCount}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>{t('photo')}</TooltipContent>
-                          </Tooltip>
-                        )}
-                        {vidCount > 0 && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="flex items-center gap-0.5">
-                                <Video className="h-3 w-3" />
-                                {vidCount}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>{t('video')}</TooltipContent>
-                          </Tooltip>
-                        )}
-                        {prtCount > 0 && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="flex items-center gap-0.5">
-                                <Package className="h-3 w-3" />
-                                {prtCount}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>{t('parts')}</TooltipContent>
-                          </Tooltip>
-                        )}
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        disabled={isUploading}
-                        onClick={() => handleCameraClick(job.id)}
-                      >
-                        {isUploadingPhoto ? (
-                          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-                        ) : (
-                          <Camera className="mr-1.5 h-4 w-4" />
-                        )}
-                        {t('addPhoto')}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        disabled={isUploading}
-                        onClick={() => videoInputRefs.current[job.id]?.click()}
-                      >
-                        {isUploadingVideo ? (
-                          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-                        ) : (
-                          <Video className="mr-1.5 h-4 w-4" />
-                        )}
-                        {t('addVideo')}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        onClick={() => handleScanClick(job.id)}
-                      >
-                        <ScanBarcode className="mr-1.5 h-4 w-4" />
-                        {t('scanPart')}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9"
-                        onClick={() => setStatusReportJobId(job.id)}
-                      >
-                        <FileVideo className="mr-1.5 h-4 w-4" />
-                        {t('statusReport')}
-                      </Button>
-                      {job.vehicleId && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-9"
-                          onClick={() =>
-                            setObservationTarget({ vehicleId: job.vehicleId as string, serviceRecordId: job.id })
-                          }
-                        >
-                          <ClipboardCheck className="mr-1.5 h-4 w-4" />
-                          {t('observation')}
-                        </Button>
-                      )}
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">{job.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {job.vehicle
+                          ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}${job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}`
+                          : (job.customer?.name ?? '')}
+                      </p>
                     </div>
-                    {/* Mobile: counters only */}
-                    <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
+                  </div>
+                  {/* Desktop: inline buttons */}
+                  <div className="shrink-0 ml-3 hidden sm:flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       {imgCount > 0 && (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -476,98 +384,200 @@ export function MyActiveJobs({
                         </Tooltip>
                       )}
                     </div>
-                  </div>
-                  {/* Mobile: action buttons on two rows */}
-                  <div className="mt-2 flex flex-col gap-1.5 sm:hidden">
-                    <ButtonGroup className="w-full">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9"
-                        disabled={isUploading}
-                        onClick={() => handleCameraClick(job.id)}
-                      >
-                        {isUploadingPhoto ? (
-                          <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Camera className="mr-1 h-3.5 w-3.5" />
-                        )}
-                        {t('photo')}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9"
-                        disabled={isUploading}
-                        onClick={() => videoInputRefs.current[job.id]?.click()}
-                      >
-                        {isUploadingVideo ? (
-                          <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Video className="mr-1 h-3.5 w-3.5" />
-                        )}
-                        {t('video')}
-                      </Button>
-                    </ButtonGroup>
-                    <ButtonGroup className="w-full">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9"
-                        onClick={() => handleScanClick(job.id)}
-                      >
-                        <ScanBarcode className="mr-1 h-3.5 w-3.5" />
-                        {t('parts')}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9"
-                        onClick={() => setStatusReportJobId(job.id)}
-                      >
-                        <FileVideo className="mr-1 h-3.5 w-3.5" />
-                        {t('report')}
-                      </Button>
-                      {job.vehicleId && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 h-9"
-                          onClick={() =>
-                            setObservationTarget({ vehicleId: job.vehicleId as string, serviceRecordId: job.id })
-                          }
-                        >
-                          <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
-                          {t('observation')}
-                        </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9"
+                      disabled={isUploading}
+                      onClick={() => handleCameraClick(job.id)}
+                    >
+                      {isUploadingPhoto ? (
+                        <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Camera className="mr-1.5 h-4 w-4" />
                       )}
-                    </ButtonGroup>
+                      {t('addPhoto')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9"
+                      disabled={isUploading}
+                      onClick={() => videoInputRefs.current[job.id]?.click()}
+                    >
+                      {isUploadingVideo ? (
+                        <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Video className="mr-1.5 h-4 w-4" />
+                      )}
+                      {t('addVideo')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9"
+                      onClick={() => handleScanClick(job.id)}
+                    >
+                      <ScanBarcode className="mr-1.5 h-4 w-4" />
+                      {t('scanPart')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9"
+                      onClick={() => setStatusReportJobId(job.id)}
+                    >
+                      <FileVideo className="mr-1.5 h-4 w-4" />
+                      {t('statusReport')}
+                    </Button>
+                    {job.vehicleId && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9"
+                        onClick={() =>
+                          setObservationTarget({
+                            vehicleId: job.vehicleId as string,
+                            serviceRecordId: job.id,
+                          })
+                        }
+                      >
+                        <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                        {t('observation')}
+                      </Button>
+                    )}
                   </div>
-                  <input
-                    ref={(el) => {
-                      fileInputRefs.current[job.id] = el
-                    }}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => handleFileSelect(job.id, e.target.files)}
-                  />
-                  <input
-                    ref={(el) => {
-                      videoInputRefs.current[job.id] = el
-                    }}
-                    type="file"
-                    accept="video/*"
-                    capture="environment"
-                    className="hidden"
-                    onChange={(e) => handleVideoSelect(job.id, e.target.files)}
-                  />
+                  {/* Mobile: counters only */}
+                  <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
+                    {imgCount > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-0.5">
+                            <ImageIcon className="h-3 w-3" />
+                            {imgCount}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('photo')}</TooltipContent>
+                      </Tooltip>
+                    )}
+                    {vidCount > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-0.5">
+                            <Video className="h-3 w-3" />
+                            {vidCount}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('video')}</TooltipContent>
+                      </Tooltip>
+                    )}
+                    {prtCount > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-0.5">
+                            <Package className="h-3 w-3" />
+                            {prtCount}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('parts')}</TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
                 </div>
-              )
-            })}
-          </div>
+                {/* Mobile: action buttons on two rows */}
+                <div className="mt-2 flex flex-col gap-1.5 sm:hidden">
+                  <ButtonGroup className="w-full">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-9"
+                      disabled={isUploading}
+                      onClick={() => handleCameraClick(job.id)}
+                    >
+                      {isUploadingPhoto ? (
+                        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Camera className="mr-1 h-3.5 w-3.5" />
+                      )}
+                      {t('photo')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-9"
+                      disabled={isUploading}
+                      onClick={() => videoInputRefs.current[job.id]?.click()}
+                    >
+                      {isUploadingVideo ? (
+                        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Video className="mr-1 h-3.5 w-3.5" />
+                      )}
+                      {t('video')}
+                    </Button>
+                  </ButtonGroup>
+                  <ButtonGroup className="w-full">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-9"
+                      onClick={() => handleScanClick(job.id)}
+                    >
+                      <ScanBarcode className="mr-1 h-3.5 w-3.5" />
+                      {t('parts')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-9"
+                      onClick={() => setStatusReportJobId(job.id)}
+                    >
+                      <FileVideo className="mr-1 h-3.5 w-3.5" />
+                      {t('report')}
+                    </Button>
+                    {job.vehicleId && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 h-9"
+                        onClick={() =>
+                          setObservationTarget({
+                            vehicleId: job.vehicleId as string,
+                            serviceRecordId: job.id,
+                          })
+                        }
+                      >
+                        <ClipboardCheck className="mr-1 h-3.5 w-3.5" />
+                        {t('observation')}
+                      </Button>
+                    )}
+                  </ButtonGroup>
+                </div>
+                <input
+                  ref={(el) => {
+                    fileInputRefs.current[job.id] = el
+                  }}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleFileSelect(job.id, e.target.files)}
+                />
+                <input
+                  ref={(el) => {
+                    videoInputRefs.current[job.id] = el
+                  }}
+                  type="file"
+                  accept="video/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => handleVideoSelect(job.id, e.target.files)}
+                />
+              </div>
+            )
+          })}
+        </div>
       </AppCard>
 
       <BarcodeScannerDialog
@@ -669,7 +679,11 @@ export function MyActiveJobs({
                 if (!open) setStatusReportJobId(null)
               }}
               serviceRecordId={statusReportJobId}
-              vehicleName={job.vehicle ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}` : job.title}
+              vehicleName={
+                job.vehicle
+                  ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`
+                  : job.title
+              }
               customer={job.customer}
               smsEnabled={smsEnabled}
               emailEnabled={emailEnabled}

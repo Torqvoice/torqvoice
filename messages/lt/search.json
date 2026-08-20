@@ -1,0 +1,9 @@
+{
+  "title": "Paieška",
+  "description": "Ieškokite transporto priemonių, klientų, darbų ir nustatymų",
+  "placeholder": "Ieškoti pagal vardą, numerį, telefoną, VIN, sąskaitą…",
+  "noResults": "Rezultatų nėra.",
+  "recentCustomers": "Naujausi klientai",
+  "services": "Serviso įrašai",
+  "toClose": "kad uždarytumėte"
+}

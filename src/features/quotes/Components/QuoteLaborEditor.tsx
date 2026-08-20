@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import { memo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Layers, Plus, Trash2, Wrench } from "lucide-react";
+import { memo } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { QuoteLaborInput } from "./quote-page-types";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import type { QuoteLaborInput } from './quote-page-types'
 
 const QuoteLaborRow = memo(function QuoteLaborRow({
   labor,
@@ -24,69 +24,107 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   tDeleteRow,
   tExcludeFromTotal,
 }: {
-  labor: QuoteLaborInput;
-  index: number;
-  currencyCode: string;
-  onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void;
-  onDelete: (index: number) => void;
-  tDescriptionPlaceholder: string;
-  tHourlyTag: string;
-  tServiceTag: string;
-  tSwitchToHourly: string;
-  tSwitchToService: string;
-  tQty: string;
-  tHours: string;
-  tDeleteRow: string;
-  tExcludeFromTotal: string;
+  labor: QuoteLaborInput
+  index: number
+  currencyCode: string
+  onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void
+  onDelete: (index: number) => void
+  tDescriptionPlaceholder: string
+  tHourlyTag: string
+  tServiceTag: string
+  tSwitchToHourly: string
+  tSwitchToService: string
+  tQty: string
+  tHours: string
+  tDeleteRow: string
+  tExcludeFromTotal: string
 }) {
-  const isService = labor.pricingType === "service";
-  const formatCurrency = useFormatCurrency();
+  const isService = labor.pricingType === 'service'
+  const formatCurrency = useFormatCurrency()
   return (
-    <div className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? "line-through opacity-50" : ""}`}>
+    <div
+      className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? 'line-through opacity-50' : ''}`}
+    >
       <div className="col-span-2 flex gap-2 sm:col-span-1">
-        <Input placeholder={tDescriptionPlaceholder} value={labor.description} onChange={(e) => onUpdate(index, "description", e.target.value)} className="flex-1" />
+        <Input
+          placeholder={tDescriptionPlaceholder}
+          value={labor.description}
+          onChange={(e) => onUpdate(index, 'description', e.target.value)}
+          className="flex-1"
+        />
         <button
           type="button"
           className={`shrink-0 rounded-md border px-2 text-[10px] font-medium transition-all ${
             isService
-              ? "border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50"
-              : "border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20"
+              ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 hover:border-blue-500/50'
+              : 'border-muted text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
           }`}
-          onClick={() => onUpdate(index, "pricingType", isService ? "hourly" : "service")}
+          onClick={() => onUpdate(index, 'pricingType', isService ? 'hourly' : 'service')}
           title={isService ? tSwitchToHourly : tSwitchToService}
         >
           {isService ? tServiceTag : tHourlyTag}
         </button>
       </div>
-      <Input type="number" min="0" step={isService ? "1" : "0.1"} placeholder={isService ? tQty : tHours} value={labor.hours} onChange={(e) => onUpdate(index, "hours", e.target.value)} />
-      <Input type="number" min="0" step="0.01" value={labor.rate} onChange={(e) => onUpdate(index, "rate", e.target.value)} />
-      <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">{formatCurrency(labor.total, currencyCode)}</div>
+      <Input
+        type="number"
+        min="0"
+        step={isService ? '1' : '0.1'}
+        placeholder={isService ? tQty : tHours}
+        value={labor.hours}
+        onChange={(e) => onUpdate(index, 'hours', e.target.value)}
+      />
+      <Input
+        type="number"
+        min="0"
+        step="0.01"
+        value={labor.rate}
+        onChange={(e) => onUpdate(index, 'rate', e.target.value)}
+      />
+      <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
+        {formatCurrency(labor.total, currencyCode)}
+      </div>
       <div className="flex items-center gap-1">
-        <input type="checkbox" checked={labor.excluded ?? false} onChange={(e) => onUpdate(index, "excluded", e.target.checked)} className="h-4 w-4 rounded border-gray-300" title={tExcludeFromTotal} aria-label={tExcludeFromTotal} />
+        <input
+          type="checkbox"
+          checked={labor.excluded ?? false}
+          onChange={(e) => onUpdate(index, 'excluded', e.target.checked)}
+          className="h-4 w-4 rounded border-gray-300"
+          title={tExcludeFromTotal}
+          aria-label={tExcludeFromTotal}
+        />
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive" onClick={() => onDelete(index)} aria-label={tDeleteRow}><Trash2 className="h-4 w-4" /></Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-destructive"
+              onClick={() => onDelete(index)}
+              aria-label={tDeleteRow}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </TooltipTrigger>
           <TooltipContent>{tDeleteRow}</TooltipContent>
         </Tooltip>
       </div>
     </div>
-  );
-});
+  )
+})
 
 interface QuoteLaborEditorProps {
-  laborItems: QuoteLaborInput[];
-  currencyCode: string;
-  cs: string;
-  laborSubtotal: number;
-  onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void;
-  onDelete: (index: number) => void;
-  onAdd: () => void;
-  onAddService?: () => void;
-  hasPresets?: boolean;
-  onOpenPresets?: () => void;
+  laborItems: QuoteLaborInput[]
+  currencyCode: string
+  cs: string
+  laborSubtotal: number
+  onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void
+  onDelete: (index: number) => void
+  onAdd: () => void
+  onAddService?: () => void
+  hasPresets?: boolean
+  onOpenPresets?: () => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (key: string, values?: any) => string;
+  t: (key: string, values?: any) => string
 }
 
 export const QuoteLaborEditor = memo(function QuoteLaborEditor({
@@ -105,63 +143,91 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   const formatCurrency = useFormatCurrency()
   return (
     <TooltipProvider>
-    <div className="rounded-lg border p-3 space-y-2">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">{t("labor.title")}</h3>
-        <div className="flex gap-2">
-          {hasPresets && onOpenPresets && (
-            <Button type="button" variant="outline" size="sm" onClick={onOpenPresets}>
-              <Layers className="mr-1 h-3.5 w-3.5" />
-              {t("labor.fromPresets")}
+      <div className="rounded-lg border p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold">{t('labor.title')}</h3>
+          <div className="flex gap-2">
+            {hasPresets && onOpenPresets && (
+              <Button type="button" variant="outline" size="sm" onClick={onOpenPresets}>
+                <Layers className="mr-1 h-3.5 w-3.5" />
+                {t('labor.fromPresets')}
+              </Button>
+            )}
+            <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+              <Plus className="mr-1 h-3.5 w-3.5" /> {t('labor.addLabor')}
             </Button>
-          )}
-          <Button type="button" variant="outline" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> {t("labor.addLabor")}</Button>
-          {onAddService && (
-            <Button type="button" variant="outline" size="sm" onClick={onAddService}><Wrench className="mr-1 h-3.5 w-3.5" /> {t("labor.addService")}</Button>
-          )}
-        </div>
-      </div>
-      {laborItems.length > 0 && (
-        <>
-          <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-            <span>{t("labor.description")}</span><span>{t("labor.qtyOrHours")}</span><span>{t("labor.rate", { currency: cs })}</span><span>{t("labor.total")}</span><span />
+            {onAddService && (
+              <Button type="button" variant="outline" size="sm" onClick={onAddService}>
+                <Wrench className="mr-1 h-3.5 w-3.5" /> {t('labor.addService')}
+              </Button>
+            )}
           </div>
-          {laborItems.map((labor, i) => (
-            <QuoteLaborRow
-              key={i}
-              labor={labor}
-              index={i}
-              currencyCode={currencyCode}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-              tDescriptionPlaceholder={t("labor.descriptionPlaceholder")}
-              tHourlyTag={t("labor.hourlyTag")}
-              tServiceTag={t("labor.serviceTag")}
-              tSwitchToHourly={t("labor.switchToHourlyHint")}
-              tSwitchToService={t("labor.switchToServiceHint")}
-              tQty={t("labor.qty")}
-              tHours={t("labor.hours")}
-              tDeleteRow={t("labor.deleteRow")}
-              tExcludeFromTotal={t("labor.excludeFromTotal")}
-            />
-          ))}
-          <button type="button" className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}><Plus className="h-4 w-4" /></button>
-          <div className="flex justify-end pt-1 text-sm"><span className="font-medium">{t("labor.subtotal", { amount: formatCurrency(laborSubtotal, currencyCode) })}</span></div>
-        </>
-      )}
-      {laborItems.length === 0 && (
-        <div className="flex gap-2">
-          <button type="button" className="flex flex-1 items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAdd}>
-            <Plus className="mr-1 h-4 w-4" /><span className="text-sm">{t("labor.addLabor")}</span>
-          </button>
-          {onAddService && (
-            <button type="button" className="flex flex-1 items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground" onClick={onAddService}>
-              <Wrench className="mr-1 h-4 w-4" /><span className="text-sm">{t("labor.addService")}</span>
-            </button>
-          )}
         </div>
-      )}
-    </div>
+        {laborItems.length > 0 && (
+          <>
+            <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+              <span>{t('labor.description')}</span>
+              <span>{t('labor.qtyOrHours')}</span>
+              <span>{t('labor.rate', { currency: cs })}</span>
+              <span>{t('labor.total')}</span>
+              <span />
+            </div>
+            {laborItems.map((labor, i) => (
+              <QuoteLaborRow
+                key={i}
+                labor={labor}
+                index={i}
+                currencyCode={currencyCode}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                tDescriptionPlaceholder={t('labor.descriptionPlaceholder')}
+                tHourlyTag={t('labor.hourlyTag')}
+                tServiceTag={t('labor.serviceTag')}
+                tSwitchToHourly={t('labor.switchToHourlyHint')}
+                tSwitchToService={t('labor.switchToServiceHint')}
+                tQty={t('labor.qty')}
+                tHours={t('labor.hours')}
+                tDeleteRow={t('labor.deleteRow')}
+                tExcludeFromTotal={t('labor.excludeFromTotal')}
+              />
+            ))}
+            <button
+              type="button"
+              className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+              onClick={onAdd}
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+            <div className="flex justify-end pt-1 text-sm">
+              <span className="font-medium">
+                {t('labor.subtotal', { amount: formatCurrency(laborSubtotal, currencyCode) })}
+              </span>
+            </div>
+          </>
+        )}
+        {laborItems.length === 0 && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="flex flex-1 items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+              onClick={onAdd}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              <span className="text-sm">{t('labor.addLabor')}</span>
+            </button>
+            {onAddService && (
+              <button
+                type="button"
+                className="flex flex-1 items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+                onClick={onAddService}
+              >
+                <Wrench className="mr-1 h-4 w-4" />
+                <span className="text-sm">{t('labor.addService')}</span>
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </TooltipProvider>
-  );
-});
+  )
+})

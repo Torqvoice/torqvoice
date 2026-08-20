@@ -122,6 +122,10 @@
       "support": {
         "title": "Support",
         "description": "Support kontaktieren und die Support-Schaltfläche verwalten"
+      },
+      "tireHotel": {
+        "title": "Reifenhotel",
+        "description": "Saisonale Reifeneinlagerung"
       }
     },
     "pro": "PRO"
@@ -974,7 +978,9 @@
       "lastBackup": "Letztes Backup:",
       "supportPrompt": "Bei Fragen zum Schutz Ihrer Daten",
       "supportAction": "kontaktieren Sie unser Support-Team."
-    }
+    },
+    "optTireHotel": "Reifenhotel",
+    "optTireHotelDesc": "Eingelagerte Reifensätze, Regale, Vorbereitung und Lagervereinbarungen"
   },
   "license": {
     "title": "White-Label-Lizenz",
@@ -1454,5 +1460,32 @@
     "unavailable": "Dieser Browser hat keine Installation angeboten. Öffnen Sie das Browsermenü und suchen Sie nach „App installieren“ oder „Zum Home-Bildschirm“.",
     "bannerHidden": "Das Installations-Banner ist auf diesem Gerät ausgeblendet.",
     "showBanner": "Banner wieder anzeigen"
+  },
+  "tireHotel": {
+    "title": "Reifenhotel",
+    "description": "Lagern Sie die Saisonreifen Ihrer Kunden ein und behalten Sie den Überblick, wo jeder Satz steht.",
+    "cardTitle": "Reifeneinlagerung",
+    "enable": "Reifenhotel aktivieren",
+    "enableHint": "Fügt die Reifeneinlagerung zur Navigation hinzu. Später abschalten blendet sie wieder aus, ohne etwas zu löschen.",
+    "defaultCapacity": "Standardreifen pro Fach",
+    "defaultCapacityHint": "Wird beim Anlegen neuer Fächer vorausgefüllt. Pro Fach änderbar.",
+    "warnPercent": "Warnen bei Auslastung (%)",
+    "warnPercentHint": "Markiert die Lagerübersicht, sobald dieser Anteil der Gesamtkapazität belegt ist.",
+    "treadTitle": "Ersatzgrenzwerte",
+    "treadHint": "Gesetzliche Mindestwerte unterscheiden sich je Land, setzen Sie also die Grenzwerte Ihres Marktes. Profiltiefe unter dem Grenzwert wird zum Ersatz markiert.",
+    "summerLimit": "Sommergrenze ({unit})",
+    "winterLimit": "Wintergrenze ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Richten Sie als Nächstes Ihre Regale ein.",
+    "setupLink": "Lagerstruktur öffnen",
+    "save": "Reifenhotel-Einstellungen speichern",
+    "saved": "Reifenhotel-Einstellungen gespeichert",
+    "billingTitle": "Lagerabrechnung",
+    "billingHint": "Wird beim Abrechnen eines Satzes auf der Lagerposition vorgeschlagen und bleibt änderbar.",
+    "seasonalPrice": "Standard-Lagerpreis",
+    "prepTitle": "Preise für Vorbereitung",
+    "prepHint": "Was jede Art von Vorbereitung kostet. Leer bedeutet, sie wird nie berechnet, was zu Betrieben passt, die das Waschen in der Lagergebühr enthalten haben. Bepreiste werden automatisch auf Angebot und Auftrag gesetzt.",
+    "prepNotCharged": "nicht berechnet"
   }
 }

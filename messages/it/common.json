@@ -10,7 +10,8 @@
     "confirm": "Conferma",
     "saveChanges": "Salva modifiche",
     "edit": "Modifica",
-    "add": "Aggiungi"
+    "add": "Aggiungi",
+    "gotIt": "Ho capito"
   },
   "contextMenu": {
     "hint": "Suggerimento: clic destro su una riga per le azioni",

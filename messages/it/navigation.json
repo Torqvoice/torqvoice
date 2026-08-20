@@ -53,7 +53,12 @@
     "allReminders": "Tutti i promemoria",
     "auditLog": "Registro attività",
     "aiAssistant": "Assistente IA",
-    "observations": "Osservazioni"
+    "observations": "Osservazioni",
+    "tireHotel": "Hotel pneumatici",
+    "allTireSets": "Tutti i treni",
+    "tireStorage": "Disposizione del deposito",
+    "tireSetDetails": "Treno di pneumatici",
+    "tireForecast": "La prossima stagione"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",
@@ -107,6 +112,7 @@
     "signOut": "Esci",
     "more": "Altro",
     "auditLog": "Registro attività",
-    "aiAssistant": "Assistente IA"
+    "aiAssistant": "Assistente IA",
+    "tireHotel": "Hotel pneumatici"
   }
 }

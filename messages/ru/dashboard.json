@@ -54,7 +54,8 @@
     "activeJobs": "Активные работы",
     "recentObservations": "Недавние наблюдения",
     "recentActivity": "Последняя активность",
-    "gettingStarted": "Первые шаги"
+    "gettingStarted": "Первые шаги",
+    "tireHotel": "Шинный отель"
   },
   "maintenance": {
     "title": "Прогнозируемое техобслуживание",
@@ -234,5 +235,14 @@
       "expired": "Истекло",
       "converted": "Преобразовано"
     }
+  },
+  "tireHotel": {
+    "title": "Шинный отель",
+    "viewAll": "Открыть шинный отель",
+    "stored": "Комплектов на хранении: {count}",
+    "capacity": "{used} / {capacity} шин",
+    "roomLeft": "Место ещё для {count}",
+    "needsPrep": "Нужна подготовка",
+    "unbilled": "Не выставлено ({count})"
   }
 }

@@ -53,7 +53,12 @@
     "allReminders": "Все напоминания",
     "auditLog": "Журнал аудита",
     "aiAssistant": "ИИ-ассистент",
-    "observations": "Наблюдения"
+    "observations": "Наблюдения",
+    "tireHotel": "Шинный отель",
+    "allTireSets": "Все комплекты",
+    "tireStorage": "Структура склада",
+    "tireSetDetails": "Комплект шин",
+    "tireForecast": "Следующий сезон"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",
@@ -107,6 +112,7 @@
     "signOut": "Выйти",
     "more": "Ещё",
     "auditLog": "Журнал аудита",
-    "aiAssistant": "ИИ-ассистент"
+    "aiAssistant": "ИИ-ассистент",
+    "tireHotel": "Шинный отель"
   }
 }

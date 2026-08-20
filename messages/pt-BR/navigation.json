@@ -53,7 +53,12 @@
     "allReminders": "Todos os lembretes",
     "auditLog": "Registro de auditoria",
     "aiAssistant": "Assistente IA",
-    "observations": "Observações"
+    "observations": "Observações",
+    "tireHotel": "Hotel de pneus",
+    "allTireSets": "Todos os jogos",
+    "tireStorage": "Layout da armazenagem",
+    "tireSetDetails": "Jogo de pneus",
+    "tireForecast": "Próxima temporada"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",
@@ -107,6 +112,7 @@
     "signOut": "Sair",
     "more": "Mais",
     "auditLog": "Registro de auditoria",
-    "aiAssistant": "Assistente IA"
+    "aiAssistant": "Assistente IA",
+    "tireHotel": "Hotel de pneus"
   }
 }

@@ -1,75 +1,65 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DateInput } from "@/components/ui/date-input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useGlassModal } from "@/components/glass-modal";
-import { createServiceRecord } from "../Actions/serviceActions";
-import { Loader2 } from "lucide-react";
+} from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useGlassModal } from '@/components/glass-modal'
+import { createServiceRecord } from '../Actions/serviceActions'
+import { Loader2 } from 'lucide-react'
 
 interface ServiceFormProps {
-  vehicleId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  vehicleId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function ServiceForm({
-  vehicleId,
-  open,
-  onOpenChange,
-}: ServiceFormProps) {
-  const router = useRouter();
-  const modal = useGlassModal();
-  const [loading, setLoading] = useState(false);
-  const [type, setType] = useState("maintenance");
-  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split("T")[0]);
+export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps) {
+  const router = useRouter()
+  const modal = useGlassModal()
+  const [loading, setLoading] = useState(false)
+  const [type, setType] = useState('maintenance')
+  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split('T')[0])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(e.currentTarget)
     const result = await createServiceRecord({
       vehicleId,
-      title: formData.get("title") as string,
-      description: (formData.get("description") as string) || undefined,
+      title: formData.get('title') as string,
+      description: (formData.get('description') as string) || undefined,
       type,
-      cost: Number(formData.get("cost")) || 0,
-      mileage: Number(formData.get("mileage")) || undefined,
-      serviceDate:
-        (formData.get("serviceDate") as string) || new Date().toISOString(),
-      shopName: (formData.get("shopName") as string) || undefined,
-      techName: (formData.get("techName") as string) || undefined,
-      parts: (formData.get("parts") as string) || undefined,
-      laborHours: Number(formData.get("laborHours")) || undefined,
-    });
+      cost: Number(formData.get('cost')) || 0,
+      mileage: Number(formData.get('mileage')) || undefined,
+      serviceDate: (formData.get('serviceDate') as string) || new Date().toISOString(),
+      shopName: (formData.get('shopName') as string) || undefined,
+      techName: (formData.get('techName') as string) || undefined,
+      parts: (formData.get('parts') as string) || undefined,
+      laborHours: Number(formData.get('laborHours')) || undefined,
+    })
 
     if (result.success) {
-      onOpenChange(false);
-      router.refresh();
+      onOpenChange(false)
+      router.refresh()
     } else {
-      modal.open("error", "Error", result.error || "Failed to create record");
+      modal.open('error', 'Error', result.error || 'Failed to create record')
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -81,12 +71,7 @@ export function ServiceForm({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              name="title"
-              placeholder="Oil Change"
-              required
-            />
+            <Input id="title" name="title" placeholder="Oil Change" required />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -118,62 +103,33 @@ export function ServiceForm({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="cost">Cost ($)</Label>
-              <Input
-                id="cost"
-                name="cost"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-              />
+              <Input id="cost" name="cost" type="number" step="0.01" placeholder="0.00" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="mileage">Mileage</Label>
-              <Input
-                id="mileage"
-                name="mileage"
-                type="number"
-                placeholder="50000"
-              />
+              <Input id="mileage" name="mileage" type="number" placeholder="50000" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="shopName">Shop Name</Label>
-              <Input
-                id="shopName"
-                name="shopName"
-                placeholder="Joe's Auto Shop"
-              />
+              <Input id="shopName" name="shopName" placeholder="Joe's Auto Shop" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="techName">Technician</Label>
-              <Input
-                id="techName"
-                name="techName"
-                placeholder="Mike"
-              />
+              <Input id="techName" name="techName" placeholder="Mike" />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="parts">Parts Used</Label>
-            <Input
-              id="parts"
-              name="parts"
-              placeholder="Oil filter, 5W-30 synthetic oil"
-            />
+            <Input id="parts" name="parts" placeholder="Oil filter, 5W-30 synthetic oil" />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="laborHours">Labor Hours</Label>
-            <Input
-              id="laborHours"
-              name="laborHours"
-              type="number"
-              step="0.5"
-              placeholder="1.0"
-            />
+            <Input id="laborHours" name="laborHours" type="number" step="0.5" placeholder="1.0" />
           </div>
 
           <div className="space-y-2">
@@ -187,11 +143,7 @@ export function ServiceForm({
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
@@ -202,5 +154,5 @@ export function ServiceForm({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

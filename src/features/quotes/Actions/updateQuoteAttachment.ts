@@ -1,21 +1,21 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { revalidatePath } from "next/cache";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { z } from "zod";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { revalidatePath } from 'next/cache'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { z } from 'zod'
 
 const updateAttachmentSchema = z.object({
   id: z.string(),
   description: z.string().optional(),
   includeInInvoice: z.boolean().optional(),
-});
+})
 
 export async function updateQuoteAttachment(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      const data = updateAttachmentSchema.parse(input);
+      const data = updateAttachmentSchema.parse(input)
 
       const attachment = await db.quoteAttachment.findFirst({
         where: {
@@ -25,8 +25,8 @@ export async function updateQuoteAttachment(input: unknown) {
         include: {
           quote: { select: { id: true } },
         },
-      });
-      if (!attachment) throw new Error("Attachment not found");
+      })
+      if (!attachment) throw new Error('Attachment not found')
 
       const updated = await db.quoteAttachment.update({
         where: { id: data.id },
@@ -38,11 +38,11 @@ export async function updateQuoteAttachment(input: unknown) {
             includeInInvoice: data.includeInInvoice,
           }),
         },
-      });
+      })
 
-      revalidatePath(`/quotes/${attachment.quote.id}`);
+      revalidatePath(`/quotes/${attachment.quote.id}`)
 
-      return updated;
+      return updated
     },
     {
       requiredPermissions: [
@@ -52,5 +52,5 @@ export async function updateQuoteAttachment(input: unknown) {
         },
       ],
     }
-  );
+  )
 }

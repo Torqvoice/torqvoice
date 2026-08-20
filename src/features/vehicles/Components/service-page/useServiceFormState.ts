@@ -37,9 +37,15 @@ export function useServiceFormState({
   const [showInventoryPicker, setShowInventoryPicker] = useState(false)
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
   const [showPresetPicker, setShowPresetPicker] = useState(false)
-  const [warrantyMonths, setWarrantyMonths] = useState<number | null>(initialData.warrantyMonths ?? null)
-  const [warrantyMileage, setWarrantyMileage] = useState<number | null>(initialData.warrantyMileage ?? null)
-  const [warrantyNotes, setWarrantyNotes] = useState<string | null>(initialData.warrantyNotes ?? null)
+  const [warrantyMonths, setWarrantyMonths] = useState<number | null>(
+    initialData.warrantyMonths ?? null
+  )
+  const [warrantyMileage, setWarrantyMileage] = useState<number | null>(
+    initialData.warrantyMileage ?? null
+  )
+  const [warrantyNotes, setWarrantyNotes] = useState<string | null>(
+    initialData.warrantyNotes ?? null
+  )
 
   // Autosave state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -67,7 +73,9 @@ export function useServiceFormState({
 
   useEffect(() => {
     if (!hasUnsavedChanges) return
-    const handler = (e: BeforeUnloadEvent) => { e.preventDefault() }
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+    }
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
   }, [hasUnsavedChanges])
@@ -143,7 +151,9 @@ export function useServiceFormState({
         ? 'paid'
         : 'partial'
   const imageAttachments = record.attachments?.filter((a) => a.category === 'image') || []
-  const vehicleName = record.vehicle ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}` : ''
+  const vehicleName = record.vehicle
+    ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
+    : ''
 
   // Part/labor update helpers
   //
@@ -199,57 +209,155 @@ export function useServiceFormState({
   )
 
   // Wrapped setters that trigger autosave
-  const dirtySetPartItems: typeof setPartItems = useCallback((action) => {
-    setPartItems(action)
-    markDirty()
-  }, [markDirty])
+  const dirtySetPartItems: typeof setPartItems = useCallback(
+    (action) => {
+      setPartItems(action)
+      markDirty()
+    },
+    [markDirty]
+  )
 
-  const dirtySetLaborItems: typeof setLaborItems = useCallback((action) => {
-    setLaborItems(action)
-    markDirty()
-  }, [markDirty])
+  const dirtySetLaborItems: typeof setLaborItems = useCallback(
+    (action) => {
+      setLaborItems(action)
+      markDirty()
+    },
+    [markDirty]
+  )
 
-  const dirtySetDiscountType = useCallback((v: string) => { setDiscountType(v); markDirty() }, [markDirty])
-  const dirtySetDiscountValue = useCallback((v: number) => { setDiscountValue(v); markDirty() }, [markDirty])
-  const dirtySetTaxRate = useCallback((v: number) => { setTaxRate(v); markDirty() }, [markDirty])
-  const dirtySetType = useCallback((v: string) => { setType(v); markDirty() }, [markDirty])
-  const dirtySetStatus = useCallback((v: string) => { setStatus(v); markDirty() }, [markDirty])
-  const dirtySetSelectedVehicleId = useCallback((v: string) => { setSelectedVehicleId(v); markDirty() }, [markDirty])
-  const dirtySetWarrantyMonths = useCallback((v: number | null) => { setWarrantyMonths(v); markDirty() }, [markDirty])
-  const dirtySetWarrantyMileage = useCallback((v: number | null) => { setWarrantyMileage(v); markDirty() }, [markDirty])
-  const dirtySetWarrantyNotes = useCallback((v: string | null) => { setWarrantyNotes(v); markDirty() }, [markDirty])
+  const dirtySetDiscountType = useCallback(
+    (v: string) => {
+      setDiscountType(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetDiscountValue = useCallback(
+    (v: number) => {
+      setDiscountValue(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetTaxRate = useCallback(
+    (v: number) => {
+      setTaxRate(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetType = useCallback(
+    (v: string) => {
+      setType(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetStatus = useCallback(
+    (v: string) => {
+      setStatus(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetSelectedVehicleId = useCallback(
+    (v: string) => {
+      setSelectedVehicleId(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetWarrantyMonths = useCallback(
+    (v: number | null) => {
+      setWarrantyMonths(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetWarrantyMileage = useCallback(
+    (v: number | null) => {
+      setWarrantyMileage(v)
+      markDirty()
+    },
+    [markDirty]
+  )
+  const dirtySetWarrantyNotes = useCallback(
+    (v: string | null) => {
+      setWarrantyNotes(v)
+      markDirty()
+    },
+    [markDirty]
+  )
 
   return {
     // State
-    loading, setLoading,
+    loading,
+    setLoading,
     selectedVehicleId,
-    techName, type, status,
-    partItems, laborItems,
-    taxRate, taxInclusive, discountType, discountValue,
-    showInventoryPicker, setShowInventoryPicker,
-    showBarcodeScanner, setShowBarcodeScanner,
-    showPresetPicker, setShowPresetPicker,
+    techName,
+    type,
+    status,
+    partItems,
+    laborItems,
+    taxRate,
+    taxInclusive,
+    discountType,
+    discountValue,
+    showInventoryPicker,
+    setShowInventoryPicker,
+    showBarcodeScanner,
+    setShowBarcodeScanner,
+    showPresetPicker,
+    setShowPresetPicker,
     // Autosave
-    hasUnsavedChanges, setHasUnsavedChanges, showSaved,
-    formRef, autosaveTimer, isSavingRef,
-    flashSaved, markDirty, saveNow,
+    hasUnsavedChanges,
+    setHasUnsavedChanges,
+    showSaved,
+    formRef,
+    autosaveTimer,
+    isSavingRef,
+    flashSaved,
+    markDirty,
+    saveNow,
     // Notes
-    notesRef, handleNotesChange,
+    notesRef,
+    handleNotesChange,
     // Custom fields
-    customFieldsSaveRef, onCustomFieldsReady,
+    customFieldsSaveRef,
+    onCustomFieldsReady,
     // Computed
-    partsSubtotal, partsCostSubtotal, laborSubtotal, subtotal,
-    discountAmount, taxAmount, totalAmount,
-    displayTotal, totalPaid, balanceDue, paymentStatus, setLocalManuallyPaid,
-    imageAttachments, vehicleName,
+    partsSubtotal,
+    partsCostSubtotal,
+    laborSubtotal,
+    subtotal,
+    discountAmount,
+    taxAmount,
+    totalAmount,
+    displayTotal,
+    totalPaid,
+    balanceDue,
+    paymentStatus,
+    setLocalManuallyPaid,
+    imageAttachments,
+    vehicleName,
     // Helpers
-    updatePart, updateLabor,
-    dirtySetPartItems, dirtySetLaborItems,
-    dirtySetDiscountType, dirtySetDiscountValue, dirtySetTaxRate,
-    dirtySetType, dirtySetStatus, dirtySetSelectedVehicleId,
+    updatePart,
+    updateLabor,
+    dirtySetPartItems,
+    dirtySetLaborItems,
+    dirtySetDiscountType,
+    dirtySetDiscountValue,
+    dirtySetTaxRate,
+    dirtySetType,
+    dirtySetStatus,
+    dirtySetSelectedVehicleId,
     // Warranty
-    warrantyMonths, warrantyMileage, warrantyNotes,
-    dirtySetWarrantyMonths, dirtySetWarrantyMileage, dirtySetWarrantyNotes,
+    warrantyMonths,
+    warrantyMileage,
+    warrantyNotes,
+    dirtySetWarrantyMonths,
+    dirtySetWarrantyMileage,
+    dirtySetWarrantyNotes,
     initialData,
   }
 }

@@ -1,252 +1,260 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
 export type PredictedMileage = {
-  predictedMileage: number;
-  avgPerDay: number;
-  lastServiceDate: Date;
-  lastServiceMileage: number;
-  confidence: number;
-  confidencePercent: number;
-};
+  predictedMileage: number
+  avgPerDay: number
+  lastServiceDate: Date
+  lastServiceMileage: number
+  confidence: number
+  confidencePercent: number
+}
 
 export type VehicleDueForService = {
-  vehicleId: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  predictedMileage: number;
-  lastServiceMileage: number;
-  mileageSinceLastService: number;
-  serviceInterval: number;
-  status: "overdue" | "approaching";
-  confidencePercent: number;
-};
+  vehicleId: string
+  make: string
+  model: string
+  year: number
+  licensePlate: string | null
+  predictedMileage: number
+  lastServiceMileage: number
+  mileageSinceLastService: number
+  serviceInterval: number
+  status: 'overdue' | 'approaching'
+  confidencePercent: number
+}
 
 function calculateConfidencePercent(dataPoints: number, totalDays: number): number {
-  const pointScore = Math.min(50, 15 * Math.log2(dataPoints));
-  const timeScore = Math.min(30, (totalDays / 365) * 30);
-  return Math.min(95, Math.round(15 + pointScore + timeScore));
+  const pointScore = Math.min(50, 15 * Math.log2(dataPoints))
+  const timeScore = Math.min(30, (totalDays / 365) * 30)
+  return Math.min(95, Math.round(15 + pointScore + timeScore))
 }
 
 export async function getVehiclePredictedMileage(vehicleId: string) {
-  return withAuth(async ({ organizationId }) => {
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: vehicleId, organizationId },
-      select: { mileage: true },
-    });
-    if (!vehicle) return null;
+  return withAuth(
+    async ({ organizationId }) => {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, organizationId },
+        select: { mileage: true },
+      })
+      if (!vehicle) return null
 
-    const records = await db.serviceRecord.findMany({
-      where: {
-        vehicleId,
-        organizationId,
-        mileage: { not: null },
-        status: "completed",
-      },
-      orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
-      select: { serviceDate: true, startDateTime: true, mileage: true },
-    });
+      const records = await db.serviceRecord.findMany({
+        where: {
+          vehicleId,
+          organizationId,
+          mileage: { not: null },
+          status: 'completed',
+        },
+        orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
+        select: { serviceDate: true, startDateTime: true, mileage: true },
+      })
 
-    if (records.length < 2) return null;
+      if (records.length < 2) return null
 
-    const dataPoints = records.map((r) => ({
-      date: new Date(r.startDateTime ?? r.serviceDate),
-      mileage: r.mileage!,
-    }));
+      const dataPoints = records.map((r) => ({
+        date: new Date(r.startDateTime ?? r.serviceDate),
+        mileage: r.mileage!,
+      }))
 
-    const earliest = dataPoints[0];
-    const latest = dataPoints[dataPoints.length - 1];
+      const earliest = dataPoints[0]
+      const latest = dataPoints[dataPoints.length - 1]
 
-    // Linear regression: calculate average distance per day across all data points
-    const totalDays =
-      (latest.date.getTime() - earliest.date.getTime()) / (1000 * 60 * 60 * 24);
+      // Linear regression: calculate average distance per day across all data points
+      const totalDays = (latest.date.getTime() - earliest.date.getTime()) / (1000 * 60 * 60 * 24)
 
-    if (totalDays <= 0) return null;
+      if (totalDays <= 0) return null
 
-    const totalMileage = latest.mileage - earliest.mileage;
-    const avgPerDay = totalMileage / totalDays;
+      const totalMileage = latest.mileage - earliest.mileage
+      const avgPerDay = totalMileage / totalDays
 
-    if (avgPerDay <= 0) return null;
+      if (avgPerDay <= 0) return null
 
-    // Project from latest known data point to today
-    const daysSinceLatest =
-      (Date.now() - latest.date.getTime()) / (1000 * 60 * 60 * 24);
-    // Never predict less than the vehicle's actual recorded mileage
-    const predictedMileage = Math.max(
-      vehicle.mileage,
-      Math.round(latest.mileage + daysSinceLatest * avgPerDay)
-    );
+      // Project from latest known data point to today
+      const daysSinceLatest = (Date.now() - latest.date.getTime()) / (1000 * 60 * 60 * 24)
+      // Never predict less than the vehicle's actual recorded mileage
+      const predictedMileage = Math.max(
+        vehicle.mileage,
+        Math.round(latest.mileage + daysSinceLatest * avgPerDay)
+      )
 
-    return {
-      predictedMileage,
-      avgPerDay: Math.round(avgPerDay * 10) / 10,
-      lastServiceDate: latest.date,
-      lastServiceMileage: latest.mileage,
-      confidence: dataPoints.length,
-      confidencePercent: calculateConfidencePercent(dataPoints.length, totalDays),
-    } satisfies PredictedMileage;
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
+      return {
+        predictedMileage,
+        avgPerDay: Math.round(avgPerDay * 10) / 10,
+        lastServiceDate: latest.date,
+        lastServiceMileage: latest.mileage,
+        confidence: dataPoints.length,
+        confidencePercent: calculateConfidencePercent(dataPoints.length, totalDays),
+      } satisfies PredictedMileage
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
+    }
+  )
 }
 
 export async function getVehiclesDueForService() {
-  return withAuth(async ({ organizationId }) => {
-    // Check if feature is enabled
-    const settings = await db.appSetting.findMany({
-      where: {
-        organizationId,
-        key: {
-          in: [
-            SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
-            SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
-            SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
-          ],
+  return withAuth(
+    async ({ organizationId }) => {
+      // Check if feature is enabled
+      const settings = await db.appSetting.findMany({
+        where: {
+          organizationId,
+          key: {
+            in: [
+              SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
+              SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
+              SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
+            ],
+          },
         },
-      },
-    });
+      })
 
-    const settingsMap: Record<string, string> = {};
-    for (const s of settings) {
-      settingsMap[s.key] = s.value;
-    }
+      const settingsMap: Record<string, string> = {}
+      for (const s of settings) {
+        settingsMap[s.key] = s.value
+      }
 
-    if (settingsMap[SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED] !== "true") {
-      return [];
-    }
+      if (settingsMap[SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED] !== 'true') {
+        return []
+      }
 
-    const serviceInterval = parseInt(
-      settingsMap[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] || "15000",
-      10
-    );
-    const approachingThreshold = parseInt(
-      settingsMap[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || "1000",
-      10
-    );
+      const serviceInterval = parseInt(
+        settingsMap[SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL] || '15000',
+        10
+      )
+      const approachingThreshold = parseInt(
+        settingsMap[SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD] || '1000',
+        10
+      )
 
-    // Get all non-archived vehicles with their service records that have mileage
-    const vehicles = await db.vehicle.findMany({
-      where: { organizationId, isArchived: false, maintenanceDismissed: false },
-      select: {
-        id: true,
-        make: true,
-        model: true,
-        year: true,
-        licensePlate: true,
-        serviceRecords: {
-          where: { mileage: { not: null }, status: "completed" },
-          orderBy: [{ startDateTime: { sort: "asc", nulls: "last" } }, { serviceDate: "asc" }],
-          select: { serviceDate: true, startDateTime: true, mileage: true },
+      // Get all non-archived vehicles with their service records that have mileage
+      const vehicles = await db.vehicle.findMany({
+        where: { organizationId, isArchived: false, maintenanceDismissed: false },
+        select: {
+          id: true,
+          make: true,
+          model: true,
+          year: true,
+          licensePlate: true,
+          serviceRecords: {
+            where: { mileage: { not: null }, status: 'completed' },
+            orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
+            select: { serviceDate: true, startDateTime: true, mileage: true },
+          },
         },
-      },
-    });
+      })
 
-    const results: VehicleDueForService[] = [];
+      const results: VehicleDueForService[] = []
 
-    for (const vehicle of vehicles) {
-      const records = vehicle.serviceRecords;
-      if (records.length < 2) continue;
+      for (const vehicle of vehicles) {
+        const records = vehicle.serviceRecords
+        if (records.length < 2) continue
 
-      const earliest = records[0];
-      const latest = records[records.length - 1];
+        const earliest = records[0]
+        const latest = records[records.length - 1]
 
-      const totalDays =
-        (new Date(latest.startDateTime ?? latest.serviceDate).getTime() -
-          new Date(earliest.startDateTime ?? earliest.serviceDate).getTime()) /
-        (1000 * 60 * 60 * 24);
+        const totalDays =
+          (new Date(latest.startDateTime ?? latest.serviceDate).getTime() -
+            new Date(earliest.startDateTime ?? earliest.serviceDate).getTime()) /
+          (1000 * 60 * 60 * 24)
 
-      if (totalDays <= 0) continue;
+        if (totalDays <= 0) continue
 
-      const totalMileage = latest.mileage! - earliest.mileage!;
-      const avgPerDay = totalMileage / totalDays;
+        const totalMileage = latest.mileage! - earliest.mileage!
+        const avgPerDay = totalMileage / totalDays
 
-      if (avgPerDay <= 0) continue;
+        if (avgPerDay <= 0) continue
 
-      const daysSinceLatest =
-        (Date.now() - new Date(latest.startDateTime ?? latest.serviceDate).getTime()) /
-        (1000 * 60 * 60 * 24);
-      const predictedMileage = Math.round(
-        latest.mileage! + daysSinceLatest * avgPerDay
-      );
+        const daysSinceLatest =
+          (Date.now() - new Date(latest.startDateTime ?? latest.serviceDate).getTime()) /
+          (1000 * 60 * 60 * 24)
+        const predictedMileage = Math.round(latest.mileage! + daysSinceLatest * avgPerDay)
 
-      const lastServiceMileage = latest.mileage!;
-      const mileageSinceLastService = predictedMileage - lastServiceMileage;
+        const lastServiceMileage = latest.mileage!
+        const mileageSinceLastService = predictedMileage - lastServiceMileage
 
-      let status: "overdue" | "approaching" | null = null;
+        let status: 'overdue' | 'approaching' | null = null
 
-      if (mileageSinceLastService >= serviceInterval) {
-        status = "overdue";
-      } else if (
-        mileageSinceLastService >=
-        serviceInterval - approachingThreshold
-      ) {
-        status = "approaching";
+        if (mileageSinceLastService >= serviceInterval) {
+          status = 'overdue'
+        } else if (mileageSinceLastService >= serviceInterval - approachingThreshold) {
+          status = 'approaching'
+        }
+
+        if (status) {
+          results.push({
+            vehicleId: vehicle.id,
+            make: vehicle.make,
+            model: vehicle.model,
+            year: vehicle.year,
+            licensePlate: vehicle.licensePlate,
+            predictedMileage,
+            lastServiceMileage,
+            mileageSinceLastService,
+            serviceInterval,
+            status,
+            confidencePercent: calculateConfidencePercent(records.length, totalDays),
+          })
+        }
       }
 
-      if (status) {
-        results.push({
-          vehicleId: vehicle.id,
-          make: vehicle.make,
-          model: vehicle.model,
-          year: vehicle.year,
-          licensePlate: vehicle.licensePlate,
-          predictedMileage,
-          lastServiceMileage,
-          mileageSinceLastService,
-          serviceInterval,
-          status,
-          confidencePercent: calculateConfidencePercent(records.length, totalDays),
-        });
-      }
+      // Sort: overdue first, then by mileage since last service descending
+      results.sort((a, b) => {
+        if (a.status !== b.status) {
+          return a.status === 'overdue' ? -1 : 1
+        }
+        return b.mileageSinceLastService - a.mileageSinceLastService
+      })
+
+      return results
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
     }
-
-    // Sort: overdue first, then by mileage since last service descending
-    results.sort((a, b) => {
-      if (a.status !== b.status) {
-        return a.status === "overdue" ? -1 : 1;
-      }
-      return b.mileageSinceLastService - a.mileageSinceLastService;
-    });
-
-    return results;
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
+  )
 }
 
 export type DismissedMaintenanceVehicle = {
-  vehicleId: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  dismissedAt: Date | null;
-};
+  vehicleId: string
+  make: string
+  model: string
+  year: number
+  licensePlate: string | null
+  dismissedAt: Date | null
+}
 
 export async function getDismissedMaintenanceVehicles() {
-  return withAuth(async ({ organizationId }) => {
-    const vehicles = await db.vehicle.findMany({
-      where: { organizationId, isArchived: false, maintenanceDismissed: true },
-      orderBy: { maintenanceDismissedAt: "desc" },
-      select: {
-        id: true,
-        make: true,
-        model: true,
-        year: true,
-        licensePlate: true,
-        maintenanceDismissedAt: true,
-      },
-    });
+  return withAuth(
+    async ({ organizationId }) => {
+      const vehicles = await db.vehicle.findMany({
+        where: { organizationId, isArchived: false, maintenanceDismissed: true },
+        orderBy: { maintenanceDismissedAt: 'desc' },
+        select: {
+          id: true,
+          make: true,
+          model: true,
+          year: true,
+          licensePlate: true,
+          maintenanceDismissedAt: true,
+        },
+      })
 
-    return vehicles.map((v) => ({
-      vehicleId: v.id,
-      make: v.make,
-      model: v.model,
-      year: v.year,
-      licensePlate: v.licensePlate,
-      dismissedAt: v.maintenanceDismissedAt,
-    })) satisfies DismissedMaintenanceVehicle[];
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }] });
+      return vehicles.map((v) => ({
+        vehicleId: v.id,
+        make: v.make,
+        model: v.model,
+        year: v.year,
+        licensePlate: v.licensePlate,
+        dismissedAt: v.maintenanceDismissedAt,
+      })) satisfies DismissedMaintenanceVehicle[]
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
+    }
+  )
 }

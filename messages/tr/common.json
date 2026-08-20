@@ -10,7 +10,8 @@
     "confirm": "Onayla",
     "saveChanges": "Değişiklikleri Kaydet",
     "edit": "Düzenle",
-    "add": "Ekle"
+    "add": "Ekle",
+    "gotIt": "Anladım"
   },
   "contextMenu": {
     "hint": "İpucu: işlemler için bir satıra sağ tıklayın",

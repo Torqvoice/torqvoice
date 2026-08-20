@@ -4,10 +4,7 @@ import { gray, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
 interface FooterProps {
@@ -41,7 +38,9 @@ export function Footer({
       {portalUrl && (
         <View style={{ marginTop: 8 }}>
           <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
-            {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
+            {labels.viewPortal
+              ? fillTemplate(labels.viewPortal, { url: portalUrl })
+              : `View your portal: ${portalUrl}`}
           </Text>
         </View>
       )}

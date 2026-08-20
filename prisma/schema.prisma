@@ -43,6 +43,12 @@ model User {
   auditLogs              AuditLog[]
   technicians            Technician[]
   stockMovements         StockMovement[]
+  tireWarehouses         TireWarehouse[]
+  tireSets               TireSet[]
+  tireSetAttachments     TireSetAttachment[]
+  tireMeasurements       TireMeasurement[]
+  tireMovements          TireMovement[]
+  tireTreatments         TireTreatment[]
 
   @@map("users")
 }
@@ -181,6 +187,7 @@ model Vehicle {
   serviceRequests   ServiceRequest[]
   findings          VehicleFinding[]
   scheduledMessages ScheduledMessage[]
+  tireSets          TireSet[]
 
   @@index([organizationId])
   @@map("vehicles")
@@ -228,6 +235,12 @@ model ServiceRecord {
   lastViewedAt DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  /// The stored set this job is about, when it came out of the tire hotel.
+  /// Without it a tire-change work order says nothing about which tires, and
+  /// the technician has to go and ask.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
 
   /// Null for parts-only / counter sales; such records use customerId
   /// (or neither, for anonymous walk-in sales)
@@ -398,6 +411,7 @@ model Customer {
 
   serviceRecords ServiceRecord[]
   reminders      Reminder[]
+  tireSets       TireSet[]
 
   @@unique([organizationId, customerNumber])
   @@index([organizationId])
@@ -616,7 +630,13 @@ model StoredImage {
   inventoryPartId String?
   inventoryPart   InventoryPart? @relation("InventoryPartImages", fields: [inventoryPartId], references: [id], onDelete: Cascade)
 
+  /// Condition photos taken when a tire is measured. Second parent on this
+  /// model — an image belongs to exactly one of them.
+  tireMeasurementId String?
+  tireMeasurement   TireMeasurement? @relation("TireMeasurementImages", fields: [tireMeasurementId], references: [id], onDelete: Cascade)
+
   @@index([inventoryPartId])
+  @@index([tireMeasurementId])
   @@map("stored_images")
 }
 
@@ -653,6 +673,12 @@ model Quote {
 
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  /// The stored set this quote is about, when it came out of the tire hotel.
+  /// SetNull rather than Cascade: a quote already sent is a document the
+  /// customer holds, and deleting the set must not erase it.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
 
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
@@ -813,6 +839,12 @@ model Organization {
   scheduledMessages      ScheduledMessage[]
   webhooks               Webhook[]
   stockMovements         StockMovement[]
+  tireWarehouses         TireWarehouse[]
+  tireLocations          TireLocation[]
+  tireSets               TireSet[]
+  tireSetAttachments     TireSetAttachment[]
+  tireMovements          TireMovement[]
+  tireTreatments         TireTreatment[]
 
   @@map("organizations")
 }
@@ -1545,4 +1577,322 @@ model WebhookDelivery {
   @@index([webhookId, createdAt(sort: Desc)])
   @@index([status, nextRetryAt])
   @@map("webhook_deliveries")
+}
+
+// ---------------------------------------------------------------------------
+// Tire hotel
+//
+// Seasonal tire storage. Opt-in per organization via the `tireHotel.enabled`
+// app setting — every model here stays empty and every route stays hidden
+// until a workshop switches it on.
+//
+// Capacity is counted in individual tires rather than sets, because a shelf
+// that holds eight 15" tires does not hold eight 21" tires, and customers
+// store anything from a single spare to a five-wheel set. Counting the real
+// unit is the only thing that stays true in every market.
+// ---------------------------------------------------------------------------
+
+/// A physical building or room holding tire storage. Most workshops have one;
+/// multi-site operators have several.
+model TireWarehouse {
+  id      String  @id @default(cuid())
+  name    String
+  address String?
+  notes   String?
+  /// Preselected when checking tires in. Exactly one per organization.
+  isDefault Boolean @default(false)
+  isArchived Boolean @default(false)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  locations TireLocation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("tire_warehouses")
+}
+
+/// One addressable storage slot: a shelf, a rack level, a pallet, a floor
+/// square. The workshop names its own geography, so `zone`/`rack`/`shelf` are
+/// free text rather than a fixed hierarchy — "Room B / Rack 4 / Shelf 2" and
+/// "Container 1 / -- / Pallet 7" both fit.
+model TireLocation {
+  id String @id @default(cuid())
+
+  /// Short human code used on labels and when directing a technician,
+  /// e.g. "B-04-2". Unique within a warehouse.
+  code String
+
+  zone     String?
+  rack     String?
+  shelf    String?
+  position String?
+
+  /// How many individual tires fit here. The shelf overview divides stored
+  /// tires by this to show how full the location is.
+  capacity Int @default(8)
+
+  notes      String?
+  isArchived Boolean @default(false)
+
+  warehouseId String
+  warehouse   TireWarehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  tireSets  TireSet[]
+  movesFrom TireMovement[] @relation("TireMovementFrom")
+  movesTo   TireMovement[] @relation("TireMovementTo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([warehouseId, code])
+  @@index([organizationId])
+  @@index([warehouseId, isArchived])
+  @@map("tire_locations")
+}
+
+/// A group of tires stored together for one vehicle. Usually four, but the
+/// count is explicit so a pair or a five-wheel set works the same way.
+model TireSet {
+  id String @id @default(cuid())
+
+  /// Sequential per organization, shown to staff and printed on labels.
+  reference String?
+
+  /// summer | winter | all_season | other — see TIRE_SEASONS in
+  /// src/features/tire-hotel/Lib/tireConstants.ts
+  season String @default("summer")
+  /// Studded winter tires are legal in some markets and banned in others, so
+  /// this is a flag on the season rather than a season of its own.
+  studded Boolean @default(false)
+
+  brand String?
+  model String?
+  /// Free text so every regional notation fits: "225/45R17", "P225/45R17 94V",
+  /// "31x10.5R15".
+  size String?
+  /// DOT / TIN week-year code used to judge tire age.
+  dotCode String?
+  loadSpeedIndex String?
+
+  /// Mounted on rims, which changes both handling and what a shelf holds.
+  withRims Boolean @default(false)
+  rimType  String?
+  /// Tire pressure monitoring sensors present — they need care on refit.
+  hasTpms Boolean @default(false)
+
+  /// Individual tires in this set. Drives every capacity calculation.
+  quantity Int @default(4)
+
+  /// stored | released | disposed — see TIRE_SET_STATUSES
+  status String @default("stored")
+
+  notes String?
+
+  /// Where it physically sits. Null once released to the customer.
+  locationId String?
+  location   TireLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  checkedInAt  DateTime?
+  checkedOutAt DateTime?
+
+  measurements TireMeasurement[]
+  movements    TireMovement[]
+  treatments   TireTreatment[]
+  attachments  TireSetAttachment[]
+  quotes       Quote[]
+  serviceRecords ServiceRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, reference])
+  @@index([organizationId, status])
+  @@index([locationId])
+  @@index([vehicleId])
+  @@index([customerId])
+  @@map("tire_sets")
+}
+
+/// Condition of one tire at one moment. Kept as history rather than current
+/// state so wear between seasons is visible, and so a damage dispute has a
+/// dated record behind it.
+/// A photo or document held against a stored set: a picture of a kerbed rim,
+/// a damage report, the customer's written agreement to store them.
+///
+/// Deliberately the same shape as ServiceAttachment, because that is where
+/// these end up when the set is billed. Copying a row between two models with
+/// the same fields cannot lose anything in translation, and the invoice PDF
+/// already knows how to render one.
+model TireSetAttachment {
+  id       String @id @default(cuid())
+  fileName String
+  fileUrl  String
+  fileType String
+  fileSize Int
+
+  /// What the technician wants said about it, e.g. "kerbing on the near side".
+  /// Travels onto the invoice as the caption under the image.
+  description String?
+
+  /// Whether it should reach the customer's invoice when this set is billed.
+  /// On by default: a photo taken at check-in is usually taken to be shown.
+  includeInInvoice Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([tireSetId])
+  @@index([organizationId])
+  @@map("tire_set_attachments")
+}
+
+model TireMeasurement {
+  id String @id @default(cuid())
+
+  /// front_left | front_right | rear_left | rear_right | spare | unspecified
+  position String @default("unspecified")
+
+  /// Always stored in millimetres. The UI converts to 32nds of an inch for
+  /// workshops on imperial units, so one number means the same thing in
+  /// every market.
+  treadDepthMm Float?
+  /// Always stored in bar. Converted to psi/kPa for display.
+  pressureBar Float?
+
+  /// good | fair | replace — see TIRE_CONDITIONS
+  condition String @default("good")
+  damage    String?
+  notes     String?
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  /// Groups the four readings taken during one check-in or inspection so the
+  /// history reads as events rather than loose numbers.
+  movementId String?
+  movement   TireMovement? @relation(fields: [movementId], references: [id], onDelete: SetNull)
+
+  measuredById String?
+  measuredBy   User?   @relation(fields: [measuredById], references: [id], onDelete: SetNull)
+
+  images StoredImage[] @relation("TireMeasurementImages")
+
+  measuredAt DateTime @default(now())
+
+  @@index([tireSetId, measuredAt(sort: Desc)])
+  @@index([movementId])
+  @@map("tire_measurements")
+}
+
+/// Every physical handling of a set: arrival, departure, a move between
+/// shelves, disposal. This is the storage audit trail — "where has this been
+/// and who touched it" has to outlive the set's current row.
+model TireMovement {
+  id String @id @default(cuid())
+
+  /// check_in | check_out | relocate | dispose — see TIRE_MOVEMENT_TYPES
+  type String
+
+  /// Denormalised location codes so history still reads correctly after a
+  /// shelf is renamed or deleted.
+  fromCode String?
+  toCode   String?
+
+  fromLocationId String?
+  fromLocation   TireLocation? @relation("TireMovementFrom", fields: [fromLocationId], references: [id], onDelete: SetNull)
+
+  toLocationId String?
+  toLocation   TireLocation? @relation("TireMovementTo", fields: [toLocationId], references: [id], onDelete: SetNull)
+
+  note String?
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  performedById String?
+  performedBy   User?   @relation(fields: [performedById], references: [id], onDelete: SetNull)
+
+  measurements TireMeasurement[]
+
+  createdAt DateTime @default(now())
+
+  @@index([tireSetId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@map("tire_movements")
+}
+
+
+
+/// Work a set needs before it goes back on the car, or before it goes on the
+/// shelf: washing, balancing, a TPMS service.
+///
+/// A task with a state rather than a flag on the set, because the tire
+/// department's real question is "what is left to do on this one", and a
+/// boolean cannot answer that once someone has started. Recording who
+/// finished it also settles the "was this washed?" conversation at pickup.
+model TireTreatment {
+  id String @id @default(cuid())
+
+  /// wash_tires | wash_rims | balance | tpms_service | new_valves | repair
+  /// — see TREATMENT_TYPES
+  type String
+
+  /// pending | done | skipped — see TREATMENT_STATUSES
+  status String @default("pending")
+
+  notes String?
+
+  tireSetId String
+  tireSet   TireSet @relation(fields: [tireSetId], references: [id], onDelete: Cascade)
+
+  completedAt   DateTime?
+  completedById String?
+  completedBy   User?     @relation(fields: [completedById], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// One row per kind of work per set: asking for a wash twice is the same
+  /// request, not two.
+  @@unique([tireSetId, type])
+  @@index([organizationId, status])
+  @@map("tire_treatments")
 }

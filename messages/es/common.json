@@ -10,7 +10,8 @@
     "confirm": "Confirmar",
     "saveChanges": "Guardar cambios",
     "edit": "Editar",
-    "add": "Agregar"
+    "add": "Agregar",
+    "gotIt": "Entendido"
   },
   "contextMenu": {
     "hint": "Consejo: clic derecho en una fila para ver acciones",

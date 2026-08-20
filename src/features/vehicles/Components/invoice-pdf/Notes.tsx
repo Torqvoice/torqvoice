@@ -6,10 +6,7 @@ import type { Style } from '@react-pdf/types'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
 // Simple HTML token types
@@ -30,7 +27,14 @@ function tokenize(html: string): Token[] {
       if (tag === 'br') tokens.push({ type: 'selfclose', tag })
       else tokens.push({ type: 'open', tag })
     } else if (m[3]) {
-      const text = m[3].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&mdash;/g, '\u2014').replace(/&ndash;/g, '\u2013')
+      const text = m[3]
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&mdash;/g, '\u2014')
+        .replace(/&ndash;/g, '\u2013')
       if (text) tokens.push({ type: 'text', text })
     }
   }
@@ -101,21 +105,67 @@ export function HtmlToPdf({
 
     switch (node.tag) {
       case 'p':
-        return <Text key={k} style={{ ...base, marginBottom: 3 }}>{children}</Text>
+        return (
+          <Text key={k} style={{ ...base, marginBottom: 3 }}>
+            {children}
+          </Text>
+        )
       case 'strong':
       case 'b':
-        return <Text key={k} style={{ fontFamily: fontBold }}>{children}</Text>
+        return (
+          <Text key={k} style={{ fontFamily: fontBold }}>
+            {children}
+          </Text>
+        )
       case 'em':
       case 'i':
-        return <Text key={k} style={{ fontStyle: 'italic' }}>{children}</Text>
+        return (
+          <Text key={k} style={{ fontStyle: 'italic' }}>
+            {children}
+          </Text>
+        )
       case 'u':
-        return <Text key={k} style={{ textDecoration: 'underline' }}>{children}</Text>
+        return (
+          <Text key={k} style={{ textDecoration: 'underline' }}>
+            {children}
+          </Text>
+        )
       case 'h2':
-        return <Text key={k} style={{ ...base, fontSize: fontSize + 3, fontFamily: fontBold, marginBottom: 3, marginTop: 4 }}>{children}</Text>
+        return (
+          <Text
+            key={k}
+            style={{
+              ...base,
+              fontSize: fontSize + 3,
+              fontFamily: fontBold,
+              marginBottom: 3,
+              marginTop: 4,
+            }}
+          >
+            {children}
+          </Text>
+        )
       case 'h3':
-        return <Text key={k} style={{ ...base, fontSize: fontSize + 1.5, fontFamily: fontBold, marginBottom: 2, marginTop: 3 }}>{children}</Text>
+        return (
+          <Text
+            key={k}
+            style={{
+              ...base,
+              fontSize: fontSize + 1.5,
+              fontFamily: fontBold,
+              marginBottom: 2,
+              marginTop: 3,
+            }}
+          >
+            {children}
+          </Text>
+        )
       case 'ul':
-        return <View key={k} style={{ marginLeft: 8, marginBottom: 3 }}>{children}</View>
+        return (
+          <View key={k} style={{ marginLeft: 8, marginBottom: 3 }}>
+            {children}
+          </View>
+        )
       case 'ol': {
         let idx = 0
         return (
@@ -144,7 +194,16 @@ export function HtmlToPdf({
         )
       case 'blockquote':
         return (
-          <View key={k} style={{ borderLeftWidth: 2, borderLeftColor: color, paddingLeft: 6, marginBottom: 3, opacity: 0.8 }}>
+          <View
+            key={k}
+            style={{
+              borderLeftWidth: 2,
+              borderLeftColor: color,
+              paddingLeft: 6,
+              marginBottom: 3,
+              opacity: 0.8,
+            }}
+          >
             {children}
           </View>
         )
@@ -199,7 +258,9 @@ export function NotesOnly({
           <Text style={styles.notesLabel}>{labels.attachedDocuments || 'Attached Documents'}</Text>
           {pdfAttachmentNames.map((name, i) => (
             <Text key={`pdf-${i}`} style={styles.notesText}>
-              {labels.seeAppendedPages ? fillTemplate(labels.seeAppendedPages, { name }) : `${name} (see appended pages)`}
+              {labels.seeAppendedPages
+                ? fillTemplate(labels.seeAppendedPages, { name })
+                : `${name} (see appended pages)`}
             </Text>
           ))}
           {otherAttachments.map((att, i) => (
@@ -245,12 +306,16 @@ export function BankAccountSection({
 
   const hasBankAccount = showBankAccount && invoiceSettings?.bankAccount
   const hasOrgNumber = showOrgNumber && invoiceSettings?.orgNumber
-  const netDays = dueDate && invoiceDate
-    ? Math.ceil((new Date(dueDate).getTime() - new Date(invoiceDate).getTime()) / 86400000)
-    : null
-  const paymentTermsText = netDays !== null && netDays > 0
-    ? (labels.netDays ? labels.netDays.replace('{days}', String(netDays)) : `Net ${netDays} Days`)
-    : invoiceSettings?.paymentTerms || null
+  const netDays =
+    dueDate && invoiceDate
+      ? Math.ceil((new Date(dueDate).getTime() - new Date(invoiceDate).getTime()) / 86400000)
+      : null
+  const paymentTermsText =
+    netDays !== null && netDays > 0
+      ? labels.netDays
+        ? labels.netDays.replace('{days}', String(netDays))
+        : `Net ${netDays} Days`
+      : invoiceSettings?.paymentTerms || null
   const hasPaymentTerms = !!paymentTermsText
   const hasDueDate = !!dueDate
 
@@ -261,22 +326,27 @@ export function BankAccountSection({
   const borderColor = primaryColor
 
   return (
-    <View wrap={false} style={{
-      marginTop: 12,
-      padding: 12,
-      borderWidth: 1,
-      borderColor: borderColor,
-      borderRadius: 4,
-      backgroundColor: bgColor,
-    }}>
-      <Text style={{
-        fontSize: 9,
-        fontFamily: fontBold,
-        color: primaryColor,
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-        marginBottom: 8,
-      }}>
+    <View
+      wrap={false}
+      style={{
+        marginTop: 12,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: borderColor,
+        borderRadius: 4,
+        backgroundColor: bgColor,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 9,
+          fontFamily: fontBold,
+          color: primaryColor,
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+          marginBottom: 8,
+        }}
+      >
         {labels.paymentInformation || 'Payment Information'}
       </Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
@@ -285,11 +355,14 @@ export function BankAccountSection({
             <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
               {labels.bankAccount || 'Bank Account'}
             </Text>
-            {invoiceSettings!.bankAccount!.split(/\r?\n/).filter((line) => line.trim()).map((line, i) => (
-              <Text key={i} style={{ fontSize: 10, fontFamily: fontBold }}>
-                {line}
-              </Text>
-            ))}
+            {invoiceSettings!
+              .bankAccount!.split(/\r?\n/)
+              .filter((line) => line.trim())
+              .map((line, i) => (
+                <Text key={i} style={{ fontSize: 10, fontFamily: fontBold }}>
+                  {line}
+                </Text>
+              ))}
           </View>
         )}
         {hasOrgNumber && (
@@ -297,9 +370,7 @@ export function BankAccountSection({
             <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
               {labels.orgNumberLabel || 'Org. Number'}
             </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
-              {invoiceSettings!.orgNumber}
-            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{invoiceSettings!.orgNumber}</Text>
           </View>
         )}
         {hasPaymentTerms && (
@@ -307,9 +378,7 @@ export function BankAccountSection({
             <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
               {labels.paymentTermsLabel || 'Payment Terms'}
             </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
-              {paymentTermsText}
-            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{paymentTermsText}</Text>
           </View>
         )}
         {hasDueDate && (
@@ -317,13 +386,10 @@ export function BankAccountSection({
             <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
               {labels.dueDateLabel || 'Due Date'}
             </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>
-              {dueDate}
-            </Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{dueDate}</Text>
           </View>
         )}
       </View>
     </View>
   )
 }
-

@@ -54,7 +54,8 @@
     "activeJobs": "Aktive jobber",
     "recentObservations": "Nylige observasjoner",
     "recentActivity": "Nylig aktivitet",
-    "gettingStarted": "Kom i gang"
+    "gettingStarted": "Kom i gang",
+    "tireHotel": "Dekkhotell"
   },
   "maintenance": {
     "title": "Forventet vedlikehold",
@@ -234,5 +235,14 @@
       "expired": "Utløpt",
       "converted": "Konvertert"
     }
+  },
+  "tireHotel": {
+    "title": "Dekkhotell",
+    "viewAll": "Vis dekkhotell",
+    "stored": "{count} sett lagret",
+    "capacity": "{used} / {capacity} dekk",
+    "roomLeft": "Plass til {count} til",
+    "needsPrep": "Trenger klargjøring",
+    "unbilled": "Ufakturert ({count})"
   }
 }

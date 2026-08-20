@@ -122,6 +122,10 @@
       "support": {
         "title": "Assistenza",
         "description": "Contatta l'assistenza e gestisci il pulsante"
+      },
+      "tireHotel": {
+        "title": "Hotel pneumatici",
+        "description": "Deposito stagionale degli pneumatici"
       }
     },
     "pro": "PRO"
@@ -974,7 +978,9 @@
       "lastBackup": "Ultimo backup:",
       "supportPrompt": "Per qualsiasi domanda sulla protezione dei tuoi dati,",
       "supportAction": "contatta il nostro team di supporto."
-    }
+    },
+    "optTireHotel": "Hotel pneumatici",
+    "optTireHotelDesc": "Treni in deposito, scaffali, preparazione e contratti di deposito"
   },
   "license": {
     "title": "Licenza White-Label",
@@ -1454,5 +1460,32 @@
     "unavailable": "Questo browser non ha proposto l'installazione. Apri il menu del browser e cerca «Installa app» o «Aggiungi a Home».",
     "bannerHidden": "Il banner di installazione è nascosto su questo dispositivo.",
     "showBanner": "Mostra di nuovo il banner"
+  },
+  "tireHotel": {
+    "title": "Hotel pneumatici",
+    "description": "Custodisci gli pneumatici stagionali dei tuoi clienti e sai sempre dove si trova ogni treno.",
+    "cardTitle": "Deposito pneumatici",
+    "enable": "Attiva hotel pneumatici",
+    "enableHint": "Aggiunge il deposito pneumatici al menu. Disattivandolo in seguito viene nascosto senza cancellare nulla.",
+    "defaultCapacity": "Pneumatici per ripiano predefiniti",
+    "defaultCapacityHint": "Precompilato quando crei nuovi ripiani. Modificabile per ogni ripiano.",
+    "warnPercent": "Avvisa quando pieno (%)",
+    "warnPercentHint": "Segnala la panoramica del deposito quando questa quota della capacità totale è occupata.",
+    "treadTitle": "Soglie di sostituzione",
+    "treadHint": "I minimi di legge variano da paese a paese, quindi imposta le soglie del tuo mercato. Un battistrada sotto la soglia viene segnalato per la sostituzione.",
+    "summerLimit": "Soglia estiva ({unit})",
+    "winterLimit": "Soglia invernale ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Poi configura i tuoi scaffali.",
+    "setupLink": "Apri la disposizione del deposito",
+    "save": "Salva impostazioni hotel pneumatici",
+    "saved": "Impostazioni hotel pneumatici salvate",
+    "billingTitle": "Fatturazione del deposito",
+    "billingHint": "Precompilato sulla riga di deposito quando fatturi un treno. Modificabile sulla fattura.",
+    "seasonalPrice": "Prezzo di deposito predefinito",
+    "prepTitle": "Prezzi della preparazione",
+    "prepHint": "Quanto costa ogni tipo di preparazione. Lasciandolo vuoto non viene mai fatturata, come serve a chi include il lavaggio nel deposito. Quelle con un prezzo finiscono da sole su preventivo e ordine.",
+    "prepNotCharged": "non addebitato"
   }
 }

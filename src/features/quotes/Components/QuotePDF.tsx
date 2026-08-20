@@ -5,17 +5,31 @@ import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
-import type { InvoiceLayoutConfig, InvoiceSection } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type {
+  InvoiceLayoutConfig,
+  InvoiceSection,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import { calculateTotals, netLineTotal } from '@/lib/tax'
-import { isCustomFieldId, fromCustomFieldId, groupSectionsForRendering, getDefaultInvoiceLayout, getOrderedFieldIds, getVisibleFieldsForSection as getVisibleFieldsForSectionHelper } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  isCustomFieldId,
+  fromCustomFieldId,
+  groupSectionsForRendering,
+  getDefaultInvoiceLayout,
+  getOrderedFieldIds,
+  getVisibleFieldsForSection as getVisibleFieldsForSectionHelper,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 
-const DEFAULT_HEADER_FIELD_ORDER = ['logo', 'company_name', 'company_address', 'company_phone', 'company_email', 'company_org_number']
+const DEFAULT_HEADER_FIELD_ORDER = [
+  'logo',
+  'company_name',
+  'company_address',
+  'company_phone',
+  'company_email',
+  'company_org_number',
+]
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
 interface QuoteData {
@@ -41,7 +55,14 @@ interface QuoteData {
     total: number
     excluded?: boolean
   }[]
-  laborItems: { description: string; hours: number; rate: number; total: number; pricingType?: string; excluded?: boolean }[]
+  laborItems: {
+    description: string
+    hours: number
+    rate: number
+    total: number
+    pricingType?: string
+    excluded?: boolean
+  }[]
   customer: {
     name: string
     email: string | null
@@ -118,7 +139,9 @@ export function QuotePDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const logoScale = (template?.logoSize || 100) / 100
-  const headerFields = layoutConfig ? getVisibleFieldsForSectionHelper(layoutConfig, 'header') : null
+  const headerFields = layoutConfig
+    ? getVisibleFieldsForSectionHelper(layoutConfig, 'header')
+    : null
   const headerFieldOrder = getOrderedFieldIds(headerFields, DEFAULT_HEADER_FIELD_ORDER)
   const styles = createStyles(primaryColor, fontFamily)
   const fontBold = getFontBold(fontFamily)
@@ -134,17 +157,17 @@ export function QuotePDF({
   }
 
   const getCustomFieldsForSection = (
-    sectionId: string,
+    sectionId: string
   ): Array<{ fieldId: string; label: string; value: string; fieldType: string }> => {
     if (!layoutConfig || !customFields?.length) return []
     const section = sectionMap.get(sectionId)
     if (!section?.fields) return []
     const cfIds = new Set(
       section.fields
-        .filter(f => f.visible && isCustomFieldId(f.id))
-        .map(f => fromCustomFieldId(f.id))
+        .filter((f) => f.visible && isCustomFieldId(f.id))
+        .map((f) => fromCustomFieldId(f.id))
     )
-    return customFields.filter(cf => cfIds.has(cf.fieldId))
+    return customFields.filter((cf) => cfIds.has(cf.fieldId))
   }
 
   const quoteNum = data.quoteNumber || 'QUOTE'
@@ -158,18 +181,47 @@ export function QuotePDF({
     switch (fieldId) {
       case 'logo':
         return showLogo && logoDataUri ? (
-          <Image key="logo" src={logoDataUri} style={{ maxWidth: 40 * logoScale, maxHeight: 40 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 4 }} />
+          <Image
+            key="logo"
+            src={logoDataUri}
+            style={{
+              maxWidth: 40 * logoScale,
+              maxHeight: 40 * logoScale,
+              borderRadius: 4,
+              objectFit: 'contain',
+              marginBottom: 4,
+            }}
+          />
         ) : null
       case 'company_name':
         return showCompanyName ? (
-          <Text key="company_name" style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}>{shopName}</Text>
+          <Text
+            key="company_name"
+            style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}
+          >
+            {shopName}
+          </Text>
         ) : null
       case 'company_address':
-        return workshop?.address ? <Text key="company_address" style={{ fontSize: 8, color: gray }}>{workshop.address}</Text> : null
+        return workshop?.address ? (
+          <Text key="company_address" style={{ fontSize: 8, color: gray }}>
+            {workshop.address}
+          </Text>
+        ) : null
       case 'company_phone':
-        return workshop?.phone ? <Text key="company_phone" style={{ fontSize: 8, color: gray }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text> : null
+        return workshop?.phone ? (
+          <Text key="company_phone" style={{ fontSize: 8, color: gray }}>
+            {labels.tel
+              ? fillTemplate(labels.tel, { phone: workshop.phone })
+              : `Tel: ${workshop.phone}`}
+          </Text>
+        ) : null
       case 'company_email':
-        return workshop?.email ? <Text key="company_email" style={{ fontSize: 8, color: gray }}>{workshop.email}</Text> : null
+        return workshop?.email ? (
+          <Text key="company_email" style={{ fontSize: 8, color: gray }}>
+            {workshop.email}
+          </Text>
+        ) : null
       case 'company_org_number':
         return null // org number not shown in quote header
       default:
@@ -189,18 +241,33 @@ export function QuotePDF({
           borderBottomColor: '#e5e7eb',
         }}
       >
-        <View>
-          {headerFieldOrder.map(renderCompactField)}
-        </View>
+        <View>{headerFieldOrder.map(renderCompactField)}</View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
+          <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>
+            {labels.title || 'QUOTE'}
+          </Text>
           <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{quoteNum}</Text>
           <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
-          {validDate && <Text style={{ fontSize: 9, color: gray }}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
+          {validDate && (
+            <Text style={{ fontSize: 9, color: gray }}>
+              {labels.validUntil
+                ? fillTemplate(labels.validUntil, { date: validDate })
+                : `Valid until: ${validDate}`}
+            </Text>
+          )}
         </View>
       </View>
       {torqvoiceLogoDataUri && (
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6, paddingHorizontal: 2 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            gap: 3,
+            marginTop: 6,
+            paddingHorizontal: 2,
+          }}
+        >
           <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
           <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
         </View>
@@ -212,23 +279,52 @@ export function QuotePDF({
     switch (fieldId) {
       case 'logo':
         return showLogo && logoDataUri ? (
-          <Image key="logo" src={logoDataUri} style={{ maxWidth: 50 * logoScale, maxHeight: 50 * logoScale, borderRadius: 4, objectFit: 'contain', marginBottom: 6 }} />
+          <Image
+            key="logo"
+            src={logoDataUri}
+            style={{
+              maxWidth: 50 * logoScale,
+              maxHeight: 50 * logoScale,
+              borderRadius: 4,
+              objectFit: 'contain',
+              marginBottom: 6,
+            }}
+          />
         ) : null
       case 'company_name':
         return showCompanyName ? (
-          <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>{shopName}</Text>
+          <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+            {shopName}
+          </Text>
         ) : null
       case 'company_address':
         return workshop?.address ? (
-          <Text key="company_address" style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>{workshop.address}</Text>
+          <Text
+            key="company_address"
+            style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}
+          >
+            {workshop.address}
+          </Text>
         ) : null
       case 'company_phone':
         return workshop?.phone ? (
-          <Text key="company_phone" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text>
+          <Text
+            key="company_phone"
+            style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}
+          >
+            {labels.tel
+              ? fillTemplate(labels.tel, { phone: workshop.phone })
+              : `Tel: ${workshop.phone}`}
+          </Text>
         ) : null
       case 'company_email':
         return workshop?.email ? (
-          <Text key="company_email" style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>{workshop.email}</Text>
+          <Text
+            key="company_email"
+            style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', marginTop: 2 }}
+          >
+            {workshop.email}
+          </Text>
         ) : null
       case 'company_org_number':
         return null // org number not shown in quote header
@@ -247,9 +343,7 @@ export function QuotePDF({
           marginHorizontal: -10,
         }}
       >
-        <View style={{ alignItems: 'center' }}>
-          {headerFieldOrder.map(renderModernField)}
-        </View>
+        <View style={{ alignItems: 'center' }}>{headerFieldOrder.map(renderModernField)}</View>
         {torqvoiceLogoDataUri && (
           <View
             style={{
@@ -276,11 +370,19 @@ export function QuotePDF({
           paddingBottom: 8,
         }}
       >
-        <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
+        <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>
+          {labels.title || 'QUOTE'}
+        </Text>
         <View style={{ flexDirection: 'row', gap: 16 }}>
           <Text style={{ fontSize: 9, color: gray }}>{quoteNum}</Text>
           <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
-          {validDate && <Text style={{ fontSize: 9, color: gray }}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
+          {validDate && (
+            <Text style={{ fontSize: 9, color: gray }}>
+              {labels.validUntil
+                ? fillTemplate(labels.validUntil, { date: validDate })
+                : `Valid until: ${validDate}`}
+            </Text>
+          )}
         </View>
       </View>
     </View>
@@ -290,16 +392,45 @@ export function QuotePDF({
     switch (fieldId) {
       case 'logo':
         return showLogo && logoDataUri ? (
-          <Image key="logo" src={logoDataUri} style={{ maxWidth: 150 * logoScale, maxHeight: 60 * logoScale, marginBottom: 6, borderRadius: 4, objectFit: 'contain', objectPosition: 'left' }} />
+          <Image
+            key="logo"
+            src={logoDataUri}
+            style={{
+              maxWidth: 150 * logoScale,
+              maxHeight: 60 * logoScale,
+              marginBottom: 6,
+              borderRadius: 4,
+              objectFit: 'contain',
+              objectPosition: 'left',
+            }}
+          />
         ) : null
       case 'company_name':
-        return showCompanyName ? <Text key="company_name" style={styles.brandName}>{shopName}</Text> : null
+        return showCompanyName ? (
+          <Text key="company_name" style={styles.brandName}>
+            {shopName}
+          </Text>
+        ) : null
       case 'company_address':
-        return workshop?.address ? <Text key="company_address" style={styles.brandSub}>{workshop.address}</Text> : null
+        return workshop?.address ? (
+          <Text key="company_address" style={styles.brandSub}>
+            {workshop.address}
+          </Text>
+        ) : null
       case 'company_phone':
-        return workshop?.phone ? <Text key="company_phone" style={styles.brandContact}>{labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}</Text> : null
+        return workshop?.phone ? (
+          <Text key="company_phone" style={styles.brandContact}>
+            {labels.tel
+              ? fillTemplate(labels.tel, { phone: workshop.phone })
+              : `Tel: ${workshop.phone}`}
+          </Text>
+        ) : null
       case 'company_email':
-        return workshop?.email ? <Text key="company_email" style={styles.brandContact}>{workshop.email}</Text> : null
+        return workshop?.email ? (
+          <Text key="company_email" style={styles.brandContact}>
+            {workshop.email}
+          </Text>
+        ) : null
       case 'company_org_number':
         return null // org number not shown in quote header
       default:
@@ -309,20 +440,34 @@ export function QuotePDF({
 
   const renderStandardHeader = () => (
     <View style={styles.header}>
-      <View>
-        {headerFieldOrder.map(renderStandardField)}
-      </View>
+      <View>{headerFieldOrder.map(renderStandardField)}</View>
       <View>
         {torqvoiceLogoDataUri && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginBottom: 6 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 3,
+              marginBottom: 6,
+            }}
+          >
             <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
             <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
           </View>
         )}
-        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>{labels.title || 'QUOTE'}</Text>
+        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>
+          {labels.title || 'QUOTE'}
+        </Text>
         <Text style={styles.invoiceNumber}>{quoteNum}</Text>
         <Text style={styles.invoiceNumber}>{createdDate}</Text>
-        {validDate && <Text style={styles.invoiceNumber}>{labels.validUntil ? fillTemplate(labels.validUntil, { date: validDate }) : `Valid until: ${validDate}`}</Text>}
+        {validDate && (
+          <Text style={styles.invoiceNumber}>
+            {labels.validUntil
+              ? fillTemplate(labels.validUntil, { date: validDate })
+              : `Valid until: ${validDate}`}
+          </Text>
+        )}
       </View>
     </View>
   )
@@ -341,23 +486,68 @@ export function QuotePDF({
 
   const renderCustomerSection = () => {
     const showC = (fid: string) => !visibleCustomerFields || visibleCustomerFields.has(fid)
-    const hasCustomer = data.customer && (showC('customer_name') || (showC('customer_company') && data.customer.company) || (showC('customer_address') && data.customer.address) || (showC('customer_email') && data.customer.email) || (showC('customer_phone') && data.customer.phone) || (showC('customer_tax_id') && data.customer.taxId))
-    const hasCustCf = customerCf.some(cf => cf.value !== '' && cf.value != null)
+    const hasCustomer =
+      data.customer &&
+      (showC('customer_name') ||
+        (showC('customer_company') && data.customer.company) ||
+        (showC('customer_address') && data.customer.address) ||
+        (showC('customer_email') && data.customer.email) ||
+        (showC('customer_phone') && data.customer.phone) ||
+        (showC('customer_tax_id') && data.customer.taxId))
+    const hasCustCf = customerCf.some((cf) => cf.value !== '' && cf.value != null)
     if (!hasCustomer && !hasCustCf) return null
 
-    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, ['customer_name', 'customer_company', 'customer_address', 'customer_email', 'customer_phone', 'customer_tax_id'])
+    const fieldOrder = getOrderedFieldIds(visibleCustomerFields, [
+      'customer_name',
+      'customer_company',
+      'customer_address',
+      'customer_email',
+      'customer_phone',
+      'customer_tax_id',
+    ])
     const c = data.customer
 
     const renderField = (fid: string) => {
       if (!c || !showC(fid)) return null
       switch (fid) {
-        case 'customer_name': return <Text key={fid} style={styles.infoTextBold}>{c.name}</Text>
-        case 'customer_company': return c.company ? <Text key={fid} style={styles.infoText}>{c.company}</Text> : null
-        case 'customer_address': return c.address ? <Text key={fid} style={styles.infoTextSmall}>{c.address}</Text> : null
-        case 'customer_email': return c.email ? <Text key={fid} style={styles.infoTextSmall}>{c.email}</Text> : null
-        case 'customer_phone': return c.phone ? <Text key={fid} style={styles.infoTextSmall}>{c.phone}</Text> : null
-        case 'customer_tax_id': return c.taxId ? <Text key={fid} style={styles.infoTextSmall}>{(labels.customerTaxId || 'Tax ID')}: {c.taxId}</Text> : null
-        default: return null
+        case 'customer_name':
+          return (
+            <Text key={fid} style={styles.infoTextBold}>
+              {c.name}
+            </Text>
+          )
+        case 'customer_company':
+          return c.company ? (
+            <Text key={fid} style={styles.infoText}>
+              {c.company}
+            </Text>
+          ) : null
+        case 'customer_address':
+          return c.address ? (
+            <Text key={fid} style={styles.infoTextSmall}>
+              {c.address}
+            </Text>
+          ) : null
+        case 'customer_email':
+          return c.email ? (
+            <Text key={fid} style={styles.infoTextSmall}>
+              {c.email}
+            </Text>
+          ) : null
+        case 'customer_phone':
+          return c.phone ? (
+            <Text key={fid} style={styles.infoTextSmall}>
+              {c.phone}
+            </Text>
+          ) : null
+        case 'customer_tax_id':
+          return c.taxId ? (
+            <Text key={fid} style={styles.infoTextSmall}>
+              {labels.customerTaxId || 'Tax ID'}: {c.taxId}
+            </Text>
+          ) : null
+        default:
+          return null
       }
     }
 
@@ -365,29 +555,59 @@ export function QuotePDF({
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.to || 'To'}</Text>
         {fieldOrder.map(renderField)}
-        {customerCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
-          <Text key={`cf-cust-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
-        ))}
+        {customerCf
+          .filter((cf) => cf.value !== '' && cf.value != null)
+          .map((cf, i) => (
+            <Text key={`cf-cust-${i}`} style={styles.infoTextSmall}>
+              {cf.label}: {cf.value}
+            </Text>
+          ))}
       </View>
     )
   }
 
   const renderVehicleSection = () => {
     const showV = (fid: string) => !visibleVehicleFields || visibleVehicleFields.has(fid)
-    const hasVehicle = data.vehicle && (showV('vehicle_name') || (showV('vin') && data.vehicle.vin) || (showV('license_plate') && data.vehicle.licensePlate))
-    const hasVehCf = vehicleCf.some(cf => cf.value !== '' && cf.value != null)
+    const hasVehicle =
+      data.vehicle &&
+      (showV('vehicle_name') ||
+        (showV('vin') && data.vehicle.vin) ||
+        (showV('license_plate') && data.vehicle.licensePlate))
+    const hasVehCf = vehicleCf.some((cf) => cf.value !== '' && cf.value != null)
     if (!hasVehicle && !hasVehCf) return null
 
-    const fieldOrder = getOrderedFieldIds(visibleVehicleFields, ['vehicle_name', 'vin', 'license_plate'])
+    const fieldOrder = getOrderedFieldIds(visibleVehicleFields, [
+      'vehicle_name',
+      'vin',
+      'license_plate',
+    ])
     const v = data.vehicle
 
     const renderField = (fid: string) => {
       if (!v || !showV(fid)) return null
       switch (fid) {
-        case 'vehicle_name': return <Text key={fid} style={styles.infoTextBold}>{v.year} {v.make} {v.model}</Text>
-        case 'vin': return v.vin ? <Text key={fid} style={styles.infoTextSmall}>{labels.vin ? fillTemplate(labels.vin, { vin: v.vin }) : `VIN: ${v.vin}`}</Text> : null
-        case 'license_plate': return v.licensePlate ? <Text key={fid} style={styles.infoTextSmall}>{labels.plate ? fillTemplate(labels.plate, { plate: v.licensePlate }) : `Plate: ${v.licensePlate}`}</Text> : null
-        default: return null
+        case 'vehicle_name':
+          return (
+            <Text key={fid} style={styles.infoTextBold}>
+              {v.year} {v.make} {v.model}
+            </Text>
+          )
+        case 'vin':
+          return v.vin ? (
+            <Text key={fid} style={styles.infoTextSmall}>
+              {labels.vin ? fillTemplate(labels.vin, { vin: v.vin }) : `VIN: ${v.vin}`}
+            </Text>
+          ) : null
+        case 'license_plate':
+          return v.licensePlate ? (
+            <Text key={fid} style={styles.infoTextSmall}>
+              {labels.plate
+                ? fillTemplate(labels.plate, { plate: v.licensePlate })
+                : `Plate: ${v.licensePlate}`}
+            </Text>
+          ) : null
+        default:
+          return null
       }
     }
 
@@ -395,9 +615,13 @@ export function QuotePDF({
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
         {fieldOrder.map(renderField)}
-        {vehicleCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
-          <Text key={`cf-veh-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
-        ))}
+        {vehicleCf
+          .filter((cf) => cf.value !== '' && cf.value != null)
+          .map((cf, i) => (
+            <Text key={`cf-veh-${i}`} style={styles.infoTextSmall}>
+              {cf.label}: {cf.value}
+            </Text>
+          ))}
       </View>
     )
   }
@@ -405,7 +629,7 @@ export function QuotePDF({
   const renderServiceSection = () => {
     const show = (fid: string) => !visibleServiceFields || visibleServiceFields.has(fid)
     const hasBuiltin = show('service_title')
-    const hasCf = serviceCf.some(cf => cf.value !== '' && cf.value != null)
+    const hasCf = serviceCf.some((cf) => cf.value !== '' && cf.value != null)
     if (!hasBuiltin && !hasCf) return null
 
     const fieldOrder = getOrderedFieldIds(visibleServiceFields, ['service_title'])
@@ -413,8 +637,14 @@ export function QuotePDF({
     const renderField = (fid: string) => {
       if (!show(fid)) return null
       switch (fid) {
-        case 'service_title': return <Text key={fid} style={styles.infoTextBold}>{data.title}</Text>
-        default: return null
+        case 'service_title':
+          return (
+            <Text key={fid} style={styles.infoTextBold}>
+              {data.title}
+            </Text>
+          )
+        default:
+          return null
       }
     }
 
@@ -422,9 +652,13 @@ export function QuotePDF({
       <View style={styles.infoBox}>
         <Text style={styles.infoLabel}>{labels.quoteDetails || 'Quote Details'}</Text>
         {fieldOrder.map(renderField)}
-        {serviceCf.filter(cf => cf.value !== '' && cf.value != null).map((cf, i) => (
-          <Text key={`cf-${i}`} style={styles.infoTextSmall}>{cf.label}: {cf.value}</Text>
-        ))}
+        {serviceCf
+          .filter((cf) => cf.value !== '' && cf.value != null)
+          .map((cf, i) => (
+            <Text key={`cf-${i}`} style={styles.infoTextSmall}>
+              {cf.label}: {cf.value}
+            </Text>
+          ))}
       </View>
     )
   }
@@ -442,8 +676,12 @@ export function QuotePDF({
         <Text style={styles.sectionTitle}>{labels.parts || 'Parts'}</Text>
         <View style={styles.table}>
           <View style={styles.tableHeader}>
-            <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>{labels.partNumber || 'Part #'}</Text>
-            <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.description || 'Description'}</Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '15%' }}>
+              {labels.partNumber || 'Part #'}
+            </Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>
+              {labels.description || 'Description'}
+            </Text>
             <Text style={{ ...styles.tableHeaderCell, width: '12%', textAlign: 'right' }}>
               {labels.qty || 'Qty'}
             </Text>
@@ -459,15 +697,52 @@ export function QuotePDF({
             const netLineValue = netLineTotal(p.total, taxRate, taxInclusive)
             return (
               <View key={i} style={{ ...styles.tableRow, ...(p.excluded ? { opacity: 0.5 } : {}) }}>
-                <Text style={{ ...styles.tableCell, width: '15%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.partNumber || '-'}</Text>
-                <Text style={{ ...styles.tableCell, width: '35%', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>{p.name}</Text>
-                <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '15%',
+                    ...(p.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
+                  {p.partNumber || '-'}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '35%',
+                    ...(p.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
+                  {p.name}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '12%',
+                    textAlign: 'right',
+                    ...(p.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
                   {p.quantity}
                 </Text>
-                <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '18%',
+                    textAlign: 'right',
+                    ...(p.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
                   {formatCurrency(netUnitPrice, currencyCode, currencyFormat)}
                 </Text>
-                <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(p.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                <Text
+                  style={{
+                    ...styles.tableCellBold,
+                    width: '20%',
+                    textAlign: 'right',
+                    ...(p.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
                   {formatCurrency(netLineValue, currencyCode, currencyFormat)}
                 </Text>
               </View>
@@ -485,7 +760,9 @@ export function QuotePDF({
         <Text style={styles.sectionTitle}>{labels.labor || 'Labor'}</Text>
         <View style={styles.table}>
           <View style={styles.tableHeader}>
-            <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>{labels.description || 'Description'}</Text>
+            <Text style={{ ...styles.tableHeaderCell, width: '45%' }}>
+              {labels.description || 'Description'}
+            </Text>
             <Text style={{ ...styles.tableHeaderCell, width: '15%', textAlign: 'right' }}>
               {labels.qtyOrHours || labels.hours || 'Qty / Hours'}
             </Text>
@@ -502,20 +779,51 @@ export function QuotePDF({
             const netLineValue = netLineTotal(l.total, taxRate, taxInclusive)
             return (
               <View key={i} style={{ ...styles.tableRow, ...(l.excluded ? { opacity: 0.5 } : {}) }}>
-                <Text style={{ ...styles.tableCell, width: '45%', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>{l.description}</Text>
-                <Text style={{ ...styles.tableCell, width: '15%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '45%',
+                    ...(l.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
+                  {l.description}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '15%',
+                    textAlign: 'right',
+                    ...(l.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
                   {isService
                     ? `${l.hours} ${labels.unit || 'unit'}`
                     : `${l.hours} ${labels.hrs || 'hrs'}`}
                 </Text>
-                <Text style={{ ...styles.tableCell, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                <Text
+                  style={{
+                    ...styles.tableCell,
+                    width: '20%',
+                    textAlign: 'right',
+                    ...(l.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
                   {isService
                     ? formatCurrency(netRate, currencyCode, currencyFormat)
                     : labels.ratePerHour
-                      ? fillTemplate(labels.ratePerHour, { rate: formatCurrency(netRate, currencyCode, currencyFormat) })
+                      ? fillTemplate(labels.ratePerHour, {
+                          rate: formatCurrency(netRate, currencyCode, currencyFormat),
+                        })
                       : `${formatCurrency(netRate, currencyCode, currencyFormat)}/hr`}
                 </Text>
-                <Text style={{ ...styles.tableCellBold, width: '20%', textAlign: 'right', ...(l.excluded ? { textDecoration: 'line-through' } : {}) }}>
+                <Text
+                  style={{
+                    ...styles.tableCellBold,
+                    width: '20%',
+                    textAlign: 'right',
+                    ...(l.excluded ? { textDecoration: 'line-through' } : {}),
+                  }}
+                >
                   {formatCurrency(netLineValue, currencyCode, currencyFormat)}
                 </Text>
               </View>
@@ -529,14 +837,21 @@ export function QuotePDF({
   const renderTotals = () => {
     // Stored line totals (sums of stored values — gross in inclusive mode,
     // net in exclusive). Excluded lines are not part of the totals.
-    const laborTotalStored = data.laborItems.reduce((sum, l) => l.excluded ? sum : sum + l.total, 0)
-    const partsTotalStored = data.partItems.reduce((sum, p) => p.excluded ? sum : sum + p.total, 0)
+    const laborTotalStored = data.laborItems.reduce(
+      (sum, l) => (l.excluded ? sum : sum + l.total),
+      0
+    )
+    const partsTotalStored = data.partItems.reduce(
+      (sum, p) => (p.excluded ? sum : sum + p.total),
+      0
+    )
     const subStored = laborTotalStored + partsTotalStored
-    const discStored = data.discountType === 'percentage'
-      ? subStored * (data.discountValue / 100)
-      : data.discountType === 'fixed'
-      ? Math.min(data.discountValue, subStored)
-      : 0
+    const discStored =
+      data.discountType === 'percentage'
+        ? subStored * (data.discountValue / 100)
+        : data.discountType === 'fixed'
+          ? Math.min(data.discountValue, subStored)
+          : 0
     const { taxAmount: tax, totalAmount: total } = calculateTotals({
       subtotal: subStored,
       discountAmount: discStored,
@@ -573,15 +888,19 @@ export function QuotePDF({
         {subDisplay > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.subtotal || 'Subtotal'}</Text>
-            <Text style={styles.totalValue}>{formatCurrency(subDisplay, currencyCode, currencyFormat)}</Text>
+            <Text style={styles.totalValue}>
+              {formatCurrency(subDisplay, currencyCode, currencyFormat)}
+            </Text>
           </View>
         )}
         {discDisplay > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>
               {data.discountType === 'percentage'
-                ? (labels.discountPercent ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) }) : `Discount (${data.discountValue}%)`)
-                : (labels.discount || 'Discount')}
+                ? labels.discountPercent
+                  ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) })
+                  : `Discount (${data.discountValue}%)`
+                : labels.discount || 'Discount'}
             </Text>
             <Text style={{ ...styles.totalValue, color: '#dc2626' }}>
               {formatCurrency(-discDisplay, currencyCode, currencyFormat)}
@@ -595,7 +914,9 @@ export function QuotePDF({
                 ? fillTemplate(labels.tax, { rate: String(data.taxRate) })
                 : `Tax (${data.taxRate}%)`}
             </Text>
-            <Text style={styles.totalValue}>{formatCurrency(tax, currencyCode, currencyFormat)}</Text>
+            <Text style={styles.totalValue}>
+              {formatCurrency(tax, currencyCode, currencyFormat)}
+            </Text>
           </View>
         )}
         <View style={styles.totalDivider} />
@@ -633,7 +954,9 @@ export function QuotePDF({
       {portalUrl && (
         <View style={{ marginTop: 8 }}>
           <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
-            {labels.viewPortal ? fillTemplate(labels.viewPortal, { url: portalUrl }) : `View your portal: ${portalUrl}`}
+            {labels.viewPortal
+              ? fillTemplate(labels.viewPortal, { url: portalUrl })
+              : `View your portal: ${portalUrl}`}
           </Text>
         </View>
       )}
@@ -641,7 +964,9 @@ export function QuotePDF({
       {/* Document attachment names */}
       {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
         <View style={{ marginTop: 10 }}>
-          <Text style={styles.sectionTitle}>{labels.attachedDocuments || 'Attached Documents'}</Text>
+          <Text style={styles.sectionTitle}>
+            {labels.attachedDocuments || 'Attached Documents'}
+          </Text>
           {otherAttachments.map((att, i) => (
             <Text key={`other-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
               {att.fileName}
@@ -656,17 +981,22 @@ export function QuotePDF({
       )}
 
       {torqvoiceLogoDataUri ? (
-        <View style={{
-          ...styles.footer,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 4,
-        }}>
+        <View
+          style={{
+            ...styles.footer,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+          }}
+        >
           <Text style={{ fontSize: 8, color: gray }}>
             {validDate
-              ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
-              : (labels.validityFooter30 || 'This quote is valid for 30 days')} ·{' '}
+              ? labels.validityFooterUntil
+                ? fillTemplate(labels.validityFooterUntil, { date: validDate })
+                : `This quote is valid until ${validDate}`
+              : labels.validityFooter30 || 'This quote is valid for 30 days'}{' '}
+            ·{' '}
           </Text>
           <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
           <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
@@ -675,8 +1005,11 @@ export function QuotePDF({
       ) : (
         <Text style={styles.footer}>
           {validDate
-            ? (labels.validityFooterUntil ? fillTemplate(labels.validityFooterUntil, { date: validDate }) : `This quote is valid until ${validDate}`)
-            : (labels.validityFooter30 || 'This quote is valid for 30 days')} · {shopName}
+            ? labels.validityFooterUntil
+              ? fillTemplate(labels.validityFooterUntil, { date: validDate })
+              : `This quote is valid until ${validDate}`
+            : labels.validityFooter30 || 'This quote is valid for 30 days'}{' '}
+          · {shopName}
         </Text>
       )}
     </>
@@ -707,7 +1040,15 @@ export function QuotePDF({
           <>
             {renderTotals()}
             {torqvoiceLogoDataUri && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 3, marginTop: 6 }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  gap: 3,
+                  marginTop: 6,
+                }}
+              >
                 <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
                 <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
                 <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
@@ -734,19 +1075,21 @@ export function QuotePDF({
   for (const group of renderGroups) {
     if (group.type === 'full-width') {
       if (group.sectionId === 'footer') continue
-      renderedSections.push(
-        <View key={group.sectionId}>{renderSection(group.sectionId)}</View>
-      )
+      renderedSections.push(<View key={group.sectionId}>{renderSection(group.sectionId)}</View>)
     } else {
-      const allIds = [...group.left, ...group.right].filter(id => id !== 'footer')
+      const allIds = [...group.left, ...group.right].filter((id) => id !== 'footer')
       if (allIds.length === 0) continue
       renderedSections.push(
         <View key={`col-${allIds[0]}`} style={styles.infoRow}>
           <View style={{ flex: 1, gap: 4 }}>
-            {group.left.map(id => <React.Fragment key={id}>{renderSection(id)}</React.Fragment>)}
+            {group.left.map((id) => (
+              <React.Fragment key={id}>{renderSection(id)}</React.Fragment>
+            ))}
           </View>
           <View style={{ flex: 1, gap: 4 }}>
-            {group.right.map(id => <React.Fragment key={id}>{renderSection(id)}</React.Fragment>)}
+            {group.right.map((id) => (
+              <React.Fragment key={id}>{renderSection(id)}</React.Fragment>
+            ))}
           </View>
         </View>
       )

@@ -46,15 +46,17 @@ export function WarrantySection({
   // Format the expiry date
   let expiresLine: string | null = null
   if (warrantyExpiresAt) {
-    const formatted = formatDateForPdf(warrantyExpiresAt, dateFormat || DEFAULT_DATE_FORMAT, timezone)
+    const formatted = formatDateForPdf(
+      warrantyExpiresAt,
+      dateFormat || DEFAULT_DATE_FORMAT,
+      timezone
+    )
     expiresLine = `${labels.warrantyExpires || 'Expires'}: ${formatted}`
   }
 
   return (
     <View wrap={false} style={styles.notesSection}>
-      <Text style={styles.notesLabel}>
-        {labels.warrantyTitle || 'Warranty'}
-      </Text>
+      <Text style={styles.notesLabel}>{labels.warrantyTitle || 'Warranty'}</Text>
 
       {durationLine && (
         <View style={{ flexDirection: 'row', marginBottom: 2 }}>
@@ -66,9 +68,7 @@ export function WarrantySection({
       )}
 
       {expiresLine && (
-        <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 2 }}>
-          {expiresLine}
-        </Text>
+        <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 2 }}>{expiresLine}</Text>
       )}
 
       {warrantyNotes && (
@@ -76,9 +76,7 @@ export function WarrantySection({
           <Text style={{ fontSize: 8, fontFamily: fontBold, color: '#6b7280', marginBottom: 1 }}>
             {labels.warrantyNotes || 'Terms'}
           </Text>
-          <Text style={{ fontSize: 9, color: '#6b7280', lineHeight: 1.5 }}>
-            {warrantyNotes}
-          </Text>
+          <Text style={{ fontSize: 9, color: '#6b7280', lineHeight: 1.5 }}>{warrantyNotes}</Text>
         </View>
       )}
     </View>

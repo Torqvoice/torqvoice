@@ -54,7 +54,8 @@
     "activeJobs": "Aktywne zlecenia",
     "recentObservations": "Ostatnie obserwacje",
     "recentActivity": "Ostatnia aktywność",
-    "gettingStarted": "Pierwsze kroki"
+    "gettingStarted": "Pierwsze kroki",
+    "tireHotel": "Hotel opon"
   },
   "maintenance": {
     "title": "Przewidywany termin konserwacji",
@@ -234,5 +235,14 @@
       "expired": "Wygasła",
       "converted": "Przekształcona"
     }
+  },
+  "tireHotel": {
+    "title": "Hotel opon",
+    "viewAll": "Zobacz hotel opon",
+    "stored": "{count} kompletów w magazynie",
+    "capacity": "{used} / {capacity} opon",
+    "roomLeft": "Miejsce na {count} więcej",
+    "needsPrep": "Do przygotowania",
+    "unbilled": "Nierozliczone ({count})"
   }
 }
