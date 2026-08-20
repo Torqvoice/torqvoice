@@ -488,5 +488,25 @@
     "storagePrices": "Precios de almacenaje",
     "treadLimits": "Cambiar el límite",
     "defaultCapacity": "Capacidad por defecto"
+  },
+  "forecast": {
+    "title": "La próxima temporada",
+    "subtitle": "Lo que los juegos almacenados necesitan según las mediciones, por medida.",
+    "backToList": "Volver a los juegos",
+    "tires": "Neumáticos previstos",
+    "atLimit": "Ya en el límite",
+    "expected": "Previsto en una temporada",
+    "orderTitle": "Por medida",
+    "sizes": "{count} medidas",
+    "empty": "Nada medido cerca del límite todavía. Un juego necesita dos visitas para calcular un ritmo.",
+    "nowCount": "{count, plural, one {# juego en el límite} other {# juegos en el límite}}",
+    "nextCount": "{count, plural, one {# juego en una temporada} other {# juegos en una temporada}}",
+    "tiresShort": "neumáticos",
+    "lowest": "mínimo {value}",
+    "now": "En el límite",
+    "next": "En una temporada",
+    "rate": "{value} por temporada",
+    "caveat": "Los juegos en el límite están medidos. El resto se extrapola del desgaste de un cliente en un intervalo: sirve para planificar, no para pedir.",
+    "unmeasured": "{count, plural, one {# juego tiene poco historial y no se cuenta} other {# juegos tienen poco historial y no se cuentan}}"
   }
 }

@@ -38,7 +38,16 @@ import {
   type TireSetStatus,
 } from '@/features/tire-hotel/Lib/tireConstants'
 import { cn } from '@/lib/utils'
-import { Car, ExternalLink, Loader2, MapPin, Plus, Search, Warehouse } from 'lucide-react'
+import {
+  Car,
+  ExternalLink,
+  Loader2,
+  MapPin,
+  Plus,
+  Search,
+  TrendingUp,
+  Warehouse,
+} from 'lucide-react'
 
 type TireSetRecord = {
   id: string
@@ -173,17 +182,22 @@ export function TireHotelClient({
             number staff glance at before answering a customer on the phone.
             It doubles as the way into the shelf layout, since "how much room
             is left" and "where are the shelves" are the same errand. */}
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-          className="ml-auto h-9 shrink-0 self-center sm:h-8"
-        >
-          <Link href="/tire-hotel/storage">
-            <Warehouse className="mr-1.5 h-3.5 w-3.5" />
-            <span className="tabular-nums">{t('list.roomLeft', { count: totalFree })}</span>
-          </Link>
-        </Button>
+        <div className="ml-auto flex shrink-0 items-center gap-2 self-center">
+          {/* Purchasing's question rather than the counter's, so it sits
+              beside the shelf count instead of competing with the filters. */}
+          <Button asChild variant="outline" size="sm" className="h-9 sm:h-8">
+            <Link href="/tire-hotel/forecast">
+              <TrendingUp className="mr-1.5 h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t('forecast.title')}</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="h-9 sm:h-8">
+            <Link href="/tire-hotel/storage">
+              <Warehouse className="mr-1.5 h-3.5 w-3.5" />
+              <span className="tabular-nums">{t('list.roomLeft', { count: totalFree })}</span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-2">

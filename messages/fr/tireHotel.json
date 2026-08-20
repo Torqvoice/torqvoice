@@ -488,5 +488,25 @@
     "storagePrices": "Tarifs de stockage",
     "treadLimits": "Modifier la limite",
     "defaultCapacity": "Capacité par défaut"
+  },
+  "forecast": {
+    "title": "La saison prochaine",
+    "subtitle": "Ce que les jeux stockés sont mesurés comme devant remplacer, par dimension.",
+    "backToList": "Retour aux jeux",
+    "tires": "Pneus attendus",
+    "atLimit": "Déjà à la limite",
+    "expected": "Attendu sous une saison",
+    "orderTitle": "Par dimension",
+    "sizes": "{count} dimensions",
+    "empty": "Rien de mesuré près de la limite pour l’instant. Il faut deux passages pour établir un rythme d’usure.",
+    "nowCount": "{count, plural, one {# jeu à la limite} other {# jeux à la limite}}",
+    "nextCount": "{count, plural, one {# jeu sous une saison} other {# jeux sous une saison}}",
+    "tiresShort": "pneus",
+    "lowest": "plus faible {value}",
+    "now": "À la limite",
+    "next": "Sous une saison",
+    "rate": "{value} par saison",
+    "caveat": "Les jeux déjà à la limite sont mesurés. Le reste est extrapolé de l’usure d’un client sur un intervalle : à utiliser pour planifier, pas pour commander.",
+    "unmeasured": "{count, plural, one {# jeu manque d’historique et n’est pas compté} other {# jeux manquent d’historique et ne sont pas comptés}}"
   }
 }

@@ -386,6 +386,50 @@ export async function checkInTireSet(input: unknown) {
 }
 
 /**
+ * Every set the shop still holds a live record of, with its tread history.
+ *
+ * Feeds the replacement forecast. Disposed sets are excluded because they are
+ * in a skip, and their last reading would otherwise be counted as demand that
+ * has already been met.
+ */
+export async function getSetsForForecast() {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireTireHotel(organizationId)
+
+      return db.tireSet.findMany({
+        where: { organizationId, status: { not: 'disposed' } },
+        orderBy: { checkedInAt: 'desc' },
+        take: 500,
+        select: {
+          id: true,
+          reference: true,
+          season: true,
+          size: true,
+          brand: true,
+          quantity: true,
+          status: true,
+          customer: { select: { id: true, name: true } },
+          vehicle: { select: { id: true, licensePlate: true, make: true, model: true } },
+          measurements: {
+            orderBy: { measuredAt: 'desc' },
+            take: 24,
+            select: {
+              position: true,
+              treadDepthMm: true,
+              condition: true,
+              measuredAt: true,
+              movementId: true,
+            },
+          },
+        },
+      })
+    },
+    { requiredPermissions: READ }
+  )
+}
+
+/**
  * Sets this customer has left with, which could be coming back.
  *
  * A tire hotel's ordinary year is the same four tires arriving twice: the

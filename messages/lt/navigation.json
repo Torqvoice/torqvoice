@@ -57,7 +57,8 @@
     "tireHotel": "Padangų viešbutis",
     "allTireSets": "Visi komplektai",
     "tireStorage": "Saugyklos išdėstymas",
-    "tireSetDetails": "Padangų komplektas"
+    "tireSetDetails": "Padangų komplektas",
+    "tireForecast": "Kitas sezonas"
   },
   "search": "Ieškoti...",
   "shortcut": "Ctrl+K",

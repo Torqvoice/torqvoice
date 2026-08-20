@@ -57,7 +57,8 @@
     "tireHotel": "Шинный отель",
     "allTireSets": "Все комплекты",
     "tireStorage": "Структура склада",
-    "tireSetDetails": "Комплект шин"
+    "tireSetDetails": "Комплект шин",
+    "tireForecast": "Следующий сезон"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",

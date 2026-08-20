@@ -488,5 +488,25 @@
     "storagePrices": "Lagerpreise in den Einstellungen",
     "treadLimits": "Grenzwert ändern",
     "defaultCapacity": "Standardkapazität"
+  },
+  "forecast": {
+    "title": "Nächste Saison",
+    "subtitle": "Was die eingelagerten Sätze laut Messung brauchen, nach Größe.",
+    "backToList": "Zurück zu den Sätzen",
+    "tires": "Erwartete Reifen",
+    "atLimit": "Bereits an der Grenze",
+    "expected": "Innerhalb einer Saison erwartet",
+    "orderTitle": "Nach Größe",
+    "sizes": "{count} Größen",
+    "empty": "Noch nichts nahe der Grenze gemessen. Ein Satz braucht zwei Besuche, bevor sich eine Rate ergibt.",
+    "nowCount": "{count, plural, one {# Satz an der Grenze} other {# Sätze an der Grenze}}",
+    "nextCount": "{count, plural, one {# Satz innerhalb einer Saison} other {# Sätze innerhalb einer Saison}}",
+    "tiresShort": "Reifen",
+    "lowest": "niedrigster {value}",
+    "now": "An der Grenze",
+    "next": "Innerhalb einer Saison",
+    "rate": "{value} pro Saison",
+    "caveat": "Sätze an der Grenze sind gemessen. Der Rest ist aus dem Verschleiß eines Kunden über ein Intervall hochgerechnet: gut zur Planung, nicht als Bestellung.",
+    "unmeasured": "{count, plural, one {# Satz hat zu wenig Historie und wird nicht gezählt} other {# Sätze haben zu wenig Historie und werden nicht gezählt}}"
   }
 }

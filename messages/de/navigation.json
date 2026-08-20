@@ -57,7 +57,8 @@
     "tireHotel": "Reifenhotel",
     "allTireSets": "Alle Reifensätze",
     "tireStorage": "Lagerstruktur",
-    "tireSetDetails": "Reifensatz"
+    "tireSetDetails": "Reifensatz",
+    "tireForecast": "Nächste Saison"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",

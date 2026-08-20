@@ -57,7 +57,8 @@
     "tireHotel": "Lastik oteli",
     "allTireSets": "Tüm lastik takımları",
     "tireStorage": "Depo düzeni",
-    "tireSetDetails": "Lastik takımı"
+    "tireSetDetails": "Lastik takımı",
+    "tireForecast": "Gelecek sezon"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",

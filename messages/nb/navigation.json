@@ -57,7 +57,8 @@
     "tireHotel": "Dekkhotell",
     "allTireSets": "Alle dekksett",
     "tireStorage": "Lageroppsett",
-    "tireSetDetails": "Dekksett"
+    "tireSetDetails": "Dekksett",
+    "tireForecast": "Neste sesong"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",

@@ -488,5 +488,25 @@
     "storagePrices": "Lagringspriser i innstillinger",
     "treadLimits": "Endre grensen",
     "defaultCapacity": "Standard kapasitet"
+  },
+  "forecast": {
+    "title": "Neste sesong",
+    "subtitle": "Hva de lagrede settene er målt til å trenge, per dimensjon.",
+    "backToList": "Tilbake til sett",
+    "tires": "Forventede dekk",
+    "atLimit": "Allerede på grensen",
+    "expected": "Ventet innen en sesong",
+    "orderTitle": "Per dimensjon",
+    "sizes": "{count} dimensjoner",
+    "empty": "Ingenting er målt nær grensen ennå. Sett trenger to besøk før en slitasjerate kan regnes ut.",
+    "nowCount": "{count, plural, one {# sett på grensen} other {# sett på grensen}}",
+    "nextCount": "{count, plural, one {# sett innen en sesong} other {# sett innen en sesong}}",
+    "tiresShort": "dekk",
+    "lowest": "laveste {value}",
+    "now": "På grensen",
+    "next": "Innen en sesong",
+    "rate": "{value} per sesong",
+    "caveat": "Sett som allerede er på grensen, er målt. Resten er beregnet ut fra én kundes slitasje over ett intervall, så bruk det til å planlegge, ikke til å bestille direkte.",
+    "unmeasured": "{count, plural, one {# sett har for lite historikk til å vurderes og telles ikke med} other {# sett har for lite historikk til å vurderes og telles ikke med}}"
   }
 }

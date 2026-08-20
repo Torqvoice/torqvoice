@@ -488,5 +488,25 @@
     "storagePrices": "Storage prices in settings",
     "treadLimits": "Change the limit",
     "defaultCapacity": "Default capacity"
+  },
+  "forecast": {
+    "title": "Next season",
+    "subtitle": "What your stored sets are measured to need, by size.",
+    "backToList": "Back to sets",
+    "tires": "Tires expected",
+    "atLimit": "Already at the limit",
+    "expected": "Expected within a season",
+    "orderTitle": "By size",
+    "sizes": "{count} sizes",
+    "empty": "Nothing is measured close to its limit yet. Sets need two visits before a rate can be worked out.",
+    "nowCount": "{count, plural, one {# set at the limit} other {# sets at the limit}}",
+    "nextCount": "{count, plural, one {# set within a season} other {# sets within a season}}",
+    "tiresShort": "tires",
+    "lowest": "lowest {value}",
+    "now": "At the limit",
+    "next": "Within a season",
+    "rate": "{value} a season",
+    "caveat": "Sets already at the limit are measured. The rest is extrapolated from one customer’s wear over one interval, so treat it as demand to plan around, not an order to place.",
+    "unmeasured": "{count, plural, one {# set has too little history to judge and is not counted} other {# sets have too little history to judge and are not counted}}"
   }
 }

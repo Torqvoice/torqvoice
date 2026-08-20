@@ -488,5 +488,25 @@
     "storagePrices": "Prezzi del deposito",
     "treadLimits": "Modifica il limite",
     "defaultCapacity": "Capacità predefinita"
+  },
+  "forecast": {
+    "title": "La prossima stagione",
+    "subtitle": "Ciò che i treni in deposito risultano dover sostituire, per misura.",
+    "backToList": "Torna ai treni",
+    "tires": "Pneumatici previsti",
+    "atLimit": "Già al limite",
+    "expected": "Previsto entro una stagione",
+    "orderTitle": "Per misura",
+    "sizes": "{count} misure",
+    "empty": "Nulla misurato vicino al limite finora. Servono due visite per ricavare un ritmo di usura.",
+    "nowCount": "{count, plural, one {# treno al limite} other {# treni al limite}}",
+    "nextCount": "{count, plural, one {# treno entro una stagione} other {# treni entro una stagione}}",
+    "tiresShort": "pneumatici",
+    "lowest": "minimo {value}",
+    "now": "Al limite",
+    "next": "Entro una stagione",
+    "rate": "{value} a stagione",
+    "caveat": "I treni al limite sono misurati. Il resto è estrapolato dall’usura di un cliente su un intervallo: utile per pianificare, non per ordinare.",
+    "unmeasured": "{count, plural, one {# treno ha poco storico e non viene conteggiato} other {# treni hanno poco storico e non vengono conteggiati}}"
   }
 }

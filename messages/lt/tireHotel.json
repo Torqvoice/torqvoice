@@ -488,5 +488,25 @@
     "storagePrices": "Saugojimo kainos",
     "treadLimits": "Keisti ribą",
     "defaultCapacity": "Numatytoji talpa"
+  },
+  "forecast": {
+    "title": "Kitas sezonas",
+    "subtitle": "Ko, pagal matavimus, prireiks saugomiems komplektams, pagal dydį.",
+    "backToList": "Atgal į komplektus",
+    "tires": "Laukiama padangų",
+    "atLimit": "Jau ties riba",
+    "expected": "Laukiama per sezoną",
+    "orderTitle": "Pagal dydį",
+    "sizes": "{count} dydžiai",
+    "empty": "Kol kas nieko nepamatuota arti ribos. Komplektui reikia dviejų vizitų, kad būtų galima apskaičiuoti tempą.",
+    "nowCount": "{count, plural, one {# komplektas ties riba} other {# komplektai ties riba}}",
+    "nextCount": "{count, plural, one {# komplektas per sezoną} other {# komplektai per sezoną}}",
+    "tiresShort": "padangos",
+    "lowest": "mažiausia {value}",
+    "now": "Ties riba",
+    "next": "Per sezoną",
+    "rate": "{value} per sezoną",
+    "caveat": "Komplektai ties riba yra išmatuoti. Likusi dalis apskaičiuota pagal vieno kliento nusidėvėjimą per vieną intervalą: planavimui, ne užsakymui.",
+    "unmeasured": "{count, plural, one {# komplektas turi per mažai istorijos ir neįskaičiuotas} other {# komplektai turi per mažai istorijos ir neįskaičiuoti}}"
   }
 }

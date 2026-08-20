@@ -92,6 +92,10 @@ const docsMap: Record<string, string> = {
   '/settings/report-schedule': '/docs/features/reports',
   '/settings/account': '/docs/security/passkeys-and-2fa',
   '/sales': '/docs/features/work-orders',
+  '/tire-hotel': '/docs/features/tire-hotel',
+  '/tire-hotel/storage': '/docs/features/tire-hotel',
+  '/tire-hotel/forecast': '/docs/features/tire-hotel',
+  '/settings/tire-hotel': '/docs/features/tire-hotel',
 }
 
 const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
@@ -134,6 +138,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/observations': [{ key: 'observations' }],
   '/tire-hotel': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'allTireSets' }],
   '/tire-hotel/storage': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireStorage' }],
+  '/tire-hotel/forecast': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireForecast' }],
   '/settings/tire-hotel': [{ key: 'settings', href: '/settings' }, { key: 'tireHotel' }],
 }
 
@@ -144,7 +149,11 @@ export function PageHeader() {
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
 
-  const docsHref = docsMap[pathname]
+  // A set's own page is still the tire hotel, and somebody reading a set is
+  // as likely to want the manual as somebody reading the list.
+  const docsHref =
+    docsMap[pathname] ??
+    (/^\/tire-hotel\/[^/]+$/.test(pathname) ? '/docs/features/tire-hotel' : undefined)
 
   // Match exact route first
   let segments = breadcrumbMap[pathname]

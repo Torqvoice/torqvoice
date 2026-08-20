@@ -57,7 +57,8 @@
     "tireHotel": "Hotel pneumatici",
     "allTireSets": "Tutti i treni",
     "tireStorage": "Disposizione del deposito",
-    "tireSetDetails": "Treno di pneumatici"
+    "tireSetDetails": "Treno di pneumatici",
+    "tireForecast": "La prossima stagione"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",

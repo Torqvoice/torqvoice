@@ -488,5 +488,25 @@
     "storagePrices": "Ceny przechowywania",
     "treadLimits": "Zmień limit",
     "defaultCapacity": "Domyślna pojemność"
+  },
+  "forecast": {
+    "title": "Następny sezon",
+    "subtitle": "Czego zmierzone komplety będą potrzebować, według rozmiaru.",
+    "backToList": "Wróć do kompletów",
+    "tires": "Spodziewane opony",
+    "atLimit": "Już na granicy",
+    "expected": "Spodziewane w ciągu sezonu",
+    "orderTitle": "Według rozmiaru",
+    "sizes": "{count} rozmiarów",
+    "empty": "Nic jeszcze nie zmierzono blisko granicy. Komplet potrzebuje dwóch wizyt, by wyliczyć tempo.",
+    "nowCount": "{count, plural, one {# komplet na granicy} other {# kompletów na granicy}}",
+    "nextCount": "{count, plural, one {# komplet w ciągu sezonu} other {# kompletów w ciągu sezonu}}",
+    "tiresShort": "opon",
+    "lowest": "najniższy {value}",
+    "now": "Na granicy",
+    "next": "W ciągu sezonu",
+    "rate": "{value} na sezon",
+    "caveat": "Komplety na granicy są zmierzone. Reszta to ekstrapolacja zużycia jednego klienta w jednym okresie: do planowania, nie do zamówienia.",
+    "unmeasured": "{count, plural, one {# komplet ma za mało historii i nie jest liczony} other {# kompletów ma za mało historii i nie jest liczonych}}"
   }
 }

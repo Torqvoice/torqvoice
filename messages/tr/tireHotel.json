@@ -488,5 +488,25 @@
     "storagePrices": "Depolama fiyatları",
     "treadLimits": "Sınırı değiştir",
     "defaultCapacity": "Varsayılan kapasite"
+  },
+  "forecast": {
+    "title": "Gelecek sezon",
+    "subtitle": "Depodaki takımların ölçüme göre ihtiyacı, ebada göre.",
+    "backToList": "Takımlara dön",
+    "tires": "Beklenen lastik",
+    "atLimit": "Zaten sınırda",
+    "expected": "Bir sezon içinde bekleniyor",
+    "orderTitle": "Ebada göre",
+    "sizes": "{count} ebat",
+    "empty": "Henüz sınıra yakın ölçüm yok. Bir takımın aşınma hızı için iki ziyaret gerekir.",
+    "nowCount": "{count, plural, one {# takım sınırda} other {# takım sınırda}}",
+    "nextCount": "{count, plural, one {# takım bir sezon içinde} other {# takım bir sezon içinde}}",
+    "tiresShort": "lastik",
+    "lowest": "en düşük {value}",
+    "now": "Sınırda",
+    "next": "Bir sezon içinde",
+    "rate": "sezonda {value}",
+    "caveat": "Sınırdaki takımlar ölçülmüştür. Gerisi tek bir müşterinin tek aralıktaki aşınmasından türetilmiştir: planlama içindir, sipariş için değil.",
+    "unmeasured": "{count, plural, one {# takımın geçmişi yetersiz, sayılmadı} other {# takımın geçmişi yetersiz, sayılmadı}}"
   }
 }

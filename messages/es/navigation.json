@@ -57,7 +57,8 @@
     "tireHotel": "Hotel de neumáticos",
     "allTireSets": "Todos los juegos",
     "tireStorage": "Distribución del almacén",
-    "tireSetDetails": "Juego de neumáticos"
+    "tireSetDetails": "Juego de neumáticos",
+    "tireForecast": "La próxima temporada"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",

@@ -488,5 +488,25 @@
     "storagePrices": "Opslagprijzen in instellingen",
     "treadLimits": "Grens wijzigen",
     "defaultCapacity": "Standaardcapaciteit"
+  },
+  "forecast": {
+    "title": "Volgend seizoen",
+    "subtitle": "Wat de opgeslagen sets volgens meting nodig hebben, per maat.",
+    "backToList": "Terug naar sets",
+    "tires": "Verwachte banden",
+    "atLimit": "Al op de grens",
+    "expected": "Binnen een seizoen verwacht",
+    "orderTitle": "Per maat",
+    "sizes": "{count} maten",
+    "empty": "Nog niets gemeten dicht bij de grens. Een set heeft twee bezoeken nodig voor een slijtagetempo.",
+    "nowCount": "{count, plural, one {# set op de grens} other {# sets op de grens}}",
+    "nextCount": "{count, plural, one {# set binnen een seizoen} other {# sets binnen een seizoen}}",
+    "tiresShort": "banden",
+    "lowest": "laagste {value}",
+    "now": "Op de grens",
+    "next": "Binnen een seizoen",
+    "rate": "{value} per seizoen",
+    "caveat": "Sets op de grens zijn gemeten. De rest is doorgerekend vanuit de slijtage van één klant over één periode: bruikbaar om te plannen, niet om op te bestellen.",
+    "unmeasured": "{count, plural, one {# set heeft te weinig historie en telt niet mee} other {# sets hebben te weinig historie en tellen niet mee}}"
   }
 }

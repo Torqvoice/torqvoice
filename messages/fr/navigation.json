@@ -57,7 +57,8 @@
     "tireHotel": "Hôtel à pneus",
     "allTireSets": "Tous les jeux de pneus",
     "tireStorage": "Organisation du stockage",
-    "tireSetDetails": "Jeu de pneus"
+    "tireSetDetails": "Jeu de pneus",
+    "tireForecast": "La saison prochaine"
   },
   "search": "Rechercher…",
   "shortcut": "Ctrl+K",
