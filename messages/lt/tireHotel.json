@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Padangų saugojimas",
     "pieces": "vnt."
+  },
+  "setNames": {
+    "winter": "žieminės padangos",
+    "summer": "vasarinės padangos",
+    "all_season": "visasezonės padangos",
+    "other": "padangos"
+  },
+  "jobNotes": {
+    "set": "Padangų komplektas {reference}",
+    "shelf": "Lentyna: {shelf}",
+    "notOnShelf": "ne lentynoje",
+    "onRims": "Su ratlankiais",
+    "tiresOnly": "Tik padangos",
+    "tpms": "Su TPMS jutikliais"
   }
 }

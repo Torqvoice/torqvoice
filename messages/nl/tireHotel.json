@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Bandenopslag",
     "pieces": "st."
+  },
+  "setNames": {
+    "winter": "winterbanden",
+    "summer": "zomerbanden",
+    "all_season": "vierseizoenenbanden",
+    "other": "banden"
+  },
+  "jobNotes": {
+    "set": "Bandenset {reference}",
+    "shelf": "Stelling: {shelf}",
+    "notOnShelf": "niet op een stelling",
+    "onRims": "Op velgen",
+    "tiresOnly": "Alleen banden",
+    "tpms": "Heeft TPMS-sensoren"
   }
 }

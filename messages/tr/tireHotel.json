@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Lastik depolama",
     "pieces": "adet"
+  },
+  "setNames": {
+    "winter": "kış lastiği",
+    "summer": "yaz lastiği",
+    "all_season": "dört mevsim lastik",
+    "other": "lastik"
+  },
+  "jobNotes": {
+    "set": "Lastik takımı {reference}",
+    "shelf": "Raf: {shelf}",
+    "notOnShelf": "rafta değil",
+    "onRims": "Jantlı",
+    "tiresOnly": "Sadece lastik",
+    "tpms": "TPMS sensörlü"
   }
 }

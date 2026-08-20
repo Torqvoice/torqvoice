@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
@@ -17,6 +16,7 @@ import {
 import { parseExtras, periodAmount, round2 } from '../Lib/billing'
 import { syncCharges } from '../Lib/syncCharges'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
+import { invoiceLineWords } from '../Lib/serverMessages'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -69,26 +69,6 @@ type TireSetForCharge = {
   size: string | null
   quantity: number
   vehicleId: string | null
-}
-
-/**
- * The two words the storage line is built from, in the workshop's language.
- *
- * Read from the message files rather than the request, because this runs in a
- * server action where the locale lives in a cookie. Falls back to English
- * rather than failing: a line in the wrong language still bills correctly, a
- * thrown error does not.
- */
-async function lineWords(): Promise<{ storage: string; pieces: string }> {
-  const fallback = { storage: 'Tire storage', pieces: 'pcs' }
-  const locale = (await cookies()).get('locale')?.value || 'en'
-  try {
-    const messages = (await import(`../../../../messages/${locale}/tireHotel.json`)).default
-    return messages?.invoiceLine ?? fallback
-  } catch {
-    const messages = (await import('../../../../messages/en/tireHotel.json')).default
-    return messages?.invoiceLine ?? fallback
-  }
 }
 
 function revalidateBilling(tireSetId?: string) {
@@ -481,7 +461,7 @@ export async function invoiceCharge(input: unknown) {
         // In the workshop's own language, because this ends up on a customer's
         // invoice. An English line on a Norwegian bill is the workshop looking
         // careless to its own customer.
-        const words = await lineWords()
+        const words = await invoiceLineWords()
         const description = [
           words.storage,
           tireSet.size,

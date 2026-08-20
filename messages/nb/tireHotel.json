@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Dekklagring",
     "pieces": "stk"
+  },
+  "setNames": {
+    "winter": "vinterdekk",
+    "summer": "sommerdekk",
+    "all_season": "helårsdekk",
+    "other": "dekk"
+  },
+  "jobNotes": {
+    "set": "Dekksett {reference}",
+    "shelf": "Hylle: {shelf}",
+    "notOnShelf": "ikke på hylle",
+    "onRims": "På felg",
+    "tiresOnly": "Kun dekk",
+    "tpms": "Har TPMS-sensorer"
   }
 }

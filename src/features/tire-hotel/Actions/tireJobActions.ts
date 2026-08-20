@@ -15,6 +15,7 @@ import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
 import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
@@ -163,17 +164,6 @@ export async function searchTireStock(input: unknown) {
  * invoice, and invoice wording should not be whatever a client happened to
  * send.
  */
-async function treatmentNames(): Promise<Record<string, string>> {
-  const locale = (await cookies()).get('locale')?.value || 'en'
-  try {
-    const messages = (await import(`../../../../messages/${locale}/tireHotel.json`)).default
-    return messages?.treatments?.types ?? {}
-  } catch {
-    const messages = (await import('../../../../messages/en/tireHotel.json')).default
-    return messages?.treatments?.types ?? {}
-  }
-}
-
 async function billablePrep(
   organizationId: string,
   treatments: { type: string; status: string }[]
@@ -210,15 +200,27 @@ async function treatmentLines(
 }
 
 /** Human label for the tires, used as the quote line and the job title. */
-function describeSet(set: {
-  quantity: number
-  season: string
-  size: string | null
-  brand: string | null
-}): string {
+/**
+ * What to call a set on a quote, a work order or an invoice line.
+ *
+ * The season phrase is passed in rather than looked up here, so an action
+ * resolves it once instead of once per line, and never inside a transaction.
+ * Falls back to the raw season word if a locale is missing the phrase, which
+ * reads oddly but still identifies the tires.
+ */
+function describeSet(
+  set: {
+    quantity: number
+    season: string
+    size: string | null
+    brand: string | null
+  },
+  seasons: Record<string, string>
+): string {
   const parsed = parseTireSize(set.size)
   const size = parsed ? formatTireSize(parsed) : set.size
-  return [`${set.quantity}x`, set.brand, size, `${set.season} tires`].filter(Boolean).join(' ')
+  const season = seasons[set.season] ?? `${set.season} tires`
+  return [`${set.quantity}x`, set.brand, size, season].filter(Boolean).join(' ')
 }
 
 /**
@@ -230,6 +232,7 @@ export async function getJobDraftForSet(tireSetId: string) {
     async ({ organizationId }) => {
       await requireTireHotel(organizationId)
       const set = await loadSet(organizationId, tireSetId)
+      const seasons = await seasonNames()
 
       // Narrow on the rim diameter before matching properly, so a large
       // catalogue is not pulled into memory whole.
@@ -263,7 +266,7 @@ export async function getJobDraftForSet(tireSetId: string) {
         size: set.size,
         parsedSize: target ? formatTireSize(target) : null,
         quantity: set.quantity,
-        description: describeSet(set),
+        description: describeSet(set, seasons),
         matches: matchStock(candidates, set.size, set.quantity),
         // What the prep would add, so the dialog can list it and let the
         // operator drop any of it before it lands on the job.
@@ -288,6 +291,7 @@ export async function createQuoteFromTireSet(input: unknown) {
       await requireTireHotel(organizationId)
       const data = fromSetSchema.parse(input)
       const set = await loadSet(organizationId, data.tireSetId)
+      const seasons = await seasonNames()
 
       const part = data.inventoryPartId
         ? await db.inventoryPart.findFirst({
@@ -346,7 +350,7 @@ export async function createQuoteFromTireSet(input: unknown) {
       const quote = await db.quote.create({
         data: {
           quoteNumber,
-          title: describeSet(set),
+          title: describeSet(set, seasons),
           status: 'draft',
           validUntil,
           subtotal,
@@ -364,7 +368,7 @@ export async function createQuoteFromTireSet(input: unknown) {
                 partItems: {
                   create: [
                     {
-                      name: part?.name ?? describeSet(set),
+                      name: part?.name ?? describeSet(set, seasons),
                       partNumber: part?.partNumber ?? null,
                       quantity: lineQuantity,
                       unitCost: part?.unitCost ?? 0,
@@ -411,6 +415,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
       await requireTireHotel(organizationId)
       const data = fromSetSchema.parse(input)
       const set = await loadSet(organizationId, data.tireSetId)
+      const seasons = await seasonNames()
 
       if (!set.vehicleId) {
         throw new Error('Link a vehicle to this set before creating a work order')
@@ -422,7 +427,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
           vehicleId: set.vehicleId,
           customerId: null,
           customerExempt: set.customer?.taxExempt ?? false,
-          title: describeSet(set),
+          title: describeSet(set, seasons),
         }
       )
 
@@ -444,13 +449,13 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         if (data.includeTires) {
           await addTireLineToRecord(tx, organizationId, userId, {
             serviceRecordId: record.id,
-            name: part?.name ?? describeSet(set),
+            name: part?.name ?? describeSet(set, seasons),
             partNumber: part?.partNumber ?? null,
             quantity: lineQuantity,
             unitPrice,
             unitCost: part?.unitCost ?? 0,
             inventoryPartId: part?.id ?? null,
-            recordLabel: record.invoiceNumber || describeSet(set),
+            recordLabel: record.invoiceNumber || describeSet(set, seasons),
           })
         }
 
@@ -467,9 +472,10 @@ export async function createWorkOrderFromTireSet(input: unknown) {
 
       if (data.includeTires && part) await onInventoryChanged(organizationId)
 
+      const notes = await jobNoteWords()
       const shelf = set.location
         ? `${set.location.code} (${set.location.warehouse.name})`
-        : 'not on a shelf'
+        : (notes.notOnShelf ?? 'not on a shelf')
 
       await db.serviceRecord.update({
         where: { id: record.id },
@@ -479,10 +485,12 @@ export async function createWorkOrderFromTireSet(input: unknown) {
           // sheet and the PDF do not render the relation, and the shelf is
           // the one fact the technician needs before touching anything.
           diagnosticNotes: [
-            `Tire set ${set.reference ?? ''}`.trim(),
-            `Shelf: ${shelf}`,
-            set.withRims ? 'On rims' : 'Tires only',
-            set.hasTpms ? 'Has TPMS sensors' : null,
+            (notes.set ?? 'Tire set {reference}')
+              .replace('{reference}', set.reference ?? '')
+              .trim(),
+            (notes.shelf ?? 'Shelf: {shelf}').replace('{shelf}', shelf),
+            set.withRims ? (notes.onRims ?? 'On rims') : (notes.tiresOnly ?? 'Tires only'),
+            set.hasTpms ? (notes.tpms ?? 'Has TPMS sensors') : null,
           ]
             .filter(Boolean)
             .join('\n'),
@@ -561,6 +569,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
       await requireTireHotel(organizationId)
       const data = fromSetSchema.extend({ serviceRecordId: z.string().min(1) }).parse(input)
       const set = await loadSet(organizationId, data.tireSetId)
+      const seasons = await seasonNames()
 
       const record = await db.serviceRecord.findFirst({
         where: { id: data.serviceRecordId, organizationId },
@@ -586,13 +595,13 @@ export async function addTireSetToWorkOrder(input: unknown) {
         if (data.includeTires) {
           await addTireLineToRecord(tx, organizationId, userId, {
             serviceRecordId: record.id,
-            name: part?.name ?? describeSet(set),
+            name: part?.name ?? describeSet(set, seasons),
             partNumber: part?.partNumber ?? null,
             quantity: lineQuantity,
             unitPrice,
             unitCost: part?.unitCost ?? 0,
             inventoryPartId: part?.id ?? null,
-            recordLabel: record.invoiceNumber || describeSet(set),
+            recordLabel: record.invoiceNumber || describeSet(set, seasons),
           })
         }
         if (labor.length > 0) {

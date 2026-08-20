@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Guarda de pneus",
     "pieces": "pçs"
+  },
+  "setNames": {
+    "winter": "pneus de inverno",
+    "summer": "pneus de verão",
+    "all_season": "pneus all season",
+    "other": "pneus"
+  },
+  "jobNotes": {
+    "set": "Jogo de pneus {reference}",
+    "shelf": "Prateleira: {shelf}",
+    "notOnShelf": "sem prateleira",
+    "onRims": "Com rodas",
+    "tiresOnly": "Somente pneus",
+    "tpms": "Com sensores TPMS"
   }
 }

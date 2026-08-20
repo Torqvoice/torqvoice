@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Tire storage",
     "pieces": "pcs"
+  },
+  "setNames": {
+    "winter": "winter tires",
+    "summer": "summer tires",
+    "all_season": "all-season tires",
+    "other": "tires"
+  },
+  "jobNotes": {
+    "set": "Tire set {reference}",
+    "shelf": "Shelf: {shelf}",
+    "notOnShelf": "not on a shelf",
+    "onRims": "On rims",
+    "tiresOnly": "Tires only",
+    "tpms": "Has TPMS sensors"
   }
 }

@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Stockage de pneus",
     "pieces": "pcs"
+  },
+  "setNames": {
+    "winter": "pneus hiver",
+    "summer": "pneus été",
+    "all_season": "pneus 4 saisons",
+    "other": "pneus"
+  },
+  "jobNotes": {
+    "set": "Jeu de pneus {reference}",
+    "shelf": "Étagère : {shelf}",
+    "notOnShelf": "pas en rayon",
+    "onRims": "Sur jantes",
+    "tiresOnly": "Pneus seuls",
+    "tpms": "Capteurs TPMS"
   }
 }

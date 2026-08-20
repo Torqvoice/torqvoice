@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Хранение шин",
     "pieces": "шт."
+  },
+  "setNames": {
+    "winter": "зимние шины",
+    "summer": "летние шины",
+    "all_season": "всесезонные шины",
+    "other": "шины"
+  },
+  "jobNotes": {
+    "set": "Комплект шин {reference}",
+    "shelf": "Полка: {shelf}",
+    "notOnShelf": "не на полке",
+    "onRims": "На дисках",
+    "tiresOnly": "Только шины",
+    "tpms": "С датчиками TPMS"
   }
 }

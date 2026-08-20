@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Almacenaje de neumáticos",
     "pieces": "uds"
+  },
+  "setNames": {
+    "winter": "neumáticos de invierno",
+    "summer": "neumáticos de verano",
+    "all_season": "neumáticos all season",
+    "other": "neumáticos"
+  },
+  "jobNotes": {
+    "set": "Juego de neumáticos {reference}",
+    "shelf": "Estante: {shelf}",
+    "notOnShelf": "sin estante",
+    "onRims": "Con llantas",
+    "tiresOnly": "Solo neumáticos",
+    "tpms": "Con sensores TPMS"
   }
 }

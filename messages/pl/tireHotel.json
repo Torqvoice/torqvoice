@@ -517,5 +517,19 @@
   "invoiceLine": {
     "storage": "Przechowywanie opon",
     "pieces": "szt."
+  },
+  "setNames": {
+    "winter": "opony zimowe",
+    "summer": "opony letnie",
+    "all_season": "opony całoroczne",
+    "other": "opony"
+  },
+  "jobNotes": {
+    "set": "Komplet opon {reference}",
+    "shelf": "Półka: {shelf}",
+    "notOnShelf": "poza półką",
+    "onRims": "Na felgach",
+    "tiresOnly": "Same opony",
+    "tpms": "Z czujnikami TPMS"
   }
 }
