@@ -688,12 +688,9 @@ function MeasurementHistory({
                     </span>
                     <Badge
                       variant="outline"
-                      className={cn(
-                        'shrink-0 text-[10px]',
-                        CONDITION_TOKENS[m.condition as TireCondition].badge
-                      )}
+                      className={cn('shrink-0 text-[10px]', CONDITION_TOKENS[gradeOf(m)].badge)}
                     >
-                      {t(`conditions.${m.condition}`)}
+                      {t(`conditions.${gradeOf(m)}`)}
                     </Badge>
                   </div>
                 )
