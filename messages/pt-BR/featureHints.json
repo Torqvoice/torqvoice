@@ -2,5 +2,9 @@
   "tire-hotel": {
     "title": "O hotel de pneus está ativo",
     "body": "Guarde pneus de temporada. Configure prateleiras e receba um jogo."
+  },
+  "telegram": {
+    "title": "O Telegram está ativo",
+    "body": "As conversas com clientes chegam aqui. Responda sem sair do aplicativo."
   }
 }

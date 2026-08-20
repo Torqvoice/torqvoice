@@ -39,13 +39,22 @@ const Context = createContext<FeatureHintContext>({
  *
  * Registration order decides the queue, which means sidebar order decides it,
  * which is the order somebody reads the screen in anyway.
+ *
+ * A hint is only ever shown because somebody switched the thing on. Being
+ * eligible is not enough on its own: a workshop that has had Telegram running
+ * for a year has an eligible link on every page load and should never be told
+ * about it. The server side raises the hint at the moment of the flip, and
+ * this only decides which of the raised ones is showing.
  */
 export function FeatureHintProvider({
   initialSeen,
+  pending,
   children,
 }: {
   /** Ids already shown, read on the server so nothing flashes on load. */
   initialSeen: string[]
+  /** Ids raised by a setting being switched on, and not yet dismissed. */
+  pending: string[]
   children: React.ReactNode
 }) {
   const [seen, setSeen] = useState<string[]>(initialSeen)
@@ -67,7 +76,10 @@ export function FeatureHintProvider({
     void dismissFeatureHint(id)
   }, [])
 
-  const active = useMemo(() => queue.find((id) => !seen.includes(id)) ?? null, [queue, seen])
+  const active = useMemo(
+    () => queue.find((id) => pending.includes(id) && !seen.includes(id)) ?? null,
+    [queue, pending, seen]
+  )
 
   const value = useMemo(
     () => ({ active, register, unregister, dismiss }),

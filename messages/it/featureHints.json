@@ -2,5 +2,9 @@
   "tire-hotel": {
     "title": "L’hotel pneumatici è attivo",
     "body": "Conserva gli pneumatici stagionali. Crea gli scaffali, poi accetta un treno."
+  },
+  "telegram": {
+    "title": "Telegram è attivo",
+    "body": "Le conversazioni con i clienti arrivano qui. Rispondi senza uscire dall'app."
   }
 }

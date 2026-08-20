@@ -10,6 +10,7 @@ import {
   ORG_TELEGRAM_KEYS,
 } from "../Schema/telegramSettingsSchema";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { armFeatureHints } from "@/features/settings/Lib/armFeatureHints";
 import {
   getTelegramBotInfo,
   setTelegramWebhook,
@@ -65,6 +66,10 @@ export async function setTelegramSettings(settings: { botToken: string }) {
         [ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME]: botInfo.username,
         [ORG_TELEGRAM_KEYS.TELEGRAM_WEBHOOK_SECRET]: webhookSecret,
       };
+
+      // Connecting a bot switches Telegram on, which is the same event as
+      // ticking the toggle and deserves the same note about the new link.
+      await armFeatureHints(db, organizationId, userId, entries);
 
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>

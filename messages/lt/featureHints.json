@@ -2,5 +2,9 @@
   "tire-hotel": {
     "title": "Padangų viešbutis įjungtas",
     "body": "Saugokite sezonines padangas. Sukurkite lentynas ir priimkite komplektą."
+  },
+  "telegram": {
+    "title": "Telegram įjungtas",
+    "body": "Pokalbiai su klientais atsiduria čia. Atsakykite neišeidami iš programos."
   }
 }

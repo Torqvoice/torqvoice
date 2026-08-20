@@ -124,6 +124,11 @@ export const SETTING_KEYS = {
   /// something appeared in this workshop's sidebar, and once somebody here
   /// has seen it, the workshop has been told.
   FEATURE_HINTS_SEEN: 'featureHints.seen',
+  /// Hints raised by a setting being switched on and not yet dismissed.
+  /// Separate from the seen list because being eligible for a hint and
+  /// having been shown one are different things: a workshop that has had
+  /// Telegram on for a year is eligible forever and should never be told.
+  FEATURE_HINTS_PENDING: 'featureHints.pending',
 
   /// Tire hotel is off until a workshop opts in. Everything about the module
   /// — sidebar entry, routes, cron sweeps — keys off this one flag, so a shop

@@ -3,7 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { SETTING_KEYS } from '../Schema/settingsSchema'
-import { parseSeenHints } from '../Lib/featureHints'
+import { parseHintIds } from '../Lib/featureHints'
 
 /**
  * Marks a feature hint as shown, for the whole workshop.
@@ -20,14 +20,29 @@ export async function dismissFeatureHint(id: string) {
     const trimmed = id.trim().slice(0, 100)
     if (!trimmed) return { seen: [] as string[] }
 
-    const existing = await db.appSetting.findUnique({
+    const rows = await db.appSetting.findMany({
       where: {
-        organizationId_key: { organizationId, key: SETTING_KEYS.FEATURE_HINTS_SEEN },
+        organizationId,
+        key: { in: [SETTING_KEYS.FEATURE_HINTS_SEEN, SETTING_KEYS.FEATURE_HINTS_PENDING] },
       },
-      select: { value: true },
+      select: { key: true, value: true },
     })
+    const stored = new Map(rows.map((row) => [row.key, row.value]))
 
-    const seen = parseSeenHints(existing?.value)
+    // Taken off the pending list as well as added to the seen one. Leaving it
+    // pending would cost nothing today, but a later hint bumped to .v2 would
+    // find a stale .v1 sitting in front of it in the queue forever.
+    const pending = parseHintIds(stored.get(SETTING_KEYS.FEATURE_HINTS_PENDING))
+    if (pending.includes(trimmed)) {
+      await db.appSetting.update({
+        where: {
+          organizationId_key: { organizationId, key: SETTING_KEYS.FEATURE_HINTS_PENDING },
+        },
+        data: { value: JSON.stringify(pending.filter((id) => id !== trimmed)) },
+      })
+    }
+
+    const seen = parseHintIds(stored.get(SETTING_KEYS.FEATURE_HINTS_SEEN))
     if (seen.includes(trimmed)) return { seen }
 
     // Capped so a long-lived workshop cannot grow this without bound. The

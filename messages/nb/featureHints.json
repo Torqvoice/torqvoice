@@ -2,5 +2,9 @@
   "tire-hotel": {
     "title": "Dekkhotellet er på",
     "body": "Lagre kundenes sesongdekk. Sett opp hyller, så tar du inn et sett."
+  },
+  "telegram": {
+    "title": "Telegram er på",
+    "body": "Kundesamtaler havner her. Svar uten å forlate appen."
   }
 }

@@ -8,7 +8,7 @@ import { NotificationInitializer } from '@/features/notifications/Components/Not
 import { ConfirmProvider } from '@/components/confirm-dialog'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { parseSeenHints } from '@/features/settings/Lib/featureHints'
+import { parseHintIds } from '@/features/settings/Lib/featureHints'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { WhiteLabelCtaProvider } from '@/components/white-label-cta-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
@@ -73,16 +73,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   // Read here so the first paint already knows, and a hint that was dismissed
   // months ago never flashes up before the client can suppress it.
-  const seenHintsRow = await db.appSetting.findUnique({
+  const hintRows = await db.appSetting.findMany({
     where: {
-      organizationId_key: {
-        organizationId: data.organizationId,
-        key: SETTING_KEYS.FEATURE_HINTS_SEEN,
-      },
+      organizationId: data.organizationId,
+      key: { in: [SETTING_KEYS.FEATURE_HINTS_SEEN, SETTING_KEYS.FEATURE_HINTS_PENDING] },
     },
-    select: { value: true },
+    select: { key: true, value: true },
   })
-  const seenHints = parseSeenHints(seenHintsRow?.value)
+  const hintValues = new Map(hintRows.map((row) => [row.key, row.value]))
+  const seenHints = parseHintIds(hintValues.get(SETTING_KEYS.FEATURE_HINTS_SEEN))
+  const pendingHints = parseHintIds(hintValues.get(SETTING_KEYS.FEATURE_HINTS_PENDING))
 
   // Determine which subjects the user can access (for sidebar visibility)
   const isOwnerOrAdmin =
@@ -166,7 +166,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 currencyFormat={data.currencyFormat}
               >
                 <ConfirmProvider>
-                  <FeatureHintProvider initialSeen={seenHints}>
+                  <FeatureHintProvider initialSeen={seenHints} pending={pendingHints}>
                     <AppSidebar
                       companyLogo={data.companyLogo}
                       organizations={data.organizations}

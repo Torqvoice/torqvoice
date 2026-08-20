@@ -139,6 +139,8 @@ export function AppSidebar({
       icon: MessageSquare,
       subject: 'customers',
     },
+    // Same story as the tire hotel below: the link only exists once Telegram
+    // is connected, so it is worth pointing at the first time it appears.
     ...(telegramEnabled
       ? [
           {
@@ -146,6 +148,7 @@ export function AppSidebar({
             url: '/telegram',
             icon: Send,
             subject: 'customers',
+            hint: 'telegram.v1',
           },
         ]
       : []),
