@@ -69,6 +69,7 @@ export default getRequestConfig(async () => {
   const onboarding = (await import(`../../messages/${locale}/onboarding.json`)).default
   const tireHotel = (await import(`../../messages/${locale}/tireHotel.json`)).default
   const search = (await import(`../../messages/${locale}/search.json`)).default
+  const permissions = (await import(`../../messages/${locale}/permissions.json`)).default
 
   return {
     locale,
@@ -107,6 +108,7 @@ export default getRequestConfig(async () => {
       onboarding,
       tireHotel,
       search,
+      permissions,
     },
   }
 })

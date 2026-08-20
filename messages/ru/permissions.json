@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Панель",
+    "vehicles": "Автомобили",
+    "customers": "Клиенты",
+    "work_orders": "Заказ-наряды",
+    "quotes": "Сметы",
+    "services": "История работ",
+    "billing": "Счета",
+    "inventory": "Склад",
+    "labor_presets": "Шаблоны работ",
+    "inspections": "Осмотры",
+    "tire_hotel": "Шинный отель",
+    "reports": "Отчёты",
+    "work_board": "Доска работ",
+    "ai_assistant": "ИИ-помощник",
+    "settings": "Настройки"
+  },
+  "actions": {
+    "create": "Создание",
+    "read": "Просмотр",
+    "update": "Изменение",
+    "delete": "Удаление",
+    "manage": "Управление",
+    "manage_storage": "Управление структурой склада"
+  }
+}

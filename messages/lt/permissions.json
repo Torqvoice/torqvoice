@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Skydelis",
+    "vehicles": "Transporto priemonės",
+    "customers": "Klientai",
+    "work_orders": "Darbo užsakymai",
+    "quotes": "Pasiūlymai",
+    "services": "Serviso įrašai",
+    "billing": "Atsiskaitymai",
+    "inventory": "Sandėlis",
+    "labor_presets": "Darbų šablonai",
+    "inspections": "Patikros",
+    "tire_hotel": "Padangų viešbutis",
+    "reports": "Ataskaitos",
+    "work_board": "Darbų lenta",
+    "ai_assistant": "DI asistentas",
+    "settings": "Nustatymai"
+  },
+  "actions": {
+    "create": "Kurti",
+    "read": "Peržiūrėti",
+    "update": "Redaguoti",
+    "delete": "Šalinti",
+    "manage": "Valdyti",
+    "manage_storage": "Valdyti saugyklos išdėstymą"
+  }
+}

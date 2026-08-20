@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Dashbord",
+    "vehicles": "Kjøretøy",
+    "customers": "Kunder",
+    "work_orders": "Arbeidsordrer",
+    "quotes": "Tilbud",
+    "services": "Servicehistorikk",
+    "billing": "Fakturering",
+    "inventory": "Lager",
+    "labor_presets": "Arbeidsmaler",
+    "inspections": "Kontroller",
+    "tire_hotel": "Dekkhotell",
+    "reports": "Rapporter",
+    "work_board": "Arbeidstavle",
+    "ai_assistant": "AI-assistent",
+    "settings": "Innstillinger"
+  },
+  "actions": {
+    "create": "Opprette",
+    "read": "Se",
+    "update": "Endre",
+    "delete": "Slette",
+    "manage": "Administrere",
+    "manage_storage": "Endre lageroppsettet"
+  }
+}
