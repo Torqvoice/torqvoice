@@ -57,12 +57,14 @@ const JOB_TOKENS: Record<string, string> = {
 export function TireJobsCard({
   jobs,
   hasVehicle,
+  hasCustomer,
   currencyCode,
   onCreate,
 }: {
   tireSetId: string
   jobs: TireJobs
   hasVehicle: boolean
+  hasCustomer: boolean
   currencyCode: string
   onCreate: (mode: 'quote' | 'workOrder') => void
 }) {
@@ -79,15 +81,17 @@ export function TireJobsCard({
           <FileText className="mr-1.5 h-3.5 w-3.5" />
           {t('job.quote')}
         </Button>
+        {/* Named for what it will actually produce. A set with no vehicle
+            still gets billed, it just cannot hang off a car. */}
         <Button
           size="sm"
           variant="outline"
           onClick={() => onCreate('workOrder')}
-          disabled={!hasVehicle}
-          title={hasVehicle ? undefined : t('job.needsVehicle')}
+          disabled={!hasVehicle && !hasCustomer}
+          title={hasVehicle || hasCustomer ? undefined : t('job.needsCustomer')}
         >
           <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
-          {t('job.workOrder')}
+          {hasVehicle ? t('job.workOrder') : t('job.targetInvoice')}
         </Button>
       </div>
 

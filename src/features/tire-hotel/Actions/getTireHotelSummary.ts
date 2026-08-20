@@ -12,8 +12,6 @@ export type TireHotelSummary = {
   free: number
   storedSets: number
   needsPrep: number
-  unbilledPeriods: number
-  unbilledAmount: number
 }
 
 /**
@@ -29,7 +27,7 @@ export async function getTireHotelSummary() {
     async ({ organizationId }) => {
       if (!(await isTireHotelEnabled(organizationId))) return null
 
-      const [warehouses, storedSets, needsPrep, unbilled] = await Promise.all([
+      const [warehouses, storedSets, needsPrep] = await Promise.all([
         db.tireWarehouse.findMany({
           where: { organizationId, isArchived: false },
           select: {
@@ -56,11 +54,6 @@ export async function getTireHotelSummary() {
             treatments: { some: { status: 'pending' } },
           },
         }),
-        db.tireStorageCharge.aggregate({
-          where: { organizationId, status: 'pending' },
-          _count: { _all: true },
-          _sum: { amount: true },
-        }),
       ])
 
       const totals = warehouses.map(warehouseCapacity).reduce(
@@ -77,8 +70,6 @@ export async function getTireHotelSummary() {
         free: Math.max(0, totals.capacity - totals.used),
         storedSets,
         needsPrep,
-        unbilledPeriods: unbilled._count._all,
-        unbilledAmount: unbilled._sum.amount ?? 0,
       } satisfies TireHotelSummary
     },
     {

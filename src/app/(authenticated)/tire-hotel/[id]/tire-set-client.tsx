@@ -14,11 +14,6 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { CheckOutDialog } from '@/features/tire-hotel/Components/CheckOutDialog'
 import { EditTireSetDialog } from '@/features/tire-hotel/Components/EditTireSetDialog'
 import { RelocateDialog } from '@/features/tire-hotel/Components/RelocateDialog'
-import {
-  AgreementCard,
-  type AgreementRow,
-  type OneOffCharge,
-} from '@/features/tire-hotel/Components/AgreementCard'
 import { TreatmentCard, type TreatmentRow } from '@/features/tire-hotel/Components/TreatmentCard'
 import { MessageCustomerDialog } from '@/features/tire-hotel/Components/MessageCustomerDialog'
 import { NewTireJobDialog } from '@/features/tire-hotel/Components/NewTireJobDialog'
@@ -119,8 +114,6 @@ export function TireSetClient({
   set,
   locations,
   vehicles,
-  agreements,
-  oneOffCharges,
   jobs,
   billing,
   imperial,
@@ -129,8 +122,6 @@ export function TireSetClient({
 }: {
   set: TireSet
   locations: PickerLocation[]
-  agreements: AgreementRow[]
-  oneOffCharges: OneOffCharge[]
   jobs: TireJobs
   billing: {
     seasonalPrice: number
@@ -420,19 +411,9 @@ export function TireSetClient({
             tireSetId={set.id}
             jobs={jobs}
             hasVehicle={!!set.vehicle}
+            hasCustomer={!!set.customer}
             currencyCode={billing.currency}
             onCreate={setJobMode}
-          />
-
-          <AgreementCard
-            tireSetId={set.id}
-            agreements={agreements}
-            oneOffCharges={oneOffCharges}
-            canEditSettings={canEditSettings}
-            defaultSeasonalPrice={billing.seasonalPrice}
-            defaultMonthlyPrice={billing.monthlyPrice}
-            currency={billing.currency}
-            hasVehicle={!!set.vehicle}
           />
 
           <AppCard icon={MapPin} title={t('detail.historyTitle')} contentClassName="space-y-0 p-0">
@@ -575,6 +556,7 @@ export function TireSetClient({
           mode={jobMode}
           hasVehicle={!!set.vehicle}
           currencyCode={billing.currency}
+          defaultStoragePrice={billing.seasonalPrice}
           canEditSettings={canEditSettings}
         />
       )}

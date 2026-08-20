@@ -36,8 +36,6 @@ describe('tire hotel models', () => {
       'TireMeasurement',
       'TireMovement',
       'TireSet',
-      'TireStorageAgreement',
-      'TireStorageCharge',
       'TireTreatment',
       'TireWarehouse',
     ])
@@ -66,14 +64,10 @@ describe('export', () => {
     'measurements',
     'movements',
     'treatments',
-    'agreements',
   ])('pulls %s with the set', (relation) => {
     expect(exportSource).toMatch(new RegExp(`db\\.tireSet[\\s\\S]{0,400}${relation}`))
   })
 
-  it('pulls the charges under each agreement', () => {
-    expect(exportSource).toMatch(/agreements:\s*\{\s*include:\s*\{\s*charges:\s*true/)
-  })
 })
 
 describe('import', () => {
@@ -84,8 +78,6 @@ describe('import', () => {
     'tx.tireMeasurement',
     'tx.tireMovement',
     'tx.tireTreatment',
-    'tx.tireStorageAgreement',
-    'tx.tireStorageCharge',
   ])('restores through %s', (call) => {
     expect(importSource).toContain(call)
   })
@@ -98,11 +90,4 @@ describe('import', () => {
     }
   })
 
-  it('does not invent a start date for an agreement', () => {
-    // Every period is derived from it, so a guess would shift the whole
-    // billing schedule rather than fail visibly.
-    expect(importSource).toMatch(
-      /const startDate = toSafeDate[\s\S]{0,120}if \(!startDate\) continue/
-    )
-  })
 })

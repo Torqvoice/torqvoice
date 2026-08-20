@@ -27,7 +27,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, Check, ChevronsUpDown, ClipboardList, FilePlus2, Loader2 } from 'lucide-react'
+import { Check, ChevronsUpDown, ClipboardList, FilePlus2, Loader2, Receipt } from 'lucide-react'
 import {
   addTireSetToWorkOrder,
   createQuoteFromTireSet,
@@ -64,6 +64,7 @@ export function NewTireJobDialog({
   mode,
   hasVehicle,
   currencyCode,
+  defaultStoragePrice = 0,
   canEditSettings = false,
 }: {
   open: boolean
@@ -72,6 +73,8 @@ export function NewTireJobDialog({
   mode: 'quote' | 'workOrder'
   hasVehicle: boolean
   currencyCode: string
+  /** The workshop's own season price, prefilled on the storage line. */
+  defaultStoragePrice?: number
   /** Whether to offer a way to the prices these lines are drawn from. */
   canEditSettings?: boolean
 }) {
@@ -81,9 +84,16 @@ export function NewTireJobDialog({
   const { formatDate } = useFormatDate()
   // Work orders ask where the lines go before asking what they are; a quote
   // has nowhere else to go, so it skips straight to the tires.
-  const [step, setStep] = useState<'target' | 'lines'>(mode === 'quote' ? 'lines' : 'target')
   const [openJobs, setOpenJobs] = useState<OpenJobs>([])
-  const [target, setTarget] = useState<string | null>(null)
+  // 'new' raises a work order on the vehicle, 'invoice' bills the customer
+  // directly, anything else is the id of a job already open.
+  const [destination, setDestination] = useState<string>(hasVehicle ? 'new' : 'invoice')
+  // Storage is billed here, on the same document as the work, rather than on
+  // a schedule of its own. One place to charge a customer, not two.
+  const [includeStorage, setIncludeStorage] = useState(false)
+  const [storageAmount, setStorageAmount] = useState('')
+  const [storageFrom, setStorageFrom] = useState('')
+  const [storageTo, setStorageTo] = useState('')
   const [data, setData] = useState<Matches | null>(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -117,10 +127,10 @@ export function NewTireJobDialog({
       setHits(null)
       setBrowsing(false)
       setOpenJobs([])
-      setTarget(null)
+      setDestination(hasVehicle ? 'new' : 'invoice')
+      setIncludeStorage(false)
       setIncludeTires(true)
       setIncludePrep([])
-      setStep(mode === 'quote' ? 'lines' : 'target')
       return
     }
     let cancelled = false
@@ -141,11 +151,17 @@ export function NewTireJobDialog({
         setPrice(String(best.sellPrice))
       }
       setIncludePrep((value?.prep ?? []).map((line) => line.type))
+      // Prefilled from the workshop's own season price, over the six months a
+      // stored set normally sits there. Both stay editable.
+      setStorageAmount(String(defaultStoragePrice || ''))
+      const today = new Date()
+      const until = new Date(today)
+      until.setMonth(until.getMonth() + 6)
+      setStorageFrom(today.toISOString().slice(0, 10))
+      setStorageTo(until.toISOString().slice(0, 10))
 
       const rows = jobs?.success && jobs.data ? jobs.data : []
       setOpenJobs(rows)
-      // Nothing to choose between, so the question is not worth asking.
-      if (mode === 'workOrder' && rows.length === 0) setStep('lines')
       setLoading(false)
     })
     return () => {
@@ -226,10 +242,11 @@ export function NewTireJobDialog({
   const prepTotal = prep
     .filter((line) => includePrep.includes(line.type))
     .reduce((sum, line) => sum + line.price, 0)
-  const jobTotal = Math.round(((includeTires ? total : 0) + prepTotal) * 100) / 100
+  const storage = includeStorage ? Math.max(0, Number(storageAmount) || 0) : 0
+  const jobTotal = Math.round(((includeTires ? total : 0) + prepTotal + storage) * 100) / 100
   // A job with nothing on it is not worth raising, and an empty quote reads
   // as a bug rather than as a choice.
-  const nothingPicked = !includeTires && includePrep.length === 0
+  const nothingPicked = !includeTires && includePrep.length === 0 && !includeStorage
 
   const togglePrep = (type: string) =>
     setIncludePrep((current) =>
@@ -245,13 +262,21 @@ export function NewTireJobDialog({
       quantity,
       includeTires,
       includeTreatments: includePrep,
+      includeStorage,
+      storageAmount: storage,
+      storageFrom: storageFrom || undefined,
+      storageTo: storageTo || undefined,
     }
+    const existingJob = destination !== 'new' && destination !== 'invoice' ? destination : null
     const result =
       mode === 'quote'
         ? await createQuoteFromTireSet(payload)
-        : target
-          ? await addTireSetToWorkOrder({ ...payload, serviceRecordId: target })
-          : await createWorkOrderFromTireSet(payload)
+        : existingJob
+          ? await addTireSetToWorkOrder({ ...payload, serviceRecordId: existingJob })
+          : await createWorkOrderFromTireSet({
+              ...payload,
+              asInvoice: destination === 'invoice',
+            })
     setSaving(false)
 
     if (!result.success) {
@@ -266,272 +291,334 @@ export function NewTireJobDialog({
       return
     }
     if (result.data && 'vehicleId' in result.data) {
-      toast.success(target ? t('job.workOrderUpdated') : t('job.workOrderCreated'))
-      router.push(`/vehicles/${result.data.vehicleId}/service/${result.data.id}`)
+      toast.success(existingJob ? t('job.workOrderUpdated') : t('job.workOrderCreated'))
+      // An invoice has no vehicle to hang off, so it lives under sales.
+      router.push(
+        result.data.vehicleId
+          ? `/vehicles/${result.data.vehicleId}/service/${result.data.id}`
+          : `/sales/${result.data.id}`
+      )
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{t(mode === 'quote' ? 'job.quoteTitle' : 'job.workOrderTitle')}</DialogTitle>
           <DialogDescription>{data?.description ?? t('job.loadingSet')}</DialogDescription>
         </DialogHeader>
 
-        {mode === 'workOrder' && !hasVehicle ? (
-          <p className="py-4 text-sm text-muted-foreground">{t('job.needsVehicle')}</p>
-        ) : loading ? (
+        {loading ? (
           <div className="flex items-center justify-center py-10">
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
-        ) : step === 'target' ? (
-          <div className="min-w-0 space-y-2">
-            <TargetOption
-              selected={target === null}
-              onSelect={() => setTarget(null)}
-              icon={<FilePlus2 className="h-4 w-4" />}
-              title={t('job.targetNew')}
-              subtitle={t('job.targetNewHint')}
-            />
-            <p className="px-1 pt-2 text-xs font-medium text-muted-foreground">
-              {t('job.targetExisting')}
-            </p>
-            {openJobs.map((job) => (
-              <TargetOption
-                key={job.id}
-                selected={target === job.id}
-                onSelect={() => setTarget(job.id)}
-                icon={<ClipboardList className="h-4 w-4" />}
-                title={job.invoiceNumber ?? job.title}
-                subtitle={`${job.title} · ${formatDate(new Date(job.serviceDate))}`}
-                trailing={
-                  <span className="text-xs tabular-nums text-muted-foreground">
-                    {formatCurrency(job.totalAmount, currencyCode)}
-                  </span>
-                }
-              />
-            ))}
-          </div>
         ) : (
-          <div className="min-w-0 space-y-3">
-            <div className="min-w-0 space-y-1.5">
-              <label className="flex cursor-pointer items-center gap-2.5">
-                <Checkbox
-                  checked={includeTires}
-                  onCheckedChange={(value) => setIncludeTires(value === true)}
-                />
-                <span className="text-sm font-medium">{t('job.tires')}</span>
-              </label>
+          <div className="grid min-w-0 gap-6 md:grid-cols-[minmax(0,1fr)_18rem]">
+            {/* Everything that goes on the bill, in one list. */}
+            <div className="min-w-0 space-y-3">
+              <div className="min-w-0 space-y-1.5">
+                <label className="flex cursor-pointer items-center gap-2.5">
+                  <Checkbox
+                    checked={includeTires}
+                    onCheckedChange={(value) => setIncludeTires(value === true)}
+                  />
+                  <span className="text-sm font-medium">{t('job.tires')}</span>
+                </label>
 
-              {!includeTires ? (
-                // The customer brought their own, or they are already on the
-                // job. Say so, rather than leaving a blank where the picker was.
-                <p className="rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
-                  {t('job.tiresSkipped')}
-                </p>
-              ) : (
-                // modal: the content portals out of the dialog, and a dialog's
-                // scroll lock swallows wheel events over everything outside
-                // itself, which would leave this list unscrollable.
-                <Popover open={browsing} onOpenChange={toggleBrowsing} modal>
-                  <PopoverTrigger asChild>
-                    <button
-                      type="button"
-                      className="flex w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors hover:bg-muted/60 focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
-                    >
-                      <span className="min-w-0 flex-1">
-                        {picked ? (
-                          <>
-                            <span className="block truncate text-sm">{picked.name}</span>
-                            {stockMeta(picked)}
-                          </>
-                        ) : (
-                          <>
-                            {/* No stock item is a real answer, and the line
+                {!includeTires ? (
+                  // The customer brought their own, or they are already on the
+                  // job. Say so, rather than leaving a blank where the picker was.
+                  <p className="rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
+                    {t('job.tiresSkipped')}
+                  </p>
+                ) : (
+                  // modal: the content portals out of the dialog, and a dialog's
+                  // scroll lock swallows wheel events over everything outside
+                  // itself, which would leave this list unscrollable.
+                  <Popover open={browsing} onOpenChange={toggleBrowsing} modal>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="flex w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors hover:bg-muted/60 focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+                      >
+                        <span className="min-w-0 flex-1">
+                          {picked ? (
+                            <>
+                              <span className="block truncate text-sm">{picked.name}</span>
+                              {stockMeta(picked)}
+                            </>
+                          ) : (
+                            <>
+                              {/* No stock item is a real answer, and the line
                                 still gets made. It reads as the set itself,
                                 which is exactly what the server will name it. */}
-                            <span className="block truncate text-sm">
-                              {data?.description ?? ''}
-                            </span>
-                            <span className="block truncate text-[11px] text-muted-foreground">
-                              {t('job.noStockItem')}
-                            </span>
-                          </>
-                        )}
-                      </span>
-                      <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
-                    <Command shouldFilter={false}>
-                      <CommandInput
-                        value={query}
-                        onValueChange={setQuery}
-                        placeholder={t('job.searchStock')}
-                      />
-                      <CommandList className="max-h-56">
-                        {searching && suggestions.length === 0 ? (
-                          <div className="flex items-center justify-center py-6">
-                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                          </div>
-                        ) : (
-                          <CommandEmpty>
-                            {/* Nothing matched, which is normal for an unusual
+                              <span className="block truncate text-sm">
+                                {data?.description ?? ''}
+                              </span>
+                              <span className="block truncate text-[11px] text-muted-foreground">
+                                {t('job.noStockItem')}
+                              </span>
+                            </>
+                          )}
+                        </span>
+                        <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="start" className="w-(--radix-popover-trigger-width) p-0">
+                      <Command shouldFilter={false}>
+                        <CommandInput
+                          value={query}
+                          onValueChange={setQuery}
+                          placeholder={t('job.searchStock')}
+                        />
+                        <CommandList className="max-h-56">
+                          {searching && suggestions.length === 0 ? (
+                            <div className="flex items-center justify-center py-6">
+                              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                            </div>
+                          ) : (
+                            <CommandEmpty>
+                              {/* Nothing matched, which is normal for an unusual
                                 size or a shop that does not stock tires. */}
-                            {searchActive
-                              ? t('job.noSearchHits', { query: query.trim() })
-                              : data?.parsedSize
-                                ? t('job.noMatch', { size: data.parsedSize })
-                                : t('job.noSize')}
-                          </CommandEmpty>
-                        )}
-                        {suggestions.length > 0 && (
-                          <CommandGroup
-                            heading={
-                              !searchActive && data?.parsedSize
-                                ? t('job.inSize', {
-                                    count: suggestions.length,
-                                    size: data.parsedSize,
-                                  })
-                                : undefined
-                            }
-                          >
-                            {suggestions.map((match) => {
-                              const isOn = picked?.id === match.id
-                              return (
-                                <CommandItem
-                                  key={match.id}
-                                  value={match.id}
-                                  onSelect={() => pick(match)}
-                                >
-                                  <span className="min-w-0 flex-1">
-                                    <span className="block truncate text-sm">{match.name}</span>
-                                    {stockMeta(match)}
-                                  </span>
-                                  <span className="shrink-0 text-sm tabular-nums">
-                                    {formatCurrency(match.sellPrice, currencyCode)}
-                                  </span>
-                                  {/* The slot is always there, so highlighting
+                              {searchActive
+                                ? t('job.noSearchHits', { query: query.trim() })
+                                : data?.parsedSize
+                                  ? t('job.noMatch', { size: data.parsedSize })
+                                  : t('job.noSize')}
+                            </CommandEmpty>
+                          )}
+                          {suggestions.length > 0 && (
+                            <CommandGroup
+                              heading={
+                                !searchActive && data?.parsedSize
+                                  ? t('job.inSize', {
+                                      count: suggestions.length,
+                                      size: data.parsedSize,
+                                    })
+                                  : undefined
+                              }
+                            >
+                              {suggestions.map((match) => {
+                                const isOn = picked?.id === match.id
+                                return (
+                                  <CommandItem
+                                    key={match.id}
+                                    value={match.id}
+                                    onSelect={() => pick(match)}
+                                  >
+                                    <span className="min-w-0 flex-1">
+                                      <span className="block truncate text-sm">{match.name}</span>
+                                      {stockMeta(match)}
+                                    </span>
+                                    <span className="shrink-0 text-sm tabular-nums">
+                                      {formatCurrency(match.sellPrice, currencyCode)}
+                                    </span>
+                                    {/* The slot is always there, so highlighting
                                       a row does not shift the prices sideways. */}
-                                  <span className="w-3.5 shrink-0">
-                                    {/* size-, not h-/w-: CommandItem forces
+                                    <span className="w-3.5 shrink-0">
+                                      {/* size-, not h-/w-: CommandItem forces
                                         size-4 on any svg without one. */}
-                                    {isOn && <Check className="size-3.5 text-primary" />}
-                                  </span>
-                                </CommandItem>
-                              )
-                            })}
-                          </CommandGroup>
-                        )}
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              )}
+                                      {isOn && <Check className="size-3.5 text-primary" />}
+                                    </span>
+                                  </CommandItem>
+                                )
+                              })}
+                            </CommandGroup>
+                          )}
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )}
 
-              {includeTires && (
-                <div className="flex min-w-0 flex-wrap items-center gap-2 pt-0.5">
-                  <Label htmlFor="tireJobQty" className="shrink-0 text-xs font-normal">
-                    {t('job.quantity')}
-                  </Label>
-                  <Input
-                    id="tireJobQty"
-                    type="number"
-                    min="1"
-                    max="99"
-                    step="1"
-                    value={qty}
-                    onChange={(e) => setQty(e.target.value)}
-                    className="h-8 w-14 text-sm tabular-nums"
-                  />
-                  <Label htmlFor="tireJobPrice" className="shrink-0 text-xs font-normal">
-                    {t('job.unitPrice')}
-                  </Label>
-                  <Input
-                    id="tireJobPrice"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="h-8 w-24 text-sm tabular-nums"
-                  />
-                  <span className="min-w-0 flex-1 truncate text-right text-sm font-medium tabular-nums">
-                    {formatCurrency(total, currencyCode)}
-                  </span>
+                {includeTires && (
+                  <div className="flex min-w-0 flex-wrap items-center gap-2 pt-0.5">
+                    <Label htmlFor="tireJobQty" className="shrink-0 text-xs font-normal">
+                      {t('job.quantity')}
+                    </Label>
+                    <Input
+                      id="tireJobQty"
+                      type="number"
+                      min="1"
+                      max="99"
+                      step="1"
+                      value={qty}
+                      onChange={(e) => setQty(e.target.value)}
+                      className="h-8 w-14 text-sm tabular-nums"
+                    />
+                    <Label htmlFor="tireJobPrice" className="shrink-0 text-xs font-normal">
+                      {t('job.unitPrice')}
+                    </Label>
+                    <Input
+                      id="tireJobPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="h-8 w-24 text-sm tabular-nums"
+                    />
+                    <span className="min-w-0 flex-1 truncate text-right text-sm font-medium tabular-nums">
+                      {formatCurrency(total, currencyCode)}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {prep.length > 0 && (
+                <div className="min-w-0 space-y-1.5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-sm font-medium">{t('job.prep')}</p>
+                    {/* These prices are a setting, and this list is where a shop
+                      notices one is wrong or missing. */}
+                    <SettingsLink can={canEditSettings} labelKey="settings.prepPrices" />
+                  </div>
+                  <div className="divide-y rounded-lg border">
+                    {prep.map((line) => (
+                      <label
+                        key={line.type}
+                        className="flex cursor-pointer items-center gap-2.5 px-2.5 py-1.5 hover:bg-muted/50"
+                      >
+                        <Checkbox
+                          checked={includePrep.includes(line.type)}
+                          onCheckedChange={() => togglePrep(line.type)}
+                        />
+                        <span className="min-w-0 flex-1 truncate text-sm">
+                          {t(`treatments.types.${line.type}`)}
+                        </span>
+                        <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
+                          {formatCurrency(line.price, currencyCode)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>
 
-            {prep.length > 0 && (
+              {/* The storage fee, on the same bill as the work. There is no
+                second place to charge it from and nothing raising it on a
+                schedule: it is billed when somebody is looking at the
+                account, which is now. */}
               <div className="min-w-0 space-y-1.5">
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-sm font-medium">{t('job.prep')}</p>
-                  {/* These prices are a setting, and this list is where a shop
-                      notices one is wrong or missing. */}
-                  <SettingsLink can={canEditSettings} labelKey="settings.prepPrices" />
+                  <label className="flex cursor-pointer items-center gap-2.5">
+                    <Checkbox
+                      checked={includeStorage}
+                      onCheckedChange={(value) => setIncludeStorage(value === true)}
+                    />
+                    <span className="text-sm font-medium">{t('job.storage')}</span>
+                  </label>
+                  <SettingsLink can={canEditSettings} labelKey="settings.storagePrices" />
                 </div>
-                <div className="divide-y rounded-lg border">
-                  {prep.map((line) => (
-                    <label
-                      key={line.type}
-                      className="flex cursor-pointer items-center gap-2.5 px-2.5 py-1.5 hover:bg-muted/50"
-                    >
-                      <Checkbox
-                        checked={includePrep.includes(line.type)}
-                        onCheckedChange={() => togglePrep(line.type)}
-                      />
-                      <span className="min-w-0 flex-1 truncate text-sm">
-                        {t(`treatments.types.${line.type}`)}
-                      </span>
-                      <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
-                        {formatCurrency(line.price, currencyCode)}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            <div className="flex items-center justify-between border-t pt-2.5">
-              <span className="text-sm text-muted-foreground">{t('job.total')}</span>
-              <span className="text-base font-semibold tabular-nums">
-                {formatCurrency(jobTotal, currencyCode)}
-              </span>
+                {includeStorage && (
+                  <div className="space-y-2 rounded-lg border p-2.5">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <Label htmlFor="tireJobStorage" className="shrink-0 text-xs font-normal">
+                        {t('job.storageFee')}
+                      </Label>
+                      <Input
+                        id="tireJobStorage"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={storageAmount}
+                        onChange={(e) => setStorageAmount(e.target.value)}
+                        className="h-8 w-28 text-sm tabular-nums"
+                      />
+                    </div>
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      {/* Not a rule, just what prints on the line, so the
+                        customer can see what they paid for. */}
+                      <Label htmlFor="tireJobStorageFrom" className="shrink-0 text-xs font-normal">
+                        {t('job.storagePeriod')}
+                      </Label>
+                      <Input
+                        id="tireJobStorageFrom"
+                        type="date"
+                        value={storageFrom}
+                        onChange={(e) => setStorageFrom(e.target.value)}
+                        className="h-8 w-36 text-sm"
+                      />
+                      <Input
+                        type="date"
+                        value={storageTo}
+                        onChange={(e) => setStorageTo(e.target.value)}
+                        aria-label={t('job.storagePeriod')}
+                        className="h-8 w-36 text-sm"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Where it all lands. */}
+            <div className="min-w-0 space-y-3">
+              {mode === 'workOrder' && (
+                <div className="min-w-0 space-y-1.5">
+                  <p className="text-sm font-medium">{t('job.destination')}</p>
+                  <div className="space-y-1.5">
+                    {hasVehicle && (
+                      <TargetOption
+                        selected={destination === 'new'}
+                        onSelect={() => setDestination('new')}
+                        icon={<FilePlus2 className="h-4 w-4" />}
+                        title={t('job.targetNew')}
+                        subtitle={t('job.targetNewHint')}
+                      />
+                    )}
+                    <TargetOption
+                      selected={destination === 'invoice'}
+                      onSelect={() => setDestination('invoice')}
+                      icon={<Receipt className="h-4 w-4" />}
+                      title={t('job.targetInvoice')}
+                      subtitle={t('job.targetInvoiceHint')}
+                    />
+                    {openJobs.map((job) => (
+                      <TargetOption
+                        key={job.id}
+                        selected={destination === job.id}
+                        onSelect={() => setDestination(job.id)}
+                        icon={<ClipboardList className="h-4 w-4" />}
+                        title={job.invoiceNumber ?? job.title}
+                        subtitle={`${job.title} · ${formatDate(new Date(job.serviceDate))}`}
+                        trailing={
+                          <span className="text-xs tabular-nums text-muted-foreground">
+                            {formatCurrency(job.totalAmount, currencyCode)}
+                          </span>
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between border-t pt-2.5">
+                <span className="text-sm text-muted-foreground">{t('job.total')}</span>
+                <span className="text-base font-semibold tabular-nums">
+                  {formatCurrency(jobTotal, currencyCode)}
+                </span>
+              </div>
             </div>
           </div>
         )}
 
         <DialogFooter>
-          {step === 'lines' && mode === 'workOrder' && openJobs.length > 0 ? (
-            <Button variant="ghost" onClick={() => setStep('target')} disabled={saving}>
-              <ArrowLeft className="mr-1.5 h-4 w-4" />
-              {t('common.back')}
-            </Button>
-          ) : (
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
-              {t('common.cancel')}
-            </Button>
-          )}
-
-          {step === 'target' ? (
-            <Button onClick={() => setStep('lines')} disabled={loading}>
-              {t('common.next')}
-            </Button>
-          ) : (
-            <Button
-              onClick={handleSubmit}
-              disabled={saving || loading || nothingPicked || (mode === 'workOrder' && !hasVehicle)}
-            >
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {mode === 'quote'
-                ? t('job.createQuote')
-                : target
-                  ? t('job.addToWorkOrder')
-                  : t('job.createWorkOrder')}
-            </Button>
-          )}
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={handleSubmit} disabled={saving || loading || nothingPicked}>
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {mode === 'quote'
+              ? t('job.createQuote')
+              : destination === 'new'
+                ? t('job.createWorkOrder')
+                : destination === 'invoice'
+                  ? t('job.createInvoice')
+                  : t('job.addToWorkOrder')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

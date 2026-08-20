@@ -16,7 +16,7 @@ import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
 import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
+import { invoiceLineWords, jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
@@ -40,6 +40,16 @@ const fromSetSchema = z.object({
   /// not have to fix the line afterwards.
   quantity: z.coerce.number().int().min(1).max(99).optional(),
   includeTreatments: z.array(z.enum(TREATMENT_TYPES)).optional(),
+  /// The storage fee, billed on the same document as the work rather than on
+  /// a schedule of its own. The period is not a rule, it is what prints on
+  /// the line so the customer can see what they paid for.
+  includeStorage: z.boolean().default(false),
+  /// Bills the customer directly instead of raising a job on a vehicle, for
+  /// the customer who only ever stores tires and never brings the car in.
+  asInvoice: z.boolean().default(false),
+  storageAmount: z.coerce.number().min(0).max(1_000_000).optional(),
+  storageFrom: z.coerce.date().optional(),
+  storageTo: z.coerce.date().optional(),
   /// Stocked part to quote, chosen by the operator from the matches. Omitted
   /// when nothing matched, which leaves a blank priced line to fill in.
   inventoryPartId: z.string().min(1).optional().nullable(),
@@ -165,6 +175,35 @@ export async function searchTireStock(input: unknown) {
  * invoice, and invoice wording should not be whatever a client happened to
  * send.
  */
+/**
+ * The storage fee as a flat service line, in the workshop's language.
+ *
+ * Priced per job rather than by the hour, so it prints as one figure with the
+ * period beside it. Nothing schedules this: it is charged when the tires are
+ * billed, which is the moment somebody is looking at the account anyway.
+ */
+async function storageLine(
+  set: { size: string | null; quantity: number },
+  data: { storageAmount?: number; storageFrom?: Date; storageTo?: Date }
+) {
+  const amount = Math.round((data.storageAmount ?? 0) * 100) / 100
+  const words = await invoiceLineWords()
+  const period =
+    data.storageFrom && data.storageTo
+      ? `${data.storageFrom.toISOString().slice(0, 10)} - ${data.storageTo.toISOString().slice(0, 10)}`
+      : null
+
+  return {
+    description: [words.storage, set.size, `${set.quantity} ${words.pieces}`, period]
+      .filter(Boolean)
+      .join(' · '),
+    hours: 1,
+    rate: amount,
+    total: amount,
+    pricingType: 'service' as const,
+  }
+}
+
 async function billablePrep(
   organizationId: string,
   treatments: { type: string; status: string }[]
@@ -339,6 +378,7 @@ export async function createQuoteFromTireSet(input: unknown) {
       const lineQuantity = data.quantity ?? set.quantity
       const lineTotal = data.includeTires ? Math.round(unitPrice * lineQuantity * 100) / 100 : 0
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
+      if (data.includeStorage) labor.push(await storageLine(set, data))
       const laborTotal = labor.reduce((sum, line) => sum + line.total, 0)
       const subtotal = Math.round((lineTotal + laborTotal) * 100) / 100
       const { taxAmount, totalAmount } = calculateTotals({
@@ -418,15 +458,21 @@ export async function createWorkOrderFromTireSet(input: unknown) {
       const set = await loadSet(organizationId, data.tireSetId)
       const seasons = await seasonNames()
 
-      if (!set.vehicleId) {
+      if (!data.asInvoice && !set.vehicleId) {
         throw new Error('Link a vehicle to this set before creating a work order')
       }
+      if (data.asInvoice && !set.customerId) {
+        throw new Error('Link a customer to this set before invoicing them')
+      }
 
+      // A work order hangs off the vehicle, so it reaches the board, the
+      // vehicle history and the technician's day. A plain invoice does not,
+      // which is exactly what a storage-only customer wants.
       const record = await createDraftRecord(
         { organizationId, userId },
         {
-          vehicleId: set.vehicleId,
-          customerId: null,
+          vehicleId: data.asInvoice ? null : set.vehicleId,
+          customerId: data.asInvoice ? set.customerId : null,
           customerExempt: set.customer?.taxExempt ?? false,
           title: describeSet(set, seasons),
         }
@@ -442,6 +488,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
       const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
+      if (data.includeStorage) labor.push(await storageLine(set, data))
 
       await db.$transaction(async (tx) => {
         // The tires themselves, which a quote and an add-to-existing already
@@ -498,12 +545,13 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         },
       })
 
-      revalidatePath(`/vehicles/${set.vehicleId}`)
+      if (set.vehicleId) revalidatePath(`/vehicles/${set.vehicleId}`)
+      revalidatePath('/billing')
       revalidatePath(`/tire-hotel/${set.id}`)
       return {
         id: record.id,
         invoiceNumber: record.invoiceNumber,
-        vehicleId: set.vehicleId,
+        vehicleId: data.asInvoice ? null : set.vehicleId,
         tireSetId: set.id,
       }
     },
@@ -591,6 +639,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
       const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
+      if (data.includeStorage) labor.push(await storageLine(set, data))
 
       await db.$transaction(async (tx) => {
         if (data.includeTires) {

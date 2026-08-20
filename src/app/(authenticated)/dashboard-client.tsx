@@ -1981,26 +1981,16 @@ export function DashboardClient({
                   {t('tireHotel.roomLeft', { count: tireHotelSummary.free })}
                 </p>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push('/tire-hotel?status=needs_prep')}
-                    className="rounded-lg border p-2.5 text-left transition-colors hover:bg-muted/60"
-                  >
-                    <p className="text-lg font-semibold tabular-nums">
-                      {tireHotelSummary.needsPrep}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{t('tireHotel.needsPrep')}</p>
-                  </button>
-                  <div className="rounded-lg border p-2.5">
-                    <p className="text-lg font-semibold tabular-nums">
-                      {formatCurrency(tireHotelSummary.unbilledAmount, currencyCode)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {t('tireHotel.unbilled', { count: tireHotelSummary.unbilledPeriods })}
-                    </p>
-                  </div>
-                </div>
+                {/* Outstanding prep is the one number the tire department
+                    acts on from here. */}
+                <button
+                  type="button"
+                  onClick={() => router.push('/tire-hotel?status=needs_prep')}
+                  className="w-full rounded-lg border p-2.5 text-left transition-colors hover:bg-muted/60"
+                >
+                  <p className="text-lg font-semibold tabular-nums">{tireHotelSummary.needsPrep}</p>
+                  <p className="text-xs text-muted-foreground">{t('tireHotel.needsPrep')}</p>
+                </button>
               </AppCard>
             ) : null,
           }

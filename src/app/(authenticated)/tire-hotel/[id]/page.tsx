@@ -5,10 +5,6 @@ import { canEditSettings } from '@/lib/settings-access'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
-import {
-  getAgreementsForSet,
-  getOneOffChargesForSet,
-} from '@/features/tire-hotel/Actions/agreementActions'
 import { getJobsForSet } from '@/features/tire-hotel/Actions/tireJobActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -29,19 +25,9 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
 
   const { id } = await params
 
-  const [
-    setResult,
-    locationResult,
-    agreementResult,
-    chargeResult,
-    jobsResult,
-    settingsResult,
-    vehicles,
-  ] = await Promise.all([
+  const [setResult, locationResult, jobsResult, settingsResult, vehicles] = await Promise.all([
     getTireSet(id),
     getLocationOptions(),
-    getAgreementsForSet(id),
-    getOneOffChargesForSet(id),
     getJobsForSet(id),
     getSettings([
       SETTING_KEYS.UNIT_SYSTEM,
@@ -70,8 +56,6 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
   if (!setResult.success || !setResult.data) notFound()
 
   const locations = locationResult.success && locationResult.data ? locationResult.data : []
-  const agreements = agreementResult.success && agreementResult.data ? agreementResult.data : []
-  const oneOffCharges = chargeResult.success && chargeResult.data ? chargeResult.data : []
   const jobs =
     jobsResult.success && jobsResult.data ? jobsResult.data : { quotes: [], workOrders: [] }
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
@@ -90,8 +74,6 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
           set={setResult.data}
           locations={locations}
           vehicles={vehicles}
-          agreements={agreements}
-          oneOffCharges={oneOffCharges}
           jobs={jobs}
           billing={billing}
           imperial={imperial}

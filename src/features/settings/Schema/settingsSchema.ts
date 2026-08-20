@@ -138,7 +138,7 @@ export const SETTING_KEYS = {
   TIRE_HOTEL_DEFAULT_CAPACITY: 'tireHotel.defaultCapacity',
   /// Warn in-app once the warehouse passes this fraction of total capacity.
   TIRE_HOTEL_CAPACITY_WARN_PERCENT: 'tireHotel.capacityWarnPercent',
-  /// Prefilled price for a new agreement, per billing model.
+  /// Prefilled storage fee, offered when a set is billed.
   TIRE_HOTEL_DEFAULT_SEASONAL_PRICE: 'tireHotel.defaultSeasonalPrice',
   TIRE_HOTEL_DEFAULT_MONTHLY_PRICE: 'tireHotel.defaultMonthlyPrice',
   /// What each kind of prep work is charged at, as JSON keyed by treatment

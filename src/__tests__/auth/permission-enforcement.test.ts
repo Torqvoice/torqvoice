@@ -210,7 +210,6 @@ import {
   disposeTireSet,
   getSetsForForecast,
 } from '@/features/tire-hotel/Actions/tireSetActions'
-import { createOneOffCharge } from '@/features/tire-hotel/Actions/agreementActions'
 
 // ---------- Helpers ----------
 
@@ -316,7 +315,6 @@ describe('Permission denial — restricted custom role with no permissions', () 
     ['TIRE_HOTEL', 'CREATE', () => checkInTireSet({})],
     ['TIRE_HOTEL', 'UPDATE', () => returnTireSet({})],
     ['TIRE_HOTEL', 'UPDATE', () => disposeTireSet({})],
-    ['TIRE_HOTEL', 'UPDATE', () => createOneOffCharge({})],
   ]
 
   it.each(

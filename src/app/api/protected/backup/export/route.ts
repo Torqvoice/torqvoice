@@ -239,10 +239,6 @@ export async function POST(request: NextRequest) {
             measurements: true,
             movements: true,
             treatments: true,
-            agreements: { include: { charges: true } },
-            // The fees raised by hand. They hang off the set rather than an
-            // agreement, so the agreement include above never reaches them.
-            charges: true,
           },
         })
         .then((result) => {
