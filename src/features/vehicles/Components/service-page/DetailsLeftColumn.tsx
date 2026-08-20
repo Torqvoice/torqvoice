@@ -7,12 +7,18 @@ import { ServiceFindingsSection } from '../service-detail/ServiceFindingsSection
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
+import {
+  TireSetBanner,
+  type TireSetBannerData,
+} from '@/features/tire-hotel/Components/TireSetBanner'
 import type { InventoryPartOption } from '../service-edit/form-types'
 
 interface DetailsLeftColumnProps {
   formState: ReturnType<typeof useServiceFormState>
   actions: ReturnType<typeof useServiceActions>
   record: ServiceDetail
+  /** Present only when the job came out of the tire hotel. */
+  tireSet?: TireSetBannerData | null
   currencyCode: string
   defaultLaborRate: number
   inventoryParts: InventoryPartOption[]
@@ -46,6 +52,7 @@ export function DetailsLeftColumn({
   formState,
   actions,
   record,
+  tireSet = null,
   currencyCode,
   defaultLaborRate,
   inventoryParts,
@@ -64,6 +71,11 @@ export function DetailsLeftColumn({
 }: DetailsLeftColumnProps) {
   return (
     <div className="space-y-3">
+      {/* Above the parts, inside the working column: the tires are the first
+          thing this job needs and the last thing the invoice sidebar cares
+          about, so it belongs here rather than spanning both. */}
+      {tireSet && <TireSetBanner set={tireSet} />}
+
       <PartsEditor
         partItems={formState.partItems}
         setPartItems={formState.dirtySetPartItems}
