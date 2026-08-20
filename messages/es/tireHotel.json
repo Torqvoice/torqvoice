@@ -424,6 +424,9 @@
     "withRims": "Con llantas",
     "tpms": "TPMS",
     "studded": "Con clavos",
-    "unassigned": "Sin asignar"
+    "unassigned": "Sin asignar",
+    "preview": "Vista previa",
+    "previewScale": "Mostrado a tamaño de impresión. El código también se escanea desde la pantalla.",
+    "previewFailed": "No se ha podido generar la vista previa"
   }
 }

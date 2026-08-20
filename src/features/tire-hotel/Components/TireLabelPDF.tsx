@@ -1,10 +1,11 @@
-import { Document, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
+import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import {
-  A4,
   LABEL_SPECS,
   SHEET_MARGIN,
+  labelLayout,
   type LabelData,
   type LabelFormat,
+  type LabelLayout,
   type LabelSpec,
 } from '../Lib/labels'
 
@@ -12,117 +13,45 @@ import {
  * The sticker that goes on a tire.
  *
  * Read at arm's length in a cold store by someone holding a wheel, so the
- * plate is the largest thing on it and everything else is support. The QR is
- * sized to scan from a phone held roughly a hand's width away, which on the
- * small format means it takes nearly half the label.
+ * plate is the largest thing on it and everything else is support. Sizes and
+ * what survives at each label size come from labelLayout, which the on-screen
+ * preview reads too, so the two cannot drift apart.
  */
 
-const styles = StyleSheet.create({
-  label: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: '100%',
-    padding: 6,
-  },
-  qrBlock: {
-    alignItems: 'center',
-    marginRight: 6,
-  },
-  qrCaption: {
-    fontSize: 4,
-    color: '#666666',
-    marginTop: 1,
-  },
-  body: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  plate: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
-  },
-  plateSmall: {
-    fontSize: 13,
-    fontWeight: 'bold',
-  },
-  line: {
-    fontSize: 7,
-    color: '#333333',
-    marginTop: 1,
-  },
-  muted: {
-    fontSize: 6,
-    color: '#777777',
-    marginTop: 1,
-  },
-  reference: {
-    fontSize: 8,
-    fontWeight: 'bold',
-    marginTop: 2,
-  },
-  flags: {
-    flexDirection: 'row',
-    marginTop: 2,
-  },
-  flag: {
-    fontSize: 5.5,
-    color: '#000000',
-    borderWidth: 0.5,
-    borderColor: '#999999',
-    borderRadius: 2,
-    paddingHorizontal: 2,
-    paddingVertical: 0.5,
-    marginRight: 2,
-  },
-  // Large format stacks instead, since the roll is taller than it is wide.
-  tall: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    padding: 8,
-  },
-  tallPlate: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 6,
-    textAlign: 'center',
-  },
-  tallLine: {
-    fontSize: 9,
-    color: '#333333',
-    marginTop: 3,
-    textAlign: 'center',
-  },
-  sheetPage: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingTop: SHEET_MARGIN.top,
-    paddingLeft: SHEET_MARGIN.left,
-  },
-  cell: {
-    borderWidth: 0.25,
-    borderColor: '#dddddd',
-    borderStyle: 'dashed',
-  },
-})
-
-function seasonLine(data: LabelData, seasonLabel: string): string {
-  return [data.brand, data.size, seasonLabel].filter(Boolean).join(' · ')
+export type LabelLabels = {
+  reference: string
+  quantity: string
+  withRims: string
+  tpms: string
+  studded: string
+  unassigned: string
 }
 
-function Flags({ data, labels }: { data: LabelData; labels: LabelLabels }) {
-  const flags = [
+function flagList(data: LabelData, labels: LabelLabels): string[] {
+  return [
     data.withRims ? labels.withRims : null,
     data.hasTpms ? labels.tpms : null,
     data.studded ? labels.studded : null,
   ].filter(Boolean) as string[]
+}
+
+function Flags({ flags, layout }: { flags: string[]; layout: LabelLayout }) {
   if (flags.length === 0) return null
   return (
-    <View style={styles.flags}>
+    <View style={{ flexDirection: 'row', marginTop: 2 }}>
       {flags.map((flag) => (
-        <Text key={flag} style={styles.flag}>
+        <Text
+          key={flag}
+          style={{
+            fontSize: layout.flag,
+            borderWidth: 0.5,
+            borderColor: '#999999',
+            borderRadius: 2,
+            paddingHorizontal: 2,
+            paddingVertical: 0.5,
+            marginRight: 2,
+          }}
+        >
           {flag}
         </Text>
       ))}
@@ -130,7 +59,6 @@ function Flags({ data, labels }: { data: LabelData; labels: LabelLabels }) {
   )
 }
 
-/** One sticker, laid out for the space it has. */
 function Label({
   data,
   spec,
@@ -142,72 +70,90 @@ function Label({
   labels: LabelLabels
   seasonLabel: string
 }) {
+  const layout = labelLayout(spec.detail)
   const identity = data.plate || data.customer || data.reference || labels.unassigned
+  const tireLine = [data.brand, data.size, seasonLabel].filter(Boolean).join(' · ')
+  const flags = flagList(data, labels)
 
-  if (spec.detail === 'full') {
-    // Tall roll: the QR gets its own row rather than competing for width.
+  if (layout.stacked) {
     return (
-      <View style={styles.tall}>
-        <Image src={data.qr} style={{ width: 110, height: 110 }} />
-        <Text style={styles.qrCaption}>{data.url}</Text>
-        <Text style={styles.tallPlate}>{identity}</Text>
-        {data.customer && data.plate && <Text style={styles.tallLine}>{data.customer}</Text>}
-        <Text style={styles.tallLine}>{seasonLine(data, seasonLabel)}</Text>
-        <Text style={styles.tallLine}>
-          {labels.quantity.replace('{count}', String(data.quantity))}
-        </Text>
-        <Flags data={data} labels={labels} />
+      <View
+        style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          padding: layout.padding,
+        }}
+      >
+        <Image src={data.qr} style={{ width: layout.qr, height: layout.qr }} />
+        {layout.showUrl && (
+          <Text style={{ fontSize: 4, color: '#666666', marginTop: 1 }}>{data.url}</Text>
+        )}
+        <Text style={{ fontSize: layout.plate, fontWeight: 'bold', marginTop: 6 }}>{identity}</Text>
+        {data.customer && data.plate && (
+          <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 3 }}>
+            {data.customer}
+          </Text>
+        )}
+        <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 3 }}>{tireLine}</Text>
+        {layout.showQuantity && (
+          <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 3 }}>
+            {labels.quantity.replace('{count}', String(data.quantity))}
+          </Text>
+        )}
+        <Flags flags={flags} layout={layout} />
         {data.reference && (
-          <Text style={styles.reference}>
+          <Text style={{ fontSize: layout.reference, fontWeight: 'bold', marginTop: 2 }}>
             {labels.reference} {data.reference}
           </Text>
         )}
-        <Text style={styles.muted}>{data.shopName}</Text>
+        <Text style={{ fontSize: layout.footer, color: '#777777', marginTop: 1 }}>
+          {data.shopName}
+        </Text>
       </View>
     )
   }
 
-  const qrSize = spec.detail === 'minimal' ? 52 : 62
-
   return (
-    <View style={styles.label}>
-      <View style={styles.qrBlock}>
-        <Image src={data.qr} style={{ width: qrSize, height: qrSize }} />
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: '100%',
+        padding: layout.padding,
+      }}
+    >
+      <View style={{ marginRight: 6 }}>
+        <Image src={data.qr} style={{ width: layout.qr, height: layout.qr }} />
       </View>
-      <View style={styles.body}>
-        <Text style={spec.detail === 'minimal' ? styles.plateSmall : styles.plate}>{identity}</Text>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <Text style={{ fontSize: layout.plate, fontWeight: 'bold' }}>{identity}</Text>
 
-        {/* On the smallest label everything below the plate competes with it,
-            so only the reference survives. */}
-        {spec.detail === 'minimal' ? (
-          data.reference ? (
-            <Text style={styles.reference}>
-              {labels.reference} {data.reference}
-            </Text>
-          ) : null
-        ) : (
+        {layout.showDetail ? (
           <>
-            {data.customer && data.plate && <Text style={styles.line}>{data.customer}</Text>}
-            <Text style={styles.line}>{seasonLine(data, seasonLabel)}</Text>
-            <Flags data={data} labels={labels} />
-            <Text style={styles.muted}>
+            {data.customer && data.plate && (
+              <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 1 }}>
+                {data.customer}
+              </Text>
+            )}
+            <Text style={{ fontSize: layout.body, color: '#333333', marginTop: 1 }}>
+              {tireLine}
+            </Text>
+            <Flags flags={flags} layout={layout} />
+            <Text style={{ fontSize: layout.footer, color: '#777777', marginTop: 1 }}>
               {data.reference ? `${labels.reference} ${data.reference} · ` : ''}
               {data.shopName}
             </Text>
           </>
-        )}
+        ) : data.reference ? (
+          <Text style={{ fontSize: layout.reference, fontWeight: 'bold', marginTop: 2 }}>
+            {labels.reference} {data.reference}
+          </Text>
+        ) : null}
       </View>
     </View>
   )
-}
-
-export type LabelLabels = {
-  reference: string
-  quantity: string
-  withRims: string
-  tpms: string
-  studded: string
-  unassigned: string
 }
 
 export function TireLabelPDF({
@@ -224,21 +170,38 @@ export function TireLabelPDF({
   seasonLabel: string
 }) {
   const spec = LABEL_SPECS[format]
-  const sheets = spec.columns * spec.rows > 1
+  const perPage = spec.columns * spec.rows
 
-  if (sheets) {
-    const per = spec.columns * spec.rows
-    const pages = Math.ceil(copies / per)
+  if (perPage > 1) {
+    const pages = Math.ceil(copies / perPage)
     return (
       <Document>
         {Array.from({ length: pages }, (_, page) => {
-          const onThisPage = Math.min(per, copies - page * per)
+          const onThisPage = Math.min(perPage, copies - page * perPage)
           return (
             // biome-ignore lint/suspicious/noArrayIndexKey: pages are ordinal
-            <Page key={page} size="A4" style={styles.sheetPage}>
+            <Page
+              key={page}
+              size="A4"
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                paddingTop: SHEET_MARGIN.top,
+                paddingLeft: SHEET_MARGIN.left,
+              }}
+            >
               {Array.from({ length: onThisPage }, (_, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: cells are ordinal
-                <View key={i} style={[styles.cell, { width: spec.width, height: spec.height }]}>
+                <View
+                  // biome-ignore lint/suspicious/noArrayIndexKey: cells are ordinal
+                  key={i}
+                  style={{
+                    width: spec.width,
+                    height: spec.height,
+                    borderWidth: 0.25,
+                    borderColor: '#dddddd',
+                    borderStyle: 'dashed',
+                  }}
+                >
                   <Label data={data} spec={spec} labels={labels} seasonLabel={seasonLabel} />
                 </View>
               ))}
@@ -261,5 +224,3 @@ export function TireLabelPDF({
     </Document>
   )
 }
-
-export { A4 }

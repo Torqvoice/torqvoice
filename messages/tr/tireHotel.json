@@ -424,6 +424,9 @@
     "withRims": "Jantlı",
     "tpms": "TPMS",
     "studded": "Çivili",
-    "unassigned": "Atanmamış"
+    "unassigned": "Atanmamış",
+    "preview": "Önizleme",
+    "previewScale": "Baskı boyutunda gösterilir. Kod ekrandan da okutulabilir.",
+    "previewFailed": "Önizleme oluşturulamadı"
   }
 }

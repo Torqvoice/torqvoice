@@ -106,3 +106,77 @@ export function perPage(format: LabelFormat): number {
 export function pageCount(format: LabelFormat, copies: number): number {
   return Math.ceil(copies / perPage(format))
 }
+
+/**
+ * What fits on a label, and how big it is.
+ *
+ * Shared by the PDF and the on-screen preview so the two cannot disagree.
+ * A preview that flattered the small format would send someone to the
+ * printer twice, and the only reliable way to prevent that is for both to
+ * read the same numbers.
+ *
+ * Sizes are in PDF points; the preview converts them for the screen.
+ */
+export type LabelLayout = {
+  /** Stacked for tall rolls, side by side otherwise. */
+  stacked: boolean
+  padding: number
+  qr: number
+  plate: number
+  body: number
+  footer: number
+  flag: number
+  reference: number
+  /** The URL in text under the QR, for a code that will not scan. */
+  showUrl: boolean
+  /** Everything that would compete with the plate on a small label. */
+  showDetail: boolean
+  showQuantity: boolean
+}
+
+export function labelLayout(detail: LabelSpec['detail']): LabelLayout {
+  if (detail === 'full') {
+    return {
+      stacked: true,
+      padding: 8,
+      qr: 110,
+      plate: 22,
+      body: 9,
+      footer: 6,
+      flag: 5.5,
+      reference: 8,
+      showUrl: true,
+      showDetail: true,
+      showQuantity: true,
+    }
+  }
+  if (detail === 'minimal') {
+    return {
+      stacked: false,
+      padding: 6,
+      qr: 52,
+      plate: 13,
+      body: 7,
+      footer: 6,
+      flag: 5.5,
+      reference: 8,
+      showUrl: false,
+      // Barely bigger than the QR, so anything else would shrink the plate.
+      showDetail: false,
+      showQuantity: false,
+    }
+  }
+  return {
+    stacked: false,
+    padding: 6,
+    qr: 62,
+    plate: 16,
+    body: 7,
+    footer: 6,
+    flag: 5.5,
+    reference: 8,
+    showUrl: false,
+    showDetail: true,
+    showQuantity: false,
+  }
+}

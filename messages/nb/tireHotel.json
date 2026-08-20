@@ -424,6 +424,9 @@
     "withRims": "På felg",
     "tpms": "TPMS",
     "studded": "Pigg",
-    "unassigned": "Uten eier"
+    "unassigned": "Uten eier",
+    "preview": "Forhåndsvisning",
+    "previewScale": "Vist i utskriftsstørrelse. Koden kan skannes rett fra skjermen.",
+    "previewFailed": "Kunne ikke lage forhåndsvisning"
   }
 }

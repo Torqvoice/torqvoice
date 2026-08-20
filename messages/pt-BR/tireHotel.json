@@ -424,6 +424,9 @@
     "withRims": "Com rodas",
     "tpms": "TPMS",
     "studded": "Com cravos",
-    "unassigned": "Sem vínculo"
+    "unassigned": "Sem vínculo",
+    "preview": "Prévia",
+    "previewScale": "Exibida no tamanho de impressão. O código também lê direto da tela.",
+    "previewFailed": "Não foi possível gerar a prévia"
   }
 }

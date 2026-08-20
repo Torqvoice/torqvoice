@@ -424,6 +424,9 @@
     "withRims": "Sur jantes",
     "tpms": "TPMS",
     "studded": "Cloutés",
-    "unassigned": "Non attribué"
+    "unassigned": "Non attribué",
+    "preview": "Aperçu",
+    "previewScale": "Affiché à la taille d’impression. Le code se scanne aussi depuis l’écran.",
+    "previewFailed": "Aperçu impossible"
   }
 }

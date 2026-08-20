@@ -424,6 +424,9 @@
     "withRims": "Auf Felgen",
     "tpms": "RDKS",
     "studded": "Spikes",
-    "unassigned": "Nicht zugeordnet"
+    "unassigned": "Nicht zugeordnet",
+    "preview": "Vorschau",
+    "previewScale": "In Druckgröße dargestellt. Der Code lässt sich auch vom Bildschirm scannen.",
+    "previewFailed": "Vorschau nicht möglich"
   }
 }

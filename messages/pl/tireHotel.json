@@ -424,6 +424,9 @@
     "withRims": "Na felgach",
     "tpms": "TPMS",
     "studded": "Z kolcami",
-    "unassigned": "Nieprzypisane"
+    "unassigned": "Nieprzypisane",
+    "preview": "Podgląd",
+    "previewScale": "Pokazany w rozmiarze wydruku. Kod można zeskanować także z ekranu.",
+    "previewFailed": "Nie udało się utworzyć podglądu"
   }
 }

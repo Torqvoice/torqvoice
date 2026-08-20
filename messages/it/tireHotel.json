@@ -424,6 +424,9 @@
     "withRims": "Su cerchi",
     "tpms": "TPMS",
     "studded": "Chiodati",
-    "unassigned": "Non assegnato"
+    "unassigned": "Non assegnato",
+    "preview": "Anteprima",
+    "previewScale": "Mostrata a dimensione di stampa. Il codice si scansiona anche dallo schermo.",
+    "previewFailed": "Impossibile creare l’anteprima"
   }
 }

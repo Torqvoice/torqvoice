@@ -424,6 +424,9 @@
     "withRims": "On rims",
     "tpms": "TPMS",
     "studded": "Studded",
-    "unassigned": "Unassigned"
+    "unassigned": "Unassigned",
+    "preview": "Preview",
+    "previewScale": "Shown at print size. Scanning the code on screen works too.",
+    "previewFailed": "Could not build a preview"
   }
 }

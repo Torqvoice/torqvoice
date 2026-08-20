@@ -424,6 +424,9 @@
     "withRims": "Op velgen",
     "tpms": "TPMS",
     "studded": "Spijkers",
-    "unassigned": "Niet toegewezen"
+    "unassigned": "Niet toegewezen",
+    "preview": "Voorbeeld",
+    "previewScale": "Op printformaat weergegeven. De code scant ook vanaf het scherm.",
+    "previewFailed": "Kon geen voorbeeld maken"
   }
 }

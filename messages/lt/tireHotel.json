@@ -424,6 +424,9 @@
     "withRims": "Ant ratlankių",
     "tpms": "TPMS",
     "studded": "Su dygliais",
-    "unassigned": "Nepriskirta"
+    "unassigned": "Nepriskirta",
+    "preview": "Peržiūra",
+    "previewScale": "Rodoma spausdinimo dydžiu. Kodą galima nuskaityti ir nuo ekrano.",
+    "previewFailed": "Nepavyko sukurti peržiūros"
   }
 }
