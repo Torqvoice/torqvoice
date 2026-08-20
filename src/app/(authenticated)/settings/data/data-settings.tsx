@@ -7,10 +7,26 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useGlassModal } from '@/components/glass-modal'
-import { AlertTriangle, ArrowRight, Download, FileArchive, Loader2, ShieldCheck, Trash2, Upload } from 'lucide-react'
+import {
+  AlertTriangle,
+  ArrowRight,
+  Download,
+  FileArchive,
+  Loader2,
+  ShieldCheck,
+  Trash2,
+  Upload,
+} from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '../read-only-guard'
 import {
   SUPPORT_OPEN_EVENT,
@@ -52,6 +68,7 @@ interface ExportOptions {
   smsMessages: boolean
   scheduledMessages: boolean
   notifications: boolean
+  tireHotel: boolean
   files: boolean
 }
 
@@ -65,9 +82,14 @@ const OPTION_META: { key: keyof ExportOptions; labelKey: string; descKey: string
   { key: 'inspections', labelKey: 'optInspections', descKey: 'optInspectionsDesc' },
   { key: 'auditLogs', labelKey: 'optAuditLogs', descKey: 'optAuditLogsDesc' },
   { key: 'smsMessages', labelKey: 'optSmsMessages', descKey: 'optSmsMessagesDesc' },
-  { key: 'scheduledMessages', labelKey: 'optScheduledMessages', descKey: 'optScheduledMessagesDesc' },
+  {
+    key: 'scheduledMessages',
+    labelKey: 'optScheduledMessages',
+    descKey: 'optScheduledMessagesDesc',
+  },
   { key: 'notifications', labelKey: 'optNotifications', descKey: 'optNotificationsDesc' },
   { key: 'customFields', labelKey: 'optCustomFields', descKey: 'optCustomFieldsDesc' },
+  { key: 'tireHotel', labelKey: 'optTireHotel', descKey: 'optTireHotelDesc' },
   { key: 'files', labelKey: 'optFiles', descKey: 'optFilesDesc' },
 ]
 
@@ -84,6 +106,7 @@ const ALL_TRUE: ExportOptions = {
   smsMessages: true,
   scheduledMessages: true,
   notifications: true,
+  tireHotel: true,
   files: true,
 }
 
@@ -117,21 +140,11 @@ export function DataSettings({
 
   const toggleAll = () => {
     if (allChecked) {
-      setOptions({
-        settings: false,
-        customers: false,
-        vehicles: false,
-        quotes: false,
-        inventory: false,
-        customFields: false,
-        technicians: false,
-        inspections: false,
-        auditLogs: false,
-        smsMessages: false,
-        scheduledMessages: false,
-        notifications: false,
-        files: false,
-      })
+      setOptions(
+        Object.fromEntries(
+          (Object.keys(ALL_TRUE) as (keyof ExportOptions)[]).map((key) => [key, false])
+        ) as unknown as ExportOptions
+      )
     } else {
       setOptions({ ...ALL_TRUE })
     }
@@ -331,9 +344,16 @@ export function DataSettings({
         setContentDialogOpen(false)
         setContentConfirmText('')
         setContentSelections({
-          vehicles: false, customers: false, quotes: false, inventory: false,
-          inspections: false, technicians: false, inspectionTemplates: false,
-          notifications: false, smsMessages: false, customFields: false,
+          vehicles: false,
+          customers: false,
+          quotes: false,
+          inventory: false,
+          inspections: false,
+          technicians: false,
+          inspectionTemplates: false,
+          notifications: false,
+          smsMessages: false,
+          customFields: false,
         })
         router.refresh()
       } else {
@@ -383,26 +403,24 @@ export function DataSettings({
       <ReadOnlyBanner />
       <div>
         <h2 className="text-lg font-semibold">{t('data.title')}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t('data.description')}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('data.description')}</p>
       </div>
 
-      {lastBackupAt && (() => {
-        const ageHours = (now.getTime() - new Date(lastBackupAt).getTime()) / 3_600_000
-        // Hourly schedule: green while fresh, amber once a couple of runs were
-        // missed, red when a whole day has passed.
-        const dot = ageHours < 3 ? 'bg-emerald-500' : ageHours < 26 ? 'bg-amber-500' : 'bg-red-500'
-        return (
-          <AppCard
-            icon={ShieldCheck}
-            title={t('data.backupStatus.title')}
-            className="gap-2 border border-primary/30 shadow-sm"
-            contentClassName="space-y-2"
-          >
-              <p className="text-sm text-muted-foreground">
-                {t('data.backupStatus.description')}
-              </p>
+      {lastBackupAt &&
+        (() => {
+          const ageHours = (now.getTime() - new Date(lastBackupAt).getTime()) / 3_600_000
+          // Hourly schedule: green while fresh, amber once a couple of runs were
+          // missed, red when a whole day has passed.
+          const dot =
+            ageHours < 3 ? 'bg-emerald-500' : ageHours < 26 ? 'bg-amber-500' : 'bg-red-500'
+          return (
+            <AppCard
+              icon={ShieldCheck}
+              title={t('data.backupStatus.title')}
+              className="gap-2 border border-primary/30 shadow-sm"
+              contentClassName="space-y-2"
+            >
+              <p className="text-sm text-muted-foreground">{t('data.backupStatus.description')}</p>
               <p className="flex items-center gap-2 text-sm font-medium">
                 <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
                 {t('data.backupStatus.lastBackup')}{' '}
@@ -428,8 +446,8 @@ export function DataSettings({
                 </button>
               </p>
             </AppCard>
-        )
-      })()}
+          )
+        })()}
 
       <ReadOnlyWrapper>
         <div className="grid gap-6 lg:grid-cols-12">
@@ -440,54 +458,54 @@ export function DataSettings({
             className="lg:col-span-7"
             contentClassName="space-y-4"
           >
-              <p className="text-sm text-muted-foreground">
-                {t('data.exportDescription')}
-              </p>
+            <p className="text-sm text-muted-foreground">{t('data.exportDescription')}</p>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{t('data.includeInBackup')}</span>
-                  <button
-                    type="button"
-                    onClick={toggleAll}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    {allChecked ? t('data.deselectAll') : t('data.selectAll')}
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                  {OPTION_META.map(({ key, labelKey, descKey }) => (
-                    <label
-                      key={key}
-                      className="flex items-start gap-3 rounded-md p-2 hover:bg-muted/50 cursor-pointer"
-                    >
-                      <Checkbox
-                        checked={options[key]}
-                        onCheckedChange={() => toggleOption(key)}
-                        className="mt-0.5"
-                      />
-                      <div className="space-y-0.5">
-                        <div className="text-sm font-medium leading-none">{t(`data.${labelKey}`)}</div>
-                        <div className="text-xs text-muted-foreground">{t(`data.${descKey}`)}</div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-
-                {options.files && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                    <FileArchive className="h-3.5 w-3.5 shrink-0" />
-                    {t('data.filesWarning')}
-                  </p>
-                )}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('data.includeInBackup')}</span>
+                <button
+                  type="button"
+                  onClick={toggleAll}
+                  className="text-xs text-primary hover:underline"
+                >
+                  {allChecked ? t('data.deselectAll') : t('data.selectAll')}
+                </button>
               </div>
 
-              <Button onClick={handleExport} disabled={exporting || noneChecked}>
-                {exporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('data.downloadBackup')}
-              </Button>
-            </AppCard>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                {OPTION_META.map(({ key, labelKey, descKey }) => (
+                  <label
+                    key={key}
+                    className="flex items-start gap-3 rounded-md p-2 hover:bg-muted/50 cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={options[key]}
+                      onCheckedChange={() => toggleOption(key)}
+                      className="mt-0.5"
+                    />
+                    <div className="space-y-0.5">
+                      <div className="text-sm font-medium leading-none">
+                        {t(`data.${labelKey}`)}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{t(`data.${descKey}`)}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+
+              {options.files && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <FileArchive className="h-3.5 w-3.5 shrink-0" />
+                  {t('data.filesWarning')}
+                </p>
+              )}
+            </div>
+
+            <Button onClick={handleExport} disabled={exporting || noneChecked}>
+              {exporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('data.downloadBackup')}
+            </Button>
+          </AppCard>
 
           {/* Import Card */}
           <AppCard
@@ -496,78 +514,70 @@ export function DataSettings({
             className="lg:col-span-5"
             contentClassName="space-y-4"
           >
-              <div className="flex items-start gap-2 rounded-md bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>
-                  {t.rich('data.importWarning', { bold: (chunks) => <strong>{chunks}</strong> })}
-                </span>
-              </div>
-              <div className="space-y-3">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json,.zip"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-                  className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t('data.importFileHint')}
-                </p>
-                <Button
-                  onClick={handleImport}
-                  disabled={!selectedFile || importing}
-                  variant="outline"
-                >
-                  {importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('data.uploadRestore')}
-                </Button>
-              </div>
-            </AppCard>
+            <div className="flex items-start gap-2 rounded-md bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>
+                {t.rich('data.importWarning', { bold: (chunks) => <strong>{chunks}</strong> })}
+              </span>
+            </div>
+            <div className="space-y-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json,.zip"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
+              />
+              <p className="text-xs text-muted-foreground">{t('data.importFileHint')}</p>
+              <Button
+                onClick={handleImport}
+                disabled={!selectedFile || importing}
+                variant="outline"
+              >
+                {importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t('data.uploadRestore')}
+              </Button>
+            </div>
+          </AppCard>
         </div>
 
         {/* Import from Other Services */}
-        <AppCard
-          icon={ArrowRight}
-          title={t('data.importFromOther')}
-          contentClassName="space-y-4"
-        >
-            <p className="text-sm text-muted-foreground">
-              {t('data.importFromOtherDescription')}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              {/* LubeLog */}
-              <button
-                type="button"
-                onClick={() => setLubelogOpen(true)}
-                className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:border-primary/50 hover:shadow-md"
-              >
-                <Image
-                  src="/images/import/lubelog.png"
-                  alt="LubeLog"
-                  width={120}
-                  height={30}
-                  className="w-[120px] h-auto object-contain"
-                  unoptimized
-                />
-              </button>
+        <AppCard icon={ArrowRight} title={t('data.importFromOther')} contentClassName="space-y-4">
+          <p className="text-sm text-muted-foreground">{t('data.importFromOtherDescription')}</p>
+          <div className="flex flex-wrap gap-4">
+            {/* LubeLog */}
+            <button
+              type="button"
+              onClick={() => setLubelogOpen(true)}
+              className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:border-primary/50 hover:shadow-md"
+            >
+              <Image
+                src="/images/import/lubelog.png"
+                alt="LubeLog"
+                width={120}
+                height={30}
+                className="w-[120px] h-auto object-contain"
+                unoptimized
+              />
+            </button>
 
-              {/* Invoice Ninja */}
-              <button
-                type="button"
-                onClick={() => setInvoiceNinjaOpen(true)}
-                className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:border-primary/50 hover:shadow-md"
-              >
-                <Image
-                  src="/images/import/invoice_ninja.png"
-                  alt="Invoice Ninja"
-                  width={140}
-                  height={30}
-                  className="w-[140px] h-auto object-contain"
-                  unoptimized
-                />
-              </button>
-            </div>
-          </AppCard>
+            {/* Invoice Ninja */}
+            <button
+              type="button"
+              onClick={() => setInvoiceNinjaOpen(true)}
+              className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:border-primary/50 hover:shadow-md"
+            >
+              <Image
+                src="/images/import/invoice_ninja.png"
+                alt="Invoice Ninja"
+                width={140}
+                height={30}
+                className="w-[140px] h-auto object-contain"
+                unoptimized
+              />
+            </button>
+          </div>
+        </AppCard>
 
         {/* Onboarding sample data removal */}
         {hasSampleData && <SampleDataCard />}
@@ -605,10 +615,14 @@ export function DataSettings({
               <ol className="list-inside list-decimal space-y-1.5 text-sm text-muted-foreground">
                 <li>{t('data.lubelogStep1')}</li>
                 <li>
-                  {t.rich('data.lubelogStep2', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
+                  {t.rich('data.lubelogStep2', {
+                    bold: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+                  })}
                 </li>
                 <li>
-                  {t.rich('data.lubelogStep3', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
+                  {t.rich('data.lubelogStep3', {
+                    bold: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+                  })}
                 </li>
                 <li>{t('data.lubelogStep4')}</li>
               </ol>
@@ -674,10 +688,17 @@ export function DataSettings({
               onClick={() => {
                 setContentConfirmText('')
                 setContentSelections({
-          vehicles: false, customers: false, quotes: false, inventory: false,
-          inspections: false, technicians: false, inspectionTemplates: false,
-          notifications: false, smsMessages: false, customFields: false,
-        })
+                  vehicles: false,
+                  customers: false,
+                  quotes: false,
+                  inventory: false,
+                  inspections: false,
+                  technicians: false,
+                  inspectionTemplates: false,
+                  notifications: false,
+                  smsMessages: false,
+                  customFields: false,
+                })
                 setContentDialogOpen(true)
               }}
             >
@@ -698,7 +719,10 @@ export function DataSettings({
                 </div>
                 <Button
                   variant="destructive"
-                  onClick={() => { setWorkshopConfirmText(''); setWorkshopDialogOpen(true) }}
+                  onClick={() => {
+                    setWorkshopConfirmText('')
+                    setWorkshopDialogOpen(true)
+                  }}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   {t('account.deleteWorkshopButton')}
@@ -717,7 +741,10 @@ export function DataSettings({
             </div>
             <Button
               variant="destructive"
-              onClick={() => { setAccountConfirmText(''); setAccountDialogOpen(true) }}
+              onClick={() => {
+                setAccountConfirmText('')
+                setAccountDialogOpen(true)
+              }}
             >
               <Trash2 className="mr-2 h-4 w-4" />
               {t('account.deleteAccountButton')}
@@ -730,10 +757,10 @@ export function DataSettings({
       <Dialog open={workshopDialogOpen} onOpenChange={setWorkshopDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-destructive">{t('account.deleteWorkshopDialogTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('account.deleteWorkshopDialogDescription')}
-            </DialogDescription>
+            <DialogTitle className="text-destructive">
+              {t('account.deleteWorkshopDialogTitle')}
+            </DialogTitle>
+            <DialogDescription>{t('account.deleteWorkshopDialogDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
@@ -752,7 +779,11 @@ export function DataSettings({
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setWorkshopDialogOpen(false)} disabled={deletingWorkshop}>
+            <Button
+              variant="outline"
+              onClick={() => setWorkshopDialogOpen(false)}
+              disabled={deletingWorkshop}
+            >
               {t('account.cancel')}
             </Button>
             <Button
@@ -775,15 +806,17 @@ export function DataSettings({
       <Dialog open={accountDialogOpen} onOpenChange={setAccountDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-destructive">{t('account.deleteAccountDialogTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('account.deleteAccountDialogDescription')}
-            </DialogDescription>
+            <DialogTitle className="text-destructive">
+              {t('account.deleteAccountDialogTitle')}
+            </DialogTitle>
+            <DialogDescription>{t('account.deleteAccountDialogDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
               <p className="text-sm font-medium text-destructive">
-                {t.rich('account.deleteAccountConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
+                {t.rich('account.deleteAccountConfirmPrompt', {
+                  bold: (chunks) => <span className="font-mono font-bold">{chunks}</span>,
+                })}
               </p>
             </div>
             <Input
@@ -794,7 +827,11 @@ export function DataSettings({
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAccountDialogOpen(false)} disabled={deletingAccount}>
+            <Button
+              variant="outline"
+              onClick={() => setAccountDialogOpen(false)}
+              disabled={deletingAccount}
+            >
               {t('account.cancel')}
             </Button>
             <Button
@@ -817,14 +854,14 @@ export function DataSettings({
       <Dialog open={contentDialogOpen} onOpenChange={setContentDialogOpen}>
         <DialogContent className="sm:max-w-[640px]">
           <DialogHeader>
-            <DialogTitle className="text-destructive">{t('account.deleteContentDialogTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('account.deleteContentDialogDescription')}
-            </DialogDescription>
+            <DialogTitle className="text-destructive">
+              {t('account.deleteContentDialogTitle')}
+            </DialogTitle>
+            <DialogDescription>{t('account.deleteContentDialogDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {([
+              {[
                 {
                   key: 'vehicles' as const,
                   label: t('account.contentVehicles'),
@@ -885,7 +922,7 @@ export function DataSettings({
                   count: contentCounts.customFields,
                   description: t('account.contentCustomFieldsDescription'),
                 },
-              ]).map((item) => (
+              ].map((item) => (
                 <label
                   key={item.key}
                   className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${
@@ -905,9 +942,7 @@ export function DataSettings({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{item.label}</span>
-                      <span className="text-xs text-muted-foreground font-mono">
-                        {item.count}
-                      </span>
+                      <span className="text-xs text-muted-foreground font-mono">{item.count}</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
                   </div>
@@ -919,7 +954,9 @@ export function DataSettings({
               <>
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3">
                   <p className="text-sm font-medium text-destructive">
-                    {t.rich('account.deleteContentConfirmPrompt', { bold: (chunks) => <span className="font-mono font-bold">{chunks}</span> })}
+                    {t.rich('account.deleteContentConfirmPrompt', {
+                      bold: (chunks) => <span className="font-mono font-bold">{chunks}</span>,
+                    })}
                   </p>
                 </div>
                 <Input
@@ -932,7 +969,11 @@ export function DataSettings({
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setContentDialogOpen(false)} disabled={deletingContent}>
+            <Button
+              variant="outline"
+              onClick={() => setContentDialogOpen(false)}
+              disabled={deletingContent}
+            >
               Cancel
             </Button>
             <Button
@@ -949,7 +990,9 @@ export function DataSettings({
               ) : (
                 <Trash2 className="mr-2 h-4 w-4" />
               )}
-              {deletingContent ? t('account.deleting') : t('account.deleteSelected', { count: selectedContentCount })}
+              {deletingContent
+                ? t('account.deleting')
+                : t('account.deleteSelected', { count: selectedContentCount })}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -987,10 +1030,14 @@ export function DataSettings({
               <ol className="list-inside list-decimal space-y-1.5 text-sm text-muted-foreground">
                 <li>{t('data.invoiceNinjaStep1')}</li>
                 <li>
-                  {t.rich('data.invoiceNinjaStep2', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
+                  {t.rich('data.invoiceNinjaStep2', {
+                    bold: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+                  })}
                 </li>
                 <li>
-                  {t.rich('data.invoiceNinjaStep3', { bold: (chunks) => <strong className="text-foreground">{chunks}</strong> })}
+                  {t.rich('data.invoiceNinjaStep3', {
+                    bold: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+                  })}
                 </li>
                 <li>{t('data.invoiceNinjaStep4')}</li>
               </ol>
@@ -999,7 +1046,9 @@ export function DataSettings({
             <div className="flex items-start gap-2 rounded-md bg-blue-500/10 p-3 text-sm text-blue-700 dark:text-blue-400">
               <FileArchive className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                {t.rich('data.invoiceNinjaAddNote', { bold: (chunks) => <strong>{chunks}</strong> })}
+                {t.rich('data.invoiceNinjaAddNote', {
+                  bold: (chunks) => <strong>{chunks}</strong>,
+                })}
               </span>
             </div>
 
@@ -1022,9 +1071,7 @@ export function DataSettings({
                 onChange={(e) => setInvoiceNinjaFile(e.target.files?.[0] ?? null)}
                 className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
               />
-              <p className="text-xs text-muted-foreground">
-                {t('data.invoiceNinjaFileHint')}
-              </p>
+              <p className="text-xs text-muted-foreground">{t('data.invoiceNinjaFileHint')}</p>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">

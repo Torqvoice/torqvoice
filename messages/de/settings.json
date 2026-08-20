@@ -978,7 +978,9 @@
       "lastBackup": "Letztes Backup:",
       "supportPrompt": "Bei Fragen zum Schutz Ihrer Daten",
       "supportAction": "kontaktieren Sie unser Support-Team."
-    }
+    },
+    "optTireHotel": "Reifenhotel",
+    "optTireHotelDesc": "Eingelagerte Reifensätze, Regale, Vorbereitung und Lagervereinbarungen"
   },
   "license": {
     "title": "White-Label-Lizenz",

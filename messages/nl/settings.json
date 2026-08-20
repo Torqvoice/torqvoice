@@ -978,7 +978,9 @@
       "lastBackup": "Laatste back-up:",
       "supportPrompt": "Heeft u vragen over hoe uw gegevens worden beschermd,",
       "supportAction": "neem contact op met ons supportteam."
-    }
+    },
+    "optTireHotel": "Bandenhotel",
+    "optTireHotelDesc": "Opgeslagen bandensets, stellingen, voorbereiding en opslagovereenkomsten"
   },
   "license": {
     "title": "White-label licentie",

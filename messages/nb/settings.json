@@ -978,7 +978,9 @@
       "lastBackup": "Siste sikkerhetskopi:",
       "supportPrompt": "Har du spørsmål om hvordan dataene dine beskyttes,",
       "supportAction": "kontakt supportteamet vårt."
-    }
+    },
+    "optTireHotel": "Dekkhotell",
+    "optTireHotelDesc": "Lagrede dekksett, hyller, klargjøring og lagringsavtaler"
   },
   "license": {
     "title": "White-label-lisens",

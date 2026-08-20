@@ -978,7 +978,9 @@
       "lastBackup": "Son yedekleme:",
       "supportPrompt": "Verilerinizin nasıl korunduğuyla ilgili sorularınız varsa,",
       "supportAction": "destek ekibimizle iletişime geçin."
-    }
+    },
+    "optTireHotel": "Lastik oteli",
+    "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri"
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",

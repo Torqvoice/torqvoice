@@ -978,7 +978,9 @@
       "lastBackup": "Ultimo backup:",
       "supportPrompt": "Per qualsiasi domanda sulla protezione dei tuoi dati,",
       "supportAction": "contatta il nostro team di supporto."
-    }
+    },
+    "optTireHotel": "Hotel pneumatici",
+    "optTireHotelDesc": "Treni in deposito, scaffali, preparazione e contratti di deposito"
   },
   "license": {
     "title": "Licenza White-Label",

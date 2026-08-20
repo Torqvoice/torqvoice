@@ -978,7 +978,9 @@
       "lastBackup": "Ostatnia kopia zapasowa:",
       "supportPrompt": "Jeśli masz pytania dotyczące ochrony Twoich danych,",
       "supportAction": "skontaktuj się z naszym zespołem wsparcia."
-    }
+    },
+    "optTireHotel": "Hotel opon",
+    "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania"
   },
   "license": {
     "title": "Licencja white-label",

@@ -978,7 +978,9 @@
       "lastBackup": "Dernière sauvegarde :",
       "supportPrompt": "Pour toute question sur la protection de vos données,",
       "supportAction": "contactez notre équipe d'assistance."
-    }
+    },
+    "optTireHotel": "Hôtel à pneus",
+    "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage"
   },
   "license": {
     "title": "Licence marque blanche",

@@ -978,7 +978,9 @@
       "lastBackup": "Última copia de seguridad:",
       "supportPrompt": "Si tiene alguna pregunta sobre cómo se protegen sus datos,",
       "supportAction": "contacte con nuestro equipo de soporte."
-    }
+    },
+    "optTireHotel": "Hotel de neumáticos",
+    "optTireHotelDesc": "Juegos guardados, estantes, preparación y contratos de almacenaje"
   },
   "license": {
     "title": "Licencia marca blanca",

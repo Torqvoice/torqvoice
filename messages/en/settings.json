@@ -978,7 +978,9 @@
       "lastBackup": "Last backup:",
       "supportPrompt": "If you have any questions about how your data is protected,",
       "supportAction": "contact our support team."
-    }
+    },
+    "optTireHotel": "Tire hotel",
+    "optTireHotelDesc": "Stored tire sets, shelves, prep work and storage agreements"
   },
   "license": {
     "title": "White-Label License",

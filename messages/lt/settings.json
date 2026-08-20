@@ -978,7 +978,9 @@
       "lastBackup": "Paskutinė atsarginė kopija:",
       "supportPrompt": "Jei turite klausimų apie jūsų duomenų apsaugą,",
       "supportAction": "susisiekite su mūsų pagalbos komanda."
-    }
+    },
+    "optTireHotel": "Padangų viešbutis",
+    "optTireHotelDesc": "Saugomi komplektai, lentynos, paruošimas ir saugojimo sutartys"
   },
   "license": {
     "title": "\"White-Label\" licencija",

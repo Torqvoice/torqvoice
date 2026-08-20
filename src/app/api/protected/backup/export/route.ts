@@ -1,27 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { db } from "@/lib/db";
-import JSZip from "jszip";
-import { isDemoMode } from "@/lib/demo";
-import { readdir, readFile, stat } from "fs/promises";
-import path from "path";
+import { NextRequest, NextResponse } from 'next/server'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { db } from '@/lib/db'
+import JSZip from 'jszip'
+import { isDemoMode } from '@/lib/demo'
+import { readdir, readFile, stat } from 'fs/promises'
+import path from 'path'
 
-export const maxDuration = 300;
+export const maxDuration = 300
 
 interface ExportOptions {
-  settings: boolean;
-  customers: boolean;
-  vehicles: boolean;
-  quotes: boolean;
-  inventory: boolean;
-  customFields: boolean;
-  files: boolean;
-  technicians: boolean;
-  inspections: boolean;
-  auditLogs: boolean;
-  smsMessages: boolean;
-  scheduledMessages: boolean;
-  notifications: boolean;
+  settings: boolean
+  customers: boolean
+  vehicles: boolean
+  quotes: boolean
+  inventory: boolean
+  customFields: boolean
+  files: boolean
+  technicians: boolean
+  inspections: boolean
+  auditLogs: boolean
+  smsMessages: boolean
+  scheduledMessages: boolean
+  notifications: boolean
+  tireHotel: boolean
 }
 
 const DEFAULT_OPTIONS: ExportOptions = {
@@ -38,51 +39,48 @@ const DEFAULT_OPTIONS: ExportOptions = {
   smsMessages: true,
   scheduledMessages: true,
   notifications: true,
-};
+  tireHotel: true,
+}
 
 export async function POST(request: NextRequest) {
   if (isDemoMode) {
-    return NextResponse.json({ error: "This action is disabled on the demo." }, { status: 403 });
+    return NextResponse.json({ error: 'This action is disabled on the demo.' }, { status: 403 })
   }
 
-  const ctx = await getAuthContext();
+  const ctx = await getAuthContext()
 
   if (!ctx) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  let options: ExportOptions = DEFAULT_OPTIONS;
+  let options: ExportOptions = DEFAULT_OPTIONS
   try {
-    const body = await request.json();
+    const body = await request.json()
     if (body?.include) {
-      options = { ...DEFAULT_OPTIONS, ...body.include };
+      options = { ...DEFAULT_OPTIONS, ...body.include }
     }
   } catch {
     // If no body or invalid JSON, use defaults
   }
 
-  const data: Record<string, unknown> = {};
+  const data: Record<string, unknown> = {}
 
-  const queries: Promise<void>[] = [];
+  const queries: Promise<void>[] = []
 
   if (options.settings) {
     queries.push(
-      db.appSetting
-        .findMany({ where: { organizationId: ctx.organizationId } })
-        .then((result) => {
-          data.settings = result;
-        })
-    );
+      db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.settings = result
+      })
+    )
   }
 
   if (options.customers) {
     queries.push(
-      db.customer
-        .findMany({ where: { organizationId: ctx.organizationId } })
-        .then((result) => {
-          data.customers = result;
-        })
-    );
+      db.customer.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.customers = result
+      })
+    )
   }
 
   if (options.customFields) {
@@ -93,9 +91,9 @@ export async function POST(request: NextRequest) {
           include: { values: true },
         })
         .then((result) => {
-          data.customFieldDefinitions = result;
+          data.customFieldDefinitions = result
         })
-    );
+    )
   }
 
   if (options.inventory) {
@@ -103,9 +101,9 @@ export async function POST(request: NextRequest) {
       db.inventoryPart
         .findMany({ where: { organizationId: ctx.organizationId } })
         .then((result) => {
-          data.inventoryParts = result;
+          data.inventoryParts = result
         })
-    );
+    )
   }
 
   if (options.vehicles) {
@@ -128,9 +126,9 @@ export async function POST(request: NextRequest) {
           },
         })
         .then((result) => {
-          data.vehicles = result;
+          data.vehicles = result
         })
-    );
+    )
   }
 
   if (options.vehicles) {
@@ -139,9 +137,9 @@ export async function POST(request: NextRequest) {
       db.reminder
         .findMany({ where: { organizationId: ctx.organizationId, vehicleId: null } })
         .then((result) => {
-          data.orgReminders = result;
+          data.orgReminders = result
         })
-    );
+    )
   }
 
   if (options.vehicles) {
@@ -160,9 +158,9 @@ export async function POST(request: NextRequest) {
           },
         })
         .then((result) => {
-          data.counterSales = result;
+          data.counterSales = result
         })
-    );
+    )
   }
 
   if (options.quotes) {
@@ -176,19 +174,17 @@ export async function POST(request: NextRequest) {
           },
         })
         .then((result) => {
-          data.quotes = result;
+          data.quotes = result
         })
-    );
+    )
   }
 
   if (options.technicians) {
     queries.push(
-      db.technician
-        .findMany({ where: { organizationId: ctx.organizationId } })
-        .then((result) => {
-          data.technicians = result;
-        })
-    );
+      db.technician.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.technicians = result
+      })
+    )
   }
 
   if (options.inspections) {
@@ -203,9 +199,9 @@ export async function POST(request: NextRequest) {
           },
         })
         .then((result) => {
-          data.inspectionTemplates = result;
+          data.inspectionTemplates = result
         })
-    );
+    )
     queries.push(
       db.inspection
         .findMany({
@@ -216,29 +212,56 @@ export async function POST(request: NextRequest) {
           },
         })
         .then((result) => {
-          data.inspections = result;
+          data.inspections = result
         })
-    );
+    )
+  }
+
+  if (options.tireHotel) {
+    // Shelves first, then what sits on them. The sets reference locations by
+    // id, so an export missing the warehouses would restore tires with
+    // nowhere to put them.
+    queries.push(
+      db.tireWarehouse
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: { locations: true },
+        })
+        .then((result) => {
+          data.tireWarehouses = result
+        })
+    )
+    queries.push(
+      db.tireSet
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: {
+            measurements: true,
+            movements: true,
+            treatments: true,
+            agreements: { include: { charges: true } },
+          },
+        })
+        .then((result) => {
+          data.tireSets = result
+        })
+    )
   }
 
   if (options.auditLogs) {
     queries.push(
-      db.auditLog
-        .findMany({ where: { organizationId: ctx.organizationId } })
-        .then((result) => {
-          data.auditLogs = result;
-        })
-    );
+      db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.auditLogs = result
+      })
+    )
   }
 
   if (options.smsMessages) {
     queries.push(
-      db.smsMessage
-        .findMany({ where: { organizationId: ctx.organizationId } })
-        .then((result) => {
-          data.smsMessages = result;
-        })
-    );
+      db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.smsMessages = result
+      })
+    )
   }
 
   if (options.scheduledMessages) {
@@ -246,59 +269,52 @@ export async function POST(request: NextRequest) {
       db.scheduledMessage
         .findMany({ where: { organizationId: ctx.organizationId } })
         .then((result) => {
-          data.scheduledMessages = result;
+          data.scheduledMessages = result
         })
-    );
+    )
   }
 
   if (options.notifications) {
     queries.push(
-      db.notification
-        .findMany({ where: { organizationId: ctx.organizationId } })
-        .then((result) => {
-          data.notifications = result;
-        })
-    );
+      db.notification.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.notifications = result
+      })
+    )
   }
 
-  await Promise.all(queries);
+  await Promise.all(queries)
 
   const backup = {
     version: 2,
     exportedAt: new Date().toISOString(),
     data,
-  };
+  }
 
-  const zip = new JSZip();
+  const zip = new JSZip()
 
   // Add data.json
-  zip.file("data.json", JSON.stringify(backup, null, 2));
+  zip.file('data.json', JSON.stringify(backup, null, 2))
 
   // Add uploaded files if requested
   if (options.files) {
-    const uploadsDir = path.join(
-      process.cwd(),
-      "data",
-      "uploads",
-      ctx.organizationId
-    );
+    const uploadsDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId)
 
-    const categories = ["logos", "vehicles", "inventory", "services"];
+    const categories = ['logos', 'vehicles', 'inventory', 'services']
 
     for (const category of categories) {
-      const categoryDir = path.join(uploadsDir, category);
+      const categoryDir = path.join(uploadsDir, category)
       try {
-        const dirStat = await stat(categoryDir);
-        if (!dirStat.isDirectory()) continue;
+        const dirStat = await stat(categoryDir)
+        if (!dirStat.isDirectory()) continue
 
-        const files = await readdir(categoryDir);
+        const files = await readdir(categoryDir)
         for (const file of files) {
-          const filePath = path.join(categoryDir, file);
-          const fileStat = await stat(filePath);
-          if (!fileStat.isFile()) continue;
+          const filePath = path.join(categoryDir, file)
+          const fileStat = await stat(filePath)
+          if (!fileStat.isFile()) continue
 
-          const fileBuffer = await readFile(filePath);
-          zip.file(`files/${category}/${file}`, fileBuffer);
+          const fileBuffer = await readFile(filePath)
+          zip.file(`files/${category}/${file}`, fileBuffer)
         }
       } catch {
         // Category directory doesn't exist, skip
@@ -306,85 +322,102 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const zipBuffer = await zip.generateAsync({ type: "arraybuffer", compression: "DEFLATE", compressionOptions: { level: 6 } });
+  const zipBuffer = await zip.generateAsync({
+    type: 'arraybuffer',
+    compression: 'DEFLATE',
+    compressionOptions: { level: 6 },
+  })
 
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = new Date().toISOString().slice(0, 10)
   return new Response(zipBuffer, {
     headers: {
-      "Content-Type": "application/zip",
-      "Content-Disposition": `attachment; filename="torqvoice-backup-${dateStr}.zip"`,
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="torqvoice-backup-${dateStr}.zip"`,
     },
-  });
+  })
 }
 
 // Keep GET for backward compatibility — exports all data as zip with defaults
 export async function GET() {
-  const ctx = await getAuthContext();
+  const ctx = await getAuthContext()
 
   if (!ctx) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const [
-    settings, customers, customFieldDefinitions, inventoryParts, vehicles, orgReminders, counterSales, quotes,
-    technicians, inspectionTemplates, inspections, auditLogs, smsMessages, scheduledMessages, notifications,
+    settings,
+    customers,
+    customFieldDefinitions,
+    inventoryParts,
+    vehicles,
+    orgReminders,
+    counterSales,
+    quotes,
+    technicians,
+    inspectionTemplates,
+    inspections,
+    auditLogs,
+    smsMessages,
+    scheduledMessages,
+    notifications,
   ] = await Promise.all([
-      db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.customer.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.customFieldDefinition.findMany({
-        where: { organizationId: ctx.organizationId },
-        include: { values: true },
-      }),
-      db.inventoryPart.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.vehicle.findMany({
-        where: { organizationId: ctx.organizationId },
-        include: {
-          notes: true,
-          fuelLogs: true,
-          reminders: true,
-          serviceRecords: {
-            include: {
-              partItems: true,
-              laborItems: true,
-              attachments: true,
-              payments: true,
-            },
+    db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.customer.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.customFieldDefinition.findMany({
+      where: { organizationId: ctx.organizationId },
+      include: { values: true },
+    }),
+    db.inventoryPart.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.vehicle.findMany({
+      where: { organizationId: ctx.organizationId },
+      include: {
+        notes: true,
+        fuelLogs: true,
+        reminders: true,
+        serviceRecords: {
+          include: {
+            partItems: true,
+            laborItems: true,
+            attachments: true,
+            payments: true,
           },
         },
-      }),
-      db.reminder.findMany({
-        where: { organizationId: ctx.organizationId, vehicleId: null },
-      }),
-      db.serviceRecord.findMany({
-        where: { organizationId: ctx.organizationId, vehicleId: null },
-        include: {
-          partItems: true,
-          laborItems: true,
-          attachments: true,
-          payments: true,
-        },
-      }),
-      db.quote.findMany({
-        where: { organizationId: ctx.organizationId },
-        include: {
-          partItems: true,
-          laborItems: true,
-        },
-      }),
-      db.technician.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.inspectionTemplate.findMany({
-        where: { organizationId: ctx.organizationId },
-        include: { sections: { include: { items: true } } },
-      }),
-      db.inspection.findMany({
-        where: { organizationId: ctx.organizationId },
-        include: { items: true, quoteRequests: true },
-      }),
-      db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.scheduledMessage.findMany({ where: { organizationId: ctx.organizationId } }),
-      db.notification.findMany({ where: { organizationId: ctx.organizationId } }),
-    ]);
+      },
+    }),
+    db.reminder.findMany({
+      where: { organizationId: ctx.organizationId, vehicleId: null },
+    }),
+    db.serviceRecord.findMany({
+      where: { organizationId: ctx.organizationId, vehicleId: null },
+      include: {
+        partItems: true,
+        laborItems: true,
+        attachments: true,
+        payments: true,
+      },
+    }),
+    db.quote.findMany({
+      where: { organizationId: ctx.organizationId },
+      include: {
+        partItems: true,
+        laborItems: true,
+      },
+    }),
+    db.technician.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.inspectionTemplate.findMany({
+      where: { organizationId: ctx.organizationId },
+      include: { sections: { include: { items: true } } },
+    }),
+    db.inspection.findMany({
+      where: { organizationId: ctx.organizationId },
+      include: { items: true, quoteRequests: true },
+    }),
+    db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.scheduledMessage.findMany({ where: { organizationId: ctx.organizationId } }),
+    db.notification.findMany({ where: { organizationId: ctx.organizationId } }),
+  ])
 
   const backup = {
     version: 1,
@@ -406,12 +439,12 @@ export async function GET() {
       scheduledMessages,
       notifications,
     },
-  };
+  }
 
   return new NextResponse(JSON.stringify(backup, null, 2), {
     headers: {
-      "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="torqvoice-backup-${new Date().toISOString().slice(0, 10)}.json"`,
+      'Content-Type': 'application/json',
+      'Content-Disposition': `attachment; filename="torqvoice-backup-${new Date().toISOString().slice(0, 10)}.json"`,
     },
-  });
+  })
 }
