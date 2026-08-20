@@ -365,9 +365,9 @@
     "storageFee": "Valor",
     "storagePeriod": "Período",
     "destination": "Para onde vai",
-    "targetInvoice": "Nova nota",
+    "targetInvoice": "Nova fatura",
     "targetInvoiceHint": "Cobre o cliente direto, sem ordem em um veículo.",
-    "createInvoice": "Criar nota",
+    "createInvoice": "Criar fatura",
     "needsCustomer": "Vincule um cliente ou veículo ao jogo antes de cobrar."
   },
   "label": {
