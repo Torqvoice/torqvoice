@@ -6,9 +6,7 @@
     "save": "Išsaugoti",
     "create": "Sukurti",
     "delete": "Ištrinti",
-    "edit": "Redaguoti",
-    "back": "Atgal",
-    "next": "Toliau"
+    "edit": "Redaguoti"
   },
   "seasons": {
     "summer": "Vasarinės",
@@ -326,7 +324,6 @@
     "tires": "Padangos",
     "inStock": "{count} sandėlyje",
     "shortStock": "sandėlyje tik {count}",
-    "order": "užsakyti",
     "noMatch": "Sandėlyje nieko nėra pagal {size}. Eilutė bus pridėta su jūsų nurodyta kaina.",
     "noSize": "Šiam komplektui nenurodytas dydis, todėl sandėlio sugretinti negalima. Eilutė naudos jūsų kainą.",
     "unitPrice": "Kaina už padangą",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Sukurti darbo užsakymą",
     "quoteCreated": "Sukurtas pasiūlymas {number}",
     "workOrderCreated": "Sukurtas darbo užsakymas",
-    "needsVehicle": "Prieš kurdami darbą, susiekite komplektą su transporto priemone.",
     "failed": "Nepavyko sukurti",
     "bannerTitle": "Paimti iš",
     "openSet": "Atverti komplektą",
@@ -345,7 +341,6 @@
     "targetExisting": "Arba pridėti prie jau atviro šios transporto priemonės darbo",
     "addToWorkOrder": "Pridėti prie darbo užsakymo",
     "workOrderUpdated": "Pridėta prie darbo užsakymo",
-    "prepLines": "Paruošimas šiame darbe",
     "unlink": "Atsieti",
     "unlinkTitle": "Atsieti šias padangas nuo darbo?",
     "unlinkBody": "Darbas neberodys į padangų komplektą. Jau įtrauktos dalių ir darbo eilutės lieka, tad pašalinkite jas atskirai, jei jų apmokestinti nereikia.",

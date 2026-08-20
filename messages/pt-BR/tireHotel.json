@@ -6,9 +6,7 @@
     "save": "Salvar",
     "create": "Criar",
     "delete": "Excluir",
-    "edit": "Editar",
-    "back": "Voltar",
-    "next": "Avançar"
+    "edit": "Editar"
   },
   "seasons": {
     "summer": "Verão",
@@ -326,7 +324,6 @@
     "tires": "Pneus",
     "inStock": "{count} em estoque",
     "shortStock": "apenas {count} em estoque",
-    "order": "a pedir",
     "noMatch": "Nada no estoque corresponde a {size}. A linha entra com o preço que você definir.",
     "noSize": "Este jogo não tem medida, então não dá para cruzar com o estoque. A linha usa seu preço.",
     "unitPrice": "Preço por pneu",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Criar ordem",
     "quoteCreated": "Orçamento {number} criado",
     "workOrderCreated": "Ordem criada",
-    "needsVehicle": "Vincule um veículo ao jogo antes de criar uma ordem.",
     "failed": "Não foi possível criar",
     "bannerTitle": "Buscar em",
     "openSet": "Abrir jogo",
@@ -345,7 +341,6 @@
     "targetExisting": "Ou some a uma ordem já aberta para este veículo",
     "addToWorkOrder": "Somar à ordem",
     "workOrderUpdated": "Somado à ordem",
-    "prepLines": "Preparação nesta ordem",
     "unlink": "Desvincular",
     "unlinkTitle": "Desvincular estes pneus da ordem?",
     "unlinkBody": "A ordem deixa de apontar para o jogo de pneus. Peças e mão de obra já lançadas permanecem; remova-as à parte se não devem ser cobradas.",

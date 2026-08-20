@@ -6,9 +6,7 @@
     "save": "Zapisz",
     "create": "Utwórz",
     "delete": "Usuń",
-    "edit": "Edytuj",
-    "back": "Wstecz",
-    "next": "Dalej"
+    "edit": "Edytuj"
   },
   "seasons": {
     "summer": "Letnie",
@@ -326,7 +324,6 @@
     "tires": "Opony",
     "inStock": "{count} na stanie",
     "shortStock": "tylko {count} na stanie",
-    "order": "do zamówienia",
     "noMatch": "Nic na stanie nie pasuje do {size}. Pozycja zostanie dodana z ceną, którą podasz.",
     "noSize": "Ten komplet nie ma rozmiaru, więc nie da się dopasować stanu. Pozycja użyje Twojej ceny.",
     "unitPrice": "Cena za oponę",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Utwórz zlecenie",
     "quoteCreated": "Utworzono wycenę {number}",
     "workOrderCreated": "Utworzono zlecenie",
-    "needsVehicle": "Powiąż pojazd z kompletem, zanim utworzysz zlecenie.",
     "failed": "Nie udało się utworzyć",
     "bannerTitle": "Odbiór z",
     "openSet": "Otwórz komplet",
@@ -345,7 +341,6 @@
     "targetExisting": "Albo dodaj do zlecenia już otwartego dla tego pojazdu",
     "addToWorkOrder": "Dodaj do zlecenia",
     "workOrderUpdated": "Dodano do zlecenia",
-    "prepLines": "Przygotowanie w tym zleceniu",
     "unlink": "Odłącz",
     "unlinkTitle": "Odłączyć te opony od zlecenia?",
     "unlinkBody": "Zlecenie przestaje wskazywać komplet opon. Części i robocizna, które już na nim są, zostają, więc usuń je osobno, jeśli nie mają być fakturowane.",

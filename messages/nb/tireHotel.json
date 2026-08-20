@@ -6,9 +6,7 @@
     "save": "Lagre",
     "create": "Opprett",
     "delete": "Slett",
-    "edit": "Rediger",
-    "back": "Tilbake",
-    "next": "Neste"
+    "edit": "Rediger"
   },
   "seasons": {
     "summer": "Sommer",
@@ -326,7 +324,6 @@
     "tires": "Dekk",
     "inStock": "{count} på lager",
     "shortStock": "bare {count} på lager",
-    "order": "må bestilles",
     "noMatch": "Ingenting på lager passer {size}. Linjen legges inn med prisen du setter.",
     "noSize": "Dette settet mangler dimensjon, så lageret kan ikke matches. Linjen legges inn med prisen du setter.",
     "unitPrice": "Pris per dekk",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Opprett arbeidsordre",
     "quoteCreated": "Tilbud {number} opprettet",
     "workOrderCreated": "Arbeidsordre opprettet",
-    "needsVehicle": "Knytt et kjøretøy til settet før du oppretter jobb.",
     "failed": "Kunne ikke opprette",
     "bannerTitle": "Hentes fra",
     "openSet": "Åpne dekksett",
@@ -345,7 +341,6 @@
     "targetExisting": "Eller legg til på en jobb som allerede er åpen for dette kjøretøyet",
     "addToWorkOrder": "Legg til på arbeidsordre",
     "workOrderUpdated": "Lagt til på arbeidsordren",
-    "prepLines": "Klargjøring på denne jobben",
     "unlink": "Koble fra",
     "unlinkTitle": "Koble disse dekkene fra jobben?",
     "unlinkBody": "Jobben peker ikke lenger på dekksettet. Deler og arbeidslinjer som allerede ligger der blir stående, så fjern dem separat hvis de ikke skal faktureres.",

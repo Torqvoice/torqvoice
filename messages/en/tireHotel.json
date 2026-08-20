@@ -6,9 +6,7 @@
     "save": "Save",
     "create": "Create",
     "delete": "Delete",
-    "edit": "Edit",
-    "back": "Back",
-    "next": "Next"
+    "edit": "Edit"
   },
   "seasons": {
     "summer": "Summer",
@@ -326,7 +324,6 @@
     "tires": "Tires",
     "inStock": "{count} in stock",
     "shortStock": "only {count} in stock",
-    "order": "to order",
     "noMatch": "Nothing in stock matches {size}. The line is added at the price you set.",
     "noSize": "This set has no size recorded, so stock cannot be matched. The line is added at the price you set.",
     "unitPrice": "Price per tire",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Create work order",
     "quoteCreated": "Quote {number} created",
     "workOrderCreated": "Work order created",
-    "needsVehicle": "Link a vehicle to this set before booking a job.",
     "failed": "Could not create that",
     "bannerTitle": "Fetch from",
     "openSet": "Open tire set",
@@ -345,7 +341,6 @@
     "targetExisting": "Or add to a job already open for this vehicle",
     "addToWorkOrder": "Add to work order",
     "workOrderUpdated": "Added to the work order",
-    "prepLines": "Prep on this job",
     "unlink": "Unlink",
     "unlinkTitle": "Unlink these tires from the job?",
     "unlinkBody": "The job stops pointing at the tire set. The parts and labour lines already on it stay, so remove them separately if they should not be billed.",

@@ -6,9 +6,7 @@
     "save": "Guardar",
     "create": "Crear",
     "delete": "Eliminar",
-    "edit": "Editar",
-    "back": "Atrás",
-    "next": "Siguiente"
+    "edit": "Editar"
   },
   "seasons": {
     "summer": "Verano",
@@ -326,7 +324,6 @@
     "tires": "Neumáticos",
     "inStock": "{count} en stock",
     "shortStock": "solo {count} en stock",
-    "order": "pedir",
     "noMatch": "Nada en stock coincide con {size}. La línea se añade con el precio que pongas.",
     "noSize": "Este juego no tiene medida, así que no se puede cruzar con el stock. La línea se añade con tu precio.",
     "unitPrice": "Precio por neumático",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Crear orden",
     "quoteCreated": "Presupuesto {number} creado",
     "workOrderCreated": "Orden creada",
-    "needsVehicle": "Vincula un vehículo al juego antes de crear una orden.",
     "failed": "No se ha podido crear",
     "bannerTitle": "Recoger en",
     "openSet": "Abrir juego",
@@ -345,7 +341,6 @@
     "targetExisting": "O añadir a una orden ya abierta para este vehículo",
     "addToWorkOrder": "Añadir a la orden",
     "workOrderUpdated": "Añadido a la orden",
-    "prepLines": "Preparación en esta orden",
     "unlink": "Desvincular",
     "unlinkTitle": "¿Desvincular estos neumáticos de la orden?",
     "unlinkBody": "La orden deja de apuntar al juego de neumáticos. Las piezas y la mano de obra que ya están se quedan; quítalas aparte si no se deben cobrar.",

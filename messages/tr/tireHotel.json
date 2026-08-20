@@ -6,9 +6,7 @@
     "save": "Kaydet",
     "create": "Oluştur",
     "delete": "Sil",
-    "edit": "Düzenle",
-    "back": "Geri",
-    "next": "İleri"
+    "edit": "Düzenle"
   },
   "seasons": {
     "summer": "Yaz",
@@ -326,7 +324,6 @@
     "tires": "Lastikler",
     "inStock": "{count} stokta",
     "shortStock": "stokta yalnızca {count}",
-    "order": "sipariş",
     "noMatch": "Stokta {size} ölçüsüne uyan bir şey yok. Satır belirlediğiniz fiyatla eklenir.",
     "noSize": "Bu takımın ölçüsü kayıtlı değil, stok eşleştirilemez. Satır sizin fiyatınızla eklenir.",
     "unitPrice": "Lastik başına fiyat",
@@ -334,7 +331,6 @@
     "createWorkOrder": "İş emri oluştur",
     "quoteCreated": "{number} numaralı teklif oluşturuldu",
     "workOrderCreated": "İş emri oluşturuldu",
-    "needsVehicle": "İş oluşturmadan önce takıma bir araç bağlayın.",
     "failed": "Oluşturulamadı",
     "bannerTitle": "Şuradan alınacak",
     "openSet": "Lastik takımını aç",
@@ -345,7 +341,6 @@
     "targetExisting": "Veya bu araç için açık olan bir işe ekle",
     "addToWorkOrder": "İş emrine ekle",
     "workOrderUpdated": "İş emrine eklendi",
-    "prepLines": "Bu işteki hazırlık",
     "unlink": "Bağlantıyı kaldır",
     "unlinkTitle": "Bu lastikler işten ayrılsın mı?",
     "unlinkBody": "İş artık lastik takımını göstermez. Üzerindeki parça ve işçilik satırları kalır; faturalanmaması gerekiyorsa ayrıca silin.",

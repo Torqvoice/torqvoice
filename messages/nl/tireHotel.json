@@ -6,9 +6,7 @@
     "save": "Opslaan",
     "create": "Aanmaken",
     "delete": "Verwijderen",
-    "edit": "Bewerken",
-    "back": "Terug",
-    "next": "Volgende"
+    "edit": "Bewerken"
   },
   "seasons": {
     "summer": "Zomer",
@@ -326,7 +324,6 @@
     "tires": "Banden",
     "inStock": "{count} op voorraad",
     "shortStock": "maar {count} op voorraad",
-    "order": "te bestellen",
     "noMatch": "Niets op voorraad past bij {size}. De regel komt erin met de prijs die u invult.",
     "noSize": "Deze set heeft geen maat, dus voorraad kan niet gematcht worden. De regel komt erin met uw prijs.",
     "unitPrice": "Prijs per band",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Werkorder aanmaken",
     "quoteCreated": "Offerte {number} aangemaakt",
     "workOrderCreated": "Werkorder aangemaakt",
-    "needsVehicle": "Koppel een voertuig aan de set voordat u een opdracht maakt.",
     "failed": "Kon dit niet aanmaken",
     "bannerTitle": "Ophalen van",
     "openSet": "Bandenset openen",
@@ -345,7 +341,6 @@
     "targetExisting": "Of toevoegen aan een opdracht die al open staat voor dit voertuig",
     "addToWorkOrder": "Aan werkorder toevoegen",
     "workOrderUpdated": "Toegevoegd aan de werkorder",
-    "prepLines": "Voorbereiding op deze opdracht",
     "unlink": "Ontkoppelen",
     "unlinkTitle": "Deze banden van de opdracht ontkoppelen?",
     "unlinkBody": "De opdracht verwijst niet langer naar de bandenset. Onderdelen en arbeidsregels die er al op staan blijven staan; verwijder ze apart als ze niet gefactureerd moeten worden.",

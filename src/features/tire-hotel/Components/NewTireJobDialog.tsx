@@ -576,6 +576,13 @@ export function NewTireJobDialog({
                       title={t('job.targetInvoice')}
                       subtitle={t('job.targetInvoiceHint')}
                     />
+                    {/* Said once above the list, since a row showing only
+                        an invoice number does not explain itself. */}
+                    {openJobs.length > 0 && (
+                      <p className="px-1 pt-1 text-xs text-muted-foreground">
+                        {t('job.targetExisting')}
+                      </p>
+                    )}
                     {openJobs.map((job) => (
                       <TargetOption
                         key={job.id}

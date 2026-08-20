@@ -6,9 +6,7 @@
     "save": "Salva",
     "create": "Crea",
     "delete": "Elimina",
-    "edit": "Modifica",
-    "back": "Indietro",
-    "next": "Avanti"
+    "edit": "Modifica"
   },
   "seasons": {
     "summer": "Estivi",
@@ -326,7 +324,6 @@
     "tires": "Pneumatici",
     "inStock": "{count} disponibili",
     "shortStock": "solo {count} disponibili",
-    "order": "da ordinare",
     "noMatch": "Niente a magazzino corrisponde a {size}. La riga viene aggiunta al prezzo che indichi.",
     "noSize": "Questo treno non ha misura, quindi il magazzino non si può confrontare. La riga usa il tuo prezzo.",
     "unitPrice": "Prezzo per pneumatico",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Crea ordine",
     "quoteCreated": "Preventivo {number} creato",
     "workOrderCreated": "Ordine creato",
-    "needsVehicle": "Collega un veicolo al treno prima di creare un ordine.",
     "failed": "Creazione non riuscita",
     "bannerTitle": "Da prelevare in",
     "openSet": "Apri il treno",
@@ -345,7 +341,6 @@
     "targetExisting": "Oppure aggiungi a un ordine già aperto per questo veicolo",
     "addToWorkOrder": "Aggiungi all’ordine",
     "workOrderUpdated": "Aggiunto all’ordine",
-    "prepLines": "Preparazione su questo ordine",
     "unlink": "Scollega",
     "unlinkTitle": "Scollegare questi pneumatici dall’ordine?",
     "unlinkBody": "L’ordine non punta più al treno di pneumatici. Ricambi e manodopera già inseriti restano: rimuovili separatamente se non vanno fatturati.",

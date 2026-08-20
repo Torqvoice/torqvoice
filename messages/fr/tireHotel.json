@@ -6,9 +6,7 @@
     "save": "Enregistrer",
     "create": "Créer",
     "delete": "Supprimer",
-    "edit": "Modifier",
-    "back": "Retour",
-    "next": "Suivant"
+    "edit": "Modifier"
   },
   "seasons": {
     "summer": "Été",
@@ -326,7 +324,6 @@
     "tires": "Pneus",
     "inStock": "{count} en stock",
     "shortStock": "seulement {count} en stock",
-    "order": "à commander",
     "noMatch": "Rien en stock ne correspond à {size}. La ligne est ajoutée au prix que vous saisissez.",
     "noSize": "Ce jeu n’a pas de dimension, le stock ne peut pas être comparé. La ligne est ajoutée à votre prix.",
     "unitPrice": "Prix par pneu",
@@ -334,7 +331,6 @@
     "createWorkOrder": "Créer l’ordre",
     "quoteCreated": "Devis {number} créé",
     "workOrderCreated": "Ordre créé",
-    "needsVehicle": "Associez un véhicule au jeu avant de créer un ordre.",
     "failed": "Création impossible",
     "bannerTitle": "À récupérer en",
     "openSet": "Ouvrir le jeu",
@@ -345,7 +341,6 @@
     "targetExisting": "Ou ajouter à un ordre déjà ouvert pour ce véhicule",
     "addToWorkOrder": "Ajouter à l’ordre",
     "workOrderUpdated": "Ajouté à l’ordre",
-    "prepLines": "Préparation sur cet ordre",
     "unlink": "Dissocier",
     "unlinkTitle": "Dissocier ces pneus de l’ordre ?",
     "unlinkBody": "L’ordre ne renvoie plus au jeu de pneus. Les pièces et la main-d’œuvre déjà saisies restent ; retirez-les séparément si elles ne doivent pas être facturées.",
