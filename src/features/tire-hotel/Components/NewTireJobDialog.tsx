@@ -15,7 +15,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { cn } from '@/lib/utils'
@@ -240,7 +239,7 @@ export function NewTireJobDialog({
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         ) : step === 'target' ? (
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <TargetOption
               selected={target === null}
               onSelect={() => setTarget(null)}
@@ -268,8 +267,8 @@ export function NewTireJobDialog({
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="space-y-2">
+          <div className="min-w-0 space-y-3">
+            <div className="min-w-0 space-y-1.5">
               <label className="flex cursor-pointer items-center gap-2.5">
                 <Checkbox
                   checked={includeTires}
@@ -295,7 +294,7 @@ export function NewTireJobDialog({
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder={t('job.searchStock')}
-                      className="h-9 pr-8 pl-8"
+                      className="h-8 pr-8 pl-8 text-sm"
                     />
                     {query && (
                       <button
@@ -334,7 +333,10 @@ export function NewTireJobDialog({
                       </p>
                     </div>
                   ) : (
-                    <div className="max-h-64 space-y-2 overflow-y-auto">
+                    // One bordered list rather than a stack of cards: this is
+                    // a table of stock, and a tech scanning a dozen brands in
+                    // one size wants them close enough to compare at a glance.
+                    <div className="max-h-56 divide-y overflow-x-hidden overflow-y-auto rounded-lg border">
                       {rows.map((match) => {
                         const isOn = picked?.id === match.id
                         return (
@@ -347,44 +349,38 @@ export function NewTireJobDialog({
                             }}
                             aria-pressed={isOn}
                             className={cn(
-                              'flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors',
-                              'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
-                              isOn ? 'border-primary/50 bg-primary/5' : 'hover:bg-muted/60'
+                              'flex w-full min-w-0 items-center gap-2 px-2.5 py-1.5 text-left transition-colors',
+                              'focus-visible:ring-ring focus-visible:ring-inset focus-visible:ring-2 focus-visible:outline-none',
+                              isOn ? 'bg-primary/5' : 'hover:bg-muted/60'
                             )}
                           >
                             <span className="min-w-0 flex-1">
-                              <span className="block truncate text-sm font-medium">
-                                {match.name}
-                              </span>
-                              <span className="block truncate text-xs text-muted-foreground">
+                              <span className="block truncate text-sm">{match.name}</span>
+                              <span className="block truncate text-[11px] text-muted-foreground">
                                 {match.partNumber ? `${match.partNumber} · ` : ''}
-                                {match.inStock
-                                  ? t('job.inStock', { count: match.quantity })
-                                  : t('job.shortStock', { count: match.quantity })}
+                                <span className={cn(!match.inStock && 'text-amber-600')}>
+                                  {match.inStock
+                                    ? t('job.inStock', { count: match.quantity })
+                                    : t('job.shortStock', { count: match.quantity })}
+                                </span>
+                                {/* Selling a size other than the one on the
+                                    shelf is allowed, it just should not happen
+                                    by accident. Said in the meta line rather
+                                    than as a pill, so a long part name still
+                                    has somewhere to go. */}
+                                {match.fits === false && (
+                                  <span className="text-amber-600"> · {t('job.otherSize')}</span>
+                                )}
                               </span>
                             </span>
-                            {/* Selling a size other than the one on the shelf is
-                            allowed, it just should not happen by accident. */}
-                            {match.fits === false && (
-                              <Badge
-                                variant="outline"
-                                className="shrink-0 border-amber-500/20 bg-amber-500/10 text-[10px] text-amber-600"
-                              >
-                                {t('job.otherSize')}
-                              </Badge>
-                            )}
-                            {!match.inStock && (
-                              <Badge
-                                variant="outline"
-                                className="shrink-0 border-amber-500/20 bg-amber-500/10 text-[10px] text-amber-600"
-                              >
-                                {t('job.order')}
-                              </Badge>
-                            )}
                             <span className="shrink-0 text-sm tabular-nums">
                               {formatCurrency(match.sellPrice, currencyCode)}
                             </span>
-                            {isOn && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                            {/* The slot is always there, so picking a row does
+                                not shift every price in the list sideways. */}
+                            <span className="w-3.5 shrink-0">
+                              {isOn && <Check className="h-3.5 w-3.5 text-primary" />}
+                            </span>
                           </button>
                         )
                       })}
@@ -394,36 +390,34 @@ export function NewTireJobDialog({
               )}
 
               {includeTires && (
-                <div className="flex items-end gap-3 pt-1">
-                  <div className="w-40 space-y-1.5">
-                    <Label htmlFor="tireJobPrice" className="text-xs">
-                      {t('job.unitPrice')}
-                    </Label>
-                    <Input
-                      id="tireJobPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="tabular-nums"
-                    />
-                  </div>
-                  <p className="flex h-9 flex-1 items-center justify-end text-sm font-medium tabular-nums">
+                <div className="flex min-w-0 items-center gap-2 pt-0.5">
+                  <Label htmlFor="tireJobPrice" className="shrink-0 text-xs font-normal">
+                    {t('job.unitPrice')}
+                  </Label>
+                  <Input
+                    id="tireJobPrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="h-8 w-24 text-sm tabular-nums"
+                  />
+                  <span className="min-w-0 flex-1 truncate text-right text-sm font-medium tabular-nums">
                     {formatCurrency(total, currencyCode)}
-                  </p>
+                  </span>
                 </div>
               )}
             </div>
 
             {prep.length > 0 && (
-              <div className="space-y-2">
-                <Label>{t('job.prep')}</Label>
-                <div className="rounded-lg border">
+              <div className="min-w-0 space-y-1.5">
+                <p className="text-sm font-medium">{t('job.prep')}</p>
+                <div className="divide-y rounded-lg border">
                   {prep.map((line) => (
                     <label
                       key={line.type}
-                      className="flex cursor-pointer items-center gap-2.5 border-b p-3 last:border-b-0 hover:bg-muted/50"
+                      className="flex cursor-pointer items-center gap-2.5 px-2.5 py-1.5 hover:bg-muted/50"
                     >
                       <Checkbox
                         checked={includePrep.includes(line.type)}
@@ -441,9 +435,9 @@ export function NewTireJobDialog({
               </div>
             )}
 
-            <div className="flex items-center justify-between border-t pt-3">
+            <div className="flex items-center justify-between border-t pt-2.5">
               <span className="text-sm text-muted-foreground">{t('job.total')}</span>
-              <span className="text-lg font-semibold tabular-nums">
+              <span className="text-base font-semibold tabular-nums">
                 {formatCurrency(jobTotal, currencyCode)}
               </span>
             </div>
