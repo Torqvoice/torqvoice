@@ -73,6 +73,24 @@ CREATE TABLE "tire_sets" (
 );
 
 -- CreateTable
+CREATE TABLE "tire_set_attachments" (
+    "id" TEXT NOT NULL,
+    "fileName" TEXT NOT NULL,
+    "fileUrl" TEXT NOT NULL,
+    "fileType" TEXT NOT NULL,
+    "fileSize" INTEGER NOT NULL,
+    "description" TEXT,
+    "includeInInvoice" BOOLEAN NOT NULL DEFAULT true,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+    "tireSetId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "uploadedById" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "tire_set_attachments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "tire_measurements" (
     "id" TEXT NOT NULL,
     "position" TEXT NOT NULL DEFAULT 'unspecified',
@@ -150,6 +168,12 @@ CREATE INDEX "tire_sets_customerId_idx" ON "tire_sets"("customerId");
 CREATE UNIQUE INDEX "tire_sets_organizationId_reference_key" ON "tire_sets"("organizationId", "reference");
 
 -- CreateIndex
+CREATE INDEX "tire_set_attachments_tireSetId_idx" ON "tire_set_attachments"("tireSetId");
+
+-- CreateIndex
+CREATE INDEX "tire_set_attachments_organizationId_idx" ON "tire_set_attachments"("organizationId");
+
+-- CreateIndex
 CREATE INDEX "tire_measurements_tireSetId_measuredAt_idx" ON "tire_measurements"("tireSetId", "measuredAt" DESC);
 
 -- CreateIndex
@@ -205,6 +229,15 @@ ALTER TABLE "tire_sets" ADD CONSTRAINT "tire_sets_organizationId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "tire_sets" ADD CONSTRAINT "tire_sets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_set_attachments" ADD CONSTRAINT "tire_set_attachments_tireSetId_fkey" FOREIGN KEY ("tireSetId") REFERENCES "tire_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_set_attachments" ADD CONSTRAINT "tire_set_attachments_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_set_attachments" ADD CONSTRAINT "tire_set_attachments_uploadedById_fkey" FOREIGN KEY ("uploadedById") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tire_measurements" ADD CONSTRAINT "tire_measurements_tireSetId_fkey" FOREIGN KEY ("tireSetId") REFERENCES "tire_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
