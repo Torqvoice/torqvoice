@@ -390,7 +390,6 @@
     "noMatch": "Nada en stock coincide con {size}. La línea se añade con el precio que pongas.",
     "noSize": "Este juego no tiene medida, así que no se puede cruzar con el stock. La línea se añade con tu precio.",
     "unitPrice": "Precio por neumático",
-    "quantityNote": "para {count} neumáticos",
     "createQuote": "Crear presupuesto",
     "createWorkOrder": "Crear orden",
     "quoteCreated": "Presupuesto {number} creado",
@@ -418,7 +417,9 @@
     "searchStock": "Buscar en el inventario por marca, medida o número de pieza",
     "noSearchHits": "Nada en el inventario coincide con \"{query}\".",
     "otherSize": "Otra medida",
-    "inSize": "{count} en {size}"
+    "inSize": "{count} en {size}",
+    "quantity": "Cant.",
+    "change": "Cambiar"
   },
   "label": {
     "action": "Etiquetas",

@@ -390,7 +390,6 @@
     "noMatch": "Nic na stanie nie pasuje do {size}. Pozycja zostanie dodana z ceną, którą podasz.",
     "noSize": "Ten komplet nie ma rozmiaru, więc nie da się dopasować stanu. Pozycja użyje Twojej ceny.",
     "unitPrice": "Cena za oponę",
-    "quantityNote": "za {count} opon",
     "createQuote": "Utwórz wycenę",
     "createWorkOrder": "Utwórz zlecenie",
     "quoteCreated": "Utworzono wycenę {number}",
@@ -418,7 +417,9 @@
     "searchStock": "Szukaj w magazynie według marki, rozmiaru lub numeru części",
     "noSearchHits": "Nic w magazynie nie pasuje do \"{query}\".",
     "otherSize": "Inny rozmiar",
-    "inSize": "{count} w {size}"
+    "inSize": "{count} w {size}",
+    "quantity": "Ilość",
+    "change": "Zmień"
   },
   "label": {
     "action": "Etykiety",

@@ -390,7 +390,6 @@
     "noMatch": "Rien en stock ne correspond à {size}. La ligne est ajoutée au prix que vous saisissez.",
     "noSize": "Ce jeu n’a pas de dimension, le stock ne peut pas être comparé. La ligne est ajoutée à votre prix.",
     "unitPrice": "Prix par pneu",
-    "quantityNote": "pour {count} pneus",
     "createQuote": "Créer le devis",
     "createWorkOrder": "Créer l’ordre",
     "quoteCreated": "Devis {number} créé",
@@ -418,7 +417,9 @@
     "searchStock": "Rechercher dans le stock par marque, dimension ou référence",
     "noSearchHits": "Rien dans le stock ne correspond à \"{query}\".",
     "otherSize": "Autre dimension",
-    "inSize": "{count} en {size}"
+    "inSize": "{count} en {size}",
+    "quantity": "Qté",
+    "change": "Modifier"
   },
   "label": {
     "action": "Étiquettes",

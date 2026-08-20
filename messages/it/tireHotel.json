@@ -390,7 +390,6 @@
     "noMatch": "Niente a magazzino corrisponde a {size}. La riga viene aggiunta al prezzo che indichi.",
     "noSize": "Questo treno non ha misura, quindi il magazzino non si può confrontare. La riga usa il tuo prezzo.",
     "unitPrice": "Prezzo per pneumatico",
-    "quantityNote": "per {count} pneumatici",
     "createQuote": "Crea preventivo",
     "createWorkOrder": "Crea ordine",
     "quoteCreated": "Preventivo {number} creato",
@@ -418,7 +417,9 @@
     "searchStock": "Cerca in magazzino per marca, misura o codice articolo",
     "noSearchHits": "Niente in magazzino corrisponde a \"{query}\".",
     "otherSize": "Altra misura",
-    "inSize": "{count} in {size}"
+    "inSize": "{count} in {size}",
+    "quantity": "Qtà",
+    "change": "Cambia"
   },
   "label": {
     "action": "Etichette",

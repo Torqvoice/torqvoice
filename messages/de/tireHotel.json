@@ -390,7 +390,6 @@
     "noMatch": "Nichts auf Lager passt zu {size}. Die Position wird mit Ihrem Preis angelegt.",
     "noSize": "Für diesen Satz ist keine Größe erfasst, daher kein Lagerabgleich. Die Position wird mit Ihrem Preis angelegt.",
     "unitPrice": "Preis pro Reifen",
-    "quantityNote": "für {count} Reifen",
     "createQuote": "Angebot erstellen",
     "createWorkOrder": "Auftrag erstellen",
     "quoteCreated": "Angebot {number} erstellt",
@@ -418,7 +417,9 @@
     "searchStock": "Lager nach Marke, Größe oder Artikelnummer durchsuchen",
     "noSearchHits": "Nichts im Lager passt zu \"{query}\".",
     "otherSize": "Andere Größe",
-    "inSize": "{count} in {size}"
+    "inSize": "{count} in {size}",
+    "quantity": "Anz.",
+    "change": "Ändern"
   },
   "label": {
     "action": "Etiketten",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -87,7 +87,15 @@ export function NewTireJobDialog({
   // stays visible after the search is cleared.
   const [picked, setPicked] = useState<StockRow | null>(null)
   const [price, setPrice] = useState('')
+  // Defaults to the set on the shelf, which is the usual job, but a customer
+  // replacing two of four should not have to fix the line afterwards.
+  const [qty, setQty] = useState('')
   const [query, setQuery] = useState('')
+  // The picker is only open while the operator is choosing. Once a tire is
+  // chosen the section shows that one line, because that is what goes on the
+  // job, and a list of alternatives underneath reads as more than one tire.
+  const [browsing, setBrowsing] = useState(false)
+  const searchRef = useRef<HTMLInputElement>(null)
   const [hits, setHits] = useState<SearchHits | null>(null)
   const [searching, setSearching] = useState(false)
   // Everything billable starts ticked, since that is the usual job. The point
@@ -101,8 +109,10 @@ export function NewTireJobDialog({
       setData(null)
       setPicked(null)
       setPrice('')
+      setQty('')
       setQuery('')
       setHits(null)
+      setBrowsing(false)
       setOpenJobs([])
       setTarget(null)
       setIncludeTires(true)
@@ -119,6 +129,7 @@ export function NewTireJobDialog({
       if (cancelled) return
       const value = stock.success && stock.data ? stock.data : null
       setData(value)
+      setQty(String(value?.quantity ?? 4))
       // Preselect the best match, which is the cheapest that covers the whole
       // set. Anything else and the operator is choosing from a list of one.
       const best = value?.matches[0]
@@ -126,6 +137,9 @@ export function NewTireJobDialog({
         setPicked(best)
         setPrice(String(best.sellPrice))
       }
+      // Nothing to preselect, so open on the search rather than on an empty
+      // box the operator has to work out how to fill.
+      if (!best) setBrowsing(true)
       setIncludePrep((value?.prep ?? []).map((line) => line.type))
 
       const rows = jobs?.success && jobs.data ? jobs.data : []
@@ -179,9 +193,35 @@ export function NewTireJobDialog({
     // the prep list and the total behind a list nobody is reading any more.
     setQuery('')
     setHits(null)
+    setBrowsing(false)
   }
 
-  const quantity = data?.quantity ?? 0
+  // Stock is judged against the quantity being sold, which the operator can
+  // change, so it is worked out here rather than taken from the server.
+  const stockMeta = (row: StockRow) => {
+    const covered = row.quantity >= quantity
+    return (
+      <span className="block truncate text-[11px] text-muted-foreground">
+        {row.partNumber ? `${row.partNumber} · ` : ''}
+        <span className={cn(!covered && 'text-amber-600')}>
+          {covered
+            ? t('job.inStock', { count: row.quantity })
+            : t('job.shortStock', { count: row.quantity })}
+        </span>
+        {/* Selling a size other than the one on the shelf is allowed, it just
+            should not happen by accident. Said in the meta line rather than
+            as a pill, so a long part name still has somewhere to go. */}
+        {row.fits === false && <span className="text-amber-600"> · {t('job.otherSize')}</span>}
+      </span>
+    )
+  }
+
+  const startBrowsing = () => {
+    setBrowsing(true)
+    requestAnimationFrame(() => searchRef.current?.focus())
+  }
+
+  const quantity = Math.max(1, Math.min(99, Math.round(Number(qty) || 0)))
   const unit = Number(price) || 0
   const total = Math.round(unit * quantity * 100) / 100
 
@@ -205,6 +245,7 @@ export function NewTireJobDialog({
       tireSetId,
       inventoryPartId: picked?.id ?? null,
       unitPrice: unit,
+      quantity,
       includeTires,
       includeTreatments: includePrep,
     }
@@ -284,9 +325,6 @@ export function NewTireJobDialog({
                   onCheckedChange={(value) => setIncludeTires(value === true)}
                 />
                 <span className="text-sm font-medium">{t('job.tires')}</span>
-                <span className="text-xs text-muted-foreground">
-                  {t('job.quantityNote', { count: quantity })}
-                </span>
               </label>
 
               {!includeTires ? (
@@ -295,25 +333,64 @@ export function NewTireJobDialog({
                 <p className="rounded-lg border border-dashed p-3 text-xs text-muted-foreground">
                   {t('job.tiresSkipped')}
                 </p>
+              ) : picked && !browsing ? (
+                // One line, because one tire goes on the job. Leaving the
+                // alternatives listed underneath reads as more than one tire
+                // being added, which is what it looked like.
+                <div className="flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-1.5">
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm">{picked.name}</span>
+                    {stockMeta(picked)}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={startBrowsing}
+                    className="h-7 shrink-0 px-2 text-xs"
+                  >
+                    {t('job.change')}
+                  </Button>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder={t('job.searchStock')}
-                      className="h-8 pr-8 pl-8 text-sm"
-                    />
-                    {query && (
-                      <button
+                  <div className="flex min-w-0 items-center gap-2">
+                    <div className="relative min-w-0 flex-1">
+                      <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        ref={searchRef}
+                        placeholder={t('job.searchStock')}
+                        className="h-8 pr-8 pl-8 text-sm"
+                      />
+                      {query && (
+                        <button
+                          type="button"
+                          onClick={() => setQuery('')}
+                          aria-label={t('common.clear')}
+                          className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                    {/* A way back out for someone who opened the picker by
+                      mistake, rather than making them re-pick what they had. */}
+                    {picked && (
+                      <Button
                         type="button"
-                        onClick={() => setQuery('')}
-                        aria-label={t('common.clear')}
-                        className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setBrowsing(false)
+                          setQuery('')
+                          setHits(null)
+                        }}
+                        className="h-8 shrink-0 px-2 text-xs"
                       >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
+                        {t('common.cancel')}
+                      </Button>
                     )}
                   </div>
 
@@ -364,22 +441,7 @@ export function NewTireJobDialog({
                           >
                             <span className="min-w-0 flex-1">
                               <span className="block truncate text-sm">{match.name}</span>
-                              <span className="block truncate text-[11px] text-muted-foreground">
-                                {match.partNumber ? `${match.partNumber} · ` : ''}
-                                <span className={cn(!match.inStock && 'text-amber-600')}>
-                                  {match.inStock
-                                    ? t('job.inStock', { count: match.quantity })
-                                    : t('job.shortStock', { count: match.quantity })}
-                                </span>
-                                {/* Selling a size other than the one on the
-                                    shelf is allowed, it just should not happen
-                                    by accident. Said in the meta line rather
-                                    than as a pill, so a long part name still
-                                    has somewhere to go. */}
-                                {match.fits === false && (
-                                  <span className="text-amber-600"> · {t('job.otherSize')}</span>
-                                )}
-                              </span>
+                              {stockMeta(match)}
                             </span>
                             <span className="shrink-0 text-sm tabular-nums">
                               {formatCurrency(match.sellPrice, currencyCode)}
@@ -398,7 +460,20 @@ export function NewTireJobDialog({
               )}
 
               {includeTires && (
-                <div className="flex min-w-0 items-center gap-2 pt-0.5">
+                <div className="flex min-w-0 flex-wrap items-center gap-2 pt-0.5">
+                  <Label htmlFor="tireJobQty" className="shrink-0 text-xs font-normal">
+                    {t('job.quantity')}
+                  </Label>
+                  <Input
+                    id="tireJobQty"
+                    type="number"
+                    min="1"
+                    max="99"
+                    step="1"
+                    value={qty}
+                    onChange={(e) => setQty(e.target.value)}
+                    className="h-8 w-14 text-sm tabular-nums"
+                  />
                   <Label htmlFor="tireJobPrice" className="shrink-0 text-xs font-normal">
                     {t('job.unitPrice')}
                   </Label>

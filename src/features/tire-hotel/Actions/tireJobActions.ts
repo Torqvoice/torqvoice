@@ -31,6 +31,10 @@ const fromSetSchema = z.object({
   /// when the dialog opens, but a swap where the customer supplies the tires,
   /// or where the wash is a goodwill, should not force a line onto the job.
   includeTires: z.boolean().default(true),
+  /// How many tires the line covers. Defaults to the size of the stored set,
+  /// which is the usual answer, but a customer replacing two of four should
+  /// not have to fix the line afterwards.
+  quantity: z.coerce.number().int().min(1).max(99).optional(),
   includeTreatments: z.array(z.enum(TREATMENT_TYPES)).optional(),
   /// Stocked part to quote, chosen by the operator from the matches. Omitted
   /// when nothing matched, which leaves a blank priced line to fill in.
@@ -325,7 +329,8 @@ export async function createQuoteFromTireSet(input: unknown) {
       validUntil.setDate(validUntil.getDate() + validDays)
 
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
-      const lineTotal = data.includeTires ? Math.round(unitPrice * set.quantity * 100) / 100 : 0
+      const lineQuantity = data.quantity ?? set.quantity
+      const lineTotal = data.includeTires ? Math.round(unitPrice * lineQuantity * 100) / 100 : 0
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
       const laborTotal = labor.reduce((sum, line) => sum + line.total, 0)
       const subtotal = Math.round((lineTotal + laborTotal) * 100) / 100
@@ -359,7 +364,7 @@ export async function createQuoteFromTireSet(input: unknown) {
                     {
                       name: part?.name ?? describeSet(set),
                       partNumber: part?.partNumber ?? null,
-                      quantity: set.quantity,
+                      quantity: lineQuantity,
                       unitCost: part?.unitCost ?? 0,
                       unitPrice,
                       total: lineTotal,
@@ -419,11 +424,42 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         }
       )
 
+      const part = data.inventoryPartId
+        ? await db.inventoryPart.findFirst({
+            where: { id: data.inventoryPartId, organizationId, isArchived: false },
+            select: { id: true, name: true, partNumber: true, unitCost: true, sellPrice: true },
+          })
+        : null
+
+      const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
+      const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
+
+      // The tires themselves, which a quote and an add-to-existing already
+      // put on the job. Without this the operator picks a tire and a price
+      // and gets a work order with nothing but the prep on it.
+      if (data.includeTires) {
+        await db.servicePart.create({
+          data: {
+            serviceRecordId: record.id,
+            name: part?.name ?? describeSet(set),
+            partNumber: part?.partNumber ?? null,
+            quantity: lineQuantity,
+            unitPrice,
+            unitCost: part?.unitCost ?? 0,
+            total: Math.round(unitPrice * lineQuantity * 100) / 100,
+            inventoryPartId: part?.id ?? null,
+          },
+        })
+      }
+
       if (labor.length > 0) {
         await db.serviceLabor.createMany({
           data: labor.map((line) => ({ ...line, serviceRecordId: record.id })),
         })
+      }
+
+      if (data.includeTires || labor.length > 0) {
         await retotalServiceRecord(record.id)
       }
 
@@ -539,6 +575,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
         : null
 
       const unitPrice = data.unitPrice ?? part?.sellPrice ?? 0
+      const lineQuantity = data.quantity ?? set.quantity
       const labor = await treatmentLines(organizationId, set.treatments, data.includeTreatments)
 
       await db.$transaction(async (tx) => {
@@ -548,10 +585,10 @@ export async function addTireSetToWorkOrder(input: unknown) {
               serviceRecordId: record.id,
               name: part?.name ?? describeSet(set),
               partNumber: part?.partNumber ?? null,
-              quantity: set.quantity,
+              quantity: lineQuantity,
               unitPrice,
               unitCost: part?.unitCost ?? 0,
-              total: Math.round(unitPrice * set.quantity * 100) / 100,
+              total: Math.round(unitPrice * lineQuantity * 100) / 100,
               inventoryPartId: part?.id ?? null,
             },
           })

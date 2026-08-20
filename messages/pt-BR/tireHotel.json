@@ -390,7 +390,6 @@
     "noMatch": "Nada no estoque corresponde a {size}. A linha entra com o preço que você definir.",
     "noSize": "Este jogo não tem medida, então não dá para cruzar com o estoque. A linha usa seu preço.",
     "unitPrice": "Preço por pneu",
-    "quantityNote": "para {count} pneus",
     "createQuote": "Criar orçamento",
     "createWorkOrder": "Criar ordem",
     "quoteCreated": "Orçamento {number} criado",
@@ -418,7 +417,9 @@
     "searchStock": "Buscar no estoque por marca, medida ou código da peça",
     "noSearchHits": "Nada no estoque corresponde a \"{query}\".",
     "otherSize": "Outra medida",
-    "inSize": "{count} em {size}"
+    "inSize": "{count} em {size}",
+    "quantity": "Qtd",
+    "change": "Alterar"
   },
   "label": {
     "action": "Etiquetas",

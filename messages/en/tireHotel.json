@@ -390,7 +390,6 @@
     "noMatch": "Nothing in stock matches {size}. The line is added at the price you set.",
     "noSize": "This set has no size recorded, so stock cannot be matched. The line is added at the price you set.",
     "unitPrice": "Price per tire",
-    "quantityNote": "for {count} tires",
     "createQuote": "Create quote",
     "createWorkOrder": "Create work order",
     "quoteCreated": "Quote {number} created",
@@ -418,7 +417,9 @@
     "searchStock": "Search inventory by brand, size or part number",
     "noSearchHits": "Nothing in inventory matches \"{query}\".",
     "otherSize": "Other size",
-    "inSize": "{count} in {size}"
+    "inSize": "{count} in {size}",
+    "quantity": "Qty",
+    "change": "Change"
   },
   "label": {
     "action": "Labels",

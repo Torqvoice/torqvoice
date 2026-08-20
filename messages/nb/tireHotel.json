@@ -390,7 +390,6 @@
     "noMatch": "Ingenting på lager passer {size}. Linjen legges inn med prisen du setter.",
     "noSize": "Dette settet mangler dimensjon, så lageret kan ikke matches. Linjen legges inn med prisen du setter.",
     "unitPrice": "Pris per dekk",
-    "quantityNote": "for {count} dekk",
     "createQuote": "Opprett tilbud",
     "createWorkOrder": "Opprett arbeidsordre",
     "quoteCreated": "Tilbud {number} opprettet",
@@ -418,7 +417,9 @@
     "searchStock": "Søk i lageret på merke, dimensjon eller varenummer",
     "noSearchHits": "Ingenting på lageret passer \"{query}\".",
     "otherSize": "Annen dimensjon",
-    "inSize": "{count} i {size}"
+    "inSize": "{count} i {size}",
+    "quantity": "Ant.",
+    "change": "Endre"
   },
   "label": {
     "action": "Etiketter",

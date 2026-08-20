@@ -390,7 +390,6 @@
     "noMatch": "Stokta {size} ölçüsüne uyan bir şey yok. Satır belirlediğiniz fiyatla eklenir.",
     "noSize": "Bu takımın ölçüsü kayıtlı değil, stok eşleştirilemez. Satır sizin fiyatınızla eklenir.",
     "unitPrice": "Lastik başına fiyat",
-    "quantityNote": "{count} lastik için",
     "createQuote": "Teklif oluştur",
     "createWorkOrder": "İş emri oluştur",
     "quoteCreated": "{number} numaralı teklif oluşturuldu",
@@ -418,7 +417,9 @@
     "searchStock": "Stokta markaya, ebada veya parça numarasına göre ara",
     "noSearchHits": "Stokta \"{query}\" ile eşleşen bir şey yok.",
     "otherSize": "Farklı ebat",
-    "inSize": "{size} ebadında {count} adet"
+    "inSize": "{size} ebadında {count} adet",
+    "quantity": "Adet",
+    "change": "Değiştir"
   },
   "label": {
     "action": "Etiketler",

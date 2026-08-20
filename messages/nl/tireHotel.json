@@ -390,7 +390,6 @@
     "noMatch": "Niets op voorraad past bij {size}. De regel komt erin met de prijs die u invult.",
     "noSize": "Deze set heeft geen maat, dus voorraad kan niet gematcht worden. De regel komt erin met uw prijs.",
     "unitPrice": "Prijs per band",
-    "quantityNote": "voor {count} banden",
     "createQuote": "Offerte aanmaken",
     "createWorkOrder": "Werkorder aanmaken",
     "quoteCreated": "Offerte {number} aangemaakt",
@@ -418,7 +417,9 @@
     "searchStock": "Zoek in voorraad op merk, maat of artikelnummer",
     "noSearchHits": "Niets in de voorraad komt overeen met \"{query}\".",
     "otherSize": "Andere maat",
-    "inSize": "{count} in {size}"
+    "inSize": "{count} in {size}",
+    "quantity": "Aantal",
+    "change": "Wijzigen"
   },
   "label": {
     "action": "Labels",

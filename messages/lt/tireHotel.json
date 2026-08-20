@@ -390,7 +390,6 @@
     "noMatch": "Sandėlyje nieko nėra pagal {size}. Eilutė bus pridėta su jūsų nurodyta kaina.",
     "noSize": "Šiam komplektui nenurodytas dydis, todėl sandėlio sugretinti negalima. Eilutė naudos jūsų kainą.",
     "unitPrice": "Kaina už padangą",
-    "quantityNote": "už {count} padangų",
     "createQuote": "Sukurti pasiūlymą",
     "createWorkOrder": "Sukurti darbo užsakymą",
     "quoteCreated": "Sukurtas pasiūlymas {number}",
@@ -418,7 +417,9 @@
     "searchStock": "Ieškoti sandėlyje pagal markę, dydį ar dalies numerį",
     "noSearchHits": "Sandėlyje nieko neatitinka \"{query}\".",
     "otherSize": "Kitas dydis",
-    "inSize": "{count} dydžio {size}"
+    "inSize": "{count} dydžio {size}",
+    "quantity": "Kiekis",
+    "change": "Keisti"
   },
   "label": {
     "action": "Etiketės",
