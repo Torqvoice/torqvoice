@@ -359,7 +359,8 @@
     "completeAll": "Segna tutti e {count} come fatti",
     "allDone": "Preparazione completata",
     "undo": "Rimetti in elenco",
-    "saveFailed": "Impossibile salvare"
+    "saveFailed": "Impossibile salvare",
+    "skip": "Salta"
   },
   "messaging": {
     "action": "Messaggio",

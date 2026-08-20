@@ -359,7 +359,8 @@
     "completeAll": "Pažymėti visus {count} kaip atliktus",
     "allDone": "Paruošimas baigtas",
     "undo": "Grąžinti į sąrašą",
-    "saveFailed": "Nepavyko išsaugoti"
+    "saveFailed": "Nepavyko išsaugoti",
+    "skip": "Praleisti"
   },
   "messaging": {
     "action": "Žinutė",

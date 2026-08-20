@@ -359,7 +359,8 @@
     "completeAll": "{count} işin hepsini tamam olarak işaretle",
     "allDone": "Hazırlık tamamlandı",
     "undo": "Listeye geri koy",
-    "saveFailed": "Kaydedilemedi"
+    "saveFailed": "Kaydedilemedi",
+    "skip": "Atla"
   },
   "messaging": {
     "action": "Mesaj",

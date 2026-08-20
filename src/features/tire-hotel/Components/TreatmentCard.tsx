@@ -8,7 +8,7 @@ import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
-import { Check, CheckCheck, ClipboardList, Loader2, Pencil, Undo2 } from 'lucide-react'
+import { Ban, Check, CheckCheck, ClipboardList, Loader2, Pencil, Undo2 } from 'lucide-react'
 import { TREATMENT_ICON_MAP, TreatmentPicker } from './TreatmentPicker'
 import { SettingsLink } from './SettingsLink'
 import { completeAllTreatments, markTreatment, setTreatments } from '../Actions/treatmentActions'
@@ -164,6 +164,20 @@ export function TreatmentCard({
                 <span className="min-w-0 flex-1 font-medium">
                   {t(`treatments.types.${treatment.type}`)}
                 </span>
+                {/* Deciding against a job is a real outcome, not the same as
+                    leaving it undone: skipped work is never billed, while
+                    pending work stays on the technician's list forever. */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 shrink-0 p-0"
+                  onClick={() => handleMark(treatment.id, 'skipped')}
+                  disabled={busyId === treatment.id}
+                  aria-label={t('treatments.skip')}
+                  title={t('treatments.skip')}
+                >
+                  <Ban className="h-3.5 w-3.5" />
+                </Button>
                 <Button
                   size="sm"
                   onClick={() => handleMark(treatment.id, 'done')}

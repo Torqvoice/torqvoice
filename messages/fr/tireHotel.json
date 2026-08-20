@@ -359,7 +359,8 @@
     "completeAll": "Tout marquer fait ({count})",
     "allDone": "Préparation terminée",
     "undo": "Remettre dans la liste",
-    "saveFailed": "Enregistrement impossible"
+    "saveFailed": "Enregistrement impossible",
+    "skip": "Ignorer"
   },
   "messaging": {
     "action": "Message",

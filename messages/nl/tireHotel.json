@@ -359,7 +359,8 @@
     "completeAll": "Alle {count} als klaar markeren",
     "allDone": "Alle voorbereiding klaar",
     "undo": "Terug op de lijst",
-    "saveFailed": "Kon niet opslaan"
+    "saveFailed": "Kon niet opslaan",
+    "skip": "Overslaan"
   },
   "messaging": {
     "action": "Bericht",

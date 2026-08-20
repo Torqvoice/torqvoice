@@ -359,7 +359,8 @@
     "completeAll": "Alle {count} als erledigt markieren",
     "allDone": "Vorbereitung abgeschlossen",
     "undo": "Zurück auf die Liste",
-    "saveFailed": "Speichern fehlgeschlagen"
+    "saveFailed": "Speichern fehlgeschlagen",
+    "skip": "Überspringen"
   },
   "messaging": {
     "action": "Nachricht",

@@ -359,7 +359,8 @@
     "completeAll": "Marcar os {count} como feitos",
     "allDone": "Preparação concluída",
     "undo": "Voltar para a lista",
-    "saveFailed": "Não foi possível salvar"
+    "saveFailed": "Não foi possível salvar",
+    "skip": "Pular"
   },
   "messaging": {
     "action": "Mensagem",

@@ -359,7 +359,8 @@
     "completeAll": "Oznacz wszystkie {count} jako zrobione",
     "allDone": "Przygotowanie zakończone",
     "undo": "Wróć na listę",
-    "saveFailed": "Nie udało się zapisać"
+    "saveFailed": "Nie udało się zapisać",
+    "skip": "Pomiń"
   },
   "messaging": {
     "action": "Wiadomość",

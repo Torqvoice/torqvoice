@@ -359,7 +359,8 @@
     "completeAll": "Merk alle {count} som ferdig",
     "allDone": "All klargjøring ferdig",
     "undo": "Legg tilbake på lista",
-    "saveFailed": "Kunne ikke lagre"
+    "saveFailed": "Kunne ikke lagre",
+    "skip": "Hopp over"
   },
   "messaging": {
     "action": "Send melding",

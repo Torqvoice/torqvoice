@@ -359,7 +359,8 @@
     "completeAll": "Mark all {count} done",
     "allDone": "All prep work done",
     "undo": "Put back on the list",
-    "saveFailed": "Could not save"
+    "saveFailed": "Could not save",
+    "skip": "Skip"
   },
   "messaging": {
     "action": "Message",
