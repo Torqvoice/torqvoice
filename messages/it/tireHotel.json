@@ -209,7 +209,7 @@
     "belowLimitHint": "Vale la pena proporre un prezzo finché gli pneumatici sono ancora qui.",
     "dispose": "Dismetti",
     "disposeTitle": "Dismettere questo treno?",
-    "disposeBody": "La scheda e lo storico restano. Non verrà più proposto come lo stesso treno la prossima stagione.",
+    "disposeBody": "La scheda e lo storico restano e il posto si libera. Non verrà più proposto come lo stesso treno la prossima stagione.",
     "disposed": "Treno dismesso",
     "disposeFailed": "Impossibile dismettere il treno"
   },

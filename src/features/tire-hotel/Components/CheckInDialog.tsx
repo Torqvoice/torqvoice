@@ -215,6 +215,10 @@ export function CheckInDialog({
   // counter: staff scan a plate, not a customer record.
   const handleVehicle = (id: string) => {
     setVehicleId(id)
+    // A set chosen under the old vehicle is not this vehicle's set. Left
+    // selected, the form would show one car and file the tires against
+    // another.
+    setReturning(null)
     const vehicle = vehicles.find((v) => v.id === id)
     if (vehicle?.customerId && !customerId) setCustomerId(vehicle.customerId)
   }
@@ -224,6 +228,7 @@ export function CheckInDialog({
   // pairing the form no longer shows.
   const handleCustomer = (id: string) => {
     setCustomerId(id)
+    setReturning(null)
     const current = vehicles.find((v) => v.id === vehicleId)
     if (id && current && current.customerId !== id) setVehicleId('')
   }

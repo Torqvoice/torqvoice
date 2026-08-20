@@ -209,7 +209,7 @@
     "belowLimitHint": "Conviene ofrecer precio al cliente mientras los neumáticos siguen aquí.",
     "dispose": "Dar de baja",
     "disposeTitle": "¿Dar de baja este juego?",
-    "disposeBody": "La ficha y su historial se mantienen. Deja de ofrecerse como los mismos neumáticos la próxima temporada.",
+    "disposeBody": "La ficha y su historial se mantienen y se libera el hueco. Deja de ofrecerse como los mismos neumáticos la próxima temporada.",
     "disposed": "Juego dado de baja",
     "disposeFailed": "No se pudo dar de baja el juego"
   },

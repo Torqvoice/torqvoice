@@ -209,7 +209,7 @@
     "belowLimitHint": "Warto zaproponować klientowi cenę, póki opony są jeszcze u nas.",
     "dispose": "Spisz",
     "disposeTitle": "Spisać ten komplet?",
-    "disposeBody": "Wpis i historia zostają. Komplet nie będzie proponowany w kolejnym sezonie.",
+    "disposeBody": "Wpis i historia zostają, a miejsce na półce zwalnia się. Komplet nie będzie proponowany w kolejnym sezonie.",
     "disposed": "Komplet spisany",
     "disposeFailed": "Nie udało się spisać kompletu"
   },

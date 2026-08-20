@@ -296,6 +296,19 @@ export function TireSetClient({
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
             {t('common.edit')}
           </Button>
+          {/* Writing off is rare but applies whether the tires are on a shelf
+              or already back on the car: a set condemned at check-in should
+              not need a fake check-out first. */}
+          {!isDisposed && (
+            <Button variant="outline" size="sm" onClick={handleDispose} disabled={disposing}>
+              {disposing ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Ban className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              {t('detail.dispose')}
+            </Button>
+          )}
           {isStored ? (
             <>
               <Button variant="outline" size="sm" onClick={() => setShowRelocate(true)}>
@@ -308,32 +321,20 @@ export function TireSetClient({
               </Button>
             </>
           ) : (
-            <>
-              {!isDisposed && (
-                <Button variant="outline" size="sm" onClick={handleDispose} disabled={disposing}>
-                  {disposing ? (
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Ban className="mr-1.5 h-3.5 w-3.5" />
-                  )}
-                  {t('detail.dispose')}
-                </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="text-destructive hover:text-destructive"
+            >
+              {deleting ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDelete}
-                disabled={deleting}
-                className="text-destructive hover:text-destructive"
-              >
-                {deleting ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                )}
-                {t('common.delete')}
-              </Button>
-            </>
+              {t('common.delete')}
+            </Button>
           )}
         </div>
       </div>

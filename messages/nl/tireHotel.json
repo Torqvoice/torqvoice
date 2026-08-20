@@ -209,7 +209,7 @@
     "belowLimitHint": "Bied de klant een prijs aan nu de banden hier nog liggen.",
     "dispose": "Afschrijven",
     "disposeTitle": "Deze set afschrijven?",
-    "disposeBody": "Het record en de historie blijven staan. Volgend seizoen wordt de set niet meer voorgesteld.",
+    "disposeBody": "Het record en de historie blijven staan en de plek komt vrij. Volgend seizoen wordt de set niet meer voorgesteld.",
     "disposed": "Set afgeschreven",
     "disposeFailed": "Kon de set niet afschrijven"
   },

@@ -209,7 +209,7 @@
     "belowLimitHint": "Lastikler hâlâ buradayken müşteriye fiyat vermekte fayda var.",
     "dispose": "Hurdaya ayır",
     "disposeTitle": "Bu takım hurdaya ayrılsın mı?",
-    "disposeBody": "Kayıt ve geçmişi kalır. Gelecek sezon aynı lastikler olarak önerilmez.",
+    "disposeBody": "Kayıt ve geçmişi kalır, raf yeri boşalır. Gelecek sezon aynı lastikler olarak önerilmez.",
     "disposed": "Takım hurdaya ayrıldı",
     "disposeFailed": "Takım hurdaya ayrılamadı"
   },

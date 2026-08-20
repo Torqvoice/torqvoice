@@ -209,7 +209,7 @@
     "belowLimitHint": "Vale oferecer um preço ao cliente enquanto os pneus ainda estão aqui.",
     "dispose": "Dar baixa",
     "disposeTitle": "Dar baixa neste jogo?",
-    "disposeBody": "O registro e o histórico permanecem. Ele deixa de ser sugerido como os mesmos pneus na próxima temporada.",
+    "disposeBody": "O registro e o histórico permanecem e a vaga é liberada. Ele deixa de ser sugerido como os mesmos pneus na próxima temporada.",
     "disposed": "Jogo baixado",
     "disposeFailed": "Não foi possível dar baixa no jogo"
   },

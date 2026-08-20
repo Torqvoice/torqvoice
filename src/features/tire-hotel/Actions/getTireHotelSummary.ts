@@ -48,7 +48,13 @@ export async function getTireHotelSummary() {
         }),
         db.tireSet.count({ where: { organizationId, status: 'stored' } }),
         db.tireSet.count({
-          where: { organizationId, treatments: { some: { status: 'pending' } } },
+          // A written-off set can still carry a wash nobody ticked off. It is
+          // in a skip, so it is not work anybody is going to do.
+          where: {
+            organizationId,
+            status: { not: 'disposed' },
+            treatments: { some: { status: 'pending' } },
+          },
         }),
         db.tireStorageCharge.aggregate({
           where: { organizationId, status: 'pending' },

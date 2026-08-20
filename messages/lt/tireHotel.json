@@ -209,7 +209,7 @@
     "belowLimitHint": "Verta pasiūlyti klientui kainą, kol padangos dar čia.",
     "dispose": "Nurašyti",
     "disposeTitle": "Nurašyti šį komplektą?",
-    "disposeBody": "Įrašas ir istorija lieka. Kitą sezoną jis nebebus siūlomas kaip tos pačios padangos.",
+    "disposeBody": "Įrašas ir istorija lieka, vieta lentynoje atlaisvinama. Kitą sezoną jis nebebus siūlomas kaip tos pačios padangos.",
     "disposed": "Komplektas nurašytas",
     "disposeFailed": "Nepavyko nurašyti komplekto"
   },

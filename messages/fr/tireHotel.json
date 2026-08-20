@@ -209,7 +209,7 @@
     "belowLimitHint": "À proposer au client tant que les pneus sont encore ici.",
     "dispose": "Mettre au rebut",
     "disposeTitle": "Mettre ce jeu au rebut ?",
-    "disposeBody": "La fiche et son historique restent. Le jeu ne sera plus proposé la saison prochaine.",
+    "disposeBody": "La fiche et son historique restent, et la place est libérée. Le jeu ne sera plus proposé la saison prochaine.",
     "disposed": "Jeu mis au rebut",
     "disposeFailed": "Impossible de mettre le jeu au rebut"
   },

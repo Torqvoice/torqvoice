@@ -209,7 +209,7 @@
     "belowLimitHint": "Worth offering the customer a price while the tires are still here.",
     "dispose": "Write off",
     "disposeTitle": "Write this set off?",
-    "disposeBody": "The record and its history stay. It stops being offered as the same tires next season.",
+    "disposeBody": "The record and its history stay, and the shelf is freed. It stops being offered as the same tires next season.",
     "disposed": "Set written off",
     "disposeFailed": "Could not write the set off"
   },

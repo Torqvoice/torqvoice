@@ -194,7 +194,13 @@ export async function getTireSetsPaginated(params: {
           _count: { _all: true },
         }),
         db.tireSet.count({
-          where: { organizationId, treatments: { some: { status: 'pending' } } },
+          // Matches the filter itself: a written-off set is not outstanding
+          // work, so the badge must not count it either.
+          where: {
+            organizationId,
+            status: { not: 'disposed' },
+            treatments: { some: { status: 'pending' } },
+          },
         }),
       ])
 

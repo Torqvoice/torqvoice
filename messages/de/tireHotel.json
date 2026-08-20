@@ -209,7 +209,7 @@
     "belowLimitHint": "Bieten Sie dem Kunden einen Preis an, solange die Reifen noch hier sind.",
     "dispose": "Ausmustern",
     "disposeTitle": "Diesen Satz ausmustern?",
-    "disposeBody": "Der Eintrag und seine Historie bleiben. Er wird nächste Saison nicht mehr als dieselben Reifen vorgeschlagen.",
+    "disposeBody": "Der Eintrag und seine Historie bleiben, der Regalplatz wird frei. Er wird nächste Saison nicht mehr als dieselben Reifen vorgeschlagen.",
     "disposed": "Satz ausgemustert",
     "disposeFailed": "Satz konnte nicht ausgemustert werden"
   },

@@ -209,7 +209,7 @@
     "belowLimitHint": "Verdt å tilby kunden pris mens dekkene fortsatt står her.",
     "dispose": "Kasser",
     "disposeTitle": "Kassere dette settet?",
-    "disposeBody": "Oppføringen og historikken blir stående. Det foreslås ikke som samme dekk neste sesong.",
+    "disposeBody": "Oppføringen og historikken blir stående, og hyllen frigjøres. Det foreslås ikke som samme dekk neste sesong.",
     "disposed": "Settet er kassert",
     "disposeFailed": "Kunne ikke kassere settet"
   },
