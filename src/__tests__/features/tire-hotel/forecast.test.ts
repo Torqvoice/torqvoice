@@ -52,7 +52,10 @@ describe('when a set needs replacing', () => {
   })
 
   it('judges a winter set against the winter limit', () => {
-    const summer = forecastSet(set({ measurements: readings('m1', '2026-04-01', [4, 5, 5, 5]) }), LIMITS)
+    const summer = forecastSet(
+      set({ measurements: readings('m1', '2026-04-01', [4, 5, 5, 5]) }),
+      LIMITS
+    )
     const winter = forecastSet(
       set({ season: 'winter', measurements: readings('m1', '2026-04-01', [4, 5, 5, 5]) }),
       LIMITS
@@ -119,7 +122,13 @@ describe('when a set needs replacing', () => {
 
   it('ignores a round with no depths recorded', () => {
     const blank: MeasurementLike[] = [
-      { position: 'front_left', treadDepthMm: null, condition: 'good', measuredAt: new Date('2026-04-01'), movementId: 'm1' },
+      {
+        position: 'front_left',
+        treadDepthMm: null,
+        condition: 'good',
+        measuredAt: new Date('2026-04-01'),
+        movementId: 'm1',
+      },
     ]
     expect(forecastSet(set({ measurements: blank }), LIMITS).verdict).toBe('unknown')
   })
@@ -171,7 +180,12 @@ describe('what to order', () => {
   it('collapses the ways one fitment gets written into a single order line', () => {
     const written = ['225/45R17', '225/45 R17', 'P225/45ZR17 94V'].map((size, i) =>
       forecastSet(
-        set({ id: `s${i}`, size, quantity: 4, measurements: readings('m1', '2026-04-01', [3, 3, 3, 3]) }),
+        set({
+          id: `s${i}`,
+          size,
+          quantity: 4,
+          measurements: readings('m1', '2026-04-01', [3, 3, 3, 3]),
+        }),
         LIMITS
       )
     )
@@ -183,7 +197,11 @@ describe('what to order', () => {
 
   it('keeps an unreadable size under its own text rather than dropping it', () => {
     const odd = forecastSet(
-      set({ id: 'x', size: '31x10.50R15', measurements: readings('m1', '2026-04-01', [3, 3, 3, 3]) }),
+      set({
+        id: 'x',
+        size: '31x10.50R15',
+        measurements: readings('m1', '2026-04-01', [3, 3, 3, 3]),
+      }),
       LIMITS
     )
     const demand = replacementDemand([odd])
@@ -200,7 +218,12 @@ describe('what to order', () => {
 
   it('puts the biggest order line first', () => {
     const other = forecastSet(
-      set({ id: 'z', size: '205/55R16', quantity: 4, measurements: readings('m1', '2026-04-01', [2, 3, 3, 3]) }),
+      set({
+        id: 'z',
+        size: '205/55R16',
+        quantity: 4,
+        measurements: readings('m1', '2026-04-01', [2, 3, 3, 3]),
+      }),
       LIMITS
     )
     const demand = replacementDemand([other, atLimit, dueNext])

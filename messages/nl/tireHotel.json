@@ -363,7 +363,11 @@
     "targetInvoice": "Nieuwe factuur",
     "targetInvoiceHint": "Factureer de klant direct, zonder werkorder op een voertuig.",
     "createInvoice": "Factuur aanmaken",
-    "needsCustomer": "Koppel een klant of voertuig aan deze set voordat u factureert."
+    "needsCustomer": "Koppel een klant of voertuig aan deze set voordat u factureert.",
+    "storagePeriodEnd": "Opgehaald",
+    "storageOpenEnded": "Open",
+    "storagePeriodHint": "Staat op de factuurregel zodat de klant ziet waarvoor de kosten gelden. Laat het einde leeg tot u weet wanneer ze ophalen.",
+    "pricesHint": "Prijzen voor voorbereiding komen uit de instellingen. Elke regel is achteraf nog aan te passen."
   },
   "label": {
     "action": "Labels",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Bandenopslag",
-    "pieces": "st."
+    "pieces": "st.",
+    "fromDate": "vanaf {date}"
   },
   "setNames": {
     "winter": "winterbanden",

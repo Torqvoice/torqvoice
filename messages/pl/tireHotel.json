@@ -363,7 +363,11 @@
     "targetInvoice": "Nowa faktura",
     "targetInvoiceHint": "Obciąż klienta bezpośrednio, bez zlecenia na pojazd.",
     "createInvoice": "Utwórz fakturę",
-    "needsCustomer": "Powiąż klienta lub pojazd z kompletem przed rozliczeniem."
+    "needsCustomer": "Powiąż klienta lub pojazd z kompletem przed rozliczeniem.",
+    "storagePeriodEnd": "Odebrano",
+    "storageOpenEnded": "Otwarty",
+    "storagePeriodHint": "Widnieje na pozycji faktury, więc klient widzi, co obejmuje opłata. Zostaw koniec pusty, dopóki nie wiesz, kiedy odbiorą.",
+    "pricesHint": "Ceny przygotowania pochodzą z ustawień. Każdą pozycję można zmienić po utworzeniu dokumentu."
   },
   "label": {
     "action": "Etykiety",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Przechowywanie opon",
-    "pieces": "szt."
+    "pieces": "szt.",
+    "fromDate": "od {date}"
   },
   "setNames": {
     "winter": "opony zimowe",

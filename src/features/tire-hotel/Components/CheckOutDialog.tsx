@@ -52,6 +52,7 @@ export function CheckOutDialog({
   locationCode,
   season,
   imperial,
+  thresholds,
   treatments = [],
   latestMeasurements = [],
 }: {
@@ -62,6 +63,8 @@ export function CheckOutDialog({
   locationCode: string | null
   season: string
   imperial: boolean
+  /** The workshop's own replacement limits, so the grade matches settings. */
+  thresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   treatments?: { type: string; status: string }[]
   /** The most recent reading round, normally taken at check-in. */
   latestMeasurements?: { position: string; treadDepthMm: number | null; condition: string }[]
@@ -153,7 +156,13 @@ export function CheckOutDialog({
             <div className="space-y-2">
               <Label>{t('checkOut.treadTitle')}</Label>
               <p className="text-xs text-muted-foreground">{t('checkOut.treadHintUnmeasured')}</p>
-              <TreadEntry rows={treads} onChange={setTreads} imperial={imperial} season={season} />
+              <TreadEntry
+                rows={treads}
+                onChange={setTreads}
+                imperial={imperial}
+                season={season}
+                thresholds={thresholds}
+              />
             </div>
           ) : (
             <div className="space-y-2">

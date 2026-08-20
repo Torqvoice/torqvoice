@@ -54,6 +54,7 @@ export function CheckInDialog({
   locations,
   vehicles,
   imperial,
+  thresholds,
   defaultQuantity = 4,
   lockedVehicle,
   serviceRecordId,
@@ -64,6 +65,12 @@ export function CheckInDialog({
   locations: PickerLocation[]
   vehicles: VehicleOption[]
   imperial: boolean
+  /**
+   * The workshop's own replacement limits. Without them the grade falls back
+   * to built-in figures, and a shop that set its winter limit to 3 mm would
+   * still see 3.5 mm called Replace.
+   */
+  thresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultQuantity?: number
   /**
    * Set when check-in starts from a job. The car is already on the ramp and
@@ -538,6 +545,7 @@ export function CheckInDialog({
               onChange={setTreads}
               imperial={imperial}
               season={season}
+              thresholds={thresholds}
               previous={lastReadings}
             />
           </div>

@@ -64,7 +64,12 @@ describe('grouping readings into visits', () => {
     // A mid-season inspection: no check-in, no check-out, just a gauge.
     const loose: MeasurementLike[] = [
       { position: 'front_left', treadDepthMm: 7.2, condition: 'good', measuredAt: d('2025-07-01') },
-      { position: 'front_right', treadDepthMm: 7.3, condition: 'good', measuredAt: d('2025-07-01') },
+      {
+        position: 'front_right',
+        treadDepthMm: 7.3,
+        condition: 'good',
+        measuredAt: d('2025-07-01'),
+      },
     ]
     const rounds = groupRounds([...SPRING_2025, ...loose])
     expect(rounds).toHaveLength(2)
@@ -175,12 +180,7 @@ describe('position order', () => {
       rear_left: 8,
       front_right: 8,
     })
-    expect(roundPositions(rows)).toEqual([
-      'front_left',
-      'front_right',
-      'rear_left',
-      'rear_right',
-    ])
+    expect(roundPositions(rows)).toEqual(['front_left', 'front_right', 'rear_left', 'rear_right'])
   })
 
   it('keeps anything unusual, after the four road positions', () => {

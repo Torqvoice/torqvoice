@@ -363,7 +363,11 @@
     "targetInvoice": "Ny faktura",
     "targetInvoiceHint": "Fakturer kunden direkte, uten jobb på et kjøretøy.",
     "createInvoice": "Opprett faktura",
-    "needsCustomer": "Koble en kunde eller et kjøretøy til settet før du fakturerer."
+    "needsCustomer": "Koble en kunde eller et kjøretøy til settet før du fakturerer.",
+    "storagePeriodEnd": "Hentet",
+    "storageOpenEnded": "Åpen",
+    "storagePeriodHint": "Står på fakturalinjen så kunden ser hva gebyret dekker. La sluttdatoen stå tom til du vet når de henter.",
+    "pricesHint": "Prisene for klargjøring hentes fra innstillingene. Alle linjer kan endres etter at dette er opprettet."
   },
   "label": {
     "action": "Etiketter",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Dekklagring",
-    "pieces": "stk"
+    "pieces": "stk",
+    "fromDate": "fra {date}"
   },
   "setNames": {
     "winter": "vinterdekk",

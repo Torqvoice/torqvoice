@@ -60,14 +60,9 @@ describe('export', () => {
     expect(exportSource).toMatch(/tireWarehouse[\s\S]{0,200}locations:\s*true/)
   })
 
-  it.each([
-    'measurements',
-    'movements',
-    'treatments',
-  ])('pulls %s with the set', (relation) => {
+  it.each(['measurements', 'movements', 'treatments'])('pulls %s with the set', (relation) => {
     expect(exportSource).toMatch(new RegExp(`db\\.tireSet[\\s\\S]{0,400}${relation}`))
   })
-
 })
 
 describe('import', () => {
@@ -89,5 +84,4 @@ describe('import', () => {
       expect(importSource, `import never reads data.${key}`).toContain(`data.${key}`)
     }
   })
-
 })

@@ -526,6 +526,7 @@ export function TireSetClient({
       </div>
 
       <CheckOutDialog
+        thresholds={{ ...thresholds, warnMargin: 1 }}
         open={showCheckOut}
         onOpenChange={setShowCheckOut}
         tireSetId={set.id}

@@ -188,10 +188,13 @@ async function storageLine(
 ) {
   const amount = Math.round((data.storageAmount ?? 0) * 100) / 100
   const words = await invoiceLineWords()
-  const period =
-    data.storageFrom && data.storageTo
-      ? `${data.storageFrom.toISOString().slice(0, 10)} - ${data.storageTo.toISOString().slice(0, 10)}`
-      : null
+
+  // An open-ended period is the normal case: the shop knows when the tires
+  // arrived and not when they will be collected, and inventing an end date
+  // would print a promise on the invoice.
+  const from = data.storageFrom?.toISOString().slice(0, 10)
+  const to = data.storageTo?.toISOString().slice(0, 10)
+  const period = from ? (to ? `${from} - ${to}` : words.fromDate.replace('{date}', from)) : null
 
   return {
     description: [words.storage, set.size, `${set.quantity} ${words.pieces}`, period]

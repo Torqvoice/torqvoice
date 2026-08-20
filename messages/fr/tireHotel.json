@@ -363,7 +363,11 @@
     "targetInvoice": "Nouvelle facture",
     "targetInvoiceHint": "Facturer le client directement, sans ordre sur un véhicule.",
     "createInvoice": "Créer la facture",
-    "needsCustomer": "Associez un client ou un véhicule à ce jeu avant de facturer."
+    "needsCustomer": "Associez un client ou un véhicule à ce jeu avant de facturer.",
+    "storagePeriodEnd": "Repris",
+    "storageOpenEnded": "Ouvert",
+    "storagePeriodHint": "Apparaît sur la ligne de facture pour que le client voie ce que couvrent les frais. Laissez la fin vide tant que la date de reprise est inconnue.",
+    "pricesHint": "Les tarifs de préparation viennent des paramètres. Chaque ligne reste modifiable une fois le document créé."
   },
   "label": {
     "action": "Étiquettes",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Stockage de pneus",
-    "pieces": "pcs"
+    "pieces": "pcs",
+    "fromDate": "depuis le {date}"
   },
   "setNames": {
     "winter": "pneus hiver",

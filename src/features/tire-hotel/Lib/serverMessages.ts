@@ -41,11 +41,16 @@ export async function treatmentNames(): Promise<Record<string, string>> {
 }
 
 /** The words the storage line on an invoice is built from. */
-export async function invoiceLineWords(): Promise<{ storage: string; pieces: string }> {
+export async function invoiceLineWords(): Promise<{
+  storage: string
+  pieces: string
+  fromDate: string
+}> {
   const line = group(await tireHotelMessages(), 'invoiceLine')
   return {
     storage: line.storage ?? 'Tire storage',
     pieces: line.pieces ?? 'pcs',
+    fromDate: line.fromDate ?? 'from {date}',
   }
 }
 

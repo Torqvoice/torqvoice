@@ -363,7 +363,11 @@
     "targetInvoice": "New invoice",
     "targetInvoiceHint": "Bill the customer directly, with no job on a vehicle.",
     "createInvoice": "Create invoice",
-    "needsCustomer": "Link a customer or a vehicle to this set before billing it."
+    "needsCustomer": "Link a customer or a vehicle to this set before billing it.",
+    "storagePeriodEnd": "Collected",
+    "storageOpenEnded": "Open",
+    "storagePeriodHint": "Prints on the invoice line so the customer can see what the fee covers. Leave the end blank until you know when they are collecting.",
+    "pricesHint": "Prep prices come from settings. Every line can still be edited after this is created."
   },
   "label": {
     "action": "Labels",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Tire storage",
-    "pieces": "pcs"
+    "pieces": "pcs",
+    "fromDate": "from {date}"
   },
   "setNames": {
     "winter": "winter tires",

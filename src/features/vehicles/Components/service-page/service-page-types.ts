@@ -61,6 +61,8 @@ export interface ServicePageClientProps {
   aiEnabled?: boolean
   /** Gates the "Store tires" action, by plan and by the org's own switch. */
   tireHotelEnabled?: boolean
+  /** The workshop's tread limits, so a set checked in here grades correctly. */
+  tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultDueDays?: number
   defaultMarkupPercent?: number
   markupAppliesToInventory?: boolean

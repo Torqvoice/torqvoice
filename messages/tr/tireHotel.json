@@ -363,7 +363,11 @@
     "targetInvoice": "Yeni fatura",
     "targetInvoiceHint": "Araca iş emri açmadan müşteriye doğrudan faturala.",
     "createInvoice": "Fatura oluştur",
-    "needsCustomer": "Faturalamadan önce takıma bir müşteri veya araç bağlayın."
+    "needsCustomer": "Faturalamadan önce takıma bir müşteri veya araç bağlayın.",
+    "storagePeriodEnd": "Teslim alındı",
+    "storageOpenEnded": "Açık",
+    "storagePeriodHint": "Fatura satırında görünür, böylece müşteri ücretin neyi kapsadığını görür. Ne zaman alacakları belli olana kadar bitişi boş bırakın.",
+    "pricesHint": "Hazırlık fiyatları ayarlardan gelir. Oluşturulduktan sonra her satır yine de düzenlenebilir."
   },
   "label": {
     "action": "Etiketler",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Lastik depolama",
-    "pieces": "adet"
+    "pieces": "adet",
+    "fromDate": "{date} tarihinden"
   },
   "setNames": {
     "winter": "kış lastiği",

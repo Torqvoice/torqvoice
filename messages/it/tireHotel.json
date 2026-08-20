@@ -363,7 +363,11 @@
     "targetInvoice": "Nuova fattura",
     "targetInvoiceHint": "Fattura il cliente direttamente, senza un ordine su un veicolo.",
     "createInvoice": "Crea fattura",
-    "needsCustomer": "Collega un cliente o un veicolo al treno prima di fatturare."
+    "needsCustomer": "Collega un cliente o un veicolo al treno prima di fatturare.",
+    "storagePeriodEnd": "Ritirato",
+    "storageOpenEnded": "Aperto",
+    "storagePeriodHint": "Compare sulla riga della fattura, così il cliente vede cosa copre l’importo. Lascia la fine vuota finché non sai quando ritirano.",
+    "pricesHint": "I prezzi della preparazione vengono dalle impostazioni. Ogni riga resta modificabile dopo la creazione."
   },
   "label": {
     "action": "Etichette",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Deposito pneumatici",
-    "pieces": "pz"
+    "pieces": "pz",
+    "fromDate": "dal {date}"
   },
   "setNames": {
     "winter": "pneumatici invernali",

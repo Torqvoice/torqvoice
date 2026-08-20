@@ -100,6 +100,7 @@ export function TireHotelClient({
   locations,
   vehicles,
   imperial,
+  thresholds,
   search,
   statusFilter,
   totalFree,
@@ -115,6 +116,8 @@ export function TireHotelClient({
     customerId: string | null
   }[]
   imperial: boolean
+  /** The workshop's own replacement limits, so grading matches settings. */
+  thresholds: { summerReplace: number; winterReplace: number; warnMargin: number }
   search: string
   statusFilter: string
   totalFree: number
@@ -408,6 +411,7 @@ export function TireHotelClient({
       />
 
       <CheckInDialog
+        thresholds={thresholds}
         open={showCheckIn}
         onOpenChange={setShowCheckIn}
         locations={locations}

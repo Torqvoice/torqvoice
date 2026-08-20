@@ -35,10 +35,13 @@ export function StoreTiresButton({
   serviceRecordId,
   vehicle,
   imperial,
+  thresholds,
 }: {
   serviceRecordId: string
   vehicle: Vehicle
   imperial: boolean
+  /** The workshop's tread limits, passed straight to the check-in form. */
+  thresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
 }) {
   const t = useTranslations('tireHotel')
   const [loading, setLoading] = useState(false)
@@ -86,6 +89,7 @@ export function StoreTiresButton({
           lockedVehicle={vehicle}
           serviceRecordId={serviceRecordId}
           imperial={imperial}
+          thresholds={thresholds}
           // Straight into the labels, still on the job. The sticker has to go
           // on before the tires reach the shelf, and the desk has a work order
           // half written behind this dialog.

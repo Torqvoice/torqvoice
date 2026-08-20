@@ -363,7 +363,11 @@
     "targetInvoice": "Nova fatura",
     "targetInvoiceHint": "Cobre o cliente direto, sem ordem em um veículo.",
     "createInvoice": "Criar fatura",
-    "needsCustomer": "Vincule um cliente ou veículo ao jogo antes de cobrar."
+    "needsCustomer": "Vincule um cliente ou veículo ao jogo antes de cobrar.",
+    "storagePeriodEnd": "Retirado",
+    "storageOpenEnded": "Aberto",
+    "storagePeriodHint": "Aparece na linha da nota para o cliente ver o que o valor cobre. Deixe o fim em branco até saber quando vão retirar.",
+    "pricesHint": "Os preços de preparação vêm das configurações. Cada linha ainda pode ser editada depois de criado."
   },
   "label": {
     "action": "Etiquetas",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Guarda de pneus",
-    "pieces": "pçs"
+    "pieces": "pçs",
+    "fromDate": "desde {date}"
   },
   "setNames": {
     "winter": "pneus de inverno",

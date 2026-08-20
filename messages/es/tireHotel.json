@@ -363,7 +363,11 @@
     "targetInvoice": "Nueva factura",
     "targetInvoiceHint": "Factura al cliente directamente, sin orden sobre un vehículo.",
     "createInvoice": "Crear factura",
-    "needsCustomer": "Vincula un cliente o un vehículo al juego antes de facturar."
+    "needsCustomer": "Vincula un cliente o un vehículo al juego antes de facturar.",
+    "storagePeriodEnd": "Retirado",
+    "storageOpenEnded": "Abierto",
+    "storagePeriodHint": "Aparece en la línea de la factura para que el cliente vea qué cubre el importe. Deja el final en blanco hasta saber cuándo lo retiran.",
+    "pricesHint": "Los precios de preparación vienen de los ajustes. Cada línea se puede editar después de crearlo."
   },
   "label": {
     "action": "Etiquetas",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Almacenaje de neumáticos",
-    "pieces": "uds"
+    "pieces": "uds",
+    "fromDate": "desde {date}"
   },
   "setNames": {
     "winter": "neumáticos de invierno",

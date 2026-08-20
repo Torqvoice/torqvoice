@@ -363,7 +363,11 @@
     "targetInvoice": "Nauja sąskaita",
     "targetInvoiceHint": "Apmokestinti klientą tiesiogiai, be darbo užsakymo transporto priemonei.",
     "createInvoice": "Sukurti sąskaitą",
-    "needsCustomer": "Prieš apmokestindami susiekite komplektą su klientu arba transporto priemone."
+    "needsCustomer": "Prieš apmokestindami susiekite komplektą su klientu arba transporto priemone.",
+    "storagePeriodEnd": "Atsiimta",
+    "storageOpenEnded": "Atvira",
+    "storagePeriodHint": "Rodoma sąskaitos eilutėje, kad klientas matytų, už ką mokestis. Palikite pabaigą tuščią, kol nežinote, kada atsiims.",
+    "pricesHint": "Paruošimo kainos imamos iš nustatymų. Kiekvieną eilutę galima redaguoti ir sukūrus dokumentą."
   },
   "label": {
     "action": "Etiketės",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Padangų saugojimas",
-    "pieces": "vnt."
+    "pieces": "vnt.",
+    "fromDate": "nuo {date}"
   },
   "setNames": {
     "winter": "žieminės padangos",

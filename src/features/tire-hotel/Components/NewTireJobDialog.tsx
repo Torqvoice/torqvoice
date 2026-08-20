@@ -90,7 +90,7 @@ export function NewTireJobDialog({
   const [destination, setDestination] = useState<string>(hasVehicle ? 'new' : 'invoice')
   // Storage is billed here, on the same document as the work, rather than on
   // a schedule of its own. One place to charge a customer, not two.
-  const [includeStorage, setIncludeStorage] = useState(false)
+  const [includeStorage, setIncludeStorage] = useState(true)
   const [storageAmount, setStorageAmount] = useState('')
   const [storageFrom, setStorageFrom] = useState('')
   const [storageTo, setStorageTo] = useState('')
@@ -128,7 +128,7 @@ export function NewTireJobDialog({
       setBrowsing(false)
       setOpenJobs([])
       setDestination(hasVehicle ? 'new' : 'invoice')
-      setIncludeStorage(false)
+      setIncludeStorage(true)
       setIncludeTires(true)
       setIncludePrep([])
       return
@@ -151,14 +151,12 @@ export function NewTireJobDialog({
         setPrice(String(best.sellPrice))
       }
       setIncludePrep((value?.prep ?? []).map((line) => line.type))
-      // Prefilled from the workshop's own season price, over the six months a
-      // stored set normally sits there. Both stay editable.
+      // Prefilled from the workshop's own storage price. The end date is left
+      // blank on purpose: nobody knows when the customer will come back for
+      // them, and a guessed date would print on the invoice as if they did.
       setStorageAmount(String(defaultStoragePrice || ''))
-      const today = new Date()
-      const until = new Date(today)
-      until.setMonth(until.getMonth() + 6)
-      setStorageFrom(today.toISOString().slice(0, 10))
-      setStorageTo(until.toISOString().slice(0, 10))
+      setStorageFrom(new Date().toISOString().slice(0, 10))
+      setStorageTo('')
 
       const rows = jobs?.success && jobs.data ? jobs.data : []
       setOpenJobs(rows)
@@ -493,6 +491,9 @@ export function NewTireJobDialog({
                       </label>
                     ))}
                   </div>
+                  {/* These are the only prices the dialog cannot edit, so it
+                      says where they come from and that nothing is final. */}
+                  <p className="text-xs text-muted-foreground">{t('job.pricesHint')}</p>
                 </div>
               )}
 
@@ -559,7 +560,9 @@ export function NewTireJobDialog({
               {mode === 'workOrder' && (
                 <div className="min-w-0 space-y-1.5">
                   <p className="text-sm font-medium">{t('job.destination')}</p>
-                  <div className="space-y-1.5">
+                  {/* A busy shop can have twenty jobs open. The column scrolls
+                      rather than pushing the total off the bottom. */}
+                  <div className="max-h-72 space-y-1.5 overflow-x-hidden overflow-y-auto pr-1">
                     {hasVehicle && (
                       <TargetOption
                         selected={destination === 'new'}

@@ -21,6 +21,7 @@ interface DetailsLeftColumnProps {
   /** Present only when the job came out of the tire hotel. */
   tireSet?: TireSetBannerData | null
   tireHotelEnabled?: boolean
+  tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   unitSystem?: 'metric' | 'imperial'
   currencyCode: string
   defaultLaborRate: number
@@ -57,6 +58,7 @@ export function DetailsLeftColumn({
   record,
   tireSet = null,
   tireHotelEnabled = false,
+  tireThresholds,
   unitSystem = 'metric',
   currencyCode,
   defaultLaborRate,
@@ -99,6 +101,7 @@ export function DetailsLeftColumn({
                 customerId: record.customer?.id ?? null,
               }}
               imperial={unitSystem === 'imperial'}
+              thresholds={tireThresholds}
             />
           </div>
         )

@@ -363,7 +363,11 @@
     "targetInvoice": "Neue Rechnung",
     "targetInvoiceHint": "Direkt an den Kunden, ohne Auftrag an einem Fahrzeug.",
     "createInvoice": "Rechnung erstellen",
-    "needsCustomer": "Verknüpfen Sie einen Kunden oder ein Fahrzeug, bevor Sie abrechnen."
+    "needsCustomer": "Verknüpfen Sie einen Kunden oder ein Fahrzeug, bevor Sie abrechnen.",
+    "storagePeriodEnd": "Abgeholt",
+    "storageOpenEnded": "Offen",
+    "storagePeriodHint": "Erscheint auf der Rechnungsposition, damit der Kunde sieht, wofür die Gebühr gilt. Enddatum offen lassen, bis der Abholtermin feststeht.",
+    "pricesHint": "Die Preise für die Vorbereitung stammen aus den Einstellungen. Jede Position lässt sich danach noch ändern."
   },
   "label": {
     "action": "Etiketten",
@@ -433,7 +437,8 @@
   },
   "invoiceLine": {
     "storage": "Reifeneinlagerung",
-    "pieces": "Stk."
+    "pieces": "Stk.",
+    "fromDate": "ab {date}"
   },
   "setNames": {
     "winter": "Winterreifen",

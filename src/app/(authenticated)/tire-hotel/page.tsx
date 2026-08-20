@@ -77,6 +77,11 @@ export default async function TireHotelPage({
           locations={locations}
           vehicles={vehicles}
           imperial={imperial}
+          thresholds={{
+            summerReplace: config.summerReplaceMm,
+            winterReplace: config.winterReplaceMm,
+            warnMargin: 1,
+          }}
           search={search}
           statusFilter={status}
           totalFree={sumFree(locations)}
