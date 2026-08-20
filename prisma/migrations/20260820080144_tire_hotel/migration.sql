@@ -136,7 +136,8 @@ CREATE TABLE "tire_storage_charges" (
     "status" TEXT NOT NULL DEFAULT 'pending',
     "serviceRecordId" TEXT,
     "invoicedAt" TIMESTAMP(3),
-    "agreementId" TEXT NOT NULL,
+    "agreementId" TEXT,
+    "tireSetId" TEXT,
     "organizationId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -213,6 +214,9 @@ CREATE INDEX "tire_storage_charges_organizationId_status_idx" ON "tire_storage_c
 
 -- CreateIndex
 CREATE INDEX "tire_storage_charges_serviceRecordId_idx" ON "tire_storage_charges"("serviceRecordId");
+
+-- CreateIndex
+CREATE INDEX "tire_storage_charges_tireSetId_idx" ON "tire_storage_charges"("tireSetId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tire_storage_charges_agreementId_periodStart_key" ON "tire_storage_charges"("agreementId", "periodStart");
@@ -303,6 +307,9 @@ ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_serviceR
 
 -- AddForeignKey
 ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_agreementId_fkey" FOREIGN KEY ("agreementId") REFERENCES "tire_storage_agreements"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_tireSetId_fkey" FOREIGN KEY ("tireSetId") REFERENCES "tire_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tire_storage_charges" ADD CONSTRAINT "tire_storage_charges_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,0 +1,9 @@
+{
+  "title": "Suche",
+  "description": "Fahrzeuge, Kunden, Aufträge und Einstellungen durchsuchen",
+  "placeholder": "Nach Name, Kennzeichen, Telefon, FIN, Rechnung suchen…",
+  "noResults": "Keine Treffer.",
+  "recentCustomers": "Zuletzt genutzte Kunden",
+  "services": "Serviceeinträge",
+  "toClose": "zum Schließen"
+}

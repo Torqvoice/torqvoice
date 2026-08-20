@@ -1,0 +1,9 @@
+{
+  "title": "Search",
+  "description": "Search for vehicles, customers, services and settings",
+  "placeholder": "Search by name, plate, phone, VIN, invoice…",
+  "noResults": "No results found.",
+  "recentCustomers": "Recent customers",
+  "services": "Service records",
+  "toClose": "to close"
+}

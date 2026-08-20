@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import {
   CommandDialog,
@@ -115,52 +116,47 @@ interface SearchResult {
   }[]
 }
 
+/**
+ * The settings pages worth reaching from search.
+ *
+ * Named by key rather than by label, because the settings sidebar already
+ * names every one of these in twelve languages. Two lists of the same page
+ * names would drift, and the one nobody edits is the one that goes stale.
+ *
+ * The keywords stay in English on purpose: they are aliases, so that someone
+ * typing "vat" or "smtp" still lands on the right page whatever language the
+ * app is in. The translated title and description are matched as well.
+ */
 const SEARCHABLE_SETTINGS = [
   {
-    label: 'Company',
-    description: 'Company, business, branding, logo',
+    key: 'company',
     href: '/settings/company',
     keywords: ['company', 'business', 'branding', 'logo', 'name', 'address'],
   },
   {
-    label: 'Account',
-    description: 'Account, profile, password',
+    key: 'account',
     href: '/settings/account',
     keywords: ['account', 'profile', 'password', 'email', '2fa'],
   },
+  { key: 'team', href: '/settings/team', keywords: ['team', 'members', 'roles', 'invite'] },
   {
-    label: 'Team',
-    description: 'Team members and roles',
-    href: '/settings/team',
-    keywords: ['team', 'members', 'roles', 'invite'],
-  },
-  {
-    label: 'Invoice',
-    description: 'Invoice layout and prefix',
+    key: 'invoice',
     href: '/settings/invoice',
     keywords: ['invoice', 'layout', 'prefix', 'footer', 'due'],
   },
   {
-    label: 'Templates',
-    description: 'Invoice & quote template styling',
+    key: 'templates',
     href: '/settings/templates',
     keywords: ['template', 'styling', 'colors', 'font', 'header', 'quote'],
   },
   {
-    label: 'Payment',
-    description: 'Payment and bank settings',
+    key: 'payment',
     href: '/settings/payment',
     keywords: ['payment', 'bank', 'vipps', 'stripe', 'terms'],
   },
+  { key: 'tax', href: '/settings/tax', keywords: ['tax', 'vat', 'rate'] },
   {
-    label: 'Tax',
-    description: 'Tax rate and VAT defaults',
-    href: '/settings/tax',
-    keywords: ['tax', 'vat', 'rate'],
-  },
-  {
-    label: 'Localization',
-    description: 'Language, currency, date & time',
+    key: 'localization',
     href: '/settings/localization',
     keywords: [
       'localization',
@@ -173,43 +169,21 @@ const SEARCHABLE_SETTINGS = [
       'unit',
     ],
   },
+  { key: 'customFields', href: '/settings/custom-fields', keywords: ['custom fields', 'fields'] },
+  { key: 'email', href: '/settings/email', keywords: ['email', 'mail', 'smtp', 'sending'] },
   {
-    label: 'Custom Fields',
-    description: 'Custom fields configuration',
-    href: '/settings/custom-fields',
-    keywords: ['custom fields', 'fields'],
-  },
-  {
-    label: 'Email',
-    description: 'Email and SMTP settings',
-    href: '/settings/email',
-    keywords: ['email', 'mail', 'smtp', 'sending'],
-  },
-  {
-    label: 'Workshop',
-    description: 'Workshop and labor settings',
+    key: 'workshop',
     href: '/settings/workshop',
     keywords: ['workshop', 'technician', 'labor', 'hours'],
   },
   {
-    label: 'Appearance',
-    description: 'Theme and date settings',
+    key: 'appearance',
     href: '/settings/appearance',
     keywords: ['appearance', 'theme', 'dark', 'light', 'date', 'timezone'],
   },
-  {
-    label: 'Data',
-    description: 'Data export and backup',
-    href: '/settings/data',
-    keywords: ['data', 'export', 'import', 'backup'],
-  },
-  {
-    label: 'About',
-    description: 'Version and info',
-    href: '/settings/about',
-    keywords: ['about', 'version', 'info'],
-  },
-]
+  { key: 'data', href: '/settings/data', keywords: ['data', 'export', 'import', 'backup'] },
+  { key: 'about', href: '/settings/about', keywords: ['about', 'version', 'info'] },
+] as const
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value)
@@ -228,18 +202,12 @@ type RecentCustomer = {
   company: string | null
 }
 
-function filterSettings(query: string) {
-  const q = query.toLowerCase()
-  return SEARCHABLE_SETTINGS.filter(
-    (s) =>
-      s.label.toLowerCase().includes(q) ||
-      s.description.toLowerCase().includes(q) ||
-      s.keywords.some((k) => k.toLowerCase().includes(q))
-  )
-}
-
 export function SearchCommand() {
   const router = useRouter()
+  const t = useTranslations('search')
+  const tNav = useTranslations('navigation.sidebar')
+  const tSettings = useTranslations('settings')
+  const tTire = useTranslations('tireHotel')
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult>({
@@ -335,31 +303,48 @@ export function SearchCommand() {
     results.reminders.length > 0 ||
     results.inspections.length > 0 ||
     results.tireSets.length > 0
-  const matchedSettings = hasQuery ? filterSettings(debouncedQuery) : SEARCHABLE_SETTINGS
+  // Matched on what the user can actually read, plus the English aliases, so
+  // "vat" finds the tax page in every language and "mva" finds it in Norwegian.
+  const settingsEntries = useMemo(
+    () =>
+      SEARCHABLE_SETTINGS.map((entry) => ({
+        ...entry,
+        label: tSettings(`nav.items.${entry.key}.title`),
+        description: tSettings(`nav.items.${entry.key}.description`),
+      })),
+    [tSettings]
+  )
+
+  const matchedSettings = useMemo(() => {
+    if (!hasQuery) return settingsEntries
+    const q = debouncedQuery.toLowerCase()
+    return settingsEntries.filter(
+      (entry) =>
+        entry.label.toLowerCase().includes(q) ||
+        entry.description.toLowerCase().includes(q) ||
+        entry.keywords.some((k) => k.toLowerCase().includes(q))
+    )
+  }, [hasQuery, debouncedQuery, settingsEntries])
   const showDefault = !hasQuery
 
   return (
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      title="Search"
-      description="Search for vehicles, customers, services, and settings"
+      title={t('title')}
+      description={t('description')}
       className="sm:max-w-2xl"
       shouldFilter={!hasQuery}
     >
-      <CommandInput
-        placeholder="Search by name, plate, phone, VIN, invoice..."
-        value={query}
-        onValueChange={setQuery}
-      />
+      <CommandInput placeholder={t('placeholder')} value={query} onValueChange={setQuery} />
       <CommandList className="min-h-[300px]">
         {!loading && hasQuery && !hasResults && matchedSettings.length === 0 && (
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>{t('noResults')}</CommandEmpty>
         )}
 
         {/* Default view: recent customers + all settings */}
         {showDefault && recentCustomers.length > 0 && (
-          <CommandGroup heading="Recent Customers">
+          <CommandGroup heading={t('recentCustomers')}>
             {recentCustomers.map((c) => (
               <CommandItem
                 key={c.id}
@@ -382,7 +367,7 @@ export function SearchCommand() {
         {hasQuery && (
           <>
             {results.customers.length > 0 && (
-              <CommandGroup heading="Customers">
+              <CommandGroup heading={tNav('customers')}>
                 {results.customers.map((c) => (
                   <div key={c.id}>
                     <CommandItem
@@ -420,7 +405,7 @@ export function SearchCommand() {
               </CommandGroup>
             )}
             {results.vehicles.length > 0 && (
-              <CommandGroup heading="Vehicles">
+              <CommandGroup heading={tNav('vehicles')}>
                 {results.vehicles.map((v) => (
                   <CommandItem
                     key={v.id}
@@ -441,7 +426,7 @@ export function SearchCommand() {
               </CommandGroup>
             )}
             {results.services.length > 0 && (
-              <CommandGroup heading="Services">
+              <CommandGroup heading={t('services')}>
                 {results.services.map((s) => (
                   <CommandItem
                     key={s.id}
@@ -472,7 +457,7 @@ export function SearchCommand() {
               </CommandGroup>
             )}
             {results.quotes.length > 0 && (
-              <CommandGroup heading="Quotes">
+              <CommandGroup heading={tNav('quotes')}>
                 {results.quotes.map((q) => (
                   <CommandItem
                     key={q.id}
@@ -491,7 +476,7 @@ export function SearchCommand() {
               </CommandGroup>
             )}
             {results.parts.length > 0 && (
-              <CommandGroup heading="Parts">
+              <CommandGroup heading={tNav('inventory')}>
                 {results.parts.map((p) => (
                   <CommandItem
                     key={p.id}
@@ -510,7 +495,7 @@ export function SearchCommand() {
               </CommandGroup>
             )}
             {results.reminders.length > 0 && (
-              <CommandGroup heading="Reminders">
+              <CommandGroup heading={tNav('reminders')}>
                 {results.reminders.map((r) => (
                   <CommandItem
                     key={r.id}
@@ -542,7 +527,7 @@ export function SearchCommand() {
             {/* Shelf code leads: the desk asks "where are these tires", and
                 the code is the answer they are about to read out loud. */}
             {results.tireSets.length > 0 && (
-              <CommandGroup heading="Tire Hotel">
+              <CommandGroup heading={tNav('tireHotel')}>
                 {results.tireSets.map((set) => (
                   <CommandItem
                     key={set.id}
@@ -555,7 +540,9 @@ export function SearchCommand() {
                         {set.location?.code ? (
                           <span className="font-mono">{set.location.code}</span>
                         ) : (
-                          <span className="text-muted-foreground">{set.status}</span>
+                          <span className="text-muted-foreground">
+                            {tTire(`statuses.${set.status}`)}
+                          </span>
                         )}
                         {set.vehicle?.licensePlate && ` · ${set.vehicle.licensePlate}`}
                       </span>
@@ -565,7 +552,7 @@ export function SearchCommand() {
                           ? `${set.customer ? ' · ' : ''}${set.vehicle.make} ${set.vehicle.model}`
                           : ''}
                         {set.size ? ` · ${set.size}` : ''}
-                        {` · ${set.quantity} pcs`}
+                        {` · ${tTire('list.tireCount', { count: set.quantity })}`}
                       </span>
                     </div>
                   </CommandItem>
@@ -573,7 +560,7 @@ export function SearchCommand() {
               </CommandGroup>
             )}
             {results.inspections.length > 0 && (
-              <CommandGroup heading="Inspections">
+              <CommandGroup heading={tNav('inspections')}>
                 {results.inspections.map((insp) => (
                   <CommandItem
                     key={insp.id}
@@ -598,7 +585,7 @@ export function SearchCommand() {
 
         {/* Settings group: shown in both default and search views */}
         {matchedSettings.length > 0 && (
-          <CommandGroup heading="Settings">
+          <CommandGroup heading={tNav('settings')}>
             {matchedSettings.map((s) => (
               <CommandItem
                 key={s.href}
@@ -620,7 +607,7 @@ export function SearchCommand() {
           <kbd className="pointer-events-none inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
             ESC
           </kbd>
-          <span className="ml-1.5">to close</span>
+          <span className="ml-1.5">{t('toClose')}</span>
         </span>
       </div>
     </CommandDialog>

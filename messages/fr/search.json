@@ -1,0 +1,9 @@
+{
+  "title": "Recherche",
+  "description": "Rechercher véhicules, clients, interventions et paramètres",
+  "placeholder": "Nom, plaque, téléphone, VIN, facture…",
+  "noResults": "Aucun résultat.",
+  "recentCustomers": "Clients récents",
+  "services": "Interventions",
+  "toClose": "pour fermer"
+}

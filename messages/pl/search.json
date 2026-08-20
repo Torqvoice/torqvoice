@@ -1,0 +1,9 @@
+{
+  "title": "Szukaj",
+  "description": "Szukaj pojazdów, klientów, zleceń i ustawień",
+  "placeholder": "Szukaj po nazwie, rejestracji, telefonie, VIN, fakturze…",
+  "noResults": "Brak wyników.",
+  "recentCustomers": "Ostatni klienci",
+  "services": "Historia serwisowa",
+  "toClose": "aby zamknąć"
+}
