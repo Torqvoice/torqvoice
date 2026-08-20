@@ -507,7 +507,8 @@
     "next": "Within a season",
     "rate": "{value} a season",
     "caveat": "Sets already at the limit are measured. The rest is extrapolated from one customer’s wear over one interval, so treat it as demand to plan around, not an order to place.",
-    "unmeasured": "{count, plural, one {# set has too little history to judge and is not counted} other {# sets have too little history to judge and are not counted}}"
+    "unmeasured": "{count, plural, one {# set has too little history to judge and is not counted} other {# sets have too little history to judge and are not counted}}",
+    "capped": "Read the {shown} most recent sets of {total}."
   },
   "invoiceLine": {
     "storage": "Tire storage",

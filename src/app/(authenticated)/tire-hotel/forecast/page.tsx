@@ -20,7 +20,7 @@ export default async function TireForecastPage() {
     getSettings([SETTING_KEYS.UNIT_SYSTEM]),
   ])
 
-  const sets = result.success && result.data ? result.data : []
+  const data = result.success && result.data ? result.data : { sets: [], total: 0, shown: 0 }
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
 
   return (
@@ -28,7 +28,9 @@ export default async function TireForecastPage() {
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <ForecastClient
-          sets={sets}
+          sets={data.sets}
+          total={data.total}
+          shown={data.shown}
           imperial={settings[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'}
           thresholds={{
             summerReplace: config.summerReplaceMm,

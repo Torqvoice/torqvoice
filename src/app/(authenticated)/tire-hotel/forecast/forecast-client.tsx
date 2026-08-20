@@ -18,7 +18,9 @@ import type { getSetsForForecast } from '@/features/tire-hotel/Actions/tireSetAc
 import { ChevronDown, ChevronRight, Package, TriangleAlert } from 'lucide-react'
 import { DocsLink } from '@/components/docs-link'
 
-type ForecastRow = NonNullable<Awaited<ReturnType<typeof getSetsForForecast>>['data']>[number]
+type ForecastRow = NonNullable<
+  Awaited<ReturnType<typeof getSetsForForecast>>['data']
+>['sets'][number]
 
 /**
  * What the shop can expect to sell next season, from tires it has measured.
@@ -34,10 +36,15 @@ type ForecastRow = NonNullable<Awaited<ReturnType<typeof getSetsForForecast>>['d
  */
 export function ForecastClient({
   sets,
+  total,
+  shown,
   imperial,
   thresholds,
 }: {
   sets: ForecastRow[]
+  /** Live sets the shop holds, which may be more than were read. */
+  total: number
+  shown: number
   imperial: boolean
   thresholds: { summerReplace: number; winterReplace: number }
 }) {
@@ -148,6 +155,8 @@ export function ForecastClient({
         <div className="min-w-0 space-y-1 text-xs text-muted-foreground">
           <p>{t('forecast.caveat')}</p>
           {unknown > 0 && <p>{t('forecast.unmeasured', { count: unknown })}</p>}
+          {/* A cap nobody is told about reads as "we looked at everything". */}
+          {shown < total && <p>{t('forecast.capped', { shown, total })}</p>}
           <DocsLink href="/docs/features/tire-hotel" variant="hint" />
         </div>
       </div>

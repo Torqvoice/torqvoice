@@ -403,33 +403,46 @@ export async function getSetsForForecast() {
     async ({ organizationId }) => {
       await requireTireHotel(organizationId)
 
-      return db.tireSet.findMany({
-        where: { organizationId, status: { not: 'disposed' } },
-        orderBy: { checkedInAt: 'desc' },
-        take: 500,
-        select: {
-          id: true,
-          reference: true,
-          season: true,
-          size: true,
-          brand: true,
-          quantity: true,
-          status: true,
-          customer: { select: { id: true, name: true } },
-          vehicle: { select: { id: true, licensePlate: true, make: true, model: true } },
-          measurements: {
-            orderBy: { measuredAt: 'desc' },
-            take: 24,
-            select: {
-              position: true,
-              treadDepthMm: true,
-              condition: true,
-              measuredAt: true,
-              movementId: true,
+      const where = { organizationId, status: { not: 'disposed' } }
+
+      // Capped, because this loads every reading for every set and a large
+      // hotel would otherwise pull tens of thousands of rows into one page.
+      // The count comes back with it so the page can say what it left out
+      // rather than presenting a corner of the racks as the whole picture.
+      const LIMIT = 2000
+
+      const [total, sets] = await Promise.all([
+        db.tireSet.count({ where }),
+        db.tireSet.findMany({
+          where,
+          orderBy: { checkedInAt: 'desc' },
+          take: LIMIT,
+          select: {
+            id: true,
+            reference: true,
+            season: true,
+            size: true,
+            brand: true,
+            quantity: true,
+            status: true,
+            customer: { select: { id: true, name: true } },
+            vehicle: { select: { id: true, licensePlate: true, make: true, model: true } },
+            measurements: {
+              orderBy: { measuredAt: 'desc' },
+              take: 24,
+              select: {
+                position: true,
+                treadDepthMm: true,
+                condition: true,
+                measuredAt: true,
+                movementId: true,
+              },
             },
           },
-        },
-      })
+        }),
+      ])
+
+      return { sets, total, shown: sets.length }
     },
     { requiredPermissions: READ }
   )

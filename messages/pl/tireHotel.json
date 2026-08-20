@@ -507,7 +507,8 @@
     "next": "W ciągu sezonu",
     "rate": "{value} na sezon",
     "caveat": "Komplety na granicy są zmierzone. Reszta to ekstrapolacja zużycia jednego klienta w jednym okresie: do planowania, nie do zamówienia.",
-    "unmeasured": "{count, plural, one {# komplet ma za mało historii i nie jest liczony} other {# kompletów ma za mało historii i nie jest liczonych}}"
+    "unmeasured": "{count, plural, one {# komplet ma za mało historii i nie jest liczony} other {# kompletów ma za mało historii i nie jest liczonych}}",
+    "capped": "Odczytano {shown} najnowszych kompletów z {total}."
   },
   "invoiceLine": {
     "storage": "Przechowywanie opon",
