@@ -438,7 +438,7 @@
     "previewFailed": "Не удалось построить предпросмотр"
   },
   "vehicle": {
-    "title": "В шинном отеле",
-    "count": "Комплектов: {count}"
+    "oneOnShelf": "на {code}",
+    "inStorage": "в шинном отеле"
   }
 }

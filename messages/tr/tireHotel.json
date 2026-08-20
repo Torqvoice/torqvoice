@@ -438,7 +438,7 @@
     "previewFailed": "Önizleme oluşturulamadı"
   },
   "vehicle": {
-    "title": "Lastik otelinde",
-    "count": "{count} takım"
+    "oneOnShelf": "{code} rafında",
+    "inStorage": "lastik otelinde"
   }
 }

@@ -438,7 +438,7 @@
     "previewFailed": "Vorschau nicht möglich"
   },
   "vehicle": {
-    "title": "Im Reifenhotel",
-    "count": "{count} Sätze"
+    "oneOnShelf": "auf {code}",
+    "inStorage": "im Reifenhotel"
   }
 }

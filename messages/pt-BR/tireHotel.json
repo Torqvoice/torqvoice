@@ -438,7 +438,7 @@
     "previewFailed": "Não foi possível gerar a prévia"
   },
   "vehicle": {
-    "title": "No hotel de pneus",
-    "count": "{count} jogos"
+    "oneOnShelf": "em {code}",
+    "inStorage": "no hotel de pneus"
   }
 }

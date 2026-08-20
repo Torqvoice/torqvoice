@@ -438,7 +438,7 @@
     "previewFailed": "Kunne ikke lage forhåndsvisning"
   },
   "vehicle": {
-    "title": "På dekkhotell",
-    "count": "{count} sett"
+    "oneOnShelf": "på {code}",
+    "inStorage": "på dekkhotell"
   }
 }

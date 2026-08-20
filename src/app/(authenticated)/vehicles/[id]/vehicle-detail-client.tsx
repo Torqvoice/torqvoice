@@ -829,6 +829,7 @@ export function VehicleDetailClient({
               )}
             </div>
           )}
+          <VehicleTireSets sets={tireSets} />
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Wrench className="h-3.5 w-3.5" />
             <span className="font-semibold text-foreground">{vehicle._count.serviceRecords}</span>
@@ -883,8 +884,6 @@ export function VehicleDetailClient({
           )}
         </div>
       </div>
-
-      <VehicleTireSets sets={tireSets} />
 
       {/* AI Summary Panel */}
       {activeAiPanel === 'summary' && aiEnabled && (

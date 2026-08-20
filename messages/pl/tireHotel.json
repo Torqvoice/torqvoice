@@ -438,7 +438,7 @@
     "previewFailed": "Nie udało się utworzyć podglądu"
   },
   "vehicle": {
-    "title": "W hotelu opon",
-    "count": "{count} kompletów"
+    "oneOnShelf": "na {code}",
+    "inStorage": "w hotelu opon"
   }
 }

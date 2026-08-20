@@ -438,7 +438,7 @@
     "previewFailed": "Nepavyko sukurti peržiūros"
   },
   "vehicle": {
-    "title": "Padangų viešbutyje",
-    "count": "{count} komplektai"
+    "oneOnShelf": "{code} lentynoje",
+    "inStorage": "padangų viešbutyje"
   }
 }

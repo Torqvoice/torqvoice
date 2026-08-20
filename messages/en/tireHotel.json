@@ -438,7 +438,7 @@
     "previewFailed": "Could not build a preview"
   },
   "vehicle": {
-    "title": "In tire hotel",
-    "count": "{count} sets"
+    "oneOnShelf": "on {code}",
+    "inStorage": "in tire hotel"
   }
 }

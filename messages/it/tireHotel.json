@@ -438,7 +438,7 @@
     "previewFailed": "Impossibile creare l’anteprima"
   },
   "vehicle": {
-    "title": "In hotel pneumatici",
-    "count": "{count} treni"
+    "oneOnShelf": "in {code}",
+    "inStorage": "in hotel"
   }
 }

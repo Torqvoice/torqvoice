@@ -438,7 +438,7 @@
     "previewFailed": "Aperçu impossible"
   },
   "vehicle": {
-    "title": "À l’hôtel à pneus",
-    "count": "{count} jeux"
+    "oneOnShelf": "en {code}",
+    "inStorage": "à l’hôtel à pneus"
   }
 }

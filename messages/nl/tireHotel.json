@@ -438,7 +438,7 @@
     "previewFailed": "Kon geen voorbeeld maken"
   },
   "vehicle": {
-    "title": "In bandenhotel",
-    "count": "{count} sets"
+    "oneOnShelf": "op {code}",
+    "inStorage": "in bandenhotel"
   }
 }
