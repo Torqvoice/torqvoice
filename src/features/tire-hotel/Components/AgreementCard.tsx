@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { useConfirm } from '@/components/confirm-dialog'
 import { OneOffChargeDialog } from './OneOffChargeDialog'
 import { SettingsLink } from './SettingsLink'
+import { DocsLink } from '@/components/docs-link'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { Ban, FileText, Loader2, Pencil, Plus, Receipt, Trash2 } from 'lucide-react'
@@ -239,7 +240,12 @@ export function AgreementCard({
         </div>
       }
       contentClassName="space-y-4"
-      footer={<SettingsLink can={canEditSettings} labelKey="settings.storagePrices" />}
+      footer={
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <SettingsLink can={canEditSettings} labelKey="settings.storagePrices" />
+          <DocsLink href="/docs/features/tire-hotel" variant="hint" />
+        </div>
+      }
     >
       {agreements.length === 0 && oneOffCharges.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t('agreement.none')}</p>

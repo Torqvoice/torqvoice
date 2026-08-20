@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Check, Loader2, Warehouse } from 'lucide-react'
+import { DocsLink } from '@/components/docs-link'
 import { cn } from '@/lib/utils'
 import { useFormatDate } from '@/lib/use-format-date'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
@@ -315,6 +316,7 @@ export function CheckInDialog({
         <DialogHeader>
           <DialogTitle>{t('checkIn.title')}</DialogTitle>
           <DialogDescription>{t('checkIn.description')}</DialogDescription>
+          <DocsLink href="/docs/features/tire-hotel" variant="hint" className="self-start" />
         </DialogHeader>
 
         <div className="space-y-5">

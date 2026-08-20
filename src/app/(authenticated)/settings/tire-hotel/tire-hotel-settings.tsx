@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Loader2, Save, Warehouse } from 'lucide-react'
+import { DocsLink } from '@/components/docs-link'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { mmToThirtySeconds, thirtySecondsToMm } from '@/features/tire-hotel/Lib/tireConstants'
 import {
@@ -116,6 +117,9 @@ export function TireHotelSettings({ settings }: { settings: Record<string, strin
       <div>
         <h2 className="text-lg font-semibold">{t('tireHotel.title')}</h2>
         <p className="text-sm text-muted-foreground">{t('tireHotel.description')}</p>
+        {/* These defaults decide what every set is priced and graded against,
+            and the manual is where the reasoning behind them lives. */}
+        <DocsLink href="/docs/features/tire-hotel" variant="hint" className="mt-1" />
       </div>
       <ReadOnlyWrapper>
         <AppCard icon={Warehouse} title={t('tireHotel.cardTitle')} contentClassName="space-y-6">

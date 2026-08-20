@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { Check, Loader2, Minus, Plus, Printer } from 'lucide-react'
+import { DocsLink } from '@/components/docs-link'
 import { LABEL_FORMATS, LABEL_SPECS, defaultCopies, type LabelFormat } from '../Lib/labels'
 import { getLabelPreview, type LabelPreview as LabelPreviewData } from '../Actions/getLabelPreview'
 import { LabelPreview } from './LabelPreview'
@@ -100,6 +101,7 @@ export function PrintLabelsDialog({
         <DialogHeader>
           <DialogTitle>{t('label.title')}</DialogTitle>
           <DialogDescription>{t('label.description')}</DialogDescription>
+          <DocsLink href="/docs/features/tire-hotel" variant="hint" className="self-start" />
         </DialogHeader>
 
         <div className="grid gap-6 md:grid-cols-2">

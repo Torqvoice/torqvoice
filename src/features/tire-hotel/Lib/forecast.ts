@@ -43,7 +43,7 @@ export type SizeDemand<T extends ForecastSet = ForecastSet> = {
  * When this set is likely to need replacing.
  *
  * "Now" is a measurement, not a prediction: the tread is already at the limit.
- * "Next" is the extrapolation, and it is deliberately crude — one season's
+ * "Next" is the extrapolation, and it is deliberately crude: one season's
  * headroom against one season's measured wear. A tire hotel is the only party
  * that measures the same four tires twice a year, so the rate is real, but it
  * is two readings from one customer's driving and should be read as a demand

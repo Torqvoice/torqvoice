@@ -16,6 +16,7 @@ import {
 } from '@/features/tire-hotel/Lib/forecast'
 import type { getSetsForForecast } from '@/features/tire-hotel/Actions/tireSetActions'
 import { ChevronDown, ChevronRight, Package, TriangleAlert } from 'lucide-react'
+import { DocsLink } from '@/components/docs-link'
 
 type ForecastRow = NonNullable<Awaited<ReturnType<typeof getSetsForForecast>>['data']>[number]
 
@@ -147,6 +148,7 @@ export function ForecastClient({
         <div className="min-w-0 space-y-1 text-xs text-muted-foreground">
           <p>{t('forecast.caveat')}</p>
           {unknown > 0 && <p>{t('forecast.unmeasured', { count: unknown })}</p>}
+          <DocsLink href="/docs/features/tire-hotel" variant="hint" />
         </div>
       </div>
     </div>

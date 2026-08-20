@@ -36,6 +36,7 @@ import {
 import { OCCUPANCY_TOKENS } from '@/features/tire-hotel/Lib/tireConstants'
 import { cn } from '@/lib/utils'
 import { Building2, Loader2, Pencil, Plus, Trash2, Warehouse } from 'lucide-react'
+import { DocsLink } from '@/components/docs-link'
 
 type LocationRow = EditableLocation & {
   used: number
@@ -192,6 +193,11 @@ export function StorageClient({
             <Plus className="mr-1 h-4 w-4" />
             {t('storage.addWarehouse')}
           </Button>
+          {/* Somebody setting up racking for the first time is exactly who
+              needs the manual, and this is the only screen they are on. */}
+          <div className="mt-4 flex justify-center">
+            <DocsLink href="/docs/features/tire-hotel" variant="hint" />
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
