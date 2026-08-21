@@ -14,6 +14,8 @@ export const ORG_WHATSAPP_KEYS = {
   /** Template used to reopen a conversation once the 24 hour window closed. */
   WHATSAPP_TEMPLATE_NAME: 'whatsapp.template.name',
   WHATSAPP_TEMPLATE_LANGUAGE: 'whatsapp.template.language',
+  /** Ordered list of tokens filling the template's numbered placeholders. */
+  WHATSAPP_TEMPLATE_VARIABLES: 'whatsapp.template.variables',
 } as const
 
 export type OrgWhatsappKey = (typeof ORG_WHATSAPP_KEYS)[keyof typeof ORG_WHATSAPP_KEYS]

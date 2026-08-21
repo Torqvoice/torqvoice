@@ -15,7 +15,7 @@ import {
   whatsappCredentialKey,
 } from '../Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter, listWhatsappProviderOptions } from '@/lib/whatsapp/registry'
-import { sendOrgWhatsapp } from '@/lib/whatsapp'
+import { sendOrgWhatsapp, TEMPLATE_TOKENS, unknownTemplateTokens } from '@/lib/whatsapp'
 
 /** Stands in for a stored secret, so the real one never reaches the browser. */
 const SECRET_MASK = '••••••••••••••••'
@@ -26,6 +26,7 @@ export interface WhatsappSettingsView {
   from: string
   templateName: string
   templateLanguage: string
+  templateVariables: string
   /** Per provider, field name to value, with secrets masked. */
   credentials: Record<string, Record<string, string>>
   /** Where the provider should post, ready to paste into its console. */
@@ -78,6 +79,7 @@ export async function getWhatsappSettings() {
         provider: providerId,
         from: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_FROM) ?? '',
         templateName: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME) ?? '',
+        templateVariables: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES) ?? '',
         templateLanguage: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE) ?? '',
         credentials,
         webhookUrl: providerId ? webhookUrlFor(organizationId, providerId, token) : null,
@@ -96,6 +98,8 @@ export interface SaveWhatsappSettingsInput {
   from: string
   templateName?: string
   templateLanguage?: string
+  /** Comma-separated tokens filling the template's placeholders, in order. */
+  templateVariables?: string
   /** Only the fields the workshop actually typed; masked ones are ignored. */
   credentials: Record<string, string>
 }
@@ -115,6 +119,7 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
         [ORG_WHATSAPP_KEYS.WHATSAPP_FROM]: input.from.trim(),
         [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME]: input.templateName?.trim() ?? '',
         [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE]: input.templateLanguage?.trim() ?? '',
+        [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES]: input.templateVariables?.trim() ?? '',
       }
 
       // What is already stored, so an untouched field still counts as filled in.
@@ -160,6 +165,14 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
       if (templateName) {
         const problem = adapter.template.validate?.(templateName)
         if (problem) throw new Error(problem)
+      }
+
+      // A token that fills nothing would reach WhatsApp as a literal word.
+      const unknown = unknownTemplateTokens(input.templateVariables)
+      if (unknown.length > 0) {
+        throw new Error(
+          `Unknown template values: ${unknown.join(', ')}. Use ${TEMPLATE_TOKENS.join(', ')}.`
+        )
       }
 
       // Only block switching it on: a workshop may save a half-filled form

@@ -36,7 +36,10 @@
       "nameLabel": "Template name",
       "nameHint": "The approved template's name, or its Content SID at providers that use one.",
       "languageLabel": "Template language",
-      "languageHint": "The language code the template was approved under, for example de."
+      "languageHint": "The language code the template was approved under, for example de.",
+      "variablesLabel": "Template values, in order",
+      "variablesHint": "Which values fill your template's numbered blanks, comma separated. Available: customer, vehicle, plate, message, workshop. Leave empty if your template has no blanks.",
+      "variablesExample": "A template reading Hallo blank-1, Ihr blank-2 ist fertig takes: customer, vehicle."
     },
     "test": {
       "title": "Test and disconnect",

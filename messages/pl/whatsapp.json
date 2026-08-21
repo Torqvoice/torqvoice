@@ -36,7 +36,10 @@
       "nameLabel": "Nazwa szablonu",
       "nameHint": "Nazwa zatwierdzonego szablonu lub Content SID u dostawców, którzy go używają.",
       "languageLabel": "Język szablonu",
-      "languageHint": "Kod języka, w którym szablon zatwierdzono, na przykład pl."
+      "languageHint": "Kod języka, w którym szablon zatwierdzono, na przykład pl.",
+      "variablesLabel": "Wartości szablonu, po kolei",
+      "variablesHint": "Które wartości wypełniają numerowane miejsca w szablonie, oddzielone przecinkami. Dostępne: customer, vehicle, plate, message, workshop. Zostaw puste, jeśli szablon ich nie ma.",
+      "variablesExample": "Szablon, w którym miejsce 1 to nazwisko, a 2 to pojazd, wymaga: customer, vehicle."
     },
     "test": {
       "title": "Test i rozłączenie",

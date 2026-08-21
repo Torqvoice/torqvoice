@@ -36,7 +36,10 @@
       "nameLabel": "Name der Vorlage",
       "nameHint": "Name der freigegebenen Vorlage, bei manchen Anbietern die Content-SID.",
       "languageLabel": "Sprache der Vorlage",
-      "languageHint": "Sprachcode, unter dem die Vorlage freigegeben wurde, zum Beispiel de."
+      "languageHint": "Sprachcode, unter dem die Vorlage freigegeben wurde, zum Beispiel de.",
+      "variablesLabel": "Werte der Vorlage, in Reihenfolge",
+      "variablesHint": "Welche Werte die nummerierten Platzhalter Ihrer Vorlage füllen, per Komma getrennt. Verfügbar: customer, vehicle, plate, message, workshop. Leer lassen, wenn die Vorlage keine Platzhalter hat.",
+      "variablesExample": "Eine Vorlage mit Platzhalter 1 für den Namen und Platzhalter 2 für das Fahrzeug braucht: customer, vehicle."
     },
     "test": {
       "title": "Test und Trennen",

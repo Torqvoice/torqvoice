@@ -36,7 +36,10 @@
       "nameLabel": "Malnavn",
       "nameHint": "Navnet på den godkjente malen, eller Content SID hos leverandører som bruker det.",
       "languageLabel": "Malspråk",
-      "languageHint": "Språkkoden malen ble godkjent under, for eksempel nb."
+      "languageHint": "Språkkoden malen ble godkjent under, for eksempel nb.",
+      "variablesLabel": "Verdier i malen, i rekkefølge",
+      "variablesHint": "Hvilke verdier som fyller de nummererte feltene i malen, skilt med komma. Tilgjengelig: customer, vehicle, plate, message, workshop. La stå tom hvis malen ikke har felter.",
+      "variablesExample": "En mal der felt 1 er navnet og felt 2 er kjøretøyet trenger: customer, vehicle."
     },
     "test": {
       "title": "Test og koble fra",

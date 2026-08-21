@@ -46,6 +46,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   const [from, setFrom] = useState(initial.from)
   const [templateName, setTemplateName] = useState(initial.templateName)
   const [templateLanguage, setTemplateLanguage] = useState(initial.templateLanguage)
+  const [templateVariables, setTemplateVariables] = useState(initial.templateVariables)
   const [credentials, setCredentials] = useState<Record<string, Record<string, string>>>(
     initial.credentials
   )
@@ -75,6 +76,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
         from,
         templateName,
         templateLanguage,
+        templateVariables,
         credentials: credentials[provider.id] ?? {},
       })
       if (result.success) {
@@ -243,13 +245,6 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
               <p className="text-xs text-muted-foreground">{t('webhook.description')}</p>
             </div>
           )}
-
-          <SaveButton>
-            <Button type="button" onClick={handleSave} disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('save')}
-            </Button>
-          </SaveButton>
         </AppCard>
 
         <AppCard
@@ -280,6 +275,18 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                 {provider?.template.help ?? t('template.nameHint')}
               </p>
             </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="whatsapp-template-variables">{t('template.variablesLabel')}</Label>
+              <Input
+                id="whatsapp-template-variables"
+                value={templateVariables}
+                onChange={(event) => setTemplateVariables(event.target.value)}
+                placeholder="customer, vehicle, message"
+              />
+              <p className="text-xs text-muted-foreground">{t('template.variablesHint')}</p>
+              <p className="text-xs text-muted-foreground">{t('template.variablesExample')}</p>
+            </div>
+
             {provider?.template.usesLanguage !== false && (
               <div className="space-y-2">
                 <Label htmlFor="whatsapp-template-language">{t('template.languageLabel')}</Label>
@@ -294,6 +301,15 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
             )}
           </div>
         </AppCard>
+
+        <SaveButton>
+          <div className="flex justify-end">
+            <Button type="button" onClick={handleSave} disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('save')}
+            </Button>
+          </div>
+        </SaveButton>
 
         {initial.enabled && (
           <AppCard

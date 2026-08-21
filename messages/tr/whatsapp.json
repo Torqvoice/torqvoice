@@ -36,7 +36,10 @@
       "nameLabel": "Şablon adı",
       "nameHint": "Onaylı şablonun adı veya bunu kullanan sağlayıcılarda Content SID.",
       "languageLabel": "Şablon dili",
-      "languageHint": "Şablonun onaylandığı dil kodu, örneğin tr."
+      "languageHint": "Şablonun onaylandığı dil kodu, örneğin tr.",
+      "variablesLabel": "Şablon değerleri, sırayla",
+      "variablesHint": "Şablonunuzdaki numaralı boşlukları hangi değerlerin dolduracağı, virgülle ayrılmış. Kullanılabilir: customer, vehicle, plate, message, workshop. Şablonunuzda boşluk yoksa boş bırakın.",
+      "variablesExample": "1. boşluğu ad, 2. boşluğu araç olan bir şablon şunları ister: customer, vehicle."
     },
     "test": {
       "title": "Test ve bağlantıyı kes",

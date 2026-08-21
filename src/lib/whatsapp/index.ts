@@ -9,6 +9,11 @@ import {
 } from '@/features/whatsapp/Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter } from './registry'
 import { signWhatsappMediaToken } from './media-link'
+import {
+  parseTemplateTokens,
+  resolveTemplateVariables,
+  type TemplateToken,
+} from './templateVariables'
 import type {
   WhatsappAdapter,
   WhatsappContext,
@@ -19,6 +24,7 @@ import type {
 } from './types'
 
 export * from './types'
+export * from './templateVariables'
 export { listWhatsappAdapters, listWhatsappProviderOptions, getWhatsappAdapter } from './registry'
 
 /**
@@ -42,7 +48,7 @@ export interface WhatsappConfig {
   adapter: WhatsappAdapter
   context: WhatsappContext
   /** Template used to reopen a closed conversation, when the shop set one up. */
-  template: { name: string; language: string } | null
+  template: { name: string; language: string; tokens: TemplateToken[] } | null
 }
 
 /**
@@ -85,7 +91,13 @@ export async function getWhatsappConfig(organizationId: string): Promise<Whatsap
     organizationId,
     adapter,
     context: { organizationId, from, credentials },
-    template: templateName ? { name: templateName, language: templateLanguage || 'en' } : null,
+    template: templateName
+      ? {
+          name: templateName,
+          language: templateLanguage || 'en',
+          tokens: parseTemplateTokens(settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES)),
+        }
+      : null,
   }
 }
 
@@ -198,7 +210,7 @@ export async function sendOrgWhatsapp(
   }
 
   const open = await isWithinServiceWindow(organizationId, to)
-  const template = open ? undefined : (options.template ?? templateFor(config, options))
+  const template = open ? undefined : (options.template ?? (await templateFor(config, options)))
   if (!open && !template) throw new WhatsappWindowClosedError()
 
   const record = await db.whatsappMessage.create({
@@ -258,15 +270,24 @@ export async function sendOrgWhatsapp(
  * The message the shop typed becomes the template's first variable, which is
  * the shape almost every "your vehicle is ready" template takes.
  */
-function templateFor(
+async function templateFor(
   config: WhatsappConfig,
   options: SendWhatsappOptions
-): WhatsappTemplate | undefined {
+): Promise<WhatsappTemplate | undefined> {
   if (!config.template) return undefined
+
+  const variables = await resolveTemplateVariables(config.template.tokens, {
+    organizationId: config.organizationId,
+    customerId: options.customerId,
+    body: options.body,
+    relatedEntityType: options.relatedEntityType,
+    relatedEntityId: options.relatedEntityId,
+  })
+
   return {
     name: config.template.name,
     language: config.template.language,
-    variables: options.body ? [options.body] : undefined,
+    variables: variables.length > 0 ? variables : undefined,
     headerMediaUrl: toProviderMediaUrl(config.organizationId, options.mediaUrl),
     headerMediaType: options.mediaType,
   }

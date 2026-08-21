@@ -36,7 +36,10 @@
       "nameLabel": "Nome do modelo",
       "nameHint": "O nome do modelo aprovado, ou o Content SID em provedores que usam um.",
       "languageLabel": "Idioma do modelo",
-      "languageHint": "O código de idioma em que o modelo foi aprovado, por exemplo pt_BR."
+      "languageHint": "O código de idioma em que o modelo foi aprovado, por exemplo pt_BR.",
+      "variablesLabel": "Valores do modelo, em ordem",
+      "variablesHint": "Quais valores preenchem os espaços numerados do seu modelo, separados por vírgula. Disponíveis: customer, vehicle, plate, message, workshop. Deixe vazio se o modelo não tiver espaços.",
+      "variablesExample": "Um modelo em que o espaço 1 é o nome e o 2 é o veículo pede: customer, vehicle."
     },
     "test": {
       "title": "Testar e desconectar",

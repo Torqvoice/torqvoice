@@ -36,7 +36,10 @@
       "nameLabel": "Naam van het sjabloon",
       "nameHint": "De naam van het goedgekeurde sjabloon, of de Content SID bij providers die daarmee werken.",
       "languageLabel": "Taal van het sjabloon",
-      "languageHint": "De taalcode waaronder het sjabloon is goedgekeurd, bijvoorbeeld nl."
+      "languageHint": "De taalcode waaronder het sjabloon is goedgekeurd, bijvoorbeeld nl.",
+      "variablesLabel": "Waarden van het sjabloon, op volgorde",
+      "variablesHint": "Welke waarden de genummerde plekken in je sjabloon invullen, gescheiden door komma's. Beschikbaar: customer, vehicle, plate, message, workshop. Laat leeg als je sjabloon er geen heeft.",
+      "variablesExample": "Een sjabloon waarin plek 1 de naam is en plek 2 het voertuig vraagt om: customer, vehicle."
     },
     "test": {
       "title": "Testen en loskoppelen",

@@ -36,7 +36,10 @@
       "nameLabel": "Šablono pavadinimas",
       "nameHint": "Patvirtinto šablono pavadinimas arba „Content SID“ pas tiekėjus, kurie jį naudoja.",
       "languageLabel": "Šablono kalba",
-      "languageHint": "Kalbos kodas, su kuriuo šablonas patvirtintas, pavyzdžiui lt."
+      "languageHint": "Kalbos kodas, su kuriuo šablonas patvirtintas, pavyzdžiui lt.",
+      "variablesLabel": "Šablono reikšmės iš eilės",
+      "variablesHint": "Kokios reikšmės užpildo sunumeruotas šablono vietas, atskirtos kableliais. Galimos: customer, vehicle, plate, message, workshop. Palikite tuščią, jei šablone vietų nėra.",
+      "variablesExample": "Šablonui, kurio 1 vieta yra vardas, o 2 – automobilis, reikia: customer, vehicle."
     },
     "test": {
       "title": "Bandymas ir atjungimas",
