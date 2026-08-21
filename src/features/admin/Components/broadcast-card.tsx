@@ -104,10 +104,8 @@ export function BroadcastCard({
       {trimmed.length > 0 && (
         <div className="overflow-hidden rounded-md border">
           <BroadcastBanner
-            // Remounts on every edit so the preview always renders, whatever
-            // the admin's own browser has dismissed.
-            key={`${trimmed}-${level}`}
-            broadcast={{ message: trimmed, level, updatedAt: `preview-${trimmed}-${level}` }}
+            preview
+            broadcast={{ message: trimmed, level, updatedAt: 'preview' }}
           />
         </div>
       )}

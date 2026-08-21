@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useState } from 'react'
 
 /**
  * How loud each strip is allowed to be, when more than one has something to
@@ -17,13 +17,20 @@ export const BANNER_PRIORITY = {
   update: 40,
 } as const
 
-type Registry = Record<string, number>
+/**
+ * Keyed by instance, not by banner id.
+ *
+ * Two of the same banner can be mounted at once: the admin card previews the
+ * real one. Keying by id let the preview's unmount release the page banner's
+ * claim, so the notice vanished the moment you navigated away from settings.
+ */
+type Registry = Record<string, { id: string; priority: number }>
 
 const Context = createContext<{
-  /** The id currently allowed to render, if any. */
+  /** The instance currently allowed to render, if any. */
   winner: string | null
-  claim: (id: string, priority: number) => void
-  release: (id: string) => void
+  claim: (instance: string, id: string, priority: number) => void
+  release: (instance: string) => void
 }>({
   winner: null,
   claim: () => undefined,
@@ -45,15 +52,19 @@ const Context = createContext<{
 export function BannerSlotProvider({ children }: { children: React.ReactNode }) {
   const [waiting, setWaiting] = useState<Registry>({})
 
-  const claim = useCallback((id: string, priority: number) => {
-    setWaiting((current) => (current[id] === priority ? current : { ...current, [id]: priority }))
+  const claim = useCallback((instance: string, id: string, priority: number) => {
+    setWaiting((current) => {
+      const held = current[instance]
+      if (held && held.id === id && held.priority === priority) return current
+      return { ...current, [instance]: { id, priority } }
+    })
   }, [])
 
-  const release = useCallback((id: string) => {
+  const release = useCallback((instance: string) => {
     setWaiting((current) => {
-      if (!(id in current)) return current
+      if (!(instance in current)) return current
       const next = { ...current }
-      delete next[id]
+      delete next[instance]
       return next
     })
   }, [])
@@ -61,7 +72,7 @@ export function BannerSlotProvider({ children }: { children: React.ReactNode }) 
   const winner = useMemo(() => {
     const entries = Object.entries(waiting)
     if (entries.length === 0) return null
-    return entries.reduce((best, entry) => (entry[1] > best[1] ? entry : best))[0]
+    return entries.reduce((best, entry) => (entry[1].priority > best[1].priority ? entry : best))[0]
   }, [waiting])
 
   const value = useMemo(() => ({ winner, claim, release }), [winner, claim, release])
@@ -83,15 +94,16 @@ export function BannerSlotProvider({ children }: { children: React.ReactNode }) 
  */
 export function useBannerSlot(id: string, priority: number, wants: boolean): boolean {
   const { winner, claim, release } = useContext(Context)
+  const instance = useId()
 
   useEffect(() => {
     if (!wants) {
-      release(id)
+      release(instance)
       return
     }
-    claim(id, priority)
-    return () => release(id)
-  }, [id, priority, wants, claim, release])
+    claim(instance, id, priority)
+    return () => release(instance)
+  }, [instance, id, priority, wants, claim, release])
 
-  return wants && winner === id
+  return wants && winner === instance
 }

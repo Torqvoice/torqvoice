@@ -39,8 +39,18 @@ const DISMISSED_KEY = 'broadcast-dismissed'
  */
 export function BroadcastBanner({
   broadcast: fromServer,
+  preview = false,
 }: {
   broadcast: Broadcast | null
+  /**
+   * Rendered inside the admin card rather than at the top of the page.
+   *
+   * A preview is not a page-level strip: it takes no part in the queue, reads
+   * only what it is handed, and ignores what this browser has dismissed. The
+   * admin needs to see the notice they are writing even if they closed the
+   * last one.
+   */
+  preview?: boolean
 }) {
   const t = useTranslations('common.broadcast')
 
@@ -52,13 +62,17 @@ export function BroadcastBanner({
     getLiveBroadcast,
     () => undefined as Broadcast | null | undefined
   )
-  const broadcast = live === undefined ? fromServer : live
+  const broadcast = preview || live === undefined ? fromServer : live
   // Starts hidden and appears once the browser has been asked. Rendering it
   // first and hiding it a moment later would flash a stale outage notice at
   // somebody who dismissed it days ago.
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
+    if (preview) {
+      setVisible(true)
+      return
+    }
     if (!broadcast) return
     let seen: string | null = null
     try {
@@ -68,11 +82,15 @@ export function BroadcastBanner({
       // wrong about a notice that matters.
     }
     setVisible(seen !== broadcast.updatedAt)
-  }, [broadcast])
+  }, [broadcast, preview])
 
-  const mine = useBannerSlot('broadcast', BANNER_PRIORITY.broadcast, Boolean(broadcast) && visible)
+  const mine = useBannerSlot(
+    'broadcast',
+    BANNER_PRIORITY.broadcast,
+    !preview && Boolean(broadcast) && visible
+  )
 
-  if (!broadcast || !visible || !mine) return null
+  if (!broadcast || !visible || (!preview && !mine)) return null
 
   const Icon = ICONS[broadcast.level]
 

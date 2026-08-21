@@ -90,6 +90,27 @@ describe('the banner queue', () => {
     expect(visible()).toEqual(['update'])
   })
 
+  it('survives a second instance of the same banner going away', () => {
+    // The admin card previews the real banner, so two of them are mounted
+    // while that page is open. The preview unmounting must not take the page
+    // banner's claim with it, which is what "the notice only shows on the
+    // settings page" turned out to be.
+    const { rerender } = render(
+      <BannerSlotProvider>
+        <Strip id="broadcast" priority={BANNER_PRIORITY.broadcast} />
+        <Strip id="broadcast" priority={BANNER_PRIORITY.broadcast} />
+      </BannerSlotProvider>
+    )
+    act(() => {
+      rerender(
+        <BannerSlotProvider>
+          <Strip id="broadcast" priority={BANNER_PRIORITY.broadcast} />
+        </BannerSlotProvider>
+      )
+    })
+    expect(visible()).toEqual(['broadcast'])
+  })
+
   it('shows nothing when nobody has anything to say', () => {
     render(
       <BannerSlotProvider>

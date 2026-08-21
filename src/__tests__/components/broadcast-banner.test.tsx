@@ -108,6 +108,24 @@ describe('the notice banner', () => {
     expect(shown()).toBeNull()
   })
 
+  it('previews without joining the queue or reading dismissals', () => {
+    // The admin card renders the real banner to preview it. It must show the
+    // text being written even if this browser dismissed the last notice, and
+    // it must not hold the page-level slot, which is what made the notice
+    // vanish the moment you navigated away from settings.
+    localStorage.setItem('broadcast-dismissed', NOTICE.updatedAt)
+    render(<BroadcastBanner preview broadcast={NOTICE} />)
+    expect(shown()?.textContent).toContain('server infrastructure')
+  })
+
+  it('previews what it is handed, not what the socket last said', () => {
+    act(() => {
+      setLiveBroadcast({ message: 'Something else', level: 'info', updatedAt: 'live' })
+    })
+    render(<BroadcastBanner preview broadcast={NOTICE} />)
+    expect(shown()?.textContent).toContain('server infrastructure')
+  })
+
   it('announces politely rather than interrupting', () => {
     // It is on screen and will not move, so there is no reason to cut across
     // whatever a screen reader is in the middle of.
