@@ -321,7 +321,20 @@
     "licensePlateMarine": "Registracijos numeris",
     "vehicleUpdated": "Transporto priemonė atnaujinta",
     "vehicleAdded": "Transporto priemonė pridėta",
-    "saveError": "Nepavyko išsaugoti transporto priemonės"
+    "saveError": "Nepavyko išsaugoti transporto priemonės",
+    "scanDocument": "Skenuoti registracijos liudijimą",
+    "scanDocumentHint": "Nufotografuokite transporto priemonės dokumentus ir laukai bus užpildyti automatiškai.",
+    "scanningDocument": "Skaitomas dokumentas...",
+    "scanSuccess": "Laukai užpildyti iš dokumento",
+    "scanFailed": "Nepavyko perskaityti dokumento",
+    "ownerFromDocument": "Savininkas pagal dokumentą",
+    "createCustomerFromDocument": "Pridėti kaip klientą",
+    "ownerMatchTitle": "Priskirti transporto priemonę",
+    "ownerMatchDescription": "Dokumente nurodyta {name}. Pasirinkite vieną iš šių klientų arba sukurkite naują.",
+    "ownerMatchScore": "{percent}% atitikmuo",
+    "ownerMatchCreateNew": "Sukurti naują klientą",
+    "ownerMatchChoose": "Pasirinkti klientą",
+    "scanUnavailable": "Įjunkite DI nustatymuose"
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",

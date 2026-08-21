@@ -321,7 +321,20 @@
     "licensePlateMarine": "Регистрационный Номер",
     "vehicleUpdated": "Транспортное средство обновлено",
     "vehicleAdded": "Транспортное средство добавлено",
-    "saveError": "Не удалось сохранить транспортное средство"
+    "saveError": "Не удалось сохранить транспортное средство",
+    "scanDocument": "Сканировать документы на автомобиль",
+    "scanDocumentHint": "Сфотографируйте документы, и поля заполнятся автоматически.",
+    "scanningDocument": "Чтение документа...",
+    "scanSuccess": "Поля заполнены из документа",
+    "scanFailed": "Не удалось прочитать документ",
+    "ownerFromDocument": "Владелец по документу",
+    "createCustomerFromDocument": "Добавить как клиента",
+    "ownerMatchTitle": "Привязать автомобиль",
+    "ownerMatchDescription": "В документе указан {name}. Выберите одного из этих клиентов или создайте нового.",
+    "ownerMatchScore": "совпадение {percent}%",
+    "ownerMatchCreateNew": "Создать нового клиента",
+    "ownerMatchChoose": "Выбрать клиента",
+    "scanUnavailable": "Включите ИИ в настройках"
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",

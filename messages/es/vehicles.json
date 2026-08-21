@@ -321,7 +321,20 @@
     "licensePlateMarine": "Número de Registro",
     "vehicleUpdated": "Vehículo actualizado",
     "vehicleAdded": "Vehículo agregado",
-    "saveError": "Error al guardar vehículo"
+    "saveError": "Error al guardar vehículo",
+    "scanDocument": "Escanear permiso de circulación",
+    "scanDocumentHint": "Fotografía la documentación del vehículo y los campos se rellenan solos.",
+    "scanningDocument": "Leyendo el documento...",
+    "scanSuccess": "Campos rellenados desde el documento",
+    "scanFailed": "No se pudo leer el documento",
+    "ownerFromDocument": "Titular según el documento",
+    "createCustomerFromDocument": "Añadir como cliente",
+    "ownerMatchTitle": "Asignar este vehículo",
+    "ownerMatchDescription": "El documento indica {name}. Elige uno de estos clientes o crea uno nuevo.",
+    "ownerMatchScore": "{percent}% de coincidencia",
+    "ownerMatchCreateNew": "Crear cliente nuevo",
+    "ownerMatchChoose": "Elegir cliente",
+    "scanUnavailable": "Activa la IA en los ajustes"
   },
   "archiveDialog": {
     "title": "Archivar vehículo",

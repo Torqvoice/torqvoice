@@ -321,7 +321,20 @@
     "licensePlateMarine": "Numero di Registrazione",
     "vehicleUpdated": "Veicolo aggiornato",
     "vehicleAdded": "Veicolo aggiunto",
-    "saveError": "Impossibile salvare il veicolo"
+    "saveError": "Impossibile salvare il veicolo",
+    "scanDocument": "Scansiona il libretto di circolazione",
+    "scanDocumentHint": "Fotografa i documenti del veicolo e i campi si compilano da soli.",
+    "scanningDocument": "Lettura del documento...",
+    "scanSuccess": "Campi compilati dal documento",
+    "scanFailed": "Impossibile leggere il documento",
+    "ownerFromDocument": "Intestatario secondo il documento",
+    "createCustomerFromDocument": "Aggiungi come cliente",
+    "ownerMatchTitle": "Assegna questo veicolo",
+    "ownerMatchDescription": "Il documento riporta {name}. Scegli uno di questi clienti o creane uno nuovo.",
+    "ownerMatchScore": "{percent}% di corrispondenza",
+    "ownerMatchCreateNew": "Crea nuovo cliente",
+    "ownerMatchChoose": "Scegli cliente",
+    "scanUnavailable": "Attiva l'IA nelle impostazioni"
   },
   "archiveDialog": {
     "title": "Archivia Veicolo",

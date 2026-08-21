@@ -321,7 +321,20 @@
     "licensePlateMarine": "Registreringsnummer",
     "vehicleUpdated": "Kjøretøy oppdatert",
     "vehicleAdded": "Kjøretøy lagt til",
-    "saveError": "Kunne ikke lagre kjøretøy"
+    "saveError": "Kunne ikke lagre kjøretøy",
+    "scanDocument": "Skann vognkortet",
+    "scanDocumentHint": "Ta bilde av vognkortet, så fylles feltene ut automatisk.",
+    "scanningDocument": "Leser dokumentet...",
+    "scanSuccess": "Feltene er fylt ut fra dokumentet",
+    "scanFailed": "Kunne ikke lese dokumentet",
+    "ownerFromDocument": "Eier ifølge dokumentet",
+    "createCustomerFromDocument": "Legg til som kunde",
+    "ownerMatchTitle": "Tilordne kjøretøyet",
+    "ownerMatchDescription": "Dokumentet oppgir {name}. Velg en av disse kundene, eller opprett en ny.",
+    "ownerMatchScore": "{percent}% treff",
+    "ownerMatchCreateNew": "Opprett ny kunde",
+    "ownerMatchChoose": "Velg kunde",
+    "scanUnavailable": "Aktiver KI i innstillingene"
   },
   "archiveDialog": {
     "title": "Arkiver kjøretøy",

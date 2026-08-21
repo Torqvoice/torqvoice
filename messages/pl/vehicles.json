@@ -321,7 +321,20 @@
     "licensePlateMarine": "Numer Rejestracyjny",
     "vehicleUpdated": "Pojazd zaktualizowany",
     "vehicleAdded": "Pojazd dodany",
-    "saveError": "Nie udało się zapisać pojazdu"
+    "saveError": "Nie udało się zapisać pojazdu",
+    "scanDocument": "Skanuj dowód rejestracyjny",
+    "scanDocumentHint": "Zrób zdjęcie dokumentów pojazdu, a pola wypełnią się automatycznie.",
+    "scanningDocument": "Odczytywanie dokumentu...",
+    "scanSuccess": "Pola wypełnione z dokumentu",
+    "scanFailed": "Nie udało się odczytać dokumentu",
+    "ownerFromDocument": "Właściciel według dokumentu",
+    "createCustomerFromDocument": "Dodaj jako klienta",
+    "ownerMatchTitle": "Przypisz pojazd",
+    "ownerMatchDescription": "W dokumencie widnieje {name}. Wybierz jednego z tych klientów lub utwórz nowego.",
+    "ownerMatchScore": "{percent}% zgodności",
+    "ownerMatchCreateNew": "Utwórz nowego klienta",
+    "ownerMatchChoose": "Wybierz klienta",
+    "scanUnavailable": "Włącz AI w ustawieniach"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",

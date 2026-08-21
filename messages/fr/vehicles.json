@@ -321,7 +321,20 @@
     "licensePlateMarine": "Numéro d'Immatriculation",
     "vehicleUpdated": "Véhicule mis à jour",
     "vehicleAdded": "Véhicule ajouté",
-    "saveError": "Échec de l'enregistrement du véhicule"
+    "saveError": "Échec de l'enregistrement du véhicule",
+    "scanDocument": "Scanner la carte grise",
+    "scanDocumentHint": "Photographiez les papiers du véhicule, les champs se remplissent automatiquement.",
+    "scanningDocument": "Lecture du document...",
+    "scanSuccess": "Champs remplis à partir du document",
+    "scanFailed": "Impossible de lire le document",
+    "ownerFromDocument": "Titulaire indiqué sur le document",
+    "createCustomerFromDocument": "Ajouter comme client",
+    "ownerMatchTitle": "Attribuer ce véhicule",
+    "ownerMatchDescription": "Le document indique {name}. Choisissez un de ces clients ou créez-en un nouveau.",
+    "ownerMatchScore": "{percent}% de correspondance",
+    "ownerMatchCreateNew": "Créer un nouveau client",
+    "ownerMatchChoose": "Choisir un client",
+    "scanUnavailable": "Activez l'IA dans les paramètres"
   },
   "archiveDialog": {
     "title": "Archiver le véhicule",

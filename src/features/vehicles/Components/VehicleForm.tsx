@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   Command,
   CommandEmpty,
@@ -34,12 +35,30 @@ import { DocsLink } from '@/components/docs-link'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
-import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
+import {
+  aiAnalyzeVehicleDocument,
+  isVehicleScanAvailable,
+  type VehicleDocumentScan,
+} from '../Actions/aiAnalyzeVehicleDocument'
+import { documentToDataUri } from '../Lib/documentImage'
+import { nameSimilarity } from '@/lib/name-similarity'
+import { Camera, Check, ChevronsUpDown, Loader2, Plus, ScanLine, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
 import { useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
+
+/**
+ * How alike two names must read before the scanned keeper is offered as an
+ * existing customer rather than a new one.
+ */
+const OWNER_MATCH_THRESHOLD = 0.9
+
+interface OwnerMatch {
+  customer: { id: string; name: string; company: string | null }
+  score: number
+}
 
 interface VehicleFormProps {
   open: boolean
@@ -87,14 +106,40 @@ export function VehicleForm({
   const [customerOpen, setCustomerOpen] = useState(false)
   const [showCustomerForm, setShowCustomerForm] = useState(false)
   const [localCustomers, setLocalCustomers] = useState(customers || [])
+  const [fuelType, setFuelType] = useState(vehicle?.fuelType ?? 'gasoline')
+  const [scanning, setScanning] = useState(false)
+  /** null while the availability check is still in flight. */
+  const [scanAvailable, setScanAvailable] = useState<boolean | null>(null)
+  /** Keeper read off a scanned document, until it is tied to a customer. */
+  const [scannedOwner, setScannedOwner] = useState<{ name?: string; address?: string } | null>(null)
+  const [ownerMatches, setOwnerMatches] = useState<OwnerMatch[]>([])
+  const [showOwnerMatch, setShowOwnerMatch] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const documentRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
   useEffect(() => {
     setSelectedCustomerId(vehicle?.customerId || defaultCustomerId || 'none')
     setPreview(vehicle?.imageUrl ?? null)
     setImageFile(null)
-  }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl, defaultCustomerId])
+    setFuelType(vehicle?.fuelType ?? 'gasoline')
+    setScannedOwner(null)
+    setOwnerMatches([])
+  }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl, vehicle?.fuelType, defaultCustomerId])
+
+  // Scanning needs an AI provider configured for the organization. Checked on
+  // open rather than passed in, so all three call sites stay unchanged.
+  useEffect(() => {
+    if (!open) return
+    let active = true
+    isVehicleScanAvailable().then((result) => {
+      if (active) setScanAvailable(result.success && result.data === true)
+    })
+    return () => {
+      active = false
+    }
+  }, [open])
 
   const selectedCustomerLabel = useMemo(() => {
     if (!selectedCustomerId || selectedCustomerId === 'none') return t('noCustomer')
@@ -142,6 +187,77 @@ export function VehicleForm({
     return url
   }
 
+  const applyScan = (data: VehicleDocumentScan) => {
+    const form = formRef.current
+    if (!form) return
+
+    const setIfEmpty = (name: string, value: string | undefined) => {
+      if (!value) return
+      const input = form.elements.namedItem(name) as HTMLInputElement | null
+      if (input && !input.value) input.value = value
+    }
+
+    setIfEmpty('make', data.make)
+    setIfEmpty('model', data.model)
+    setIfEmpty('year', data.year ? String(data.year) : undefined)
+    setIfEmpty('vin', data.vin)
+    setIfEmpty('licensePlate', data.licensePlate)
+    setIfEmpty('color', data.color)
+    setIfEmpty('engineSize', data.engineSize)
+
+    // A select has no empty state, so only fill it while it still holds the
+    // value the form opened with.
+    if (data.fuelType && fuelType === (vehicle?.fuelType ?? 'gasoline')) {
+      setFuelType(data.fuelType)
+    }
+
+    if (!data.owner?.name || selectedCustomerId !== 'none') return
+    setScannedOwner(data.owner)
+
+    // Near-identical names are still a judgement call: two brothers at one
+    // address differ by a first name. Offer the close ones and let the user say.
+    const ownerName = data.owner.name
+    const candidates = localCustomers
+      .map((c) => ({
+        customer: c,
+        // Papers naming a business may match the company field rather than the
+        // contact saved as the customer's name.
+        score: Math.max(
+          nameSimilarity(ownerName, c.name),
+          c.company ? nameSimilarity(ownerName, c.company) : 0
+        ),
+      }))
+      .filter((m) => m.score >= OWNER_MATCH_THRESHOLD)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+
+    setOwnerMatches(candidates)
+    if (candidates.length > 0) setShowOwnerMatch(true)
+  }
+
+  const handleDocumentSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+
+    setScanning(true)
+    const toastId = toast.loading(t('scanningDocument'))
+    try {
+      const dataUri = await documentToDataUri(file)
+      const result = await aiAnalyzeVehicleDocument(dataUri)
+      if (!result.success || !result.data) {
+        toast.error(result.error || t('scanFailed'), { id: toastId })
+        return
+      }
+      applyScan(result.data)
+      toast.success(t('scanSuccess'), { id: toastId })
+    } catch {
+      toast.error(t('scanFailed'), { id: toastId })
+    } finally {
+      setScanning(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -169,7 +285,7 @@ export function VehicleForm({
         licensePlate: (formData.get('licensePlate') as string) || undefined,
         color: (formData.get('color') as string) || undefined,
         mileage: Number(formData.get('mileage')) || 0,
-        fuelType: (formData.get('fuelType') as string) || undefined,
+        fuelType: fuelType || undefined,
         transmission: (formData.get('transmission') as string) || undefined,
         engineSize: (formData.get('engineSize') as string) || undefined,
         engineCode: (formData.get('engineCode') as string) || undefined,
@@ -198,7 +314,7 @@ export function VehicleForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>{vehicle ? t('editTitle') : t('addTitle')}</DialogTitle>
             <DocsLink href="/docs/features/vehicles" variant="hint" className="self-start" />
@@ -207,223 +323,302 @@ export function VehicleForm({
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Image upload */}
-            <div className="space-y-2">
-              <Label>{t('photo')}</Label>
-              <div
-                {...interactiveRow(() => fileRef.current?.click())}
-                className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50"
-              >
-                {preview ? (
-                  <>
-                    <Image
-                      src={preview}
-                      alt="Vehicle preview"
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        clearImage()
-                      }}
-                      className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+          <form
+            ref={formRef}
+            onSubmit={handleSubmit}
+            className="grid gap-x-6 gap-y-4 md:grid-cols-2"
+          >
+            {/* Left: what the vehicle belongs to and where its data comes from */}
+            <div className="space-y-4">
+              {/* Scan the registration document and fill the form from it */}
+              <div className="space-y-1">
+                <Tooltip>
+                  {/* A disabled button swallows pointer events, so the trigger
+                      has to be the wrapper rather than the button itself. */}
+                  <TooltipTrigger asChild>
+                    <span className="block">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => documentRef.current?.click()}
+                        disabled={scanning || !scanAvailable}
+                      >
+                        {scanning ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <ScanLine className="mr-2 h-4 w-4" />
+                        )}
+                        {t('scanDocument')}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {scanAvailable === false && (
+                    <TooltipContent>{t('scanUnavailable')}</TooltipContent>
+                  )}
+                </Tooltip>
+                <p className="text-xs text-muted-foreground">{t('scanDocumentHint')}</p>
+                <input
+                  ref={documentRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  onChange={handleDocumentSelect}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Image upload */}
+              <div className="space-y-2">
+                <Label>{t('photo')}</Label>
+                <div
+                  {...interactiveRow(() => fileRef.current?.click())}
+                  className="group relative flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-muted/50"
+                >
+                  {preview ? (
+                    <>
+                      <Image
+                        src={preview}
+                        alt="Vehicle preview"
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          clearImage()
+                        }}
+                        className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <Camera className="h-8 w-8" />
+                      <span className="text-sm">{t('clickToUpload')}</span>
+                      <span className="text-xs">{t('imageFormats')}</span>
+                    </div>
+                  )}
+                </div>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Customer selector */}
+              <div className="space-y-2">
+                <Label>{t('customer')}</Label>
+                <Popover open={customerOpen} onOpenChange={setCustomerOpen} modal={true}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={customerOpen}
+                      className="w-full justify-between font-normal"
                     >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <Camera className="h-8 w-8" />
-                    <span className="text-sm">{t('clickToUpload')}</span>
-                    <span className="text-xs">{t('imageFormats')}</span>
+                      <span className="truncate">{selectedCustomerLabel}</span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder={t('searchCustomers')} />
+                      <CommandList className="max-h-60 overflow-y-auto">
+                        <CommandEmpty>{t('noCustomerFound')}</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem
+                            value="no-customer"
+                            onSelect={() => {
+                              setSelectedCustomerId('none')
+                              setCustomerOpen(false)
+                            }}
+                          >
+                            <Check
+                              className={`mr-2 h-4 w-4 ${selectedCustomerId === 'none' ? 'opacity-100' : 'opacity-0'}`}
+                            />
+                            {t('noCustomer')}
+                          </CommandItem>
+                          {localCustomers.map((c) => {
+                            const label = c.name + (c.company ? ` (${c.company})` : '')
+                            return (
+                              <CommandItem
+                                key={c.id}
+                                value={label}
+                                onSelect={() => {
+                                  setSelectedCustomerId(c.id)
+                                  setCustomerOpen(false)
+                                }}
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${selectedCustomerId === c.id ? 'opacity-100' : 'opacity-0'}`}
+                                />
+                                {label}
+                              </CommandItem>
+                            )
+                          })}
+                        </CommandGroup>
+                      </CommandList>
+                      <div className="border-t p-1">
+                        <button
+                          type="button"
+                          className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
+                          onClick={() => {
+                            setCustomerOpen(false)
+                            setShowCustomerForm(true)
+                          }}
+                        >
+                          <Plus className="h-4 w-4" />
+                          {t('addCustomer')}
+                        </button>
+                      </div>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                {/* Keeper read off the papers who matches no customer yet */}
+                {scannedOwner?.name && selectedCustomerId === 'none' && (
+                  <div className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-border bg-muted/30 p-2">
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">{t('ownerFromDocument')}</p>
+                      <p className="truncate text-sm font-medium">{scannedOwner.name}</p>
+                      {scannedOwner.address && (
+                        <p className="truncate text-xs text-muted-foreground">
+                          {scannedOwner.address}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0"
+                      onClick={() =>
+                        ownerMatches.length > 0
+                          ? setShowOwnerMatch(true)
+                          : setShowCustomerForm(true)
+                      }
+                    >
+                      <Plus className="mr-1 h-3 w-3" />
+                      {ownerMatches.length > 0
+                        ? t('ownerMatchChoose')
+                        : t('createCustomerFromDocument')}
+                    </Button>
                   </div>
                 )}
               </div>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/avif"
-                onChange={handleImageSelect}
-                className="hidden"
-              />
             </div>
 
-            {/* Customer selector */}
-            <div className="space-y-2">
-              <Label>{t('customer')}</Label>
-              <Popover open={customerOpen} onOpenChange={setCustomerOpen} modal={true}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={customerOpen}
-                    className="w-full justify-between font-normal"
-                  >
-                    <span className="truncate">{selectedCustomerLabel}</span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                  <Command>
-                    <CommandInput placeholder={t('searchCustomers')} />
-                    <CommandList className="max-h-60 overflow-y-auto">
-                      <CommandEmpty>{t('noCustomerFound')}</CommandEmpty>
-                      <CommandGroup>
-                        <CommandItem
-                          value="no-customer"
-                          onSelect={() => {
-                            setSelectedCustomerId('none')
-                            setCustomerOpen(false)
-                          }}
-                        >
-                          <Check
-                            className={`mr-2 h-4 w-4 ${selectedCustomerId === 'none' ? 'opacity-100' : 'opacity-0'}`}
-                          />
-                          {t('noCustomer')}
-                        </CommandItem>
-                        {localCustomers.map((c) => {
-                          const label = c.name + (c.company ? ` (${c.company})` : '')
-                          return (
-                            <CommandItem
-                              key={c.id}
-                              value={label}
-                              onSelect={() => {
-                                setSelectedCustomerId(c.id)
-                                setCustomerOpen(false)
-                              }}
-                            >
-                              <Check
-                                className={`mr-2 h-4 w-4 ${selectedCustomerId === c.id ? 'opacity-100' : 'opacity-0'}`}
-                              />
-                              {label}
-                            </CommandItem>
-                          )
-                        })}
-                      </CommandGroup>
-                    </CommandList>
-                    <div className="border-t p-1">
-                      <button
-                        type="button"
-                        className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
-                        onClick={() => {
-                          setCustomerOpen(false)
-                          setShowCustomerForm(true)
-                        }}
-                      >
-                        <Plus className="h-4 w-4" />
-                        {t('addCustomer')}
-                      </button>
-                    </div>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
+            {/* Right: the vehicle's own details */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="make">{isMarine ? t('makeMarine') : t('make')}</Label>
+                  <Input
+                    id="make"
+                    name="make"
+                    placeholder={isMarine ? 'Boston Whaler' : 'Toyota'}
+                    defaultValue={vehicle?.make}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="model">{t('model')}</Label>
+                  <Input
+                    id="model"
+                    name="model"
+                    placeholder={isMarine ? 'Montauk 170' : 'Camry'}
+                    defaultValue={vehicle?.model}
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="make">{isMarine ? t('makeMarine') : t('make')}</Label>
-                <Input
-                  id="make"
-                  name="make"
-                  placeholder={isMarine ? 'Boston Whaler' : 'Toyota'}
-                  defaultValue={vehicle?.make}
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="year">{t('year')}</Label>
+                  <Input
+                    id="year"
+                    name="year"
+                    type="number"
+                    placeholder="2024"
+                    defaultValue={vehicle?.year}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="mileage">{isMarine ? t('mileageMarine') : t('mileage')}</Label>
+                  <Input
+                    id="mileage"
+                    name="mileage"
+                    type="number"
+                    placeholder="0"
+                    defaultValue={vehicle?.mileage}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="model">{t('model')}</Label>
-                <Input
-                  id="model"
-                  name="model"
-                  placeholder={isMarine ? 'Montauk 170' : 'Camry'}
-                  defaultValue={vehicle?.model}
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="year">{t('year')}</Label>
-                <Input
-                  id="year"
-                  name="year"
-                  type="number"
-                  placeholder="2024"
-                  defaultValue={vehicle?.year}
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
+                  <Input
+                    id="vin"
+                    name="vin"
+                    placeholder="1HGCM82633A004352"
+                    defaultValue={vehicle?.vin ?? ''}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="licensePlate">
+                    {isMarine ? t('licensePlateMarine') : t('licensePlate')}
+                  </Label>
+                  <Input
+                    id="licensePlate"
+                    name="licensePlate"
+                    placeholder="ABC-1234"
+                    defaultValue={vehicle?.licensePlate ?? ''}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="mileage">{isMarine ? t('mileageMarine') : t('mileage')}</Label>
-                <Input
-                  id="mileage"
-                  name="mileage"
-                  type="number"
-                  placeholder="0"
-                  defaultValue={vehicle?.mileage}
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="vin">{isMarine ? t('vinMarine') : t('vin')}</Label>
-                <Input
-                  id="vin"
-                  name="vin"
-                  placeholder="1HGCM82633A004352"
-                  defaultValue={vehicle?.vin ?? ''}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="color">{t('color')}</Label>
+                  <Input
+                    id="color"
+                    name="color"
+                    placeholder="Silver"
+                    defaultValue={vehicle?.color ?? ''}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fuelType">{t('fuelType')}</Label>
+                  <Select name="fuelType" value={fuelType} onValueChange={setFuelType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gasoline">{t('gasoline')}</SelectItem>
+                      <SelectItem value="diesel">{t('diesel')}</SelectItem>
+                      {!isMarine && (
+                        <>
+                          <SelectItem value="electric">{t('electric')}</SelectItem>
+                          <SelectItem value="hybrid">{t('hybrid')}</SelectItem>
+                        </>
+                      )}
+                      {isMarine && <SelectItem value="two-stroke">{t('twoStroke')}</SelectItem>}
+                      <SelectItem value="other">{t('other')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="licensePlate">
-                  {isMarine ? t('licensePlateMarine') : t('licensePlate')}
-                </Label>
-                <Input
-                  id="licensePlate"
-                  name="licensePlate"
-                  placeholder="ABC-1234"
-                  defaultValue={vehicle?.licensePlate ?? ''}
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="color">{t('color')}</Label>
-                <Input
-                  id="color"
-                  name="color"
-                  placeholder="Silver"
-                  defaultValue={vehicle?.color ?? ''}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fuelType">{t('fuelType')}</Label>
-                <Select name="fuelType" defaultValue={vehicle?.fuelType ?? 'gasoline'}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gasoline">{t('gasoline')}</SelectItem>
-                    <SelectItem value="diesel">{t('diesel')}</SelectItem>
-                    {!isMarine && (
-                      <>
-                        <SelectItem value="electric">{t('electric')}</SelectItem>
-                        <SelectItem value="hybrid">{t('hybrid')}</SelectItem>
-                      </>
-                    )}
-                    {isMarine && <SelectItem value="two-stroke">{t('twoStroke')}</SelectItem>}
-                    <SelectItem value="other">{t('other')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="transmission">
                   {isMarine ? t('transmissionMarine') : t('transmission')}
@@ -451,32 +646,32 @@ export function VehicleForm({
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="engineSize">
+                    {isMarine ? t('engineSizeMarine') : t('engineSize')}
+                  </Label>
+                  <Input
+                    id="engineSize"
+                    name="engineSize"
+                    placeholder={isMarine ? 'Mercury F 350 XXL Verado V-10 (350 hp)' : '2.5L'}
+                    defaultValue={vehicle?.engineSize ?? ''}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="engineCode">{t('engineCode')}</Label>
+                  <Input
+                    id="engineCode"
+                    name="engineCode"
+                    placeholder="2AR-FE"
+                    defaultValue={vehicle?.engineCode ?? ''}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="engineSize">
-                  {isMarine ? t('engineSizeMarine') : t('engineSize')}
-                </Label>
-                <Input
-                  id="engineSize"
-                  name="engineSize"
-                  placeholder={isMarine ? 'Mercury F 350 XXL Verado V-10 (350 hp)' : '2.5L'}
-                  defaultValue={vehicle?.engineSize ?? ''}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="engineCode">{t('engineCode')}</Label>
-                <Input
-                  id="engineCode"
-                  name="engineCode"
-                  placeholder="2AR-FE"
-                  defaultValue={vehicle?.engineCode ?? ''}
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {tc('cancel')}
               </Button>
@@ -489,12 +684,69 @@ export function VehicleForm({
         </DialogContent>
       </Dialog>
 
+      {/* Close matches for the keeper on the papers */}
+      <Dialog open={showOwnerMatch} onOpenChange={setShowOwnerMatch}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('ownerMatchTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('ownerMatchDescription', { name: scannedOwner?.name ?? '' })}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            {ownerMatches.map(({ customer, score }) => (
+              <button
+                key={customer.id}
+                type="button"
+                className="flex w-full items-center justify-between gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-accent"
+                onClick={() => {
+                  setSelectedCustomerId(customer.id)
+                  setScannedOwner(null)
+                  setShowOwnerMatch(false)
+                }}
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium">{customer.name}</span>
+                  {customer.company && (
+                    <span className="block truncate text-xs text-muted-foreground">
+                      {customer.company}
+                    </span>
+                  )}
+                </span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {t('ownerMatchScore', { percent: Math.round(score * 100) })}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => setShowOwnerMatch(false)}>
+              {tc('cancel')}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setShowOwnerMatch(false)
+                setShowCustomerForm(true)
+              }}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              {t('ownerMatchCreateNew')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <CustomerForm
         open={showCustomerForm}
         onOpenChange={setShowCustomerForm}
+        defaults={scannedOwner ?? undefined}
         onCreated={(created) => {
           setLocalCustomers((prev) => [...prev, created])
           setSelectedCustomerId(created.id)
+          setScannedOwner(null)
         }}
       />
     </>
