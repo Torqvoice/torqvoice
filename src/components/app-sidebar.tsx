@@ -52,7 +52,6 @@ import {
   History,
   Globe,
   Layers,
-  MessageCircle,
   MessageSquare,
   Send,
   LayoutDashboard,
