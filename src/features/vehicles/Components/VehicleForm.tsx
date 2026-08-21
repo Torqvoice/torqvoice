@@ -283,11 +283,13 @@ export function VehicleForm({
             onSubmit={handleSubmit}
             className="grid gap-x-6 gap-y-4 md:grid-cols-2"
           >
+            {/* Scan the registration document and fill the form from it */}
+            <div className="md:col-span-2">
+              <ScanDocumentButton onScanned={applyScan} />
+            </div>
+
             {/* Left: what the vehicle belongs to and where its data comes from */}
             <div className="space-y-4">
-              {/* Scan the registration document and fill the form from it */}
-              <ScanDocumentButton onScanned={applyScan} />
-
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t('sectionAssignment')}
               </p>

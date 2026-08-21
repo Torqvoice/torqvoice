@@ -182,11 +182,13 @@ export function CustomerForm({
             onSubmit={handleSubmit}
             className="grid gap-x-6 gap-y-4 md:grid-cols-2"
           >
+            {/* The keeper on a registration document is a customer waiting to be typed in */}
+            <div className="md:col-span-2">
+              <ScanDocumentButton onScanned={applyScan} />
+            </div>
+
             {/* Left: who the customer is and how to reach them */}
             <div className="space-y-4">
-              {/* The keeper on a registration document is a customer waiting to be typed in */}
-              <ScanDocumentButton onScanned={applyScan} />
-
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t('sectionContact')}
               </p>

@@ -73,7 +73,7 @@ export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentB
   )
 
   return (
-    <div className="space-y-1">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
       <Tooltip>
         {/* A disabled button swallows pointer events, so the trigger has to be
             the wrapper rather than the button itself. */}
@@ -82,7 +82,7 @@ export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentB
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full sm:w-auto"
               onClick={() => inputRef.current?.click()}
               disabled={scanning || !available}
             >
@@ -97,7 +97,9 @@ export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentB
         </TooltipTrigger>
         {available === false && <TooltipContent>{t('scanUnavailable')}</TooltipContent>}
       </Tooltip>
-      {showHint && <p className="text-xs text-muted-foreground">{t('scanDocumentHint')}</p>}
+      {showHint && (
+        <p className="text-xs text-muted-foreground sm:flex-1">{t('scanDocumentHint')}</p>
+      )}
       <input
         ref={inputRef}
         type="file"
