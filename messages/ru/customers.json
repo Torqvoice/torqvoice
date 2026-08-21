@@ -38,7 +38,8 @@
       "messages": "Сообщения",
       "requests": "Заявки ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Госномер",

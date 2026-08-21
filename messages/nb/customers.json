@@ -38,7 +38,8 @@
       "messages": "Meldinger",
       "requests": "Forespørsler ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Registreringsnummer",

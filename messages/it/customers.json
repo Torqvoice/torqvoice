@@ -38,7 +38,8 @@
       "messages": "Messaggi",
       "requests": "Richieste ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Targa",

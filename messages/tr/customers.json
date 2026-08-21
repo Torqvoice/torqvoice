@@ -38,7 +38,8 @@
       "messages": "Mesajlar",
       "requests": "Talepler ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Plaka",

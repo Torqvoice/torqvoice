@@ -38,7 +38,8 @@
       "messages": "Wiadomości",
       "requests": "Zlecenia ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Tablica",
