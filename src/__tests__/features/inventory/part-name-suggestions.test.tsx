@@ -40,12 +40,22 @@ const PARTS: PartSuggestion[] = [
   { id: 'p5', name: 'Brake cable', partNumber: 'BC-7', unitCost: 8, sellPrice: 20, quantity: 1 },
 ]
 
+/**
+ * Arrives at `query` the way a person does: by typing into an empty field.
+ *
+ * The panel deliberately stays shut when it is mounted with a name already in
+ * it, because that is a saved record being opened rather than someone typing.
+ * Rendering straight to the final value would test a state the component is
+ * never in.
+ */
 function setup(
   query: string,
   over: Partial<React.ComponentProps<typeof PartNameSuggestions>> = {}
 ) {
   const onSelect = vi.fn()
-  render(<PartNameSuggestions query={query} parts={PARTS} onSelect={onSelect} {...over} />)
+  const props = { parts: PARTS, onSelect, ...over }
+  const { rerender } = render(<PartNameSuggestions query="" {...props} />)
+  rerender(<PartNameSuggestions query={query} {...props} />)
   return { onSelect }
 }
 
@@ -53,6 +63,33 @@ function setup(
 function shown() {
   return screen.queryAllByRole('button').map((b) => b.textContent ?? '')
 }
+
+describe('opening a saved record', () => {
+  it('stays shut when the field already has a name in it', () => {
+    // The reported bug. A work order with five free-typed parts opened five
+    // suggestion panels the moment it loaded, one over each row, before
+    // anybody had touched the keyboard.
+    render(<PartNameSuggestions query="brake" parts={PARTS} onSelect={vi.fn()} />)
+    expect(shown()).toHaveLength(0)
+  })
+
+  it('opens as soon as that name is edited', () => {
+    const props = { parts: PARTS, onSelect: vi.fn() }
+    const { rerender } = render(<PartNameSuggestions query="brake" {...props} />)
+    expect(shown()).toHaveLength(0)
+
+    rerender(<PartNameSuggestions query="brake p" {...props} />)
+    expect(shown().length).toBeGreaterThan(0)
+  })
+
+  it('stays shut on a re-render that does not change the name', () => {
+    // A parent re-rendering for its own reasons is not someone typing.
+    const props = { parts: PARTS, onSelect: vi.fn() }
+    const { rerender } = render(<PartNameSuggestions query="brake" {...props} />)
+    rerender(<PartNameSuggestions query="brake" {...props} />)
+    expect(shown()).toHaveLength(0)
+  })
+})
 
 describe('PartNameSuggestions', () => {
   it('shows nothing until enough has been typed', () => {
@@ -125,7 +162,7 @@ describe('PartNameSuggestions', () => {
     const noSell: PartSuggestion[] = [
       { id: 'z', name: 'Zero priced', partNumber: null, unitCost: 18, sellPrice: 0, quantity: 3 },
     ]
-    render(<PartNameSuggestions query="zero" parts={noSell} onSelect={vi.fn()} />)
+    setup('zero', { parts: noSell })
     expect(shown()[0]).toContain('$18.00')
     expect(shown()[0]).not.toContain('$0.00')
   })
@@ -134,15 +171,7 @@ describe('PartNameSuggestions', () => {
     const p: PartSuggestion[] = [
       { id: 'm', name: 'Marked up', partNumber: null, unitCost: 10, sellPrice: 25, quantity: 2 },
     ]
-    render(
-      <PartNameSuggestions
-        query="marked"
-        parts={p}
-        onSelect={vi.fn()}
-        markupAppliesToInventory
-        defaultMarkupPercent={40}
-      />
-    )
+    setup('marked', { parts: p, markupAppliesToInventory: true, defaultMarkupPercent: 40 })
     expect(shown()[0]).toContain('$14.00')
   })
 
@@ -158,7 +187,7 @@ describe('PartNameSuggestions', () => {
         quantity: -3,
       },
     ]
-    render(<PartNameSuggestions query="out" parts={p} onSelect={vi.fn()} />)
+    setup('out', { parts: p })
     const text = shown().join(' ')
     expect(text).toContain('suggestions.outOfStock')
     expect(text).toContain('suggestions.onBackorder')
@@ -175,7 +204,7 @@ describe('PartNameSuggestions', () => {
         quantity: 3,
       },
     ]
-    render(<PartNameSuggestions query="brake" parts={long} onSelect={vi.fn()} />)
+    setup('brake', { parts: long })
     expect(screen.getByTitle(long[0].name)).toBeTruthy()
   })
 
