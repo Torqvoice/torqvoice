@@ -1,4 +1,8 @@
 import { PrismaClient } from "../src/generated/prisma/client";
+import {
+  TIRE_ROAD_POSITIONS,
+  gradeTread,
+} from "../src/features/tire-hotel/Lib/tireConstants";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { randomBytes, scryptSync } from "node:crypto";
 import * as fs from "fs";
@@ -68,6 +72,10 @@ const ORG_ID = "cmmh0vczm0000oiyan37vuyqf";
 const DEMO_EMAIL = process.env.DEMO_USER_EMAIL || "demo@torqvoice.com";
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD || "demo";
 const DEMO_ORG_NAME = process.env.DEMO_ORG_NAME || "Demo Auto Workshop";
+/// What this workshop calls worn out. Stored in millimetres whatever the
+/// unit system, and used both for the settings rows and for grading the
+/// seeded readings, so the two can never disagree.
+const DEMO_TREAD_LIMITS = { summerReplace: 1.6, winterReplace: 4, warnMargin: 1 };
 const DATA_ROOT = process.env.DATA_ROOT || path.join(process.cwd(), "data");
 const UPLOAD_DIR = path.join(DATA_ROOT, "uploads", ORG_ID, "vehicles");
 // Image assets bundled with the repo — preferred over live URL downloads so
@@ -595,6 +603,14 @@ async function cleanup() {
   await prisma.vehicle.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customer.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.inventoryPart.deleteMany({ where: { organizationId: ORG_ID } });
+  // Tire sets survive the vehicle and customer wipe above, because both of
+  // those relations are SetNull rather than Cascade. Warehouses and shelves
+  // only cascade from the organization, which the reset never touches. Left
+  // alone, every reseed would stack another storeroom on top of the last.
+  // Measurements, movements, treatments and attachments cascade from the set.
+  await prisma.tireSet.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.tireLocation.deleteMany({ where: { organizationId: ORG_ID } });
+  await prisma.tireWarehouse.deleteMany({ where: { organizationId: ORG_ID } });
 
   cleanupUploads();
   console.log("  Done.\n");
@@ -678,6 +694,22 @@ async function seed() {
     "sms.twilio.authToken": "demo-token-not-a-real-credential",
     "telegram.botToken": "0000000000:DEMO-not-a-real-bot-token",
     "telegram.botUsername": "EgelandAutoDemoBot",
+    // Tire hotel is opt-in per workshop, so the sidebar entry and the
+    // routes stay hidden until this is set.
+    "tireHotel.enabled": "true",
+    "tireHotel.summerReplaceMm": String(DEMO_TREAD_LIMITS.summerReplace),
+    "tireHotel.winterReplaceMm": String(DEMO_TREAD_LIMITS.winterReplace),
+    "tireHotel.defaultCapacity": "8",
+    "tireHotel.capacityWarnPercent": "90",
+    "tireHotel.defaultSeasonalPrice": "45",
+    "tireHotel.treatmentPrices": JSON.stringify({
+      wash_tires: 15,
+      wash_rims: 25,
+      balance: 40,
+      tpms_service: 30,
+      new_valves: 20,
+      repair: 35,
+    }),
   };
   await Promise.all(
     Object.entries(settings).map(([key, value]) =>
@@ -2183,6 +2215,400 @@ async function seed() {
     prisma.statusReport.create({ data: { organizationId: ORG_ID, serviceRecordId: unassignedRecords[11].id, technicianId: technicians[10].id, title: "Kenworth sleeper A/C - parts on order", message: "The compressor has seized and put debris through the condenser, so both need replacing. Parts land Wednesday and we'll have it back to you Thursday.", status: "draft", publicToken: randomBytes(16).toString("hex") } }),
   ]);
   console.log(`  Created ${statusReports.length} status reports`);
+
+  // -- Tire hotel --
+  // Seasonal tire storage. The interesting parts of this module only exist
+  // once there is history behind a set: shelves filling up, tread wearing down
+  // over successive winters, and the replacement forecast that falls out of
+  // those two numbers. A set checked in yesterday shows none of it, so most of
+  // these carry two or three years of readings.
+  //
+  // Dates are relative rather than pinned to real April and October, so the
+  // demo reads the same in February as it does in August. A shop in the
+  // southern hemisphere sees the same story with the seasons the other way up.
+  console.log("\nCreating tire hotel...");
+
+  const tireWarehouse = await prisma.tireWarehouse.create({
+    data: {
+      name: "Tire store",
+      address: "1450 Foundry Road, Denver, CO 80216 (rear building)",
+      notes: "Unheated but dry. Racks A and B, floor level to head height.",
+      isDefault: true,
+      organizationId: ORG_ID,
+      userId: USER_ID,
+    },
+  });
+
+  // Two racks. The A bays are the small ones by the door and fill up first,
+  // which is why several of them read full while rack B has room.
+  const tireLocations = await Promise.all(
+    [
+      { code: "A-1-1-L", zone: "Rack A", rack: "1", shelf: "1", position: "Left", capacity: 8 },
+      { code: "A-1-1-R", zone: "Rack A", rack: "1", shelf: "1", position: "Right", capacity: 8 },
+      { code: "A-1-2-L", zone: "Rack A", rack: "1", shelf: "2", position: "Left", capacity: 8 },
+      { code: "A-1-2-R", zone: "Rack A", rack: "1", shelf: "2", position: "Right", capacity: 8 },
+      { code: "A-2-1-L", zone: "Rack A", rack: "2", shelf: "1", position: "Left", capacity: 8 },
+      { code: "A-2-1-R", zone: "Rack A", rack: "2", shelf: "1", position: "Right", capacity: 8 },
+      { code: "B-1-1-L", zone: "Rack B", rack: "1", shelf: "1", position: "Left", capacity: 12 },
+      { code: "B-1-1-R", zone: "Rack B", rack: "1", shelf: "1", position: "Right", capacity: 12 },
+      { code: "B-1-2-L", zone: "Rack B", rack: "1", shelf: "2", position: "Left", capacity: 12 },
+      {
+        code: "B-1-2-R",
+        zone: "Rack B",
+        rack: "1",
+        shelf: "2",
+        position: "Right",
+        capacity: 12,
+        notes: "Kept clear for walk-ins during the changeover weeks.",
+      },
+    ].map((spec) =>
+      prisma.tireLocation.create({
+        data: { ...spec, warehouseId: tireWarehouse.id, organizationId: ORG_ID },
+      }),
+    ),
+  );
+  const shelf = new Map(tireLocations.map((l) => [l.code, l]));
+
+  /**
+   * One stored set, described the way the workshop would describe it.
+   *
+   * `rounds` are tread readings in millimetres, newest first, four per round
+   * in the order a technician walks the car: front left, front right, rear
+   * left, rear right. Each round is one check-in a year earlier than the last,
+   * so the gaps between them are a winter's driving.
+   */
+  type TireSetSpec = {
+    vehicle: number;
+    customer: number;
+    season: "summer" | "winter" | "all_season";
+    studded?: boolean;
+    brand: string;
+    model: string;
+    size: string;
+    dotCode: string;
+    loadSpeedIndex?: string;
+    withRims: boolean;
+    rimType?: string;
+    hasTpms?: boolean;
+    quantity?: number;
+    /** Shelf code, or null for a set that is no longer on a shelf. */
+    location: string | null;
+    /** Where it used to sit, for one that has left. History still shows it. */
+    lastShelf?: string;
+    /** Bar, as found at check-in. Vans and trucks run higher than cars. */
+    pressureBar?: number;
+    status?: "stored" | "released" | "disposed";
+    /** Days ago the most recent check-in happened. */
+    storedDaysAgo: number;
+    /** Days ago the set left, for one that is no longer here. */
+    goneDaysAgo?: number;
+    rounds: number[][];
+    treatments?: Partial<Record<"wash_tires" | "wash_rims" | "balance" | "tpms_service" | "new_valves" | "repair", "pending" | "done" | "skipped">>;
+    notes?: string;
+    damage?: string;
+  };
+
+  const TIRE_SETS: TireSetSpec[] = [
+    // Three winters of readings: the forecast has real data to work from.
+    {
+      vehicle: 0, customer: 1, season: "winter",
+      brand: "Nokian", model: "Hakkapeliitta R5", size: "235/45R18", dotCode: "3623",
+      loadSpeedIndex: "98T", withRims: true, rimType: 'Alloy, 18" OEM', hasTpms: true,
+      location: "A-1-1-L", storedDaysAgo: 118,
+      rounds: [[4.6, 4.4, 5.1, 5.0], [6.0, 5.9, 6.4, 6.3], [7.4, 7.3, 7.7, 7.6]],
+      treatments: { wash_rims: "done", balance: "done" },
+      notes: "Fronts wearing faster than the rears, as they always do on this car.",
+    },
+    {
+      vehicle: 4, customer: 3, season: "winter",
+      brand: "Continental", model: "WinterContact TS 870 P", size: "225/45R18", dotCode: "1024",
+      loadSpeedIndex: "95V", withRims: true, rimType: 'Alloy, 18" winter set', hasTpms: true,
+      location: "A-1-1-L", storedDaysAgo: 116,
+      rounds: [[5.2, 5.3, 5.8, 5.9], [6.5, 6.6, 6.9, 7.0], [7.8, 7.9, 8.1, 8.2]],
+      treatments: { wash_tires: "done", wash_rims: "done" },
+    },
+    // Down to the limit. Turns up on the forecast as needing replacing before
+    // the next season, which is the whole point of keeping the history.
+    {
+      vehicle: 5, customer: 9, season: "winter",
+      brand: "Bridgestone", model: "Blizzak WS90", size: "235/40R18", dotCode: "4122",
+      loadSpeedIndex: "95H", withRims: false,
+      location: "A-1-1-R", storedDaysAgo: 121,
+      rounds: [[3.1, 3.0, 3.4, 3.3], [4.6, 4.5, 4.8, 4.7], [6.1, 6.0, 6.3, 6.2]],
+      treatments: { wash_tires: "done", balance: "pending" },
+      notes: "Told the owner at check-in these will not pass another winter.",
+    },
+    {
+      vehicle: 6, customer: 5, season: "winter",
+      brand: "Michelin", model: "X-Ice Snow", size: "235/45R19", dotCode: "0824",
+      loadSpeedIndex: "99H", withRims: true, rimType: 'Alloy, 19" aero', hasTpms: true,
+      location: "A-1-1-R", storedDaysAgo: 110,
+      rounds: [[6.3, 6.4, 6.6, 6.7], [7.6, 7.7, 7.8, 7.9]],
+      treatments: { wash_rims: "done", tpms_service: "done" },
+      notes: "Aero covers in the boot with the tires. Do not fit without them.",
+    },
+    {
+      vehicle: 7, customer: 13, season: "winter",
+      brand: "Pirelli", model: "Scorpion Winter 2", size: "255/45R19", dotCode: "1525",
+      loadSpeedIndex: "104V", withRims: true, rimType: 'Alloy, 19" Gemini', hasTpms: true,
+      location: "A-1-2-L", storedDaysAgo: 104,
+      rounds: [[7.4, 7.5, 7.6, 7.6]],
+      treatments: { wash_rims: "done" },
+      notes: "First season with us. One year of readings, so no wear rate yet.",
+    },
+    {
+      vehicle: 10, customer: 7, season: "winter",
+      brand: "Vredestein", model: "Wintrac Pro", size: "245/40R18", dotCode: "3722",
+      loadSpeedIndex: "97V", withRims: false,
+      location: "A-1-2-L", storedDaysAgo: 126,
+      rounds: [[4.9, 4.8, 5.5, 5.4], [6.2, 6.1, 6.7, 6.6], [7.5, 7.4, 7.9, 7.8]],
+      treatments: { wash_tires: "done", balance: "done", new_valves: "done" },
+    },
+    {
+      vehicle: 11, customer: 11, season: "winter", studded: true,
+      brand: "Nokian", model: "Hakkapeliitta 10 SUV", size: "285/70R17", dotCode: "2823",
+      loadSpeedIndex: "121T", withRims: true, rimType: 'Steel, 17" black', hasTpms: true,
+      location: "A-1-2-R", storedDaysAgo: 133,
+      rounds: [[7.1, 7.0, 7.4, 7.3], [8.4, 8.3, 8.6, 8.5]],
+      treatments: { wash_tires: "done", repair: "done" },
+      notes: "Studded. Owner drives over the pass every weekend through winter.",
+      damage: "Sidewall scuff on the near-side rear, cosmetic only. Photographed at check-in.",
+    },
+    {
+      vehicle: 12, customer: 12, season: "winter",
+      brand: "Goodyear", model: "UltraGrip Performance +", size: "245/75R17", dotCode: "0524",
+      loadSpeedIndex: "121S", withRims: false,
+      location: "A-2-1-L", storedDaysAgo: 99,
+      rounds: [[6.6, 6.5, 6.9, 6.8], [8.0, 7.9, 8.2, 8.1]],
+      treatments: { wash_tires: "pending" },
+    },
+    {
+      vehicle: 13, customer: 3, season: "winter",
+      brand: "Michelin", model: "Pilot Alpin 5", size: "245/35R20", dotCode: "1124",
+      loadSpeedIndex: "95V", withRims: true, rimType: 'Alloy, staggered 20/21"', hasTpms: true,
+      location: "A-2-1-L", storedDaysAgo: 112,
+      rounds: [[5.8, 5.9, 5.1, 5.0], [7.0, 7.1, 6.4, 6.3]],
+      treatments: { wash_rims: "done", balance: "done", tpms_service: "done" },
+      notes: 'Staggered set: fronts 245/35R20, rears 305/30R21. Keep them paired.',
+    },
+    {
+      vehicle: 14, customer: 7, season: "winter",
+      brand: "Continental", model: "WinterContact TS 860", size: "225/40R18", dotCode: "3921",
+      loadSpeedIndex: "92H", withRims: true, rimType: 'Alloy, 18" Nogaro', hasTpms: true,
+      location: "A-2-1-R", storedDaysAgo: 129,
+      rounds: [[4.1, 4.0, 4.6, 4.5], [5.5, 5.4, 5.9, 5.8], [6.9, 6.8, 7.2, 7.1]],
+      treatments: { wash_tires: "done", wash_rims: "done", balance: "done" },
+      notes: "One more winter in them at this rate, then they need doing.",
+    },
+    {
+      vehicle: 15, customer: 17, season: "winter",
+      brand: "Bridgestone", model: "Blizzak DM-V2", size: "275/55R20", dotCode: "2224",
+      loadSpeedIndex: "117T", withRims: false, quantity: 5, pressureBar: 2.8,
+      location: "B-1-1-L", storedDaysAgo: 95,
+      rounds: [[7.8, 7.7, 8.0, 7.9]],
+      treatments: { wash_tires: "done" },
+      notes: "Five tires: four plus a matching full-size spare.",
+    },
+    {
+      vehicle: 16, customer: 19, season: "winter",
+      brand: "Toyo", model: "Observe GSi-6", size: "265/70R16", dotCode: "1723",
+      loadSpeedIndex: "112H", withRims: true, rimType: 'Steel, 16" with trims',
+      location: "B-1-1-L", storedDaysAgo: 138,
+      rounds: [[6.0, 6.1, 6.5, 6.4], [7.3, 7.4, 7.6, 7.5]],
+      treatments: { wash_tires: "done", new_valves: "done" },
+    },
+    {
+      vehicle: 1, customer: 0, season: "winter",
+      brand: "Firestone", model: "Winterforce 2 UV", size: "275/60R20", dotCode: "3123",
+      loadSpeedIndex: "115S", withRims: true, rimType: 'Steel, 20" fleet spec', hasTpms: true,
+      pressureBar: 2.8,
+      location: "B-1-1-R", storedDaysAgo: 141,
+      rounds: [[5.4, 5.3, 5.9, 5.8], [6.8, 6.7, 7.1, 7.0], [8.1, 8.0, 8.3, 8.2]],
+      treatments: { wash_tires: "done", balance: "done" },
+      notes: "Fleet vehicle. Invoice goes on the Summit Construction account.",
+    },
+    {
+      vehicle: 2, customer: 11, season: "all_season",
+      brand: "Michelin", model: "CrossClimate 2", size: "265/70R17", dotCode: "0225",
+      loadSpeedIndex: "115T", withRims: false,
+      location: "B-1-2-L", storedDaysAgo: 87,
+      rounds: [[6.7, 6.6, 7.0, 6.9]],
+      treatments: { wash_tires: "pending", balance: "pending" },
+      notes: "Second vehicle, so the all-seasons come off over the summer too.",
+    },
+    // Collected. Off the shelf, still in the history.
+    {
+      vehicle: 3, customer: 4, season: "winter",
+      brand: "Hankook", model: "Winter i*cept evo3 X", size: "275/55R20", dotCode: "4023",
+      loadSpeedIndex: "117V", withRims: true, rimType: 'Alloy, 20" platinum', hasTpms: true,
+      location: null, lastShelf: "B-1-1-R", status: "released", storedDaysAgo: 300, goneDaysAgo: 21,
+      rounds: [[6.2, 6.3, 6.7, 6.6], [7.5, 7.6, 7.8, 7.7]],
+      treatments: { wash_tires: "done", wash_rims: "done", balance: "done" },
+      notes: "Collected when the fleet contract moved depot.",
+    },
+    // Written off at the limit. Shows what a disposal looks like afterwards.
+    {
+      vehicle: 9, customer: 15, season: "winter",
+      brand: "Semperit", model: "Van-Grip 3", size: "235/65R16C", dotCode: "1219",
+      loadSpeedIndex: "115R", withRims: false,
+      location: null, lastShelf: "B-1-2-L", status: "disposed", storedDaysAgo: 240, goneDaysAgo: 34,
+      pressureBar: 3.2,
+      rounds: [[2.2, 2.1, 2.6, 2.5], [3.9, 3.8, 4.2, 4.1]],
+      notes: "Scrapped with the owner's agreement. New set fitted the same day.",
+    },
+  ];
+
+  /** Roughly a season between a set going out and coming back. */
+  const SEASON_DAYS = 182;
+  /** A whole year between one check-in and the next. */
+  const YEAR_DAYS = 365;
+
+  let tireReference = 0;
+  const tireSetIds: string[] = [];
+
+  for (const spec of TIRE_SETS) {
+    tireReference += 1;
+    const status = spec.status ?? "stored";
+    const quantity = spec.quantity ?? 4;
+    const location = spec.location ? shelf.get(spec.location) : undefined;
+    // Where the movement trail says it went. A set that has been collected
+    // still spent its winters on a real shelf, and the history should say so.
+    const historyShelf = shelf.get(spec.location ?? spec.lastShelf ?? "");
+    const checkedInAt = days(-spec.storedDaysAgo);
+    const checkedOutAt = spec.goneDaysAgo ? days(-spec.goneDaysAgo) : null;
+
+    const set = await prisma.tireSet.create({
+      data: {
+        reference: String(tireReference),
+        season: spec.season,
+        studded: spec.studded ?? false,
+        brand: spec.brand,
+        model: spec.model,
+        size: spec.size,
+        dotCode: spec.dotCode,
+        loadSpeedIndex: spec.loadSpeedIndex ?? null,
+        withRims: spec.withRims,
+        rimType: spec.rimType ?? null,
+        hasTpms: spec.hasTpms ?? false,
+        quantity,
+        status,
+        notes: spec.notes ?? null,
+        locationId: location?.id ?? null,
+        vehicleId: vehicles[spec.vehicle].id,
+        customerId: customers[spec.customer].id,
+        organizationId: ORG_ID,
+        userId: USER_ID,
+        checkedInAt,
+        checkedOutAt,
+      },
+    });
+    tireSetIds.push(set.id);
+
+    // Oldest first, so the movement trail reads forwards: arrived, left,
+    // arrived again. Each round is one check-in, a year apart.
+    for (let i = spec.rounds.length - 1; i >= 0; i -= 1) {
+      const arrivedAt = days(-(spec.storedDaysAgo + i * YEAR_DAYS));
+      const movement = await prisma.tireMovement.create({
+        data: {
+          type: "check_in",
+          toCode: historyShelf?.code ?? null,
+          toLocationId: historyShelf?.id ?? null,
+          note: i === spec.rounds.length - 1 ? "First check-in for this set." : null,
+          tireSetId: set.id,
+          organizationId: ORG_ID,
+          performedById: USER_ID,
+          createdAt: arrivedAt,
+        },
+      });
+
+      await prisma.tireMeasurement.createMany({
+        data: TIRE_ROAD_POSITIONS.map((position, index) => ({
+          position,
+          treadDepthMm: spec.rounds[i][index],
+          pressureBar: spec.pressureBar ?? 2.4,
+          // Left as the grade the reading implies at the shop's own limits.
+          // The app derives what it shows from the depth, so this is only a
+          // fallback for a reading taken by eye.
+          condition: gradeTread(spec.rounds[i][index], spec.season, DEMO_TREAD_LIMITS) ?? "good",
+          damage: i === 0 && position === "rear_left" ? (spec.damage ?? null) : null,
+          tireSetId: set.id,
+          movementId: movement.id,
+          measuredById: USER_ID,
+          measuredAt: arrivedAt,
+        })),
+      });
+
+      // Everything except the most recent round went back on the car for a
+      // season before coming in again.
+      if (i > 0) {
+        await prisma.tireMovement.create({
+          data: {
+            type: "check_out",
+            fromCode: historyShelf?.code ?? null,
+            fromLocationId: historyShelf?.id ?? null,
+            note: "Refitted for the season.",
+            tireSetId: set.id,
+            organizationId: ORG_ID,
+            performedById: USER_ID,
+            createdAt: days(-(spec.storedDaysAgo + i * YEAR_DAYS - SEASON_DAYS)),
+          },
+        });
+      }
+    }
+
+    if (status !== "stored" && spec.goneDaysAgo) {
+      await prisma.tireMovement.create({
+        data: {
+          type: status === "disposed" ? "dispose" : "check_out",
+          fromCode: historyShelf?.code ?? null,
+          fromLocationId: historyShelf?.id ?? null,
+          note:
+            status === "disposed"
+              ? "Written off at the tread limit, with the owner's agreement."
+              : "Collected by the customer.",
+          tireSetId: set.id,
+          organizationId: ORG_ID,
+          performedById: USER_ID,
+          createdAt: days(-spec.goneDaysAgo),
+        },
+      });
+    }
+
+    if (spec.treatments) {
+      await prisma.tireTreatment.createMany({
+        data: Object.entries(spec.treatments).map(([type, treatmentStatus]) => ({
+          type,
+          status: treatmentStatus,
+          tireSetId: set.id,
+          organizationId: ORG_ID,
+          completedAt: treatmentStatus === "done" ? checkedInAt : null,
+          completedById: treatmentStatus === "done" ? USER_ID : null,
+        })),
+      });
+    }
+  }
+
+  // One set moved between shelves, so the history shows a relocation and not
+  // just arrivals and departures.
+  await prisma.tireMovement.create({
+    data: {
+      type: "relocate",
+      fromCode: "A-2-1-R",
+      toCode: "A-1-2-R",
+      fromLocationId: shelf.get("A-2-1-R")?.id ?? null,
+      toLocationId: shelf.get("A-1-2-R")?.id ?? null,
+      note: "Moved off the top shelf, owner collects these himself.",
+      tireSetId: tireSetIds[6],
+      organizationId: ORG_ID,
+      performedById: USER_ID,
+      createdAt: days(-40),
+    },
+  });
+
+  console.log(
+    `  Created ${tireLocations.length} shelves and ${TIRE_SETS.length} tire sets`,
+  );
+
 
   // -- Audit log --
   // Written by the app in normal use; seeded here so the page is not blank.

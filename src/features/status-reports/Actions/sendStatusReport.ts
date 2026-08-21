@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { withAuth } from "@/lib/with-auth";
+import { demoGuard } from "@/lib/demo";
 import { PermissionAction, PermissionSubject } from "@/lib/permissions";
 import { getTranslations } from "next-intl/server";
 import { sendStatusReportSchema } from "../Schema/statusReportSchema";
@@ -12,6 +13,12 @@ import { sendTelegramToCustomer } from "@/features/telegram/Actions/telegramActi
 export async function sendStatusReport(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
+      // The transports refuse to send in demo mode, but sendSmsToCustomer and
+      // sendTelegramToCustomer are withAuth actions, so their refusal comes
+      // back as a returned error rather than a thrown one. This function does
+      // not read those returns, so without this guard the report would be
+      // marked sent over a channel that sent nothing.
+      demoGuard();
       const data = sendStatusReportSchema.parse(input);
 
       // Get the status report with service record and customer info

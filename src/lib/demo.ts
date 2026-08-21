@@ -52,6 +52,19 @@ export function assertOutboundAllowed(channel: "email" | "sms" | "telegram"): vo
 const DEMO_BLOCKED_SETTING_KEY_PATTERNS: RegExp[] = [
   /^payment\.(stripe|vipps|paypal)\./,
   /^payment\.providersEnabled$/,
+  // Each provider's own settings action already refuses in demo mode, but
+  // setSettings is a plain server action that takes any key at all, so
+  // without these the guarded page is a locked front door beside an open
+  // window. Nothing outbound can leave the demo either way; the point is that
+  // a visitor's real credentials never land in a database twenty strangers
+  // share. Templates and the enabled flags stay open, so the demo is still
+  // something you can play with.
+  /^sms\.(twilio|vonage|telnyx)\./,
+  /^sms\.(provider|phoneNumber|webhookSecret)$/,
+  /^telegram\.(botToken|webhookSecret)$/,
+  /^email\.(smtp|resend|sendgrid|mailgun|postmark|ses)\./,
+  /^email\.provider$/,
+  /^ai\.apiKey$/,
 ];
 
 export function isDemoBlockedSettingKey(key: string): boolean {
