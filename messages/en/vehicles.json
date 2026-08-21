@@ -321,7 +321,22 @@
     "licensePlateMarine": "Registration Number",
     "vehicleUpdated": "Vehicle updated",
     "vehicleAdded": "Vehicle added",
-    "saveError": "Failed to save vehicle"
+    "saveError": "Failed to save vehicle",
+    "scanDocument": "Scan registration document",
+    "scanDocumentHint": "Photograph the vehicle papers and the fields fill in automatically.",
+    "scanningDocument": "Reading document...",
+    "scanSuccess": "Fields filled from the document",
+    "scanFailed": "Could not read the document",
+    "ownerMatchTitle": "Assign this vehicle",
+    "ownerMatchDescription": "The document lists {name}. Use one of these customers or create a new one.",
+    "ownerMatchScore": "{percent}% match",
+    "ownerMatchCreateNew": "Create new customer",
+    "ownerMatchChoose": "Choose customer",
+    "scanUnavailable": "Enable AI in settings",
+    "sectionAssignment": "Photo and owner",
+    "sectionDetails": "Details",
+    "addScannedOwner": "Add customer {name}",
+    "ownerSaveFailed": "Could not create the customer"
   },
   "archiveDialog": {
     "title": "Archive Vehicle",

@@ -68,7 +68,10 @@
     "customerCreated": "Клиент создан",
     "saveError": "Не удалось сохранить клиента",
     "customerNumber": "№ клиента",
-    "customerNumberAuto": "Авто"
+    "customerNumberAuto": "Авто",
+    "sectionContact": "Контакты",
+    "sectionBilling": "Выставление счетов",
+    "addScannedVehicle": "Добавить автомобиль {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Новая",

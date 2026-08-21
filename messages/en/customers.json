@@ -68,7 +68,10 @@
     "customerCreated": "Customer created",
     "saveError": "Failed to save customer",
     "customerNumber": "Customer no.",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "sectionContact": "Contact",
+    "sectionBilling": "Billing",
+    "addScannedVehicle": "Add vehicle {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "New",

@@ -68,7 +68,10 @@
     "customerCreated": "Müşteri oluşturuldu",
     "saveError": "Müşteri kaydedilemedi",
     "customerNumber": "Müşteri no",
-    "customerNumberAuto": "Oto"
+    "customerNumberAuto": "Oto",
+    "sectionContact": "İletişim",
+    "sectionBilling": "Faturalama",
+    "addScannedVehicle": "{vehicle} aracını ekle"
   },
   "serviceRequests": {
     "statusNew": "Yeni",

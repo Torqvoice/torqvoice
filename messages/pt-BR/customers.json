@@ -68,7 +68,10 @@
     "customerCreated": "Cliente cadastrado",
     "saveError": "Falha ao salvar cliente",
     "customerNumber": "Nº do cliente",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "sectionContact": "Contato",
+    "sectionBilling": "Faturamento",
+    "addScannedVehicle": "Adicionar o veículo {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Novo",
