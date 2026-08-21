@@ -1,0 +1,25 @@
+{
+  "inbox": {
+    "title": "Konversationen",
+    "searchPlaceholder": "Konversationen durchsuchen",
+    "noSearchResults": "Keine Konversation passt zur Suche.",
+    "empty": "Noch keine Konversationen.",
+    "selectConversation": "Konversation auswählen",
+    "back": "Zurück",
+    "newMessage": "Neue Nachricht",
+    "unknownContact": "Diese Nummer gehört noch zu keinem Kunden. Legen Sie ihn als Kunden an, um zu antworten.",
+    "noChannelsTitle": "Kein Nachrichtenkanal eingerichtet",
+    "noChannelsHint": "Verbinden Sie SMS, WhatsApp oder Telegram, um von hier aus zu schreiben.",
+    "goToProviders": "Anbieter einrichten",
+    "chooseChannel": {
+      "title": "Über welchen Kanal senden?",
+      "description": "Sie haben mehrere Wege, Ihre Kunden zu erreichen."
+    },
+    "deleteConversation": "Konversation löschen",
+    "deleteTitle": "Diese Konversation löschen?",
+    "deleteDescription": "Entfernt Ihre Kopie der Konversation mit {name}. Beim Kunden bleiben die Nachrichten erhalten.",
+    "deleteFailed": "Konversation konnte nicht gelöscht werden",
+    "delete": "Löschen",
+    "cancel": "Abbrechen"
+  }
+}

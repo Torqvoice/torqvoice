@@ -77,6 +77,16 @@
       "title": "WhatsApp ist nicht verbunden",
       "description": "Verbinden Sie eine WhatsApp-Nummer, um Nachrichten mit Ihren Kunden auszutauschen.",
       "action": "WhatsApp einrichten"
+    },
+    "title": "Konversationen",
+    "searchPlaceholder": "Konversationen durchsuchen",
+    "noSearchResults": "Keine Konversation passt zur Suche.",
+    "compose": {
+      "newMessage": "Neue Nachricht",
+      "title": "Neue WhatsApp-Nachricht",
+      "searchPlaceholder": "Kunden suchen",
+      "noMatches": "Kein Kunde passt zur Suche.",
+      "noRecipients": "Noch kein Kunde mit Telefonnummer."
     }
   },
   "sendPhoto": {

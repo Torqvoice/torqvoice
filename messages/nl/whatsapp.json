@@ -77,6 +77,16 @@
       "title": "WhatsApp is niet verbonden",
       "description": "Verbind een WhatsApp-nummer om berichten met je klanten uit te wisselen.",
       "action": "WhatsApp instellen"
+    },
+    "title": "Gesprekken",
+    "searchPlaceholder": "Gesprekken zoeken",
+    "noSearchResults": "Geen gesprek komt overeen met je zoekopdracht.",
+    "compose": {
+      "newMessage": "Nieuw bericht",
+      "title": "Nieuw WhatsApp-bericht",
+      "searchPlaceholder": "Klanten zoeken",
+      "noMatches": "Geen klant komt overeen met je zoekopdracht.",
+      "noRecipients": "Nog geen klanten met een telefoonnummer."
     }
   },
   "sendPhoto": {

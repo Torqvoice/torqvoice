@@ -77,6 +77,16 @@
       "title": "WhatsApp no está conectado",
       "description": "Conecta un número de WhatsApp para enviar y recibir mensajes con tus clientes.",
       "action": "Configurar WhatsApp"
+    },
+    "title": "Conversaciones",
+    "searchPlaceholder": "Buscar conversaciones",
+    "noSearchResults": "Ninguna conversación coincide con tu búsqueda.",
+    "compose": {
+      "newMessage": "Nuevo mensaje",
+      "title": "Nuevo mensaje de WhatsApp",
+      "searchPlaceholder": "Buscar clientes",
+      "noMatches": "Ningún cliente coincide con tu búsqueda.",
+      "noRecipients": "Aún no hay clientes con teléfono."
     }
   },
   "sendPhoto": {

@@ -77,6 +77,16 @@
       "title": "„WhatsApp“ neprijungtas",
       "description": "Prijunkite „WhatsApp“ numerį, kad galėtumėte susirašinėti su klientais.",
       "action": "Nustatyti „WhatsApp“"
+    },
+    "title": "Pokalbiai",
+    "searchPlaceholder": "Ieškoti pokalbių",
+    "noSearchResults": "Pagal paiešką pokalbių nerasta.",
+    "compose": {
+      "newMessage": "Nauja žinutė",
+      "title": "Nauja „WhatsApp“ žinutė",
+      "searchPlaceholder": "Ieškoti klientų",
+      "noMatches": "Pagal paiešką klientų nerasta.",
+      "noRecipients": "Dar nėra klientų su telefono numeriu."
     }
   },
   "sendPhoto": {

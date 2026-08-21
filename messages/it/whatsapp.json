@@ -77,6 +77,16 @@
       "title": "WhatsApp non è collegato",
       "description": "Collega un numero WhatsApp per scambiare messaggi con i tuoi clienti.",
       "action": "Configura WhatsApp"
+    },
+    "title": "Conversazioni",
+    "searchPlaceholder": "Cerca conversazioni",
+    "noSearchResults": "Nessuna conversazione corrisponde alla ricerca.",
+    "compose": {
+      "newMessage": "Nuovo messaggio",
+      "title": "Nuovo messaggio WhatsApp",
+      "searchPlaceholder": "Cerca clienti",
+      "noMatches": "Nessun cliente corrisponde alla ricerca.",
+      "noRecipients": "Ancora nessun cliente con un numero di telefono."
     }
   },
   "sendPhoto": {

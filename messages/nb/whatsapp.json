@@ -77,6 +77,16 @@
       "title": "WhatsApp er ikke koblet til",
       "description": "Koble til et WhatsApp-nummer for å sende og motta meldinger med kundene dine.",
       "action": "Sett opp WhatsApp"
+    },
+    "title": "Samtaler",
+    "searchPlaceholder": "Søk i samtaler",
+    "noSearchResults": "Ingen samtaler passer søket.",
+    "compose": {
+      "newMessage": "Ny melding",
+      "title": "Ny WhatsApp-melding",
+      "searchPlaceholder": "Søk etter kunder",
+      "noMatches": "Ingen kunder passer søket.",
+      "noRecipients": "Ingen kunder med telefonnummer ennå."
     }
   },
   "sendPhoto": {

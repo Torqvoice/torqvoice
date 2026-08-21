@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -30,8 +31,16 @@ export interface WhatsappThread {
  * because a mechanic typing a paragraph deserves to know it will arrive as a
  * fixed template.
  */
-export function WhatsappConversation({ thread }: { thread: WhatsappThread }) {
+export function WhatsappConversation({
+  thread,
+  onSent,
+}: {
+  thread: WhatsappThread
+  /** Lets the surrounding list reload once a message is on its way. */
+  onSent?: () => void
+}) {
   const t = useTranslations('whatsapp.messages')
+  const router = useRouter()
   const [messages, setMessages] = useState<WhatsappMessageView[]>([])
   const [loading, setLoading] = useState(true)
   const [body, setBody] = useState('')
@@ -114,6 +123,10 @@ export function WhatsappConversation({ thread }: { thread: WhatsappThread }) {
       setBody('')
       setAttachment(null)
       await load()
+      // The thread list is server-rendered, so a first message to someone new
+      // only appears there once the page reloads its data.
+      router.refresh()
+      onSent?.()
       endRef.current?.scrollIntoView({ behavior: 'smooth' })
     })
   }
@@ -131,11 +144,6 @@ export function WhatsappConversation({ thread }: { thread: WhatsappThread }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b px-4 py-3">
-        <p className="font-medium">{thread.name}</p>
-        <p className="text-xs text-muted-foreground">{thread.phone}</p>
-      </div>
-
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         {loading ? (
           <div className="flex justify-center py-8">

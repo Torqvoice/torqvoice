@@ -1,0 +1,25 @@
+{
+  "inbox": {
+    "title": "Görüşmeler",
+    "searchPlaceholder": "Görüşmelerde ara",
+    "noSearchResults": "Aramanızla eşleşen görüşme yok.",
+    "empty": "Henüz görüşme yok.",
+    "selectConversation": "Bir görüşme seçin",
+    "back": "Geri",
+    "newMessage": "Yeni mesaj",
+    "unknownContact": "Bu numara henüz bir müşteriye ait değil. Yanıtlamak için müşteri olarak ekleyin.",
+    "noChannelsTitle": "Kurulu mesajlaşma kanalı yok",
+    "noChannelsHint": "Buradan müşterilerinize yazmak için SMS, WhatsApp veya Telegram bağlayın.",
+    "goToProviders": "Sağlayıcı kur",
+    "chooseChannel": {
+      "title": "Hangi kanaldan gönderilsin?",
+      "description": "Müşterilerinize ulaşmanın birden fazla yolu var."
+    },
+    "deleteConversation": "Görüşmeyi sil",
+    "deleteTitle": "Bu görüşme silinsin mi?",
+    "deleteDescription": "{name} ile görüşmenin sizdeki kopyasını siler. Müşterinin telefonunda mesajlar kalır.",
+    "deleteFailed": "Görüşme silinemedi",
+    "delete": "Sil",
+    "cancel": "İptal"
+  }
+}

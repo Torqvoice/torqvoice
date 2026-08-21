@@ -138,6 +138,44 @@ export async function sendWhatsappToCustomer(input: SendWhatsappToCustomerInput)
   )
 }
 
+/**
+ * Customers reachable on WhatsApp, which means anyone with a phone number.
+ *
+ * Kept separate from the SMS search of the same shape: the two channels only
+ * happen to share a requirement today, and a WhatsApp-specific one is where a
+ * future opt-in flag would live.
+ */
+export async function searchWhatsappRecipients(search?: string, limit = 30) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const term = search?.trim()
+      return db.customer.findMany({
+        where: {
+          organizationId,
+          phone: { not: null },
+          ...(term
+            ? {
+                OR: [
+                  { name: { contains: term, mode: 'insensitive' as const } },
+                  { phone: { contains: term, mode: 'insensitive' as const } },
+                  { company: { contains: term, mode: 'insensitive' as const } },
+                ],
+              }
+            : {}),
+        },
+        select: { id: true, name: true, company: true, phone: true },
+        orderBy: { name: 'asc' },
+        take: limit,
+      })
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
 export async function getWhatsappConversation(customerId: string, limit = 100) {
   return withAuth(
     async ({ organizationId }) => {
@@ -230,6 +268,24 @@ export async function getRecentWhatsappThreads(limit = 30) {
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
+/** Clears our copy of a whole conversation; the customer keeps theirs. */
+export async function deleteWhatsappConversation(customerId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      demoGuard()
+      const { count } = await db.whatsappMessage.deleteMany({
+        where: { organizationId, customerId },
+      })
+      return { deleted: count }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
       ],
     }
   )

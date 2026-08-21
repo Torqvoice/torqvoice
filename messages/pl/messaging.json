@@ -1,0 +1,25 @@
+{
+  "inbox": {
+    "title": "Rozmowy",
+    "searchPlaceholder": "Szukaj rozmów",
+    "noSearchResults": "Żadna rozmowa nie pasuje do wyszukiwania.",
+    "empty": "Brak rozmów.",
+    "selectConversation": "Wybierz rozmowę",
+    "back": "Wstecz",
+    "newMessage": "Nowa wiadomość",
+    "unknownContact": "Ten numer nie należy jeszcze do żadnego klienta. Dodaj go jako klienta, aby odpowiedzieć.",
+    "noChannelsTitle": "Brak skonfigurowanego kanału",
+    "noChannelsHint": "Podłącz SMS, WhatsApp lub Telegram, aby pisać do klientów stąd.",
+    "goToProviders": "Skonfiguruj dostawcę",
+    "chooseChannel": {
+      "title": "Którym kanałem wysłać?",
+      "description": "Masz więcej niż jeden sposób kontaktu z klientami."
+    },
+    "deleteConversation": "Usuń rozmowę",
+    "deleteTitle": "Usunąć tę rozmowę?",
+    "deleteDescription": "Usuwa Twoją kopię rozmowy z {name}. Na telefonie klienta wiadomości zostają.",
+    "deleteFailed": "Nie udało się usunąć rozmowy",
+    "delete": "Usuń",
+    "cancel": "Anuluj"
+  }
+}

@@ -77,6 +77,16 @@
       "title": "O WhatsApp não está conectado",
       "description": "Conecte um número de WhatsApp para trocar mensagens com seus clientes.",
       "action": "Configurar WhatsApp"
+    },
+    "title": "Conversas",
+    "searchPlaceholder": "Buscar conversas",
+    "noSearchResults": "Nenhuma conversa corresponde à sua busca.",
+    "compose": {
+      "newMessage": "Nova mensagem",
+      "title": "Nova mensagem de WhatsApp",
+      "searchPlaceholder": "Buscar clientes",
+      "noMatches": "Nenhum cliente corresponde à sua busca.",
+      "noRecipients": "Ainda não há clientes com telefone."
     }
   },
   "sendPhoto": {

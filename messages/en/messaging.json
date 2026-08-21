@@ -1,0 +1,25 @@
+{
+  "inbox": {
+    "title": "Conversations",
+    "searchPlaceholder": "Search conversations",
+    "noSearchResults": "No conversations match your search.",
+    "empty": "No conversations yet.",
+    "selectConversation": "Pick a conversation",
+    "back": "Back",
+    "newMessage": "New message",
+    "unknownContact": "This number belongs to no customer yet. Add them as a customer to reply.",
+    "noChannelsTitle": "No messaging channel set up",
+    "noChannelsHint": "Connect SMS, WhatsApp or Telegram to write to your customers from here.",
+    "goToProviders": "Set up a provider",
+    "chooseChannel": {
+      "title": "Send on which channel?",
+      "description": "You have more than one way to reach your customers."
+    },
+    "deleteConversation": "Delete conversation",
+    "deleteTitle": "Delete this conversation?",
+    "deleteDescription": "Removes your copy of the conversation with {name}. The messages stay on their phone.",
+    "deleteFailed": "Could not delete the conversation",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  }
+}

@@ -77,6 +77,16 @@
       "title": "WhatsApp is not connected",
       "description": "Connect a WhatsApp number to send and receive messages with your customers.",
       "action": "Set up WhatsApp"
+    },
+    "title": "Conversations",
+    "searchPlaceholder": "Search conversations",
+    "noSearchResults": "No conversations match your search.",
+    "compose": {
+      "newMessage": "New message",
+      "title": "New WhatsApp message",
+      "searchPlaceholder": "Search customers",
+      "noMatches": "No customers match your search.",
+      "noRecipients": "No customers with a phone number yet."
     }
   },
   "sendPhoto": {

@@ -77,6 +77,16 @@
       "title": "WhatsApp nie jest połączony",
       "description": "Podłącz numer WhatsApp, aby wymieniać wiadomości z klientami.",
       "action": "Skonfiguruj WhatsApp"
+    },
+    "title": "Rozmowy",
+    "searchPlaceholder": "Szukaj rozmów",
+    "noSearchResults": "Żadna rozmowa nie pasuje do wyszukiwania.",
+    "compose": {
+      "newMessage": "Nowa wiadomość",
+      "title": "Nowa wiadomość WhatsApp",
+      "searchPlaceholder": "Szukaj klientów",
+      "noMatches": "Żaden klient nie pasuje do wyszukiwania.",
+      "noRecipients": "Brak klientów z numerem telefonu."
     }
   },
   "sendPhoto": {

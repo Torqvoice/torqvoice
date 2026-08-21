@@ -1,0 +1,25 @@
+{
+  "inbox": {
+    "title": "Pokalbiai",
+    "searchPlaceholder": "Ieškoti pokalbių",
+    "noSearchResults": "Pagal paiešką pokalbių nerasta.",
+    "empty": "Pokalbių dar nėra.",
+    "selectConversation": "Pasirinkite pokalbį",
+    "back": "Atgal",
+    "newMessage": "Nauja žinutė",
+    "unknownContact": "Šis numeris dar nepriskirtas klientui. Norėdami atsakyti, pridėkite jį kaip klientą.",
+    "noChannelsTitle": "Nėra sukonfigūruoto kanalo",
+    "noChannelsHint": "Prijunkite SMS, „WhatsApp“ ar „Telegram“, kad rašytumėte klientams iš čia.",
+    "goToProviders": "Nustatyti tiekėją",
+    "chooseChannel": {
+      "title": "Kuriuo kanalu siųsti?",
+      "description": "Klientus galite pasiekti keliais būdais."
+    },
+    "deleteConversation": "Ištrinti pokalbį",
+    "deleteTitle": "Ištrinti šį pokalbį?",
+    "deleteDescription": "Pašalina jūsų pokalbio su {name} kopiją. Kliento telefone žinutės lieka.",
+    "deleteFailed": "Nepavyko ištrinti pokalbio",
+    "delete": "Ištrinti",
+    "cancel": "Atšaukti"
+  }
+}

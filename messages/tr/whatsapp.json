@@ -77,6 +77,16 @@
       "title": "WhatsApp bağlı değil",
       "description": "Müşterilerinizle mesajlaşmak için bir WhatsApp numarası bağlayın.",
       "action": "WhatsApp'ı kur"
+    },
+    "title": "Görüşmeler",
+    "searchPlaceholder": "Görüşmelerde ara",
+    "noSearchResults": "Aramanızla eşleşen görüşme yok.",
+    "compose": {
+      "newMessage": "Yeni mesaj",
+      "title": "Yeni WhatsApp mesajı",
+      "searchPlaceholder": "Müşteri ara",
+      "noMatches": "Aramanızla eşleşen müşteri yok.",
+      "noRecipients": "Henüz telefon numarası olan müşteri yok."
     }
   },
   "sendPhoto": {

@@ -1,0 +1,25 @@
+{
+  "inbox": {
+    "title": "Samtaler",
+    "searchPlaceholder": "Søk i samtaler",
+    "noSearchResults": "Ingen samtaler passer søket.",
+    "empty": "Ingen samtaler ennå.",
+    "selectConversation": "Velg en samtale",
+    "back": "Tilbake",
+    "newMessage": "Ny melding",
+    "unknownContact": "Dette nummeret tilhører ingen kunde ennå. Legg dem til som kunde for å svare.",
+    "noChannelsTitle": "Ingen meldingskanal satt opp",
+    "noChannelsHint": "Koble til SMS, WhatsApp eller Telegram for å skrive til kundene herfra.",
+    "goToProviders": "Sett opp en leverandør",
+    "chooseChannel": {
+      "title": "Hvilken kanal?",
+      "description": "Du har flere måter å nå kundene dine på."
+    },
+    "deleteConversation": "Slett samtale",
+    "deleteTitle": "Slette denne samtalen?",
+    "deleteDescription": "Fjerner din kopi av samtalen med {name}. Meldingene blir liggende på telefonen deres.",
+    "deleteFailed": "Kunne ikke slette samtalen",
+    "delete": "Slett",
+    "cancel": "Avbryt"
+  }
+}
