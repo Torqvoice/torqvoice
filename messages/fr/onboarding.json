@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Configurez votre atelier",
+    "subtitle": "Saisissez le nom de votre atelier pour commencer",
+    "workshopName": "Nom de l'atelier",
+    "workshopNamePlaceholder": "Mon Garage Auto",
+    "submit": "Commencer",
+    "sampleDataLabel": "Charger des données d'exemple",
+    "sampleDataDescription": "Ajoute quelques clients, véhicules et interventions d'exemple pour découvrir l'application. Vous pourrez les supprimer en un clic.",
+    "setupFailed": "Échec de la configuration",
+    "couldNotCreate": "Impossible de créer l'atelier",
+    "unexpectedError": "Une erreur inattendue est survenue"
+  },
+  "sample": {
+    "prefix": "Exemple :",
+    "oilService": "Vidange et remplacement du filtre",
+    "brakeJob": "Remplacement des plaquettes de frein avant",
+    "annualService": "Révision annuelle",
+    "quoteTitle": "Remise en état de la suspension avant",
+    "inspectionNote": "Le pneu avant gauche approche de la limite d'usure",
+    "parts": {
+      "oilFilter": "Filtre à huile",
+      "engineOil": "Huile moteur 5W-30",
+      "brakePads": "Jeu de plaquettes de frein avant",
+      "shockAbsorber": "Amortisseur"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Vidange",
+      "description": "Vidange de l'huile moteur et remplacement du filtre"
+    },
+    "frontBrakePads": {
+      "name": "Plaquettes de frein avant",
+      "description": "Remplacer les plaquettes de frein avant"
+    },
+    "tireSwap": {
+      "name": "Permutation des pneus",
+      "description": "Changement de roues saisonnier avec contrôle du serrage"
+    },
+    "batteryReplacement": {
+      "name": "Remplacement de la batterie",
+      "description": "Remplacer et enregistrer la batterie de démarrage"
+    },
+    "diagnostics": {
+      "name": "Diagnostic",
+      "description": "Lecture des codes défauts et premier diagnostic"
+    },
+    "annualService": {
+      "name": "Révision annuelle",
+      "description": "Révision annuelle complète selon le carnet d'entretien"
+    }
+  },
+  "checklist": {
+    "title": "Premiers pas",
+    "description": "Quatre étapes pour lancer votre atelier",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Ajouter un client",
+        "description": "Créez votre première fiche client"
+      },
+      "vehicle": {
+        "title": "Ajouter un véhicule",
+        "description": "Enregistrez un véhicule pour un client"
+      },
+      "workOrder": {
+        "title": "Créer un ordre de réparation",
+        "description": "Ouvrez votre première intervention"
+      },
+      "invoice": {
+        "title": "Envoyer ou télécharger une facture",
+        "description": "Partagez une facture avec un client ou téléchargez-la en PDF"
+      }
+    },
+    "allDoneTitle": "Tout est prêt",
+    "allDoneDescription": "Toutes les étapes sont terminées et votre atelier est opérationnel.",
+    "dismiss": "Masquer la carte",
+    "dismissAriaLabel": "Masquer cette liste"
+  },
+  "sampleData": {
+    "title": "Données d'exemple",
+    "description": "Votre atelier contient encore les clients, véhicules et interventions d'exemple de la configuration. Leur suppression efface exactement ces enregistrements et rien d'autre.",
+    "footerNote": "Des données d'exemple sont chargées",
+    "remove": "Supprimer les données d'exemple",
+    "removeConfirmTitle": "Supprimer les données d'exemple ?",
+    "removeConfirmDescription": "Cette action supprime les clients, véhicules, ordres de réparation, le devis et l'inspection d'exemple créés lors de la configuration. Vos propres données ne sont pas concernées.",
+    "removed": "Données d'exemple supprimées",
+    "removeFailed": "Impossible de supprimer les données d'exemple"
+  }
+}

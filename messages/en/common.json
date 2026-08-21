@@ -10,7 +10,8 @@
     "back": "Back",
     "confirm": "Confirm",
     "edit": "Edit",
-    "add": "Add"
+    "add": "Add",
+    "gotIt": "Got it"
   },
   "contextMenu": {
     "hint": "Tip: right-click a row for actions",
@@ -75,6 +76,9 @@
     "enterManually": "Enter manually",
     "enterBarcode": "Enter barcode...",
     "scanHint": "Point your camera at a barcode or enter it manually",
-    "iosInstallHint": "Tap Share > Add to Home Screen"
+    "iosInstallHint": "Tap Share > Add to Home Screen",
+    "installDescription": "Add to your home screen for quick access",
+    "enterFullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen"
   }
 }

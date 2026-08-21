@@ -84,10 +84,7 @@ export function UnifiedServiceHeader({
               >
                 {paymentStatusLabels[paymentStatus] || t('unpaid')}
               </Badge>
-              <Badge
-                variant="outline"
-                className={`shrink-0 text-xs ${statusColors[status] || ''}`}
-              >
+              <Badge variant="outline" className={`shrink-0 text-xs ${statusColors[status] || ''}`}>
                 {status}
               </Badge>
               <h1 className="truncate text-lg font-semibold leading-tight">{title}</h1>
@@ -99,10 +96,14 @@ export function UnifiedServiceHeader({
           {activeTab === 'details' && (
             <>
               {hasUnsavedChanges && (
-                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">{t('unsavedChanges')}</span>
+                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                  {t('unsavedChanges')}
+                </span>
               )}
               {showSaved && !hasUnsavedChanges && (
-                <span className="text-xs font-medium text-green-600 dark:text-green-400">{t('saved')}</span>
+                <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                  {t('saved')}
+                </span>
               )}
               <IconActionButton
                 type="submit"

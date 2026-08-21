@@ -1,5 +1,6 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -17,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DocsLink } from '@/components/docs-link'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import {
@@ -221,7 +223,7 @@ export function CustomFieldsManager({
               <div
                 key={field.id}
                 className="flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors cursor-pointer"
-                onClick={() => openEdit(field)}
+                {...interactiveRow(() => openEdit(field))}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
@@ -301,6 +303,7 @@ export function CustomFieldsManager({
             <DialogTitle>
               {editing ? t('customFields.editField') : t('customFields.newField')}
             </DialogTitle>
+            <DocsLink href="/docs/configuration/custom-fields" variant="hint" className="self-start" />
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">

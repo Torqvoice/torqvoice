@@ -1,5 +1,7 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
+import { interactiveRow } from "@/lib/interactive-row";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -121,6 +123,7 @@ export function CustomerDetailClient({
   const searchParams = useSearchParams();
   const [showEditForm, setShowEditForm] = useState(false);
   const [showVehicleForm, setShowVehicleForm] = useState(false);
+  const tableNav = useTableKeyboardNav();
 
   const tabParam = searchParams.get("tab");
   const activeTab =
@@ -240,9 +243,16 @@ export function CustomerDetailClient({
                 customerEmail={customer.email}
               />
             )}
-            <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
-              <Pencil className="mr-1 h-3.5 w-3.5" />
-              {t("editCustomer")}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowEditForm(true)}
+              aria-label={t("editCustomer")}
+              title={t("editCustomer")}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Pencil className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{t("editCustomer")}</span>
             </Button>
           </div>
         </div>
@@ -250,7 +260,8 @@ export function CustomerDetailClient({
 
       {/* Tabs */}
       <div>
-        <div className="flex gap-1 border-b mb-4">
+        {/* Scrolls sideways on phones rather than wrapping the tab strip. */}
+        <div className="mb-4 flex gap-1 overflow-x-auto border-b">
           <button
             type="button"
             onClick={() => setActiveTab("vehicles")}
@@ -314,9 +325,15 @@ export function CustomerDetailClient({
         {activeTab === "vehicles" && (
           <>
             <div className="mb-3 flex justify-end">
-              <Button size="sm" onClick={() => setShowVehicleForm(true)}>
-                <Plus className="mr-1 h-4 w-4" />
-                {tVehicles("addVehicle")}
+              <Button
+                size="sm"
+                onClick={() => setShowVehicleForm(true)}
+                aria-label={tVehicles("addVehicle")}
+                title={tVehicles("addVehicle")}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{tVehicles("addVehicle")}</span>
               </Button>
             </div>
             <VehicleForm
@@ -335,7 +352,38 @@ export function CustomerDetailClient({
                 </CardContent>
               </Card>
             ) : (
-              <div className="rounded-lg border">
+              <>
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 md:hidden">
+                {customer.vehicles.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`)}
+                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">
+                        {v.year} {v.make} {v.model}
+                      </span>
+                      {v.licensePlate && (
+                        <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
+                      )}
+                    </div>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                      <span className="font-mono">
+                        {v.mileage.toLocaleString()} {unitSystem === "metric" ? "km" : "mi"}
+                      </span>
+                      <span>
+                        {t("vehicleTable.services")}: {v._count.serviceRecords}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Table (md and up) */}
+              <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -350,7 +398,7 @@ export function CustomerDetailClient({
                       <TableRow
                         key={v.id}
                         className="cursor-pointer"
-                        onClick={() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`)}
+                        {...interactiveRow(() => router.push(`/vehicles/${v.id}?back=${encodeURIComponent(`/customers/${customer.id}`)}`))}
                       >
                         <TableCell className="font-mono text-sm">
                           {v.licensePlate || "-"}
@@ -367,6 +415,7 @@ export function CustomerDetailClient({
                   </TableBody>
                 </Table>
               </div>
+              </>
             )}
           </>
         )}

@@ -20,7 +20,7 @@ export function ServiceTypeSelector({ serviceType, onServiceTypeChange }: Servic
   const t = useTranslations("settings");
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm text-muted-foreground">
           {t("company.serviceType")}

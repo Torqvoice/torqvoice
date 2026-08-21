@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Richten Sie Ihre Werkstatt ein",
+    "subtitle": "Geben Sie den Namen Ihrer Werkstatt ein, um loszulegen",
+    "workshopName": "Name der Werkstatt",
+    "workshopNamePlaceholder": "Meine Autowerkstatt",
+    "submit": "Loslegen",
+    "sampleDataLabel": "Beispieldaten laden",
+    "sampleDataDescription": "Fügt einige Beispielkunden, Fahrzeuge und Aufträge hinzu, damit Sie sich umsehen können. Sie können sie mit einem Klick wieder entfernen.",
+    "setupFailed": "Einrichtung fehlgeschlagen",
+    "couldNotCreate": "Werkstatt konnte nicht erstellt werden",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+  },
+  "sample": {
+    "prefix": "Beispiel:",
+    "oilService": "Öl- und Filterwechsel",
+    "brakeJob": "Bremsbeläge vorne erneuern",
+    "annualService": "Jahresinspektion",
+    "quoteTitle": "Fahrwerk vorne überholen",
+    "inspectionNote": "Reifen vorne links ist nahe an der Verschleißgrenze",
+    "parts": {
+      "oilFilter": "Ölfilter",
+      "engineOil": "Motoröl 5W-30",
+      "brakePads": "Bremsbelagsatz vorne",
+      "shockAbsorber": "Stoßdämpfer"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Ölwechsel",
+      "description": "Motoröl und Filter wechseln"
+    },
+    "frontBrakePads": {
+      "name": "Bremsbeläge vorne",
+      "description": "Bremsbeläge vorne erneuern"
+    },
+    "tireSwap": {
+      "name": "Radwechsel",
+      "description": "Saisonaler Radwechsel mit Drehmomentkontrolle"
+    },
+    "batteryReplacement": {
+      "name": "Batteriewechsel",
+      "description": "Starterbatterie ersetzen und anlernen"
+    },
+    "diagnostics": {
+      "name": "Diagnose",
+      "description": "Fehlerspeicher auslesen und Erstdiagnose"
+    },
+    "annualService": {
+      "name": "Jahresinspektion",
+      "description": "Komplette Jahresinspektion nach Plan"
+    }
+  },
+  "checklist": {
+    "title": "Erste Schritte",
+    "description": "Vier Schritte, um Ihre Werkstatt zum Laufen zu bringen",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Kunden anlegen",
+        "description": "Legen Sie Ihren ersten Kunden an"
+      },
+      "vehicle": {
+        "title": "Fahrzeug anlegen",
+        "description": "Erfassen Sie ein Fahrzeug für einen Kunden"
+      },
+      "workOrder": {
+        "title": "Auftrag erstellen",
+        "description": "Eröffnen Sie Ihren ersten Auftrag"
+      },
+      "invoice": {
+        "title": "Rechnung senden oder herunterladen",
+        "description": "Teilen Sie eine Rechnung mit einem Kunden oder laden Sie sie als PDF herunter"
+      }
+    },
+    "allDoneTitle": "Alles erledigt",
+    "allDoneDescription": "Alle Schritte sind abgeschlossen und Ihre Werkstatt ist startklar.",
+    "dismiss": "Karte ausblenden",
+    "dismissAriaLabel": "Diese Checkliste ausblenden"
+  },
+  "sampleData": {
+    "title": "Beispieldaten",
+    "description": "Ihre Werkstatt enthält noch die Beispielkunden, Fahrzeuge und Aufträge aus der Einrichtung. Beim Entfernen werden genau diese Datensätze gelöscht und sonst nichts.",
+    "footerNote": "Beispieldaten sind geladen",
+    "remove": "Beispieldaten entfernen",
+    "removeConfirmTitle": "Beispieldaten entfernen?",
+    "removeConfirmDescription": "Damit werden die bei der Einrichtung erstellten Beispielkunden, Fahrzeuge, Aufträge, das Angebot und die Inspektion gelöscht. Ihre eigenen Daten bleiben unberührt.",
+    "removed": "Beispieldaten entfernt",
+    "removeFailed": "Beispieldaten konnten nicht entfernt werden"
+  }
+}

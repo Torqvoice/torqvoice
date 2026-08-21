@@ -10,7 +10,8 @@
     "confirm": "Conferma",
     "saveChanges": "Salva modifiche",
     "edit": "Modifica",
-    "add": "Aggiungi"
+    "add": "Aggiungi",
+    "gotIt": "Ho capito"
   },
   "contextMenu": {
     "hint": "Suggerimento: clic destro su una riga per le azioni",
@@ -75,6 +76,9 @@
     "enterManually": "Inserisci manualmente",
     "enterBarcode": "Inserisci codice a barre…",
     "scanHint": "Punta la fotocamera su un codice a barre oppure inseriscilo manualmente",
-    "iosInstallHint": "Tocca Condividi > Aggiungi a Home"
+    "iosInstallHint": "Tocca Condividi > Aggiungi a Home",
+    "installDescription": "Aggiungila alla schermata Home per un accesso rapido",
+    "enterFullscreen": "Schermo intero",
+    "exitFullscreen": "Esci da schermo intero"
   }
 }

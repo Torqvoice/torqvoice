@@ -53,7 +53,9 @@
     "recentCompleted": "Recent Completed",
     "activeJobs": "Active Jobs",
     "recentObservations": "Recent Observations",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "gettingStarted": "Getting Started",
+    "tireHotel": "Tire Hotel"
   },
   "maintenance": {
     "title": "Predicted Maintenance Due",
@@ -233,5 +235,14 @@
       "expired": "Expired",
       "converted": "Converted"
     }
+  },
+  "tireHotel": {
+    "title": "Tire Hotel",
+    "viewAll": "View tire hotel",
+    "stored": "{count} sets stored",
+    "capacity": "{used} / {capacity} tires",
+    "roomLeft": "Room for {count} more",
+    "needsPrep": "Needs prep",
+    "unbilled": "Unbilled ({count})"
   }
 }

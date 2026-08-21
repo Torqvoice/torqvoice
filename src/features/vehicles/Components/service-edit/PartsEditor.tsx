@@ -85,19 +85,16 @@ function SortablePartRow({
   dragEnabled: boolean
 }) {
   const formatCurrency = useFormatCurrency()
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  })
 
-  const style = dragEnabled ? {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  } : undefined
+  const style = dragEnabled
+    ? {
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }
+    : undefined
 
   const nameMissing =
     !part.name.trim() &&
@@ -112,7 +109,7 @@ function SortablePartRow({
         // container is wide enough to hold every column at a usable size
         'grid grid-cols-[auto_1fr] gap-2 rounded-lg border p-2',
         '@2xl:grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] @2xl:rounded-none @2xl:border-0 @2xl:p-0',
-        isDragging && dragEnabled && 'z-10 opacity-75',
+        isDragging && dragEnabled && 'z-10 opacity-75'
       )}
     >
       <button
@@ -142,7 +139,7 @@ function SortablePartRow({
               aria-invalid={nameMissing}
               className={cn(
                 'min-h-9 w-full resize-none',
-                nameMissing && 'border-destructive focus-visible:ring-destructive',
+                nameMissing && 'border-destructive focus-visible:ring-destructive'
               )}
             />
             <PartNameSuggestions
@@ -270,10 +267,10 @@ export function PartsEditor({
             total: lineTotal(row.quantity, unitPrice),
             inventoryPartId: picked.id,
           }
-        }),
+        })
       )
     },
-    [setPartItems, defaultMarkupPercent, markupAppliesToInventory],
+    [setPartItems, defaultMarkupPercent, markupAppliesToInventory]
   )
   const keysRef = useRef<string[]>([])
 
@@ -287,18 +284,21 @@ export function PartsEditor({
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-    const oldIndex = keysRef.current.indexOf(active.id as string)
-    const newIndex = keysRef.current.indexOf(over.id as string)
-    if (oldIndex === -1 || newIndex === -1) return
-    keysRef.current = arrayMove(keysRef.current, oldIndex, newIndex)
-    setPartItems((prev) => arrayMove(prev, oldIndex, newIndex))
-  }, [setPartItems])
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id) return
+      const oldIndex = keysRef.current.indexOf(active.id as string)
+      const newIndex = keysRef.current.indexOf(over.id as string)
+      if (oldIndex === -1 || newIndex === -1) return
+      keysRef.current = arrayMove(keysRef.current, oldIndex, newIndex)
+      setPartItems((prev) => arrayMove(prev, oldIndex, newIndex))
+    },
+    [setPartItems]
+  )
 
   const addPartAtStart = useCallback(() => {
     const key = `part-${keyCounterRef.current++}`
@@ -312,10 +312,13 @@ export function PartsEditor({
     setPartItems((prev) => [...prev, emptyPart(defaultMarkupPercent)])
   }, [setPartItems, defaultMarkupPercent])
 
-  const deletePart = useCallback((index: number) => {
-    keysRef.current = keysRef.current.filter((_, j) => j !== index)
-    setPartItems((prev) => prev.filter((_, j) => j !== index))
-  }, [setPartItems])
+  const deletePart = useCallback(
+    (index: number) => {
+      keysRef.current = keysRef.current.filter((_, j) => j !== index)
+      setPartItems((prev) => prev.filter((_, j) => j !== index))
+    },
+    [setPartItems]
+  )
 
   /**
    * Apply the default markup % to every eligible row. Eligible means:
@@ -356,18 +359,10 @@ export function PartsEditor({
             />
           )}
           {hasInventory && (
-            <IconActionButton
-              label={t('fromInventory')}
-              icon={Package}
-              onClick={onOpenInventory}
-            />
+            <IconActionButton label={t('fromInventory')} icon={Package} onClick={onOpenInventory} />
           )}
           {onScanBarcode && (
-            <IconActionButton
-              label={t('scanBarcode')}
-              icon={ScanBarcode}
-              onClick={onScanBarcode}
-            />
+            <IconActionButton label={t('scanBarcode')} icon={ScanBarcode} onClick={onScanBarcode} />
           )}
           <IconActionButton label={t('addPart')} icon={Plus} onClick={addPartAtStart} />
         </div>
@@ -387,7 +382,11 @@ export function PartsEditor({
             <span />
           </div>
           {mounted ? (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
               <SortableContext items={keysRef.current} strategy={verticalListSortingStrategy}>
                 {partItems.map((part, i) => (
                   <SortablePartRow
@@ -435,7 +434,8 @@ export function PartsEditor({
             <Plus className="h-4 w-4" />
           </button>
           {partItems.some(
-            (p) => !p.name.trim() && (p.partNumber || Number(p.unitCost) > 0 || Number(p.unitPrice) > 0)
+            (p) =>
+              !p.name.trim() && (p.partNumber || Number(p.unitCost) > 0 || Number(p.unitPrice) > 0)
           ) && <p className="text-xs text-destructive">{t('nameMissingHint')}</p>}
           <div className="flex justify-end pt-1 text-sm">
             <span className="font-medium">

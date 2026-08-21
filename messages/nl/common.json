@@ -10,7 +10,8 @@
     "confirm": "Bevestigen",
     "saveChanges": "Wijzigingen opslaan",
     "edit": "Bewerken",
-    "add": "Toevoegen"
+    "add": "Toevoegen",
+    "gotIt": "Duidelijk"
   },
   "contextMenu": {
     "hint": "Tip: rechtsklik op een rij voor acties",
@@ -75,6 +76,9 @@
     "enterManually": "Handmatig invoeren",
     "enterBarcode": "Barcode invoeren…",
     "scanHint": "Richt uw camera op een barcode of voer hem handmatig in",
-    "iosInstallHint": "Tik op Deel > Zet op beginscherm"
+    "iosInstallHint": "Tik op Deel > Zet op beginscherm",
+    "installDescription": "Zet de app op je beginscherm voor snelle toegang",
+    "enterFullscreen": "Volledig scherm",
+    "exitFullscreen": "Volledig scherm afsluiten"
   }
 }

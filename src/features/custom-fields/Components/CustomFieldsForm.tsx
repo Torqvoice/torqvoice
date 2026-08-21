@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
+import { Card, CardContent } from "@/components/ui/card";
 import { getCustomFieldValues, saveCustomFieldValues, getFieldDefinitions } from "@/features/custom-fields/Actions/customFieldActions";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -111,7 +112,7 @@ export function CustomFieldsForm({
 
   if (loading) {
     return (
-      <Card className="border-0 shadow-sm">
+      <Card>
         <CardContent className="flex items-center justify-center py-6">
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
         </CardContent>
@@ -122,11 +123,10 @@ export function CustomFieldsForm({
   if (fields.length === 0) return null;
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base">Custom Fields</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <AppCard
+      title="Custom Fields"
+      contentClassName="space-y-4"
+    >
         {fields.map((field) => {
           const val = values[field.id] ?? field.value ?? "";
           const hasError = !!errors[field.id];
@@ -209,8 +209,7 @@ export function CustomFieldsForm({
             </div>
           );
         })}
-      </CardContent>
-    </Card>
+      </AppCard>
   );
 }
 

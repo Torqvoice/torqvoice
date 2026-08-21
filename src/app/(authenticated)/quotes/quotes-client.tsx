@@ -1,5 +1,7 @@
 'use client'
 
+import { interactiveRow } from '@/lib/interactive-row';
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useState, useCallback, useTransition, useEffect } from 'react'
@@ -96,6 +98,7 @@ export function QuotesClient({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav()
   const t = useTranslations('quotes')
   const tcm = useTranslations('common.contextMenu')
 
@@ -157,7 +160,8 @@ export function QuotesClient({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      {/* Status filters: a single scrollable row on phones, wrapped above sm. */}
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
           const isActive = statusFilter === tab.key
           const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
@@ -166,6 +170,7 @@ export function QuotesClient({
               key={tab.key}
               variant={isActive ? 'default' : 'outline'}
               size="sm"
+              className="h-9 shrink-0 sm:h-8"
               onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
             >
               {t(tab.titleKey)}
@@ -187,18 +192,75 @@ export function QuotesClient({
               placeholder={t('list.searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9"
+              className="h-9 pl-9"
+              {...tableNav.searchInputProps}
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
         </div>
-        <Button size="sm" onClick={openNewDialog}>
-          <Plus className="mr-1 h-3.5 w-3.5" />
-          {t('list.newQuote')}
+        <Button
+          size="sm"
+          onClick={openNewDialog}
+          aria-label={t('list.newQuote')}
+          title={t('list.newQuote')}
+          className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+        >
+          <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+          <span className="hidden md:inline">{t('list.newQuote')}</span>
         </Button>
       </div>
 
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t('list.noQuotes')}
+          </div>
+        ) : (
+          data.records.map((q) => (
+            <button
+              key={q.id}
+              type="button"
+              onClick={() => router.push(`/quotes/${q.id}`)}
+              className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
+                <span className="shrink-0 font-semibold">
+                  {formatCurrency(q.totalAmount, currencyCode)}
+                </span>
+              </div>
+              {(q.customer || q.vehicle) && (
+                <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                  {q.customer && (
+                    <p className="flex items-center gap-1.5 truncate">
+                      <User className="h-3 w-3 shrink-0" />
+                      {q.customer.name}
+                    </p>
+                  )}
+                  {q.vehicle && (
+                    <p className="flex items-center gap-1.5 truncate">
+                      <Car className="h-3 w-3 shrink-0" />
+                      {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                      {q.vehicle.licensePlate && ` · ${q.vehicle.licensePlate}`}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
+                  {q.status}
+                </Badge>
+                {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <Table className="table-fixed">
           <TableHeader>
@@ -253,7 +315,7 @@ export function QuotesClient({
                 <ContextMenuTrigger asChild>
                 <TableRow
                   className="cursor-pointer"
-                  onClick={() => router.push(`/quotes/${q.id}`)}
+                  {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
                 >
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {q.quoteNumber || '-'}

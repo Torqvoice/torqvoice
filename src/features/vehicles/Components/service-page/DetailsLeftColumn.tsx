@@ -7,12 +7,22 @@ import { ServiceFindingsSection } from '../service-detail/ServiceFindingsSection
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
+import {
+  TireSetBanner,
+  type TireSetBannerData,
+} from '@/features/tire-hotel/Components/TireSetBanner'
+import { StoreTiresButton } from '@/features/tire-hotel/Components/StoreTiresButton'
 import type { InventoryPartOption } from '../service-edit/form-types'
 
 interface DetailsLeftColumnProps {
   formState: ReturnType<typeof useServiceFormState>
   actions: ReturnType<typeof useServiceActions>
   record: ServiceDetail
+  /** Present only when the job came out of the tire hotel. */
+  tireSet?: TireSetBannerData | null
+  tireHotelEnabled?: boolean
+  tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
+  unitSystem?: 'metric' | 'imperial'
   currencyCode: string
   defaultLaborRate: number
   inventoryParts: InventoryPartOption[]
@@ -23,9 +33,21 @@ interface DetailsLeftColumnProps {
   onScanBarcode?: () => void
   aiEnabled?: boolean
   vehicleId: string | null
-  findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
+  findings?: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+  }[]
   onAddFinding?: () => void
-  onEditFinding?: (finding: { id: string; description: string; severity: string; status: string; notes: string | null }) => void
+  onEditFinding?: (finding: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+  }) => void
   openObservationsCount?: number
   onShowExistingObservations?: () => void
 }
@@ -34,6 +56,10 @@ export function DetailsLeftColumn({
   formState,
   actions,
   record,
+  tireSet = null,
+  tireHotelEnabled = false,
+  tireThresholds,
+  unitSystem = 'metric',
   currencyCode,
   defaultLaborRate,
   inventoryParts,
@@ -52,6 +78,35 @@ export function DetailsLeftColumn({
 }: DetailsLeftColumnProps) {
   return (
     <div className="space-y-3">
+      {/* Above the parts, inside the working column: the tires are the first
+          thing this job needs and the last thing the invoice sidebar cares
+          about, so it belongs here rather than spanning both. */}
+      {tireSet ? (
+        <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />
+      ) : (
+        // No set on this job yet. The tires that came off the car are standing
+        // in the corner while the desk writes it up, so the offer to store
+        // them belongs here rather than three screens away.
+        tireHotelEnabled &&
+        record.vehicle && (
+          <div className="flex justify-end">
+            <StoreTiresButton
+              serviceRecordId={record.id}
+              vehicle={{
+                id: record.vehicle.id,
+                make: record.vehicle.make,
+                model: record.vehicle.model,
+                year: record.vehicle.year,
+                licensePlate: record.vehicle.licensePlate ?? null,
+                customerId: record.customer?.id ?? null,
+              }}
+              imperial={unitSystem === 'imperial'}
+              thresholds={tireThresholds}
+            />
+          </div>
+        )
+      )}
+
       <PartsEditor
         partItems={formState.partItems}
         setPartItems={formState.dirtySetPartItems}

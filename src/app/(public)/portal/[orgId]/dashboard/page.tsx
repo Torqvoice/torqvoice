@@ -1,6 +1,6 @@
 import { PortalShell } from '@/features/portal/Components/PortalShell'
 import { getPortalDashboard } from '@/features/portal/Actions/portalActions'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -101,18 +101,20 @@ export default async function PortalDashboardPage({
         {/* Two-column main grid */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* Recent invoices — wider */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-              <CardTitle className="text-base">{t('recentInvoices')}</CardTitle>
+          <AppCard
+            title={t('recentInvoices')}
+            className="lg:col-span-2"
+            contentClassName="pt-4"
+            footer={
               <Link
                 href={`/portal/${orgId}/invoices`}
-                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
               >
                 {t('viewAll')}
                 <ArrowRight className="h-3 w-3" />
               </Link>
-            </CardHeader>
-            <CardContent className="pt-0">
+            }
+          >
               {d.recentInvoices.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">
                   {t('noInvoicesYet')}
@@ -158,22 +160,22 @@ export default async function PortalDashboardPage({
                   ))}
                 </ul>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
 
           {/* Recent quotes — narrower */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-              <CardTitle className="text-base">{t('recentQuotes')}</CardTitle>
+          <AppCard
+            title={t('recentQuotes')}
+            contentClassName="pt-4"
+            footer={
               <Link
                 href={`/portal/${orgId}/quotes`}
-                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
               >
                 {t('viewAll')}
                 <ArrowRight className="h-3 w-3" />
               </Link>
-            </CardHeader>
-            <CardContent className="pt-0">
+            }
+          >
               {d.recentQuotes.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">{t('noQuotesYet')}</p>
               ) : (
@@ -208,20 +210,16 @@ export default async function PortalDashboardPage({
                   ))}
                 </ul>
               )}
-            </CardContent>
-          </Card>
+          </AppCard>
         </div>
 
         {/* Active jobs (only if any) */}
         {d.activeJobs.length > 0 && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Activity className="h-4 w-4 text-primary" />
-                {t('activeJobs')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
+          <AppCard
+            icon={Activity}
+            title={t('activeJobs')}
+            contentClassName="pt-0"
+          >
               <ul className="divide-y">
                 {d.activeJobs.map((job) => (
                   <li
@@ -241,23 +239,23 @@ export default async function PortalDashboardPage({
                   </li>
                 ))}
               </ul>
-            </CardContent>
-          </Card>
+            </AppCard>
         )}
 
         {/* Pending requests (only if any) */}
         {d.pendingRequests.length > 0 && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-3">
-              <CardTitle className="text-base">{t('pendingServiceRequests')}</CardTitle>
+          <AppCard
+            title={t('pendingServiceRequests')}
+            action={
               <Button asChild size="sm" variant="outline">
                 <Link href={`/portal/${orgId}/request-service`}>
                   <Wrench className="mr-1.5 h-3.5 w-3.5" />
                   {t('newRequest')}
                 </Link>
               </Button>
-            </CardHeader>
-            <CardContent className="pt-0">
+            }
+            contentClassName="pt-4"
+          >
               <ul className="divide-y">
                 {d.pendingRequests.map((req) => (
                   <li
@@ -277,8 +275,7 @@ export default async function PortalDashboardPage({
                   </li>
                 ))}
               </ul>
-            </CardContent>
-          </Card>
+          </AppCard>
         )}
       </div>
     </PortalShell>

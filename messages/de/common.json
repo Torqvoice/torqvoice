@@ -10,7 +10,8 @@
     "confirm": "Bestätigen",
     "saveChanges": "Änderungen speichern",
     "edit": "Bearbeiten",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "gotIt": "Verstanden"
   },
   "contextMenu": {
     "hint": "Tipp: Rechtsklick auf eine Zeile für Aktionen",
@@ -75,6 +76,9 @@
     "enterManually": "Manuell eingeben",
     "enterBarcode": "Barcode eingeben…",
     "scanHint": "Richten Sie die Kamera auf einen Barcode oder geben Sie ihn manuell ein",
-    "iosInstallHint": "Auf Teilen > Zum Home-Bildschirm tippen"
+    "iosInstallHint": "Auf Teilen > Zum Home-Bildschirm tippen",
+    "installDescription": "Zum Home-Bildschirm hinzufügen für schnellen Zugriff",
+    "enterFullscreen": "Vollbild",
+    "exitFullscreen": "Vollbild beenden"
   }
 }

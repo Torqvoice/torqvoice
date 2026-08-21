@@ -48,7 +48,54 @@ export default async function PortalQuotesPage({
             <p className="mt-4 text-muted-foreground">{t('noQuotes')}</p>
           </div>
         ) : (
-          <div className="rounded-lg border">
+          <>
+          {/* Card list (phones + small tablets) */}
+          <div className="space-y-2 md:hidden">
+            {quotes.map((q) => (
+              <div key={q.id} className="rounded-lg border bg-card p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">
+                    {q.quoteNumber ? `#${q.quoteNumber}` : q.title}
+                  </span>
+                  <span className="shrink-0 font-semibold">${q.totalAmount.toFixed(2)}</span>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                  <Badge
+                    variant={
+                      q.status === "accepted"
+                        ? "default"
+                        : q.status === "sent"
+                          ? "secondary"
+                          : "outline"
+                    }
+                  >
+                    {q.status}
+                  </Badge>
+                  {q.vehicle && (
+                    <span className="truncate">
+                      {q.vehicle.make} {q.vehicle.model}
+                    </span>
+                  )}
+                  {q.validUntil && (
+                    <span>
+                      {t('validUntil')}: {new Date(q.validUntil).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+                {q.publicToken && (
+                  <Link
+                    href={`/share/quote/${orgId}/${q.publicToken}`}
+                    className="mt-3 inline-block text-sm text-primary hover:underline"
+                  >
+                    {t('view')}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Table (md and up) */}
+          <div className="hidden rounded-lg border md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -103,6 +150,7 @@ export default async function PortalQuotesPage({
               </TableBody>
             </Table>
           </div>
+          </>
         )}
       </div>
     </PortalShell>

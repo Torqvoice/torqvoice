@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Dashboard",
+    "vehicles": "Veicoli",
+    "customers": "Clienti",
+    "work_orders": "Ordini di lavoro",
+    "quotes": "Preventivi",
+    "services": "Interventi",
+    "billing": "Fatturazione",
+    "inventory": "Magazzino",
+    "labor_presets": "Preset di manodopera",
+    "inspections": "Ispezioni",
+    "tire_hotel": "Hotel pneumatici",
+    "reports": "Report",
+    "work_board": "Bacheca lavori",
+    "ai_assistant": "Assistente IA",
+    "settings": "Impostazioni"
+  },
+  "actions": {
+    "create": "Creare",
+    "read": "Vedere",
+    "update": "Modificare",
+    "delete": "Eliminare",
+    "manage": "Gestire",
+    "manage_storage": "Gestire la disposizione del deposito"
+  }
+}

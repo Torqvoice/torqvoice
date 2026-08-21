@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import { DocsLink } from "@/components/docs-link";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -313,6 +314,7 @@ export function ImportCustomersDialog({
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
+          <DocsLink href="/docs/tutorials/migrate-customers" variant="hint" className="self-start" />
         </DialogHeader>
 
         {step === "upload" && (

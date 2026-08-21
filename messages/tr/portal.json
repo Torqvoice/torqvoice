@@ -152,7 +152,13 @@
     "good": "{count} iyi",
     "fair": "{count} orta",
     "poor": "{count} kötü",
-    "view": "Görüntüle"
+    "view": "Görüntüle",
+    "serviceHistoryTitle": "Servis geçmişi",
+    "inspectionsTitle": "Muayeneler",
+    "columnVehicle": "Araç",
+    "columnPlate": "Plaka",
+    "columnServices": "Servisler",
+    "columnInspections": "Muayeneler"
   },
   "requestService": {
     "title": "Servis İste",
@@ -174,6 +180,15 @@
     "yourRequests": "Servis Talepleriniz",
     "failedToLoad": "Veriler yüklenemedi.",
     "staffNotes": "Personel notları: {notes}",
-    "preferred": "Tercih edilen: {date}"
+    "preferred": "Tercih edilen: {date}",
+    "notListedOption": "Aracım listede yok",
+    "newVehicleHint": "Aracınızı anlatın, profilinize ekleyelim.",
+    "fillVehicleDetails": "Lütfen aracın markasını ve modelini girin",
+    "makeLabel": "Marka",
+    "makePlaceholder": "örn. Ford",
+    "modelLabel": "Model",
+    "modelPlaceholder": "örn. Kuga",
+    "yearLabel": "Model yılı",
+    "plateLabel": "Plaka"
   }
 }

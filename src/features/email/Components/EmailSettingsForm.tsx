@@ -8,13 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Loader2, Send, Info } from "lucide-react";
 import { ORG_EMAIL_KEYS } from "../Schema/emailSettingsSchema";
 import {
@@ -239,14 +233,11 @@ export function EmailSettingsForm({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("email.title")}</CardTitle>
-          <CardDescription>
-            {t("email.description")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        title={t("email.title")}
+        description={t("email.description")}
+        contentClassName="space-y-6"
+      >
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="use-custom-email">
@@ -763,8 +754,7 @@ export function EmailSettingsForm({
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </AppCard>
 
       <SaveButton>
         <div className="flex justify-end">

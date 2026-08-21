@@ -1,5 +1,7 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
+import { interactiveRow } from "@/lib/interactive-row";
 import { useCallback, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -88,6 +90,7 @@ export function AuditLogClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const [selectedLog, setSelectedLog] = useState<AuditLogData["logs"][number] | null>(null);
   const { formatDateTime } = useFormatDate();
   const t = useTranslations("audit");
@@ -134,13 +137,14 @@ export function AuditLogClient({
               if (value === search) return;
               navigate({ search: value || undefined });
             }}
-            className="pl-9 pr-9"
+            className="h-9 pl-9 pr-9"
+            {...tableNav.searchInputProps}
           />
           {isPending && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Select value={actionFilter} onValueChange={(v) => navigate({ action: v })}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="h-9 w-[180px]">
               <SelectValue placeholder={t("allActions")} />
             </SelectTrigger>
             <SelectContent>
@@ -153,7 +157,7 @@ export function AuditLogClient({
             </SelectContent>
           </Select>
           <Select value={entityFilter} onValueChange={(v) => navigate({ entity: v })}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="h-9 w-[160px]">
               <SelectValue placeholder={t("allEntities")} />
             </SelectTrigger>
             <SelectContent>
@@ -166,7 +170,7 @@ export function AuditLogClient({
             </SelectContent>
           </Select>
           <Select value={userFilter} onValueChange={(v) => navigate({ userId: v })}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="h-9 w-[160px]">
               <SelectValue placeholder={t("allUsers")} />
             </SelectTrigger>
             <SelectContent>
@@ -181,8 +185,45 @@ export function AuditLogClient({
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-md border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.logs.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("noLogsFound")}
+          </div>
+        ) : (
+          data.logs.map((log) => (
+            <button
+              key={log.id}
+              type="button"
+              onClick={() => setSelectedLog(log)}
+              className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <Badge variant={getActionColor(log.action) as "default" | "secondary" | "destructive" | "outline"}>
+                  {getActionLabel(log.action)}
+                </Badge>
+                <span
+                  className="shrink-0 text-xs text-muted-foreground"
+                  suppressHydrationWarning
+                >
+                  {formatDateTime(log.timestamp)}
+                </span>
+              </div>
+              {log.message && <p className="mt-1.5 text-sm">{log.message}</p>}
+              <p className="mt-1 truncate text-xs text-muted-foreground">
+                {log.user?.name || log.user?.email || t("unknownUser")}
+                {log.entityId && (
+                  <span className="font-mono"> · {log.entityId.substring(0, 8)}</span>
+                )}
+              </p>
+            </button>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <Table>
           <TableHeader>
@@ -205,7 +246,7 @@ export function AuditLogClient({
               data.logs.map((log) => (
                 <ContextMenu key={log.id} modal={false}>
                 <ContextMenuTrigger asChild>
-                <TableRow className="cursor-pointer" onClick={() => setSelectedLog(log)}>
+                <TableRow className="cursor-pointer" {...interactiveRow(() => setSelectedLog(log))}>
                   <TableCell className="text-xs text-muted-foreground whitespace-nowrap" suppressHydrationWarning>
                     {formatDateTime(log.timestamp)}
                   </TableCell>

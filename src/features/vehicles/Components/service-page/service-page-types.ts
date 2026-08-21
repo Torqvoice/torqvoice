@@ -38,7 +38,13 @@ export interface ServicePageClientProps {
   defaultLaborRate: number
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
-  initialVehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null
+  initialVehicle: {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  } | null
   boardTechnicians?: BoardTechnicianOption[]
   orgMembers?: OrgMemberOption[]
   currentUserName: string
@@ -53,14 +59,56 @@ export interface ServicePageClientProps {
   emailEnabled?: boolean
   telegramEnabled?: boolean
   aiEnabled?: boolean
+  /** Gates the "Store tires" action, by plan and by the org's own switch. */
+  tireHotelEnabled?: boolean
+  /** The workshop's tread limits, so a set checked in here grades correctly. */
+  tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultDueDays?: number
   defaultMarkupPercent?: number
   markupAppliesToInventory?: boolean
-  statusReports?: { id: string; title: string | null; message: string | null; status: string; videoUrl: string | null; createdAt: string; publicToken: string; expiresAt: string | null; customerFeedback: string | null; feedbackAt: string | null; sentVia: string | null; sentAt: string | null }[]
+  statusReports?: {
+    id: string
+    title: string | null
+    message: string | null
+    status: string
+    videoUrl: string | null
+    createdAt: string
+    publicToken: string
+    expiresAt: string | null
+    customerFeedback: string | null
+    feedbackAt: string | null
+    sentVia: string | null
+    sentAt: string | null
+  }[]
   initialTab?: string
-  findings?: { id: string; description: string; severity: string; status: string; notes: string | null }[]
-  openObservations?: { id: string; description: string; severity: string; notes: string | null; serviceRecordId: string | null }[]
-  notificationHistory?: { id: string; body: string; status: string; createdAt: string; toNumber: string }[]
+  findings?: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+  }[]
+  openObservations?: {
+    id: string
+    description: string
+    severity: string
+    notes: string | null
+    serviceRecordId: string | null
+  }[]
+  notificationHistory?: {
+    id: string
+    body: string
+    status: string
+    createdAt: string
+    toNumber: string
+  }[]
 }
 
-export type { ServicePartInput, ServiceLaborInput, ServiceDetail, InitialData, InventoryPartOption, LaborPresetOption }
+export type {
+  ServicePartInput,
+  ServiceLaborInput,
+  ServiceDetail,
+  InitialData,
+  InventoryPartOption,
+  LaborPresetOption,
+}

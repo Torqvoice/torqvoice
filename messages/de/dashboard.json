@@ -53,7 +53,9 @@
     "recentCompleted": "Kürzlich abgeschlossen",
     "activeJobs": "Aktive Aufträge",
     "recentObservations": "Aktuelle Beobachtungen",
-    "recentActivity": "Letzte Aktivitäten"
+    "recentActivity": "Letzte Aktivitäten",
+    "gettingStarted": "Erste Schritte",
+    "tireHotel": "Reifenhotel"
   },
   "maintenance": {
     "title": "Voraussichtlich fällige Wartung",
@@ -233,5 +235,14 @@
       "expired": "Abgelaufen",
       "converted": "Umgewandelt"
     }
+  },
+  "tireHotel": {
+    "title": "Reifenhotel",
+    "viewAll": "Reifenhotel ansehen",
+    "stored": "{count} Sätze eingelagert",
+    "capacity": "{used} / {capacity} Reifen",
+    "roomLeft": "Platz für {count} weitere",
+    "needsPrep": "Vorbereitung offen",
+    "unbilled": "Nicht berechnet ({count})"
   }
 }

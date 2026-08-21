@@ -119,6 +119,36 @@ export const SETTING_KEYS = {
   WORKSHOP_LOCALE: 'workshop.locale',
   WORKSHOP_DEFAULT_COUNTRY_CODE: 'workshop.defaultCountryCode',
   FORCE_CUSTOMER_LOCALE: 'workshop.forceCustomerLocale',
+  /// Feature hints the workshop has already been shown, as a JSON array of
+  /// ids. Kept per workshop rather than per person: the hint announces that
+  /// something appeared in this workshop's sidebar, and once somebody here
+  /// has seen it, the workshop has been told.
+  FEATURE_HINTS_SEEN: 'featureHints.seen',
+  /// Hints raised by a setting being switched on and not yet dismissed.
+  /// Separate from the seen list because being eligible for a hint and
+  /// having been shown one are different things: a workshop that has had
+  /// Telegram on for a year is eligible forever and should never be told.
+  FEATURE_HINTS_PENDING: 'featureHints.pending',
+
+  /// Tire hotel is off until a workshop opts in. Everything about the module
+  /// — sidebar entry, routes, cron sweeps — keys off this one flag, so a shop
+  /// that does not store tires never sees it.
+  TIRE_HOTEL_ENABLED: 'tireHotel.enabled',
+  /// Tread depth below which a summer tire is flagged for replacement, in mm.
+  /// Legal minimums differ by country, so the workshop sets its own.
+  TIRE_HOTEL_SUMMER_REPLACE_MM: 'tireHotel.summerReplaceMm',
+  /// Same for winter tires, which lose grip well above the summer limit.
+  TIRE_HOTEL_WINTER_REPLACE_MM: 'tireHotel.winterReplaceMm',
+  /// Default number of tires a newly created shelf holds.
+  TIRE_HOTEL_DEFAULT_CAPACITY: 'tireHotel.defaultCapacity',
+  /// Warn in-app once the warehouse passes this fraction of total capacity.
+  TIRE_HOTEL_CAPACITY_WARN_PERCENT: 'tireHotel.capacityWarnPercent',
+  /// Prefilled storage fee, offered when a set is billed.
+  TIRE_HOTEL_DEFAULT_SEASONAL_PRICE: 'tireHotel.defaultSeasonalPrice',
+  /// What each kind of prep work is charged at, as JSON keyed by treatment
+  /// type. A type with no price here produces no line, which is how a shop
+  /// that folds washing into the storage fee keeps it off the invoice.
+  TIRE_HOTEL_TREATMENT_PRICES: 'tireHotel.treatmentPrices',
   DEFAULT_WARRANTY_MONTHS: 'defaultWarrantyMonths',
   DEFAULT_WARRANTY_MILEAGE: 'defaultWarrantyMileage',
   DEFAULT_WARRANTY_NOTES: 'defaultWarrantyNotes',

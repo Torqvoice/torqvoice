@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import { Responsive, useContainerWidth, type Layout } from "react-grid-layout";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { Responsive, useContainerWidth, type Layout } from 'react-grid-layout'
+import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   CARD_MIN_H,
   CARD_MIN_W,
@@ -12,7 +12,7 @@ import {
   GRID_MARGIN,
   GRID_ROW_HEIGHT,
   type CardLayout,
-} from "../dashboard-grid-config";
+} from '../dashboard-grid-config'
 
 /**
  * The dashboard's 12-column drag/resize grid (react-grid-layout v2).
@@ -28,51 +28,51 @@ export function DashboardGrid({
   onCardsCommit,
   cardNodes,
 }: {
-  cards: Record<string, CardLayout>;
-  visibleIds: string[];
-  editing: boolean;
-  onCardsCommit: (cards: Record<string, CardLayout>) => void;
-  cardNodes: Partial<Record<string, ReactNode>>;
+  cards: Record<string, CardLayout>
+  visibleIds: string[]
+  editing: boolean
+  onCardsCommit: (cards: Record<string, CardLayout>) => void
+  cardNodes: Partial<Record<string, ReactNode>>
 }) {
-  const { width, containerRef, mounted } = useContainerWidth();
-  const [breakpoint, setBreakpoint] = useState("lg");
+  const { width, containerRef, mounted } = useContainerWidth()
+  const [breakpoint, setBreakpoint] = useState('lg')
   // The container width keeps moving briefly after mount (sidebar mount /
   // collapse transition, scrollbar appearance). The grid stays invisible and
   // unanimated until the measured width has been stable for a beat, then
   // fades in at its final layout — `width` in the deps restarts the timer on
   // every change, and once ready it stays ready.
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(false)
   useEffect(() => {
-    if (!mounted || ready) return;
-    const timer = setTimeout(() => setReady(true), 300);
-    return () => clearTimeout(timer);
-  }, [mounted, width, ready]);
-  const interactive = editing && breakpoint === "lg";
+    if (!mounted || ready) return
+    const timer = setTimeout(() => setReady(true), 300)
+    return () => clearTimeout(timer)
+  }, [mounted, width, ready])
+  const interactive = editing && breakpoint === 'lg'
 
   const layout: Layout = visibleIds.map((id) => ({
     i: id,
     ...cards[id],
     minW: CARD_MIN_W,
     minH: CARD_MIN_H,
-  }));
+  }))
 
   const handleLayoutChange = (next: Layout) => {
     // Only user edits on the full grid are persisted; the generated
     // single-column layout on small screens never overwrites saved positions.
-    if (!editing || breakpoint !== "lg") return;
-    const merged = { ...cards };
-    let changed = false;
+    if (!editing || breakpoint !== 'lg') return
+    const merged = { ...cards }
+    let changed = false
     for (const item of next) {
-      const id = item.i;
-      const prev = merged[id];
-      if (!prev) continue;
+      const id = item.i
+      const prev = merged[id]
+      if (!prev) continue
       if (prev.x !== item.x || prev.y !== item.y || prev.w !== item.w || prev.h !== item.h) {
-        merged[id] = { x: item.x, y: item.y, w: item.w, h: item.h };
-        changed = true;
+        merged[id] = { x: item.x, y: item.y, w: item.w, h: item.h }
+        changed = true
       }
     }
-    if (changed) onCardsCommit(merged);
-  };
+    if (changed) onCardsCommit(merged)
+  }
 
   return (
     <div ref={containerRef}>
@@ -87,7 +87,10 @@ export function DashboardGrid({
       )}
       {ready && (
         <Responsive
-          className={cn("dashboard-grid animate-in fade-in duration-200", editing && "dashboard-grid-editing")}
+          className={cn(
+            'dashboard-grid animate-in fade-in duration-200',
+            editing && 'dashboard-grid-editing'
+          )}
           width={width}
           layouts={{ lg: layout }}
           breakpoints={{ lg: 900, xs: 0 }}
@@ -95,8 +98,8 @@ export function DashboardGrid({
           rowHeight={GRID_ROW_HEIGHT}
           margin={GRID_MARGIN}
           containerPadding={[0, 0]}
-          dragConfig={{ enabled: interactive, cancel: ".dashboard-no-drag" }}
-          resizeConfig={{ enabled: interactive, handles: ["se"] }}
+          dragConfig={{ enabled: interactive, cancel: '.dashboard-no-drag' }}
+          resizeConfig={{ enabled: interactive, handles: ['se'] }}
           onBreakpointChange={(bp) => setBreakpoint(bp)}
           onLayoutChange={handleLayoutChange}
         >
@@ -113,5 +116,5 @@ export function DashboardGrid({
         </Responsive>
       )}
     </div>
-  );
+  )
 }

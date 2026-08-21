@@ -64,7 +64,11 @@ export function InvoiceDetailsSection({
           type="button"
           variant="outline"
           size="sm"
-          className={cn('h-7 text-xs', paymentStatus === 'paid' && 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800')}
+          className={cn(
+            'h-7 text-xs',
+            paymentStatus === 'paid' &&
+              'border-green-300 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800'
+          )}
           onClick={onTogglePaid}
           disabled={paymentLoading}
         >
@@ -78,7 +82,9 @@ export function InvoiceDetailsSection({
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="title" className="text-xs">{t('titleLabel')}</Label>
+        <Label htmlFor="title" className="text-xs">
+          {t('titleLabel')}
+        </Label>
         <Input
           id="title"
           name="title"
@@ -96,7 +102,7 @@ export function InvoiceDetailsSection({
         value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
       />
 
-      <div className={showType ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"}>
+      <div className={showType ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2'}>
         {showType && (
           <div className="space-y-1">
             <Label className="text-xs">{t('type')}</Label>
@@ -130,7 +136,9 @@ export function InvoiceDetailsSection({
       </div>
 
       <div className="space-y-1">
-        <Label htmlFor="invoiceNumber" className="text-xs">{t('invoiceNumber')}</Label>
+        <Label htmlFor="invoiceNumber" className="text-xs">
+          {t('invoiceNumber')}
+        </Label>
         <Input
           id="invoiceNumber"
           name="invoiceNumber"
@@ -141,22 +149,32 @@ export function InvoiceDetailsSection({
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
-          <Label htmlFor="invoiceDate" className="text-xs">{t('invoiceDate')}</Label>
+          <Label htmlFor="invoiceDate" className="text-xs">
+            {t('invoiceDate')}
+          </Label>
           <DateInput
             id="invoiceDate"
             name="invoiceDate"
             value={invoiceDate}
-            onChange={(v) => { setInvoiceDate(v); onDirty?.() }}
+            onChange={(v) => {
+              setInvoiceDate(v)
+              onDirty?.()
+            }}
             className="h-9 text-sm"
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="invoiceDueDate" className="text-xs">{t('invoiceDueDate')}</Label>
+          <Label htmlFor="invoiceDueDate" className="text-xs">
+            {t('invoiceDueDate')}
+          </Label>
           <DateInput
             id="invoiceDueDate"
             name="invoiceDueDate"
             value={invoiceDueDate}
-            onChange={(v) => { setInvoiceDueDate(v); onDirty?.() }}
+            onChange={(v) => {
+              setInvoiceDueDate(v)
+              onDirty?.()
+            }}
             className="h-9 text-sm"
           />
         </div>

@@ -17,6 +17,7 @@ export enum PermissionSubject {
   INVENTORY = "inventory",
   LABOR_PRESETS = "labor_presets",
   INSPECTIONS = "inspections",
+  TIRE_HOTEL = "tire_hotel",
   REPORTS = "reports",
   SETTINGS = "settings",
   WORK_BOARD = "work_board",
@@ -133,6 +134,17 @@ export const permissionGroups: PermissionGroup[] = [
       { action: PermissionAction.READ, label: "View" },
       { action: PermissionAction.UPDATE, label: "Edit" },
       { action: PermissionAction.DELETE, label: "Delete" },
+    ],
+  },
+  {
+    name: "Tire Hotel",
+    subject: PermissionSubject.TIRE_HOTEL,
+    permissions: [
+      { action: PermissionAction.CREATE, label: "Create" },
+      { action: PermissionAction.READ, label: "View" },
+      { action: PermissionAction.UPDATE, label: "Edit" },
+      { action: PermissionAction.DELETE, label: "Delete" },
+      { action: PermissionAction.MANAGE, label: "Manage storage layout" },
     ],
   },
   {

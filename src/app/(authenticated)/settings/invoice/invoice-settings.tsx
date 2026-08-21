@@ -1,9 +1,9 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useState, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -241,12 +241,11 @@ export function InvoiceSettings({
 
       {tab === 'general' ? (
         <ReadOnlyWrapper>
-          <Card className="border-0 shadow-sm">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4">
-              <FileText className="h-5 w-5 text-muted-foreground" />
-              <CardTitle className="text-lg">{t('invoice.tabs.general')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
+          <AppCard
+            icon={FileText}
+            title={t('invoice.tabs.general')}
+            contentClassName="space-y-6"
+          >
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold">{t('invoice.sectionInvoices')}</h3>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -438,8 +437,7 @@ export function InvoiceSettings({
                   </Button>
                 </div>
               </SaveButton>
-            </CardContent>
-          </Card>
+            </AppCard>
         </ReadOnlyWrapper>
       ) : tab === 'layout' ? (
         <>

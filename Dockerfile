@@ -71,14 +71,26 @@ RUN rm -rf \
       /app/node_modules/prisma \
       /app/node_modules/@prisma \
       /app/node_modules/.prisma \
-    && npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
+    && npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx sharp
 
 # The npm install above re-resolves the dependency tree and replaces the
 # standalone build's PATCHED next package with a fresh unpatched copy from the
 # registry, which silently breaks all WebSocket routes (live updates, work
 # board sync). Re-apply the next-ws patch so the runtime server can accept
 # WebSocket upgrades. next-ws itself is already in the standalone bundle.
+#
+# sharp is named in that install for the same reason. It is the only native
+# module in the tree, its binary lives in a platform-specific optional
+# dependency (@img/sharp-linuxmusl-x64 on this image), and re-resolving the
+# tree can leave the traced copy without one. Installing it by name makes npm
+# resolve the binary against the platform the image will actually run on.
 RUN npx next-ws patch --yes
+
+# Fail the build here rather than at the first certificate download: a native
+# module that cannot be loaded throws while the route module is being
+# evaluated, which reaches the browser as an empty HTTP 500 with nothing in it
+# to explain itself.
+RUN node -e "require('sharp'); console.log('sharp loads')"
 
 # Copy init script
 COPY --chown=nextjs:nodejs init-db.sh ./init-db.sh

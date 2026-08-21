@@ -1,9 +1,9 @@
 'use client'
 
+import { AppCard } from '@/components/app-card'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ThemePicker } from '@/components/theme-picker'
@@ -102,12 +102,11 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
 
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Palette className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('appearance.title')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <AppCard
+        icon={Palette}
+        title={t('appearance.title')}
+        contentClassName="space-y-4"
+      >
           <p className="text-sm text-muted-foreground">{t('appearance.description')}</p>
 
           <div>
@@ -115,15 +114,13 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
             <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
           </div>
           <ThemePicker />
-        </CardContent>
-      </Card>
+        </AppCard>
 
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="flex flex-row items-center gap-3 pb-4">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
-          <CardTitle className="text-lg">{t('appearance.dateTimeTitle')}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <AppCard
+        icon={Calendar}
+        title={t('appearance.dateTimeTitle')}
+        contentClassName="space-y-6"
+      >
           <p className="text-sm text-muted-foreground">
             {t('appearance.dateTimeDescription')}
           </p>
@@ -196,8 +193,7 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
               {t('appearance.saveSettings')}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </AppCard>
     </div>
   )
 }

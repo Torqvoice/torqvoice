@@ -10,7 +10,8 @@
     "confirm": "Potwierdź",
     "saveChanges": "Zapisz zmiany",
     "edit": "Edytuj",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "gotIt": "Rozumiem"
   },
   "contextMenu": {
     "hint": "Wskazówka: kliknij wiersz prawym przyciskiem, aby zobaczyć akcje",
@@ -75,6 +76,9 @@
     "enterManually": "Wprowadź ręcznie",
     "enterBarcode": "Wprowadź kod kreskowy…",
     "scanHint": "Skieruj aparat na kod kreskowy albo wprowadź go ręcznie",
-    "iosInstallHint": "Dotknij Udostępnij > Do ekranu początkowego"
+    "iosInstallHint": "Dotknij Udostępnij > Do ekranu początkowego",
+    "installDescription": "Dodaj do ekranu głównego, aby mieć szybki dostęp",
+    "enterFullscreen": "Pełny ekran",
+    "exitFullscreen": "Zamknij pełny ekran"
   }
 }

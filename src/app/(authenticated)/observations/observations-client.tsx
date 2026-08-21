@@ -1,5 +1,7 @@
 "use client";
 
+import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
+import { interactiveRow } from "@/lib/interactive-row";
 import { useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -82,6 +84,7 @@ export function ObservationsClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const tableNav = useTableKeyboardNav();
   const { formatDate } = useFormatDate();
   const t = useTranslations("vehicles.observationsPage");
   const tf = useTranslations("vehicles.findings");
@@ -121,13 +124,14 @@ export function ObservationsClient({
               if (value === search) return;
               navigate({ search: value || undefined });
             }}
-            className="pl-9 pr-9"
+            className="h-9 pl-9 pr-9"
+            {...tableNav.searchInputProps}
           />
           {isPending && <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
         </div>
         <div className="flex gap-2">
           <Select value={statusFilter} onValueChange={(v) => navigate({ status: v })}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="h-9 w-full sm:w-[140px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -137,7 +141,7 @@ export function ObservationsClient({
             </SelectContent>
           </Select>
           <Select value={severityFilter} onValueChange={(v) => navigate({ severity: v })}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="h-9 w-full sm:w-[160px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -150,8 +154,53 @@ export function ObservationsClient({
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-md border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.records.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {t("empty")}
+          </div>
+        ) : (
+          data.records.map((obs) => (
+            <button
+              key={obs.id}
+              type="button"
+              onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+              className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+            >
+              <p className="text-sm font-medium">{obs.description}</p>
+              {obs.notes && (
+                <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{obs.notes}</p>
+              )}
+              <p className="mt-1 truncate text-xs text-muted-foreground">
+                {obs.vehicle.licensePlate && (
+                  <span className="font-mono font-medium text-foreground">
+                    {obs.vehicle.licensePlate}{" "}
+                  </span>
+                )}
+                {obs.vehicle.year} {obs.vehicle.make} {obs.vehicle.model}
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <Badge
+                  variant="outline"
+                  className={`text-xs ${severityColors[obs.severity] || ""}`}
+                >
+                  {tf(`severity.${obs.severity}` as "severity.urgent" | "severity.needs_work" | "severity.monitor")}
+                </Badge>
+                <Badge variant="outline" className={`text-xs ${statusColors[obs.status] || ""}`}>
+                  {tf(`status.${obs.status}` as "status.open" | "status.quoted" | "status.resolved")}
+                </Badge>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {formatDate(new Date(obs.createdAt))}
+                </span>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <Table>
           <TableHeader>
@@ -180,7 +229,7 @@ export function ObservationsClient({
                   <ContextMenuTrigger asChild>
                   <TableRow
                     className="cursor-pointer"
-                    onClick={() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`)}
+                    {...interactiveRow(() => router.push(`/vehicles/${obs.vehicle.id}?tab=findings`))}
                   >
                     <TableCell>
                       <Badge variant="outline" className={`text-xs ${severityColors[obs.severity] || ""}`}>

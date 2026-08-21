@@ -3,9 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
-import Link from '@tiptap/extension-link'
 import { Button } from '@/components/ui/button'
 import {
   Bold,
@@ -34,17 +32,20 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
+      // Link and underline come bundled with StarterKit from v3, so they are
+      // configured through it rather than added again. Registering them
+      // twice leaves two extensions answering to the same name, which tiptap
+      // warns about and which makes the toolbar's active state unreliable.
       StarterKit.configure({
         heading: { levels: [2, 3] },
-      }),
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: {
-          rel: 'noopener noreferrer',
-          target: '_blank',
+        link: {
+          openOnClick: false,
+          autolink: true,
+          linkOnPaste: true,
+          HTMLAttributes: {
+            rel: 'noopener noreferrer',
+            target: '_blank',
+          },
         },
       }),
       Placeholder.configure({
@@ -82,14 +83,16 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
       return
     }
-    const normalized = /^https?:\/\//i.test(url) || url.startsWith('mailto:')
-      ? url
-      : `https://${url}`
+    const normalized =
+      /^https?:\/\//i.test(url) || url.startsWith('mailto:') ? url : `https://${url}`
     editor.chain().focus().extendMarkRange('link').setLink({ href: normalized }).run()
   }
 
   return (
-    <div className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y" style={{ minHeight: 180 }}>
+    <div
+      className="overflow-hidden rounded-md border border-input bg-background flex flex-col resize-y"
+      style={{ minHeight: 180 }}
+    >
       <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/30 px-1 py-1 shrink-0">
         <ToolbarButton
           active={editor.isActive('bold')}
@@ -112,11 +115,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
         >
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton
-          active={editor.isActive('link')}
-          onClick={handleSetLink}
-          title="Link"
-        >
+        <ToolbarButton active={editor.isActive('link')} onClick={handleSetLink} title="Link">
           <LinkIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
 

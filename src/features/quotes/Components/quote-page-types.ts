@@ -1,64 +1,98 @@
-import type { QuotePartInput, QuoteLaborInput } from "@/features/quotes/Schema/quoteSchema";
+import type { QuotePartInput, QuoteLaborInput } from '@/features/quotes/Schema/quoteSchema'
 
-export type { QuotePartInput, QuoteLaborInput };
+export type { QuotePartInput, QuoteLaborInput }
 
 export interface QuoteAttachment {
-  id: string;
-  fileName: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  category: string;
-  description: string | null;
-  includeInInvoice: boolean;
+  id: string
+  fileName: string
+  fileUrl: string
+  fileType: string
+  fileSize: number
+  category: string
+  description: string | null
+  includeInInvoice: boolean
 }
 
-export type TabType = "details" | "images" | "documents";
+export type TabType = 'details' | 'images' | 'documents'
 
 export interface QuoteRecord {
-  id: string;
-  quoteNumber: string | null;
-  title: string;
-  description: string | null;
-  status: string;
-  validUntil: Date | null;
-  subtotal: number;
-  taxRate: number;
-  taxAmount: number;
-  taxInclusive: boolean;
-  discountType: string | null;
-  discountValue: number;
-  discountAmount: number;
-  totalAmount: number;
-  notes: string | null;
-  customerMessage: string | null;
-  publicToken: string | null;
-  sharedAt: Date | null;
-  viewCount: number;
-  lastViewedAt: Date | null;
-  convertedToId: string | null;
-  inspectionId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  partItems: { id: string; partNumber: string | null; name: string; quantity: number; unitCost?: number; markupPercent?: number; unitPrice: number; total: number; excluded?: boolean; inventoryPartId?: string | null }[];
-  laborItems: { id: string; description: string; hours: number; rate: number; total: number; pricingType?: string; excluded?: boolean }[];
-  customer: { id: string; name: string; email: string | null; phone: string | null; address: string | null; company: string | null } | null;
-  vehicle: { id: string; make: string; model: string; year: number; vin: string | null; licensePlate: string | null; mileage: number } | null;
+  id: string
+  quoteNumber: string | null
+  title: string
+  description: string | null
+  status: string
+  validUntil: Date | null
+  subtotal: number
+  taxRate: number
+  taxAmount: number
+  taxInclusive: boolean
+  discountType: string | null
+  discountValue: number
+  discountAmount: number
+  totalAmount: number
+  notes: string | null
+  customerMessage: string | null
+  publicToken: string | null
+  sharedAt: Date | null
+  viewCount: number
+  lastViewedAt: Date | null
+  convertedToId: string | null
+  inspectionId: string | null
+  createdAt: Date
+  updatedAt: Date
+  partItems: {
+    id: string
+    partNumber: string | null
+    name: string
+    quantity: number
+    unitCost?: number
+    markupPercent?: number
+    unitPrice: number
+    total: number
+    excluded?: boolean
+    inventoryPartId?: string | null
+  }[]
+  laborItems: {
+    id: string
+    description: string
+    hours: number
+    rate: number
+    total: number
+    pricingType?: string
+    excluded?: boolean
+  }[]
+  customer: {
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+    address: string | null
+    company: string | null
+  } | null
+  vehicle: {
+    id: string
+    make: string
+    model: string
+    year: number
+    vin: string | null
+    licensePlate: string | null
+    mileage: number
+  } | null
 }
 
 export const statusColors: Record<string, string> = {
-  draft: "bg-gray-500/10 text-gray-500 border-gray-500/20",
-  sent: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  accepted: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  rejected: "bg-red-500/10 text-red-500 border-red-500/20",
-  expired: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  converted: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  changes_requested: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-};
+  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+}
 
 export const emptyPart = (): QuotePartInput => ({
-  partNumber: "",
-  name: "",
+  partNumber: '',
+  name: '',
   quantity: 1,
   unitCost: 0,
   markupPercent: 0,
@@ -67,22 +101,22 @@ export const emptyPart = (): QuotePartInput => ({
   excluded: false,
   // Free-text line by default; set when picked from stock.
   inventoryPartId: null,
-});
+})
 
 export const makeEmptyLabor = (defaultRate: number): QuoteLaborInput => ({
-  description: "",
+  description: '',
   hours: 0,
   rate: defaultRate,
   total: 0,
-  pricingType: "hourly",
+  pricingType: 'hourly',
   excluded: false,
-});
+})
 
 export const makeEmptyService = (): QuoteLaborInput => ({
-  description: "",
+  description: '',
   hours: 1,
   rate: 0,
   total: 0,
-  pricingType: "service",
+  pricingType: 'service',
   excluded: false,
-});
+})

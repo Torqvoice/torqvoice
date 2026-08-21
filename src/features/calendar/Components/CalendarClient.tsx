@@ -265,7 +265,7 @@ export default function CalendarClient({
       <div className="grid gap-4 lg:grid-cols-3">
         {/* Calendar grid */}
         <div className="lg:col-span-2">
-          <Card className="border-0 shadow-sm">
+          <Card>
             <CardContent className="p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
@@ -379,7 +379,7 @@ export default function CalendarClient({
 
         {/* Event list sidebar */}
         <div>
-          <Card className="border-0 shadow-sm">
+          <Card>
             <CardContent className="p-4">
               <CalendarEventList
                 events={filteredEvents}

@@ -9,13 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import {
   Select,
   SelectContent,
@@ -156,25 +150,22 @@ export function AiSettingsForm({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                {t("ai.title")}
-              </CardTitle>
-              <a
-                href="https://torqvoice.com/docs/integrations/ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t("ai.readMore")} →
-              </a>
-            </div>
-            <CardDescription>{t("ai.description")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <AppCard
+          icon={Sparkles}
+          title={t("ai.title")}
+          description={t("ai.description")}
+          action={
+            <a
+              href="https://torqvoice.com/docs/integrations/ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("ai.readMore")} →
+            </a>
+          }
+          contentClassName="space-y-6"
+        >
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="enable-ai">{t("ai.enableLabel")}</Label>
@@ -299,8 +290,7 @@ export function AiSettingsForm({
                 </div>
               </>
             )}
-          </CardContent>
-        </Card>
+        </AppCard>
 
         <SaveButton>
           <div className="flex justify-end">

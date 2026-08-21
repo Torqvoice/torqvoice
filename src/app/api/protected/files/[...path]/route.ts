@@ -40,7 +40,18 @@ export async function GET(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const allowedCategories = ['vehicles', 'inventory', 'services', 'logos', 'quotes', 'portal']
+  // Every folder the upload routes write into. A folder missing here serves
+  // 400 for a file that uploaded perfectly well, which reads as a broken
+  // image rather than as a misconfiguration.
+  const allowedCategories = [
+    'vehicles',
+    'inventory',
+    'services',
+    'logos',
+    'quotes',
+    'portal',
+    'tire-hotel',
+  ]
   if (!allowedCategories.includes(category)) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
   }

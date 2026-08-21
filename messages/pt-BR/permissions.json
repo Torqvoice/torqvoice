@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Painel",
+    "vehicles": "Veículos",
+    "customers": "Clientes",
+    "work_orders": "Ordens de serviço",
+    "quotes": "Orçamentos",
+    "services": "Histórico de serviço",
+    "billing": "Faturamento",
+    "inventory": "Estoque",
+    "labor_presets": "Modelos de mão de obra",
+    "inspections": "Inspeções",
+    "tire_hotel": "Hotel de pneus",
+    "reports": "Relatórios",
+    "work_board": "Quadro de trabalho",
+    "ai_assistant": "Assistente de IA",
+    "settings": "Configurações"
+  },
+  "actions": {
+    "create": "Criar",
+    "read": "Ver",
+    "update": "Editar",
+    "delete": "Excluir",
+    "manage": "Gerenciar",
+    "manage_storage": "Gerenciar o layout da armazenagem"
+  }
+}

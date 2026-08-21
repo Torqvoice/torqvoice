@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Atölyenizi kurun",
+    "subtitle": "Başlamak için atölyenizin adını girin",
+    "workshopName": "Atölye adı",
+    "workshopNamePlaceholder": "Benim Oto Servisim",
+    "submit": "Başla",
+    "sampleDataLabel": "Örnek verileri yükle",
+    "sampleDataDescription": "Etrafı keşfedebilmeniz için birkaç örnek müşteri, araç ve iş ekler. Tek tıkla tekrar kaldırabilirsiniz.",
+    "setupFailed": "Kurulum başarısız",
+    "couldNotCreate": "Atölye oluşturulamadı",
+    "unexpectedError": "Beklenmeyen bir hata oluştu"
+  },
+  "sample": {
+    "prefix": "Örnek:",
+    "oilService": "Yağ ve filtre değişimi",
+    "brakeJob": "Ön fren balatalarının değişimi",
+    "annualService": "Yıllık bakım",
+    "quoteTitle": "Ön süspansiyon yenileme",
+    "inspectionNote": "Sol ön lastik aşınma sınırına yakın",
+    "parts": {
+      "oilFilter": "Yağ filtresi",
+      "engineOil": "Motor yağı 5W-30",
+      "brakePads": "Ön fren balata takımı",
+      "shockAbsorber": "Amortisör"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Yağ değişimi",
+      "description": "Motor yağı ve filtre değişimi"
+    },
+    "frontBrakePads": {
+      "name": "Ön fren balataları",
+      "description": "Ön fren balatalarını değiştirme"
+    },
+    "tireSwap": {
+      "name": "Lastik değişimi",
+      "description": "Tork kontrolüyle mevsimlik lastik değişimi"
+    },
+    "batteryReplacement": {
+      "name": "Akü değişimi",
+      "description": "Marş aküsünü değiştirme ve tanıtma"
+    },
+    "diagnostics": {
+      "name": "Arıza tespiti",
+      "description": "Arıza kodlarının okunması ve ilk teşhis"
+    },
+    "annualService": {
+      "name": "Yıllık bakım",
+      "description": "Programa göre eksiksiz yıllık bakım"
+    }
+  },
+  "checklist": {
+    "title": "Başlarken",
+    "description": "Atölyenizi çalışır hale getirmek için dört adım",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Müşteri ekleyin",
+        "description": "İlk müşteri kaydınızı oluşturun"
+      },
+      "vehicle": {
+        "title": "Araç ekleyin",
+        "description": "Bir müşteri için araç kaydedin"
+      },
+      "workOrder": {
+        "title": "İş emri oluşturun",
+        "description": "İlk işinizi açın"
+      },
+      "invoice": {
+        "title": "Fatura gönderin veya indirin",
+        "description": "Bir faturayı müşteriyle paylaşın veya PDF olarak indirin"
+      }
+    },
+    "allDoneTitle": "Her şey hazır",
+    "allDoneDescription": "Tüm adımlar tamamlandı ve atölyeniz çalışıyor.",
+    "dismiss": "Kartı gizle",
+    "dismissAriaLabel": "Bu listeyi gizle"
+  },
+  "sampleData": {
+    "title": "Örnek veriler",
+    "description": "Atölyenizde kurulumdan kalan örnek müşteriler, araçlar ve işler hâlâ duruyor. Kaldırma işlemi yalnızca bu kayıtları siler, başka hiçbir şeyi silmez.",
+    "footerNote": "Örnek veriler yüklü",
+    "remove": "Örnek verileri kaldır",
+    "removeConfirmTitle": "Örnek veriler kaldırılsın mı?",
+    "removeConfirmDescription": "Bu işlem kurulum sırasında oluşturulan örnek müşterileri, araçları, iş emirlerini, teklifi ve muayeneyi siler. Kendi verileriniz etkilenmez.",
+    "removed": "Örnek veriler kaldırıldı",
+    "removeFailed": "Örnek veriler kaldırılamadı"
+  }
+}

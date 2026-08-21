@@ -53,7 +53,12 @@
     "allReminders": "Alle Erinnerungen",
     "auditLog": "Aktivitätsprotokoll",
     "aiAssistant": "KI-Assistent",
-    "observations": "Beobachtungen"
+    "observations": "Beobachtungen",
+    "tireHotel": "Reifenhotel",
+    "allTireSets": "Alle Reifensätze",
+    "tireStorage": "Lagerstruktur",
+    "tireSetDetails": "Reifensatz",
+    "tireForecast": "Nächste Saison"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",
@@ -107,6 +112,7 @@
     "signOut": "Abmelden",
     "more": "Mehr",
     "auditLog": "Aktivitätsprotokoll",
-    "aiAssistant": "KI-Assistent"
+    "aiAssistant": "KI-Assistent",
+    "tireHotel": "Reifenhotel"
   }
 }

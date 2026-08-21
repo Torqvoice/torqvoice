@@ -32,7 +32,12 @@ function hasContent(html: string): boolean {
   return text.length > 0
 }
 
-export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEnabled }: NotesSectionProps) {
+export function NotesSection({
+  initialData,
+  onNotesChange,
+  serviceRecordId,
+  aiEnabled,
+}: NotesSectionProps) {
   const t = useTranslations('service.notes')
   const [noteType, setNoteType] = useState<'public' | 'internal'>('public')
   const [publicNotes, setPublicNotes] = useState(initialData.invoiceNotes || '')
@@ -116,19 +121,13 @@ export function NotesSection({ initialData, onNotesChange, serviceRecordId, aiEn
             <TabsTrigger value="public" className="text-xs">
               {t('public')}
               {publicHasContent && (
-                <span
-                  aria-hidden
-                  className="ml-1.5 h-1.5 w-1.5 rounded-full bg-sky-500"
-                />
+                <span aria-hidden className="ml-1.5 h-1.5 w-1.5 rounded-full bg-sky-500" />
               )}
             </TabsTrigger>
             <TabsTrigger value="internal" className="text-xs">
               {t('internal')}
               {internalHasContent && (
-                <span
-                  aria-hidden
-                  className="ml-1.5 h-1.5 w-1.5 rounded-full bg-orange-500"
-                />
+                <span aria-hidden className="ml-1.5 h-1.5 w-1.5 rounded-full bg-orange-500" />
               )}
             </TabsTrigger>
           </TabsList>

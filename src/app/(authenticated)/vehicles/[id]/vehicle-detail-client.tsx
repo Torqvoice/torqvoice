@@ -1,5 +1,7 @@
 'use client'
 
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -26,6 +28,10 @@ import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { ServiceRecordsTable } from './service-records-table'
 import { NotesTable } from './notes-table'
 import { FindingsTable } from './findings-table'
+import {
+  VehicleTireSets,
+  type VehicleTireSet,
+} from '@/features/tire-hotel/Components/VehicleTireSets'
 import { toast } from 'sonner'
 import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
 import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
@@ -38,7 +44,11 @@ import {
   undismissMaintenance,
 } from '@/features/vehicles/Actions/dismissMaintenance'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
-import { aiSummarizeVehicleHistory, aiGetCommonIssues, aiClearMessage } from '@/features/ai/Actions/aiActions'
+import {
+  aiSummarizeVehicleHistory,
+  aiGetCommonIssues,
+  aiClearMessage,
+} from '@/features/ai/Actions/aiActions'
 import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import {
@@ -225,6 +235,39 @@ const quoteStatusColors: Record<string, string> = {
   converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
 }
 
+/** Pass/fail/other split of an inspection's items, shared by the card and table views. */
+function InspectionProgress({
+  total,
+  inspected,
+  passCount,
+  failCount,
+}: {
+  total: number
+  inspected: number
+  passCount: number
+  failCount: number
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+        {total > 0 && (
+          <>
+            <div className="bg-emerald-500" style={{ width: `${(passCount / total) * 100}%` }} />
+            <div className="bg-red-500" style={{ width: `${(failCount / total) * 100}%` }} />
+            <div
+              className="bg-amber-500"
+              style={{ width: `${((inspected - passCount - failCount) / total) * 100}%` }}
+            />
+          </>
+        )}
+      </div>
+      <span className="text-xs text-muted-foreground">
+        {inspected}/{total}
+      </span>
+    </div>
+  )
+}
+
 export function VehicleDetailClient({
   vehicle,
   customers,
@@ -240,12 +283,15 @@ export function VehicleDetailClient({
   quotes = [],
   aiEnabled = false,
   paginatedFindings,
+  tireSets = [],
 }: {
   vehicle: VehicleDetail
   customers: CustomerOption[]
   paginatedServices: PaginatedServices
   paginatedNotes: PaginatedNotes
   paginatedFindings: PaginatedFindings
+  /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
+  tireSets?: VehicleTireSet[]
   serviceSearch: string
   serviceRecordType: string
   currencyCode?: string
@@ -295,7 +341,8 @@ export function VehicleDetailClient({
   // Where to return after leaving this page (e.g. arrived from a customer
   // page). Restricted to internal paths; tab changes preserve the param.
   const rawBack = searchParams.get('back')
-  const backHref = rawBack && rawBack.startsWith('/') && !rawBack.startsWith('//') ? rawBack : '/vehicles'
+  const backHref =
+    rawBack && rawBack.startsWith('/') && !rawBack.startsWith('//') ? rawBack : '/vehicles'
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -311,6 +358,8 @@ export function VehicleDetailClient({
     [searchParams, router, vehicle.id]
   )
   const modal = useGlassModal()
+  const quotesNav = useTableKeyboardNav()
+  const inspectionsNav = useTableKeyboardNav()
   const [showEditForm, setShowEditForm] = useState(false)
   const [showNoteForm, setShowNoteForm] = useState(false)
   const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
@@ -319,7 +368,9 @@ export function VehicleDetailClient({
     VehicleDetail['reminders'][number] | undefined
   >()
   const [showFindingForm, setShowFindingForm] = useState(false)
-  const [editingFinding, setEditingFinding] = useState<PaginatedFindings['records'][number] | undefined>()
+  const [editingFinding, setEditingFinding] = useState<
+    PaginatedFindings['records'][number] | undefined
+  >()
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
   const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
@@ -333,7 +384,9 @@ export function VehicleDetailClient({
   const [activeAiPanel, setActiveAiPanel] = useState<'summary' | 'issues' | null>(null)
 
   const storedSummary = vehicle.aiMessages.find((m) => m.type === AI_MESSAGE_TYPES.SUMMARY)
-  const storedCommonIssues = vehicle.aiMessages.find((m) => m.type === AI_MESSAGE_TYPES.COMMON_ISSUES)
+  const storedCommonIssues = vehicle.aiMessages.find(
+    (m) => m.type === AI_MESSAGE_TYPES.COMMON_ISSUES
+  )
 
   const handleDismissMaintenance = () => {
     startDismissTransition(async () => {
@@ -367,6 +420,14 @@ export function VehicleDetailClient({
     if (reminderFilter === 'completed') return r.isCompleted
     return true
   })
+
+  const inspectionRows = (inspections ?? []).map((insp) => ({
+    insp,
+    total: insp.items.length,
+    inspected: insp.items.filter((i) => i.condition !== 'not_inspected').length,
+    passCount: insp.items.filter((i) => i.condition === 'pass').length,
+    failCount: insp.items.filter((i) => i.condition === 'fail').length,
+  }))
 
   const totalServiceCost = vehicle.serviceRecords.reduce(
     (sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost),
@@ -516,8 +577,8 @@ export function VehicleDetailClient({
     <div className="space-y-4">
       {/* Archived banner */}
       {vehicle.isArchived && (
-        <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
             <Archive className="h-4 w-4 text-amber-600" />
             <span className="font-medium text-amber-600">{t('vehicleArchived')}</span>
             {vehicle.archiveReason && (
@@ -543,9 +604,16 @@ export function VehicleDetailClient({
           </Link>
           <div className="flex items-center gap-2">
             {!vehicle.isArchived && (
-              <Button variant="outline" size="sm" onClick={() => setShowEditForm(true)}>
-                <Pencil className="mr-1 h-3.5 w-3.5" />
-                {t('editVehicle')}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowEditForm(true)}
+                aria-label={t('editVehicle')}
+                title={t('editVehicle')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Pencil className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('editVehicle')}</span>
               </Button>
             )}
             <DropdownMenu>
@@ -593,11 +661,11 @@ export function VehicleDetailClient({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
               <h1 className="text-lg font-bold leading-tight">
                 {vehicle.year} {vehicle.make} {vehicle.model}
               </h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                 {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
                 {vehicle.vin && (
                   <>
@@ -671,7 +739,11 @@ export function VehicleDetailClient({
                     <div className="flex cursor-help items-center gap-1.5">
                       <TrendingUp className="h-3.5 w-3.5" />
                       <span className="text-xs">
-                        {isMarine ? t('predictedHours') : unitSystem === 'metric' ? t('predictedKm') : t('predictedMileage')}
+                        {isMarine
+                          ? t('predictedHours')
+                          : unitSystem === 'metric'
+                            ? t('predictedKm')
+                            : t('predictedMileage')}
                       </span>
                       <span className="font-semibold text-foreground">
                         ~{predictionData.predictedMileage.toLocaleString()}
@@ -757,6 +829,7 @@ export function VehicleDetailClient({
               )}
             </div>
           )}
+          <VehicleTireSets sets={tireSets} />
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Wrench className="h-3.5 w-3.5" />
             <span className="font-semibold text-foreground">{vehicle._count.serviceRecords}</span>
@@ -898,7 +971,15 @@ export function VehicleDetailClient({
                                 <span className="font-medium">{w.title}</span>
                                 {(w.date || w.cost > 0) && (
                                   <span className="text-xs text-muted-foreground ml-2">
-                                    {[w.date, w.cost > 0 && new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(w.cost)].filter(Boolean).join(' · ')}
+                                    {[
+                                      w.date,
+                                      w.cost > 0 &&
+                                        new Intl.NumberFormat('en-US', {
+                                          minimumFractionDigits: 0,
+                                        }).format(w.cost),
+                                    ]
+                                      .filter(Boolean)
+                                      .join(' · ')}
                                   </span>
                                 )}
                               </div>
@@ -918,7 +999,10 @@ export function VehicleDetailClient({
                               <div key={i}>
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-medium">{m.item}</span>
-                                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${urgencyColor[m.urgency] || urgencyColor.medium}`}>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-[10px] px-1.5 py-0 ${urgencyColor[m.urgency] || urgencyColor.medium}`}
+                                  >
                                     {m.urgency}
                                   </Badge>
                                 </div>
@@ -939,7 +1023,9 @@ export function VehicleDetailClient({
                             {summary.recurringIssues.map((issue, i) => (
                               <div key={i} className="text-sm">
                                 <span className="font-medium">{issue.title}</span>
-                                <p className="text-xs text-muted-foreground mt-0.5">{issue.description}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  {issue.description}
+                                </p>
                               </div>
                             ))}
                           </div>
@@ -962,10 +1048,14 @@ export function VehicleDetailClient({
           <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
-              <h3 className="text-sm font-semibold">{t('commonIssuesTitle', { make: vehicle.make, model: vehicle.model })}</h3>
+              <h3 className="text-sm font-semibold">
+                {t('commonIssuesTitle', { make: vehicle.make, model: vehicle.model })}
+              </h3>
               {storedCommonIssues && (
                 <span className="text-[11px] text-muted-foreground">
-                  {t('aiSummaryUpdated', { date: formatDate(new Date(storedCommonIssues.updatedAt)) })}
+                  {t('aiSummaryUpdated', {
+                    date: formatDate(new Date(storedCommonIssues.updatedAt)),
+                  })}
                 </span>
               )}
             </div>
@@ -1003,7 +1093,13 @@ export function VehicleDetailClient({
               </div>
             ) : storedCommonIssues ? (
               (() => {
-                let issues: { title: string; description: string; cost: string; risk: string; severity?: number }[] = []
+                let issues: {
+                  title: string
+                  description: string
+                  cost: string
+                  risk: string
+                  severity?: number
+                }[] = []
                 try {
                   const raw = storedCommonIssues.content.replace(/^```json?\n?|\n?```$/g, '').trim()
                   issues = JSON.parse(raw)
@@ -1034,7 +1130,10 @@ export function VehicleDetailClient({
                   const sev = Math.max(1, Math.min(5, issue.severity ?? 3))
                   return (
                     <div key={i} className="flex gap-3 px-4 py-3">
-                      <div className="flex flex-col items-center gap-0.5 pt-1 cursor-help" title={severityLabel(sev)}>
+                      <div
+                        className="flex flex-col items-center gap-0.5 pt-1 cursor-help"
+                        title={severityLabel(sev)}
+                      >
                         {Array.from({ length: 5 }).map((_, j) => (
                           <div
                             key={j}
@@ -1045,12 +1144,17 @@ export function VehicleDetailClient({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-semibold">{issue.title}</span>
-                          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[issue.risk] || riskColor.other}`}>
+                          <Badge
+                            variant="outline"
+                            className={`text-[10px] px-1.5 py-0 ${riskColor[issue.risk] || riskColor.other}`}
+                          >
                             {issue.risk}
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground mt-0.5">{issue.description}</p>
-                        <span className="text-xs font-medium text-foreground/70 mt-1 inline-block">{issue.cost}</span>
+                        <span className="text-xs font-medium text-foreground/70 mt-1 inline-block">
+                          {issue.cost}
+                        </span>
                       </div>
                     </div>
                   )
@@ -1147,9 +1251,15 @@ export function VehicleDetailClient({
         {/* Quotes Tab */}
         <TabsContent value="quotes" className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" onClick={() => setShowNewQuoteDialog(true)}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {tq('newQuote')}
+            <Button
+              size="sm"
+              onClick={() => setShowNewQuoteDialog(true)}
+              aria-label={tq('newQuote')}
+              title={tq('newQuote')}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{tq('newQuote')}</span>
             </Button>
           </div>
           <NewQuoteDialog
@@ -1162,11 +1272,17 @@ export function VehicleDetailClient({
               year: vehicle.year,
               licensePlate: vehicle.licensePlate,
               customerId: vehicle.customerId,
-              customer: vehicle.customer ? { id: vehicle.customer.id, name: vehicle.customer.name } : null,
+              customer: vehicle.customer
+                ? { id: vehicle.customer.id, name: vehicle.customer.name }
+                : null,
             }}
             defaultCustomer={
               vehicle.customer
-                ? { id: vehicle.customer.id, name: vehicle.customer.name, company: vehicle.customer.company }
+                ? {
+                    id: vehicle.customer.id,
+                    name: vehicle.customer.name,
+                    company: vehicle.customer.company,
+                  }
                 : null
             }
           />
@@ -1179,56 +1295,94 @@ export function VehicleDetailClient({
               </CardContent>
             </Card>
           ) : (
-            <div className="rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-25">{tq('columnNumber')}</TableHead>
-                    <TableHead>{tq('columnTitle')}</TableHead>
-                    <TableHead className="w-27.5">{tq('columnStatus')}</TableHead>
-                    <TableHead className="w-24">{tq('columnDate')}</TableHead>
-                    <TableHead className="w-22.5 text-right">{tq('columnTotal')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {quotes.map((q) => (
-                    <TableRow
-                      key={q.id}
-                      className="cursor-pointer"
-                      onClick={() => router.push(`/quotes/${q.id}`)}
-                    >
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {q.quoteNumber || '-'}
-                      </TableCell>
-                      <TableCell className="font-medium">{q.title}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={`text-xs ${quoteStatusColors[q.status] || ''}`}
-                        >
-                          {q.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {formatDate(new Date(q.createdAt))}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">
+            <>
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 md:hidden">
+                {quotes.map((q) => (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => router.push(`/quotes/${q.id}`)}
+                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
+                      <span className="shrink-0 font-semibold">
                         {formatCurrency(q.totalAmount, currencyCode)}
-                      </TableCell>
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${quoteStatusColors[q.status] || ''}`}
+                      >
+                        {q.status}
+                      </Badge>
+                      {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                      <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Table (md and up) */}
+              <div className="hidden rounded-lg border md:block" {...quotesNav.containerProps}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-25">{tq('columnNumber')}</TableHead>
+                      <TableHead>{tq('columnTitle')}</TableHead>
+                      <TableHead className="w-27.5">{tq('columnStatus')}</TableHead>
+                      <TableHead className="w-24">{tq('columnDate')}</TableHead>
+                      <TableHead className="w-22.5 text-right">{tq('columnTotal')}</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {quotes.map((q) => (
+                      <TableRow
+                        key={q.id}
+                        className="cursor-pointer"
+                        {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {q.quoteNumber || '-'}
+                        </TableCell>
+                        <TableCell className="font-medium">{q.title}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${quoteStatusColors[q.status] || ''}`}
+                          >
+                            {q.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {formatDate(new Date(q.createdAt))}
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {formatCurrency(q.totalAmount, currencyCode)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
           )}
         </TabsContent>
 
         {/* Inspections Tab */}
         <TabsContent value="inspections" className="space-y-4">
           <div className="flex justify-end">
-            <Button size="sm" onClick={() => setShowNewInspection(true)}>
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {ti('newInspection')}
+            <Button
+              size="sm"
+              onClick={() => setShowNewInspection(true)}
+              aria-label={ti('newInspection')}
+              title={ti('newInspection')}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{ti('newInspection')}</span>
             </Button>
           </div>
 
@@ -1240,57 +1394,68 @@ export function VehicleDetailClient({
               </CardContent>
             </Card>
           ) : (
-            <div className="rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{ti('template')}</TableHead>
-                    <TableHead className="w-32">{ti('progress')}</TableHead>
-                    <TableHead className="w-28">{ti('status')}</TableHead>
-                    <TableHead className="w-24">{ti('date')}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {inspections.map((insp) => {
-                    const total = insp.items.length
-                    const inspected = insp.items.filter(
-                      (i) => i.condition !== 'not_inspected'
-                    ).length
-                    const passCount = insp.items.filter((i) => i.condition === 'pass').length
-                    const failCount = insp.items.filter((i) => i.condition === 'fail').length
-                    return (
+            <>
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 md:hidden">
+                {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
+                  <button
+                    key={insp.id}
+                    type="button"
+                    onClick={() => router.push(`/inspections/${insp.id}`)}
+                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">
+                        {insp.template.name}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={`shrink-0 text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                      >
+                        {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                      </Badge>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <InspectionProgress
+                        total={total}
+                        inspected={inspected}
+                        passCount={passCount}
+                        failCount={failCount}
+                      />
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {formatDate(new Date(insp.createdAt))}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Table (md and up) */}
+              <div className="hidden rounded-lg border md:block" {...inspectionsNav.containerProps}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{ti('template')}</TableHead>
+                      <TableHead className="w-32">{ti('progress')}</TableHead>
+                      <TableHead className="w-28">{ti('status')}</TableHead>
+                      <TableHead className="w-24">{ti('date')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
                       <TableRow
                         key={insp.id}
                         className="cursor-pointer"
-                        onClick={() => router.push(`/inspections/${insp.id}`)}
+                        {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
                       >
                         <TableCell className="font-medium">{insp.template.name}</TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-1.5">
-                            <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                              {total > 0 && (
-                                <>
-                                  <div
-                                    className="bg-emerald-500"
-                                    style={{ width: `${(passCount / total) * 100}%` }}
-                                  />
-                                  <div
-                                    className="bg-red-500"
-                                    style={{ width: `${(failCount / total) * 100}%` }}
-                                  />
-                                  <div
-                                    className="bg-amber-500"
-                                    style={{
-                                      width: `${((inspected - passCount - failCount) / total) * 100}%`,
-                                    }}
-                                  />
-                                </>
-                              )}
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              {inspected}/{total}
-                            </span>
-                          </div>
+                          <InspectionProgress
+                            total={total}
+                            inspected={inspected}
+                            passCount={passCount}
+                            failCount={failCount}
+                          />
                         </TableCell>
                         <TableCell>
                           <Badge
@@ -1304,11 +1469,11 @@ export function VehicleDetailClient({
                           {formatDate(new Date(insp.createdAt))}
                         </TableCell>
                       </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
           )}
         </TabsContent>
 
@@ -1378,9 +1543,12 @@ export function VehicleDetailClient({
                 setEditingReminder(undefined)
                 setShowReminderForm(true)
               }}
+              aria-label={tr('addReminder')}
+              title={tr('addReminder')}
+              className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
             >
-              <Plus className="mr-1 h-3.5 w-3.5" />
-              {tr('addReminder')}
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{tr('addReminder')}</span>
             </Button>
           </div>
 
@@ -1404,7 +1572,7 @@ export function VehicleDetailClient({
                 return (
                   <Card
                     key={r.id}
-                    className={`border-0 shadow-sm ${
+                    className={`${
                       urgency === 'overdue'
                         ? 'ring-1 ring-red-500/30'
                         : urgency === 'due-soon'
@@ -1412,20 +1580,21 @@ export function VehicleDetailClient({
                           : ''
                     }`}
                   >
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div className="flex items-center gap-3">
+                    <CardContent className="flex items-start justify-between gap-2 p-4">
+                      <div className="flex min-w-0 flex-1 items-start gap-3">
                         <button
                           onClick={() => handleToggleReminder(r.id)}
-                          className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
+                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                             r.isCompleted
                               ? 'border-primary bg-primary/10'
                               : 'border-primary/50 hover:bg-primary/10'
                           }`}
+                          aria-label={r.title}
                         >
                           {r.isCompleted && <CheckCircle2 className="h-5 w-5 text-primary" />}
                         </button>
-                        <div>
-                          <div className="flex items-center gap-2">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
                             <p
                               className={`font-medium ${r.isCompleted ? 'line-through text-muted-foreground' : ''}`}
                             >
@@ -1456,8 +1625,13 @@ export function VehicleDetailClient({
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={t('openMenu')}>
-                            <MoreVertical className="h-3.5 w-3.5" />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9 shrink-0 md:h-7 md:w-7"
+                            aria-label={t('openMenu')}
+                          >
+                            <MoreVertical className="h-4 w-4 md:h-3.5 md:w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -1581,7 +1755,6 @@ export function VehicleDetailClient({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
 
       {/* Image lightbox */}
       {showImage && vehicle.imageUrl && (

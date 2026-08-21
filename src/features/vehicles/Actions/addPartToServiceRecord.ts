@@ -1,30 +1,40 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { revalidatePath } from "next/cache";
-import { onInventoryChanged } from "@/features/inventory/Lib/onInventoryChanged";
-import { calculateTotals } from "@/lib/tax";
-import { reconcileInventoryForParts } from "@/features/inventory/Lib/reconcileStock";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { revalidatePath } from 'next/cache'
+import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
+import { calculateTotals } from '@/lib/tax'
+import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 
 export async function addPartToServiceRecord(input: {
-  serviceRecordId: string;
-  partNumber?: string;
-  name: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-  unitCost: number;
-  inventoryPartId?: string;
+  serviceRecordId: string
+  partNumber?: string
+  name: string
+  quantity: number
+  unitPrice: number
+  total: number
+  unitCost: number
+  inventoryPartId?: string
 }) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const record = await db.serviceRecord.findFirst({
         where: { id: input.serviceRecordId, organizationId },
-        select: { id: true, vehicleId: true, subtotal: true, taxRate: true, taxInclusive: true, discountType: true, discountValue: true, title: true, invoiceNumber: true },
-      });
-      if (!record) throw new Error("Service record not found");
+        select: {
+          id: true,
+          vehicleId: true,
+          subtotal: true,
+          taxRate: true,
+          taxInclusive: true,
+          discountType: true,
+          discountValue: true,
+          title: true,
+          invoiceNumber: true,
+        },
+      })
+      if (!record) throw new Error('Service record not found')
 
       // Create the part, recalculate totals and deduct inventory stock in one
       // transaction so the line and its stock movement commit together.
@@ -40,7 +50,7 @@ export async function addPartToServiceRecord(input: {
             inventoryPartId: input.inventoryPartId || null,
             serviceRecordId: record.id,
           },
-        });
+        })
 
         // Recalculate totals
         const [partsAgg, laborAgg] = await Promise.all([
@@ -52,26 +62,26 @@ export async function addPartToServiceRecord(input: {
             where: { serviceRecordId: record.id },
             _sum: { total: true },
           }),
-        ]);
+        ])
 
-        const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0);
+        const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
         const discountAmount =
-          record.discountType === "percentage"
+          record.discountType === 'percentage'
             ? subtotal * ((record.discountValue ?? 0) / 100)
-            : record.discountType === "fixed"
+            : record.discountType === 'fixed'
               ? Math.min(record.discountValue ?? 0, subtotal)
-              : 0;
+              : 0
         const { taxAmount, totalAmount } = calculateTotals({
           subtotal,
           discountAmount,
           taxRate: record.taxRate,
           taxInclusive: record.taxInclusive,
-        });
+        })
 
         await tx.serviceRecord.update({
           where: { id: record.id },
           data: { subtotal, taxAmount, totalAmount },
-        });
+        })
 
         // Deduct inventory stock for the newly added line (delta from empty).
         await reconcileInventoryForParts(
@@ -80,29 +90,29 @@ export async function addPartToServiceRecord(input: {
           [],
           [{ inventoryPartId: input.inventoryPartId, quantity: input.quantity }],
           {
-            reason: "service_record",
+            reason: 'service_record',
             userId,
             serviceRecordId: record.id,
             serviceRecordLabel: record.invoiceNumber || record.title,
-          },
-        );
+          }
+        )
 
-        return created;
-      });
+        return created
+      })
 
       revalidatePath(
         record.vehicleId
           ? `/vehicles/${record.vehicleId}/service/${record.id}`
           : `/sales/${record.id}`
-      );
-      if (input.inventoryPartId) await onInventoryChanged(organizationId);
+      )
+      if (input.inventoryPartId) await onInventoryChanged(organizationId)
 
-      return part;
+      return part
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
       ],
     }
-  );
+  )
 }

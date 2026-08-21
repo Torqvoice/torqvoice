@@ -366,6 +366,7 @@
     "vehicle": "Vehicle",
     "template": "Template",
     "progress": "Progress",
+    "progressTooltip": "{graded} of {total} checks graded",
     "status": "Status",
     "date": "Date",
     "statusInProgress": "In Progress",

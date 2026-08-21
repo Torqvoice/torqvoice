@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Sukurkite savo dirbtuves",
+    "subtitle": "Įveskite dirbtuvių pavadinimą, kad pradėtumėte",
+    "workshopName": "Dirbtuvių pavadinimas",
+    "workshopNamePlaceholder": "Mano autoservisas",
+    "submit": "Pradėti",
+    "sampleDataLabel": "Įkelti pavyzdinius duomenis",
+    "sampleDataDescription": "Prideda kelis pavyzdinius klientus, automobilius ir darbus, kad galėtumėte apsižvalgyti. Juos galėsite pašalinti vienu paspaudimu.",
+    "setupFailed": "Nustatymas nepavyko",
+    "couldNotCreate": "Nepavyko sukurti dirbtuvių",
+    "unexpectedError": "Įvyko netikėta klaida"
+  },
+  "sample": {
+    "prefix": "Pavyzdys:",
+    "oilService": "Alyvos ir filtro keitimas",
+    "brakeJob": "Priekinių stabdžių kaladėlių keitimas",
+    "annualService": "Metinė techninė priežiūra",
+    "quoteTitle": "Priekinės pakabos atnaujinimas",
+    "inspectionNote": "Kairė priekinė padanga arti nusidėvėjimo ribos",
+    "parts": {
+      "oilFilter": "Alyvos filtras",
+      "engineOil": "Variklio alyva 5W-30",
+      "brakePads": "Priekinių stabdžių kaladėlių komplektas",
+      "shockAbsorber": "Amortizatorius"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Alyvos keitimas",
+      "description": "Variklio alyvos ir filtro keitimas"
+    },
+    "frontBrakePads": {
+      "name": "Priekinės stabdžių kaladėlės",
+      "description": "Pakeisti priekines stabdžių kaladėles"
+    },
+    "tireSwap": {
+      "name": "Ratų keitimas",
+      "description": "Sezoninis ratų keitimas su užveržimo momento patikra"
+    },
+    "batteryReplacement": {
+      "name": "Akumuliatoriaus keitimas",
+      "description": "Pakeisti ir užregistruoti paleidimo akumuliatorių"
+    },
+    "diagnostics": {
+      "name": "Diagnostika",
+      "description": "Klaidų kodų nuskaitymas ir pirminė diagnozė"
+    },
+    "annualService": {
+      "name": "Metinė techninė priežiūra",
+      "description": "Pilna metinė priežiūra pagal grafiką"
+    }
+  },
+  "checklist": {
+    "title": "Pradžia",
+    "description": "Keturi žingsniai, kad dirbtuvės pradėtų veikti",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Pridėkite klientą",
+        "description": "Sukurkite pirmą kliento kortelę"
+      },
+      "vehicle": {
+        "title": "Pridėkite automobilį",
+        "description": "Užregistruokite kliento automobilį"
+      },
+      "workOrder": {
+        "title": "Sukurkite darbo užsakymą",
+        "description": "Atidarykite pirmą savo darbą"
+      },
+      "invoice": {
+        "title": "Išsiųskite arba atsisiųskite sąskaitą",
+        "description": "Pasidalinkite sąskaita su klientu arba atsisiųskite ją PDF formatu"
+      }
+    },
+    "allDoneTitle": "Viskas paruošta",
+    "allDoneDescription": "Visi žingsniai atlikti ir jūsų dirbtuvės veikia.",
+    "dismiss": "Slėpti kortelę",
+    "dismissAriaLabel": "Slėpti šį sąrašą"
+  },
+  "sampleData": {
+    "title": "Pavyzdiniai duomenys",
+    "description": "Jūsų dirbtuvėse vis dar yra pavyzdiniai klientai, automobiliai ir darbai iš pradinio nustatymo. Pašalinus ištrinami būtent šie įrašai ir nieko daugiau.",
+    "footerNote": "Įkelti pavyzdiniai duomenys",
+    "remove": "Pašalinti pavyzdinius duomenis",
+    "removeConfirmTitle": "Pašalinti pavyzdinius duomenis?",
+    "removeConfirmDescription": "Bus ištrinti pavyzdiniai klientai, automobiliai, darbo užsakymai, pasiūlymas ir apžiūra, sukurti per pradinį nustatymą. Jūsų pačių duomenys nebus paliesti.",
+    "removed": "Pavyzdiniai duomenys pašalinti",
+    "removeFailed": "Nepavyko pašalinti pavyzdinių duomenų"
+  }
+}

@@ -744,6 +744,56 @@ export function presetPackageId(preset: TemplatePreset | string): string {
 /** Bumped when a preset's contents change enough to offer as an update. */
 export const PRESET_VERSION = '1.0.0'
 
+/**
+ * Turns a preset into the nested Prisma create for an InspectionTemplate.
+ * Shared by the template library sync and the onboarding installer so both
+ * record the same provenance (packageId/version/source) and the library can
+ * recognise an onboarding-installed template as its own.
+ */
+export function presetToTemplateCreate(
+  preset: TemplatePreset,
+  organizationId: string,
+  isDefault: boolean
+) {
+  return {
+    name: preset.name,
+    description: preset.description,
+    isDefault,
+    country: preset.country,
+    standard: preset.standard,
+    severityScale: preset.severityScale,
+    packageId: presetPackageId(preset),
+    packageVersion: PRESET_VERSION,
+    packageSource: 'builtin',
+    organizationId,
+    sections: {
+      create: preset.sections.map((section, sIdx) => ({
+        name: section.name,
+        description: section.description || null,
+        code: section.code || null,
+        sortOrder: sIdx,
+        items: {
+          create: section.items.map((item, iIdx) => ({
+            name: item.name,
+            description: item.description || null,
+            code: item.code || null,
+            sortOrder: iIdx,
+            inputType: item.inputType ?? 'condition',
+            unit: item.unit || null,
+            minValue: item.minValue ?? null,
+            maxValue: item.maxValue ?? null,
+            choices: item.choices ?? [],
+            required: item.required ?? false,
+            photoRequired: item.photoRequired ?? false,
+            defaultSeverity: item.defaultSeverity ?? null,
+            defectSuggestions: [],
+          })),
+        },
+      })),
+    },
+  }
+}
+
 export function countPresetItems(preset: TemplatePreset): number {
   return preset.sections.reduce((sum, s) => sum + s.items.length, 0)
 }

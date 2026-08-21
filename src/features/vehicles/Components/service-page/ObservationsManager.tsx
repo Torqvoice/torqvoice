@@ -4,12 +4,7 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { FindingForm } from '../FindingForm'
 
 interface Observation {
@@ -58,7 +53,9 @@ export function ObservationsManager({
   const [showExistingDialog, setShowExistingDialog] = useState(false)
 
   const otherObservations = openObservations.filter((o) => o.serviceRecordId !== serviceRecordId)
-  const [selectedObs, setSelectedObs] = useState<Set<string>>(() => new Set(otherObservations.map((o) => o.id)))
+  const [selectedObs, setSelectedObs] = useState<Set<string>>(
+    () => new Set(otherObservations.map((o) => o.id))
+  )
 
   const toggleObs = (id: string) => {
     setSelectedObs((prev) => {
@@ -72,8 +69,14 @@ export function ObservationsManager({
   // Expose controls to parent via callback
   useEffect(() => {
     onControlsReady({
-      onAddFinding: () => { setEditingFinding(undefined); setOpenFindingForm(true) },
-      onEditFinding: (f: Finding) => { setEditingFinding(f); setOpenFindingForm(true) },
+      onAddFinding: () => {
+        setEditingFinding(undefined)
+        setOpenFindingForm(true)
+      },
+      onEditFinding: (f: Finding) => {
+        setEditingFinding(f)
+        setOpenFindingForm(true)
+      },
       openObservationsCount: otherObservations.length,
       onShowExistingObservations: () => setShowExistingDialog(true),
     })
@@ -92,17 +95,25 @@ export function ObservationsManager({
       <Dialog open={showExistingDialog} onOpenChange={setShowExistingDialog}>
         <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
-            <DialogTitle>{tf('vehicleHasObservations', { count: otherObservations.length })}</DialogTitle>
+            <DialogTitle>
+              {tf('vehicleHasObservations', { count: otherObservations.length })}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-1.5">
             {otherObservations.map((o) => (
-              <label key={o.id} className="flex items-start gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted/50 cursor-pointer">
+              <label
+                key={o.id}
+                className="flex items-start gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted/50 cursor-pointer"
+              >
                 <Checkbox
                   checked={selectedObs.has(o.id)}
                   onCheckedChange={() => toggleObs(o.id)}
                   className="mt-0.5"
                 />
-                <span>{o.description}{o.notes ? <span className="text-muted-foreground"> — {o.notes}</span> : null}</span>
+                <span>
+                  {o.description}
+                  {o.notes ? <span className="text-muted-foreground"> — {o.notes}</span> : null}
+                </span>
               </label>
             ))}
           </div>
@@ -117,7 +128,9 @@ export function ObservationsManager({
                 setShowExistingDialog(false)
               }}
             >
-              {addingObservations ? <span className="mr-1 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : null}
+              {addingObservations ? (
+                <span className="mr-1 h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : null}
               {tf('addToWorkOrder', { count: selectedObs.size })}
             </Button>
           </div>

@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Tableau de bord",
+    "vehicles": "Véhicules",
+    "customers": "Clients",
+    "work_orders": "Ordres de travail",
+    "quotes": "Devis",
+    "services": "Interventions",
+    "billing": "Facturation",
+    "inventory": "Stock",
+    "labor_presets": "Modèles de main-d’œuvre",
+    "inspections": "Contrôles",
+    "tire_hotel": "Hôtel à pneus",
+    "reports": "Rapports",
+    "work_board": "Tableau d’atelier",
+    "ai_assistant": "Assistant IA",
+    "settings": "Paramètres"
+  },
+  "actions": {
+    "create": "Créer",
+    "read": "Consulter",
+    "update": "Modifier",
+    "delete": "Supprimer",
+    "manage": "Gérer",
+    "manage_storage": "Gérer l’organisation du stockage"
+  }
+}

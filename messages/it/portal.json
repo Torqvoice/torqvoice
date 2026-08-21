@@ -152,7 +152,13 @@
     "good": "{count} buono",
     "fair": "{count} discreto",
     "poor": "{count} scarso",
-    "view": "Visualizza"
+    "view": "Visualizza",
+    "serviceHistoryTitle": "Storico interventi",
+    "inspectionsTitle": "Ispezioni",
+    "columnVehicle": "Veicolo",
+    "columnPlate": "Targa",
+    "columnServices": "Interventi",
+    "columnInspections": "Ispezioni"
   },
   "requestService": {
     "title": "Richiedi Servizio",
@@ -174,6 +180,15 @@
     "yourRequests": "Le Tue Richieste di Servizio",
     "failedToLoad": "Caricamento dei dati non riuscito.",
     "staffNotes": "Note del personale: {notes}",
-    "preferred": "Preferita: {date}"
+    "preferred": "Preferita: {date}",
+    "notListedOption": "Il mio veicolo non è in elenco",
+    "newVehicleHint": "Descrivi il veicolo e lo aggiungeremo al tuo profilo.",
+    "fillVehicleDetails": "Inserisci marca e modello del veicolo",
+    "makeLabel": "Marca",
+    "makePlaceholder": "es. Ford",
+    "modelLabel": "Modello",
+    "modelPlaceholder": "es. Kuga",
+    "yearLabel": "Anno",
+    "plateLabel": "Targa"
   }
 }

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppCard } from "@/components/app-card";
 import { Switch } from "@/components/ui/switch";
 import { ExternalLink, Info, Loader2, Copy, Check, Eye, EyeOff } from "lucide-react";
 import { setTelegramSettings } from "../Actions/telegramSettingsActions";
@@ -65,23 +65,11 @@ export function TelegramSettingsForm({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>
-              {t("description")}{" "}
-              <a
-                href="https://torqvoice.com/docs/integrations/telegram"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
-              >
-                {t("helpLink")}
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        <AppCard
+          title={t("title")}
+          description={<>{t("description")}{" "} <a href="https://torqvoice.com/docs/integrations/telegram" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-medium text-primary hover:underline" > {t("helpLink")} <ExternalLink className="h-3 w-3" /> </a></>}
+          contentClassName="space-y-6"
+        >
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="enable-telegram">{t("enable.label")}</Label>
@@ -142,8 +130,7 @@ export function TelegramSettingsForm({
 
               </>
             )}
-          </CardContent>
-        </Card>
+          </AppCard>
 
         {enabled && (
           <SaveButton>

@@ -10,7 +10,8 @@
     "back": "Atgal",
     "confirm": "Patvirtinti",
     "edit": "Redaguoti",
-    "add": "Pridėti"
+    "add": "Pridėti",
+    "gotIt": "Supratau"
   },
   "contextMenu": {
     "hint": "Patarimas: spustelėkite eilutę dešiniuoju mygtuku veiksmams",
@@ -75,6 +76,9 @@
     "enterManually": "Įvesti ranka",
     "enterBarcode": "Įveskite brūkšninį kodą…",
     "scanHint": "Nukreipkite kamerą į brūkšninį kodą arba įveskite jį ranka",
-    "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną"
+    "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną",
+    "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau",
+    "enterFullscreen": "Visas ekranas",
+    "exitFullscreen": "Išjungti visą ekraną"
   }
 }

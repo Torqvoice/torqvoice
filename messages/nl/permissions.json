@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Dashboard",
+    "vehicles": "Voertuigen",
+    "customers": "Klanten",
+    "work_orders": "Werkorders",
+    "quotes": "Offertes",
+    "services": "Serviceregistraties",
+    "billing": "Facturatie",
+    "inventory": "Voorraad",
+    "labor_presets": "Werksjablonen",
+    "inspections": "Inspecties",
+    "tire_hotel": "Bandenhotel",
+    "reports": "Rapporten",
+    "work_board": "Werkbord",
+    "ai_assistant": "AI-assistent",
+    "settings": "Instellingen"
+  },
+  "actions": {
+    "create": "Aanmaken",
+    "read": "Bekijken",
+    "update": "Bewerken",
+    "delete": "Verwijderen",
+    "manage": "Beheren",
+    "manage_storage": "Opslagindeling beheren"
+  }
+}

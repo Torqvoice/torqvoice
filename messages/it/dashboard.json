@@ -53,7 +53,9 @@
     "recentCompleted": "Completati di recente",
     "activeJobs": "Lavori attivi",
     "recentObservations": "Osservazioni recenti",
-    "recentActivity": "Attività recente"
+    "recentActivity": "Attività recente",
+    "gettingStarted": "Per iniziare",
+    "tireHotel": "Hotel pneumatici"
   },
   "maintenance": {
     "title": "Manutenzione prevista in scadenza",
@@ -233,5 +235,14 @@
       "expired": "Scaduto",
       "converted": "Convertito"
     }
+  },
+  "tireHotel": {
+    "title": "Hotel pneumatici",
+    "viewAll": "Vedi hotel pneumatici",
+    "stored": "{count} treni in deposito",
+    "capacity": "{used} / {capacity} pneumatici",
+    "roomLeft": "Spazio per altri {count}",
+    "needsPrep": "Da preparare",
+    "unbilled": "Non fatturato ({count})"
   }
 }

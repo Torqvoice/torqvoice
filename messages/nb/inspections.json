@@ -366,6 +366,7 @@
     "vehicle": "Kjøretøy",
     "template": "Mal",
     "progress": "Fremdrift",
+    "progressTooltip": "{graded} av {total} punkter vurdert",
     "status": "Status",
     "date": "Dato",
     "statusInProgress": "Pågår",

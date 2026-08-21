@@ -53,7 +53,12 @@
     "allReminders": "Visi priminimai",
     "auditLog": "Audito žurnalas",
     "aiAssistant": "DI asistentas",
-    "observations": "Pastebėjimai"
+    "observations": "Pastebėjimai",
+    "tireHotel": "Padangų viešbutis",
+    "allTireSets": "Visi komplektai",
+    "tireStorage": "Saugyklos išdėstymas",
+    "tireSetDetails": "Padangų komplektas",
+    "tireForecast": "Kitas sezonas"
   },
   "search": "Ieškoti...",
   "shortcut": "Ctrl+K",
@@ -107,6 +112,7 @@
     "signOut": "Atsijungti",
     "more": "Daugiau",
     "auditLog": "Audito žurnalas",
-    "aiAssistant": "DI asistentas"
+    "aiAssistant": "DI asistentas",
+    "tireHotel": "Padangų viešbutis"
   }
 }

@@ -103,6 +103,10 @@
         "title": "Dane",
         "description": "Eksport i import kopii zapasowej"
       },
+      "install": {
+        "title": "Zainstaluj aplikację",
+        "description": "Dodaj Torqvoice na tym urządzeniu"
+      },
       "license": {
         "title": "Licencja",
         "description": "Licencja white-label"
@@ -118,6 +122,10 @@
       "support": {
         "title": "Pomoc",
         "description": "Skontaktuj się z pomocą i zarządzaj przyciskiem"
+      },
+      "tireHotel": {
+        "title": "Hotel opon",
+        "description": "Sezonowe przechowywanie opon"
       }
     },
     "pro": "PRO"
@@ -970,7 +978,9 @@
       "lastBackup": "Ostatnia kopia zapasowa:",
       "supportPrompt": "Jeśli masz pytania dotyczące ochrony Twoich danych,",
       "supportAction": "skontaktuj się z naszym zespołem wsparcia."
-    }
+    },
+    "optTireHotel": "Hotel opon",
+    "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania"
   },
   "license": {
     "title": "Licencja white-label",
@@ -1441,5 +1451,41 @@
     "contactTitle": "Skontaktuj się z pomocą",
     "contactHint": "Otwórz formularz pomocy od razu.",
     "contactAction": "Otwórz formularz"
+  },
+  "install": {
+    "title": "Zainstaluj Torqvoice",
+    "description": "Zainstaluj Torqvoice na tym urządzeniu, aby otwierać ją z ekranu głównego, na pełnym ekranie i bez paska przeglądarki. To ta sama aplikacja i te same dane.",
+    "installed": "Torqvoice jest zainstalowana na tym urządzeniu.",
+    "iosHint": "W Safari dotknij przycisku Udostępnij, a następnie „Do ekranu początkowego”.",
+    "unavailable": "Ta przeglądarka nie zaproponowała instalacji. Otwórz menu przeglądarki i poszukaj „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.",
+    "bannerHidden": "Baner instalacji jest ukryty na tym urządzeniu.",
+    "showBanner": "Pokaż baner ponownie"
+  },
+  "tireHotel": {
+    "title": "Hotel opon",
+    "description": "Przechowuj sezonowe opony klientów i wiedz, gdzie stoi każdy komplet.",
+    "cardTitle": "Magazyn opon",
+    "enable": "Włącz hotel opon",
+    "enableHint": "Dodaje magazyn opon do menu. Późniejsze wyłączenie ukrywa go bez usuwania danych.",
+    "defaultCapacity": "Domyślna liczba opon na półkę",
+    "defaultCapacityHint": "Wypełniane przy tworzeniu nowych półek. Można zmienić dla każdej półki.",
+    "warnPercent": "Ostrzegaj przy zapełnieniu (%)",
+    "warnPercentHint": "Oznacza podgląd magazynu, gdy ta część łącznej pojemności jest zajęta.",
+    "treadTitle": "Progi wymiany",
+    "treadHint": "Minimalne wartości prawne różnią się w zależności od kraju, więc ustaw progi obowiązujące na Twoim rynku. Bieżnik poniżej progu jest oznaczany do wymiany.",
+    "summerLimit": "Próg letni ({unit})",
+    "winterLimit": "Próg zimowy ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Następnie skonfiguruj półki.",
+    "setupLink": "Otwórz układ magazynu",
+    "save": "Zapisz ustawienia hotelu opon",
+    "saved": "Zapisano ustawienia hotelu opon",
+    "billingTitle": "Rozliczenie przechowywania",
+    "billingHint": "Wstawiane w pozycji przechowywania przy rozliczaniu kompletu. Można je zmienić na fakturze.",
+    "seasonalPrice": "Domyślna cena przechowywania",
+    "prepTitle": "Ceny przygotowania",
+    "prepHint": "Ile kosztuje każdy rodzaj przygotowania. Puste pole oznacza, że nigdy nie jest fakturowane, co pasuje warsztatom mającym mycie w cenie przechowywania. Wycenione trafiają automatycznie na wycenę i zlecenie.",
+    "prepNotCharged": "nie naliczane"
   }
 }

@@ -134,13 +134,70 @@ export function AdminOrganizations({
             placeholder={t("organizations.searchPlaceholder")}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="pl-9"
+            className="h-9 pl-9"
           />
         </form>
         {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
 
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.organizations.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {search ? t("organizations.noResults") : t("organizations.noOrganizations")}
+          </div>
+        ) : (
+          data.organizations.map((org) => (
+            <div key={org.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">{org.name}</span>
+                  {org.subscriptionStatus && (
+                    <Badge variant={statusVariant(org.subscriptionStatus)} className="shrink-0">
+                      {org.subscriptionStatus}
+                    </Badge>
+                  )}
+                </div>
+                <p className="truncate text-xs text-muted-foreground">
+                  {org.ownerName} · {org.ownerEmail}
+                </p>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <span>
+                    {t("organizations.members")}: {org.memberCount}
+                  </span>
+                  {org.subscriptionPlan && <span>{org.subscriptionPlan}</span>}
+                  <span>{new Date(org.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 h-9 w-9 shrink-0"
+                    disabled={isPending}
+                    aria-label={t("common.openMenu")}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => handleDelete(org)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t("organizations.deleteOrganization")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block">
         <Table>
           <TableHeader>
             <TableRow>

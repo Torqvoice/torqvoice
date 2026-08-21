@@ -103,6 +103,10 @@
         "title": "Duomenys",
         "description": "Eksportas ir importas atsarginei kopijai"
       },
+      "install": {
+        "title": "Įdiegti programą",
+        "description": "Pridėkite „Torqvoice“ į šį įrenginį"
+      },
       "license": {
         "title": "Licencija",
         "description": "\"White-label\" licencija"
@@ -118,6 +122,10 @@
       "support": {
         "title": "Pagalba",
         "description": "Susisiekti su pagalba ir tvarkyti mygtuką"
+      },
+      "tireHotel": {
+        "title": "Padangų viešbutis",
+        "description": "Sezoninis padangų saugojimas"
       }
     },
     "pro": "PRO"
@@ -970,7 +978,9 @@
       "lastBackup": "Paskutinė atsarginė kopija:",
       "supportPrompt": "Jei turite klausimų apie jūsų duomenų apsaugą,",
       "supportAction": "susisiekite su mūsų pagalbos komanda."
-    }
+    },
+    "optTireHotel": "Padangų viešbutis",
+    "optTireHotelDesc": "Saugomi komplektai, lentynos, paruošimas ir saugojimo sutartys"
   },
   "license": {
     "title": "\"White-Label\" licencija",
@@ -1441,5 +1451,41 @@
     "contactTitle": "Susisiekti su pagalba",
     "contactHint": "Iš karto atidaryti pagalbos formą.",
     "contactAction": "Atidaryti formą"
+  },
+  "install": {
+    "title": "Įdiegti „Torqvoice“",
+    "description": "Įdiekite „Torqvoice“ šiame įrenginyje, kad atidarytumėte ją iš pradžios ekrano visame ekrane ir be naršyklės juostos. Tai ta pati programa ir tie patys duomenys.",
+    "installed": "„Torqvoice“ įdiegta šiame įrenginyje.",
+    "iosHint": "„Safari“ palieskite bendrinimo mygtuką, tada „Į pradžios ekraną“.",
+    "unavailable": "Ši naršyklė nepasiūlė įdiegimo. Atidarykite naršyklės meniu ir ieškokite „Įdiegti programą“ arba „Į pradžios ekraną“.",
+    "bannerHidden": "Įdiegimo juosta šiame įrenginyje paslėpta.",
+    "showBanner": "Vėl rodyti juostą"
+  },
+  "tireHotel": {
+    "title": "Padangų viešbutis",
+    "description": "Saugokite klientų sezonines padangas ir žinokite, kur guli kiekvienas komplektas.",
+    "cardTitle": "Padangų saugojimas",
+    "enable": "Įjungti padangų viešbutį",
+    "enableHint": "Prideda padangų saugojimą į meniu. Vėliau išjungus, jis paslepiamas nieko neištrinant.",
+    "defaultCapacity": "Numatytas padangų skaičius lentynoje",
+    "defaultCapacityHint": "Užpildoma kuriant naujas lentynas. Galima keisti kiekvienai lentynai.",
+    "warnPercent": "Įspėti užsipildžius (%)",
+    "warnPercentHint": "Pažymi saugyklos apžvalgą, kai užimta tokia bendros talpos dalis.",
+    "treadTitle": "Keitimo ribos",
+    "treadHint": "Teisiniai minimumai skiriasi pagal šalį, tad nustatykite savo rinkos ribas. Protektorius žemiau ribos žymimas keitimui.",
+    "summerLimit": "Vasaros riba ({unit})",
+    "winterLimit": "Žiemos riba ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Toliau sutvarkykite lentynas.",
+    "setupLink": "Atverti saugyklos išdėstymą",
+    "save": "Išsaugoti padangų viešbučio nustatymus",
+    "saved": "Padangų viešbučio nustatymai išsaugoti",
+    "billingTitle": "Saugojimo apmokėjimas",
+    "billingHint": "Įrašoma į saugojimo eilutę apmokestinant komplektą. Sąskaitoje galima keisti.",
+    "seasonalPrice": "Numatytoji saugojimo kaina",
+    "prepTitle": "Paruošimo kainos",
+    "prepHint": "Kiek kainuoja kiekvienas paruošimo darbas. Palikus tuščią, jis niekada neapmokestinamas, o to ir reikia dirbtuvėms, kurios plovimą įskaičiuoja į saugojimą. Turintys kainą patys atsiranda pasiūlyme ir darbo užsakyme.",
+    "prepNotCharged": "neapmokestinama"
   }
 }

@@ -8,21 +8,21 @@
  * - Vehicle and customer association
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock("@/lib/cached-session", () => ({
+vi.mock('@/lib/cached-session', () => ({
   getCachedSession: vi.fn(),
   getCachedMembership: vi.fn(),
-}));
+}))
 
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
-vi.mock("@/lib/invoice-utils", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/lib/invoice-utils")>()),
+vi.mock('@/lib/invoice-utils', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/invoice-utils')>()),
   resolveInvoicePrefix: vi.fn((p: string) => p),
-}));
+}))
 
-vi.mock("@/lib/db", () => ({
+vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
@@ -30,273 +30,273 @@ vi.mock("@/lib/db", () => ({
     customer: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
-}));
+}))
 
-import { getCachedSession, getCachedMembership } from "@/lib/cached-session";
-import { db } from "@/lib/db";
-import { createQuote } from "@/features/quotes/Actions/quoteActions";
+import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
+import { db } from '@/lib/db'
+import { createQuote } from '@/features/quotes/Actions/quoteActions'
 
-const mockSession = vi.mocked(getCachedSession);
-const mockMembership = vi.mocked(getCachedMembership);
+const mockSession = vi.mocked(getCachedSession)
+const mockMembership = vi.mocked(getCachedMembership)
 
-const ORG = "org-1";
-const USER_ID = "user-1";
+const ORG = 'org-1'
+const USER_ID = 'user-1'
 
 function setupAuth() {
-  mockSession.mockResolvedValue({ user: { id: USER_ID, email: "user@example.com" } } as any);
+  mockSession.mockResolvedValue({ user: { id: USER_ID, email: 'user@example.com' } } as any)
   mockMembership.mockResolvedValue({
     organizationId: ORG,
-    role: "owner",
+    role: 'owner',
     roleId: null,
     customRole: null,
-  } as any);
-  vi.mocked(db.user.findUnique).mockResolvedValue({ isSuperAdmin: false } as any);
+  } as any)
+  vi.mocked(db.user.findUnique).mockResolvedValue({ isSuperAdmin: false } as any)
 }
 
 function setupQuoteCreation() {
-  vi.mocked(db.appSetting.findMany).mockResolvedValue([]);
-  vi.mocked(db.quote.findFirst).mockResolvedValue(null); // no previous quotes
-  vi.mocked(db.customer.findFirst).mockResolvedValue(null); // not tax-exempt by default
+  vi.mocked(db.appSetting.findMany).mockResolvedValue([])
+  vi.mocked(db.quote.findFirst).mockResolvedValue(null) // no previous quotes
+  vi.mocked(db.customer.findFirst).mockResolvedValue(null) // not tax-exempt by default
 }
 
 beforeEach(() => {
-  vi.resetAllMocks();
-});
+  vi.resetAllMocks()
+})
 
 // ---------------------------------------------------------------------------
 // Quote number generation
 // ---------------------------------------------------------------------------
 
-describe("createQuote — quote number generation", () => {
-  it("generates QT-1001 when no previous quotes exist", async () => {
-    setupAuth();
-    setupQuoteCreation();
+describe('createQuote — quote number generation', () => {
+  it('generates QT-1001 when no previous quotes exist', async () => {
+    setupAuth()
+    setupQuoteCreation()
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-1", quoteNumber: "QT-1001" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-1', quoteNumber: 'QT-1001' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     const result = await createQuote({
-      title: "Test Quote",
-      status: "draft",
+      title: 'Test Quote',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(true)
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ quoteNumber: "QT-1001" }),
+        data: expect.objectContaining({ quoteNumber: 'QT-1001' }),
       })
-    );
-  });
+    )
+  })
 
-  it("increments quote number from the last existing quote", async () => {
-    setupAuth();
-    vi.mocked(db.appSetting.findMany).mockResolvedValue([]);
-    vi.mocked(db.quote.findFirst).mockResolvedValue({ quoteNumber: "QT-1005" } as any);
+  it('increments quote number from the last existing quote', async () => {
+    setupAuth()
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([])
+    vi.mocked(db.quote.findFirst).mockResolvedValue({ quoteNumber: 'QT-1005' } as any)
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-2", quoteNumber: "QT-1006" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-2', quoteNumber: 'QT-1006' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test Quote",
-      status: "draft",
+      title: 'Test Quote',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
-
-    expect(mockCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ quoteNumber: "QT-1006" }),
-      })
-    );
-  });
-
-  it("uses custom prefix from settings", async () => {
-    setupAuth();
-    vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.quotePrefix", value: "QUOTE-" } as any,
-    ]);
-    vi.mocked(db.quote.findFirst).mockResolvedValue(null);
-
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-3" });
-    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
-      fn({
-        quote: { create: mockCreate },
-        quotePart: { createMany: vi.fn() },
-        quoteLabor: { createMany: vi.fn() },
-      })
-    );
-
-    await createQuote({
-      title: "Test",
-      status: "draft",
-      subtotal: 0,
-      taxRate: 0,
-      taxAmount: 0,
-      discountValue: 0,
-      discountAmount: 0,
-      totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ quoteNumber: "QUOTE-1001" }),
+        data: expect.objectContaining({ quoteNumber: 'QT-1006' }),
       })
-    );
-  });
+    )
+  })
 
-  it("defaults validUntil from workshop.quoteValidDays when not provided", async () => {
-    setupAuth();
+  it('uses custom prefix from settings', async () => {
+    setupAuth()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.quoteValidDays", value: "14" } as any,
-    ]);
-    vi.mocked(db.quote.findFirst).mockResolvedValue(null);
+      { key: 'workshop.quotePrefix', value: 'QUOTE-' } as any,
+    ])
+    vi.mocked(db.quote.findFirst).mockResolvedValue(null)
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-4" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-3' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      status: "draft",
+      title: 'Test',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
-    const validUntil = mockCreate.mock.calls[0][0].data.validUntil as Date;
-    const expected = new Date();
-    expected.setDate(expected.getDate() + 14);
-    expect(validUntil).toBeInstanceOf(Date);
-    expect(validUntil.toDateString()).toBe(expected.toDateString());
-  });
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ quoteNumber: 'QUOTE-1001' }),
+      })
+    )
+  })
 
-  it("does not default validUntil when quoteValidDays is 0", async () => {
-    setupAuth();
+  it('defaults validUntil from workshop.quoteValidDays when not provided', async () => {
+    setupAuth()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.quoteValidDays", value: "0" } as any,
-    ]);
-    vi.mocked(db.quote.findFirst).mockResolvedValue(null);
+      { key: 'workshop.quoteValidDays', value: '14' } as any,
+    ])
+    vi.mocked(db.quote.findFirst).mockResolvedValue(null)
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-5" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-4' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      status: "draft",
+      title: 'Test',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
-    expect(mockCreate.mock.calls[0][0].data.validUntil).toBeUndefined();
-  });
-});
+    const validUntil = mockCreate.mock.calls[0][0].data.validUntil as Date
+    const expected = new Date()
+    expected.setDate(expected.getDate() + 14)
+    expect(validUntil).toBeInstanceOf(Date)
+    expect(validUntil.toDateString()).toBe(expected.toDateString())
+  })
+
+  it('does not default validUntil when quoteValidDays is 0', async () => {
+    setupAuth()
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workshop.quoteValidDays', value: '0' } as any,
+    ])
+    vi.mocked(db.quote.findFirst).mockResolvedValue(null)
+
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-5' })
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        quote: { create: mockCreate },
+        quotePart: { createMany: vi.fn() },
+        quoteLabor: { createMany: vi.fn() },
+      })
+    )
+
+    await createQuote({
+      title: 'Test',
+      status: 'draft',
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      discountValue: 0,
+      discountAmount: 0,
+      totalAmount: 0,
+    })
+
+    expect(mockCreate.mock.calls[0][0].data.validUntil).toBeUndefined()
+  })
+})
 
 // ---------------------------------------------------------------------------
 // Creating quote from inspection (the new flow)
 // ---------------------------------------------------------------------------
 
-describe("createQuote — from inspection", () => {
-  it("links quote to inspectionId, vehicleId, and customerId", async () => {
-    setupAuth();
-    setupQuoteCreation();
+describe('createQuote — from inspection', () => {
+  it('links quote to inspectionId, vehicleId, and customerId', async () => {
+    setupAuth()
+    setupQuoteCreation()
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-insp" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-insp' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "2024 Toyota Camry - Inspection Quote",
-      vehicleId: "veh-1",
-      customerId: "cust-1",
-      inspectionId: "insp-1",
-      status: "draft",
+      title: '2024 Toyota Camry - Inspection Quote',
+      vehicleId: 'veh-1',
+      customerId: 'cust-1',
+      inspectionId: 'insp-1',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          vehicleId: "veh-1",
-          customerId: "cust-1",
-          inspectionId: "insp-1",
+          vehicleId: 'veh-1',
+          customerId: 'cust-1',
+          inspectionId: 'insp-1',
           organizationId: ORG,
           userId: USER_ID,
         }),
       })
-    );
-  });
+    )
+  })
 
-  it("creates labor items from inspection fail/attention items", async () => {
-    setupAuth();
-    setupQuoteCreation();
+  it('creates labor items from inspection fail/attention items', async () => {
+    setupAuth()
+    setupQuoteCreation()
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-labor" });
-    const mockLaborCreateMany = vi.fn();
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-labor' })
+    const mockLaborCreateMany = vi.fn()
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: mockLaborCreateMany },
       })
-    );
+    )
 
     await createQuote({
-      title: "Inspection Quote",
-      inspectionId: "insp-1",
-      status: "draft",
+      title: 'Inspection Quote',
+      inspectionId: 'insp-1',
+      status: 'draft',
       laborItems: [
-        { description: "Front brake pads - Worn below 2mm", hours: 0, rate: 0, total: 0 },
-        { description: "Tire alignment - Pulling left", hours: 0, rate: 0, total: 0 },
+        { description: 'Front brake pads - Worn below 2mm', hours: 0, rate: 0, total: 0 },
+        { description: 'Tire alignment - Pulling left', hours: 0, rate: 0, total: 0 },
       ],
       subtotal: 0,
       taxRate: 0,
@@ -304,265 +304,271 @@ describe("createQuote — from inspection", () => {
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockLaborCreateMany).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.arrayContaining([
-          expect.objectContaining({ description: "Front brake pads - Worn below 2mm", quoteId: "q-labor" }),
-          expect.objectContaining({ description: "Tire alignment - Pulling left", quoteId: "q-labor" }),
+          expect.objectContaining({
+            description: 'Front brake pads - Worn below 2mm',
+            quoteId: 'q-labor',
+          }),
+          expect.objectContaining({
+            description: 'Tire alignment - Pulling left',
+            quoteId: 'q-labor',
+          }),
         ]),
       })
-    );
-  });
+    )
+  })
 
-  it("creates quote without labor items when none provided", async () => {
-    setupAuth();
-    setupQuoteCreation();
+  it('creates quote without labor items when none provided', async () => {
+    setupAuth()
+    setupQuoteCreation()
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-no-labor" });
-    const mockLaborCreateMany = vi.fn();
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-no-labor' })
+    const mockLaborCreateMany = vi.fn()
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: mockLaborCreateMany },
       })
-    );
+    )
 
     await createQuote({
-      title: "Simple Quote",
-      status: "draft",
+      title: 'Simple Quote',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     // laborCreateMany should not be called when no labor items
-    expect(mockLaborCreateMany).not.toHaveBeenCalled();
-  });
-});
+    expect(mockLaborCreateMany).not.toHaveBeenCalled()
+  })
+})
 
 // ---------------------------------------------------------------------------
 // Org scoping
 // ---------------------------------------------------------------------------
 
-describe("createQuote — org scoping", () => {
-  it("always sets organizationId from auth context, not from input", async () => {
-    setupAuth();
-    setupQuoteCreation();
+describe('createQuote — org scoping', () => {
+  it('always sets organizationId from auth context, not from input', async () => {
+    setupAuth()
+    setupQuoteCreation()
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-org" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-org' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      status: "draft",
+      title: 'Test',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ organizationId: ORG }),
       })
-    );
-  });
-});
+    )
+  })
+})
 
 // ---------------------------------------------------------------------------
 // createQuote — tax injection (org defaults + customer.taxExempt)
 // ---------------------------------------------------------------------------
 
-describe("createQuote — tax injection", () => {
-  it("injects the org default tax rate when caller sends taxRate=0", async () => {
-    setupAuth();
-    setupQuoteCreation();
+describe('createQuote — tax injection', () => {
+  it('injects the org default tax rate when caller sends taxRate=0', async () => {
+    setupAuth()
+    setupQuoteCreation()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.defaultTaxRate", value: "25" } as any,
-      { key: "workshop.taxEnabled", value: "true" } as any,
-    ]);
+      { key: 'workshop.defaultTaxRate', value: '25' } as any,
+      { key: 'workshop.taxEnabled', value: 'true' } as any,
+    ])
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-default-rate" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-default-rate' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      status: "draft",
+      title: 'Test',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ taxRate: 25 }),
       })
-    );
-  });
+    )
+  })
 
-  it("respects an explicit non-zero taxRate from the caller (no auto-injection)", async () => {
-    setupAuth();
-    setupQuoteCreation();
+  it('respects an explicit non-zero taxRate from the caller (no auto-injection)', async () => {
+    setupAuth()
+    setupQuoteCreation()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.defaultTaxRate", value: "25" } as any,
-      { key: "workshop.taxEnabled", value: "true" } as any,
-    ]);
+      { key: 'workshop.defaultTaxRate', value: '25' } as any,
+      { key: 'workshop.taxEnabled', value: 'true' } as any,
+    ])
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-explicit-rate" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-explicit-rate' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      status: "draft",
+      title: 'Test',
+      status: 'draft',
       subtotal: 0,
       taxRate: 8,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ taxRate: 8 }),
       })
-    );
-  });
+    )
+  })
 
-  it("injects taxInclusive=true from the org setting", async () => {
-    setupAuth();
-    setupQuoteCreation();
+  it('injects taxInclusive=true from the org setting', async () => {
+    setupAuth()
+    setupQuoteCreation()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.taxInclusive", value: "true" } as any,
-    ]);
+      { key: 'workshop.taxInclusive', value: 'true' } as any,
+    ])
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-incl" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-incl' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      status: "draft",
+      title: 'Test',
+      status: 'draft',
       subtotal: 0,
       taxRate: 0,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ taxInclusive: true }),
       })
-    );
-  });
+    )
+  })
 
-  it("forces taxRate=0 when the customer is tax exempt (overrides any caller value)", async () => {
-    setupAuth();
-    setupQuoteCreation();
+  it('forces taxRate=0 when the customer is tax exempt (overrides any caller value)', async () => {
+    setupAuth()
+    setupQuoteCreation()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.defaultTaxRate", value: "25" } as any,
-      { key: "workshop.taxEnabled", value: "true" } as any,
-    ]);
-    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: true } as any);
+      { key: 'workshop.defaultTaxRate', value: '25' } as any,
+      { key: 'workshop.taxEnabled', value: 'true' } as any,
+    ])
+    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: true } as any)
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-exempt" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-exempt' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      customerId: "cust-exempt",
-      status: "draft",
+      title: 'Test',
+      customerId: 'cust-exempt',
+      status: 'draft',
       subtotal: 0,
       taxRate: 25,
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 0,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ taxRate: 0 }),
       })
-    );
-  });
+    )
+  })
 
-  it("does NOT zero out taxRate when the customer is NOT tax exempt", async () => {
-    setupAuth();
-    setupQuoteCreation();
+  it('does NOT zero out taxRate when the customer is NOT tax exempt', async () => {
+    setupAuth()
+    setupQuoteCreation()
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: "workshop.defaultTaxRate", value: "25" } as any,
-      { key: "workshop.taxEnabled", value: "true" } as any,
-    ]);
-    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: false } as any);
+      { key: 'workshop.defaultTaxRate', value: '25' } as any,
+      { key: 'workshop.taxEnabled', value: 'true' } as any,
+    ])
+    vi.mocked(db.customer.findFirst).mockResolvedValue({ taxExempt: false } as any)
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: "q-normal" });
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'q-normal' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         quote: { create: mockCreate },
         quotePart: { createMany: vi.fn() },
         quoteLabor: { createMany: vi.fn() },
       })
-    );
+    )
 
     await createQuote({
-      title: "Test",
-      customerId: "cust-normal",
-      status: "draft",
+      title: 'Test',
+      customerId: 'cust-normal',
+      status: 'draft',
       subtotal: 100,
       taxRate: 0, // empty → should pick up the org default of 25
       taxAmount: 0,
       discountValue: 0,
       discountAmount: 0,
       totalAmount: 100,
-    });
+    })
 
     expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ taxRate: 25 }),
       })
-    );
-  });
-});
+    )
+  })
+})

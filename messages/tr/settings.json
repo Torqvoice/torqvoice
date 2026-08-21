@@ -103,6 +103,10 @@
         "title": "Veri",
         "description": "Dışa & içe aktarma yedeği"
       },
+      "install": {
+        "title": "Uygulamayı yükle",
+        "description": "Torqvoice'i bu cihaza ekleyin"
+      },
       "license": {
         "title": "Lisans",
         "description": "Beyaz etiket lisansı"
@@ -118,6 +122,10 @@
       "support": {
         "title": "Destek",
         "description": "Destekle iletişime geç ve düğmeyi yönet"
+      },
+      "tireHotel": {
+        "title": "Lastik oteli",
+        "description": "Mevsimlik lastik saklama"
       }
     },
     "pro": "PRO"
@@ -970,7 +978,9 @@
       "lastBackup": "Son yedekleme:",
       "supportPrompt": "Verilerinizin nasıl korunduğuyla ilgili sorularınız varsa,",
       "supportAction": "destek ekibimizle iletişime geçin."
-    }
+    },
+    "optTireHotel": "Lastik oteli",
+    "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri"
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",
@@ -1441,5 +1451,41 @@
     "contactTitle": "Destekle iletişime geç",
     "contactHint": "Destek formunu hemen açın.",
     "contactAction": "Formu aç"
+  },
+  "install": {
+    "title": "Torqvoice'i yükle",
+    "description": "Torqvoice'i bu cihaza yükleyin; ana ekrandan, tam ekran ve tarayıcı çubuğu olmadan açılsın. Aynı uygulama ve aynı veriler kalır.",
+    "installed": "Torqvoice bu cihaza yüklü.",
+    "iosHint": "Safari'de Paylaş düğmesine, ardından \"Ana Ekrana Ekle\" seçeneğine dokunun.",
+    "unavailable": "Bu tarayıcı yükleme önermedi. Tarayıcı menüsünü açın ve \"Uygulamayı yükle\" ya da \"Ana Ekrana Ekle\" seçeneğini arayın.",
+    "bannerHidden": "Yükleme başlığı bu cihazda gizli.",
+    "showBanner": "Başlığı tekrar göster"
+  },
+  "tireHotel": {
+    "title": "Lastik oteli",
+    "description": "Müşterilerinizin mevsimlik lastiklerini saklayın ve her takımın nerede olduğunu izleyin.",
+    "cardTitle": "Lastik deposu",
+    "enable": "Lastik otelini etkinleştir",
+    "enableHint": "Lastik deposunu menüye ekler. Sonradan kapatmak, hiçbir şeyi silmeden gizler.",
+    "defaultCapacity": "Raf başına varsayılan lastik",
+    "defaultCapacityHint": "Yeni raf eklerken önceden doldurulur. Her raf için değiştirilebilir.",
+    "warnPercent": "Doluluk uyarısı (%)",
+    "warnPercentHint": "Toplam kapasitenin bu oranı kullanıldığında depo özetini işaretler.",
+    "treadTitle": "Değişim eşikleri",
+    "treadHint": "Yasal alt sınırlar ülkeye göre değişir, bu yüzden kendi pazarınızın sınırlarını girin. Eşiğin altındaki diş derinliği değişim için işaretlenir.",
+    "summerLimit": "Yaz sınırı ({unit})",
+    "winterLimit": "Kış sınırı ({unit})",
+    "unitMm": "mm",
+    "unit32nds": "1/32\"",
+    "setupHint": "Sırada raflarınızı kurmak var.",
+    "setupLink": "Depo düzenini aç",
+    "save": "Lastik oteli ayarlarını kaydet",
+    "saved": "Lastik oteli ayarları kaydedildi",
+    "billingTitle": "Depolama faturalandırması",
+    "billingHint": "Bir takımı faturalarken depolama satırına önceden yazılır. Faturada değiştirilebilir.",
+    "seasonalPrice": "Varsayılan depolama ücreti",
+    "prepTitle": "Hazırlık fiyatları",
+    "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
+    "prepNotCharged": "ücretlendirilmiyor"
   }
 }

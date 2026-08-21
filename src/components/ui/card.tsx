@@ -7,7 +7,10 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        // Matches the AppCard shell (edge + layered shadow) so untitled
+        // utility cards — empty states, wrappers — sit in the same family.
+        // Headers, chips and hairlines come from AppCard, not from here.
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-card-edge py-6 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)]",
         className
       )}
       {...props}

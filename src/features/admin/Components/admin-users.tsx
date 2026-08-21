@@ -1,5 +1,7 @@
 'use client'
 
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav';
+import { interactiveRow } from '@/lib/interactive-row';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 
 import { useCallback, useTransition } from 'react'
@@ -90,6 +92,7 @@ export function AdminUsers({
   const confirm = useConfirm()
   const { formatDate, formatDateTime } = useFormatDate()
   const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav();
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -195,13 +198,108 @@ export function AdminUsers({
             placeholder={t('users.searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="pl-9"
+            className="h-9 pl-9"
+            {...tableNav.searchInputProps}
           />
         </form>
         {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
 
-      <div className="rounded-lg border">
+      {/* Card list (phones + small tablets) */}
+      <div className="space-y-2 md:hidden">
+        {data.users.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+            {search ? t('users.noResults') : t('users.noUsers')}
+          </div>
+        ) : (
+          data.users.map((user) => (
+            <div key={user.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
+              <button
+                type="button"
+                className="min-w-0 flex-1 text-left"
+                onClick={() => router.push(`/admin/users/${user.id}`)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate font-medium">{user.name}</span>
+                  {user.isSuperAdmin ? (
+                    <Badge variant="default" className="shrink-0 gap-1">
+                      <ShieldCheck className="h-3 w-3" />
+                      {t('users.superAdmin')}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="shrink-0">
+                      {t('users.user')}
+                    </Badge>
+                  )}
+                </div>
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="truncate">{user.email}</span>
+                  {user.emailVerified && (
+                    <span title={t('users.emailVerified')}>
+                      <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-blue-500" />
+                    </span>
+                  )}
+                </span>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <span>
+                    {t('users.orgs')}: {user.organizationCount}
+                  </span>
+                  <span>{formatDate(user.createdAt)}</span>
+                  {user.lastSeen &&
+                  Date.now() - new Date(user.lastSeen).getTime() < 5 * 60 * 1000 ? (
+                    <span className="flex items-center gap-1.5">
+                      <OnlineDot lastSeen={user.lastSeen} />
+                      <span className="text-green-600 dark:text-green-400">
+                        {t('users.online')}
+                      </span>
+                    </span>
+                  ) : (
+                    user.lastSeen && <span>{formatDateTime(user.lastSeen)}</span>
+                  )}
+                </div>
+              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-mr-1 h-9 w-9 shrink-0"
+                    disabled={isPending}
+                    aria-label={t('common.openMenu')}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleToggleSuperAdmin(user)}>
+                    {user.isSuperAdmin ? (
+                      <>
+                        <ShieldOff className="mr-2 h-4 w-4" />
+                        {t('users.demoteFromSuperAdmin')}
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                        {t('users.promoteToSuperAdmin')}
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleDeleteUser(user)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {t('users.deleteUser')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table (md and up) */}
+      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -271,7 +369,7 @@ export function AdminUsers({
                 <TableRow
                   key={user.id}
                   className="cursor-pointer"
-                  onClick={() => router.push(`/admin/users/${user.id}`)}
+                  {...interactiveRow(() => router.push(`/admin/users/${user.id}`))}
                 >
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>

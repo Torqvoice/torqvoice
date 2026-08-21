@@ -1,0 +1,91 @@
+{
+  "form": {
+    "title": "Skonfiguruj swój warsztat",
+    "subtitle": "Wpisz nazwę warsztatu, aby rozpocząć",
+    "workshopName": "Nazwa warsztatu",
+    "workshopNamePlaceholder": "Mój Warsztat Samochodowy",
+    "submit": "Rozpocznij",
+    "sampleDataLabel": "Wczytaj dane przykładowe",
+    "sampleDataDescription": "Dodaje kilku przykładowych klientów, pojazdów i zleceń, żebyś mógł się rozejrzeć. Możesz je usunąć jednym kliknięciem.",
+    "setupFailed": "Konfiguracja nie powiodła się",
+    "couldNotCreate": "Nie udało się utworzyć warsztatu",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd"
+  },
+  "sample": {
+    "prefix": "Przykład:",
+    "oilService": "Wymiana oleju i filtra",
+    "brakeJob": "Wymiana przednich klocków hamulcowych",
+    "annualService": "Przegląd roczny",
+    "quoteTitle": "Regeneracja przedniego zawieszenia",
+    "inspectionNote": "Lewa przednia opona jest blisko granicy zużycia",
+    "parts": {
+      "oilFilter": "Filtr oleju",
+      "engineOil": "Olej silnikowy 5W-30",
+      "brakePads": "Komplet przednich klocków hamulcowych",
+      "shockAbsorber": "Amortyzator"
+    }
+  },
+  "presets": {
+    "oilChange": {
+      "name": "Wymiana oleju",
+      "description": "Wymiana oleju silnikowego i filtra"
+    },
+    "frontBrakePads": {
+      "name": "Przednie klocki hamulcowe",
+      "description": "Wymiana przednich klocków hamulcowych"
+    },
+    "tireSwap": {
+      "name": "Wymiana kół",
+      "description": "Sezonowa wymiana kół z kontrolą momentu dokręcenia"
+    },
+    "batteryReplacement": {
+      "name": "Wymiana akumulatora",
+      "description": "Wymiana i rejestracja akumulatora rozruchowego"
+    },
+    "diagnostics": {
+      "name": "Diagnostyka",
+      "description": "Odczyt kodów błędów i wstępna diagnoza"
+    },
+    "annualService": {
+      "name": "Przegląd roczny",
+      "description": "Pełny przegląd roczny zgodnie z harmonogramem"
+    }
+  },
+  "checklist": {
+    "title": "Pierwsze kroki",
+    "description": "Cztery kroki, aby uruchomić swój warsztat",
+    "progress": "{done}/{total}",
+    "steps": {
+      "customer": {
+        "title": "Dodaj klienta",
+        "description": "Utwórz pierwszą kartotekę klienta"
+      },
+      "vehicle": {
+        "title": "Dodaj pojazd",
+        "description": "Zarejestruj pojazd dla klienta"
+      },
+      "workOrder": {
+        "title": "Utwórz zlecenie",
+        "description": "Otwórz swoje pierwsze zlecenie"
+      },
+      "invoice": {
+        "title": "Wyślij lub pobierz fakturę",
+        "description": "Udostępnij fakturę klientowi lub pobierz ją jako PDF"
+      }
+    },
+    "allDoneTitle": "Wszystko gotowe",
+    "allDoneDescription": "Wszystkie kroki zostały wykonane i Twój warsztat działa.",
+    "dismiss": "Ukryj kartę",
+    "dismissAriaLabel": "Ukryj tę listę"
+  },
+  "sampleData": {
+    "title": "Dane przykładowe",
+    "description": "Twój warsztat nadal zawiera przykładowych klientów, pojazdy i zlecenia z konfiguracji. Usunięcie kasuje dokładnie te rekordy i nic więcej.",
+    "footerNote": "Wczytane są dane przykładowe",
+    "remove": "Usuń dane przykładowe",
+    "removeConfirmTitle": "Usunąć dane przykładowe?",
+    "removeConfirmDescription": "Spowoduje to usunięcie przykładowych klientów, pojazdów, zleceń, wyceny i przeglądu utworzonych podczas konfiguracji. Twoje własne dane pozostaną nietknięte.",
+    "removed": "Dane przykładowe usunięte",
+    "removeFailed": "Nie udało się usunąć danych przykładowych"
+  }
+}

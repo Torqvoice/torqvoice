@@ -50,7 +50,66 @@ export default async function PortalInspectionsPage({
             </p>
           </div>
         ) : (
-          <div className="rounded-lg border">
+          <>
+          {/* Card list (phones + small tablets) */}
+          <div className="space-y-2 md:hidden">
+            {inspections.map((insp) => {
+              const conditions = insp.items.reduce(
+                (acc, item) => {
+                  acc[item.condition] = (acc[item.condition] || 0) + 1;
+                  return acc;
+                },
+                {} as Record<string, number>,
+              );
+
+              return (
+                <div key={insp.id} className="rounded-lg border bg-card p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate font-medium">
+                      {insp.vehicle.make} {insp.vehicle.model}
+                      {insp.vehicle.licensePlate && (
+                        <span className="ml-1 text-xs text-muted-foreground">
+                          ({insp.vehicle.licensePlate})
+                        </span>
+                      )}
+                    </span>
+                    <Badge
+                      variant={insp.status === "completed" ? "default" : "secondary"}
+                      className="shrink-0"
+                    >
+                      {insp.status.replace("_", " ")}
+                    </Badge>
+                  </div>
+                  <p className="truncate text-xs text-muted-foreground">{insp.template.name}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                    {conditions.good && (
+                      <span className="text-green-600">{t('good', { count: conditions.good })}</span>
+                    )}
+                    {conditions.fair && (
+                      <span className="text-yellow-600">{t('fair', { count: conditions.fair })}</span>
+                    )}
+                    {conditions.poor && (
+                      <span className="text-red-600">{t('poor', { count: conditions.poor })}</span>
+                    )}
+                    <span className="text-muted-foreground">
+                      {new Date(insp.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {insp.publicToken && (
+                    <Link
+                      href={`/share/inspection/${orgId}/${insp.publicToken}`}
+                      className="mt-3 inline-block text-sm text-primary hover:underline"
+                    >
+                      {t('view')}
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Table (md and up) */}
+          <div className="hidden rounded-lg border md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -132,6 +191,7 @@ export default async function PortalInspectionsPage({
               </TableBody>
             </Table>
           </div>
+          </>
         )}
       </div>
     </PortalShell>

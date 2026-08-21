@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Dashboard",
+    "vehicles": "Fahrzeuge",
+    "customers": "Kunden",
+    "work_orders": "Aufträge",
+    "quotes": "Angebote",
+    "services": "Serviceeinträge",
+    "billing": "Abrechnung",
+    "inventory": "Lager",
+    "labor_presets": "Arbeitsvorlagen",
+    "inspections": "Prüfungen",
+    "tire_hotel": "Reifenhotel",
+    "reports": "Berichte",
+    "work_board": "Auftragstafel",
+    "ai_assistant": "KI-Assistent",
+    "settings": "Einstellungen"
+  },
+  "actions": {
+    "create": "Anlegen",
+    "read": "Ansehen",
+    "update": "Bearbeiten",
+    "delete": "Löschen",
+    "manage": "Verwalten",
+    "manage_storage": "Lagerstruktur verwalten"
+  }
+}

@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Columns3,
+  Disc3,
   FileText,
   History,
   Layers,
@@ -57,6 +58,9 @@ const workshopItems = [
   { href: '/reminders', icon: Bell, labelKey: 'reminders' },
 ] as const
 
+/** Opt-in module, appended to the workshop group only when it is switched on. */
+const tireHotelItem = { href: '/tire-hotel', icon: Disc3, labelKey: 'tireHotel' } as const
+
 const businessItems = [
   { href: '/quotes', icon: FileText, labelKey: 'quotes' },
   { href: '/billing', icon: Receipt, labelKey: 'billing' },
@@ -65,10 +69,19 @@ const businessItems = [
   { href: '/audit-log', icon: History, labelKey: 'auditLog' },
 ] as const
 
-const allDrawerItems = [...workshopItems, ...businessItems, { href: '/settings', icon: Settings, labelKey: 'settings' }, { href: '/admin', icon: ShieldCheck, labelKey: 'adminPanel' }] as const
+const allDrawerItems = [...workshopItems, tireHotelItem, ...businessItems, { href: '/settings', icon: Settings, labelKey: 'settings' }, { href: '/admin', icon: ShieldCheck, labelKey: 'adminPanel' }] as const
 
-export function MobileBottomNav({ isSuperAdmin }: { isSuperAdmin?: boolean }) {
+export function MobileBottomNav({
+  isSuperAdmin,
+  tireHotelEnabled,
+}: {
+  isSuperAdmin?: boolean
+  tireHotelEnabled?: boolean
+}) {
   const pathname = usePathname()
+  const visibleWorkshopItems = tireHotelEnabled
+    ? [...workshopItems, tireHotelItem]
+    : [...workshopItems]
   const router = useRouter()
   const t = useTranslations('navigation.sidebar')
   const tScan = useTranslations('inventory.barcodeScan')
@@ -162,7 +175,7 @@ export function MobileBottomNav({ isSuperAdmin }: { isSuperAdmin?: boolean }) {
             <div>
               <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">{t('workshop')}</p>
               <nav className="grid grid-cols-4 gap-2">
-                {workshopItems.map(({ href, icon: Icon, labelKey }) => {
+                {visibleWorkshopItems.map(({ href, icon: Icon, labelKey }) => {
                   const isActive = pathname === href || pathname.startsWith(`${href}/`)
                   return (
                     <Link

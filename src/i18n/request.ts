@@ -1,7 +1,11 @@
 import { getRequestConfig } from 'next-intl/server'
 import { cookies, headers } from 'next/headers'
 import { type Locale, defaultLocale, locales } from './config'
-import { extractCustomerOrgParam, getBestLocaleFromHeader, resolveCustomerLocale } from './locale-from-request'
+import {
+  extractCustomerOrgParam,
+  getBestLocaleFromHeader,
+  resolveCustomerLocale,
+} from './locale-from-request'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 
 export default getRequestConfig(async () => {
@@ -44,7 +48,8 @@ export default getRequestConfig(async () => {
   const pdf = (await import(`../../messages/${locale}/pdf.json`)).default
   const portal = (await import(`../../messages/${locale}/portal.json`)).default
   const calendar = (await import(`../../messages/${locale}/calendar.json`)).default
-  const scheduledMessages = (await import(`../../messages/${locale}/scheduledMessages.json`)).default
+  const scheduledMessages = (await import(`../../messages/${locale}/scheduledMessages.json`))
+    .default
   const inventory = (await import(`../../messages/${locale}/inventory.json`)).default
   const reports = (await import(`../../messages/${locale}/reports.json`)).default
   const settings = (await import(`../../messages/${locale}/settings.json`)).default
@@ -61,6 +66,11 @@ export default getRequestConfig(async () => {
   const statusReport = (await import(`../../messages/${locale}/statusReport.json`)).default
   const support = (await import(`../../messages/${locale}/support.json`)).default
   const inspections = (await import(`../../messages/${locale}/inspections.json`)).default
+  const onboarding = (await import(`../../messages/${locale}/onboarding.json`)).default
+  const tireHotel = (await import(`../../messages/${locale}/tireHotel.json`)).default
+  const search = (await import(`../../messages/${locale}/search.json`)).default
+  const permissions = (await import(`../../messages/${locale}/permissions.json`)).default
+  const featureHints = (await import(`../../messages/${locale}/featureHints.json`)).default
 
   return {
     locale,
@@ -96,6 +106,11 @@ export default getRequestConfig(async () => {
       statusReport,
       support,
       inspections,
+      onboarding,
+      tireHotel,
+      search,
+      permissions,
+      featureHints,
     },
   }
 })

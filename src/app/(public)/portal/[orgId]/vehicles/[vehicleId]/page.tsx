@@ -1,9 +1,9 @@
 import { PortalShell } from '@/features/portal/Components/PortalShell'
 import { getPortalVehicleDetail } from '@/features/portal/Actions/portalActions'
-import { Card, CardContent } from '@/components/ui/card'
+import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Download } from 'lucide-react'
+import { ClipboardCheck, Download, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
@@ -49,13 +49,6 @@ export default async function PortalVehicleDetailPage({
       <div className="space-y-6">
         {/* Vehicle info header */}
         <div className="flex items-start gap-4">
-          {v.imageUrl ? (
-            <img
-              src={v.imageUrl}
-              alt={`${v.make} ${v.model}`}
-              className="h-20 w-20 rounded object-cover"
-            />
-          ) : null}
           <div>
             <h1 className="text-2xl font-bold">
               {v.year} {v.make} {v.model}
@@ -94,15 +87,20 @@ export default async function PortalVehicleDetailPage({
           </TabsList>
 
           <TabsContent value="service-history" className="mt-4">
-            {v.serviceRecords.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                {t('noServiceRecords')}
-              </p>
-            ) : (
-              <div className="space-y-3">
+            <AppCard
+              icon={Wrench}
+              title={t('serviceHistoryTitle')}
+              badge={v.serviceRecords.length || undefined}
+              contentClassName="p-0"
+            >
+              {v.serviceRecords.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  {t('noServiceRecords')}
+                </p>
+              ) : (
+              <div className="divide-y">
                 {v.serviceRecords.map((sr) => (
-                  <Card key={sr.id}>
-                    <CardContent className="flex items-center justify-between py-4">
+                    <div key={sr.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
                           {sr.invoiceNumber ? `#${sr.invoiceNumber} - ` : ''}
@@ -148,18 +146,24 @@ export default async function PortalVehicleDetailPage({
                           {tInvoices('download')}
                         </a>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
                 ))}
               </div>
-            )}
+              )}
+            </AppCard>
           </TabsContent>
 
           <TabsContent value="inspections" className="mt-4">
-            {v.inspections.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">{t('noInspections')}</p>
-            ) : (
-              <div className="space-y-3">
+            <AppCard
+              icon={ClipboardCheck}
+              title={t('inspectionsTitle')}
+              badge={v.inspections.length || undefined}
+              contentClassName="p-0"
+            >
+              {v.inspections.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">{t('noInspections')}</p>
+              ) : (
+              <div className="divide-y">
                 {v.inspections.map((insp) => {
                   const conditions = insp.items.reduce(
                     (acc, item) => {
@@ -170,8 +174,7 @@ export default async function PortalVehicleDetailPage({
                   )
 
                   return (
-                    <Card key={insp.id}>
-                      <CardContent className="flex items-center justify-between py-4">
+                    <div key={insp.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium">{insp.template.name}</p>
                           <p className="text-xs text-muted-foreground">
@@ -208,12 +211,12 @@ export default async function PortalVehicleDetailPage({
                             </Link>
                           )}
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
                   )
                 })}
               </div>
-            )}
+              )}
+            </AppCard>
           </TabsContent>
         </Tabs>
       </div>

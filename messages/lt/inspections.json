@@ -366,6 +366,7 @@
     "vehicle": "Transporto priemonė",
     "template": "Šablonas",
     "progress": "Eiga",
+    "progressTooltip": "Įvertinta {graded} iš {total} punktų",
     "status": "Būsena",
     "date": "Data",
     "statusInProgress": "Vyksta",

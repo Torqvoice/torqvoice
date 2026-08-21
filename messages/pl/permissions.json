@@ -1,0 +1,27 @@
+{
+  "subjects": {
+    "dashboard": "Pulpit",
+    "vehicles": "Pojazdy",
+    "customers": "Klienci",
+    "work_orders": "Zlecenia",
+    "quotes": "Oferty",
+    "services": "Historia serwisowa",
+    "billing": "Rozliczenia",
+    "inventory": "Magazyn",
+    "labor_presets": "Szablony robocizny",
+    "inspections": "Przeglądy",
+    "tire_hotel": "Hotel opon",
+    "reports": "Raporty",
+    "work_board": "Tablica pracy",
+    "ai_assistant": "Asystent AI",
+    "settings": "Ustawienia"
+  },
+  "actions": {
+    "create": "Tworzyć",
+    "read": "Podgląd",
+    "update": "Edytować",
+    "delete": "Usuwać",
+    "manage": "Zarządzać",
+    "manage_storage": "Zarządzać układem magazynu"
+  }
+}

@@ -1,10 +1,20 @@
 "use server";
 
 import { headers, cookies } from "next/headers";
+import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { logAudit } from "@/lib/audit";
 import { onboardingSchema } from "../Schema/onboardingSchema";
+import {
+  installDefaultInspectionTemplates,
+  installDefaultLaborPresets,
+} from "../Lib/onboardingDefaults";
+import { seedSampleData } from "../Lib/sampleData";
+import {
+  CHECKLIST_DISMISSED_KEY,
+  SAMPLE_DATA_IDS_KEY,
+} from "../Lib/onboardingKeys";
 import type { ActionResult } from "@/lib/with-auth";
 
 export async function createOnboardingOrg(
@@ -44,6 +54,54 @@ export async function createOnboardingOrg(
       httpOnly: true,
       sameSite: "lax",
     });
+
+    // First-run setup: a default inspection template, common labor presets
+    // and (optionally) removable sample data. All best-effort: the org and
+    // membership above are what onboarding must not lose, so a hiccup here
+    // never fails the action — the library sync tops templates up later
+    // anyway.
+    try {
+      const [locale, t] = await Promise.all([
+        getLocale(),
+        getTranslations("onboarding"),
+      ]);
+
+      const template = await installDefaultInspectionTemplates(org.id, locale);
+      await installDefaultLaborPresets(org.id, session.user.id, t);
+
+      if (data.loadSampleData) {
+        const sampleIds = await seedSampleData(
+          org.id,
+          session.user.id,
+          t,
+          template
+        );
+        await db.appSetting.create({
+          data: {
+            organizationId: org.id,
+            key: SAMPLE_DATA_IDS_KEY,
+            value: JSON.stringify(sampleIds),
+            userId: session.user.id,
+          },
+        });
+      }
+
+      // Written for every new org: its presence is what tells the dashboard
+      // this org should see the getting-started checklist.
+      await db.appSetting.create({
+        data: {
+          organizationId: org.id,
+          key: CHECKLIST_DISMISSED_KEY,
+          value: "false",
+          userId: session.user.id,
+        },
+      });
+    } catch (setupError) {
+      console.error(
+        "[createOnboardingOrg] First-run setup failed:",
+        setupError instanceof Error ? setupError.message : setupError
+      );
+    }
 
     // Audit: log registration + org creation (first org = new user onboarding)
     const h = await headers();
