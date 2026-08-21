@@ -96,12 +96,14 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     quoteResponses: half(6, 14),
     recentActivity: half(0, 19),
     recentObservations: half(6, 19),
-    recentCompleted: full(24),
-    activeJobs: full(29),
-    // Opt-in, and the odd card out when it is on: last, where a lone half is
-    // least disruptive. Hidden entirely when the module is off, so a shop
+    // Opt-in, and the odd card out when it is on: it sits below the last
+    // pair of halves and above the full-width tables, which keeps it the
+    // lowest half row, so the hole beside it is allowed and lands in one
+    // predictable place. Hidden entirely when the module is off, so a shop
     // without it never reserves the slot.
-    tireHotel: half(0, 34),
+    tireHotel: half(0, 24),
+    recentCompleted: full(29),
+    activeJobs: full(34),
   },
 }
 
