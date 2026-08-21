@@ -68,6 +68,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
     telegramEnabled = tgSetting?.value === 'true'
   }
 
+  let whatsappEnabled = false
+  if (features.whatsapp) {
+    const waSetting = await db.appSetting.findUnique({
+      where: {
+        organizationId_key: { organizationId: data.organizationId, key: 'whatsapp.enabled' },
+      },
+      select: { value: true },
+    })
+    whatsappEnabled = waSetting?.value === 'true'
+  }
+
   // Tire hotel is opt-in, so the nav entry only exists once a workshop has
   // switched the module on.
   const tireHotelEnabled = await isTireHotelEnabled(data.organizationId)
@@ -179,6 +190,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       isSuperAdmin={data.isSuperAdmin}
                       features={features}
                       telegramEnabled={telegramEnabled}
+                      whatsappEnabled={whatsappEnabled}
                       tireHotelEnabled={tireHotelEnabled}
                       visibleSubjects={visibleSubjects}
                       isAdminOrOwner={isOwnerOrAdmin}

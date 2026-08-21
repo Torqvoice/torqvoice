@@ -58,7 +58,8 @@
     "allTireSets": "All Tire Sets",
     "tireStorage": "Storage Layout",
     "tireSetDetails": "Tire Set",
-    "tireForecast": "Next season"
+    "tireForecast": "Next season",
+    "whatsapp": "WhatsApp"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "More",
     "auditLog": "Audit Log",
     "aiAssistant": "AI Assistant",
-    "tireHotel": "Tire hotel"
+    "tireHotel": "Tire hotel",
+    "whatsapp": "WhatsApp"
   }
 }

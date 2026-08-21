@@ -51,5 +51,32 @@
       "hint": "Removes the credentials from Torqvoice. Your conversations are kept.",
       "done": "WhatsApp disconnected"
     }
+  },
+  "messages": {
+    "featureName": "WhatsApp Messaging",
+    "featureDescription": "Send and receive WhatsApp messages, including photos of parts, directly from Torqvoice.",
+    "noThreads": "No conversations yet",
+    "noThreadsHint": "Messages appear here as soon as a customer writes to your WhatsApp number, or you write to them.",
+    "selectThread": "Pick a conversation",
+    "backToThreads": "Conversations",
+    "empty": "Nothing here yet.",
+    "placeholder": "Write a message",
+    "send": "Send",
+    "sendFailed": "Could not send the message",
+    "attach": "Attach a photo",
+    "attachFailed": "Could not attach the photo",
+    "removeAttachment": "Remove attachment",
+    "attachment": "Attachment",
+    "delete": "Delete",
+    "deleteFailed": "Could not delete the message",
+    "sentAsTemplate": "template",
+    "sentAsTemplateNotice": "Sent as your approved template, because the customer has not written in the last 24 hours.",
+    "windowClosed": "The customer has not written in the last 24 hours, so this will go out as your approved template.",
+    "unknownNumber": "This number belongs to no customer yet. Add them as a customer to reply.",
+    "notConfigured": {
+      "title": "WhatsApp is not connected",
+      "description": "Connect a WhatsApp number to send and receive messages with your customers.",
+      "action": "Set up WhatsApp"
+    }
   }
 }

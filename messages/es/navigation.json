@@ -58,7 +58,8 @@
     "allTireSets": "Todos los juegos",
     "tireStorage": "Distribución del almacén",
     "tireSetDetails": "Juego de neumáticos",
-    "tireForecast": "La próxima temporada"
+    "tireForecast": "La próxima temporada",
+    "whatsapp": "WhatsApp"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Más",
     "auditLog": "Registro de auditoría",
     "aiAssistant": "Asistente IA",
-    "tireHotel": "Hotel de neumáticos"
+    "tireHotel": "Hotel de neumáticos",
+    "whatsapp": "WhatsApp"
   }
 }

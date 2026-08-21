@@ -51,5 +51,32 @@
       "hint": "Kimlik bilgilerini Torqvoice'tan siler. Görüşmeleriniz kalır.",
       "done": "WhatsApp bağlantısı kesildi"
     }
+  },
+  "messages": {
+    "featureName": "WhatsApp mesajlaşma",
+    "featureDescription": "Parça fotoğrafları dahil WhatsApp mesajlarını doğrudan Torqvoice üzerinden gönderip alın.",
+    "noThreads": "Henüz görüşme yok",
+    "noThreadsHint": "Bir müşteri WhatsApp numaranıza yazdığında ya da siz ona yazdığınızda mesajlar burada belirir.",
+    "selectThread": "Bir görüşme seçin",
+    "backToThreads": "Görüşmeler",
+    "empty": "Burada henüz bir şey yok.",
+    "placeholder": "Bir mesaj yazın",
+    "send": "Gönder",
+    "sendFailed": "Mesaj gönderilemedi",
+    "attach": "Fotoğraf ekle",
+    "attachFailed": "Fotoğraf eklenemedi",
+    "removeAttachment": "Eki kaldır",
+    "attachment": "Ek",
+    "delete": "Sil",
+    "deleteFailed": "Mesaj silinemedi",
+    "sentAsTemplate": "şablon",
+    "sentAsTemplateNotice": "Müşteri son 24 saatte yazmadığı için onaylı şablonunuzla gönderildi.",
+    "windowClosed": "Müşteri son 24 saatte yazmadı, bu yüzden mesaj onaylı şablonunuzla gidecek.",
+    "unknownNumber": "Bu numara henüz bir müşteriye ait değil. Yanıtlamak için müşteri olarak ekleyin.",
+    "notConfigured": {
+      "title": "WhatsApp bağlı değil",
+      "description": "Müşterilerinizle mesajlaşmak için bir WhatsApp numarası bağlayın.",
+      "action": "WhatsApp'ı kur"
+    }
   }
 }

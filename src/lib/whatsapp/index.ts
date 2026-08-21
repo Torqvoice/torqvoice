@@ -8,6 +8,7 @@ import {
   whatsappCredentialKey,
 } from '@/features/whatsapp/Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter } from './registry'
+import { signWhatsappMediaToken } from './media-link'
 import type {
   WhatsappAdapter,
   WhatsappContext,
@@ -128,6 +129,29 @@ export async function isWithinServiceWindow(
   return Date.now() - last.getTime() < SERVICE_WINDOW_HOURS * 60 * 60 * 1000
 }
 
+/**
+ * Turns an internal file URL into something the provider can actually fetch.
+ *
+ * Providers download media from their own servers, with no session of ours, so
+ * an `/api/protected/files/...` link would arrive as a 401 and the customer
+ * would receive an empty message. Anything already absolute is left alone.
+ */
+function toProviderMediaUrl(
+  organizationId: string,
+  mediaUrl: string | undefined
+): string | undefined {
+  if (!mediaUrl) return undefined
+  if (/^https?:\/\//i.test(mediaUrl)) return mediaUrl
+
+  const base = process.env.NEXT_PUBLIC_APP_URL
+  if (!base) {
+    throw new Error('NEXT_PUBLIC_APP_URL must be set before WhatsApp can send attachments.')
+  }
+
+  const token = signWhatsappMediaToken({ fileUrl: mediaUrl, organizationId })
+  return `${base.replace(/\/$/, '')}/api/public/whatsapp-media/${token}`
+}
+
 export interface SendWhatsappOptions {
   to: string
   body?: string
@@ -200,7 +224,9 @@ export async function sendOrgWhatsapp(
     const result = await config.adapter.send(config.context, {
       to,
       body: options.body,
-      mediaUrl: options.mediaUrl,
+      // The row keeps the internal URL so the conversation view can render it;
+      // the provider gets a signed public one that expires within the hour.
+      mediaUrl: toProviderMediaUrl(organizationId, options.mediaUrl),
       mediaType: options.mediaType,
       mediaFilename: options.mediaFilename,
       template,
@@ -241,7 +267,7 @@ function templateFor(
     name: config.template.name,
     language: config.template.language,
     variables: options.body ? [options.body] : undefined,
-    headerMediaUrl: options.mediaUrl,
+    headerMediaUrl: toProviderMediaUrl(config.organizationId, options.mediaUrl),
     headerMediaType: options.mediaType,
   }
 }

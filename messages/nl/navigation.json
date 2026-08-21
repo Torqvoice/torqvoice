@@ -58,7 +58,8 @@
     "allTireSets": "Alle bandensets",
     "tireStorage": "Opslagindeling",
     "tireSetDetails": "Bandenset",
-    "tireForecast": "Volgend seizoen"
+    "tireForecast": "Volgend seizoen",
+    "whatsapp": "WhatsApp"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Meer",
     "auditLog": "Activiteitenlog",
     "aiAssistant": "AI-assistent",
-    "tireHotel": "Bandenhotel"
+    "tireHotel": "Bandenhotel",
+    "whatsapp": "WhatsApp"
   }
 }

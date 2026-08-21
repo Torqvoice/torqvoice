@@ -58,7 +58,8 @@
     "allTireSets": "Visi komplektai",
     "tireStorage": "Saugyklos išdėstymas",
     "tireSetDetails": "Padangų komplektas",
-    "tireForecast": "Kitas sezonas"
+    "tireForecast": "Kitas sezonas",
+    "whatsapp": "„WhatsApp“"
   },
   "search": "Ieškoti...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Daugiau",
     "auditLog": "Audito žurnalas",
     "aiAssistant": "DI asistentas",
-    "tireHotel": "Padangų viešbutis"
+    "tireHotel": "Padangų viešbutis",
+    "whatsapp": "„WhatsApp“"
   }
 }

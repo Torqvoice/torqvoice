@@ -51,5 +51,32 @@
       "hint": "Entfernt die Zugangsdaten aus Torqvoice. Ihre Konversationen bleiben erhalten.",
       "done": "WhatsApp getrennt"
     }
+  },
+  "messages": {
+    "featureName": "WhatsApp-Nachrichten",
+    "featureDescription": "WhatsApp-Nachrichten samt Fotos von Bauteilen direkt aus Torqvoice senden und empfangen.",
+    "noThreads": "Noch keine Konversationen",
+    "noThreadsHint": "Nachrichten erscheinen hier, sobald ein Kunde an Ihre WhatsApp-Nummer schreibt oder Sie ihm schreiben.",
+    "selectThread": "Konversation auswählen",
+    "backToThreads": "Konversationen",
+    "empty": "Hier ist noch nichts.",
+    "placeholder": "Nachricht schreiben",
+    "send": "Senden",
+    "sendFailed": "Nachricht konnte nicht gesendet werden",
+    "attach": "Foto anhängen",
+    "attachFailed": "Foto konnte nicht angehängt werden",
+    "removeAttachment": "Anhang entfernen",
+    "attachment": "Anhang",
+    "delete": "Löschen",
+    "deleteFailed": "Nachricht konnte nicht gelöscht werden",
+    "sentAsTemplate": "Vorlage",
+    "sentAsTemplateNotice": "Als freigegebene Vorlage gesendet, weil der Kunde in den letzten 24 Stunden nicht geschrieben hat.",
+    "windowClosed": "Der Kunde hat in den letzten 24 Stunden nicht geschrieben, daher geht dies als freigegebene Vorlage raus.",
+    "unknownNumber": "Diese Nummer gehört noch zu keinem Kunden. Legen Sie ihn als Kunden an, um zu antworten.",
+    "notConfigured": {
+      "title": "WhatsApp ist nicht verbunden",
+      "description": "Verbinden Sie eine WhatsApp-Nummer, um Nachrichten mit Ihren Kunden auszutauschen.",
+      "action": "WhatsApp einrichten"
+    }
   }
 }

@@ -58,7 +58,8 @@
     "allTireSets": "Alle dekksett",
     "tireStorage": "Lageroppsett",
     "tireSetDetails": "Dekksett",
-    "tireForecast": "Neste sesong"
+    "tireForecast": "Neste sesong",
+    "whatsapp": "WhatsApp"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Mer",
     "auditLog": "Aktivitetslogg",
     "aiAssistant": "AI-assistent",
-    "tireHotel": "Dekkhotell"
+    "tireHotel": "Dekkhotell",
+    "whatsapp": "WhatsApp"
   }
 }

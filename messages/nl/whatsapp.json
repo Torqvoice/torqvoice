@@ -51,5 +51,32 @@
       "hint": "Verwijdert de gegevens uit Torqvoice. Je gesprekken blijven bewaard.",
       "done": "WhatsApp losgekoppeld"
     }
+  },
+  "messages": {
+    "featureName": "WhatsApp-berichten",
+    "featureDescription": "Verstuur en ontvang WhatsApp-berichten, inclusief foto's van onderdelen, vanuit Torqvoice.",
+    "noThreads": "Nog geen gesprekken",
+    "noThreadsHint": "Berichten verschijnen hier zodra een klant naar je WhatsApp-nummer schrijft, of jij naar hen.",
+    "selectThread": "Kies een gesprek",
+    "backToThreads": "Gesprekken",
+    "empty": "Hier is nog niets.",
+    "placeholder": "Schrijf een bericht",
+    "send": "Versturen",
+    "sendFailed": "Kon het bericht niet versturen",
+    "attach": "Foto toevoegen",
+    "attachFailed": "Kon de foto niet toevoegen",
+    "removeAttachment": "Bijlage verwijderen",
+    "attachment": "Bijlage",
+    "delete": "Verwijderen",
+    "deleteFailed": "Kon het bericht niet verwijderen",
+    "sentAsTemplate": "sjabloon",
+    "sentAsTemplateNotice": "Verstuurd als je goedgekeurde sjabloon, omdat de klant de afgelopen 24 uur niets stuurde.",
+    "windowClosed": "De klant schreef de afgelopen 24 uur niets, dus dit gaat als je goedgekeurde sjabloon de deur uit.",
+    "unknownNumber": "Dit nummer hoort nog bij geen klant. Voeg ze als klant toe om te antwoorden.",
+    "notConfigured": {
+      "title": "WhatsApp is niet verbonden",
+      "description": "Verbind een WhatsApp-nummer om berichten met je klanten uit te wisselen.",
+      "action": "WhatsApp instellen"
+    }
   }
 }

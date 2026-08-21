@@ -51,5 +51,32 @@
       "hint": "Supprime les identifiants de Torqvoice. Vos conversations sont conservées.",
       "done": "WhatsApp déconnecté"
     }
+  },
+  "messages": {
+    "featureName": "Messagerie WhatsApp",
+    "featureDescription": "Envoyez et recevez des messages WhatsApp, photos de pièces comprises, depuis Torqvoice.",
+    "noThreads": "Aucune conversation pour l'instant",
+    "noThreadsHint": "Les messages apparaissent ici dès qu'un client écrit à votre numéro WhatsApp, ou que vous lui écrivez.",
+    "selectThread": "Choisissez une conversation",
+    "backToThreads": "Conversations",
+    "empty": "Rien pour l'instant.",
+    "placeholder": "Écrire un message",
+    "send": "Envoyer",
+    "sendFailed": "Impossible d'envoyer le message",
+    "attach": "Joindre une photo",
+    "attachFailed": "Impossible de joindre la photo",
+    "removeAttachment": "Retirer la pièce jointe",
+    "attachment": "Pièce jointe",
+    "delete": "Supprimer",
+    "deleteFailed": "Impossible de supprimer le message",
+    "sentAsTemplate": "modèle",
+    "sentAsTemplateNotice": "Envoyé sous forme de modèle approuvé, car le client n'a pas écrit depuis 24 heures.",
+    "windowClosed": "Le client n'a pas écrit depuis 24 heures, ce message partira donc sous forme de modèle approuvé.",
+    "unknownNumber": "Ce numéro n'appartient encore à aucun client. Ajoutez-le comme client pour répondre.",
+    "notConfigured": {
+      "title": "WhatsApp n'est pas connecté",
+      "description": "Connectez un numéro WhatsApp pour échanger des messages avec vos clients.",
+      "action": "Configurer WhatsApp"
+    }
   }
 }

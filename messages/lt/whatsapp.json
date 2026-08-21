@@ -51,5 +51,32 @@
       "hint": "Pašalina prisijungimo duomenis iš „Torqvoice“. Pokalbiai išlieka.",
       "done": "„WhatsApp“ atjungtas"
     }
+  },
+  "messages": {
+    "featureName": "„WhatsApp“ žinutės",
+    "featureDescription": "Siųskite ir gaukite „WhatsApp“ žinutes, įskaitant detalių nuotraukas, tiesiai iš „Torqvoice“.",
+    "noThreads": "Pokalbių dar nėra",
+    "noThreadsHint": "Žinutės atsiras čia, kai klientas parašys jūsų „WhatsApp“ numeriu arba jūs jam.",
+    "selectThread": "Pasirinkite pokalbį",
+    "backToThreads": "Pokalbiai",
+    "empty": "Čia dar nieko nėra.",
+    "placeholder": "Rašykite žinutę",
+    "send": "Siųsti",
+    "sendFailed": "Nepavyko išsiųsti žinutės",
+    "attach": "Pridėti nuotrauką",
+    "attachFailed": "Nepavyko pridėti nuotraukos",
+    "removeAttachment": "Pašalinti priedą",
+    "attachment": "Priedas",
+    "delete": "Ištrinti",
+    "deleteFailed": "Nepavyko ištrinti žinutės",
+    "sentAsTemplate": "šablonas",
+    "sentAsTemplateNotice": "Išsiųsta kaip patvirtintas šablonas, nes klientas nerašė pastarąsias 24 valandas.",
+    "windowClosed": "Klientas nerašė pastarąsias 24 valandas, todėl tai iškeliaus kaip patvirtintas šablonas.",
+    "unknownNumber": "Šis numeris dar nepriskirtas klientui. Norėdami atsakyti, pridėkite jį kaip klientą.",
+    "notConfigured": {
+      "title": "„WhatsApp“ neprijungtas",
+      "description": "Prijunkite „WhatsApp“ numerį, kad galėtumėte susirašinėti su klientais.",
+      "action": "Nustatyti „WhatsApp“"
+    }
   }
 }

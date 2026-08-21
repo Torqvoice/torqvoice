@@ -51,5 +51,32 @@
       "hint": "Fjerner legitimasjonen fra Torqvoice. Samtalene beholdes.",
       "done": "WhatsApp koblet fra"
     }
+  },
+  "messages": {
+    "featureName": "WhatsApp-meldinger",
+    "featureDescription": "Send og motta WhatsApp-meldinger, inkludert bilder av deler, rett fra Torqvoice.",
+    "noThreads": "Ingen samtaler ennå",
+    "noThreadsHint": "Meldinger dukker opp her så snart en kunde skriver til WhatsApp-nummeret ditt, eller du skriver til dem.",
+    "selectThread": "Velg en samtale",
+    "backToThreads": "Samtaler",
+    "empty": "Ingenting her ennå.",
+    "placeholder": "Skriv en melding",
+    "send": "Send",
+    "sendFailed": "Kunne ikke sende meldingen",
+    "attach": "Legg ved et bilde",
+    "attachFailed": "Kunne ikke legge ved bildet",
+    "removeAttachment": "Fjern vedlegg",
+    "attachment": "Vedlegg",
+    "delete": "Slett",
+    "deleteFailed": "Kunne ikke slette meldingen",
+    "sentAsTemplate": "mal",
+    "sentAsTemplateNotice": "Sendt som den godkjente malen din, fordi kunden ikke har skrevet de siste 24 timene.",
+    "windowClosed": "Kunden har ikke skrevet de siste 24 timene, så dette går ut som den godkjente malen din.",
+    "unknownNumber": "Dette nummeret tilhører ingen kunde ennå. Legg dem til som kunde for å svare.",
+    "notConfigured": {
+      "title": "WhatsApp er ikke koblet til",
+      "description": "Koble til et WhatsApp-nummer for å sende og motta meldinger med kundene dine.",
+      "action": "Sett opp WhatsApp"
+    }
   }
 }

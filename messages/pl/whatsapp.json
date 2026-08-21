@@ -51,5 +51,32 @@
       "hint": "Usuwa dane logowania z Torqvoice. Rozmowy pozostają.",
       "done": "WhatsApp rozłączony"
     }
+  },
+  "messages": {
+    "featureName": "Wiadomości WhatsApp",
+    "featureDescription": "Wysyłaj i odbieraj wiadomości WhatsApp, w tym zdjęcia części, bezpośrednio w Torqvoice.",
+    "noThreads": "Brak rozmów",
+    "noThreadsHint": "Wiadomości pojawią się tutaj, gdy klient napisze na Twój numer WhatsApp albo Ty napiszesz do niego.",
+    "selectThread": "Wybierz rozmowę",
+    "backToThreads": "Rozmowy",
+    "empty": "Jeszcze nic tu nie ma.",
+    "placeholder": "Napisz wiadomość",
+    "send": "Wyślij",
+    "sendFailed": "Nie udało się wysłać wiadomości",
+    "attach": "Dołącz zdjęcie",
+    "attachFailed": "Nie udało się dołączyć zdjęcia",
+    "removeAttachment": "Usuń załącznik",
+    "attachment": "Załącznik",
+    "delete": "Usuń",
+    "deleteFailed": "Nie udało się usunąć wiadomości",
+    "sentAsTemplate": "szablon",
+    "sentAsTemplateNotice": "Wysłano jako zatwierdzony szablon, bo klient nie pisał przez ostatnie 24 godziny.",
+    "windowClosed": "Klient nie pisał przez ostatnie 24 godziny, więc wiadomość wyjdzie jako zatwierdzony szablon.",
+    "unknownNumber": "Ten numer nie należy jeszcze do żadnego klienta. Dodaj go jako klienta, aby odpowiedzieć.",
+    "notConfigured": {
+      "title": "WhatsApp nie jest połączony",
+      "description": "Podłącz numer WhatsApp, aby wymieniać wiadomości z klientami.",
+      "action": "Skonfiguruj WhatsApp"
+    }
   }
 }
