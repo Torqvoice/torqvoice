@@ -53,7 +53,6 @@ import {
   Globe,
   Layers,
   MessageSquare,
-  Send,
   LayoutDashboard,
   Loader2,
   LogOut,
