@@ -46,6 +46,7 @@
     "maintenance": "Numatoma priežiūra",
     "reminders": "Artėjantys priminimai",
     "inspections": "Apžiūros",
+    "serviceRequests": "Paslaugų užklausos",
     "quoteRequests": "Pasiūlymų užklausos",
     "quoteResponses": "Pasiūlymų atsakymai",
     "sms": "Naujausios žinutės",
@@ -68,6 +69,7 @@
     "active": "Aktyvūs",
     "dismissedTab": "Atmesti",
     "noActive": "Šiuo metu nėra transporto priemonių, kurioms reikia aptarnavimo.",
+    "noDismissed": "Nėra atmestų transporto priemonių.",
     "dismissedOn": "Atmesta {date}",
     "restore": "Atkurti",
     "settingsAriaLabel": "Maintenance settings",
@@ -95,6 +97,11 @@
     "completed": "Užbaigtos",
     "itemCount": "{inspected}/{total} elementų",
     "noData": "Apžiūrų nėra."
+  },
+  "serviceRequests": {
+    "title": "Paslaugų užklausos",
+    "description": "Vizitų užklausos iš klientų portalo",
+    "noData": "Nėra laukiančių paslaugų užklausų."
   },
   "quoteRequests": {
     "title": "Pasiūlymų užklausos",

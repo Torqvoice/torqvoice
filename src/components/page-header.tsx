@@ -221,7 +221,13 @@ export function PageHeader() {
               if (isLast) {
                 return (
                   <BreadcrumbItem key={i}>
-                    <BreadcrumbPage>{t(segment.key)}</BreadcrumbPage>
+                    {/* A trail of one is not a trail. Pages that sit at the
+                        top level get their crumb styled as the page title. */}
+                    <BreadcrumbPage
+                      className={segments.length === 1 ? 'text-base font-semibold' : undefined}
+                    >
+                      {t(segment.key)}
+                    </BreadcrumbPage>
                   </BreadcrumbItem>
                 )
               }
@@ -241,7 +247,7 @@ export function PageHeader() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">
-          {docsHref && <DocsLink href={docsHref} className="hidden sm:inline" />}
+          {docsHref && <DocsLink href={docsHref} variant="header" className="hidden sm:flex" />}
           <SearchTrigger />
           <QuickCreateMenu />
           {showWhiteLabelCta && (
