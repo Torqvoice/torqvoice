@@ -167,7 +167,7 @@ export function CustomerForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>{customer ? t('editTitle') : t('addTitle')}</DialogTitle>
             <DocsLink href="/docs/features/customers" variant="hint" className="self-start" />
@@ -180,107 +180,113 @@ export function CustomerForm({
             key={customer?.id ?? `${defaults?.name ?? ''}|${defaults?.address ?? ''}`}
             ref={formRef}
             onSubmit={handleSubmit}
-            className="space-y-4"
+            className="grid gap-x-6 gap-y-4 md:grid-cols-2"
           >
-            {/* The keeper on a registration document is a customer waiting to be typed in */}
-            <ScanDocumentButton onScanned={applyScan} />
+            {/* Left: who the customer is and how to reach them */}
+            <div className="space-y-4">
+              {/* The keeper on a registration document is a customer waiting to be typed in */}
+              <ScanDocumentButton onScanned={applyScan} />
 
-            <div className="grid grid-cols-[1fr_120px] gap-4">
+              <div className="grid grid-cols-[1fr_120px] gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">{t('nameRequired')}</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder={t('namePlaceholder')}
+                    defaultValue={customer?.name ?? defaults?.name ?? ''}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
+                  <Input
+                    id="customerNumber"
+                    name="customerNumber"
+                    placeholder={t('customerNumberAuto')}
+                    defaultValue={customer?.customerNumber ?? ''}
+                    maxLength={20}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">{tc('form.email')}</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder={t('emailPlaceholder')}
+                    defaultValue={customer?.email ?? ''}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">{tc('form.phone')}</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    placeholder={t('phonePlaceholder')}
+                    defaultValue={customer?.phone ?? ''}
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="name">{t('nameRequired')}</Label>
+                <Label htmlFor="company">{tc('form.company')}</Label>
                 <Input
-                  id="name"
-                  name="name"
-                  placeholder={t('namePlaceholder')}
-                  defaultValue={customer?.name ?? defaults?.name ?? ''}
-                  required
+                  id="company"
+                  name="company"
+                  placeholder={t('companyPlaceholder')}
+                  defaultValue={customer?.company ?? ''}
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
+                <Label htmlFor="address">{tc('form.address')}</Label>
                 <Input
-                  id="customerNumber"
-                  name="customerNumber"
-                  placeholder={t('customerNumberAuto')}
-                  defaultValue={customer?.customerNumber ?? ''}
-                  maxLength={20}
+                  id="address"
+                  name="address"
+                  placeholder={t('addressPlaceholder')}
+                  defaultValue={customer?.address ?? defaults?.address ?? ''}
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Right: billing details and free text */}
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">{tc('form.email')}</Label>
+                <Label htmlFor="taxId">{t('taxId')}</Label>
                 <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t('emailPlaceholder')}
-                  defaultValue={customer?.email ?? ''}
+                  id="taxId"
+                  name="taxId"
+                  placeholder={t('taxIdPlaceholder')}
+                  defaultValue={customer?.taxId ?? ''}
+                />
+                <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
+              </div>
+
+              <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <Label>{t('taxExempt')}</Label>
+                  <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
+                </div>
+                <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">{tc('form.notes')}</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  placeholder={t('notesPlaceholder')}
+                  rows={3}
+                  defaultValue={customer?.notes ?? ''}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">{tc('form.phone')}</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  placeholder={t('phonePlaceholder')}
-                  defaultValue={customer?.phone ?? ''}
-                />
-              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="company">{tc('form.company')}</Label>
-              <Input
-                id="company"
-                name="company"
-                placeholder={t('companyPlaceholder')}
-                defaultValue={customer?.company ?? ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="address">{tc('form.address')}</Label>
-              <Input
-                id="address"
-                name="address"
-                placeholder={t('addressPlaceholder')}
-                defaultValue={customer?.address ?? defaults?.address ?? ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="taxId">{t('taxId')}</Label>
-              <Input
-                id="taxId"
-                name="taxId"
-                placeholder={t('taxIdPlaceholder')}
-                defaultValue={customer?.taxId ?? ''}
-              />
-              <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
-            </div>
-
-            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <Label>{t('taxExempt')}</Label>
-                <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
-              </div>
-              <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">{tc('form.notes')}</Label>
-              <Textarea
-                id="notes"
-                name="notes"
-                placeholder={t('notesPlaceholder')}
-                rows={3}
-                defaultValue={customer?.notes ?? ''}
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {tc('buttons.cancel')}
               </Button>
