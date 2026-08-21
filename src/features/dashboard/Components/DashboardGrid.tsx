@@ -84,9 +84,10 @@ export function DashboardGrid({
     return Math.min(stored, fitted[id] ?? stored)
   }
 
-  // Measure once the grid has stopped moving, then again after each
-  // adjustment until nothing more can be given back. Returning the previous
-  // state unchanged ends the loop, since `fitted` is what re-runs this.
+  // Measure once the grid has stopped moving. The answer is absolute rather
+  // than a nudge in one direction, so a card lands on its height in a single
+  // pass; returning the previous state unchanged ends the loop, since
+  // `fitted` is what re-runs this.
   const idsKey = visibleIds.join('|')
   const collapsedKey = collapsedIds.join('|')
   useEffect(() => {
@@ -104,11 +105,9 @@ export function DashboardGrid({
           const scroller = wrap && contentRegion(wrap)
           if (!scroller) continue
           const current = prev[id] ?? stored.h
-          const slack = scroller.clientHeight - scroller.scrollHeight
-          let want = current
-          if (slack >= ROW_STEP) want = current - Math.floor(slack / ROW_STEP)
-          else if (slack < 0) want = current + Math.ceil(-slack / ROW_STEP)
-          want = Math.max(CARD_MIN_H, Math.min(stored.h, want))
+          const needed = neededRows(wrap, scroller)
+          if (needed === null) continue
+          const want = Math.max(CARD_MIN_H, Math.min(stored.h, needed))
           if (want !== current) {
             next[id] = want
             changed = true
@@ -202,6 +201,42 @@ export function DashboardGrid({
       )}
     </div>
   )
+}
+
+/**
+ * Grid rows this card needs to show everything it has, or null if that
+ * cannot be worked out.
+ *
+ * Deliberately not `scrollHeight`: that never reports less than the box it
+ * is in, so a card with room to spare looks exactly like one filled to the
+ * brim. The content is measured from the top of its first child to the
+ * bottom of its last instead, which also picks up the margins between them,
+ * and the card's fixed furniture — header, tabs, footer — is added on top.
+ *
+ * An empty state is the case this still cannot see: it fills its box on
+ * purpose, so it measures as exactly full. Those cards come through
+ * `collapsedIds` instead.
+ */
+function neededRows(wrap: HTMLElement, scroller: HTMLElement): number | null {
+  const card = wrap.firstElementChild
+  if (!card) return null
+
+  let furniturePx = 0
+  for (const part of card.children) {
+    if (part !== scroller) furniturePx += part.getBoundingClientRect().height
+  }
+
+  const style = getComputedStyle(scroller)
+  const paddingPx = Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom)
+  const kids = scroller.children
+  const contentPx =
+    kids.length === 0
+      ? 0
+      : kids[kids.length - 1].getBoundingClientRect().bottom - kids[0].getBoundingClientRect().top
+
+  // h rows measure h * GRID_ROW_HEIGHT + (h - 1) * marginY pixels.
+  const needed = furniturePx + paddingPx + contentPx + GRID_MARGIN[1]
+  return Math.ceil(needed / ROW_STEP)
 }
 
 /**

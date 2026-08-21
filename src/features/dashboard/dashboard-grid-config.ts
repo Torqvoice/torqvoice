@@ -29,8 +29,16 @@ export interface CardLayout {
   h: number
 }
 
+/**
+ * Bumped when a card's default position moves and the new one should reach
+ * people who already have a layout saved. `normalizeLayout` discards the
+ * stored spot for the cards named in MOVED_AT and only for those, so
+ * everything else the user arranged survives the migration.
+ */
+export const LAYOUT_VERSION = 2
+
 export interface DashboardLayout {
-  version: 1
+  version: number
   /** Hidden card ids: built-in ids or custom:<widgetId> */
   hidden: string[]
   /** Positions keyed by built-in id or custom:<widgetId> */
@@ -76,7 +84,7 @@ const full = (row: number, h = 5): CardLayout => ({ x: 0, y: row, w: 12, h })
  * cannot collide, and `inspections` takes the partner position.
  */
 export const DEFAULT_LAYOUT: DashboardLayout = {
-  version: 1,
+  version: LAYOUT_VERSION,
   hidden: [],
   cards: {
     // First-run checklist leads the grid; rows compact upward once it is
@@ -108,6 +116,13 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
   },
 }
 
+/** Cards whose default moved, and the layout version that moved them. */
+const MOVED_AT: Partial<Record<DashboardCardId, number>> = {
+  // Was bottom-left, under both full-width tables; now right column, above
+  // the completed-work table.
+  tireHotel: 2,
+}
+
 function isCardLayout(v: unknown): v is CardLayout {
   if (!v || typeof v !== 'object') return false
   const c = v as Record<string, unknown>
@@ -134,18 +149,20 @@ export function placeAtBottom(cards: Record<string, CardLayout>): CardLayout {
 /**
  * Merges a stored layout with the defaults: unknown card ids are dropped,
  * missing cards (added after the user saved) fall back to their default
- * position, and malformed values reset. `customIds` are the currently
+ * position, cards whose default has moved since the layout was saved take
+ * the new one, and malformed values reset. `customIds` are the currently
  * existing custom:<widgetId> card ids; stored entries for deleted widgets
  * are discarded, and new widgets get a spot at the bottom. Never throws.
  */
 export function normalizeLayout(raw: unknown, customIds: string[] = []): DashboardLayout {
   const result: DashboardLayout = {
-    version: 1,
+    version: LAYOUT_VERSION,
     hidden: [],
     cards: { ...DEFAULT_LAYOUT.cards },
   }
   const knownIds = new Set<string>([...DASHBOARD_CARD_IDS, ...customIds])
   const data = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+  const storedVersion = typeof data.version === 'number' ? data.version : 1
 
   if (Array.isArray(data.hidden)) {
     result.hidden = data.hidden.filter(
@@ -156,6 +173,10 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
   const cards =
     data.cards && typeof data.cards === 'object' ? (data.cards as Record<string, unknown>) : {}
   for (const id of DASHBOARD_CARD_IDS) {
+    const movedAt = MOVED_AT[id]
+    // A layout saved before this card moved keeps the default, not the spot
+    // it was stored in; one saved since is the user's own choice.
+    if (movedAt !== undefined && storedVersion < movedAt) continue
     const stored = cards[id]
     if (isCardLayout(stored)) result.cards[id] = clampCard(stored)
   }

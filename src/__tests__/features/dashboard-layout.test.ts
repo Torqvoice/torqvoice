@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   DASHBOARD_CARD_IDS,
   DEFAULT_LAYOUT,
+  LAYOUT_VERSION,
+  normalizeLayout,
   type CardLayout,
   type DashboardCardId,
 } from '@/features/dashboard/dashboard-grid-config'
@@ -96,5 +98,49 @@ describe('default dashboard layout', () => {
     for (const [row] of lonely) {
       expect(row, `a half card sits alone on row ${row}, leaving a hole beside it`).toBe(lastRow)
     }
+  })
+})
+
+/**
+ * Moving a default is the one thing that reaches past a saved layout, so it
+ * has to reach exactly as far as intended: the card that moved, and nothing
+ * else the user put where they wanted it.
+ */
+describe('moved defaults', () => {
+  const somewhereElse: CardLayout = { x: 0, y: 34, w: 6, h: 5 }
+
+  it('replaces a stored position saved before the card moved', () => {
+    const layout = normalizeLayout({
+      version: 1,
+      hidden: [],
+      cards: { tireHotel: somewhereElse },
+    })
+
+    expect(layout.cards.tireHotel).toEqual(DEFAULT_LAYOUT.cards.tireHotel)
+  })
+
+  it('keeps a stored position saved since the card moved', () => {
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { tireHotel: somewhereElse },
+    })
+
+    expect(layout.cards.tireHotel).toEqual(somewhereElse)
+  })
+
+  it('leaves every other card where the user put it', () => {
+    const layout = normalizeLayout({
+      version: 1,
+      hidden: [],
+      cards: { reminders: somewhereElse, activeJobs: { x: 0, y: 0, w: 12, h: 6 } },
+    })
+
+    expect(layout.cards.reminders).toEqual(somewhereElse)
+    expect(layout.cards.activeJobs).toEqual({ x: 0, y: 0, w: 12, h: 6 })
+  })
+
+  it('stamps the current version so the move happens once', () => {
+    expect(normalizeLayout({ version: 1, hidden: [], cards: {} }).version).toBe(LAYOUT_VERSION)
   })
 })
