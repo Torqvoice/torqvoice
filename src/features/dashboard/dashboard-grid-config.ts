@@ -99,9 +99,10 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     // Opt-in, and the odd card out when it is on: it sits below the last
     // pair of halves and above the full-width tables, which keeps it the
     // lowest half row, so the hole beside it is allowed and lands in one
-    // predictable place. Hidden entirely when the module is off, so a shop
-    // without it never reserves the slot.
-    tireHotel: half(0, 24),
+    // predictable place. Right column, so that hole reads as a margin
+    // rather than a gap punched in the middle of the page. Hidden entirely
+    // when the module is off, so a shop without it never reserves the slot.
+    tireHotel: half(6, 24),
     recentCompleted: full(29),
     activeJobs: full(34),
   },
