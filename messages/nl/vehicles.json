@@ -327,8 +327,6 @@
     "scanningDocument": "Document wordt gelezen...",
     "scanSuccess": "Velden ingevuld vanaf het document",
     "scanFailed": "Kon het document niet lezen",
-    "ownerFromDocument": "Tenaamgestelde volgens het document",
-    "createCustomerFromDocument": "Toevoegen als klant",
     "ownerMatchTitle": "Voertuig toewijzen",
     "ownerMatchDescription": "Op het document staat {name}. Kies een van deze klanten of maak een nieuwe aan.",
     "ownerMatchScore": "{percent}% overeenkomst",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Klant kiezen",
     "scanUnavailable": "Schakel AI in bij instellingen",
     "sectionAssignment": "Foto en eigenaar",
-    "sectionDetails": "Details"
+    "sectionDetails": "Details",
+    "addScannedOwner": "Klant {name} toevoegen",
+    "ownerSaveFailed": "Kon de klant niet aanmaken"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",

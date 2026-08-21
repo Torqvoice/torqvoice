@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Command,
   CommandEmpty,
@@ -40,6 +41,7 @@ import { nameSimilarity } from '@/lib/name-similarity'
 import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
+import { createCustomer } from '@/features/customers/Actions/customerActions'
 import { useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
@@ -105,6 +107,8 @@ export function VehicleForm({
   /** Keeper read off a scanned document, until it is tied to a customer. */
   const [scannedOwner, setScannedOwner] = useState<{ name?: string; address?: string } | null>(null)
   const [ownerMatches, setOwnerMatches] = useState<OwnerMatch[]>([])
+  /** Whether saving should also create the keeper as a customer. */
+  const [addOwner, setAddOwner] = useState(true)
   const [showOwnerMatch, setShowOwnerMatch] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -117,6 +121,7 @@ export function VehicleForm({
     setFuelType(vehicle?.fuelType ?? 'gasoline')
     setScannedOwner(null)
     setOwnerMatches([])
+    setAddOwner(true)
   }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl, vehicle?.fuelType, defaultCustomerId])
 
   const selectedCustomerLabel = useMemo(() => {
@@ -191,6 +196,7 @@ export function VehicleForm({
 
     if (!data.owner?.name || selectedCustomerId !== 'none') return
     setScannedOwner(data.owner)
+    setAddOwner(true)
 
     // Near-identical names are still a judgement call: two brothers at one
     // address differ by a first name. Offer the close ones and let the user say.
@@ -232,6 +238,21 @@ export function VehicleForm({
         return
       }
 
+      // The keeper read off the papers is nobody until a customer row exists,
+      // and losing them to an unnoticed checkbox is worse than an extra record.
+      let customerId = selectedCustomerId === 'none' ? undefined : selectedCustomerId || undefined
+      if (!customerId && addOwner && scannedOwner?.name) {
+        const created = await createCustomer({
+          name: scannedOwner.name,
+          address: scannedOwner.address,
+        })
+        if (created.success && created.data) {
+          customerId = (created.data as { id: string }).id
+        } else {
+          toast.error(created.error || t('ownerSaveFailed'))
+        }
+      }
+
       const data: CreateVehicleInput & { imageUrl?: string } = {
         make: formData.get('make') as string,
         model: formData.get('model') as string,
@@ -244,7 +265,7 @@ export function VehicleForm({
         transmission: (formData.get('transmission') as string) || undefined,
         engineSize: (formData.get('engineSize') as string) || undefined,
         engineCode: (formData.get('engineCode') as string) || undefined,
-        customerId: selectedCustomerId === 'none' ? undefined : selectedCustomerId || undefined,
+        customerId,
       }
 
       const payload = imageUrl ? { ...data, imageUrl } : data
@@ -411,32 +432,36 @@ export function VehicleForm({
 
                 {/* Keeper read off the papers who matches no customer yet */}
                 {scannedOwner?.name && selectedCustomerId === 'none' && (
-                  <div className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-border bg-muted/30 p-2">
-                    <div className="min-w-0">
-                      <p className="text-xs text-muted-foreground">{t('ownerFromDocument')}</p>
-                      <p className="truncate text-sm font-medium">{scannedOwner.name}</p>
-                      {scannedOwner.address && (
-                        <p className="truncate text-xs text-muted-foreground">
-                          {scannedOwner.address}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      className="shrink-0"
-                      onClick={() =>
-                        ownerMatches.length > 0
-                          ? setShowOwnerMatch(true)
-                          : setShowCustomerForm(true)
-                      }
-                    >
-                      <Plus className="mr-1 h-3 w-3" />
-                      {ownerMatches.length > 0
-                        ? t('ownerMatchChoose')
-                        : t('createCustomerFromDocument')}
-                    </Button>
+                  <div className="space-y-2 rounded-lg border border-dashed border-border bg-muted/30 p-3">
+                    <label className="flex cursor-pointer items-start gap-3">
+                      <Checkbox
+                        className="mt-0.5"
+                        checked={addOwner}
+                        onCheckedChange={(next) => setAddOwner(next === true)}
+                      />
+                      <span className="min-w-0">
+                        <span className="block text-sm">
+                          {t('addScannedOwner', { name: scannedOwner.name })}
+                        </span>
+                        {scannedOwner.address && (
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {scannedOwner.address}
+                          </span>
+                        )}
+                      </span>
+                    </label>
+
+                    {ownerMatches.length > 0 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => setShowOwnerMatch(true)}
+                      >
+                        {t('ownerMatchChoose')}
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

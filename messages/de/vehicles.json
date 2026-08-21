@@ -327,8 +327,6 @@
     "scanningDocument": "Dokument wird gelesen...",
     "scanSuccess": "Felder aus dem Dokument übernommen",
     "scanFailed": "Dokument konnte nicht gelesen werden",
-    "ownerFromDocument": "Halter laut Dokument",
-    "createCustomerFromDocument": "Als Kunde anlegen",
     "ownerMatchTitle": "Fahrzeug zuordnen",
     "ownerMatchDescription": "Im Dokument steht {name}. Wählen Sie einen dieser Kunden oder legen Sie einen neuen an.",
     "ownerMatchScore": "{percent}% Übereinstimmung",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Kunde auswählen",
     "scanUnavailable": "KI in den Einstellungen aktivieren",
     "sectionAssignment": "Foto und Halter",
-    "sectionDetails": "Details"
+    "sectionDetails": "Details",
+    "addScannedOwner": "Kunde {name} anlegen",
+    "ownerSaveFailed": "Kunde konnte nicht angelegt werden"
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",

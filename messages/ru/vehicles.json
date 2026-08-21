@@ -327,8 +327,6 @@
     "scanningDocument": "Чтение документа...",
     "scanSuccess": "Поля заполнены из документа",
     "scanFailed": "Не удалось прочитать документ",
-    "ownerFromDocument": "Владелец по документу",
-    "createCustomerFromDocument": "Добавить как клиента",
     "ownerMatchTitle": "Привязать автомобиль",
     "ownerMatchDescription": "В документе указан {name}. Выберите одного из этих клиентов или создайте нового.",
     "ownerMatchScore": "совпадение {percent}%",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Выбрать клиента",
     "scanUnavailable": "Включите ИИ в настройках",
     "sectionAssignment": "Фото и владелец",
-    "sectionDetails": "Характеристики"
+    "sectionDetails": "Характеристики",
+    "addScannedOwner": "Добавить клиента {name}",
+    "ownerSaveFailed": "Не удалось создать клиента"
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",

@@ -327,8 +327,6 @@
     "scanningDocument": "Belge okunuyor...",
     "scanSuccess": "Alanlar belgeden dolduruldu",
     "scanFailed": "Belge okunamadı",
-    "ownerFromDocument": "Belgedeki araç sahibi",
-    "createCustomerFromDocument": "Müşteri olarak ekle",
     "ownerMatchTitle": "Bu aracı ata",
     "ownerMatchDescription": "Belgede {name} yazıyor. Bu müşterilerden birini seçin veya yeni bir müşteri oluşturun.",
     "ownerMatchScore": "%{percent} eşleşme",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Müşteri seç",
     "scanUnavailable": "Ayarlardan yapay zekayı etkinleştirin",
     "sectionAssignment": "Fotoğraf ve sahibi",
-    "sectionDetails": "Ayrıntılar"
+    "sectionDetails": "Ayrıntılar",
+    "addScannedOwner": "{name} müşterisini ekle",
+    "ownerSaveFailed": "Müşteri oluşturulamadı"
   },
   "archiveDialog": {
     "title": "Aracı Arşivle",

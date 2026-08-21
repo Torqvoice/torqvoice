@@ -327,8 +327,6 @@
     "scanningDocument": "Leser dokumentet...",
     "scanSuccess": "Feltene er fylt ut fra dokumentet",
     "scanFailed": "Kunne ikke lese dokumentet",
-    "ownerFromDocument": "Eier ifølge dokumentet",
-    "createCustomerFromDocument": "Legg til som kunde",
     "ownerMatchTitle": "Tilordne kjøretøyet",
     "ownerMatchDescription": "Dokumentet oppgir {name}. Velg en av disse kundene, eller opprett en ny.",
     "ownerMatchScore": "{percent}% treff",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Velg kunde",
     "scanUnavailable": "Aktiver KI i innstillingene",
     "sectionAssignment": "Bilde og eier",
-    "sectionDetails": "Detaljer"
+    "sectionDetails": "Detaljer",
+    "addScannedOwner": "Legg til kunden {name}",
+    "ownerSaveFailed": "Kunne ikke opprette kunden"
   },
   "archiveDialog": {
     "title": "Arkiver kjøretøy",

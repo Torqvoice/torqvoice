@@ -327,8 +327,6 @@
     "scanningDocument": "Odczytywanie dokumentu...",
     "scanSuccess": "Pola wypełnione z dokumentu",
     "scanFailed": "Nie udało się odczytać dokumentu",
-    "ownerFromDocument": "Właściciel według dokumentu",
-    "createCustomerFromDocument": "Dodaj jako klienta",
     "ownerMatchTitle": "Przypisz pojazd",
     "ownerMatchDescription": "W dokumencie widnieje {name}. Wybierz jednego z tych klientów lub utwórz nowego.",
     "ownerMatchScore": "{percent}% zgodności",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Wybierz klienta",
     "scanUnavailable": "Włącz AI w ustawieniach",
     "sectionAssignment": "Zdjęcie i właściciel",
-    "sectionDetails": "Szczegóły"
+    "sectionDetails": "Szczegóły",
+    "addScannedOwner": "Dodaj klienta {name}",
+    "ownerSaveFailed": "Nie udało się utworzyć klienta"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",

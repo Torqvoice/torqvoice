@@ -327,8 +327,6 @@
     "scanningDocument": "Reading document...",
     "scanSuccess": "Fields filled from the document",
     "scanFailed": "Could not read the document",
-    "ownerFromDocument": "Owner on the document",
-    "createCustomerFromDocument": "Add as customer",
     "ownerMatchTitle": "Assign this vehicle",
     "ownerMatchDescription": "The document lists {name}. Use one of these customers or create a new one.",
     "ownerMatchScore": "{percent}% match",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Choose customer",
     "scanUnavailable": "Enable AI in settings",
     "sectionAssignment": "Photo and owner",
-    "sectionDetails": "Details"
+    "sectionDetails": "Details",
+    "addScannedOwner": "Add customer {name}",
+    "ownerSaveFailed": "Could not create the customer"
   },
   "archiveDialog": {
     "title": "Archive Vehicle",

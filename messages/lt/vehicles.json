@@ -327,8 +327,6 @@
     "scanningDocument": "Skaitomas dokumentas...",
     "scanSuccess": "Laukai užpildyti iš dokumento",
     "scanFailed": "Nepavyko perskaityti dokumento",
-    "ownerFromDocument": "Savininkas pagal dokumentą",
-    "createCustomerFromDocument": "Pridėti kaip klientą",
     "ownerMatchTitle": "Priskirti transporto priemonę",
     "ownerMatchDescription": "Dokumente nurodyta {name}. Pasirinkite vieną iš šių klientų arba sukurkite naują.",
     "ownerMatchScore": "{percent}% atitikmuo",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Pasirinkti klientą",
     "scanUnavailable": "Įjunkite DI nustatymuose",
     "sectionAssignment": "Nuotrauka ir savininkas",
-    "sectionDetails": "Duomenys"
+    "sectionDetails": "Duomenys",
+    "addScannedOwner": "Pridėti klientą {name}",
+    "ownerSaveFailed": "Nepavyko sukurti kliento"
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",

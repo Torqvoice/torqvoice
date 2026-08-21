@@ -327,8 +327,6 @@
     "scanningDocument": "Lendo o documento...",
     "scanSuccess": "Campos preenchidos a partir do documento",
     "scanFailed": "Não foi possível ler o documento",
-    "ownerFromDocument": "Proprietário conforme o documento",
-    "createCustomerFromDocument": "Adicionar como cliente",
     "ownerMatchTitle": "Atribuir este veículo",
     "ownerMatchDescription": "O documento indica {name}. Escolha um destes clientes ou crie um novo.",
     "ownerMatchScore": "{percent}% de correspondência",
@@ -336,7 +334,9 @@
     "ownerMatchChoose": "Escolher cliente",
     "scanUnavailable": "Ative a IA nas configurações",
     "sectionAssignment": "Foto e proprietário",
-    "sectionDetails": "Detalhes"
+    "sectionDetails": "Detalhes",
+    "addScannedOwner": "Adicionar o cliente {name}",
+    "ownerSaveFailed": "Não foi possível criar o cliente"
   },
   "archiveDialog": {
     "title": "Arquivar Veículo",
