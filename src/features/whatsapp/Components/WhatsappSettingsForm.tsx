@@ -22,6 +22,7 @@ import {
   ReadOnlyWrapper,
   SaveButton,
 } from '@/app/(authenticated)/settings/read-only-guard'
+import { TemplateVariablePicker } from './TemplateVariablePicker'
 import {
   disconnectWhatsapp,
   saveWhatsappSettings,
@@ -276,15 +277,9 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
               </p>
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="whatsapp-template-variables">{t('template.variablesLabel')}</Label>
-              <Input
-                id="whatsapp-template-variables"
-                value={templateVariables}
-                onChange={(event) => setTemplateVariables(event.target.value)}
-                placeholder="customer, vehicle, message"
-              />
+              <Label>{t('template.variablesLabel')}</Label>
+              <TemplateVariablePicker value={templateVariables} onChange={setTemplateVariables} />
               <p className="text-xs text-muted-foreground">{t('template.variablesHint')}</p>
-              <p className="text-xs text-muted-foreground">{t('template.variablesExample')}</p>
             </div>
 
             {provider?.template.usesLanguage !== false && (

@@ -39,7 +39,15 @@
       "languageHint": "Kod języka, w którym szablon zatwierdzono, na przykład pl.",
       "variablesLabel": "Wartości szablonu, po kolei",
       "variablesHint": "Które wartości wypełniają numerowane miejsca w szablonie, oddzielone przecinkami. Dostępne: customer, vehicle, plate, message, workshop. Zostaw puste, jeśli szablon ich nie ma.",
-      "variablesExample": "Szablon, w którym miejsce 1 to nazwisko, a 2 to pojazd, wymaga: customer, vehicle."
+      "tokens": {
+        "customer": "nazwa klienta",
+        "vehicle": "rocznik, marka i model",
+        "plate": "numer rejestracyjny",
+        "message": "to, co wpiszesz",
+        "workshop": "nazwa warsztatu"
+      },
+      "variablesEmpty": "Brak wartości. Dodaj je poniżej, w kolejności oczekiwanej przez szablon.",
+      "variablesRemove": "Usuń {name}"
     },
     "test": {
       "title": "Test i rozłączenie",

@@ -1,5 +1,8 @@
 import 'server-only'
 import { db } from '@/lib/db'
+import type { TemplateToken } from '@/features/whatsapp/Schema/templateTokens'
+
+export type { TemplateToken }
 
 /**
  * What a workshop can put in the blanks of an approved template.
@@ -15,30 +18,6 @@ import { db } from '@/lib/db'
  *
  * is filled by the list `customer, vehicle, message`.
  */
-
-export const TEMPLATE_TOKENS = ['customer', 'vehicle', 'plate', 'message', 'workshop'] as const
-
-export type TemplateToken = (typeof TEMPLATE_TOKENS)[number]
-
-export function parseTemplateTokens(value: string | undefined | null): TemplateToken[] {
-  if (!value?.trim()) return []
-  return value
-    .split(',')
-    .map((token) => token.trim().toLowerCase())
-    .filter((token): token is TemplateToken =>
-      (TEMPLATE_TOKENS as readonly string[]).includes(token)
-    )
-}
-
-/** Names any entry that is not one of ours, for the settings form to refuse. */
-export function unknownTemplateTokens(value: string | undefined | null): string[] {
-  if (!value?.trim()) return []
-  return value
-    .split(',')
-    .map((token) => token.trim().toLowerCase())
-    .filter(Boolean)
-    .filter((token) => !(TEMPLATE_TOKENS as readonly string[]).includes(token))
-}
 
 export interface TemplateContext {
   organizationId: string

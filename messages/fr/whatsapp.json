@@ -39,7 +39,15 @@
       "languageHint": "Le code de langue sous lequel le modèle a été approuvé, par exemple fr.",
       "variablesLabel": "Valeurs du modèle, dans l'ordre",
       "variablesHint": "Quelles valeurs remplissent les emplacements numérotés de votre modèle, séparées par des virgules. Disponibles : customer, vehicle, plate, message, workshop. Laissez vide si votre modèle n'en a pas.",
-      "variablesExample": "Un modèle dont l'emplacement 1 est le nom et le 2 le véhicule demande : customer, vehicle."
+      "tokens": {
+        "customer": "nom du client",
+        "vehicle": "année, marque et modèle",
+        "plate": "immatriculation",
+        "message": "ce que vous écrivez",
+        "workshop": "nom de votre atelier"
+      },
+      "variablesEmpty": "Aucune valeur pour l'instant. Ajoutez-les ci-dessous, dans l'ordre attendu par votre modèle.",
+      "variablesRemove": "Retirer {name}"
     },
     "test": {
       "title": "Tester et déconnecter",

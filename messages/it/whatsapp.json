@@ -39,7 +39,15 @@
       "languageHint": "Il codice lingua con cui è stato approvato, per esempio it.",
       "variablesLabel": "Valori del modello, in ordine",
       "variablesHint": "Quali valori riempiono gli spazi numerati del modello, separati da virgole. Disponibili: customer, vehicle, plate, message, workshop. Lascia vuoto se il modello non ha spazi.",
-      "variablesExample": "Un modello con lo spazio 1 per il nome e il 2 per il veicolo richiede: customer, vehicle."
+      "tokens": {
+        "customer": "nome del cliente",
+        "vehicle": "anno, marca e modello",
+        "plate": "targa",
+        "message": "ciò che scrivi",
+        "workshop": "nome della tua officina"
+      },
+      "variablesEmpty": "Ancora nessun valore. Aggiungili sotto, nell'ordine che il modello si aspetta.",
+      "variablesRemove": "Rimuovi {name}"
     },
     "test": {
       "title": "Prova e disconnetti",

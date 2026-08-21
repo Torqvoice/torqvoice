@@ -39,7 +39,15 @@
       "languageHint": "The language code the template was approved under, for example de.",
       "variablesLabel": "Template values, in order",
       "variablesHint": "Which values fill your template's numbered blanks, comma separated. Available: customer, vehicle, plate, message, workshop. Leave empty if your template has no blanks.",
-      "variablesExample": "A template reading Hallo blank-1, Ihr blank-2 ist fertig takes: customer, vehicle."
+      "tokens": {
+        "customer": "customer name",
+        "vehicle": "year, make and model",
+        "plate": "registration",
+        "message": "what you type",
+        "workshop": "your shop name"
+      },
+      "variablesEmpty": "No values yet. Add them below, in the order your template expects.",
+      "variablesRemove": "Remove {name}"
     },
     "test": {
       "title": "Test and disconnect",

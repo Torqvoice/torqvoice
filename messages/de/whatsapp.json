@@ -39,7 +39,15 @@
       "languageHint": "Sprachcode, unter dem die Vorlage freigegeben wurde, zum Beispiel de.",
       "variablesLabel": "Werte der Vorlage, in Reihenfolge",
       "variablesHint": "Welche Werte die nummerierten Platzhalter Ihrer Vorlage füllen, per Komma getrennt. Verfügbar: customer, vehicle, plate, message, workshop. Leer lassen, wenn die Vorlage keine Platzhalter hat.",
-      "variablesExample": "Eine Vorlage mit Platzhalter 1 für den Namen und Platzhalter 2 für das Fahrzeug braucht: customer, vehicle."
+      "tokens": {
+        "customer": "Kundenname",
+        "vehicle": "Baujahr, Marke und Modell",
+        "plate": "Kennzeichen",
+        "message": "Ihr Text",
+        "workshop": "Name Ihrer Werkstatt"
+      },
+      "variablesEmpty": "Noch keine Werte. Unten in der Reihenfolge Ihrer Vorlage hinzufügen.",
+      "variablesRemove": "{name} entfernen"
     },
     "test": {
       "title": "Test und Trennen",

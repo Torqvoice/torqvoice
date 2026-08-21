@@ -39,7 +39,15 @@
       "languageHint": "Kalbos kodas, su kuriuo šablonas patvirtintas, pavyzdžiui lt.",
       "variablesLabel": "Šablono reikšmės iš eilės",
       "variablesHint": "Kokios reikšmės užpildo sunumeruotas šablono vietas, atskirtos kableliais. Galimos: customer, vehicle, plate, message, workshop. Palikite tuščią, jei šablone vietų nėra.",
-      "variablesExample": "Šablonui, kurio 1 vieta yra vardas, o 2 – automobilis, reikia: customer, vehicle."
+      "tokens": {
+        "customer": "kliento vardas",
+        "vehicle": "metai, markė ir modelis",
+        "plate": "valstybinis numeris",
+        "message": "jūsų tekstas",
+        "workshop": "jūsų dirbtuvių pavadinimas"
+      },
+      "variablesEmpty": "Reikšmių dar nėra. Pridėkite jas žemiau tokia tvarka, kokios tikisi šablonas.",
+      "variablesRemove": "Pašalinti {name}"
     },
     "test": {
       "title": "Bandymas ir atjungimas",

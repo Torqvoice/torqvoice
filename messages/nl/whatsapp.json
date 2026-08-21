@@ -39,7 +39,15 @@
       "languageHint": "De taalcode waaronder het sjabloon is goedgekeurd, bijvoorbeeld nl.",
       "variablesLabel": "Waarden van het sjabloon, op volgorde",
       "variablesHint": "Welke waarden de genummerde plekken in je sjabloon invullen, gescheiden door komma's. Beschikbaar: customer, vehicle, plate, message, workshop. Laat leeg als je sjabloon er geen heeft.",
-      "variablesExample": "Een sjabloon waarin plek 1 de naam is en plek 2 het voertuig vraagt om: customer, vehicle."
+      "tokens": {
+        "customer": "klantnaam",
+        "vehicle": "bouwjaar, merk en model",
+        "plate": "kenteken",
+        "message": "wat je typt",
+        "workshop": "naam van je werkplaats"
+      },
+      "variablesEmpty": "Nog geen waarden. Voeg ze hieronder toe, in de volgorde die je sjabloon verwacht.",
+      "variablesRemove": "{name} verwijderen"
     },
     "test": {
       "title": "Testen en loskoppelen",

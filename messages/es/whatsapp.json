@@ -39,7 +39,15 @@
       "languageHint": "El código de idioma con el que se aprobó, por ejemplo es.",
       "variablesLabel": "Valores de la plantilla, en orden",
       "variablesHint": "Qué valores rellenan los huecos numerados de tu plantilla, separados por comas. Disponibles: customer, vehicle, plate, message, workshop. Déjalo vacío si tu plantilla no tiene huecos.",
-      "variablesExample": "Una plantilla con el hueco 1 para el nombre y el 2 para el vehículo necesita: customer, vehicle."
+      "tokens": {
+        "customer": "nombre del cliente",
+        "vehicle": "año, marca y modelo",
+        "plate": "matrícula",
+        "message": "lo que escribas",
+        "workshop": "nombre de tu taller"
+      },
+      "variablesEmpty": "Aún sin valores. Añádelos abajo, en el orden que espera tu plantilla.",
+      "variablesRemove": "Quitar {name}"
     },
     "test": {
       "title": "Probar y desconectar",

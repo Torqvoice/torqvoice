@@ -15,7 +15,8 @@ import {
   whatsappCredentialKey,
 } from '../Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter, listWhatsappProviderOptions } from '@/lib/whatsapp/registry'
-import { sendOrgWhatsapp, TEMPLATE_TOKENS, unknownTemplateTokens } from '@/lib/whatsapp'
+import { sendOrgWhatsapp } from '@/lib/whatsapp'
+import { TEMPLATE_TOKENS, unknownTemplateTokens } from '../Schema/templateTokens'
 
 /** Stands in for a stored secret, so the real one never reaches the browser. */
 const SECRET_MASK = '••••••••••••••••'

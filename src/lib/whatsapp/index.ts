@@ -9,11 +9,8 @@ import {
 } from '@/features/whatsapp/Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter } from './registry'
 import { signWhatsappMediaToken } from './media-link'
-import {
-  parseTemplateTokens,
-  resolveTemplateVariables,
-  type TemplateToken,
-} from './templateVariables'
+import { resolveTemplateVariables } from './templateVariables'
+import { parseTemplateTokens, type TemplateToken } from '@/features/whatsapp/Schema/templateTokens'
 import type {
   WhatsappAdapter,
   WhatsappContext,
@@ -24,7 +21,6 @@ import type {
 } from './types'
 
 export * from './types'
-export * from './templateVariables'
 export { listWhatsappAdapters, listWhatsappProviderOptions, getWhatsappAdapter } from './registry'
 
 /**

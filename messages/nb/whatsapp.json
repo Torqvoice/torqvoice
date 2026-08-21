@@ -39,7 +39,15 @@
       "languageHint": "Språkkoden malen ble godkjent under, for eksempel nb.",
       "variablesLabel": "Verdier i malen, i rekkefølge",
       "variablesHint": "Hvilke verdier som fyller de nummererte feltene i malen, skilt med komma. Tilgjengelig: customer, vehicle, plate, message, workshop. La stå tom hvis malen ikke har felter.",
-      "variablesExample": "En mal der felt 1 er navnet og felt 2 er kjøretøyet trenger: customer, vehicle."
+      "tokens": {
+        "customer": "kundenavn",
+        "vehicle": "årsmodell, merke og modell",
+        "plate": "registreringsnummer",
+        "message": "det du skriver",
+        "workshop": "navnet på verkstedet"
+      },
+      "variablesEmpty": "Ingen verdier ennå. Legg dem til under, i rekkefølgen malen forventer.",
+      "variablesRemove": "Fjern {name}"
     },
     "test": {
       "title": "Test og koble fra",
