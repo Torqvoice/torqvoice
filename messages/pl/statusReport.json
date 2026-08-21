@@ -37,7 +37,8 @@
     "skip": "Pomiń",
     "send": "Wyślij",
     "sent": "Raport statusu wysłany",
-    "failed": "Nie udało się wysłać raportu statusu"
+    "failed": "Nie udało się wysłać raportu statusu",
+    "notSent": "Nie wysłano"
   },
   "view": {
     "title": "Raport statusu pojazdu",

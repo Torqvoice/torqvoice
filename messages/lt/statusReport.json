@@ -37,7 +37,8 @@
     "skip": "Praleisti",
     "send": "Siųsti",
     "sent": "Būsenos ataskaita išsiųsta",
-    "failed": "Nepavyko išsiųsti būsenos ataskaitos"
+    "failed": "Nepavyko išsiųsti būsenos ataskaitos",
+    "notSent": "Neišsiųsta"
   },
   "view": {
     "title": "Transporto priemonės būsenos ataskaita",

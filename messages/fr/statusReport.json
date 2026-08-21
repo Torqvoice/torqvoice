@@ -37,7 +37,8 @@
     "skip": "Ignorer",
     "send": "Envoyer",
     "sent": "Rapport d'état envoyé",
-    "failed": "Échec de l'envoi du rapport d'état"
+    "failed": "Échec de l'envoi du rapport d'état",
+    "notSent": "Non envoyé"
   },
   "view": {
     "title": "Rapport d'état du véhicule",

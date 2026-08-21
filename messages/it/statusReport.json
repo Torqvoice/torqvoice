@@ -37,7 +37,8 @@
     "skip": "Salta",
     "send": "Invia",
     "sent": "Rapporto di stato inviato",
-    "failed": "Invio del rapporto di stato non riuscito"
+    "failed": "Invio del rapporto di stato non riuscito",
+    "notSent": "Non inviato"
   },
   "view": {
     "title": "Rapporto di stato del veicolo",

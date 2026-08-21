@@ -37,7 +37,8 @@
     "skip": "Skip",
     "send": "Send",
     "sent": "Status report sent",
-    "failed": "Failed to send status report"
+    "failed": "Failed to send status report",
+    "notSent": "Not sent"
   },
   "view": {
     "title": "Vehicle Status Report",

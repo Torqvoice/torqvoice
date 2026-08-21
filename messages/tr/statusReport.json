@@ -37,7 +37,8 @@
     "skip": "Atla",
     "send": "Gönder",
     "sent": "Durum raporu gönderildi",
-    "failed": "Durum raporu gönderilemedi"
+    "failed": "Durum raporu gönderilemedi",
+    "notSent": "Gönderilmedi"
   },
   "view": {
     "title": "Araç Durum Raporu",

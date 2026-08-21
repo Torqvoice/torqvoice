@@ -37,7 +37,8 @@
     "skip": "Überspringen",
     "send": "Senden",
     "sent": "Statusbericht gesendet",
-    "failed": "Statusbericht konnte nicht gesendet werden"
+    "failed": "Statusbericht konnte nicht gesendet werden",
+    "notSent": "Nicht gesendet"
   },
   "view": {
     "title": "Fahrzeug-Statusbericht",

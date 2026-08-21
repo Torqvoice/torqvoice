@@ -65,37 +65,76 @@ export async function sendStatusReport(input: unknown) {
         : t("defaultMessage", { name: customer.name, vehicle: vehicleName, url: publicUrl });
 
       const sentChannels: string[] = [];
+      const failures: { channel: string; error: string }[] = [];
 
-      if (data.channels.email && customer.email) {
-        await sendNotificationEmail({
-          recipientEmail: customer.email,
-          subject: t("emailSubject", { vehicle: vehicleName }),
-          body: messageBody,
-        });
-        sentChannels.push("email");
+      /**
+       * Records a channel as sent only if it was.
+       *
+       * The three senders are withAuth actions, so a refusal comes back as
+       * `{ success: false }` rather than as a thrown error. Nothing here used
+       * to read that, so a text message the provider rejected still counted,
+       * and the report was filed as sent over a channel that sent nothing.
+       *
+       * A missing address counts as a failure too. Someone ticked the box, and
+       * silently doing nothing is the same lie in a quieter voice.
+       */
+      const attempt = async (
+        channel: string,
+        address: string | null | undefined,
+        send: () => Promise<{ success: boolean; error?: string }>,
+      ) => {
+        if (!address) {
+          failures.push({ channel, error: "no address on file" });
+          return;
+        }
+        const result = await send();
+        if (result.success) sentChannels.push(channel);
+        else failures.push({ channel, error: result.error ?? "send failed" });
+      };
+
+      if (data.channels.email) {
+        await attempt("email", customer.email, () =>
+          sendNotificationEmail({
+            recipientEmail: customer.email as string,
+            subject: t("emailSubject", { vehicle: vehicleName }),
+            body: messageBody,
+          }),
+        );
       }
 
-      if (data.channels.sms && customer.phone) {
-        await sendSmsToCustomer({
-          customerId: customer.id,
-          body: messageBody,
-          relatedEntityType: "status_report",
-          relatedEntityId: report.id,
-        });
-        sentChannels.push("sms");
+      if (data.channels.sms) {
+        await attempt("sms", customer.phone, () =>
+          sendSmsToCustomer({
+            customerId: customer.id,
+            body: messageBody,
+            relatedEntityType: "status_report",
+            relatedEntityId: report.id,
+          }),
+        );
       }
 
-      if (data.channels.telegram && customer.telegramChatId) {
-        await sendTelegramToCustomer({
-          customerId: customer.id,
-          body: messageBody,
-          relatedEntityType: "status_report",
-          relatedEntityId: report.id,
-        });
-        sentChannels.push("telegram");
+      if (data.channels.telegram) {
+        await attempt("telegram", customer.telegramChatId, () =>
+          sendTelegramToCustomer({
+            customerId: customer.id,
+            body: messageBody,
+            relatedEntityType: "status_report",
+            relatedEntityId: report.id,
+          }),
+        );
       }
 
-      // Update the report status
+      // Nothing left the building, so nothing is recorded and the caller hears
+      // about it. Marking a report sent when every channel failed is the
+      // failure this whole function exists to avoid.
+      if (sentChannels.length === 0) {
+        throw new Error(
+          failures.map((f) => `${f.channel}: ${f.error}`).join("; ") || "No channel to send on",
+        );
+      }
+
+      // Only the channels that actually carried it. A partial send is still a
+      // send, and the row should say which half worked.
       await db.statusReport.update({
         where: { id: report.id },
         data: {
@@ -105,7 +144,12 @@ export async function sendStatusReport(input: unknown) {
         },
       });
 
-      return { sent: true, channels: sentChannels, statusReportId: data.statusReportId };
+      return {
+        sent: true,
+        channels: sentChannels,
+        failures,
+        statusReportId: data.statusReportId,
+      };
     },
     {
       requiredPermissions: [
