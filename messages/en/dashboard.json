@@ -68,6 +68,7 @@
     "active": "Active",
     "dismissedTab": "Dismissed",
     "noActive": "No vehicles currently due for service.",
+    "noDismissed": "No dismissed vehicles.",
     "dismissedOn": "Dismissed {date}",
     "restore": "Restore",
     "settingsAriaLabel": "Maintenance settings",

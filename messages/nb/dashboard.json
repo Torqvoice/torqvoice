@@ -68,6 +68,7 @@
     "active": "Aktive",
     "dismissedTab": "Avvist",
     "noActive": "Ingen kjøretøy trenger service for øyeblikket.",
+    "noDismissed": "Ingen avviste kjøretøy.",
     "dismissedOn": "Avvist {date}",
     "restore": "Gjenopprett",
     "settingsAriaLabel": "Maintenance settings",

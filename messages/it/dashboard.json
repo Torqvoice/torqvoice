@@ -68,6 +68,7 @@
     "active": "Attivi",
     "dismissedTab": "Ignorati",
     "noActive": "Nessun veicolo attualmente in scadenza per la manutenzione.",
+    "noDismissed": "Nessun veicolo ignorato.",
     "dismissedOn": "Ignorato il {date}",
     "restore": "Ripristina",
     "settingsAriaLabel": "Maintenance settings",

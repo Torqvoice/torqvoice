@@ -63,15 +63,15 @@ export function AppCard({
         // pass fades in on hover — gradients can't transition, opacity can.
         // inset-0, not a fixed-height strip: the ellipse must finish its own
         // fade-out inside the layer, or its clip edge draws a hard line.
-        'before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(8rem_5rem_at_2.75rem_2.5rem,color-mix(in_oklab,var(--primary)_9%,transparent),transparent_70%)]',
-        'after:pointer-events-none after:absolute after:inset-0 after:opacity-0 after:transition-opacity after:duration-300 after:bg-[radial-gradient(9.5rem_6rem_at_2.75rem_2.5rem,color-mix(in_oklab,var(--primary)_8%,transparent),transparent_70%)] hover:after:opacity-100',
+        'before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(8rem_5rem_at_2.75rem_2.5rem,color-mix(in_oklab,var(--primary)_6%,transparent),transparent_70%)]',
+        'after:pointer-events-none after:absolute after:inset-0 after:opacity-0 after:transition-opacity after:duration-300 after:bg-[radial-gradient(9.5rem_6rem_at_2.75rem_2.5rem,color-mix(in_oklab,var(--primary)_6%,transparent),transparent_70%)] hover:after:opacity-100',
         className
       )}
     >
       <div className="relative shrink-0">
         <div className="flex items-start gap-3 px-5 pb-3 pt-4">
           {Icon && (
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-b from-primary/18 to-primary/6 text-primary ring-1 ring-inset ring-primary/25 shadow-[inset_0_1px_0_rgb(255_255_255/0.15)]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-b from-primary/12 to-primary/4 text-primary ring-1 ring-inset ring-primary/20 shadow-[inset_0_1px_0_rgb(255_255_255/0.15)]">
               <Icon className="h-4 w-4" />
             </div>
           )}

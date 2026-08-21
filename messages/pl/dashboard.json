@@ -68,6 +68,7 @@
     "active": "Aktywne",
     "dismissedTab": "Odrzucone",
     "noActive": "Żaden pojazd nie wymaga obecnie serwisu.",
+    "noDismissed": "Brak odrzuconych pojazdów.",
     "dismissedOn": "Odrzucono {date}",
     "restore": "Przywróć",
     "settingsAriaLabel": "Maintenance settings",

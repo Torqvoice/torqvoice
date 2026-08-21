@@ -8,9 +8,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import {
   CARD_MIN_H,
   CARD_MIN_W,
+  COLLAPSED_CARD_H,
+  DEFAULT_LAYOUT,
   GRID_COLS,
   GRID_MARGIN,
   GRID_ROW_HEIGHT,
+  gridHeightPx,
   type CardLayout,
 } from '../dashboard-grid-config'
 
@@ -20,6 +23,12 @@ import {
  * through `onCardsCommit` when the user rearranges or resizes in edit mode.
  * Below the lg breakpoint the grid renders a compacted single column and is
  * never interactive.
+ *
+ * `collapsedIds` are cards with nothing to show. They are drawn at
+ * COLLAPSED_CARD_H rather than their stored height so a quiet dashboard is
+ * not mostly blank. Collapsing stays on in edit mode, so entering it never
+ * makes the page jump; simply moving a collapsed card leaves its stored
+ * height alone, and only pulling its resize handle sets a new one.
  */
 export function DashboardGrid({
   cards,
@@ -27,12 +36,15 @@ export function DashboardGrid({
   editing,
   onCardsCommit,
   cardNodes,
+  collapsedIds = [],
 }: {
   cards: Record<string, CardLayout>
   visibleIds: string[]
   editing: boolean
   onCardsCommit: (cards: Record<string, CardLayout>) => void
   cardNodes: Partial<Record<string, ReactNode>>
+  /** Ids of cards that currently have no rows to show. */
+  collapsedIds?: string[]
 }) {
   const { width, containerRef, mounted } = useContainerWidth()
   const [breakpoint, setBreakpoint] = useState('lg')
@@ -49,9 +61,15 @@ export function DashboardGrid({
   }, [mounted, width, ready])
   const interactive = editing && breakpoint === 'lg'
 
+  const collapsed = new Set(collapsedIds)
+  /** The height a card is actually drawn at, collapsed or not. */
+  const drawnHeight = (id: string) =>
+    collapsed.has(id) ? Math.min(cards[id].h, COLLAPSED_CARD_H) : cards[id].h
+
   const layout: Layout = visibleIds.map((id) => ({
     i: id,
     ...cards[id],
+    h: drawnHeight(id),
     minW: CARD_MIN_W,
     minH: CARD_MIN_H,
   }))
@@ -66,8 +84,13 @@ export function DashboardGrid({
       const id = item.i
       const prev = merged[id]
       if (!prev) continue
-      if (prev.x !== item.x || prev.y !== item.y || prev.w !== item.w || prev.h !== item.h) {
-        merged[id] = { x: item.x, y: item.y, w: item.w, h: item.h }
+      // A collapsed card is drawn shorter than it is stored. Coming back
+      // from the grid at exactly that drawn height means nothing was
+      // resized, so keep the stored height; any other value is the user
+      // having pulled the handle, and that is a real choice.
+      const h = collapsed.has(id) && item.h === drawnHeight(id) ? prev.h : item.h
+      if (prev.x !== item.x || prev.y !== item.y || prev.w !== item.w || prev.h !== h) {
+        merged[id] = { x: item.x, y: item.y, w: item.w, h }
         changed = true
       }
     }
@@ -78,10 +101,16 @@ export function DashboardGrid({
     <div ref={containerRef}>
       {!ready && (
         // Placeholder mirroring the default two-column card layout while the
-        // container width settles; the real grid mounts only at stable width
+        // container width settles; the real grid mounts only at stable width.
+        // Height comes from the grid model, so the skeleton and the card that
+        // replaces it are the same size and nothing reflows on mount.
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-[480px] rounded-xl" />
+            <Skeleton
+              key={i}
+              className="rounded-xl"
+              style={{ height: gridHeightPx(DEFAULT_LAYOUT.cards.maintenance.h) }}
+            />
           ))}
         </div>
       )}

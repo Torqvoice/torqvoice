@@ -4,10 +4,11 @@ import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { AppCard } from '@/components/app-card'
+import { CardEmpty } from '@/components/card-empty'
+import { StatTile } from '@/components/stat-tile'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -47,6 +48,7 @@ import {
   Loader2,
   BellRing,
   MessageSquare,
+  Package,
   Settings,
   Plus,
   RotateCcw,
@@ -307,6 +309,13 @@ export function DashboardClient({
   const t = useTranslations('dashboard')
   const tcm = useTranslations('common.contextMenu')
   const tAudit = useTranslations('audit')
+  // Empty-state actions reuse the labels their own sections already ship,
+  // so a card with nothing in it can still offer the next step without
+  // adding a translation key to twelve locales.
+  const tVehicles = useTranslations('vehicles')
+  const tInspections = useTranslations('inspections')
+  const tMessages = useTranslations('messages')
+  const tWorkOrders = useTranslations('workOrders')
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const { formatDate } = useFormatDate()
@@ -419,6 +428,41 @@ export function DashboardClient({
     return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
   }
 
+  /**
+   * Cards with nothing to show. They render at the grid's minimum height
+   * instead of their stored one, so a quiet shop does not get a screen of
+   * blank panels. Custom cards fetch their own rows and are never listed
+   * here; the getting-started checklist is always worth its space.
+   */
+  const emptyCardIds = [
+    vehiclesDueForService.length === 0 && dismissedMaintenanceVehicles.length === 0
+      ? 'maintenance'
+      : null,
+    upcomingReminders.length === 0 ? 'reminders' : null,
+    smsThreads.length === 0 ? 'sms' : null,
+    notifications.length === 0 ? 'notifications' : null,
+    inProgressInspections.length === 0 && completedInspections.length === 0 ? 'inspections' : null,
+    quoteRequests.length === 0 ? 'quoteRequests' : null,
+    quoteResponses.length === 0 ? 'quoteResponses' : null,
+    stats.recentServices.length === 0 ? 'recentCompleted' : null,
+    stats.todaysServices.length === 0 ? 'activeJobs' : null,
+    recentAuditLogs.length === 0 ? 'recentActivity' : null,
+    recentObservations.length === 0 ? 'recentObservations' : null,
+  ].filter((id): id is string => id !== null)
+
+  /** The one next step an empty card offers, styled the same everywhere. */
+  const emptyAction = (label: string, href: string) => (
+    <Button
+      variant="outline"
+      size="sm"
+      className="h-7 gap-1.5 text-xs"
+      onClick={() => router.push(href)}
+    >
+      <Plus className="h-3.5 w-3.5" />
+      {label}
+    </Button>
+  )
+
   const handleDismiss = async (vehicleId: string) => {
     setDismissingId(vehicleId)
     await dismissMaintenance(vehicleId)
@@ -440,71 +484,46 @@ export function DashboardClient({
         <div
           className={`grid grid-cols-2 gap-2 ${stats.isAdmin ? (stats.lowStockParts > 0 ? 'sm:grid-cols-5' : 'sm:grid-cols-4') : 'sm:grid-cols-2'}`}
         >
-          <Link
+          <StatTile
             href="/work-orders?status=active"
-            className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">{t('stats.activeJobs')}</span>
-              <ClipboardList className="h-3.5 w-3.5 text-muted-foreground/50" />
-            </div>
-            <p className="text-lg font-bold">{stats.activeJobs}</p>
-          </Link>
-          <Link
+            label={t('stats.activeJobs')}
+            value={stats.activeJobs}
+            icon={ClipboardList}
+          />
+          <StatTile
             href="/work-orders?status=pending"
-            className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground">{t('stats.pending')}</span>
-              <Clock className="h-3.5 w-3.5 text-muted-foreground/50" />
-            </div>
-            <p className="text-lg font-bold">{stats.pendingJobs}</p>
-          </Link>
+            label={t('stats.pending')}
+            value={stats.pendingJobs}
+            icon={Clock}
+          />
           {stats.isAdmin && (
-            <Link
+            <StatTile
               href="/inventory"
-              className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] text-muted-foreground">{t('stats.totalParts')}</span>
-                <Settings className="h-3.5 w-3.5 text-muted-foreground/50" />
-              </div>
-              <p className="text-lg font-bold">{stats.totalParts}</p>
-            </Link>
+              label={t('stats.totalParts')}
+              value={stats.totalParts}
+              icon={Package}
+            />
           )}
           {stats.isAdmin && stats.lowStockParts > 0 && (
-            <Link
+            <StatTile
               href="/inventory?lowStock=1"
-              className="rounded-lg border border-amber-500/30 bg-amber-50 px-3 py-2 shadow-sm transition-colors hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] text-amber-700 dark:text-amber-500">
-                  {t('stats.lowStock')}
-                </span>
-                <AlertTriangle className="h-3.5 w-3.5 text-amber-600/70" />
-              </div>
-              <p className="text-lg font-bold text-amber-700 dark:text-amber-500">
-                {stats.lowStockParts}
-              </p>
-            </Link>
+              label={t('stats.lowStock')}
+              value={stats.lowStockParts}
+              icon={AlertTriangle}
+              tone="warning"
+            />
           )}
           {stats.isAdmin && (
-            <Link
+            <StatTile
               href="/customers"
-              className="rounded-lg border border-card-edge shadow-sm bg-card px-3 py-2 transition-colors hover:bg-muted/50"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] text-muted-foreground">
-                  {t('stats.totalCustomers')}
-                </span>
-                <Users className="h-3.5 w-3.5 text-muted-foreground/50" />
-              </div>
-              <p className="text-lg font-bold">{stats.totalCustomers}</p>
-            </Link>
+              label={t('stats.totalCustomers')}
+              value={stats.totalCustomers}
+              icon={Users}
+            />
           )}
         </div>
 
-        {/* Customize Dashboard */}
+        {/* Dashboard controls, sitting above the grid they act on. */}
         <div className="flex items-center justify-end gap-2">
           {editing ? (
             <>
@@ -580,7 +599,7 @@ export function DashboardClient({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 text-xs gap-1.5"
+              className="h-8 gap-1.5 text-xs"
               onClick={() => setEditing(true)}
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -620,9 +639,11 @@ export function DashboardClient({
                   </Tooltip>
                 }
                 subheader={
+                  // Filter chips, not a call to action: a solid primary fill
+                  // here outshouted the overdue vehicle listed below it.
                   <div className="flex gap-1">
                     <Button
-                      variant={maintenanceTab === 'active' ? 'default' : 'ghost'}
+                      variant={maintenanceTab === 'active' ? 'secondary' : 'ghost'}
                       size="sm"
                       className="h-7 text-xs"
                       onClick={() => setMaintenanceTab('active')}
@@ -630,7 +651,7 @@ export function DashboardClient({
                       {t('maintenance.active')} ({vehiclesDueForService.length})
                     </Button>
                     <Button
-                      variant={maintenanceTab === 'dismissed' ? 'default' : 'ghost'}
+                      variant={maintenanceTab === 'dismissed' ? 'secondary' : 'ghost'}
                       size="sm"
                       className="h-7 text-xs"
                       onClick={() => setMaintenanceTab('dismissed')}
@@ -640,13 +661,21 @@ export function DashboardClient({
                   </div>
                 }
                 contentClassName="p-0"
+                footer={
+                  <button
+                    type="button"
+                    onClick={() => router.push('/vehicles')}
+                    className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+                  >
+                    {t('viewAll')}
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                }
               >
                 {maintenanceTab === 'active' && (
-                  <div className="divide-y">
+                  <div className={vehiclesDueForService.length === 0 ? 'h-full' : 'divide-y'}>
                     {vehiclesDueForService.length === 0 ? (
-                      <p className="px-5 py-4 text-xs text-muted-foreground">
-                        {t('maintenance.noActive')}
-                      </p>
+                      <CardEmpty icon={Gauge} title={t('maintenance.noActive')} />
                     ) : (
                       vehiclesDueForService.map((v) => (
                         <div
@@ -725,7 +754,12 @@ export function DashboardClient({
                   </div>
                 )}
                 {maintenanceTab === 'dismissed' && (
-                  <div className="divide-y">
+                  <div
+                    className={dismissedMaintenanceVehicles.length === 0 ? 'h-full' : 'divide-y'}
+                  >
+                    {dismissedMaintenanceVehicles.length === 0 && (
+                      <CardEmpty icon={EyeOff} title={t('maintenance.noDismissed')} />
+                    )}
                     {dismissedMaintenanceVehicles.map((v) => (
                       <div
                         key={v.vehicleId}
@@ -781,18 +815,24 @@ export function DashboardClient({
                 badge={upcomingReminders.length || undefined}
                 contentClassName="p-0"
                 footer={
-                  <button
-                    type="button"
-                    onClick={() => router.push('/reminders')}
-                    className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
-                  >
-                    {t('viewAll')}
-                    <ArrowRight className="h-3 w-3" />
-                  </button>
+                  upcomingReminders.length === 0 ? undefined : (
+                    <button
+                      type="button"
+                      onClick={() => router.push('/reminders')}
+                      className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+                    >
+                      {t('viewAll')}
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )
                 }
               >
                 {upcomingReminders.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">{t('reminders.noData')}</p>
+                  <CardEmpty
+                    icon={Bell}
+                    title={t('reminders.noData')}
+                    action={emptyAction(tVehicles('reminders.addReminder'), '/reminders')}
+                  />
                 ) : (
                   <div className="divide-y">
                     {upcomingReminders.map((r) => {
@@ -873,18 +913,24 @@ export function DashboardClient({
                 badge={smsThreads.length || undefined}
                 contentClassName="p-0"
                 footer={
-                  <button
-                    type="button"
-                    onClick={() => router.push('/messages')}
-                    className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
-                  >
-                    {t('messages.viewAll')}
-                    <ArrowRight className="h-3 w-3" />
-                  </button>
+                  smsThreads.length === 0 ? undefined : (
+                    <button
+                      type="button"
+                      onClick={() => router.push('/messages')}
+                      className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+                    >
+                      {t('messages.viewAll')}
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )
                 }
               >
                 {smsThreads.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">{t('messages.noData')}</p>
+                  <CardEmpty
+                    icon={MessageSquare}
+                    title={t('messages.noData')}
+                    action={emptyAction(tMessages('compose.newMessage'), '/messages')}
+                  />
                 ) : (
                   <div className="divide-y">
                     {smsThreads.map((thread) => (
@@ -926,9 +972,7 @@ export function DashboardClient({
                 contentClassName="p-0"
               >
                 {notifications.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">
-                    {t('notifications.noData')}
-                  </p>
+                  <CardEmpty icon={BellRing} title={t('notifications.noData')} />
                 ) : (
                   <div className="divide-y">
                     {notifications.slice(0, 5).map((n) => (
@@ -967,20 +1011,25 @@ export function DashboardClient({
                 title={t('inspections.title')}
                 contentClassName="p-0"
                 footer={
-                  <button
-                    type="button"
-                    onClick={() => router.push('/inspections')}
-                    className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
-                  >
-                    {t('viewAll')}
-                    <ArrowRight className="h-3 w-3" />
-                  </button>
+                  inProgressInspections.length === 0 &&
+                  completedInspections.length === 0 ? undefined : (
+                    <button
+                      type="button"
+                      onClick={() => router.push('/inspections')}
+                      className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+                    >
+                      {t('viewAll')}
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )
                 }
               >
                 {inProgressInspections.length === 0 && completedInspections.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">
-                    {t('inspections.noData')}
-                  </p>
+                  <CardEmpty
+                    icon={ClipboardCheck}
+                    title={t('inspections.noData')}
+                    action={emptyAction(tInspections('list.new'), '/inspections')}
+                  />
                 ) : (
                   <div className="divide-y">
                     {inProgressInspections.map((insp) => {
@@ -1110,9 +1159,7 @@ export function DashboardClient({
                 }
               >
                 {quoteRequests.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">
-                    {t('quoteRequests.noData')}
-                  </p>
+                  <CardEmpty icon={FileText} title={t('quoteRequests.noData')} />
                 ) : (
                   <div className="divide-y">
                     {quoteRequests.map((req) => {
@@ -1233,9 +1280,7 @@ export function DashboardClient({
                 }
               >
                 {quoteResponses.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">
-                    {t('quoteResponses.noData')}
-                  </p>
+                  <CardEmpty icon={FileText} title={t('quoteResponses.noData')} />
                 ) : (
                   <div className="divide-y">
                     {quoteResponses.map((resp) => (
@@ -1367,178 +1412,167 @@ export function DashboardClient({
                   </button>
                 }
               >
-                {/* Card list (phones + small tablets) */}
-                <div className="space-y-2 px-3 pb-3 md:hidden">
-                  {stats.recentServices.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-muted-foreground">
-                      {t('recentCompleted.empty')}
-                    </p>
-                  ) : (
-                    stats.recentServices.map((s) => {
-                      const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost
-                      const recordHref = s.vehicle
-                        ? `/vehicles/${s.vehicle.id}/service/${s.id}`
-                        : `/sales/${s.id}`
-                      const rowCustomer = s.customer ?? s.vehicle?.customer
-                      return (
-                        <button
-                          key={s.id}
-                          type="button"
-                          onClick={() => {
-                            setNavigatingId(s.id)
-                            router.push(recordHref)
-                          }}
-                          className={`w-full rounded-lg border p-2.5 text-left transition-opacity active:bg-muted/50 ${
-                            navigatingId === s.id ? 'opacity-50' : ''
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
-                            {stats.isAdmin && (
-                              <span className="shrink-0 font-semibold">
-                                {formatCurrency(displayTotal, currencyCode)}
-                              </span>
-                            )}
-                          </div>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {s.vehicle && (
-                              <>
-                                {s.vehicle.licensePlate && (
-                                  <span className="font-mono">{s.vehicle.licensePlate} · </span>
-                                )}
-                                {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
-                              </>
-                            )}
-                            {rowCustomer && ` · ${rowCustomer.name}`}
-                          </p>
-                          <p className="mt-1 font-mono text-xs text-muted-foreground">
-                            {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
-                          </p>
-                        </button>
-                      )
-                    })
-                  )}
-                </div>
-
-                <div className="hidden md:block" {...recentNav.containerProps}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-22.5">{t('recentCompleted.date')}</TableHead>
-                        <TableHead>{t('recentCompleted.vehicle')}</TableHead>
-                        <TableHead className="hidden sm:table-cell">
-                          {t('recentCompleted.customer')}
-                        </TableHead>
-                        <TableHead>{t('recentCompleted.serviceTitle')}</TableHead>
-                        {stats.isAdmin && (
-                          <TableHead className="w-22.5 text-right">
-                            {t('recentCompleted.total')}
-                          </TableHead>
-                        )}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {stats.recentServices.length === 0 ? (
-                        <TableRow>
-                          <TableCell
-                            colSpan={stats.isAdmin ? 5 : 4}
-                            className="h-20 text-center text-muted-foreground"
+                {stats.recentServices.length === 0 ? (
+                  <CardEmpty icon={Check} title={t('recentCompleted.empty')} />
+                ) : (
+                  <>
+                    {/* Card list (phones + small tablets) */}
+                    <div className="space-y-2 px-3 pb-3 md:hidden">
+                      {stats.recentServices.map((s) => {
+                        const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost
+                        const recordHref = s.vehicle
+                          ? `/vehicles/${s.vehicle.id}/service/${s.id}`
+                          : `/sales/${s.id}`
+                        const rowCustomer = s.customer ?? s.vehicle?.customer
+                        return (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => {
+                              setNavigatingId(s.id)
+                              router.push(recordHref)
+                            }}
+                            className={`w-full rounded-lg border p-2.5 text-left transition-opacity active:bg-muted/50 ${
+                              navigatingId === s.id ? 'opacity-50' : ''
+                            }`}
                           >
-                            {t('recentCompleted.empty')}
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        stats.recentServices.map((s) => {
-                          const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost
-                          const recordHref = s.vehicle
-                            ? `/vehicles/${s.vehicle.id}/service/${s.id}`
-                            : `/sales/${s.id}`
-                          const rowCustomer = s.customer ?? s.vehicle?.customer
-                          return (
-                            <ContextMenu key={s.id} modal={false}>
-                              <ContextMenuTrigger asChild>
-                                <TableRow
-                                  className={`cursor-pointer transition-opacity ${navigatingId === s.id ? 'opacity-50' : ''}`}
-                                  {...interactiveRow(() => {
-                                    setNavigatingId(s.id)
-                                    router.push(recordHref)
-                                  })}
-                                >
-                                  <TableCell className="font-mono text-xs">
-                                    {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
-                                  </TableCell>
-                                  <TableCell>
-                                    {s.vehicle ? (
-                                      <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
-                                        {s.vehicle.licensePlate && (
-                                          <span className="font-mono text-sm">
-                                            {s.vehicle.licensePlate}
-                                          </span>
-                                        )}
-                                        <p className="text-xs text-muted-foreground">
-                                          {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
-                                        </p>
-                                      </TableCellLink>
-                                    ) : (
-                                      <p className="text-xs text-muted-foreground">-</p>
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="hidden sm:table-cell text-muted-foreground">
-                                    {rowCustomer ? (
-                                      <TableCellLink href={`/customers/${rowCustomer.id}`}>
-                                        {rowCustomer.name}
-                                      </TableCellLink>
-                                    ) : (
-                                      '-'
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="font-medium">{s.title}</TableCell>
-                                  {stats.isAdmin && (
-                                    <TableCell className="text-right font-semibold">
-                                      <span className="inline-flex items-center gap-2">
-                                        {navigatingId === s.id && (
-                                          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-                                        )}
-                                        {formatCurrency(displayTotal, currencyCode)}
-                                      </span>
-                                    </TableCell>
+                            <div className="flex items-start justify-between gap-3">
+                              <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
+                              {stats.isAdmin && (
+                                <span className="shrink-0 font-semibold">
+                                  {formatCurrency(displayTotal, currencyCode)}
+                                </span>
+                              )}
+                            </div>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {s.vehicle && (
+                                <>
+                                  {s.vehicle.licensePlate && (
+                                    <span className="font-mono">{s.vehicle.licensePlate} · </span>
                                   )}
-                                </TableRow>
-                              </ContextMenuTrigger>
-                              <ContextMenuContent className="min-w-52">
-                                <ContextMenuItem
-                                  onClick={() => {
-                                    setNavigatingId(s.id)
-                                    router.push(recordHref)
-                                  }}
-                                >
-                                  <ExternalLink className="mr-2 h-4 w-4" />
-                                  {tcm('open')}
-                                </ContextMenuItem>
-                                {s.vehicle && (
-                                  <ContextMenuItem
-                                    onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}
+                                  {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                </>
+                              )}
+                              {rowCustomer && ` · ${rowCustomer.name}`}
+                            </p>
+                            <p className="mt-1 font-mono text-xs text-muted-foreground">
+                              {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
+                            </p>
+                          </button>
+                        )
+                      })}
+                    </div>
+
+                    <div className="hidden md:block" {...recentNav.containerProps}>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-22.5">{t('recentCompleted.date')}</TableHead>
+                            <TableHead>{t('recentCompleted.vehicle')}</TableHead>
+                            <TableHead className="hidden sm:table-cell">
+                              {t('recentCompleted.customer')}
+                            </TableHead>
+                            <TableHead>{t('recentCompleted.serviceTitle')}</TableHead>
+                            {stats.isAdmin && (
+                              <TableHead className="w-22.5 text-right">
+                                {t('recentCompleted.total')}
+                              </TableHead>
+                            )}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {stats.recentServices.map((s) => {
+                            const displayTotal = s.totalAmount > 0 ? s.totalAmount : s.cost
+                            const recordHref = s.vehicle
+                              ? `/vehicles/${s.vehicle.id}/service/${s.id}`
+                              : `/sales/${s.id}`
+                            const rowCustomer = s.customer ?? s.vehicle?.customer
+                            return (
+                              <ContextMenu key={s.id} modal={false}>
+                                <ContextMenuTrigger asChild>
+                                  <TableRow
+                                    className={`cursor-pointer transition-opacity ${navigatingId === s.id ? 'opacity-50' : ''}`}
+                                    {...interactiveRow(() => {
+                                      setNavigatingId(s.id)
+                                      router.push(recordHref)
+                                    })}
                                   >
-                                    <Car className="mr-2 h-4 w-4" />
-                                    {tcm('openVehicle')}
-                                  </ContextMenuItem>
-                                )}
-                                {rowCustomer && (
+                                    <TableCell className="font-mono text-xs">
+                                      {formatDate(new Date(s.startDateTime ?? s.serviceDate))}
+                                    </TableCell>
+                                    <TableCell>
+                                      {s.vehicle ? (
+                                        <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
+                                          {s.vehicle.licensePlate && (
+                                            <span className="font-mono text-sm">
+                                              {s.vehicle.licensePlate}
+                                            </span>
+                                          )}
+                                          <p className="text-xs text-muted-foreground">
+                                            {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                          </p>
+                                        </TableCellLink>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground">-</p>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="hidden sm:table-cell text-muted-foreground">
+                                      {rowCustomer ? (
+                                        <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                                          {rowCustomer.name}
+                                        </TableCellLink>
+                                      ) : (
+                                        '-'
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="font-medium">{s.title}</TableCell>
+                                    {stats.isAdmin && (
+                                      <TableCell className="text-right font-semibold">
+                                        <span className="inline-flex items-center gap-2">
+                                          {navigatingId === s.id && (
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                                          )}
+                                          {formatCurrency(displayTotal, currencyCode)}
+                                        </span>
+                                      </TableCell>
+                                    )}
+                                  </TableRow>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="min-w-52">
                                   <ContextMenuItem
-                                    onClick={() => router.push(`/customers/${rowCustomer.id}`)}
+                                    onClick={() => {
+                                      setNavigatingId(s.id)
+                                      router.push(recordHref)
+                                    }}
                                   >
-                                    <Users className="mr-2 h-4 w-4" />
-                                    {tcm('openCustomer')}
+                                    <ExternalLink className="mr-2 h-4 w-4" />
+                                    {tcm('open')}
                                   </ContextMenuItem>
-                                )}
-                              </ContextMenuContent>
-                            </ContextMenu>
-                          )
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                                  {s.vehicle && (
+                                    <ContextMenuItem
+                                      onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}
+                                    >
+                                      <Car className="mr-2 h-4 w-4" />
+                                      {tcm('openVehicle')}
+                                    </ContextMenuItem>
+                                  )}
+                                  {rowCustomer && (
+                                    <ContextMenuItem
+                                      onClick={() => router.push(`/customers/${rowCustomer.id}`)}
+                                    >
+                                      <Users className="mr-2 h-4 w-4" />
+                                      {tcm('openCustomer')}
+                                    </ContextMenuItem>
+                                  )}
+                                </ContextMenuContent>
+                              </ContextMenu>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </>
+                )}
               </AppCard>
             ),
 
@@ -1551,183 +1585,181 @@ export function DashboardClient({
                 className="lg:col-span-2"
                 contentClassName="p-0"
                 footer={
-                  <button
-                    type="button"
-                    onClick={() => router.push('/work-orders?status=active')}
-                    className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
-                  >
-                    {t('viewAll')}
-                    <ArrowRight className="h-3 w-3" />
-                  </button>
+                  stats.todaysServices.length === 0 ? undefined : (
+                    <button
+                      type="button"
+                      onClick={() => router.push('/work-orders?status=active')}
+                      className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+                    >
+                      {t('viewAll')}
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )
                 }
               >
-                {/* Card list (phones + small tablets) */}
-                <div className="space-y-2 px-3 pb-3 md:hidden">
-                  {stats.todaysServices.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-muted-foreground">
-                      {t('activeJobsTable.empty')}
-                    </p>
-                  ) : (
-                    stats.todaysServices.map((s) => {
-                      const recordHref = s.vehicle
-                        ? `/vehicles/${s.vehicle.id}/service/${s.id}`
-                        : `/sales/${s.id}`
-                      const rowCustomer = s.customer ?? s.vehicle?.customer
-                      return (
-                        <button
-                          key={s.id}
-                          type="button"
-                          onClick={() => {
-                            setNavigatingId(s.id)
-                            router.push(recordHref)
-                          }}
-                          className={`w-full rounded-lg border p-2.5 text-left transition-opacity active:bg-muted/50 ${
-                            navigatingId === s.id ? 'opacity-50' : ''
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
-                            <Badge
-                              variant="outline"
-                              className={`shrink-0 text-xs ${statusColors[s.status] || ''}`}
-                            >
-                              {s.status}
-                            </Badge>
-                          </div>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {s.vehicle && (
-                              <>
-                                {s.vehicle.licensePlate && (
-                                  <span className="font-mono">{s.vehicle.licensePlate} · </span>
-                                )}
-                                {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
-                              </>
-                            )}
-                            {rowCustomer && ` · ${rowCustomer.name}`}
-                            {s.techName && ` · ${s.techName}`}
-                          </p>
-                        </button>
-                      )
-                    })
-                  )}
-                </div>
+                {stats.todaysServices.length === 0 ? (
+                  <CardEmpty
+                    icon={ClipboardList}
+                    title={t('activeJobsTable.empty')}
+                    action={emptyAction(tWorkOrders('list.newWorkOrder'), '/work-orders')}
+                  />
+                ) : (
+                  <>
+                    {/* Card list (phones + small tablets) */}
+                    <div className="space-y-2 px-3 pb-3 md:hidden">
+                      {stats.todaysServices.map((s) => {
+                        const recordHref = s.vehicle
+                          ? `/vehicles/${s.vehicle.id}/service/${s.id}`
+                          : `/sales/${s.id}`
+                        const rowCustomer = s.customer ?? s.vehicle?.customer
+                        return (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => {
+                              setNavigatingId(s.id)
+                              router.push(recordHref)
+                            }}
+                            className={`w-full rounded-lg border p-2.5 text-left transition-opacity active:bg-muted/50 ${
+                              navigatingId === s.id ? 'opacity-50' : ''
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
+                              <Badge
+                                variant="outline"
+                                className={`shrink-0 text-xs ${statusColors[s.status] || ''}`}
+                              >
+                                {s.status}
+                              </Badge>
+                            </div>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {s.vehicle && (
+                                <>
+                                  {s.vehicle.licensePlate && (
+                                    <span className="font-mono">{s.vehicle.licensePlate} · </span>
+                                  )}
+                                  {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                </>
+                              )}
+                              {rowCustomer && ` · ${rowCustomer.name}`}
+                              {s.techName && ` · ${s.techName}`}
+                            </p>
+                          </button>
+                        )
+                      })}
+                    </div>
 
-                <div className="hidden md:block" {...activeNav.containerProps}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t('activeJobsTable.vehicle')}</TableHead>
-                        <TableHead className="hidden sm:table-cell">
-                          {t('activeJobsTable.customer')}
-                        </TableHead>
-                        <TableHead>{t('activeJobsTable.serviceTitle')}</TableHead>
-                        <TableHead className="w-27.5">{t('activeJobsTable.status')}</TableHead>
-                        <TableHead className="hidden md:table-cell">
-                          {t('activeJobsTable.tech')}
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {stats.todaysServices.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={5} className="h-20 text-center text-muted-foreground">
-                            {t('activeJobsTable.empty')}
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        stats.todaysServices.map((s) => {
-                          const recordHref = s.vehicle
-                            ? `/vehicles/${s.vehicle.id}/service/${s.id}`
-                            : `/sales/${s.id}`
-                          const rowCustomer = s.customer ?? s.vehicle?.customer
-                          return (
-                            <ContextMenu key={s.id} modal={false}>
-                              <ContextMenuTrigger asChild>
-                                <TableRow
-                                  className={`cursor-pointer transition-opacity ${navigatingId === s.id ? 'opacity-50' : ''}`}
-                                  {...interactiveRow(() => {
-                                    setNavigatingId(s.id)
-                                    router.push(recordHref)
-                                  })}
-                                >
-                                  <TableCell>
-                                    {s.vehicle ? (
-                                      <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
-                                        {s.vehicle.licensePlate && (
-                                          <span className="font-mono text-sm font-medium">
-                                            {s.vehicle.licensePlate}
-                                          </span>
-                                        )}
-                                        <p className="text-xs text-muted-foreground">
-                                          {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
-                                        </p>
-                                      </TableCellLink>
-                                    ) : (
-                                      <p className="text-xs text-muted-foreground">-</p>
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="hidden sm:table-cell text-muted-foreground">
-                                    {rowCustomer ? (
-                                      <TableCellLink href={`/customers/${rowCustomer.id}`}>
-                                        {rowCustomer.name}
-                                      </TableCellLink>
-                                    ) : (
-                                      '-'
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="font-medium">{s.title}</TableCell>
-                                  <TableCell>
-                                    <span className="inline-flex items-center gap-2">
-                                      {navigatingId === s.id && (
-                                        <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                    <div className="hidden md:block" {...activeNav.containerProps}>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t('activeJobsTable.vehicle')}</TableHead>
+                            <TableHead className="hidden sm:table-cell">
+                              {t('activeJobsTable.customer')}
+                            </TableHead>
+                            <TableHead>{t('activeJobsTable.serviceTitle')}</TableHead>
+                            <TableHead className="w-27.5">{t('activeJobsTable.status')}</TableHead>
+                            <TableHead className="hidden md:table-cell">
+                              {t('activeJobsTable.tech')}
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {stats.todaysServices.map((s) => {
+                            const recordHref = s.vehicle
+                              ? `/vehicles/${s.vehicle.id}/service/${s.id}`
+                              : `/sales/${s.id}`
+                            const rowCustomer = s.customer ?? s.vehicle?.customer
+                            return (
+                              <ContextMenu key={s.id} modal={false}>
+                                <ContextMenuTrigger asChild>
+                                  <TableRow
+                                    className={`cursor-pointer transition-opacity ${navigatingId === s.id ? 'opacity-50' : ''}`}
+                                    {...interactiveRow(() => {
+                                      setNavigatingId(s.id)
+                                      router.push(recordHref)
+                                    })}
+                                  >
+                                    <TableCell>
+                                      {s.vehicle ? (
+                                        <TableCellLink href={`/vehicles/${s.vehicle.id}`} block>
+                                          {s.vehicle.licensePlate && (
+                                            <span className="font-mono text-sm font-medium">
+                                              {s.vehicle.licensePlate}
+                                            </span>
+                                          )}
+                                          <p className="text-xs text-muted-foreground">
+                                            {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                          </p>
+                                        </TableCellLink>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground">-</p>
                                       )}
-                                      <Badge
-                                        variant="outline"
-                                        className={`text-xs ${statusColors[s.status] || ''}`}
-                                      >
-                                        {s.status}
-                                      </Badge>
-                                    </span>
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                                    {s.techName || '-'}
-                                  </TableCell>
-                                </TableRow>
-                              </ContextMenuTrigger>
-                              <ContextMenuContent className="min-w-52">
-                                <ContextMenuItem
-                                  onClick={() => {
-                                    setNavigatingId(s.id)
-                                    router.push(recordHref)
-                                  }}
-                                >
-                                  <ExternalLink className="mr-2 h-4 w-4" />
-                                  {tcm('open')}
-                                </ContextMenuItem>
-                                {s.vehicle && (
+                                    </TableCell>
+                                    <TableCell className="hidden sm:table-cell text-muted-foreground">
+                                      {rowCustomer ? (
+                                        <TableCellLink href={`/customers/${rowCustomer.id}`}>
+                                          {rowCustomer.name}
+                                        </TableCellLink>
+                                      ) : (
+                                        '-'
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="font-medium">{s.title}</TableCell>
+                                    <TableCell>
+                                      <span className="inline-flex items-center gap-2">
+                                        {navigatingId === s.id && (
+                                          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                                        )}
+                                        <Badge
+                                          variant="outline"
+                                          className={`text-xs ${statusColors[s.status] || ''}`}
+                                        >
+                                          {s.status}
+                                        </Badge>
+                                      </span>
+                                    </TableCell>
+                                    <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                                      {s.techName || '-'}
+                                    </TableCell>
+                                  </TableRow>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent className="min-w-52">
                                   <ContextMenuItem
-                                    onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}
+                                    onClick={() => {
+                                      setNavigatingId(s.id)
+                                      router.push(recordHref)
+                                    }}
                                   >
-                                    <Car className="mr-2 h-4 w-4" />
-                                    {tcm('openVehicle')}
+                                    <ExternalLink className="mr-2 h-4 w-4" />
+                                    {tcm('open')}
                                   </ContextMenuItem>
-                                )}
-                                {rowCustomer && (
-                                  <ContextMenuItem
-                                    onClick={() => router.push(`/customers/${rowCustomer.id}`)}
-                                  >
-                                    <Users className="mr-2 h-4 w-4" />
-                                    {tcm('openCustomer')}
-                                  </ContextMenuItem>
-                                )}
-                              </ContextMenuContent>
-                            </ContextMenu>
-                          )
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                                  {s.vehicle && (
+                                    <ContextMenuItem
+                                      onClick={() => router.push(`/vehicles/${s.vehicle?.id}`)}
+                                    >
+                                      <Car className="mr-2 h-4 w-4" />
+                                      {tcm('openVehicle')}
+                                    </ContextMenuItem>
+                                  )}
+                                  {rowCustomer && (
+                                    <ContextMenuItem
+                                      onClick={() => router.push(`/customers/${rowCustomer.id}`)}
+                                    >
+                                      <Users className="mr-2 h-4 w-4" />
+                                      {tcm('openCustomer')}
+                                    </ContextMenuItem>
+                                  )}
+                                </ContextMenuContent>
+                              </ContextMenu>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </>
+                )}
               </AppCard>
             ),
             // Recent Activity (Audit Logs)
@@ -1748,7 +1780,7 @@ export function DashboardClient({
                 }
               >
                 {recentAuditLogs.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">{t('noRecentActivity')}</p>
+                  <CardEmpty icon={Clock} title={t('noRecentActivity')} />
                 ) : (
                   <div className="divide-y">
                     {recentAuditLogs.slice(0, 5).map((log) => {
@@ -1822,9 +1854,7 @@ export function DashboardClient({
                 }
               >
                 {recentObservations.length === 0 ? (
-                  <p className="px-5 py-4 text-xs text-muted-foreground">
-                    {t('noRecentObservations')}
-                  </p>
+                  <CardEmpty icon={Eye} title={t('noRecentObservations')} />
                 ) : (
                   <>
                     {/* Card list (phones + small tablets) */}
@@ -2014,6 +2044,7 @@ export function DashboardClient({
               editing={editing}
               onCardsCommit={commitCards}
               cardNodes={cardNodes}
+              collapsedIds={emptyCardIds}
             />
           )
         })()}

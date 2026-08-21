@@ -68,6 +68,7 @@
     "active": "Aktyvūs",
     "dismissedTab": "Atmesti",
     "noActive": "Šiuo metu nėra transporto priemonių, kurioms reikia aptarnavimo.",
+    "noDismissed": "Nėra atmestų transporto priemonių.",
     "dismissedOn": "Atmesta {date}",
     "restore": "Atkurti",
     "settingsAriaLabel": "Maintenance settings",

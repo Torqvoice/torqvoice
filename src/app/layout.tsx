@@ -129,7 +129,13 @@ export default async function RootLayout({
                     {children}
                   </BannerSlotProvider>
                   <GlassModal />
-                  <Toaster richColors position="bottom-right" />
+                  {/* Centred at the bottom, and lifted clear of the mobile
+                      bottom nav so a toast never lands on the tab bar. */}
+                  <Toaster
+                    richColors
+                    position="bottom-center"
+                    mobileOffset={{ bottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}
+                  />
                   <PWAServiceWorker />
                 </TooltipProvider>
               </QueryProvider>

@@ -19,10 +19,33 @@ export function DocsLink({
 }: {
   href: string
   className?: string
-  /** `inline` sits beside a heading; `hint` sits under dialog text with an icon. */
-  variant?: 'inline' | 'hint'
+  /**
+   * `inline` sits beside a heading; `hint` sits under dialog text with an
+   * icon; `header` is the page header's icon button, sized to the row of
+   * controls it sits in rather than floating as loose text among them.
+   */
+  variant?: 'inline' | 'hint' | 'header'
 }) {
   const t = useTranslations('navigation')
+  const label = t('readMore')
+
+  if (variant === 'header') {
+    return (
+      <a
+        href={`https://torqvoice.com${href}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        title={label}
+        className={cn(
+          'flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          className
+        )}
+      >
+        <BookOpen className="h-4 w-4" />
+      </a>
+    )
+  }
 
   return (
     <a
@@ -36,7 +59,7 @@ export function DocsLink({
       )}
     >
       {variant === 'hint' && <BookOpen className="h-3.5 w-3.5" />}
-      {t('readMore')} →
+      {label} →
     </a>
   )
 }

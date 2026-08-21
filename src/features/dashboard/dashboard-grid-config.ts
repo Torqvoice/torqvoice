@@ -43,6 +43,20 @@ export const GRID_MARGIN: [number, number] = [16, 16]
 export const CARD_MIN_W = 3
 export const CARD_MIN_H = 3
 
+/**
+ * Height a card is drawn at while it has nothing to show. A card keeps its
+ * grid tile whether or not it has rows, so an empty one used to reserve its
+ * full configured height for a single line of grey text. Collapsing to the
+ * minimum keeps the dashboard from being mostly blank on a quiet day; the
+ * user's stored height is untouched and comes back with the first row.
+ */
+export const COLLAPSED_CARD_H = CARD_MIN_H
+
+/** Pixel height of `h` grid rows, margins between them included. */
+export function gridHeightPx(h: number): number {
+  return h * GRID_ROW_HEIGHT + (h - 1) * GRID_MARGIN[1]
+}
+
 const half = (x: 0 | 6, row: number, h = 5): CardLayout => ({ x, y: row, w: 6, h })
 const full = (row: number, h = 5): CardLayout => ({ x: 0, y: row, w: 12, h })
 
@@ -68,8 +82,12 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     // First-run checklist leads the grid; rows compact upward once it is
     // gone (dismissed or not offered), so established users see no hole.
     gettingStarted: full(0, 4),
-    maintenance: half(0, 4),
-    reminders: half(6, 4),
+    // Both are short lists by nature, so the row starts a notch under the
+    // five-row default. They move together: a half card whose partner is a
+    // different height leaves the two columns out of step for every row
+    // below it.
+    maintenance: half(0, 4, 4),
+    reminders: half(6, 4, 4),
     // One slot, two candidates.
     sms: half(0, 9),
     notifications: half(0, 9),

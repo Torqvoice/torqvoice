@@ -68,6 +68,7 @@
     "active": "Aktif",
     "dismissedTab": "Kapatılan",
     "noActive": "Şu anda bakım gerektiren araç bulunmuyor.",
+    "noDismissed": "Yok sayılan araç yok.",
     "dismissedOn": "{date} tarihinde kapatıldı",
     "restore": "Geri Yükle",
     "settingsAriaLabel": "Maintenance settings",
