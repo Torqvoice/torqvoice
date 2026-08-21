@@ -12,6 +12,10 @@ import { PostHogProvider } from '@/components/posthog-provider'
 import { isCloudMode } from '@/lib/features'
 import { isDemoMode } from '@/lib/demo'
 import { DemoBanner } from '@/components/demo-banner'
+import { BroadcastBanner } from '@/components/broadcast-banner'
+import { BannerSlotProvider } from '@/components/banner-slot'
+import { getBroadcast, isCustomerFacingPath } from '@/lib/broadcast'
+import { headers } from 'next/headers'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import './globals.css'
@@ -86,6 +90,13 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale()
   const messages = await getMessages()
+  // Staff only, deliberately. This layout also wraps the invoice, quote and
+  // portal pages a workshop's own customers open, and those carry the
+  // workshop's branding, not ours. A white-label licence exists precisely so
+  // Torqvoice does not appear on that paperwork, and a platform notice there
+  // would be both off-brand and none of the customer's business.
+  const pathname = (await headers()).get('x-pathname')
+  const broadcast = isCustomerFacingPath(pathname) ? null : await getBroadcast()
 
   return (
     <html lang={locale} translate="no" suppressHydrationWarning>
@@ -109,8 +120,14 @@ export default async function RootLayout({
             <ThemeProvider defaultTheme="dark">
               <QueryProvider>
                 <TooltipProvider>
-                  <DemoBanner />
-                  {children}
+                  {/* One strip at a time. These used to render independently
+                      in three layouts, so a notice and a new-version note
+                      pushed the app down by two bars at once. */}
+                  <BannerSlotProvider>
+                    <BroadcastBanner broadcast={broadcast} />
+                    <DemoBanner isDemo={isDemoMode} />
+                    {children}
+                  </BannerSlotProvider>
                   <GlassModal />
                   <Toaster richColors position="bottom-right" />
                   <PWAServiceWorker />

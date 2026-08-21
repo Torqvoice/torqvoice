@@ -13,6 +13,7 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { WhiteLabelCtaProvider } from '@/components/white-label-cta-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
 import { UpdateBanner } from '@/components/update-banner'
+import { BroadcastLive } from '@/components/broadcast-live'
 import { CurrencySettingsProvider } from '@/components/currency-settings-context'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -136,6 +137,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
             aria-hidden
             className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
           />
+          {/* Watches for a notice posted while this page is already open. Here
+              rather than beside the banner because the socket authenticates on
+              the session cookie, which the sign-in page does not have. */}
+          <BroadcastLive />
           {/* The demo banner already occupies the header, and demo image tags
         (demo-abc1234) are not versions a visitor should be notified about. */}
           {!isDemoMode && (

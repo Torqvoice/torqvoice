@@ -80,5 +80,20 @@
     "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau",
     "enterFullscreen": "Visas ekranas",
     "exitFullscreen": "Išjungti visą ekraną"
+  },
+  "broadcast": {
+    "dismiss": "Uždaryti",
+    "title": "Pranešimas visiems",
+    "description": "Rodomas kiekvieno puslapio viršuje visiems, prisijungusiems ar ne. Palikite tuščią, jei pranešimo nereikia.",
+    "message": "Pranešimas",
+    "level": "Svarbumas",
+    "post": "Paskelbti pranešimą",
+    "clear": "Pašalinti pranešimą",
+    "levelInfo": "Informacija",
+    "levelWarning": "Įspėjimas",
+    "levelCritical": "Kritinis",
+    "placeholder": "pvz. Turime serverių infrastruktūros problemų ir jas sprendžiame.",
+    "posted": "Pranešimas paskelbtas",
+    "cleared": "Pranešimas pašalintas"
   }
 }

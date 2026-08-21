@@ -80,5 +80,20 @@
     "installDescription": "Zet de app op je beginscherm voor snelle toegang",
     "enterFullscreen": "Volledig scherm",
     "exitFullscreen": "Volledig scherm afsluiten"
+  },
+  "broadcast": {
+    "dismiss": "Sluiten",
+    "title": "Bericht aan iedereen",
+    "description": "Wordt bovenaan elke pagina getoond, aan iedereen, ingelogd of niet. Laat leeg voor geen bericht.",
+    "message": "Bericht",
+    "level": "Ernst",
+    "post": "Bericht plaatsen",
+    "clear": "Bericht verwijderen",
+    "levelInfo": "Informatie",
+    "levelWarning": "Waarschuwing",
+    "levelCritical": "Kritiek",
+    "placeholder": "bijv. We hebben problemen met onze serverinfrastructuur en werken eraan.",
+    "posted": "Bericht geplaatst",
+    "cleared": "Bericht verwijderd"
   }
 }

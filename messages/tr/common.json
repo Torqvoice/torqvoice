@@ -80,5 +80,20 @@
     "installDescription": "Hızlı erişim için ana ekranınıza ekleyin",
     "enterFullscreen": "Tam ekran",
     "exitFullscreen": "Tam ekrandan çık"
+  },
+  "broadcast": {
+    "dismiss": "Kapat",
+    "title": "Herkese duyuru",
+    "description": "Her sayfanın üstünde, oturum açmış olsun olmasın herkese gösterilir. Duyuru istemiyorsanız boş bırakın.",
+    "message": "Mesaj",
+    "level": "Önem",
+    "post": "Duyuruyu yayınla",
+    "clear": "Duyuruyu kaldır",
+    "levelInfo": "Bilgi",
+    "levelWarning": "Uyarı",
+    "levelCritical": "Kritik",
+    "placeholder": "ör. Sunucu altyapımızda sorun yaşıyoruz ve üzerinde çalışıyoruz.",
+    "posted": "Duyuru yayınlandı",
+    "cleared": "Duyuru kaldırıldı"
   }
 }

@@ -18,6 +18,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { AlertTriangle, Search, X, Zap } from 'lucide-react'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
+import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
 import { DocsLink } from '@/components/docs-link'
 
@@ -146,6 +147,13 @@ export function PageHeader() {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
   const { daysUntilExpiry, dismissed, dismiss } = useLicenseExpiry()
+  // Weeks of warning before a licence lapses, so this waits behind anything
+  // happening right now rather than adding a second bar beneath it.
+  const showLicenceNotice = useBannerSlot(
+    'licence',
+    BANNER_PRIORITY.licence,
+    daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed
+  )
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
 
@@ -246,7 +254,7 @@ export function PageHeader() {
           )}
         </div>
       </header>
-      {daysUntilExpiry !== null && daysUntilExpiry <= 14 && !dismissed && (
+      {showLicenceNotice && daysUntilExpiry !== null && (
         <div
           className={`flex items-center gap-2 px-4 py-2 text-sm ${
             daysUntilExpiry <= 0
