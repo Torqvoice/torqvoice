@@ -45,6 +45,15 @@ notificationBus.on("workboard", (event: { organizationId: string }) => {
   }
 });
 
+// Platform-wide notice. The only event here that ignores organizationId:
+// an infrastructure incident is not one workshop's business, it is everyone's.
+notificationBus.on("broadcast", (broadcast: unknown) => {
+  const payload = JSON.stringify({ type: "broadcast", data: broadcast });
+  for (const client of clients) {
+    if (client.readyState === 1) client.send(payload);
+  }
+});
+
 /**
  * Resolve the session token from the Next.js cookie store.
  * better-auth uses chunked cookies for large tokens (.0, .1, …)

@@ -50,6 +50,18 @@ export const SYSTEM_SETTING_KEYS = {
   SES_FROM_EMAIL: "ses.fromEmail",
   SES_FROM_NAME: "ses.fromName",
 
+  // A notice shown to everyone, set from the admin panel. Meant for the
+  // things nobody can work around and everybody needs to hear at once, an
+  // infrastructure incident being the usual one.
+  //
+  // The timestamp is what makes it repeatable: it is the key each person's
+  // dismissal is remembered against, so editing the text brings the banner
+  // back for everybody rather than leaving it hidden from whoever had already
+  // waved the last one away.
+  BROADCAST_MESSAGE: "broadcast.message",
+  BROADCAST_LEVEL: "broadcast.level",
+  BROADCAST_UPDATED_AT: "broadcast.updatedAt",
+
   // In-app support requests. Written from the torqvoice.com admin dashboard
   // rather than from this app: whether a workshop may reach support is a
   // platform decision, not one the workshop makes for itself.
@@ -63,5 +75,12 @@ export type SystemSettingKey =
 export const ALL_SYSTEM_KEYS = Object.values(SYSTEM_SETTING_KEYS);
 
 export const systemSettingsUpdateSchema = z.record(z.string(), z.string());
+
+/** How loudly the global notice is shown. */
+export const BROADCAST_LEVELS = ["info", "warning", "critical"] as const;
+export type BroadcastLevel = (typeof BROADCAST_LEVELS)[number];
+
+/** Long enough for what happened and what is being done, short enough to read. */
+export const BROADCAST_MAX_LENGTH = 400;
 
 export type SystemSettingsMap = Partial<Record<SystemSettingKey, string>>;

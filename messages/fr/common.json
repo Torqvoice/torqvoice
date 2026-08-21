@@ -80,5 +80,20 @@
     "installDescription": "Ajoutez-la à votre écran d'accueil pour un accès rapide",
     "enterFullscreen": "Plein écran",
     "exitFullscreen": "Quitter le plein écran"
+  },
+  "broadcast": {
+    "dismiss": "Fermer",
+    "title": "Message à tous",
+    "description": "Affiché en haut de chaque page, pour tout le monde, connecté ou non. Laissez vide pour ne rien afficher.",
+    "message": "Message",
+    "level": "Gravité",
+    "post": "Publier le message",
+    "clear": "Retirer le message",
+    "levelInfo": "Information",
+    "levelWarning": "Avertissement",
+    "levelCritical": "Critique",
+    "placeholder": "ex. Nous rencontrons des difficultés avec notre infrastructure serveur et y travaillons.",
+    "posted": "Message publié",
+    "cleared": "Message retiré"
   }
 }

@@ -80,5 +80,20 @@
     "installDescription": "Add to your home screen for quick access",
     "enterFullscreen": "Fullscreen",
     "exitFullscreen": "Exit fullscreen"
+  },
+  "broadcast": {
+    "dismiss": "Dismiss",
+    "title": "Notice to everyone",
+    "description": "Shown at the top of every page, for everyone, signed in or not. Leave it empty for no notice.",
+    "message": "Message",
+    "level": "Severity",
+    "post": "Post notice",
+    "clear": "Clear notice",
+    "levelInfo": "Information",
+    "levelWarning": "Warning",
+    "levelCritical": "Critical",
+    "placeholder": "e.g. We are having trouble with our server infrastructure and are working on it.",
+    "posted": "Notice posted",
+    "cleared": "Notice cleared"
   }
 }

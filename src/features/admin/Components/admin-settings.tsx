@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Loader2, Send } from 'lucide-react'
-import { SYSTEM_SETTING_KEYS } from '../Schema/systemSettingsSchema'
+import { SYSTEM_SETTING_KEYS, type BroadcastLevel } from '../Schema/systemSettingsSchema'
 import type { SystemSettingsMap } from '../Schema/systemSettingsSchema'
 import { setSystemSettings } from '../Actions/setSystemSettings'
+import { BroadcastCard } from './broadcast-card'
 import { testEmailConnection } from '../Actions/testEmailConnection'
 
 type EmailProviderType = 'smtp' | 'resend' | 'postmark' | 'mailgun' | 'sendgrid' | 'ses'
@@ -204,6 +205,13 @@ export function AdminSettings({
 
   return (
     <div className="space-y-6">
+      <BroadcastCard
+        initialMessage={initial[SYSTEM_SETTING_KEYS.BROADCAST_MESSAGE] ?? ''}
+        initialLevel={
+          (initial[SYSTEM_SETTING_KEYS.BROADCAST_LEVEL] as BroadcastLevel | undefined) ?? 'info'
+        }
+      />
+
       {/* Platform Settings */}
       <AppCard
         title={t('adminSettings.platformTitle')}

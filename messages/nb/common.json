@@ -80,5 +80,20 @@
     "installDescription": "Legg den til på hjem-skjermen for rask tilgang",
     "enterFullscreen": "Fullskjerm",
     "exitFullscreen": "Avslutt fullskjerm"
+  },
+  "broadcast": {
+    "dismiss": "Lukk",
+    "title": "Melding til alle",
+    "description": "Vises øverst på hver side, for alle, innlogget eller ikke. La den stå tom for ingen melding.",
+    "message": "Melding",
+    "level": "Alvorlighet",
+    "post": "Publiser melding",
+    "clear": "Fjern melding",
+    "levelInfo": "Informasjon",
+    "levelWarning": "Advarsel",
+    "levelCritical": "Kritisk",
+    "placeholder": "f.eks. Vi har problemer med serverinfrastrukturen vår og jobber med saken.",
+    "posted": "Meldingen er publisert",
+    "cleared": "Meldingen er fjernet"
   }
 }

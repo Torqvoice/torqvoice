@@ -80,5 +80,20 @@
     "installDescription": "Dodaj do ekranu głównego, aby mieć szybki dostęp",
     "enterFullscreen": "Pełny ekran",
     "exitFullscreen": "Zamknij pełny ekran"
+  },
+  "broadcast": {
+    "dismiss": "Zamknij",
+    "title": "Komunikat dla wszystkich",
+    "description": "Wyświetlany na górze każdej strony, wszystkim, zalogowanym i nie. Zostaw puste, aby nic nie pokazywać.",
+    "message": "Komunikat",
+    "level": "Waga",
+    "post": "Opublikuj komunikat",
+    "clear": "Usuń komunikat",
+    "levelInfo": "Informacja",
+    "levelWarning": "Ostrzeżenie",
+    "levelCritical": "Krytyczny",
+    "placeholder": "np. Mamy problemy z infrastrukturą serwerową i pracujemy nad nimi.",
+    "posted": "Komunikat opublikowany",
+    "cleared": "Komunikat usunięty"
   }
 }

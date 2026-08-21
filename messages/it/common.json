@@ -80,5 +80,20 @@
     "installDescription": "Aggiungila alla schermata Home per un accesso rapido",
     "enterFullscreen": "Schermo intero",
     "exitFullscreen": "Esci da schermo intero"
+  },
+  "broadcast": {
+    "dismiss": "Chiudi",
+    "title": "Avviso a tutti",
+    "description": "Mostrato in cima a ogni pagina, per tutti, con o senza accesso. Lascia vuoto per non mostrare nulla.",
+    "message": "Messaggio",
+    "level": "Gravità",
+    "post": "Pubblica avviso",
+    "clear": "Rimuovi avviso",
+    "levelInfo": "Informazione",
+    "levelWarning": "Avvertenza",
+    "levelCritical": "Critico",
+    "placeholder": "es. Stiamo riscontrando problemi con la nostra infrastruttura server e ci stiamo lavorando.",
+    "posted": "Avviso pubblicato",
+    "cleared": "Avviso rimosso"
   }
 }
