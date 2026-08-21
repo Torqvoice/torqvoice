@@ -46,6 +46,7 @@
     "maintenance": "Forventet vedlikehold",
     "reminders": "Kommende påminnelser",
     "inspections": "Inspeksjoner",
+    "serviceRequests": "Serviceforespørsler",
     "quoteRequests": "Tilbudsforespørsler",
     "quoteResponses": "Tilbudssvar",
     "sms": "Siste meldinger",
@@ -96,6 +97,11 @@
     "completed": "Fullført",
     "itemCount": "{inspected}/{total} punkter",
     "noData": "Ingen inspeksjoner."
+  },
+  "serviceRequests": {
+    "title": "Serviceforespørsler",
+    "description": "Timebestillinger fra kundeportalen",
+    "noData": "Ingen ventende serviceforespørsler."
   },
   "quoteRequests": {
     "title": "Tilbudsforespørsler",

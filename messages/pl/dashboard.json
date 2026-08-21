@@ -46,6 +46,7 @@
     "maintenance": "Przewidywana konserwacja",
     "reminders": "Nadchodzące przypomnienia",
     "inspections": "Przeglądy",
+    "serviceRequests": "Zgłoszenia serwisowe",
     "quoteRequests": "Zapytania o wycenę",
     "quoteResponses": "Odpowiedzi na wyceny",
     "sms": "Ostatnie wiadomości",
@@ -96,6 +97,11 @@
     "completed": "Ukończone",
     "itemCount": "{inspected}/{total} pozycji",
     "noData": "Brak inspekcji."
+  },
+  "serviceRequests": {
+    "title": "Zgłoszenia serwisowe",
+    "description": "Prośby o termin z portalu klienta",
+    "noData": "Brak oczekujących zgłoszeń serwisowych."
   },
   "quoteRequests": {
     "title": "Zapytania o wycenę",

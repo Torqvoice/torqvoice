@@ -46,6 +46,7 @@
     "maintenance": "Manutenzione prevista",
     "reminders": "Promemoria in scadenza",
     "inspections": "Ispezioni",
+    "serviceRequests": "Richieste di servizio",
     "quoteRequests": "Richieste di preventivo",
     "quoteResponses": "Risposte ai preventivi",
     "sms": "Messaggi recenti",
@@ -96,6 +97,11 @@
     "completed": "Completato",
     "itemCount": "{inspected}/{total} elementi",
     "noData": "Nessuna ispezione."
+  },
+  "serviceRequests": {
+    "title": "Richieste di servizio",
+    "description": "Richieste di appuntamento dal portale clienti",
+    "noData": "Nessuna richiesta di servizio in sospeso."
   },
   "quoteRequests": {
     "title": "Richieste di preventivo",

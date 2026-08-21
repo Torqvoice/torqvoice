@@ -46,6 +46,7 @@
     "maintenance": "Плановое ТО",
     "reminders": "Предстоящие напоминания",
     "inspections": "Осмотры",
+    "serviceRequests": "Заявки на обслуживание",
     "quoteRequests": "Запросы на предложения",
     "quoteResponses": "Ответы на предложения",
     "sms": "Последние сообщения",
@@ -96,6 +97,11 @@
     "completed": "Завершено",
     "itemCount": "{inspected}/{total} пунктов",
     "noData": "Нет осмотров."
+  },
+  "serviceRequests": {
+    "title": "Заявки на обслуживание",
+    "description": "Запросы на запись из клиентского портала",
+    "noData": "Нет ожидающих заявок на обслуживание."
   },
   "quoteRequests": {
     "title": "Запросы на предложения",

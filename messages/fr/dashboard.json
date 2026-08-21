@@ -46,6 +46,7 @@
     "maintenance": "Maintenance prévue",
     "reminders": "Rappels à venir",
     "inspections": "Inspections",
+    "serviceRequests": "Demandes de service",
     "quoteRequests": "Demandes de devis",
     "quoteResponses": "Réponses aux devis",
     "sms": "Messages récents",
@@ -96,6 +97,11 @@
     "completed": "Terminé",
     "itemCount": "{inspected}/{total} éléments",
     "noData": "Aucune inspection."
+  },
+  "serviceRequests": {
+    "title": "Demandes de service",
+    "description": "Demandes de rendez-vous depuis le portail client",
+    "noData": "Aucune demande de service en attente."
   },
   "quoteRequests": {
     "title": "Demandes de devis",

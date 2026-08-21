@@ -46,6 +46,7 @@
     "maintenance": "Numatoma priežiūra",
     "reminders": "Artėjantys priminimai",
     "inspections": "Apžiūros",
+    "serviceRequests": "Paslaugų užklausos",
     "quoteRequests": "Pasiūlymų užklausos",
     "quoteResponses": "Pasiūlymų atsakymai",
     "sms": "Naujausios žinutės",
@@ -96,6 +97,11 @@
     "completed": "Užbaigtos",
     "itemCount": "{inspected}/{total} elementų",
     "noData": "Apžiūrų nėra."
+  },
+  "serviceRequests": {
+    "title": "Paslaugų užklausos",
+    "description": "Vizitų užklausos iš klientų portalo",
+    "noData": "Nėra laukiančių paslaugų užklausų."
   },
   "quoteRequests": {
     "title": "Pasiūlymų užklausos",

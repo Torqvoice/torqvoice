@@ -35,6 +35,7 @@ import {
   ArrowRight,
   Disc3,
   Bell,
+  CalendarClock,
   Car,
   Check,
   ClipboardCheck,
@@ -63,6 +64,10 @@ import {
   undismissMaintenance,
 } from '@/features/vehicles/Actions/dismissMaintenance'
 import { updateQuoteRequestStatus } from '@/features/inspections/Actions/quoteRequestActions'
+import {
+  createWorkOrderFromRequest,
+  updateServiceRequest,
+} from '@/features/customers/Actions/customerActions'
 import type { TireHotelSummary } from '@/features/tire-hotel/Actions/getTireHotelSummary'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { toast } from 'sonner'
@@ -175,6 +180,21 @@ interface DashboardInspection {
   items: { id: string; condition: string }[]
 }
 
+interface DashboardServiceRequest {
+  id: string
+  description: string
+  preferredDate: Date | null
+  createdAt: Date
+  customer: { id: string; name: string } | null
+  vehicle: {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  } | null
+}
+
 interface DashboardQuoteRequest {
   id: string
   status: string
@@ -263,6 +283,7 @@ export function DashboardClient({
   unitSystem = 'imperial',
   inProgressInspections = [],
   completedInspections = [],
+  serviceRequests = [],
   quoteRequests = [],
   quoteResponses = [],
   smsThreads = [],
@@ -283,6 +304,8 @@ export function DashboardClient({
   unitSystem?: 'metric' | 'imperial'
   inProgressInspections?: DashboardInspection[]
   completedInspections?: DashboardInspection[]
+  /** Null when the customer portal is off, which hides the card entirely. */
+  serviceRequests?: DashboardServiceRequest[] | null
   quoteRequests?: DashboardQuoteRequest[]
   quoteResponses?: DashboardQuoteResponse[]
   smsThreads?: SmsThread[]
@@ -316,6 +339,8 @@ export function DashboardClient({
   const tInspections = useTranslations('inspections')
   const tMessages = useTranslations('messages')
   const tWorkOrders = useTranslations('workOrders')
+  // The customer page already ships every label a service request needs.
+  const tCustomerRequests = useTranslations('customers.serviceRequests')
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const { formatDate } = useFormatDate()
@@ -349,6 +374,7 @@ export function DashboardClient({
     excludedCard,
     ...(onboardingChecklist ? [] : (['gettingStarted'] as const)),
     ...(tireHotelSummary ? [] : (['tireHotel'] as const)),
+    ...(serviceRequests ? [] : (['serviceRequests'] as const)),
   ])
   const availableIds = DASHBOARD_CARD_IDS.filter((id) => !excludedIds.has(id))
   const hiddenSet = new Set<string>(layout.hidden)
@@ -442,6 +468,7 @@ export function DashboardClient({
     smsThreads.length === 0 ? 'sms' : null,
     notifications.length === 0 ? 'notifications' : null,
     inProgressInspections.length === 0 && completedInspections.length === 0 ? 'inspections' : null,
+    !serviceRequests || serviceRequests.length === 0 ? 'serviceRequests' : null,
     quoteRequests.length === 0 ? 'quoteRequests' : null,
     quoteResponses.length === 0 ? 'quoteResponses' : null,
     stats.recentServices.length === 0 ? 'recentCompleted' : null,
@@ -449,6 +476,33 @@ export function DashboardClient({
     recentAuditLogs.length === 0 ? 'recentActivity' : null,
     recentObservations.length === 0 ? 'recentObservations' : null,
   ].filter((id): id is string => id !== null)
+
+  const [requestActionId, setRequestActionId] = useState<string | null>(null)
+
+  /** Turn a portal request into a draft job and open it, as the customer page does. */
+  const handleCreateWorkOrderFromRequest = async (requestId: string) => {
+    setRequestActionId(requestId)
+    const result = await createWorkOrderFromRequest(requestId)
+    setRequestActionId(null)
+    if (result.success && result.data) {
+      toast.success(tCustomerRequests('workOrderCreated'))
+      router.push(`/vehicles/${result.data.vehicleId}/service/${result.data.serviceRecordId}`)
+      return
+    }
+    toast.error(result.error ?? tCustomerRequests('workOrderError'))
+  }
+
+  const handleDismissServiceRequest = async (requestId: string) => {
+    setRequestActionId(requestId)
+    const result = await updateServiceRequest(requestId, { status: 'dismissed' })
+    setRequestActionId(null)
+    if (result.success) {
+      toast.success(tCustomerRequests('requestDismissed'))
+      router.refresh()
+      return
+    }
+    toast.error(result.error ?? tCustomerRequests('dismissError'))
+  }
 
   /** The one next step an empty card offers, styled the same everywhere. */
   const emptyAction = (label: string, href: string) => (
@@ -1140,6 +1194,100 @@ export function DashboardClient({
             ),
 
             // Quote Requests
+            // Portal service requests: a customer asking for work. Reuses the
+            // labels and the two actions the customer page already has, so a
+            // request can be turned into a job without leaving the dashboard.
+            serviceRequests: (
+              <AppCard
+                icon={CalendarClock}
+                title={t('serviceRequests.title')}
+                badge={serviceRequests?.length || undefined}
+                description={t('serviceRequests.description')}
+                contentClassName="p-0"
+                footer={
+                  !serviceRequests || serviceRequests.length === 0 ? undefined : (
+                    <button
+                      type="button"
+                      onClick={() => router.push('/customers')}
+                      className="flex w-full items-center justify-between font-medium transition-colors hover:text-foreground"
+                    >
+                      {t('viewAll')}
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )
+                }
+              >
+                {!serviceRequests || serviceRequests.length === 0 ? (
+                  <CardEmpty icon={CalendarClock} title={t('serviceRequests.noData')} />
+                ) : (
+                  <div className="divide-y">
+                    {serviceRequests.map((req) => (
+                      <div key={req.id} className="px-5 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium">
+                              {req.vehicle
+                                ? `${req.vehicle.year} ${req.vehicle.make} ${req.vehicle.model}`
+                                : (req.customer?.name ?? '')}
+                            </p>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {req.vehicle?.licensePlate && `${req.vehicle.licensePlate} · `}
+                              {req.customer?.name}
+                            </p>
+                          </div>
+                          <Badge variant="secondary" className="shrink-0 text-[10px]">
+                            {tCustomerRequests('statusNew')}
+                          </Badge>
+                        </div>
+                        <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground">
+                          {req.description}
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                          <span>
+                            {tCustomerRequests('submitted', {
+                              date: formatDate(new Date(req.createdAt)),
+                            })}
+                          </span>
+                          {req.preferredDate && (
+                            <span className="font-medium text-foreground">
+                              {tCustomerRequests('preferred', {
+                                date: formatDate(new Date(req.preferredDate)),
+                              })}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-2 flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs"
+                            disabled={requestActionId === req.id}
+                            onClick={() => handleCreateWorkOrderFromRequest(req.id)}
+                          >
+                            {requestActionId === req.id ? (
+                              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Plus className="mr-1 h-3.5 w-3.5" />
+                            )}
+                            {tCustomerRequests('createWorkOrder')}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                            disabled={requestActionId === req.id}
+                            onClick={() => handleDismissServiceRequest(req.id)}
+                          >
+                            <X className="mr-1 h-3.5 w-3.5" />
+                            {tCustomerRequests('dismiss')}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </AppCard>
+            ),
+
             quoteRequests: (
               <AppCard
                 icon={FileText}

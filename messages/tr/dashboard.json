@@ -46,6 +46,7 @@
     "maintenance": "Tahmini Bakım",
     "reminders": "Yaklaşan Hatırlatmalar",
     "inspections": "Muayeneler",
+    "serviceRequests": "Servis talepleri",
     "quoteRequests": "Teklif Talepleri",
     "quoteResponses": "Teklif Yanıtları",
     "sms": "Son Mesajlar",
@@ -96,6 +97,11 @@
     "completed": "Tamamlandı",
     "itemCount": "{inspected}/{total} öğe",
     "noData": "İnceleme yok."
+  },
+  "serviceRequests": {
+    "title": "Servis talepleri",
+    "description": "Müşteri portalından randevu talepleri",
+    "noData": "Bekleyen servis talebi yok."
   },
   "quoteRequests": {
     "title": "Teklif Talepleri",

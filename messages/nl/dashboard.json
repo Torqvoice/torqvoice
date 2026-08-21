@@ -46,6 +46,7 @@
     "maintenance": "Verwacht onderhoud",
     "reminders": "Aankomende herinneringen",
     "inspections": "Inspecties",
+    "serviceRequests": "Serviceaanvragen",
     "quoteRequests": "Offerte-aanvragen",
     "quoteResponses": "Offerte-reacties",
     "sms": "Recente berichten",
@@ -96,6 +97,11 @@
     "completed": "Afgerond",
     "itemCount": "{inspected}/{total} items",
     "noData": "Geen inspecties."
+  },
+  "serviceRequests": {
+    "title": "Serviceaanvragen",
+    "description": "Afspraakaanvragen via het klantenportaal",
+    "noData": "Geen openstaande serviceaanvragen."
   },
   "quoteRequests": {
     "title": "Offerte-aanvragen",

@@ -11,6 +11,7 @@ export const DASHBOARD_CARD_IDS = [
   'sms',
   'notifications',
   'inspections',
+  'serviceRequests',
   'quoteRequests',
   'quoteResponses',
   'recentCompleted',
@@ -107,16 +108,17 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     sms: half(0, 9),
     notifications: half(0, 9),
     inspections: half(6, 9),
-    quoteRequests: half(0, 14),
-    quoteResponses: half(6, 14),
-    recentActivity: half(0, 19),
-    recentObservations: half(6, 19),
-    // Opt-in, and the odd card out when it is on: it sits below the last
-    // pair of halves and above the full-width tables, which keeps it the
-    // lowest half row, so the hole beside it is allowed and lands in one
-    // predictable place. Right column, so that hole reads as a margin
-    // rather than a gap punched in the middle of the page. Hidden entirely
-    // when the module is off, so a shop without it never reserves the slot.
+    // The two things customers ask for, side by side.
+    serviceRequests: half(0, 14),
+    quoteRequests: half(6, 14),
+    quoteResponses: half(0, 19),
+    recentActivity: half(6, 19),
+    recentObservations: half(0, 24),
+    // Opt-in, and the odd card out when it is on. It pairs with the
+    // observations card here and sits above the full-width tables; with the
+    // module off, observations is the lone half on the lowest half row,
+    // which is the one place a hole is allowed. Hidden entirely when the
+    // module is off, so a shop without it never reserves the slot.
     tireHotel: half(6, 24),
     recentCompleted: full(29),
     activeJobs: full(34),

@@ -46,6 +46,7 @@
     "maintenance": "Voraussichtliche Wartung",
     "reminders": "Anstehende Erinnerungen",
     "inspections": "Inspektionen",
+    "serviceRequests": "Serviceanfragen",
     "quoteRequests": "Angebotsanfragen",
     "quoteResponses": "Angebotsantworten",
     "sms": "Letzte Nachrichten",
@@ -96,6 +97,11 @@
     "completed": "Abgeschlossen",
     "itemCount": "{inspected}/{total} Positionen",
     "noData": "Keine Inspektionen."
+  },
+  "serviceRequests": {
+    "title": "Serviceanfragen",
+    "description": "Terminanfragen aus dem Kundenportal",
+    "noData": "Keine offenen Serviceanfragen."
   },
   "quoteRequests": {
     "title": "Angebotsanfragen",

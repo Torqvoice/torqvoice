@@ -11,6 +11,7 @@ import {
 } from '@/features/vehicles/Actions/predictedMaintenanceActions'
 import { getInspectionsPaginated } from '@/features/inspections/Actions/inspectionActions'
 import { getQuoteRequests } from '@/features/inspections/Actions/quoteRequestActions'
+import { getPendingServiceRequests } from '@/features/customers/Actions/customerActions'
 import { getQuoteResponses } from '@/features/quotes/Actions/quoteResponseActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
@@ -31,6 +32,10 @@ export default async function DashboardPage() {
   const auth = await getAuthContext()
   const features = auth ? await getFeatures(auth.organizationId) : null
   const smsEnabled = features?.sms ?? false
+  // The plan decides whether the portal exists at all; the setting decides
+  // whether this shop turned it on. Gate the query on the first so a shop
+  // that cannot have a portal never runs it, and the card on the second.
+  const portalAllowed = features?.customerPortal ?? false
 
   const [
     result,
@@ -49,9 +54,14 @@ export default async function DashboardPage() {
     myJobsResult,
     checklistResult,
     tireHotelResult,
+    serviceRequestsResult,
   ] = await Promise.all([
     getDashboardStats(),
-    getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
+    getSettings([
+      SETTING_KEYS.CURRENCY_CODE,
+      SETTING_KEYS.UNIT_SYSTEM,
+      SETTING_KEYS.PORTAL_ENABLED,
+    ]),
     getUpcomingReminders(),
     getVehiclesDueForService(),
     getDismissedMaintenanceVehicles(),
@@ -66,6 +76,7 @@ export default async function DashboardPage() {
     getMyActiveJobs(),
     getOnboardingChecklist(),
     getTireHotelSummary(),
+    portalAllowed ? getPendingServiceRequests() : Promise.resolve(null),
   ])
 
   const [layoutUser, widgetRows] = auth
@@ -114,6 +125,13 @@ export default async function DashboardPage() {
       ? recentObservationsResult.data
       : []
 
+  // Null rather than an empty list: no portal means no card at all, where an
+  // empty list would mean a portal nobody has used yet.
+  const serviceRequests =
+    portalAllowed && settings[SETTING_KEYS.PORTAL_ENABLED] === 'true'
+      ? (serviceRequestsResult?.success && serviceRequestsResult.data) || []
+      : null
+
   const myJobs = myJobsResult.success && myJobsResult.data ? myJobsResult.data : []
   const onboardingChecklist =
     checklistResult.success && checklistResult.data ? checklistResult.data : null
@@ -149,6 +167,7 @@ export default async function DashboardPage() {
           completedInspections={
             completedResult.success && completedResult.data ? completedResult.data.records : []
           }
+          serviceRequests={serviceRequests}
           quoteRequests={
             quoteRequestsResult.success && quoteRequestsResult.data ? quoteRequestsResult.data : []
           }
