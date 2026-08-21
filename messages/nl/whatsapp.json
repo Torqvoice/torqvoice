@@ -78,5 +78,16 @@
       "description": "Verbind een WhatsApp-nummer om berichten met je klanten uit te wisselen.",
       "action": "WhatsApp instellen"
     }
+  },
+  "sendPhoto": {
+    "action": "Via WhatsApp sturen",
+    "title": "Foto via WhatsApp sturen",
+    "description": "De klant krijgt deze foto in zijn WhatsApp-gesprek.",
+    "captionPlaceholder": "Voeg een notitie toe, bijvoorbeeld wat de foto laat zien",
+    "send": "Versturen",
+    "cancel": "Annuleren",
+    "sent": "Foto verstuurd",
+    "sentAsTemplate": "Foto verstuurd als je goedgekeurde sjabloon",
+    "failed": "Kon de foto niet versturen"
   }
 }

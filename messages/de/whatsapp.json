@@ -78,5 +78,16 @@
       "description": "Verbinden Sie eine WhatsApp-Nummer, um Nachrichten mit Ihren Kunden auszutauschen.",
       "action": "WhatsApp einrichten"
     }
+  },
+  "sendPhoto": {
+    "action": "Per WhatsApp senden",
+    "title": "Foto per WhatsApp senden",
+    "description": "Der Kunde erhält dieses Foto in seinem WhatsApp-Chat.",
+    "captionPlaceholder": "Hinweis ergänzen, zum Beispiel was das Foto zeigt",
+    "send": "Senden",
+    "cancel": "Abbrechen",
+    "sent": "Foto gesendet",
+    "sentAsTemplate": "Foto als freigegebene Vorlage gesendet",
+    "failed": "Foto konnte nicht gesendet werden"
   }
 }

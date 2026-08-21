@@ -78,5 +78,16 @@
       "description": "Müşterilerinizle mesajlaşmak için bir WhatsApp numarası bağlayın.",
       "action": "WhatsApp'ı kur"
     }
+  },
+  "sendPhoto": {
+    "action": "WhatsApp'tan gönder",
+    "title": "Fotoğrafı WhatsApp'tan gönder",
+    "description": "Müşteri bu fotoğrafı WhatsApp sohbetinde alır.",
+    "captionPlaceholder": "Bir not ekleyin, örneğin fotoğrafta ne olduğunu",
+    "send": "Gönder",
+    "cancel": "İptal",
+    "sent": "Fotoğraf gönderildi",
+    "sentAsTemplate": "Fotoğraf onaylı şablonunuzla gönderildi",
+    "failed": "Fotoğraf gönderilemedi"
   }
 }

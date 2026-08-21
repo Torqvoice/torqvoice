@@ -78,5 +78,16 @@
       "description": "Connect a WhatsApp number to send and receive messages with your customers.",
       "action": "Set up WhatsApp"
     }
+  },
+  "sendPhoto": {
+    "action": "Send on WhatsApp",
+    "title": "Send photo on WhatsApp",
+    "description": "The customer gets this photo in their WhatsApp chat.",
+    "captionPlaceholder": "Add a note, for example what the photo shows",
+    "send": "Send",
+    "cancel": "Cancel",
+    "sent": "Photo sent",
+    "sentAsTemplate": "Photo sent as your approved template",
+    "failed": "Could not send the photo"
   }
 }

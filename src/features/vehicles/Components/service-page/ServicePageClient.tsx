@@ -406,6 +406,7 @@ export function ServicePageClient({
             serviceRecordId={record.id}
             initialImages={imageAttachmentsForManager}
             maxImages={maxImagesPerService}
+            customerId={customer?.id}
           />
         </div>
       )}

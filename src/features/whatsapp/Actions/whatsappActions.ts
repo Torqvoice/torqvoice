@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { requireFeature } from '@/lib/features'
+import { getFeatures, requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuard } from '@/lib/demo'
 import {
@@ -38,6 +38,27 @@ export async function getWhatsappWindowState(customerId: string) {
       ])
 
       return { configured, open, lastInboundAt: last }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
+/**
+ * Whether this workshop can send on WhatsApp at all.
+ *
+ * Asked by anything that wants to offer a "send to customer" action without
+ * its own page having to know about messaging setup.
+ */
+export async function isWhatsappReady() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const features = await getFeatures(organizationId)
+      if (!features.whatsapp) return false
+      return isWhatsappConfigured(organizationId)
     },
     {
       requiredPermissions: [

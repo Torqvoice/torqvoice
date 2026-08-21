@@ -14,6 +14,7 @@ import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAtta
 import { updateServiceAttachment } from '@/features/vehicles/Actions/updateServiceAttachment'
 import { deleteServiceAttachment } from '@/features/vehicles/Actions/serviceActions'
 import { ImageCarousel } from '@/features/vehicles/Components/service-detail/ImageCarousel'
+import { SendPhotoToWhatsapp } from '@/features/whatsapp/Components/SendPhotoToWhatsapp'
 
 interface Attachment {
   id: string
@@ -30,12 +31,15 @@ interface ServiceImagesManagerProps {
   serviceRecordId: string
   initialImages: Attachment[]
   maxImages?: number
+  /** Enables sending a photo straight to the customer; omitted on jobs with none. */
+  customerId?: string | null
 }
 
 export function ServiceImagesManager({
   serviceRecordId,
   initialImages,
   maxImages,
+  customerId,
 }: ServiceImagesManagerProps) {
   const t = useTranslations('service')
   const [images, setImages] = useState<Attachment[]>(initialImages)
@@ -235,16 +239,26 @@ export function ServiceImagesManager({
                   className="aspect-square w-full cursor-pointer object-cover"
                   onClick={() => setCarouselIndex(images.indexOf(file))}
                 />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                  onClick={() => handleDelete(file.id)}
-                  aria-label={t('header.delete')}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
+                <div className="absolute right-1 top-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                  {customerId && (
+                    <SendPhotoToWhatsapp
+                      customerId={customerId}
+                      fileUrl={file.fileUrl}
+                      fileName={file.fileName}
+                      serviceRecordId={serviceRecordId}
+                    />
+                  )}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => handleDelete(file.id)}
+                    aria-label={t('header.delete')}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-1 p-1.5">
                 <Input

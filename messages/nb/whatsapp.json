@@ -78,5 +78,16 @@
       "description": "Koble til et WhatsApp-nummer for å sende og motta meldinger med kundene dine.",
       "action": "Sett opp WhatsApp"
     }
+  },
+  "sendPhoto": {
+    "action": "Send på WhatsApp",
+    "title": "Send bilde på WhatsApp",
+    "description": "Kunden får dette bildet i WhatsApp-samtalen sin.",
+    "captionPlaceholder": "Legg til en merknad, for eksempel hva bildet viser",
+    "send": "Send",
+    "cancel": "Avbryt",
+    "sent": "Bilde sendt",
+    "sentAsTemplate": "Bilde sendt som den godkjente malen din",
+    "failed": "Kunne ikke sende bildet"
   }
 }

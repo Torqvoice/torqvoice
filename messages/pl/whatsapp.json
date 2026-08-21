@@ -78,5 +78,16 @@
       "description": "Podłącz numer WhatsApp, aby wymieniać wiadomości z klientami.",
       "action": "Skonfiguruj WhatsApp"
     }
+  },
+  "sendPhoto": {
+    "action": "Wyślij przez WhatsApp",
+    "title": "Wyślij zdjęcie przez WhatsApp",
+    "description": "Klient dostanie to zdjęcie na czacie WhatsApp.",
+    "captionPlaceholder": "Dodaj notatkę, na przykład co widać na zdjęciu",
+    "send": "Wyślij",
+    "cancel": "Anuluj",
+    "sent": "Zdjęcie wysłane",
+    "sentAsTemplate": "Zdjęcie wysłane jako zatwierdzony szablon",
+    "failed": "Nie udało się wysłać zdjęcia"
   }
 }

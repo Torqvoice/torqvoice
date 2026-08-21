@@ -78,5 +78,16 @@
       "description": "Collega un numero WhatsApp per scambiare messaggi con i tuoi clienti.",
       "action": "Configura WhatsApp"
     }
+  },
+  "sendPhoto": {
+    "action": "Invia su WhatsApp",
+    "title": "Invia la foto su WhatsApp",
+    "description": "Il cliente riceve questa foto nella sua chat WhatsApp.",
+    "captionPlaceholder": "Aggiungi una nota, per esempio cosa mostra la foto",
+    "send": "Invia",
+    "cancel": "Annulla",
+    "sent": "Foto inviata",
+    "sentAsTemplate": "Foto inviata come modello approvato",
+    "failed": "Impossibile inviare la foto"
   }
 }

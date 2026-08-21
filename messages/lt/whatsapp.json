@@ -78,5 +78,16 @@
       "description": "Prijunkite „WhatsApp“ numerį, kad galėtumėte susirašinėti su klientais.",
       "action": "Nustatyti „WhatsApp“"
     }
+  },
+  "sendPhoto": {
+    "action": "Siųsti per „WhatsApp“",
+    "title": "Siųsti nuotrauką per „WhatsApp“",
+    "description": "Klientas gaus šią nuotrauką savo „WhatsApp“ pokalbyje.",
+    "captionPlaceholder": "Pridėkite pastabą, pavyzdžiui ką rodo nuotrauka",
+    "send": "Siųsti",
+    "cancel": "Atšaukti",
+    "sent": "Nuotrauka išsiųsta",
+    "sentAsTemplate": "Nuotrauka išsiųsta kaip patvirtintas šablonas",
+    "failed": "Nepavyko išsiųsti nuotraukos"
   }
 }
