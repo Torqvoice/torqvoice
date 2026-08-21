@@ -78,7 +78,14 @@ export function PartNameSuggestions({
 }) {
   const t = useTranslations('inventory')
   const formatCurrency = useFormatCurrency()
-  const [dismissed, setDismissed] = useState(false)
+  // Starts closed when the field arrives with something already in it.
+  //
+  // The panel is a typeahead, and the only signal it had was "the query is
+  // long enough", which is equally true of a name loaded from a saved record.
+  // Opening a work order with five free-typed parts therefore opened five
+  // panels at once, before anyone touched the keyboard.
+  const [dismissed, setDismissed] = useState(() => query.trim().length > 0)
+  const previousQuery = useRef(query)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const trimmed = query.trim().toLowerCase()
@@ -91,8 +98,12 @@ export function PartNameSuggestions({
       .slice(0, MAX_SUGGESTIONS)
   }, [parts, trimmed, disabled])
 
-  // Typing again after dismissing should bring the list back.
+  // Typing again after dismissing should bring the list back. Compared against
+  // the last value rather than run on every render, so the mount pass does not
+  // immediately undo the closed state above.
   useEffect(() => {
+    if (query === previousQuery.current) return
+    previousQuery.current = query
     setDismissed(false)
   }, [query])
 
