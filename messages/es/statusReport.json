@@ -37,7 +37,8 @@
     "skip": "Omitir",
     "send": "Enviar",
     "sent": "Informe de estado enviado",
-    "failed": "Error al enviar el informe de estado"
+    "failed": "Error al enviar el informe de estado",
+    "notSent": "No enviado"
   },
   "view": {
     "title": "Informe de estado del vehículo",

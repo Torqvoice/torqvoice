@@ -37,7 +37,8 @@
     "skip": "Pular",
     "send": "Enviar",
     "sent": "Relatório de status enviado",
-    "failed": "Falha ao enviar o relatório de status"
+    "failed": "Falha ao enviar o relatório de status",
+    "notSent": "Não enviado"
   },
   "view": {
     "title": "Relatório de Status do Veículo",
