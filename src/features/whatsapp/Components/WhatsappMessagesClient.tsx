@@ -28,7 +28,7 @@ export function WhatsappMessagesClient({ threads }: { threads: WhatsappThreadSum
 
   if (threads.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-xl border border-dashed py-16 text-center">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 py-16 text-center">
         <MessageCircle className="h-8 w-8 text-muted-foreground" />
         <p className="font-medium">{t('noThreads')}</p>
         <p className="max-w-sm text-sm text-muted-foreground">{t('noThreadsHint')}</p>
@@ -37,7 +37,7 @@ export function WhatsappMessagesClient({ threads }: { threads: WhatsappThreadSum
   }
 
   return (
-    <div className="flex min-h-[70vh] flex-1 overflow-hidden rounded-xl border">
+    <div className="flex flex-1 overflow-hidden">
       <aside
         className={cn(
           'w-full shrink-0 overflow-y-auto border-r md:block md:w-80',

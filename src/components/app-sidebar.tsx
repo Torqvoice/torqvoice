@@ -94,8 +94,6 @@ export function AppSidebar({
   activeOrgId,
   isSuperAdmin,
   features,
-  telegramEnabled = false,
-  whatsappEnabled = false,
   tireHotelEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
@@ -106,8 +104,6 @@ export function AppSidebar({
   activeOrgId?: string
   isSuperAdmin?: boolean
   features?: PlanFeatures
-  telegramEnabled?: boolean
-  whatsappEnabled?: boolean
   tireHotelEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
@@ -143,29 +139,6 @@ export function AppSidebar({
       icon: MessageSquare,
       subject: 'customers',
     },
-    ...(whatsappEnabled
-      ? [
-          {
-            titleKey: 'sidebar.whatsapp' as const,
-            url: '/whatsapp',
-            icon: MessageCircle,
-            subject: 'customers',
-          },
-        ]
-      : []),
-    // Same story as the tire hotel below: the link only exists once Telegram
-    // is connected, so it is worth pointing at the first time it appears.
-    ...(telegramEnabled
-      ? [
-          {
-            titleKey: 'sidebar.telegram' as const,
-            url: '/telegram',
-            icon: Send,
-            subject: 'customers',
-            hint: 'telegram.v1',
-          },
-        ]
-      : []),
   ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [

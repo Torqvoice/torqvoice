@@ -7,7 +7,8 @@
       "email": "Correo",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Nota en la app"
+      "in_app": "Nota en la app",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Repetir",
     "frequencies": {

@@ -4,7 +4,10 @@
     "featureDescription": "Wysyłaj i odbieraj wiadomości SMS z klientami bezpośrednio z Torqvoice.",
     "tabs": {
       "inbox": "Odebrane",
-      "scheduled": "Zaplanowane"
+      "scheduled": "Zaplanowane",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "SMS nie jest skonfigurowany",
     "smsNotConfiguredHint": "Podłącz dostawcę SMS, aby wysyłać i odbierać wiadomości tutaj. Zaplanowana poczta działa bez tego.",

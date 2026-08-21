@@ -7,7 +7,8 @@
       "email": "El. paštas",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Pastaba programoje"
+      "in_app": "Pastaba programoje",
+      "whatsapp": "„WhatsApp“"
     },
     "repeatLabel": "Kartoti",
     "frequencies": {

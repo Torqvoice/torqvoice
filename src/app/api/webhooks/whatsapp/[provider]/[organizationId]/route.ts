@@ -62,7 +62,9 @@ export async function POST(request: Request, { params }: RouteParams) {
         message: `${customer?.name ?? message.senderName ?? message.from}: ${preview}`,
         entityType: 'whatsapp_message',
         entityId: stored.id,
-        entityUrl: customer ? `/whatsapp?customerId=${customer.id}` : '/whatsapp',
+        entityUrl: customer
+          ? `/messages?tab=whatsapp&customerId=${customer.id}`
+          : '/messages?tab=whatsapp',
       })
     }
   } catch (error) {

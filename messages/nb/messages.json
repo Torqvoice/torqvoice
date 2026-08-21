@@ -4,7 +4,10 @@
     "featureDescription": "Send og motta SMS-meldinger med kundene dine direkte fra Torqvoice.",
     "tabs": {
       "inbox": "Innboks",
-      "scheduled": "Planlagt"
+      "scheduled": "Planlagt",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "SMS er ikke satt opp",
     "smsNotConfiguredHint": "Koble til en SMS-leverandør for å sende og motta meldinger her. Planlagt e-post fungerer uansett.",

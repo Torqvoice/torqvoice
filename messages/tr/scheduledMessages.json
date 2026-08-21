@@ -7,7 +7,8 @@
       "email": "E-posta",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Uygulama içi not"
+      "in_app": "Uygulama içi not",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Tekrar",
     "frequencies": {

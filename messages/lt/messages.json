@@ -4,7 +4,10 @@
     "featureDescription": "Siųskite ir gaukite SMS žinutes su klientais tiesiogiai iš Torqvoice.",
     "tabs": {
       "inbox": "Gauta",
-      "scheduled": "Suplanuota"
+      "scheduled": "Suplanuota",
+      "sms": "SMS",
+      "whatsapp": "„WhatsApp“",
+      "telegram": "„Telegram“"
     },
     "smsNotConfiguredTitle": "SMS nesukonfigūruotas",
     "smsNotConfiguredHint": "Prijunkite SMS tiekėją, kad galėtumėte siųsti ir gauti žinutes čia. Suplanuoti el. laiškai veikia ir be to.",

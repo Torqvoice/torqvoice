@@ -7,7 +7,8 @@
       "email": "E-post",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Notat i appen"
+      "in_app": "Notat i appen",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Gjenta",
     "frequencies": {
