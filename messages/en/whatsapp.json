@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Send and receive WhatsApp messages with your customers.",
+    "helpLink": "Set up {provider}",
+    "save": "Save WhatsApp settings",
+    "saved": "WhatsApp settings saved",
+    "saveError": "Could not save WhatsApp settings",
+    "enable": {
+      "label": "Enable WhatsApp",
+      "hint": "Turn on once your provider credentials are in place."
+    },
+    "provider": {
+      "label": "Provider",
+      "placeholder": "Choose a provider",
+      "hint": "Who supplies your WhatsApp number. Switching keeps the credentials of the old one."
+    },
+    "from": {
+      "label": "Your WhatsApp number",
+      "hint": "The business number customers see, in international format."
+    },
+    "secret": {
+      "show": "Show",
+      "hide": "Hide"
+    },
+    "webhook": {
+      "label": "Webhook URL",
+      "description": "Paste this into your provider so incoming messages reach Torqvoice.",
+      "copy": "Copy webhook URL",
+      "copied": "Webhook URL copied"
+    },
+    "template": {
+      "title": "Message template",
+      "description": "Used when you write to a customer who has not messaged you recently.",
+      "windowExplainer": "WhatsApp only allows free text for 24 hours after the customer's last message. Outside that window your message has to go out as a template approved by your provider.",
+      "nameLabel": "Template name",
+      "nameHint": "The approved template's name, or its Content SID at providers that use one.",
+      "languageLabel": "Template language",
+      "languageHint": "The language code the template was approved under, for example de."
+    },
+    "test": {
+      "title": "Test and disconnect",
+      "description": "Send a message to your own number to check the setup.",
+      "send": "Send test",
+      "sent": "Test message sent",
+      "failed": "Could not send the test message",
+      "hint": "Message yourself on WhatsApp first, otherwise the test needs an approved template."
+    },
+    "disconnect": {
+      "action": "Disconnect WhatsApp",
+      "hint": "Removes the credentials from Torqvoice. Your conversations are kept.",
+      "done": "WhatsApp disconnected"
+    }
+  }
+}

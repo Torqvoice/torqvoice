@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Wysyłaj i odbieraj wiadomości WhatsApp z klientami.",
+    "helpLink": "Skonfiguruj {provider}",
+    "save": "Zapisz ustawienia WhatsApp",
+    "saved": "Ustawienia WhatsApp zapisane",
+    "saveError": "Nie udało się zapisać ustawień WhatsApp",
+    "enable": {
+      "label": "Włącz WhatsApp",
+      "hint": "Włącz, gdy dane dostawcy są już wpisane."
+    },
+    "provider": {
+      "label": "Dostawca",
+      "placeholder": "Wybierz dostawcę",
+      "hint": "Kto dostarcza Twój numer WhatsApp. Po zmianie dane poprzedniego zostają."
+    },
+    "from": {
+      "label": "Twój numer WhatsApp",
+      "hint": "Numer, który widzą klienci, w formacie międzynarodowym."
+    },
+    "secret": {
+      "show": "Pokaż",
+      "hide": "Ukryj"
+    },
+    "webhook": {
+      "label": "Adres webhooka",
+      "description": "Wklej go u dostawcy, aby przychodzące wiadomości trafiały do Torqvoice.",
+      "copy": "Kopiuj adres webhooka",
+      "copied": "Adres webhooka skopiowany"
+    },
+    "template": {
+      "title": "Szablon wiadomości",
+      "description": "Używany, gdy piszesz do klienta, który dawno się nie odzywał.",
+      "windowExplainer": "WhatsApp pozwala na dowolny tekst tylko przez 24 godziny od ostatniej wiadomości klienta. Poza tym oknem wiadomość musi wyjść jako szablon zatwierdzony przez dostawcę.",
+      "nameLabel": "Nazwa szablonu",
+      "nameHint": "Nazwa zatwierdzonego szablonu lub Content SID u dostawców, którzy go używają.",
+      "languageLabel": "Język szablonu",
+      "languageHint": "Kod języka, w którym szablon zatwierdzono, na przykład pl."
+    },
+    "test": {
+      "title": "Test i rozłączenie",
+      "description": "Wyślij wiadomość na własny numer, aby sprawdzić konfigurację.",
+      "send": "Wyślij test",
+      "sent": "Wiadomość testowa wysłana",
+      "failed": "Nie udało się wysłać wiadomości testowej",
+      "hint": "Najpierw napisz do siebie na WhatsAppie, inaczej test będzie wymagał zatwierdzonego szablonu."
+    },
+    "disconnect": {
+      "action": "Rozłącz WhatsApp",
+      "hint": "Usuwa dane logowania z Torqvoice. Rozmowy pozostają.",
+      "done": "WhatsApp rozłączony"
+    }
+  }
+}

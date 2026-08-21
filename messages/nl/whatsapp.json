@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Verstuur en ontvang WhatsApp-berichten met je klanten.",
+    "helpLink": "{provider} instellen",
+    "save": "WhatsApp-instellingen opslaan",
+    "saved": "WhatsApp-instellingen opgeslagen",
+    "saveError": "Kon de WhatsApp-instellingen niet opslaan",
+    "enable": {
+      "label": "WhatsApp inschakelen",
+      "hint": "Zet aan zodra de gegevens van je provider ingevuld zijn."
+    },
+    "provider": {
+      "label": "Provider",
+      "placeholder": "Kies een provider",
+      "hint": "Wie je WhatsApp-nummer levert. Bij wisselen blijven de gegevens van de vorige bewaard."
+    },
+    "from": {
+      "label": "Je WhatsApp-nummer",
+      "hint": "Het nummer dat klanten zien, in internationaal formaat."
+    },
+    "secret": {
+      "show": "Tonen",
+      "hide": "Verbergen"
+    },
+    "webhook": {
+      "label": "Webhook-URL",
+      "description": "Plak dit bij je provider zodat inkomende berichten in Torqvoice aankomen.",
+      "copy": "Webhook-URL kopiëren",
+      "copied": "Webhook-URL gekopieerd"
+    },
+    "template": {
+      "title": "Berichtsjabloon",
+      "description": "Gebruikt wanneer je een klant schrijft die je niet recent iets stuurde.",
+      "windowExplainer": "WhatsApp staat vrije tekst alleen toe binnen 24 uur na het laatste bericht van de klant. Daarbuiten moet je bericht als goedgekeurd sjabloon uitgaan.",
+      "nameLabel": "Naam van het sjabloon",
+      "nameHint": "De naam van het goedgekeurde sjabloon, of de Content SID bij providers die daarmee werken.",
+      "languageLabel": "Taal van het sjabloon",
+      "languageHint": "De taalcode waaronder het sjabloon is goedgekeurd, bijvoorbeeld nl."
+    },
+    "test": {
+      "title": "Testen en loskoppelen",
+      "description": "Stuur een bericht naar je eigen nummer om de instelling te controleren.",
+      "send": "Test versturen",
+      "sent": "Testbericht verstuurd",
+      "failed": "Kon het testbericht niet versturen",
+      "hint": "Stuur jezelf eerst een WhatsApp, anders heeft de test een goedgekeurd sjabloon nodig."
+    },
+    "disconnect": {
+      "action": "WhatsApp loskoppelen",
+      "hint": "Verwijdert de gegevens uit Torqvoice. Je gesprekken blijven bewaard.",
+      "done": "WhatsApp losgekoppeld"
+    }
+  }
+}

@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Hotel opon",
         "description": "Sezonowe przechowywanie opon"
+      },
+      "providers": {
+        "title": "Dostawcy",
+        "description": "E-mail, SMS, WhatsApp i Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Ceny przygotowania",
     "prepHint": "Ile kosztuje każdy rodzaj przygotowania. Puste pole oznacza, że nigdy nie jest fakturowane, co pasuje warsztatom mającym mycie w cenie przechowywania. Wycenione trafiają automatycznie na wycenę i zlecenie.",
     "prepNotCharged": "nie naliczane"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Ustawienia e-mail",
+        "description": "Skonfiguruj wysyłkę SMTP, aby faktury, oferty i powiadomienia wychodziły prosto z warsztatu."
+      },
+      "sms": {
+        "feature": "Wiadomości SMS",
+        "description": "Wysyłaj i odbieraj SMS-y z klientami bezpośrednio w Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Wiadomości WhatsApp",
+        "description": "Wysyłaj i odbieraj wiadomości WhatsApp, w tym zdjęcia części, bezpośrednio w Torqvoice."
+      },
+      "telegram": {
+        "feature": "Wiadomości Telegram",
+        "description": "Wysyłaj i odbieraj wiadomości Telegram z klientami bezpośrednio w Torqvoice."
+      }
+    }
   }
 }

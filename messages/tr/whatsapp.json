@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Müşterilerinizle WhatsApp mesajları gönderip alın.",
+    "helpLink": "{provider} kurulumu",
+    "save": "WhatsApp ayarlarını kaydet",
+    "saved": "WhatsApp ayarları kaydedildi",
+    "saveError": "WhatsApp ayarları kaydedilemedi",
+    "enable": {
+      "label": "WhatsApp'ı etkinleştir",
+      "hint": "Sağlayıcı bilgileri girildikten sonra açın."
+    },
+    "provider": {
+      "label": "Sağlayıcı",
+      "placeholder": "Bir sağlayıcı seçin",
+      "hint": "WhatsApp numaranızı kim sağlıyor. Değiştirdiğinizde eskisinin bilgileri korunur."
+    },
+    "from": {
+      "label": "WhatsApp numaranız",
+      "hint": "Müşterilerin gördüğü numara, uluslararası biçimde."
+    },
+    "secret": {
+      "show": "Göster",
+      "hide": "Gizle"
+    },
+    "webhook": {
+      "label": "Webhook adresi",
+      "description": "Gelen mesajların Torqvoice'a ulaşması için bunu sağlayıcınıza yapıştırın.",
+      "copy": "Webhook adresini kopyala",
+      "copied": "Webhook adresi kopyalandı"
+    },
+    "template": {
+      "title": "Mesaj şablonu",
+      "description": "Size yakın zamanda yazmamış bir müşteriye yazdığınızda kullanılır.",
+      "windowExplainer": "WhatsApp serbest metne yalnızca müşterinin son mesajından sonraki 24 saat boyunca izin verir. Bu pencerenin dışında mesajınız sağlayıcınızın onayladığı bir şablon olarak gitmek zorundadır.",
+      "nameLabel": "Şablon adı",
+      "nameHint": "Onaylı şablonun adı veya bunu kullanan sağlayıcılarda Content SID.",
+      "languageLabel": "Şablon dili",
+      "languageHint": "Şablonun onaylandığı dil kodu, örneğin tr."
+    },
+    "test": {
+      "title": "Test ve bağlantıyı kes",
+      "description": "Kurulumu denemek için kendi numaranıza bir mesaj gönderin.",
+      "send": "Test gönder",
+      "sent": "Test mesajı gönderildi",
+      "failed": "Test mesajı gönderilemedi",
+      "hint": "Önce WhatsApp'tan kendinize yazın, aksi halde test onaylı bir şablon ister."
+    },
+    "disconnect": {
+      "action": "WhatsApp bağlantısını kes",
+      "hint": "Kimlik bilgilerini Torqvoice'tan siler. Görüşmeleriniz kalır.",
+      "done": "WhatsApp bağlantısı kesildi"
+    }
+  }
+}

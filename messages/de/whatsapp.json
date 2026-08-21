@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "WhatsApp-Nachrichten mit Ihren Kunden senden und empfangen.",
+    "helpLink": "{provider} einrichten",
+    "save": "WhatsApp-Einstellungen speichern",
+    "saved": "WhatsApp-Einstellungen gespeichert",
+    "saveError": "WhatsApp-Einstellungen konnten nicht gespeichert werden",
+    "enable": {
+      "label": "WhatsApp aktivieren",
+      "hint": "Einschalten, sobald die Zugangsdaten des Anbieters hinterlegt sind."
+    },
+    "provider": {
+      "label": "Anbieter",
+      "placeholder": "Anbieter wählen",
+      "hint": "Wer Ihre WhatsApp-Nummer bereitstellt. Beim Wechsel bleiben die Zugangsdaten des alten Anbieters erhalten."
+    },
+    "from": {
+      "label": "Ihre WhatsApp-Nummer",
+      "hint": "Die Nummer, die Kunden sehen, im internationalen Format."
+    },
+    "secret": {
+      "show": "Anzeigen",
+      "hide": "Verbergen"
+    },
+    "webhook": {
+      "label": "Webhook-URL",
+      "description": "Diese URL beim Anbieter eintragen, damit eingehende Nachrichten in Torqvoice ankommen.",
+      "copy": "Webhook-URL kopieren",
+      "copied": "Webhook-URL kopiert"
+    },
+    "template": {
+      "title": "Nachrichtenvorlage",
+      "description": "Wird verwendet, wenn Sie einem Kunden schreiben, der sich länger nicht gemeldet hat.",
+      "windowExplainer": "WhatsApp erlaubt freien Text nur 24 Stunden nach der letzten Kundennachricht. Danach muss Ihre Nachricht als vom Anbieter freigegebene Vorlage rausgehen.",
+      "nameLabel": "Name der Vorlage",
+      "nameHint": "Name der freigegebenen Vorlage, bei manchen Anbietern die Content-SID.",
+      "languageLabel": "Sprache der Vorlage",
+      "languageHint": "Sprachcode, unter dem die Vorlage freigegeben wurde, zum Beispiel de."
+    },
+    "test": {
+      "title": "Test und Trennen",
+      "description": "Senden Sie eine Nachricht an Ihre eigene Nummer, um die Einrichtung zu prüfen.",
+      "send": "Test senden",
+      "sent": "Testnachricht gesendet",
+      "failed": "Testnachricht konnte nicht gesendet werden",
+      "hint": "Schreiben Sie sich zuerst selbst über WhatsApp an, sonst braucht der Test eine freigegebene Vorlage."
+    },
+    "disconnect": {
+      "action": "WhatsApp trennen",
+      "hint": "Entfernt die Zugangsdaten aus Torqvoice. Ihre Konversationen bleiben erhalten.",
+      "done": "WhatsApp getrennt"
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Invia e ricevi messaggi WhatsApp con i tuoi clienti.",
+    "helpLink": "Configura {provider}",
+    "save": "Salva impostazioni WhatsApp",
+    "saved": "Impostazioni WhatsApp salvate",
+    "saveError": "Impossibile salvare le impostazioni WhatsApp",
+    "enable": {
+      "label": "Attiva WhatsApp",
+      "hint": "Attiva quando le credenziali del provider sono inserite."
+    },
+    "provider": {
+      "label": "Provider",
+      "placeholder": "Scegli un provider",
+      "hint": "Chi fornisce il tuo numero WhatsApp. Cambiando restano le credenziali del precedente."
+    },
+    "from": {
+      "label": "Il tuo numero WhatsApp",
+      "hint": "Il numero che vedono i clienti, in formato internazionale."
+    },
+    "secret": {
+      "show": "Mostra",
+      "hide": "Nascondi"
+    },
+    "webhook": {
+      "label": "URL webhook",
+      "description": "Incollalo nel tuo provider così i messaggi in arrivo raggiungono Torqvoice.",
+      "copy": "Copia URL webhook",
+      "copied": "URL webhook copiato"
+    },
+    "template": {
+      "title": "Modello di messaggio",
+      "description": "Usato quando scrivi a un cliente che non ti ha scritto di recente.",
+      "windowExplainer": "WhatsApp consente testo libero solo per 24 ore dall'ultimo messaggio del cliente. Fuori da quella finestra il messaggio deve partire come modello approvato dal provider.",
+      "nameLabel": "Nome del modello",
+      "nameHint": "Il nome del modello approvato, o il Content SID nei provider che lo usano.",
+      "languageLabel": "Lingua del modello",
+      "languageHint": "Il codice lingua con cui è stato approvato, per esempio it."
+    },
+    "test": {
+      "title": "Prova e disconnetti",
+      "description": "Invia un messaggio al tuo numero per verificare la configurazione.",
+      "send": "Invia prova",
+      "sent": "Messaggio di prova inviato",
+      "failed": "Impossibile inviare il messaggio di prova",
+      "hint": "Scriviti prima su WhatsApp, altrimenti la prova richiede un modello approvato."
+    },
+    "disconnect": {
+      "action": "Disconnetti WhatsApp",
+      "hint": "Rimuove le credenziali da Torqvoice. Le conversazioni restano.",
+      "done": "WhatsApp disconnesso"
+    }
+  }
+}

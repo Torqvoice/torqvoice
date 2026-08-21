@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Шинный отель",
         "description": "Сезонное хранение шин"
+      },
+      "providers": {
+        "title": "Провайдеры",
+        "description": "Эл. почта, SMS, WhatsApp и Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Цены на подготовку",
     "prepHint": "Сколько стоит каждый вид подготовки. Пустое поле означает, что она никогда не выставляется, как нужно мастерским, у которых мойка входит в хранение. Те, у которых есть цена, попадают в смету и заказ сами.",
     "prepNotCharged": "не выставляется"
+  },
+  "providers": {
+    "tabs": {
+      "email": "Эл. почта",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Настройки почты",
+        "description": "Настройте отправку по SMTP, чтобы счета, сметы и уведомления уходили прямо из мастерской."
+      },
+      "sms": {
+        "feature": "SMS-сообщения",
+        "description": "Отправляйте и получайте SMS от клиентов прямо в Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Сообщения WhatsApp",
+        "description": "Отправляйте и получайте сообщения WhatsApp, включая фото деталей, прямо в Torqvoice."
+      },
+      "telegram": {
+        "feature": "Сообщения Telegram",
+        "description": "Отправляйте и получайте сообщения Telegram от клиентов прямо в Torqvoice."
+      }
+    }
   }
 }

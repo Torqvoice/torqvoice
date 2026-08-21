@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Envoyez et recevez des messages WhatsApp avec vos clients.",
+    "helpLink": "Configurer {provider}",
+    "save": "Enregistrer les paramètres WhatsApp",
+    "saved": "Paramètres WhatsApp enregistrés",
+    "saveError": "Impossible d'enregistrer les paramètres WhatsApp",
+    "enable": {
+      "label": "Activer WhatsApp",
+      "hint": "Activez une fois les identifiants du fournisseur renseignés."
+    },
+    "provider": {
+      "label": "Fournisseur",
+      "placeholder": "Choisir un fournisseur",
+      "hint": "Qui fournit votre numéro WhatsApp. Un changement conserve les identifiants du précédent."
+    },
+    "from": {
+      "label": "Votre numéro WhatsApp",
+      "hint": "Le numéro que voient les clients, au format international."
+    },
+    "secret": {
+      "show": "Afficher",
+      "hide": "Masquer"
+    },
+    "webhook": {
+      "label": "URL du webhook",
+      "description": "Collez-la chez votre fournisseur pour que les messages entrants arrivent dans Torqvoice.",
+      "copy": "Copier l'URL du webhook",
+      "copied": "URL du webhook copiée"
+    },
+    "template": {
+      "title": "Modèle de message",
+      "description": "Utilisé quand vous écrivez à un client qui ne vous a pas écrit récemment.",
+      "windowExplainer": "WhatsApp n'autorise le texte libre que pendant 24 heures après le dernier message du client. En dehors, votre message doit partir sous forme de modèle approuvé par votre fournisseur.",
+      "nameLabel": "Nom du modèle",
+      "nameHint": "Le nom du modèle approuvé, ou son Content SID chez les fournisseurs qui en utilisent un.",
+      "languageLabel": "Langue du modèle",
+      "languageHint": "Le code de langue sous lequel le modèle a été approuvé, par exemple fr."
+    },
+    "test": {
+      "title": "Tester et déconnecter",
+      "description": "Envoyez un message à votre propre numéro pour vérifier la configuration.",
+      "send": "Envoyer un test",
+      "sent": "Message de test envoyé",
+      "failed": "Impossible d'envoyer le message de test",
+      "hint": "Écrivez-vous d'abord sur WhatsApp, sinon le test exige un modèle approuvé."
+    },
+    "disconnect": {
+      "action": "Déconnecter WhatsApp",
+      "hint": "Supprime les identifiants de Torqvoice. Vos conversations sont conservées.",
+      "done": "WhatsApp déconnecté"
+    }
+  }
+}

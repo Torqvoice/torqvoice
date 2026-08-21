@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "„WhatsApp“",
+    "description": "Siųskite ir gaukite „WhatsApp“ žinutes su klientais.",
+    "helpLink": "Nustatyti {provider}",
+    "save": "Įrašyti „WhatsApp“ nustatymus",
+    "saved": "„WhatsApp“ nustatymai įrašyti",
+    "saveError": "Nepavyko įrašyti „WhatsApp“ nustatymų",
+    "enable": {
+      "label": "Įjungti „WhatsApp“",
+      "hint": "Įjunkite, kai tiekėjo prisijungimo duomenys suvesti."
+    },
+    "provider": {
+      "label": "Tiekėjas",
+      "placeholder": "Pasirinkite tiekėją",
+      "hint": "Kas suteikia jūsų „WhatsApp“ numerį. Pakeitus senojo duomenys išlieka."
+    },
+    "from": {
+      "label": "Jūsų „WhatsApp“ numeris",
+      "hint": "Numeris, kurį mato klientai, tarptautiniu formatu."
+    },
+    "secret": {
+      "show": "Rodyti",
+      "hide": "Slėpti"
+    },
+    "webhook": {
+      "label": "Webhook URL",
+      "description": "Įklijuokite tai pas tiekėją, kad gaunamos žinutės pasiektų „Torqvoice“.",
+      "copy": "Kopijuoti webhook URL",
+      "copied": "Webhook URL nukopijuotas"
+    },
+    "template": {
+      "title": "Žinutės šablonas",
+      "description": "Naudojamas, kai rašote klientui, kuris seniai nerašė.",
+      "windowExplainer": "„WhatsApp“ leidžia laisvą tekstą tik 24 valandas nuo paskutinės kliento žinutės. Vėliau žinutė turi būti tiekėjo patvirtintas šablonas.",
+      "nameLabel": "Šablono pavadinimas",
+      "nameHint": "Patvirtinto šablono pavadinimas arba „Content SID“ pas tiekėjus, kurie jį naudoja.",
+      "languageLabel": "Šablono kalba",
+      "languageHint": "Kalbos kodas, su kuriuo šablonas patvirtintas, pavyzdžiui lt."
+    },
+    "test": {
+      "title": "Bandymas ir atjungimas",
+      "description": "Nusiųskite žinutę į savo numerį, kad patikrintumėte nustatymus.",
+      "send": "Siųsti bandymą",
+      "sent": "Bandomoji žinutė išsiųsta",
+      "failed": "Nepavyko išsiųsti bandomosios žinutės",
+      "hint": "Pirma parašykite sau per „WhatsApp“, kitaip bandymui reikės patvirtinto šablono."
+    },
+    "disconnect": {
+      "action": "Atjungti „WhatsApp“",
+      "hint": "Pašalina prisijungimo duomenis iš „Torqvoice“. Pokalbiai išlieka.",
+      "done": "„WhatsApp“ atjungtas"
+    }
+  }
+}

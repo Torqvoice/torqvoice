@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Envía y recibe mensajes de WhatsApp con tus clientes.",
+    "helpLink": "Configurar {provider}",
+    "save": "Guardar ajustes de WhatsApp",
+    "saved": "Ajustes de WhatsApp guardados",
+    "saveError": "No se pudieron guardar los ajustes de WhatsApp",
+    "enable": {
+      "label": "Activar WhatsApp",
+      "hint": "Actívalo cuando las credenciales del proveedor estén puestas."
+    },
+    "provider": {
+      "label": "Proveedor",
+      "placeholder": "Elige un proveedor",
+      "hint": "Quién te da el número de WhatsApp. Al cambiar se conservan las credenciales del anterior."
+    },
+    "from": {
+      "label": "Tu número de WhatsApp",
+      "hint": "El número que ven los clientes, en formato internacional."
+    },
+    "secret": {
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    },
+    "webhook": {
+      "label": "URL del webhook",
+      "description": "Pega esto en tu proveedor para que los mensajes entrantes lleguen a Torqvoice.",
+      "copy": "Copiar URL del webhook",
+      "copied": "URL del webhook copiada"
+    },
+    "template": {
+      "title": "Plantilla de mensaje",
+      "description": "Se usa cuando escribes a un cliente que no te ha escrito hace poco.",
+      "windowExplainer": "WhatsApp solo permite texto libre durante 24 horas tras el último mensaje del cliente. Fuera de esa ventana, tu mensaje debe salir como plantilla aprobada por tu proveedor.",
+      "nameLabel": "Nombre de la plantilla",
+      "nameHint": "El nombre de la plantilla aprobada, o su Content SID en proveedores que lo usan.",
+      "languageLabel": "Idioma de la plantilla",
+      "languageHint": "El código de idioma con el que se aprobó, por ejemplo es."
+    },
+    "test": {
+      "title": "Probar y desconectar",
+      "description": "Envía un mensaje a tu propio número para comprobar la configuración.",
+      "send": "Enviar prueba",
+      "sent": "Mensaje de prueba enviado",
+      "failed": "No se pudo enviar el mensaje de prueba",
+      "hint": "Escríbete primero por WhatsApp; si no, la prueba necesita una plantilla aprobada."
+    },
+    "disconnect": {
+      "action": "Desconectar WhatsApp",
+      "hint": "Elimina las credenciales de Torqvoice. Se conservan tus conversaciones.",
+      "done": "WhatsApp desconectado"
+    }
+  }
+}

@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Padangų viešbutis",
         "description": "Sezoninis padangų saugojimas"
+      },
+      "providers": {
+        "title": "Tiekėjai",
+        "description": "El. paštas, SMS, „WhatsApp“ ir „Telegram“"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Paruošimo kainos",
     "prepHint": "Kiek kainuoja kiekvienas paruošimo darbas. Palikus tuščią, jis niekada neapmokestinamas, o to ir reikia dirbtuvėms, kurios plovimą įskaičiuoja į saugojimą. Turintys kainą patys atsiranda pasiūlyme ir darbo užsakyme.",
     "prepNotCharged": "neapmokestinama"
+  },
+  "providers": {
+    "tabs": {
+      "email": "El. paštas",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "El. pašto nustatymai",
+        "description": "Nustatykite SMTP siuntimą, kad sąskaitos, pasiūlymai ir pranešimai keliautų tiesiai iš dirbtuvių."
+      },
+      "sms": {
+        "feature": "SMS žinutės",
+        "description": "Siųskite ir gaukite SMS su klientais tiesiai iš „Torqvoice“."
+      },
+      "whatsapp": {
+        "feature": "„WhatsApp“ žinutės",
+        "description": "Siųskite ir gaukite „WhatsApp“ žinutes, įskaitant detalių nuotraukas, tiesiai iš „Torqvoice“."
+      },
+      "telegram": {
+        "feature": "„Telegram“ žinutės",
+        "description": "Siųskite ir gaukite „Telegram“ žinutes su klientais tiesiai iš „Torqvoice“."
+      }
+    }
   }
 }

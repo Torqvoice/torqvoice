@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Envie e receba mensagens de WhatsApp com seus clientes.",
+    "helpLink": "Configurar {provider}",
+    "save": "Salvar configurações do WhatsApp",
+    "saved": "Configurações do WhatsApp salvas",
+    "saveError": "Não foi possível salvar as configurações do WhatsApp",
+    "enable": {
+      "label": "Ativar WhatsApp",
+      "hint": "Ative quando as credenciais do provedor estiverem preenchidas."
+    },
+    "provider": {
+      "label": "Provedor",
+      "placeholder": "Escolha um provedor",
+      "hint": "Quem fornece seu número de WhatsApp. Ao trocar, as credenciais do anterior são mantidas."
+    },
+    "from": {
+      "label": "Seu número de WhatsApp",
+      "hint": "O número que os clientes veem, em formato internacional."
+    },
+    "secret": {
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    },
+    "webhook": {
+      "label": "URL do webhook",
+      "description": "Cole isto no seu provedor para que as mensagens recebidas cheguem ao Torqvoice.",
+      "copy": "Copiar URL do webhook",
+      "copied": "URL do webhook copiada"
+    },
+    "template": {
+      "title": "Modelo de mensagem",
+      "description": "Usado quando você escreve para um cliente que não falou com você recentemente.",
+      "windowExplainer": "O WhatsApp só permite texto livre por 24 horas após a última mensagem do cliente. Fora dessa janela, sua mensagem precisa sair como um modelo aprovado pelo provedor.",
+      "nameLabel": "Nome do modelo",
+      "nameHint": "O nome do modelo aprovado, ou o Content SID em provedores que usam um.",
+      "languageLabel": "Idioma do modelo",
+      "languageHint": "O código de idioma em que o modelo foi aprovado, por exemplo pt_BR."
+    },
+    "test": {
+      "title": "Testar e desconectar",
+      "description": "Envie uma mensagem para o seu próprio número para conferir a configuração.",
+      "send": "Enviar teste",
+      "sent": "Mensagem de teste enviada",
+      "failed": "Não foi possível enviar a mensagem de teste",
+      "hint": "Mande uma mensagem para você mesmo no WhatsApp antes, senão o teste exige um modelo aprovado."
+    },
+    "disconnect": {
+      "action": "Desconectar WhatsApp",
+      "hint": "Remove as credenciais do Torqvoice. Suas conversas são mantidas.",
+      "done": "WhatsApp desconectado"
+    }
+  }
+}

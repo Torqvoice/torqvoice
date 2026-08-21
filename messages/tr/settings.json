@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Lastik oteli",
         "description": "Mevsimlik lastik saklama"
+      },
+      "providers": {
+        "title": "Sağlayıcılar",
+        "description": "E-posta, SMS, WhatsApp ve Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Hazırlık fiyatları",
     "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
     "prepNotCharged": "ücretlendirilmiyor"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-posta",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "E-posta ayarları",
+        "description": "Faturaların, tekliflerin ve bildirimlerin doğrudan atölyeden gitmesi için SMTP gönderimini ayarlayın."
+      },
+      "sms": {
+        "feature": "SMS mesajlaşma",
+        "description": "Müşterilerinizle SMS'i doğrudan Torqvoice üzerinden gönderip alın."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp mesajlaşma",
+        "description": "Parça fotoğrafları dahil WhatsApp mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
+      },
+      "telegram": {
+        "feature": "Telegram mesajlaşma",
+        "description": "Müşterilerinizle Telegram mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
+      }
+    }
   }
 }

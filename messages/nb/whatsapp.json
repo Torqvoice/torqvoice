@@ -1,0 +1,55 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Send og motta WhatsApp-meldinger med kundene dine.",
+    "helpLink": "Sett opp {provider}",
+    "save": "Lagre WhatsApp-innstillinger",
+    "saved": "WhatsApp-innstillinger lagret",
+    "saveError": "Kunne ikke lagre WhatsApp-innstillingene",
+    "enable": {
+      "label": "Slå på WhatsApp",
+      "hint": "Slå på når legitimasjonen fra leverandøren er på plass."
+    },
+    "provider": {
+      "label": "Leverandør",
+      "placeholder": "Velg leverandør",
+      "hint": "Hvem som leverer WhatsApp-nummeret ditt. Bytter du, beholdes legitimasjonen til den forrige."
+    },
+    "from": {
+      "label": "Ditt WhatsApp-nummer",
+      "hint": "Nummeret kundene ser, i internasjonalt format."
+    },
+    "secret": {
+      "show": "Vis",
+      "hide": "Skjul"
+    },
+    "webhook": {
+      "label": "Webhook-URL",
+      "description": "Lim denne inn hos leverandøren så innkommende meldinger når Torqvoice.",
+      "copy": "Kopier webhook-URL",
+      "copied": "Webhook-URL kopiert"
+    },
+    "template": {
+      "title": "Meldingsmal",
+      "description": "Brukes når du skriver til en kunde som ikke har meldt fra på en stund.",
+      "windowExplainer": "WhatsApp tillater fritekst kun i 24 timer etter kundens siste melding. Utenfor det vinduet må meldingen gå ut som en mal leverandøren har godkjent.",
+      "nameLabel": "Malnavn",
+      "nameHint": "Navnet på den godkjente malen, eller Content SID hos leverandører som bruker det.",
+      "languageLabel": "Malspråk",
+      "languageHint": "Språkkoden malen ble godkjent under, for eksempel nb."
+    },
+    "test": {
+      "title": "Test og koble fra",
+      "description": "Send en melding til ditt eget nummer for å sjekke oppsettet.",
+      "send": "Send test",
+      "sent": "Testmelding sendt",
+      "failed": "Kunne ikke sende testmeldingen",
+      "hint": "Send deg selv en melding på WhatsApp først, ellers krever testen en godkjent mal."
+    },
+    "disconnect": {
+      "action": "Koble fra WhatsApp",
+      "hint": "Fjerner legitimasjonen fra Torqvoice. Samtalene beholdes.",
+      "done": "WhatsApp koblet fra"
+    }
+  }
+}
