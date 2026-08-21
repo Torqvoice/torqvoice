@@ -69,12 +69,9 @@
     "saveError": "Failed to save customer",
     "customerNumber": "Customer no.",
     "customerNumberAuto": "Auto",
-    "addScannedVehicleTitle": "Add the vehicle too?",
-    "addScannedVehicleDescription": "The document also describes a vehicle. Add it to this customer?",
-    "addScannedVehicleConfirm": "Add vehicle",
-    "addScannedVehicleSkip": "Not now",
     "sectionContact": "Contact",
-    "sectionBilling": "Billing"
+    "sectionBilling": "Billing",
+    "addScannedVehicle": "Add vehicle {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "New",

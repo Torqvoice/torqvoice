@@ -69,12 +69,9 @@
     "saveError": "Error al guardar el cliente",
     "customerNumber": "N.º de cliente",
     "customerNumberAuto": "Auto",
-    "addScannedVehicleTitle": "¿Añadir también el vehículo?",
-    "addScannedVehicleDescription": "El documento también describe un vehículo. ¿Añadirlo a este cliente?",
-    "addScannedVehicleConfirm": "Añadir vehículo",
-    "addScannedVehicleSkip": "Ahora no",
     "sectionContact": "Contacto",
-    "sectionBilling": "Facturación"
+    "sectionBilling": "Facturación",
+    "addScannedVehicle": "Añadir el vehículo {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nuevo",

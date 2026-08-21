@@ -69,12 +69,9 @@
     "saveError": "Échec de l'enregistrement du client",
     "customerNumber": "N° client",
     "customerNumberAuto": "Auto",
-    "addScannedVehicleTitle": "Ajouter aussi le véhicule ?",
-    "addScannedVehicleDescription": "Le document décrit également un véhicule. L'ajouter à ce client ?",
-    "addScannedVehicleConfirm": "Ajouter le véhicule",
-    "addScannedVehicleSkip": "Pas maintenant",
     "sectionContact": "Contact",
-    "sectionBilling": "Facturation"
+    "sectionBilling": "Facturation",
+    "addScannedVehicle": "Ajouter le véhicule {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nouveau",

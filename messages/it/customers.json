@@ -69,12 +69,9 @@
     "saveError": "Salvataggio del cliente non riuscito",
     "customerNumber": "N. cliente",
     "customerNumberAuto": "Auto",
-    "addScannedVehicleTitle": "Aggiungere anche il veicolo?",
-    "addScannedVehicleDescription": "Il documento descrive anche un veicolo. Aggiungerlo a questo cliente?",
-    "addScannedVehicleConfirm": "Aggiungi veicolo",
-    "addScannedVehicleSkip": "Non ora",
     "sectionContact": "Contatto",
-    "sectionBilling": "Fatturazione"
+    "sectionBilling": "Fatturazione",
+    "addScannedVehicle": "Aggiungi il veicolo {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nuova",

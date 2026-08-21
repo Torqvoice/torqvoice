@@ -69,12 +69,9 @@
     "saveError": "Не удалось сохранить клиента",
     "customerNumber": "№ клиента",
     "customerNumberAuto": "Авто",
-    "addScannedVehicleTitle": "Добавить и автомобиль?",
-    "addScannedVehicleDescription": "В документе описан и автомобиль. Добавить его этому клиенту?",
-    "addScannedVehicleConfirm": "Добавить автомобиль",
-    "addScannedVehicleSkip": "Не сейчас",
     "sectionContact": "Контакты",
-    "sectionBilling": "Выставление счетов"
+    "sectionBilling": "Выставление счетов",
+    "addScannedVehicle": "Добавить автомобиль {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Новая",

@@ -69,12 +69,9 @@
     "saveError": "Nepavyko išsaugoti kliento",
     "customerNumber": "Kliento nr.",
     "customerNumberAuto": "Autom.",
-    "addScannedVehicleTitle": "Pridėti ir transporto priemonę?",
-    "addScannedVehicleDescription": "Dokumente aprašyta ir transporto priemonė. Pridėti ją šiam klientui?",
-    "addScannedVehicleConfirm": "Pridėti transporto priemonę",
-    "addScannedVehicleSkip": "Ne dabar",
     "sectionContact": "Kontaktai",
-    "sectionBilling": "Atsiskaitymas"
+    "sectionBilling": "Atsiskaitymas",
+    "addScannedVehicle": "Pridėti transporto priemonę {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nauja",

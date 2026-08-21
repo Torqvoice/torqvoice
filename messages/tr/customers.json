@@ -69,12 +69,9 @@
     "saveError": "Müşteri kaydedilemedi",
     "customerNumber": "Müşteri no",
     "customerNumberAuto": "Oto",
-    "addScannedVehicleTitle": "Araç da eklensin mi?",
-    "addScannedVehicleDescription": "Belgede bir araç da tanımlanıyor. Bu müşteriye eklensin mi?",
-    "addScannedVehicleConfirm": "Araç ekle",
-    "addScannedVehicleSkip": "Şimdi değil",
     "sectionContact": "İletişim",
-    "sectionBilling": "Faturalama"
+    "sectionBilling": "Faturalama",
+    "addScannedVehicle": "{vehicle} aracını ekle"
   },
   "serviceRequests": {
     "statusNew": "Yeni",

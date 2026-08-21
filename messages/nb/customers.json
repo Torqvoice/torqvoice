@@ -69,12 +69,9 @@
     "saveError": "Kunne ikke lagre kunde",
     "customerNumber": "Kundenr.",
     "customerNumberAuto": "Auto",
-    "addScannedVehicleTitle": "Legge til kjøretøyet også?",
-    "addScannedVehicleDescription": "Dokumentet beskriver også et kjøretøy. Legge det til denne kunden?",
-    "addScannedVehicleConfirm": "Legg til kjøretøy",
-    "addScannedVehicleSkip": "Ikke nå",
     "sectionContact": "Kontakt",
-    "sectionBilling": "Fakturering"
+    "sectionBilling": "Fakturering",
+    "addScannedVehicle": "Legg til kjøretøyet {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Ny",

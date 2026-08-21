@@ -69,12 +69,9 @@
     "saveError": "Opslaan van klant mislukt",
     "customerNumber": "Klantnr.",
     "customerNumberAuto": "Auto",
-    "addScannedVehicleTitle": "Ook het voertuig toevoegen?",
-    "addScannedVehicleDescription": "Het document beschrijft ook een voertuig. Toevoegen aan deze klant?",
-    "addScannedVehicleConfirm": "Voertuig toevoegen",
-    "addScannedVehicleSkip": "Niet nu",
     "sectionContact": "Contact",
-    "sectionBilling": "Facturatie"
+    "sectionBilling": "Facturatie",
+    "addScannedVehicle": "Voertuig {vehicle} toevoegen"
   },
   "serviceRequests": {
     "statusNew": "Nieuw",

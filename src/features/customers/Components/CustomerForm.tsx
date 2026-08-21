@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
@@ -64,11 +65,7 @@ export function CustomerForm({
   const formRef = useRef<HTMLFormElement>(null)
   /** Vehicle details from a scanned document, offered once the customer exists. */
   const [scannedVehicle, setScannedVehicle] = useState<VehicleDocumentScan | null>(null)
-  const [pendingVehicle, setPendingVehicle] = useState<{
-    customerId: string
-    data: VehicleDocumentScan
-  } | null>(null)
-  const [addingVehicle, setAddingVehicle] = useState(false)
+  const [addVehicle, setAddVehicle] = useState(true)
 
   const applyScan = (data: VehicleDocumentScan) => {
     const form = formRef.current
@@ -86,40 +83,12 @@ export function CustomerForm({
     // make, model and year are all required.
     const complete = Boolean(data.make && data.model && data.year)
     setScannedVehicle(complete ? data : null)
+    setAddVehicle(true)
   }
 
   const vehicleLabel = (data: VehicleDocumentScan) =>
     [data.year, data.make, data.model].filter(Boolean).join(' ') +
     (data.licensePlate ? ` (${data.licensePlate})` : '')
-
-  const handleAddVehicle = async () => {
-    if (!pendingVehicle) return
-    const { customerId, data } = pendingVehicle
-    setAddingVehicle(true)
-
-    const result = await createVehicle({
-      make: data.make as string,
-      model: data.model as string,
-      year: data.year as number,
-      vin: data.vin,
-      licensePlate: data.licensePlate,
-      color: data.color,
-      fuelType: data.fuelType,
-      engineSize: data.engineSize,
-      mileage: 0,
-      customerId,
-    })
-
-    setAddingVehicle(false)
-    setPendingVehicle(null)
-
-    if (result.success) {
-      toast.success(tv('vehicleAdded'))
-      router.refresh()
-    } else {
-      modal.open('error', tc('errors.error'), result.error || tv('saveError'))
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -144,17 +113,37 @@ export function CustomerForm({
 
     if (result.success) {
       toast.success(customer ? t('customerUpdated') : t('customerCreated'))
-      onOpenChange(false)
       const created = result.data as
         | { id: string; name: string; company: string | null }
         | undefined
+      const customerId = customer?.id ?? created?.id
+
+      // The scanned papers describe a vehicle too, and the customer it belongs
+      // to only exists now.
+      if (scannedVehicle && addVehicle && customerId) {
+        const vehicleResult = await createVehicle({
+          make: scannedVehicle.make as string,
+          model: scannedVehicle.model as string,
+          year: scannedVehicle.year as number,
+          vin: scannedVehicle.vin,
+          licensePlate: scannedVehicle.licensePlate,
+          color: scannedVehicle.color,
+          fuelType: scannedVehicle.fuelType,
+          engineSize: scannedVehicle.engineSize,
+          mileage: 0,
+          customerId,
+        })
+        if (vehicleResult.success) {
+          toast.success(tv('vehicleAdded'))
+        } else {
+          toast.error(vehicleResult.error || tv('saveError'))
+        }
+      }
+
+      setScannedVehicle(null)
+      onOpenChange(false)
       if (!customer && created && onCreated) {
         onCreated({ id: created.id, name: created.name, company: created.company ?? null })
-      }
-      const customerId = customer?.id ?? created?.id
-      if (scannedVehicle && customerId) {
-        setPendingVehicle({ customerId, data: scannedVehicle })
-        setScannedVehicle(null)
       }
       router.refresh()
     } else {
@@ -165,178 +154,159 @@ export function CustomerForm({
   }
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{customer ? t('editTitle') : t('addTitle')}</DialogTitle>
-            <DocsLink href="/docs/features/customers" variant="hint" className="self-start" />
-            <DialogDescription className="sr-only">
-              {customer ? t('editTitle') : t('addTitle')}
-            </DialogDescription>
-          </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>{customer ? t('editTitle') : t('addTitle')}</DialogTitle>
+          <DocsLink href="/docs/features/customers" variant="hint" className="self-start" />
+          <DialogDescription className="sr-only">
+            {customer ? t('editTitle') : t('addTitle')}
+          </DialogDescription>
+        </DialogHeader>
 
-          <form
-            key={customer?.id ?? `${defaults?.name ?? ''}|${defaults?.address ?? ''}`}
-            ref={formRef}
-            onSubmit={handleSubmit}
-            className="grid gap-x-6 gap-y-4 md:grid-cols-2"
-          >
-            {/* The keeper on a registration document is a customer waiting to be typed in */}
-            <div className="md:col-span-2">
-              <ScanDocumentButton onScanned={applyScan} />
-            </div>
+        <form
+          key={customer?.id ?? `${defaults?.name ?? ''}|${defaults?.address ?? ''}`}
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="grid gap-x-6 gap-y-4 md:grid-cols-2"
+        >
+          {/* The keeper on a registration document is a customer waiting to be typed in */}
+          <div className="space-y-3 md:col-span-2">
+            <ScanDocumentButton onScanned={applyScan} />
 
-            {/* Left: who the customer is and how to reach them */}
-            <div className="space-y-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t('sectionContact')}
-              </p>
+            {scannedVehicle && (
+              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 p-3">
+                <Checkbox
+                  checked={addVehicle}
+                  onCheckedChange={(next) => setAddVehicle(next === true)}
+                />
+                <span className="text-sm">
+                  {t('addScannedVehicle', { vehicle: vehicleLabel(scannedVehicle) })}
+                </span>
+              </label>
+            )}
+          </div>
 
-              <div className="grid grid-cols-[1fr_120px] gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('nameRequired')}</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    placeholder={t('namePlaceholder')}
-                    defaultValue={customer?.name ?? defaults?.name ?? ''}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
-                  <Input
-                    id="customerNumber"
-                    name="customerNumber"
-                    placeholder={t('customerNumberAuto')}
-                    defaultValue={customer?.customerNumber ?? ''}
-                    maxLength={20}
-                  />
-                </div>
-              </div>
+          {/* Left: who the customer is and how to reach them */}
+          <div className="space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {t('sectionContact')}
+            </p>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{tc('form.email')}</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder={t('emailPlaceholder')}
-                    defaultValue={customer?.email ?? ''}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{tc('form.phone')}</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    placeholder={t('phonePlaceholder')}
-                    defaultValue={customer?.phone ?? ''}
-                  />
-                </div>
-              </div>
-
+            <div className="grid grid-cols-[1fr_120px] gap-4">
               <div className="space-y-2">
-                <Label htmlFor="address">{tc('form.address')}</Label>
+                <Label htmlFor="name">{t('nameRequired')}</Label>
                 <Input
-                  id="address"
-                  name="address"
-                  placeholder={t('addressPlaceholder')}
-                  defaultValue={customer?.address ?? defaults?.address ?? ''}
+                  id="name"
+                  name="name"
+                  placeholder={t('namePlaceholder')}
+                  defaultValue={customer?.name ?? defaults?.name ?? ''}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
+                <Input
+                  id="customerNumber"
+                  name="customerNumber"
+                  placeholder={t('customerNumberAuto')}
+                  defaultValue={customer?.customerNumber ?? ''}
+                  maxLength={20}
                 />
               </div>
             </div>
 
-            {/* Right: who they are on an invoice */}
-            <div className="space-y-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t('sectionBilling')}
-              </p>
-
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="company">{tc('form.company')}</Label>
+                <Label htmlFor="email">{tc('form.email')}</Label>
                 <Input
-                  id="company"
-                  name="company"
-                  placeholder={t('companyPlaceholder')}
-                  defaultValue={customer?.company ?? ''}
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder={t('emailPlaceholder')}
+                  defaultValue={customer?.email ?? ''}
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="taxId">{t('taxId')}</Label>
+                <Label htmlFor="phone">{tc('form.phone')}</Label>
                 <Input
-                  id="taxId"
-                  name="taxId"
-                  placeholder={t('taxIdPlaceholder')}
-                  defaultValue={customer?.taxId ?? ''}
+                  id="phone"
+                  name="phone"
+                  placeholder={t('phonePlaceholder')}
+                  defaultValue={customer?.phone ?? ''}
                 />
-                <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
-              </div>
-
-              <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
-                <div className="space-y-0.5">
-                  <Label>{t('taxExempt')}</Label>
-                  <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
-                </div>
-                <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
               </div>
             </div>
 
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="notes">{tc('form.notes')}</Label>
-              <Textarea
-                id="notes"
-                name="notes"
-                placeholder={t('notesPlaceholder')}
-                rows={3}
-                defaultValue={customer?.notes ?? ''}
+            <div className="space-y-2">
+              <Label htmlFor="address">{tc('form.address')}</Label>
+              <Input
+                id="address"
+                name="address"
+                placeholder={t('addressPlaceholder')}
+                defaultValue={customer?.address ?? defaults?.address ?? ''}
+              />
+            </div>
+          </div>
+
+          {/* Right: who they are on an invoice */}
+          <div className="space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {t('sectionBilling')}
+            </p>
+
+            <div className="space-y-2">
+              <Label htmlFor="company">{tc('form.company')}</Label>
+              <Input
+                id="company"
+                name="company"
+                placeholder={t('companyPlaceholder')}
+                defaultValue={customer?.company ?? ''}
               />
             </div>
 
-            <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                {tc('buttons.cancel')}
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {customer ? tc('buttons.saveChanges') : t('addTitle')}
-              </Button>
+            <div className="space-y-2">
+              <Label htmlFor="taxId">{t('taxId')}</Label>
+              <Input
+                id="taxId"
+                name="taxId"
+                placeholder={t('taxIdPlaceholder')}
+                defaultValue={customer?.taxId ?? ''}
+              />
+              <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
 
-      {/* The same papers describe a vehicle: offer it once the customer exists */}
-      <Dialog
-        open={pendingVehicle !== null}
-        onOpenChange={(next) => !next && setPendingVehicle(null)}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('addScannedVehicleTitle')}</DialogTitle>
-            <DialogDescription>{t('addScannedVehicleDescription')}</DialogDescription>
-          </DialogHeader>
+            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <Label>{t('taxExempt')}</Label>
+                <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
+              </div>
+              <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
+            </div>
+          </div>
 
-          {pendingVehicle && (
-            <p className="rounded-lg border border-dashed border-border bg-muted/30 p-3 text-sm font-medium">
-              {vehicleLabel(pendingVehicle.data)}
-            </p>
-          )}
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="notes">{tc('form.notes')}</Label>
+            <Textarea
+              id="notes"
+              name="notes"
+              placeholder={t('notesPlaceholder')}
+              rows={3}
+              defaultValue={customer?.notes ?? ''}
+            />
+          </div>
 
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setPendingVehicle(null)}>
-              {t('addScannedVehicleSkip')}
+          <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {tc('buttons.cancel')}
             </Button>
-            <Button type="button" onClick={handleAddVehicle} disabled={addingVehicle}>
-              {addingVehicle && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('addScannedVehicleConfirm')}
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {customer ? tc('buttons.saveChanges') : t('addTitle')}
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }
