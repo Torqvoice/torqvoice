@@ -68,7 +68,11 @@
     "customerCreated": "Klientas sukurtas",
     "saveError": "Nepavyko išsaugoti kliento",
     "customerNumber": "Kliento nr.",
-    "customerNumberAuto": "Autom."
+    "customerNumberAuto": "Autom.",
+    "addScannedVehicleTitle": "Pridėti ir transporto priemonę?",
+    "addScannedVehicleDescription": "Dokumente aprašyta ir transporto priemonė. Pridėti ją šiam klientui?",
+    "addScannedVehicleConfirm": "Pridėti transporto priemonę",
+    "addScannedVehicleSkip": "Ne dabar"
   },
   "serviceRequests": {
     "statusNew": "Nauja",

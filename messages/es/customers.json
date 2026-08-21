@@ -68,7 +68,11 @@
     "customerCreated": "Cliente creado",
     "saveError": "Error al guardar el cliente",
     "customerNumber": "N.º de cliente",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "addScannedVehicleTitle": "¿Añadir también el vehículo?",
+    "addScannedVehicleDescription": "El documento también describe un vehículo. ¿Añadirlo a este cliente?",
+    "addScannedVehicleConfirm": "Añadir vehículo",
+    "addScannedVehicleSkip": "Ahora no"
   },
   "serviceRequests": {
     "statusNew": "Nuevo",

@@ -68,7 +68,11 @@
     "customerCreated": "Kunde angelegt",
     "saveError": "Kunde konnte nicht gespeichert werden",
     "customerNumber": "Kundennr.",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "addScannedVehicleTitle": "Fahrzeug ebenfalls anlegen?",
+    "addScannedVehicleDescription": "Das Dokument beschreibt auch ein Fahrzeug. Diesem Kunden hinzufügen?",
+    "addScannedVehicleConfirm": "Fahrzeug anlegen",
+    "addScannedVehicleSkip": "Jetzt nicht"
   },
   "serviceRequests": {
     "statusNew": "Neu",

@@ -68,7 +68,11 @@
     "customerCreated": "Müşteri oluşturuldu",
     "saveError": "Müşteri kaydedilemedi",
     "customerNumber": "Müşteri no",
-    "customerNumberAuto": "Oto"
+    "customerNumberAuto": "Oto",
+    "addScannedVehicleTitle": "Araç da eklensin mi?",
+    "addScannedVehicleDescription": "Belgede bir araç da tanımlanıyor. Bu müşteriye eklensin mi?",
+    "addScannedVehicleConfirm": "Araç ekle",
+    "addScannedVehicleSkip": "Şimdi değil"
   },
   "serviceRequests": {
     "statusNew": "Yeni",

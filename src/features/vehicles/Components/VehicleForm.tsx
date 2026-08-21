@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   Command,
   CommandEmpty,
@@ -35,14 +34,10 @@ import { DocsLink } from '@/components/docs-link'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
-import {
-  aiAnalyzeVehicleDocument,
-  isVehicleScanAvailable,
-  type VehicleDocumentScan,
-} from '../Actions/aiAnalyzeVehicleDocument'
-import { documentToDataUri } from '../Lib/documentImage'
+import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
+import { ScanDocumentButton } from './ScanDocumentButton'
 import { nameSimilarity } from '@/lib/name-similarity'
-import { Camera, Check, ChevronsUpDown, Loader2, Plus, ScanLine, X } from 'lucide-react'
+import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
 import { useTranslations } from 'next-intl'
@@ -107,15 +102,11 @@ export function VehicleForm({
   const [showCustomerForm, setShowCustomerForm] = useState(false)
   const [localCustomers, setLocalCustomers] = useState(customers || [])
   const [fuelType, setFuelType] = useState(vehicle?.fuelType ?? 'gasoline')
-  const [scanning, setScanning] = useState(false)
-  /** null while the availability check is still in flight. */
-  const [scanAvailable, setScanAvailable] = useState<boolean | null>(null)
   /** Keeper read off a scanned document, until it is tied to a customer. */
   const [scannedOwner, setScannedOwner] = useState<{ name?: string; address?: string } | null>(null)
   const [ownerMatches, setOwnerMatches] = useState<OwnerMatch[]>([])
   const [showOwnerMatch, setShowOwnerMatch] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
-  const documentRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
@@ -127,19 +118,6 @@ export function VehicleForm({
     setScannedOwner(null)
     setOwnerMatches([])
   }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl, vehicle?.fuelType, defaultCustomerId])
-
-  // Scanning needs an AI provider configured for the organization. Checked on
-  // open rather than passed in, so all three call sites stay unchanged.
-  useEffect(() => {
-    if (!open) return
-    let active = true
-    isVehicleScanAvailable().then((result) => {
-      if (active) setScanAvailable(result.success && result.data === true)
-    })
-    return () => {
-      active = false
-    }
-  }, [open])
 
   const selectedCustomerLabel = useMemo(() => {
     if (!selectedCustomerId || selectedCustomerId === 'none') return t('noCustomer')
@@ -235,29 +213,6 @@ export function VehicleForm({
     if (candidates.length > 0) setShowOwnerMatch(true)
   }
 
-  const handleDocumentSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    e.target.value = ''
-    if (!file) return
-
-    setScanning(true)
-    const toastId = toast.loading(t('scanningDocument'))
-    try {
-      const dataUri = await documentToDataUri(file)
-      const result = await aiAnalyzeVehicleDocument(dataUri)
-      if (!result.success || !result.data) {
-        toast.error(result.error || t('scanFailed'), { id: toastId })
-        return
-      }
-      applyScan(result.data)
-      toast.success(t('scanSuccess'), { id: toastId })
-    } catch {
-      toast.error(t('scanFailed'), { id: toastId })
-    } finally {
-      setScanning(false)
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -331,41 +286,7 @@ export function VehicleForm({
             {/* Left: what the vehicle belongs to and where its data comes from */}
             <div className="space-y-4">
               {/* Scan the registration document and fill the form from it */}
-              <div className="space-y-1">
-                <Tooltip>
-                  {/* A disabled button swallows pointer events, so the trigger
-                      has to be the wrapper rather than the button itself. */}
-                  <TooltipTrigger asChild>
-                    <span className="block">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => documentRef.current?.click()}
-                        disabled={scanning || !scanAvailable}
-                      >
-                        {scanning ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                          <ScanLine className="mr-2 h-4 w-4" />
-                        )}
-                        {t('scanDocument')}
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  {scanAvailable === false && (
-                    <TooltipContent>{t('scanUnavailable')}</TooltipContent>
-                  )}
-                </Tooltip>
-                <p className="text-xs text-muted-foreground">{t('scanDocumentHint')}</p>
-                <input
-                  ref={documentRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/avif"
-                  onChange={handleDocumentSelect}
-                  className="hidden"
-                />
-              </div>
+              <ScanDocumentButton onScanned={applyScan} />
 
               {/* Image upload */}
               <div className="space-y-2">

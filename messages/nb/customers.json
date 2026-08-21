@@ -68,7 +68,11 @@
     "customerCreated": "Kunde opprettet",
     "saveError": "Kunne ikke lagre kunde",
     "customerNumber": "Kundenr.",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "addScannedVehicleTitle": "Legge til kjøretøyet også?",
+    "addScannedVehicleDescription": "Dokumentet beskriver også et kjøretøy. Legge det til denne kunden?",
+    "addScannedVehicleConfirm": "Legg til kjøretøy",
+    "addScannedVehicleSkip": "Ikke nå"
   },
   "serviceRequests": {
     "statusNew": "Ny",
