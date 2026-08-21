@@ -7,6 +7,7 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { TREATMENT_STATUSES, TREATMENT_TYPES } from '../Lib/treatments'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
+import { humanise, plural } from '../Lib/auditText'
 
 const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.TIRE_HOTEL }]
 
@@ -88,6 +89,8 @@ export async function setTreatments(input: unknown) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_treatment.update',
+        entity: 'TireSet',
+        entityId: result.id,
         message: `Updated prep work on tire set ${result.reference ?? result.id}`,
         metadata: { added: result.added, removed: result.removed },
       }),
@@ -132,8 +135,10 @@ export async function markTreatment(input: unknown) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_treatment.mark',
-        message: `Marked ${result.type} as ${result.status} on tire set ${result.reference ?? result.tireSetId}`,
-        metadata: { treatmentId: result.id },
+        entity: 'TireTreatment',
+        entityId: result.id,
+        message: `Marked ${humanise(result.type)} as ${result.status} on tire set ${result.reference ?? result.tireSetId}`,
+        metadata: { tireSetId: result.tireSetId },
       }),
     }
   )
@@ -163,7 +168,9 @@ export async function completeAllTreatments(tireSetId: string) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_treatment.complete_all',
-        message: `Completed ${result.count} prep job(s) on tire set ${result.reference ?? result.id}`,
+        entity: 'TireSet',
+        entityId: result.id,
+        message: `Completed ${plural(result.count, 'prep job')} on tire set ${result.reference ?? result.id}`,
       }),
     }
   )
