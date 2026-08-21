@@ -280,7 +280,7 @@ export async function createQuote(input: unknown) {
         action: 'quote.create',
         entity: 'Quote',
         entityId: result.id,
-        message: `Created quote ${result.quoteNumber || result.id}`,
+        details: { key: 'quote_create', params: { ref: result.quoteNumber || result.id } },
         metadata: { quoteId: result.id },
       }),
     }
@@ -339,7 +339,7 @@ export async function updateQuote(input: unknown) {
         action: 'quote.update',
         entity: 'Quote',
         entityId: result.id,
-        message: `Updated quote ${result.id}`,
+        details: { key: 'quote_update', params: { ref: result.id } },
         metadata: { quoteId: result.id },
       }),
     }
@@ -369,7 +369,7 @@ export async function updateQuoteStatus(quoteId: string, status: string) {
         action: 'quote.status',
         entity: 'Quote',
         entityId: result.quoteId,
-        message: `Changed quote status to ${result.status}`,
+        details: { key: 'quote_status', params: { status: result.status } },
         metadata: { quoteId: result.quoteId, status: result.status },
       }),
     }
@@ -394,7 +394,7 @@ export async function deleteQuote(quoteId: string) {
         action: 'quote.delete',
         entity: 'Quote',
         entityId: result.quoteId,
-        message: `Deleted quote ${result.quoteId}`,
+        details: { key: 'quote_delete', params: { ref: result.quoteId } },
         metadata: { quoteId: result.quoteId },
       }),
     }
@@ -577,7 +577,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         action: 'quote.convert',
         entity: 'Quote',
         entityId: result.convertedFromQuoteId,
-        message: `Converted quote ${result.convertedFromQuoteId} to service record ${result.id}`,
+        details: { key: 'quote_convert', params: { ref: result.convertedFromQuoteId, serviceRecordId: result.id } },
         metadata: { quoteId: result.convertedFromQuoteId, serviceRecordId: result.id },
       }),
     }

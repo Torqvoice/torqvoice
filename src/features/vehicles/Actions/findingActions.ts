@@ -198,7 +198,7 @@ export async function createFinding(input: unknown) {
         action: 'finding.create',
         entity: 'VehicleFinding',
         entityId: result.id,
-        message: `Created finding "${result.description}" on vehicle ${result.vehicleId}`,
+        details: { key: 'finding_create', params: { description: result.description, vehicleId: result.vehicleId } },
         metadata: { findingId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -236,7 +236,7 @@ export async function updateFinding(input: unknown) {
         action: 'finding.update',
         entity: 'VehicleFinding',
         entityId: result.id,
-        message: `Updated finding "${result.description}"`,
+        details: { key: 'finding_update', params: { description: result.description } },
         metadata: { findingId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -274,7 +274,7 @@ export async function resolveFinding(input: unknown) {
         action: 'finding.resolve',
         entity: 'VehicleFinding',
         entityId: result.id,
-        message: `Resolved finding "${result.description}"`,
+        details: { key: 'finding_resolve', params: { description: result.description } },
         metadata: { findingId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -305,7 +305,7 @@ export async function deleteFinding(findingId: string) {
         action: 'finding.delete',
         entity: 'VehicleFinding',
         entityId: result.findingId,
-        message: `Deleted finding ${result.findingId}`,
+        details: { key: 'finding_delete', params: { id: result.findingId } },
         metadata: { findingId: result.findingId },
       }),
     }

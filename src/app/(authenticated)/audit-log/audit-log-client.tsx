@@ -103,6 +103,25 @@ export function AuditLogClient({
     return t.has(key) ? t(key) : action;
   };
 
+  /**
+   * The sentence, in the reader's language where we can manage it.
+   *
+   * Rows written before this existed, and any written by a build that does not
+   * know the key, still have the English the event was composed with. That is
+   * the fallback rather than a blank cell: a log entry nobody can read is
+   * worse than one in the wrong language.
+   */
+  const getSummary = (log: AuditLogData["logs"][number]) => {
+    const details = log.metadata?.details as
+      | { key?: string; params?: Record<string, string | number> }
+      | undefined;
+    if (details?.key) {
+      const key = `summary.${details.key}`;
+      if (t.has(key)) return t(key, details.params);
+    }
+    return log.message;
+  };
+
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const newParams = new URLSearchParams(searchParams.toString());
@@ -210,7 +229,7 @@ export function AuditLogClient({
                   {formatDateTime(log.timestamp)}
                 </span>
               </div>
-              {log.message && <p className="mt-1.5 text-sm">{log.message}</p>}
+              {getSummary(log) && <p className="mt-1.5 text-sm">{getSummary(log)}</p>}
               <p className="mt-1 truncate text-xs text-muted-foreground">
                 {log.user?.name || log.user?.email || t("unknownUser")}
                 {log.entityId && (
@@ -259,7 +278,7 @@ export function AuditLogClient({
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-sm text-muted-foreground truncate max-w-[300px]">
-                    {log.message}
+                    {getSummary(log)}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell font-mono text-xs text-muted-foreground">
                     {log.entityId?.substring(0, 8)}
@@ -302,7 +321,9 @@ export function AuditLogClient({
               <DetailRow label={t("timestamp")} value={formatDateTime(selectedLog.timestamp)} suppressHydrationWarning />
               <DetailRow label={t("user")} value={selectedLog.user?.name || selectedLog.user?.email || t("unknownUser")} />
               <DetailRow label={t("action")} value={getActionLabel(selectedLog.action)} />
-              {selectedLog.message && <DetailRow label={t("details")} value={selectedLog.message} />}
+              {getSummary(selectedLog) && (
+                <DetailRow label={t("details")} value={getSummary(selectedLog) as string} />
+              )}
               {selectedLog.entity && <DetailRow label={t("entity")} value={selectedLog.entity} />}
               {selectedLog.entityId && <DetailRow label={t("entityId")} value={selectedLog.entityId} mono />}
               {selectedLog.ip && <DetailRow label={t("ipAddress")} value={selectedLog.ip} mono />}

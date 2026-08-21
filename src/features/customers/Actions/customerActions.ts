@@ -98,7 +98,7 @@ export async function createCustomer(input: unknown) {
       action: "customer.create",
       entity: "Customer",
       entityId: result.id,
-      message: `Created customer ${result.name}`,
+      details: { key: "customer_create", params: { name: result.name } },
       metadata: { customerId: result.id },
     }),
   });
@@ -139,7 +139,7 @@ export async function updateCustomer(input: unknown) {
       action: "customer.update",
       entity: "Customer",
       entityId: result.id,
-      message: `Updated customer ${result.id}`,
+      details: { key: "customer_update", params: { id: result.id } },
       metadata: { customerId: result.id },
     }),
   });
@@ -157,7 +157,7 @@ export async function deleteCustomer(customerId: string) {
       action: "customer.delete",
       entity: "Customer",
       entityId: result.customerId,
-      message: `Deleted customer ${result.customerId}`,
+      details: { key: "customer_delete", params: { id: result.customerId } },
       metadata: { customerId: result.customerId },
     }),
   });
@@ -215,7 +215,7 @@ export async function backfillCustomerNumbers() {
     audit: ({ result }) => ({
       action: "customer.backfillNumbers",
       entity: "Customer",
-      message: `Assigned customer numbers to ${result.assigned} customers`,
+      details: { key: "customer_backfillNumbers", params: { count: result.assigned } },
       metadata: { assigned: result.assigned },
     }),
   });

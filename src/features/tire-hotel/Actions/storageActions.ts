@@ -14,7 +14,7 @@ import {
 import { buildLocationCode } from '../Lib/tireConstants'
 import { locationCapacity, warehouseCapacity } from '../Lib/capacity'
 import { requireTireHotel, getTireHotelSettings } from '../Lib/tireHotelSettings'
-import { plural } from '../Lib/auditText'
+import { auditDetails } from '@/lib/audit'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const MANAGE = [{ action: PermissionAction.MANAGE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -147,7 +147,7 @@ export async function createWarehouse(input: unknown) {
         action: 'tire_warehouse.create',
         entity: 'TireWarehouse',
         entityId: result.id,
-        message: `Created tire warehouse ${result.name}`,
+        details: { key: 'tire_warehouse_create', params: { name: result.name } },
       }),
     }
   )
@@ -188,7 +188,7 @@ export async function updateWarehouse(input: unknown) {
         action: 'tire_warehouse.update',
         entity: 'TireWarehouse',
         entityId: result.id,
-        message: `Updated tire warehouse ${result.name}`,
+        details: { key: 'tire_warehouse_update', params: { name: result.name } },
       }),
     }
   )
@@ -232,7 +232,10 @@ export async function deleteWarehouse(id: string) {
         action: result.archived ? 'tire_warehouse.archive' : 'tire_warehouse.delete',
         entity: 'TireWarehouse',
         entityId: result.id,
-        message: `${result.archived ? 'Archived' : 'Deleted'} tire warehouse ${result.name}`,
+        details: auditDetails(
+          result.archived ? 'tire_warehouse_archive' : 'tire_warehouse_delete',
+          { name: result.name }
+        ),
       }),
     }
   )
@@ -288,7 +291,7 @@ export async function createLocation(input: unknown) {
         action: 'tire_location.create',
         entity: 'TireLocation',
         entityId: result.id,
-        message: `Created tire storage location ${result.code}`,
+        details: { key: 'tire_location_create', params: { code: result.code } },
       }),
     }
   )
@@ -359,7 +362,7 @@ export async function createLocationsBulk(input: unknown) {
       audit: ({ result }) => ({
         action: 'tire_location.bulk_create',
         entity: 'TireLocation',
-        message: `Created ${plural(result.created, 'tire storage location')}`,
+        details: { key: 'tire_location_bulk_create', params: { count: result.created } },
         metadata: { skipped: result.skipped },
       }),
     }
@@ -430,7 +433,7 @@ export async function updateLocation(input: unknown) {
         action: 'tire_location.update',
         entity: 'TireLocation',
         entityId: result.id,
-        message: `Updated tire storage location ${result.code}`,
+        details: { key: 'tire_location_update', params: { code: result.code } },
       }),
     }
   )
@@ -463,7 +466,7 @@ export async function deleteLocation(id: string) {
         action: 'tire_location.delete',
         entity: 'TireLocation',
         entityId: result.id,
-        message: `Deleted tire storage location ${result.code}`,
+        details: { key: 'tire_location_delete', params: { code: result.code } },
       }),
     }
   )

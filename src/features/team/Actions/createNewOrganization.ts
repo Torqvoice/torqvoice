@@ -60,7 +60,7 @@ export async function createNewOrganization(input: unknown) {
       action: "organization.create",
       entity: "Organization",
       entityId: result.id,
-      message: `Created organization "${result.name}"`,
+      details: { key: "organization_create", params: { name: result.name } },
       metadata: { organizationId: result.id },
     }),
   });

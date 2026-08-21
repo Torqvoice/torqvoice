@@ -115,7 +115,7 @@ export async function sendStatusReport(input: unknown) {
         action: "statusReport.send",
         entity: "StatusReport",
         entityId: result.statusReportId,
-        message: `Sent status report via ${result.channels.join(", ")}`,
+        details: { key: "statusReport_send", params: { channels: result.channels.join(", ") } },
       }),
     }
   );

@@ -169,7 +169,7 @@ export async function sendQuoteEmail(input: {
       action: "email.sendQuote",
       entity: "Quote",
       entityId: result.quoteId,
-      message: `Sent quote email to ${result.recipientEmail}`,
+      details: { key: "email_sendQuote", params: { recipient: result.recipientEmail } },
       metadata: { quoteId: result.quoteId, recipientEmail: result.recipientEmail },
     }),
   });
@@ -309,7 +309,7 @@ export async function sendInvoiceEmail(input: {
       action: "email.sendInvoice",
       entity: "ServiceRecord",
       entityId: result.serviceRecordId,
-      message: `Sent invoice email to ${result.recipientEmail}`,
+      details: { key: "email_sendInvoice", params: { recipient: result.recipientEmail } },
       metadata: { serviceRecordId: result.serviceRecordId, recipientEmail: result.recipientEmail },
     }),
   });
@@ -427,7 +427,7 @@ export async function sendInspectionEmail(input: {
       action: "email.sendInspection",
       entity: "Inspection",
       entityId: result.inspectionId,
-      message: `Sent inspection email to ${result.recipientEmail}`,
+      details: { key: "email_sendInspection", params: { recipient: result.recipientEmail } },
       metadata: { inspectionId: result.inspectionId, recipientEmail: result.recipientEmail },
     }),
   });

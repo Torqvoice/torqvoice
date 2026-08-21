@@ -8,16 +8,14 @@
  * unfindable by the one filter meant to find it. Every other feature sets it,
  * so the omission looks deliberate rather than forgotten.
  *
- * And the message is composed once and stored, so it can never be corrected
- * at read time the way a translated string can. A database enum or a `(s)`
- * that reaches it is there for good.
+ * And a `(s)` in a message means someone has gone back to composing English
+ * by hand instead of naming a key. The sentences live in the message
+ * catalogue now, one per language, checked by audit-summary-keys.test.ts.
  */
 
 import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
-import { plural, humanise } from '@/features/tire-hotel/Lib/auditText'
-import { TREATMENT_TYPES } from '@/features/tire-hotel/Lib/treatments'
 
 const ACTIONS_DIR = 'src/features/tire-hotel/Actions'
 
@@ -29,7 +27,9 @@ function auditBlocks(): { file: string; action: string; body: string }[] {
     const file = path.join(ACTIONS_DIR, name)
     const source = readFileSync(file, 'utf-8')
     for (const match of source.matchAll(
-      /audit:\s*(?:\([^)]*\)\s*=>\s*)?\(?\{((?:[^{}]|\{[^{}]*\})*)\}/g
+      // Three levels deep: the block, its details object, and that
+      // object's params.
+      /audit:\s*(?:\([^)]*\)\s*=>\s*)?\(?\{((?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*)\}/g
     )) {
       const body = match[1]
       const action = body.match(/action:\s*(.+)/)?.[1]?.trim()
@@ -60,27 +60,5 @@ describe('every tire hotel audit row', () => {
       .map(({ file, action }) => `${file}  ${action}`)
 
     expect(sloppy, `these store "(s)":\n${sloppy.join('\n')}`).toEqual([])
-  })
-})
-
-describe('the wording helpers', () => {
-  it('counts one thing and several things differently', () => {
-    expect(plural(1, 'file')).toBe('1 file')
-    expect(plural(3, 'file')).toBe('3 files')
-    expect(plural(0, 'file')).toBe('0 files')
-  })
-
-  it('takes an irregular plural when the noun needs one', () => {
-    expect(plural(2, 'entry', 'entries')).toBe('2 entries')
-  })
-
-  it('turns every treatment type into words', () => {
-    // The reported symptom: "Marked wash_tires as done", a column value
-    // sitting in the middle of an English sentence.
-    for (const type of TREATMENT_TYPES) {
-      expect(humanise(type)).not.toContain('_')
-    }
-    expect(humanise('wash_tires')).toBe('wash tires')
-    expect(humanise('tpms_service')).toBe('tpms service')
   })
 })

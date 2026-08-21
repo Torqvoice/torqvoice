@@ -502,7 +502,7 @@ export async function createServiceRecord(input: unknown) {
         action: 'service.create',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Created service record ${result.invoiceNumber || result.id}`,
+        details: { key: 'service_create', params: { ref: result.invoiceNumber || result.id } },
         metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -751,7 +751,7 @@ export async function updateServiceRecord(input: unknown) {
         action: 'service.update',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Updated service record ${result.invoiceNumber || result.id}`,
+        details: { key: 'service_update', params: { ref: result.invoiceNumber || result.id } },
         metadata: { serviceRecordId: result.id },
       }),
     }
@@ -804,7 +804,12 @@ export async function updateServiceStatus(recordId: string, status: string) {
         action: 'service.status',
         entity: 'ServiceRecord',
         entityId: result.recordId,
-        message: `Changed service record status to ${result.status}`,
+        // ICU select selectors cannot contain a hyphen, and the stored
+        // statuses do: in-progress, waiting-parts.
+        details: {
+          key: 'service_status',
+          params: { status: result.status.replaceAll('-', '_') },
+        },
         metadata: { serviceRecordId: result.recordId, status: result.status },
       }),
     }
@@ -1006,7 +1011,7 @@ export async function deleteServiceRecord(recordId: string) {
         action: 'service.delete',
         entity: 'ServiceRecord',
         entityId: result.recordId,
-        message: `Deleted service record ${result.recordId}`,
+        details: { key: 'service_delete', params: { ref: result.recordId } },
         metadata: { serviceRecordId: result.recordId },
       }),
     }

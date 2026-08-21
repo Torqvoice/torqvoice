@@ -32,7 +32,7 @@ export async function cancelSubscription() {
     audit: () => ({
       action: "subscription.cancel",
       entity: "Subscription",
-      message: "Cancelled subscription (end of period)",
+      details: { key: "subscription_cancel" },
     }),
   });
 }
@@ -64,7 +64,7 @@ export async function resumeSubscription() {
     audit: () => ({
       action: "subscription.resume",
       entity: "Subscription",
-      message: "Resumed subscription",
+      details: { key: "subscription_resume" },
     }),
   });
 }

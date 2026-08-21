@@ -43,7 +43,7 @@ export async function createFieldDefinition(input: unknown) {
       action: "customField.create",
       entity: "CustomFieldDefinition",
       entityId: result.id,
-      message: `Created custom field "${result.name}"`,
+      details: { key: "customField_create", params: { name: result.name } },
       metadata: { fieldId: result.id, fieldName: result.name, entityType: result.entityType },
     }),
   });
@@ -72,7 +72,7 @@ export async function updateFieldDefinition(input: unknown) {
       action: "customField.update",
       entity: "CustomFieldDefinition",
       entityId: result.id,
-      message: `Updated custom field "${result.name}"`,
+      details: { key: "customField_update", params: { name: result.name } },
       metadata: { fieldId: result.id, fieldName: result.name },
     }),
   });
@@ -98,7 +98,7 @@ export async function deleteFieldDefinition(fieldId: string) {
       action: "customField.delete",
       entity: "CustomFieldDefinition",
       entityId: result.fieldId,
-      message: `Deleted custom field "${result.fieldName}"`,
+      details: { key: "customField_delete", params: { name: result.fieldName } },
       metadata: { fieldId: result.fieldId, fieldName: result.fieldName },
     }),
   });

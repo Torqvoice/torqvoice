@@ -492,7 +492,7 @@ export async function createQuoteFromTireSet(input: unknown) {
         action: 'tire_set.create_quote',
         entity: 'Quote',
         entityId: result.id,
-        message: `Created quote ${result.quoteNumber} from a tire set`,
+        details: { key: 'tire_set_create_quote', params: { ref: result.quoteNumber ?? result.id } },
         metadata: { tireSetId: result.tireSetId },
       }),
     }
@@ -624,7 +624,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         action: 'tire_set.create_work_order',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Created work order ${result.invoiceNumber ?? result.id} from a tire set`,
+        details: { key: 'tire_set_create_work_order', params: { ref: result.invoiceNumber ?? result.id } },
         metadata: { tireSetId: result.tireSetId },
       }),
     }
@@ -759,7 +759,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
         action: 'tire_set.add_to_work_order',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Added tire set ${result.reference ?? result.tireSetId} to work order ${result.invoiceNumber ?? result.id}`,
+        details: { key: 'tire_set_add_to_work_order', params: { ref: result.reference ?? result.tireSetId, jobRef: result.invoiceNumber ?? result.id } },
         metadata: { tireSetId: result.tireSetId },
       }),
     }
@@ -816,7 +816,7 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
         action: 'tire_set.unlink_work_order',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Unlinked tire set ${result.reference ?? result.tireSetId} from work order ${result.invoiceNumber ?? result.id}`,
+        details: { key: 'tire_set_unlink_work_order', params: { ref: result.reference ?? result.tireSetId, jobRef: result.invoiceNumber ?? result.id } },
         metadata: { tireSetId: result.tireSetId },
       }),
     }

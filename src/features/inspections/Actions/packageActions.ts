@@ -190,7 +190,7 @@ export async function importTemplatePackage(raw: unknown) {
       action: "inspectionTemplate.import",
       entity: "InspectionTemplate",
       entityId: result.templates[0]?.id,
-      message: `Imported ${result.templates.length} inspection template(s) from a package`,
+      details: { key: "inspectionTemplate_import", params: { count: result.templates.length } },
       metadata: { count: result.templates.length },
     }),
   });

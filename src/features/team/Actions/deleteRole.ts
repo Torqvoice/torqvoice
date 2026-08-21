@@ -28,7 +28,7 @@ export async function deleteRole(roleId: string) {
       action: "role.delete",
       entity: "Role",
       entityId: result.roleId,
-      message: `Deleted role "${result.roleName}"`,
+      details: { key: "role_delete", params: { name: result.roleName } },
       metadata: { roleId: result.roleId, roleName: result.roleName },
     }),
   });

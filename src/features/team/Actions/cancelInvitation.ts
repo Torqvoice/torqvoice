@@ -35,7 +35,7 @@ export async function cancelInvitation(input: unknown) {
       action: "team.cancelInvitation",
       entity: "TeamInvitation",
       entityId: result.invitationId,
-      message: `Cancelled invitation for ${result.email}`,
+      details: { key: "team_cancelInvitation", params: { email: result.email } },
       metadata: { invitationId: result.invitationId, email: result.email },
     }),
   });
