@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Legge til kjøretøyet også?",
     "addScannedVehicleDescription": "Dokumentet beskriver også et kjøretøy. Legge det til denne kunden?",
     "addScannedVehicleConfirm": "Legg til kjøretøy",
-    "addScannedVehicleSkip": "Ikke nå"
+    "addScannedVehicleSkip": "Ikke nå",
+    "sectionContact": "Kontakt",
+    "sectionBilling": "Fakturering"
   },
   "serviceRequests": {
     "statusNew": "Ny",

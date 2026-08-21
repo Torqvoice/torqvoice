@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Ook het voertuig toevoegen?",
     "addScannedVehicleDescription": "Het document beschrijft ook een voertuig. Toevoegen aan deze klant?",
     "addScannedVehicleConfirm": "Voertuig toevoegen",
-    "addScannedVehicleSkip": "Niet nu"
+    "addScannedVehicleSkip": "Niet nu",
+    "sectionContact": "Contact",
+    "sectionBilling": "Facturatie"
   },
   "serviceRequests": {
     "statusNew": "Nieuw",

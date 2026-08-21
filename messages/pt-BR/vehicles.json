@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% de correspondência",
     "ownerMatchCreateNew": "Criar novo cliente",
     "ownerMatchChoose": "Escolher cliente",
-    "scanUnavailable": "Ative a IA nas configurações"
+    "scanUnavailable": "Ative a IA nas configurações",
+    "sectionAssignment": "Foto e proprietário",
+    "sectionDetails": "Detalhes"
   },
   "archiveDialog": {
     "title": "Arquivar Veículo",

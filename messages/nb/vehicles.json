@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% treff",
     "ownerMatchCreateNew": "Opprett ny kunde",
     "ownerMatchChoose": "Velg kunde",
-    "scanUnavailable": "Aktiver KI i innstillingene"
+    "scanUnavailable": "Aktiver KI i innstillingene",
+    "sectionAssignment": "Bilde og eier",
+    "sectionDetails": "Detaljer"
   },
   "archiveDialog": {
     "title": "Arkiver kjøretøy",

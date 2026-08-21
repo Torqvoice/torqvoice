@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% Übereinstimmung",
     "ownerMatchCreateNew": "Neuen Kunden anlegen",
     "ownerMatchChoose": "Kunde auswählen",
-    "scanUnavailable": "KI in den Einstellungen aktivieren"
+    "scanUnavailable": "KI in den Einstellungen aktivieren",
+    "sectionAssignment": "Foto und Halter",
+    "sectionDetails": "Details"
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",

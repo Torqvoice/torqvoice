@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Добавить и автомобиль?",
     "addScannedVehicleDescription": "В документе описан и автомобиль. Добавить его этому клиенту?",
     "addScannedVehicleConfirm": "Добавить автомобиль",
-    "addScannedVehicleSkip": "Не сейчас"
+    "addScannedVehicleSkip": "Не сейчас",
+    "sectionContact": "Контакты",
+    "sectionBilling": "Выставление счетов"
   },
   "serviceRequests": {
     "statusNew": "Новая",

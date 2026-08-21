@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% zgodności",
     "ownerMatchCreateNew": "Utwórz nowego klienta",
     "ownerMatchChoose": "Wybierz klienta",
-    "scanUnavailable": "Włącz AI w ustawieniach"
+    "scanUnavailable": "Włącz AI w ustawieniach",
+    "sectionAssignment": "Zdjęcie i właściciel",
+    "sectionDetails": "Szczegóły"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",

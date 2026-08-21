@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Adicionar também o veículo?",
     "addScannedVehicleDescription": "O documento também descreve um veículo. Adicioná-lo a este cliente?",
     "addScannedVehicleConfirm": "Adicionar veículo",
-    "addScannedVehicleSkip": "Agora não"
+    "addScannedVehicleSkip": "Agora não",
+    "sectionContact": "Contato",
+    "sectionBilling": "Faturamento"
   },
   "serviceRequests": {
     "statusNew": "Novo",

@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Pridėti ir transporto priemonę?",
     "addScannedVehicleDescription": "Dokumente aprašyta ir transporto priemonė. Pridėti ją šiam klientui?",
     "addScannedVehicleConfirm": "Pridėti transporto priemonę",
-    "addScannedVehicleSkip": "Ne dabar"
+    "addScannedVehicleSkip": "Ne dabar",
+    "sectionContact": "Kontaktai",
+    "sectionBilling": "Atsiskaitymas"
   },
   "serviceRequests": {
     "statusNew": "Nauja",

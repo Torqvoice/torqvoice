@@ -187,6 +187,10 @@ export function CustomerForm({
               {/* The keeper on a registration document is a customer waiting to be typed in */}
               <ScanDocumentButton onScanned={applyScan} />
 
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('sectionContact')}
+              </p>
+
               <div className="grid grid-cols-[1fr_120px] gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">{t('nameRequired')}</Label>
@@ -233,16 +237,6 @@ export function CustomerForm({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="company">{tc('form.company')}</Label>
-                <Input
-                  id="company"
-                  name="company"
-                  placeholder={t('companyPlaceholder')}
-                  defaultValue={customer?.company ?? ''}
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="address">{tc('form.address')}</Label>
                 <Input
                   id="address"
@@ -253,8 +247,22 @@ export function CustomerForm({
               </div>
             </div>
 
-            {/* Right: billing details and free text */}
+            {/* Right: who they are on an invoice */}
             <div className="space-y-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('sectionBilling')}
+              </p>
+
+              <div className="space-y-2">
+                <Label htmlFor="company">{tc('form.company')}</Label>
+                <Input
+                  id="company"
+                  name="company"
+                  placeholder={t('companyPlaceholder')}
+                  defaultValue={customer?.company ?? ''}
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="taxId">{t('taxId')}</Label>
                 <Input
@@ -273,17 +281,17 @@ export function CustomerForm({
                 </div>
                 <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="notes">{tc('form.notes')}</Label>
-                <Textarea
-                  id="notes"
-                  name="notes"
-                  placeholder={t('notesPlaceholder')}
-                  rows={3}
-                  defaultValue={customer?.notes ?? ''}
-                />
-              </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="notes">{tc('form.notes')}</Label>
+              <Textarea
+                id="notes"
+                name="notes"
+                placeholder={t('notesPlaceholder')}
+                rows={3}
+                defaultValue={customer?.notes ?? ''}
+              />
             </div>
 
             <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">

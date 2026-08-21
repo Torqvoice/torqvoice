@@ -334,7 +334,9 @@
     "ownerMatchScore": "совпадение {percent}%",
     "ownerMatchCreateNew": "Создать нового клиента",
     "ownerMatchChoose": "Выбрать клиента",
-    "scanUnavailable": "Включите ИИ в настройках"
+    "scanUnavailable": "Включите ИИ в настройках",
+    "sectionAssignment": "Фото и владелец",
+    "sectionDetails": "Характеристики"
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",

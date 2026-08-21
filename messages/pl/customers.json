@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Dodać też pojazd?",
     "addScannedVehicleDescription": "Dokument opisuje również pojazd. Dodać go do tego klienta?",
     "addScannedVehicleConfirm": "Dodaj pojazd",
-    "addScannedVehicleSkip": "Nie teraz"
+    "addScannedVehicleSkip": "Nie teraz",
+    "sectionContact": "Kontakt",
+    "sectionBilling": "Rozliczenia"
   },
   "serviceRequests": {
     "statusNew": "Nowe",

@@ -288,6 +288,10 @@ export function VehicleForm({
               {/* Scan the registration document and fill the form from it */}
               <ScanDocumentButton onScanned={applyScan} />
 
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('sectionAssignment')}
+              </p>
+
               {/* Image upload */}
               <div className="space-y-2">
                 <Label>{t('photo')}</Label>
@@ -438,6 +442,10 @@ export function VehicleForm({
 
             {/* Right: the vehicle's own details */}
             <div className="space-y-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('sectionDetails')}
+              </p>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="make">{isMarine ? t('makeMarine') : t('make')}</Label>

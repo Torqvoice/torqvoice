@@ -334,7 +334,9 @@
     "ownerMatchScore": "%{percent} eşleşme",
     "ownerMatchCreateNew": "Yeni müşteri oluştur",
     "ownerMatchChoose": "Müşteri seç",
-    "scanUnavailable": "Ayarlardan yapay zekayı etkinleştirin"
+    "scanUnavailable": "Ayarlardan yapay zekayı etkinleştirin",
+    "sectionAssignment": "Fotoğraf ve sahibi",
+    "sectionDetails": "Ayrıntılar"
   },
   "archiveDialog": {
     "title": "Aracı Arşivle",

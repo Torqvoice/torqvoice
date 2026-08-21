@@ -72,7 +72,9 @@
     "addScannedVehicleTitle": "Fahrzeug ebenfalls anlegen?",
     "addScannedVehicleDescription": "Das Dokument beschreibt auch ein Fahrzeug. Diesem Kunden hinzufügen?",
     "addScannedVehicleConfirm": "Fahrzeug anlegen",
-    "addScannedVehicleSkip": "Jetzt nicht"
+    "addScannedVehicleSkip": "Jetzt nicht",
+    "sectionContact": "Kontakt",
+    "sectionBilling": "Rechnung"
   },
   "serviceRequests": {
     "statusNew": "Neu",

@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% atitikmuo",
     "ownerMatchCreateNew": "Sukurti naują klientą",
     "ownerMatchChoose": "Pasirinkti klientą",
-    "scanUnavailable": "Įjunkite DI nustatymuose"
+    "scanUnavailable": "Įjunkite DI nustatymuose",
+    "sectionAssignment": "Nuotrauka ir savininkas",
+    "sectionDetails": "Duomenys"
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",

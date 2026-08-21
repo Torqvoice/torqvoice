@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% overeenkomst",
     "ownerMatchCreateNew": "Nieuwe klant aanmaken",
     "ownerMatchChoose": "Klant kiezen",
-    "scanUnavailable": "Schakel AI in bij instellingen"
+    "scanUnavailable": "Schakel AI in bij instellingen",
+    "sectionAssignment": "Foto en eigenaar",
+    "sectionDetails": "Details"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",

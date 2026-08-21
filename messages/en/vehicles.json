@@ -334,7 +334,9 @@
     "ownerMatchScore": "{percent}% match",
     "ownerMatchCreateNew": "Create new customer",
     "ownerMatchChoose": "Choose customer",
-    "scanUnavailable": "Enable AI in settings"
+    "scanUnavailable": "Enable AI in settings",
+    "sectionAssignment": "Photo and owner",
+    "sectionDetails": "Details"
   },
   "archiveDialog": {
     "title": "Archive Vehicle",
