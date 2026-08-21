@@ -87,7 +87,10 @@
       "searchPlaceholder": "Søk etter kunder",
       "noMatches": "Ingen kunder passer søket.",
       "noRecipients": "Ingen kunder med telefonnummer ennå."
-    }
+    },
+    "windowBlocked": "Denne kunden har ikke skrevet de siste 24 timene, så WhatsApp leverer ingen melding nå. Be dem sende deg en, eller sett opp en godkjent mal.",
+    "windowBlockedAction": "Sett opp en mal",
+    "windowBlockedPlaceholder": "Venter på at kunden skriver først"
   },
   "sendPhoto": {
     "action": "Send på WhatsApp",

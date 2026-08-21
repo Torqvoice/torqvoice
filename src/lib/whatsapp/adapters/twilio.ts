@@ -64,6 +64,17 @@ export const twilioAdapter: WhatsappAdapter = {
   docsUrl: 'https://www.twilio.com/docs/whatsapp/quickstart',
   usesWebhookToken: true,
 
+  template: {
+    label: 'Content SID',
+    help: 'Twilio approves templates as Content resources. Copy the SID from Twilio Content Template Builder; it starts with HX. A template name will be rejected.',
+    placeholder: 'HXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    usesLanguage: false,
+    validate: (value) =>
+      /^HX[0-9a-fA-F]{32}$/.test(value)
+        ? null
+        : 'Twilio expects a Content SID starting with HX, not a template name.',
+  },
+
   credentials: [
     {
       key: 'accountSid',
@@ -105,8 +116,17 @@ export const twilioAdapter: WhatsappAdapter = {
     })
 
     if (!response.ok) {
-      const error = (await response.json().catch(() => null)) as { message?: string } | null
-      throw new Error(error?.message || `Twilio returned HTTP ${response.status}`)
+      const error = (await response.json().catch(() => null)) as {
+        message?: string
+        code?: number
+        more_info?: string
+      } | null
+      // "Invalid Parameter" on its own sends a workshop hunting; the code is
+      // what Twilio's own documentation is indexed by.
+      const detail = error?.message || `HTTP ${response.status}`
+      const code = error?.code ? ` (Twilio error ${error.code})` : ''
+      const more = error?.more_info ? ` See ${error.more_info}` : ''
+      throw new Error(`${detail}${code}.${more}`)
     }
 
     const result = (await response.json()) as { sid?: string; status?: string }

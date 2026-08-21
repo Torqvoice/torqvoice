@@ -28,6 +28,8 @@ export interface WhatsappProviderOption {
   docsUrl: string
   usesWebhookToken: boolean
   credentials: WhatsappAdapter['credentials']
+  /** Without the validator: functions cannot cross to a client component. */
+  template: Omit<WhatsappAdapter['template'], 'validate'>
 }
 
 export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
@@ -37,5 +39,11 @@ export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
     docsUrl: adapter.docsUrl,
     usesWebhookToken: adapter.usesWebhookToken,
     credentials: adapter.credentials,
+    template: {
+      label: adapter.template.label,
+      help: adapter.template.help,
+      placeholder: adapter.template.placeholder,
+      usesLanguage: adapter.template.usesLanguage,
+    },
   }))
 }

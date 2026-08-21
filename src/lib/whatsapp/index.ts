@@ -31,7 +31,7 @@ export const SERVICE_WINDOW_HOURS = 24
 export class WhatsappWindowClosedError extends Error {
   constructor() {
     super(
-      'The 24 hour WhatsApp window has closed. Set up an approved template in Settings to reach this customer.'
+      'WhatsApp only allows free messages for 24 hours after the customer writes to you, and that window has closed. Ask them to send you a message, or set up an approved template in Settings to reach them any time.'
     )
     this.name = 'WhatsappWindowClosedError'
   }

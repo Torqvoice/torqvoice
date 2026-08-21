@@ -87,7 +87,10 @@
       "searchPlaceholder": "Rechercher des clients",
       "noMatches": "Aucun client ne correspond à votre recherche.",
       "noRecipients": "Aucun client avec un numéro pour l'instant."
-    }
+    },
+    "windowBlocked": "Ce client n'a pas écrit depuis 24 heures, WhatsApp ne délivrera donc aucun message maintenant. Demandez-lui de vous écrire, ou configurez un modèle approuvé.",
+    "windowBlockedAction": "Configurer un modèle",
+    "windowBlockedPlaceholder": "En attente d'un message du client"
   },
   "sendPhoto": {
     "action": "Envoyer sur WhatsApp",

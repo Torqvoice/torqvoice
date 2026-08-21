@@ -87,7 +87,10 @@
       "searchPlaceholder": "Müşteri ara",
       "noMatches": "Aramanızla eşleşen müşteri yok.",
       "noRecipients": "Henüz telefon numarası olan müşteri yok."
-    }
+    },
+    "windowBlocked": "Bu müşteri son 24 saatte yazmadı, bu yüzden WhatsApp şu anda mesaj iletmez. Size yazmasını isteyin ya da onaylı bir şablon kurun.",
+    "windowBlockedAction": "Şablon kur",
+    "windowBlockedPlaceholder": "Müşterinin ilk yazması bekleniyor"
   },
   "sendPhoto": {
     "action": "WhatsApp'tan gönder",

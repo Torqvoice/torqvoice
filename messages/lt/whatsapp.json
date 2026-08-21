@@ -87,7 +87,10 @@
       "searchPlaceholder": "Ieškoti klientų",
       "noMatches": "Pagal paiešką klientų nerasta.",
       "noRecipients": "Dar nėra klientų su telefono numeriu."
-    }
+    },
+    "windowBlocked": "Šis klientas nerašė pastarąsias 24 valandas, todėl „WhatsApp“ dabar žinutės nepristatys. Paprašykite jo parašyti arba nustatykite patvirtintą šabloną.",
+    "windowBlockedAction": "Nustatyti šabloną",
+    "windowBlockedPlaceholder": "Laukiama, kol klientas parašys pirmas"
   },
   "sendPhoto": {
     "action": "Siųsti per „WhatsApp“",

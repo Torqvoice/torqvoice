@@ -91,6 +91,17 @@ export const metaAdapter: WhatsappAdapter = {
   docsUrl: 'https://developers.facebook.com/docs/whatsapp/cloud-api/get-started',
   usesWebhookToken: false,
 
+  template: {
+    label: 'Template name',
+    help: 'The name of a template approved in WhatsApp Manager, for example vehicle_ready.',
+    placeholder: 'vehicle_ready',
+    usesLanguage: true,
+    validate: (value) =>
+      /^[a-z0-9_]+$/.test(value)
+        ? null
+        : 'Meta template names are lower case, digits and underscores only.',
+  },
+
   credentials: [
     {
       key: 'phoneNumberId',

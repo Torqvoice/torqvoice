@@ -87,7 +87,10 @@
       "searchPlaceholder": "Kunden suchen",
       "noMatches": "Kein Kunde passt zur Suche.",
       "noRecipients": "Noch kein Kunde mit Telefonnummer."
-    }
+    },
+    "windowBlocked": "Dieser Kunde hat in den letzten 24 Stunden nicht geschrieben, daher stellt WhatsApp jetzt keine Nachricht zu. Bitten Sie ihn zu schreiben, oder richten Sie eine freigegebene Vorlage ein.",
+    "windowBlockedAction": "Vorlage einrichten",
+    "windowBlockedPlaceholder": "Warten, bis der Kunde zuerst schreibt"
   },
   "sendPhoto": {
     "action": "Per WhatsApp senden",

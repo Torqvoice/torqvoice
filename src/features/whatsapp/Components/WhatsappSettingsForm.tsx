@@ -264,25 +264,34 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="whatsapp-template">{t('template.nameLabel')}</Label>
+              {/* Providers disagree on what this is, and getting it wrong shows
+                  up only as a rejected send, so the wording comes from the
+                  provider rather than from us. */}
+              <Label htmlFor="whatsapp-template">
+                {provider?.template.label ?? t('template.nameLabel')}
+              </Label>
               <Input
                 id="whatsapp-template"
                 value={templateName}
                 onChange={(event) => setTemplateName(event.target.value)}
-                placeholder="vehicle_ready"
+                placeholder={provider?.template.placeholder}
               />
-              <p className="text-xs text-muted-foreground">{t('template.nameHint')}</p>
+              <p className="text-xs text-muted-foreground">
+                {provider?.template.help ?? t('template.nameHint')}
+              </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp-template-language">{t('template.languageLabel')}</Label>
-              <Input
-                id="whatsapp-template-language"
-                value={templateLanguage}
-                onChange={(event) => setTemplateLanguage(event.target.value)}
-                placeholder="de"
-              />
-              <p className="text-xs text-muted-foreground">{t('template.languageHint')}</p>
-            </div>
+            {provider?.template.usesLanguage !== false && (
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp-template-language">{t('template.languageLabel')}</Label>
+                <Input
+                  id="whatsapp-template-language"
+                  value={templateLanguage}
+                  onChange={(event) => setTemplateLanguage(event.target.value)}
+                  placeholder="de"
+                />
+                <p className="text-xs text-muted-foreground">{t('template.languageHint')}</p>
+              </div>
+            )}
           </div>
         </AppCard>
 

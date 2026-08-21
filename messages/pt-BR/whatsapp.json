@@ -87,7 +87,10 @@
       "searchPlaceholder": "Buscar clientes",
       "noMatches": "Nenhum cliente corresponde à sua busca.",
       "noRecipients": "Ainda não há clientes com telefone."
-    }
+    },
+    "windowBlocked": "Este cliente não escreve há mais de 24 horas, então o WhatsApp não vai entregar a mensagem agora. Peça que ele mande uma, ou configure um modelo aprovado.",
+    "windowBlockedAction": "Configurar um modelo",
+    "windowBlockedPlaceholder": "Aguardando o cliente escrever primeiro"
   },
   "sendPhoto": {
     "action": "Enviar pelo WhatsApp",

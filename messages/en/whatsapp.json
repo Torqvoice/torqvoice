@@ -87,7 +87,10 @@
       "searchPlaceholder": "Search customers",
       "noMatches": "No customers match your search.",
       "noRecipients": "No customers with a phone number yet."
-    }
+    },
+    "windowBlocked": "This customer has not written in the last 24 hours, so WhatsApp will not deliver a message right now. Ask them to send you one, or set up an approved template.",
+    "windowBlockedAction": "Set up a template",
+    "windowBlockedPlaceholder": "Waiting for the customer to write first"
   },
   "sendPhoto": {
     "action": "Send on WhatsApp",

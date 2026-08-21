@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -46,7 +47,10 @@ export function WhatsappConversation({
   const [body, setBody] = useState('')
   const [attachment, setAttachment] = useState<{ url: string; name: string } | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [windowOpen, setWindowOpen] = useState<boolean | null>(null)
+  const [windowState, setWindowState] = useState<{
+    open: boolean
+    hasTemplate: boolean
+  } | null>(null)
   const [isSending, startSending] = useTransition()
   const [mounted, setMounted] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -67,7 +71,9 @@ export function WhatsappConversation({
     if (conversation.success && conversation.data) {
       setMessages(conversation.data as unknown as WhatsappMessageView[])
     }
-    if (state.success && state.data) setWindowOpen(state.data.open)
+    if (state.success && state.data) {
+      setWindowState({ open: state.data.open, hasTemplate: state.data.hasTemplate })
+    }
     setLoading(false)
   }, [thread.customerId])
 
@@ -142,6 +148,8 @@ export function WhatsappConversation({
     })
   }
 
+  const blocked = windowState?.open === false && !windowState.hasTemplate
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
@@ -169,10 +177,20 @@ export function WhatsappConversation({
           <p className="text-sm text-muted-foreground">{t('unknownNumber')}</p>
         ) : (
           <>
-            {windowOpen === false && (
+            {windowState?.open === false && (
               <p className="flex items-start gap-2 rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
                 <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                {t('windowClosed')}
+                <span>
+                  {windowState.hasTemplate ? t('windowClosed') : t('windowBlocked')}
+                  {!windowState.hasTemplate && (
+                    <Link
+                      href="/settings/providers?tab=whatsapp"
+                      className="ml-1 font-medium text-primary hover:underline"
+                    >
+                      {t('windowBlockedAction')}
+                    </Link>
+                  )}
+                </span>
               </p>
             )}
 
@@ -196,7 +214,7 @@ export function WhatsappConversation({
                 variant="outline"
                 size="icon"
                 onClick={() => fileRef.current?.click()}
-                disabled={uploading || isSending}
+                disabled={uploading || isSending || blocked}
                 aria-label={t('attach')}
               >
                 {uploading ? (
@@ -208,7 +226,8 @@ export function WhatsappConversation({
               <Textarea
                 value={body}
                 onChange={(event) => setBody(event.target.value)}
-                placeholder={t('placeholder')}
+                placeholder={blocked ? t('windowBlockedPlaceholder') : t('placeholder')}
+                disabled={blocked}
                 rows={2}
                 className="min-h-[44px] flex-1 resize-none"
                 onKeyDown={(event) => {
@@ -221,7 +240,7 @@ export function WhatsappConversation({
               <Button
                 type="button"
                 onClick={handleSend}
-                disabled={isSending || (!body.trim() && !attachment)}
+                disabled={isSending || blocked || (!body.trim() && !attachment)}
                 aria-label={t('send')}
               >
                 {isSending ? (

@@ -6,6 +6,7 @@ import { getFeatures, requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuard } from '@/lib/demo'
 import {
+  getWhatsappConfig,
   isWhatsappConfigured,
   isWithinServiceWindow,
   lastInboundAt,
@@ -29,15 +30,25 @@ export async function getWhatsappWindowState(customerId: string) {
         where: { id: customerId, organizationId },
         select: { phone: true },
       })
-      if (!customer?.phone) return { configured: false, open: false, lastInboundAt: null }
+      if (!customer?.phone) {
+        return { configured: false, open: false, hasTemplate: false, lastInboundAt: null }
+      }
 
-      const [configured, open, last] = await Promise.all([
-        isWhatsappConfigured(organizationId),
+      const [config, open, last] = await Promise.all([
+        getWhatsappConfig(organizationId),
         isWithinServiceWindow(organizationId, customer.phone),
         lastInboundAt(organizationId, customer.phone),
       ])
 
-      return { configured, open, lastInboundAt: last }
+      // Whether a template exists decides what the compose box may promise: a
+      // closed window with no template means nothing can be sent at all, and
+      // saying so before someone types is the whole point of asking.
+      return {
+        configured: config !== null,
+        open,
+        hasTemplate: config?.template != null,
+        lastInboundAt: last,
+      }
     },
     {
       requiredPermissions: [

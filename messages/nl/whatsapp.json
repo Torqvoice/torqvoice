@@ -87,7 +87,10 @@
       "searchPlaceholder": "Klanten zoeken",
       "noMatches": "Geen klant komt overeen met je zoekopdracht.",
       "noRecipients": "Nog geen klanten met een telefoonnummer."
-    }
+    },
+    "windowBlocked": "Deze klant schreef de afgelopen 24 uur niets, dus WhatsApp levert nu geen bericht af. Vraag ze iets te sturen of stel een goedgekeurd sjabloon in.",
+    "windowBlockedAction": "Sjabloon instellen",
+    "windowBlockedPlaceholder": "Wachten tot de klant eerst schrijft"
   },
   "sendPhoto": {
     "action": "Via WhatsApp sturen",

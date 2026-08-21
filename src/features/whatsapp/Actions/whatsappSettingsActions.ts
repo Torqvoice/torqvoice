@@ -154,6 +154,14 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
         if (!existing?.value) entries[key] = crypto.randomUUID().replace(/-/g, '')
       }
 
+      // Catch a template that cannot possibly work before it fails mid-send,
+      // where the provider's own wording is rarely more than "Invalid Parameter".
+      const templateName = input.templateName?.trim()
+      if (templateName) {
+        const problem = adapter.template.validate?.(templateName)
+        if (problem) throw new Error(problem)
+      }
+
       // Only block switching it on: a workshop may save a half-filled form
       // while it waits for a credential to arrive.
       const missing = adapter.credentials
