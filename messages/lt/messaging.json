@@ -20,6 +20,7 @@
     "deleteDescription": "Pašalina jūsų pokalbio su {name} kopiją. Kliento telefone žinutės lieka.",
     "deleteFailed": "Nepavyko ištrinti pokalbio",
     "delete": "Ištrinti",
-    "cancel": "Atšaukti"
+    "cancel": "Atšaukti",
+    "loadMore": "Įkelti daugiau"
   }
 }

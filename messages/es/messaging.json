@@ -20,6 +20,7 @@
     "deleteDescription": "Elimina tu copia de la conversación con {name}. Los mensajes se quedan en su teléfono.",
     "deleteFailed": "No se pudo eliminar la conversación",
     "delete": "Eliminar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "loadMore": "Cargar más"
   }
 }

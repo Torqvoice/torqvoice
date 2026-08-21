@@ -3,7 +3,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { redirect } from 'next/navigation'
 import { getScheduledMessages } from '@/features/scheduled-messages/Actions/scheduledMessageActions'
 import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availableChannels'
-import { getInboxThreads } from '@/features/messaging/Actions/inboxActions'
+import { getInboxThreads, type InboxPage } from '@/features/messaging/Actions/inboxActions'
 import { MessagesPageClient } from '@/features/messaging/Components/MessagesPageClient'
 import { PageHeader } from '@/components/page-header'
 
@@ -19,8 +19,10 @@ export default async function MessagesPage() {
     getAvailableChannels(ctx.organizationId),
   ])
 
-  const inbox =
-    inboxResult.success && inboxResult.data ? inboxResult.data : { threads: [], channels: [] }
+  const inbox: InboxPage =
+    inboxResult.success && inboxResult.data
+      ? inboxResult.data
+      : { threads: [], nextCursor: null, channels: [] }
   const scheduled = scheduledResult.success && scheduledResult.data ? scheduledResult.data : []
 
   return (
@@ -30,6 +32,7 @@ export default async function MessagesPage() {
         <Suspense>
           <MessagesPageClient
             threads={inbox.threads}
+            initialCursor={inbox.nextCursor}
             channels={inbox.channels}
             initialScheduled={scheduled}
             availableChannels={messageChannels}

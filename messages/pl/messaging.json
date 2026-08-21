@@ -20,6 +20,7 @@
     "deleteDescription": "Usuwa Twoją kopię rozmowy z {name}. Na telefonie klienta wiadomości zostają.",
     "deleteFailed": "Nie udało się usunąć rozmowy",
     "delete": "Usuń",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "loadMore": "Wczytaj więcej"
   }
 }

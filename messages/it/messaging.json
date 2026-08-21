@@ -20,6 +20,7 @@
     "deleteDescription": "Rimuove la tua copia della conversazione con {name}. Sul telefono del cliente resta tutto.",
     "deleteFailed": "Impossibile eliminare la conversazione",
     "delete": "Elimina",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "loadMore": "Carica altro"
   }
 }

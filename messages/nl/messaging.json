@@ -20,6 +20,7 @@
     "deleteDescription": "Verwijdert jouw kopie van het gesprek met {name}. Op hun telefoon blijven de berichten staan.",
     "deleteFailed": "Kon het gesprek niet verwijderen",
     "delete": "Verwijderen",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "loadMore": "Meer laden"
   }
 }

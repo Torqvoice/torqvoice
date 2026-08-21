@@ -20,6 +20,7 @@
     "deleteDescription": "Entfernt Ihre Kopie der Konversation mit {name}. Beim Kunden bleiben die Nachrichten erhalten.",
     "deleteFailed": "Konversation konnte nicht gelöscht werden",
     "delete": "Löschen",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "loadMore": "Mehr laden"
   }
 }

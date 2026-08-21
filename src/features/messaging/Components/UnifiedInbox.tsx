@@ -1,9 +1,18 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, Inbox, Loader2, MoreVertical, Plus, Search, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  ChevronDown,
+  Inbox,
+  Loader2,
+  MoreVertical,
+  Plus,
+  Search,
+  Trash2,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -41,9 +50,10 @@ import { TelegramConversation } from '@/features/telegram/Components/TelegramCon
 import { WhatsappConversation } from '@/features/whatsapp/Components/WhatsappConversation'
 import { NewWhatsappDialog } from '@/features/whatsapp/Components/NewWhatsappDialog'
 import { deleteWhatsappConversation } from '@/features/whatsapp/Actions/whatsappActions'
-import type { InboxThread, MessagingChannel } from '../Actions/inboxActions'
+import { getInboxThreads, type InboxThread, type MessagingChannel } from '../Actions/inboxActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
 import { avatarTint, initials } from '../Lib/threadDisplay'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
 /**
  * Every conversation, whatever it arrived on.
@@ -72,17 +82,23 @@ interface TelegramConversationData {
 }
 
 export function UnifiedInbox({
-  threads,
+  threads: initialThreads,
+  initialCursor = null,
   channels,
   onChanged,
 }: {
   threads: InboxThread[]
+  /** Where the next page starts, or null when the first page is all of it. */
+  initialCursor?: string | null
   channels: MessagingChannel[]
   /** Asks the page to reload its server data after something is sent. */
   onChanged?: () => void
 }) {
   const t = useTranslations('messaging.inbox')
-  const [search, setSearch] = useState('')
+  const [threads, setThreads] = useState(initialThreads)
+  const [cursor, setCursor] = useState<string | null>(initialCursor)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
   const [selected, setSelected] = useState<InboxThread | null>(null)
   const [loadingConversation, setLoadingConversation] = useState(false)
   const [smsData, setSmsData] = useState<SmsConversationData | null>(null)
@@ -93,16 +109,58 @@ export function UnifiedInbox({
   const [showChannelChoice, setShowChannelChoice] = useState(false)
   const [composeChannel, setComposeChannel] = useState<MessagingChannel | null>(null)
 
-  const visibleThreads = useMemo(() => {
-    const term = search.trim().toLowerCase()
-    if (!term) return threads
-    return threads.filter(
-      (thread) =>
-        thread.name.toLowerCase().includes(term) ||
-        thread.contact.toLowerCase().includes(term) ||
-        thread.lastMessage.toLowerCase().includes(term)
+  // Search runs on the server: filtering only what is loaded would quietly
+  // answer "no results" for a conversation two pages down.
+  const runSearch = useCallback(async (term?: string) => {
+    setLoadingMore(true)
+    const result = await getInboxThreads({ search: term })
+    if (result.success && result.data) {
+      setThreads(result.data.threads)
+      setCursor(result.data.nextCursor)
+    }
+    setLoadingMore(false)
+  }, [])
+
+  const { value: search, setValue: setSearch } = useDebouncedSearch('', runSearch)
+
+  // A send or a delete reloads the page's data; adopt it and start again.
+  useEffect(() => {
+    if (search.trim()) return
+    setThreads(initialThreads)
+    setCursor(initialCursor)
+  }, [initialThreads, initialCursor, search])
+
+  const loadMore = useCallback(async () => {
+    if (!cursor || loadingMore) return
+    setLoadingMore(true)
+    const result = await getInboxThreads({ cursor, search: search.trim() || undefined })
+    if (result.success && result.data) {
+      const page = result.data
+      setThreads((previous) => {
+        const seen = new Set(previous.map((thread) => thread.key))
+        return [...previous, ...page.threads.filter((thread) => !seen.has(thread.key))]
+      })
+      setCursor(page.nextCursor)
+    }
+    setLoadingMore(false)
+  }, [cursor, loadingMore, search])
+
+  // Continuous scroll: the button below stays for keyboards and for the case
+  // where the observer never fires.
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel || !cursor) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) loadMore()
+      },
+      { rootMargin: '200px' }
     )
-  }, [threads, search])
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [cursor, loadMore])
+
+  const visibleThreads = threads
 
   /** SMS and Telegram hand their history over as props, so it loads on select. */
   const select = useCallback(async (thread: InboxThread) => {
@@ -259,6 +317,25 @@ export function UnifiedInbox({
                 </button>
               )
             })
+          )}
+
+          {cursor && (
+            <div ref={sentinelRef} className="p-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={loadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? (
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <ChevronDown className="mr-2 h-3.5 w-3.5" />
+                )}
+                {t('loadMore')}
+              </Button>
+            </div>
           )}
         </div>
       </div>

@@ -28,11 +28,14 @@ type Tab = 'inbox' | 'scheduled'
 
 export function MessagesPageClient({
   threads,
+  initialCursor = null,
   channels,
   initialScheduled = [],
   availableChannels = [],
 }: {
   threads: InboxThread[]
+  /** Where the inbox's next page starts. */
+  initialCursor?: string | null
   /** Channels with a working provider, for the composer. */
   channels: MessagingChannel[]
   initialScheduled?: ScheduledMessageListItem[]
@@ -126,6 +129,7 @@ export function MessagesPageClient({
         ) : (
           <UnifiedInbox
             threads={threads}
+            initialCursor={initialCursor}
             channels={channels}
             onChanged={() => startRefresh(() => router.refresh())}
           />

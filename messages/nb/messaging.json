@@ -20,6 +20,7 @@
     "deleteDescription": "Fjerner din kopi av samtalen med {name}. Meldingene blir liggende på telefonen deres.",
     "deleteFailed": "Kunne ikke slette samtalen",
     "delete": "Slett",
-    "cancel": "Avbryt"
+    "cancel": "Avbryt",
+    "loadMore": "Last mer"
   }
 }
