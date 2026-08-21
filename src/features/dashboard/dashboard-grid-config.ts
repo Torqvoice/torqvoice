@@ -116,11 +116,44 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
   },
 }
 
-/** Cards whose default moved, and the layout version that moved them. */
-const MOVED_AT: Partial<Record<DashboardCardId, number>> = {
-  // Was bottom-left, under both full-width tables; now right column, above
-  // the completed-work table.
-  tireHotel: 2,
+/**
+ * Cards whose default position moved, with the version that moved them and
+ * where they should land in a layout the user has already arranged.
+ *
+ * The spot is worked out from that layout rather than copied from
+ * DEFAULT_LAYOUT: an absolute row means nothing once the user has moved
+ * things, and a card meant to sit above another can easily land below it.
+ */
+const MOVED: Partial<
+  Record<
+    DashboardCardId,
+    { version: number; place: (cards: Record<string, CardLayout>) => CardLayout }
+  >
+> = {
+  // Was bottom-left, under both full-width tables. Now the right column,
+  // directly above the completed-work table wherever that has ended up.
+  tireHotel: {
+    version: 2,
+    place: (cards) => ({
+      x: 6,
+      y: cards.recentCompleted.y,
+      w: 6,
+      h: DEFAULT_LAYOUT.cards.tireHotel.h,
+    }),
+  },
+}
+
+/**
+ * Puts `card` at its spot in `cards`, pushing whatever starts at or below
+ * that row down far enough to make room. Compaction closes the gap this
+ * leaves beside it.
+ */
+function insertAt(cards: Record<string, CardLayout>, id: string, spot: CardLayout): void {
+  for (const [otherId, other] of Object.entries(cards)) {
+    if (otherId === id) continue
+    if (other.y >= spot.y) cards[otherId] = { ...other, y: other.y + spot.h }
+  }
+  cards[id] = spot
 }
 
 function isCardLayout(v: unknown): v is CardLayout {
@@ -172,13 +205,25 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
 
   const cards =
     data.cards && typeof data.cards === 'object' ? (data.cards as Record<string, unknown>) : {}
+  const migrating: DashboardCardId[] = []
   for (const id of DASHBOARD_CARD_IDS) {
-    const movedAt = MOVED_AT[id]
-    // A layout saved before this card moved keeps the default, not the spot
-    // it was stored in; one saved since is the user's own choice.
-    if (movedAt !== undefined && storedVersion < movedAt) continue
     const stored = cards[id]
-    if (isCardLayout(stored)) result.cards[id] = clampCard(stored)
+    if (!isCardLayout(stored)) continue
+    const moved = MOVED[id]
+    // A layout saved before this card moved gives up the spot it was stored
+    // in; one saved since is the user's own choice and is left alone. A
+    // layout with no position for the card at all just takes the default.
+    if (moved && storedVersion < moved.version) {
+      migrating.push(id)
+      continue
+    }
+    result.cards[id] = clampCard(stored)
+  }
+  // After every other card is back where the user left it, so a moved card
+  // can be placed relative to them.
+  for (const id of migrating) {
+    const moved = MOVED[id]
+    if (moved) insertAt(result.cards, id, moved.place(result.cards))
   }
   for (const id of customIds) {
     const stored = cards[id]

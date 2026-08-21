@@ -109,14 +109,39 @@ describe('default dashboard layout', () => {
 describe('moved defaults', () => {
   const somewhereElse: CardLayout = { x: 0, y: 34, w: 6, h: 5 }
 
-  it('replaces a stored position saved before the card moved', () => {
+  it('lands the moved card above the one it belongs above', () => {
+    // recentCompleted moved up by hand, well above the tire hotel's own
+    // default row: an absolute row would drop the card below it.
+    const layout = normalizeLayout({
+      version: 1,
+      hidden: [],
+      cards: {
+        tireHotel: somewhereElse,
+        recentCompleted: { x: 0, y: 8, w: 12, h: 5 },
+      },
+    })
+
+    const tireHotel = layout.cards.tireHotel
+    expect(tireHotel.x).toBe(6)
+    expect(tireHotel.y + tireHotel.h).toBeLessThanOrEqual(layout.cards.recentCompleted.y)
+  })
+
+  it('overlaps nothing after making room for the moved card', () => {
     const layout = normalizeLayout({
       version: 1,
       hidden: [],
       cards: { tireHotel: somewhereElse },
     })
 
-    expect(layout.cards.tireHotel).toEqual(DEFAULT_LAYOUT.cards.tireHotel)
+    const ids = DASHBOARD_CARD_IDS.filter((id) => id !== 'notifications')
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        expect(
+          overlaps(layout.cards[ids[i]], layout.cards[ids[j]]),
+          `${ids[i]} overlaps ${ids[j]} after the migration`
+        ).toBe(false)
+      }
+    }
   })
 
   it('keeps a stored position saved since the card moved', () => {
