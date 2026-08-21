@@ -8,6 +8,7 @@ import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchem
 import { revalidatePath } from 'next/cache'
 import { unlink } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { auditDetails } from "@/lib/audit";
 
 export async function getVehicles() {
   return withAuth(
@@ -194,7 +195,7 @@ export async function createVehicle(input: unknown) {
         action: 'vehicle.create',
         entity: 'Vehicle',
         entityId: result.id,
-        message: `Created vehicle ${result.year} ${result.make} ${result.model}`,
+        details: { key: 'vehicle_create', params: { year: result.year, make: result.make, model: result.model } },
         metadata: { vehicleId: result.id },
       }),
     }
@@ -261,7 +262,12 @@ export async function updateVehicle(input: unknown) {
         action: 'vehicle.update',
         entity: 'Vehicle',
         entityId: result.id,
-        message: `Updated vehicle ${result.vehicleDisplay} — changed: ${result.fields.join(', ') || '(no changes)'}`,
+        details: result.fields.length
+        ? auditDetails("vehicle_update", {
+            name: result.vehicleDisplay,
+            fields: result.fields.join(", "),
+          })
+        : auditDetails("vehicle_updateNoChanges", { name: result.vehicleDisplay }),
         metadata: {
           vehicleId: result.id,
           vehicleDisplay: result.vehicleDisplay,
@@ -324,7 +330,7 @@ export async function deleteVehicle(vehicleId: string) {
         action: 'vehicle.delete',
         entity: 'Vehicle',
         entityId: result.vehicleId,
-        message: `Deleted vehicle ${result.vehicleDisplay}`,
+        details: { key: 'vehicle_delete', params: { name: result.vehicleDisplay } },
         metadata: { vehicleId: result.vehicleId, vehicleDisplay: result.vehicleDisplay },
       }),
     }

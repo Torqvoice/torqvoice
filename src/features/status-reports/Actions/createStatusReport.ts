@@ -50,7 +50,7 @@ export async function createStatusReport(input: unknown) {
         action: "statusReport.create",
         entity: "StatusReport",
         entityId: result.id,
-        message: `Created status report for service ${result.serviceRecordId}`,
+        details: { key: "statusReport_create", params: { serviceRecordId: result.serviceRecordId } },
       }),
     }
   );

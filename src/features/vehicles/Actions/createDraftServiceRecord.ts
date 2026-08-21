@@ -43,7 +43,7 @@ export async function createDraftServiceRecord(
         action: 'service.create',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Created draft service record ${result.invoiceNumber || result.id}`,
+        details: { key: 'service_createDraft', params: { ref: result.invoiceNumber || result.id } },
         metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -80,7 +80,7 @@ export async function createDraftCounterSale(customerId: string) {
         action: 'service.create',
         entity: 'ServiceRecord',
         entityId: result.id,
-        message: `Created counter sale ${result.invoiceNumber || result.id}`,
+        details: { key: 'service_createCounterSale', params: { ref: result.invoiceNumber || result.id } },
         metadata: { serviceRecordId: result.id, customerId: result.customerId },
       }),
     }

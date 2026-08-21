@@ -37,7 +37,7 @@ export async function createRole(input: unknown) {
       action: "role.create",
       entity: "Role",
       entityId: result.id,
-      message: `Created role "${result.name}"`,
+      details: { key: "role_create", params: { name: result.name } },
       metadata: { roleId: result.id, roleName: result.name },
     }),
   });

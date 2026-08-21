@@ -119,7 +119,7 @@ export async function createTemplate(input: unknown) {
       action: "inspectionTemplate.create",
       entity: "InspectionTemplate",
       entityId: result.id,
-      message: `Created inspection template "${result.name}"`,
+      details: { key: "inspectionTemplate_create", params: { name: result.name } },
       metadata: { templateId: result.id, templateName: result.name },
     }),
   });
@@ -175,7 +175,7 @@ export async function updateTemplate(input: unknown) {
       action: "inspectionTemplate.update",
       entity: "InspectionTemplate",
       entityId: result.id,
-      message: `Updated inspection template "${result.name}"`,
+      details: { key: "inspectionTemplate_update", params: { name: result.name } },
       metadata: { templateId: result.id, templateName: result.name },
     }),
   });
@@ -205,7 +205,7 @@ export async function deleteTemplate(id: string) {
       action: "inspectionTemplate.delete",
       entity: "InspectionTemplate",
       entityId: result.templateId,
-      message: `Deleted inspection template "${result.templateName}"`,
+      details: { key: "inspectionTemplate_delete", params: { name: result.templateName } },
       metadata: { templateId: result.templateId, templateName: result.templateName },
     }),
   });
@@ -238,7 +238,7 @@ export async function createTemplateFromPreset(presetId: string) {
       action: "inspectionTemplate.create",
       entity: "InspectionTemplate",
       entityId: result.id,
-      message: `Created inspection template "${result.name}" from a preset`,
+      details: { key: "inspectionTemplate_createFromPreset", params: { name: result.name } },
       metadata: { templateId: result.id, templateName: result.name },
     }),
   });
@@ -307,7 +307,7 @@ export async function duplicateTemplate(id: string) {
       action: "inspectionTemplate.create",
       entity: "InspectionTemplate",
       entityId: result.id,
-      message: `Duplicated inspection template into "${result.name}"`,
+      details: { key: "inspectionTemplate_duplicate", params: { name: result.name } },
       metadata: { templateId: result.id, templateName: result.name },
     }),
   });

@@ -15,7 +15,7 @@ import {
 } from '../Schema/tireHotelSchema'
 import type { MeasurementInput } from '../Schema/tireHotelSchema'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
-import { plural } from '../Lib/auditText'
+import { auditDetails } from '@/lib/audit'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const CREATE = [{ action: PermissionAction.CREATE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -387,7 +387,7 @@ export async function checkInTireSet(input: unknown) {
         action: 'tire_set.check_in',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Checked in tire set ${result.reference} to ${result.locationCode}`,
+        details: { key: 'tire_set_check_in', params: { ref: result.reference ?? result.id, code: result.locationCode } },
         metadata: { quantity: result.quantity },
       }),
     }
@@ -618,7 +618,7 @@ export async function returnTireSet(input: unknown) {
         action: 'tire_set.return',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Stored tire set ${result.reference} again, on ${result.locationCode}`,
+        details: { key: 'tire_set_return', params: { ref: result.reference ?? result.id, code: result.locationCode } },
         metadata: { quantity: result.quantity },
       }),
     }
@@ -682,7 +682,7 @@ export async function disposeTireSet(input: unknown) {
         action: 'tire_set.dispose',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Wrote off tire set ${result.reference}`,
+        details: { key: 'tire_set_dispose', params: { ref: result.reference ?? result.id } },
       }),
     }
   )
@@ -737,7 +737,7 @@ export async function checkOutTireSet(input: unknown) {
         action: 'tire_set.check_out',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Checked out tire set ${result.reference}`,
+        details: { key: 'tire_set_check_out', params: { ref: result.reference ?? result.id } },
       }),
     }
   )
@@ -791,7 +791,16 @@ export async function relocateTireSet(input: unknown) {
         action: 'tire_set.relocate',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Moved tire set ${result.reference} from ${result.fromCode ?? 'unassigned'} to ${result.toCode}`,
+        details: result.fromCode
+          ? auditDetails('tire_set_relocate', {
+              ref: result.reference ?? result.id,
+              from: result.fromCode,
+              to: result.toCode,
+            })
+          : auditDetails('tire_set_relocateUnassigned', {
+              ref: result.reference ?? result.id,
+              to: result.toCode,
+            }),
       }),
     }
   )
@@ -889,7 +898,7 @@ export async function updateTireSet(input: unknown) {
         action: 'tire_set.update',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Updated tire set ${result.reference}`,
+        details: { key: 'tire_set_update', params: { ref: result.reference ?? result.id } },
       }),
     }
   )
@@ -925,7 +934,7 @@ export async function addMeasurements(input: { tireSetId: string; measurements: 
         action: 'tire_measurement.create',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Recorded ${plural(result.count, 'reading')} on tire set ${result.reference}`,
+        details: { key: 'tire_measurement_create', params: { count: result.count, ref: result.reference ?? result.id } },
       }),
     }
   )
@@ -955,7 +964,7 @@ export async function deleteTireSet(id: string) {
         action: 'tire_set.delete',
         entity: 'TireSet',
         entityId: result.id,
-        message: `Deleted tire set ${result.reference}`,
+        details: { key: 'tire_set_delete', params: { ref: result.reference ?? result.id } },
       }),
     }
   )

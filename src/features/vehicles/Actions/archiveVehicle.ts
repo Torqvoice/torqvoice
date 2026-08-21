@@ -28,7 +28,7 @@ export async function archiveVehicle(vehicleId: string, reason?: string) {
         action: 'vehicle.archive',
         entity: 'Vehicle',
         entityId: result.vehicleId,
-        message: `Archived vehicle ${result.vehicleId}`,
+        details: { key: 'vehicle_archive', params: { id: result.vehicleId } },
         metadata: { vehicleId: result.vehicleId },
       }),
     }

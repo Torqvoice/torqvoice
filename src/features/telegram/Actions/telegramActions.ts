@@ -84,7 +84,7 @@ export async function sendTelegramToCustomer(input: {
         action: "telegram.send",
         entity: "TelegramMessage",
         entityId: result.id,
-        message: `Sent Telegram message to ${result.customerName}`,
+        details: { key: "telegram_send", params: { name: result.customerName } },
         metadata: { messageId: result.id },
       }),
     },

@@ -99,7 +99,7 @@ export async function sendSmsToCustomer(input: {
         action: 'sms.send',
         entity: 'SmsMessage',
         entityId: result.id,
-        message: `Sent SMS to ${result.customerName} (${result.customerPhone})`,
+        details: { key: 'sms_send', params: { name: result.customerName, phone: result.customerPhone } },
         metadata: { messageId: result.id },
       }),
     }

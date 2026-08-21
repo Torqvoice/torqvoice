@@ -28,7 +28,7 @@ export async function unarchiveVehicle(vehicleId: string) {
         action: 'vehicle.unarchive',
         entity: 'Vehicle',
         entityId: result.vehicleId,
-        message: `Unarchived vehicle ${result.vehicleId}`,
+        details: { key: 'vehicle_unarchive', params: { id: result.vehicleId } },
         metadata: { vehicleId: result.vehicleId },
       }),
     }

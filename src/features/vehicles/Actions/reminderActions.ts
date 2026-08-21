@@ -86,7 +86,7 @@ export async function createReminder(input: unknown) {
         action: 'reminder.create',
         entity: 'Reminder',
         entityId: result.id,
-        message: `Created reminder "${result.title}"`,
+        details: { key: 'reminder_create', params: { title: result.title } },
         metadata: { reminderId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -189,7 +189,7 @@ export async function deleteReminder(reminderId: string) {
         action: 'reminder.delete',
         entity: 'Reminder',
         entityId: result.reminderId,
-        message: `Deleted reminder ${result.reminderId}`,
+        details: { key: 'reminder_delete', params: { id: result.reminderId } },
         metadata: { reminderId: result.reminderId },
       }),
     }

@@ -6,7 +6,6 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { requireTireHotel } from '../Lib/tireHotelSettings'
-import { plural } from '../Lib/auditText'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -113,7 +112,7 @@ export async function addTireSetAttachments(input: unknown) {
         action: 'tire_set.attach',
         entity: 'TireSet',
         entityId: result.tireSetId,
-        message: `Added ${plural(result.added, 'file')} to tire set ${result.reference ?? result.tireSetId}`,
+        details: { key: 'tire_set_attach', params: { count: result.added, ref: result.reference ?? result.tireSetId } },
       }),
     }
   )
@@ -177,7 +176,7 @@ export async function deleteTireSetAttachment(id: string) {
         action: 'tire_set.detach',
         entity: 'TireSet',
         entityId: result.tireSetId,
-        message: `Removed ${result.fileName} from a tire set`,
+        details: { key: 'tire_set_detach', params: { fileName: result.fileName } },
       }),
     }
   )

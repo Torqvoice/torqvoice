@@ -154,7 +154,7 @@ export async function createInventoryPart(input: unknown) {
       action: "inventory.create",
       entity: "InventoryPart",
       entityId: result.id,
-      message: `Created inventory part "${result.name}"`,
+      details: { key: "inventory_create", params: { name: result.name } },
       metadata: { partId: result.id },
     }),
   });
@@ -223,7 +223,7 @@ export async function updateInventoryPart(input: unknown) {
       action: "inventory.update",
       entity: "InventoryPart",
       entityId: result.partId,
-      message: `Updated inventory part ${result.partId}`,
+      details: { key: "inventory_update", params: { id: result.partId } },
       metadata: { partId: result.partId },
     }),
   });
@@ -261,7 +261,7 @@ export async function deleteInventoryPart(partId: string) {
       action: "inventory.delete",
       entity: "InventoryPart",
       entityId: result.partId,
-      message: `Deleted inventory part ${result.partId}`,
+      details: { key: "inventory_delete", params: { id: result.partId } },
       metadata: { partId: result.partId },
     }),
   });
@@ -299,7 +299,7 @@ export async function deleteInventoryParts(partIds: string[]) {
       action: "inventory.bulkDelete",
       entity: "InventoryPart",
       entityId: partIds.join(","),
-      message: `Bulk deleted ${result.deleted} inventory parts`,
+      details: { key: "inventory_bulkDelete", params: { count: result.deleted } },
       metadata: { partIds, deleted: result.deleted },
     }),
   });

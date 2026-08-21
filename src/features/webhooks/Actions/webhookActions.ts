@@ -105,7 +105,7 @@ export async function createWebhook(input: unknown) {
         action: "webhook.create",
         entity: "webhook",
         entityId: result.id,
-        message: `Created webhook ${result.name}`,
+        details: { key: "webhook_create", params: { name: result.name } },
       }),
     },
   );
