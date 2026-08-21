@@ -27,6 +27,13 @@ export interface CardLayout {
   y: number
   w: number
   h: number
+  /**
+   * Set once the user has pulled this card's resize handle. Cards are
+   * otherwise drawn only as tall as their content needs, which would
+   * silently undo the height they just chose; a pinned card keeps `h`
+   * exactly, empty or not.
+   */
+  pinH?: boolean
 }
 
 /**
@@ -170,6 +177,7 @@ function clampCard(stored: CardLayout): CardLayout {
     y: Math.max(0, Math.round(stored.y)),
     w: Math.max(CARD_MIN_W, Math.min(GRID_COLS, Math.round(stored.w))),
     h: Math.max(CARD_MIN_H, Math.min(40, Math.round(stored.h))),
+    ...(stored.pinH === true ? { pinH: true as const } : {}),
   }
 }
 

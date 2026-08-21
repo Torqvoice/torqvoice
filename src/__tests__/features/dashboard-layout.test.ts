@@ -169,3 +169,37 @@ describe('moved defaults', () => {
     expect(normalizeLayout({ version: 1, hidden: [], cards: {} }).version).toBe(LAYOUT_VERSION)
   })
 })
+
+/**
+ * Cards are drawn only as tall as their content needs, so a height the user
+ * set by hand has to survive the round trip or the resize handle looks
+ * broken: it moves, and then the next fitting pass undoes it.
+ */
+describe('pinned heights', () => {
+  it('keeps the pin through a save and load', () => {
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { tireHotel: { x: 6, y: 24, w: 6, h: 7, pinH: true } },
+    })
+
+    expect(layout.cards.tireHotel.pinH).toBe(true)
+    expect(layout.cards.tireHotel.h).toBe(7)
+  })
+
+  it('leaves an unpinned card unpinned', () => {
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { tireHotel: { x: 6, y: 24, w: 6, h: 7 } },
+    })
+
+    expect(layout.cards.tireHotel.pinH).toBeUndefined()
+  })
+
+  it('drops the pin when the layout is reset', () => {
+    for (const id of DASHBOARD_CARD_IDS) {
+      expect(DEFAULT_LAYOUT.cards[id].pinH, `${id} ships pinned`).toBeUndefined()
+    }
+  })
+})

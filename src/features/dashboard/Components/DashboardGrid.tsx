@@ -31,16 +31,17 @@ const SETTLE_MS = 260
  * never interactive.
  *
  * Cards are drawn no taller than they need to be. A stored height is a
- * ceiling, not a target: once the grid has settled, any card with a whole
- * grid row of unused space below its content gives that space back, and a
- * card whose content later outgrows its tile takes it back up to the stored
- * height. `collapsedIds` covers the one case measurement cannot see — an
- * empty state fills its box by design, so it reports no slack — by dropping
- * those cards straight to COLLAPSED_CARD_H.
+ * ceiling, not a target: once the grid has settled, a card takes the rows
+ * its content actually needs, and takes more back if that content grows.
+ * `collapsedIds` covers the one case measurement cannot see — an empty
+ * state fills its box by design, so it measures as exactly full — by
+ * dropping those cards straight to COLLAPSED_CARD_H.
  *
- * Both are display-only: the user's stored height is never overwritten by a
- * height they did not choose, and neither shrinking nor collapsing is paused
- * in edit mode, so opening it never makes the page jump.
+ * Both are display-only and neither pauses in edit mode, so opening it
+ * never makes the page jump. Both also stop the moment the user pulls a
+ * card's resize handle: that card is pinned from then on and keeps the
+ * height they gave it, since a fitting pass that quietly undoes a resize
+ * reads as a broken handle.
  */
 export function DashboardGrid({
   cards,
@@ -77,11 +78,12 @@ export function DashboardGrid({
   /** Heights measurement has settled on, keyed by card id. */
   const [fitted, setFitted] = useState<Record<string, number>>({})
 
-  /** The height a card is actually drawn at, which is never its full one. */
+  /** The height a card is actually drawn at, which is rarely its stored one. */
   const drawnHeight = (id: string) => {
-    const stored = cards[id].h
-    if (collapsed.has(id)) return Math.min(stored, COLLAPSED_CARD_H)
-    return Math.min(stored, fitted[id] ?? stored)
+    const card = cards[id]
+    if (card.pinH) return card.h
+    if (collapsed.has(id)) return Math.min(card.h, COLLAPSED_CARD_H)
+    return Math.min(card.h, fitted[id] ?? card.h)
   }
 
   // Measure once the grid has stopped moving. The answer is absolute rather
@@ -100,7 +102,7 @@ export function DashboardGrid({
         let changed = false
         for (const id of visibleIds) {
           const stored = cards[id]
-          if (!stored || collapsed.has(id)) continue
+          if (!stored || stored.pinH || collapsed.has(id)) continue
           const wrap = root.querySelector<HTMLElement>(`[data-card-id="${CSS.escape(id)}"]`)
           const scroller = wrap && contentRegion(wrap)
           if (!scroller) continue
@@ -142,10 +144,18 @@ export function DashboardGrid({
       // A card is drawn at its fitted height, not its stored one. Coming
       // back at exactly that height means nothing was resized, so keep what
       // is stored; any other value is the user having pulled the handle,
-      // and that is a real choice.
-      const h = item.h === drawnHeight(id) ? prev.h : item.h
-      if (prev.x !== item.x || prev.y !== item.y || prev.w !== item.w || prev.h !== h) {
-        merged[id] = { x: item.x, y: item.y, w: item.w, h }
+      // which both sets the height and pins it against further fitting.
+      const resized = item.h !== drawnHeight(id)
+      const h = resized ? item.h : prev.h
+      const pinH = prev.pinH || resized || undefined
+      if (
+        prev.x !== item.x ||
+        prev.y !== item.y ||
+        prev.w !== item.w ||
+        prev.h !== h ||
+        prev.pinH !== pinH
+      ) {
+        merged[id] = { x: item.x, y: item.y, w: item.w, h, ...(pinH ? { pinH } : {}) }
         changed = true
       }
     }
