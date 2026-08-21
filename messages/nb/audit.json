@@ -135,7 +135,8 @@
     "tire_set_return": "Lagret et sett på nytt",
     "tire_set_dispose": "Kasserte et dekksett",
     "tire_set_attach": "La til filer på et dekksett",
-    "tire_set_detach": "Fjernet en fil fra et dekksett"
+    "tire_set_detach": "Fjernet en fil fra et dekksett",
+    "whatsapp_send": "WhatsApp-melding sendt"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Hentet kjøretøy {id} ut av arkivet",
     "vehicle_update": "Oppdaterte kjøretøy {name}, endret: {fields}",
     "vehicle_updateNoChanges": "Oppdaterte kjøretøy {name}, ingenting endret",
-    "webhook_create": "Opprettet webhook {name}"
+    "webhook_create": "Opprettet webhook {name}",
+    "whatsapp_send": "Sendte en WhatsApp-melding til {name}"
   }
 }

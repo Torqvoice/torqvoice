@@ -135,7 +135,8 @@
     "tire_set_return": "Stored a set again",
     "tire_set_dispose": "Wrote off a tire set",
     "tire_set_attach": "Added files to a tire set",
-    "tire_set_detach": "Removed a file from a tire set"
+    "tire_set_detach": "Removed a file from a tire set",
+    "whatsapp_send": "Sent WhatsApp Message"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Unarchived vehicle {id}",
     "vehicle_update": "Updated vehicle {name}, changed: {fields}",
     "vehicle_updateNoChanges": "Updated vehicle {name}, nothing changed",
-    "webhook_create": "Created webhook {name}"
+    "webhook_create": "Created webhook {name}",
+    "whatsapp_send": "Sent a WhatsApp message to {name}"
   }
 }

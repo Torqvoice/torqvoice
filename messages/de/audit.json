@@ -135,7 +135,8 @@
     "tire_set_return": "Satz erneut eingelagert",
     "tire_set_dispose": "Reifensatz ausgemustert",
     "tire_set_attach": "Dateien zu einem Reifensatz hinzugefügt",
-    "tire_set_detach": "Datei von einem Reifensatz entfernt"
+    "tire_set_detach": "Datei von einem Reifensatz entfernt",
+    "whatsapp_send": "WhatsApp-Nachricht gesendet"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Fahrzeug {id} aus dem Archiv geholt",
     "vehicle_update": "Fahrzeug {name} aktualisiert, geändert: {fields}",
     "vehicle_updateNoChanges": "Fahrzeug {name} aktualisiert, nichts geändert",
-    "webhook_create": "Webhook {name} erstellt"
+    "webhook_create": "Webhook {name} erstellt",
+    "whatsapp_send": "WhatsApp-Nachricht an {name} gesendet"
   }
 }
