@@ -30,6 +30,7 @@ export interface WhatsappProviderOption {
   credentials: WhatsappAdapter['credentials']
   /** Without the validator: functions cannot cross to a client component. */
   template: Omit<WhatsappAdapter['template'], 'validate'>
+  setup: WhatsappAdapter['setup']
 }
 
 export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
@@ -46,5 +47,6 @@ export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
       usesLanguage: adapter.template.usesLanguage,
       mediaAs: adapter.template.mediaAs,
     },
+    setup: adapter.setup,
   }))
 }

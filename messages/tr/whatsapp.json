@@ -64,8 +64,6 @@
       "mediaMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye fotoğraf gönderemezsiniz."
     },
     "test": {
-      "title": "Test ve bağlantıyı kes",
-      "description": "Kurulumu denemek için kendi numaranıza bir mesaj gönderin.",
       "send": "Test gönder",
       "sent": "Test mesajı gönderildi",
       "failed": "Test mesajı gönderilemedi",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "WhatsApp bağlantısını kes",
       "hint": "Kimlik bilgilerini Torqvoice'tan siler. Görüşmeleriniz kalır.",
-      "done": "WhatsApp bağlantısı kesildi"
+      "done": "WhatsApp bağlantısı kesildi",
+      "title": "Bağlantıyı kes"
     },
     "savedIncomplete": "Kaydedildi. Gönderebilmek için hâlâ gerekli: {fields}",
-    "fieldStillNeeded": "Göndermek için hâlâ gerekli"
+    "fieldStillNeeded": "Göndermek için hâlâ gerekli",
+    "steps": {
+      "openProvider": "{provider} aç",
+      "provider": {
+        "title": "Sağlayıcınızı ve numaranızı seçin",
+        "description": "Twilio ile başlamak daha hızlıdır ve Meta tarafını sizin için üstlenir. Meta Cloud API daha ucuzdur ama işletme doğrulamasını siz tamamlarsınız. Müşterilerin göreceği numarayı uluslararası biçimde girin."
+      },
+      "credentials": {
+        "title": "Kimlik bilgilerinizi girin",
+        "description": "Her değeri {provider} üzerinden kopyalayın. Aşağıdaki her alan nerede bulunacağını söyler. Elinizdekileri kaydedin; kalanı için geri dönebilirsiniz."
+      },
+      "webhook": {
+        "title": "Webhook'u kaydedin",
+        "description": "Müşteri mesajlarının Torqvoice'a ulaşması için bu adresi {provider} tarafına yapıştırın. Önce bu sayfayı kaydedin: adres burada kayıtlı olana göre denetlenir.",
+        "open": "{provider} webhook ayarlarını aç",
+        "recheck": "Yeniden denetle",
+        "waiting": "Bu adrese henüz bir şey ulaşmadı. Sağlayıcınız doğruladığı ya da mesaj ilettiği anda yeşile döner.",
+        "seen": "Sağlayıcınız bu adrese ulaştı. Gelen mesajlar Mesajlar'da görünecek."
+      },
+      "templates": {
+        "title": "Şablonlarınızı onaylatın",
+        "description": "Yalnızca 24 saatlik pencerenin dışında ilk yazan taraf olmak için gerekir. Şimdilik atlayıp mesajlaşma çalıştığında dönebilirsiniz.",
+        "open": "{provider} şablonlarını aç"
+      },
+      "test": {
+        "title": "Test mesajı gönderin",
+        "description": "Önce kendi telefonunuzdan WhatsApp numaranıza yazın. Bu, webhook'un çalıştığını kanıtlar ve 24 saatlik pencereyi açar; böylece yanıt için şablon gerekmez."
+      },
+      "back": "Geri",
+      "continue": "Devam"
+    }
   },
   "messages": {
     "featureName": "WhatsApp mesajlaşma",

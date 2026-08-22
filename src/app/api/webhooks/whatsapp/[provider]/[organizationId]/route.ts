@@ -2,6 +2,7 @@ import { notify } from '@/lib/notify'
 import {
   applyWhatsappStatus,
   getWhatsappWebhookContext,
+  markWhatsappWebhookSeen,
   recordInboundWhatsapp,
 } from '@/lib/whatsapp'
 
@@ -31,7 +32,9 @@ export async function GET(request: Request, { params }: RouteParams) {
     return new Response('Forbidden', { status: 403 })
   }
 
-  return resolved.adapter.verify(request, resolved.context)
+  const response = await resolved.adapter.verify(request, resolved.context)
+  if (response.ok) await markWhatsappWebhookSeen(organizationId)
+  return response
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
@@ -47,6 +50,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 
   try {
     const events = await adapter.receive(request, context)
+    await markWhatsappWebhookSeen(organizationId)
 
     for (const status of events.statuses) {
       await applyWhatsappStatus(organizationId, status)

@@ -64,8 +64,6 @@
       "mediaMissing": "Niet ingesteld: je kunt geen foto's sturen naar een klant die de afgelopen 24 uur niets stuurde."
     },
     "test": {
-      "title": "Testen en loskoppelen",
-      "description": "Stuur een bericht naar je eigen nummer om de instelling te controleren.",
       "send": "Test versturen",
       "sent": "Testbericht verstuurd",
       "failed": "Kon het testbericht niet versturen",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "WhatsApp loskoppelen",
       "hint": "Verwijdert de gegevens uit Torqvoice. Je gesprekken blijven bewaard.",
-      "done": "WhatsApp losgekoppeld"
+      "done": "WhatsApp losgekoppeld",
+      "title": "Loskoppelen"
     },
     "savedIncomplete": "Opgeslagen. Nog nodig om te kunnen sturen: {fields}",
-    "fieldStillNeeded": "Nog nodig om te kunnen sturen"
+    "fieldStillNeeded": "Nog nodig om te kunnen sturen",
+    "steps": {
+      "openProvider": "{provider} openen",
+      "provider": {
+        "title": "Kies je provider en nummer",
+        "description": "Twilio is sneller op te zetten en regelt Meta voor je. Meta Cloud API kost minder, maar de bedrijfsverificatie doe je zelf. Vul het nummer in dat klanten zien, in internationaal formaat."
+      },
+      "credentials": {
+        "title": "Vul je gegevens in",
+        "description": "Kopieer elke waarde uit {provider}. Elk veld zegt waar je die vindt. Sla op zodra je ze hebt; voor de rest kom je terug."
+      },
+      "webhook": {
+        "title": "Registreer de webhook",
+        "description": "Plak dit adres in {provider} zodat berichten van klanten bij Torqvoice aankomen. Sla eerst deze pagina op: het adres wordt gecontroleerd tegen wat hier is opgeslagen.",
+        "open": "Webhook-instellingen bij {provider} openen",
+        "recheck": "Opnieuw controleren",
+        "waiting": "Er is nog niets op dit adres binnengekomen. Het wordt groen zodra je provider het verifieert of een bericht aflevert.",
+        "seen": "Je provider heeft dit adres bereikt. Inkomende berichten verschijnen bij Berichten."
+      },
+      "templates": {
+        "title": "Laat je sjablonen goedkeuren",
+        "description": "Alleen nodig om als eerste te schrijven, buiten het venster van 24 uur. Je kunt dit overslaan en terugkomen als berichten werken.",
+        "open": "Sjablonen bij {provider} openen"
+      },
+      "test": {
+        "title": "Stuur een testbericht",
+        "description": "Stuur eerst vanaf je eigen telefoon een bericht naar je WhatsApp-nummer. Dat bewijst dat de webhook werkt en opent een venster van 24 uur, dus een antwoord heeft geen sjabloon nodig."
+      },
+      "back": "Terug",
+      "continue": "Doorgaan"
+    }
   },
   "messages": {
     "featureName": "WhatsApp-berichten",

@@ -166,6 +166,38 @@ export async function getWhatsappWebhookContext(
   }
 }
 
+/**
+ * Records that the provider reached us, once.
+ *
+ * Written on the first verification or delivery and never again: it answers
+ * "did this ever work", not "when was the last message".
+ */
+export async function markWhatsappWebhookSeen(organizationId: string): Promise<void> {
+  const key = ORG_WHATSAPP_KEYS.WHATSAPP_WEBHOOK_SEEN_AT
+  const existing = await db.appSetting.findUnique({
+    where: { organizationId_key: { organizationId, key } },
+    select: { value: true },
+  })
+  if (existing?.value) return
+
+  const owner = await db.appSetting.findFirst({
+    where: { organizationId, key: ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER },
+    select: { userId: true },
+  })
+  if (!owner) return
+
+  await db.appSetting.upsert({
+    where: { organizationId_key: { organizationId, key } },
+    update: { value: new Date().toISOString() },
+    create: {
+      organizationId,
+      key,
+      value: new Date().toISOString(),
+      userId: owner.userId,
+    },
+  })
+}
+
 /** Cheap check for the settings UI and channel pickers. */
 export async function isWhatsappConfigured(organizationId: string): Promise<boolean> {
   return (await getWhatsappConfig(organizationId)) !== null

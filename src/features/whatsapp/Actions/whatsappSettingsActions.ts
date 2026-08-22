@@ -46,6 +46,10 @@ export interface WhatsappSettingsView {
    * workshop to place, e.g. https://app.example.com/api/public/whatsapp-media/
    */
   mediaUrlPrefix: string
+  /** When the provider first reached the webhook, ISO, or null if never. */
+  webhookSeenAt: string | null
+  /** Whether anything has actually been sent or received yet. */
+  hasMessages: boolean
   providers: ReturnType<typeof listWhatsappProviderOptions>
 }
 
@@ -108,6 +112,8 @@ export async function getWhatsappSettings() {
         credentials,
         webhookUrls,
         mediaUrlPrefix: `${appUrl().replace(/\/$/, '')}${WHATSAPP_MEDIA_PATH}/`,
+        webhookSeenAt: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_WEBHOOK_SEEN_AT) ?? null,
+        hasMessages: (await db.whatsappMessage.count({ where: { organizationId } })) > 0,
         providers,
       }
     },

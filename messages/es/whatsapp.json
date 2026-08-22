@@ -64,8 +64,6 @@
       "mediaMissing": "Sin configurar: no puedes enviar fotos a un cliente que no te ha escrito en las últimas 24 horas."
     },
     "test": {
-      "title": "Probar y desconectar",
-      "description": "Envía un mensaje a tu propio número para comprobar la configuración.",
       "send": "Enviar prueba",
       "sent": "Mensaje de prueba enviado",
       "failed": "No se pudo enviar el mensaje de prueba",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "Desconectar WhatsApp",
       "hint": "Elimina las credenciales de Torqvoice. Se conservan tus conversaciones.",
-      "done": "WhatsApp desconectado"
+      "done": "WhatsApp desconectado",
+      "title": "Desconectar"
     },
     "savedIncomplete": "Guardado. Aún falta para poder enviar: {fields}",
-    "fieldStillNeeded": "Aún necesario para enviar"
+    "fieldStillNeeded": "Aún necesario para enviar",
+    "steps": {
+      "openProvider": "Abrir {provider}",
+      "provider": {
+        "title": "Elige proveedor y número",
+        "description": "Twilio se pone en marcha antes y gestiona Meta por ti. Meta Cloud API cuesta menos, pero completas tú su verificación de empresa. Escribe el número que verán los clientes, en formato internacional."
+      },
+      "credentials": {
+        "title": "Introduce tus credenciales",
+        "description": "Copia cada valor desde {provider}. Cada campo indica dónde encontrarlo. Guarda cuando los tengas; puedes volver a por el resto."
+      },
+      "webhook": {
+        "title": "Registra el webhook",
+        "description": "Copia esta dirección en {provider} para que los mensajes de clientes lleguen a Torqvoice. Guarda antes esta página: la dirección se comprueba contra lo guardado aquí.",
+        "open": "Abrir ajustes de webhook en {provider}",
+        "recheck": "Comprobar de nuevo",
+        "waiting": "Todavía no ha llegado nada a esta dirección. Se pondrá en verde en cuanto tu proveedor la verifique o entregue un mensaje.",
+        "seen": "Tu proveedor ha alcanzado esta dirección. Los mensajes entrantes aparecerán en Mensajes."
+      },
+      "templates": {
+        "title": "Aprueba tus plantillas",
+        "description": "Solo hace falta para escribir primero, fuera de la ventana de 24 horas. Puedes saltarlo ahora y volver cuando la mensajería funcione.",
+        "open": "Abrir plantillas de {provider}"
+      },
+      "test": {
+        "title": "Envía un mensaje de prueba",
+        "description": "Escribe primero a tu número de WhatsApp desde tu propio teléfono. Eso prueba el webhook y abre una ventana de 24 horas, así la respuesta no necesita plantilla."
+      },
+      "back": "Atrás",
+      "continue": "Continuar"
+    }
   },
   "messages": {
     "featureName": "Mensajería WhatsApp",

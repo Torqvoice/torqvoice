@@ -64,8 +64,6 @@
       "mediaMissing": "Not set up: you cannot send photos to a customer who has not messaged in the last 24 hours."
     },
     "test": {
-      "title": "Test and disconnect",
-      "description": "Send a message to your own number to check the setup.",
       "send": "Send test",
       "sent": "Test message sent",
       "failed": "Could not send the test message",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "Disconnect WhatsApp",
       "hint": "Removes the credentials from Torqvoice. Your conversations are kept.",
-      "done": "WhatsApp disconnected"
+      "done": "WhatsApp disconnected",
+      "title": "Disconnect"
     },
     "savedIncomplete": "Saved. Still needed before you can send: {fields}",
-    "fieldStillNeeded": "Still needed before you can send"
+    "fieldStillNeeded": "Still needed before you can send",
+    "steps": {
+      "openProvider": "Open {provider}",
+      "provider": {
+        "title": "Choose your provider and number",
+        "description": "Twilio is quicker to start with and handles Meta for you. Meta Cloud API costs less but you complete its business verification yourself. Enter the number customers will see, in international format."
+      },
+      "credentials": {
+        "title": "Enter your credentials",
+        "description": "Copy each value from {provider}. Every field below says exactly where to find it. Save when you have them; you can come back for the rest."
+      },
+      "webhook": {
+        "title": "Register the webhook",
+        "description": "Copy this address into {provider} so messages from customers reach Torqvoice. Save this page first: the address is checked against what is stored here.",
+        "open": "Open {provider} webhook settings",
+        "recheck": "Check again",
+        "waiting": "Nothing has reached this address yet. It turns green the moment your provider verifies it or delivers a message.",
+        "seen": "Your provider has reached this address. Incoming messages will appear in Messages."
+      },
+      "templates": {
+        "title": "Approve your templates",
+        "description": "Only needed to write first, outside the 24 hour window. You can skip this now and come back once messaging works.",
+        "open": "Open {provider} templates"
+      },
+      "test": {
+        "title": "Send a test message",
+        "description": "Message your WhatsApp number from your own phone first. That proves the webhook works and opens a 24 hour window, so a reply needs no template."
+      },
+      "back": "Back",
+      "continue": "Continue"
+    }
   },
   "messages": {
     "featureName": "WhatsApp Messaging",

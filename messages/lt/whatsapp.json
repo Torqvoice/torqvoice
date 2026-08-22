@@ -64,8 +64,6 @@
       "mediaMissing": "Nenustatyta: negalėsite siųsti nuotraukų klientui, kuris nerašė pastarąsias 24 valandas."
     },
     "test": {
-      "title": "Bandymas ir atjungimas",
-      "description": "Nusiųskite žinutę į savo numerį, kad patikrintumėte nustatymus.",
       "send": "Siųsti bandymą",
       "sent": "Bandomoji žinutė išsiųsta",
       "failed": "Nepavyko išsiųsti bandomosios žinutės",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "Atjungti „WhatsApp“",
       "hint": "Pašalina prisijungimo duomenis iš „Torqvoice“. Pokalbiai išlieka.",
-      "done": "„WhatsApp“ atjungtas"
+      "done": "„WhatsApp“ atjungtas",
+      "title": "Atjungti"
     },
     "savedIncomplete": "Įrašyta. Kad galėtumėte siųsti, dar trūksta: {fields}",
-    "fieldStillNeeded": "Dar reikia norint siųsti"
+    "fieldStillNeeded": "Dar reikia norint siųsti",
+    "steps": {
+      "openProvider": "Atidaryti {provider}",
+      "provider": {
+        "title": "Pasirinkite tiekėją ir numerį",
+        "description": "„Twilio“ paleisti greičiau ir jis tvarko „Meta“ už jus. „Meta Cloud API“ kainuoja mažiau, bet verslo patvirtinimą atliekate patys. Įveskite numerį, kurį matys klientai, tarptautiniu formatu."
+      },
+      "credentials": {
+        "title": "Įveskite prisijungimo duomenis",
+        "description": "Nukopijuokite kiekvieną reikšmę iš {provider}. Kiekvienas laukas nurodo, kur ją rasti. Įrašykite, kai turėsite; likusius galėsite pridėti vėliau."
+      },
+      "webhook": {
+        "title": "Užregistruokite webhook",
+        "description": "Nukopijuokite šį adresą į {provider}, kad klientų žinutės pasiektų „Torqvoice“. Pirma įrašykite šį puslapį: adresas tikrinamas pagal tai, kas čia įrašyta.",
+        "open": "Atidaryti {provider} webhook nustatymus",
+        "recheck": "Tikrinti dar kartą",
+        "waiting": "Į šį adresą dar nieko neatėjo. Jis taps žalias, kai tiekėjas jį patvirtins arba pristatys žinutę.",
+        "seen": "Tiekėjas pasiekė šį adresą. Gaunamos žinutės atsiras skiltyje Žinutės."
+      },
+      "templates": {
+        "title": "Patvirtinkite šablonus",
+        "description": "Reikia tik tam, kad rašytumėte pirmi už 24 valandų lango ribų. Galite praleisti ir grįžti, kai susirašinėjimas veiks.",
+        "open": "Atidaryti {provider} šablonus"
+      },
+      "test": {
+        "title": "Išsiųskite bandomąją žinutę",
+        "description": "Pirma parašykite savo „WhatsApp“ numeriu iš savo telefono. Tai įrodo, kad webhook veikia, ir atveria 24 valandų langą, tad atsakymui šablono nereikės."
+      },
+      "back": "Atgal",
+      "continue": "Toliau"
+    }
   },
   "messages": {
     "featureName": "„WhatsApp“ žinutės",

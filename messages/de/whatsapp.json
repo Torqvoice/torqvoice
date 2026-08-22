@@ -64,8 +64,6 @@
       "mediaMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, keine Fotos senden."
     },
     "test": {
-      "title": "Test und Trennen",
-      "description": "Senden Sie eine Nachricht an Ihre eigene Nummer, um die Einrichtung zu prüfen.",
       "send": "Test senden",
       "sent": "Testnachricht gesendet",
       "failed": "Testnachricht konnte nicht gesendet werden",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "WhatsApp trennen",
       "hint": "Entfernt die Zugangsdaten aus Torqvoice. Ihre Konversationen bleiben erhalten.",
-      "done": "WhatsApp getrennt"
+      "done": "WhatsApp getrennt",
+      "title": "Trennen"
     },
     "savedIncomplete": "Gespeichert. Zum Senden fehlt noch: {fields}",
-    "fieldStillNeeded": "Zum Senden noch erforderlich"
+    "fieldStillNeeded": "Zum Senden noch erforderlich",
+    "steps": {
+      "openProvider": "{provider} öffnen",
+      "provider": {
+        "title": "Anbieter und Nummer wählen",
+        "description": "Twilio ist schneller eingerichtet und übernimmt Meta für Sie. Die Meta Cloud API kostet weniger, dafür durchlaufen Sie die Unternehmensverifizierung selbst. Tragen Sie die Nummer ein, die Kunden sehen, im internationalen Format."
+      },
+      "credentials": {
+        "title": "Zugangsdaten eintragen",
+        "description": "Kopieren Sie jeden Wert aus {provider}. Jedes Feld unten sagt genau, wo er zu finden ist. Speichern Sie, sobald Sie sie haben; den Rest können Sie später ergänzen."
+      },
+      "webhook": {
+        "title": "Webhook eintragen",
+        "description": "Kopieren Sie diese Adresse zu {provider}, damit Nachrichten von Kunden bei Torqvoice ankommen. Speichern Sie zuerst diese Seite: Die Adresse wird gegen das hier Gespeicherte geprüft.",
+        "open": "Webhook-Einstellungen bei {provider} öffnen",
+        "recheck": "Erneut prüfen",
+        "waiting": "An dieser Adresse ist noch nichts angekommen. Sie wird grün, sobald Ihr Anbieter sie bestätigt oder eine Nachricht zustellt.",
+        "seen": "Ihr Anbieter hat diese Adresse erreicht. Eingehende Nachrichten erscheinen unter Nachrichten."
+      },
+      "templates": {
+        "title": "Vorlagen freigeben lassen",
+        "description": "Nur nötig, um außerhalb des 24-Stunden-Fensters zuerst zu schreiben. Sie können das überspringen und zurückkommen, sobald der Nachrichtenversand läuft.",
+        "open": "Vorlagen bei {provider} öffnen"
+      },
+      "test": {
+        "title": "Testnachricht senden",
+        "description": "Schreiben Sie zuerst vom eigenen Handy an Ihre WhatsApp-Nummer. Das beweist, dass der Webhook funktioniert, und öffnet ein 24-Stunden-Fenster, sodass eine Antwort keine Vorlage braucht."
+      },
+      "back": "Zurück",
+      "continue": "Weiter"
+    }
   },
   "messages": {
     "featureName": "WhatsApp-Nachrichten",

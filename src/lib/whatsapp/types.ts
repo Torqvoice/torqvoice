@@ -143,6 +143,16 @@ export interface WhatsappTemplateField {
   validate?: (value: string) => string | null
 }
 
+/** Deep links into the provider's own console, one per setup step. */
+export interface WhatsappSetupLinks {
+  /** Where the credentials in this adapter's list are found. */
+  credentials: string
+  /** Where the webhook URL is registered. */
+  webhook: string
+  /** Where approved templates are written. */
+  templates: string
+}
+
 export interface WhatsappAdapter {
   readonly id: string
   readonly label: string
@@ -150,6 +160,7 @@ export interface WhatsappAdapter {
   readonly docsUrl: string
   readonly credentials: readonly WhatsappCredentialField[]
   readonly template: WhatsappTemplateField
+  readonly setup: WhatsappSetupLinks
   /**
    * True when the provider expects the webhook URL to carry our own shared
    * secret, because it signs nothing itself.

@@ -64,6 +64,12 @@ export const twilioAdapter: WhatsappAdapter = {
   docsUrl: 'https://www.twilio.com/docs/whatsapp/quickstart',
   usesWebhookToken: true,
 
+  setup: {
+    credentials: 'https://console.twilio.com/',
+    webhook: 'https://console.twilio.com/us1/develop/sms/senders/whatsapp-senders',
+    templates: 'https://console.twilio.com/us1/develop/sms/content-template-builder',
+  },
+
   template: {
     label: 'Content SID',
     help: 'Twilio approves templates as Content resources. Copy the SID from Twilio Content Template Builder; it starts with HX. A template name will be rejected.',

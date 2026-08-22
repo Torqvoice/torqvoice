@@ -64,8 +64,6 @@
       "mediaMissing": "Não configurado: você não pode enviar fotos para um cliente que não escreve há 24 horas."
     },
     "test": {
-      "title": "Testar e desconectar",
-      "description": "Envie uma mensagem para o seu próprio número para conferir a configuração.",
       "send": "Enviar teste",
       "sent": "Mensagem de teste enviada",
       "failed": "Não foi possível enviar a mensagem de teste",
@@ -74,10 +72,41 @@
     "disconnect": {
       "action": "Desconectar WhatsApp",
       "hint": "Remove as credenciais do Torqvoice. Suas conversas são mantidas.",
-      "done": "WhatsApp desconectado"
+      "done": "WhatsApp desconectado",
+      "title": "Desconectar"
     },
     "savedIncomplete": "Salvo. Ainda falta para poder enviar: {fields}",
-    "fieldStillNeeded": "Ainda necessário para enviar"
+    "fieldStillNeeded": "Ainda necessário para enviar",
+    "steps": {
+      "openProvider": "Abrir {provider}",
+      "provider": {
+        "title": "Escolha o provedor e o número",
+        "description": "O Twilio começa mais rápido e cuida da Meta para você. A Meta Cloud API custa menos, mas a verificação da empresa é você quem faz. Informe o número que os clientes verão, em formato internacional."
+      },
+      "credentials": {
+        "title": "Informe suas credenciais",
+        "description": "Copie cada valor do {provider}. Cada campo diz onde encontrá-lo. Salve quando tiver; dá para voltar depois pelo resto."
+      },
+      "webhook": {
+        "title": "Registre o webhook",
+        "description": "Cole este endereço no {provider} para que as mensagens dos clientes cheguem ao Torqvoice. Salve esta página antes: o endereço é conferido com o que está salvo aqui.",
+        "open": "Abrir configurações de webhook do {provider}",
+        "recheck": "Verificar de novo",
+        "waiting": "Nada chegou a este endereço ainda. Ele fica verde assim que o provedor o verificar ou entregar uma mensagem.",
+        "seen": "Seu provedor alcançou este endereço. As mensagens recebidas aparecerão em Mensagens."
+      },
+      "templates": {
+        "title": "Aprove seus modelos",
+        "description": "Só é preciso para escrever primeiro, fora da janela de 24 horas. Pode pular agora e voltar quando as mensagens funcionarem.",
+        "open": "Abrir modelos do {provider}"
+      },
+      "test": {
+        "title": "Envie uma mensagem de teste",
+        "description": "Mande primeiro uma mensagem do seu celular para o seu número de WhatsApp. Isso prova que o webhook funciona e abre uma janela de 24 horas, então a resposta não precisa de modelo."
+      },
+      "back": "Voltar",
+      "continue": "Continuar"
+    }
   },
   "messages": {
     "featureName": "Mensagens WhatsApp",

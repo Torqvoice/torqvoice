@@ -23,6 +23,12 @@ export const ORG_WHATSAPP_KEYS = {
   WHATSAPP_MEDIA_TEMPLATE_NAME: 'whatsapp.template.media.name',
   WHATSAPP_MEDIA_TEMPLATE_LANGUAGE: 'whatsapp.template.media.language',
   WHATSAPP_MEDIA_TEMPLATE_VARIABLES: 'whatsapp.template.media.variables',
+  /**
+   * When the provider first reached the webhook, either by verifying it or by
+   * delivering something. Proof the plumbing works, which is otherwise
+   * invisible from inside the app.
+   */
+  WHATSAPP_WEBHOOK_SEEN_AT: 'whatsapp.webhookSeenAt',
 } as const
 
 export type OrgWhatsappKey = (typeof ORG_WHATSAPP_KEYS)[keyof typeof ORG_WHATSAPP_KEYS]
