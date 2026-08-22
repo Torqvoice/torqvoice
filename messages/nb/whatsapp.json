@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Medie-URL for malen din",
       "mediaUrlHint": "Lim dette inn i malens mediefelt og bytt ut n med nummeret til bildeverdien.",
       "mediaUrlCopy": "Kopier medie-URL",
-      "mediaUrlCopied": "Medie-URL kopiert"
+      "mediaUrlCopied": "Medie-URL kopiert",
+      "mediaUrlSample": "Som eksempelverdi hos leverandøren, bruk: sample"
     },
     "test": {
       "title": "Test og koble fra",

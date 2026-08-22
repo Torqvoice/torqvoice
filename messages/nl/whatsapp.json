@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Media-URL voor je sjabloon",
       "mediaUrlHint": "Plak dit in het mediaveld van het sjabloon en vervang n door het nummer van de fotowaarde.",
       "mediaUrlCopy": "Media-URL kopiëren",
-      "mediaUrlCopied": "Media-URL gekopieerd"
+      "mediaUrlCopied": "Media-URL gekopieerd",
+      "mediaUrlSample": "Gebruik als voorbeeldwaarde bij de provider: sample"
     },
     "test": {
       "title": "Testen en loskoppelen",

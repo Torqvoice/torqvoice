@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Adres media dla szablonu",
       "mediaUrlHint": "Wklej to w pole media szablonu i zastąp n numerem wartości zdjęcia.",
       "mediaUrlCopy": "Kopiuj adres media",
-      "mediaUrlCopied": "Adres media skopiowany"
+      "mediaUrlCopied": "Adres media skopiowany",
+      "mediaUrlSample": "Jako wartość przykładową u dostawcy użyj: sample"
     },
     "test": {
       "title": "Test i rozłączenie",

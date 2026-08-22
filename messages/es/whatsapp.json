@@ -52,7 +52,8 @@
       "mediaUrlLabel": "URL de medios para tu plantilla",
       "mediaUrlHint": "Pega esto en el campo de medios de la plantilla y sustituye n por el número del valor de la foto.",
       "mediaUrlCopy": "Copiar URL de medios",
-      "mediaUrlCopied": "URL de medios copiada"
+      "mediaUrlCopied": "URL de medios copiada",
+      "mediaUrlSample": "Como valor de muestra en el proveedor, usa: sample"
     },
     "test": {
       "title": "Probar y desconectar",

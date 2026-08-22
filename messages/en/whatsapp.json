@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Media URL for your template",
       "mediaUrlHint": "Paste this into the template's media field and replace n with the number of the photo value.",
       "mediaUrlCopy": "Copy media URL",
-      "mediaUrlCopied": "Media URL copied"
+      "mediaUrlCopied": "Media URL copied",
+      "mediaUrlSample": "For the provider's sample value, use: sample"
     },
     "test": {
       "title": "Test and disconnect",

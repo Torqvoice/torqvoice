@@ -308,6 +308,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">{t('template.mediaUrlHint')}</p>
+                  <p className="text-xs text-muted-foreground">{t('template.mediaUrlSample')}</p>
                 </div>
               )}
             </div>

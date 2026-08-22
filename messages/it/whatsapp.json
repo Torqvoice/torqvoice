@@ -52,7 +52,8 @@
       "mediaUrlLabel": "URL del media per il tuo modello",
       "mediaUrlHint": "Incolla questo nel campo media del modello e sostituisci n con il numero del valore foto.",
       "mediaUrlCopy": "Copia URL del media",
-      "mediaUrlCopied": "URL del media copiato"
+      "mediaUrlCopied": "URL del media copiato",
+      "mediaUrlSample": "Come valore di esempio presso il provider, usa: sample"
     },
     "test": {
       "title": "Prova e disconnetti",

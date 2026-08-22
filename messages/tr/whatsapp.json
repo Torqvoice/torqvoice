@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Şablonunuz için medya adresi",
       "mediaUrlHint": "Bunu şablonun medya alanına yapıştırın ve n yerine fotoğraf değerinin numarasını yazın.",
       "mediaUrlCopy": "Medya adresini kopyala",
-      "mediaUrlCopied": "Medya adresi kopyalandı"
+      "mediaUrlCopied": "Medya adresi kopyalandı",
+      "mediaUrlSample": "Sağlayıcıdaki örnek değer olarak şunu kullanın: sample"
     },
     "test": {
       "title": "Test ve bağlantıyı kes",

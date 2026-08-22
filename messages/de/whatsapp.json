@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Medien-URL für Ihre Vorlage",
       "mediaUrlHint": "Fügen Sie dies in das Medienfeld der Vorlage ein und ersetzen Sie n durch die Nummer des Foto-Werts.",
       "mediaUrlCopy": "Medien-URL kopieren",
-      "mediaUrlCopied": "Medien-URL kopiert"
+      "mediaUrlCopied": "Medien-URL kopiert",
+      "mediaUrlSample": "Als Beispielwert beim Anbieter verwenden: sample"
     },
     "test": {
       "title": "Test und Trennen",

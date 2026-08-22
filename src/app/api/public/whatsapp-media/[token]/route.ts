@@ -14,6 +14,14 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
  * organization's own folder.
  */
 
+/** The one unsigned address this route serves, for template approval. */
+const SAMPLE_TOKEN = 'sample'
+
+/** A small grey square: enough for a reviewer to see the media loads. */
+const SAMPLE_IMAGE_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAP0lEQVR4nO3QMQEAAAgDoC251a3gLQ' +
+  '8UoNPMzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OTgcXegcBK3d4hAAAAABJRU5ErkJggg=='
+
 const CONTENT_TYPES: Record<string, string> = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -25,6 +33,15 @@ const CONTENT_TYPES: Record<string, string> = {
 
 export async function GET(_request: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
+
+  // Template approval fetches the sample value a provider was given, and a
+  // made-up token would 403 and fail the review. This one address answers with
+  // a placeholder image so a workshop can use it as its sample.
+  if (token === SAMPLE_TOKEN) {
+    return new Response(new Uint8Array(Buffer.from(SAMPLE_IMAGE_BASE64, 'base64')), {
+      headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=86400' },
+    })
+  }
 
   const claim = verifyWhatsappMediaToken(token)
   if (!claim) {

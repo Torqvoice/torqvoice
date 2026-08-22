@@ -52,7 +52,8 @@
       "mediaUrlLabel": "Medijos URL jūsų šablonui",
       "mediaUrlHint": "Įklijuokite tai į šablono medijos lauką ir pakeiskite n nuotraukos reikšmės numeriu.",
       "mediaUrlCopy": "Kopijuoti medijos URL",
-      "mediaUrlCopied": "Medijos URL nukopijuotas"
+      "mediaUrlCopied": "Medijos URL nukopijuotas",
+      "mediaUrlSample": "Kaip pavyzdinę reikšmę pas tiekėją naudokite: sample"
     },
     "test": {
       "title": "Bandymas ir atjungimas",
