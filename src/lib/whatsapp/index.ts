@@ -144,6 +144,29 @@ export async function isWithinServiceWindow(
  * an `/api/protected/files/...` link would arrive as a 401 and the customer
  * would receive an empty message. Anything already absolute is left alone.
  */
+/** Where a signed photo is served from, minus the token itself. */
+export const WHATSAPP_MEDIA_PATH = '/api/public/whatsapp-media'
+
+function appBaseUrl(): string {
+  const base = process.env.NEXT_PUBLIC_APP_URL
+  if (!base) {
+    throw new Error('NEXT_PUBLIC_APP_URL must be set before WhatsApp can send attachments.')
+  }
+  return base.replace(/\/$/, '')
+}
+
+/**
+ * The token naming one photo, or undefined when there is nothing to sign.
+ *
+ * A media template cannot take a bare variable where its URL goes: providers
+ * validate that field as a real URL, so the workshop pastes our prefix and the
+ * variable supplies only the last segment.
+ */
+function mediaTokenFor(organizationId: string, mediaUrl: string | undefined): string | undefined {
+  if (!mediaUrl || /^https?:\/\//i.test(mediaUrl)) return undefined
+  return signWhatsappMediaToken({ fileUrl: mediaUrl, organizationId })
+}
+
 function toProviderMediaUrl(
   organizationId: string,
   mediaUrl: string | undefined
@@ -151,13 +174,8 @@ function toProviderMediaUrl(
   if (!mediaUrl) return undefined
   if (/^https?:\/\//i.test(mediaUrl)) return mediaUrl
 
-  const base = process.env.NEXT_PUBLIC_APP_URL
-  if (!base) {
-    throw new Error('NEXT_PUBLIC_APP_URL must be set before WhatsApp can send attachments.')
-  }
-
-  const token = signWhatsappMediaToken({ fileUrl: mediaUrl, organizationId })
-  return `${base.replace(/\/$/, '')}/api/public/whatsapp-media/${token}`
+  const token = mediaTokenFor(organizationId, mediaUrl)
+  return token ? `${appBaseUrl()}${WHATSAPP_MEDIA_PATH}/${token}` : undefined
 }
 
 export interface SendWhatsappOptions {
@@ -278,7 +296,8 @@ async function templateFor(
     organizationId: config.organizationId,
     customerId: options.customerId,
     body: options.body,
-    mediaUrl: providerMediaUrl,
+    // Only the token: the template already carries the rest of the URL.
+    mediaToken: mediaTokenFor(config.organizationId, options.mediaUrl),
     relatedEntityType: options.relatedEntityType,
     relatedEntityId: options.relatedEntityId,
   })

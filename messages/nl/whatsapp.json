@@ -48,7 +48,11 @@
         "photo": "de bijgevoegde foto"
       },
       "variablesEmpty": "Nog geen waarden. Voeg ze hieronder toe, in de volgorde die je sjabloon verwacht.",
-      "variablesRemove": "{name} verwijderen"
+      "variablesRemove": "{name} verwijderen",
+      "mediaUrlLabel": "Media-URL voor je sjabloon",
+      "mediaUrlHint": "Plak dit in het mediaveld van het sjabloon en vervang n door het nummer van de fotowaarde.",
+      "mediaUrlCopy": "Media-URL kopiëren",
+      "mediaUrlCopied": "Media-URL gekopieerd"
     },
     "test": {
       "title": "Testen en loskoppelen",

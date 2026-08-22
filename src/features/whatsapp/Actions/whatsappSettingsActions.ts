@@ -15,7 +15,7 @@ import {
   whatsappCredentialKey,
 } from '../Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter, listWhatsappProviderOptions } from '@/lib/whatsapp/registry'
-import { sendOrgWhatsapp } from '@/lib/whatsapp'
+import { sendOrgWhatsapp, WHATSAPP_MEDIA_PATH } from '@/lib/whatsapp'
 import { TEMPLATE_TOKENS, unknownTemplateTokens } from '../Schema/templateTokens'
 
 /** Stands in for a stored secret, so the real one never reaches the browser. */
@@ -32,6 +32,11 @@ export interface WhatsappSettingsView {
   credentials: Record<string, Record<string, string>>
   /** Where the provider should post, ready to paste into its console. */
   webhookUrl: string | null
+  /**
+   * What a media template's URL field needs, with the variable left for the
+   * workshop to place, e.g. https://app.example.com/api/public/whatsapp-media/
+   */
+  mediaUrlPrefix: string
   providers: ReturnType<typeof listWhatsappProviderOptions>
 }
 
@@ -84,6 +89,7 @@ export async function getWhatsappSettings() {
         templateLanguage: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE) ?? '',
         credentials,
         webhookUrl: providerId ? webhookUrlFor(organizationId, providerId, token) : null,
+        mediaUrlPrefix: `${appUrl().replace(/\/$/, '')}${WHATSAPP_MEDIA_PATH}/`,
         providers,
       }
     },

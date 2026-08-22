@@ -48,7 +48,11 @@
         "photo": "pridėta nuotrauka"
       },
       "variablesEmpty": "Reikšmių dar nėra. Pridėkite jas žemiau tokia tvarka, kokios tikisi šablonas.",
-      "variablesRemove": "Pašalinti {name}"
+      "variablesRemove": "Pašalinti {name}",
+      "mediaUrlLabel": "Medijos URL jūsų šablonui",
+      "mediaUrlHint": "Įklijuokite tai į šablono medijos lauką ir pakeiskite n nuotraukos reikšmės numeriu.",
+      "mediaUrlCopy": "Kopijuoti medijos URL",
+      "mediaUrlCopied": "Medijos URL nukopijuotas"
     },
     "test": {
       "title": "Bandymas ir atjungimas",

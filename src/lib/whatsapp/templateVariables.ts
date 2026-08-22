@@ -24,8 +24,11 @@ export interface TemplateContext {
   customerId?: string
   /** What the mechanic typed, for the token that carries it. */
   body?: string
-  /** The signed, publicly fetchable URL of an attached photo. */
-  mediaUrl?: string
+  /**
+   * The signed token naming an attached photo. Templates hold the URL prefix
+   * themselves, because providers reject a media field that is only a variable.
+   */
+  mediaToken?: string
   relatedEntityType?: string
   relatedEntityId?: string
 }
@@ -47,7 +50,7 @@ export async function resolveTemplateVariables(
   const values: Partial<Record<TemplateToken, string>> = {}
 
   if (needs.has('message') && context.body) values.message = context.body
-  if (needs.has('photo') && context.mediaUrl) values.photo = context.mediaUrl
+  if (needs.has('photo') && context.mediaToken) values.photo = context.mediaToken
 
   if ((needs.has('customer') || needs.has('vehicle') || needs.has('plate')) && context.customerId) {
     const customer = await db.customer.findFirst({

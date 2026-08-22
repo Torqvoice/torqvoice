@@ -280,6 +280,35 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
               <Label>{t('template.variablesLabel')}</Label>
               <TemplateVariablePicker value={templateVariables} onChange={setTemplateVariables} />
               <p className="text-xs text-muted-foreground">{t('template.variablesHint')}</p>
+
+              {/* A media template's URL field is validated as a real URL, so
+                  the workshop pastes this prefix and puts the variable at the
+                  end rather than using the variable alone. */}
+              {templateVariables.includes('photo') && (
+                <div className="space-y-1 rounded-lg border border-dashed bg-muted/30 p-3">
+                  <p className="text-xs font-medium">{t('template.mediaUrlLabel')}</p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      readOnly
+                      value={`${initial.mediaUrlPrefix}{{n}}`}
+                      className="font-mono text-xs"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${initial.mediaUrlPrefix}{{n}}`)
+                        toast.success(t('template.mediaUrlCopied'))
+                      }}
+                      aria-label={t('template.mediaUrlCopy')}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{t('template.mediaUrlHint')}</p>
+                </div>
+              )}
             </div>
 
             {provider?.template.usesLanguage !== false && (

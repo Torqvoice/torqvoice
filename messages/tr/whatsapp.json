@@ -48,7 +48,11 @@
         "photo": "eklenen fotoğraf"
       },
       "variablesEmpty": "Henüz değer yok. Şablonunuzun beklediği sırayla aşağıdan ekleyin.",
-      "variablesRemove": "{name} kaldır"
+      "variablesRemove": "{name} kaldır",
+      "mediaUrlLabel": "Şablonunuz için medya adresi",
+      "mediaUrlHint": "Bunu şablonun medya alanına yapıştırın ve n yerine fotoğraf değerinin numarasını yazın.",
+      "mediaUrlCopy": "Medya adresini kopyala",
+      "mediaUrlCopied": "Medya adresi kopyalandı"
     },
     "test": {
       "title": "Test ve bağlantıyı kes",

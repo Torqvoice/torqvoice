@@ -48,7 +48,11 @@
         "photo": "la photo jointe"
       },
       "variablesEmpty": "Aucune valeur pour l'instant. Ajoutez-les ci-dessous, dans l'ordre attendu par votre modèle.",
-      "variablesRemove": "Retirer {name}"
+      "variablesRemove": "Retirer {name}",
+      "mediaUrlLabel": "URL du média pour votre modèle",
+      "mediaUrlHint": "Collez ceci dans le champ média du modèle et remplacez n par le numéro de la valeur photo.",
+      "mediaUrlCopy": "Copier l'URL du média",
+      "mediaUrlCopied": "URL du média copiée"
     },
     "test": {
       "title": "Tester et déconnecter",

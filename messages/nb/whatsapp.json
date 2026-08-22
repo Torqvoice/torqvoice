@@ -48,7 +48,11 @@
         "photo": "bildet du legger ved"
       },
       "variablesEmpty": "Ingen verdier ennå. Legg dem til under, i rekkefølgen malen forventer.",
-      "variablesRemove": "Fjern {name}"
+      "variablesRemove": "Fjern {name}",
+      "mediaUrlLabel": "Medie-URL for malen din",
+      "mediaUrlHint": "Lim dette inn i malens mediefelt og bytt ut n med nummeret til bildeverdien.",
+      "mediaUrlCopy": "Kopier medie-URL",
+      "mediaUrlCopied": "Medie-URL kopiert"
     },
     "test": {
       "title": "Test og koble fra",

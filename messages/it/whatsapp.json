@@ -48,7 +48,11 @@
         "photo": "la foto allegata"
       },
       "variablesEmpty": "Ancora nessun valore. Aggiungili sotto, nell'ordine che il modello si aspetta.",
-      "variablesRemove": "Rimuovi {name}"
+      "variablesRemove": "Rimuovi {name}",
+      "mediaUrlLabel": "URL del media per il tuo modello",
+      "mediaUrlHint": "Incolla questo nel campo media del modello e sostituisci n con il numero del valore foto.",
+      "mediaUrlCopy": "Copia URL del media",
+      "mediaUrlCopied": "URL del media copiato"
     },
     "test": {
       "title": "Prova e disconnetti",

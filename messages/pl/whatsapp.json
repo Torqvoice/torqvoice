@@ -48,7 +48,11 @@
         "photo": "dołączone zdjęcie"
       },
       "variablesEmpty": "Brak wartości. Dodaj je poniżej, w kolejności oczekiwanej przez szablon.",
-      "variablesRemove": "Usuń {name}"
+      "variablesRemove": "Usuń {name}",
+      "mediaUrlLabel": "Adres media dla szablonu",
+      "mediaUrlHint": "Wklej to w pole media szablonu i zastąp n numerem wartości zdjęcia.",
+      "mediaUrlCopy": "Kopiuj adres media",
+      "mediaUrlCopied": "Adres media skopiowany"
     },
     "test": {
       "title": "Test i rozłączenie",

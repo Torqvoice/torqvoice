@@ -48,7 +48,11 @@
         "photo": "das angehängte Foto"
       },
       "variablesEmpty": "Noch keine Werte. Unten in der Reihenfolge Ihrer Vorlage hinzufügen.",
-      "variablesRemove": "{name} entfernen"
+      "variablesRemove": "{name} entfernen",
+      "mediaUrlLabel": "Medien-URL für Ihre Vorlage",
+      "mediaUrlHint": "Fügen Sie dies in das Medienfeld der Vorlage ein und ersetzen Sie n durch die Nummer des Foto-Werts.",
+      "mediaUrlCopy": "Medien-URL kopieren",
+      "mediaUrlCopied": "Medien-URL kopiert"
     },
     "test": {
       "title": "Test und Trennen",

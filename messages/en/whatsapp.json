@@ -48,7 +48,11 @@
         "photo": "the attached photo"
       },
       "variablesEmpty": "No values yet. Add them below, in the order your template expects.",
-      "variablesRemove": "Remove {name}"
+      "variablesRemove": "Remove {name}",
+      "mediaUrlLabel": "Media URL for your template",
+      "mediaUrlHint": "Paste this into the template's media field and replace n with the number of the photo value.",
+      "mediaUrlCopy": "Copy media URL",
+      "mediaUrlCopied": "Media URL copied"
     },
     "test": {
       "title": "Test and disconnect",
