@@ -13,6 +13,7 @@ import {
   ORG_WHATSAPP_KEYS,
   WHATSAPP_WEBHOOK_TOKEN_FIELD,
   whatsappCredentialKey,
+  whatsappTemplateKey,
 } from '../Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter, listWhatsappProviderOptions } from '@/lib/whatsapp/registry'
 import { sendOrgWhatsapp, WHATSAPP_MEDIA_PATH } from '@/lib/whatsapp'
@@ -21,16 +22,18 @@ import { TEMPLATE_TOKENS, unknownTemplateTokens } from '../Schema/templateTokens
 /** Stands in for a stored secret, so the real one never reaches the browser. */
 const SECRET_MASK = '••••••••••••••••'
 
+export interface TemplateFields {
+  name: string
+  language: string
+  variables: string
+}
+
 export interface WhatsappSettingsView {
   enabled: boolean
   provider: string | null
   from: string
-  templateName: string
-  templateLanguage: string
-  templateVariables: string
-  mediaTemplateName: string
-  mediaTemplateLanguage: string
-  mediaTemplateVariables: string
+  /** Per provider, then per kind: the identifiers are provider-shaped. */
+  templates: Record<string, { text: TemplateFields; media: TemplateFields }>
   /** Per provider, field name to value, with secrets masked. */
   credentials: Record<string, Record<string, string>>
   /**
@@ -66,6 +69,36 @@ function webhookUrlFor(organizationId: string, providerId: string, token?: strin
   return token ? `${base}?token=${token}` : base
 }
 
+/**
+ * One template's fields for one provider, falling back to the flat keys used
+ * before templates were namespaced.
+ */
+function readTemplateFields(
+  settings: Map<string, string>,
+  provider: string,
+  kind: 'text' | 'media'
+): TemplateFields {
+  const legacy = {
+    text: {
+      name: ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME,
+      language: ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE,
+      variables: ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES,
+    },
+    media: {
+      name: ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME,
+      language: ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE,
+      variables: ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES,
+    },
+  } as const
+  const wasThisProvider = settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER) === provider
+
+  const read = (field: 'name' | 'language' | 'variables') =>
+    settings.get(whatsappTemplateKey(provider, kind, field)) ??
+    (wasThisProvider ? (settings.get(legacy[kind][field]) ?? '') : '')
+
+  return { name: read('name'), language: read('language'), variables: read('variables') }
+}
+
 export async function getWhatsappSettings() {
   return withAuth(
     async ({ organizationId }): Promise<WhatsappSettingsView> => {
@@ -87,6 +120,14 @@ export async function getWhatsappSettings() {
         credentials[provider.id] = fields
       }
 
+      const templates: WhatsappSettingsView['templates'] = {}
+      for (const provider of providers) {
+        templates[provider.id] = {
+          text: readTemplateFields(settings, provider.id, 'text'),
+          media: readTemplateFields(settings, provider.id, 'media'),
+        }
+      }
+
       const providerId = settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER) ?? null
 
       const webhookUrls: Record<string, string> = {}
@@ -101,14 +142,7 @@ export async function getWhatsappSettings() {
         enabled: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_ENABLED) === 'true',
         provider: providerId,
         from: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_FROM) ?? '',
-        templateName: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME) ?? '',
-        templateVariables: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES) ?? '',
-        mediaTemplateName: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME) ?? '',
-        mediaTemplateLanguage:
-          settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE) ?? '',
-        mediaTemplateVariables:
-          settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES) ?? '',
-        templateLanguage: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE) ?? '',
+        templates,
         credentials,
         webhookUrls,
         mediaUrlPrefix: `${appUrl().replace(/\/$/, '')}${WHATSAPP_MEDIA_PATH}/`,
@@ -151,13 +185,14 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
         [ORG_WHATSAPP_KEYS.WHATSAPP_ENABLED]: input.enabled ? 'true' : 'false',
         [ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER]: adapter.id,
         [ORG_WHATSAPP_KEYS.WHATSAPP_FROM]: input.from.trim(),
-        [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME]: input.templateName?.trim() ?? '',
-        [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE]: input.templateLanguage?.trim() ?? '',
-        [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES]: input.templateVariables?.trim() ?? '',
-        [ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME]: input.mediaTemplateName?.trim() ?? '',
-        [ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE]:
+        [whatsappTemplateKey(adapter.id, 'text', 'name')]: input.templateName?.trim() ?? '',
+        [whatsappTemplateKey(adapter.id, 'text', 'language')]: input.templateLanguage?.trim() ?? '',
+        [whatsappTemplateKey(adapter.id, 'text', 'variables')]:
+          input.templateVariables?.trim() ?? '',
+        [whatsappTemplateKey(adapter.id, 'media', 'name')]: input.mediaTemplateName?.trim() ?? '',
+        [whatsappTemplateKey(adapter.id, 'media', 'language')]:
           input.mediaTemplateLanguage?.trim() ?? '',
-        [ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES]:
+        [whatsappTemplateKey(adapter.id, 'media', 'variables')]:
           input.mediaTemplateVariables?.trim() ?? '',
       }
 

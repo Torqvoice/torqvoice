@@ -34,6 +34,24 @@ export const ORG_WHATSAPP_KEYS = {
 export type OrgWhatsappKey = (typeof ORG_WHATSAPP_KEYS)[keyof typeof ORG_WHATSAPP_KEYS]
 export const ALL_ORG_WHATSAPP_KEYS = Object.values(ORG_WHATSAPP_KEYS)
 
+const TEMPLATE_PREFIX = 'whatsapp.tpl.'
+
+/**
+ * Setting key for one field of one template, per provider.
+ *
+ * Namespaced like credentials because the identifiers are provider-shaped: a
+ * Twilio Content SID means nothing to Meta, and sharing one field between them
+ * meant switching provider carried the other one's value along and failed its
+ * validation.
+ */
+export function whatsappTemplateKey(
+  provider: string,
+  kind: 'text' | 'media',
+  field: 'name' | 'language' | 'variables'
+): string {
+  return `${TEMPLATE_PREFIX}${provider}.${kind}.${field}`
+}
+
 const CREDENTIAL_PREFIX = 'whatsapp.cred.'
 
 /** Setting key holding one credential field for one provider. */

@@ -71,14 +71,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   const [enabled, setEnabled] = useState(initial.enabled)
   const [providerId, setProviderId] = useState(initial.provider ?? initial.providers[0]?.id ?? '')
   const [from, setFrom] = useState(initial.from)
-  const [templateName, setTemplateName] = useState(initial.templateName)
-  const [templateLanguage, setTemplateLanguage] = useState(initial.templateLanguage)
-  const [templateVariables, setTemplateVariables] = useState(initial.templateVariables)
-  const [mediaTemplateName, setMediaTemplateName] = useState(initial.mediaTemplateName)
-  const [mediaTemplateLanguage, setMediaTemplateLanguage] = useState(initial.mediaTemplateLanguage)
-  const [mediaTemplateVariables, setMediaTemplateVariables] = useState(
-    initial.mediaTemplateVariables
-  )
+  const [templates, setTemplates] = useState(initial.templates)
   const [credentials, setCredentials] = useState(initial.credentials)
   const [revealed, setRevealed] = useState<Record<string, boolean>>({})
   const [missing, setMissing] = useState<string[]>([])
@@ -92,6 +85,24 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
     [initial.providers, providerId]
   )
   const webhookUrl = webhookUrls[providerId] ?? ''
+  const blankTemplate = { name: '', language: '', variables: '' }
+  const template = templates[providerId]?.text ?? blankTemplate
+  const mediaTemplate = templates[providerId]?.media ?? blankTemplate
+
+  const setTemplate = (
+    kind: 'text' | 'media',
+    field: keyof typeof blankTemplate,
+    value: string
+  ) => {
+    setTemplates((previous) => ({
+      ...previous,
+      [providerId]: {
+        text: previous[providerId]?.text ?? blankTemplate,
+        media: previous[providerId]?.media ?? blankTemplate,
+        [kind]: { ...(previous[providerId]?.[kind] ?? blankTemplate), [field]: value },
+      },
+    }))
+  }
 
   const credentialsDone = Boolean(
     provider?.credentials
@@ -103,7 +114,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
     { step: 1, key: 'provider', done: Boolean(providerId && from.trim()) },
     { step: 2, key: 'credentials', done: credentialsDone },
     { step: 3, key: 'webhook', done: Boolean(initial.webhookSeenAt) },
-    { step: 4, key: 'templates', done: Boolean(initial.templateName || initial.mediaTemplateName) },
+    { step: 4, key: 'templates', done: Boolean(template.name || mediaTemplate.name) },
     { step: 5, key: 'test', done: initial.hasMessages },
   ] as const
   const lastStep = stepList.length
@@ -123,12 +134,12 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
         enabled,
         provider: provider.id,
         from,
-        templateName,
-        templateLanguage,
-        templateVariables,
-        mediaTemplateName,
-        mediaTemplateLanguage,
-        mediaTemplateVariables,
+        templateName: template.name,
+        templateLanguage: template.language,
+        templateVariables: template.variables,
+        mediaTemplateName: mediaTemplate.name,
+        mediaTemplateLanguage: mediaTemplate.language,
+        mediaTemplateVariables: mediaTemplate.variables,
         credentials: credentials[provider.id] ?? {},
       })
 
@@ -399,23 +410,23 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                       <TemplateSetupFields
                         kind="text"
                         provider={provider}
-                        name={templateName}
-                        onName={setTemplateName}
-                        language={templateLanguage}
-                        onLanguage={setTemplateLanguage}
-                        variables={templateVariables}
-                        onVariables={setTemplateVariables}
+                        name={template.name}
+                        onName={(value) => setTemplate('text', 'name', value)}
+                        language={template.language}
+                        onLanguage={(value) => setTemplate('text', 'language', value)}
+                        variables={template.variables}
+                        onVariables={(value) => setTemplate('text', 'variables', value)}
                       />
 
                       <TemplateSetupFields
                         kind="media"
                         provider={provider}
-                        name={mediaTemplateName}
-                        onName={setMediaTemplateName}
-                        language={mediaTemplateLanguage}
-                        onLanguage={setMediaTemplateLanguage}
-                        variables={mediaTemplateVariables}
-                        onVariables={setMediaTemplateVariables}
+                        name={mediaTemplate.name}
+                        onName={(value) => setTemplate('media', 'name', value)}
+                        language={mediaTemplate.language}
+                        onLanguage={(value) => setTemplate('media', 'language', value)}
+                        variables={mediaTemplate.variables}
+                        onVariables={(value) => setTemplate('media', 'variables', value)}
                         mediaUrlPrefix={initial.mediaUrlPrefix}
                       />
                     </>

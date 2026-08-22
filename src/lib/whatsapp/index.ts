@@ -6,6 +6,7 @@ import {
   ORG_WHATSAPP_KEYS,
   WHATSAPP_WEBHOOK_TOKEN_FIELD,
   whatsappCredentialKey,
+  whatsappTemplateKey,
 } from '@/features/whatsapp/Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter } from './registry'
 import { signWhatsappMediaToken } from './media-link'
@@ -94,24 +95,52 @@ export async function getWhatsappConfig(organizationId: string): Promise<Whatsap
   const missing = adapter.credentials.filter((field) => field.required && !credentials[field.key])
   if (missing.length > 0) return null
 
-  const templateName = settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME)
-  const templateLanguage = settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE)
-
   return {
     organizationId,
     adapter,
     context: { organizationId, from, credentials },
     template: templateSetup(
-      templateName,
-      templateLanguage,
-      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES)
+      readTemplate(settings, adapter.id, 'text', 'name'),
+      readTemplate(settings, adapter.id, 'text', 'language'),
+      readTemplate(settings, adapter.id, 'text', 'variables')
     ),
     mediaTemplate: templateSetup(
-      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME),
-      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE),
-      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES)
+      readTemplate(settings, adapter.id, 'media', 'name'),
+      readTemplate(settings, adapter.id, 'media', 'language'),
+      readTemplate(settings, adapter.id, 'media', 'variables')
     ),
   }
+}
+
+/**
+ * A template field for one provider, falling back to the flat keys used before
+ * templates were namespaced, so an existing setup keeps working.
+ */
+function readTemplate(
+  settings: Map<string, string>,
+  provider: string,
+  kind: 'text' | 'media',
+  field: 'name' | 'language' | 'variables'
+): string | undefined {
+  const namespaced = settings.get(whatsappTemplateKey(provider, kind, field))
+  if (namespaced !== undefined) return namespaced
+
+  const legacy = {
+    text: {
+      name: ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME,
+      language: ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE,
+      variables: ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES,
+    },
+    media: {
+      name: ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME,
+      language: ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE,
+      variables: ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES,
+    },
+  } as const
+
+  // Only for the provider the workshop was using when those keys were written.
+  if (settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER) !== provider) return undefined
+  return settings.get(legacy[kind][field])
 }
 
 function templateSetup(
