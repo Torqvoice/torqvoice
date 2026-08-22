@@ -38,7 +38,7 @@
       "languageLabel": "Język szablonu",
       "languageHint": "Kod języka, w którym szablon zatwierdzono, na przykład pl.",
       "variablesLabel": "Wartości szablonu, po kolei",
-      "variablesHint": "Które wartości wypełniają numerowane miejsca w szablonie, oddzielone przecinkami. Dostępne: customer, vehicle, plate, message, workshop. Zostaw puste, jeśli szablon ich nie ma.",
+      "variablesHint": "Wybierz wartości wypełniające numerowane miejsca w szablonie, w tej samej kolejności. Zostaw puste, jeśli szablon ich nie ma.",
       "tokens": {
         "customer": "nazwa klienta",
         "vehicle": "rocznik, marka i model",

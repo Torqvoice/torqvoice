@@ -38,7 +38,7 @@
       "languageLabel": "Malspråk",
       "languageHint": "Språkkoden malen ble godkjent under, for eksempel nb.",
       "variablesLabel": "Verdier i malen, i rekkefølge",
-      "variablesHint": "Hvilke verdier som fyller de nummererte feltene i malen, skilt med komma. Tilgjengelig: customer, vehicle, plate, message, workshop. La stå tom hvis malen ikke har felter.",
+      "variablesHint": "Velg verdiene som fyller de nummererte feltene i malen, i samme rekkefølge. La stå tom hvis malen ikke har felter.",
       "tokens": {
         "customer": "kundenavn",
         "vehicle": "årsmodell, merke og modell",

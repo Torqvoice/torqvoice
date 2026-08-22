@@ -38,7 +38,7 @@
       "languageLabel": "Sprache der Vorlage",
       "languageHint": "Sprachcode, unter dem die Vorlage freigegeben wurde, zum Beispiel de.",
       "variablesLabel": "Werte der Vorlage, in Reihenfolge",
-      "variablesHint": "Welche Werte die nummerierten Platzhalter Ihrer Vorlage füllen, per Komma getrennt. Verfügbar: customer, vehicle, plate, message, workshop. Leer lassen, wenn die Vorlage keine Platzhalter hat.",
+      "variablesHint": "Wählen Sie die Werte, die die nummerierten Platzhalter Ihrer Vorlage füllen, in derselben Reihenfolge. Leer lassen, wenn die Vorlage keine Platzhalter hat.",
       "tokens": {
         "customer": "Kundenname",
         "vehicle": "Baujahr, Marke und Modell",

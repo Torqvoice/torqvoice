@@ -38,7 +38,7 @@
       "languageLabel": "Taal van het sjabloon",
       "languageHint": "De taalcode waaronder het sjabloon is goedgekeurd, bijvoorbeeld nl.",
       "variablesLabel": "Waarden van het sjabloon, op volgorde",
-      "variablesHint": "Welke waarden de genummerde plekken in je sjabloon invullen, gescheiden door komma's. Beschikbaar: customer, vehicle, plate, message, workshop. Laat leeg als je sjabloon er geen heeft.",
+      "variablesHint": "Kies de waarden die de genummerde plekken in je sjabloon invullen, in dezelfde volgorde. Laat leeg als je sjabloon er geen heeft.",
       "tokens": {
         "customer": "klantnaam",
         "vehicle": "bouwjaar, merk en model",

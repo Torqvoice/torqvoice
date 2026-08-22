@@ -38,7 +38,7 @@
       "languageLabel": "Lingua del modello",
       "languageHint": "Il codice lingua con cui è stato approvato, per esempio it.",
       "variablesLabel": "Valori del modello, in ordine",
-      "variablesHint": "Quali valori riempiono gli spazi numerati del modello, separati da virgole. Disponibili: customer, vehicle, plate, message, workshop. Lascia vuoto se il modello non ha spazi.",
+      "variablesHint": "Scegli i valori che riempiono gli spazi numerati del modello, nello stesso ordine. Lascia vuoto se il modello non ha spazi.",
       "tokens": {
         "customer": "nome del cliente",
         "vehicle": "anno, marca e modello",

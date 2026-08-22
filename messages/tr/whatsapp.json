@@ -38,7 +38,7 @@
       "languageLabel": "Şablon dili",
       "languageHint": "Şablonun onaylandığı dil kodu, örneğin tr.",
       "variablesLabel": "Şablon değerleri, sırayla",
-      "variablesHint": "Şablonunuzdaki numaralı boşlukları hangi değerlerin dolduracağı, virgülle ayrılmış. Kullanılabilir: customer, vehicle, plate, message, workshop. Şablonunuzda boşluk yoksa boş bırakın.",
+      "variablesHint": "Şablonunuzdaki numaralı boşlukları dolduran değerleri aynı sırayla seçin. Şablonunuzda boşluk yoksa boş bırakın.",
       "tokens": {
         "customer": "müşteri adı",
         "vehicle": "yıl, marka ve model",

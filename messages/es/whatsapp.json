@@ -38,7 +38,7 @@
       "languageLabel": "Idioma de la plantilla",
       "languageHint": "El código de idioma con el que se aprobó, por ejemplo es.",
       "variablesLabel": "Valores de la plantilla, en orden",
-      "variablesHint": "Qué valores rellenan los huecos numerados de tu plantilla, separados por comas. Disponibles: customer, vehicle, plate, message, workshop. Déjalo vacío si tu plantilla no tiene huecos.",
+      "variablesHint": "Elige los valores que rellenan los huecos numerados de tu plantilla, en el mismo orden. Déjalo vacío si tu plantilla no tiene huecos.",
       "tokens": {
         "customer": "nombre del cliente",
         "vehicle": "año, marca y modelo",
