@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
+import { DocsLink } from '@/components/docs-link'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -132,7 +133,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
           title={t('title')}
           description={
             <>
-              {t('description')}{' '}
+              {t('description')} <DocsLink href="/docs/integrations/whatsapp" variant="hint" />{' '}
               {provider && (
                 <a
                   href={provider.docsUrl}
