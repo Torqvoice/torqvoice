@@ -45,7 +45,7 @@ export function TemplateVariablePicker({
               key={`${token}-${index}`}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 py-1 pl-2 pr-1 text-xs font-medium text-primary"
             >
-              <span className="tabular-nums opacity-60">{index + 1}</span>
+              <span className="font-mono text-[11px] opacity-60">{`{{${index + 1}}}`}</span>
               {token}
               <button
                 type="button"
