@@ -44,7 +44,8 @@
         "vehicle": "yıl, marka ve model",
         "plate": "plaka",
         "message": "yazdığınız metin",
-        "workshop": "atölyenizin adı"
+        "workshop": "atölyenizin adı",
+        "photo": "eklenen fotoğraf"
       },
       "variablesEmpty": "Henüz değer yok. Şablonunuzun beklediği sırayla aşağıdan ekleyin.",
       "variablesRemove": "{name} kaldır"

@@ -44,7 +44,8 @@
         "vehicle": "anno, marca e modello",
         "plate": "targa",
         "message": "ciò che scrivi",
-        "workshop": "nome della tua officina"
+        "workshop": "nome della tua officina",
+        "photo": "la foto allegata"
       },
       "variablesEmpty": "Ancora nessun valore. Aggiungili sotto, nell'ordine che il modello si aspetta.",
       "variablesRemove": "Rimuovi {name}"

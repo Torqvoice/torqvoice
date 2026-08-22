@@ -44,7 +44,8 @@
         "vehicle": "año, marca y modelo",
         "plate": "matrícula",
         "message": "lo que escribas",
-        "workshop": "nombre de tu taller"
+        "workshop": "nombre de tu taller",
+        "photo": "la foto adjunta"
       },
       "variablesEmpty": "Aún sin valores. Añádelos abajo, en el orden que espera tu plantilla.",
       "variablesRemove": "Quitar {name}"

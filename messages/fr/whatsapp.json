@@ -44,7 +44,8 @@
         "vehicle": "année, marque et modèle",
         "plate": "immatriculation",
         "message": "ce que vous écrivez",
-        "workshop": "nom de votre atelier"
+        "workshop": "nom de votre atelier",
+        "photo": "la photo jointe"
       },
       "variablesEmpty": "Aucune valeur pour l'instant. Ajoutez-les ci-dessous, dans l'ordre attendu par votre modèle.",
       "variablesRemove": "Retirer {name}"

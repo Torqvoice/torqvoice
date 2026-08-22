@@ -24,6 +24,8 @@ export interface TemplateContext {
   customerId?: string
   /** What the mechanic typed, for the token that carries it. */
   body?: string
+  /** The signed, publicly fetchable URL of an attached photo. */
+  mediaUrl?: string
   relatedEntityType?: string
   relatedEntityId?: string
 }
@@ -45,6 +47,7 @@ export async function resolveTemplateVariables(
   const values: Partial<Record<TemplateToken, string>> = {}
 
   if (needs.has('message') && context.body) values.message = context.body
+  if (needs.has('photo') && context.mediaUrl) values.photo = context.mediaUrl
 
   if ((needs.has('customer') || needs.has('vehicle') || needs.has('plate')) && context.customerId) {
     const customer = await db.customer.findFirst({

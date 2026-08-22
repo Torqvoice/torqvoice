@@ -44,7 +44,8 @@
         "vehicle": "rocznik, marka i model",
         "plate": "numer rejestracyjny",
         "message": "to, co wpiszesz",
-        "workshop": "nazwa warsztatu"
+        "workshop": "nazwa warsztatu",
+        "photo": "dołączone zdjęcie"
       },
       "variablesEmpty": "Brak wartości. Dodaj je poniżej, w kolejności oczekiwanej przez szablon.",
       "variablesRemove": "Usuń {name}"

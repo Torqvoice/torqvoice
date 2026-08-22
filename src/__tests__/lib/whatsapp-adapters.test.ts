@@ -240,6 +240,25 @@ describe('twilio payloads', () => {
       '2': 'Freitag',
     })
   })
+
+  it('leaves media to the template rather than sending it alongside', () => {
+    // Twilio's Content API fills a media template's image from a content
+    // variable; a MediaUrl next to a ContentSid is rejected or ignored.
+    const form = buildTwilioForm(twilioContext, {
+      to: '+4917612345678',
+      template: {
+        name: 'HX123',
+        language: 'de',
+        variables: ['https://app.test/photo.jpg', 'Bremssattel fest'],
+        headerMediaUrl: 'https://app.test/photo.jpg',
+      },
+    })
+    expect(form.get('MediaUrl')).toBeNull()
+    expect(JSON.parse(form.get('ContentVariables') as string)).toEqual({
+      '1': 'https://app.test/photo.jpg',
+      '2': 'Bremssattel fest',
+    })
+  })
 })
 
 describe('twilio webhook', () => {

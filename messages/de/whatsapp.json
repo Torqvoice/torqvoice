@@ -44,7 +44,8 @@
         "vehicle": "Baujahr, Marke und Modell",
         "plate": "Kennzeichen",
         "message": "Ihr Text",
-        "workshop": "Name Ihrer Werkstatt"
+        "workshop": "Name Ihrer Werkstatt",
+        "photo": "das angehängte Foto"
       },
       "variablesEmpty": "Noch keine Werte. Unten in der Reihenfolge Ihrer Vorlage hinzufügen.",
       "variablesRemove": "{name} entfernen"

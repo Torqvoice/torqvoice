@@ -44,7 +44,8 @@
         "vehicle": "year, make and model",
         "plate": "registration",
         "message": "what you type",
-        "workshop": "your shop name"
+        "workshop": "your shop name",
+        "photo": "the attached photo"
       },
       "variablesEmpty": "No values yet. Add them below, in the order your template expects.",
       "variablesRemove": "Remove {name}"

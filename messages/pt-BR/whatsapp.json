@@ -44,7 +44,8 @@
         "vehicle": "ano, marca e modelo",
         "plate": "placa",
         "message": "o que você digitar",
-        "workshop": "nome da sua oficina"
+        "workshop": "nome da sua oficina",
+        "photo": "a foto anexada"
       },
       "variablesEmpty": "Ainda sem valores. Adicione abaixo, na ordem que seu modelo espera.",
       "variablesRemove": "Remover {name}"

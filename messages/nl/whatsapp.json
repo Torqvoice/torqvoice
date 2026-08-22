@@ -44,7 +44,8 @@
         "vehicle": "bouwjaar, merk en model",
         "plate": "kenteken",
         "message": "wat je typt",
-        "workshop": "naam van je werkplaats"
+        "workshop": "naam van je werkplaats",
+        "photo": "de bijgevoegde foto"
       },
       "variablesEmpty": "Nog geen waarden. Voeg ze hieronder toe, in de volgorde die je sjabloon verwacht.",
       "variablesRemove": "{name} verwijderen"

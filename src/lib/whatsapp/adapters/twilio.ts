@@ -254,7 +254,8 @@ export function buildTwilioForm(ctx: WhatsappContext, message: WhatsappOutbound)
       })
       form.set('ContentVariables', JSON.stringify(variables))
     }
-    if (message.template.headerMediaUrl) form.append('MediaUrl', message.template.headerMediaUrl)
+    // No MediaUrl here on purpose: a Twilio media template carries its own
+    // media placeholder, filled by one of the content variables above.
     return form
   }
 

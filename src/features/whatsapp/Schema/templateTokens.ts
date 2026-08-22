@@ -6,7 +6,14 @@
  * cannot import a server-only module.
  */
 
-export const TEMPLATE_TOKENS = ['customer', 'vehicle', 'plate', 'message', 'workshop'] as const
+export const TEMPLATE_TOKENS = [
+  'customer',
+  'vehicle',
+  'plate',
+  'message',
+  'photo',
+  'workshop',
+] as const
 
 export type TemplateToken = (typeof TEMPLATE_TOKENS)[number]
 

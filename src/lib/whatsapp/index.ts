@@ -272,10 +272,13 @@ async function templateFor(
 ): Promise<WhatsappTemplate | undefined> {
   if (!config.template) return undefined
 
+  const providerMediaUrl = toProviderMediaUrl(config.organizationId, options.mediaUrl)
+
   const variables = await resolveTemplateVariables(config.template.tokens, {
     organizationId: config.organizationId,
     customerId: options.customerId,
     body: options.body,
+    mediaUrl: providerMediaUrl,
     relatedEntityType: options.relatedEntityType,
     relatedEntityId: options.relatedEntityId,
   })
@@ -284,7 +287,7 @@ async function templateFor(
     name: config.template.name,
     language: config.template.language,
     variables: variables.length > 0 ? variables : undefined,
-    headerMediaUrl: toProviderMediaUrl(config.organizationId, options.mediaUrl),
+    headerMediaUrl: providerMediaUrl,
     headerMediaType: options.mediaType,
   }
 }

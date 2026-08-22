@@ -44,7 +44,8 @@
         "vehicle": "metai, markė ir modelis",
         "plate": "valstybinis numeris",
         "message": "jūsų tekstas",
-        "workshop": "jūsų dirbtuvių pavadinimas"
+        "workshop": "jūsų dirbtuvių pavadinimas",
+        "photo": "pridėta nuotrauka"
       },
       "variablesEmpty": "Reikšmių dar nėra. Pridėkite jas žemiau tokia tvarka, kokios tikisi šablonas.",
       "variablesRemove": "Pašalinti {name}"

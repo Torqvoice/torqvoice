@@ -44,7 +44,8 @@
         "vehicle": "årsmodell, merke og modell",
         "plate": "registreringsnummer",
         "message": "det du skriver",
-        "workshop": "navnet på verkstedet"
+        "workshop": "navnet på verkstedet",
+        "photo": "bildet du legger ved"
       },
       "variablesEmpty": "Ingen verdier ennå. Legg dem til under, i rekkefølgen malen forventer.",
       "variablesRemove": "Fjern {name}"
