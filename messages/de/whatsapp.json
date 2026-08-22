@@ -54,7 +54,11 @@
       "mediaUrlHint": "Fügen Sie dies in das Medienfeld der Vorlage ein und ersetzen Sie n durch die Nummer des Foto-Werts.",
       "mediaUrlCopy": "Medien-URL kopieren",
       "mediaUrlCopied": "Medien-URL kopiert",
-      "mediaUrlSample": "Als Beispielwert beim Anbieter verwenden: sample"
+      "mediaUrlSample": "Als Beispielwert beim Anbieter verwenden: sample",
+      "textTitle": "Textnachrichten",
+      "textDescription": "Wird verwendet, wenn Sie ohne Foto schreiben.",
+      "mediaTitle": "Nachrichten mit Foto",
+      "mediaDescription": "Wird beim Senden eines Fotos verwendet. WhatsApp legt den Medientyp bei der Freigabe fest, daher braucht es eine eigene Vorlage."
     },
     "test": {
       "title": "Test und Trennen",

@@ -54,7 +54,11 @@
       "mediaUrlHint": "Lim dette inn i malens mediefelt og bytt ut n med nummeret til bildeverdien.",
       "mediaUrlCopy": "Kopier medie-URL",
       "mediaUrlCopied": "Medie-URL kopiert",
-      "mediaUrlSample": "Som eksempelverdi hos leverandøren, bruk: sample"
+      "mediaUrlSample": "Som eksempelverdi hos leverandøren, bruk: sample",
+      "textTitle": "Tekstmeldinger",
+      "textDescription": "Brukes når du skriver uten bilde.",
+      "mediaTitle": "Meldinger med bilde",
+      "mediaDescription": "Brukes når du sender et bilde. WhatsApp låser medietypen ved godkjenning, så dette må være en egen mal."
     },
     "test": {
       "title": "Test og koble fra",

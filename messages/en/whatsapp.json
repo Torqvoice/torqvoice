@@ -54,7 +54,11 @@
       "mediaUrlHint": "Paste this into the template's media field and replace n with the number of the photo value.",
       "mediaUrlCopy": "Copy media URL",
       "mediaUrlCopied": "Media URL copied",
-      "mediaUrlSample": "For the provider's sample value, use: sample"
+      "mediaUrlSample": "For the provider's sample value, use: sample",
+      "textTitle": "Text messages",
+      "textDescription": "Used when you write without a photo attached.",
+      "mediaTitle": "Messages with a photo",
+      "mediaDescription": "Used when you send a photo. WhatsApp fixes a template's media type when it is approved, so this has to be a separate template."
     },
     "test": {
       "title": "Test and disconnect",

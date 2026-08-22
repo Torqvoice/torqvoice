@@ -54,7 +54,11 @@
       "mediaUrlHint": "Įklijuokite tai į šablono medijos lauką ir pakeiskite n nuotraukos reikšmės numeriu.",
       "mediaUrlCopy": "Kopijuoti medijos URL",
       "mediaUrlCopied": "Medijos URL nukopijuotas",
-      "mediaUrlSample": "Kaip pavyzdinę reikšmę pas tiekėją naudokite: sample"
+      "mediaUrlSample": "Kaip pavyzdinę reikšmę pas tiekėją naudokite: sample",
+      "textTitle": "Tekstinės žinutės",
+      "textDescription": "Naudojama, kai rašote be nuotraukos.",
+      "mediaTitle": "Žinutės su nuotrauka",
+      "mediaDescription": "Naudojama siunčiant nuotrauką. „WhatsApp“ nustato medijos tipą patvirtinimo metu, todėl reikia atskiro šablono."
     },
     "test": {
       "title": "Bandymas ir atjungimas",

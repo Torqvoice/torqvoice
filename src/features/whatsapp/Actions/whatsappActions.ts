@@ -31,7 +31,13 @@ export async function getWhatsappWindowState(customerId: string) {
         select: { phone: true },
       })
       if (!customer?.phone) {
-        return { configured: false, open: false, hasTemplate: false, lastInboundAt: null }
+        return {
+          configured: false,
+          open: false,
+          hasTemplate: false,
+          hasMediaTemplate: false,
+          lastInboundAt: null,
+        }
       }
 
       const [config, open, last] = await Promise.all([
@@ -47,6 +53,7 @@ export async function getWhatsappWindowState(customerId: string) {
         configured: config !== null,
         open,
         hasTemplate: config?.template != null,
+        hasMediaTemplate: config?.mediaTemplate != null,
         lastInboundAt: last,
       }
     },

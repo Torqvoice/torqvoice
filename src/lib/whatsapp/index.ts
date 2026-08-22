@@ -31,20 +31,34 @@ export const SERVICE_WINDOW_HOURS = 24
 
 /** Raised instead of a provider error, so callers can explain the rule. */
 export class WhatsappWindowClosedError extends Error {
-  constructor() {
+  constructor(needs: 'text' | 'photo' = 'text') {
     super(
-      'WhatsApp only allows free messages for 24 hours after the customer writes to you, and that window has closed. Ask them to send you a message, or set up an approved template in Settings to reach them any time.'
+      needs === 'photo'
+        ? 'WhatsApp only allows free messages for 24 hours after the customer writes to you, and that window has closed. Sending a photo now needs an approved photo template, which is a separate one from the text template. Ask the customer to send you a message, or set one up in Settings.'
+        : 'WhatsApp only allows free messages for 24 hours after the customer writes to you, and that window has closed. Ask them to send you a message, or set up an approved text template in Settings to reach them any time.'
     )
     this.name = 'WhatsappWindowClosedError'
   }
+}
+
+export interface WhatsappTemplateSetup {
+  name: string
+  language: string
+  tokens: TemplateToken[]
 }
 
 export interface WhatsappConfig {
   organizationId: string
   adapter: WhatsappAdapter
   context: WhatsappContext
-  /** Template used to reopen a closed conversation, when the shop set one up. */
-  template: { name: string; language: string; tokens: TemplateToken[] } | null
+  /** Reopens a closed conversation with text only. */
+  template: WhatsappTemplateSetup | null
+  /**
+   * Reopens it with a photo. A separate template because WhatsApp fixes the
+   * media type when a template is approved: one that was approved with an
+   * image can never carry plain text, and vice versa.
+   */
+  mediaTemplate: WhatsappTemplateSetup | null
 }
 
 /**
@@ -87,14 +101,26 @@ export async function getWhatsappConfig(organizationId: string): Promise<Whatsap
     organizationId,
     adapter,
     context: { organizationId, from, credentials },
-    template: templateName
-      ? {
-          name: templateName,
-          language: templateLanguage || 'en',
-          tokens: parseTemplateTokens(settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES)),
-        }
-      : null,
+    template: templateSetup(
+      templateName,
+      templateLanguage,
+      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES)
+    ),
+    mediaTemplate: templateSetup(
+      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME),
+      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE),
+      settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES)
+    ),
   }
+}
+
+function templateSetup(
+  name: string | undefined,
+  language: string | undefined,
+  variables: string | undefined
+): WhatsappTemplateSetup | null {
+  if (!name) return null
+  return { name, language: language || 'en', tokens: parseTemplateTokens(variables) }
 }
 
 /** Cheap check for the settings UI and channel pickers. */
@@ -225,7 +251,7 @@ export async function sendOrgWhatsapp(
 
   const open = await isWithinServiceWindow(organizationId, to)
   const template = open ? undefined : (options.template ?? (await templateFor(config, options)))
-  if (!open && !template) throw new WhatsappWindowClosedError()
+  if (!open && !template) throw new WhatsappWindowClosedError(options.mediaUrl ? 'photo' : 'text')
 
   const record = await db.whatsappMessage.create({
     data: {
@@ -288,11 +314,14 @@ async function templateFor(
   config: WhatsappConfig,
   options: SendWhatsappOptions
 ): Promise<WhatsappTemplate | undefined> {
-  if (!config.template) return undefined
+  // A template approved with an image can only ever send an image, so the
+  // choice is made by what is actually being sent, not by preference.
+  const setup = options.mediaUrl ? config.mediaTemplate : config.template
+  if (!setup) return undefined
 
   const providerMediaUrl = toProviderMediaUrl(config.organizationId, options.mediaUrl)
 
-  const variables = await resolveTemplateVariables(config.template.tokens, {
+  const variables = await resolveTemplateVariables(setup.tokens, {
     organizationId: config.organizationId,
     customerId: options.customerId,
     body: options.body,
@@ -303,8 +332,8 @@ async function templateFor(
   })
 
   return {
-    name: config.template.name,
-    language: config.template.language,
+    name: setup.name,
+    language: setup.language,
     variables: variables.length > 0 ? variables : undefined,
     headerMediaUrl: providerMediaUrl,
     headerMediaType: options.mediaType,

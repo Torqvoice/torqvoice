@@ -28,6 +28,9 @@ export interface WhatsappSettingsView {
   templateName: string
   templateLanguage: string
   templateVariables: string
+  mediaTemplateName: string
+  mediaTemplateLanguage: string
+  mediaTemplateVariables: string
   /** Per provider, field name to value, with secrets masked. */
   credentials: Record<string, Record<string, string>>
   /** Where the provider should post, ready to paste into its console. */
@@ -86,6 +89,11 @@ export async function getWhatsappSettings() {
         from: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_FROM) ?? '',
         templateName: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME) ?? '',
         templateVariables: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES) ?? '',
+        mediaTemplateName: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME) ?? '',
+        mediaTemplateLanguage:
+          settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE) ?? '',
+        mediaTemplateVariables:
+          settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES) ?? '',
         templateLanguage: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE) ?? '',
         credentials,
         webhookUrl: providerId ? webhookUrlFor(organizationId, providerId, token) : null,
@@ -107,6 +115,9 @@ export interface SaveWhatsappSettingsInput {
   templateLanguage?: string
   /** Comma-separated tokens filling the template's placeholders, in order. */
   templateVariables?: string
+  mediaTemplateName?: string
+  mediaTemplateLanguage?: string
+  mediaTemplateVariables?: string
   /** Only the fields the workshop actually typed; masked ones are ignored. */
   credentials: Record<string, string>
 }
@@ -127,6 +138,11 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
         [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_NAME]: input.templateName?.trim() ?? '',
         [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE]: input.templateLanguage?.trim() ?? '',
         [ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_VARIABLES]: input.templateVariables?.trim() ?? '',
+        [ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_NAME]: input.mediaTemplateName?.trim() ?? '',
+        [ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_LANGUAGE]:
+          input.mediaTemplateLanguage?.trim() ?? '',
+        [ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES]:
+          input.mediaTemplateVariables?.trim() ?? '',
       }
 
       // What is already stored, so an untouched field still counts as filled in.
@@ -168,17 +184,20 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
 
       // Catch a template that cannot possibly work before it fails mid-send,
       // where the provider's own wording is rarely more than "Invalid Parameter".
-      const templateName = input.templateName?.trim()
-      if (templateName) {
-        const problem = adapter.template.validate?.(templateName)
+      for (const name of [input.templateName?.trim(), input.mediaTemplateName?.trim()]) {
+        if (!name) continue
+        const problem = adapter.template.validate?.(name)
         if (problem) throw new Error(problem)
       }
 
       // A token that fills nothing would reach WhatsApp as a literal word.
-      const unknown = unknownTemplateTokens(input.templateVariables)
+      const unknown = [
+        ...unknownTemplateTokens(input.templateVariables),
+        ...unknownTemplateTokens(input.mediaTemplateVariables),
+      ]
       if (unknown.length > 0) {
         throw new Error(
-          `Unknown template values: ${unknown.join(', ')}. Use ${TEMPLATE_TOKENS.join(', ')}.`
+          `Unknown template values: ${[...new Set(unknown)].join(', ')}. Use ${TEMPLATE_TOKENS.join(', ')}.`
         )
       }
 

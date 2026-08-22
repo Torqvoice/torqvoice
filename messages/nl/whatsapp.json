@@ -54,7 +54,11 @@
       "mediaUrlHint": "Plak dit in het mediaveld van het sjabloon en vervang n door het nummer van de fotowaarde.",
       "mediaUrlCopy": "Media-URL kopiëren",
       "mediaUrlCopied": "Media-URL gekopieerd",
-      "mediaUrlSample": "Gebruik als voorbeeldwaarde bij de provider: sample"
+      "mediaUrlSample": "Gebruik als voorbeeldwaarde bij de provider: sample",
+      "textTitle": "Tekstberichten",
+      "textDescription": "Gebruikt wanneer je schrijft zonder foto.",
+      "mediaTitle": "Berichten met foto",
+      "mediaDescription": "Gebruikt bij het sturen van een foto. WhatsApp legt het mediatype vast bij goedkeuring, dus dit moet een apart sjabloon zijn."
     },
     "test": {
       "title": "Testen en loskoppelen",

@@ -16,6 +16,13 @@ export const ORG_WHATSAPP_KEYS = {
   WHATSAPP_TEMPLATE_LANGUAGE: 'whatsapp.template.language',
   /** Ordered list of tokens filling the template's numbered placeholders. */
   WHATSAPP_TEMPLATE_VARIABLES: 'whatsapp.template.variables',
+  /**
+   * A second template, for messages carrying a photo. WhatsApp fixes a
+   * template's media type at approval, so one template cannot do both.
+   */
+  WHATSAPP_MEDIA_TEMPLATE_NAME: 'whatsapp.template.media.name',
+  WHATSAPP_MEDIA_TEMPLATE_LANGUAGE: 'whatsapp.template.media.language',
+  WHATSAPP_MEDIA_TEMPLATE_VARIABLES: 'whatsapp.template.media.variables',
 } as const
 
 export type OrgWhatsappKey = (typeof ORG_WHATSAPP_KEYS)[keyof typeof ORG_WHATSAPP_KEYS]

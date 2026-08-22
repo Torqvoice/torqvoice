@@ -54,7 +54,11 @@
       "mediaUrlHint": "Wklej to w pole media szablonu i zastąp n numerem wartości zdjęcia.",
       "mediaUrlCopy": "Kopiuj adres media",
       "mediaUrlCopied": "Adres media skopiowany",
-      "mediaUrlSample": "Jako wartość przykładową u dostawcy użyj: sample"
+      "mediaUrlSample": "Jako wartość przykładową u dostawcy użyj: sample",
+      "textTitle": "Wiadomości tekstowe",
+      "textDescription": "Używane, gdy piszesz bez zdjęcia.",
+      "mediaTitle": "Wiadomości ze zdjęciem",
+      "mediaDescription": "Używane przy wysyłaniu zdjęcia. WhatsApp ustala typ medium przy zatwierdzaniu, więc to musi być osobny szablon."
     },
     "test": {
       "title": "Test i rozłączenie",

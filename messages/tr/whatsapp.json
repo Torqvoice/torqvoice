@@ -54,7 +54,11 @@
       "mediaUrlHint": "Bunu şablonun medya alanına yapıştırın ve n yerine fotoğraf değerinin numarasını yazın.",
       "mediaUrlCopy": "Medya adresini kopyala",
       "mediaUrlCopied": "Medya adresi kopyalandı",
-      "mediaUrlSample": "Sağlayıcıdaki örnek değer olarak şunu kullanın: sample"
+      "mediaUrlSample": "Sağlayıcıdaki örnek değer olarak şunu kullanın: sample",
+      "textTitle": "Metin mesajları",
+      "textDescription": "Fotoğraf eklemeden yazdığınızda kullanılır.",
+      "mediaTitle": "Fotoğraflı mesajlar",
+      "mediaDescription": "Fotoğraf gönderirken kullanılır. WhatsApp şablonun medya türünü onayda sabitler, bu yüzden ayrı bir şablon gerekir."
     },
     "test": {
       "title": "Test ve bağlantıyı kes",

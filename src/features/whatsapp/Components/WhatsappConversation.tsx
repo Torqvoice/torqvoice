@@ -50,6 +50,7 @@ export function WhatsappConversation({
   const [windowState, setWindowState] = useState<{
     open: boolean
     hasTemplate: boolean
+    hasMediaTemplate: boolean
   } | null>(null)
   const [isSending, startSending] = useTransition()
   const [mounted, setMounted] = useState(false)
@@ -72,7 +73,11 @@ export function WhatsappConversation({
       setMessages(conversation.data as unknown as WhatsappMessageView[])
     }
     if (state.success && state.data) {
-      setWindowState({ open: state.data.open, hasTemplate: state.data.hasTemplate })
+      setWindowState({
+        open: state.data.open,
+        hasTemplate: state.data.hasTemplate,
+        hasMediaTemplate: state.data.hasMediaTemplate,
+      })
     }
     setLoading(false)
   }, [thread.customerId])
@@ -148,7 +153,9 @@ export function WhatsappConversation({
     })
   }
 
-  const blocked = windowState?.open === false && !windowState.hasTemplate
+  const blocked =
+    windowState?.open === false &&
+    (attachment ? !windowState.hasMediaTemplate : !windowState.hasTemplate)
 
   return (
     <div className="flex h-full flex-col">

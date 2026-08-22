@@ -22,8 +22,7 @@ import {
   ReadOnlyWrapper,
   SaveButton,
 } from '@/app/(authenticated)/settings/read-only-guard'
-import { TemplateVariablePicker } from './TemplateVariablePicker'
-import { TEMPLATE_TOKENS } from '../Schema/templateTokens'
+import { TemplateSetupFields } from './TemplateSetupFields'
 import {
   disconnectWhatsapp,
   saveWhatsappSettings,
@@ -49,6 +48,11 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   const [templateName, setTemplateName] = useState(initial.templateName)
   const [templateLanguage, setTemplateLanguage] = useState(initial.templateLanguage)
   const [templateVariables, setTemplateVariables] = useState(initial.templateVariables)
+  const [mediaTemplateName, setMediaTemplateName] = useState(initial.mediaTemplateName)
+  const [mediaTemplateLanguage, setMediaTemplateLanguage] = useState(initial.mediaTemplateLanguage)
+  const [mediaTemplateVariables, setMediaTemplateVariables] = useState(
+    initial.mediaTemplateVariables
+  )
   const [credentials, setCredentials] = useState<Record<string, Record<string, string>>>(
     initial.credentials
   )
@@ -271,87 +275,28 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
           </div>
 
           <fieldset disabled={!enabled} className="space-y-4 disabled:opacity-50">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                {/* Providers disagree on what this is, and getting it wrong shows
-                  up only as a rejected send, so the wording comes from the
-                  provider rather than from us. */}
-                <Label htmlFor="whatsapp-template">
-                  {provider?.template.label ?? t('template.nameLabel')}
-                </Label>
-                <Input
-                  id="whatsapp-template"
-                  value={templateName}
-                  onChange={(event) => setTemplateName(event.target.value)}
-                  placeholder={provider?.template.placeholder}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {provider?.template.help ?? t('template.nameHint')}
-                </p>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label>{t('template.variablesLabel')}</Label>
-                <TemplateVariablePicker
-                  value={templateVariables}
-                  onChange={setTemplateVariables}
-                  offered={
-                    // Meta takes the photo as a header parameter at send time,
-                    // so offering it as a body value would only put a token
-                    // string into the message text.
-                    provider?.template.mediaAs === 'header'
-                      ? TEMPLATE_TOKENS.filter((token) => token !== 'photo')
-                      : TEMPLATE_TOKENS
-                  }
-                />
-                <p className="text-xs text-muted-foreground">{t('template.variablesHint')}</p>
+            <TemplateSetupFields
+              kind="text"
+              provider={provider}
+              name={templateName}
+              onName={setTemplateName}
+              language={templateLanguage}
+              onLanguage={setTemplateLanguage}
+              variables={templateVariables}
+              onVariables={setTemplateVariables}
+            />
 
-                {/* A media template's URL field is validated as a real URL, so
-                  the workshop pastes this prefix and puts the variable at the
-                  end rather than using the variable alone. */}
-                {provider?.template.mediaAs === 'variable' &&
-                  templateVariables.includes('photo') && (
-                    <div className="space-y-1 rounded-lg border border-dashed bg-muted/30 p-3">
-                      <p className="text-xs font-medium">{t('template.mediaUrlLabel')}</p>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          readOnly
-                          value={`${initial.mediaUrlPrefix}{{n}}`}
-                          className="font-mono text-xs"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${initial.mediaUrlPrefix}{{n}}`)
-                            toast.success(t('template.mediaUrlCopied'))
-                          }}
-                          aria-label={t('template.mediaUrlCopy')}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{t('template.mediaUrlHint')}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('template.mediaUrlSample')}
-                      </p>
-                    </div>
-                  )}
-              </div>
-
-              {provider?.template.usesLanguage !== false && (
-                <div className="space-y-2">
-                  <Label htmlFor="whatsapp-template-language">{t('template.languageLabel')}</Label>
-                  <Input
-                    id="whatsapp-template-language"
-                    value={templateLanguage}
-                    onChange={(event) => setTemplateLanguage(event.target.value)}
-                    placeholder="de"
-                  />
-                  <p className="text-xs text-muted-foreground">{t('template.languageHint')}</p>
-                </div>
-              )}
-            </div>
+            <TemplateSetupFields
+              kind="media"
+              provider={provider}
+              name={mediaTemplateName}
+              onName={setMediaTemplateName}
+              language={mediaTemplateLanguage}
+              onLanguage={setMediaTemplateLanguage}
+              variables={mediaTemplateVariables}
+              onVariables={setMediaTemplateVariables}
+              mediaUrlPrefix={initial.mediaUrlPrefix}
+            />
           </fieldset>
         </AppCard>
 

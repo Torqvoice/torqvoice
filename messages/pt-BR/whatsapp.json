@@ -54,7 +54,11 @@
       "mediaUrlHint": "Cole isto no campo de mídia do modelo e troque n pelo número do valor da foto.",
       "mediaUrlCopy": "Copiar URL de mídia",
       "mediaUrlCopied": "URL de mídia copiada",
-      "mediaUrlSample": "Como valor de exemplo no provedor, use: sample"
+      "mediaUrlSample": "Como valor de exemplo no provedor, use: sample",
+      "textTitle": "Mensagens de texto",
+      "textDescription": "Usado quando você escreve sem anexar foto.",
+      "mediaTitle": "Mensagens com foto",
+      "mediaDescription": "Usado ao enviar uma foto. O WhatsApp fixa o tipo de mídia na aprovação, então precisa ser um modelo separado."
     },
     "test": {
       "title": "Testar e desconectar",

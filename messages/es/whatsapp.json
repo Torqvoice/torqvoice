@@ -54,7 +54,11 @@
       "mediaUrlHint": "Pega esto en el campo de medios de la plantilla y sustituye n por el número del valor de la foto.",
       "mediaUrlCopy": "Copiar URL de medios",
       "mediaUrlCopied": "URL de medios copiada",
-      "mediaUrlSample": "Como valor de muestra en el proveedor, usa: sample"
+      "mediaUrlSample": "Como valor de muestra en el proveedor, usa: sample",
+      "textTitle": "Mensajes de texto",
+      "textDescription": "Se usa cuando escribes sin adjuntar una foto.",
+      "mediaTitle": "Mensajes con foto",
+      "mediaDescription": "Se usa al enviar una foto. WhatsApp fija el tipo de medio al aprobar la plantilla, así que esta debe ser otra distinta."
     },
     "test": {
       "title": "Probar y desconectar",
