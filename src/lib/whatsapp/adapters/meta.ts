@@ -239,6 +239,30 @@ export const metaAdapter: WhatsappAdapter = {
     return { inbound, statuses }
   },
 
+  async markRead(ctx, providerMessageId) {
+    const phoneNumberId = ctx.credentials.phoneNumberId
+    const accessToken = ctx.credentials.accessToken
+    if (!phoneNumberId || !accessToken) return
+
+    // Best effort: a failed read receipt is not worth failing a delivery over.
+    try {
+      await fetch(`${graphBase(ctx)}/${phoneNumberId}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          status: 'read',
+          message_id: providerMessageId,
+        }),
+      })
+    } catch (error) {
+      console.error('[whatsapp/meta] could not mark as read:', error)
+    }
+  },
+
   async fetchMedia(ctx, reference): Promise<WhatsappMediaPayload> {
     const accessToken = ctx.credentials.accessToken
     if (!accessToken) throw new Error('WhatsApp access token is missing.')

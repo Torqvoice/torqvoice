@@ -63,6 +63,11 @@ export async function POST(request: Request, { params }: RouteParams) {
         message
       )
 
+      // The customer sees their message was read, not merely delivered.
+      if (message.providerMessageId && adapter.markRead) {
+        await adapter.markRead(context, message.providerMessageId)
+      }
+
       const preview =
         message.body?.slice(0, 100) || (message.media ? `[${message.media.type}]` : '')
 

@@ -50,7 +50,7 @@ export function WhatsappMessageBubble({
         <button
           type="button"
           onClick={() => onDelete(message)}
-          className="mr-2 self-center text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+          className="mr-2 self-center text-muted-foreground transition-opacity hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
           title={t('delete')}
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -116,7 +116,7 @@ export function WhatsappMessageBubble({
         <button
           type="button"
           onClick={() => onDelete(message)}
-          className="ml-2 self-center text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+          className="ml-2 self-center text-muted-foreground transition-opacity hover:text-destructive [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
           title={t('delete')}
         >
           <Trash2 className="h-3.5 w-3.5" />

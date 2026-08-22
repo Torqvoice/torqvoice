@@ -181,6 +181,14 @@ export interface WhatsappAdapter {
    */
   receive(request: Request, ctx: WhatsappContext): Promise<WhatsappWebhookEvents>
 
+  /**
+   * Tells the provider the message has been seen, where that exists.
+   *
+   * Meta shows the customer blue ticks; a workshop that reads on a screen but
+   * never marks anything looks like it is ignoring people.
+   */
+  markRead?(ctx: WhatsappContext, providerMessageId: string): Promise<void>
+
   /** Fetches an inbound attachment, which providers keep behind their own auth. */
   fetchMedia?(ctx: WhatsappContext, reference: string): Promise<WhatsappMediaPayload>
 

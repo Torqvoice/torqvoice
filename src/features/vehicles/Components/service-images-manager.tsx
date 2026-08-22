@@ -239,7 +239,7 @@ export function ServiceImagesManager({
                   className="aspect-square w-full cursor-pointer object-cover"
                   onClick={() => setCarouselIndex(images.indexOf(file))}
                 />
-                <div className="absolute right-1 top-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="absolute right-1 top-1 flex gap-1 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
                   {customerId && (
                     <SendPhotoToWhatsapp
                       customerId={customerId}
