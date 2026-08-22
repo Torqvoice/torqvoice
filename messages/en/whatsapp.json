@@ -61,7 +61,12 @@
       "mediaTitle": "Messages with a photo",
       "mediaDescription": "Used by the Send on WhatsApp button on a job's photos, and whenever you attach a photo in a conversation.",
       "textMissing": "Not set up: you cannot write to a customer who has not messaged in the last 24 hours.",
-      "mediaMissing": "Not set up: you cannot send photos to a customer who has not messaged in the last 24 hours."
+      "mediaMissing": "Not set up: you cannot send photos to a customer who has not messaged in the last 24 hours.",
+      "whatIsIt": "A template is a fixed message you write once and {provider} has approved: the wording never changes, only the numbered blanks you fill in. Write it in their console, then paste its identifier here.",
+      "whyTwo": "Two are needed because WhatsApp fixes a template's media type when it approves it. One approved with a photo can only ever carry a photo, and one approved as text can never carry one.",
+      "exampleLabel": "Example body to write in your provider's console",
+      "exampleTextValues": "Fill it with: customer, message. Write it in the language your customers read.",
+      "exampleMediaValues": "Fill it with: customer, message, and photo for the media URL. Write it in the language your customers read."
     },
     "test": {
       "send": "Send test",

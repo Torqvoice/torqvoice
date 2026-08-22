@@ -103,6 +103,18 @@ export function TemplateSetupFields({
         )}
       </div>
 
+      <div className="rounded-lg bg-muted/40 p-3">
+        <p className="text-xs font-medium">{t('exampleLabel')}</p>
+        <code className="mt-1 block font-mono text-xs text-muted-foreground">
+          {kind === 'media'
+            ? 'Hi {{1}}, here is a photo from your repair: {{2}}. Reply here if you have any questions.'
+            : 'Hi {{1}}, an update on your repair: {{2}}. Reply here if you have any questions.'}
+        </code>
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          {t(kind === 'media' ? 'exampleMediaValues' : 'exampleTextValues')}
+        </p>
+      </div>
+
       <div className="space-y-2">
         <Label>{t('variablesLabel')}</Label>
         <TemplateVariablePicker value={variables} onChange={onVariables} offered={offered} />

@@ -61,7 +61,12 @@
       "mediaTitle": "Berichten met foto",
       "mediaDescription": "Gebruikt door de knop Via WhatsApp sturen bij de foto's van een werkorder, en telkens als je een foto toevoegt in een gesprek.",
       "textMissing": "Niet ingesteld: je kunt geen klant schrijven die de afgelopen 24 uur niets stuurde.",
-      "mediaMissing": "Niet ingesteld: je kunt geen foto's sturen naar een klant die de afgelopen 24 uur niets stuurde."
+      "mediaMissing": "Niet ingesteld: je kunt geen foto's sturen naar een klant die de afgelopen 24 uur niets stuurde.",
+      "whatIsIt": "Een sjabloon is een vast bericht dat je één keer schrijft en dat {provider} goedkeurt: de tekst verandert nooit, je vult alleen de genummerde plekken in. Schrijf het in hun console en plak de identificatie hier.",
+      "whyTwo": "Je hebt er twee nodig omdat WhatsApp het mediatype vastlegt bij goedkeuring. Een sjabloon goedgekeurd met foto kan alleen foto's dragen, een als tekst goedgekeurd sjabloon nooit.",
+      "exampleLabel": "Voorbeeldtekst voor de console van je provider",
+      "exampleTextValues": "Vul het met: customer, message. Schrijf het in de taal die je klanten lezen.",
+      "exampleMediaValues": "Vul het met: customer, message en photo voor de media-URL. Schrijf het in de taal die je klanten lezen."
     },
     "test": {
       "send": "Test versturen",

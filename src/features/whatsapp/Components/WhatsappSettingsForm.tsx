@@ -402,9 +402,12 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                     <>
                       <div className="flex items-start gap-3 rounded-lg border bg-muted/50 p-4">
                         <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">
-                          {t('template.windowExplainer')}
-                        </p>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          <p>{t('template.windowExplainer')}</p>
+                          <p>{t('template.whatIsIt', { provider: provider?.label ?? '' })}</p>
+                          <p>{t('template.whyTwo')}</p>
+                          <DocsLink href="/docs/integrations/whatsapp" variant="hint" />
+                        </div>
                       </div>
 
                       <TemplateSetupFields

@@ -61,7 +61,12 @@
       "mediaTitle": "Messaggi con foto",
       "mediaDescription": "Usato dal pulsante Invia su WhatsApp sulle foto di un intervento, e ogni volta che alleghi una foto in una conversazione.",
       "textMissing": "Non configurato: non puoi scrivere a un cliente che non ti scrive da 24 ore.",
-      "mediaMissing": "Non configurato: non puoi inviare foto a un cliente che non ti scrive da 24 ore."
+      "mediaMissing": "Non configurato: non puoi inviare foto a un cliente che non ti scrive da 24 ore.",
+      "whatIsIt": "Un modello è un messaggio fisso che scrivi una volta e che {provider} approva: il testo non cambia mai, riempi solo gli spazi numerati. Scrivilo nella loro console e incolla qui il suo identificatore.",
+      "whyTwo": "Ne servono due perché WhatsApp fissa il tipo di media all'approvazione. Uno approvato con foto può portare solo foto, uno approvato come testo non ne porterà mai.",
+      "exampleLabel": "Corpo di esempio da scrivere nella console del provider",
+      "exampleTextValues": "Riempilo con: customer, message. Scrivilo nella lingua dei tuoi clienti.",
+      "exampleMediaValues": "Riempilo con: customer, message e photo per l'URL del media. Scrivilo nella lingua dei tuoi clienti."
     },
     "test": {
       "send": "Invia prova",

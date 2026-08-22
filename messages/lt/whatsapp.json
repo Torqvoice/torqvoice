@@ -61,7 +61,12 @@
       "mediaTitle": "Žinutės su nuotrauka",
       "mediaDescription": "Naudojama mygtuko „Siųsti per WhatsApp“ prie darbo nuotraukų ir visada, kai pokalbyje pridedate nuotrauką.",
       "textMissing": "Nenustatyta: negalėsite rašyti klientui, kuris nerašė pastarąsias 24 valandas.",
-      "mediaMissing": "Nenustatyta: negalėsite siųsti nuotraukų klientui, kuris nerašė pastarąsias 24 valandas."
+      "mediaMissing": "Nenustatyta: negalėsite siųsti nuotraukų klientui, kuris nerašė pastarąsias 24 valandas.",
+      "whatIsIt": "Šablonas – tai fiksuota žinutė, kurią parašote kartą ir kurią patvirtina {provider}: tekstas nekinta, užpildote tik sunumeruotas vietas. Parašykite ją jų konsolėje ir čia įklijuokite identifikatorių.",
+      "whyTwo": "Reikia dviejų, nes „WhatsApp“ medijos tipą nustato patvirtinimo metu. Su nuotrauka patvirtintas šablonas gali nešti tik nuotraukas, o kaip tekstas patvirtintas – niekada.",
+      "exampleLabel": "Pavyzdinis tekstas tiekėjo konsolei",
+      "exampleTextValues": "Užpildykite: customer, message. Rašykite klientų kalba.",
+      "exampleMediaValues": "Užpildykite: customer, message ir photo medijos URL. Rašykite klientų kalba."
     },
     "test": {
       "send": "Siųsti bandymą",

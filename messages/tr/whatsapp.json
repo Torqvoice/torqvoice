@@ -61,7 +61,12 @@
       "mediaTitle": "Fotoğraflı mesajlar",
       "mediaDescription": "Bir işin fotoğraflarındaki WhatsApp'tan gönder düğmesi ve bir görüşmede fotoğraf eklediğiniz her durumda kullanılır.",
       "textMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye yazamazsınız.",
-      "mediaMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye fotoğraf gönderemezsiniz."
+      "mediaMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye fotoğraf gönderemezsiniz.",
+      "whatIsIt": "Şablon, bir kez yazdığınız ve {provider} tarafından onaylanan sabit bir mesajdır: metin hiç değişmez, yalnızca numaralı boşlukları doldurursunuz. Onların konsolunda yazın, tanımlayıcısını buraya yapıştırın.",
+      "whyTwo": "İki tane gerekir çünkü WhatsApp medya türünü onay anında sabitler. Fotoğrafla onaylanan bir şablon yalnızca fotoğraf taşır, metin olarak onaylanan ise hiç taşıyamaz.",
+      "exampleLabel": "Sağlayıcınızın konsoluna yazacağınız örnek metin",
+      "exampleTextValues": "Şunlarla doldurun: customer, message. Müşterilerinizin okuduğu dilde yazın.",
+      "exampleMediaValues": "Şunlarla doldurun: customer, message ve medya adresi için photo. Müşterilerinizin okuduğu dilde yazın."
     },
     "test": {
       "send": "Test gönder",

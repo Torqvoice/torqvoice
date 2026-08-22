@@ -61,7 +61,12 @@
       "mediaTitle": "Nachrichten mit Foto",
       "mediaDescription": "Wird vom Button „Per WhatsApp senden“ bei den Fotos eines Auftrags verwendet und immer, wenn Sie in einer Konversation ein Foto anhängen.",
       "textMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, nicht schreiben.",
-      "mediaMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, keine Fotos senden."
+      "mediaMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, keine Fotos senden.",
+      "whatIsIt": "Eine Vorlage ist eine feste Nachricht, die Sie einmal schreiben und die {provider} freigibt: Der Wortlaut ändert sich nie, nur die nummerierten Platzhalter füllen Sie. Schreiben Sie sie in deren Konsole und fügen Sie hier die Kennung ein.",
+      "whyTwo": "Zwei sind nötig, weil WhatsApp den Medientyp bei der Freigabe festlegt. Eine mit Foto freigegebene Vorlage kann nur Fotos tragen, eine als Text freigegebene nie eines.",
+      "exampleLabel": "Beispieltext für die Konsole Ihres Anbieters",
+      "exampleTextValues": "Zu füllen mit: customer, message. Schreiben Sie ihn in der Sprache Ihrer Kunden.",
+      "exampleMediaValues": "Zu füllen mit: customer, message und photo für die Medien-URL. Schreiben Sie ihn in der Sprache Ihrer Kunden."
     },
     "test": {
       "send": "Test senden",

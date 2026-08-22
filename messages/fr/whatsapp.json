@@ -61,7 +61,12 @@
       "mediaTitle": "Messages avec photo",
       "mediaDescription": "Utilisé par le bouton Envoyer sur WhatsApp sur les photos d'une intervention, et dès que vous joignez une photo dans une conversation.",
       "textMissing": "Non configuré : vous ne pouvez pas écrire à un client qui n'a pas écrit depuis 24 heures.",
-      "mediaMissing": "Non configuré : vous ne pouvez pas envoyer de photos à un client qui n'a pas écrit depuis 24 heures."
+      "mediaMissing": "Non configuré : vous ne pouvez pas envoyer de photos à un client qui n'a pas écrit depuis 24 heures.",
+      "whatIsIt": "Un modèle est un message figé que vous écrivez une fois et que {provider} approuve : le texte ne change jamais, vous ne remplissez que les emplacements numérotés. Écrivez-le dans leur console, puis collez son identifiant ici.",
+      "whyTwo": "Il en faut deux car WhatsApp fige le type de média à l'approbation. Un modèle approuvé avec une photo ne peut porter que des photos, et un approuvé comme texte n'en portera jamais.",
+      "exampleLabel": "Exemple de corps à écrire dans la console de votre fournisseur",
+      "exampleTextValues": "À remplir avec : customer, message. Rédigez-le dans la langue de vos clients.",
+      "exampleMediaValues": "À remplir avec : customer, message et photo pour l'URL du média. Rédigez-le dans la langue de vos clients."
     },
     "test": {
       "send": "Envoyer un test",

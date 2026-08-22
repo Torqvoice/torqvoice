@@ -61,7 +61,12 @@
       "mediaTitle": "Mensajes con foto",
       "mediaDescription": "Lo usa el botón Enviar por WhatsApp en las fotos de un trabajo, y siempre que adjuntas una foto en una conversación.",
       "textMissing": "Sin configurar: no puedes escribir a un cliente que no te ha escrito en las últimas 24 horas.",
-      "mediaMissing": "Sin configurar: no puedes enviar fotos a un cliente que no te ha escrito en las últimas 24 horas."
+      "mediaMissing": "Sin configurar: no puedes enviar fotos a un cliente que no te ha escrito en las últimas 24 horas.",
+      "whatIsIt": "Una plantilla es un mensaje fijo que escribes una vez y que {provider} aprueba: el texto nunca cambia, solo rellenas los huecos numerados. Escríbela en su consola y pega aquí su identificador.",
+      "whyTwo": "Hacen falta dos porque WhatsApp fija el tipo de medio al aprobar la plantilla. Una aprobada con foto solo puede llevar fotos, y una aprobada como texto nunca podrá llevarlas.",
+      "exampleLabel": "Cuerpo de ejemplo para la consola de tu proveedor",
+      "exampleTextValues": "Rellénalo con: customer, message. Escríbelo en el idioma de tus clientes.",
+      "exampleMediaValues": "Rellénalo con: customer, message y photo para la URL de medios. Escríbelo en el idioma de tus clientes."
     },
     "test": {
       "send": "Enviar prueba",

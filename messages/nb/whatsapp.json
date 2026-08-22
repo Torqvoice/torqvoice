@@ -61,7 +61,12 @@
       "mediaTitle": "Meldinger med bilde",
       "mediaDescription": "Brukes av Send på WhatsApp-knappen på bildene i en jobb, og hver gang du legger ved et bilde i en samtale.",
       "textMissing": "Ikke satt opp: du kan ikke skrive til en kunde som ikke har meldt fra de siste 24 timene.",
-      "mediaMissing": "Ikke satt opp: du kan ikke sende bilder til en kunde som ikke har meldt fra de siste 24 timene."
+      "mediaMissing": "Ikke satt opp: du kan ikke sende bilder til en kunde som ikke har meldt fra de siste 24 timene.",
+      "whatIsIt": "En mal er en fast melding du skriver én gang og som {provider} godkjenner: ordlyden endres aldri, du fyller bare de nummererte feltene. Skriv den i deres konsoll og lim inn identifikatoren her.",
+      "whyTwo": "Du trenger to fordi WhatsApp låser medietypen ved godkjenning. En mal godkjent med bilde kan bare bære bilder, og en godkjent som tekst kan aldri bære ett.",
+      "exampleLabel": "Eksempeltekst å skrive i leverandørens konsoll",
+      "exampleTextValues": "Fyll den med: customer, message. Skriv den på språket kundene dine leser.",
+      "exampleMediaValues": "Fyll den med: customer, message og photo for medie-URL-en. Skriv den på språket kundene dine leser."
     },
     "test": {
       "send": "Send test",
