@@ -28,7 +28,8 @@
       "label": "Webhook-URL",
       "description": "Plak dit bij je provider zodat inkomende berichten in Torqvoice aankomen.",
       "copy": "Webhook-URL kopiëren",
-      "copied": "Webhook-URL gekopieerd"
+      "copied": "Webhook-URL gekopieerd",
+      "saveFirst": "Sla deze instellingen op voordat je provider de URL verifieert. Er wordt gecontroleerd tegen wat hier is opgeslagen, dus een niet-opgeslagen formulier faalt."
     },
     "template": {
       "title": "Berichtsjabloon",

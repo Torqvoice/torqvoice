@@ -33,8 +33,14 @@ export interface WhatsappSettingsView {
   mediaTemplateVariables: string
   /** Per provider, field name to value, with secrets masked. */
   credentials: Record<string, Record<string, string>>
-  /** Where the provider should post, ready to paste into its console. */
-  webhookUrl: string | null
+  /**
+   * Where each provider should post, ready to paste into its console.
+   *
+   * One per provider rather than one for the saved provider: the form shows
+   * the URL for whichever is selected, and a workshop switching provider needs
+   * the new address before it has saved anything.
+   */
+  webhookUrls: Record<string, string>
   /**
    * What a media template's URL field needs, with the variable left for the
    * workshop to place, e.g. https://app.example.com/api/public/whatsapp-media/
@@ -78,10 +84,14 @@ export async function getWhatsappSettings() {
       }
 
       const providerId = settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER) ?? null
-      const adapter = getWhatsappAdapter(providerId)
-      const token = adapter?.usesWebhookToken
-        ? settings.get(whatsappCredentialKey(adapter.id, WHATSAPP_WEBHOOK_TOKEN_FIELD))
-        : undefined
+
+      const webhookUrls: Record<string, string> = {}
+      for (const provider of providers) {
+        const token = provider.usesWebhookToken
+          ? settings.get(whatsappCredentialKey(provider.id, WHATSAPP_WEBHOOK_TOKEN_FIELD))
+          : undefined
+        webhookUrls[provider.id] = webhookUrlFor(organizationId, provider.id, token)
+      }
 
       return {
         enabled: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_ENABLED) === 'true',
@@ -96,7 +106,7 @@ export async function getWhatsappSettings() {
           settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_MEDIA_TEMPLATE_VARIABLES) ?? '',
         templateLanguage: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_TEMPLATE_LANGUAGE) ?? '',
         credentials,
-        webhookUrl: providerId ? webhookUrlFor(organizationId, providerId, token) : null,
+        webhookUrls,
         mediaUrlPrefix: `${appUrl().replace(/\/$/, '')}${WHATSAPP_MEDIA_PATH}/`,
         providers,
       }

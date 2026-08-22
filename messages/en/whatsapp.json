@@ -28,7 +28,8 @@
       "label": "Webhook URL",
       "description": "Paste this into your provider so incoming messages reach Torqvoice.",
       "copy": "Copy webhook URL",
-      "copied": "Webhook URL copied"
+      "copied": "Webhook URL copied",
+      "saveFirst": "Save these settings before your provider verifies the URL. It is checked against what is stored here, so an unsaved form fails the check."
     },
     "template": {
       "title": "Message template",

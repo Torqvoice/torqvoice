@@ -28,7 +28,8 @@
       "label": "URL webhook",
       "description": "Incollalo nel tuo provider così i messaggi in arrivo raggiungono Torqvoice.",
       "copy": "Copia URL webhook",
-      "copied": "URL webhook copiato"
+      "copied": "URL webhook copiato",
+      "saveFirst": "Salva queste impostazioni prima che il provider verifichi l'URL. Il controllo avviene su ciò che è salvato qui, quindi un modulo non salvato fallisce."
     },
     "template": {
       "title": "Modello di messaggio",

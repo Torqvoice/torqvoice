@@ -28,7 +28,8 @@
       "label": "Adres webhooka",
       "description": "Wklej go u dostawcy, aby przychodzące wiadomości trafiały do Torqvoice.",
       "copy": "Kopiuj adres webhooka",
-      "copied": "Adres webhooka skopiowany"
+      "copied": "Adres webhooka skopiowany",
+      "saveFirst": "Zapisz te ustawienia, zanim dostawca zweryfikuje adres. Sprawdzany jest zapisany stan, więc niezapisany formularz nie przejdzie weryfikacji."
     },
     "template": {
       "title": "Szablon wiadomości",

@@ -28,7 +28,8 @@
       "label": "Webhook URL",
       "description": "Įklijuokite tai pas tiekėją, kad gaunamos žinutės pasiektų „Torqvoice“.",
       "copy": "Kopijuoti webhook URL",
-      "copied": "Webhook URL nukopijuotas"
+      "copied": "Webhook URL nukopijuotas",
+      "saveFirst": "Įrašykite šiuos nustatymus prieš tiekėjui tikrinant URL. Tikrinama pagal tai, kas čia įrašyta, todėl neįrašyta forma testo neišlaikys."
     },
     "template": {
       "title": "Žinutės šablonas",

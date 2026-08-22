@@ -28,7 +28,8 @@
       "label": "URL del webhook",
       "description": "Pega esto en tu proveedor para que los mensajes entrantes lleguen a Torqvoice.",
       "copy": "Copiar URL del webhook",
-      "copied": "URL del webhook copiada"
+      "copied": "URL del webhook copiada",
+      "saveFirst": "Guarda estos ajustes antes de que tu proveedor verifique la URL. Se comprueba contra lo guardado aquí, así que un formulario sin guardar falla."
     },
     "template": {
       "title": "Plantilla de mensaje",

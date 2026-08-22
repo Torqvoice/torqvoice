@@ -28,7 +28,8 @@
       "label": "Webhook adresi",
       "description": "Gelen mesajların Torqvoice'a ulaşması için bunu sağlayıcınıza yapıştırın.",
       "copy": "Webhook adresini kopyala",
-      "copied": "Webhook adresi kopyalandı"
+      "copied": "Webhook adresi kopyalandı",
+      "saveFirst": "Sağlayıcınız adresi doğrulamadan önce bu ayarları kaydedin. Doğrulama burada kayıtlı olana göre yapılır, kaydedilmemiş form geçemez."
     },
     "template": {
       "title": "Mesaj şablonu",

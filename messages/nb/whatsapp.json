@@ -28,7 +28,8 @@
       "label": "Webhook-URL",
       "description": "Lim denne inn hos leverandøren så innkommende meldinger når Torqvoice.",
       "copy": "Kopier webhook-URL",
-      "copied": "Webhook-URL kopiert"
+      "copied": "Webhook-URL kopiert",
+      "saveFirst": "Lagre disse innstillingene før leverandøren verifiserer URL-en. Den sjekkes mot det som er lagret her, så et ulagret skjema feiler."
     },
     "template": {
       "title": "Meldingsmal",

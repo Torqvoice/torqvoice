@@ -60,7 +60,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   const [revealed, setRevealed] = useState<Record<string, boolean>>({})
   const [copied, setCopied] = useState(false)
   const [testNumber, setTestNumber] = useState('')
-  const [webhookUrl, setWebhookUrl] = useState(initial.webhookUrl)
+  const [webhookUrls, setWebhookUrls] = useState(initial.webhookUrls)
 
   const provider = useMemo(
     () => initial.providers.find((option) => option.id === providerId) ?? null,
@@ -88,13 +88,19 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
       })
       if (result.success) {
         toast.success(t('saved'))
-        if (result.data?.webhookUrl) setWebhookUrl(result.data.webhookUrl)
+        const savedWebhookUrl = result.data?.webhookUrl
+        if (savedWebhookUrl) {
+          // Saving may have minted this provider's token for the first time.
+          setWebhookUrls((previous) => ({ ...previous, [provider.id]: savedWebhookUrl }))
+        }
         router.refresh()
       } else {
         toast.error(result.error ?? t('saveError'))
       }
     })
   }
+
+  const webhookUrl = webhookUrls[providerId]
 
   const handleCopyWebhook = () => {
     if (!webhookUrl) return
@@ -260,6 +266,9 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">{t('webhook.description')}</p>
+                {/* Meta calls this URL to verify it and Torqvoice answers from
+                  the stored settings, so an unsaved form fails the check. */}
+                <p className="text-xs text-muted-foreground">{t('webhook.saveFirst')}</p>
               </div>
             )}
           </fieldset>

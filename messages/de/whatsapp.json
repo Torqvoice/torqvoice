@@ -28,7 +28,8 @@
       "label": "Webhook-URL",
       "description": "Diese URL beim Anbieter eintragen, damit eingehende Nachrichten in Torqvoice ankommen.",
       "copy": "Webhook-URL kopieren",
-      "copied": "Webhook-URL kopiert"
+      "copied": "Webhook-URL kopiert",
+      "saveFirst": "Speichern Sie diese Einstellungen, bevor Ihr Anbieter die URL prüft. Geprüft wird gegen das hier Gespeicherte, ein ungespeichertes Formular fällt durch."
     },
     "template": {
       "title": "Nachrichtenvorlage",
