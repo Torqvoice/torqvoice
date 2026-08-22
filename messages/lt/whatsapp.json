@@ -75,7 +75,9 @@
       "action": "Atjungti „WhatsApp“",
       "hint": "Pašalina prisijungimo duomenis iš „Torqvoice“. Pokalbiai išlieka.",
       "done": "„WhatsApp“ atjungtas"
-    }
+    },
+    "savedIncomplete": "Įrašyta. Kad galėtumėte siųsti, dar trūksta: {fields}",
+    "fieldStillNeeded": "Dar reikia norint siųsti"
   },
   "messages": {
     "featureName": "„WhatsApp“ žinutės",

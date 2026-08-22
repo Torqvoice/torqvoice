@@ -75,7 +75,9 @@
       "action": "Koble fra WhatsApp",
       "hint": "Fjerner legitimasjonen fra Torqvoice. Samtalene beholdes.",
       "done": "WhatsApp koblet fra"
-    }
+    },
+    "savedIncomplete": "Lagret. Mangler fortsatt før du kan sende: {fields}",
+    "fieldStillNeeded": "Mangler fortsatt før du kan sende"
   },
   "messages": {
     "featureName": "WhatsApp-meldinger",

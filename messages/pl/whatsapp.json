@@ -75,7 +75,9 @@
       "action": "Rozłącz WhatsApp",
       "hint": "Usuwa dane logowania z Torqvoice. Rozmowy pozostają.",
       "done": "WhatsApp rozłączony"
-    }
+    },
+    "savedIncomplete": "Zapisano. Do wysyłania brakuje jeszcze: {fields}",
+    "fieldStillNeeded": "Wciąż potrzebne do wysyłania"
   },
   "messages": {
     "featureName": "Wiadomości WhatsApp",

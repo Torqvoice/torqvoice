@@ -75,7 +75,9 @@
       "action": "Desconectar WhatsApp",
       "hint": "Remove as credenciais do Torqvoice. Suas conversas são mantidas.",
       "done": "WhatsApp desconectado"
-    }
+    },
+    "savedIncomplete": "Salvo. Ainda falta para poder enviar: {fields}",
+    "fieldStillNeeded": "Ainda necessário para enviar"
   },
   "messages": {
     "featureName": "Mensagens WhatsApp",

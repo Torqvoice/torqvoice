@@ -75,7 +75,9 @@
       "action": "WhatsApp trennen",
       "hint": "Entfernt die Zugangsdaten aus Torqvoice. Ihre Konversationen bleiben erhalten.",
       "done": "WhatsApp getrennt"
-    }
+    },
+    "savedIncomplete": "Gespeichert. Zum Senden fehlt noch: {fields}",
+    "fieldStillNeeded": "Zum Senden noch erforderlich"
   },
   "messages": {
     "featureName": "WhatsApp-Nachrichten",

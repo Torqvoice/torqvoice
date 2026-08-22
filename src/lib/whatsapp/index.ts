@@ -123,6 +123,49 @@ function templateSetup(
   return { name, language: language || 'en', tokens: parseTemplateTokens(variables) }
 }
 
+/**
+ * Enough to answer a provider's webhook, which is less than it takes to send.
+ *
+ * A provider verifies the callback URL before a workshop has the rest of its
+ * credentials: Meta only issues a phone number ID once the webhook is live. So
+ * this asks for neither completeness nor the enabled flag, and reads whatever
+ * is stored for the provider named in the URL.
+ */
+export async function getWhatsappWebhookContext(
+  organizationId: string,
+  providerId: string
+): Promise<{ adapter: WhatsappAdapter; context: WhatsappContext } | null> {
+  const adapter = getWhatsappAdapter(providerId)
+  if (!adapter) return null
+
+  const rows = await db.appSetting.findMany({
+    where: { organizationId },
+    select: { key: true, value: true },
+  })
+  const settings = new Map(rows.map((row) => [row.key, row.value]))
+
+  // Only for the provider in the URL, so a stored Twilio token can never
+  // authorise a call that claims to be from Meta.
+  if (settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER) !== adapter.id) return null
+
+  const credentials: Record<string, string> = {}
+  for (const field of adapter.credentials) {
+    const value = settings.get(whatsappCredentialKey(adapter.id, field.key))
+    if (value) credentials[field.key] = value
+  }
+  const webhookToken = settings.get(whatsappCredentialKey(adapter.id, WHATSAPP_WEBHOOK_TOKEN_FIELD))
+  if (webhookToken) credentials[WHATSAPP_WEBHOOK_TOKEN_FIELD] = webhookToken
+
+  return {
+    adapter,
+    context: {
+      organizationId,
+      from: settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_FROM) ?? '',
+      credentials,
+    },
+  }
+}
+
 /** Cheap check for the settings UI and channel pickers. */
 export async function isWhatsappConfigured(organizationId: string): Promise<boolean> {
   return (await getWhatsappConfig(organizationId)) !== null

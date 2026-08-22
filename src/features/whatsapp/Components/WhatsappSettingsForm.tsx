@@ -58,6 +58,12 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
     initial.credentials
   )
   const [revealed, setRevealed] = useState<Record<string, boolean>>({})
+  /**
+   * Required fields left empty when a save was attempted. A placeholder like
+   * "123456789012345" reads as a filled field, so an error naming the field is
+   * not enough: the field itself has to say it.
+   */
+  const [missing, setMissing] = useState<string[]>([])
   const [copied, setCopied] = useState(false)
   const [testNumber, setTestNumber] = useState('')
   const [webhookUrls, setWebhookUrls] = useState(initial.webhookUrls)
@@ -68,6 +74,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   )
 
   const setCredential = (field: string, value: string) => {
+    setMissing((previous) => previous.filter((key) => key !== field))
     setCredentials((previous) => ({
       ...previous,
       [providerId]: { ...(previous[providerId] ?? {}), [field]: value },
@@ -76,6 +83,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
 
   const handleSave = () => {
     if (!provider) return
+
     startTransition(async () => {
       const result = await saveWhatsappSettings({
         enabled,
@@ -87,7 +95,19 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
         credentials: credentials[provider.id] ?? {},
       })
       if (result.success) {
-        toast.success(t('saved'))
+        // A half-finished setup is a normal state here: a provider issues some
+        // credentials only after the webhook it verifies is live.
+        const stillNeeded = result.data?.missing ?? []
+        setMissing(
+          provider.credentials
+            .filter((field) => stillNeeded.includes(field.label))
+            .map((field) => field.key)
+        )
+        if (stillNeeded.length > 0) {
+          toast.warning(t('savedIncomplete', { fields: stillNeeded.join(', ') }))
+        } else {
+          toast.success(t('saved'))
+        }
         const savedWebhookUrl = result.data?.webhookUrl
         if (savedWebhookUrl) {
           // Saving may have minted this provider's token for the first time.
@@ -220,6 +240,8 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                           type={field.secret && !isRevealed ? 'password' : 'text'}
                           value={value}
                           placeholder={field.placeholder}
+                          aria-invalid={missing.includes(field.key)}
+                          className={missing.includes(field.key) ? 'border-amber-500' : undefined}
                           onChange={(event) => setCredential(field.key, event.target.value)}
                         />
                         {field.secret && (
@@ -243,7 +265,11 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                           </Button>
                         )}
                       </div>
-                      {field.help && <p className="text-xs text-muted-foreground">{field.help}</p>}
+                      {missing.includes(field.key) ? (
+                        <p className="text-xs text-amber-600">{t('fieldStillNeeded')}</p>
+                      ) : (
+                        field.help && <p className="text-xs text-muted-foreground">{field.help}</p>
+                      )}
                     </div>
                   )
                 })}

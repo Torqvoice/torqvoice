@@ -75,7 +75,9 @@
       "action": "Отключить WhatsApp",
       "hint": "Удаляет данные доступа из Torqvoice. Переписка сохраняется.",
       "done": "WhatsApp отключён"
-    }
+    },
+    "savedIncomplete": "Сохранено. Для отправки ещё нужно: {fields}",
+    "fieldStillNeeded": "Ещё нужно для отправки"
   },
   "messages": {
     "featureName": "Сообщения WhatsApp",

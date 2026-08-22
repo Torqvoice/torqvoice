@@ -75,7 +75,9 @@
       "action": "WhatsApp bağlantısını kes",
       "hint": "Kimlik bilgilerini Torqvoice'tan siler. Görüşmeleriniz kalır.",
       "done": "WhatsApp bağlantısı kesildi"
-    }
+    },
+    "savedIncomplete": "Kaydedildi. Gönderebilmek için hâlâ gerekli: {fields}",
+    "fieldStillNeeded": "Göndermek için hâlâ gerekli"
   },
   "messages": {
     "featureName": "WhatsApp mesajlaşma",

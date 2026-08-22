@@ -75,7 +75,9 @@
       "action": "Disconnect WhatsApp",
       "hint": "Removes the credentials from Torqvoice. Your conversations are kept.",
       "done": "WhatsApp disconnected"
-    }
+    },
+    "savedIncomplete": "Saved. Still needed before you can send: {fields}",
+    "fieldStillNeeded": "Still needed before you can send"
   },
   "messages": {
     "featureName": "WhatsApp Messaging",

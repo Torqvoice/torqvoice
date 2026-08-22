@@ -1,5 +1,9 @@
 import { notify } from '@/lib/notify'
-import { applyWhatsappStatus, getWhatsappConfig, recordInboundWhatsapp } from '@/lib/whatsapp'
+import {
+  applyWhatsappStatus,
+  getWhatsappWebhookContext,
+  recordInboundWhatsapp,
+} from '@/lib/whatsapp'
 
 /**
  * One webhook for every WhatsApp provider.
@@ -20,26 +24,29 @@ interface RouteParams {
 export async function GET(request: Request, { params }: RouteParams) {
   const { provider, organizationId } = await params
 
-  const config = await getWhatsappConfig(organizationId)
-  if (!config || config.adapter.id !== provider || !config.adapter.verify) {
+  // Verification runs before a workshop has finished the setup, so this asks
+  // only for the verify token, not for a setup complete enough to send with.
+  const resolved = await getWhatsappWebhookContext(organizationId, provider)
+  if (!resolved?.adapter.verify) {
     return new Response('Forbidden', { status: 403 })
   }
 
-  return config.adapter.verify(request, config.context)
+  return resolved.adapter.verify(request, resolved.context)
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
   const { provider, organizationId } = await params
 
-  const config = await getWhatsappConfig(organizationId)
-  if (!config || config.adapter.id !== provider) {
-    // A workshop that switched provider or turned WhatsApp off should not
-    // trigger endless retries at the other end.
+  const resolved = await getWhatsappWebhookContext(organizationId, provider)
+  if (!resolved) {
+    // A workshop that switched provider should not trigger endless retries at
+    // the other end.
     return new Response(null, { status: 200 })
   }
+  const { adapter, context } = resolved
 
   try {
-    const events = await config.adapter.receive(request, config.context)
+    const events = await adapter.receive(request, context)
 
     for (const status of events.statuses) {
       await applyWhatsappStatus(organizationId, status)
@@ -48,7 +55,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     for (const message of events.inbound) {
       const { message: stored, customer } = await recordInboundWhatsapp(
         organizationId,
-        config.adapter.id,
+        adapter.id,
         message
       )
 
@@ -73,5 +80,5 @@ export async function POST(request: Request, { params }: RouteParams) {
     console.error(`[webhook/whatsapp/${provider}] ${(error as Error).message}`)
   }
 
-  return config.adapter.acknowledge()
+  return adapter.acknowledge()
 }

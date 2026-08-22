@@ -211,19 +211,16 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
         )
       }
 
-      // Only block switching it on: a workshop may save a half-filled form
-      // while it waits for a credential to arrive.
+      // Saved either way, and reported rather than refused. Meta hands out the
+      // phone number ID only after the webhook has been verified, so a
+      // workshop has to be able to store a verify token before it has the
+      // rest. Sending stays unavailable until the setup is complete, which
+      // getWhatsappConfig decides on its own.
       const missing = adapter.credentials
         .filter((field) => field.required)
         .filter((field) => !effective[field.key])
-      if (input.enabled && missing.length > 0) {
-        throw new Error(
-          `WhatsApp cannot be switched on yet. Missing ${missing.map((field) => field.label).join(', ')}.`
-        )
-      }
-      if (input.enabled && !entries[ORG_WHATSAPP_KEYS.WHATSAPP_FROM]) {
-        throw new Error('WhatsApp cannot be switched on without your WhatsApp number.')
-      }
+        .map((field) => field.label)
+      if (!entries[ORG_WHATSAPP_KEYS.WHATSAPP_FROM]) missing.push('WhatsApp number')
 
       await armFeatureHints(db, organizationId, userId, entries)
 
@@ -255,7 +252,11 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
           )?.value)
         : undefined
 
-      return { webhookUrl: webhookUrlFor(organizationId, adapter.id, token) }
+      return {
+        webhookUrl: webhookUrlFor(organizationId, adapter.id, token),
+        /** Still needed before anything can be sent. */
+        missing,
+      }
     },
     {
       requiredPermissions: [

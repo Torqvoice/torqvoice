@@ -75,7 +75,9 @@
       "action": "WhatsApp loskoppelen",
       "hint": "Verwijdert de gegevens uit Torqvoice. Je gesprekken blijven bewaard.",
       "done": "WhatsApp losgekoppeld"
-    }
+    },
+    "savedIncomplete": "Opgeslagen. Nog nodig om te kunnen sturen: {fields}",
+    "fieldStillNeeded": "Nog nodig om te kunnen sturen"
   },
   "messages": {
     "featureName": "WhatsApp-berichten",
