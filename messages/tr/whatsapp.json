@@ -8,7 +8,8 @@
     "saveError": "WhatsApp ayarları kaydedilemedi",
     "enable": {
       "label": "WhatsApp'ı etkinleştir",
-      "hint": "Sağlayıcı bilgileri girildikten sonra açın."
+      "hint": "Sağlayıcı bilgileri girildikten sonra açın.",
+      "disabledInfo": "Sağlayıcı, numara ve şablonu ayarlamak için WhatsApp'ı açın."
     },
     "provider": {
       "label": "Sağlayıcı",

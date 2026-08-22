@@ -8,7 +8,8 @@
     "saveError": "Could not save WhatsApp settings",
     "enable": {
       "label": "Enable WhatsApp",
-      "hint": "Turn on once your provider credentials are in place."
+      "hint": "Turn on once your provider credentials are in place.",
+      "disabledInfo": "Switch WhatsApp on to set up your provider, number and template."
     },
     "provider": {
       "label": "Provider",

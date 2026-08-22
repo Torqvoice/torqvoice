@@ -8,7 +8,8 @@
     "saveError": "Não foi possível salvar as configurações do WhatsApp",
     "enable": {
       "label": "Ativar WhatsApp",
-      "hint": "Ative quando as credenciais do provedor estiverem preenchidas."
+      "hint": "Ative quando as credenciais do provedor estiverem preenchidas.",
+      "disabledInfo": "Ative o WhatsApp para configurar provedor, número e modelo."
     },
     "provider": {
       "label": "Provedor",

@@ -8,7 +8,8 @@
     "saveError": "Nie udało się zapisać ustawień WhatsApp",
     "enable": {
       "label": "Włącz WhatsApp",
-      "hint": "Włącz, gdy dane dostawcy są już wpisane."
+      "hint": "Włącz, gdy dane dostawcy są już wpisane.",
+      "disabledInfo": "Włącz WhatsApp, aby skonfigurować dostawcę, numer i szablon."
     },
     "provider": {
       "label": "Dostawca",

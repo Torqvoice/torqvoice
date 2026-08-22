@@ -8,7 +8,8 @@
     "saveError": "Kunne ikke lagre WhatsApp-innstillingene",
     "enable": {
       "label": "Slå på WhatsApp",
-      "hint": "Slå på når legitimasjonen fra leverandøren er på plass."
+      "hint": "Slå på når legitimasjonen fra leverandøren er på plass.",
+      "disabledInfo": "Slå på WhatsApp for å sette opp leverandør, nummer og mal."
     },
     "provider": {
       "label": "Leverandør",

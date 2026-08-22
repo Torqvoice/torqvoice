@@ -8,7 +8,8 @@
     "saveError": "Impossible d'enregistrer les paramètres WhatsApp",
     "enable": {
       "label": "Activer WhatsApp",
-      "hint": "Activez une fois les identifiants du fournisseur renseignés."
+      "hint": "Activez une fois les identifiants du fournisseur renseignés.",
+      "disabledInfo": "Activez WhatsApp pour configurer votre fournisseur, votre numéro et votre modèle."
     },
     "provider": {
       "label": "Fournisseur",

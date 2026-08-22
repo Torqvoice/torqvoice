@@ -152,101 +152,112 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
             <Switch id="enable-whatsapp" checked={enabled} onCheckedChange={setEnabled} />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp-provider">{t('provider.label')}</Label>
-              <Select value={providerId} onValueChange={setProviderId}>
-                <SelectTrigger id="whatsapp-provider">
-                  <SelectValue placeholder={t('provider.placeholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {initial.providers.map((option) => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">{t('provider.hint')}</p>
+          {!enabled && (
+            <div className="flex items-start gap-3 rounded-lg border bg-muted/50 p-4">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">{t('enable.disabledInfo')}</p>
             </div>
+          )}
 
-            <div className="space-y-2">
-              <Label htmlFor="whatsapp-from">{t('from.label')}</Label>
-              <Input
-                id="whatsapp-from"
-                value={from}
-                onChange={(event) => setFrom(event.target.value)}
-                placeholder="+49 151 12345678"
-              />
-              <p className="text-xs text-muted-foreground">{t('from.hint')}</p>
-            </div>
-          </div>
-
-          {provider && (
+          {/* A fieldset disables every control inside it, including the ones
+              that are buttons rather than inputs. */}
+          <fieldset disabled={!enabled} className="space-y-6 disabled:opacity-50">
             <div className="grid gap-4 md:grid-cols-2">
-              {provider.credentials.map((field) => {
-                const value = credentials[provider.id]?.[field.key] ?? ''
-                const isRevealed = revealed[field.key] ?? false
-                return (
-                  <div key={field.key} className="space-y-2">
-                    <Label htmlFor={`whatsapp-${field.key}`}>
-                      {field.label}
-                      {field.required && ' *'}
-                    </Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id={`whatsapp-${field.key}`}
-                        type={field.secret && !isRevealed ? 'password' : 'text'}
-                        value={value}
-                        placeholder={field.placeholder}
-                        onChange={(event) => setCredential(field.key, event.target.value)}
-                      />
-                      {field.secret && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() =>
-                            setRevealed((previous) => ({
-                              ...previous,
-                              [field.key]: !isRevealed,
-                            }))
-                          }
-                          aria-label={isRevealed ? t('secret.hide') : t('secret.show')}
-                        >
-                          {isRevealed ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                    {field.help && <p className="text-xs text-muted-foreground">{field.help}</p>}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-          {webhookUrl && (
-            <div className="space-y-2">
-              <Label>{t('webhook.label')}</Label>
-              <div className="flex items-center gap-2">
-                <Input readOnly value={webhookUrl} className="font-mono text-xs" />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={handleCopyWebhook}
-                  aria-label={t('webhook.copy')}
-                >
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp-provider">{t('provider.label')}</Label>
+                <Select value={providerId} onValueChange={setProviderId}>
+                  <SelectTrigger id="whatsapp-provider">
+                    <SelectValue placeholder={t('provider.placeholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {initial.providers.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">{t('provider.hint')}</p>
               </div>
-              <p className="text-xs text-muted-foreground">{t('webhook.description')}</p>
+
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp-from">{t('from.label')}</Label>
+                <Input
+                  id="whatsapp-from"
+                  value={from}
+                  onChange={(event) => setFrom(event.target.value)}
+                  placeholder="+49 151 12345678"
+                />
+                <p className="text-xs text-muted-foreground">{t('from.hint')}</p>
+              </div>
             </div>
-          )}
+
+            {provider && (
+              <div className="grid gap-4 md:grid-cols-2">
+                {provider.credentials.map((field) => {
+                  const value = credentials[provider.id]?.[field.key] ?? ''
+                  const isRevealed = revealed[field.key] ?? false
+                  return (
+                    <div key={field.key} className="space-y-2">
+                      <Label htmlFor={`whatsapp-${field.key}`}>
+                        {field.label}
+                        {field.required && ' *'}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id={`whatsapp-${field.key}`}
+                          type={field.secret && !isRevealed ? 'password' : 'text'}
+                          value={value}
+                          placeholder={field.placeholder}
+                          onChange={(event) => setCredential(field.key, event.target.value)}
+                        />
+                        {field.secret && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                              setRevealed((previous) => ({
+                                ...previous,
+                                [field.key]: !isRevealed,
+                              }))
+                            }
+                            aria-label={isRevealed ? t('secret.hide') : t('secret.show')}
+                          >
+                            {isRevealed ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                      {field.help && <p className="text-xs text-muted-foreground">{field.help}</p>}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {webhookUrl && (
+              <div className="space-y-2">
+                <Label>{t('webhook.label')}</Label>
+                <div className="flex items-center gap-2">
+                  <Input readOnly value={webhookUrl} className="font-mono text-xs" />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleCopyWebhook}
+                    aria-label={t('webhook.copy')}
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">{t('webhook.description')}</p>
+              </div>
+            )}
+          </fieldset>
         </AppCard>
 
         <AppCard
@@ -259,73 +270,89 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
             <p className="text-sm text-muted-foreground">{t('template.windowExplainer')}</p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              {/* Providers disagree on what this is, and getting it wrong shows
+          <fieldset disabled={!enabled} className="space-y-4 disabled:opacity-50">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                {/* Providers disagree on what this is, and getting it wrong shows
                   up only as a rejected send, so the wording comes from the
                   provider rather than from us. */}
-              <Label htmlFor="whatsapp-template">
-                {provider?.template.label ?? t('template.nameLabel')}
-              </Label>
-              <Input
-                id="whatsapp-template"
-                value={templateName}
-                onChange={(event) => setTemplateName(event.target.value)}
-                placeholder={provider?.template.placeholder}
-              />
-              <p className="text-xs text-muted-foreground">
-                {provider?.template.help ?? t('template.nameHint')}
-              </p>
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>{t('template.variablesLabel')}</Label>
-              <TemplateVariablePicker value={templateVariables} onChange={setTemplateVariables} />
-              <p className="text-xs text-muted-foreground">{t('template.variablesHint')}</p>
+                <Label htmlFor="whatsapp-template">
+                  {provider?.template.label ?? t('template.nameLabel')}
+                </Label>
+                <Input
+                  id="whatsapp-template"
+                  value={templateName}
+                  onChange={(event) => setTemplateName(event.target.value)}
+                  placeholder={provider?.template.placeholder}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {provider?.template.help ?? t('template.nameHint')}
+                </p>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label>{t('template.variablesLabel')}</Label>
+                <TemplateVariablePicker
+                  value={templateVariables}
+                  onChange={setTemplateVariables}
+                  offered={
+                    // Meta takes the photo as a header parameter at send time,
+                    // so offering it as a body value would only put a token
+                    // string into the message text.
+                    provider?.template.mediaAs === 'header'
+                      ? TEMPLATE_TOKENS.filter((token) => token !== 'photo')
+                      : TEMPLATE_TOKENS
+                  }
+                />
+                <p className="text-xs text-muted-foreground">{t('template.variablesHint')}</p>
 
-              {/* A media template's URL field is validated as a real URL, so
+                {/* A media template's URL field is validated as a real URL, so
                   the workshop pastes this prefix and puts the variable at the
                   end rather than using the variable alone. */}
-              {provider?.template.mediaAs === 'variable' && templateVariables.includes('photo') && (
-                <div className="space-y-1 rounded-lg border border-dashed bg-muted/30 p-3">
-                  <p className="text-xs font-medium">{t('template.mediaUrlLabel')}</p>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      readOnly
-                      value={`${initial.mediaUrlPrefix}{{n}}`}
-                      className="font-mono text-xs"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${initial.mediaUrlPrefix}{{n}}`)
-                        toast.success(t('template.mediaUrlCopied'))
-                      }}
-                      aria-label={t('template.mediaUrlCopy')}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{t('template.mediaUrlHint')}</p>
-                  <p className="text-xs text-muted-foreground">{t('template.mediaUrlSample')}</p>
+                {provider?.template.mediaAs === 'variable' &&
+                  templateVariables.includes('photo') && (
+                    <div className="space-y-1 rounded-lg border border-dashed bg-muted/30 p-3">
+                      <p className="text-xs font-medium">{t('template.mediaUrlLabel')}</p>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          readOnly
+                          value={`${initial.mediaUrlPrefix}{{n}}`}
+                          className="font-mono text-xs"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${initial.mediaUrlPrefix}{{n}}`)
+                            toast.success(t('template.mediaUrlCopied'))
+                          }}
+                          aria-label={t('template.mediaUrlCopy')}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{t('template.mediaUrlHint')}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('template.mediaUrlSample')}
+                      </p>
+                    </div>
+                  )}
+              </div>
+
+              {provider?.template.usesLanguage !== false && (
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp-template-language">{t('template.languageLabel')}</Label>
+                  <Input
+                    id="whatsapp-template-language"
+                    value={templateLanguage}
+                    onChange={(event) => setTemplateLanguage(event.target.value)}
+                    placeholder="de"
+                  />
+                  <p className="text-xs text-muted-foreground">{t('template.languageHint')}</p>
                 </div>
               )}
             </div>
-
-            {provider?.template.usesLanguage !== false && (
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp-template-language">{t('template.languageLabel')}</Label>
-                <Input
-                  id="whatsapp-template-language"
-                  value={templateLanguage}
-                  onChange={(event) => setTemplateLanguage(event.target.value)}
-                  placeholder="de"
-                />
-                <p className="text-xs text-muted-foreground">{t('template.languageHint')}</p>
-              </div>
-            )}
-          </div>
+          </fieldset>
         </AppCard>
 
         <SaveButton>

@@ -8,7 +8,8 @@
     "saveError": "Nepavyko įrašyti „WhatsApp“ nustatymų",
     "enable": {
       "label": "Įjungti „WhatsApp“",
-      "hint": "Įjunkite, kai tiekėjo prisijungimo duomenys suvesti."
+      "hint": "Įjunkite, kai tiekėjo prisijungimo duomenys suvesti.",
+      "disabledInfo": "Įjunkite „WhatsApp“, kad nustatytumėte tiekėją, numerį ir šabloną."
     },
     "provider": {
       "label": "Tiekėjas",

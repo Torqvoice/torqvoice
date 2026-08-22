@@ -8,7 +8,8 @@
     "saveError": "No se pudieron guardar los ajustes de WhatsApp",
     "enable": {
       "label": "Activar WhatsApp",
-      "hint": "Actívalo cuando las credenciales del proveedor estén puestas."
+      "hint": "Actívalo cuando las credenciales del proveedor estén puestas.",
+      "disabledInfo": "Activa WhatsApp para configurar tu proveedor, número y plantilla."
     },
     "provider": {
       "label": "Proveedor",

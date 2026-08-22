@@ -8,7 +8,8 @@
     "saveError": "WhatsApp-Einstellungen konnten nicht gespeichert werden",
     "enable": {
       "label": "WhatsApp aktivieren",
-      "hint": "Einschalten, sobald die Zugangsdaten des Anbieters hinterlegt sind."
+      "hint": "Einschalten, sobald die Zugangsdaten des Anbieters hinterlegt sind.",
+      "disabledInfo": "Schalten Sie WhatsApp ein, um Anbieter, Nummer und Vorlage einzurichten."
     },
     "provider": {
       "label": "Anbieter",

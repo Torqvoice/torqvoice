@@ -8,7 +8,8 @@
     "saveError": "Kon de WhatsApp-instellingen niet opslaan",
     "enable": {
       "label": "WhatsApp inschakelen",
-      "hint": "Zet aan zodra de gegevens van je provider ingevuld zijn."
+      "hint": "Zet aan zodra de gegevens van je provider ingevuld zijn.",
+      "disabledInfo": "Schakel WhatsApp in om je provider, nummer en sjabloon in te stellen."
     },
     "provider": {
       "label": "Provider",
