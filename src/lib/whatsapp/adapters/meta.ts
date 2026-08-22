@@ -96,6 +96,7 @@ export const metaAdapter: WhatsappAdapter = {
     help: 'The name of a template approved in WhatsApp Manager, for example vehicle_ready.',
     placeholder: 'vehicle_ready',
     usesLanguage: true,
+    mediaAs: 'header',
     validate: (value) =>
       /^[a-z0-9_]+$/.test(value)
         ? null

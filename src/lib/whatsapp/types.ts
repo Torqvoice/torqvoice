@@ -127,6 +127,18 @@ export interface WhatsappTemplateField {
   placeholder?: string
   /** False when the template resource already knows its own language. */
   usesLanguage: boolean
+  /**
+   * How a photo reaches a template, which the two providers do differently.
+   *
+   * 'header': the template fixes only the media *type* at creation, and the
+   * image itself is handed over whole at send time as a header parameter.
+   * Meta works this way, so the workshop has nothing to configure.
+   *
+   * 'variable': the media URL belongs to the template, and a variable may only
+   * follow the domain, so the workshop leaves a placeholder at the end of it
+   * and we supply the last segment.
+   */
+  mediaAs: 'header' | 'variable'
   /** Returns an error when the value cannot be right, or null when it may be. */
   validate?: (value: string) => string | null
 }

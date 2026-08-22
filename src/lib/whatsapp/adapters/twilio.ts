@@ -69,6 +69,7 @@ export const twilioAdapter: WhatsappAdapter = {
     help: 'Twilio approves templates as Content resources. Copy the SID from Twilio Content Template Builder; it starts with HX. A template name will be rejected.',
     placeholder: 'HXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     usesLanguage: false,
+    mediaAs: 'variable',
     validate: (value) =>
       /^HX[0-9a-fA-F]{32}$/.test(value)
         ? null

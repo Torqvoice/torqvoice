@@ -44,6 +44,7 @@ export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
       help: adapter.template.help,
       placeholder: adapter.template.placeholder,
       usesLanguage: adapter.template.usesLanguage,
+      mediaAs: adapter.template.mediaAs,
     },
   }))
 }

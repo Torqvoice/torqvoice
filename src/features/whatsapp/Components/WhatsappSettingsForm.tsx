@@ -23,6 +23,7 @@ import {
   SaveButton,
 } from '@/app/(authenticated)/settings/read-only-guard'
 import { TemplateVariablePicker } from './TemplateVariablePicker'
+import { TEMPLATE_TOKENS } from '../Schema/templateTokens'
 import {
   disconnectWhatsapp,
   saveWhatsappSettings,
@@ -284,7 +285,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
               {/* A media template's URL field is validated as a real URL, so
                   the workshop pastes this prefix and puts the variable at the
                   end rather than using the variable alone. */}
-              {templateVariables.includes('photo') && (
+              {provider?.template.mediaAs === 'variable' && templateVariables.includes('photo') && (
                 <div className="space-y-1 rounded-lg border border-dashed bg-muted/30 p-3">
                   <p className="text-xs font-medium">{t('template.mediaUrlLabel')}</p>
                   <div className="flex items-center gap-2">

@@ -17,10 +17,13 @@ import { TEMPLATE_TOKENS, parseTemplateTokens, type TemplateToken } from '../Sch
 export function TemplateVariablePicker({
   value,
   onChange,
+  offered = TEMPLATE_TOKENS,
 }: {
   /** Comma-separated tokens, exactly as stored. */
   value: string
   onChange: (next: string) => void
+  /** Narrowed when a provider handles some of them itself. */
+  offered?: readonly TemplateToken[]
 }) {
   const t = useTranslations('whatsapp.settings.template')
   const selected = parseTemplateTokens(value)
@@ -61,7 +64,7 @@ export function TemplateVariablePicker({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {TEMPLATE_TOKENS.map((token) => (
+        {offered.map((token) => (
           <button
             key={token}
             type="button"
