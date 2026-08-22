@@ -80,14 +80,14 @@ export function SendPhotoToWhatsapp({
     <>
       <Button
         type="button"
-        variant="secondary"
-        size="icon"
-        className="h-8 w-8"
+        variant="ghost"
+        size="sm"
+        className="h-7 shrink-0 px-2 text-xs text-muted-foreground hover:text-foreground"
         onClick={() => setOpen(true)}
         title={t('action')}
-        aria-label={t('action')}
       >
-        <MessageCircle className="h-4 w-4" />
+        <MessageCircle className="mr-1 h-3.5 w-3.5" />
+        {t('send')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Bell, Loader2, Mail, MessageCircle, MessageSquare, Send } from 'lucide-react'
+import { getWhatsappTemplateState } from '@/features/whatsapp/Actions/whatsappActions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -90,6 +91,8 @@ export function ScheduleMessageDialog({
   const isEdit = !!message
 
   const [channel, setChannel] = useState<MessageChannel>(availableChannels[0] ?? 'email')
+  /** Null until asked; a scheduled WhatsApp needs an approved text template. */
+  const [whatsappTemplateReady, setWhatsappTemplateReady] = useState<boolean | null>(null)
   const [customerId, setCustomerId] = useState('')
   const [recipient, setRecipient] = useState('')
   const [subject, setSubject] = useState('')
@@ -128,6 +131,19 @@ export function ScheduleMessageDialog({
       setEndDate('')
     }
   }, [open, message, defaultDate, defaultBody, defaultCustomer?.id, availableChannels])
+
+  // A scheduled message fires later, when the customer's 24 hour window has
+  // almost certainly closed, so it goes as a template or not at all.
+  useEffect(() => {
+    if (channel !== 'whatsapp' || whatsappTemplateReady !== null) return
+    let active = true
+    getWhatsappTemplateState().then((result) => {
+      if (active) setWhatsappTemplateReady(result.success ? !!result.data?.hasTextTemplate : null)
+    })
+    return () => {
+      active = false
+    }
+  }, [channel, whatsappTemplateReady])
 
   const needsRecipient = channel !== 'in_app' && !customerId
   const recipientLabel = useMemo(() => {
@@ -225,6 +241,12 @@ export function ScheduleMessageDialog({
               </Select>
             </div>
           </div>
+
+          {channel === 'whatsapp' && whatsappTemplateReady === false && (
+            <p className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-xs text-amber-700">
+              {t('whatsappNeedsTemplate')}
+            </p>
+          )}
 
           {channel !== 'in_app' && (
             <div className="space-y-2">

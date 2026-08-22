@@ -40,7 +40,8 @@
     "schedule": "Schedule",
     "scheduled": "Message scheduled",
     "updated": "Scheduled message updated",
-    "saveError": "Could not save the message"
+    "saveError": "Could not save the message",
+    "whatsappNeedsTemplate": "This will be sent long after the customer's 24 hour window closes, and no WhatsApp text template is set up, so it would fail at send time. Set one up in Settings > Providers > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Schedule message",

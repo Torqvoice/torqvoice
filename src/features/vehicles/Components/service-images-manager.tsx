@@ -239,26 +239,16 @@ export function ServiceImagesManager({
                   className="aspect-square w-full cursor-pointer object-cover"
                   onClick={() => setCarouselIndex(images.indexOf(file))}
                 />
-                <div className="absolute right-1 top-1 flex gap-1 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
-                  {customerId && (
-                    <SendPhotoToWhatsapp
-                      customerId={customerId}
-                      fileUrl={file.fileUrl}
-                      fileName={file.fileName}
-                      serviceRecordId={serviceRecordId}
-                    />
-                  )}
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="icon"
-                    className="h-6 w-6"
-                    onClick={() => handleDelete(file.id)}
-                    aria-label={t('header.delete')}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon"
+                  className="absolute right-1 top-1 h-6 w-6 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+                  onClick={() => handleDelete(file.id)}
+                  aria-label={t('header.delete')}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
               </div>
               <div className="space-y-1 p-1.5">
                 <Input
@@ -268,14 +258,24 @@ export function ServiceImagesManager({
                   onBlur={(e) => handleDescriptionBlur(file.id, e.target.value)}
                   className="h-7 text-xs"
                 />
-                <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Switch
-                    checked={file.includeInInvoice}
-                    onCheckedChange={(checked) => handleToggleInvoice(file.id, checked)}
-                    className="scale-75"
-                  />
-                  {t('images.invoice')}
-                </label>
+                <div className="flex items-center justify-between gap-1">
+                  <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Switch
+                      checked={file.includeInInvoice}
+                      onCheckedChange={(checked) => handleToggleInvoice(file.id, checked)}
+                      className="scale-75"
+                    />
+                    {t('images.invoice')}
+                  </label>
+                  {customerId && (
+                    <SendPhotoToWhatsapp
+                      customerId={customerId}
+                      fileUrl={file.fileUrl}
+                      fileName={file.fileName}
+                      serviceRecordId={serviceRecordId}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           ))}

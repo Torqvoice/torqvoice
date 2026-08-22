@@ -40,7 +40,8 @@
     "schedule": "Agendar",
     "scheduled": "Mensagem agendada",
     "updated": "Mensagem agendada atualizada",
-    "saveError": "Não foi possível salvar a mensagem"
+    "saveError": "Não foi possível salvar a mensagem",
+    "whatsappNeedsTemplate": "Isto será enviado bem depois de a janela de 24 horas fechar e não há modelo de texto do WhatsApp configurado, então falharia no envio. Configure um em Configurações > Provedores > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Agendar mensagem",

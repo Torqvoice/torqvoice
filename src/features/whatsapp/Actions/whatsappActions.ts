@@ -86,6 +86,30 @@ export async function isWhatsappReady() {
   )
 }
 
+/**
+ * Which approved templates exist.
+ *
+ * Asked before scheduling: a scheduled message almost always fires outside the
+ * 24 hour window, so without a text template it would fail days later with
+ * nobody watching.
+ */
+export async function getWhatsappTemplateState() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const config = await getWhatsappConfig(organizationId)
+      return {
+        hasTextTemplate: config?.template != null,
+        hasMediaTemplate: config?.mediaTemplate != null,
+      }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
 export interface SendWhatsappToCustomerInput {
   customerId: string
   body?: string
