@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Adres media skopiowany",
       "mediaUrlSample": "Jako wartość przykładową u dostawcy użyj: sample",
       "textTitle": "Wiadomości tekstowe",
-      "textDescription": "Używane, gdy piszesz bez zdjęcia.",
+      "textDescription": "Używany, gdy piszesz bez zdjęcia: z Wiadomości, z zakładki WhatsApp u klienta lub z zaplanowanej wiadomości.",
       "mediaTitle": "Wiadomości ze zdjęciem",
-      "mediaDescription": "Używane przy wysyłaniu zdjęcia. WhatsApp ustala typ medium przy zatwierdzaniu, więc to musi być osobny szablon."
+      "mediaDescription": "Używany przez przycisk Wyślij przez WhatsApp przy zdjęciach zlecenia i zawsze, gdy dołączasz zdjęcie w rozmowie.",
+      "textMissing": "Nieskonfigurowane: nie napiszesz do klienta, który nie pisał przez ostatnie 24 godziny.",
+      "mediaMissing": "Nieskonfigurowane: nie wyślesz zdjęć klientowi, który nie pisał przez ostatnie 24 godziny."
     },
     "test": {
       "title": "Test i rozłączenie",

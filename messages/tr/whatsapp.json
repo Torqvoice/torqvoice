@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Medya adresi kopyalandı",
       "mediaUrlSample": "Sağlayıcıdaki örnek değer olarak şunu kullanın: sample",
       "textTitle": "Metin mesajları",
-      "textDescription": "Fotoğraf eklemeden yazdığınızda kullanılır.",
+      "textDescription": "Fotoğrafsız yazdığınızda kullanılır: Mesajlar'dan, müşterinin WhatsApp sekmesinden veya planlanmış bir mesajdan.",
       "mediaTitle": "Fotoğraflı mesajlar",
-      "mediaDescription": "Fotoğraf gönderirken kullanılır. WhatsApp şablonun medya türünü onayda sabitler, bu yüzden ayrı bir şablon gerekir."
+      "mediaDescription": "Bir işin fotoğraflarındaki WhatsApp'tan gönder düğmesi ve bir görüşmede fotoğraf eklediğiniz her durumda kullanılır.",
+      "textMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye yazamazsınız.",
+      "mediaMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye fotoğraf gönderemezsiniz."
     },
     "test": {
       "title": "Test ve bağlantıyı kes",

@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Media-URL gekopieerd",
       "mediaUrlSample": "Gebruik als voorbeeldwaarde bij de provider: sample",
       "textTitle": "Tekstberichten",
-      "textDescription": "Gebruikt wanneer je schrijft zonder foto.",
+      "textDescription": "Gebruikt wanneer je zonder foto schrijft: vanuit Berichten, vanuit het WhatsApp-tabblad bij een klant of vanuit een gepland bericht.",
       "mediaTitle": "Berichten met foto",
-      "mediaDescription": "Gebruikt bij het sturen van een foto. WhatsApp legt het mediatype vast bij goedkeuring, dus dit moet een apart sjabloon zijn."
+      "mediaDescription": "Gebruikt door de knop Via WhatsApp sturen bij de foto's van een werkorder, en telkens als je een foto toevoegt in een gesprek.",
+      "textMissing": "Niet ingesteld: je kunt geen klant schrijven die de afgelopen 24 uur niets stuurde.",
+      "mediaMissing": "Niet ingesteld: je kunt geen foto's sturen naar een klant die de afgelopen 24 uur niets stuurde."
     },
     "test": {
       "title": "Testen en loskoppelen",

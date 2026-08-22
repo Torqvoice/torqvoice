@@ -56,9 +56,11 @@
       "mediaUrlCopied": "URL de medios copiada",
       "mediaUrlSample": "Como valor de muestra en el proveedor, usa: sample",
       "textTitle": "Mensajes de texto",
-      "textDescription": "Se usa cuando escribes sin adjuntar una foto.",
+      "textDescription": "Se usa cuando escribes sin adjuntar foto: desde Mensajes, desde la pestaña WhatsApp de un cliente o desde un mensaje programado.",
       "mediaTitle": "Mensajes con foto",
-      "mediaDescription": "Se usa al enviar una foto. WhatsApp fija el tipo de medio al aprobar la plantilla, así que esta debe ser otra distinta."
+      "mediaDescription": "Lo usa el botón Enviar por WhatsApp en las fotos de un trabajo, y siempre que adjuntas una foto en una conversación.",
+      "textMissing": "Sin configurar: no puedes escribir a un cliente que no te ha escrito en las últimas 24 horas.",
+      "mediaMissing": "Sin configurar: no puedes enviar fotos a un cliente que no te ha escrito en las últimas 24 horas."
     },
     "test": {
       "title": "Probar y desconectar",

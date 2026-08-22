@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Medien-URL kopiert",
       "mediaUrlSample": "Als Beispielwert beim Anbieter verwenden: sample",
       "textTitle": "Textnachrichten",
-      "textDescription": "Wird verwendet, wenn Sie ohne Foto schreiben.",
+      "textDescription": "Wird verwendet, wenn Sie ohne Foto schreiben: aus Nachrichten, aus dem WhatsApp-Tab beim Kunden oder aus einer geplanten Nachricht.",
       "mediaTitle": "Nachrichten mit Foto",
-      "mediaDescription": "Wird beim Senden eines Fotos verwendet. WhatsApp legt den Medientyp bei der Freigabe fest, daher braucht es eine eigene Vorlage."
+      "mediaDescription": "Wird vom Button „Per WhatsApp senden“ bei den Fotos eines Auftrags verwendet und immer, wenn Sie in einer Konversation ein Foto anhängen.",
+      "textMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, nicht schreiben.",
+      "mediaMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, keine Fotos senden."
     },
     "test": {
       "title": "Test und Trennen",

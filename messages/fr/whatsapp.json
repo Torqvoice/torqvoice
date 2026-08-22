@@ -56,9 +56,11 @@
       "mediaUrlCopied": "URL du média copiée",
       "mediaUrlSample": "Comme valeur d'exemple chez le fournisseur, utilisez : sample",
       "textTitle": "Messages texte",
-      "textDescription": "Utilisé quand vous écrivez sans photo jointe.",
+      "textDescription": "Utilisé quand vous écrivez sans photo : depuis Messages, depuis l'onglet WhatsApp d'un client ou depuis un message programmé.",
       "mediaTitle": "Messages avec photo",
-      "mediaDescription": "Utilisé à l'envoi d'une photo. WhatsApp fige le type de média à l'approbation, il faut donc un modèle distinct."
+      "mediaDescription": "Utilisé par le bouton Envoyer sur WhatsApp sur les photos d'une intervention, et dès que vous joignez une photo dans une conversation.",
+      "textMissing": "Non configuré : vous ne pouvez pas écrire à un client qui n'a pas écrit depuis 24 heures.",
+      "mediaMissing": "Non configuré : vous ne pouvez pas envoyer de photos à un client qui n'a pas écrit depuis 24 heures."
     },
     "test": {
       "title": "Tester et déconnecter",

@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Media URL copied",
       "mediaUrlSample": "For the provider's sample value, use: sample",
       "textTitle": "Text messages",
-      "textDescription": "Used when you write without a photo attached.",
+      "textDescription": "Used when you write with no photo attached: from Messages, from the WhatsApp tab on a customer, or from a scheduled message.",
       "mediaTitle": "Messages with a photo",
-      "mediaDescription": "Used when you send a photo. WhatsApp fixes a template's media type when it is approved, so this has to be a separate template."
+      "mediaDescription": "Used by the Send on WhatsApp button on a job's photos, and whenever you attach a photo in a conversation.",
+      "textMissing": "Not set up: you cannot write to a customer who has not messaged in the last 24 hours.",
+      "mediaMissing": "Not set up: you cannot send photos to a customer who has not messaged in the last 24 hours."
     },
     "test": {
       "title": "Test and disconnect",

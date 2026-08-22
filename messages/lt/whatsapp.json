@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Medijos URL nukopijuotas",
       "mediaUrlSample": "Kaip pavyzdinę reikšmę pas tiekėją naudokite: sample",
       "textTitle": "Tekstinės žinutės",
-      "textDescription": "Naudojama, kai rašote be nuotraukos.",
+      "textDescription": "Naudojama, kai rašote be nuotraukos: iš Žinučių, iš kliento „WhatsApp“ kortelės arba iš suplanuotos žinutės.",
       "mediaTitle": "Žinutės su nuotrauka",
-      "mediaDescription": "Naudojama siunčiant nuotrauką. „WhatsApp“ nustato medijos tipą patvirtinimo metu, todėl reikia atskiro šablono."
+      "mediaDescription": "Naudojama mygtuko „Siųsti per WhatsApp“ prie darbo nuotraukų ir visada, kai pokalbyje pridedate nuotrauką.",
+      "textMissing": "Nenustatyta: negalėsite rašyti klientui, kuris nerašė pastarąsias 24 valandas.",
+      "mediaMissing": "Nenustatyta: negalėsite siųsti nuotraukų klientui, kuris nerašė pastarąsias 24 valandas."
     },
     "test": {
       "title": "Bandymas ir atjungimas",

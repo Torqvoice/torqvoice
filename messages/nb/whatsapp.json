@@ -56,9 +56,11 @@
       "mediaUrlCopied": "Medie-URL kopiert",
       "mediaUrlSample": "Som eksempelverdi hos leverandøren, bruk: sample",
       "textTitle": "Tekstmeldinger",
-      "textDescription": "Brukes når du skriver uten bilde.",
+      "textDescription": "Brukes når du skriver uten bilde: fra Meldinger, fra WhatsApp-fanen på en kunde, eller fra en planlagt melding.",
       "mediaTitle": "Meldinger med bilde",
-      "mediaDescription": "Brukes når du sender et bilde. WhatsApp låser medietypen ved godkjenning, så dette må være en egen mal."
+      "mediaDescription": "Brukes av Send på WhatsApp-knappen på bildene i en jobb, og hver gang du legger ved et bilde i en samtale.",
+      "textMissing": "Ikke satt opp: du kan ikke skrive til en kunde som ikke har meldt fra de siste 24 timene.",
+      "mediaMissing": "Ikke satt opp: du kan ikke sende bilder til en kunde som ikke har meldt fra de siste 24 timene."
     },
     "test": {
       "title": "Test og koble fra",

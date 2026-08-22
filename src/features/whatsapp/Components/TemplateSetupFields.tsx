@@ -64,6 +64,13 @@ export function TemplateSetupFields({
         <p className="text-xs text-muted-foreground">
           {t(kind === 'media' ? 'mediaDescription' : 'textDescription')}
         </p>
+        {/* An empty template is not an error, but it does close off a whole
+            way of reaching customers, which is worth saying here. */}
+        {!name.trim() && (
+          <p className="text-xs text-amber-600">
+            {t(kind === 'media' ? 'mediaMissing' : 'textMissing')}
+          </p>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
