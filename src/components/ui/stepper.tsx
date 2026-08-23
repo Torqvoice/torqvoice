@@ -32,6 +32,8 @@ type StepItemContextValue = {
   step: number
   state: 'active' | 'completed' | 'inactive'
   disabled: boolean
+  /** Outstanding work, drawn to be noticed rather than merely unfilled. */
+  attention: boolean
 }
 
 const StepItemContext = React.createContext<StepItemContextValue | null>(null)
@@ -77,6 +79,7 @@ function StepperItem({
   step,
   completed = false,
   disabled = false,
+  attention = false,
   className,
   ...props
 }: React.ComponentProps<'div'> & {
@@ -84,13 +87,15 @@ function StepperItem({
   /** Marks a step done even when it is not the one behind the cursor. */
   completed?: boolean
   disabled?: boolean
+  /** Marks a step as still needing something, whether or not it has been visited. */
+  attention?: boolean
 }) {
   const { value } = useStepper()
   const state: StepItemContextValue['state'] =
     completed || value > step ? 'completed' : value === step ? 'active' : 'inactive'
 
   return (
-    <StepItemContext.Provider value={{ step, state, disabled }}>
+    <StepItemContext.Provider value={{ step, state, disabled, attention }}>
       <div
         data-slot="stepper-item"
         data-state={state}
@@ -131,17 +136,21 @@ function StepperTrigger({ className, children, ...props }: React.ComponentProps<
 }
 
 function StepperIndicator({ className, children, ...props }: React.ComponentProps<'span'>) {
-  const { step, state } = useStepItem()
+  const { step, state, attention } = useStepItem()
 
   return (
     <span
       data-slot="stepper-indicator"
       data-state={state}
+      data-attention={attention || undefined}
       className={cn(
         'flex size-8 shrink-0 items-center justify-center rounded-full border text-sm font-medium transition-colors',
         'data-[state=inactive]:border-border data-[state=inactive]:text-muted-foreground',
         'data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
         'data-[state=completed]:border-primary/40 data-[state=completed]:bg-primary/10 data-[state=completed]:text-primary',
+        // Outstanding, and not the step being worked on: worth noticing without
+        // shouting, since none of it is an error.
+        'data-[attention]:data-[state=inactive]:border-amber-500/60 data-[attention]:data-[state=inactive]:bg-amber-500/10 data-[attention]:data-[state=inactive]:text-amber-700',
         className
       )}
       {...props}

@@ -265,12 +265,21 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
             <>
               <Stepper value={current} onValueChange={setCurrent}>
                 {stepList.map((entry) => (
-                  <StepperItem key={entry.step} step={entry.step} completed={entry.done}>
+                  <StepperItem
+                    key={entry.step}
+                    step={entry.step}
+                    completed={entry.done}
+                    attention={!entry.done}
+                  >
                     <StepperTrigger>
                       <StepperIndicator>
                         {entry.done ? <Check className="h-4 w-4" /> : entry.step}
                       </StepperIndicator>
-                      <StepperTitle className="hidden lg:block">
+                      <StepperTitle
+                        className={
+                          entry.done ? 'hidden lg:block' : 'hidden text-amber-700 lg:block'
+                        }
+                      >
                         {t(`steps.${entry.key}.title`)}
                       </StepperTitle>
                     </StepperTrigger>
