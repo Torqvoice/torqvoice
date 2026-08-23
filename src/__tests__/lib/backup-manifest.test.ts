@@ -162,6 +162,44 @@ describe('backup manifest', () => {
   })
 })
 
+describe('the routes implement the manifest', () => {
+  const exportRoute = fs.readFileSync('src/app/api/protected/backup/export/route.ts', 'utf-8')
+  const importRoute = fs.readFileSync('src/app/api/protected/backup/import/route.ts', 'utf-8')
+
+  it('writes every top-level key on the way out', () => {
+    const missing = topLevelEntities()
+      .filter((entity) => !exportRoute.includes(`data.${entity.key} =`))
+      .map((entity) => entity.key)
+
+    expect(
+      missing,
+      `The manifest promises these keys, the export writes none: ${missing.join(', ')}`
+    ).toEqual([])
+  })
+
+  it('reads every top-level key on the way back in', () => {
+    const missing = topLevelEntities()
+      .filter((entity) => !importRoute.includes(`data.${entity.key}`))
+      .map((entity) => entity.key)
+
+    expect(
+      missing,
+      `Exported but never restored, so a restore would drop them: ${missing.join(', ')}`
+    ).toEqual([])
+  })
+
+  it('can clear every table it restores', () => {
+    // A table written back without being cleared collides with the rows
+    // already there, which is a failed import on the second restore.
+    const missing = topLevelEntities()
+      .filter((entity) => entity.restore === 'replace')
+      .filter((entity) => !importRoute.includes(`${entity.model}: () =>`))
+      .map((entity) => entity.model)
+
+    expect(missing, `Restored but never cleared: ${missing.join(', ')}`).toEqual([])
+  })
+})
+
 describe('clearPlanFor', () => {
   it('clears nothing the backup does not carry', () => {
     // Restoring a customers-only export used to delete every vehicle.
