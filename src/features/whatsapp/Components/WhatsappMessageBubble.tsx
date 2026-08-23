@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { AlertCircle, FileText, Trash2 } from 'lucide-react'
+import { MessageText } from '@/features/messaging/Components/MessageText'
 
 export interface WhatsappMessageView {
   id: string
@@ -89,7 +90,7 @@ export function WhatsappMessageBubble({
           </div>
         )}
 
-        {message.body && <p className="whitespace-pre-wrap text-sm">{message.body}</p>}
+        {message.body && <MessageText body={message.body} />}
 
         <div
           className={cn(
