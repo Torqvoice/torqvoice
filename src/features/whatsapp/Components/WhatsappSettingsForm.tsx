@@ -222,12 +222,15 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   }
 
   const openProvider = (href: string, label: string) => (
-    <Button variant="outline" size="sm" asChild>
-      <a href={href} target="_blank" rel="noopener noreferrer">
-        {label}
-        <ExternalLink className="ml-1.5 h-3 w-3" />
-      </a>
-    </Button>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-sm font-medium text-primary underline underline-offset-4 hover:no-underline"
+    >
+      {label}
+      <ExternalLink className="h-3 w-3" />
+    </a>
   )
 
   /** Saves, then moves on. Steps that only read data skip the save. */
@@ -344,6 +347,18 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                         <p className="text-xs text-muted-foreground">{t('from.hint')}</p>
                       </div>
                     </div>
+                  )}
+
+                  {/* Meta's pages hang off an app id we never collect, so the
+                      button below reaches the app list and no further. The
+                      rest of the way is written out. */}
+                  {current === 2 && provider?.setup.credentialsPath && (
+                    <p className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+                      {t('steps.consolePath')}{' '}
+                      <span className="font-medium text-foreground">
+                        {provider.setup.credentialsPath}
+                      </span>
+                    </p>
                   )}
 
                   {current === 2 && provider && (
@@ -467,6 +482,14 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
 
                   {current === 3 && (
                     <>
+                      {provider?.setup.webhookPath && (
+                        <p className="rounded-lg bg-muted/40 p-3 text-xs text-muted-foreground">
+                          {t('steps.consolePath')}{' '}
+                          <span className="font-medium text-foreground">
+                            {provider.setup.webhookPath}
+                          </span>
+                        </p>
+                      )}
                       <div className="space-y-2">
                         <Label>{t('webhook.label')}</Label>
                         <div className="flex items-center gap-2">

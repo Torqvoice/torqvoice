@@ -86,6 +86,7 @@
     "steps": {
       "openProvider": "Atidaryti {provider}",
       "openToken": "Sukurti nuolatinį prieigos raktą",
+      "consolePath": "Meta aplinkoje eikite į:",
       "provider": {
         "title": "Pasirinkite tiekėją ir numerį",
         "description": "„Twilio“ paleisti greičiau ir jis tvarko „Meta“ už jus. „Meta Cloud API“ kainuoja mažiau, bet verslo patvirtinimą atliekate patys. Įveskite numerį, kurį matys klientai, tarptautiniu formatu."

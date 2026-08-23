@@ -157,6 +157,13 @@ export interface WhatsappSetupLinks {
    * keeps the permanent one in a different product entirely.
    */
   token?: string
+  /**
+   * Where to click once the link lands, for consoles that cannot be linked
+   * any deeper. Meta's pages hang off an app id we never collect, so the
+   * button can only reach the app list and the rest is a breadcrumb.
+   */
+  credentialsPath?: string
+  webhookPath?: string
 }
 
 export interface WhatsappAdapter {

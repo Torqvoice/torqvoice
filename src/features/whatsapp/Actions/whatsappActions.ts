@@ -248,6 +248,47 @@ export async function getWhatsappConversation(customerId: string, limit = 100) {
 }
 
 /**
+ * The same history for a number we could not match to a customer.
+ *
+ * A first enquiry from a stranger is exactly the message a workshop must not
+ * miss, and it arrives before anyone has had a chance to create the customer.
+ * Those messages are stored against the number alone, so they are read back
+ * that way too.
+ */
+export async function getWhatsappConversationByPhone(phone: string, limit = 100) {
+  return withAuth(
+    async ({ organizationId }) => {
+      return db.whatsappMessage.findMany({
+        where: {
+          organizationId,
+          customerId: null,
+          OR: [{ fromNumber: phone }, { toNumber: phone }],
+        },
+        orderBy: { createdAt: 'asc' },
+        take: limit,
+        select: {
+          id: true,
+          direction: true,
+          body: true,
+          mediaType: true,
+          mediaFilename: true,
+          mediaUrl: true,
+          templateName: true,
+          status: true,
+          errorMessage: true,
+          createdAt: true,
+        },
+      })
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
+/**
  * Conversations with something in them, most recent first.
  *
  * Messages from a number we could not match to a customer are grouped by that

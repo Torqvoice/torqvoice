@@ -86,6 +86,7 @@
     "steps": {
       "openProvider": "Open {provider}",
       "openToken": "Create a permanent token",
+      "consolePath": "In Meta, go to:",
       "provider": {
         "title": "Choose your provider and number",
         "description": "Twilio is quicker to start with and handles Meta for you. Meta Cloud API costs less but you complete its business verification yourself. Enter the number customers will see, in international format."

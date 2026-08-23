@@ -104,8 +104,10 @@ export const metaAdapter: WhatsappAdapter = {
   setup: {
     credentials: 'https://developers.facebook.com/apps',
     webhook: 'https://developers.facebook.com/apps',
-    templates: 'https://business.facebook.com/wa/manage/message-templates/',
+    templates: 'https://business.facebook.com/latest/whatsapp_manager/message_templates',
     token: 'https://business.facebook.com/settings/system-users',
+    credentialsPath: 'your app > Use cases > Customize > Basic setup > Step 1 or Step 2',
+    webhookPath: 'your app > Use cases > Customize > Step 2. Production setup > Configure Webhooks',
   },
 
   template: {

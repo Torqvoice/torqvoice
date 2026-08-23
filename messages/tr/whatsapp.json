@@ -86,6 +86,7 @@
     "steps": {
       "openProvider": "{provider} aç",
       "openToken": "Kalıcı bir token oluşturun",
+      "consolePath": "Meta'da şuraya gidin:",
       "provider": {
         "title": "Sağlayıcınızı ve numaranızı seçin",
         "description": "Twilio ile başlamak daha hızlıdır ve Meta tarafını sizin için üstlenir. Meta Cloud API daha ucuzdur ama işletme doğrulamasını siz tamamlarsınız. Müşterilerin göreceği numarayı uluslararası biçimde girin."

@@ -86,6 +86,7 @@
     "steps": {
       "openProvider": "Åpne {provider}",
       "openToken": "Lag et permanent token",
+      "consolePath": "I Meta går du til:",
       "provider": {
         "title": "Velg leverandør og nummer",
         "description": "Twilio er raskere å komme i gang med og håndterer Meta for deg. Meta Cloud API koster mindre, men du tar bedriftsverifiseringen selv. Skriv inn nummeret kundene ser, i internasjonalt format."

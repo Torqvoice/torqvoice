@@ -86,6 +86,7 @@
     "steps": {
       "openProvider": "Otwórz {provider}",
       "openToken": "Utwórz stały token",
+      "consolePath": "W Meta przejdź do:",
       "provider": {
         "title": "Wybierz dostawcę i numer",
         "description": "Twilio uruchomisz szybciej i obsłuży Metę za Ciebie. Meta Cloud API kosztuje mniej, ale weryfikację firmy przechodzisz samodzielnie. Wpisz numer, który zobaczą klienci, w formacie międzynarodowym."

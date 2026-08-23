@@ -11,6 +11,7 @@ import { Clock, ImagePlus, Loader2, Send, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import {
   getWhatsappConversation,
+  getWhatsappConversationByPhone,
   getWhatsappWindowState,
   sendWhatsappToCustomer,
   deleteWhatsappMessage,
@@ -60,8 +61,15 @@ export function WhatsappConversation({
   useEffect(() => setMounted(true), [])
 
   const load = useCallback(async () => {
+    // No customer yet, so the history is filed under the number itself. It is
+    // still readable: only replying needs a customer to reply to.
     if (!thread.customerId) {
-      setMessages([])
+      const conversation = await getWhatsappConversationByPhone(thread.phone)
+      setMessages(
+        conversation.success && conversation.data
+          ? (conversation.data as unknown as WhatsappMessageView[])
+          : []
+      )
       setLoading(false)
       return
     }
@@ -80,7 +88,7 @@ export function WhatsappConversation({
       })
     }
     setLoading(false)
-  }, [thread.customerId])
+  }, [thread.customerId, thread.phone])
 
   useEffect(() => {
     setLoading(true)

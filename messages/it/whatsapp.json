@@ -86,6 +86,7 @@
     "steps": {
       "openProvider": "Apri {provider}",
       "openToken": "Crea un token permanente",
+      "consolePath": "In Meta, vada a:",
       "provider": {
         "title": "Scegli provider e numero",
         "description": "Twilio parte prima e gestisce Meta per te. Meta Cloud API costa meno, ma la verifica aziendale la completi tu. Inserisci il numero che vedranno i clienti, in formato internazionale."
