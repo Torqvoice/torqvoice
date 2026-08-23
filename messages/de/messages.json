@@ -4,7 +4,10 @@
     "featureDescription": "Senden und empfangen Sie SMS-Nachrichten mit Ihren Kunden direkt über Torqvoice.",
     "tabs": {
       "inbox": "Posteingang",
-      "scheduled": "Geplant"
+      "scheduled": "Geplant",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "SMS ist nicht eingerichtet",
     "smsNotConfiguredHint": "Verbinden Sie einen SMS-Anbieter, um hier Nachrichten zu senden und zu empfangen. Geplante E-Mails funktionieren auch ohne.",

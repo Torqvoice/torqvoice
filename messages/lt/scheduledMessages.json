@@ -7,7 +7,8 @@
       "email": "El. paštas",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Pastaba programoje"
+      "in_app": "Pastaba programoje",
+      "whatsapp": "„WhatsApp“"
     },
     "repeatLabel": "Kartoti",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Suplanuoti",
     "scheduled": "Žinutė suplanuota",
     "updated": "Suplanuota žinutė atnaujinta",
-    "saveError": "Nepavyko išsaugoti žinutės"
+    "saveError": "Nepavyko išsaugoti žinutės",
+    "whatsappNeedsTemplate": "Ši žinutė iškeliaus gerokai užsidarius 24 valandų langui, o „WhatsApp“ teksto šablonas nenustatytas, todėl siuntimas nepavyktų. Nustatykite jį: Nustatymai > Tiekėjai > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Suplanuoti žinutę",

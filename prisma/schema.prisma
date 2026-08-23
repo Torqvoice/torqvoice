@@ -405,6 +405,7 @@ model Customer {
   quotes            Quote[]
   smsMessages       SmsMessage[]
   telegramMessages  TelegramMessage[]
+  whatsappMessages  WhatsappMessage[]
   customerSessions  CustomerSession[]
   scheduledMessages ScheduledMessage[]
   serviceRequests   ServiceRequest[]
@@ -832,6 +833,7 @@ model Organization {
   inspectionTemplates    InspectionTemplate[]
   smsMessages            SmsMessage[]
   telegramMessages       TelegramMessage[]
+  whatsappMessages       WhatsappMessage[]
   technicians            Technician[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
@@ -1276,6 +1278,55 @@ model TelegramMessage {
   @@index([organizationId, chatId, createdAt(sort: Desc)])
   @@map("telegram_messages")
 }
+
+/// One WhatsApp message in either direction.
+///
+/// `provider` records which adapter carried it, because a workshop can switch
+/// provider without its history becoming unreadable, and a status callback
+/// arriving later has to find the row it belongs to.
+model WhatsappMessage {
+  id        String  @id @default(cuid())
+  direction String // "inbound" | "outbound"
+  provider  String // "meta" | "twilio" | any adapter registered later
+
+  /// E.164 without the "whatsapp:" prefix a provider may use on the wire.
+  fromNumber String
+  toNumber   String
+
+  body String?
+
+  /// Media the message carried. Inbound URLs may need the provider's
+  /// credentials to fetch, so they are not necessarily public.
+  mediaUrl      String?
+  mediaType     String? // image | document | video | audio | sticker
+  mediaFilename String?
+
+  /// Set when the message had to go out as an approved template, which is the
+  /// only thing WhatsApp allows outside the 24 hour service window.
+  templateName String?
+
+  status            String  @default("queued") // queued | sent | delivered | read | failed | received
+  providerMessageId String?
+  errorMessage      String?
+
+  relatedEntityType String?
+  relatedEntityId   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([providerMessageId])
+  @@map("whatsapp_messages")
+}
+
 
 model Technician {
   id            String  @id @default(cuid())

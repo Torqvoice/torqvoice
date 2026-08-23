@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Verstuur en ontvang WhatsApp-berichten met je klanten.",
+    "helpLink": "{provider} instellen",
+    "save": "WhatsApp-instellingen opslaan",
+    "saved": "WhatsApp-instellingen opgeslagen",
+    "saveError": "Kon de WhatsApp-instellingen niet opslaan",
+    "enable": {
+      "label": "WhatsApp inschakelen",
+      "hint": "Zet aan zodra de gegevens van je provider ingevuld zijn.",
+      "disabledInfo": "Schakel WhatsApp in om je provider, nummer en sjabloon in te stellen."
+    },
+    "provider": {
+      "label": "Provider",
+      "hint": "Wie je WhatsApp-nummer levert. Bij wisselen blijven de gegevens van de vorige bewaard."
+    },
+    "from": {
+      "label": "Je WhatsApp-nummer",
+      "hint": "Het nummer dat klanten zien, in internationaal formaat."
+    },
+    "secret": {
+      "show": "Tonen",
+      "hide": "Verbergen",
+      "stored": "Opgeslagen en verborgen. Typ een nieuwe waarde om hem te vervangen."
+    },
+    "webhook": {
+      "label": "Webhook-URL",
+      "description": "Plak dit bij je provider zodat inkomende berichten in Torqvoice aankomen.",
+      "copy": "Webhook-URL kopiëren",
+      "copied": "Webhook-URL gekopieerd",
+      "saveFirst": "Sla deze instellingen op voordat je provider de URL verifieert. Er wordt gecontroleerd tegen wat hier is opgeslagen, dus een niet-opgeslagen formulier faalt."
+    },
+    "template": {
+      "title": "Berichtsjabloon",
+      "description": "Gebruikt wanneer je een klant schrijft die je niet recent iets stuurde.",
+      "windowExplainer": "WhatsApp staat vrije tekst alleen toe binnen 24 uur na het laatste bericht van de klant. Daarbuiten moet je bericht als goedgekeurd sjabloon uitgaan.",
+      "nameLabel": "Naam van het sjabloon",
+      "nameHint": "De naam van het goedgekeurde sjabloon, of de Content SID bij providers die daarmee werken.",
+      "languageLabel": "Taal van het sjabloon",
+      "languageHint": "De taalcode waaronder het sjabloon is goedgekeurd, bijvoorbeeld nl.",
+      "variablesLabel": "Waarden van het sjabloon, op volgorde",
+      "variablesHint": "Kies de waarden die de genummerde plekken in je sjabloon invullen, in dezelfde volgorde. Laat leeg als je sjabloon er geen heeft.",
+      "tokens": {
+        "customer": "klantnaam",
+        "vehicle": "bouwjaar, merk en model",
+        "plate": "kenteken",
+        "message": "wat je typt",
+        "workshop": "naam van je werkplaats",
+        "photo": "de bijgevoegde foto"
+      },
+      "variablesEmpty": "Nog geen waarden. Voeg ze hieronder toe, in de volgorde die je sjabloon verwacht.",
+      "variablesRemove": "{name} verwijderen",
+      "mediaUrlLabel": "Media-URL voor je sjabloon",
+      "mediaUrlHint": "Plak dit in het mediaveld van het sjabloon en vervang n door het nummer van de fotowaarde.",
+      "mediaUrlCopy": "Media-URL kopiëren",
+      "mediaUrlCopied": "Media-URL gekopieerd",
+      "mediaUrlSample": "Gebruik als voorbeeldwaarde bij de provider: sample",
+      "textTitle": "Tekstberichten",
+      "textDescription": "Gebruikt wanneer je zonder foto schrijft: vanuit Berichten, vanuit het WhatsApp-tabblad bij een klant of vanuit een gepland bericht.",
+      "mediaTitle": "Berichten met foto",
+      "mediaDescription": "Gebruikt door de knop Via WhatsApp sturen bij de foto's van een werkorder, en telkens als je een foto toevoegt in een gesprek.",
+      "textMissing": "Niet ingesteld: je kunt geen klant schrijven die de afgelopen 24 uur niets stuurde.",
+      "mediaMissing": "Niet ingesteld: je kunt geen foto's sturen naar een klant die de afgelopen 24 uur niets stuurde.",
+      "whatIsIt": "Een sjabloon is een vast bericht dat je één keer schrijft en dat {provider} goedkeurt: de tekst verandert nooit, je vult alleen de genummerde plekken in. Schrijf het in hun console en plak de identificatie hier.",
+      "whyTwo": "Je hebt er twee nodig omdat WhatsApp het mediatype vastlegt bij goedkeuring. Een sjabloon goedgekeurd met foto kan alleen foto's dragen, een als tekst goedgekeurd sjabloon nooit.",
+      "exampleLabel": "Voorbeeldtekst voor de console van je provider",
+      "exampleTextValues": "Vul het met: customer, message. Schrijf het in de taal die je klanten lezen.",
+      "exampleMediaValues": "Vul het met: customer, message en photo voor de media-URL. Schrijf het in de taal die je klanten lezen.",
+      "exampleMediaValuesHeader": "Vul hem met: customer, message. De foto wordt automatisch meegestuurd en heeft dus geen eigen invulplek nodig. Schrijf hem in de taal die uw klanten lezen."
+    },
+    "test": {
+      "send": "Test versturen",
+      "sent": "Testbericht verstuurd",
+      "failed": "Kon het testbericht niet versturen",
+      "hint": "Stuur jezelf eerst een WhatsApp, anders heeft de test een goedgekeurd sjabloon nodig."
+    },
+    "disconnect": {
+      "action": "WhatsApp loskoppelen",
+      "hint": "Verwijdert de gegevens uit Torqvoice. Je gesprekken blijven bewaard.",
+      "done": "WhatsApp losgekoppeld",
+      "title": "Loskoppelen"
+    },
+    "savedIncomplete": "Opgeslagen. Nog nodig om te kunnen sturen: {fields}",
+    "fieldStillNeeded": "Nog nodig om te kunnen sturen",
+    "steps": {
+      "openProvider": "{provider} openen",
+      "openNumber": "Uw afzendernummer vinden",
+      "openToken": "Een permanent token maken",
+      "consolePath": "Ga in Meta naar:",
+      "provider": {
+        "title": "Kies je provider en nummer",
+        "description": "Twilio is sneller op te zetten en regelt Meta voor je. Meta Cloud API kost minder, maar de bedrijfsverificatie doe je zelf. Vul het nummer in dat klanten zien, in internationaal formaat."
+      },
+      "credentials": {
+        "title": "Vul je gegevens in",
+        "description": "Kopieer elke waarde uit {provider}. Elk veld zegt waar je die vindt. Sla op zodra je ze hebt; voor de rest kom je terug."
+      },
+      "webhook": {
+        "title": "Registreer de webhook",
+        "description": "Plak dit adres in {provider} zodat berichten van klanten bij Torqvoice aankomen. Sla eerst deze pagina op: het adres wordt gecontroleerd tegen wat hier is opgeslagen.",
+        "open": "Webhook-instellingen bij {provider} openen",
+        "recheck": "Opnieuw controleren",
+        "waiting": "Er is nog niets op dit adres binnengekomen. Het wordt groen zodra je provider het verifieert of een bericht aflevert.",
+        "seen": "Je provider heeft dit adres bereikt. Inkomende berichten verschijnen bij Berichten."
+      },
+      "templates": {
+        "title": "Laat je sjablonen goedkeuren",
+        "description": "Alleen nodig om als eerste te schrijven, buiten het venster van 24 uur. Je kunt dit overslaan en terugkomen als berichten werken.",
+        "open": "Sjablonen bij {provider} openen"
+      },
+      "test": {
+        "title": "Stuur een testbericht",
+        "description": "Stuur eerst vanaf je eigen telefoon een bericht naar je WhatsApp-nummer. Dat bewijst dat de webhook werkt en opent een venster van 24 uur, dus een antwoord heeft geen sjabloon nodig."
+      },
+      "back": "Terug",
+      "continue": "Doorgaan"
+    },
+    "register": {
+      "title": "Registreer het nummer bij Meta",
+      "description": "Meta vraagt om een aparte registratie zodra het nummer geverifieerd is. Kies een pincode van zes cijfers, of gebruik de bestaande pincode voor verificatie in twee stappen. Schrijf hem op: je hebt hem nodig om het nummer te verplaatsen of opnieuw te registreren.",
+      "action": "Nummer registreren",
+      "done": "Nummer geregistreerd",
+      "failed": "Kon het nummer niet registreren",
+      "limit": "Meta staat 10 registratiepogingen per nummer per 72 uur toe. Een verkeerde pincode telt mee, dus controleer hem eerst."
+    }
+  },
+  "messages": {
+    "featureName": "WhatsApp-berichten",
+    "featureDescription": "Verstuur en ontvang WhatsApp-berichten, inclusief foto's van onderdelen, vanuit Torqvoice.",
+    "noThreads": "Nog geen gesprekken",
+    "noThreadsHint": "Berichten verschijnen hier zodra een klant naar je WhatsApp-nummer schrijft, of jij naar hen.",
+    "selectThread": "Kies een gesprek",
+    "backToThreads": "Gesprekken",
+    "empty": "Hier is nog niets.",
+    "placeholder": "Schrijf een bericht",
+    "send": "Versturen",
+    "sendFailed": "Kon het bericht niet versturen",
+    "attach": "Foto toevoegen",
+    "attachFailed": "Kon de foto niet toevoegen",
+    "removeAttachment": "Bijlage verwijderen",
+    "attachment": "Bijlage",
+    "delete": "Verwijderen",
+    "deleteFailed": "Kon het bericht niet verwijderen",
+    "sentAsTemplate": "sjabloon",
+    "sentAsTemplateNotice": "Verstuurd als je goedgekeurde sjabloon, omdat de klant de afgelopen 24 uur niets stuurde.",
+    "windowClosed": "De klant schreef de afgelopen 24 uur niets, dus dit gaat als je goedgekeurde sjabloon de deur uit.",
+    "unknownNumber": "Dit nummer hoort nog bij geen klant. Voeg ze als klant toe om te antwoorden.",
+    "notConfigured": {
+      "title": "WhatsApp is niet verbonden",
+      "description": "Verbind een WhatsApp-nummer om berichten met je klanten uit te wisselen.",
+      "action": "WhatsApp instellen"
+    },
+    "title": "Gesprekken",
+    "searchPlaceholder": "Gesprekken zoeken",
+    "noSearchResults": "Geen gesprek komt overeen met je zoekopdracht.",
+    "compose": {
+      "newMessage": "Nieuw bericht",
+      "title": "Nieuw WhatsApp-bericht",
+      "searchPlaceholder": "Klanten zoeken",
+      "noMatches": "Geen klant komt overeen met je zoekopdracht.",
+      "noRecipients": "Nog geen klanten met een telefoonnummer."
+    },
+    "windowBlocked": "Deze klant schreef de afgelopen 24 uur niets, dus WhatsApp levert nu geen bericht af. Vraag ze iets te sturen of stel een goedgekeurd sjabloon in.",
+    "windowBlockedAction": "Sjabloon instellen",
+    "windowBlockedPlaceholder": "Wachten tot de klant eerst schrijft"
+  },
+  "sendPhoto": {
+    "action": "Via WhatsApp sturen",
+    "title": "Foto via WhatsApp sturen",
+    "description": "De klant krijgt deze foto in zijn WhatsApp-gesprek.",
+    "captionPlaceholder": "Voeg een notitie toe, bijvoorbeeld wat de foto laat zien",
+    "send": "Versturen",
+    "cancel": "Annuleren",
+    "sent": "Foto verstuurd",
+    "sentAsTemplate": "Foto verstuurd als je goedgekeurde sjabloon",
+    "failed": "Kon de foto niet versturen"
+  }
+}

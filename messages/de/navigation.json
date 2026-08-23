@@ -58,7 +58,8 @@
     "allTireSets": "Alle Reifensätze",
     "tireStorage": "Lagerstruktur",
     "tireSetDetails": "Reifensatz",
-    "tireForecast": "Nächste Saison"
+    "tireForecast": "Nächste Saison",
+    "whatsapp": "WhatsApp"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Mehr",
     "auditLog": "Aktivitätsprotokoll",
     "aiAssistant": "KI-Assistent",
-    "tireHotel": "Reifenhotel"
+    "tireHotel": "Reifenhotel",
+    "whatsapp": "WhatsApp"
   }
 }

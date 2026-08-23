@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Hotel pneumatici",
         "description": "Deposito stagionale degli pneumatici"
+      },
+      "providers": {
+        "title": "Provider",
+        "description": "Email, SMS, WhatsApp e Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Prezzi della preparazione",
     "prepHint": "Quanto costa ogni tipo di preparazione. Lasciandolo vuoto non viene mai fatturata, come serve a chi include il lavaggio nel deposito. Quelle con un prezzo finiscono da sole su preventivo e ordine.",
     "prepNotCharged": "non addebitato"
+  },
+  "providers": {
+    "tabs": {
+      "email": "Email",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Impostazioni email",
+        "description": "Configura l'invio SMTP per recapitare fatture, preventivi e notifiche dalla tua officina."
+      },
+      "sms": {
+        "feature": "Messaggi SMS",
+        "description": "Invia e ricevi SMS con i tuoi clienti da Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Messaggi WhatsApp",
+        "description": "Invia e ricevi messaggi WhatsApp, foto dei ricambi comprese, da Torqvoice."
+      },
+      "telegram": {
+        "feature": "Messaggi Telegram",
+        "description": "Invia e ricevi messaggi Telegram con i tuoi clienti da Torqvoice."
+      }
+    }
   }
 }

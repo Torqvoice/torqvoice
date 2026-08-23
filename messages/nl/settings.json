@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Bandenhotel",
         "description": "Seizoensopslag van banden"
+      },
+      "providers": {
+        "title": "Providers",
+        "description": "E-mail, sms, WhatsApp en Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Prijzen voorbereiding",
     "prepHint": "Wat elk soort voorbereiding kost. Laat er een leeg en die wordt nooit gefactureerd, wat past bij een bedrijf dat wassen in de opslagprijs meeneemt. Beprijsde komen automatisch op offerte en werkorder.",
     "prepNotCharged": "niet in rekening"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "E-mailinstellingen",
+        "description": "Stel SMTP-verzending in om facturen, offertes en meldingen direct vanuit de werkplaats te sturen."
+      },
+      "sms": {
+        "feature": "Sms-berichten",
+        "description": "Verstuur en ontvang sms met je klanten rechtstreeks vanuit Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp-berichten",
+        "description": "Verstuur en ontvang WhatsApp-berichten, inclusief foto's van onderdelen, vanuit Torqvoice."
+      },
+      "telegram": {
+        "feature": "Telegram-berichten",
+        "description": "Verstuur en ontvang Telegram-berichten met je klanten vanuit Torqvoice."
+      }
+    }
   }
 }

@@ -1,54 +1,46 @@
-import { Suspense } from "react";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { redirect } from "next/navigation";
-import { getRecentSmsThreads } from "@/features/sms/Actions/smsActions";
-import { getSmsSettings } from "@/features/sms/Actions/smsSettingsActions";
-import { getFeatures } from "@/lib/features";
-import { getScheduledMessages } from "@/features/scheduled-messages/Actions/scheduledMessageActions";
-import { getAvailableChannels } from "@/features/scheduled-messages/Lib/availableChannels";
-import { MessagesPageClient } from "@/features/sms/Components/MessagesPageClient";
-import { PageHeader } from "@/components/page-header";
+import { Suspense } from 'react'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { redirect } from 'next/navigation'
+import { getScheduledMessages } from '@/features/scheduled-messages/Actions/scheduledMessageActions'
+import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availableChannels'
+import { getInboxThreads, type InboxPage } from '@/features/messaging/Actions/inboxActions'
+import { MessagesPageClient } from '@/features/messaging/Components/MessagesPageClient'
+import { PageHeader } from '@/components/page-header'
 
 export default async function MessagesPage() {
-  const ctx = await getAuthContext();
-  if (!ctx) redirect("/auth/sign-in");
+  const ctx = await getAuthContext()
+  if (!ctx) redirect('/auth/sign-in')
 
-  const features = await getFeatures(ctx.organizationId);
-
-  // The inbox needs SMS on the plan and a provider set up; scheduled messages
-  // only need email, so the page itself stays open either way and the inbox
-  // tab explains what is missing.
-  const settingsResult = features.sms ? await getSmsSettings() : null;
-  const settings = settingsResult?.success && settingsResult.data ? settingsResult.data : {};
-  const smsConfigured = !!features.sms && !!settings["sms.provider"];
-
-  const [threadsResult, scheduledResult, messageChannels] = await Promise.all([
-    smsConfigured ? getRecentSmsThreads() : Promise.resolve(null),
+  // One inbox for every channel, so the page loads them together rather than
+  // asking which one the workshop meant.
+  const [inboxResult, scheduledResult, messageChannels] = await Promise.all([
+    getInboxThreads(),
     getScheduledMessages(),
     getAvailableChannels(ctx.organizationId),
-  ]);
+  ])
 
-  const threads =
-    threadsResult?.success && threadsResult.data ? threadsResult.data.threads : [];
-  const hasMore =
-    threadsResult?.success && threadsResult.data ? threadsResult.data.hasMore : false;
-  const scheduled =
-    scheduledResult.success && scheduledResult.data ? scheduledResult.data : [];
+  const inbox: InboxPage =
+    inboxResult.success && inboxResult.data
+      ? inboxResult.data
+      : { threads: [], nextCursor: null, channels: [] }
+  const scheduled = scheduledResult.success && scheduledResult.data ? scheduledResult.data : []
 
   return (
-    <>
+    // The inbox is a full-height pane with its own scrolling regions, so the
+    // page is bounded by the viewport rather than growing the document.
+    <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
-      <div className="flex flex-1 flex-col p-4 pt-0">
+      <div className="flex min-h-0 flex-1 flex-col p-4 pt-0">
         <Suspense>
           <MessagesPageClient
-            initialThreads={threads}
-            initialHasMore={hasMore}
+            threads={inbox.threads}
+            initialCursor={inbox.nextCursor}
+            channels={inbox.channels}
             initialScheduled={scheduled}
             availableChannels={messageChannels}
-            smsConfigured={smsConfigured}
           />
         </Suspense>
       </div>
-    </>
-  );
+    </div>
+  )
 }

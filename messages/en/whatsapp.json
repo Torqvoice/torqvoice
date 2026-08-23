@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Send and receive WhatsApp messages with your customers.",
+    "helpLink": "Set up {provider}",
+    "save": "Save WhatsApp settings",
+    "saved": "WhatsApp settings saved",
+    "saveError": "Could not save WhatsApp settings",
+    "enable": {
+      "label": "Enable WhatsApp",
+      "hint": "Turn on once your provider credentials are in place.",
+      "disabledInfo": "Switch WhatsApp on to set up your provider, number and template."
+    },
+    "provider": {
+      "label": "Provider",
+      "hint": "Who supplies your WhatsApp number. Switching keeps the credentials of the old one."
+    },
+    "from": {
+      "label": "Your WhatsApp number",
+      "hint": "The business number customers see, in international format."
+    },
+    "secret": {
+      "show": "Show",
+      "hide": "Hide",
+      "stored": "Saved and hidden. Type a new value to replace it."
+    },
+    "webhook": {
+      "label": "Webhook URL",
+      "description": "Paste this into your provider so incoming messages reach Torqvoice.",
+      "copy": "Copy webhook URL",
+      "copied": "Webhook URL copied",
+      "saveFirst": "Save these settings before your provider verifies the URL. It is checked against what is stored here, so an unsaved form fails the check."
+    },
+    "template": {
+      "title": "Message template",
+      "description": "Used when you write to a customer who has not messaged you recently.",
+      "windowExplainer": "WhatsApp only allows free text for 24 hours after the customer's last message. Outside that window your message has to go out as a template approved by your provider.",
+      "nameLabel": "Template name",
+      "nameHint": "The approved template's name, or its Content SID at providers that use one.",
+      "languageLabel": "Template language",
+      "languageHint": "The language code the template was approved under, for example de.",
+      "variablesLabel": "Template values, in order",
+      "variablesHint": "Pick the values that fill your template's numbered blanks, in the same order. Leave empty if your template has no blanks.",
+      "tokens": {
+        "customer": "customer name",
+        "vehicle": "year, make and model",
+        "plate": "registration",
+        "message": "what you type",
+        "workshop": "your shop name",
+        "photo": "the attached photo"
+      },
+      "variablesEmpty": "No values yet. Add them below, in the order your template expects.",
+      "variablesRemove": "Remove {name}",
+      "mediaUrlLabel": "Media URL for your template",
+      "mediaUrlHint": "Paste this into the template's media field and replace n with the number of the photo value.",
+      "mediaUrlCopy": "Copy media URL",
+      "mediaUrlCopied": "Media URL copied",
+      "mediaUrlSample": "For the provider's sample value, use: sample",
+      "textTitle": "Text messages",
+      "textDescription": "Used when you write with no photo attached: from Messages, from the WhatsApp tab on a customer, or from a scheduled message.",
+      "mediaTitle": "Messages with a photo",
+      "mediaDescription": "Used by the Send on WhatsApp button on a job's photos, and whenever you attach a photo in a conversation.",
+      "textMissing": "Not set up: you cannot write to a customer who has not messaged in the last 24 hours.",
+      "mediaMissing": "Not set up: you cannot send photos to a customer who has not messaged in the last 24 hours.",
+      "whatIsIt": "A template is a fixed message you write once and {provider} has approved: the wording never changes, only the numbered blanks you fill in. Write it in their console, then paste its identifier here.",
+      "whyTwo": "Two are needed because WhatsApp fixes a template's media type when it approves it. One approved with a photo can only ever carry a photo, and one approved as text can never carry one.",
+      "exampleLabel": "Example body to write in your provider's console",
+      "exampleTextValues": "Fill it with: customer, message. Write it in the language your customers read.",
+      "exampleMediaValues": "Fill it with: customer, message, and photo for the media URL. Write it in the language your customers read.",
+      "exampleMediaValuesHeader": "Fill it with: customer, message. The photo is attached automatically, so it needs no blank of its own. Write it in the language your customers read."
+    },
+    "test": {
+      "send": "Send test",
+      "sent": "Test message sent",
+      "failed": "Could not send the test message",
+      "hint": "Message yourself on WhatsApp first, otherwise the test needs an approved template."
+    },
+    "disconnect": {
+      "action": "Disconnect WhatsApp",
+      "hint": "Removes the credentials from Torqvoice. Your conversations are kept.",
+      "done": "WhatsApp disconnected",
+      "title": "Disconnect"
+    },
+    "savedIncomplete": "Saved. Still needed before you can send: {fields}",
+    "fieldStillNeeded": "Still needed before you can send",
+    "steps": {
+      "openProvider": "Open {provider}",
+      "openNumber": "Find your sender number",
+      "openToken": "Create a permanent token",
+      "consolePath": "In Meta, go to:",
+      "provider": {
+        "title": "Choose your provider and number",
+        "description": "Twilio is quicker to start with and handles Meta for you. Meta Cloud API costs less but you complete its business verification yourself. Enter the number customers will see, in international format."
+      },
+      "credentials": {
+        "title": "Enter your credentials",
+        "description": "Copy each value from {provider}. Every field below says exactly where to find it. Save when you have them; you can come back for the rest."
+      },
+      "webhook": {
+        "title": "Register the webhook",
+        "description": "Copy this address into {provider} so messages from customers reach Torqvoice. Save this page first: the address is checked against what is stored here.",
+        "open": "Open {provider} webhook settings",
+        "recheck": "Check again",
+        "waiting": "Nothing has reached this address yet. It turns green the moment your provider verifies it or delivers a message.",
+        "seen": "Your provider has reached this address. Incoming messages will appear in Messages."
+      },
+      "templates": {
+        "title": "Approve your templates",
+        "description": "Only needed to write first, outside the 24 hour window. You can skip this now and come back once messaging works.",
+        "open": "Open {provider} templates"
+      },
+      "test": {
+        "title": "Send a test message",
+        "description": "Message your WhatsApp number from your own phone first. That proves the webhook works and opens a 24 hour window, so a reply needs no template."
+      },
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "register": {
+      "title": "Register the number with Meta",
+      "description": "Meta needs a separate registration once the number is verified. Choose a six-digit PIN, or use the number's existing two-step verification PIN if it has one. Write it down: you need it to move or re-register the number later.",
+      "action": "Register number",
+      "done": "Number registered",
+      "failed": "Could not register the number",
+      "limit": "Meta allows 10 registration attempts per number in 72 hours. A wrong PIN counts, so check it before pressing."
+    }
+  },
+  "messages": {
+    "featureName": "WhatsApp Messaging",
+    "featureDescription": "Send and receive WhatsApp messages, including photos of parts, directly from Torqvoice.",
+    "noThreads": "No conversations yet",
+    "noThreadsHint": "Messages appear here as soon as a customer writes to your WhatsApp number, or you write to them.",
+    "selectThread": "Pick a conversation",
+    "backToThreads": "Conversations",
+    "empty": "Nothing here yet.",
+    "placeholder": "Write a message",
+    "send": "Send",
+    "sendFailed": "Could not send the message",
+    "attach": "Attach a photo",
+    "attachFailed": "Could not attach the photo",
+    "removeAttachment": "Remove attachment",
+    "attachment": "Attachment",
+    "delete": "Delete",
+    "deleteFailed": "Could not delete the message",
+    "sentAsTemplate": "template",
+    "sentAsTemplateNotice": "Sent as your approved template, because the customer has not written in the last 24 hours.",
+    "windowClosed": "The customer has not written in the last 24 hours, so this will go out as your approved template.",
+    "unknownNumber": "This number belongs to no customer yet. Add them as a customer to reply.",
+    "notConfigured": {
+      "title": "WhatsApp is not connected",
+      "description": "Connect a WhatsApp number to send and receive messages with your customers.",
+      "action": "Set up WhatsApp"
+    },
+    "title": "Conversations",
+    "searchPlaceholder": "Search conversations",
+    "noSearchResults": "No conversations match your search.",
+    "compose": {
+      "newMessage": "New message",
+      "title": "New WhatsApp message",
+      "searchPlaceholder": "Search customers",
+      "noMatches": "No customers match your search.",
+      "noRecipients": "No customers with a phone number yet."
+    },
+    "windowBlocked": "This customer has not written in the last 24 hours, so WhatsApp will not deliver a message right now. Ask them to send you one, or set up an approved template.",
+    "windowBlockedAction": "Set up a template",
+    "windowBlockedPlaceholder": "Waiting for the customer to write first"
+  },
+  "sendPhoto": {
+    "action": "Send on WhatsApp",
+    "title": "Send photo on WhatsApp",
+    "description": "The customer gets this photo in their WhatsApp chat.",
+    "captionPlaceholder": "Add a note, for example what the photo shows",
+    "send": "Send",
+    "cancel": "Cancel",
+    "sent": "Photo sent",
+    "sentAsTemplate": "Photo sent as your approved template",
+    "failed": "Could not send the photo"
+  }
+}

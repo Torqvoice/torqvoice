@@ -58,7 +58,8 @@
     "allTireSets": "Tutti i treni",
     "tireStorage": "Disposizione del deposito",
     "tireSetDetails": "Treno di pneumatici",
-    "tireForecast": "La prossima stagione"
+    "tireForecast": "La prossima stagione",
+    "whatsapp": "WhatsApp"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Altro",
     "auditLog": "Registro attività",
     "aiAssistant": "Assistente IA",
-    "tireHotel": "Hotel pneumatici"
+    "tireHotel": "Hotel pneumatici",
+    "whatsapp": "WhatsApp"
   }
 }

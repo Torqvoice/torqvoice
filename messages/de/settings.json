@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Reifenhotel",
         "description": "Saisonale Reifeneinlagerung"
+      },
+      "providers": {
+        "title": "Anbieter",
+        "description": "E-Mail, SMS, WhatsApp & Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Preise für Vorbereitung",
     "prepHint": "Was jede Art von Vorbereitung kostet. Leer bedeutet, sie wird nie berechnet, was zu Betrieben passt, die das Waschen in der Lagergebühr enthalten haben. Bepreiste werden automatisch auf Angebot und Auftrag gesetzt.",
     "prepNotCharged": "nicht berechnet"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-Mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "E-Mail-Einstellungen",
+        "description": "SMTP-Versand einrichten, um Rechnungen, Angebote und Benachrichtigungen direkt aus der Werkstatt zu senden."
+      },
+      "sms": {
+        "feature": "SMS-Nachrichten",
+        "description": "SMS mit Ihren Kunden direkt aus Torqvoice senden und empfangen."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp-Nachrichten",
+        "description": "WhatsApp-Nachrichten samt Fotos von Bauteilen direkt aus Torqvoice senden und empfangen."
+      },
+      "telegram": {
+        "feature": "Telegram-Nachrichten",
+        "description": "Telegram-Nachrichten mit Ihren Kunden direkt aus Torqvoice senden und empfangen."
+      }
+    }
   }
 }

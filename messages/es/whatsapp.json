@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Envía y recibe mensajes de WhatsApp con tus clientes.",
+    "helpLink": "Configurar {provider}",
+    "save": "Guardar ajustes de WhatsApp",
+    "saved": "Ajustes de WhatsApp guardados",
+    "saveError": "No se pudieron guardar los ajustes de WhatsApp",
+    "enable": {
+      "label": "Activar WhatsApp",
+      "hint": "Actívalo cuando las credenciales del proveedor estén puestas.",
+      "disabledInfo": "Activa WhatsApp para configurar tu proveedor, número y plantilla."
+    },
+    "provider": {
+      "label": "Proveedor",
+      "hint": "Quién te da el número de WhatsApp. Al cambiar se conservan las credenciales del anterior."
+    },
+    "from": {
+      "label": "Tu número de WhatsApp",
+      "hint": "El número que ven los clientes, en formato internacional."
+    },
+    "secret": {
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "stored": "Guardado y oculto. Escribe un valor nuevo para reemplazarlo."
+    },
+    "webhook": {
+      "label": "URL del webhook",
+      "description": "Pega esto en tu proveedor para que los mensajes entrantes lleguen a Torqvoice.",
+      "copy": "Copiar URL del webhook",
+      "copied": "URL del webhook copiada",
+      "saveFirst": "Guarda estos ajustes antes de que tu proveedor verifique la URL. Se comprueba contra lo guardado aquí, así que un formulario sin guardar falla."
+    },
+    "template": {
+      "title": "Plantilla de mensaje",
+      "description": "Se usa cuando escribes a un cliente que no te ha escrito hace poco.",
+      "windowExplainer": "WhatsApp solo permite texto libre durante 24 horas tras el último mensaje del cliente. Fuera de esa ventana, tu mensaje debe salir como plantilla aprobada por tu proveedor.",
+      "nameLabel": "Nombre de la plantilla",
+      "nameHint": "El nombre de la plantilla aprobada, o su Content SID en proveedores que lo usan.",
+      "languageLabel": "Idioma de la plantilla",
+      "languageHint": "El código de idioma con el que se aprobó, por ejemplo es.",
+      "variablesLabel": "Valores de la plantilla, en orden",
+      "variablesHint": "Elige los valores que rellenan los huecos numerados de tu plantilla, en el mismo orden. Déjalo vacío si tu plantilla no tiene huecos.",
+      "tokens": {
+        "customer": "nombre del cliente",
+        "vehicle": "año, marca y modelo",
+        "plate": "matrícula",
+        "message": "lo que escribas",
+        "workshop": "nombre de tu taller",
+        "photo": "la foto adjunta"
+      },
+      "variablesEmpty": "Aún sin valores. Añádelos abajo, en el orden que espera tu plantilla.",
+      "variablesRemove": "Quitar {name}",
+      "mediaUrlLabel": "URL de medios para tu plantilla",
+      "mediaUrlHint": "Pega esto en el campo de medios de la plantilla y sustituye n por el número del valor de la foto.",
+      "mediaUrlCopy": "Copiar URL de medios",
+      "mediaUrlCopied": "URL de medios copiada",
+      "mediaUrlSample": "Como valor de muestra en el proveedor, usa: sample",
+      "textTitle": "Mensajes de texto",
+      "textDescription": "Se usa cuando escribes sin adjuntar foto: desde Mensajes, desde la pestaña WhatsApp de un cliente o desde un mensaje programado.",
+      "mediaTitle": "Mensajes con foto",
+      "mediaDescription": "Lo usa el botón Enviar por WhatsApp en las fotos de un trabajo, y siempre que adjuntas una foto en una conversación.",
+      "textMissing": "Sin configurar: no puedes escribir a un cliente que no te ha escrito en las últimas 24 horas.",
+      "mediaMissing": "Sin configurar: no puedes enviar fotos a un cliente que no te ha escrito en las últimas 24 horas.",
+      "whatIsIt": "Una plantilla es un mensaje fijo que escribes una vez y que {provider} aprueba: el texto nunca cambia, solo rellenas los huecos numerados. Escríbela en su consola y pega aquí su identificador.",
+      "whyTwo": "Hacen falta dos porque WhatsApp fija el tipo de medio al aprobar la plantilla. Una aprobada con foto solo puede llevar fotos, y una aprobada como texto nunca podrá llevarlas.",
+      "exampleLabel": "Cuerpo de ejemplo para la consola de tu proveedor",
+      "exampleTextValues": "Rellénalo con: customer, message. Escríbelo en el idioma de tus clientes.",
+      "exampleMediaValues": "Rellénalo con: customer, message y photo para la URL de medios. Escríbelo en el idioma de tus clientes.",
+      "exampleMediaValuesHeader": "Rellénela con: customer, message. La foto se adjunta automáticamente, así que no necesita su propio hueco. Escríbala en el idioma que leen sus clientes."
+    },
+    "test": {
+      "send": "Enviar prueba",
+      "sent": "Mensaje de prueba enviado",
+      "failed": "No se pudo enviar el mensaje de prueba",
+      "hint": "Escríbete primero por WhatsApp; si no, la prueba necesita una plantilla aprobada."
+    },
+    "disconnect": {
+      "action": "Desconectar WhatsApp",
+      "hint": "Elimina las credenciales de Torqvoice. Se conservan tus conversaciones.",
+      "done": "WhatsApp desconectado",
+      "title": "Desconectar"
+    },
+    "savedIncomplete": "Guardado. Aún falta para poder enviar: {fields}",
+    "fieldStillNeeded": "Aún necesario para enviar",
+    "steps": {
+      "openProvider": "Abrir {provider}",
+      "openNumber": "Buscar su número de remitente",
+      "openToken": "Crear un token permanente",
+      "consolePath": "En Meta, vaya a:",
+      "provider": {
+        "title": "Elige proveedor y número",
+        "description": "Twilio se pone en marcha antes y gestiona Meta por ti. Meta Cloud API cuesta menos, pero completas tú su verificación de empresa. Escribe el número que verán los clientes, en formato internacional."
+      },
+      "credentials": {
+        "title": "Introduce tus credenciales",
+        "description": "Copia cada valor desde {provider}. Cada campo indica dónde encontrarlo. Guarda cuando los tengas; puedes volver a por el resto."
+      },
+      "webhook": {
+        "title": "Registra el webhook",
+        "description": "Copia esta dirección en {provider} para que los mensajes de clientes lleguen a Torqvoice. Guarda antes esta página: la dirección se comprueba contra lo guardado aquí.",
+        "open": "Abrir ajustes de webhook en {provider}",
+        "recheck": "Comprobar de nuevo",
+        "waiting": "Todavía no ha llegado nada a esta dirección. Se pondrá en verde en cuanto tu proveedor la verifique o entregue un mensaje.",
+        "seen": "Tu proveedor ha alcanzado esta dirección. Los mensajes entrantes aparecerán en Mensajes."
+      },
+      "templates": {
+        "title": "Aprueba tus plantillas",
+        "description": "Solo hace falta para escribir primero, fuera de la ventana de 24 horas. Puedes saltarlo ahora y volver cuando la mensajería funcione.",
+        "open": "Abrir plantillas de {provider}"
+      },
+      "test": {
+        "title": "Envía un mensaje de prueba",
+        "description": "Escribe primero a tu número de WhatsApp desde tu propio teléfono. Eso prueba el webhook y abre una ventana de 24 horas, así la respuesta no necesita plantilla."
+      },
+      "back": "Atrás",
+      "continue": "Continuar"
+    },
+    "register": {
+      "title": "Registra el número en Meta",
+      "description": "Meta requiere un registro aparte una vez verificado el número. Elige un PIN de seis dígitos, o usa el PIN de verificación en dos pasos si ya tiene uno. Anótalo: lo necesitarás para mover o volver a registrar el número.",
+      "action": "Registrar número",
+      "done": "Número registrado",
+      "failed": "No se pudo registrar el número",
+      "limit": "Meta permite 10 intentos de registro por número en 72 horas. Un PIN incorrecto cuenta, así que compruébalo antes."
+    }
+  },
+  "messages": {
+    "featureName": "Mensajería WhatsApp",
+    "featureDescription": "Envía y recibe mensajes de WhatsApp, incluidas fotos de piezas, desde Torqvoice.",
+    "noThreads": "Aún no hay conversaciones",
+    "noThreadsHint": "Los mensajes aparecen aquí en cuanto un cliente escribe a tu número de WhatsApp, o tú le escribes.",
+    "selectThread": "Elige una conversación",
+    "backToThreads": "Conversaciones",
+    "empty": "Aquí todavía no hay nada.",
+    "placeholder": "Escribe un mensaje",
+    "send": "Enviar",
+    "sendFailed": "No se pudo enviar el mensaje",
+    "attach": "Adjuntar una foto",
+    "attachFailed": "No se pudo adjuntar la foto",
+    "removeAttachment": "Quitar adjunto",
+    "attachment": "Adjunto",
+    "delete": "Eliminar",
+    "deleteFailed": "No se pudo eliminar el mensaje",
+    "sentAsTemplate": "plantilla",
+    "sentAsTemplateNotice": "Enviado como tu plantilla aprobada, porque el cliente no ha escrito en las últimas 24 horas.",
+    "windowClosed": "El cliente no ha escrito en las últimas 24 horas, así que esto saldrá como tu plantilla aprobada.",
+    "unknownNumber": "Este número aún no pertenece a ningún cliente. Añádelo como cliente para responder.",
+    "notConfigured": {
+      "title": "WhatsApp no está conectado",
+      "description": "Conecta un número de WhatsApp para enviar y recibir mensajes con tus clientes.",
+      "action": "Configurar WhatsApp"
+    },
+    "title": "Conversaciones",
+    "searchPlaceholder": "Buscar conversaciones",
+    "noSearchResults": "Ninguna conversación coincide con tu búsqueda.",
+    "compose": {
+      "newMessage": "Nuevo mensaje",
+      "title": "Nuevo mensaje de WhatsApp",
+      "searchPlaceholder": "Buscar clientes",
+      "noMatches": "Ningún cliente coincide con tu búsqueda.",
+      "noRecipients": "Aún no hay clientes con teléfono."
+    },
+    "windowBlocked": "Este cliente no ha escrito en las últimas 24 horas, así que WhatsApp no entregará el mensaje ahora. Pídele que te escriba o configura una plantilla aprobada.",
+    "windowBlockedAction": "Configurar una plantilla",
+    "windowBlockedPlaceholder": "Esperando a que el cliente escriba primero"
+  },
+  "sendPhoto": {
+    "action": "Enviar por WhatsApp",
+    "title": "Enviar foto por WhatsApp",
+    "description": "El cliente recibe esta foto en su chat de WhatsApp.",
+    "captionPlaceholder": "Añade una nota, por ejemplo qué muestra la foto",
+    "send": "Enviar",
+    "cancel": "Cancelar",
+    "sent": "Foto enviada",
+    "sentAsTemplate": "Foto enviada como tu plantilla aprobada",
+    "failed": "No se pudo enviar la foto"
+  }
+}

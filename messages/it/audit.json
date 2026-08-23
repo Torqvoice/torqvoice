@@ -135,7 +135,8 @@
     "tire_set_return": "Treno di nuovo in deposito",
     "tire_set_dispose": "Treno di pneumatici dismesso",
     "tire_set_attach": "File aggiunti a un treno di pneumatici",
-    "tire_set_detach": "File rimosso da un treno di pneumatici"
+    "tire_set_detach": "File rimosso da un treno di pneumatici",
+    "whatsapp_send": "Messaggio WhatsApp inviato"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Veicolo {id} tolto dall'archivio",
     "vehicle_update": "Veicolo {name} aggiornato, modifiche: {fields}",
     "vehicle_updateNoChanges": "Veicolo {name} aggiornato, nessuna modifica",
-    "webhook_create": "Webhook {name} creato"
+    "webhook_create": "Webhook {name} creato",
+    "whatsapp_send": "Inviato un messaggio WhatsApp a {name}"
   }
 }

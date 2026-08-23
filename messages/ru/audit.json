@@ -135,7 +135,8 @@
     "tire_set_return": "Комплект снова на хранении",
     "tire_set_dispose": "Комплект шин списан",
     "tire_set_attach": "Файлы добавлены к комплекту шин",
-    "tire_set_detach": "Файл удалён из комплекта шин"
+    "tire_set_detach": "Файл удалён из комплекта шин",
+    "whatsapp_send": "Отправлено сообщение WhatsApp"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Автомобиль {id} возвращён из архива",
     "vehicle_update": "Обновлён автомобиль {name}, изменено: {fields}",
     "vehicle_updateNoChanges": "Обновлён автомобиль {name}, изменений нет",
-    "webhook_create": "Создан вебхук {name}"
+    "webhook_create": "Создан вебхук {name}",
+    "whatsapp_send": "Отправлено сообщение WhatsApp клиенту {name}"
   }
 }

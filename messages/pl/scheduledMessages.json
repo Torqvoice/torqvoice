@@ -7,7 +7,8 @@
       "email": "E-mail",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Notatka w aplikacji"
+      "in_app": "Notatka w aplikacji",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Powtarzaj",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Zaplanuj",
     "scheduled": "Wiadomość zaplanowana",
     "updated": "Zaplanowana wiadomość zaktualizowana",
-    "saveError": "Nie udało się zapisać wiadomości"
+    "saveError": "Nie udało się zapisać wiadomości",
+    "whatsappNeedsTemplate": "Wiadomość wyjdzie długo po zamknięciu 24-godzinnego okna, a szablon tekstowy WhatsApp nie jest skonfigurowany, więc wysyłka by się nie powiodła. Skonfiguruj go w Ustawienia > Dostawcy > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Zaplanuj wiadomość",

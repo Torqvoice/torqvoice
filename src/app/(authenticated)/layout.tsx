@@ -56,18 +56,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // the widget's code never reaches a self-hosted install's page.
   const supportEnabled = await isSupportEnabled()
 
-  // Check user-level messaging enabled settings
-  let telegramEnabled = false
-  if (features.telegram) {
-    const tgSetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: { organizationId: data.organizationId, key: 'telegram.enabled' },
-      },
-      select: { value: true },
-    })
-    telegramEnabled = tgSetting?.value === 'true'
-  }
-
   // Tire hotel is opt-in, so the nav entry only exists once a workshop has
   // switched the module on.
   const tireHotelEnabled = await isTireHotelEnabled(data.organizationId)
@@ -178,7 +166,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       activeOrgId={data.organizationId}
                       isSuperAdmin={data.isSuperAdmin}
                       features={features}
-                      telegramEnabled={telegramEnabled}
                       tireHotelEnabled={tireHotelEnabled}
                       visibleSubjects={visibleSubjects}
                       isAdminOrOwner={isOwnerOrAdmin}

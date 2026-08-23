@@ -7,7 +7,8 @@
       "email": "E-post",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Notat i appen"
+      "in_app": "Notat i appen",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Gjenta",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Planlegg",
     "scheduled": "Melding planlagt",
     "updated": "Planlagt melding oppdatert",
-    "saveError": "Kunne ikke lagre meldingen"
+    "saveError": "Kunne ikke lagre meldingen",
+    "whatsappNeedsTemplate": "Denne sendes lenge etter at kundens 24-timersvindu er lukket, og ingen WhatsApp-tekstmal er satt opp, så den ville feile ved sending. Sett opp en under Innstillinger > Leverandører > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Planlegg melding",

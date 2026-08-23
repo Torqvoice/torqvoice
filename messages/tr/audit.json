@@ -135,7 +135,8 @@
     "tire_set_return": "Takım yeniden depolandı",
     "tire_set_dispose": "Lastik takımı hurdaya ayrıldı",
     "tire_set_attach": "Lastik takımına dosya eklendi",
-    "tire_set_detach": "Lastik takımından dosya kaldırıldı"
+    "tire_set_detach": "Lastik takımından dosya kaldırıldı",
+    "whatsapp_send": "WhatsApp mesajı gönderildi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "{id} aracı arşivden çıkarıldı",
     "vehicle_update": "{name} aracı güncellendi, değişenler: {fields}",
     "vehicle_updateNoChanges": "{name} aracı güncellendi, hiçbir şey değişmedi",
-    "webhook_create": "{name} webhook'u oluşturuldu"
+    "webhook_create": "{name} webhook'u oluşturuldu",
+    "whatsapp_send": "{name} kişisine WhatsApp mesajı gönderildi"
   }
 }

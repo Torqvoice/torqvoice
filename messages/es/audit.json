@@ -135,7 +135,8 @@
     "tire_set_return": "Juego almacenado de nuevo",
     "tire_set_dispose": "Juego de neumáticos dado de baja",
     "tire_set_attach": "Archivos añadidos a un juego de neumáticos",
-    "tire_set_detach": "Archivo quitado de un juego de neumáticos"
+    "tire_set_detach": "Archivo quitado de un juego de neumáticos",
+    "whatsapp_send": "Mensaje de WhatsApp enviado"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Vehículo {id} recuperado del archivo",
     "vehicle_update": "Vehículo {name} actualizado, cambios: {fields}",
     "vehicle_updateNoChanges": "Vehículo {name} actualizado, sin cambios",
-    "webhook_create": "Webhook {name} creado"
+    "webhook_create": "Webhook {name} creado",
+    "whatsapp_send": "Envió un mensaje de WhatsApp a {name}"
   }
 }

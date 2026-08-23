@@ -7,7 +7,8 @@
       "email": "Correo",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Nota en la app"
+      "in_app": "Nota en la app",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Repetir",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Programar",
     "scheduled": "Mensaje programado",
     "updated": "Mensaje programado actualizado",
-    "saveError": "No se pudo guardar el mensaje"
+    "saveError": "No se pudo guardar el mensaje",
+    "whatsappNeedsTemplate": "Se enviará mucho después de que se cierre la ventana de 24 horas del cliente y no hay plantilla de texto de WhatsApp configurada, así que fallaría al enviarse. Configura una en Ajustes > Proveedores > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Programar mensaje",

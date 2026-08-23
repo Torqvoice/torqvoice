@@ -7,7 +7,8 @@
       "email": "E-mail",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Note dans l'app"
+      "in_app": "Note dans l'app",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Répéter",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Programmer",
     "scheduled": "Message programmé",
     "updated": "Message programmé mis à jour",
-    "saveError": "Impossible d'enregistrer le message"
+    "saveError": "Impossible d'enregistrer le message",
+    "whatsappNeedsTemplate": "Ce message partira bien après la fermeture de la fenêtre de 24 heures et aucun modèle texte WhatsApp n'est configuré : il échouerait à l'envoi. Configurez-en un dans Paramètres > Fournisseurs > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Programmer un message",

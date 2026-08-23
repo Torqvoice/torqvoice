@@ -135,7 +135,8 @@
     "tire_set_return": "Jeu de nouveau stocké",
     "tire_set_dispose": "Jeu de pneus mis au rebut",
     "tire_set_attach": "Fichiers ajoutés à un jeu de pneus",
-    "tire_set_detach": "Fichier retiré d’un jeu de pneus"
+    "tire_set_detach": "Fichier retiré d’un jeu de pneus",
+    "whatsapp_send": "Message WhatsApp envoyé"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Véhicule {id} sorti des archives",
     "vehicle_update": "Véhicule {name} mis à jour, modifié : {fields}",
     "vehicle_updateNoChanges": "Véhicule {name} mis à jour, aucun changement",
-    "webhook_create": "Webhook {name} créé"
+    "webhook_create": "Webhook {name} créé",
+    "whatsapp_send": "Message WhatsApp envoyé à {name}"
   }
 }

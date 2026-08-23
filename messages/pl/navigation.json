@@ -58,7 +58,8 @@
     "allTireSets": "Wszystkie komplety",
     "tireStorage": "Układ magazynu",
     "tireSetDetails": "Komplet opon",
-    "tireForecast": "Następny sezon"
+    "tireForecast": "Następny sezon",
+    "whatsapp": "WhatsApp"
   },
   "search": "Szukaj...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Więcej",
     "auditLog": "Dziennik audytu",
     "aiAssistant": "Asystent AI",
-    "tireHotel": "Hotel opon"
+    "tireHotel": "Hotel opon",
+    "whatsapp": "WhatsApp"
   }
 }

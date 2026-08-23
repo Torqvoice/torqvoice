@@ -4,7 +4,10 @@
     "featureDescription": "Verzend en ontvang SMS-berichten met uw klanten rechtstreeks vanuit Torqvoice.",
     "tabs": {
       "inbox": "Postvak in",
-      "scheduled": "Gepland"
+      "scheduled": "Gepland",
+      "sms": "Sms",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "Sms is niet ingesteld",
     "smsNotConfiguredHint": "Koppel een sms-provider om hier berichten te versturen en ontvangen. Geplande e-mail werkt ook zonder.",

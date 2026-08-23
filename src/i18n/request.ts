@@ -62,6 +62,8 @@ export default getRequestConfig(async () => {
   const aiChat = (await import(`../../messages/${locale}/aiChat.json`)).default
   const laborPresets = (await import(`../../messages/${locale}/laborPresets.json`)).default
   const telegram = (await import(`../../messages/${locale}/telegram.json`)).default
+  const whatsapp = (await import(`../../messages/${locale}/whatsapp.json`)).default
+  const messaging = (await import(`../../messages/${locale}/messaging.json`)).default
   const telegramMessages = (await import(`../../messages/${locale}/telegramMessages.json`)).default
   const statusReport = (await import(`../../messages/${locale}/statusReport.json`)).default
   const support = (await import(`../../messages/${locale}/support.json`)).default
@@ -103,6 +105,8 @@ export default getRequestConfig(async () => {
       laborPresets,
       telegram,
       telegramMessages,
+      whatsapp,
+      messaging,
       statusReport,
       support,
       inspections,

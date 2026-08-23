@@ -58,7 +58,8 @@
     "allTireSets": "Tüm lastik takımları",
     "tireStorage": "Depo düzeni",
     "tireSetDetails": "Lastik takımı",
-    "tireForecast": "Gelecek sezon"
+    "tireForecast": "Gelecek sezon",
+    "whatsapp": "WhatsApp"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",
@@ -113,6 +114,7 @@
     "more": "Diğer",
     "auditLog": "Denetim günlüğü",
     "aiAssistant": "AI Asistanı",
-    "tireHotel": "Lastik oteli"
+    "tireHotel": "Lastik oteli",
+    "whatsapp": "WhatsApp"
   }
 }

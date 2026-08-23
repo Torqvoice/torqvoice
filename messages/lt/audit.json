@@ -135,7 +135,8 @@
     "tire_set_return": "Komplektas vėl saugomas",
     "tire_set_dispose": "Padangų komplektas nurašytas",
     "tire_set_attach": "Prie padangų komplekto pridėta failų",
-    "tire_set_detach": "Failas pašalintas iš padangų komplekto"
+    "tire_set_detach": "Failas pašalintas iš padangų komplekto",
+    "whatsapp_send": "Išsiųsta „WhatsApp“ žinutė"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Transporto priemonė {id} grąžinta iš archyvo",
     "vehicle_update": "Atnaujinta transporto priemonė {name}, pakeista: {fields}",
     "vehicle_updateNoChanges": "Atnaujinta transporto priemonė {name}, niekas nepasikeitė",
-    "webhook_create": "Sukurtas webhook {name}"
+    "webhook_create": "Sukurtas webhook {name}",
+    "whatsapp_send": "Klientui {name} išsiųsta „WhatsApp“ žinutė"
   }
 }

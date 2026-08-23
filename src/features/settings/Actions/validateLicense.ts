@@ -1,42 +1,46 @@
-"use server";
+'use server'
 
-import { withAuth } from "@/lib/with-auth";
-import { db } from "@/lib/db";
-import { SETTING_KEYS } from "../Schema/settingsSchema";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { revalidatePath } from "next/cache";
+import { withAuth } from '@/lib/with-auth'
+import { db } from '@/lib/db'
+import { SETTING_KEYS } from '../Schema/settingsSchema'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { revalidatePath } from 'next/cache'
+import { demoGuard } from '@/lib/demo'
 
 export async function validateLicense(licenseKey: string) {
   return withAuth(
     async (ctx) => {
-      const key = licenseKey.trim();
+      // The demo runs on our licence, not the visitor's, and activating one
+      // here would move a real customer's plan onto a shared instance.
+      demoGuard()
+      const key = licenseKey.trim()
       if (!key) {
-        throw new Error("License key is required");
+        throw new Error('License key is required')
       }
 
-      let valid = false;
-      let plan = "free";
-      let expiresAt = "";
+      let valid = false
+      let plan = 'free'
+      let expiresAt = ''
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || "https://torqvoice.com"}/api/license/validate`,
+          `${process.env.NEXT_PUBLIC_TORQVOICE_COM_URL || 'https://torqvoice.com'}/api/license/validate`,
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key, organizationId: ctx.organizationId }),
             signal: AbortSignal.timeout(10000),
-          },
-        );
+          }
+        )
 
         if (response.ok) {
-          const data = await response.json();
-          valid = data.valid === true;
+          const data = await response.json()
+          valid = data.valid === true
           if (valid && data.plan) {
-            plan = data.plan;
+            plan = data.plan
           }
           if (data.expiresAt) {
-            expiresAt = data.expiresAt;
+            expiresAt = data.expiresAt
           }
         }
       } catch {
@@ -53,21 +57,21 @@ export async function validateLicense(licenseKey: string) {
             },
           },
           select: { key: true, value: true },
-        });
+        })
         for (const setting of cached) {
           if (setting.key === SETTING_KEYS.LICENSE_VALID) {
-            valid = setting.value === "true";
+            valid = setting.value === 'true'
           }
           if (setting.key === SETTING_KEYS.LICENSE_PLAN) {
-            plan = setting.value;
+            plan = setting.value
           }
           if (setting.key === SETTING_KEYS.LICENSE_EXPIRES_AT) {
-            expiresAt = setting.value;
+            expiresAt = setting.value
           }
         }
       }
 
-      const now = new Date().toISOString();
+      const now = new Date().toISOString()
 
       await db.$transaction([
         db.appSetting.upsert({
@@ -153,15 +157,19 @@ export async function validateLicense(licenseKey: string) {
         db.appSetting.deleteMany({
           where: {
             organizationId: ctx.organizationId,
-            key: "license.expiryDismissed",
+            key: 'license.expiryDismissed',
           },
         }),
-      ]);
+      ])
 
-      revalidatePath("/settings");
+      revalidatePath('/settings')
 
-      return { valid, plan };
+      return { valid, plan }
     },
-    { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] },
-  );
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+    }
+  )
 }

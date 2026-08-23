@@ -38,7 +38,8 @@
       "messages": "Nachrichten",
       "requests": "Anfragen ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Kennzeichen",

@@ -4,7 +4,10 @@
     "featureDescription": "Müşterilerinizle doğrudan Torqvoice üzerinden SMS mesajları gönderin ve alın.",
     "tabs": {
       "inbox": "Gelen kutusu",
-      "scheduled": "Planlanmış"
+      "scheduled": "Planlanmış",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "SMS kurulmadı",
     "smsNotConfiguredHint": "Burada mesaj gönderip almak için bir SMS sağlayıcısı bağlayın. Planlanmış e-posta bunsuz da çalışır.",

@@ -1,75 +1,69 @@
-"use server";
+'use server'
 
-import crypto from "crypto";
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { revalidatePath } from "next/cache";
-import { demoGuard } from "@/lib/demo";
-import {
-  ALL_ORG_TELEGRAM_KEYS,
-  ORG_TELEGRAM_KEYS,
-} from "../Schema/telegramSettingsSchema";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { armFeatureHints } from "@/features/settings/Lib/armFeatureHints";
+import crypto from 'crypto'
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { revalidatePath } from 'next/cache'
+import { demoGuard } from '@/lib/demo'
+import { ALL_ORG_TELEGRAM_KEYS, ORG_TELEGRAM_KEYS } from '../Schema/telegramSettingsSchema'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { armFeatureHints } from '@/features/settings/Lib/armFeatureHints'
 import {
   getTelegramBotInfo,
   setTelegramWebhook,
   deleteTelegramWebhook,
   sendTelegramMessage,
-} from "@/lib/telegram";
-import { requireFeature } from "@/lib/features";
+} from '@/lib/telegram'
+import { requireFeature } from '@/lib/features'
 
 export async function getTelegramSettings() {
   return withAuth(
     async ({ organizationId }) => {
       const settings = await db.appSetting.findMany({
         where: { organizationId, key: { in: ALL_ORG_TELEGRAM_KEYS } },
-      });
-      const map: Record<string, string> = {};
+      })
+      const map: Record<string, string> = {}
       for (const s of settings) {
-        map[s.key] = s.value;
+        map[s.key] = s.value
       }
-      return map;
+      return map
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 export async function setTelegramSettings(settings: { botToken: string }) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      demoGuard();
-      await requireFeature(organizationId, "telegram");
+      demoGuard()
+      await requireFeature(organizationId, 'telegram')
 
       // Validate bot token by calling getMe
-      const botInfo = await getTelegramBotInfo(settings.botToken);
+      const botInfo = await getTelegramBotInfo(settings.botToken)
 
       // Generate webhook secret
-      const webhookSecret = crypto.randomUUID();
+      const webhookSecret = crypto.randomUUID()
 
       // Build webhook URL
-      const appUrl =
-        process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || "";
-      const webhookUrl = `${appUrl}/api/webhooks/telegram/${organizationId}?secret=${webhookSecret}`;
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || ''
+      const webhookUrl = `${appUrl}/api/webhooks/telegram/${organizationId}?secret=${webhookSecret}`
 
       // Register webhook with Telegram
-      await setTelegramWebhook(settings.botToken, webhookUrl, webhookSecret);
+      await setTelegramWebhook(settings.botToken, webhookUrl, webhookSecret)
 
       // Save all settings via upsert (auto-enable when connecting)
       const entries: Record<string, string> = {
-        [ORG_TELEGRAM_KEYS.TELEGRAM_ENABLED]: "true",
+        [ORG_TELEGRAM_KEYS.TELEGRAM_ENABLED]: 'true',
         [ORG_TELEGRAM_KEYS.TELEGRAM_BOT_TOKEN]: settings.botToken,
         [ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME]: botInfo.username,
         [ORG_TELEGRAM_KEYS.TELEGRAM_WEBHOOK_SECRET]: webhookSecret,
-      };
+      }
 
       // Connecting a bot switches Telegram on, which is the same event as
       // ticking the toggle and deserves the same note about the new link.
-      await armFeatureHints(db, organizationId, userId, entries);
+      await armFeatureHints(db, organizationId, userId, entries)
 
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>
@@ -77,12 +71,12 @@ export async function setTelegramSettings(settings: { botToken: string }) {
             where: { organizationId_key: { organizationId, key } },
             update: { value },
             create: { userId, organizationId, key, value },
-          }),
-        ),
-      );
+          })
+        )
+      )
 
-      revalidatePath("/settings/telegram");
-      return { botUsername: botInfo.username };
+      revalidatePath('/settings/telegram')
+      return { botUsername: botInfo.username }
     },
     {
       requiredPermissions: [
@@ -91,31 +85,28 @@ export async function setTelegramSettings(settings: { botToken: string }) {
           subject: PermissionSubject.SETTINGS,
         },
       ],
-    },
-  );
+    }
+  )
 }
 
-export async function testTelegramSend(input: {
-  chatId: string;
-  message: string;
-}) {
+export async function testTelegramSend(input: { chatId: string; message: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      demoGuard();
-      await requireFeature(organizationId, "telegram");
+      demoGuard()
+      await requireFeature(organizationId, 'telegram')
 
       if (!input.chatId?.trim()) {
-        throw new Error("Please enter a chat ID to send the test message to");
+        throw new Error('Please enter a chat ID to send the test message to')
       }
 
       await sendTelegramMessage(organizationId, {
         chatId: input.chatId.trim(),
         text:
           input.message?.trim() ||
-          "Test message from Torqvoice -- your Telegram bot is configured correctly.",
-      });
+          'Test message from Torqvoice -- your Telegram bot is configured correctly.',
+      })
 
-      return { sentTo: input.chatId.trim() };
+      return { sentTo: input.chatId.trim() }
     },
     {
       requiredPermissions: [
@@ -124,13 +115,14 @@ export async function testTelegramSend(input: {
           subject: PermissionSubject.SETTINGS,
         },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function disconnectTelegram() {
   return withAuth(
     async ({ organizationId }) => {
+      demoGuard()
       // Get current bot token to delete webhook
       const tokenSetting = await db.appSetting.findUnique({
         where: {
@@ -139,14 +131,14 @@ export async function disconnectTelegram() {
             key: ORG_TELEGRAM_KEYS.TELEGRAM_BOT_TOKEN,
           },
         },
-      });
+      })
 
       if (tokenSetting?.value) {
         try {
-          await deleteTelegramWebhook(tokenSetting.value);
+          await deleteTelegramWebhook(tokenSetting.value)
         } catch (error) {
           // Log but continue — we still want to remove local settings
-          console.error("[disconnectTelegram] Failed to delete webhook:", error);
+          console.error('[disconnectTelegram] Failed to delete webhook:', error)
         }
       }
 
@@ -156,10 +148,10 @@ export async function disconnectTelegram() {
           organizationId,
           key: { in: ALL_ORG_TELEGRAM_KEYS },
         },
-      });
+      })
 
-      revalidatePath("/settings/telegram");
-      return { disconnected: true };
+      revalidatePath('/settings/telegram')
+      return { disconnected: true }
     },
     {
       requiredPermissions: [
@@ -168,6 +160,6 @@ export async function disconnectTelegram() {
           subject: PermissionSubject.SETTINGS,
         },
       ],
-    },
-  );
+    }
+  )
 }

@@ -135,7 +135,8 @@
     "tire_set_return": "Set opnieuw opgeslagen",
     "tire_set_dispose": "Bandenset afgeschreven",
     "tire_set_attach": "Bestanden aan een bandenset toegevoegd",
-    "tire_set_detach": "Bestand van een bandenset verwijderd"
+    "tire_set_detach": "Bestand van een bandenset verwijderd",
+    "whatsapp_send": "WhatsApp-bericht verzonden"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -254,6 +255,7 @@
     "vehicle_unarchive": "Voertuig {id} uit het archief gehaald",
     "vehicle_update": "Voertuig {name} bijgewerkt, gewijzigd: {fields}",
     "vehicle_updateNoChanges": "Voertuig {name} bijgewerkt, niets gewijzigd",
-    "webhook_create": "Webhook {name} aangemaakt"
+    "webhook_create": "Webhook {name} aangemaakt",
+    "whatsapp_send": "WhatsApp-bericht verzonden naar {name}"
   }
 }

@@ -38,7 +38,8 @@
       "messages": "Messages",
       "requests": "Requests ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Plate",

@@ -7,7 +7,8 @@
       "email": "E-Mail",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Notiz in der App"
+      "in_app": "Notiz in der App",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Wiederholen",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Planen",
     "scheduled": "Nachricht geplant",
     "updated": "Geplante Nachricht aktualisiert",
-    "saveError": "Nachricht konnte nicht gespeichert werden"
+    "saveError": "Nachricht konnte nicht gespeichert werden",
+    "whatsappNeedsTemplate": "Diese Nachricht geht lange nach Ablauf des 24-Stunden-Fensters raus, und es ist keine WhatsApp-Textvorlage eingerichtet, daher würde sie beim Senden scheitern. Richten Sie eine unter Einstellungen > Anbieter > WhatsApp ein."
   },
   "list": {
     "scheduleMessage": "Nachricht planen",

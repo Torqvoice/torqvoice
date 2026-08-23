@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Hotel de neumáticos",
         "description": "Almacenamiento estacional de neumáticos"
+      },
+      "providers": {
+        "title": "Proveedores",
+        "description": "Correo, SMS, WhatsApp y Telegram"
       }
     },
     "pro": "PRO"
@@ -1487,5 +1491,31 @@
     "prepTitle": "Precios de preparación",
     "prepHint": "Lo que cuesta cada tipo de preparación. Déjalo en blanco y no se factura nunca, que es lo que quiere un taller que incluye el lavado en el almacenaje. Las que tienen precio se añaden solas al presupuesto y a la orden.",
     "prepNotCharged": "no se cobra"
+  },
+  "providers": {
+    "tabs": {
+      "email": "Correo",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Ajustes de correo",
+        "description": "Configura el envío SMTP para entregar facturas, presupuestos y avisos desde tu taller."
+      },
+      "sms": {
+        "feature": "Mensajería SMS",
+        "description": "Envía y recibe SMS con tus clientes desde Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Mensajería WhatsApp",
+        "description": "Envía y recibe mensajes de WhatsApp, incluidas fotos de piezas, desde Torqvoice."
+      },
+      "telegram": {
+        "feature": "Mensajería Telegram",
+        "description": "Envía y recibe mensajes de Telegram con tus clientes desde Torqvoice."
+      }
+    }
   }
 }

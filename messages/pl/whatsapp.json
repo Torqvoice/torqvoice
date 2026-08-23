@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Wysyłaj i odbieraj wiadomości WhatsApp z klientami.",
+    "helpLink": "Skonfiguruj {provider}",
+    "save": "Zapisz ustawienia WhatsApp",
+    "saved": "Ustawienia WhatsApp zapisane",
+    "saveError": "Nie udało się zapisać ustawień WhatsApp",
+    "enable": {
+      "label": "Włącz WhatsApp",
+      "hint": "Włącz, gdy dane dostawcy są już wpisane.",
+      "disabledInfo": "Włącz WhatsApp, aby skonfigurować dostawcę, numer i szablon."
+    },
+    "provider": {
+      "label": "Dostawca",
+      "hint": "Kto dostarcza Twój numer WhatsApp. Po zmianie dane poprzedniego zostają."
+    },
+    "from": {
+      "label": "Twój numer WhatsApp",
+      "hint": "Numer, który widzą klienci, w formacie międzynarodowym."
+    },
+    "secret": {
+      "show": "Pokaż",
+      "hide": "Ukryj",
+      "stored": "Zapisane i ukryte. Wpisz nową wartość, aby zastąpić."
+    },
+    "webhook": {
+      "label": "Adres webhooka",
+      "description": "Wklej go u dostawcy, aby przychodzące wiadomości trafiały do Torqvoice.",
+      "copy": "Kopiuj adres webhooka",
+      "copied": "Adres webhooka skopiowany",
+      "saveFirst": "Zapisz te ustawienia, zanim dostawca zweryfikuje adres. Sprawdzany jest zapisany stan, więc niezapisany formularz nie przejdzie weryfikacji."
+    },
+    "template": {
+      "title": "Szablon wiadomości",
+      "description": "Używany, gdy piszesz do klienta, który dawno się nie odzywał.",
+      "windowExplainer": "WhatsApp pozwala na dowolny tekst tylko przez 24 godziny od ostatniej wiadomości klienta. Poza tym oknem wiadomość musi wyjść jako szablon zatwierdzony przez dostawcę.",
+      "nameLabel": "Nazwa szablonu",
+      "nameHint": "Nazwa zatwierdzonego szablonu lub Content SID u dostawców, którzy go używają.",
+      "languageLabel": "Język szablonu",
+      "languageHint": "Kod języka, w którym szablon zatwierdzono, na przykład pl.",
+      "variablesLabel": "Wartości szablonu, po kolei",
+      "variablesHint": "Wybierz wartości wypełniające numerowane miejsca w szablonie, w tej samej kolejności. Zostaw puste, jeśli szablon ich nie ma.",
+      "tokens": {
+        "customer": "nazwa klienta",
+        "vehicle": "rocznik, marka i model",
+        "plate": "numer rejestracyjny",
+        "message": "to, co wpiszesz",
+        "workshop": "nazwa warsztatu",
+        "photo": "dołączone zdjęcie"
+      },
+      "variablesEmpty": "Brak wartości. Dodaj je poniżej, w kolejności oczekiwanej przez szablon.",
+      "variablesRemove": "Usuń {name}",
+      "mediaUrlLabel": "Adres media dla szablonu",
+      "mediaUrlHint": "Wklej to w pole media szablonu i zastąp n numerem wartości zdjęcia.",
+      "mediaUrlCopy": "Kopiuj adres media",
+      "mediaUrlCopied": "Adres media skopiowany",
+      "mediaUrlSample": "Jako wartość przykładową u dostawcy użyj: sample",
+      "textTitle": "Wiadomości tekstowe",
+      "textDescription": "Używany, gdy piszesz bez zdjęcia: z Wiadomości, z zakładki WhatsApp u klienta lub z zaplanowanej wiadomości.",
+      "mediaTitle": "Wiadomości ze zdjęciem",
+      "mediaDescription": "Używany przez przycisk Wyślij przez WhatsApp przy zdjęciach zlecenia i zawsze, gdy dołączasz zdjęcie w rozmowie.",
+      "textMissing": "Nieskonfigurowane: nie napiszesz do klienta, który nie pisał przez ostatnie 24 godziny.",
+      "mediaMissing": "Nieskonfigurowane: nie wyślesz zdjęć klientowi, który nie pisał przez ostatnie 24 godziny.",
+      "whatIsIt": "Szablon to stała wiadomość, którą piszesz raz i którą zatwierdza {provider}: treść się nie zmienia, wypełniasz tylko numerowane miejsca. Napisz ją w ich konsoli, a tutaj wklej identyfikator.",
+      "whyTwo": "Potrzebne są dwa, bo WhatsApp ustala typ medium przy zatwierdzaniu. Szablon zatwierdzony ze zdjęciem może nieść tylko zdjęcia, a zatwierdzony jako tekst nigdy ich nie poniesie.",
+      "exampleLabel": "Przykładowa treść do wpisania w konsoli dostawcy",
+      "exampleTextValues": "Wypełnij: customer, message. Napisz w języku swoich klientów.",
+      "exampleMediaValues": "Wypełnij: customer, message oraz photo dla adresu media. Napisz w języku swoich klientów.",
+      "exampleMediaValuesHeader": "Wypełnij ją: customer, message. Zdjęcie dołączane jest automatycznie, więc nie potrzebuje własnej luki. Napisz ją w języku, którym czytają twoi klienci."
+    },
+    "test": {
+      "send": "Wyślij test",
+      "sent": "Wiadomość testowa wysłana",
+      "failed": "Nie udało się wysłać wiadomości testowej",
+      "hint": "Najpierw napisz do siebie na WhatsAppie, inaczej test będzie wymagał zatwierdzonego szablonu."
+    },
+    "disconnect": {
+      "action": "Rozłącz WhatsApp",
+      "hint": "Usuwa dane logowania z Torqvoice. Rozmowy pozostają.",
+      "done": "WhatsApp rozłączony",
+      "title": "Rozłącz"
+    },
+    "savedIncomplete": "Zapisano. Do wysyłania brakuje jeszcze: {fields}",
+    "fieldStillNeeded": "Wciąż potrzebne do wysyłania",
+    "steps": {
+      "openProvider": "Otwórz {provider}",
+      "openNumber": "Znajdź numer nadawcy",
+      "openToken": "Utwórz stały token",
+      "consolePath": "W Meta przejdź do:",
+      "provider": {
+        "title": "Wybierz dostawcę i numer",
+        "description": "Twilio uruchomisz szybciej i obsłuży Metę za Ciebie. Meta Cloud API kosztuje mniej, ale weryfikację firmy przechodzisz samodzielnie. Wpisz numer, który zobaczą klienci, w formacie międzynarodowym."
+      },
+      "credentials": {
+        "title": "Wprowadź dane dostępowe",
+        "description": "Skopiuj każdą wartość z {provider}. Każde pole mówi, gdzie ją znaleźć. Zapisz, gdy je masz; po resztę możesz wrócić."
+      },
+      "webhook": {
+        "title": "Zarejestruj webhook",
+        "description": "Wklej ten adres w {provider}, aby wiadomości od klientów trafiały do Torqvoice. Najpierw zapisz tę stronę: adres jest sprawdzany względem tego, co tu zapisano.",
+        "open": "Otwórz ustawienia webhooka w {provider}",
+        "recheck": "Sprawdź ponownie",
+        "waiting": "Na ten adres jeszcze nic nie dotarło. Zmieni kolor na zielony, gdy dostawca go zweryfikuje lub dostarczy wiadomość.",
+        "seen": "Dostawca dotarł pod ten adres. Przychodzące wiadomości pojawią się w Wiadomościach."
+      },
+      "templates": {
+        "title": "Zatwierdź szablony",
+        "description": "Potrzebne tylko, aby napisać pierwszym poza oknem 24 godzin. Możesz to pominąć i wrócić, gdy wiadomości zaczną działać.",
+        "open": "Otwórz szablony {provider}"
+      },
+      "test": {
+        "title": "Wyślij wiadomość testową",
+        "description": "Najpierw napisz na swój numer WhatsApp z własnego telefonu. To potwierdza działanie webhooka i otwiera okno 24 godzin, więc odpowiedź nie potrzebuje szablonu."
+      },
+      "back": "Wstecz",
+      "continue": "Dalej"
+    },
+    "register": {
+      "title": "Zarejestruj numer w Meta",
+      "description": "Po weryfikacji Meta wymaga osobnej rejestracji. Wybierz sześciocyfrowy PIN albo użyj istniejącego PIN-u weryfikacji dwuetapowej. Zapisz go: będzie potrzebny przy przenoszeniu lub ponownej rejestracji numeru.",
+      "action": "Zarejestruj numer",
+      "done": "Numer zarejestrowany",
+      "failed": "Nie udało się zarejestrować numeru",
+      "limit": "Meta pozwala na 10 prób rejestracji numeru w ciągu 72 godzin. Błędny PIN też się liczy, więc sprawdź go wcześniej."
+    }
+  },
+  "messages": {
+    "featureName": "Wiadomości WhatsApp",
+    "featureDescription": "Wysyłaj i odbieraj wiadomości WhatsApp, w tym zdjęcia części, bezpośrednio w Torqvoice.",
+    "noThreads": "Brak rozmów",
+    "noThreadsHint": "Wiadomości pojawią się tutaj, gdy klient napisze na Twój numer WhatsApp albo Ty napiszesz do niego.",
+    "selectThread": "Wybierz rozmowę",
+    "backToThreads": "Rozmowy",
+    "empty": "Jeszcze nic tu nie ma.",
+    "placeholder": "Napisz wiadomość",
+    "send": "Wyślij",
+    "sendFailed": "Nie udało się wysłać wiadomości",
+    "attach": "Dołącz zdjęcie",
+    "attachFailed": "Nie udało się dołączyć zdjęcia",
+    "removeAttachment": "Usuń załącznik",
+    "attachment": "Załącznik",
+    "delete": "Usuń",
+    "deleteFailed": "Nie udało się usunąć wiadomości",
+    "sentAsTemplate": "szablon",
+    "sentAsTemplateNotice": "Wysłano jako zatwierdzony szablon, bo klient nie pisał przez ostatnie 24 godziny.",
+    "windowClosed": "Klient nie pisał przez ostatnie 24 godziny, więc wiadomość wyjdzie jako zatwierdzony szablon.",
+    "unknownNumber": "Ten numer nie należy jeszcze do żadnego klienta. Dodaj go jako klienta, aby odpowiedzieć.",
+    "notConfigured": {
+      "title": "WhatsApp nie jest połączony",
+      "description": "Podłącz numer WhatsApp, aby wymieniać wiadomości z klientami.",
+      "action": "Skonfiguruj WhatsApp"
+    },
+    "title": "Rozmowy",
+    "searchPlaceholder": "Szukaj rozmów",
+    "noSearchResults": "Żadna rozmowa nie pasuje do wyszukiwania.",
+    "compose": {
+      "newMessage": "Nowa wiadomość",
+      "title": "Nowa wiadomość WhatsApp",
+      "searchPlaceholder": "Szukaj klientów",
+      "noMatches": "Żaden klient nie pasuje do wyszukiwania.",
+      "noRecipients": "Brak klientów z numerem telefonu."
+    },
+    "windowBlocked": "Ten klient nie pisał przez ostatnie 24 godziny, więc WhatsApp nie dostarczy teraz wiadomości. Poproś go o wiadomość albo skonfiguruj zatwierdzony szablon.",
+    "windowBlockedAction": "Skonfiguruj szablon",
+    "windowBlockedPlaceholder": "Czekamy, aż klient napisze pierwszy"
+  },
+  "sendPhoto": {
+    "action": "Wyślij przez WhatsApp",
+    "title": "Wyślij zdjęcie przez WhatsApp",
+    "description": "Klient dostanie to zdjęcie na czacie WhatsApp.",
+    "captionPlaceholder": "Dodaj notatkę, na przykład co widać na zdjęciu",
+    "send": "Wyślij",
+    "cancel": "Anuluj",
+    "sent": "Zdjęcie wysłane",
+    "sentAsTemplate": "Zdjęcie wysłane jako zatwierdzony szablon",
+    "failed": "Nie udało się wysłać zdjęcia"
+  }
+}

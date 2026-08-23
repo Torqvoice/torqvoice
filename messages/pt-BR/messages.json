@@ -4,7 +4,10 @@
     "featureDescription": "Envie e receba mensagens SMS com seus clientes diretamente pelo Torqvoice.",
     "tabs": {
       "inbox": "Caixa de entrada",
-      "scheduled": "Agendadas"
+      "scheduled": "Agendadas",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "O SMS não está configurado",
     "smsNotConfiguredHint": "Conecte um provedor de SMS para enviar e receber mensagens aqui. E-mails agendados funcionam sem isso.",

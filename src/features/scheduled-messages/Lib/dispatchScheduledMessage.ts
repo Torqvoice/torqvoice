@@ -1,29 +1,27 @@
-import { db } from "@/lib/db";
-import { notify } from "@/lib/notify";
-import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
-import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from "@/lib/sms";
-import { sendTelegramMessage } from "@/lib/telegram";
-import type { MessageFrequency } from "../Schema/scheduledMessageSchema";
+import { db } from '@/lib/db'
+import { notify } from '@/lib/notify'
+import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from '@/lib/sms'
+import { sendTelegramMessage } from '@/lib/telegram'
+import { sendOrgWhatsapp } from '@/lib/whatsapp'
+import type { MessageFrequency } from '../Schema/scheduledMessageSchema'
 
 /** Everything a send needs, whether it comes from the cron or a manual push. */
 export type DispatchableMessage = {
-  id: string;
-  channel: string;
-  subject: string | null;
-  body: string;
-  recipient: string | null;
-  organizationId: string;
-  customerId: string | null;
-  vehicleId: string | null;
-};
+  id: string
+  channel: string
+  subject: string | null
+  body: string
+  recipient: string | null
+  organizationId: string
+  customerId: string | null
+  vehicleId: string | null
+}
 
 /** Plain text to the minimal HTML the mail senders expect. */
 function toHtml(body: string): string {
-  const escaped = body
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-  return `<div style="font-family:system-ui,sans-serif;white-space:pre-wrap;line-height:1.5;">${escaped}</div>`;
+  const escaped = body.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  return `<div style="font-family:system-ui,sans-serif;white-space:pre-wrap;line-height:1.5;">${escaped}</div>`
 }
 
 /**
@@ -35,127 +33,144 @@ function toHtml(body: string): string {
  * conversation afterwards.
  */
 export async function dispatchScheduledMessage(message: DispatchableMessage): Promise<void> {
-  const { organizationId } = message;
+  const { organizationId } = message
 
   const customer = message.customerId
     ? await db.customer.findFirst({
         where: { id: message.customerId, organizationId },
         select: { id: true, name: true, email: true, phone: true, telegramChatId: true },
       })
-    : null;
+    : null
 
   switch (message.channel) {
-    case "email": {
-      const to = message.recipient?.trim() || customer?.email;
-      if (!to) throw new Error("No email address for this message");
-      const from = await getOrgFromAddress(organizationId);
+    case 'email': {
+      const to = message.recipient?.trim() || customer?.email
+      if (!to) throw new Error('No email address for this message')
+      const from = await getOrgFromAddress(organizationId)
       await sendOrgMail(organizationId, {
         from,
         to,
-        subject: message.subject?.trim() || "",
+        subject: message.subject?.trim() || '',
         html: toHtml(message.body),
-      });
-      return;
+      })
+      return
     }
 
-    case "sms": {
-      const rawTo = message.recipient?.trim() || customer?.phone;
-      if (!rawTo) throw new Error("No phone number for this message");
+    case 'sms': {
+      const rawTo = message.recipient?.trim() || customer?.phone
+      if (!rawTo) throw new Error('No phone number for this message')
 
-      const to = await normalizeOrgPhone(organizationId, rawTo);
-      if (!to) throw new Error("Phone number is not in a format we can dial");
+      const to = await normalizeOrgPhone(organizationId, rawTo)
+      if (!to) throw new Error('Phone number is not in a format we can dial')
 
-      const fromNumber = await getOrgSmsPhoneNumber(organizationId);
-      if (!fromNumber) throw new Error("SMS phone number is not configured");
+      const fromNumber = await getOrgSmsPhoneNumber(organizationId)
+      if (!fromNumber) throw new Error('SMS phone number is not configured')
 
       // Logged before the send, so a provider failure still leaves a trace in
       // the customer's thread rather than vanishing
       const logged = await db.smsMessage.create({
         data: {
-          direction: "outbound",
+          direction: 'outbound',
           fromNumber,
           toNumber: to,
           body: message.body,
-          status: "queued",
+          status: 'queued',
           organizationId,
           customerId: customer?.id ?? null,
-          relatedEntityType: "ScheduledMessage",
+          relatedEntityType: 'ScheduledMessage',
           relatedEntityId: message.id,
         },
-      });
+      })
 
       try {
-        const result = await sendOrgSms(organizationId, { to, body: message.body });
+        const result = await sendOrgSms(organizationId, { to, body: message.body })
         await db.smsMessage.update({
           where: { id: logged.id },
-          data: { status: "sent", providerMsgId: result?.providerMsgId ?? null },
-        });
+          data: { status: 'sent', providerMsgId: result?.providerMsgId ?? null },
+        })
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         await db.smsMessage.update({
           where: { id: logged.id },
-          data: { status: "failed", errorMessage },
-        });
-        throw error;
+          data: { status: 'failed', errorMessage },
+        })
+        throw error
       }
-      return;
+      return
     }
 
-    case "telegram": {
-      const chatId = message.recipient?.trim() || customer?.telegramChatId;
-      if (!chatId) throw new Error("No Telegram chat linked for this message");
+    case 'whatsapp': {
+      const number = message.recipient?.trim() || customer?.phone
+      if (!number) throw new Error('No WhatsApp number for this message')
+
+      // Unlike the other channels there is no row to write here first:
+      // sendOrgWhatsapp records the attempt either way, and decides on its own
+      // whether the 24 hour window allows free text or forces a template.
+      await sendOrgWhatsapp(organizationId, {
+        to: number,
+        body: message.body,
+        customerId: customer?.id,
+        relatedEntityType: 'ScheduledMessage',
+        relatedEntityId: message.id,
+      })
+      return
+    }
+
+    case 'telegram': {
+      const chatId = message.recipient?.trim() || customer?.telegramChatId
+      if (!chatId) throw new Error('No Telegram chat linked for this message')
 
       const logged = await db.telegramMessage.create({
         data: {
-          direction: "outbound",
+          direction: 'outbound',
           chatId,
           body: message.body,
-          status: "queued",
+          status: 'queued',
           organizationId,
           customerId: customer?.id ?? null,
-          relatedEntityType: "ScheduledMessage",
+          relatedEntityType: 'ScheduledMessage',
           relatedEntityId: message.id,
         },
-      });
+      })
 
       try {
         const result = await sendTelegramMessage(organizationId, {
           chatId,
           text: message.body,
-        });
+        })
         await db.telegramMessage.update({
           where: { id: logged.id },
-          data: { status: "sent", telegramMessageId: String(result.messageId) },
-        });
+          data: { status: 'sent', telegramMessageId: String(result.messageId) },
+        })
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         await db.telegramMessage.update({
           where: { id: logged.id },
-          data: { status: "failed", errorMessage },
-        });
-        throw error;
+          data: { status: 'failed', errorMessage },
+        })
+        throw error
       }
-      return;
+      return
     }
 
-    case "in_app": {
+    case 'in_app': {
       // The workshop's own bell, not the customer's inbox
       await notify({
-        type: "scheduled_message",
+        type: 'scheduled_message',
         title: message.subject?.trim() || message.body.slice(0, 80),
         message: message.body,
-        entityType: "ScheduledMessage",
+        entityType: 'ScheduledMessage',
         entityId: message.id,
         entityUrl: message.customerId
           ? `/customers/${message.customerId}`
-          : "/messages?tab=scheduled",
+          : '/messages?tab=scheduled',
         organizationId,
-      });
-      return;
+      })
+      return
     }
 
     default:
-      throw new Error(`Unknown message channel: ${message.channel}`);
+      throw new Error(`Unknown message channel: ${message.channel}`)
   }
 }
 
@@ -166,28 +181,28 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
 export function nextSendAt(
   current: Date,
   frequency: MessageFrequency | string,
-  endDate: Date | null,
+  endDate: Date | null
 ): Date | null {
-  const next = new Date(current);
+  const next = new Date(current)
   switch (frequency) {
-    case "daily":
-      next.setDate(next.getDate() + 1);
-      break;
-    case "weekly":
-      next.setDate(next.getDate() + 7);
-      break;
-    case "biweekly":
-      next.setDate(next.getDate() + 14);
-      break;
-    case "monthly":
-      next.setMonth(next.getMonth() + 1);
-      break;
-    case "yearly":
-      next.setFullYear(next.getFullYear() + 1);
-      break;
+    case 'daily':
+      next.setDate(next.getDate() + 1)
+      break
+    case 'weekly':
+      next.setDate(next.getDate() + 7)
+      break
+    case 'biweekly':
+      next.setDate(next.getDate() + 14)
+      break
+    case 'monthly':
+      next.setMonth(next.getMonth() + 1)
+      break
+    case 'yearly':
+      next.setFullYear(next.getFullYear() + 1)
+      break
     default:
-      return null; // "once"
+      return null // "once"
   }
-  if (endDate && next > endDate) return null;
-  return next;
+  if (endDate && next > endDate) return null
+  return next
 }
