@@ -26,9 +26,11 @@ export default async function MessagesPage() {
   const scheduled = scheduledResult.success && scheduledResult.data ? scheduledResult.data : []
 
   return (
-    <>
+    // The inbox is a full-height pane with its own scrolling regions, so the
+    // page is bounded by the viewport rather than growing the document.
+    <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
-      <div className="flex flex-1 flex-col p-4 pt-0">
+      <div className="flex min-h-0 flex-1 flex-col p-4 pt-0">
         <Suspense>
           <MessagesPageClient
             threads={inbox.threads}
@@ -39,6 +41,6 @@ export default async function MessagesPage() {
           />
         </Suspense>
       </div>
-    </>
+    </div>
   )
 }

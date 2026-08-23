@@ -74,7 +74,7 @@ export function MessagesPageClient({
   const upcomingCount = scheduled.filter((message) => message.status === 'scheduled').length
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-1 rounded-lg border p-1">
           <Button
@@ -108,7 +108,7 @@ export function MessagesPageClient({
         </Button>
       </div>
 
-      <div className="flex h-[calc(100vh-11rem)] overflow-hidden rounded-lg border bg-background">
+      <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border bg-background">
         {tab === 'scheduled' ? (
           <div className="min-w-0 flex-1">
             <ScheduledMessageList

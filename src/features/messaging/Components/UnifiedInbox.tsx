@@ -254,9 +254,19 @@ export function UnifiedInbox({
         )}
       >
         <div className="shrink-0 space-y-2 border-b px-3 py-2.5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">{t('title')}</h2>
-            <span className="text-xs tabular-nums text-muted-foreground">{threads.length}</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold">{t('title')}</h2>
+              <span className="text-xs tabular-nums text-muted-foreground">{threads.length}</span>
+            </div>
+            {/* Starting a conversation used to be offered only by the empty
+                state, so it disappeared as soon as there was anything to read. */}
+            {composeOptions.length > 0 && (
+              <Button size="sm" variant="ghost" className="h-7 px-2" onClick={startCompose}>
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                {t('newMessage')}
+              </Button>
+            )}
           </div>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
