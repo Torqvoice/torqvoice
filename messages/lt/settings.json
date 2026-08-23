@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Apžiūrų šablonai, apžiūros ir rezultatai",
     "optAuditLogs": "Audito žurnalai",
     "optAuditLogsDesc": "Veiklos ir pakeitimų istorija",
-    "optSmsMessages": "SMS žinutės",
-    "optSmsMessagesDesc": "Išsiųstos ir gautos SMS žinutės",
+    "optSmsMessages": "Žinutės",
+    "optSmsMessagesDesc": "Išsiųstos ir gautos SMS, WhatsApp ir Telegram žinutės",
     "optScheduledMessages": "Suplanuotos žinutės",
     "optScheduledMessagesDesc": "Eilėje esančios ir pasikartojančios žinutės, laukiančios išsiuntimo",
     "optNotifications": "Pranešimai",
@@ -984,7 +984,9 @@
       "supportAction": "susisiekite su mūsų pagalbos komanda."
     },
     "optTireHotel": "Padangų viešbutis",
-    "optTireHotelDesc": "Saugomi komplektai, lentynos, paruošimas ir saugojimo sutartys"
+    "optTireHotelDesc": "Saugomi komplektai, lentynos, paruošimas ir saugojimo sutartys",
+    "optWorkshopConfig": "Dirbtuvių nustatymai",
+    "optWorkshopConfigDesc": "Darbo šablonai, rolės, webhook'ai ir suplanuotos ataskaitos"
   },
   "license": {
     "title": "\"White-Label\" licencija",

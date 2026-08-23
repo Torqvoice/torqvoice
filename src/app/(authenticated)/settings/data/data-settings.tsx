@@ -69,6 +69,7 @@ interface ExportOptions {
   scheduledMessages: boolean
   notifications: boolean
   tireHotel: boolean
+  workshopConfig: boolean
   files: boolean
 }
 
@@ -90,6 +91,7 @@ const OPTION_META: { key: keyof ExportOptions; labelKey: string; descKey: string
   { key: 'notifications', labelKey: 'optNotifications', descKey: 'optNotificationsDesc' },
   { key: 'customFields', labelKey: 'optCustomFields', descKey: 'optCustomFieldsDesc' },
   { key: 'tireHotel', labelKey: 'optTireHotel', descKey: 'optTireHotelDesc' },
+  { key: 'workshopConfig', labelKey: 'optWorkshopConfig', descKey: 'optWorkshopConfigDesc' },
   { key: 'files', labelKey: 'optFiles', descKey: 'optFilesDesc' },
 ]
 
@@ -107,6 +109,7 @@ const ALL_TRUE: ExportOptions = {
   scheduledMessages: true,
   notifications: true,
   tireHotel: true,
+  workshopConfig: true,
   files: true,
 }
 

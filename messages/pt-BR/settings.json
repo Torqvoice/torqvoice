@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Modelos de inspeção, inspeções e resultados",
     "optAuditLogs": "Registros de auditoria",
     "optAuditLogsDesc": "Histórico de atividades e alterações",
-    "optSmsMessages": "Mensagens SMS",
-    "optSmsMessagesDesc": "Mensagens SMS enviadas e recebidas",
+    "optSmsMessages": "Mensagens",
+    "optSmsMessagesDesc": "Mensagens SMS, WhatsApp e Telegram enviadas e recebidas",
     "optScheduledMessages": "Mensagens agendadas",
     "optScheduledMessagesDesc": "Mensagens na fila e recorrentes aguardando envio",
     "optNotifications": "Notificações",
@@ -984,7 +984,9 @@
       "supportAction": "fale com nossa equipe de suporte."
     },
     "optTireHotel": "Hotel de pneus",
-    "optTireHotelDesc": "Jogos armazenados, prateleiras, preparação e contratos de armazenagem"
+    "optTireHotelDesc": "Jogos armazenados, prateleiras, preparação e contratos de armazenagem",
+    "optWorkshopConfig": "Configuração da oficina",
+    "optWorkshopConfigDesc": "Modelos de mão de obra, funções, webhooks e relatórios agendados"
   },
   "license": {
     "title": "Licença marca branca",

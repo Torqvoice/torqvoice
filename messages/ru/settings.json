@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Шаблоны осмотров, осмотры и результаты",
     "optAuditLogs": "Журналы аудита",
     "optAuditLogsDesc": "История активности и изменений",
-    "optSmsMessages": "SMS-сообщения",
-    "optSmsMessagesDesc": "Отправленные и полученные SMS-сообщения",
+    "optSmsMessages": "Сообщения",
+    "optSmsMessagesDesc": "Отправленные и полученные SMS, WhatsApp и Telegram",
     "optScheduledMessages": "Запланированные сообщения",
     "optScheduledMessagesDesc": "Сообщения в очереди и повторяющиеся, ожидающие отправки",
     "optNotifications": "Уведомления",
@@ -984,7 +984,9 @@
       "supportAction": "свяжитесь с нашей службой поддержки."
     },
     "optTireHotel": "Шинный отель",
-    "optTireHotelDesc": "Комплекты на хранении, полки, подготовка и договоры хранения"
+    "optTireHotelDesc": "Комплекты на хранении, полки, подготовка и договоры хранения",
+    "optWorkshopConfig": "Настройки мастерской",
+    "optWorkshopConfigDesc": "Шаблоны работ, роли, вебхуки и запланированные отчёты"
   },
   "license": {
     "title": "White-Label лицензия",

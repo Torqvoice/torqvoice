@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Modelli di ispezione, ispezioni e risultati",
     "optAuditLogs": "Registri di audit",
     "optAuditLogsDesc": "Cronologia delle attività e delle modifiche",
-    "optSmsMessages": "Messaggi SMS",
-    "optSmsMessagesDesc": "Messaggi SMS inviati e ricevuti",
+    "optSmsMessages": "Messaggi",
+    "optSmsMessagesDesc": "Messaggi SMS, WhatsApp e Telegram inviati e ricevuti",
     "optScheduledMessages": "Messaggi pianificati",
     "optScheduledMessagesDesc": "Messaggi in coda e ricorrenti in attesa di essere inviati",
     "optNotifications": "Notifiche",
@@ -984,7 +984,9 @@
       "supportAction": "contatta il nostro team di supporto."
     },
     "optTireHotel": "Hotel pneumatici",
-    "optTireHotelDesc": "Treni in deposito, scaffali, preparazione e contratti di deposito"
+    "optTireHotelDesc": "Treni in deposito, scaffali, preparazione e contratti di deposito",
+    "optWorkshopConfig": "Configurazione officina",
+    "optWorkshopConfigDesc": "Preset di manodopera, ruoli, webhook e report programmati"
   },
   "license": {
     "title": "Licenza White-Label",

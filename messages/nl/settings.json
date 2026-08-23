@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Inspectiesjablonen, inspecties en resultaten",
     "optAuditLogs": "Auditlogboeken",
     "optAuditLogsDesc": "Activiteiten- en wijzigingsgeschiedenis",
-    "optSmsMessages": "SMS-berichten",
-    "optSmsMessagesDesc": "Verzonden en ontvangen SMS-berichten",
+    "optSmsMessages": "Berichten",
+    "optSmsMessagesDesc": "Verzonden en ontvangen sms-, WhatsApp- en Telegram-berichten",
     "optScheduledMessages": "Geplande berichten",
     "optScheduledMessagesDesc": "Berichten in de wachtrij en herhalende berichten die nog verstuurd worden",
     "optNotifications": "Meldingen",
@@ -984,7 +984,9 @@
       "supportAction": "neem contact op met ons supportteam."
     },
     "optTireHotel": "Bandenhotel",
-    "optTireHotelDesc": "Opgeslagen bandensets, stellingen, voorbereiding en opslagovereenkomsten"
+    "optTireHotelDesc": "Opgeslagen bandensets, stellingen, voorbereiding en opslagovereenkomsten",
+    "optWorkshopConfig": "Werkplaatsinrichting",
+    "optWorkshopConfigDesc": "Arbeidsjablonen, rollen, webhooks en geplande rapporten"
   },
   "license": {
     "title": "White-label licentie",

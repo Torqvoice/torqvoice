@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Modèles d'inspection, inspections et résultats",
     "optAuditLogs": "Journaux d'audit",
     "optAuditLogsDesc": "Historique des activités et des modifications",
-    "optSmsMessages": "Messages SMS",
-    "optSmsMessagesDesc": "Messages SMS envoyés et reçus",
+    "optSmsMessages": "Messages",
+    "optSmsMessagesDesc": "Messages SMS, WhatsApp et Telegram envoyés et reçus",
     "optScheduledMessages": "Messages programmés",
     "optScheduledMessagesDesc": "Messages en attente et récurrents qui doivent encore partir",
     "optNotifications": "Notifications",
@@ -984,7 +984,9 @@
       "supportAction": "contactez notre équipe d'assistance."
     },
     "optTireHotel": "Hôtel à pneus",
-    "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage"
+    "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage",
+    "optWorkshopConfig": "Configuration de l'atelier",
+    "optWorkshopConfigDesc": "Modèles de main-d'œuvre, rôles, webhooks et rapports programmés"
   },
   "license": {
     "title": "Licence marque blanche",

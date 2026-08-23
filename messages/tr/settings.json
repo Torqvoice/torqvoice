@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Denetim şablonları, denetimler ve sonuçlar",
     "optAuditLogs": "Denetim Günlükleri",
     "optAuditLogsDesc": "Etkinlik ve değişiklik geçmişi",
-    "optSmsMessages": "SMS Mesajları",
-    "optSmsMessagesDesc": "Gönderilen ve alınan SMS mesajları",
+    "optSmsMessages": "Mesajlar",
+    "optSmsMessagesDesc": "Gönderilen ve alınan SMS, WhatsApp ve Telegram mesajları",
     "optScheduledMessages": "Planlanmış mesajlar",
     "optScheduledMessagesDesc": "Sırada bekleyen ve tekrar eden, henüz gönderilmemiş mesajlar",
     "optNotifications": "Bildirimler",
@@ -984,7 +984,9 @@
       "supportAction": "destek ekibimizle iletişime geçin."
     },
     "optTireHotel": "Lastik oteli",
-    "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri"
+    "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri",
+    "optWorkshopConfig": "Atölye kurulumu",
+    "optWorkshopConfigDesc": "İşçilik şablonları, roller, webhook'lar ve zamanlanmış raporlar"
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",
