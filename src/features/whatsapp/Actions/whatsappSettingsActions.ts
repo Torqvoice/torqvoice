@@ -216,8 +216,12 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
           effective[field.key] = stored.get(key) ?? ''
           continue
         }
-        entries[key] = typed.trim()
-        effective[field.key] = typed.trim()
+        // A paste into a masked field can land beside the mask rather than
+        // replacing it. The bullets are not part of any credential, so they
+        // come off here as well as in the form.
+        const cleaned = typed.replaceAll('\u2022', '').trim()
+        entries[key] = cleaned
+        effective[field.key] = cleaned
       }
 
       // Providers that sign nothing rely on the URL being unguessable, so the

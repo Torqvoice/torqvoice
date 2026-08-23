@@ -43,6 +43,14 @@ async function readError(response: Response): Promise<string> {
     }
     const text =
       payload.error?.error_user_msg || payload.error?.message || `HTTP ${response.status}`
+
+    // 190 covers everything wrong with a token, and Meta's own wording says
+    // nothing about what to do next. The two cases a workshop actually hits
+    // are a token that expired and one that was pasted badly.
+    if (payload.error?.code === 190) {
+      return `${text}. Your access token is not valid. Paste it again from Meta, replacing the whole field, and use a permanent system user token rather than the temporary one, which lasts 24 hours. (Meta error 190)`
+    }
+
     return payload.error?.code ? `${text} (Meta error ${payload.error.code})` : text
   } catch {
     return `HTTP ${response.status}`

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useMemo, useRef, useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -129,6 +129,18 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
       [providerId]: { ...(previous[providerId] ?? {}), [field]: value },
     }))
   }
+
+  // Which secrets already exist on the server, so an emptied field knows
+  // whether putting the mask back means "keep what is stored" or nothing.
+  const storedSecrets = useRef(
+    new Set(
+      Object.entries(initial.credentials).flatMap(([provider, fields]) =>
+        Object.entries(fields)
+          .filter(([, value]) => value === SECRET_MASK)
+          .map(([field]) => `${provider}.${field}`)
+      )
+    )
+  )
 
   const save = (then?: () => void) => {
     if (!provider) return
@@ -369,6 +381,22 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                                 aria-invalid={isMissing}
                                 className={isMissing ? 'border-amber-500' : undefined}
                                 onChange={(event) => setCredential(field.key, event.target.value)}
+                                // Clicking into a saved secret empties it, so
+                                // a paste cannot land after the mask and be
+                                // saved as mask plus token. Leaving without
+                                // typing puts the mask back and keeps the
+                                // stored value.
+                                onFocus={() => {
+                                  if (isStoredSecret) setCredential(field.key, '')
+                                }}
+                                onBlur={() => {
+                                  if (
+                                    value === '' &&
+                                    storedSecrets.current.has(`${providerId}.${field.key}`)
+                                  ) {
+                                    setCredential(field.key, SECRET_MASK)
+                                  }
+                                }}
                               />
                               {field.secret && !isStoredSecret && (
                                 <Button
