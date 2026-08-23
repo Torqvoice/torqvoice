@@ -61,6 +61,9 @@ export function WhatsappConversation({
   const [mounted, setMounted] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const endRef = useRef<HTMLDivElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
+  /** Whether the reader is at the newest message, so growth may follow. */
+  const atBottom = useRef(true)
 
   useEffect(() => setMounted(true), [])
 
@@ -99,9 +102,49 @@ export function WhatsappConversation({
     load()
   }, [load])
 
+  // Opening a thread should land on the newest message. Scrolling once on
+  // mount ran before the messages had loaded, so it scrolled an empty list and
+  // stayed at the top.
+  const initialScrollDone = useRef(false)
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+    const el = scrollAreaRef.current
+    // While loading, the pane shows a spinner rather than the list, so there
+    // is nothing to scroll yet and the first message count arrives before the
+    // messages are on screen.
+    if (!el || loading || messages.length === 0) return
+
+    if (initialScrollDone.current) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+      return
+    }
+    initialScrollDone.current = true
+    // Two frames: one for the messages to render, one for layout to settle.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight
+      })
+    })
+  }, [messages.length, loading])
+
+  // A photo has no height until it loads, so a thread ending in one would
+  // settle just short of the bottom. Follow the growth, but only while the
+  // reader is already there: nobody wants to be yanked away mid-thread.
+  useEffect(() => {
+    const el = scrollAreaRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+
+    const observer = new ResizeObserver(() => {
+      if (atBottom.current) el.scrollTop = el.scrollHeight
+    })
+    for (const child of Array.from(el.children)) observer.observe(child)
+    return () => observer.disconnect()
+  }, [messages.length, loading])
+
+  const onScroll = () => {
+    const el = scrollAreaRef.current
+    if (!el) return
+    atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
+  }
 
   const handleAttach = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -171,7 +214,11 @@ export function WhatsappConversation({
 
   return (
     <div className={cn('flex h-full min-h-0 flex-col', className)}>
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+      <div
+        ref={scrollAreaRef}
+        onScroll={onScroll}
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4"
+      >
         {loading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
