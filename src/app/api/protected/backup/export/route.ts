@@ -23,6 +23,11 @@ interface ExportOptions {
   scheduledMessages: boolean
   notifications: boolean
   tireHotel: boolean
+  /**
+   * Labour presets, roles, webhooks, report schedules and dashboard layout:
+   * the settings a workshop builds up that are not key/value AppSettings.
+   */
+  workshopConfig: boolean
 }
 
 const DEFAULT_OPTIONS: ExportOptions = {
@@ -40,6 +45,7 @@ const DEFAULT_OPTIONS: ExportOptions = {
   scheduledMessages: true,
   notifications: true,
   tireHotel: true,
+  workshopConfig: true,
 }
 
 export async function POST(request: NextRequest) {
@@ -115,12 +121,14 @@ export async function POST(request: NextRequest) {
             notes: true,
             fuelLogs: true,
             reminders: true,
+            serviceRequests: true,
             serviceRecords: {
               include: {
                 partItems: true,
                 laborItems: true,
                 attachments: true,
                 payments: true,
+                statusReports: true,
               },
             },
           },
