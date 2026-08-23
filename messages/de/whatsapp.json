@@ -85,6 +85,7 @@
     "fieldStillNeeded": "Zum Senden noch erforderlich",
     "steps": {
       "openProvider": "{provider} öffnen",
+      "openToken": "Dauerhaftes Token erstellen",
       "provider": {
         "title": "Anbieter und Nummer wählen",
         "description": "Twilio ist schneller eingerichtet und übernimmt Meta für Sie. Die Meta Cloud API kostet weniger, dafür durchlaufen Sie die Unternehmensverifizierung selbst. Tragen Sie die Nummer ein, die Kunden sehen, im internationalen Format."

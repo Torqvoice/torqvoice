@@ -85,6 +85,7 @@
     "fieldStillNeeded": "Encore nécessaire pour envoyer",
     "steps": {
       "openProvider": "Ouvrir {provider}",
+      "openToken": "Créer un jeton permanent",
       "provider": {
         "title": "Choisissez votre fournisseur et votre numéro",
         "description": "Twilio démarre plus vite et gère Meta pour vous. L'API Cloud de Meta coûte moins cher, mais vous passez sa vérification d'entreprise vous-même. Saisissez le numéro que verront les clients, au format international."

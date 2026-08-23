@@ -621,3 +621,13 @@
   min-height: 0;
   overflow-y: auto;
 }
+
+/* Masks a value without a password input. A password field anywhere in a card
+   makes Chrome read the whole card as a sign-in form and offer the user's
+   saved email into the text field above it, which is how provider credential
+   forms end up autofilled with an address. Masking in CSS keeps the secret
+   hidden and leaves the browser nothing to recognise. */
+.masked-value {
+  -webkit-text-security: disc;
+  text-security: disc;
+}

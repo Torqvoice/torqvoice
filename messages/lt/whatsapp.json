@@ -85,6 +85,7 @@
     "fieldStillNeeded": "Dar reikia norint siųsti",
     "steps": {
       "openProvider": "Atidaryti {provider}",
+      "openToken": "Sukurti nuolatinį prieigos raktą",
       "provider": {
         "title": "Pasirinkite tiekėją ir numerį",
         "description": "„Twilio“ paleisti greičiau ir jis tvarko „Meta“ už jus. „Meta Cloud API“ kainuoja mažiau, bet verslo patvirtinimą atliekate patys. Įveskite numerį, kurį matys klientai, tarptautiniu formatu."

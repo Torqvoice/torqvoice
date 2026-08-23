@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
 import { DocsLink } from '@/components/docs-link'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -365,11 +366,8 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                               <Input
                                 id={`whatsapp-${field.key}`}
                                 name={`whatsapp-${field.key}`}
-                                type={
-                                  field.secret && !isRevealed && !isStoredSecret
-                                    ? 'password'
-                                    : 'text'
-                                }
+                                // Never type="password": see .masked-value.
+                                type="text"
                                 value={value}
                                 placeholder={field.placeholder}
                                 // These are provider credentials, not the
@@ -379,7 +377,10 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                                 data-1p-ignore
                                 data-lpignore="true"
                                 aria-invalid={isMissing}
-                                className={isMissing ? 'border-amber-500' : undefined}
+                                className={cn(
+                                  field.secret && !isRevealed && !isStoredSecret && 'masked-value',
+                                  isMissing && 'border-amber-500'
+                                )}
                                 onChange={(event) => setCredential(field.key, event.target.value)}
                                 // Clicking into a saved secret empties it, so
                                 // a paste cannot land after the mask and be
@@ -562,12 +563,18 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                   </Button>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    {current === 2 &&
-                      provider &&
-                      openProvider(
-                        provider.setup.credentials,
-                        t('steps.openProvider', { provider: provider.label })
-                      )}
+                    {current === 2 && provider && (
+                      <>
+                        {openProvider(
+                          provider.setup.credentials,
+                          t('steps.openProvider', { provider: provider.label })
+                        )}
+                        {/* The token that lasts is minted somewhere else
+                            entirely, which is where this step stalls. */}
+                        {provider.setup.token &&
+                          openProvider(provider.setup.token, t('steps.openToken'))}
+                      </>
+                    )}
                     {current === 3 && provider && (
                       <>
                         {openProvider(

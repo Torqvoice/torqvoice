@@ -151,6 +151,12 @@ export interface WhatsappSetupLinks {
   webhook: string
   /** Where approved templates are written. */
   templates: string
+  /**
+   * Where a token that does not expire is minted, when that is somewhere other
+   * than the credentials page. Meta offers a 24 hour token on the way in and
+   * keeps the permanent one in a different product entirely.
+   */
+  token?: string
 }
 
 export interface WhatsappAdapter {

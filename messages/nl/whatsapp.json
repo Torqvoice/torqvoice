@@ -85,6 +85,7 @@
     "fieldStillNeeded": "Nog nodig om te kunnen sturen",
     "steps": {
       "openProvider": "{provider} openen",
+      "openToken": "Een permanent token maken",
       "provider": {
         "title": "Kies je provider en nummer",
         "description": "Twilio is sneller op te zetten en regelt Meta voor je. Meta Cloud API kost minder, maar de bedrijfsverificatie doe je zelf. Vul het nummer in dat klanten zien, in internationaal formaat."
