@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Tiekėjas",
-      "placeholder": "Pasirinkite tiekėją",
       "hint": "Kas suteikia jūsų „WhatsApp“ numerį. Pakeitus senojo duomenys išlieka."
     },
     "from": {

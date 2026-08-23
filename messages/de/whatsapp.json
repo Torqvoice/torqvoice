@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Anbieter",
-      "placeholder": "Anbieter wählen",
       "hint": "Wer Ihre WhatsApp-Nummer bereitstellt. Beim Wechsel bleiben die Zugangsdaten des alten Anbieters erhalten."
     },
     "from": {

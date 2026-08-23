@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Leverandør",
-      "placeholder": "Velg leverandør",
       "hint": "Hvem som leverer WhatsApp-nummeret ditt. Bytter du, beholdes legitimasjonen til den forrige."
     },
     "from": {

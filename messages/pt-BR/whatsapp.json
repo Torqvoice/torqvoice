@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Provedor",
-      "placeholder": "Escolha um provedor",
       "hint": "Quem fornece seu número de WhatsApp. Ao trocar, as credenciais do anterior são mantidas."
     },
     "from": {

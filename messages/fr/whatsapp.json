@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Fournisseur",
-      "placeholder": "Choisir un fournisseur",
       "hint": "Qui fournit votre numéro WhatsApp. Un changement conserve les identifiants du précédent."
     },
     "from": {

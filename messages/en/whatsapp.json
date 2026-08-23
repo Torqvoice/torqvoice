@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Provider",
-      "placeholder": "Choose a provider",
       "hint": "Who supplies your WhatsApp number. Switching keeps the credentials of the old one."
     },
     "from": {

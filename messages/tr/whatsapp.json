@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Sağlayıcı",
-      "placeholder": "Bir sağlayıcı seçin",
       "hint": "WhatsApp numaranızı kim sağlıyor. Değiştirdiğinizde eskisinin bilgileri korunur."
     },
     "from": {

@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Provider",
-      "placeholder": "Kies een provider",
       "hint": "Wie je WhatsApp-nummer levert. Bij wisselen blijven de gegevens van de vorige bewaard."
     },
     "from": {

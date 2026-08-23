@@ -12,13 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
   Stepper,
   StepperIndicator,
   StepperItem,
@@ -316,25 +309,29 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
 
                 <div className="mt-4 space-y-4">
                   {current === 1 && (
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-4">
+                      {/* A row rather than a dropdown, the way the SMS page
+                          offers its providers: two choices are worth showing,
+                          not hiding behind a click. */}
                       <div className="space-y-2">
-                        <Label htmlFor="whatsapp-provider">{t('provider.label')}</Label>
-                        <Select value={providerId} onValueChange={setProviderId}>
-                          <SelectTrigger id="whatsapp-provider">
-                            <SelectValue placeholder={t('provider.placeholder')} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {initial.providers.map((option) => (
-                              <SelectItem key={option.id} value={option.id}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>{t('provider.label')}</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {initial.providers.map((option) => (
+                            <Button
+                              key={option.id}
+                              type="button"
+                              variant={providerId === option.id ? 'default' : 'outline'}
+                              onClick={() => setProviderId(option.id)}
+                              className="flex-1"
+                            >
+                              {option.label}
+                            </Button>
+                          ))}
+                        </div>
                         <p className="text-xs text-muted-foreground">{t('provider.hint')}</p>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-2 md:max-w-sm">
                         <Label htmlFor="whatsapp-from">{t('from.label')}</Label>
                         <Input
                           id="whatsapp-from"

@@ -13,7 +13,6 @@
     },
     "provider": {
       "label": "Dostawca",
-      "placeholder": "Wybierz dostawcę",
       "hint": "Kto dostarcza Twój numer WhatsApp. Po zmianie dane poprzedniego zostają."
     },
     "from": {
