@@ -145,21 +145,19 @@ function StepperIndicator({ className, children, ...props }: React.ComponentProp
       data-attention={attention || undefined}
       className={cn(
         'flex size-9 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors',
+        // Only one marker is loud, and it is the step being worked on. The
+        // rest is context: a quiet tick for what is done, an outlined amber
+        // for what is not. Colour never carries the meaning alone, since a
+        // finished step also shows a check.
         'data-[state=inactive]:border-border data-[state=inactive]:text-muted-foreground',
-        // A ring rather than a bigger circle: it reads at a glance without
-        // shifting the row it sits in.
         'data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:ring-4 data-[state=active]:ring-primary/20',
-        // Done is green rather than another shade of the brand, so a finished
-        // step and the one being worked on are told apart by colour and not
-        // only by fill.
-        'data-[state=completed]:border-emerald-600 data-[state=completed]:bg-emerald-600 data-[state=completed]:text-white',
-        'dark:data-[state=completed]:border-emerald-500 dark:data-[state=completed]:bg-emerald-500 dark:data-[state=completed]:text-emerald-950',
-        // Outstanding work stays amber, since the product is amber and another
-        // hue shouted. What was missing was contrast, not colour: a filled
-        // chip with a full-strength border and dark text, rather than the
-        // tenth-opacity tint this used to be.
-        'data-[attention]:data-[state=inactive]:border-amber-500 data-[attention]:data-[state=inactive]:bg-amber-100 data-[attention]:data-[state=inactive]:text-amber-900 data-[attention]:data-[state=inactive]:ring-4 data-[attention]:data-[state=inactive]:ring-amber-500/15',
-        'dark:data-[attention]:data-[state=inactive]:bg-amber-500/25 dark:data-[attention]:data-[state=inactive]:text-amber-200',
+        'data-[state=completed]:border-emerald-600/70 data-[state=completed]:bg-transparent data-[state=completed]:text-emerald-600',
+        'dark:data-[state=completed]:border-emerald-400/60 dark:data-[state=completed]:text-emerald-400',
+        // Outstanding: a full-strength outline and dark text, which is what
+        // the old tenth-opacity tint was missing. Amber suits it, as long as
+        // it is not competing with a solid amber button for attention.
+        'data-[attention]:data-[state=inactive]:border-amber-500 data-[attention]:data-[state=inactive]:bg-amber-500/10 data-[attention]:data-[state=inactive]:text-amber-800',
+        'dark:data-[attention]:data-[state=inactive]:text-amber-300',
         className
       )}
       {...props}
@@ -198,7 +196,7 @@ function StepperSeparator({ className, ...props }: React.ComponentProps<'div'>) 
       data-slot="stepper-separator"
       data-state={state}
       className={cn(
-        'bg-border data-[state=completed]:bg-emerald-600/40 dark:data-[state=completed]:bg-emerald-500/40',
+        'bg-border data-[state=completed]:bg-emerald-600/30 dark:data-[state=completed]:bg-emerald-400/30',
         'group-data-[orientation=horizontal]/stepper:h-px group-data-[orientation=horizontal]/stepper:flex-1',
         'group-data-[orientation=vertical]/stepper:ms-4 group-data-[orientation=vertical]/stepper:h-full group-data-[orientation=vertical]/stepper:w-px',
         className

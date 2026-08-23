@@ -293,7 +293,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                         className={
                           entry.done
                             ? 'hidden lg:block'
-                            : 'hidden font-medium text-amber-700 lg:block dark:text-amber-400'
+                            : 'hidden font-medium text-amber-700 lg:block dark:text-amber-300'
                         }
                       >
                         {t(`steps.${entry.key}.title`)}
