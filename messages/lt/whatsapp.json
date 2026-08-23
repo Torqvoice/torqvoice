@@ -111,6 +111,14 @@
       },
       "back": "Atgal",
       "continue": "Toliau"
+    },
+    "register": {
+      "title": "Užregistruokite numerį „Meta“",
+      "description": "Patvirtinus numerį, „Meta“ reikalauja atskiros registracijos. Pasirinkite šešių skaitmenų PIN arba naudokite esamą dviejų veiksmų patvirtinimo PIN. Užsirašykite jį: prireiks perkeliant ar iš naujo registruojant numerį.",
+      "action": "Registruoti numerį",
+      "done": "Numeris užregistruotas",
+      "failed": "Nepavyko užregistruoti numerio",
+      "limit": "„Meta“ leidžia 10 registracijos bandymų vienam numeriui per 72 valandas. Neteisingas PIN taip pat skaičiuojamas, tad pasitikrinkite."
     }
   },
   "messages": {

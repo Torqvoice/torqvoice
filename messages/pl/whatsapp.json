@@ -111,6 +111,14 @@
       },
       "back": "Wstecz",
       "continue": "Dalej"
+    },
+    "register": {
+      "title": "Zarejestruj numer w Meta",
+      "description": "Po weryfikacji Meta wymaga osobnej rejestracji. Wybierz sześciocyfrowy PIN albo użyj istniejącego PIN-u weryfikacji dwuetapowej. Zapisz go: będzie potrzebny przy przenoszeniu lub ponownej rejestracji numeru.",
+      "action": "Zarejestruj numer",
+      "done": "Numer zarejestrowany",
+      "failed": "Nie udało się zarejestrować numeru",
+      "limit": "Meta pozwala na 10 prób rejestracji numeru w ciągu 72 godzin. Błędny PIN też się liczy, więc sprawdź go wcześniej."
     }
   },
   "messages": {

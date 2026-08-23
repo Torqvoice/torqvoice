@@ -45,6 +45,7 @@ import {
 import { TemplateSetupFields } from './TemplateSetupFields'
 import {
   disconnectWhatsapp,
+  registerWhatsappNumber,
   saveWhatsappSettings,
   sendWhatsappTestMessage,
   type WhatsappSettingsView,
@@ -77,6 +78,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
   const [missing, setMissing] = useState<string[]>([])
   const [copied, setCopied] = useState(false)
   const [testNumber, setTestNumber] = useState('')
+  const [registrationPin, setRegistrationPin] = useState('')
   const [webhookUrls, setWebhookUrls] = useState(initial.webhookUrls)
   const [current, setCurrent] = useState(1)
 
@@ -189,6 +191,18 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
         router.refresh()
       } else {
         toast.error(result.error ?? t('test.failed'))
+      }
+    })
+  }
+
+  const register = () => {
+    startTransition(async () => {
+      const result = await registerWhatsappNumber(registrationPin.trim())
+      if (result.success) {
+        toast.success(t('register.done'))
+        setRegistrationPin('')
+      } else {
+        toast.error(result.error ?? t('register.failed'))
       }
     })
   }
@@ -361,6 +375,33 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                           </div>
                         )
                       })}
+                    </div>
+                  )}
+
+                  {current === 2 && provider?.supportsRegistration && (
+                    <div className="space-y-2 rounded-lg border border-dashed p-4">
+                      <p className="text-sm font-medium">{t('register.title')}</p>
+                      <p className="text-xs text-muted-foreground">{t('register.description')}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Input
+                          value={registrationPin}
+                          onChange={(event) => setRegistrationPin(event.target.value)}
+                          placeholder="123456"
+                          inputMode="numeric"
+                          maxLength={6}
+                          className="w-32 font-mono"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={register}
+                          disabled={isPending || registrationPin.trim().length !== 6}
+                        >
+                          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {t('register.action')}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-amber-600">{t('register.limit')}</p>
                     </div>
                   )}
 

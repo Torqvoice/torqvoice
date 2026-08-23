@@ -16,7 +16,7 @@ import {
   whatsappTemplateKey,
 } from '../Schema/whatsappSettingsSchema'
 import { getWhatsappAdapter, listWhatsappProviderOptions } from '@/lib/whatsapp/registry'
-import { sendOrgWhatsapp, WHATSAPP_MEDIA_PATH } from '@/lib/whatsapp'
+import { getWhatsappWebhookContext, sendOrgWhatsapp, WHATSAPP_MEDIA_PATH } from '@/lib/whatsapp'
 import { TEMPLATE_TOKENS, unknownTemplateTokens } from '../Schema/templateTokens'
 
 /** Stands in for a stored secret, so the real one never reaches the browser. */
@@ -304,6 +304,53 @@ export async function saveWhatsappSettings(input: SaveWhatsappSettingsInput) {
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: { action: 'settings.whatsappUpdated', message: 'Updated WhatsApp settings' },
+    }
+  )
+}
+
+/**
+ * Registers the business number with the provider, where that is a step.
+ *
+ * Meta wants this after the number is verified and it is what the console's
+ * Register button does, except that the console never says why it failed. The
+ * provider's own error is passed through, because the codes are what its
+ * documentation is indexed by.
+ */
+export async function registerWhatsappNumber(pin: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      demoGuard()
+      await requireFeature(organizationId, 'whatsapp')
+
+      if (!/^\d{6}$/.test(pin)) {
+        throw new Error('The PIN must be exactly six digits.')
+      }
+
+      const providerId = await db.appSetting.findUnique({
+        where: {
+          organizationId_key: {
+            organizationId,
+            key: ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER,
+          },
+        },
+        select: { value: true },
+      })
+
+      const resolved = providerId?.value
+        ? await getWhatsappWebhookContext(organizationId, providerId.value)
+        : null
+      if (!resolved?.adapter.registerNumber) {
+        throw new Error('This provider registers numbers for you; there is nothing to do here.')
+      }
+
+      await resolved.adapter.registerNumber(resolved.context, pin)
+      return { registered: true }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+      audit: { action: 'settings.whatsappNumberRegistered', message: 'Registered WhatsApp number' },
     }
   )
 }

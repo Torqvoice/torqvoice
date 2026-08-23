@@ -111,6 +111,14 @@
       },
       "back": "Retour",
       "continue": "Continuer"
+    },
+    "register": {
+      "title": "Enregistrer le numéro auprès de Meta",
+      "description": "Meta exige un enregistrement distinct une fois le numéro vérifié. Choisissez un code à six chiffres, ou reprenez le code de vérification en deux étapes s'il en a un. Notez-le : il servira pour déplacer ou réenregistrer le numéro.",
+      "action": "Enregistrer le numéro",
+      "done": "Numéro enregistré",
+      "failed": "Impossible d'enregistrer le numéro",
+      "limit": "Meta autorise 10 tentatives d'enregistrement par numéro sur 72 heures. Un code erroné compte, vérifiez-le avant."
     }
   },
   "messages": {

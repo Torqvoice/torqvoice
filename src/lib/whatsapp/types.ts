@@ -182,6 +182,15 @@ export interface WhatsappAdapter {
   receive(request: Request, ctx: WhatsappContext): Promise<WhatsappWebhookEvents>
 
   /**
+   * Registers the business number for use, where the provider asks for it.
+   *
+   * Meta requires this as a separate call after a number is verified, with a
+   * six-digit PIN that becomes the number's two-step verification PIN. Twilio
+   * does it for you, so this is absent there.
+   */
+  registerNumber?(ctx: WhatsappContext, pin: string): Promise<void>
+
+  /**
    * Tells the provider the message has been seen, where that exists.
    *
    * Meta shows the customer blue ticks; a workshop that reads on a screen but

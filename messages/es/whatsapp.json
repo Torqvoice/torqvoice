@@ -111,6 +111,14 @@
       },
       "back": "Atrás",
       "continue": "Continuar"
+    },
+    "register": {
+      "title": "Registra el número en Meta",
+      "description": "Meta requiere un registro aparte una vez verificado el número. Elige un PIN de seis dígitos, o usa el PIN de verificación en dos pasos si ya tiene uno. Anótalo: lo necesitarás para mover o volver a registrar el número.",
+      "action": "Registrar número",
+      "done": "Número registrado",
+      "failed": "No se pudo registrar el número",
+      "limit": "Meta permite 10 intentos de registro por número en 72 horas. Un PIN incorrecto cuenta, así que compruébalo antes."
     }
   },
   "messages": {

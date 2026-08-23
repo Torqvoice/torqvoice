@@ -111,6 +111,14 @@
       },
       "back": "Terug",
       "continue": "Doorgaan"
+    },
+    "register": {
+      "title": "Registreer het nummer bij Meta",
+      "description": "Meta vraagt om een aparte registratie zodra het nummer geverifieerd is. Kies een pincode van zes cijfers, of gebruik de bestaande pincode voor verificatie in twee stappen. Schrijf hem op: je hebt hem nodig om het nummer te verplaatsen of opnieuw te registreren.",
+      "action": "Nummer registreren",
+      "done": "Nummer geregistreerd",
+      "failed": "Kon het nummer niet registreren",
+      "limit": "Meta staat 10 registratiepogingen per nummer per 72 uur toe. Een verkeerde pincode telt mee, dus controleer hem eerst."
     }
   },
   "messages": {

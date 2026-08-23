@@ -31,6 +31,8 @@ export interface WhatsappProviderOption {
   /** Without the validator: functions cannot cross to a client component. */
   template: Omit<WhatsappAdapter['template'], 'validate'>
   setup: WhatsappAdapter['setup']
+  /** Whether the number needs a separate registration call from us. */
+  supportsRegistration: boolean
 }
 
 export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
@@ -48,5 +50,6 @@ export function listWhatsappProviderOptions(): WhatsappProviderOption[] {
       mediaAs: adapter.template.mediaAs,
     },
     setup: adapter.setup,
+    supportsRegistration: typeof adapter.registerNumber === 'function',
   }))
 }

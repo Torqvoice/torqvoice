@@ -111,6 +111,14 @@
       },
       "back": "Tilbake",
       "continue": "Fortsett"
+    },
+    "register": {
+      "title": "Registrer nummeret hos Meta",
+      "description": "Meta krever en egen registrering når nummeret er verifisert. Velg en sekssifret PIN, eller bruk nummerets eksisterende PIN for totrinnsbekreftelse. Skriv den ned: du trenger den for å flytte eller registrere nummeret på nytt.",
+      "action": "Registrer nummer",
+      "done": "Nummeret er registrert",
+      "failed": "Kunne ikke registrere nummeret",
+      "limit": "Meta tillater 10 registreringsforsøk per nummer på 72 timer. Feil PIN teller med, så sjekk den først."
     }
   },
   "messages": {

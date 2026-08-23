@@ -111,6 +111,14 @@
       },
       "back": "Zurück",
       "continue": "Weiter"
+    },
+    "register": {
+      "title": "Nummer bei Meta registrieren",
+      "description": "Meta verlangt nach der Verifizierung eine gesonderte Registrierung. Wählen Sie eine sechsstellige PIN, oder nehmen Sie die vorhandene PIN der Bestätigung in zwei Schritten. Notieren Sie sie: Sie brauchen sie, um die Nummer später zu verschieben oder neu zu registrieren.",
+      "action": "Nummer registrieren",
+      "done": "Nummer registriert",
+      "failed": "Nummer konnte nicht registriert werden",
+      "limit": "Meta erlaubt 10 Registrierungsversuche pro Nummer in 72 Stunden. Eine falsche PIN zählt mit, prüfen Sie sie also vorher."
     }
   },
   "messages": {

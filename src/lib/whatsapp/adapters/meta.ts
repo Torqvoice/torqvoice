@@ -39,9 +39,11 @@ function mediaKey(type: WhatsappMediaType): string {
 async function readError(response: Response): Promise<string> {
   try {
     const payload = (await response.json()) as {
-      error?: { message?: string; error_user_msg?: string }
+      error?: { message?: string; error_user_msg?: string; code?: number }
     }
-    return payload.error?.error_user_msg || payload.error?.message || `HTTP ${response.status}`
+    const text =
+      payload.error?.error_user_msg || payload.error?.message || `HTTP ${response.status}`
+    return payload.error?.code ? `${text} (Meta error ${payload.error.code})` : text
   } catch {
     return `HTTP ${response.status}`
   }
@@ -237,6 +239,25 @@ export const metaAdapter: WhatsappAdapter = {
     }
 
     return { inbound, statuses }
+  },
+
+  async registerNumber(ctx, pin) {
+    const phoneNumberId = ctx.credentials.phoneNumberId
+    const accessToken = ctx.credentials.accessToken
+    if (!phoneNumberId || !accessToken) {
+      throw new Error('Add the phone number ID and access token before registering.')
+    }
+
+    const response = await fetch(`${graphBase(ctx)}/${phoneNumberId}/register`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messaging_product: 'whatsapp', pin }),
+    })
+
+    if (!response.ok) throw new Error(await readError(response))
   },
 
   async markRead(ctx, providerMessageId) {

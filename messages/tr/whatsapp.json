@@ -111,6 +111,14 @@
       },
       "back": "Geri",
       "continue": "Devam"
+    },
+    "register": {
+      "title": "Numarayı Meta'ya kaydedin",
+      "description": "Numara doğrulandıktan sonra Meta ayrı bir kayıt ister. Altı haneli bir PIN seçin ya da numaranın mevcut iki adımlı doğrulama PIN'ini kullanın. Not edin: numarayı taşırken veya yeniden kaydederken gerekir.",
+      "action": "Numarayı kaydet",
+      "done": "Numara kaydedildi",
+      "failed": "Numara kaydedilemedi",
+      "limit": "Meta bir numara için 72 saatte 10 kayıt denemesine izin verir. Yanlış PIN de sayılır, önce kontrol edin."
     }
   },
   "messages": {
