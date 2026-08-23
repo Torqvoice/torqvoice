@@ -164,11 +164,7 @@ export interface WhatsappSetupLinks {
    */
   credentialsPath?: string
   webhookPath?: string
-  /**
-   * Where the sending number itself is found, for providers that host it.
-   * Meta's number belongs to the workshop and is theirs to know; Twilio's is
-   * a sender they set up in the console, and they will need to look it up.
-   */
+  /** Where the sending number and its id are listed. */
   number?: string
 }
 
