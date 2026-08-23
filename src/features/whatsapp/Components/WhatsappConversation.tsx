@@ -17,6 +17,7 @@ import {
   deleteWhatsappMessage,
 } from '../Actions/whatsappActions'
 import { WhatsappMessageBubble, type WhatsappMessageView } from './WhatsappMessageBubble'
+import { cn } from '@/lib/utils'
 
 export interface WhatsappThread {
   key: string
@@ -36,10 +37,13 @@ export interface WhatsappThread {
 export function WhatsappConversation({
   thread,
   onSent,
+  className,
 }: {
   thread: WhatsappThread
   /** Lets the surrounding list reload once a message is on its way. */
   onSent?: () => void
+  /** How the surrounding pane wants this sized. */
+  className?: string
 }) {
   const t = useTranslations('whatsapp.messages')
   const router = useRouter()
@@ -166,8 +170,8 @@ export function WhatsappConversation({
     (attachment ? !windowState.hasMediaTemplate : !windowState.hasTemplate)
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+    <div className={cn('flex h-full min-h-0 flex-col', className)}>
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {loading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -187,7 +191,7 @@ export function WhatsappConversation({
         <div ref={endRef} />
       </div>
 
-      <div className="space-y-2 border-t p-4">
+      <div className="shrink-0 space-y-2 border-t bg-background p-4">
         {!thread.customerId ? (
           <p className="text-sm text-muted-foreground">{t('unknownNumber')}</p>
         ) : (

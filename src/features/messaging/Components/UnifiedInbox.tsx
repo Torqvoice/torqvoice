@@ -70,19 +70,16 @@ import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 /** Channels a workshop can start a conversation on. */
 const INITIABLE: MessagingChannel[] = ['sms', 'whatsapp']
 
-interface SmsConversationData {
-  messages: Parameters<typeof SmsConversation>[0]['initialMessages']
-  nextCursor: string | null
-  customerName: string
-  customerPhone: string | null
-}
-
-interface TelegramConversationData {
-  messages: Parameters<typeof TelegramConversation>[0]['initialMessages']
-  nextCursor: string | null
-  customerName: string
-  telegramChatId: string | null
-}
+/**
+ * Taken from what the actions actually return rather than declared here.
+ * Hand-written shapes plus a cast let this drift: the pane read a name and a
+ * phone number the action never sent, so an SMS thread claimed the customer
+ * had no number at all.
+ */
+type SmsConversationData = NonNullable<Awaited<ReturnType<typeof getConversation>>['data']>
+type TelegramConversationData = NonNullable<
+  Awaited<ReturnType<typeof getTelegramConversation>>['data']
+>
 
 export function UnifiedInbox({
   threads: initialThreads,
@@ -175,12 +172,12 @@ export function UnifiedInbox({
     if (thread.channel === 'sms') {
       setLoadingConversation(true)
       const result = await getConversation(thread.customerId)
-      if (result.success && result.data) setSmsData(result.data as SmsConversationData)
+      if (result.success && result.data) setSmsData(result.data)
       setLoadingConversation(false)
     } else if (thread.channel === 'telegram') {
       setLoadingConversation(true)
       const result = await getTelegramConversation(thread.customerId)
-      if (result.success && result.data) setTelegramData(result.data as TelegramConversationData)
+      if (result.success && result.data) setTelegramData(result.data)
       setLoadingConversation(false)
     }
   }, [])
@@ -411,6 +408,7 @@ export function UnifiedInbox({
                   phone: selected.contact,
                 }}
                 onSent={onChanged}
+                className="h-auto min-h-0 flex-1"
               />
             ) : selected.channel === 'sms' && smsData && selected.customerId ? (
               <SmsConversation
