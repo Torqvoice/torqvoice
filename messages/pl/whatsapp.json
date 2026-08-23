@@ -67,7 +67,8 @@
       "whyTwo": "Potrzebne są dwa, bo WhatsApp ustala typ medium przy zatwierdzaniu. Szablon zatwierdzony ze zdjęciem może nieść tylko zdjęcia, a zatwierdzony jako tekst nigdy ich nie poniesie.",
       "exampleLabel": "Przykładowa treść do wpisania w konsoli dostawcy",
       "exampleTextValues": "Wypełnij: customer, message. Napisz w języku swoich klientów.",
-      "exampleMediaValues": "Wypełnij: customer, message oraz photo dla adresu media. Napisz w języku swoich klientów."
+      "exampleMediaValues": "Wypełnij: customer, message oraz photo dla adresu media. Napisz w języku swoich klientów.",
+      "exampleMediaValuesHeader": "Wypełnij ją: customer, message. Zdjęcie dołączane jest automatycznie, więc nie potrzebuje własnej luki. Napisz ją w języku, którym czytają twoi klienci."
     },
     "test": {
       "send": "Wyślij test",

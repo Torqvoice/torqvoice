@@ -67,7 +67,8 @@
       "whyTwo": "Zwei sind nötig, weil WhatsApp den Medientyp bei der Freigabe festlegt. Eine mit Foto freigegebene Vorlage kann nur Fotos tragen, eine als Text freigegebene nie eines.",
       "exampleLabel": "Beispieltext für die Konsole Ihres Anbieters",
       "exampleTextValues": "Zu füllen mit: customer, message. Schreiben Sie ihn in der Sprache Ihrer Kunden.",
-      "exampleMediaValues": "Zu füllen mit: customer, message und photo für die Medien-URL. Schreiben Sie ihn in der Sprache Ihrer Kunden."
+      "exampleMediaValues": "Zu füllen mit: customer, message und photo für die Medien-URL. Schreiben Sie ihn in der Sprache Ihrer Kunden.",
+      "exampleMediaValuesHeader": "Füllen Sie sie mit: customer, message. Das Foto wird automatisch angehängt und braucht keine eigene Lücke. Schreiben Sie sie in der Sprache Ihrer Kundschaft."
     },
     "test": {
       "send": "Test senden",

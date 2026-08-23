@@ -119,7 +119,16 @@ export function TemplateSetupFields({
             : 'Hi {{1}}, an update on your repair: {{2}}. Reply here if you have any questions.'}
         </code>
         <p className="mt-1.5 text-xs text-muted-foreground">
-          {t(kind === 'media' ? 'exampleMediaValues' : 'exampleTextValues')}
+          {/* Only a provider that takes media through the URL asks for a value
+              for it. Meta carries the photo in the header, so mentioning one
+              here would send people looking for a chip that is not offered. */}
+          {t(
+            kind === 'media'
+              ? takesPhotoValue
+                ? 'exampleMediaValues'
+                : 'exampleMediaValuesHeader'
+              : 'exampleTextValues'
+          )}
         </p>
       </div>
 

@@ -67,7 +67,8 @@
       "whyTwo": "Hacen falta dos porque WhatsApp fija el tipo de medio al aprobar la plantilla. Una aprobada con foto solo puede llevar fotos, y una aprobada como texto nunca podrá llevarlas.",
       "exampleLabel": "Cuerpo de ejemplo para la consola de tu proveedor",
       "exampleTextValues": "Rellénalo con: customer, message. Escríbelo en el idioma de tus clientes.",
-      "exampleMediaValues": "Rellénalo con: customer, message y photo para la URL de medios. Escríbelo en el idioma de tus clientes."
+      "exampleMediaValues": "Rellénalo con: customer, message y photo para la URL de medios. Escríbelo en el idioma de tus clientes.",
+      "exampleMediaValuesHeader": "Rellénela con: customer, message. La foto se adjunta automáticamente, así que no necesita su propio hueco. Escríbala en el idioma que leen sus clientes."
     },
     "test": {
       "send": "Enviar prueba",

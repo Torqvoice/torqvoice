@@ -67,7 +67,8 @@
       "whyTwo": "Du trenger to fordi WhatsApp låser medietypen ved godkjenning. En mal godkjent med bilde kan bare bære bilder, og en godkjent som tekst kan aldri bære ett.",
       "exampleLabel": "Eksempeltekst å skrive i leverandørens konsoll",
       "exampleTextValues": "Fyll den med: customer, message. Skriv den på språket kundene dine leser.",
-      "exampleMediaValues": "Fyll den med: customer, message og photo for medie-URL-en. Skriv den på språket kundene dine leser."
+      "exampleMediaValues": "Fyll den med: customer, message og photo for medie-URL-en. Skriv den på språket kundene dine leser.",
+      "exampleMediaValuesHeader": "Fyll den med: customer, message. Bildet legges ved automatisk og trenger ingen egen plass. Skriv den på språket kundene dine leser."
     },
     "test": {
       "send": "Send test",

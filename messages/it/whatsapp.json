@@ -67,7 +67,8 @@
       "whyTwo": "Ne servono due perché WhatsApp fissa il tipo di media all'approvazione. Uno approvato con foto può portare solo foto, uno approvato come testo non ne porterà mai.",
       "exampleLabel": "Corpo di esempio da scrivere nella console del provider",
       "exampleTextValues": "Riempilo con: customer, message. Scrivilo nella lingua dei tuoi clienti.",
-      "exampleMediaValues": "Riempilo con: customer, message e photo per l'URL del media. Scrivilo nella lingua dei tuoi clienti."
+      "exampleMediaValues": "Riempilo con: customer, message e photo per l'URL del media. Scrivilo nella lingua dei tuoi clienti.",
+      "exampleMediaValuesHeader": "La riempia con: customer, message. La foto viene allegata automaticamente, quindi non serve uno spazio dedicato. La scriva nella lingua dei suoi clienti."
     },
     "test": {
       "send": "Invia prova",

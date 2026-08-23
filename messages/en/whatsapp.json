@@ -67,7 +67,8 @@
       "whyTwo": "Two are needed because WhatsApp fixes a template's media type when it approves it. One approved with a photo can only ever carry a photo, and one approved as text can never carry one.",
       "exampleLabel": "Example body to write in your provider's console",
       "exampleTextValues": "Fill it with: customer, message. Write it in the language your customers read.",
-      "exampleMediaValues": "Fill it with: customer, message, and photo for the media URL. Write it in the language your customers read."
+      "exampleMediaValues": "Fill it with: customer, message, and photo for the media URL. Write it in the language your customers read.",
+      "exampleMediaValuesHeader": "Fill it with: customer, message. The photo is attached automatically, so it needs no blank of its own. Write it in the language your customers read."
     },
     "test": {
       "send": "Send test",

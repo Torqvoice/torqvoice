@@ -67,7 +67,8 @@
       "whyTwo": "Reikia dviejų, nes „WhatsApp“ medijos tipą nustato patvirtinimo metu. Su nuotrauka patvirtintas šablonas gali nešti tik nuotraukas, o kaip tekstas patvirtintas – niekada.",
       "exampleLabel": "Pavyzdinis tekstas tiekėjo konsolei",
       "exampleTextValues": "Užpildykite: customer, message. Rašykite klientų kalba.",
-      "exampleMediaValues": "Užpildykite: customer, message ir photo medijos URL. Rašykite klientų kalba."
+      "exampleMediaValues": "Užpildykite: customer, message ir photo medijos URL. Rašykite klientų kalba.",
+      "exampleMediaValuesHeader": "Užpildykite: customer, message. Nuotrauka pridedama automatiškai, todėl jai atskiros vietos nereikia. Rašykite ta kalba, kuria skaito jūsų klientai."
     },
     "test": {
       "send": "Siųsti bandymą",

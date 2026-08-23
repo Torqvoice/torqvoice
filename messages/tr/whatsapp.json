@@ -67,7 +67,8 @@
       "whyTwo": "İki tane gerekir çünkü WhatsApp medya türünü onay anında sabitler. Fotoğrafla onaylanan bir şablon yalnızca fotoğraf taşır, metin olarak onaylanan ise hiç taşıyamaz.",
       "exampleLabel": "Sağlayıcınızın konsoluna yazacağınız örnek metin",
       "exampleTextValues": "Şunlarla doldurun: customer, message. Müşterilerinizin okuduğu dilde yazın.",
-      "exampleMediaValues": "Şunlarla doldurun: customer, message ve medya adresi için photo. Müşterilerinizin okuduğu dilde yazın."
+      "exampleMediaValues": "Şunlarla doldurun: customer, message ve medya adresi için photo. Müşterilerinizin okuduğu dilde yazın.",
+      "exampleMediaValuesHeader": "Şununla doldurun: customer, message. Fotoğraf otomatik olarak eklenir, bu yüzden kendine ait bir boşluğa gerek duymaz. Müşterilerinizin okuduğu dilde yazın."
     },
     "test": {
       "send": "Test gönder",

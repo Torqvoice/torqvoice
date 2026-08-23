@@ -67,7 +67,8 @@
       "whyTwo": "Je hebt er twee nodig omdat WhatsApp het mediatype vastlegt bij goedkeuring. Een sjabloon goedgekeurd met foto kan alleen foto's dragen, een als tekst goedgekeurd sjabloon nooit.",
       "exampleLabel": "Voorbeeldtekst voor de console van je provider",
       "exampleTextValues": "Vul het met: customer, message. Schrijf het in de taal die je klanten lezen.",
-      "exampleMediaValues": "Vul het met: customer, message en photo voor de media-URL. Schrijf het in de taal die je klanten lezen."
+      "exampleMediaValues": "Vul het met: customer, message en photo voor de media-URL. Schrijf het in de taal die je klanten lezen.",
+      "exampleMediaValuesHeader": "Vul hem met: customer, message. De foto wordt automatisch meegestuurd en heeft dus geen eigen invulplek nodig. Schrijf hem in de taal die uw klanten lezen."
     },
     "test": {
       "send": "Test versturen",
