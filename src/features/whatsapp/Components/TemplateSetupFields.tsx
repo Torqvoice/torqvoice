@@ -67,7 +67,7 @@ export function TemplateSetupFields({
         {/* An empty template is not an error, but it does close off a whole
             way of reaching customers, which is worth saying here. */}
         {!name.trim() && (
-          <p className="text-xs text-rose-600">
+          <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
             {t(kind === 'media' ? 'mediaMissing' : 'textMissing')}
           </p>
         )}
