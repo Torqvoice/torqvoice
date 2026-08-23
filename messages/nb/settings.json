@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Inspeksjonsmaler, inspeksjoner og resultater",
     "optAuditLogs": "Aktivitetslogg",
     "optAuditLogsDesc": "Aktivitets- og endringshistorikk",
-    "optSmsMessages": "SMS-meldinger",
-    "optSmsMessagesDesc": "Sendte og mottatte SMS-meldinger",
+    "optSmsMessages": "Meldinger",
+    "optSmsMessagesDesc": "Sendte og mottatte SMS-, WhatsApp- og Telegram-meldinger",
     "optScheduledMessages": "Planlagte meldinger",
     "optScheduledMessagesDesc": "Meldinger i kø og gjentakende meldinger som venter på å bli sendt",
     "optNotifications": "Varsler",
@@ -984,7 +984,9 @@
       "supportAction": "kontakt supportteamet vårt."
     },
     "optTireHotel": "Dekkhotell",
-    "optTireHotelDesc": "Lagrede dekksett, hyller, klargjøring og lagringsavtaler"
+    "optTireHotelDesc": "Lagrede dekksett, hyller, klargjøring og lagringsavtaler",
+    "optWorkshopConfig": "Verkstedoppsett",
+    "optWorkshopConfigDesc": "Arbeidsmaler, roller, webhooks og planlagte rapporter"
   },
   "license": {
     "title": "White-label-lisens",

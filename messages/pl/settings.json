@@ -921,8 +921,8 @@
     "optInspectionsDesc": "Szablony inspekcji, inspekcje i wyniki",
     "optAuditLogs": "Dzienniki audytu",
     "optAuditLogsDesc": "Historia aktywności i zmian",
-    "optSmsMessages": "Wiadomości SMS",
-    "optSmsMessagesDesc": "Wysłane i odebrane wiadomości SMS",
+    "optSmsMessages": "Wiadomości",
+    "optSmsMessagesDesc": "Wysłane i odebrane wiadomości SMS, WhatsApp i Telegram",
     "optScheduledMessages": "Zaplanowane wiadomości",
     "optScheduledMessagesDesc": "Wiadomości w kolejce i cykliczne, czekające na wysyłkę",
     "optNotifications": "Powiadomienia",
@@ -984,7 +984,9 @@
       "supportAction": "skontaktuj się z naszym zespołem wsparcia."
     },
     "optTireHotel": "Hotel opon",
-    "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania"
+    "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania",
+    "optWorkshopConfig": "Konfiguracja warsztatu",
+    "optWorkshopConfigDesc": "Szablony robocizny, role, webhooki i zaplanowane raporty"
   },
   "license": {
     "title": "Licencja white-label",

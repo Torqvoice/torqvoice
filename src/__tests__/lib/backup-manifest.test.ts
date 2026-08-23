@@ -17,6 +17,54 @@ import {
 
 const SCHEMA = fs.readFileSync(path.join('prisma', 'schema.prisma'), 'utf-8')
 
+/**
+ * model -> the models it is cascade-deleted by.
+ *
+ * Rows scoped through a parent rather than by organizationId are invisible to
+ * the organizationId check above, yet a restore deletes them all the same:
+ * vehicle findings and recurring invoices were both lost that way.
+ */
+function cascadeParents(): Map<string, Set<string>> {
+  const edges = new Map<string, Set<string>>()
+  const pattern = /^model (\w+) \{([\s\S]*?)^\}/gm
+  let match = pattern.exec(SCHEMA)
+  while (match) {
+    for (const line of match[2].split('\n')) {
+      const relation = /^\s*\w+\s+(\w+)\??\s+@relation\(.*onDelete:\s*Cascade/.exec(line)
+      if (relation) {
+        const parents = edges.get(match[1]) ?? new Set<string>()
+        parents.add(relation[1])
+        edges.set(match[1], parents)
+      }
+    }
+    match = pattern.exec(SCHEMA)
+  }
+  return edges
+}
+
+/** Models a restore would delete, by following cascades out from what it clears. */
+function deletedByRestore(): string[] {
+  const edges = cascadeParents()
+  const reached = new Set<string>()
+  const frontier = BACKUP_ENTITIES.filter((e) => e.restore === 'replace').map((e) => e.model)
+
+  while (frontier.length) {
+    const parent = frontier.pop() as string
+    for (const [child, parents] of edges) {
+      if (parents.has(parent) && !reached.has(child)) {
+        reached.add(child)
+        frontier.push(child)
+      }
+    }
+  }
+  return [...reached]
+}
+
+/** Every model in the schema. */
+function allModels(): string[] {
+  return [...SCHEMA.matchAll(/^model (\w+) \{/gm)].map((m) => m[1])
+}
+
 /** Models with an organizationId, which is what makes a row a workshop's own. */
 function tenantScopedModels(): string[] {
   const models: string[] = []
@@ -40,8 +88,22 @@ describe('backup manifest', () => {
     ).toEqual([])
   })
 
+  it('carries everything a restore deletes', () => {
+    // Clearing a table takes its children with it. Anything reachable that way
+    // has to be in the backup, or a restore is a one-way loss.
+    const known = new Set([...BACKUP_ENTITIES.map((e) => e.model), ...Object.keys(EXCLUDED_MODELS)])
+    const lost = deletedByRestore().filter((model) => !known.has(model))
+
+    expect(
+      lost,
+      `A restore deletes these, and no backup puts them back: ${lost.join(', ')}`
+    ).toEqual([])
+  })
+
   it('only excludes models that still exist', () => {
-    const inSchema = new Set(tenantScopedModels())
+    // Not only the organisation-scoped ones: an exclusion may name a model
+    // reached through a cascade, such as a delivery log.
+    const inSchema = new Set(allModels())
     const stale = Object.keys(EXCLUDED_MODELS).filter((model) => !inSchema.has(model))
     expect(stale, `No longer in the schema: ${stale.join(', ')}`).toEqual([])
   })

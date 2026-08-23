@@ -185,6 +185,72 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   // Members keep pointing at their role, so a restore fills gaps rather than
   // clearing the table.
   { model: 'Role', key: 'roles', option: 'workshopConfig', restore: 'merge' },
+  { model: 'Permission', option: 'workshopConfig', nestedUnder: 'Role', restore: 'merge' },
+  {
+    model: 'LaborPresetItem',
+    option: 'workshopConfig',
+    nestedUnder: 'LaborPreset',
+    restore: 'replace',
+  },
+  {
+    model: 'LaborPresetPart',
+    option: 'workshopConfig',
+    nestedUnder: 'LaborPreset',
+    restore: 'replace',
+  },
+
+  // Everything below hangs off a row above and is deleted with it, so a
+  // restore that leaves any of these out destroys them.
+  { model: 'Note', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  { model: 'FuelLog', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  { model: 'VehicleFinding', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  { model: 'RecurringInvoice', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  {
+    model: 'RecurringPart',
+    option: 'vehicles',
+    nestedUnder: 'RecurringInvoice',
+    restore: 'replace',
+  },
+  {
+    model: 'RecurringLabor',
+    option: 'vehicles',
+    nestedUnder: 'RecurringInvoice',
+    restore: 'replace',
+  },
+  { model: 'AiGeneratedMessage', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  { model: 'ServicePart', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
+  { model: 'ServiceLabor', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
+  {
+    model: 'ServiceAttachment',
+    option: 'vehicles',
+    nestedUnder: 'ServiceRecord',
+    restore: 'replace',
+  },
+  { model: 'Payment', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
+  { model: 'QuotePart', option: 'quotes', nestedUnder: 'Quote', restore: 'replace' },
+  { model: 'QuoteLabor', option: 'quotes', nestedUnder: 'Quote', restore: 'replace' },
+  { model: 'QuoteAttachment', option: 'quotes', nestedUnder: 'Quote', restore: 'replace' },
+  {
+    model: 'CustomFieldValue',
+    option: 'customFields',
+    nestedUnder: 'CustomFieldDefinition',
+    restore: 'replace',
+  },
+  { model: 'StoredImage', option: 'inventory', nestedUnder: 'InventoryPart', restore: 'replace' },
+  { model: 'InspectionItem', option: 'inspections', nestedUnder: 'Inspection', restore: 'replace' },
+  {
+    model: 'InspectionTemplateSection',
+    option: 'inspections',
+    nestedUnder: 'InspectionTemplate',
+    restore: 'replace',
+  },
+  {
+    model: 'InspectionTemplateItem',
+    option: 'inspections',
+    nestedUnder: 'InspectionTemplateSection',
+    restore: 'replace',
+  },
+  { model: 'TireMeasurement', option: 'tireHotel', nestedUnder: 'TireSet', restore: 'replace' },
 ]
 
 /**
@@ -202,6 +268,7 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
   Subscription: 'Billing state owned by Stripe, not by us.',
   TeamInvitation: 'Pending invitation, expires on its own.',
+  WebhookDelivery: 'Delivery log for a webhook, rewritten every time one fires.',
 }
 
 /**

@@ -3,6 +3,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import JSZip from 'jszip'
 import { isDemoMode } from '@/lib/demo'
+import { UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { readdir, readFile, stat } from 'fs/promises'
 import path from 'path'
 
@@ -105,7 +106,10 @@ export async function POST(request: NextRequest) {
   if (options.inventory) {
     queries.push(
       db.inventoryPart
-        .findMany({ where: { organizationId: ctx.organizationId } })
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: { movements: true, gallery: true },
+        })
         .then((result) => {
           data.inventoryParts = result
         })
@@ -179,6 +183,7 @@ export async function POST(request: NextRequest) {
           include: {
             partItems: true,
             laborItems: true,
+            attachments: true,
           },
         })
         .then((result) => {
@@ -256,6 +261,43 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  if (options.workshopConfig) {
+    // Everything a workshop configures that is not a key/value setting: none
+    // of it was in a backup before, so a restore rebuilt an empty shop.
+    queries.push(
+      db.laborPreset
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: { items: true, parts: true },
+        })
+        .then((result) => {
+          data.laborPresets = result
+        })
+    )
+    queries.push(
+      db.webhook.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.webhooks = result
+      })
+    )
+    queries.push(
+      db.reportSchedule
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.reportSchedules = result
+        })
+    )
+    queries.push(
+      db.role
+        .findMany({
+          where: { organizationId: ctx.organizationId },
+          include: { permissions: true },
+        })
+        .then((result) => {
+          data.roles = result
+        })
+    )
+  }
+
   if (options.auditLogs) {
     queries.push(
       db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
@@ -269,6 +311,20 @@ export async function POST(request: NextRequest) {
       db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
         data.smsMessages = result
       })
+    )
+    queries.push(
+      db.whatsappMessage
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.whatsappMessages = result
+        })
+    )
+    queries.push(
+      db.telegramMessage
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.telegramMessages = result
+        })
     )
   }
 
@@ -307,7 +363,7 @@ export async function POST(request: NextRequest) {
   if (options.files) {
     const uploadsDir = path.join(process.cwd(), 'data', 'uploads', ctx.organizationId)
 
-    const categories = ['logos', 'vehicles', 'inventory', 'services']
+    const categories = UPLOAD_CATEGORIES
 
     for (const category of categories) {
       const categoryDir = path.join(uploadsDir, category)
@@ -345,114 +401,20 @@ export async function POST(request: NextRequest) {
   })
 }
 
-// Keep GET for backward compatibility — exports all data as zip with defaults
-export async function GET() {
-  const ctx = await getAuthContext()
-
-  if (!ctx) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const [
-    settings,
-    customers,
-    customFieldDefinitions,
-    inventoryParts,
-    vehicles,
-    orgReminders,
-    counterSales,
-    quotes,
-    technicians,
-    inspectionTemplates,
-    inspections,
-    auditLogs,
-    smsMessages,
-    scheduledMessages,
-    notifications,
-  ] = await Promise.all([
-    db.appSetting.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.customer.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.customFieldDefinition.findMany({
-      where: { organizationId: ctx.organizationId },
-      include: { values: true },
-    }),
-    db.inventoryPart.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.vehicle.findMany({
-      where: { organizationId: ctx.organizationId },
-      include: {
-        notes: true,
-        fuelLogs: true,
-        reminders: true,
-        serviceRecords: {
-          include: {
-            partItems: true,
-            laborItems: true,
-            attachments: true,
-            payments: true,
-          },
-        },
-      },
-    }),
-    db.reminder.findMany({
-      where: { organizationId: ctx.organizationId, vehicleId: null },
-    }),
-    db.serviceRecord.findMany({
-      where: { organizationId: ctx.organizationId, vehicleId: null },
-      include: {
-        partItems: true,
-        laborItems: true,
-        attachments: true,
-        payments: true,
-      },
-    }),
-    db.quote.findMany({
-      where: { organizationId: ctx.organizationId },
-      include: {
-        partItems: true,
-        laborItems: true,
-      },
-    }),
-    db.technician.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.inspectionTemplate.findMany({
-      where: { organizationId: ctx.organizationId },
-      include: { sections: { include: { items: true } } },
-    }),
-    db.inspection.findMany({
-      where: { organizationId: ctx.organizationId },
-      include: { items: true, quoteRequests: true },
-    }),
-    db.auditLog.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.smsMessage.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.scheduledMessage.findMany({ where: { organizationId: ctx.organizationId } }),
-    db.notification.findMany({ where: { organizationId: ctx.organizationId } }),
-  ])
-
-  const backup = {
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    data: {
-      settings,
-      customers,
-      customFieldDefinitions,
-      inventoryParts,
-      vehicles,
-      orgReminders,
-      counterSales,
-      quotes,
-      technicians,
-      inspectionTemplates,
-      inspections,
-      auditLogs,
-      smsMessages,
-      scheduledMessages,
-      notifications,
-    },
-  }
-
-  return new NextResponse(JSON.stringify(backup, null, 2), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Disposition': `attachment; filename="torqvoice-backup-${new Date().toISOString().slice(0, 10)}.json"`,
-    },
-  })
+/**
+ * The older, no-options export.
+ *
+ * It used to be a second implementation of the same thing, and it fell behind:
+ * it predated the tire hotel and never learned about anything added since, so
+ * whoever called it received a quietly incomplete backup. It now runs the same
+ * export as everything else, with every option on.
+ */
+export async function GET(request: NextRequest) {
+  return POST(
+    new NextRequest(request.url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ include: DEFAULT_OPTIONS }),
+    })
+  )
 }
