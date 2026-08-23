@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getFeatures, FeatureGatedError } from '@/lib/features'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
+import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
 
 export async function getCustomers() {
   return withAuth(
@@ -102,6 +103,10 @@ export async function createCustomer(input: unknown) {
             organizationId,
           },
         })
+        // Someone added from an unknown WhatsApp number keeps the thread that
+        // prompted it.
+        await claimWhatsappMessagesForCustomer(organizationId, customer.id, customer.phone)
+
         revalidatePath('/customers')
         return customer
       } catch (err: unknown) {
@@ -151,6 +156,7 @@ export async function updateCustomer(input: unknown) {
         throw err
       }
       if (result.count === 0) throw new Error('Customer not found')
+      if (data.phone) await claimWhatsappMessagesForCustomer(organizationId, id, data.phone)
       revalidatePath('/customers')
       revalidatePath(`/customers/${id}`)
       return { id }

@@ -374,6 +374,33 @@ export async function deleteWhatsappConversation(customerId: string) {
   )
 }
 
+/**
+ * The same, for a conversation held under a bare number.
+ *
+ * Test sends and first enquiries arrive without a customer, and a thread that
+ * cannot be tidied away is one that stays in the way forever.
+ */
+export async function deleteWhatsappConversationByPhone(phone: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      demoGuard()
+      const { count } = await db.whatsappMessage.deleteMany({
+        where: {
+          organizationId,
+          customerId: null,
+          OR: [{ fromNumber: phone }, { toNumber: phone }],
+        },
+      })
+      return { deleted: count }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.DELETE, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
 export async function deleteWhatsappMessage(messageId: string) {
   return withAuth(
     async ({ organizationId }) => {

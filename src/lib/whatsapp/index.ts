@@ -357,6 +357,11 @@ export async function sendOrgWhatsapp(
   const template = open ? undefined : (options.template ?? (await templateFor(config, options)))
   if (!open && !template) throw new WhatsappWindowClosedError(options.mediaUrl ? 'photo' : 'text')
 
+  // Callers that know the customer say so. The rest, a test send or anything
+  // addressed by number alone, are matched here the same way inbound messages
+  // are, so one person is one conversation rather than two.
+  const customerId = options.customerId ?? (await customerForNumber(organizationId, to))
+
   const record = await db.whatsappMessage.create({
     data: {
       direction: 'outbound',
@@ -370,7 +375,7 @@ export async function sendOrgWhatsapp(
       templateName: template?.name,
       status: 'queued',
       organizationId,
-      customerId: options.customerId,
+      customerId,
       relatedEntityType: options.relatedEntityType,
       relatedEntityId: options.relatedEntityId,
     },
@@ -442,6 +447,54 @@ async function templateFor(
     headerMediaUrl: providerMediaUrl,
     headerMediaType: options.mediaType,
   }
+}
+
+/**
+ * The customer a number belongs to, if any.
+ *
+ * A workshop rarely stores numbers the way WhatsApp reports them, so every
+ * shape the same number can take is tried.
+ */
+async function customerForNumber(organizationId: string, phone: string) {
+  const countryCode = await defaultCountryCode(organizationId)
+  const normalized = normalizePortalPhone(phone, countryCode) ?? phone
+  const customer = await db.customer.findFirst({
+    where: {
+      organizationId,
+      phone: { in: getPhoneLookupVariants(normalized, countryCode) },
+    },
+    select: { id: true },
+  })
+  return customer?.id
+}
+
+/**
+ * Files messages already stored under a bare number against a customer.
+ *
+ * The app tells someone to add an unknown caller as a customer in order to
+ * reply, so the history that prompted it has to follow them across rather than
+ * being stranded in a second thread.
+ */
+export async function claimWhatsappMessagesForCustomer(
+  organizationId: string,
+  customerId: string,
+  phone: string | null | undefined
+) {
+  if (!phone?.trim()) return { claimed: 0 }
+
+  const countryCode = await defaultCountryCode(organizationId)
+  const normalized = normalizePortalPhone(phone, countryCode) ?? phone
+  const variants = getPhoneLookupVariants(normalized, countryCode)
+
+  const { count } = await db.whatsappMessage.updateMany({
+    where: {
+      organizationId,
+      customerId: null,
+      OR: [{ fromNumber: { in: variants } }, { toNumber: { in: variants } }],
+    },
+    data: { customerId },
+  })
+  return { claimed: count }
 }
 
 /** Stores one received message and links it to a customer when we can. */

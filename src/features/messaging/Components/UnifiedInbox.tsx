@@ -49,7 +49,10 @@ import { NewSmsDialog } from '@/features/sms/Components/NewSmsDialog'
 import { TelegramConversation } from '@/features/telegram/Components/TelegramConversation'
 import { WhatsappConversation } from '@/features/whatsapp/Components/WhatsappConversation'
 import { NewWhatsappDialog } from '@/features/whatsapp/Components/NewWhatsappDialog'
-import { deleteWhatsappConversation } from '@/features/whatsapp/Actions/whatsappActions'
+import {
+  deleteWhatsappConversation,
+  deleteWhatsappConversationByPhone,
+} from '@/features/whatsapp/Actions/whatsappActions'
 import { getInboxThreads, type InboxThread, type MessagingChannel } from '../Actions/inboxActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
 import { avatarTint, initials } from '../Lib/threadDisplay'
@@ -185,11 +188,14 @@ export function UnifiedInbox({
   /** Removes our copy of a conversation; the customer's phone keeps theirs. */
   const confirmDelete = async () => {
     const thread = deleteTarget
-    if (!thread?.customerId) return
+    if (!thread) return
     setIsDeleting(true)
 
-    const result =
-      thread.channel === 'sms'
+    // A WhatsApp thread can exist under a bare number, and those are the ones
+    // most worth clearing away: test sends and wrong numbers.
+    const result = !thread.customerId
+      ? await deleteWhatsappConversationByPhone(thread.contact)
+      : thread.channel === 'sms'
         ? await deleteConversation(thread.customerId)
         : thread.channel === 'telegram'
           ? await deleteTelegramConversation(thread.customerId)
@@ -361,7 +367,7 @@ export function UnifiedInbox({
                 </div>
                 <p className="truncate text-xs text-muted-foreground">{selected.contact}</p>
               </div>
-              {selected.customerId && (
+              {(selected.customerId || selected.channel === 'whatsapp') && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
