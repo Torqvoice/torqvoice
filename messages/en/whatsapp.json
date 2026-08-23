@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Still needed before you can send",
     "steps": {
       "openProvider": "Open {provider}",
+      "openNumber": "Find your sender number",
       "openToken": "Create a permanent token",
       "consolePath": "In Meta, go to:",
       "provider": {

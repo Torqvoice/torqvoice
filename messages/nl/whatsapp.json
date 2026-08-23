@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Nog nodig om te kunnen sturen",
     "steps": {
       "openProvider": "{provider} openen",
+      "openNumber": "Uw afzendernummer vinden",
       "openToken": "Een permanent token maken",
       "consolePath": "Ga in Meta naar:",
       "provider": {

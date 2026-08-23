@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Ещё нужно для отправки",
     "steps": {
       "openProvider": "Открыть {provider}",
+      "openNumber": "Найти номер отправителя",
       "openToken": "Создать постоянный токен",
       "consolePath": "В Meta перейдите:",
       "provider": {

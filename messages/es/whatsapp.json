@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Aún necesario para enviar",
     "steps": {
       "openProvider": "Abrir {provider}",
+      "openNumber": "Buscar su número de remitente",
       "openToken": "Crear un token permanente",
       "consolePath": "En Meta, vaya a:",
       "provider": {

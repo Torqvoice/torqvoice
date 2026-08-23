@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Mangler fortsatt før du kan sende",
     "steps": {
       "openProvider": "Åpne {provider}",
+      "openNumber": "Finn avsendernummeret",
       "openToken": "Lag et permanent token",
       "consolePath": "I Meta går du til:",
       "provider": {

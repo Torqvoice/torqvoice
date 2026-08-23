@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Göndermek için hâlâ gerekli",
     "steps": {
       "openProvider": "{provider} aç",
+      "openNumber": "Gönderici numaranızı bulun",
       "openToken": "Kalıcı bir token oluşturun",
       "consolePath": "Meta'da şuraya gidin:",
       "provider": {

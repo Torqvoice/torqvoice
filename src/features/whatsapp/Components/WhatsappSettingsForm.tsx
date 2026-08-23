@@ -586,6 +586,11 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                   </Button>
 
                   <div className="flex flex-wrap items-center gap-2">
+                    {/* This step asks for the sending number, which on some
+                        providers is a sender set up in their console. */}
+                    {current === 1 &&
+                      provider?.setup.number &&
+                      openProvider(provider.setup.number, t('steps.openNumber'))}
                     {current === 2 && provider && (
                       <>
                         {openProvider(

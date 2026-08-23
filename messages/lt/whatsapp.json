@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Dar reikia norint siųsti",
     "steps": {
       "openProvider": "Atidaryti {provider}",
+      "openNumber": "Rasti siuntėjo numerį",
       "openToken": "Sukurti nuolatinį prieigos raktą",
       "consolePath": "Meta aplinkoje eikite į:",
       "provider": {

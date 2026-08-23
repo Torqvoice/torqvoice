@@ -86,6 +86,7 @@
     "fieldStillNeeded": "Encore nécessaire pour envoyer",
     "steps": {
       "openProvider": "Ouvrir {provider}",
+      "openNumber": "Trouver votre numéro d'expéditeur",
       "openToken": "Créer un jeton permanent",
       "consolePath": "Dans Meta, allez à :",
       "provider": {

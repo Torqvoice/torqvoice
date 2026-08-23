@@ -67,6 +67,7 @@ export const twilioAdapter: WhatsappAdapter = {
   setup: {
     credentials: 'https://console.twilio.com/',
     webhook: 'https://console.twilio.com/us1/develop/sms/senders/whatsapp-senders',
+    number: 'https://console.twilio.com/us1/develop/sms/senders/whatsapp-senders',
     templates: 'https://console.twilio.com/us1/develop/sms/content-template-builder',
   },
 
