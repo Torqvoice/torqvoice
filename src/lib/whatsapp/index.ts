@@ -353,6 +353,15 @@ export async function sendOrgWhatsapp(
     throw new Error(`"${options.to}" is not a valid phone number.`)
   }
 
+  // WhatsApp will not carry a message from a number to itself, and says so
+  // with an error code rather than a reason. Workshops hit this while testing,
+  // because the obvious number to try is the one they just registered.
+  if (digitsOnly(to) === digitsOnly(config.context.from)) {
+    throw new Error(
+      'WhatsApp cannot send a message to your own workshop number. Use a different phone to test.'
+    )
+  }
+
   const open = await isWithinServiceWindow(organizationId, to)
   const template = open ? undefined : (options.template ?? (await templateFor(config, options)))
   if (!open && !template) throw new WhatsappWindowClosedError(options.mediaUrl ? 'photo' : 'text')
@@ -447,6 +456,11 @@ async function templateFor(
     headerMediaUrl: providerMediaUrl,
     headerMediaType: options.mediaType,
   }
+}
+
+/** Compares numbers by their digits, since formatting varies by provider. */
+function digitsOnly(value: string) {
+  return value.replace(/\D/g, '')
 }
 
 /**
