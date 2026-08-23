@@ -348,9 +348,19 @@ export async function sendOrgWhatsapp(
     throw new Error('WhatsApp is not configured. Set it up in Settings → WhatsApp.')
   }
 
-  const to = normalizePortalPhone(options.to, await defaultCountryCode(organizationId))
+  const countryCode = await defaultCountryCode(organizationId)
+  const to = normalizePortalPhone(options.to, countryCode)
   if (!to) {
-    throw new Error(`"${options.to}" is not a valid phone number.`)
+    // A number with no country code is not wrong, it is incomplete, and the
+    // workshop can complete it in two different places. Saying which is the
+    // difference between a fix and a shrug.
+    const carriesCountry = /^\s*(\+|00\d)/.test(options.to)
+    throw new Error(
+      carriesCountry || countryCode
+        ? `"${options.to}" is not a valid phone number.`
+        : `"${options.to}" has no country code, and this workshop has no default country set. ` +
+            "Add the country code to the customer's number, or set a default in Settings → Localization."
+    )
   }
 
   // WhatsApp will not carry a message from a number to itself, and says so
