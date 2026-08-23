@@ -34,6 +34,12 @@ export const ORG_WHATSAPP_KEYS = {
 export type OrgWhatsappKey = (typeof ORG_WHATSAPP_KEYS)[keyof typeof ORG_WHATSAPP_KEYS]
 export const ALL_ORG_WHATSAPP_KEYS = Object.values(ORG_WHATSAPP_KEYS)
 
+/**
+ * Stands in for a stored secret. It never leaves the server, so the form shows
+ * this instead and treats it as "unchanged" when saving.
+ */
+export const SECRET_MASK = '••••••••••••••••'
+
 const TEMPLATE_PREFIX = 'whatsapp.tpl.'
 
 /**

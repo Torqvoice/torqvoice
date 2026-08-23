@@ -10,6 +10,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { armFeatureHints } from '@/features/settings/Lib/armFeatureHints'
 import {
   ALL_ORG_WHATSAPP_KEYS,
+  SECRET_MASK,
   ORG_WHATSAPP_KEYS,
   WHATSAPP_WEBHOOK_TOKEN_FIELD,
   whatsappCredentialKey,
@@ -18,9 +19,6 @@ import {
 import { getWhatsappAdapter, listWhatsappProviderOptions } from '@/lib/whatsapp/registry'
 import { getWhatsappWebhookContext, sendOrgWhatsapp, WHATSAPP_MEDIA_PATH } from '@/lib/whatsapp'
 import { TEMPLATE_TOKENS, unknownTemplateTokens } from '../Schema/templateTokens'
-
-/** Stands in for a stored secret, so the real one never reaches the browser. */
-const SECRET_MASK = '••••••••••••••••'
 
 export interface TemplateFields {
   name: string

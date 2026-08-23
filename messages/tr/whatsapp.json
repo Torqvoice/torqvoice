@@ -22,7 +22,8 @@
     },
     "secret": {
       "show": "Göster",
-      "hide": "Gizle"
+      "hide": "Gizle",
+      "stored": "Kaydedildi ve gizlendi. Değiştirmek için yeni bir değer yazın."
     },
     "webhook": {
       "label": "Webhook adresi",

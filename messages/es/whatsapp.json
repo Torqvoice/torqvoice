@@ -22,7 +22,8 @@
     },
     "secret": {
       "show": "Mostrar",
-      "hide": "Ocultar"
+      "hide": "Ocultar",
+      "stored": "Guardado y oculto. Escribe un valor nuevo para reemplazarlo."
     },
     "webhook": {
       "label": "URL del webhook",

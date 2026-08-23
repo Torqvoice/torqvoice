@@ -80,9 +80,13 @@ export function TemplateSetupFields({
           </Label>
           <Input
             id={`whatsapp-template-${kind}`}
+            name={`whatsapp-template-${kind}`}
             value={name}
             onChange={(event) => onName(event.target.value)}
             placeholder={provider?.template.placeholder}
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
           />
           <p className="text-xs text-muted-foreground">
             {provider?.template.help ?? t('nameHint')}
@@ -94,9 +98,13 @@ export function TemplateSetupFields({
             <Label htmlFor={`whatsapp-template-language-${kind}`}>{t('languageLabel')}</Label>
             <Input
               id={`whatsapp-template-language-${kind}`}
+              name={`whatsapp-template-language-${kind}`}
               value={language}
               onChange={(event) => onLanguage(event.target.value)}
               placeholder="de"
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
             />
             <p className="text-xs text-muted-foreground">{t('languageHint')}</p>
           </div>

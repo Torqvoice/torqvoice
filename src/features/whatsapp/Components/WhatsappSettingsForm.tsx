@@ -43,6 +43,7 @@ import {
   SaveButton,
 } from '@/app/(authenticated)/settings/read-only-guard'
 import { TemplateSetupFields } from './TemplateSetupFields'
+import { SECRET_MASK } from '../Schema/whatsappSettingsSchema'
 import {
   disconnectWhatsapp,
   registerWhatsappNumber,
@@ -241,11 +242,8 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
       <ReadOnlyWrapper>
         <AppCard
           title={t('title')}
-          description={
-            <>
-              {t('description')} <DocsLink href="/docs/integrations/whatsapp" variant="hint" />
-            </>
-          }
+          description={t('description')}
+          action={<DocsLink href="/docs/integrations/whatsapp" variant="header" />}
           contentClassName="space-y-6"
         >
           <div className="flex items-center justify-between">
@@ -322,9 +320,13 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                         <Label htmlFor="whatsapp-from">{t('from.label')}</Label>
                         <Input
                           id="whatsapp-from"
+                          name="whatsapp-from"
                           value={from}
                           onChange={(event) => setFrom(event.target.value)}
                           placeholder="+49 151 12345678"
+                          autoComplete="off"
+                          data-1p-ignore
+                          data-lpignore="true"
                         />
                         <p className="text-xs text-muted-foreground">{t('from.hint')}</p>
                       </div>
@@ -337,6 +339,10 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                         const value = credentials[provider.id]?.[field.key] ?? ''
                         const isRevealed = revealed[field.key] ?? false
                         const isMissing = missing.includes(field.key)
+                        // A saved secret is only ever a mask here: the real
+                        // value stays on the server, so there is nothing an
+                        // eye could reveal until a new one is typed.
+                        const isStoredSecret = field.secret && value === SECRET_MASK
                         return (
                           <div key={field.key} className="space-y-2">
                             <Label htmlFor={`whatsapp-${field.key}`}>
@@ -346,14 +352,25 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                             <div className="flex items-center gap-2">
                               <Input
                                 id={`whatsapp-${field.key}`}
-                                type={field.secret && !isRevealed ? 'password' : 'text'}
+                                name={`whatsapp-${field.key}`}
+                                type={
+                                  field.secret && !isRevealed && !isStoredSecret
+                                    ? 'password'
+                                    : 'text'
+                                }
                                 value={value}
                                 placeholder={field.placeholder}
+                                // These are provider credentials, not the
+                                // user's own login: a masked field otherwise
+                                // invites a saved email into the one above it.
+                                autoComplete={field.secret ? 'new-password' : 'off'}
+                                data-1p-ignore
+                                data-lpignore="true"
                                 aria-invalid={isMissing}
                                 className={isMissing ? 'border-amber-500' : undefined}
                                 onChange={(event) => setCredential(field.key, event.target.value)}
                               />
-                              {field.secret && (
+                              {field.secret && !isStoredSecret && (
                                 <Button
                                   type="button"
                                   variant="outline"
@@ -376,6 +393,8 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                             </div>
                             {isMissing ? (
                               <p className="text-xs text-amber-600">{t('fieldStillNeeded')}</p>
+                            ) : isStoredSecret ? (
+                              <p className="text-xs text-muted-foreground">{t('secret.stored')}</p>
                             ) : (
                               field.help && (
                                 <p className="text-xs text-muted-foreground">{field.help}</p>
@@ -397,6 +416,9 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                           onChange={(event) => setRegistrationPin(event.target.value)}
                           placeholder="123456"
                           inputMode="numeric"
+                          autoComplete="off"
+                          data-1p-ignore
+                          data-lpignore="true"
                           maxLength={6}
                           className="w-32 font-mono"
                         />
@@ -491,6 +513,9 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                         value={testNumber}
                         onChange={(event) => setTestNumber(event.target.value)}
                         placeholder="+49 151 12345678"
+                        autoComplete="off"
+                        data-1p-ignore
+                        data-lpignore="true"
                       />
                       <p className="text-xs text-muted-foreground">{t('test.hint')}</p>
                     </>

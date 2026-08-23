@@ -22,7 +22,8 @@
     },
     "secret": {
       "show": "Tonen",
-      "hide": "Verbergen"
+      "hide": "Verbergen",
+      "stored": "Opgeslagen en verborgen. Typ een nieuwe waarde om hem te vervangen."
     },
     "webhook": {
       "label": "Webhook-URL",

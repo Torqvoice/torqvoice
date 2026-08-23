@@ -22,7 +22,8 @@
     },
     "secret": {
       "show": "Anzeigen",
-      "hide": "Verbergen"
+      "hide": "Verbergen",
+      "stored": "Gespeichert und verborgen. Neuen Wert eingeben, um ihn zu ersetzen."
     },
     "webhook": {
       "label": "Webhook-URL",

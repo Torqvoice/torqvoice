@@ -22,7 +22,8 @@
     },
     "secret": {
       "show": "Vis",
-      "hide": "Skjul"
+      "hide": "Skjul",
+      "stored": "Lagret og skjult. Skriv inn en ny verdi for å erstatte den."
     },
     "webhook": {
       "label": "Webhook-URL",

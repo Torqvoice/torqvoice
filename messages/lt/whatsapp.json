@@ -22,7 +22,8 @@
     },
     "secret": {
       "show": "Rodyti",
-      "hide": "Slėpti"
+      "hide": "Slėpti",
+      "stored": "Įrašyta ir paslėpta. Įveskite naują reikšmę, kad pakeistumėte."
     },
     "webhook": {
       "label": "Webhook URL",
