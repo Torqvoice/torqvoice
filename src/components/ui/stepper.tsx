@@ -144,13 +144,16 @@ function StepperIndicator({ className, children, ...props }: React.ComponentProp
       data-state={state}
       data-attention={attention || undefined}
       className={cn(
-        'flex size-8 shrink-0 items-center justify-center rounded-full border text-sm font-medium transition-colors',
+        'flex size-9 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors',
         'data-[state=inactive]:border-border data-[state=inactive]:text-muted-foreground',
-        'data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
-        'data-[state=completed]:border-primary/40 data-[state=completed]:bg-primary/10 data-[state=completed]:text-primary',
-        // Outstanding, and not the step being worked on: worth noticing without
-        // shouting, since none of it is an error.
-        'data-[attention]:data-[state=inactive]:border-amber-500/60 data-[attention]:data-[state=inactive]:bg-amber-500/10 data-[attention]:data-[state=inactive]:text-amber-700',
+        // A ring rather than a bigger circle: it reads at a glance without
+        // shifting the row it sits in.
+        'data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:ring-4 data-[state=active]:ring-primary/20',
+        'data-[state=completed]:border-primary data-[state=completed]:bg-primary/15 data-[state=completed]:text-primary',
+        // Outstanding work is filled solid, in a hue the product does not use
+        // elsewhere. Amber was invisible here because the brand itself is
+        // amber, so the signal read as decoration.
+        'data-[attention]:data-[state=inactive]:border-rose-600 data-[attention]:data-[state=inactive]:bg-rose-600 data-[attention]:data-[state=inactive]:text-white data-[attention]:data-[state=inactive]:ring-4 data-[attention]:data-[state=inactive]:ring-rose-500/20',
         className
       )}
       {...props}

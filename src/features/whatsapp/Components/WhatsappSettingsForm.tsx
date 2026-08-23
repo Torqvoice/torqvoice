@@ -291,7 +291,9 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                       </StepperIndicator>
                       <StepperTitle
                         className={
-                          entry.done ? 'hidden lg:block' : 'hidden text-amber-700 lg:block'
+                          entry.done
+                            ? 'hidden lg:block'
+                            : 'hidden font-medium text-rose-600 lg:block'
                         }
                       >
                         {t(`steps.${entry.key}.title`)}
@@ -394,7 +396,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                                 aria-invalid={isMissing}
                                 className={cn(
                                   field.secret && !isRevealed && !isStoredSecret && 'masked-value',
-                                  isMissing && 'border-amber-500'
+                                  isMissing && 'border-rose-500'
                                 )}
                                 onChange={(event) => setCredential(field.key, event.target.value)}
                                 // Clicking into a saved secret empties it, so
@@ -436,7 +438,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                               )}
                             </div>
                             {isMissing ? (
-                              <p className="text-xs text-amber-600">{t('fieldStillNeeded')}</p>
+                              <p className="text-xs text-rose-600">{t('fieldStillNeeded')}</p>
                             ) : isStoredSecret ? (
                               <p className="text-xs text-muted-foreground">{t('secret.stored')}</p>
                             ) : (
@@ -512,7 +514,7 @@ export function WhatsappSettingsForm({ initial }: { initial: WhatsappSettingsVie
                         className={
                           initial.webhookSeenAt
                             ? 'rounded-lg border border-dashed bg-muted/30 p-3 text-xs text-muted-foreground'
-                            : 'rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-3 text-xs text-amber-700'
+                            : 'rounded-lg border border-dashed border-rose-500/40 bg-rose-500/5 p-3 text-xs text-rose-700'
                         }
                       >
                         {initial.webhookSeenAt
