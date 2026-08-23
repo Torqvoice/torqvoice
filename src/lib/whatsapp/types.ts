@@ -43,7 +43,7 @@ export interface WhatsappContext {
  * class concept rather than an edge case.
  */
 export interface WhatsappTemplate {
-  /** Template name at Meta, or the Content SID at providers that wrap it. */
+  /** Template name at Meta, or the Template SID at providers that wrap it. */
   name: string
   /** BCP-47ish language code the template was approved under, e.g. "de". */
   language: string
@@ -117,9 +117,9 @@ export interface WhatsappMediaPayload {
  * How a provider refers to an approved template.
  *
  * They disagree on this more than on anything else: Meta wants a name plus the
- * language it was approved in, Twilio wants a Content SID that already carries
+ * language it was approved in, Twilio wants a Template SID that already carries
  * its languages. Asking for "template name" in one box and hoping is how a
- * Content SID ends up being a name that does not exist.
+ * Template SID ends up being a name that does not exist.
  */
 export interface WhatsappTemplateField {
   label: string

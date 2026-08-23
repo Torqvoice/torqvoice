@@ -46,7 +46,7 @@ const TEMPLATE_PREFIX = 'whatsapp.tpl.'
  * Setting key for one field of one template, per provider.
  *
  * Namespaced like credentials because the identifiers are provider-shaped: a
- * Twilio Content SID means nothing to Meta, and sharing one field between them
+ * Twilio Template SID means nothing to Meta, and sharing one field between them
  * meant switching provider carried the other one's value along and failed its
  * validation.
  */

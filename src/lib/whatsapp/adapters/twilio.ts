@@ -72,15 +72,18 @@ export const twilioAdapter: WhatsappAdapter = {
   },
 
   template: {
-    label: 'Content SID',
-    help: 'Twilio approves templates as Content resources. Copy the SID from Twilio Content Template Builder; it starts with HX. A template name will be rejected.',
+    // Twilio's console calls this the Template SID, though its API still takes
+    // the same value as ContentSid. The label follows the console, since that
+    // is where a workshop is looking when they copy it.
+    label: 'Template SID',
+    help: 'Copy it from Twilio Content Template Builder; it starts with HX. A template name will be rejected.',
     placeholder: 'HXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
     usesLanguage: false,
     mediaAs: 'variable',
     validate: (value) =>
       /^HX[0-9a-fA-F]{32}$/.test(value)
         ? null
-        : 'Twilio expects a Content SID starting with HX, not a template name.',
+        : 'Twilio expects a Template SID starting with HX, not a template name.',
   },
 
   credentials: [
@@ -253,7 +256,7 @@ export function buildTwilioForm(ctx: WhatsappContext, message: WhatsappOutbound)
 
   if (message.template) {
     // Twilio approves templates as Content resources, so the template name
-    // doubles as the Content SID.
+    // doubles as the Template SID, which the API still receives as ContentSid.
     form.set('ContentSid', message.template.name)
     if (message.template.variables?.length) {
       const variables: Record<string, string> = {}
