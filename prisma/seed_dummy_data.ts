@@ -1,8 +1,4 @@
 import { PrismaClient } from "../src/generated/prisma/client";
-import {
-  TIRE_ROAD_POSITIONS,
-  gradeTread,
-} from "../src/features/tire-hotel/Lib/tireConstants";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { randomBytes, scryptSync } from "node:crypto";
 import * as fs from "fs";
@@ -76,6 +72,28 @@ const DEMO_ORG_NAME = process.env.DEMO_ORG_NAME || "Demo Auto Workshop";
 /// unit system, and used both for the settings rows and for grading the
 /// seeded readings, so the two can never disagree.
 const DEMO_TREAD_LIMITS = { summerReplace: 1.6, winterReplace: 4, warnMargin: 1 };
+
+// Copied from src/features/tire-hotel/Lib/tireConstants rather than imported,
+// for the same reason as the inspection templates further down: the production
+// image ships only prisma/ and src/generated (see Dockerfile), so an import
+// reaching into src/features fails the deploy job with MODULE_NOT_FOUND. That
+// file stays the source of truth — change it there first, then mirror it here.
+/** The four road positions, in the order a technician walks around a car. */
+const TIRE_ROAD_POSITIONS = ["front_left", "front_right", "rear_left", "rear_right"] as const;
+
+type SeedTreadThresholds = { summerReplace: number; winterReplace: number; warnMargin: number };
+
+function gradeTread(
+  treadDepthMm: number | null | undefined,
+  season: string,
+  thresholds: SeedTreadThresholds,
+): "good" | "fair" | "replace" | null {
+  if (treadDepthMm == null) return null;
+  const limit = season === "winter" ? thresholds.winterReplace : thresholds.summerReplace;
+  if (treadDepthMm < limit) return "replace";
+  if (treadDepthMm < limit + thresholds.warnMargin) return "fair";
+  return "good";
+}
 const DATA_ROOT = process.env.DATA_ROOT || path.join(process.cwd(), "data");
 const UPLOAD_DIR = path.join(DATA_ROOT, "uploads", ORG_ID, "vehicles");
 // Image assets bundled with the repo — preferred over live URL downloads so
