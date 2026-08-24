@@ -1,31 +1,38 @@
-"use server";
+'use server'
 
-import { withSuperAdmin } from "@/lib/with-super-admin";
-import { db } from "@/lib/db";
-import { sendMail, getFromAddress } from "@/lib/email";
-import { SYSTEM_SETTING_KEYS } from "../Schema/systemSettingsSchema";
+import { withSuperAdmin } from '@/lib/with-super-admin'
+import { db } from '@/lib/db'
+import { demoGuard } from '@/lib/demo'
+import { sendMail, getFromAddress } from '@/lib/email'
+import { SYSTEM_SETTING_KEYS } from '../Schema/systemSettingsSchema'
 
 export async function testEmailConnection() {
   return withSuperAdmin(async (ctx) => {
+    // Unreachable today, since the demo owner is not a super admin and
+    // sendMail refuses anyway. Kept because every other action in this
+    // directory carries it, and the day one of those two facts changes is not
+    // the day to find out this one was the exception.
+    demoGuard()
+
     const user = await db.user.findUnique({
       where: { id: ctx.userId },
       select: { email: true, name: true },
-    });
+    })
 
     if (!user?.email) {
-      throw new Error("Could not find your email address");
+      throw new Error('Could not find your email address')
     }
 
     const providerSetting = await db.systemSetting.findUnique({
       where: { key: SYSTEM_SETTING_KEYS.EMAIL_PROVIDER },
-    });
-    const provider = providerSetting?.value || "smtp";
-    const from = await getFromAddress();
+    })
+    const provider = providerSetting?.value || 'smtp'
+    const from = await getFromAddress()
 
     await sendMail({
       from,
       to: user.email,
-      subject: "Email Test - Torqvoice",
+      subject: 'Email Test - Torqvoice',
       html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h2>Email Configuration Test</h2>
@@ -39,8 +46,8 @@ export async function testEmailConnection() {
           </p>
         </div>
       `,
-    });
+    })
 
-    return { sentTo: user.email };
-  });
+    return { sentTo: user.email }
+  })
 }

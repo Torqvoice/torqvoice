@@ -1,19 +1,20 @@
-import { db } from "@/lib/db";
-import { WEBHOOK_EVENTS } from "../Schema/webhookSchema";
-import { deliverOnce } from "./deliver";
+import { db } from '@/lib/db'
+import { isDemoMode } from '@/lib/demo'
+import { WEBHOOK_EVENTS } from '../Schema/webhookSchema'
+import { deliverOnce } from './deliver'
 
-const KNOWN = new Set<string>([...WEBHOOK_EVENTS, "*"]);
+const KNOWN = new Set<string>([...WEBHOOK_EVENTS, '*'])
 
 export type DispatchInput = {
-  event: string;
-  organizationId: string;
-  entity?: string | null;
-  entityId?: string | null;
-  message?: string | null;
+  event: string
+  organizationId: string
+  entity?: string | null
+  entityId?: string | null
+  message?: string | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: Record<string, any> | null;
-  userId?: string | null;
-};
+  data?: Record<string, any> | null
+  userId?: string | null
+}
 
 /**
  * Dispatch an event to all webhooks in the org subscribed to it. Creates one
@@ -22,33 +23,39 @@ export type DispatchInput = {
  *
  * No-op for unknown events so we don't generate deliveries for noise like
  * `auth.permissionDenied` or future audit-only actions.
+ *
+ * Also a no-op on the demo. Every CRUD action a visitor can reach calls this,
+ * so without it one saved customer is enough to make the demo box POST at a
+ * URL somebody else chose. Stopping here rather than at the wire also keeps
+ * the delivery log from filling with rows that could never be sent.
  */
 export async function dispatchWebhookEvent(input: DispatchInput): Promise<void> {
-  if (!input.event || !input.organizationId) return;
-  if (!KNOWN.has(input.event)) return;
+  if (isDemoMode) return
+  if (!input.event || !input.organizationId) return
+  if (!KNOWN.has(input.event)) return
 
-  let webhooks: { id: string; events: string }[] = [];
+  let webhooks: { id: string; events: string }[] = []
   try {
     webhooks = await db.webhook.findMany({
       where: { organizationId: input.organizationId, isActive: true },
       select: { id: true, events: true },
-    });
+    })
   } catch (err) {
-    console.error("[webhooks] failed to load subscribers:", err);
-    return;
+    console.error('[webhooks] failed to load subscribers:', err)
+    return
   }
-  if (webhooks.length === 0) return;
+  if (webhooks.length === 0) return
 
   const matching = webhooks.filter((w) => {
-    let subscribed: string[] = [];
+    let subscribed: string[] = []
     try {
-      subscribed = JSON.parse(w.events) as string[];
+      subscribed = JSON.parse(w.events) as string[]
     } catch {
-      return false;
+      return false
     }
-    return subscribed.includes("*") || subscribed.includes(input.event);
-  });
-  if (matching.length === 0) return;
+    return subscribed.includes('*') || subscribed.includes(input.event)
+  })
+  if (matching.length === 0) return
 
   const payload = JSON.stringify({
     id: cryptoRandomId(),
@@ -60,7 +67,7 @@ export async function dispatchWebhookEvent(input: DispatchInput): Promise<void> 
     message: input.message ?? null,
     userId: input.userId ?? null,
     data: input.data ?? null,
-  });
+  })
 
   const created = await Promise.all(
     matching.map((w) =>
@@ -70,28 +77,28 @@ export async function dispatchWebhookEvent(input: DispatchInput): Promise<void> 
             webhookId: w.id,
             event: input.event,
             payload,
-            status: "pending",
+            status: 'pending',
           },
           select: { id: true },
         })
         .catch((err) => {
-          console.error("[webhooks] failed to enqueue delivery:", err);
-          return null;
-        }),
-    ),
-  );
+          console.error('[webhooks] failed to enqueue delivery:', err)
+          return null
+        })
+    )
+  )
 
   // Fire-and-forget initial delivery. Failures are picked up by the retry cron.
   for (const row of created) {
-    if (!row) continue;
+    if (!row) continue
     setImmediate(() => {
       deliverOnce(row.id).catch((err) => {
-        console.error("[webhooks] delivery failed:", err);
-      });
-    });
+        console.error('[webhooks] delivery failed:', err)
+      })
+    })
   }
 }
 
 function cryptoRandomId(): string {
-  return `evt_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+  return `evt_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`
 }

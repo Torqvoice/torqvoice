@@ -1,33 +1,29 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { revalidatePath } from "next/cache";
-import {
-  createWebhookSchema,
-  updateWebhookSchema,
-  WEBHOOK_EVENTS,
-} from "../Schema/webhookSchema";
-import { generateWebhookSecret, signPayload } from "../Lib/sign";
-import { deliverOnce } from "../Lib/deliver";
-import { checkWebhookUrl } from "../Lib/ssrf";
-import { demoGuard } from "@/lib/demo";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { revalidatePath } from 'next/cache'
+import { createWebhookSchema, updateWebhookSchema, WEBHOOK_EVENTS } from '../Schema/webhookSchema'
+import { generateWebhookSecret, signPayload } from '../Lib/sign'
+import { deliverOnce } from '../Lib/deliver'
+import { checkWebhookUrl } from '../Lib/ssrf'
+import { demoGuard } from '@/lib/demo'
 
 const SSRF_REASONS: Record<string, string> = {
-  invalid_url: "URL is not valid",
-  scheme_not_http: "Only http:// and https:// URLs are allowed",
-  missing_host: "URL is missing a host",
-  metadata_host: "Cloud metadata endpoints are not allowed",
-  loopback_host: "Loopback hostnames are not allowed",
-  private_ip: "Private IP addresses are not allowed",
-  resolves_private: "URL resolves to a private network address",
-  dns_resolution_failed: "Could not resolve URL host",
-  dns_no_records: "No DNS records found for URL host",
-};
+  invalid_url: 'URL is not valid',
+  scheme_not_http: 'Only http:// and https:// URLs are allowed',
+  missing_host: 'URL is missing a host',
+  metadata_host: 'Cloud metadata endpoints are not allowed',
+  loopback_host: 'Loopback hostnames are not allowed',
+  private_ip: 'Private IP addresses are not allowed',
+  resolves_private: 'URL resolves to a private network address',
+  dns_resolution_failed: 'Could not resolve URL host',
+  dns_no_records: 'No DNS records found for URL host',
+}
 
 function ssrfMessage(reason: string): string {
-  return SSRF_REASONS[reason] ?? `URL was rejected: ${reason}`;
+  return SSRF_REASONS[reason] ?? `URL was rejected: ${reason}`
 }
 
 export async function getWebhooks() {
@@ -35,11 +31,11 @@ export async function getWebhooks() {
     async ({ organizationId }) => {
       const rows = await db.webhook.findMany({
         where: { organizationId },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         include: {
           _count: { select: { deliveries: true } },
         },
-      });
+      })
       return rows.map((w) => ({
         id: w.id,
         name: w.name,
@@ -54,14 +50,12 @@ export async function getWebhooks() {
         autoDisabled: !w.isActive && w.failureCount >= 20,
         deliveryCount: w._count.deliveries,
         createdAt: w.createdAt,
-      }));
+      }))
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 export async function createWebhook(input: unknown) {
@@ -69,11 +63,11 @@ export async function createWebhook(input: unknown) {
     async ({ organizationId, userId }) => {
       // Otherwise the demo becomes an open outbound HTTP relay: SSRF blocks
       // private ranges, but not arbitrary public URLs.
-      demoGuard();
-      const data = createWebhookSchema.parse(input);
-      const safety = await checkWebhookUrl(data.url);
-      if (!safety.ok) throw new Error(ssrfMessage(safety.reason));
-      const secret = generateWebhookSecret();
+      demoGuard()
+      const data = createWebhookSchema.parse(input)
+      const safety = await checkWebhookUrl(data.url)
+      if (!safety.ok) throw new Error(ssrfMessage(safety.reason))
+      const secret = generateWebhookSecret()
 
       const webhook = await db.webhook.create({
         data: {
@@ -86,47 +80,47 @@ export async function createWebhook(input: unknown) {
           organizationId,
           createdById: userId,
         },
-      });
+      })
 
-      revalidatePath("/settings/webhooks");
+      revalidatePath('/settings/webhooks')
       // Returned ONCE on creation; the secret never appears in subsequent reads.
       return {
         id: webhook.id,
         name: webhook.name,
         url: webhook.url,
         secret,
-      };
+      }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "webhook.create",
-        entity: "webhook",
+        action: 'webhook.create',
+        entity: 'webhook',
         entityId: result.id,
-        details: { key: "webhook_create", params: { name: result.name } },
+        details: { key: 'webhook_create', params: { name: result.name } },
       }),
-    },
-  );
+    }
+  )
 }
 
 export async function updateWebhook(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      demoGuard();
-      const data = updateWebhookSchema.parse(input);
+      demoGuard()
+      const data = updateWebhookSchema.parse(input)
       const existing = await db.webhook.findFirst({
         where: { id: data.id, organizationId },
-      });
-      if (!existing) throw new Error("Webhook not found");
+      })
+      if (!existing) throw new Error('Webhook not found')
 
       if (data.url !== existing.url) {
-        const safety = await checkWebhookUrl(data.url);
-        if (!safety.ok) throw new Error(ssrfMessage(safety.reason));
+        const safety = await checkWebhookUrl(data.url)
+        if (!safety.ok) throw new Error(ssrfMessage(safety.reason))
       }
 
-      const reEnabling = data.isActive === true && existing.isActive === false;
+      const reEnabling = data.isActive === true && existing.isActive === false
 
       const updated = await db.webhook.update({
         where: { id: data.id },
@@ -138,48 +132,53 @@ export async function updateWebhook(input: unknown) {
           isActive: data.isActive ?? existing.isActive,
           ...(reEnabling ? { failureCount: 0 } : {}),
         },
-      });
+      })
 
-      revalidatePath("/settings/webhooks");
-      return { id: updated.id };
+      revalidatePath('/settings/webhooks')
+      return { id: updated.id }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "webhook.update",
-        entity: "webhook",
+        action: 'webhook.update',
+        entity: 'webhook',
         entityId: result.id,
       }),
-    },
-  );
+    }
+  )
 }
 
 export async function toggleWebhook(id: string) {
   return withAuth(
     async ({ organizationId }) => {
+      // The demo ships two webhooks so the page has something to show, and
+      // they are inactive on purpose. Nothing would leave the box either way
+      // now that the dispatcher refuses, but a switch that flips and then
+      // never fires reads as a broken feature rather than a disabled one.
+      demoGuard()
       const existing = await db.webhook.findFirst({
         where: { id, organizationId },
-      });
-      if (!existing) throw new Error("Webhook not found");
-      const reEnabling = !existing.isActive;
+      })
+      if (!existing) throw new Error('Webhook not found')
+      const reEnabling = !existing.isActive
       const updated = await db.webhook.update({
         where: { id },
         data: {
           isActive: reEnabling,
           ...(reEnabling ? { failureCount: 0 } : {}),
         },
-      });
-      revalidatePath("/settings/webhooks");
-      return { id: updated.id, isActive: updated.isActive };
+      })
+      revalidatePath('/settings/webhooks')
+      return { id: updated.id, isActive: updated.isActive }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function deleteWebhook(id: string) {
@@ -187,23 +186,23 @@ export async function deleteWebhook(id: string) {
     async ({ organizationId }) => {
       const existing = await db.webhook.findFirst({
         where: { id, organizationId },
-      });
-      if (!existing) throw new Error("Webhook not found");
-      await db.webhook.delete({ where: { id } });
-      revalidatePath("/settings/webhooks");
-      return { id };
+      })
+      if (!existing) throw new Error('Webhook not found')
+      await db.webhook.delete({ where: { id } })
+      revalidatePath('/settings/webhooks')
+      return { id }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "webhook.delete",
-        entity: "webhook",
+        action: 'webhook.delete',
+        entity: 'webhook',
         entityId: result.id,
       }),
-    },
-  );
+    }
+  )
 }
 
 export async function rotateWebhookSecret(id: string) {
@@ -211,67 +210,67 @@ export async function rotateWebhookSecret(id: string) {
     async ({ organizationId }) => {
       const existing = await db.webhook.findFirst({
         where: { id, organizationId },
-      });
-      if (!existing) throw new Error("Webhook not found");
-      const secret = generateWebhookSecret();
+      })
+      if (!existing) throw new Error('Webhook not found')
+      const secret = generateWebhookSecret()
       await db.webhook.update({
         where: { id },
         data: { secret },
-      });
-      revalidatePath("/settings/webhooks");
-      return { id, secret };
+      })
+      revalidatePath('/settings/webhooks')
+      return { id, secret }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "webhook.rotateSecret",
-        entity: "webhook",
+        action: 'webhook.rotateSecret',
+        entity: 'webhook',
         entityId: result.id,
       }),
-    },
-  );
+    }
+  )
 }
 
 export async function sendTestWebhook(id: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      demoGuard();
+      demoGuard()
       const webhook = await db.webhook.findFirst({
         where: { id, organizationId },
-      });
-      if (!webhook) throw new Error("Webhook not found");
+      })
+      if (!webhook) throw new Error('Webhook not found')
 
       const payload = JSON.stringify({
         id: `evt_test_${Date.now().toString(36)}`,
-        event: "ping.test",
+        event: 'ping.test',
         createdAt: new Date().toISOString(),
         organizationId,
         userId,
         data: { test: true },
-      });
+      })
 
       const delivery = await db.webhookDelivery.create({
         data: {
           webhookId: webhook.id,
-          event: "ping.test",
+          event: 'ping.test',
           payload,
-          status: "pending",
+          status: 'pending',
         },
         select: { id: true },
-      });
+      })
 
-      await deliverOnce(delivery.id);
-      revalidatePath("/settings/webhooks");
-      return { deliveryId: delivery.id };
+      await deliverOnce(delivery.id)
+      revalidatePath('/settings/webhooks')
+      return { deliveryId: delivery.id }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function getWebhookDeliveries(webhookId: string, limit: number = 25) {
@@ -280,12 +279,12 @@ export async function getWebhookDeliveries(webhookId: string, limit: number = 25
       const webhook = await db.webhook.findFirst({
         where: { id: webhookId, organizationId },
         select: { id: true },
-      });
-      if (!webhook) throw new Error("Webhook not found");
+      })
+      if (!webhook) throw new Error('Webhook not found')
 
       const deliveries = await db.webhookDelivery.findMany({
         where: { webhookId },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         take: Math.min(Math.max(limit, 1), 100),
         select: {
           id: true,
@@ -300,53 +299,46 @@ export async function getWebhookDeliveries(webhookId: string, limit: number = 25
           deliveredAt: true,
           nextRetryAt: true,
         },
-      });
-      return deliveries;
+      })
+      return deliveries
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 export async function retryWebhookDelivery(deliveryId: string) {
   return withAuth(
     async ({ organizationId }) => {
-      demoGuard();
+      demoGuard()
       const delivery = await db.webhookDelivery.findFirst({
         where: { id: deliveryId, webhook: { organizationId } },
         select: { id: true, status: true },
-      });
-      if (!delivery) throw new Error("Delivery not found");
+      })
+      if (!delivery) throw new Error('Delivery not found')
 
       // Reset to pending so deliverOnce will pick it up
       await db.webhookDelivery.update({
         where: { id: deliveryId },
-        data: { status: "pending", nextRetryAt: null },
-      });
-      await deliverOnce(deliveryId);
-      revalidatePath("/settings/webhooks");
-      return { id: deliveryId };
+        data: { status: 'pending', nextRetryAt: null },
+      })
+      await deliverOnce(deliveryId)
+      revalidatePath('/settings/webhooks')
+      return { id: deliveryId }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function getAvailableEvents() {
-  return withAuth(
-    async () => ({ events: [...WEBHOOK_EVENTS] }),
-    {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+  return withAuth(async () => ({ events: [...WEBHOOK_EVENTS] }), {
+    requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+  })
 }
 
 export async function getDeliveryPayload(deliveryId: string) {
@@ -368,26 +360,24 @@ export async function getDeliveryPayload(deliveryId: string) {
           createdAt: true,
           deliveredAt: true,
         },
-      });
-      if (!delivery) throw new Error("Delivery not found");
-      return delivery;
+      })
+      if (!delivery) throw new Error('Delivery not found')
+      return delivery
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 function safeParseEvents(raw: string): string[] {
   try {
-    const v = JSON.parse(raw);
-    return Array.isArray(v) ? v : [];
+    const v = JSON.parse(raw)
+    return Array.isArray(v) ? v : []
   } catch {
-    return [];
+    return []
   }
 }
 
 // Re-export for use in unit tests / route handlers
-export { signPayload };
+export { signPayload }

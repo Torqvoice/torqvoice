@@ -2,6 +2,7 @@ import 'server-only'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
+import { assertOutboundAllowed } from '@/lib/demo'
 import {
   ORG_WHATSAPP_KEYS,
   WHATSAPP_WEBHOOK_TOKEN_FIELD,
@@ -343,6 +344,12 @@ export async function sendOrgWhatsapp(
   organizationId: string,
   options: SendWhatsappOptions
 ): Promise<SendWhatsappResult> {
+  // The send actions carry demoGuard(), but the scheduled-message cron reaches
+  // this directly and would have gone straight past it. The demo ships a
+  // configured WhatsApp workshop, so the seed alone is enough to queue a
+  // message at a stranger's phone without this.
+  assertOutboundAllowed('whatsapp')
+
   const config = await getWhatsappConfig(organizationId)
   if (!config) {
     throw new Error('WhatsApp is not configured. Set it up in Settings → WhatsApp.')

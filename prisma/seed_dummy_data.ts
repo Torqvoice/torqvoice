@@ -573,6 +573,9 @@ async function cleanup() {
   await prisma.aiChat.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.notification.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.telegramMessage.deleteMany({ where: { organizationId: ORG_ID } });
+  // Customer is SetNull here, so these survive the customer wipe further down
+  // and every reset would stack another set of conversations on the inbox.
+  await prisma.whatsappMessage.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customerMagicLink.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.customerSmsCode.deleteMany({ where: { organizationId: ORG_ID } });
   await prisma.auditLog.deleteMany({ where: { organizationId: ORG_ID } });
@@ -683,17 +686,43 @@ async function seed() {
     "portal.enabled": "true",
     "portal.description": "Book a service, follow your repair and read your invoices online.",
     "portal.hours": "Mon-Fri 07:00-17:00 · Sat 09:00-13:00 · Closed Sunday",
-    // Placeholder provider config so the messages and Telegram pages render as
-    // a configured workshop rather than an empty setup prompt. The credentials
+    // Placeholder provider config so the messaging pages render as a
+    // configured workshop rather than an empty setup prompt. The credentials
     // are deliberately not real, and nothing can send from the demo anyway:
-    // assertOutboundAllowed() in lib/email, lib/sms and lib/telegram refuses
-    // every outbound call while DEMO_MODE=true.
+    // assertOutboundAllowed() in lib/email, lib/sms, lib/whatsapp and
+    // lib/telegram refuses every outbound call while DEMO_MODE=true.
     "sms.provider": "twilio",
     "sms.phoneNumber": "+15555550100",
     "sms.twilio.accountSid": "ACdemo0000000000000000000000000000",
     "sms.twilio.authToken": "demo-token-not-a-real-credential",
+    // Without the enabled flag the bot token alone gets the channel into the
+    // inbox, but the Telegram tab on a customer never appears, so the seeded
+    // conversations were only half visible.
+    "telegram.enabled": "true",
     "telegram.botToken": "0000000000:DEMO-not-a-real-bot-token",
     "telegram.botUsername": "EgelandAutoDemoBot",
+    // WhatsApp reaches a workshop through whichever provider will sell it a
+    // number, so credentials are namespaced per adapter rather than by field.
+    // Meta is the one most visitors will recognise.
+    "whatsapp.enabled": "true",
+    "whatsapp.provider": "meta",
+    "whatsapp.from": "+15555550100",
+    "whatsapp.cred.meta.phoneNumberId": "000000000000000",
+    "whatsapp.cred.meta.accessToken": "DEMO-not-a-real-access-token",
+    "whatsapp.cred.meta.verifyToken": "demo-verify-token",
+    // Two templates, because WhatsApp fixes a template's media type at
+    // approval and one cannot carry both a line of text and a photo.
+    "whatsapp.tpl.meta.text.name": "vehicle_ready",
+    "whatsapp.tpl.meta.text.language": "en",
+    "whatsapp.tpl.meta.text.variables": "customer,vehicle,message",
+    "whatsapp.tpl.meta.media.name": "vehicle_photo_update",
+    "whatsapp.tpl.meta.media.language": "en",
+    // Meta carries the photo as a header parameter rather than a variable, so
+    // the media template's blanks are the same words as the text one.
+    "whatsapp.tpl.meta.media.variables": "customer,vehicle,message",
+    // Proof the webhook plumbing works, which is otherwise invisible from
+    // inside the app and leaves the settings page looking half finished.
+    "whatsapp.webhookSeenAt": hoursAgo(2).toISOString(),
     // Tire hotel is opt-in per workshop, so the sidebar entry and the
     // routes stay hidden until this is set.
     "tireHotel.enabled": "true",
@@ -2085,6 +2114,8 @@ async function seed() {
     prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "sms", body: "Reminder: your Volvo FH 640 brake inspection is booked for tomorrow at 07:30.", customerId: customers[2].id, vehicleId: vehicles[18].id, status: "scheduled", sendAt: at(2, 8) } }),
     prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Pre-planting service slots", body: "Hi,\n\nWe are holding two slots for the John Deere 6R and the Massey Ferguson ahead of planting. Let us know which week suits.\n\nEgeland Auto", customerId: customers[10].id, status: "scheduled", sendAt: at(3, 10) } }),
     prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "telegram", body: "Your Tesla Model Y is booked for a brake fluid test on Monday at 08:00.", customerId: customers[13].id, vehicleId: vehicles[7].id, status: "scheduled", sendAt: at(4, 9) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "whatsapp", body: "Hi Sarah, a reminder that the BMW 330i is booked in on Tuesday at 09:00 for the brake overhaul.", customerId: customers[3].id, vehicleId: vehicles[4].id, status: "scheduled", sendAt: at(5, 8) } }),
+    prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "whatsapp", body: "The water pump is fitted and the A4 is ready whenever suits you.", customerId: customers[7].id, vehicleId: vehicles[10].id, status: "sent", sendAt: at(-1, 14), sentAt: at(-1, 14), lastRunAt: at(-1, 14), runCount: 1 } }),
 
     // Further out
     prisma.scheduledMessage.create({ data: { organizationId: ORG_ID, createdById: USER_ID, channel: "email", subject: "Track day prep - Porsche 911", body: "Hi Sarah,\n\nBooking your 911 in for brake pads, fluid and tire pressures the week before the track day. Reply with a day that suits.\n\nEgeland Auto", customerId: customers[3].id, vehicleId: vehicles[13].id, status: "scheduled", sendAt: at(9, 11) } }),
@@ -2107,6 +2138,8 @@ async function seed() {
   console.log("\nCreating Telegram messages...");
   await prisma.customer.update({ where: { id: customers[13].id }, data: { telegramChatId: "784512996" } });
   await prisma.customer.update({ where: { id: customers[5].id }, data: { telegramChatId: "612447803" } });
+  await prisma.customer.update({ where: { id: customers[7].id }, data: { telegramChatId: "533901764" } });
+  await prisma.customer.update({ where: { id: customers[11].id }, data: { telegramChatId: "497260118" } });
   const telegram = await Promise.all([
     prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[13].id, direction: "outbound", chatId: "784512996", body: "Hi Jessica, your Tesla Model Y is booked for a brake fluid test on Monday at 08:00.", status: "delivered", createdAt: hoursAgo(72) } }),
     prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[13].id, direction: "inbound", chatId: "784512996", body: "Perfect. Can you check the tire wear at the same time?", status: "received", createdAt: hoursAgo(71) } }),
@@ -2114,8 +2147,105 @@ async function seed() {
     prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, direction: "outbound", chatId: "612447803", body: "Ryan, the 12V auxiliary battery for the Model 3 is in stock. Want it done this week?", status: "delivered", createdAt: hoursAgo(26) } }),
     prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, direction: "inbound", chatId: "612447803", body: "Yes please. Thursday afternoon if you have it.", status: "received", createdAt: hoursAgo(25) } }),
     prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[5].id, direction: "outbound", chatId: "612447803", body: "Thursday 13:00 booked. It's a 30 minute job, you can wait if you like.", status: "delivered", createdAt: hoursAgo(24) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[7].id, direction: "inbound", chatId: "533901764", body: "The Golf is making a rattle on cold start that goes away after a minute. Worth looking at?", status: "received", createdAt: hoursAgo(9) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[7].id, direction: "outbound", chatId: "533901764", body: "Sounds like the timing chain tensioner, which is worth catching early on that engine. Can you drop it off Friday morning?", status: "delivered", createdAt: hoursAgo(8) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[7].id, direction: "inbound", chatId: "533901764", body: "Friday works. I'll leave the key in the box if you're busy.", status: "received", createdAt: hoursAgo(7) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[11].id, direction: "outbound", chatId: "497260118", body: "Mike, the Wrangler is back on the ground. Lift is torqued and aligned, and we road tested it.", status: "delivered", createdAt: hoursAgo(4) } }),
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[11].id, direction: "inbound", chatId: "497260118", body: "Brilliant, thanks. Picking it up around 16:00.", status: "received", createdAt: hoursAgo(3) } }),
+    // A send that did not land, so the failure state is visible somewhere.
+    prisma.telegramMessage.create({ data: { organizationId: ORG_ID, customerId: customers[11].id, direction: "outbound", chatId: "497260118", body: "Invoice is ready whenever you are.", status: "failed", errorMessage: "Bot was blocked by the user", createdAt: hoursAgo(2) } }),
   ]);
   console.log(`  Created ${telegram.length} Telegram messages`);
+
+  // -- WhatsApp --
+  // WhatsApp only lets a business write freely for 24 hours after the
+  // customer's last message, so the conversations below deliberately sit on
+  // both sides of that line: some recent enough to reply to in the composer,
+  // and one older, where the last message out had to go as an approved
+  // template. Without that, the window rule is invisible on the demo and the
+  // "sent as template" label never appears.
+  console.log("\nCreating WhatsApp messages...");
+  const waFrom = "+15555550100";
+  // Customer 1001 is +1 (555) 555-0101 and they run in order from there. The
+  // 555-01xx block is the reserved fictional range, so none of these can ring.
+  const waTo = (index: number) => `+1555555${String(101 + index).padStart(4, "0")}`;
+  type WaExtra = {
+    status?: string;
+    errorMessage?: string;
+    templateName?: string;
+    mediaUrl?: string;
+    mediaType?: string;
+    mediaFilename?: string;
+  };
+  /** `who` is an index into `customers`, or a bare number for a stranger. */
+  const wa = (
+    who: number | string,
+    direction: "inbound" | "outbound",
+    body: string,
+    createdAt: Date,
+    extra: WaExtra = {},
+  ) => {
+    const number = typeof who === "number" ? waTo(who) : who;
+    return prisma.whatsappMessage.create({
+      data: {
+        organizationId: ORG_ID,
+        provider: "meta",
+        direction,
+        fromNumber: direction === "outbound" ? waFrom : number,
+        toNumber: direction === "outbound" ? number : waFrom,
+        body,
+        status: direction === "outbound" ? "read" : "received",
+        customerId: typeof who === "number" ? customers[who].id : null,
+        createdAt,
+        ...extra,
+      },
+    });
+  };
+
+  const whatsapp = await Promise.all([
+    // Sarah Coleman — inside the 24 hour window, so the composer is open and a
+    // visitor can type a reply straight away.
+    wa(3, "outbound", "Hi Sarah, the 911 is done. Pads, discs and a fluid flush, and the alignment came out inside spec.", hoursAgo(5)),
+    wa(3, "inbound", "Wonderful. Did the front tires make it through?", hoursAgo(4)),
+    wa(3, "outbound", "They did, about 8,000 miles left. Here it is back on the ground.", hoursAgo(4), {
+      mediaUrl: img("vehicles", "porsche-911.jpg"),
+      mediaType: "image",
+      mediaFilename: "porsche-911-collected.jpg",
+    }),
+    wa(3, "inbound", "Looks great. I'll collect it tomorrow morning.", minutesAgo(35)),
+
+    // David Chen — a problem reported, collected and quoted inside one thread,
+    // which is the shape most of this traffic actually takes.
+    wa(7, "inbound", "There's a puddle under the A4 this morning. Coolant, I think, it's pink.", hoursAgo(20)),
+    wa(7, "outbound", "Pink is the right colour for that engine, so it is coolant. Don't drive it far. Can we collect it?", hoursAgo(20)),
+    wa(7, "inbound", "Yes please. It's on the driveway, key under the mat.", hoursAgo(19)),
+    wa(7, "outbound", "Picked up. Water pump is weeping at the seal. Quote is $640 all in, and we have the pump on the shelf.", hoursAgo(6)),
+
+    // Summit Construction — fleet traffic, several vehicles in one thread.
+    wa(0, "outbound", "Morning. The Mack Granite passed its DOT inspection, paperwork is in the cab.", hoursAgo(30)),
+    wa(0, "inbound", "Good news. The F-150 on CO-4455 is due too, can it come in Thursday?", hoursAgo(29)),
+    wa(0, "outbound", "Thursday 07:00 works. Send it with the fuel card and we'll top it up.", hoursAgo(29)),
+
+    // Kevin O'Brien — the window has closed, so the last message out had to be
+    // an approved template rather than free text.
+    wa(15, "inbound", "Any chance the Sprinter is ready? I have an event Saturday.", hoursAgo(96)),
+    wa(15, "outbound", "Turbo is fitted and the oil feed line is flushed. Road tested clean, no smoke under boost.", hoursAgo(95)),
+    wa(15, "outbound", "Hi Kevin, your 2022 Mercedes-Benz Sprinter 316 CDI is ready for collection.", hoursAgo(11), {
+      templateName: "vehicle_ready",
+      status: "delivered",
+    }),
+
+    // Amanda Foster — a send that bounced, so the failure state is on screen.
+    wa(9, "outbound", "Hi Amanda, the clutch quote for the Civic is ready to look at.", hoursAgo(13), {
+      status: "failed",
+      errorMessage: "(#131026) Message undeliverable: the recipient is not on WhatsApp",
+    }),
+
+    // Someone the workshop has never dealt with, which is what most first
+    // contact actually looks like. No customer record behind it yet.
+    wa("+15555550188", "inbound", "Hi, do you take walk-ins for a brake noise? Driving past this afternoon.", hoursAgo(2)),
+  ]);
+  console.log(`  Created ${whatsapp.length} WhatsApp messages`);
 
   // -- Notifications --
   // The bell is empty on a fresh reset, which makes the app look idle.
@@ -2129,6 +2259,9 @@ async function seed() {
     prisma.notification.create({ data: { organizationId: ORG_ID, type: "quote_response", title: "Quote accepted", message: `Jeep Wrangler - Winch Install (Q-${YEAR}-011) was accepted by Mike Thompson.`, entityType: "quote", entityId: quotes[10].id, entityUrl: `/quotes/${quotes[10].id}`, read: true, createdAt: hoursAgo(30) } }),
     prisma.notification.create({ data: { organizationId: ORG_ID, type: "invoice_payment", title: "Payment received", message: "Pacific Freight Lines settled the Kenworth T680 engine service invoice.", entityType: "invoice", entityId: serviceRecords[4].id, entityUrl: `/work-orders/${serviceRecords[4].id}`, read: true, createdAt: hoursAgo(50) } }),
     prisma.notification.create({ data: { organizationId: ORG_ID, type: "telegram_inbound", title: "New Telegram message", message: "Jessica Rivera: Can you check the tire wear at the same time?", entityType: "customer", entityId: customers[13].id, entityUrl: `/customers/${customers[13].id}`, read: true, createdAt: hoursAgo(71) } }),
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "whatsapp_inbound", title: "New WhatsApp message", message: "Sarah Coleman: Looks great. I'll collect it tomorrow morning.", entityType: "whatsapp_message", entityId: whatsapp[3].id, entityUrl: `/messages?tab=whatsapp&customerId=${customers[3].id}`, read: false, createdAt: minutesAgo(35) } }),
+    // Nobody on file behind this one, which is what the link has to cope with.
+    prisma.notification.create({ data: { organizationId: ORG_ID, type: "whatsapp_inbound", title: "New WhatsApp message", message: "+15555550188: Hi, do you take walk-ins for a brake noise? Driving past this afternoon.", entityType: "whatsapp_message", entityId: whatsapp[whatsapp.length - 1].id, entityUrl: "/messages?tab=whatsapp", read: false, createdAt: hoursAgo(2) } }),
     prisma.notification.create({ data: { organizationId: ORG_ID, type: "status_report_feedback", title: "Customer replied to a status report", message: "Lisa Martinez: \"Thanks for the video, that makes sense. Go ahead.\"", entityType: "service_record", entityId: serviceRecords[0].id, entityUrl: `/work-orders/${serviceRecords[0].id}`, read: true, createdAt: hoursAgo(96) } }),
   ]);
   console.log(`  Created ${notifications.length} notifications`);
@@ -2154,6 +2287,63 @@ async function seed() {
       parts: { create: [] } } }),
   ]);
   console.log(`  Created ${laborPresets.length} labor presets`);
+
+  // -- Roles --
+  // The demo has one member, so the team page shows nothing about the
+  // permission model unless the roles themselves are there to open. Members
+  // are deliberately not seeded: each one needs a real User row, and inviting
+  // is blocked in demo mode anyway.
+  console.log("\nCreating roles...");
+  const roles = await Promise.all([
+    prisma.role.create({ data: { organizationId: ORG_ID, name: "Service advisor", permissions: { create: [
+      { action: "read", subject: "dashboard" },
+      { action: "read", subject: "vehicles" }, { action: "update", subject: "vehicles" },
+      { action: "create", subject: "customers" }, { action: "read", subject: "customers" }, { action: "update", subject: "customers" },
+      { action: "create", subject: "work_orders" }, { action: "read", subject: "work_orders" }, { action: "update", subject: "work_orders" },
+      { action: "create", subject: "quotes" }, { action: "read", subject: "quotes" }, { action: "update", subject: "quotes" },
+      { action: "read", subject: "work_board" }, { action: "read", subject: "inventory" }, { action: "read", subject: "tire_hotel" },
+    ] } } }),
+    prisma.role.create({ data: { organizationId: ORG_ID, name: "Technician", permissions: { create: [
+      { action: "read", subject: "dashboard" },
+      { action: "read", subject: "vehicles" },
+      { action: "read", subject: "customers" },
+      { action: "read", subject: "work_orders" }, { action: "update", subject: "work_orders" },
+      { action: "read", subject: "work_board" }, { action: "update", subject: "work_board" },
+      { action: "create", subject: "inspections" }, { action: "read", subject: "inspections" }, { action: "update", subject: "inspections" },
+      { action: "read", subject: "inventory" },
+      { action: "read", subject: "tire_hotel" }, { action: "update", subject: "tire_hotel" },
+    ] } } }),
+    prisma.role.create({ data: { organizationId: ORG_ID, name: "Bookkeeper", permissions: { create: [
+      { action: "read", subject: "dashboard" },
+      { action: "read", subject: "customers" },
+      { action: "read", subject: "work_orders" },
+      { action: "read", subject: "billing" }, { action: "update", subject: "billing" },
+      { action: "read", subject: "reports" },
+    ] } } }),
+  ]);
+  console.log(`  Created ${roles.length} roles`);
+
+  // -- Webhooks --
+  // Left inactive on purpose. The dispatcher and the delivery worker both skip
+  // an inactive webhook, so the page shows a real integration with real
+  // delivery history without the demo posting anything at a stranger's URL.
+  console.log("\nCreating webhooks...");
+  const webhooks = await Promise.all([
+    prisma.webhook.create({ data: { organizationId: ORG_ID, createdById: USER_ID, name: "Accounting sync", url: "https://hooks.example.com/torqvoice/accounting", secret: randomBytes(24).toString("hex"), events: JSON.stringify(["payment.create", "quote.status", "service.status"]), description: "Pushes every payment and quote decision into the bookkeeping ledger.", isActive: false, lastTriggeredAt: hoursAgo(5), lastSuccessAt: hoursAgo(5) } }),
+    prisma.webhook.create({ data: { organizationId: ORG_ID, createdById: USER_ID, name: "Fleet portal", url: "https://hooks.example.com/summit/work-orders", secret: randomBytes(24).toString("hex"), events: JSON.stringify(["service.status", "vehicle.update"]), description: "Tells Summit Construction's own system when one of their units is finished.", isActive: false, lastTriggeredAt: hoursAgo(31), lastSuccessAt: hoursAgo(31), failureCount: 1, lastFailureAt: hoursAgo(52) } }),
+  ]);
+  // Payloads match what dispatchWebhookEvent actually sends, so the delivery
+  // detail view shows the real envelope rather than an invented one.
+  const deliveryPayload = (event: string, entity: string, entityId: string, message: string, data: Record<string, unknown>, sentAt: Date) =>
+    JSON.stringify({ id: randomBytes(12).toString("hex"), event, createdAt: sentAt.toISOString(), organizationId: ORG_ID, entity, entityId, message, userId: USER_ID, data });
+  await Promise.all([
+    prisma.webhookDelivery.create({ data: { webhookId: webhooks[0].id, event: "payment.create", payload: deliveryPayload("payment.create", "payment", serviceRecords[12].id, "Payment recorded on the Sprinter turbo invoice", { amount: 2243.7, currency: "USD", method: "card" }, hoursAgo(5)), status: "success", statusCode: 200, attempt: 1, durationMs: 214, deliveredAt: hoursAgo(5), createdAt: hoursAgo(5) } }),
+    prisma.webhookDelivery.create({ data: { webhookId: webhooks[0].id, event: "quote.status", payload: deliveryPayload("quote.status", "quote", quotes[10].id, `Quote Q-${YEAR}-011 was accepted`, { status: "accepted", total: 3180 }, hoursAgo(30)), status: "success", statusCode: 200, attempt: 1, durationMs: 187, deliveredAt: hoursAgo(30), createdAt: hoursAgo(30) } }),
+    prisma.webhookDelivery.create({ data: { webhookId: webhooks[1].id, event: "service.status", payload: deliveryPayload("service.status", "service_record", serviceRecords[0].id, "Transmission flush completed", { status: "completed", licensePlate: "CO-4455" }, hoursAgo(31)), status: "success", statusCode: 202, attempt: 2, durationMs: 1340, deliveredAt: hoursAgo(31), createdAt: hoursAgo(31) } }),
+    // Five attempts, all timed out. This is the row that pushed failureCount up.
+    prisma.webhookDelivery.create({ data: { webhookId: webhooks[1].id, event: "service.status", payload: deliveryPayload("service.status", "service_record", serviceRecords[4].id, "DOT inspection completed", { status: "completed", licensePlate: "AZ-9901" }, hoursAgo(52)), status: "failed", statusCode: 504, errorMessage: "Gateway timeout after 10000ms", attempt: 5, maxAttempts: 5, durationMs: 10000, createdAt: hoursAgo(52) } }),
+  ]);
+  console.log(`  Created ${webhooks.length} webhooks`);
 
   // -- Report schedules --
   console.log("\nCreating report schedules...");
@@ -2669,10 +2859,13 @@ async function seed() {
   console.log(`  Findings:           ${findings.length}`);
   console.log(`  Inspections:        ${inspections.length} (${templates.length} templates)`);
   console.log(`  SMS Messages:       22`);
+  console.log(`  WhatsApp Messages:  ${whatsapp.length}`);
   console.log(`  Telegram Messages:  ${telegram.length}`);
   console.log(`  Scheduled Messages: ${scheduledMessages.length}`);
   console.log(`  Notifications:      ${notifications.length}`);
   console.log(`  Labor Presets:      ${laborPresets.length}`);
+  console.log(`  Roles:              ${roles.length}`);
+  console.log(`  Webhooks:           ${webhooks.length} (inactive)`);
   console.log(`  Report Schedules:   ${reportSchedules.length}`);
   console.log(`  Recurring Invoices: ${recurring.length}`);
   console.log(`  Custom Fields:      ${customFields.length}`);

@@ -10,11 +10,11 @@
  * the app. The reset cron (every 3 hours) reverts their changes.
  */
 
-export const isDemoMode = process.env.DEMO_MODE === "true";
+export const isDemoMode = process.env.DEMO_MODE === 'true'
 
 /** Credentials the sign-in page auto-fills. The seed script provisions this user. */
-export const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL || "demo@torqvoice.com";
-export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "demo";
+export const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL || 'demo@torqvoice.com'
+export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || 'demo'
 
 /**
  * Throws inside a server action when demo mode is active. `withAuth`
@@ -23,12 +23,14 @@ export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "demo";
  */
 export function demoGuard(): void {
   if (isDemoMode) {
-    throw new Error("This action is disabled on the demo. Install Torqvoice on your own server to use it.");
+    throw new Error(
+      'This action is disabled on the demo. Install Torqvoice on your own server to use it.'
+    )
   }
 }
 
 /**
- * Hard stop on anything that would leave the box: email, SMS, Telegram.
+ * Hard stop on anything that would leave the box: email, SMS, WhatsApp, Telegram.
  *
  * `demoGuard()` only covers server actions, so the background crons —
  * scheduled messages, reminder alerts, report schedules, low-stock digests —
@@ -37,11 +39,11 @@ export function demoGuard(): void {
  * to go through. Seed data carries customer-looking addresses, so a demo reset
  * is enough to queue mail at real inboxes without it.
  */
-export function assertOutboundAllowed(channel: "email" | "sms" | "telegram"): void {
+export function assertOutboundAllowed(channel: 'email' | 'sms' | 'whatsapp' | 'telegram'): void {
   if (isDemoMode) {
     throw new Error(
-      `Outbound ${channel} is disabled on the demo. Install Torqvoice on your own server to send for real.`,
-    );
+      `Outbound ${channel} is disabled on the demo. Install Torqvoice on your own server to send for real.`
+    )
   }
 }
 
@@ -62,13 +64,19 @@ const DEMO_BLOCKED_SETTING_KEY_PATTERNS: RegExp[] = [
   /^sms\.(twilio|vonage|telnyx)\./,
   /^sms\.(provider|phoneNumber|webhookSecret)$/,
   /^telegram\.(botToken|webhookSecret)$/,
+  // WhatsApp namespaces credentials by provider rather than enumerating them,
+  // so this matches the namespace and any adapter added later is covered
+  // without another entry here. The template keys stay open, since an approved
+  // template name is not a secret and is worth playing with.
+  /^whatsapp\.cred\./,
+  /^whatsapp\.(provider|from)$/,
   /^email\.(smtp|resend|sendgrid|mailgun|postmark|ses)\./,
   /^email\.provider$/,
   /^ai\.apiKey$/,
-];
+]
 
 export function isDemoBlockedSettingKey(key: string): boolean {
-  return DEMO_BLOCKED_SETTING_KEY_PATTERNS.some((p) => p.test(key));
+  return DEMO_BLOCKED_SETTING_KEY_PATTERNS.some((p) => p.test(key))
 }
 
 /**
@@ -77,6 +85,6 @@ export function isDemoBlockedSettingKey(key: string): boolean {
  */
 export function demoGuardSettingKey(key: string): void {
   if (isDemoMode && isDemoBlockedSettingKey(key)) {
-    throw new Error("This setting can't be changed on the demo.");
+    throw new Error("This setting can't be changed on the demo.")
   }
 }
