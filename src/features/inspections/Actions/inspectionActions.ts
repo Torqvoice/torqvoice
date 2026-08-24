@@ -233,7 +233,7 @@ export async function createInspection(input: unknown) {
       action: "inspection.create",
       entity: "Inspection",
       entityId: result.id,
-      message: `Created inspection ${result.id}`,
+      details: { key: "inspection_create", params: { id: result.id } },
       metadata: { inspectionId: result.id, vehicleId: result.vehicleId },
     }),
   });
@@ -388,7 +388,7 @@ export async function completeInspection(id: string) {
       action: "inspection.complete",
       entity: "Inspection",
       entityId: result.inspectionId,
-      message: `Completed inspection ${result.inspectionId}`,
+      details: { key: "inspection_complete", params: { id: result.inspectionId } },
       metadata: { inspectionId: result.inspectionId },
     }),
   });
@@ -435,7 +435,7 @@ export async function reopenInspection(id: string) {
       action: "inspection.reopen",
       entity: "Inspection",
       entityId: result.inspectionId,
-      message: `Reopened inspection ${result.inspectionId}`,
+      details: { key: "inspection_reopen", params: { id: result.inspectionId } },
       metadata: { inspectionId: result.inspectionId },
     }),
   });
@@ -458,7 +458,7 @@ export async function deleteInspection(id: string) {
       action: "inspection.delete",
       entity: "Inspection",
       entityId: result.inspectionId,
-      message: `Deleted inspection ${result.inspectionId}`,
+      details: { key: "inspection_delete", params: { id: result.inspectionId } },
       metadata: { inspectionId: result.inspectionId },
     }),
   });
@@ -677,7 +677,7 @@ export async function createWorkOrderFromInspection(id: string) {
       action: "service.create",
       entity: "ServiceRecord",
       entityId: result.id,
-      message: `Created work order ${result.id} from an inspection`,
+      details: { key: "service_createFromInspection", params: { ref: result.id } },
       metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
     }),
   });

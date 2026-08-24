@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Müşterilerinizle WhatsApp mesajları gönderip alın.",
+    "helpLink": "{provider} kurulumu",
+    "save": "WhatsApp ayarlarını kaydet",
+    "saved": "WhatsApp ayarları kaydedildi",
+    "saveError": "WhatsApp ayarları kaydedilemedi",
+    "enable": {
+      "label": "WhatsApp'ı etkinleştir",
+      "hint": "Sağlayıcı bilgileri girildikten sonra açın.",
+      "disabledInfo": "Sağlayıcı, numara ve şablonu ayarlamak için WhatsApp'ı açın."
+    },
+    "provider": {
+      "label": "Sağlayıcı",
+      "hint": "WhatsApp numaranızı kim sağlıyor. Değiştirdiğinizde eskisinin bilgileri korunur."
+    },
+    "from": {
+      "label": "WhatsApp numaranız",
+      "hint": "Müşterilerin gördüğü numara, uluslararası biçimde."
+    },
+    "secret": {
+      "show": "Göster",
+      "hide": "Gizle",
+      "stored": "Kaydedildi ve gizlendi. Değiştirmek için yeni bir değer yazın."
+    },
+    "webhook": {
+      "label": "Webhook adresi",
+      "description": "Gelen mesajların Torqvoice'a ulaşması için bunu sağlayıcınıza yapıştırın.",
+      "copy": "Webhook adresini kopyala",
+      "copied": "Webhook adresi kopyalandı",
+      "saveFirst": "Sağlayıcınız adresi doğrulamadan önce bu ayarları kaydedin. Doğrulama burada kayıtlı olana göre yapılır, kaydedilmemiş form geçemez."
+    },
+    "template": {
+      "title": "Mesaj şablonu",
+      "description": "Size yakın zamanda yazmamış bir müşteriye yazdığınızda kullanılır.",
+      "windowExplainer": "WhatsApp serbest metne yalnızca müşterinin son mesajından sonraki 24 saat boyunca izin verir. Bu pencerenin dışında mesajınız sağlayıcınızın onayladığı bir şablon olarak gitmek zorundadır.",
+      "nameLabel": "Şablon adı",
+      "nameHint": "Onaylı şablonun adı veya bunu kullanan sağlayıcılarda Content SID.",
+      "languageLabel": "Şablon dili",
+      "languageHint": "Şablonun onaylandığı dil kodu, örneğin tr.",
+      "variablesLabel": "Şablon değerleri, sırayla",
+      "variablesHint": "Şablonunuzdaki numaralı boşlukları dolduran değerleri aynı sırayla seçin. Şablonunuzda boşluk yoksa boş bırakın.",
+      "tokens": {
+        "customer": "müşteri adı",
+        "vehicle": "yıl, marka ve model",
+        "plate": "plaka",
+        "message": "yazdığınız metin",
+        "workshop": "atölyenizin adı",
+        "photo": "eklenen fotoğraf"
+      },
+      "variablesEmpty": "Henüz değer yok. Şablonunuzun beklediği sırayla aşağıdan ekleyin.",
+      "variablesRemove": "{name} kaldır",
+      "mediaUrlLabel": "Şablonunuz için medya adresi",
+      "mediaUrlHint": "Bunu şablonun medya alanına yapıştırın ve n yerine fotoğraf değerinin numarasını yazın.",
+      "mediaUrlCopy": "Medya adresini kopyala",
+      "mediaUrlCopied": "Medya adresi kopyalandı",
+      "mediaUrlSample": "Sağlayıcıdaki örnek değer olarak şunu kullanın: sample",
+      "textTitle": "Metin mesajları",
+      "textDescription": "Fotoğrafsız yazdığınızda kullanılır: Mesajlar'dan, müşterinin WhatsApp sekmesinden veya planlanmış bir mesajdan.",
+      "mediaTitle": "Fotoğraflı mesajlar",
+      "mediaDescription": "Bir işin fotoğraflarındaki WhatsApp'tan gönder düğmesi ve bir görüşmede fotoğraf eklediğiniz her durumda kullanılır.",
+      "textMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye yazamazsınız.",
+      "mediaMissing": "Kurulmadı: son 24 saatte yazmamış bir müşteriye fotoğraf gönderemezsiniz.",
+      "whatIsIt": "Şablon, bir kez yazdığınız ve {provider} tarafından onaylanan sabit bir mesajdır: metin hiç değişmez, yalnızca numaralı boşlukları doldurursunuz. Onların konsolunda yazın, tanımlayıcısını buraya yapıştırın.",
+      "whyTwo": "İki tane gerekir çünkü WhatsApp medya türünü onay anında sabitler. Fotoğrafla onaylanan bir şablon yalnızca fotoğraf taşır, metin olarak onaylanan ise hiç taşıyamaz.",
+      "exampleLabel": "Sağlayıcınızın konsoluna yazacağınız örnek metin",
+      "exampleTextValues": "Şunlarla doldurun: customer, message. Müşterilerinizin okuduğu dilde yazın.",
+      "exampleMediaValues": "Şunlarla doldurun: customer, message ve medya adresi için photo. Müşterilerinizin okuduğu dilde yazın.",
+      "exampleMediaValuesHeader": "Şununla doldurun: customer, message. Fotoğraf otomatik olarak eklenir, bu yüzden kendine ait bir boşluğa gerek duymaz. Müşterilerinizin okuduğu dilde yazın."
+    },
+    "test": {
+      "send": "Test gönder",
+      "sent": "Test mesajı gönderildi",
+      "failed": "Test mesajı gönderilemedi",
+      "hint": "Önce WhatsApp'tan kendinize yazın, aksi halde test onaylı bir şablon ister."
+    },
+    "disconnect": {
+      "action": "WhatsApp bağlantısını kes",
+      "hint": "Kimlik bilgilerini Torqvoice'tan siler. Görüşmeleriniz kalır.",
+      "done": "WhatsApp bağlantısı kesildi",
+      "title": "Bağlantıyı kes"
+    },
+    "savedIncomplete": "Kaydedildi. Gönderebilmek için hâlâ gerekli: {fields}",
+    "fieldStillNeeded": "Göndermek için hâlâ gerekli",
+    "steps": {
+      "openProvider": "{provider} aç",
+      "openNumber": "Gönderici numaranızı bulun",
+      "openToken": "Kalıcı bir token oluşturun",
+      "consolePath": "Meta'da şuraya gidin:",
+      "provider": {
+        "title": "Sağlayıcınızı ve numaranızı seçin",
+        "description": "Twilio ile başlamak daha hızlıdır ve Meta tarafını sizin için üstlenir. Meta Cloud API daha ucuzdur ama işletme doğrulamasını siz tamamlarsınız. Müşterilerin göreceği numarayı uluslararası biçimde girin."
+      },
+      "credentials": {
+        "title": "Kimlik bilgilerinizi girin",
+        "description": "Her değeri {provider} üzerinden kopyalayın. Aşağıdaki her alan nerede bulunacağını söyler. Elinizdekileri kaydedin; kalanı için geri dönebilirsiniz."
+      },
+      "webhook": {
+        "title": "Webhook'u kaydedin",
+        "description": "Müşteri mesajlarının Torqvoice'a ulaşması için bu adresi {provider} tarafına yapıştırın. Önce bu sayfayı kaydedin: adres burada kayıtlı olana göre denetlenir.",
+        "open": "{provider} webhook ayarlarını aç",
+        "recheck": "Yeniden denetle",
+        "waiting": "Bu adrese henüz bir şey ulaşmadı. Sağlayıcınız doğruladığı ya da mesaj ilettiği anda yeşile döner.",
+        "seen": "Sağlayıcınız bu adrese ulaştı. Gelen mesajlar Mesajlar'da görünecek."
+      },
+      "templates": {
+        "title": "Şablonlarınızı onaylatın",
+        "description": "Yalnızca 24 saatlik pencerenin dışında ilk yazan taraf olmak için gerekir. Şimdilik atlayıp mesajlaşma çalıştığında dönebilirsiniz.",
+        "open": "{provider} şablonlarını aç"
+      },
+      "test": {
+        "title": "Test mesajı gönderin",
+        "description": "Önce kendi telefonunuzdan WhatsApp numaranıza yazın. Bu, webhook'un çalıştığını kanıtlar ve 24 saatlik pencereyi açar; böylece yanıt için şablon gerekmez."
+      },
+      "back": "Geri",
+      "continue": "Devam"
+    },
+    "register": {
+      "title": "Numarayı Meta'ya kaydedin",
+      "description": "Numara doğrulandıktan sonra Meta ayrı bir kayıt ister. Altı haneli bir PIN seçin ya da numaranın mevcut iki adımlı doğrulama PIN'ini kullanın. Not edin: numarayı taşırken veya yeniden kaydederken gerekir.",
+      "action": "Numarayı kaydet",
+      "done": "Numara kaydedildi",
+      "failed": "Numara kaydedilemedi",
+      "limit": "Meta bir numara için 72 saatte 10 kayıt denemesine izin verir. Yanlış PIN de sayılır, önce kontrol edin."
+    }
+  },
+  "messages": {
+    "featureName": "WhatsApp mesajlaşma",
+    "featureDescription": "Parça fotoğrafları dahil WhatsApp mesajlarını doğrudan Torqvoice üzerinden gönderip alın.",
+    "noThreads": "Henüz görüşme yok",
+    "noThreadsHint": "Bir müşteri WhatsApp numaranıza yazdığında ya da siz ona yazdığınızda mesajlar burada belirir.",
+    "selectThread": "Bir görüşme seçin",
+    "backToThreads": "Görüşmeler",
+    "empty": "Burada henüz bir şey yok.",
+    "placeholder": "Bir mesaj yazın",
+    "send": "Gönder",
+    "sendFailed": "Mesaj gönderilemedi",
+    "attach": "Fotoğraf ekle",
+    "attachFailed": "Fotoğraf eklenemedi",
+    "removeAttachment": "Eki kaldır",
+    "attachment": "Ek",
+    "delete": "Sil",
+    "deleteFailed": "Mesaj silinemedi",
+    "sentAsTemplate": "şablon",
+    "sentAsTemplateNotice": "Müşteri son 24 saatte yazmadığı için onaylı şablonunuzla gönderildi.",
+    "windowClosed": "Müşteri son 24 saatte yazmadı, bu yüzden mesaj onaylı şablonunuzla gidecek.",
+    "unknownNumber": "Bu numara henüz bir müşteriye ait değil. Yanıtlamak için müşteri olarak ekleyin.",
+    "notConfigured": {
+      "title": "WhatsApp bağlı değil",
+      "description": "Müşterilerinizle mesajlaşmak için bir WhatsApp numarası bağlayın.",
+      "action": "WhatsApp'ı kur"
+    },
+    "title": "Görüşmeler",
+    "searchPlaceholder": "Görüşmelerde ara",
+    "noSearchResults": "Aramanızla eşleşen görüşme yok.",
+    "compose": {
+      "newMessage": "Yeni mesaj",
+      "title": "Yeni WhatsApp mesajı",
+      "searchPlaceholder": "Müşteri ara",
+      "noMatches": "Aramanızla eşleşen müşteri yok.",
+      "noRecipients": "Henüz telefon numarası olan müşteri yok."
+    },
+    "windowBlocked": "Bu müşteri son 24 saatte yazmadı, bu yüzden WhatsApp şu anda mesaj iletmez. Size yazmasını isteyin ya da onaylı bir şablon kurun.",
+    "windowBlockedAction": "Şablon kur",
+    "windowBlockedPlaceholder": "Müşterinin ilk yazması bekleniyor"
+  },
+  "sendPhoto": {
+    "action": "WhatsApp'tan gönder",
+    "title": "Fotoğrafı WhatsApp'tan gönder",
+    "description": "Müşteri bu fotoğrafı WhatsApp sohbetinde alır.",
+    "captionPlaceholder": "Bir not ekleyin, örneğin fotoğrafta ne olduğunu",
+    "send": "Gönder",
+    "cancel": "İptal",
+    "sent": "Fotoğraf gönderildi",
+    "sentAsTemplate": "Fotoğraf onaylı şablonunuzla gönderildi",
+    "failed": "Fotoğraf gönderilemedi"
+  }
+}

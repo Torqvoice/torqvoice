@@ -46,6 +46,7 @@
     "maintenance": "Predicted Maintenance",
     "reminders": "Upcoming Reminders",
     "inspections": "Inspections",
+    "serviceRequests": "Service Requests",
     "quoteRequests": "Quote Requests",
     "quoteResponses": "Quote Responses",
     "sms": "Recent Messages",
@@ -68,6 +69,7 @@
     "active": "Active",
     "dismissedTab": "Dismissed",
     "noActive": "No vehicles currently due for service.",
+    "noDismissed": "No dismissed vehicles.",
     "dismissedOn": "Dismissed {date}",
     "restore": "Restore",
     "settingsAriaLabel": "Maintenance settings",
@@ -95,6 +97,11 @@
     "completed": "Completed",
     "itemCount": "{inspected}/{total} items",
     "noData": "No inspections."
+  },
+  "serviceRequests": {
+    "title": "Service Requests",
+    "description": "Booking requests from the customer portal",
+    "noData": "No pending service requests."
   },
   "quoteRequests": {
     "title": "Quote Requests",

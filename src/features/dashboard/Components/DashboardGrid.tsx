@@ -8,11 +8,20 @@ import { Skeleton } from '@/components/ui/skeleton'
 import {
   CARD_MIN_H,
   CARD_MIN_W,
+  COLLAPSED_CARD_H,
+  DEFAULT_LAYOUT,
   GRID_COLS,
   GRID_MARGIN,
   GRID_ROW_HEIGHT,
+  gridHeightPx,
   type CardLayout,
 } from '../dashboard-grid-config'
+
+/** Pixels gained or lost by changing a card's height by one grid row. */
+const ROW_STEP = GRID_ROW_HEIGHT + GRID_MARGIN[1]
+
+/** Long enough for the grid's 200ms height transition to finish first. */
+const SETTLE_MS = 260
 
 /**
  * The dashboard's 12-column drag/resize grid (react-grid-layout v2).
@@ -20,6 +29,19 @@ import {
  * through `onCardsCommit` when the user rearranges or resizes in edit mode.
  * Below the lg breakpoint the grid renders a compacted single column and is
  * never interactive.
+ *
+ * Cards are drawn no taller than they need to be. A stored height is a
+ * ceiling, not a target: once the grid has settled, a card takes the rows
+ * its content actually needs, and takes more back if that content grows.
+ * `collapsedIds` covers the one case measurement cannot see — an empty
+ * state fills its box by design, so it measures as exactly full — by
+ * dropping those cards straight to COLLAPSED_CARD_H.
+ *
+ * Both are display-only and neither pauses in edit mode, so opening it
+ * never makes the page jump. Both also stop the moment the user pulls a
+ * card's resize handle: that card is pinned from then on and keeps the
+ * height they gave it, since a fitting pass that quietly undoes a resize
+ * reads as a broken handle.
  */
 export function DashboardGrid({
   cards,
@@ -27,12 +49,15 @@ export function DashboardGrid({
   editing,
   onCardsCommit,
   cardNodes,
+  collapsedIds = [],
 }: {
   cards: Record<string, CardLayout>
   visibleIds: string[]
   editing: boolean
   onCardsCommit: (cards: Record<string, CardLayout>) => void
   cardNodes: Partial<Record<string, ReactNode>>
+  /** Ids of cards that currently have no rows to show. */
+  collapsedIds?: string[]
 }) {
   const { width, containerRef, mounted } = useContainerWidth()
   const [breakpoint, setBreakpoint] = useState('lg')
@@ -49,9 +74,59 @@ export function DashboardGrid({
   }, [mounted, width, ready])
   const interactive = editing && breakpoint === 'lg'
 
+  const collapsed = new Set(collapsedIds)
+  /** Heights measurement has settled on, keyed by card id. */
+  const [fitted, setFitted] = useState<Record<string, number>>({})
+
+  /** The height a card is actually drawn at, which is rarely its stored one. */
+  const drawnHeight = (id: string) => {
+    const card = cards[id]
+    if (card.pinH) return card.h
+    if (collapsed.has(id)) return Math.min(card.h, COLLAPSED_CARD_H)
+    return Math.min(card.h, fitted[id] ?? card.h)
+  }
+
+  // Measure once the grid has stopped moving. The answer is absolute rather
+  // than a nudge in one direction, so a card lands on its height in a single
+  // pass; returning the previous state unchanged ends the loop, since
+  // `fitted` is what re-runs this.
+  const idsKey = visibleIds.join('|')
+  const collapsedKey = collapsedIds.join('|')
+  useEffect(() => {
+    if (!ready || editing) return
+    const timer = setTimeout(() => {
+      const root = containerRef.current
+      if (!root) return
+      setFitted((prev) => {
+        const next = { ...prev }
+        let changed = false
+        for (const id of visibleIds) {
+          const stored = cards[id]
+          if (!stored || stored.pinH || collapsed.has(id)) continue
+          const wrap = root.querySelector<HTMLElement>(`[data-card-id="${CSS.escape(id)}"]`)
+          const scroller = wrap && contentRegion(wrap)
+          if (!scroller) continue
+          const current = prev[id] ?? stored.h
+          const needed = neededRows(wrap, scroller)
+          if (needed === null) continue
+          const want = Math.max(CARD_MIN_H, Math.min(stored.h, needed))
+          if (want !== current) {
+            next[id] = want
+            changed = true
+          }
+        }
+        return changed ? next : prev
+      })
+    }, SETTLE_MS)
+    return () => clearTimeout(timer)
+    // Keyed on joined ids rather than the arrays themselves, so a parent
+    // re-render does not restart the timer before it can fire.
+  }, [ready, editing, idsKey, collapsedKey, cards, fitted])
+
   const layout: Layout = visibleIds.map((id) => ({
     i: id,
     ...cards[id],
+    h: drawnHeight(id),
     minW: CARD_MIN_W,
     minH: CARD_MIN_H,
   }))
@@ -66,8 +141,21 @@ export function DashboardGrid({
       const id = item.i
       const prev = merged[id]
       if (!prev) continue
-      if (prev.x !== item.x || prev.y !== item.y || prev.w !== item.w || prev.h !== item.h) {
-        merged[id] = { x: item.x, y: item.y, w: item.w, h: item.h }
+      // A card is drawn at its fitted height, not its stored one. Coming
+      // back at exactly that height means nothing was resized, so keep what
+      // is stored; any other value is the user having pulled the handle,
+      // which both sets the height and pins it against further fitting.
+      const resized = item.h !== drawnHeight(id)
+      const h = resized ? item.h : prev.h
+      const pinH = prev.pinH || resized || undefined
+      if (
+        prev.x !== item.x ||
+        prev.y !== item.y ||
+        prev.w !== item.w ||
+        prev.h !== h ||
+        prev.pinH !== pinH
+      ) {
+        merged[id] = { x: item.x, y: item.y, w: item.w, h, ...(pinH ? { pinH } : {}) }
         changed = true
       }
     }
@@ -78,10 +166,16 @@ export function DashboardGrid({
     <div ref={containerRef}>
       {!ready && (
         // Placeholder mirroring the default two-column card layout while the
-        // container width settles; the real grid mounts only at stable width
+        // container width settles; the real grid mounts only at stable width.
+        // Height comes from the grid model, so the skeleton and the card that
+        // replaces it are the same size and nothing reflows on mount.
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-[480px] rounded-xl" />
+            <Skeleton
+              key={i}
+              className="rounded-xl"
+              style={{ height: gridHeightPx(DEFAULT_LAYOUT.cards.maintenance.h) }}
+            />
           ))}
         </div>
       )}
@@ -104,7 +198,7 @@ export function DashboardGrid({
           onLayoutChange={handleLayoutChange}
         >
           {visibleIds.map((id) => (
-            <div key={id} className="dashboard-card-wrap relative">
+            <div key={id} data-card-id={id} className="dashboard-card-wrap relative">
               {cardNodes[id]}
               {editing && (
                 // Wiggle-mode overlay: makes the whole tile the drag surface
@@ -117,4 +211,53 @@ export function DashboardGrid({
       )}
     </div>
   )
+}
+
+/**
+ * Grid rows this card needs to show everything it has, or null if that
+ * cannot be worked out.
+ *
+ * Deliberately not `scrollHeight`: that never reports less than the box it
+ * is in, so a card with room to spare looks exactly like one filled to the
+ * brim. The content is measured from the top of its first child to the
+ * bottom of its last instead, which also picks up the margins between them,
+ * and the card's fixed furniture — header, tabs, footer — is added on top.
+ *
+ * An empty state is the case this still cannot see: it fills its box on
+ * purpose, so it measures as exactly full. Those cards come through
+ * `collapsedIds` instead.
+ */
+function neededRows(wrap: HTMLElement, scroller: HTMLElement): number | null {
+  const card = wrap.firstElementChild
+  if (!card) return null
+
+  let furniturePx = 0
+  for (const part of card.children) {
+    if (part !== scroller) furniturePx += part.getBoundingClientRect().height
+  }
+
+  const style = getComputedStyle(scroller)
+  const paddingPx = Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom)
+  const kids = scroller.children
+  const contentPx =
+    kids.length === 0
+      ? 0
+      : kids[kids.length - 1].getBoundingClientRect().bottom - kids[0].getBoundingClientRect().top
+
+  // h rows measure h * GRID_ROW_HEIGHT + (h - 1) * marginY pixels.
+  const needed = furniturePx + paddingPx + contentPx + GRID_MARGIN[1]
+  return Math.ceil(needed / ROW_STEP)
+}
+
+/**
+ * The scrolling region of whichever card markup this tile holds: AppCard
+ * names its own, and legacy Card markup leaves it as the last child that is
+ * not a footer — the same rule the grid's CSS uses to pick the scroll area.
+ */
+function contentRegion(wrap: HTMLElement): HTMLElement | null {
+  const named = wrap.querySelector<HTMLElement>('[data-slot="app-card-content"]')
+  if (named) return named
+  const last = wrap.firstElementChild?.lastElementChild
+  if (!(last instanceof HTMLElement)) return null
+  return last.dataset.slot === 'app-card-footer' ? null : last
 }

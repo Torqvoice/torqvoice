@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Envie e receba mensagens de WhatsApp com seus clientes.",
+    "helpLink": "Configurar {provider}",
+    "save": "Salvar configurações do WhatsApp",
+    "saved": "Configurações do WhatsApp salvas",
+    "saveError": "Não foi possível salvar as configurações do WhatsApp",
+    "enable": {
+      "label": "Ativar WhatsApp",
+      "hint": "Ative quando as credenciais do provedor estiverem preenchidas.",
+      "disabledInfo": "Ative o WhatsApp para configurar provedor, número e modelo."
+    },
+    "provider": {
+      "label": "Provedor",
+      "hint": "Quem fornece seu número de WhatsApp. Ao trocar, as credenciais do anterior são mantidas."
+    },
+    "from": {
+      "label": "Seu número de WhatsApp",
+      "hint": "O número que os clientes veem, em formato internacional."
+    },
+    "secret": {
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "stored": "Salvo e oculto. Digite um novo valor para substituir."
+    },
+    "webhook": {
+      "label": "URL do webhook",
+      "description": "Cole isto no seu provedor para que as mensagens recebidas cheguem ao Torqvoice.",
+      "copy": "Copiar URL do webhook",
+      "copied": "URL do webhook copiada",
+      "saveFirst": "Salve estas configurações antes de o provedor verificar a URL. A checagem usa o que está salvo aqui, então um formulário não salvo falha."
+    },
+    "template": {
+      "title": "Modelo de mensagem",
+      "description": "Usado quando você escreve para um cliente que não falou com você recentemente.",
+      "windowExplainer": "O WhatsApp só permite texto livre por 24 horas após a última mensagem do cliente. Fora dessa janela, sua mensagem precisa sair como um modelo aprovado pelo provedor.",
+      "nameLabel": "Nome do modelo",
+      "nameHint": "O nome do modelo aprovado, ou o Content SID em provedores que usam um.",
+      "languageLabel": "Idioma do modelo",
+      "languageHint": "O código de idioma em que o modelo foi aprovado, por exemplo pt_BR.",
+      "variablesLabel": "Valores do modelo, em ordem",
+      "variablesHint": "Escolha os valores que preenchem os espaços numerados do seu modelo, na mesma ordem. Deixe vazio se o modelo não tiver espaços.",
+      "tokens": {
+        "customer": "nome do cliente",
+        "vehicle": "ano, marca e modelo",
+        "plate": "placa",
+        "message": "o que você digitar",
+        "workshop": "nome da sua oficina",
+        "photo": "a foto anexada"
+      },
+      "variablesEmpty": "Ainda sem valores. Adicione abaixo, na ordem que seu modelo espera.",
+      "variablesRemove": "Remover {name}",
+      "mediaUrlLabel": "URL de mídia para o seu modelo",
+      "mediaUrlHint": "Cole isto no campo de mídia do modelo e troque n pelo número do valor da foto.",
+      "mediaUrlCopy": "Copiar URL de mídia",
+      "mediaUrlCopied": "URL de mídia copiada",
+      "mediaUrlSample": "Como valor de exemplo no provedor, use: sample",
+      "textTitle": "Mensagens de texto",
+      "textDescription": "Usado quando você escreve sem foto: em Mensagens, na aba WhatsApp de um cliente ou em uma mensagem agendada.",
+      "mediaTitle": "Mensagens com foto",
+      "mediaDescription": "Usado pelo botão Enviar pelo WhatsApp nas fotos de uma ordem de serviço, e sempre que você anexa uma foto em uma conversa.",
+      "textMissing": "Não configurado: você não pode escrever para um cliente que não escreve há 24 horas.",
+      "mediaMissing": "Não configurado: você não pode enviar fotos para um cliente que não escreve há 24 horas.",
+      "whatIsIt": "Um modelo é uma mensagem fixa que você escreve uma vez e o {provider} aprova: o texto nunca muda, você só preenche os espaços numerados. Escreva no console deles e cole aqui o identificador.",
+      "whyTwo": "São necessários dois porque o WhatsApp fixa o tipo de mídia na aprovação. Um aprovado com foto só pode levar fotos, e um aprovado como texto nunca levará.",
+      "exampleLabel": "Corpo de exemplo para escrever no console do provedor",
+      "exampleTextValues": "Preencha com: customer, message. Escreva no idioma que seus clientes leem.",
+      "exampleMediaValues": "Preencha com: customer, message e photo para a URL de mídia. Escreva no idioma que seus clientes leem.",
+      "exampleMediaValuesHeader": "Preencha com: customer, message. A foto é anexada automaticamente, então não precisa de lacuna própria. Escreva no idioma que seus clientes leem."
+    },
+    "test": {
+      "send": "Enviar teste",
+      "sent": "Mensagem de teste enviada",
+      "failed": "Não foi possível enviar a mensagem de teste",
+      "hint": "Mande uma mensagem para você mesmo no WhatsApp antes, senão o teste exige um modelo aprovado."
+    },
+    "disconnect": {
+      "action": "Desconectar WhatsApp",
+      "hint": "Remove as credenciais do Torqvoice. Suas conversas são mantidas.",
+      "done": "WhatsApp desconectado",
+      "title": "Desconectar"
+    },
+    "savedIncomplete": "Salvo. Ainda falta para poder enviar: {fields}",
+    "fieldStillNeeded": "Ainda necessário para enviar",
+    "steps": {
+      "openProvider": "Abrir {provider}",
+      "openNumber": "Encontrar seu número de remetente",
+      "openToken": "Criar um token permanente",
+      "consolePath": "No Meta, vá para:",
+      "provider": {
+        "title": "Escolha o provedor e o número",
+        "description": "O Twilio começa mais rápido e cuida da Meta para você. A Meta Cloud API custa menos, mas a verificação da empresa é você quem faz. Informe o número que os clientes verão, em formato internacional."
+      },
+      "credentials": {
+        "title": "Informe suas credenciais",
+        "description": "Copie cada valor do {provider}. Cada campo diz onde encontrá-lo. Salve quando tiver; dá para voltar depois pelo resto."
+      },
+      "webhook": {
+        "title": "Registre o webhook",
+        "description": "Cole este endereço no {provider} para que as mensagens dos clientes cheguem ao Torqvoice. Salve esta página antes: o endereço é conferido com o que está salvo aqui.",
+        "open": "Abrir configurações de webhook do {provider}",
+        "recheck": "Verificar de novo",
+        "waiting": "Nada chegou a este endereço ainda. Ele fica verde assim que o provedor o verificar ou entregar uma mensagem.",
+        "seen": "Seu provedor alcançou este endereço. As mensagens recebidas aparecerão em Mensagens."
+      },
+      "templates": {
+        "title": "Aprove seus modelos",
+        "description": "Só é preciso para escrever primeiro, fora da janela de 24 horas. Pode pular agora e voltar quando as mensagens funcionarem.",
+        "open": "Abrir modelos do {provider}"
+      },
+      "test": {
+        "title": "Envie uma mensagem de teste",
+        "description": "Mande primeiro uma mensagem do seu celular para o seu número de WhatsApp. Isso prova que o webhook funciona e abre uma janela de 24 horas, então a resposta não precisa de modelo."
+      },
+      "back": "Voltar",
+      "continue": "Continuar"
+    },
+    "register": {
+      "title": "Registre o número na Meta",
+      "description": "A Meta exige um registro separado depois que o número é verificado. Escolha um PIN de seis dígitos, ou use o PIN de verificação em duas etapas se já houver um. Anote: você precisará dele para mover ou registrar o número de novo.",
+      "action": "Registrar número",
+      "done": "Número registrado",
+      "failed": "Não foi possível registrar o número",
+      "limit": "A Meta permite 10 tentativas de registro por número em 72 horas. Um PIN errado conta, então confira antes."
+    }
+  },
+  "messages": {
+    "featureName": "Mensagens WhatsApp",
+    "featureDescription": "Envie e receba mensagens de WhatsApp, incluindo fotos de peças, direto do Torqvoice.",
+    "noThreads": "Ainda não há conversas",
+    "noThreadsHint": "As mensagens aparecem aqui assim que um cliente escrever para o seu número de WhatsApp, ou você para ele.",
+    "selectThread": "Escolha uma conversa",
+    "backToThreads": "Conversas",
+    "empty": "Ainda não há nada aqui.",
+    "placeholder": "Escreva uma mensagem",
+    "send": "Enviar",
+    "sendFailed": "Não foi possível enviar a mensagem",
+    "attach": "Anexar uma foto",
+    "attachFailed": "Não foi possível anexar a foto",
+    "removeAttachment": "Remover anexo",
+    "attachment": "Anexo",
+    "delete": "Excluir",
+    "deleteFailed": "Não foi possível excluir a mensagem",
+    "sentAsTemplate": "modelo",
+    "sentAsTemplateNotice": "Enviado como seu modelo aprovado, porque o cliente não escreve há mais de 24 horas.",
+    "windowClosed": "O cliente não escreve há mais de 24 horas, então isto sairá como seu modelo aprovado.",
+    "unknownNumber": "Este número ainda não pertence a nenhum cliente. Cadastre-o como cliente para responder.",
+    "notConfigured": {
+      "title": "O WhatsApp não está conectado",
+      "description": "Conecte um número de WhatsApp para trocar mensagens com seus clientes.",
+      "action": "Configurar WhatsApp"
+    },
+    "title": "Conversas",
+    "searchPlaceholder": "Buscar conversas",
+    "noSearchResults": "Nenhuma conversa corresponde à sua busca.",
+    "compose": {
+      "newMessage": "Nova mensagem",
+      "title": "Nova mensagem de WhatsApp",
+      "searchPlaceholder": "Buscar clientes",
+      "noMatches": "Nenhum cliente corresponde à sua busca.",
+      "noRecipients": "Ainda não há clientes com telefone."
+    },
+    "windowBlocked": "Este cliente não escreve há mais de 24 horas, então o WhatsApp não vai entregar a mensagem agora. Peça que ele mande uma, ou configure um modelo aprovado.",
+    "windowBlockedAction": "Configurar um modelo",
+    "windowBlockedPlaceholder": "Aguardando o cliente escrever primeiro"
+  },
+  "sendPhoto": {
+    "action": "Enviar pelo WhatsApp",
+    "title": "Enviar foto pelo WhatsApp",
+    "description": "O cliente recebe esta foto na conversa de WhatsApp.",
+    "captionPlaceholder": "Adicione uma observação, por exemplo o que a foto mostra",
+    "send": "Enviar",
+    "cancel": "Cancelar",
+    "sent": "Foto enviada",
+    "sentAsTemplate": "Foto enviada como seu modelo aprovado",
+    "failed": "Não foi possível enviar a foto"
+  }
+}

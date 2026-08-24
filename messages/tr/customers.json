@@ -38,7 +38,8 @@
       "messages": "Mesajlar",
       "requests": "Talepler ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Plaka",
@@ -68,7 +69,10 @@
     "customerCreated": "Müşteri oluşturuldu",
     "saveError": "Müşteri kaydedilemedi",
     "customerNumber": "Müşteri no",
-    "customerNumberAuto": "Oto"
+    "customerNumberAuto": "Oto",
+    "sectionContact": "İletişim",
+    "sectionBilling": "Faturalama",
+    "addScannedVehicle": "{vehicle} aracını ekle"
   },
   "serviceRequests": {
     "statusNew": "Yeni",

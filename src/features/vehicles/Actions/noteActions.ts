@@ -70,7 +70,7 @@ export async function createNote(input: unknown) {
         action: 'note.create',
         entity: 'Note',
         entityId: result.id,
-        message: `Created note on vehicle ${result.vehicleId}`,
+        details: { key: 'note_create', params: { vehicleId: result.vehicleId } },
         metadata: { noteId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -138,7 +138,7 @@ export async function deleteNote(noteId: string) {
         action: 'note.delete',
         entity: 'Note',
         entityId: result.noteId,
-        message: `Deleted note ${result.noteId}`,
+        details: { key: 'note_delete', params: { id: result.noteId } },
         metadata: { noteId: result.noteId },
       }),
     }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { markVersionSeen } from "@/features/users/Actions/versionActions";
+import { BANNER_PRIORITY, useBannerSlot } from "./banner-slot";
 
 /**
  * One-time "the app was updated" notice, shown when the running APP_VERSION
@@ -38,7 +39,11 @@ export function UpdateBanner({
     }
   }, [neverSeeded, currentVersion]);
 
-  if (!show) return null;
+  // Last in the queue. Interesting, never urgent, and it waits behind an
+  // outage notice rather than sitting under one.
+  const mine = useBannerSlot("update", BANNER_PRIORITY.update, show);
+
+  if (!show || !mine) return null;
 
   const acknowledge = () => {
     setDismissed(true);

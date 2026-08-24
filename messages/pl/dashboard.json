@@ -46,6 +46,7 @@
     "maintenance": "Przewidywana konserwacja",
     "reminders": "Nadchodzące przypomnienia",
     "inspections": "Przeglądy",
+    "serviceRequests": "Zgłoszenia serwisowe",
     "quoteRequests": "Zapytania o wycenę",
     "quoteResponses": "Odpowiedzi na wyceny",
     "sms": "Ostatnie wiadomości",
@@ -68,6 +69,7 @@
     "active": "Aktywne",
     "dismissedTab": "Odrzucone",
     "noActive": "Żaden pojazd nie wymaga obecnie serwisu.",
+    "noDismissed": "Brak odrzuconych pojazdów.",
     "dismissedOn": "Odrzucono {date}",
     "restore": "Przywróć",
     "settingsAriaLabel": "Maintenance settings",
@@ -95,6 +97,11 @@
     "completed": "Ukończone",
     "itemCount": "{inspected}/{total} pozycji",
     "noData": "Brak inspekcji."
+  },
+  "serviceRequests": {
+    "title": "Zgłoszenia serwisowe",
+    "description": "Prośby o termin z portalu klienta",
+    "noData": "Brak oczekujących zgłoszeń serwisowych."
   },
   "quoteRequests": {
     "title": "Zapytania o wycenę",

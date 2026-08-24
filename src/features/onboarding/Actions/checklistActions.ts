@@ -154,7 +154,7 @@ export async function removeSampleData() {
     audit: () => ({
       action: "organization.sampleDataRemove",
       entity: "Organization",
-      message: "Removed onboarding sample data",
+      details: { key: "organization_sampleDataRemove" },
     }),
   });
 }

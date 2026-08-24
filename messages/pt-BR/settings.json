@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Hotel de pneus",
         "description": "Armazenagem sazonal de pneus"
+      },
+      "providers": {
+        "title": "Provedores",
+        "description": "E-mail, SMS, WhatsApp e Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Modelos de inspeção, inspeções e resultados",
     "optAuditLogs": "Registros de auditoria",
     "optAuditLogsDesc": "Histórico de atividades e alterações",
-    "optSmsMessages": "Mensagens SMS",
-    "optSmsMessagesDesc": "Mensagens SMS enviadas e recebidas",
+    "optSmsMessages": "Mensagens",
+    "optSmsMessagesDesc": "Mensagens SMS, WhatsApp e Telegram enviadas e recebidas",
     "optScheduledMessages": "Mensagens agendadas",
     "optScheduledMessagesDesc": "Mensagens na fila e recorrentes aguardando envio",
     "optNotifications": "Notificações",
@@ -980,7 +984,9 @@
       "supportAction": "fale com nossa equipe de suporte."
     },
     "optTireHotel": "Hotel de pneus",
-    "optTireHotelDesc": "Jogos armazenados, prateleiras, preparação e contratos de armazenagem"
+    "optTireHotelDesc": "Jogos armazenados, prateleiras, preparação e contratos de armazenagem",
+    "optWorkshopConfig": "Configuração da oficina",
+    "optWorkshopConfigDesc": "Modelos de mão de obra, funções, webhooks e relatórios agendados"
   },
   "license": {
     "title": "Licença marca branca",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Preços da preparação",
     "prepHint": "Quanto custa cada tipo de preparação. Deixe em branco e nunca é cobrado, que é o que quer a oficina que inclui a lavagem na armazenagem. Os com preço entram sozinhos no orçamento e na ordem.",
     "prepNotCharged": "não cobrado"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Configurações de e-mail",
+        "description": "Configure o envio SMTP para entregar faturas, orçamentos e avisos direto da sua oficina."
+      },
+      "sms": {
+        "feature": "Mensagens SMS",
+        "description": "Envie e receba SMS com seus clientes direto do Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Mensagens WhatsApp",
+        "description": "Envie e receba mensagens de WhatsApp, incluindo fotos de peças, direto do Torqvoice."
+      },
+      "telegram": {
+        "feature": "Mensagens Telegram",
+        "description": "Envie e receba mensagens do Telegram com seus clientes direto do Torqvoice."
+      }
+    }
   }
 }

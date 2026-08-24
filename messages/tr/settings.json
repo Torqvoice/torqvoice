@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Lastik oteli",
         "description": "Mevsimlik lastik saklama"
+      },
+      "providers": {
+        "title": "Sağlayıcılar",
+        "description": "E-posta, SMS, WhatsApp ve Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Denetim şablonları, denetimler ve sonuçlar",
     "optAuditLogs": "Denetim Günlükleri",
     "optAuditLogsDesc": "Etkinlik ve değişiklik geçmişi",
-    "optSmsMessages": "SMS Mesajları",
-    "optSmsMessagesDesc": "Gönderilen ve alınan SMS mesajları",
+    "optSmsMessages": "Mesajlar",
+    "optSmsMessagesDesc": "Gönderilen ve alınan SMS, WhatsApp ve Telegram mesajları",
     "optScheduledMessages": "Planlanmış mesajlar",
     "optScheduledMessagesDesc": "Sırada bekleyen ve tekrar eden, henüz gönderilmemiş mesajlar",
     "optNotifications": "Bildirimler",
@@ -980,7 +984,9 @@
       "supportAction": "destek ekibimizle iletişime geçin."
     },
     "optTireHotel": "Lastik oteli",
-    "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri"
+    "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri",
+    "optWorkshopConfig": "Atölye kurulumu",
+    "optWorkshopConfigDesc": "İşçilik şablonları, roller, webhook'lar ve zamanlanmış raporlar"
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Hazırlık fiyatları",
     "prepHint": "Her hazırlık türünün ücreti. Boş bırakırsanız hiç faturalandırılmaz; yıkamayı depolama ücretine dahil eden atölyeler için budur. Fiyatı olanlar teklife ve iş emrine kendiliğinden eklenir.",
     "prepNotCharged": "ücretlendirilmiyor"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-posta",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "E-posta ayarları",
+        "description": "Faturaların, tekliflerin ve bildirimlerin doğrudan atölyeden gitmesi için SMTP gönderimini ayarlayın."
+      },
+      "sms": {
+        "feature": "SMS mesajlaşma",
+        "description": "Müşterilerinizle SMS'i doğrudan Torqvoice üzerinden gönderip alın."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp mesajlaşma",
+        "description": "Parça fotoğrafları dahil WhatsApp mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
+      },
+      "telegram": {
+        "feature": "Telegram mesajlaşma",
+        "description": "Müşterilerinizle Telegram mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
+      }
+    }
   }
 }

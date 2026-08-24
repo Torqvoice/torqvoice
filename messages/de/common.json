@@ -80,5 +80,20 @@
     "installDescription": "Zum Home-Bildschirm hinzufügen für schnellen Zugriff",
     "enterFullscreen": "Vollbild",
     "exitFullscreen": "Vollbild beenden"
+  },
+  "broadcast": {
+    "dismiss": "Schließen",
+    "title": "Hinweis an alle",
+    "description": "Wird oben auf jeder Seite angezeigt, für alle, ob angemeldet oder nicht. Leer lassen für keinen Hinweis.",
+    "message": "Nachricht",
+    "level": "Dringlichkeit",
+    "post": "Hinweis veröffentlichen",
+    "clear": "Hinweis entfernen",
+    "levelInfo": "Information",
+    "levelWarning": "Warnung",
+    "levelCritical": "Kritisch",
+    "placeholder": "z. B. Wir haben Probleme mit unserer Serverinfrastruktur und arbeiten daran.",
+    "posted": "Hinweis veröffentlicht",
+    "cleared": "Hinweis entfernt"
   }
 }

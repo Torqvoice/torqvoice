@@ -88,7 +88,9 @@ export async function setTreatments(input: unknown) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_treatment.update',
-        message: `Updated prep work on tire set ${result.reference ?? result.id}`,
+        entity: 'TireSet',
+        entityId: result.id,
+        details: { key: 'tire_treatment_update', params: { ref: result.reference ?? result.id } },
         metadata: { added: result.added, removed: result.removed },
       }),
     }
@@ -132,8 +134,10 @@ export async function markTreatment(input: unknown) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_treatment.mark',
-        message: `Marked ${result.type} as ${result.status} on tire set ${result.reference ?? result.tireSetId}`,
-        metadata: { treatmentId: result.id },
+        entity: 'TireTreatment',
+        entityId: result.id,
+        details: { key: 'tire_treatment_mark', params: { type: result.type, status: result.status, ref: result.reference ?? result.tireSetId } },
+        metadata: { tireSetId: result.tireSetId },
       }),
     }
   )
@@ -163,7 +167,9 @@ export async function completeAllTreatments(tireSetId: string) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_treatment.complete_all',
-        message: `Completed ${result.count} prep job(s) on tire set ${result.reference ?? result.id}`,
+        entity: 'TireSet',
+        entityId: result.id,
+        details: { key: 'tire_treatment_complete_all', params: { count: result.count, ref: result.reference ?? result.id } },
       }),
     }
   )

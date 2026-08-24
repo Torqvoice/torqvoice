@@ -99,7 +99,10 @@ export async function sendSmsToCustomer(input: {
         action: 'sms.send',
         entity: 'SmsMessage',
         entityId: result.id,
-        message: `Sent SMS to ${result.customerName} (${result.customerPhone})`,
+        details: {
+          key: 'sms_send',
+          params: { name: result.customerName, phone: result.customerPhone },
+        },
         metadata: { messageId: result.id },
       }),
     }
@@ -145,6 +148,14 @@ export async function searchSmsRecipients(search?: string, limit = 30) {
 export async function getConversation(customerId: string, cursor?: string, limit: number = 50) {
   return withAuth(
     async ({ organizationId }) => {
+      // The view needs the person as well as the thread: their name for the
+      // header and their number to send to. Returning only messages left the
+      // caller to invent both.
+      const customer = await db.customer.findFirst({
+        where: { id: customerId, organizationId },
+        select: { name: true, phone: true },
+      })
+
       const messages = await db.smsMessage.findMany({
         where: {
           organizationId,
@@ -170,6 +181,8 @@ export async function getConversation(customerId: string, cursor?: string, limit
       return {
         messages: items.reverse(),
         nextCursor: hasMore ? items[items.length - 1]?.id : null,
+        customerName: customer?.name ?? '',
+        customerPhone: customer?.phone ?? null,
       }
     },
     {

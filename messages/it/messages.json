@@ -4,7 +4,10 @@
     "featureDescription": "Invia e ricevi messaggi SMS con i tuoi clienti direttamente da Torqvoice.",
     "tabs": {
       "inbox": "In arrivo",
-      "scheduled": "Pianificati"
+      "scheduled": "Pianificati",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "L'SMS non è configurato",
     "smsNotConfiguredHint": "Collega un provider SMS per inviare e ricevere messaggi qui. Le email pianificate funzionano comunque.",

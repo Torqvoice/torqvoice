@@ -38,7 +38,8 @@
       "messages": "Wiadomości",
       "requests": "Zlecenia ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Tablica",
@@ -68,7 +69,10 @@
     "customerCreated": "Klient utworzony",
     "saveError": "Nie udało się zapisać klienta",
     "customerNumber": "Nr klienta",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "sectionContact": "Kontakt",
+    "sectionBilling": "Rozliczenia",
+    "addScannedVehicle": "Dodaj pojazd {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nowe",

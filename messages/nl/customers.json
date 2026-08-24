@@ -38,7 +38,8 @@
       "messages": "Berichten",
       "requests": "Aanvragen ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Kenteken",
@@ -68,7 +69,10 @@
     "customerCreated": "Klant aangemaakt",
     "saveError": "Opslaan van klant mislukt",
     "customerNumber": "Klantnr.",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "sectionContact": "Contact",
+    "sectionBilling": "Facturatie",
+    "addScannedVehicle": "Voertuig {vehicle} toevoegen"
   },
   "serviceRequests": {
     "statusNew": "Nieuw",

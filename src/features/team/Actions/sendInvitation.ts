@@ -108,7 +108,7 @@ export async function sendInvitation(input: unknown) {
     audit: ({ result }) => ({
       action: "team.sendInvitation",
       entity: "TeamInvitation",
-      message: `Sent invitation to ${result.email} as ${result.role}`,
+      details: { key: "team_sendInvitation", params: { email: result.email, role: result.role } },
       metadata: { email: result.email, role: result.role },
     }),
   });

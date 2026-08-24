@@ -7,7 +7,8 @@
       "email": "E-posta",
       "sms": "SMS",
       "telegram": "Telegram",
-      "in_app": "Uygulama içi not"
+      "in_app": "Uygulama içi not",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Tekrar",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Planla",
     "scheduled": "Mesaj planlandı",
     "updated": "Planlanmış mesaj güncellendi",
-    "saveError": "Mesaj kaydedilemedi"
+    "saveError": "Mesaj kaydedilemedi",
+    "whatsappNeedsTemplate": "Bu mesaj müşterinin 24 saatlik penceresi kapandıktan çok sonra gidecek ve bir WhatsApp metin şablonu kurulu değil, bu yüzden gönderimde başarısız olur. Ayarlar > Sağlayıcılar > WhatsApp altından bir tane kurun."
   },
   "list": {
     "scheduleMessage": "Mesaj planla",

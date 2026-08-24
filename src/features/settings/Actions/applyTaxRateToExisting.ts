@@ -124,7 +124,7 @@ export async function applyTaxRateToExisting() {
       audit: ({ result }) => ({
         action: "settings.applyTaxRate",
         entity: "Organization",
-        message: `Applied ${result.taxRate}% tax to ${result.serviceRecordsUpdated} service records and ${result.quotesUpdated} quotes`,
+        details: { key: "settings_applyTaxRate", params: { rate: result.taxRate, records: result.serviceRecordsUpdated, quotes: result.quotesUpdated } },
         metadata: {
           taxRate: result.taxRate,
           serviceRecordsUpdated: result.serviceRecordsUpdated,
@@ -371,7 +371,7 @@ export async function convertRecordsToInclusive() {
       audit: ({ result }) => ({
         action: "settings.convertToInclusive",
         entity: "Organization",
-        message: `Converted ${result.serviceRecordsUpdated} service records and ${result.quotesUpdated} quotes to inclusive tax mode`,
+        details: { key: "settings_convertToInclusive", params: { records: result.serviceRecordsUpdated, quotes: result.quotesUpdated } },
         metadata: result,
       }),
     },
@@ -538,7 +538,7 @@ export async function convertRecordsToExclusive() {
       audit: ({ result }) => ({
         action: "settings.convertToExclusive",
         entity: "Organization",
-        message: `Converted ${result.serviceRecordsUpdated} service records and ${result.quotesUpdated} quotes to exclusive tax mode`,
+        details: { key: "settings_convertToExclusive", params: { records: result.serviceRecordsUpdated, quotes: result.quotesUpdated } },
         metadata: result,
       }),
     },

@@ -46,6 +46,7 @@
     "maintenance": "Manutenção Prevista",
     "reminders": "Lembretes Próximos",
     "inspections": "Inspeções",
+    "serviceRequests": "Solicitações de serviço",
     "quoteRequests": "Solicitações de Orçamento",
     "quoteResponses": "Respostas de Orçamento",
     "sms": "Mensagens Recentes",
@@ -68,6 +69,7 @@
     "active": "Ativos",
     "dismissedTab": "Dispensados",
     "noActive": "Nenhum veículo precisa de manutenção no momento.",
+    "noDismissed": "Nenhum veículo dispensado.",
     "dismissedOn": "Dispensado em {date}",
     "restore": "Restaurar",
     "settingsAriaLabel": "Maintenance settings",
@@ -95,6 +97,11 @@
     "completed": "Concluído",
     "itemCount": "{inspected}/{total} itens",
     "noData": "Nenhuma inspeção."
+  },
+  "serviceRequests": {
+    "title": "Solicitações de serviço",
+    "description": "Pedidos de agendamento pelo portal do cliente",
+    "noData": "Nenhuma solicitação de serviço pendente."
   },
   "quoteRequests": {
     "title": "Solicitações de Orçamento",

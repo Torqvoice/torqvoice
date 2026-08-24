@@ -37,7 +37,8 @@
     "skip": "Hopp over",
     "send": "Send",
     "sent": "Statusrapport sendt",
-    "failed": "Kunne ikke sende statusrapport"
+    "failed": "Kunne ikke sende statusrapport",
+    "notSent": "Ikke sendt"
   },
   "view": {
     "title": "Kjøretøyets statusrapport",

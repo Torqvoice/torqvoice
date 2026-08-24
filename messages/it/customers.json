@@ -38,7 +38,8 @@
       "messages": "Messaggi",
       "requests": "Richieste ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Targa",
@@ -68,7 +69,10 @@
     "customerCreated": "Cliente creato",
     "saveError": "Salvataggio del cliente non riuscito",
     "customerNumber": "N. cliente",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "sectionContact": "Contatto",
+    "sectionBilling": "Fatturazione",
+    "addScannedVehicle": "Aggiungi il veicolo {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nuova",

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
+import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
+import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
@@ -175,6 +177,17 @@ async function importServiceRecordTree(
     })
   }
 
+  // Status reports. They cascade from the service record, so a restore
+  // without them loses every report the workshop sent.
+  await restoreRows(
+    'status reports',
+    (rows) => tx.statusReport.createMany({ data: rows as never }),
+    sr.statusReports,
+    {
+      organizationId: opts.organizationId,
+    }
+  )
+
   // Payments
   const payments = sr.payments as Record<string, unknown>[] | undefined
   if (payments?.length) {
@@ -193,21 +206,52 @@ async function importServiceRecordTree(
   }
 }
 
+/**
+ * Writes rows back with the ids they had.
+ *
+ * Keeping ids is what lets everything else in the file keep pointing at them,
+ * and it is why a table that is restored must also be cleared first.
+ */
+async function restoreRows(
+  what: string,
+  create: (rows: Record<string, unknown>[]) => Promise<unknown>,
+  rows: unknown,
+  override: Record<string, unknown> = {}
+) {
+  const list = rows as Record<string, unknown>[] | undefined
+  if (!list?.length) return
+
+  try {
+    await create(list.map((row) => columnsOf(row, override)))
+  } catch (error) {
+    // A restore rolls back as a whole, so the only thing left to salvage is
+    // knowing which part of the file could not be read back.
+    const reason = error instanceof Error ? error.message : String(error)
+    throw new Error(`Could not restore ${what}: ${reason}`)
+  }
+}
+
 async function restoreFiles(zip: JSZip, organizationId: string) {
   const uploadsDir = path.join(process.cwd(), 'data', 'uploads', organizationId)
-
-  // Clear existing uploads for this org
-  try {
-    await rm(uploadsDir, { recursive: true, force: true })
-  } catch {
-    // Directory may not exist
-  }
-
-  const allowedCategories = ['logos', 'vehicles', 'inventory', 'services', 'quotes']
 
   const fileEntries = Object.keys(zip.files).filter(
     (name) => !zip.files[name].dir && (name.startsWith('files/') || name.startsWith('uploads/'))
   )
+
+  // Clear only the folders this backup can refill. Wiping the lot took the
+  // portal background and the tire photos with it, and no backup carried
+  // either of them back.
+  const carried = new Set(
+    fileEntries.map((name) => name.split('/')[1]).filter((category) => Boolean(category))
+  )
+  for (const category of carried) {
+    if (!UPLOAD_CATEGORIES.includes(category)) continue
+    try {
+      await rm(path.join(uploadsDir, category), { recursive: true, force: true })
+    } catch {
+      // Folder may not exist yet.
+    }
+  }
 
   for (const filePath of fileEntries) {
     // Supports both formats:
@@ -219,7 +263,7 @@ async function restoreFiles(zip: JSZip, organizationId: string) {
     const category = parts[1]
     const filename = parts[2]
 
-    if (!allowedCategories.includes(category)) continue
+    if (!UPLOAD_CATEGORIES.includes(category)) continue
 
     // Prevent directory traversal
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) continue
@@ -285,43 +329,47 @@ export async function POST(request: NextRequest) {
 
   try {
     await db.$transaction(async (tx) => {
-      // 1. Delete all existing organization data (cascade handles children)
-      await tx.notification.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.smsMessage.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.auditLog.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.inspection.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.inspectionTemplate.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.quote.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.vehicle.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.customFieldDefinition.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.inventoryPart.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.technician.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.customer.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
-      await tx.appSetting.deleteMany({
-        where: { organizationId: ctx.organizationId },
-      })
+      const organizationId = ctx.organizationId
+
+      // 1. Clear what this backup can put back, and nothing else.
+      //
+      // A selective export omits the keys it was not asked for. Clearing a
+      // table the file says nothing about deletes records it cannot restore,
+      // which is how importing a customers-only export used to wipe every
+      // vehicle in the workshop.
+      const clearable: Record<string, () => Promise<unknown>> = {
+        Notification: () => tx.notification.deleteMany({ where: { organizationId } }),
+        SmsMessage: () => tx.smsMessage.deleteMany({ where: { organizationId } }),
+        WhatsappMessage: () => tx.whatsappMessage.deleteMany({ where: { organizationId } }),
+        TelegramMessage: () => tx.telegramMessage.deleteMany({ where: { organizationId } }),
+        ScheduledMessage: () => tx.scheduledMessage.deleteMany({ where: { organizationId } }),
+        AuditLog: () => tx.auditLog.deleteMany({ where: { organizationId } }),
+        Inspection: () => tx.inspection.deleteMany({ where: { organizationId } }),
+        InspectionTemplate: () => tx.inspectionTemplate.deleteMany({ where: { organizationId } }),
+        Quote: () => tx.quote.deleteMany({ where: { organizationId } }),
+        TireSet: () => tx.tireSet.deleteMany({ where: { organizationId } }),
+        TireWarehouse: () => tx.tireWarehouse.deleteMany({ where: { organizationId } }),
+        // Counter sales hang off a customer rather than a vehicle, so nothing
+        // else deletes them and a second restore used to collide with them.
+        ServiceRecord: () =>
+          tx.serviceRecord.deleteMany({ where: { organizationId, vehicleId: null } }),
+        Reminder: () => tx.reminder.deleteMany({ where: { organizationId, vehicleId: null } }),
+        Vehicle: () => tx.vehicle.deleteMany({ where: { organizationId } }),
+        CustomFieldDefinition: () =>
+          tx.customFieldDefinition.deleteMany({ where: { organizationId } }),
+        InventoryPart: () => tx.inventoryPart.deleteMany({ where: { organizationId } }),
+        Technician: () => tx.technician.deleteMany({ where: { organizationId } }),
+        Customer: () => tx.customer.deleteMany({ where: { organizationId } }),
+        LaborPreset: () => tx.laborPreset.deleteMany({ where: { organizationId } }),
+        Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
+        ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
+        AppSetting: () => tx.appSetting.deleteMany({ where: { organizationId } }),
+      }
+
+      for (const model of clearPlanFor(Object.keys(data))) {
+        const clear = clearable[model]
+        if (clear) await clear()
+      }
 
       // 2. Insert settings
       if (data.settings?.length) {
@@ -446,6 +494,14 @@ export async function POST(request: NextRequest) {
             })
           ),
         })
+
+        for (const part of data.inventoryParts as Record<string, unknown>[]) {
+          await restoreRows(
+            'inventory images',
+            (rows) => tx.storedImage.createMany({ data: rows as never }),
+            part.gallery
+          )
+        }
       }
 
       // Resolve work day start time from imported settings for backfilling service record times
@@ -553,6 +609,42 @@ export async function POST(request: NextRequest) {
               })
             }
           }
+
+          // What else a vehicle owns. All of it is deleted with the vehicle,
+          // so leaving any of it out makes a restore a one-way loss.
+          await restoreRows(
+            'service requests',
+            (rows) => tx.serviceRequest.createMany({ data: rows as never }),
+            v.serviceRequests,
+            { organizationId }
+          )
+          await restoreRows(
+            'AI drafted messages',
+            (rows) => tx.aiGeneratedMessage.createMany({ data: rows as never }),
+            v.aiMessages
+          )
+
+          const recurring = v.recurringInvoices as Record<string, unknown>[] | undefined
+          if (recurring?.length) {
+            await restoreRows(
+              'recurring invoices',
+              (rows) => tx.recurringInvoice.createMany({ data: rows as never }),
+              recurring,
+              { organizationId }
+            )
+            for (const invoice of recurring) {
+              await restoreRows(
+                'recurring invoice parts',
+                (rows) => tx.recurringPart.createMany({ data: rows as never }),
+                invoice.templateParts
+              )
+              await restoreRows(
+                'recurring invoice labour',
+                (rows) => tx.recurringLabor.createMany({ data: rows as never }),
+                invoice.templateLabor
+              )
+            }
+          }
         }
       }
 
@@ -588,6 +680,33 @@ export async function POST(request: NextRequest) {
             customerId: (sr.customerId as string) || null,
             workDayStartTime,
           })
+        }
+      }
+
+      // 6d. Rows that point at a service record, once every service record
+      // exists. A finding can be resolved in a counter sale, and a stock
+      // movement can belong to any job, so neither can be written while its
+      // service record is still to come.
+      if (data.inventoryParts?.length) {
+        for (const part of data.inventoryParts as Record<string, unknown>[]) {
+          // The importing user owns the history: the person who moved the
+          // stock has no account on this instance.
+          await restoreRows(
+            'stock movements',
+            (rows) => tx.stockMovement.createMany({ data: rows as never }),
+            part.movements,
+            { organizationId, userId: ctx.userId }
+          )
+        }
+      }
+      if (data.vehicles?.length) {
+        for (const vehicle of data.vehicles as Record<string, unknown>[]) {
+          await restoreRows(
+            'vehicle findings',
+            (rows) => tx.vehicleFinding.createMany({ data: rows as never }),
+            vehicle.findings,
+            { organizationId }
+          )
         }
       }
 
@@ -651,6 +770,14 @@ export async function POST(request: NextRequest) {
               })),
             })
           }
+
+          // Quote attachments: the drawings and photos a quote was argued
+          // with. Their files live in the uploads/quotes folder.
+          await restoreRows(
+            'quote attachments',
+            (rows) => tx.quoteAttachment.createMany({ data: rows as never }),
+            q.attachments
+          )
         }
       }
 
@@ -797,6 +924,84 @@ export async function POST(request: NextRequest) {
             })
           ),
         })
+      }
+
+      // The other two channels, which were never in a backup at all while SMS
+      // was. Customers are already in place, so their links survive.
+      await restoreRows(
+        'WhatsApp messages',
+        (rows) => tx.whatsappMessage.createMany({ data: rows as never }),
+        data.whatsappMessages,
+        { organizationId }
+      )
+      await restoreRows(
+        'Telegram messages',
+        (rows) => tx.telegramMessage.createMany({ data: rows as never }),
+        data.telegramMessages,
+        { organizationId }
+      )
+
+      // Workshop configuration: labour presets, webhooks, report schedules.
+      const laborPresets = data.laborPresets as Record<string, unknown>[] | undefined
+      if (laborPresets?.length) {
+        await restoreRows(
+          'labour presets',
+          (rows) => tx.laborPreset.createMany({ data: rows as never }),
+          laborPresets,
+          {
+            organizationId,
+            userId: ctx.userId,
+          }
+        )
+        for (const preset of laborPresets) {
+          await restoreRows(
+            'labour preset items',
+            (rows) => tx.laborPresetItem.createMany({ data: rows as never }),
+            preset.items
+          )
+          await restoreRows(
+            'labour preset parts',
+            (rows) => tx.laborPresetPart.createMany({ data: rows as never }),
+            preset.parts
+          )
+        }
+      }
+      await restoreRows(
+        'webhooks',
+        (rows) => tx.webhook.createMany({ data: rows as never }),
+        data.webhooks,
+        {
+          organizationId,
+        }
+      )
+      await restoreRows(
+        'report schedules',
+        (rows) => tx.reportSchedule.createMany({ data: rows as never }),
+        data.reportSchedules,
+        { organizationId }
+      )
+
+      // Roles fill gaps rather than replace: members still point at the roles
+      // they hold, and members are not in a backup.
+      const roles = data.roles as Record<string, unknown>[] | undefined
+      if (roles?.length) {
+        for (const role of roles) {
+          // A role is unique by id and again by name, and an organisation
+          // already has its default roles by the time anyone restores a file.
+          const existing = await tx.role.findFirst({
+            where: {
+              organizationId,
+              OR: [{ id: role.id as string }, { name: role.name as string }],
+            },
+          })
+          if (existing) continue
+          await tx.role.create({ data: columnsOf(role, { organizationId }) as never })
+          await restoreRows(
+            'role permissions',
+            (rows) => tx.permission.createMany({ data: rows as never }),
+            role.permissions
+          )
+        }
       }
 
       // 13. Insert notifications

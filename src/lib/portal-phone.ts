@@ -60,6 +60,7 @@ export function normalizeCountryCode(input: string | null | undefined): string |
  *   normalizePortalPhone('012 34 56 78',   '+47') → '+4712345678'
  *   normalizePortalPhone('12345678',       '+47') → '+4712345678'
  *   normalizePortalPhone('12345678',       null)  → null
+ *   normalizePortalPhone('004712345678',   null)  → '+4712345678'
  */
 export function normalizePortalPhone(
   input: string,
@@ -71,6 +72,11 @@ export function normalizePortalPhone(
   let e164: string
   if (stripped.startsWith('+')) {
     e164 = stripped
+  } else if (/^00\d/.test(stripped)) {
+    // 00 is the international prefix people dial instead of +, and it is what
+    // a phone hands back when a number was saved from a call abroad. No
+    // national number begins with it, so reading it as + is unambiguous.
+    e164 = `+${stripped.slice(2)}`
   } else {
     const cc = normalizeCountryCode(defaultCountryCode)
     if (!cc) return null
@@ -99,6 +105,9 @@ export function normalizePortalPhone(
 export function getPhoneLookupVariants(e164: string, defaultCountryCode: string | null): string[] {
   const variants = new Set<string>()
   variants.add(e164)
+
+  // The same number written the way it is dialled from abroad.
+  variants.add(`00${e164.slice(1)}`)
 
   const cc = normalizeCountryCode(defaultCountryCode)
   if (cc && e164.startsWith(cc)) {

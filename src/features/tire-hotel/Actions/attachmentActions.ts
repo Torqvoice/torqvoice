@@ -110,8 +110,9 @@ export async function addTireSetAttachments(input: unknown) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_set.attach',
-        message: `Added ${result.added} file(s) to tire set ${result.reference ?? result.tireSetId}`,
-        metadata: { tireSetId: result.tireSetId },
+        entity: 'TireSet',
+        entityId: result.tireSetId,
+        details: { key: 'tire_set_attach', params: { count: result.added, ref: result.reference ?? result.tireSetId } },
       }),
     }
   )
@@ -173,8 +174,9 @@ export async function deleteTireSetAttachment(id: string) {
       requiredPermissions: UPDATE,
       audit: ({ result }) => ({
         action: 'tire_set.detach',
-        message: `Removed ${result.fileName} from a tire set`,
-        metadata: { tireSetId: result.tireSetId },
+        entity: 'TireSet',
+        entityId: result.tireSetId,
+        details: { key: 'tire_set_detach', params: { fileName: result.fileName } },
       }),
     }
   )

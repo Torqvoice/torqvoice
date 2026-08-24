@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Tire hotel",
         "description": "Seasonal tire storage"
+      },
+      "providers": {
+        "title": "Providers",
+        "description": "Email, SMS, WhatsApp & Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Inspection templates, inspections, and results",
     "optAuditLogs": "Audit Logs",
     "optAuditLogsDesc": "Activity and change history",
-    "optSmsMessages": "SMS Messages",
-    "optSmsMessagesDesc": "Sent and received SMS messages",
+    "optSmsMessages": "Messages",
+    "optSmsMessagesDesc": "Sent and received SMS, WhatsApp and Telegram messages",
     "optScheduledMessages": "Scheduled Messages",
     "optScheduledMessagesDesc": "Queued and repeating messages waiting to go out",
     "optNotifications": "Notifications",
@@ -980,7 +984,9 @@
       "supportAction": "contact our support team."
     },
     "optTireHotel": "Tire hotel",
-    "optTireHotelDesc": "Stored tire sets, shelves, prep work and storage agreements"
+    "optTireHotelDesc": "Stored tire sets, shelves, prep work and storage agreements",
+    "optWorkshopConfig": "Workshop setup",
+    "optWorkshopConfigDesc": "Labour presets, roles, webhooks and scheduled reports"
   },
   "license": {
     "title": "White-Label License",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Prep pricing",
     "prepHint": "What each kind of prep costs. Leave one blank and it is never billed, which is what a shop that includes washing in the storage fee wants. Priced ones are added to a quote or work order automatically.",
     "prepNotCharged": "not charged"
+  },
+  "providers": {
+    "tabs": {
+      "email": "Email",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Email Settings",
+        "description": "Configure SMTP email sending to deliver invoices, quotes, and notifications directly from your workshop."
+      },
+      "sms": {
+        "feature": "SMS Messaging",
+        "description": "Send and receive SMS messages with your customers directly from Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp Messaging",
+        "description": "Send and receive WhatsApp messages, including photos of parts, directly from Torqvoice."
+      },
+      "telegram": {
+        "feature": "Telegram Messaging",
+        "description": "Send and receive Telegram messages with your customers directly from Torqvoice."
+      }
+    }
   }
 }

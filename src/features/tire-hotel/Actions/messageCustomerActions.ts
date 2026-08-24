@@ -206,7 +206,7 @@ export async function messageCustomerAboutTireSet(input: unknown) {
         action: 'tire_set.message_customer',
         entity: 'ScheduledMessage',
         entityId: result.id,
-        message: `Messaged the customer about tire set ${result.reference ?? result.tireSetId} by ${result.channel}`,
+        details: { key: 'tire_set_message_customer', params: { ref: result.reference ?? result.tireSetId, channel: result.channel } },
         metadata: { reason: result.reason, channel: result.channel },
       }),
     }

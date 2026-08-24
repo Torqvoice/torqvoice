@@ -14,6 +14,7 @@ import {
 import { buildLocationCode } from '../Lib/tireConstants'
 import { locationCapacity, warehouseCapacity } from '../Lib/capacity'
 import { requireTireHotel, getTireHotelSettings } from '../Lib/tireHotelSettings'
+import { auditDetails } from '@/lib/audit'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const MANAGE = [{ action: PermissionAction.MANAGE, subject: PermissionSubject.TIRE_HOTEL }]
@@ -144,8 +145,9 @@ export async function createWarehouse(input: unknown) {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: 'tire_warehouse.create',
-        message: `Created tire warehouse ${result.name}`,
-        metadata: { warehouseId: result.id },
+        entity: 'TireWarehouse',
+        entityId: result.id,
+        details: { key: 'tire_warehouse_create', params: { name: result.name } },
       }),
     }
   )
@@ -184,8 +186,9 @@ export async function updateWarehouse(input: unknown) {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: 'tire_warehouse.update',
-        message: `Updated tire warehouse ${result.name}`,
-        metadata: { warehouseId: result.id },
+        entity: 'TireWarehouse',
+        entityId: result.id,
+        details: { key: 'tire_warehouse_update', params: { name: result.name } },
       }),
     }
   )
@@ -216,18 +219,23 @@ export async function deleteWarehouse(id: string) {
       if (storedCount > 0) {
         await db.tireWarehouse.update({ where: { id }, data: { isArchived: true } })
         revalidateStorage()
-        return { archived: true, name: warehouse.name, storedCount }
+        return { id, archived: true, name: warehouse.name, storedCount }
       }
 
       await db.tireWarehouse.delete({ where: { id } })
       revalidateStorage()
-      return { archived: false, name: warehouse.name, storedCount: 0 }
+      return { id, archived: false, name: warehouse.name, storedCount: 0 }
     },
     {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: result.archived ? 'tire_warehouse.archive' : 'tire_warehouse.delete',
-        message: `${result.archived ? 'Archived' : 'Deleted'} tire warehouse ${result.name}`,
+        entity: 'TireWarehouse',
+        entityId: result.id,
+        details: auditDetails(
+          result.archived ? 'tire_warehouse_archive' : 'tire_warehouse_delete',
+          { name: result.name }
+        ),
       }),
     }
   )
@@ -281,8 +289,9 @@ export async function createLocation(input: unknown) {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: 'tire_location.create',
-        message: `Created tire storage location ${result.code}`,
-        metadata: { locationId: result.id },
+        entity: 'TireLocation',
+        entityId: result.id,
+        details: { key: 'tire_location_create', params: { code: result.code } },
       }),
     }
   )
@@ -352,7 +361,8 @@ export async function createLocationsBulk(input: unknown) {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: 'tire_location.bulk_create',
-        message: `Created ${result.created} tire storage locations`,
+        entity: 'TireLocation',
+        details: { key: 'tire_location_bulk_create', params: { count: result.created } },
         metadata: { skipped: result.skipped },
       }),
     }
@@ -421,8 +431,9 @@ export async function updateLocation(input: unknown) {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: 'tire_location.update',
-        message: `Updated tire storage location ${result.code}`,
-        metadata: { locationId: result.id },
+        entity: 'TireLocation',
+        entityId: result.id,
+        details: { key: 'tire_location_update', params: { code: result.code } },
       }),
     }
   )
@@ -447,13 +458,15 @@ export async function deleteLocation(id: string) {
 
       await db.tireLocation.delete({ where: { id } })
       revalidateStorage()
-      return { code: location.code }
+      return { id, code: location.code }
     },
     {
       requiredPermissions: MANAGE,
       audit: ({ result }) => ({
         action: 'tire_location.delete',
-        message: `Deleted tire storage location ${result.code}`,
+        entity: 'TireLocation',
+        entityId: result.id,
+        details: { key: 'tire_location_delete', params: { code: result.code } },
       }),
     }
   )

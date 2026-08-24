@@ -78,11 +78,19 @@ export function SendStatusReportDialog({
       });
 
       if (res.success) {
-        const channels: string[] = [];
-        if (sendSms) channels.push(t("sms"));
-        if (sendEmail) channels.push(t("email"));
-        if (sendTelegram) channels.push(t("telegram"));
-        toast.success(`${t("sent")}: ${channels.join(", ")}`);
+        // What the server got out, not what was ticked here. Those were the
+        // same thing only as long as nothing could fail.
+        const label = (channel: string) =>
+          channel === "sms" ? t("sms") : channel === "email" ? t("email") : t("telegram");
+        const sent = (res.data?.channels ?? []).map(label);
+        const failed = (res.data?.failures ?? []).map((f) => label(f.channel));
+
+        toast.success(`${t("sent")}: ${sent.join(", ")}`);
+        // A partial send is still worth flagging: the customer got one message
+        // and the desk should know the other never arrived.
+        if (failed.length > 0) {
+          toast.warning(`${t("notSent")}: ${failed.join(", ")}`);
+        }
         onOpenChange(false);
       } else {
         toast.error(res.error || t("failed"));

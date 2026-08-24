@@ -321,7 +321,22 @@
     "licensePlateMarine": "Registrierungsnummer",
     "vehicleUpdated": "Fahrzeug aktualisiert",
     "vehicleAdded": "Fahrzeug hinzugefügt",
-    "saveError": "Fehler beim Speichern des Fahrzeugs"
+    "saveError": "Fehler beim Speichern des Fahrzeugs",
+    "scanDocument": "Fahrzeugschein scannen",
+    "scanDocumentHint": "Fahrzeugpapiere abfotografieren, die Felder werden automatisch ausgefüllt.",
+    "scanningDocument": "Dokument wird gelesen...",
+    "scanSuccess": "Felder aus dem Dokument übernommen",
+    "scanFailed": "Dokument konnte nicht gelesen werden",
+    "ownerMatchTitle": "Fahrzeug zuordnen",
+    "ownerMatchDescription": "Im Dokument steht {name}. Wählen Sie einen dieser Kunden oder legen Sie einen neuen an.",
+    "ownerMatchScore": "{percent}% Übereinstimmung",
+    "ownerMatchCreateNew": "Neuen Kunden anlegen",
+    "ownerMatchChoose": "Kunde auswählen",
+    "scanUnavailable": "KI in den Einstellungen aktivieren",
+    "sectionAssignment": "Foto und Halter",
+    "sectionDetails": "Details",
+    "addScannedOwner": "Kunde {name} anlegen",
+    "ownerSaveFailed": "Kunde konnte nicht angelegt werden"
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",

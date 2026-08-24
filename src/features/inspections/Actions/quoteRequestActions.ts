@@ -141,7 +141,7 @@ export async function updateQuoteRequestStatus(id: string, status: "quoted" | "d
       action: "quoteRequest.update",
       entity: "InspectionQuoteRequest",
       entityId: result.requestId,
-      message: `Updated quote request status to ${result.status}`,
+      details: { key: "quoteRequest_update", params: { status: result.status } },
       metadata: { requestId: result.requestId, status: result.status },
     }),
   });

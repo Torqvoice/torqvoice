@@ -37,7 +37,8 @@
     "skip": "Overslaan",
     "send": "Verzenden",
     "sent": "Statusrapport verzonden",
-    "failed": "Statusrapport verzenden mislukt"
+    "failed": "Statusrapport verzenden mislukt",
+    "notSent": "Niet verzonden"
   },
   "view": {
     "title": "Statusrapport voertuig",

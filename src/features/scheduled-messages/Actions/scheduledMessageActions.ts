@@ -147,7 +147,7 @@ export async function createScheduledMessage(input: unknown) {
         action: "scheduled_message.create",
         entity: "ScheduledMessage",
         entityId: result.id,
-        message: `Scheduled a ${result.channel} message for ${result.sendAt.toISOString()}`,
+        details: { key: "scheduled_message_create", params: { channel: result.channel, sendAt: result.sendAt.toISOString() } },
         metadata: { channel: result.channel, frequency: result.frequency },
       }),
     },
@@ -197,7 +197,7 @@ export async function updateScheduledMessage(input: unknown) {
         action: "scheduled_message.update",
         entity: "ScheduledMessage",
         entityId: result.id,
-        message: `Updated a scheduled ${result.channel} message`,
+        details: { key: "scheduled_message_update", params: { channel: result.channel } },
       }),
     },
   );
@@ -229,7 +229,7 @@ export async function cancelScheduledMessage(id: string) {
         action: "scheduled_message.cancel",
         entity: "ScheduledMessage",
         entityId: result.id,
-        message: "Cancelled a scheduled message",
+        details: { key: "scheduled_message_cancel" },
       }),
     },
   );
@@ -257,7 +257,7 @@ export async function deleteScheduledMessage(id: string) {
         action: "scheduled_message.delete",
         entity: "ScheduledMessage",
         entityId: result.id,
-        message: "Deleted a scheduled message",
+        details: { key: "scheduled_message_delete" },
       }),
     },
   );
@@ -323,7 +323,7 @@ export async function sendScheduledMessageNow(id: string) {
         action: "scheduled_message.send_now",
         entity: "ScheduledMessage",
         entityId: result.id,
-        message: `Sent a scheduled ${result.channel} message ahead of time`,
+        details: { key: "scheduled_message_send_now", params: { channel: result.channel } },
       }),
     },
   );

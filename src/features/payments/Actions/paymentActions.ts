@@ -40,7 +40,7 @@ export async function createPayment(input: unknown) {
       action: "payment.create",
       entity: "Payment",
       entityId: result.id,
-      message: `Recorded payment ${result.amount} for service ${result.serviceRecordId}`,
+      details: { key: "payment_create", params: { amount: result.amount, serviceRecordId: result.serviceRecordId } },
       metadata: { paymentId: result.id, serviceRecordId: result.serviceRecordId, amount: result.amount, method: result.method },
     }),
   });
@@ -67,7 +67,7 @@ export async function deletePayment(paymentId: string) {
       action: "payment.delete",
       entity: "Payment",
       entityId: result.paymentId,
-      message: `Deleted payment ${result.paymentId}`,
+      details: { key: "payment_delete", params: { id: result.paymentId } },
       metadata: { paymentId: result.paymentId },
     }),
   });

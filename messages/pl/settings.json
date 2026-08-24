@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Hotel opon",
         "description": "Sezonowe przechowywanie opon"
+      },
+      "providers": {
+        "title": "Dostawcy",
+        "description": "E-mail, SMS, WhatsApp i Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Szablony inspekcji, inspekcje i wyniki",
     "optAuditLogs": "Dzienniki audytu",
     "optAuditLogsDesc": "Historia aktywności i zmian",
-    "optSmsMessages": "Wiadomości SMS",
-    "optSmsMessagesDesc": "Wysłane i odebrane wiadomości SMS",
+    "optSmsMessages": "Wiadomości",
+    "optSmsMessagesDesc": "Wysłane i odebrane wiadomości SMS, WhatsApp i Telegram",
     "optScheduledMessages": "Zaplanowane wiadomości",
     "optScheduledMessagesDesc": "Wiadomości w kolejce i cykliczne, czekające na wysyłkę",
     "optNotifications": "Powiadomienia",
@@ -980,7 +984,9 @@
       "supportAction": "skontaktuj się z naszym zespołem wsparcia."
     },
     "optTireHotel": "Hotel opon",
-    "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania"
+    "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania",
+    "optWorkshopConfig": "Konfiguracja warsztatu",
+    "optWorkshopConfigDesc": "Szablony robocizny, role, webhooki i zaplanowane raporty"
   },
   "license": {
     "title": "Licencja white-label",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Ceny przygotowania",
     "prepHint": "Ile kosztuje każdy rodzaj przygotowania. Puste pole oznacza, że nigdy nie jest fakturowane, co pasuje warsztatom mającym mycie w cenie przechowywania. Wycenione trafiają automatycznie na wycenę i zlecenie.",
     "prepNotCharged": "nie naliczane"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Ustawienia e-mail",
+        "description": "Skonfiguruj wysyłkę SMTP, aby faktury, oferty i powiadomienia wychodziły prosto z warsztatu."
+      },
+      "sms": {
+        "feature": "Wiadomości SMS",
+        "description": "Wysyłaj i odbieraj SMS-y z klientami bezpośrednio w Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Wiadomości WhatsApp",
+        "description": "Wysyłaj i odbieraj wiadomości WhatsApp, w tym zdjęcia części, bezpośrednio w Torqvoice."
+      },
+      "telegram": {
+        "feature": "Wiadomości Telegram",
+        "description": "Wysyłaj i odbieraj wiadomości Telegram z klientami bezpośrednio w Torqvoice."
+      }
+    }
   }
 }

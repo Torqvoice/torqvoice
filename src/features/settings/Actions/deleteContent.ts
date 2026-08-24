@@ -173,7 +173,7 @@ export async function deleteContent(input: unknown) {
     audit: ({ result }) => ({
       action: "settings.deleteContent",
       entity: "Organization",
-      message: `Deleted all data: ${result.deleted.join(", ")}`,
+      details: { key: "settings_deleteContent", params: { items: result.deleted.join(", ") } },
       metadata: { deleted: result.deleted },
     }),
   });

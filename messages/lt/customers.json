@@ -38,7 +38,8 @@
       "messages": "Žinutės",
       "requests": "Užklausos ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "„WhatsApp“"
     },
     "vehicleTable": {
       "plate": "Valst. Nr.",
@@ -68,7 +69,10 @@
     "customerCreated": "Klientas sukurtas",
     "saveError": "Nepavyko išsaugoti kliento",
     "customerNumber": "Kliento nr.",
-    "customerNumberAuto": "Autom."
+    "customerNumberAuto": "Autom.",
+    "sectionContact": "Kontaktai",
+    "sectionBilling": "Atsiskaitymas",
+    "addScannedVehicle": "Pridėti transporto priemonę {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Nauja",

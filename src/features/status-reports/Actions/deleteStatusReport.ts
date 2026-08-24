@@ -49,7 +49,7 @@ export async function deleteStatusReport(statusReportId: string) {
         action: "statusReport.delete",
         entity: "StatusReport",
         entityId: result.statusReportId,
-        message: "Deleted status report",
+        details: { key: "statusReport_delete" },
       }),
     }
   );

@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Dekkhotell",
         "description": "Sesonglagring av dekk"
+      },
+      "providers": {
+        "title": "Leverandører",
+        "description": "E-post, SMS, WhatsApp og Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Inspeksjonsmaler, inspeksjoner og resultater",
     "optAuditLogs": "Aktivitetslogg",
     "optAuditLogsDesc": "Aktivitets- og endringshistorikk",
-    "optSmsMessages": "SMS-meldinger",
-    "optSmsMessagesDesc": "Sendte og mottatte SMS-meldinger",
+    "optSmsMessages": "Meldinger",
+    "optSmsMessagesDesc": "Sendte og mottatte SMS-, WhatsApp- og Telegram-meldinger",
     "optScheduledMessages": "Planlagte meldinger",
     "optScheduledMessagesDesc": "Meldinger i kø og gjentakende meldinger som venter på å bli sendt",
     "optNotifications": "Varsler",
@@ -980,7 +984,9 @@
       "supportAction": "kontakt supportteamet vårt."
     },
     "optTireHotel": "Dekkhotell",
-    "optTireHotelDesc": "Lagrede dekksett, hyller, klargjøring og lagringsavtaler"
+    "optTireHotelDesc": "Lagrede dekksett, hyller, klargjøring og lagringsavtaler",
+    "optWorkshopConfig": "Verkstedoppsett",
+    "optWorkshopConfigDesc": "Arbeidsmaler, roller, webhooks og planlagte rapporter"
   },
   "license": {
     "title": "White-label-lisens",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Priser for klargjøring",
     "prepHint": "Hva hver type klargjøring koster. La en stå tom, så faktureres den aldri, som passer for verksteder som har vask inkludert i lagerprisen. De med pris legges automatisk på tilbud og arbeidsordre.",
     "prepNotCharged": "ikke fakturert"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-post",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "E-postinnstillinger",
+        "description": "Sett opp SMTP-sending slik at fakturaer, tilbud og varsler går direkte fra verkstedet."
+      },
+      "sms": {
+        "feature": "SMS-meldinger",
+        "description": "Send og motta SMS med kundene dine rett fra Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp-meldinger",
+        "description": "Send og motta WhatsApp-meldinger, inkludert bilder av deler, rett fra Torqvoice."
+      },
+      "telegram": {
+        "feature": "Telegram-meldinger",
+        "description": "Send og motta Telegram-meldinger med kundene dine rett fra Torqvoice."
+      }
+    }
   }
 }

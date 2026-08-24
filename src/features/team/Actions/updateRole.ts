@@ -49,7 +49,7 @@ export async function updateRole(input: unknown) {
       action: "role.update",
       entity: "Role",
       entityId: result.id,
-      message: `Updated role "${result.name}"`,
+      details: { key: "role_update", params: { name: result.name } },
       metadata: { roleId: result.id, roleName: result.name },
     }),
   });

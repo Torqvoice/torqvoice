@@ -80,5 +80,20 @@
     "installDescription": "Añádela a tu pantalla de inicio para acceder rápido",
     "enterFullscreen": "Pantalla completa",
     "exitFullscreen": "Salir de pantalla completa"
+  },
+  "broadcast": {
+    "dismiss": "Cerrar",
+    "title": "Aviso para todos",
+    "description": "Se muestra en la parte superior de cada página, para todos, con sesión iniciada o no. Déjalo vacío para no mostrar nada.",
+    "message": "Mensaje",
+    "level": "Gravedad",
+    "post": "Publicar aviso",
+    "clear": "Quitar aviso",
+    "levelInfo": "Información",
+    "levelWarning": "Advertencia",
+    "levelCritical": "Crítico",
+    "placeholder": "p. ej. Tenemos problemas con nuestra infraestructura de servidores y estamos trabajando en ello.",
+    "posted": "Aviso publicado",
+    "cleared": "Aviso retirado"
   }
 }

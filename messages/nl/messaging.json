@@ -1,0 +1,26 @@
+{
+  "inbox": {
+    "title": "Gesprekken",
+    "searchPlaceholder": "Gesprekken zoeken",
+    "noSearchResults": "Geen gesprek komt overeen met je zoekopdracht.",
+    "empty": "Nog geen gesprekken.",
+    "selectConversation": "Kies een gesprek",
+    "back": "Terug",
+    "newMessage": "Nieuw bericht",
+    "unknownContact": "Dit nummer hoort nog bij geen klant. Voeg ze als klant toe om te antwoorden.",
+    "noChannelsTitle": "Geen berichtenkanaal ingesteld",
+    "noChannelsHint": "Verbind sms, WhatsApp of Telegram om hiervandaan naar klanten te schrijven.",
+    "goToProviders": "Provider instellen",
+    "chooseChannel": {
+      "title": "Via welk kanaal?",
+      "description": "Je kunt je klanten op meerdere manieren bereiken."
+    },
+    "deleteConversation": "Gesprek verwijderen",
+    "deleteTitle": "Dit gesprek verwijderen?",
+    "deleteDescription": "Verwijdert jouw kopie van het gesprek met {name}. Op hun telefoon blijven de berichten staan.",
+    "deleteFailed": "Kon het gesprek niet verwijderen",
+    "delete": "Verwijderen",
+    "cancel": "Annuleren",
+    "loadMore": "Meer laden"
+  }
+}

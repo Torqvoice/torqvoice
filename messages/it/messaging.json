@@ -1,0 +1,26 @@
+{
+  "inbox": {
+    "title": "Conversazioni",
+    "searchPlaceholder": "Cerca conversazioni",
+    "noSearchResults": "Nessuna conversazione corrisponde alla ricerca.",
+    "empty": "Ancora nessuna conversazione.",
+    "selectConversation": "Scegli una conversazione",
+    "back": "Indietro",
+    "newMessage": "Nuovo messaggio",
+    "unknownContact": "Questo numero non appartiene ancora a nessun cliente. Aggiungilo come cliente per rispondere.",
+    "noChannelsTitle": "Nessun canale di messaggistica",
+    "noChannelsHint": "Collega SMS, WhatsApp o Telegram per scrivere ai clienti da qui.",
+    "goToProviders": "Configura un provider",
+    "chooseChannel": {
+      "title": "Su quale canale inviare?",
+      "description": "Hai più di un modo per raggiungere i clienti."
+    },
+    "deleteConversation": "Elimina conversazione",
+    "deleteTitle": "Eliminare questa conversazione?",
+    "deleteDescription": "Rimuove la tua copia della conversazione con {name}. Sul telefono del cliente resta tutto.",
+    "deleteFailed": "Impossibile eliminare la conversazione",
+    "delete": "Elimina",
+    "cancel": "Annulla",
+    "loadMore": "Carica altro"
+  }
+}

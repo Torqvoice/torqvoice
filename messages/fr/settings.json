@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Hôtel à pneus",
         "description": "Stockage saisonnier des pneus"
+      },
+      "providers": {
+        "title": "Fournisseurs",
+        "description": "E-mail, SMS, WhatsApp et Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Modèles d'inspection, inspections et résultats",
     "optAuditLogs": "Journaux d'audit",
     "optAuditLogsDesc": "Historique des activités et des modifications",
-    "optSmsMessages": "Messages SMS",
-    "optSmsMessagesDesc": "Messages SMS envoyés et reçus",
+    "optSmsMessages": "Messages",
+    "optSmsMessagesDesc": "Messages SMS, WhatsApp et Telegram envoyés et reçus",
     "optScheduledMessages": "Messages programmés",
     "optScheduledMessagesDesc": "Messages en attente et récurrents qui doivent encore partir",
     "optNotifications": "Notifications",
@@ -980,7 +984,9 @@
       "supportAction": "contactez notre équipe d'assistance."
     },
     "optTireHotel": "Hôtel à pneus",
-    "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage"
+    "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage",
+    "optWorkshopConfig": "Configuration de l'atelier",
+    "optWorkshopConfigDesc": "Modèles de main-d'œuvre, rôles, webhooks et rapports programmés"
   },
   "license": {
     "title": "Licence marque blanche",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Prix de la préparation",
     "prepHint": "Ce que coûte chaque type de préparation. Laissez vide et rien n’est facturé, ce qui convient aux ateliers qui incluent le lavage dans le stockage. Les prestations chiffrées sont ajoutées automatiquement au devis et à l’ordre.",
     "prepNotCharged": "non facturé"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "Paramètres e-mail",
+        "description": "Configurez l'envoi SMTP pour transmettre factures, devis et notifications depuis votre atelier."
+      },
+      "sms": {
+        "feature": "Messagerie SMS",
+        "description": "Envoyez et recevez des SMS avec vos clients depuis Torqvoice."
+      },
+      "whatsapp": {
+        "feature": "Messagerie WhatsApp",
+        "description": "Envoyez et recevez des messages WhatsApp, photos de pièces comprises, depuis Torqvoice."
+      },
+      "telegram": {
+        "feature": "Messagerie Telegram",
+        "description": "Envoyez et recevez des messages Telegram avec vos clients depuis Torqvoice."
+      }
+    }
   }
 }

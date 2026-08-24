@@ -26,10 +26,8 @@ import {
   Info,
   Key,
   Layout,
-  Mail,
-  MessageSquare,
+  MessagesSquare,
   Percent,
-  Send,
   Sparkles,
   UserCog,
   UsersRound,
@@ -82,9 +80,7 @@ const settingsCategories: SettingsCategory[] = [
   {
     key: 'communications',
     items: [
-      { key: 'email', href: '/settings/email', icon: Mail, gate: 'smtp' },
-      { key: 'sms', href: '/settings/sms', icon: MessageSquare, gate: 'sms' },
-      { key: 'telegram', href: '/settings/telegram', icon: Send, gate: 'telegram' },
+      { key: 'providers', href: '/settings/providers', icon: MessagesSquare },
       {
         key: 'customerPortal',
         href: '/settings/customer-portal',
@@ -101,14 +97,17 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'alerts', href: '/settings/alerts', icon: BellRing },
       { key: 'tireHotel', href: '/settings/tire-hotel', icon: Disc3, gate: 'tireHotel' },
       { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
-      { key: 'reportSchedule', href: '/settings/report-schedule', icon: CalendarClock, gate: 'reports' },
+      {
+        key: 'reportSchedule',
+        href: '/settings/report-schedule',
+        icon: CalendarClock,
+        gate: 'reports',
+      },
     ],
   },
   {
     key: 'integrations',
-    items: [
-      { key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' },
-    ],
+    items: [{ key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' }],
   },
   {
     key: 'system',

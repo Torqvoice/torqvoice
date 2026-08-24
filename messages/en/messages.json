@@ -4,7 +4,10 @@
     "featureDescription": "Send and receive SMS messages with your customers directly from Torqvoice.",
     "tabs": {
       "inbox": "Inbox",
-      "scheduled": "Scheduled"
+      "scheduled": "Scheduled",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "SMS is not set up",
     "smsNotConfiguredHint": "Connect an SMS provider to send and receive texts here. Scheduled email still works without it.",

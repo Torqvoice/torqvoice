@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "Send og motta WhatsApp-meldinger med kundene dine.",
+    "helpLink": "Sett opp {provider}",
+    "save": "Lagre WhatsApp-innstillinger",
+    "saved": "WhatsApp-innstillinger lagret",
+    "saveError": "Kunne ikke lagre WhatsApp-innstillingene",
+    "enable": {
+      "label": "Slå på WhatsApp",
+      "hint": "Slå på når legitimasjonen fra leverandøren er på plass.",
+      "disabledInfo": "Slå på WhatsApp for å sette opp leverandør, nummer og mal."
+    },
+    "provider": {
+      "label": "Leverandør",
+      "hint": "Hvem som leverer WhatsApp-nummeret ditt. Bytter du, beholdes legitimasjonen til den forrige."
+    },
+    "from": {
+      "label": "Ditt WhatsApp-nummer",
+      "hint": "Nummeret kundene ser, i internasjonalt format."
+    },
+    "secret": {
+      "show": "Vis",
+      "hide": "Skjul",
+      "stored": "Lagret og skjult. Skriv inn en ny verdi for å erstatte den."
+    },
+    "webhook": {
+      "label": "Webhook-URL",
+      "description": "Lim denne inn hos leverandøren så innkommende meldinger når Torqvoice.",
+      "copy": "Kopier webhook-URL",
+      "copied": "Webhook-URL kopiert",
+      "saveFirst": "Lagre disse innstillingene før leverandøren verifiserer URL-en. Den sjekkes mot det som er lagret her, så et ulagret skjema feiler."
+    },
+    "template": {
+      "title": "Meldingsmal",
+      "description": "Brukes når du skriver til en kunde som ikke har meldt fra på en stund.",
+      "windowExplainer": "WhatsApp tillater fritekst kun i 24 timer etter kundens siste melding. Utenfor det vinduet må meldingen gå ut som en mal leverandøren har godkjent.",
+      "nameLabel": "Malnavn",
+      "nameHint": "Navnet på den godkjente malen, eller Content SID hos leverandører som bruker det.",
+      "languageLabel": "Malspråk",
+      "languageHint": "Språkkoden malen ble godkjent under, for eksempel nb.",
+      "variablesLabel": "Verdier i malen, i rekkefølge",
+      "variablesHint": "Velg verdiene som fyller de nummererte feltene i malen, i samme rekkefølge. La stå tom hvis malen ikke har felter.",
+      "tokens": {
+        "customer": "kundenavn",
+        "vehicle": "årsmodell, merke og modell",
+        "plate": "registreringsnummer",
+        "message": "det du skriver",
+        "workshop": "navnet på verkstedet",
+        "photo": "bildet du legger ved"
+      },
+      "variablesEmpty": "Ingen verdier ennå. Legg dem til under, i rekkefølgen malen forventer.",
+      "variablesRemove": "Fjern {name}",
+      "mediaUrlLabel": "Medie-URL for malen din",
+      "mediaUrlHint": "Lim dette inn i malens mediefelt og bytt ut n med nummeret til bildeverdien.",
+      "mediaUrlCopy": "Kopier medie-URL",
+      "mediaUrlCopied": "Medie-URL kopiert",
+      "mediaUrlSample": "Som eksempelverdi hos leverandøren, bruk: sample",
+      "textTitle": "Tekstmeldinger",
+      "textDescription": "Brukes når du skriver uten bilde: fra Meldinger, fra WhatsApp-fanen på en kunde, eller fra en planlagt melding.",
+      "mediaTitle": "Meldinger med bilde",
+      "mediaDescription": "Brukes av Send på WhatsApp-knappen på bildene i en jobb, og hver gang du legger ved et bilde i en samtale.",
+      "textMissing": "Ikke satt opp: du kan ikke skrive til en kunde som ikke har meldt fra de siste 24 timene.",
+      "mediaMissing": "Ikke satt opp: du kan ikke sende bilder til en kunde som ikke har meldt fra de siste 24 timene.",
+      "whatIsIt": "En mal er en fast melding du skriver én gang og som {provider} godkjenner: ordlyden endres aldri, du fyller bare de nummererte feltene. Skriv den i deres konsoll og lim inn identifikatoren her.",
+      "whyTwo": "Du trenger to fordi WhatsApp låser medietypen ved godkjenning. En mal godkjent med bilde kan bare bære bilder, og en godkjent som tekst kan aldri bære ett.",
+      "exampleLabel": "Eksempeltekst å skrive i leverandørens konsoll",
+      "exampleTextValues": "Fyll den med: customer, message. Skriv den på språket kundene dine leser.",
+      "exampleMediaValues": "Fyll den med: customer, message og photo for medie-URL-en. Skriv den på språket kundene dine leser.",
+      "exampleMediaValuesHeader": "Fyll den med: customer, message. Bildet legges ved automatisk og trenger ingen egen plass. Skriv den på språket kundene dine leser."
+    },
+    "test": {
+      "send": "Send test",
+      "sent": "Testmelding sendt",
+      "failed": "Kunne ikke sende testmeldingen",
+      "hint": "Send deg selv en melding på WhatsApp først, ellers krever testen en godkjent mal."
+    },
+    "disconnect": {
+      "action": "Koble fra WhatsApp",
+      "hint": "Fjerner legitimasjonen fra Torqvoice. Samtalene beholdes.",
+      "done": "WhatsApp koblet fra",
+      "title": "Koble fra"
+    },
+    "savedIncomplete": "Lagret. Mangler fortsatt før du kan sende: {fields}",
+    "fieldStillNeeded": "Mangler fortsatt før du kan sende",
+    "steps": {
+      "openProvider": "Åpne {provider}",
+      "openNumber": "Finn avsendernummeret",
+      "openToken": "Lag et permanent token",
+      "consolePath": "I Meta går du til:",
+      "provider": {
+        "title": "Velg leverandør og nummer",
+        "description": "Twilio er raskere å komme i gang med og håndterer Meta for deg. Meta Cloud API koster mindre, men du tar bedriftsverifiseringen selv. Skriv inn nummeret kundene ser, i internasjonalt format."
+      },
+      "credentials": {
+        "title": "Legg inn legitimasjonen",
+        "description": "Kopier hver verdi fra {provider}. Hvert felt sier hvor du finner den. Lagre når du har dem; du kan komme tilbake for resten."
+      },
+      "webhook": {
+        "title": "Registrer webhooken",
+        "description": "Kopier denne adressen inn i {provider} slik at meldinger fra kunder når Torqvoice. Lagre denne siden først: adressen sjekkes mot det som er lagret her.",
+        "open": "Åpne webhook-innstillinger hos {provider}",
+        "recheck": "Sjekk på nytt",
+        "waiting": "Ingenting har nådd denne adressen ennå. Den blir grønn straks leverandøren verifiserer den eller leverer en melding.",
+        "seen": "Leverandøren har nådd denne adressen. Innkommende meldinger dukker opp under Meldinger."
+      },
+      "templates": {
+        "title": "Få malene godkjent",
+        "description": "Trengs bare for å skrive først, utenfor 24-timersvinduet. Du kan hoppe over nå og komme tilbake når meldinger virker.",
+        "open": "Åpne maler hos {provider}"
+      },
+      "test": {
+        "title": "Send en testmelding",
+        "description": "Send først en melding til WhatsApp-nummeret ditt fra din egen telefon. Det beviser at webhooken virker og åpner et 24-timersvindu, så svaret trenger ingen mal."
+      },
+      "back": "Tilbake",
+      "continue": "Fortsett"
+    },
+    "register": {
+      "title": "Registrer nummeret hos Meta",
+      "description": "Meta krever en egen registrering når nummeret er verifisert. Velg en sekssifret PIN, eller bruk nummerets eksisterende PIN for totrinnsbekreftelse. Skriv den ned: du trenger den for å flytte eller registrere nummeret på nytt.",
+      "action": "Registrer nummer",
+      "done": "Nummeret er registrert",
+      "failed": "Kunne ikke registrere nummeret",
+      "limit": "Meta tillater 10 registreringsforsøk per nummer på 72 timer. Feil PIN teller med, så sjekk den først."
+    }
+  },
+  "messages": {
+    "featureName": "WhatsApp-meldinger",
+    "featureDescription": "Send og motta WhatsApp-meldinger, inkludert bilder av deler, rett fra Torqvoice.",
+    "noThreads": "Ingen samtaler ennå",
+    "noThreadsHint": "Meldinger dukker opp her så snart en kunde skriver til WhatsApp-nummeret ditt, eller du skriver til dem.",
+    "selectThread": "Velg en samtale",
+    "backToThreads": "Samtaler",
+    "empty": "Ingenting her ennå.",
+    "placeholder": "Skriv en melding",
+    "send": "Send",
+    "sendFailed": "Kunne ikke sende meldingen",
+    "attach": "Legg ved et bilde",
+    "attachFailed": "Kunne ikke legge ved bildet",
+    "removeAttachment": "Fjern vedlegg",
+    "attachment": "Vedlegg",
+    "delete": "Slett",
+    "deleteFailed": "Kunne ikke slette meldingen",
+    "sentAsTemplate": "mal",
+    "sentAsTemplateNotice": "Sendt som den godkjente malen din, fordi kunden ikke har skrevet de siste 24 timene.",
+    "windowClosed": "Kunden har ikke skrevet de siste 24 timene, så dette går ut som den godkjente malen din.",
+    "unknownNumber": "Dette nummeret tilhører ingen kunde ennå. Legg dem til som kunde for å svare.",
+    "notConfigured": {
+      "title": "WhatsApp er ikke koblet til",
+      "description": "Koble til et WhatsApp-nummer for å sende og motta meldinger med kundene dine.",
+      "action": "Sett opp WhatsApp"
+    },
+    "title": "Samtaler",
+    "searchPlaceholder": "Søk i samtaler",
+    "noSearchResults": "Ingen samtaler passer søket.",
+    "compose": {
+      "newMessage": "Ny melding",
+      "title": "Ny WhatsApp-melding",
+      "searchPlaceholder": "Søk etter kunder",
+      "noMatches": "Ingen kunder passer søket.",
+      "noRecipients": "Ingen kunder med telefonnummer ennå."
+    },
+    "windowBlocked": "Denne kunden har ikke skrevet de siste 24 timene, så WhatsApp leverer ingen melding nå. Be dem sende deg en, eller sett opp en godkjent mal.",
+    "windowBlockedAction": "Sett opp en mal",
+    "windowBlockedPlaceholder": "Venter på at kunden skriver først"
+  },
+  "sendPhoto": {
+    "action": "Send på WhatsApp",
+    "title": "Send bilde på WhatsApp",
+    "description": "Kunden får dette bildet i WhatsApp-samtalen sin.",
+    "captionPlaceholder": "Legg til en merknad, for eksempel hva bildet viser",
+    "send": "Send",
+    "cancel": "Avbryt",
+    "sent": "Bilde sendt",
+    "sentAsTemplate": "Bilde sendt som den godkjente malen din",
+    "failed": "Kunne ikke sende bildet"
+  }
+}

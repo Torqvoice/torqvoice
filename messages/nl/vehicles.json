@@ -321,7 +321,22 @@
     "licensePlateMarine": "Registratienummer",
     "vehicleUpdated": "Voertuig bijgewerkt",
     "vehicleAdded": "Voertuig toegevoegd",
-    "saveError": "Opslaan van voertuig mislukt"
+    "saveError": "Opslaan van voertuig mislukt",
+    "scanDocument": "Kentekenbewijs scannen",
+    "scanDocumentHint": "Fotografeer de voertuigpapieren, de velden worden automatisch ingevuld.",
+    "scanningDocument": "Document wordt gelezen...",
+    "scanSuccess": "Velden ingevuld vanaf het document",
+    "scanFailed": "Kon het document niet lezen",
+    "ownerMatchTitle": "Voertuig toewijzen",
+    "ownerMatchDescription": "Op het document staat {name}. Kies een van deze klanten of maak een nieuwe aan.",
+    "ownerMatchScore": "{percent}% overeenkomst",
+    "ownerMatchCreateNew": "Nieuwe klant aanmaken",
+    "ownerMatchChoose": "Klant kiezen",
+    "scanUnavailable": "Schakel AI in bij instellingen",
+    "sectionAssignment": "Foto en eigenaar",
+    "sectionDetails": "Details",
+    "addScannedOwner": "Klant {name} toevoegen",
+    "ownerSaveFailed": "Kon de klant niet aanmaken"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",

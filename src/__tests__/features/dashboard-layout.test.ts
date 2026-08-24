@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   DASHBOARD_CARD_IDS,
   DEFAULT_LAYOUT,
+  LAYOUT_VERSION,
+  normalizeLayout,
   type CardLayout,
   type DashboardCardId,
 } from '@/features/dashboard/dashboard-grid-config'
@@ -95,6 +97,109 @@ describe('default dashboard layout', () => {
 
     for (const [row] of lonely) {
       expect(row, `a half card sits alone on row ${row}, leaving a hole beside it`).toBe(lastRow)
+    }
+  })
+})
+
+/**
+ * Moving a default is the one thing that reaches past a saved layout, so it
+ * has to reach exactly as far as intended: the card that moved, and nothing
+ * else the user put where they wanted it.
+ */
+describe('moved defaults', () => {
+  const somewhereElse: CardLayout = { x: 0, y: 34, w: 6, h: 5 }
+
+  it('lands the moved card above the one it belongs above', () => {
+    // recentCompleted moved up by hand, well above the tire hotel's own
+    // default row: an absolute row would drop the card below it.
+    const layout = normalizeLayout({
+      version: 1,
+      hidden: [],
+      cards: {
+        tireHotel: somewhereElse,
+        recentCompleted: { x: 0, y: 8, w: 12, h: 5 },
+      },
+    })
+
+    const tireHotel = layout.cards.tireHotel
+    expect(tireHotel.x).toBe(6)
+    expect(tireHotel.y + tireHotel.h).toBeLessThanOrEqual(layout.cards.recentCompleted.y)
+  })
+
+  it('overlaps nothing after making room for the moved card', () => {
+    const layout = normalizeLayout({
+      version: 1,
+      hidden: [],
+      cards: { tireHotel: somewhereElse },
+    })
+
+    const ids = DASHBOARD_CARD_IDS.filter((id) => id !== 'notifications')
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        expect(
+          overlaps(layout.cards[ids[i]], layout.cards[ids[j]]),
+          `${ids[i]} overlaps ${ids[j]} after the migration`
+        ).toBe(false)
+      }
+    }
+  })
+
+  it('keeps a stored position saved since the card moved', () => {
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { tireHotel: somewhereElse },
+    })
+
+    expect(layout.cards.tireHotel).toEqual(somewhereElse)
+  })
+
+  it('leaves every other card where the user put it', () => {
+    const layout = normalizeLayout({
+      version: 1,
+      hidden: [],
+      cards: { reminders: somewhereElse, activeJobs: { x: 0, y: 0, w: 12, h: 6 } },
+    })
+
+    expect(layout.cards.reminders).toEqual(somewhereElse)
+    expect(layout.cards.activeJobs).toEqual({ x: 0, y: 0, w: 12, h: 6 })
+  })
+
+  it('stamps the current version so the move happens once', () => {
+    expect(normalizeLayout({ version: 1, hidden: [], cards: {} }).version).toBe(LAYOUT_VERSION)
+  })
+})
+
+/**
+ * Cards are drawn only as tall as their content needs, so a height the user
+ * set by hand has to survive the round trip or the resize handle looks
+ * broken: it moves, and then the next fitting pass undoes it.
+ */
+describe('pinned heights', () => {
+  it('keeps the pin through a save and load', () => {
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { tireHotel: { x: 6, y: 24, w: 6, h: 7, pinH: true } },
+    })
+
+    expect(layout.cards.tireHotel.pinH).toBe(true)
+    expect(layout.cards.tireHotel.h).toBe(7)
+  })
+
+  it('leaves an unpinned card unpinned', () => {
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { tireHotel: { x: 6, y: 24, w: 6, h: 7 } },
+    })
+
+    expect(layout.cards.tireHotel.pinH).toBeUndefined()
+  })
+
+  it('drops the pin when the layout is reset', () => {
+    for (const id of DASHBOARD_CARD_IDS) {
+      expect(DEFAULT_LAYOUT.cards[id].pinH, `${id} ships pinned`).toBeUndefined()
     }
   })
 })

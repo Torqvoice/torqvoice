@@ -14,6 +14,7 @@ import { addServiceAttachment } from '@/features/vehicles/Actions/addServiceAtta
 import { updateServiceAttachment } from '@/features/vehicles/Actions/updateServiceAttachment'
 import { deleteServiceAttachment } from '@/features/vehicles/Actions/serviceActions'
 import { ImageCarousel } from '@/features/vehicles/Components/service-detail/ImageCarousel'
+import { SendPhotoToWhatsapp } from '@/features/whatsapp/Components/SendPhotoToWhatsapp'
 
 interface Attachment {
   id: string
@@ -30,12 +31,15 @@ interface ServiceImagesManagerProps {
   serviceRecordId: string
   initialImages: Attachment[]
   maxImages?: number
+  /** Enables sending a photo straight to the customer; omitted on jobs with none. */
+  customerId?: string | null
 }
 
 export function ServiceImagesManager({
   serviceRecordId,
   initialImages,
   maxImages,
+  customerId,
 }: ServiceImagesManagerProps) {
   const t = useTranslations('service')
   const [images, setImages] = useState<Attachment[]>(initialImages)
@@ -239,7 +243,7 @@ export function ServiceImagesManager({
                   type="button"
                   variant="secondary"
                   size="icon"
-                  className="absolute right-1 top-1 h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                  className="absolute right-1 top-1 h-6 w-6 transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
                   onClick={() => handleDelete(file.id)}
                   aria-label={t('header.delete')}
                 >
@@ -254,14 +258,24 @@ export function ServiceImagesManager({
                   onBlur={(e) => handleDescriptionBlur(file.id, e.target.value)}
                   className="h-7 text-xs"
                 />
-                <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Switch
-                    checked={file.includeInInvoice}
-                    onCheckedChange={(checked) => handleToggleInvoice(file.id, checked)}
-                    className="scale-75"
-                  />
-                  {t('images.invoice')}
-                </label>
+                <div className="flex items-center justify-between gap-1">
+                  <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Switch
+                      checked={file.includeInInvoice}
+                      onCheckedChange={(checked) => handleToggleInvoice(file.id, checked)}
+                      className="scale-75"
+                    />
+                    {t('images.invoice')}
+                  </label>
+                  {customerId && (
+                    <SendPhotoToWhatsapp
+                      customerId={customerId}
+                      fileUrl={file.fileUrl}
+                      fileName={file.fileName}
+                      serviceRecordId={serviceRecordId}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           ))}

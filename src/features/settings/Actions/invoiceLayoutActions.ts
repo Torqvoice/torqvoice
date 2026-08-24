@@ -61,7 +61,7 @@ export async function saveInvoiceLayoutConfig(config: InvoiceLayoutConfig) {
     audit: () => ({
       action: "settings.updateInvoiceLayout",
       entity: "AppSetting",
-      message: "Updated invoice layout configuration",
+      details: { key: "settings_updateInvoiceLayout" },
     }),
   });
 }
@@ -114,7 +114,7 @@ export async function saveQuoteLayoutConfig(config: InvoiceLayoutConfig) {
     audit: () => ({
       action: "settings.updateQuoteLayout",
       entity: "AppSetting",
-      message: "Updated quote layout configuration",
+      details: { key: "settings_updateQuoteLayout" },
     }),
   });
 }

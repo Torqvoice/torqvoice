@@ -120,7 +120,7 @@ export async function createLaborPreset(input: unknown) {
       action: "labor_preset.create",
       entity: "LaborPreset",
       entityId: result.id,
-      message: `Created labor preset "${result.name}"`,
+      details: { key: "labor_preset_create", params: { name: result.name } },
       metadata: { presetId: result.id },
     }),
   });
@@ -183,7 +183,7 @@ export async function updateLaborPreset(input: unknown) {
       action: "labor_preset.update",
       entity: "LaborPreset",
       entityId: result.presetId,
-      message: `Updated labor preset ${result.presetId}`,
+      details: { key: "labor_preset_update", params: { id: result.presetId } },
       metadata: { presetId: result.presetId },
     }),
   });
@@ -203,7 +203,7 @@ export async function deleteLaborPreset(presetId: string) {
       action: "labor_preset.delete",
       entity: "LaborPreset",
       entityId: result.presetId,
-      message: `Deleted labor preset ${result.presetId}`,
+      details: { key: "labor_preset_delete", params: { id: result.presetId } },
       metadata: { presetId: result.presetId },
     }),
   });

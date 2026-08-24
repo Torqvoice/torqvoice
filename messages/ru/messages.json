@@ -4,7 +4,10 @@
     "featureDescription": "Отправляйте и получайте SMS-сообщения с клиентами прямо из Torqvoice.",
     "tabs": {
       "inbox": "Входящие",
-      "scheduled": "Запланированные"
+      "scheduled": "Запланированные",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
     },
     "smsNotConfiguredTitle": "SMS не настроен",
     "smsNotConfiguredHint": "Подключите SMS-провайдера, чтобы отправлять и получать сообщения здесь. Запланированная почта работает и без этого.",

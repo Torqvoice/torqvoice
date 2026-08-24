@@ -38,7 +38,8 @@
       "messages": "Сообщения",
       "requests": "Заявки ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Госномер",
@@ -68,7 +69,10 @@
     "customerCreated": "Клиент создан",
     "saveError": "Не удалось сохранить клиента",
     "customerNumber": "№ клиента",
-    "customerNumberAuto": "Авто"
+    "customerNumberAuto": "Авто",
+    "sectionContact": "Контакты",
+    "sectionBilling": "Выставление счетов",
+    "addScannedVehicle": "Добавить автомобиль {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Новая",

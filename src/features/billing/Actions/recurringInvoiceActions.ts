@@ -98,7 +98,7 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
       action: "recurringInvoice.create",
       entity: "RecurringInvoice",
       entityId: result.id,
-      message: `Created recurring invoice "${result.title}"`,
+      details: { key: "recurringInvoice_create", params: { title: result.title } },
       metadata: { recurringInvoiceId: result.id },
     }),
   });
@@ -175,7 +175,7 @@ export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput)
       action: "recurringInvoice.update",
       entity: "RecurringInvoice",
       entityId: result.id,
-      message: `Updated recurring invoice "${result.title}"`,
+      details: { key: "recurringInvoice_update", params: { title: result.title } },
       metadata: { recurringInvoiceId: result.id },
     }),
   });
@@ -198,7 +198,7 @@ export async function deleteRecurringInvoice(id: string) {
       action: "recurringInvoice.delete",
       entity: "RecurringInvoice",
       entityId: result.recurringInvoiceId,
-      message: `Deleted recurring invoice ${result.recurringInvoiceId}`,
+      details: { key: "recurringInvoice_delete", params: { id: result.recurringInvoiceId } },
       metadata: { recurringInvoiceId: result.recurringInvoiceId },
     }),
   });

@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "„WhatsApp“",
+    "description": "Siųskite ir gaukite „WhatsApp“ žinutes su klientais.",
+    "helpLink": "Nustatyti {provider}",
+    "save": "Įrašyti „WhatsApp“ nustatymus",
+    "saved": "„WhatsApp“ nustatymai įrašyti",
+    "saveError": "Nepavyko įrašyti „WhatsApp“ nustatymų",
+    "enable": {
+      "label": "Įjungti „WhatsApp“",
+      "hint": "Įjunkite, kai tiekėjo prisijungimo duomenys suvesti.",
+      "disabledInfo": "Įjunkite „WhatsApp“, kad nustatytumėte tiekėją, numerį ir šabloną."
+    },
+    "provider": {
+      "label": "Tiekėjas",
+      "hint": "Kas suteikia jūsų „WhatsApp“ numerį. Pakeitus senojo duomenys išlieka."
+    },
+    "from": {
+      "label": "Jūsų „WhatsApp“ numeris",
+      "hint": "Numeris, kurį mato klientai, tarptautiniu formatu."
+    },
+    "secret": {
+      "show": "Rodyti",
+      "hide": "Slėpti",
+      "stored": "Įrašyta ir paslėpta. Įveskite naują reikšmę, kad pakeistumėte."
+    },
+    "webhook": {
+      "label": "Webhook URL",
+      "description": "Įklijuokite tai pas tiekėją, kad gaunamos žinutės pasiektų „Torqvoice“.",
+      "copy": "Kopijuoti webhook URL",
+      "copied": "Webhook URL nukopijuotas",
+      "saveFirst": "Įrašykite šiuos nustatymus prieš tiekėjui tikrinant URL. Tikrinama pagal tai, kas čia įrašyta, todėl neįrašyta forma testo neišlaikys."
+    },
+    "template": {
+      "title": "Žinutės šablonas",
+      "description": "Naudojamas, kai rašote klientui, kuris seniai nerašė.",
+      "windowExplainer": "„WhatsApp“ leidžia laisvą tekstą tik 24 valandas nuo paskutinės kliento žinutės. Vėliau žinutė turi būti tiekėjo patvirtintas šablonas.",
+      "nameLabel": "Šablono pavadinimas",
+      "nameHint": "Patvirtinto šablono pavadinimas arba „Content SID“ pas tiekėjus, kurie jį naudoja.",
+      "languageLabel": "Šablono kalba",
+      "languageHint": "Kalbos kodas, su kuriuo šablonas patvirtintas, pavyzdžiui lt.",
+      "variablesLabel": "Šablono reikšmės iš eilės",
+      "variablesHint": "Pasirinkite reikšmes, užpildančias sunumeruotas šablono vietas, ta pačia tvarka. Palikite tuščią, jei šablone vietų nėra.",
+      "tokens": {
+        "customer": "kliento vardas",
+        "vehicle": "metai, markė ir modelis",
+        "plate": "valstybinis numeris",
+        "message": "jūsų tekstas",
+        "workshop": "jūsų dirbtuvių pavadinimas",
+        "photo": "pridėta nuotrauka"
+      },
+      "variablesEmpty": "Reikšmių dar nėra. Pridėkite jas žemiau tokia tvarka, kokios tikisi šablonas.",
+      "variablesRemove": "Pašalinti {name}",
+      "mediaUrlLabel": "Medijos URL jūsų šablonui",
+      "mediaUrlHint": "Įklijuokite tai į šablono medijos lauką ir pakeiskite n nuotraukos reikšmės numeriu.",
+      "mediaUrlCopy": "Kopijuoti medijos URL",
+      "mediaUrlCopied": "Medijos URL nukopijuotas",
+      "mediaUrlSample": "Kaip pavyzdinę reikšmę pas tiekėją naudokite: sample",
+      "textTitle": "Tekstinės žinutės",
+      "textDescription": "Naudojama, kai rašote be nuotraukos: iš Žinučių, iš kliento „WhatsApp“ kortelės arba iš suplanuotos žinutės.",
+      "mediaTitle": "Žinutės su nuotrauka",
+      "mediaDescription": "Naudojama mygtuko „Siųsti per WhatsApp“ prie darbo nuotraukų ir visada, kai pokalbyje pridedate nuotrauką.",
+      "textMissing": "Nenustatyta: negalėsite rašyti klientui, kuris nerašė pastarąsias 24 valandas.",
+      "mediaMissing": "Nenustatyta: negalėsite siųsti nuotraukų klientui, kuris nerašė pastarąsias 24 valandas.",
+      "whatIsIt": "Šablonas – tai fiksuota žinutė, kurią parašote kartą ir kurią patvirtina {provider}: tekstas nekinta, užpildote tik sunumeruotas vietas. Parašykite ją jų konsolėje ir čia įklijuokite identifikatorių.",
+      "whyTwo": "Reikia dviejų, nes „WhatsApp“ medijos tipą nustato patvirtinimo metu. Su nuotrauka patvirtintas šablonas gali nešti tik nuotraukas, o kaip tekstas patvirtintas – niekada.",
+      "exampleLabel": "Pavyzdinis tekstas tiekėjo konsolei",
+      "exampleTextValues": "Užpildykite: customer, message. Rašykite klientų kalba.",
+      "exampleMediaValues": "Užpildykite: customer, message ir photo medijos URL. Rašykite klientų kalba.",
+      "exampleMediaValuesHeader": "Užpildykite: customer, message. Nuotrauka pridedama automatiškai, todėl jai atskiros vietos nereikia. Rašykite ta kalba, kuria skaito jūsų klientai."
+    },
+    "test": {
+      "send": "Siųsti bandymą",
+      "sent": "Bandomoji žinutė išsiųsta",
+      "failed": "Nepavyko išsiųsti bandomosios žinutės",
+      "hint": "Pirma parašykite sau per „WhatsApp“, kitaip bandymui reikės patvirtinto šablono."
+    },
+    "disconnect": {
+      "action": "Atjungti „WhatsApp“",
+      "hint": "Pašalina prisijungimo duomenis iš „Torqvoice“. Pokalbiai išlieka.",
+      "done": "„WhatsApp“ atjungtas",
+      "title": "Atjungti"
+    },
+    "savedIncomplete": "Įrašyta. Kad galėtumėte siųsti, dar trūksta: {fields}",
+    "fieldStillNeeded": "Dar reikia norint siųsti",
+    "steps": {
+      "openProvider": "Atidaryti {provider}",
+      "openNumber": "Rasti siuntėjo numerį",
+      "openToken": "Sukurti nuolatinį prieigos raktą",
+      "consolePath": "Meta aplinkoje eikite į:",
+      "provider": {
+        "title": "Pasirinkite tiekėją ir numerį",
+        "description": "„Twilio“ paleisti greičiau ir jis tvarko „Meta“ už jus. „Meta Cloud API“ kainuoja mažiau, bet verslo patvirtinimą atliekate patys. Įveskite numerį, kurį matys klientai, tarptautiniu formatu."
+      },
+      "credentials": {
+        "title": "Įveskite prisijungimo duomenis",
+        "description": "Nukopijuokite kiekvieną reikšmę iš {provider}. Kiekvienas laukas nurodo, kur ją rasti. Įrašykite, kai turėsite; likusius galėsite pridėti vėliau."
+      },
+      "webhook": {
+        "title": "Užregistruokite webhook",
+        "description": "Nukopijuokite šį adresą į {provider}, kad klientų žinutės pasiektų „Torqvoice“. Pirma įrašykite šį puslapį: adresas tikrinamas pagal tai, kas čia įrašyta.",
+        "open": "Atidaryti {provider} webhook nustatymus",
+        "recheck": "Tikrinti dar kartą",
+        "waiting": "Į šį adresą dar nieko neatėjo. Jis taps žalias, kai tiekėjas jį patvirtins arba pristatys žinutę.",
+        "seen": "Tiekėjas pasiekė šį adresą. Gaunamos žinutės atsiras skiltyje Žinutės."
+      },
+      "templates": {
+        "title": "Patvirtinkite šablonus",
+        "description": "Reikia tik tam, kad rašytumėte pirmi už 24 valandų lango ribų. Galite praleisti ir grįžti, kai susirašinėjimas veiks.",
+        "open": "Atidaryti {provider} šablonus"
+      },
+      "test": {
+        "title": "Išsiųskite bandomąją žinutę",
+        "description": "Pirma parašykite savo „WhatsApp“ numeriu iš savo telefono. Tai įrodo, kad webhook veikia, ir atveria 24 valandų langą, tad atsakymui šablono nereikės."
+      },
+      "back": "Atgal",
+      "continue": "Toliau"
+    },
+    "register": {
+      "title": "Užregistruokite numerį „Meta“",
+      "description": "Patvirtinus numerį, „Meta“ reikalauja atskiros registracijos. Pasirinkite šešių skaitmenų PIN arba naudokite esamą dviejų veiksmų patvirtinimo PIN. Užsirašykite jį: prireiks perkeliant ar iš naujo registruojant numerį.",
+      "action": "Registruoti numerį",
+      "done": "Numeris užregistruotas",
+      "failed": "Nepavyko užregistruoti numerio",
+      "limit": "„Meta“ leidžia 10 registracijos bandymų vienam numeriui per 72 valandas. Neteisingas PIN taip pat skaičiuojamas, tad pasitikrinkite."
+    }
+  },
+  "messages": {
+    "featureName": "„WhatsApp“ žinutės",
+    "featureDescription": "Siųskite ir gaukite „WhatsApp“ žinutes, įskaitant detalių nuotraukas, tiesiai iš „Torqvoice“.",
+    "noThreads": "Pokalbių dar nėra",
+    "noThreadsHint": "Žinutės atsiras čia, kai klientas parašys jūsų „WhatsApp“ numeriu arba jūs jam.",
+    "selectThread": "Pasirinkite pokalbį",
+    "backToThreads": "Pokalbiai",
+    "empty": "Čia dar nieko nėra.",
+    "placeholder": "Rašykite žinutę",
+    "send": "Siųsti",
+    "sendFailed": "Nepavyko išsiųsti žinutės",
+    "attach": "Pridėti nuotrauką",
+    "attachFailed": "Nepavyko pridėti nuotraukos",
+    "removeAttachment": "Pašalinti priedą",
+    "attachment": "Priedas",
+    "delete": "Ištrinti",
+    "deleteFailed": "Nepavyko ištrinti žinutės",
+    "sentAsTemplate": "šablonas",
+    "sentAsTemplateNotice": "Išsiųsta kaip patvirtintas šablonas, nes klientas nerašė pastarąsias 24 valandas.",
+    "windowClosed": "Klientas nerašė pastarąsias 24 valandas, todėl tai iškeliaus kaip patvirtintas šablonas.",
+    "unknownNumber": "Šis numeris dar nepriskirtas klientui. Norėdami atsakyti, pridėkite jį kaip klientą.",
+    "notConfigured": {
+      "title": "„WhatsApp“ neprijungtas",
+      "description": "Prijunkite „WhatsApp“ numerį, kad galėtumėte susirašinėti su klientais.",
+      "action": "Nustatyti „WhatsApp“"
+    },
+    "title": "Pokalbiai",
+    "searchPlaceholder": "Ieškoti pokalbių",
+    "noSearchResults": "Pagal paiešką pokalbių nerasta.",
+    "compose": {
+      "newMessage": "Nauja žinutė",
+      "title": "Nauja „WhatsApp“ žinutė",
+      "searchPlaceholder": "Ieškoti klientų",
+      "noMatches": "Pagal paiešką klientų nerasta.",
+      "noRecipients": "Dar nėra klientų su telefono numeriu."
+    },
+    "windowBlocked": "Šis klientas nerašė pastarąsias 24 valandas, todėl „WhatsApp“ dabar žinutės nepristatys. Paprašykite jo parašyti arba nustatykite patvirtintą šabloną.",
+    "windowBlockedAction": "Nustatyti šabloną",
+    "windowBlockedPlaceholder": "Laukiama, kol klientas parašys pirmas"
+  },
+  "sendPhoto": {
+    "action": "Siųsti per „WhatsApp“",
+    "title": "Siųsti nuotrauką per „WhatsApp“",
+    "description": "Klientas gaus šią nuotrauką savo „WhatsApp“ pokalbyje.",
+    "captionPlaceholder": "Pridėkite pastabą, pavyzdžiui ką rodo nuotrauka",
+    "send": "Siųsti",
+    "cancel": "Atšaukti",
+    "sent": "Nuotrauka išsiųsta",
+    "sentAsTemplate": "Nuotrauka išsiųsta kaip patvirtintas šablonas",
+    "failed": "Nepavyko išsiųsti nuotraukos"
+  }
+}

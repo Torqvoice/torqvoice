@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { useState, useTransition, useRef, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { SmsTemplateMenu } from "./SmsTemplateMenu";
+import { useState, useTransition, useRef, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { SmsTemplateMenu } from './SmsTemplateMenu'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,31 +14,32 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Loader2, Send, MessageSquare, ChevronUp, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { sendSmsToCustomer, getConversation, deleteSmsMessage } from "../Actions/smsActions";
-import { useNotificationStore } from "@/features/notifications/store/notificationStore";
-import { setActiveSmsCustomerId } from "../activeSmsView";
-import { toast } from "sonner";
+} from '@/components/ui/alert-dialog'
+import { Loader2, Send, MessageSquare, ChevronUp, Trash2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { sendSmsToCustomer, getConversation, deleteSmsMessage } from '../Actions/smsActions'
+import { useNotificationStore } from '@/features/notifications/store/notificationStore'
+import { setActiveSmsCustomerId } from '../activeSmsView'
+import { toast } from 'sonner'
+import { MessageText } from '@/features/messaging/Components/MessageText'
 
 interface Message {
-  id: string;
-  direction: string;
-  body: string;
-  status: string;
-  createdAt: string | Date;
-  fromNumber: string;
-  toNumber: string;
+  id: string
+  direction: string
+  body: string
+  status: string
+  createdAt: string | Date
+  fromNumber: string
+  toNumber: string
 }
 
 interface SmsConversationProps {
-  customerId: string;
-  customerName: string;
-  customerPhone: string | null;
-  initialMessages: Message[];
-  initialNextCursor: string | null;
-  className?: string;
+  customerId: string
+  customerName: string
+  customerPhone: string | null
+  initialMessages: Message[]
+  initialNextCursor: string | null
+  className?: string
 }
 
 export function SmsConversation({
@@ -49,172 +50,169 @@ export function SmsConversation({
   initialNextCursor,
   className,
 }: SmsConversationProps) {
-  const t = useTranslations("messages.conversation");
-  const tc = useTranslations("common.buttons");
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
-  const [newMessage, setNewMessage] = useState("");
-  const [mounted, setMounted] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<Message | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const t = useTranslations('messages.conversation')
+  const tc = useTranslations('common.buttons')
+  const [messages, setMessages] = useState<Message[]>(initialMessages)
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor)
+  const [newMessage, setNewMessage] = useState('')
+  const [mounted, setMounted] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<Message | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-  const [isSending, startSend] = useTransition();
-  const [isLoadingMore, startLoadMore] = useTransition();
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+    setMounted(true)
+  }, [])
+  const [isSending, startSend] = useTransition()
+  const [isLoadingMore, startLoadMore] = useTransition()
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setActiveSmsCustomerId(customerId);
-    return () => setActiveSmsCustomerId(null);
-  }, [customerId]);
+    setActiveSmsCustomerId(customerId)
+    return () => setActiveSmsCustomerId(null)
+  }, [customerId])
 
-  const initialScrollDone = useRef(false);
+  const initialScrollDone = useRef(false)
   useEffect(() => {
-    const el = scrollAreaRef.current;
-    if (!el) return;
+    const el = scrollAreaRef.current
+    if (!el) return
 
     if (!initialScrollDone.current) {
-      initialScrollDone.current = true;
+      initialScrollDone.current = true
       // Wait for layout to settle before scrolling to bottom
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          el.scrollTop = el.scrollHeight;
-        });
-      });
+          el.scrollTop = el.scrollHeight
+        })
+      })
     } else {
-      el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
     }
-  }, [messages.length]);
+  }, [messages.length])
 
   // Refetch conversation when a matching inbound SMS notification arrives via WS
   const refreshConversation = useCallback(async () => {
-    const conv = await getConversation(customerId);
+    const conv = await getConversation(customerId)
     if (conv.success && conv.data) {
-      setMessages(conv.data.messages.map((m) => ({
-        ...m,
-        createdAt: typeof m.createdAt === "string" ? m.createdAt : m.createdAt.toISOString(),
-      })));
-      setNextCursor(conv.data.nextCursor);
+      setMessages(
+        conv.data.messages.map((m) => ({
+          ...m,
+          createdAt: typeof m.createdAt === 'string' ? m.createdAt : m.createdAt.toISOString(),
+        }))
+      )
+      setNextCursor(conv.data.nextCursor)
     }
-  }, [customerId]);
+  }, [customerId])
 
   useEffect(() => {
     // Track the last notification count so we only react to new ones
-    let lastCount = useNotificationStore.getState().notifications.length;
+    let lastCount = useNotificationStore.getState().notifications.length
 
     const unsub = useNotificationStore.subscribe((state) => {
-      const { notifications } = state;
+      const { notifications } = state
       if (notifications.length <= lastCount) {
-        lastCount = notifications.length;
-        return;
+        lastCount = notifications.length
+        return
       }
-      lastCount = notifications.length;
+      lastCount = notifications.length
 
       // Check if the newest notification is an inbound SMS for this customer
-      const latest = notifications[0];
+      const latest = notifications[0]
       if (
-        latest?.type === "sms_inbound" &&
+        latest?.type === 'sms_inbound' &&
         latest.entityUrl === `/messages?customerId=${customerId}`
       ) {
-        refreshConversation();
+        refreshConversation()
       }
-    });
+    })
 
-    return unsub;
-  }, [customerId, refreshConversation]);
+    return unsub
+  }, [customerId, refreshConversation])
 
   const handleSend = () => {
-    if (!newMessage.trim() || !customerPhone) return;
-    const body = newMessage.trim();
-    setNewMessage("");
+    if (!newMessage.trim() || !customerPhone) return
+    const body = newMessage.trim()
+    setNewMessage('')
 
     startSend(async () => {
-      const result = await sendSmsToCustomer({ customerId, body });
+      const result = await sendSmsToCustomer({ customerId, body })
       if (result.success) {
         // Refresh conversation
-        const conv = await getConversation(customerId);
+        const conv = await getConversation(customerId)
         if (conv.success && conv.data) {
-          setMessages(conv.data.messages.map((m) => ({
-            ...m,
-            createdAt: typeof m.createdAt === "string" ? m.createdAt : m.createdAt.toISOString(),
-          })));
-          setNextCursor(conv.data.nextCursor);
+          setMessages(
+            conv.data.messages.map((m) => ({
+              ...m,
+              createdAt: typeof m.createdAt === 'string' ? m.createdAt : m.createdAt.toISOString(),
+            }))
+          )
+          setNextCursor(conv.data.nextCursor)
         }
       } else {
-        toast.error(result.error ?? t("sendError"));
-        setNewMessage(body);
+        toast.error(result.error ?? t('sendError'))
+        setNewMessage(body)
       }
-    });
-  };
+    })
+  }
 
   const handleLoadOlder = () => {
-    if (!nextCursor) return;
+    if (!nextCursor) return
     startLoadMore(async () => {
-      const result = await getConversation(customerId, nextCursor);
+      const result = await getConversation(customerId, nextCursor)
       if (result.success && result.data) {
         const older = result.data.messages.map((m) => ({
           ...m,
-          createdAt: typeof m.createdAt === "string" ? m.createdAt : m.createdAt.toISOString(),
-        }));
-        setMessages((prev) => [...older, ...prev]);
-        setNextCursor(result.data.nextCursor);
+          createdAt: typeof m.createdAt === 'string' ? m.createdAt : m.createdAt.toISOString(),
+        }))
+        setMessages((prev) => [...older, ...prev])
+        setNextCursor(result.data.nextCursor)
       }
-    });
-  };
+    })
+  }
 
   const handleDeleteMessage = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-    const result = await deleteSmsMessage(deleteTarget.id);
+    if (!deleteTarget) return
+    setIsDeleting(true)
+    const result = await deleteSmsMessage(deleteTarget.id)
     if (result.success) {
-      setMessages((prev) => prev.filter((m) => m.id !== deleteTarget.id));
-      toast.success(t("messageDeleted"));
+      setMessages((prev) => prev.filter((m) => m.id !== deleteTarget.id))
+      toast.success(t('messageDeleted'))
     } else {
-      toast.error(result.error || t("deleteError"));
+      toast.error(result.error || t('deleteError'))
     }
-    setIsDeleting(false);
-    setDeleteTarget(null);
-  };
+    setIsDeleting(false)
+    setDeleteTarget(null)
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
     }
-  };
+  }
 
   if (!customerPhone) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">
-          {t("noPhone", { name: customerName })}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('noPhone', { name: customerName })}</p>
       </div>
-    );
+    )
   }
 
   return (
-    <div className={cn("flex flex-col h-[500px]", className)}>
+    <div className={cn('flex flex-col h-[500px]', className)}>
       {/* Messages area — scrollable, fills available space */}
       <div ref={scrollAreaRef} className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
         {nextCursor && (
           <div className="flex justify-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLoadOlder}
-              disabled={isLoadingMore}
-            >
+            <Button variant="ghost" size="sm" onClick={handleLoadOlder} disabled={isLoadingMore}>
               {isLoadingMore ? (
                 <Loader2 className="mr-1 h-3 w-3 animate-spin" />
               ) : (
                 <ChevronUp className="mr-1 h-3 w-3" />
               )}
-              {t("loadOlder")}
+              {t('loadOlder')}
             </Button>
           </div>
         )}
@@ -222,27 +220,22 @@ export function SmsConversation({
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12">
             <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">
-              {t("empty", { name: customerName })}
-            </p>
+            <p className="text-sm text-muted-foreground">{t('empty', { name: customerName })}</p>
           </div>
         )}
 
         {messages.map((msg) => {
-          const isOutbound = msg.direction === "outbound";
+          const isOutbound = msg.direction === 'outbound'
           const time = mounted
             ? new Date(msg.createdAt).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
+                hour: '2-digit',
+                minute: '2-digit',
               })
-            : "";
+            : ''
           return (
             <div
               key={msg.id}
-              className={cn(
-                "group flex",
-                isOutbound ? "justify-end" : "justify-start",
-              )}
+              className={cn('group flex', isOutbound ? 'justify-end' : 'justify-start')}
             >
               {/* Delete button — before bubble for outbound, after for inbound */}
               {isOutbound && (
@@ -250,32 +243,26 @@ export function SmsConversation({
                   type="button"
                   onClick={() => setDeleteTarget(msg)}
                   className="mr-2 self-center opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  title={t("deleteMessage")}
+                  title={t('deleteMessage')}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               )}
               <div
                 className={cn(
-                  "max-w-[75%] rounded-2xl px-4 py-2",
-                  isOutbound
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted",
+                  'max-w-[75%] rounded-2xl px-4 py-2',
+                  isOutbound ? 'bg-primary text-primary-foreground' : 'bg-muted'
                 )}
               >
-                <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
+                <MessageText body={msg.body} />
                 <div
                   className={cn(
-                    "mt-1 flex items-center gap-1.5 text-[10px]",
-                    isOutbound
-                      ? "text-primary-foreground/70 justify-end"
-                      : "text-muted-foreground",
+                    'mt-1 flex items-center gap-1.5 text-[10px]',
+                    isOutbound ? 'text-primary-foreground/70 justify-end' : 'text-muted-foreground'
                   )}
                 >
                   <span>{time}</span>
-                  {isOutbound && (
-                    <span className="capitalize">{msg.status}</span>
-                  )}
+                  {isOutbound && <span className="capitalize">{msg.status}</span>}
                 </div>
               </div>
               {!isOutbound && (
@@ -283,13 +270,13 @@ export function SmsConversation({
                   type="button"
                   onClick={() => setDeleteTarget(msg)}
                   className="ml-2 self-center opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  title={t("deleteMessage")}
+                  title={t('deleteMessage')}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
-          );
+          )
         })}
         <div ref={bottomRef} />
       </div>
@@ -309,7 +296,7 @@ export function SmsConversation({
         </div>
         <div className="flex items-end gap-2">
           <Textarea
-            placeholder={t("placeholder", { name: customerName })}
+            placeholder={t('placeholder', { name: customerName })}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -320,7 +307,7 @@ export function SmsConversation({
             onClick={handleSend}
             disabled={isSending || !newMessage.trim()}
             size="icon"
-            aria-label={t("sendMessage")}
+            aria-label={t('sendMessage')}
           >
             {isSending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -335,24 +322,22 @@ export function SmsConversation({
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteDescription")}
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('deleteDescription')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{tc("cancel")}</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{tc('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteMessage}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {tc("delete")}
+              {tc('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }

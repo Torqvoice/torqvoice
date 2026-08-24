@@ -110,7 +110,7 @@ export async function createOrganization(input: unknown) {
       action: "organization.create",
       entity: "Organization",
       entityId: result.id,
-      message: `Created organization "${result.name}"`,
+      details: { key: "organization_create", params: { name: result.name } },
       metadata: { organizationId: result.id },
     }),
   });
@@ -201,7 +201,7 @@ export async function updateMemberRole(input: unknown) {
       action: "team.updateRole",
       entity: "OrganizationMember",
       entityId: result.memberId,
-      message: `Changed member role to ${result.role}`,
+      details: { key: "team_updateRole", params: { role: result.role } },
       metadata: { memberId: result.memberId, role: result.role },
     }),
   });
@@ -233,7 +233,7 @@ export async function removeMember(memberId: string) {
       action: "team.removeMember",
       entity: "OrganizationMember",
       entityId: result.memberId,
-      message: `Removed team member ${result.memberId}`,
+      details: { key: "team_removeMember", params: { id: result.memberId } },
       metadata: { memberId: result.memberId },
     }),
   });

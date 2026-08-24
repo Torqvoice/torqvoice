@@ -80,5 +80,20 @@
     "installDescription": "Adicione à tela de início para acesso rápido",
     "enterFullscreen": "Tela cheia",
     "exitFullscreen": "Sair da tela cheia"
+  },
+  "broadcast": {
+    "dismiss": "Fechar",
+    "title": "Aviso para todos",
+    "description": "Exibido no topo de cada página, para todos, conectados ou não. Deixe vazio para não exibir nada.",
+    "message": "Mensagem",
+    "level": "Gravidade",
+    "post": "Publicar aviso",
+    "clear": "Remover aviso",
+    "levelInfo": "Informação",
+    "levelWarning": "Alerta",
+    "levelCritical": "Crítico",
+    "placeholder": "ex. Estamos com problemas na nossa infraestrutura de servidores e já estamos trabalhando nisso.",
+    "posted": "Aviso publicado",
+    "cleared": "Aviso removido"
   }
 }

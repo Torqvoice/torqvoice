@@ -53,7 +53,6 @@ import {
   Globe,
   Layers,
   MessageSquare,
-  Send,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -93,7 +92,6 @@ export function AppSidebar({
   activeOrgId,
   isSuperAdmin,
   features,
-  telegramEnabled = false,
   tireHotelEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
@@ -104,7 +102,6 @@ export function AppSidebar({
   activeOrgId?: string
   isSuperAdmin?: boolean
   features?: PlanFeatures
-  telegramEnabled?: boolean
   tireHotelEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
@@ -140,19 +137,6 @@ export function AppSidebar({
       icon: MessageSquare,
       subject: 'customers',
     },
-    // Same story as the tire hotel below: the link only exists once Telegram
-    // is connected, so it is worth pointing at the first time it appears.
-    ...(telegramEnabled
-      ? [
-          {
-            titleKey: 'sidebar.telegram' as const,
-            url: '/telegram',
-            icon: Send,
-            subject: 'customers',
-            hint: 'telegram.v1',
-          },
-        ]
-      : []),
   ].filter((item) => canAccess(item.subject))
 
   const workshopItems = [

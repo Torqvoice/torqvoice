@@ -126,6 +126,10 @@
       "tireHotel": {
         "title": "Reifenhotel",
         "description": "Saisonale Reifeneinlagerung"
+      },
+      "providers": {
+        "title": "Anbieter",
+        "description": "E-Mail, SMS, WhatsApp & Telegram"
       }
     },
     "pro": "PRO"
@@ -917,8 +921,8 @@
     "optInspectionsDesc": "Inspektionsvorlagen, Inspektionen und Ergebnisse",
     "optAuditLogs": "Prüfprotokolle",
     "optAuditLogsDesc": "Aktivitäts- und Änderungsverlauf",
-    "optSmsMessages": "SMS-Nachrichten",
-    "optSmsMessagesDesc": "Gesendete und empfangene SMS-Nachrichten",
+    "optSmsMessages": "Nachrichten",
+    "optSmsMessagesDesc": "Gesendete und empfangene SMS-, WhatsApp- und Telegram-Nachrichten",
     "optScheduledMessages": "Geplante Nachrichten",
     "optScheduledMessagesDesc": "Wartende und wiederkehrende Nachrichten, die noch gesendet werden",
     "optNotifications": "Benachrichtigungen",
@@ -980,7 +984,9 @@
       "supportAction": "kontaktieren Sie unser Support-Team."
     },
     "optTireHotel": "Reifenhotel",
-    "optTireHotelDesc": "Eingelagerte Reifensätze, Regale, Vorbereitung und Lagervereinbarungen"
+    "optTireHotelDesc": "Eingelagerte Reifensätze, Regale, Vorbereitung und Lagervereinbarungen",
+    "optWorkshopConfig": "Werkstatt-Einrichtung",
+    "optWorkshopConfigDesc": "Arbeitsvorlagen, Rollen, Webhooks und geplante Berichte"
   },
   "license": {
     "title": "White-Label-Lizenz",
@@ -1487,5 +1493,31 @@
     "prepTitle": "Preise für Vorbereitung",
     "prepHint": "Was jede Art von Vorbereitung kostet. Leer bedeutet, sie wird nie berechnet, was zu Betrieben passt, die das Waschen in der Lagergebühr enthalten haben. Bepreiste werden automatisch auf Angebot und Auftrag gesetzt.",
     "prepNotCharged": "nicht berechnet"
+  },
+  "providers": {
+    "tabs": {
+      "email": "E-Mail",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram"
+    },
+    "locked": {
+      "email": {
+        "feature": "E-Mail-Einstellungen",
+        "description": "SMTP-Versand einrichten, um Rechnungen, Angebote und Benachrichtigungen direkt aus der Werkstatt zu senden."
+      },
+      "sms": {
+        "feature": "SMS-Nachrichten",
+        "description": "SMS mit Ihren Kunden direkt aus Torqvoice senden und empfangen."
+      },
+      "whatsapp": {
+        "feature": "WhatsApp-Nachrichten",
+        "description": "WhatsApp-Nachrichten samt Fotos von Bauteilen direkt aus Torqvoice senden und empfangen."
+      },
+      "telegram": {
+        "feature": "Telegram-Nachrichten",
+        "description": "Telegram-Nachrichten mit Ihren Kunden direkt aus Torqvoice senden und empfangen."
+      }
+    }
   }
 }

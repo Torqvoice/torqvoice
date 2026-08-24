@@ -38,7 +38,8 @@
       "messages": "Meldinger",
       "requests": "Forespørsler ({count})",
       "sms": "SMS",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "whatsapp": "WhatsApp"
     },
     "vehicleTable": {
       "plate": "Registreringsnummer",
@@ -68,7 +69,10 @@
     "customerCreated": "Kunde opprettet",
     "saveError": "Kunne ikke lagre kunde",
     "customerNumber": "Kundenr.",
-    "customerNumberAuto": "Auto"
+    "customerNumberAuto": "Auto",
+    "sectionContact": "Kontakt",
+    "sectionBilling": "Fakturering",
+    "addScannedVehicle": "Legg til kjøretøyet {vehicle}"
   },
   "serviceRequests": {
     "statusNew": "Ny",

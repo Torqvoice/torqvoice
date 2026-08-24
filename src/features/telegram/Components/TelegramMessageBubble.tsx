@@ -1,8 +1,9 @@
-"use client";
+'use client'
 
-import { cn } from "@/lib/utils";
-import { Trash2 } from "lucide-react";
-import type { TelegramMessage } from "./TelegramMessagesClient";
+import { cn } from '@/lib/utils'
+import { Trash2 } from 'lucide-react'
+import type { TelegramMessage } from './TelegramMessagesClient'
+import { MessageText } from '@/features/messaging/Components/MessageText'
 
 export function TelegramMessageBubble({
   msg,
@@ -10,26 +11,21 @@ export function TelegramMessageBubble({
   deleteLabel,
   onDelete,
 }: {
-  msg: TelegramMessage;
-  mounted: boolean;
-  deleteLabel: string;
-  onDelete: (msg: TelegramMessage) => void;
+  msg: TelegramMessage
+  mounted: boolean
+  deleteLabel: string
+  onDelete: (msg: TelegramMessage) => void
 }) {
-  const isOutbound = msg.direction === "outbound";
+  const isOutbound = msg.direction === 'outbound'
   const time = mounted
     ? new Date(msg.createdAt).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
+        hour: '2-digit',
+        minute: '2-digit',
       })
-    : "";
+    : ''
 
   return (
-    <div
-      className={cn(
-        "group flex",
-        isOutbound ? "justify-end" : "justify-start",
-      )}
-    >
+    <div className={cn('group flex', isOutbound ? 'justify-end' : 'justify-start')}>
       {isOutbound && (
         <button
           type="button"
@@ -42,19 +38,15 @@ export function TelegramMessageBubble({
       )}
       <div
         className={cn(
-          "max-w-[75%] rounded-2xl px-4 py-2",
-          isOutbound
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted",
+          'max-w-[75%] rounded-2xl px-4 py-2',
+          isOutbound ? 'bg-primary text-primary-foreground' : 'bg-muted'
         )}
       >
-        <p className="whitespace-pre-wrap text-sm">{msg.body}</p>
+        <MessageText body={msg.body} />
         <div
           className={cn(
-            "mt-1 flex items-center gap-1.5 text-[10px]",
-            isOutbound
-              ? "justify-end text-primary-foreground/70"
-              : "text-muted-foreground",
+            'mt-1 flex items-center gap-1.5 text-[10px]',
+            isOutbound ? 'justify-end text-primary-foreground/70' : 'text-muted-foreground'
           )}
         >
           <span>{time}</span>
@@ -72,5 +64,5 @@ export function TelegramMessageBubble({
         </button>
       )}
     </div>
-  );
+  )
 }

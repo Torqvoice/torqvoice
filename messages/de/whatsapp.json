@@ -1,0 +1,179 @@
+{
+  "settings": {
+    "title": "WhatsApp",
+    "description": "WhatsApp-Nachrichten mit Ihren Kunden senden und empfangen.",
+    "helpLink": "{provider} einrichten",
+    "save": "WhatsApp-Einstellungen speichern",
+    "saved": "WhatsApp-Einstellungen gespeichert",
+    "saveError": "WhatsApp-Einstellungen konnten nicht gespeichert werden",
+    "enable": {
+      "label": "WhatsApp aktivieren",
+      "hint": "Einschalten, sobald die Zugangsdaten des Anbieters hinterlegt sind.",
+      "disabledInfo": "Schalten Sie WhatsApp ein, um Anbieter, Nummer und Vorlage einzurichten."
+    },
+    "provider": {
+      "label": "Anbieter",
+      "hint": "Wer Ihre WhatsApp-Nummer bereitstellt. Beim Wechsel bleiben die Zugangsdaten des alten Anbieters erhalten."
+    },
+    "from": {
+      "label": "Ihre WhatsApp-Nummer",
+      "hint": "Die Nummer, die Kunden sehen, im internationalen Format."
+    },
+    "secret": {
+      "show": "Anzeigen",
+      "hide": "Verbergen",
+      "stored": "Gespeichert und verborgen. Neuen Wert eingeben, um ihn zu ersetzen."
+    },
+    "webhook": {
+      "label": "Webhook-URL",
+      "description": "Diese URL beim Anbieter eintragen, damit eingehende Nachrichten in Torqvoice ankommen.",
+      "copy": "Webhook-URL kopieren",
+      "copied": "Webhook-URL kopiert",
+      "saveFirst": "Speichern Sie diese Einstellungen, bevor Ihr Anbieter die URL prüft. Geprüft wird gegen das hier Gespeicherte, ein ungespeichertes Formular fällt durch."
+    },
+    "template": {
+      "title": "Nachrichtenvorlage",
+      "description": "Wird verwendet, wenn Sie einem Kunden schreiben, der sich länger nicht gemeldet hat.",
+      "windowExplainer": "WhatsApp erlaubt freien Text nur 24 Stunden nach der letzten Kundennachricht. Danach muss Ihre Nachricht als vom Anbieter freigegebene Vorlage rausgehen.",
+      "nameLabel": "Name der Vorlage",
+      "nameHint": "Name der freigegebenen Vorlage, bei manchen Anbietern die Content-SID.",
+      "languageLabel": "Sprache der Vorlage",
+      "languageHint": "Sprachcode, unter dem die Vorlage freigegeben wurde, zum Beispiel de.",
+      "variablesLabel": "Werte der Vorlage, in Reihenfolge",
+      "variablesHint": "Wählen Sie die Werte, die die nummerierten Platzhalter Ihrer Vorlage füllen, in derselben Reihenfolge. Leer lassen, wenn die Vorlage keine Platzhalter hat.",
+      "tokens": {
+        "customer": "Kundenname",
+        "vehicle": "Baujahr, Marke und Modell",
+        "plate": "Kennzeichen",
+        "message": "Ihr Text",
+        "workshop": "Name Ihrer Werkstatt",
+        "photo": "das angehängte Foto"
+      },
+      "variablesEmpty": "Noch keine Werte. Unten in der Reihenfolge Ihrer Vorlage hinzufügen.",
+      "variablesRemove": "{name} entfernen",
+      "mediaUrlLabel": "Medien-URL für Ihre Vorlage",
+      "mediaUrlHint": "Fügen Sie dies in das Medienfeld der Vorlage ein und ersetzen Sie n durch die Nummer des Foto-Werts.",
+      "mediaUrlCopy": "Medien-URL kopieren",
+      "mediaUrlCopied": "Medien-URL kopiert",
+      "mediaUrlSample": "Als Beispielwert beim Anbieter verwenden: sample",
+      "textTitle": "Textnachrichten",
+      "textDescription": "Wird verwendet, wenn Sie ohne Foto schreiben: aus Nachrichten, aus dem WhatsApp-Tab beim Kunden oder aus einer geplanten Nachricht.",
+      "mediaTitle": "Nachrichten mit Foto",
+      "mediaDescription": "Wird vom Button „Per WhatsApp senden“ bei den Fotos eines Auftrags verwendet und immer, wenn Sie in einer Konversation ein Foto anhängen.",
+      "textMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, nicht schreiben.",
+      "mediaMissing": "Nicht eingerichtet: Sie können Kunden, die sich seit 24 Stunden nicht gemeldet haben, keine Fotos senden.",
+      "whatIsIt": "Eine Vorlage ist eine feste Nachricht, die Sie einmal schreiben und die {provider} freigibt: Der Wortlaut ändert sich nie, nur die nummerierten Platzhalter füllen Sie. Schreiben Sie sie in deren Konsole und fügen Sie hier die Kennung ein.",
+      "whyTwo": "Zwei sind nötig, weil WhatsApp den Medientyp bei der Freigabe festlegt. Eine mit Foto freigegebene Vorlage kann nur Fotos tragen, eine als Text freigegebene nie eines.",
+      "exampleLabel": "Beispieltext für die Konsole Ihres Anbieters",
+      "exampleTextValues": "Zu füllen mit: customer, message. Schreiben Sie ihn in der Sprache Ihrer Kunden.",
+      "exampleMediaValues": "Zu füllen mit: customer, message und photo für die Medien-URL. Schreiben Sie ihn in der Sprache Ihrer Kunden.",
+      "exampleMediaValuesHeader": "Füllen Sie sie mit: customer, message. Das Foto wird automatisch angehängt und braucht keine eigene Lücke. Schreiben Sie sie in der Sprache Ihrer Kundschaft."
+    },
+    "test": {
+      "send": "Test senden",
+      "sent": "Testnachricht gesendet",
+      "failed": "Testnachricht konnte nicht gesendet werden",
+      "hint": "Schreiben Sie sich zuerst selbst über WhatsApp an, sonst braucht der Test eine freigegebene Vorlage."
+    },
+    "disconnect": {
+      "action": "WhatsApp trennen",
+      "hint": "Entfernt die Zugangsdaten aus Torqvoice. Ihre Konversationen bleiben erhalten.",
+      "done": "WhatsApp getrennt",
+      "title": "Trennen"
+    },
+    "savedIncomplete": "Gespeichert. Zum Senden fehlt noch: {fields}",
+    "fieldStillNeeded": "Zum Senden noch erforderlich",
+    "steps": {
+      "openProvider": "{provider} öffnen",
+      "openNumber": "Absendernummer finden",
+      "openToken": "Dauerhaftes Token erstellen",
+      "consolePath": "Gehen Sie in Meta zu:",
+      "provider": {
+        "title": "Anbieter und Nummer wählen",
+        "description": "Twilio ist schneller eingerichtet und übernimmt Meta für Sie. Die Meta Cloud API kostet weniger, dafür durchlaufen Sie die Unternehmensverifizierung selbst. Tragen Sie die Nummer ein, die Kunden sehen, im internationalen Format."
+      },
+      "credentials": {
+        "title": "Zugangsdaten eintragen",
+        "description": "Kopieren Sie jeden Wert aus {provider}. Jedes Feld unten sagt genau, wo er zu finden ist. Speichern Sie, sobald Sie sie haben; den Rest können Sie später ergänzen."
+      },
+      "webhook": {
+        "title": "Webhook eintragen",
+        "description": "Kopieren Sie diese Adresse zu {provider}, damit Nachrichten von Kunden bei Torqvoice ankommen. Speichern Sie zuerst diese Seite: Die Adresse wird gegen das hier Gespeicherte geprüft.",
+        "open": "Webhook-Einstellungen bei {provider} öffnen",
+        "recheck": "Erneut prüfen",
+        "waiting": "An dieser Adresse ist noch nichts angekommen. Sie wird grün, sobald Ihr Anbieter sie bestätigt oder eine Nachricht zustellt.",
+        "seen": "Ihr Anbieter hat diese Adresse erreicht. Eingehende Nachrichten erscheinen unter Nachrichten."
+      },
+      "templates": {
+        "title": "Vorlagen freigeben lassen",
+        "description": "Nur nötig, um außerhalb des 24-Stunden-Fensters zuerst zu schreiben. Sie können das überspringen und zurückkommen, sobald der Nachrichtenversand läuft.",
+        "open": "Vorlagen bei {provider} öffnen"
+      },
+      "test": {
+        "title": "Testnachricht senden",
+        "description": "Schreiben Sie zuerst vom eigenen Handy an Ihre WhatsApp-Nummer. Das beweist, dass der Webhook funktioniert, und öffnet ein 24-Stunden-Fenster, sodass eine Antwort keine Vorlage braucht."
+      },
+      "back": "Zurück",
+      "continue": "Weiter"
+    },
+    "register": {
+      "title": "Nummer bei Meta registrieren",
+      "description": "Meta verlangt nach der Verifizierung eine gesonderte Registrierung. Wählen Sie eine sechsstellige PIN, oder nehmen Sie die vorhandene PIN der Bestätigung in zwei Schritten. Notieren Sie sie: Sie brauchen sie, um die Nummer später zu verschieben oder neu zu registrieren.",
+      "action": "Nummer registrieren",
+      "done": "Nummer registriert",
+      "failed": "Nummer konnte nicht registriert werden",
+      "limit": "Meta erlaubt 10 Registrierungsversuche pro Nummer in 72 Stunden. Eine falsche PIN zählt mit, prüfen Sie sie also vorher."
+    }
+  },
+  "messages": {
+    "featureName": "WhatsApp-Nachrichten",
+    "featureDescription": "WhatsApp-Nachrichten samt Fotos von Bauteilen direkt aus Torqvoice senden und empfangen.",
+    "noThreads": "Noch keine Konversationen",
+    "noThreadsHint": "Nachrichten erscheinen hier, sobald ein Kunde an Ihre WhatsApp-Nummer schreibt oder Sie ihm schreiben.",
+    "selectThread": "Konversation auswählen",
+    "backToThreads": "Konversationen",
+    "empty": "Hier ist noch nichts.",
+    "placeholder": "Nachricht schreiben",
+    "send": "Senden",
+    "sendFailed": "Nachricht konnte nicht gesendet werden",
+    "attach": "Foto anhängen",
+    "attachFailed": "Foto konnte nicht angehängt werden",
+    "removeAttachment": "Anhang entfernen",
+    "attachment": "Anhang",
+    "delete": "Löschen",
+    "deleteFailed": "Nachricht konnte nicht gelöscht werden",
+    "sentAsTemplate": "Vorlage",
+    "sentAsTemplateNotice": "Als freigegebene Vorlage gesendet, weil der Kunde in den letzten 24 Stunden nicht geschrieben hat.",
+    "windowClosed": "Der Kunde hat in den letzten 24 Stunden nicht geschrieben, daher geht dies als freigegebene Vorlage raus.",
+    "unknownNumber": "Diese Nummer gehört noch zu keinem Kunden. Legen Sie ihn als Kunden an, um zu antworten.",
+    "notConfigured": {
+      "title": "WhatsApp ist nicht verbunden",
+      "description": "Verbinden Sie eine WhatsApp-Nummer, um Nachrichten mit Ihren Kunden auszutauschen.",
+      "action": "WhatsApp einrichten"
+    },
+    "title": "Konversationen",
+    "searchPlaceholder": "Konversationen durchsuchen",
+    "noSearchResults": "Keine Konversation passt zur Suche.",
+    "compose": {
+      "newMessage": "Neue Nachricht",
+      "title": "Neue WhatsApp-Nachricht",
+      "searchPlaceholder": "Kunden suchen",
+      "noMatches": "Kein Kunde passt zur Suche.",
+      "noRecipients": "Noch kein Kunde mit Telefonnummer."
+    },
+    "windowBlocked": "Dieser Kunde hat in den letzten 24 Stunden nicht geschrieben, daher stellt WhatsApp jetzt keine Nachricht zu. Bitten Sie ihn zu schreiben, oder richten Sie eine freigegebene Vorlage ein.",
+    "windowBlockedAction": "Vorlage einrichten",
+    "windowBlockedPlaceholder": "Warten, bis der Kunde zuerst schreibt"
+  },
+  "sendPhoto": {
+    "action": "Per WhatsApp senden",
+    "title": "Foto per WhatsApp senden",
+    "description": "Der Kunde erhält dieses Foto in seinem WhatsApp-Chat.",
+    "captionPlaceholder": "Hinweis ergänzen, zum Beispiel was das Foto zeigt",
+    "send": "Senden",
+    "cancel": "Abbrechen",
+    "sent": "Foto gesendet",
+    "sentAsTemplate": "Foto als freigegebene Vorlage gesendet",
+    "failed": "Foto konnte nicht gesendet werden"
+  }
+}

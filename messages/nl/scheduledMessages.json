@@ -7,7 +7,8 @@
       "email": "E-mail",
       "sms": "Sms",
       "telegram": "Telegram",
-      "in_app": "Notitie in de app"
+      "in_app": "Notitie in de app",
+      "whatsapp": "WhatsApp"
     },
     "repeatLabel": "Herhalen",
     "frequencies": {
@@ -39,7 +40,8 @@
     "schedule": "Plannen",
     "scheduled": "Bericht gepland",
     "updated": "Gepland bericht bijgewerkt",
-    "saveError": "Kan het bericht niet opslaan"
+    "saveError": "Kan het bericht niet opslaan",
+    "whatsappNeedsTemplate": "Dit wordt ruim na het sluiten van het venster van 24 uur verstuurd en er is geen WhatsApp-tekstsjabloon ingesteld, dus het zou mislukken. Stel er een in via Instellingen > Providers > WhatsApp."
   },
   "list": {
     "scheduleMessage": "Bericht plannen",
