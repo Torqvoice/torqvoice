@@ -17,8 +17,6 @@
     "byBay": "Stulpelis kiekvienai darbo vietai",
     "byNothing": "Stulpelis kiekvienai dienai",
     "weekends": "Savaitgalis",
-    "zoomIn": "Didinti",
-    "zoomOut": "Mažinti",
     "add": "Pridėti",
     "addBay": "Pridėti darbo vietą",
     "weekNumber": "{number} sav.",
@@ -111,7 +109,8 @@
     "panLeft": "Anksčiau savaitėje",
     "panRight": "Vėliau savaitėje",
     "hintPan": "Vilkite foną, kad judėtumėte per savaitę.",
-    "wholeWeek": "Rodyti visą savaitę"
+    "wholeWeek": "Rodyti visą savaitę",
+    "hintZoom": "Laikykite Ctrl ir slinkite, kad priartintumėte."
   },
   "bay": {
     "addTitle": "Pridėti darbo vietą",

@@ -17,8 +17,6 @@
     "byBay": "Una colonna per postazione",
     "byNothing": "Una colonna per giorno",
     "weekends": "Fine settimana",
-    "zoomIn": "Ingrandisci",
-    "zoomOut": "Riduci",
     "add": "Aggiungi",
     "addBay": "Aggiungi postazione",
     "weekNumber": "Sett. {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Prima nella settimana",
     "panRight": "Più avanti nella settimana",
     "hintPan": "Trascina lo sfondo per scorrere la settimana.",
-    "wholeWeek": "Vedi tutta la settimana"
+    "wholeWeek": "Vedi tutta la settimana",
+    "hintZoom": "Tieni premuto Ctrl e scorri per ingrandire."
   },
   "bay": {
     "addTitle": "Aggiungi postazione",

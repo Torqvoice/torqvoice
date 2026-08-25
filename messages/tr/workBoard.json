@@ -17,8 +17,6 @@
     "byBay": "Çalışma alanı başına bir sütun",
     "byNothing": "Gün başına bir sütun",
     "weekends": "Hafta sonu",
-    "zoomIn": "Yakınlaştır",
-    "zoomOut": "Uzaklaştır",
     "add": "Ekle",
     "addBay": "Çalışma alanı ekle",
     "weekNumber": "{number}. hafta",
@@ -111,7 +109,8 @@
     "panLeft": "Haftanın başına doğru",
     "panRight": "Haftanın sonuna doğru",
     "hintPan": "Hafta boyunca ilerlemek için arka planı sürükleyin.",
-    "wholeWeek": "Tüm haftayı gör"
+    "wholeWeek": "Tüm haftayı gör",
+    "hintZoom": "Yakınlaştırmak için Ctrl tuşuna basılı tutup kaydırın."
   },
   "bay": {
     "addTitle": "Çalışma alanı ekle",

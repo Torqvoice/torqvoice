@@ -17,8 +17,6 @@
     "byBay": "Én kolonne per arbeidsplass",
     "byNothing": "Én kolonne per dag",
     "weekends": "Helg",
-    "zoomIn": "Zoom inn",
-    "zoomOut": "Zoom ut",
     "add": "Legg til",
     "addBay": "Legg til arbeidsplass",
     "weekNumber": "Uke {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Tidligere i uken",
     "panRight": "Senere i uken",
     "hintPan": "Dra bakgrunnen for å bevege deg gjennom uken.",
-    "wholeWeek": "Vis hele uken"
+    "wholeWeek": "Vis hele uken",
+    "hintZoom": "Hold Ctrl og rull for å zoome."
   },
   "bay": {
     "addTitle": "Legg til arbeidsplass",

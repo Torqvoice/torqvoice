@@ -7,8 +7,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { useDateSettings } from '@/components/date-settings-context'
 import type { WorkBoardJob } from '../../Actions/boardActions'
-import type { BoardDensity } from '../../hooks/useBoardPreferences'
-import { DENSITY_SCALE } from '../../hooks/useBoardPreferences'
+import { MAX_ZOOM, MIN_ZOOM, ZOOM_STEP, clampZoom } from '../../hooks/useBoardPreferences'
 import { timeToMinutes } from '../../utils/datetime'
 import { formatClock } from '../../utils/clock'
 import {
@@ -39,12 +38,8 @@ import {
 import { useDragToPan } from './useDragToPan'
 import { type WeekDropTarget, useWeekDrag } from './useWeekDrag'
 
-/** How fine the horizontal rules are at each zoom. */
-const SLOT_MINUTES: Record<BoardDensity, number> = {
-  fit: 30,
-  comfortable: 15,
-  detailed: 15,
-}
+/** Quarter-hour rules once there is room for them. */
+const FINE_SLOT_FROM_ZOOM = 1.5
 
 const GUTTER_WIDTH = 60
 /** Low enough that a shop with eight bays still sees Monday to Friday at once;
@@ -78,7 +73,8 @@ export function WeekTimeline({
   lanes,
   jobs,
   grouping,
-  density,
+  zoom,
+  onZoomChange,
   snapMinutes,
   workDayStart,
   workDayEnd,
@@ -98,8 +94,10 @@ export function WeekTimeline({
   lanes: BoardLane[]
   jobs: WorkBoardJob[]
   grouping: LaneGrouping
-  density: BoardDensity
+  /** 1 fits the day to the board; above that the hours grow and it scrolls. */
+  zoom: number
   snapMinutes: number
+  onZoomChange?: (zoom: number) => void
   /** "HH:MM" from workshop settings. */
   workDayStart: string
   workDayEnd: string
@@ -147,7 +145,7 @@ export function WeekTimeline({
   // which is what the earlier pixel arithmetic got wrong: when the measurement
   // was missing the board collapsed and zooming changed nothing.
   const bodyTrack = useMemo(() => {
-    const scale = DENSITY_SCALE[density]
+    const scale = zoom
     // An absolute floor keeps an hour usable on a short window; the percentage
     // is what makes zooming mean anything, because it is measured against the
     // board itself. `1fr` on top of both fills any space left over, so the
@@ -155,7 +153,7 @@ export function WeekTimeline({
     const floorPx = Math.round(windowMinutes(timeWindow) * MIN_PX_PER_MINUTE * scale)
     if (scale === 1) return `minmax(${floorPx}px, 1fr)`
     return `minmax(max(${floorPx}px, ${Math.round(scale * 100)}%), 1fr)`
-  }, [timeWindow, density])
+  }, [timeWindow, zoom])
 
   /** Lane ids the board is actually showing, minus the catch-all itself. */
   const knownLaneIds = useMemo(
@@ -260,8 +258,25 @@ export function WeekTimeline({
     ).length
   }, [scheduled, hiddenDays])
 
-  const slotMinutes = SLOT_MINUTES[density]
+  const slotMinutes = zoom >= FINE_SLOT_FROM_ZOOM ? 15 : 30
   const pan = useDragToPan(scrollRef)
+
+  // Ctrl (or command) with the wheel zooms, which is the gesture every map and
+  // canvas uses, and is what a trackpad pinch already sends. Without the
+  // modifier the wheel scrolls the board as usual.
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el || !onZoomChange) return
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return
+      event.preventDefault()
+      const direction = event.deltaY < 0 ? 1 : -1
+      const next = clampZoom(zoom * (1 + direction * ZOOM_STEP))
+      if (next !== zoom) onZoomChange(next)
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [zoom, onZoomChange])
   /** The week runs off the edge and there is a grouping that would fix it. */
   const overflowsWeek = (pan.overflow.left || pan.overflow.right) && grouping !== 'none'
 
@@ -502,6 +517,7 @@ export function WeekTimeline({
           <span>
             {t('hint')}
             {(pan.overflow.left || pan.overflow.right) && ` ${t('hintPan')}`}
+            {onZoomChange && ` ${t('hintZoom')}`}
           </span>
           {/* The question this view kept prompting was "how do I see the whole
               week", and the answer was buried in a dropdown. It is a button

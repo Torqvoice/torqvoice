@@ -15,8 +15,6 @@ import {
   Monitor,
   ListFilter,
   Plus,
-  ZoomIn,
-  ZoomOut,
 } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { cn } from '@/lib/utils'
@@ -36,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type BoardDensity, type BoardLayout, DENSITY_ORDER } from '../hooks/useBoardPreferences'
+import type { BoardLayout } from '../hooks/useBoardPreferences'
 import type { BoardLane, LaneGrouping } from '../utils/lanes'
 
 export type BoardView = 'week' | 'day'
@@ -88,7 +86,6 @@ export function WorkBoardToolbar({
   view,
   grouping,
   layout,
-  density,
   showWeekends,
   lanes,
   hiddenLaneIds,
@@ -106,7 +103,6 @@ export function WorkBoardToolbar({
   onViewChange,
   onGroupingChange,
   onLayoutChange,
-  onDensityChange,
   onToggleWeekends,
 }: {
   weekStart: string
@@ -114,7 +110,6 @@ export function WorkBoardToolbar({
   view: BoardView
   grouping: LaneGrouping
   layout: BoardLayout
-  density: BoardDensity
   showWeekends: boolean
   /** Every lane the grouping offers, filtered or not. */
   lanes: BoardLane[]
@@ -134,13 +129,10 @@ export function WorkBoardToolbar({
   onViewChange: (view: BoardView) => void
   onGroupingChange: (grouping: LaneGrouping) => void
   onLayoutChange: (layout: BoardLayout) => void
-  onDensityChange: (density: BoardDensity) => void
   onToggleWeekends: () => void
 }) {
   const t = useTranslations('workBoard.toolbar')
   const locale = useLocale()
-
-  const densityIndex = DENSITY_ORDER.indexOf(density)
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -275,27 +267,6 @@ export function WorkBoardToolbar({
               <CalendarRange className="mr-1.5 h-3.5 w-3.5" />
               {t('weekends')}
             </Button>
-
-            <ButtonGroup className={cn(layout !== 'timeline' && 'hidden')}>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                disabled={densityIndex <= 0}
-                onClick={() => onDensityChange(DENSITY_ORDER[densityIndex - 1])}
-                aria-label={t('zoomOut')}
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                disabled={densityIndex >= DENSITY_ORDER.length - 1}
-                onClick={() => onDensityChange(DENSITY_ORDER[densityIndex + 1])}
-                aria-label={t('zoomIn')}
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            </ButtonGroup>
           </>
         )}
 

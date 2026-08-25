@@ -17,8 +17,6 @@
     "byBay": "Una columna por puesto",
     "byNothing": "Una columna por día",
     "weekends": "Fin de semana",
-    "zoomIn": "Acercar",
-    "zoomOut": "Alejar",
     "add": "Añadir",
     "addBay": "Añadir puesto",
     "weekNumber": "Sem. {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Antes en la semana",
     "panRight": "Después en la semana",
     "hintPan": "Arrastra el fondo para recorrer la semana.",
-    "wholeWeek": "Ver la semana completa"
+    "wholeWeek": "Ver la semana completa",
+    "hintZoom": "Mantén Ctrl y desplázate para hacer zoom."
   },
   "bay": {
     "addTitle": "Añadir puesto de trabajo",

@@ -17,8 +17,6 @@
     "byBay": "A column per work bay",
     "byNothing": "A column per day",
     "weekends": "Weekends",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
     "add": "Add",
     "addBay": "Add work bay",
     "weekNumber": "Week {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Earlier in the week",
     "panRight": "Later in the week",
     "hintPan": "Drag the background to move across the week.",
-    "wholeWeek": "See the whole week"
+    "wholeWeek": "See the whole week",
+    "hintZoom": "Hold Ctrl and scroll to zoom."
   },
   "bay": {
     "addTitle": "Add work bay",

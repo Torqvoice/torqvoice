@@ -373,7 +373,7 @@ export function WorkBoardPresenter({
               lanes={lanes}
               jobs={store.jobs}
               grouping={grouping}
-              density="fit"
+              zoom={1}
               snapMinutes={15}
               workDayStart={workDayStart}
               workDayEnd={workDayEnd}

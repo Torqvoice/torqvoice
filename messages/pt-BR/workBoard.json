@@ -17,8 +17,6 @@
     "byBay": "Uma coluna por baia",
     "byNothing": "Uma coluna por dia",
     "weekends": "Fim de semana",
-    "zoomIn": "Ampliar",
-    "zoomOut": "Reduzir",
     "add": "Adicionar",
     "addBay": "Adicionar baia",
     "weekNumber": "Sem. {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Antes na semana",
     "panRight": "Depois na semana",
     "hintPan": "Arraste o fundo para percorrer a semana.",
-    "wholeWeek": "Ver a semana inteira"
+    "wholeWeek": "Ver a semana inteira",
+    "hintZoom": "Segure Ctrl e role para dar zoom."
   },
   "bay": {
     "addTitle": "Adicionar baia",

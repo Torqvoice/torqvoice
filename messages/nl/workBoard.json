@@ -17,8 +17,6 @@
     "byBay": "Een kolom per werkplek",
     "byNothing": "Een kolom per dag",
     "weekends": "Weekend",
-    "zoomIn": "Inzoomen",
-    "zoomOut": "Uitzoomen",
     "add": "Toevoegen",
     "addBay": "Werkplek toevoegen",
     "weekNumber": "Week {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Eerder in de week",
     "panRight": "Later in de week",
     "hintPan": "Sleep de achtergrond om door de week te bewegen.",
-    "wholeWeek": "Hele week tonen"
+    "wholeWeek": "Hele week tonen",
+    "hintZoom": "Houd Ctrl ingedrukt en scroll om te zoomen."
   },
   "bay": {
     "addTitle": "Werkplek toevoegen",

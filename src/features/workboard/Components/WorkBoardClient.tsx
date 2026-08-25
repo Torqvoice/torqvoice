@@ -96,37 +96,33 @@ function pointerAt(event: DragEndEvent): { x: number; y: number } | null {
   }
 }
 
-function UnassignedJobOverlayCard({
-  job,
-  type,
+/**
+ * What follows the cursor while a job is in the air.
+ *
+ * Deliberately a single small line rather than the full card: the board draws a
+ * ghost at the snapped slot underneath, and a card the size of the real one sat
+ * squarely on top of it, hiding the very thing you were aiming with. Offset
+ * down and right of the cursor for the same reason.
+ */
+function DragChip({
+  title,
+  subtitle,
+  isInspection,
 }: {
-  job: Record<string, unknown>
-  type: 'serviceRecord' | 'inspection'
+  title: string
+  subtitle?: string | null
+  isInspection?: boolean
 }) {
-  const isServiceRecord = type === 'serviceRecord'
-  const vehicle = job.vehicle as
-    | { year: number; make: string; model: string; licensePlate: string | null }
-    | undefined
-  const title = isServiceRecord
-    ? (job.title as string)
-    : ((job.template as { name: string })?.name ?? '')
   return (
-    <div className="flex items-start gap-1 rounded-md border bg-card p-1.5 text-xs shadow-md">
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1">
-          {isServiceRecord ? (
-            <Wrench className="h-3 w-3 shrink-0 text-blue-500" />
-          ) : (
-            <ClipboardCheck className="h-3 w-3 shrink-0 text-green-500" />
-          )}
-          <span className="truncate font-medium">{title}</span>
-        </div>
-        {vehicle && (
-          <p className="truncate text-muted-foreground">
-            {vehicle.year} {vehicle.make} {vehicle.model}
-            {vehicle.licensePlate ? ` · ${vehicle.licensePlate}` : ''}
-          </p>
+    <div className="pointer-events-none max-w-[200px] translate-x-3 translate-y-3">
+      <div className="flex items-center gap-1 rounded-md border bg-card/95 px-1.5 py-0.5 text-[11px] shadow-md backdrop-blur-sm">
+        {isInspection ? (
+          <ClipboardCheck className="h-3 w-3 shrink-0 text-green-500" />
+        ) : (
+          <Wrench className="h-3 w-3 shrink-0 text-blue-500" />
         )}
+        <span className="truncate font-medium">{title}</span>
+        {subtitle && <span className="truncate text-muted-foreground">{subtitle}</span>}
       </div>
     </div>
   )
@@ -714,7 +710,6 @@ export function WorkBoardClient({
       view={view}
       grouping={preferences.grouping}
       layout={preferences.layout}
-      density={preferences.density}
       showWeekends={preferences.showWeekends}
       lanes={lanes}
       hiddenLaneIds={preferences.hiddenLaneIds}
@@ -738,7 +733,6 @@ export function WorkBoardClient({
       onViewChange={setView}
       onGroupingChange={setGrouping}
       onLayoutChange={(layout) => updatePreferences({ layout })}
-      onDensityChange={(density) => updatePreferences({ density })}
       onToggleWeekends={() => updatePreferences({ showWeekends: !preferences.showWeekends })}
     />
   )
@@ -761,16 +755,29 @@ export function WorkBoardClient({
   }
 
   const dragOverlay = activeDrag?.job ? (
-    <div className="w-48 opacity-90">
-      <BoardJobCard job={activeDrag.job} />
-    </div>
+    <DragChip
+      title={activeDrag.job.title}
+      subtitle={
+        activeDrag.job.vehicle?.licensePlate ??
+        (activeDrag.job.vehicle
+          ? `${activeDrag.job.vehicle.make} ${activeDrag.job.vehicle.model}`
+          : null)
+      }
+      isInspection={activeDrag.job.type === 'inspection'}
+    />
   ) : activeDrag?.unassignedJob ? (
-    <div className="w-48 opacity-90">
-      <UnassignedJobOverlayCard
-        job={activeDrag.unassignedJob.job}
-        type={activeDrag.unassignedJob.type}
-      />
-    </div>
+    <DragChip
+      title={
+        (activeDrag.unassignedJob.job.title as string) ??
+        (activeDrag.unassignedJob.job.template as { name: string })?.name ??
+        ''
+      }
+      subtitle={
+        (activeDrag.unassignedJob.job.vehicle as { licensePlate: string | null } | undefined)
+          ?.licensePlate ?? null
+      }
+      isInspection={activeDrag.unassignedJob.type === 'inspection'}
+    />
   ) : null
 
   return (
@@ -819,7 +826,8 @@ export function WorkBoardClient({
               lanes={visibleLanes}
               jobs={store.jobs}
               grouping={preferences.grouping}
-              density={preferences.density}
+              zoom={preferences.zoom}
+              onZoomChange={(zoom) => updatePreferences({ zoom })}
               snapMinutes={preferences.snapMinutes}
               workDayStart={boardSettings.workDayStart}
               workDayEnd={boardSettings.workDayEnd}

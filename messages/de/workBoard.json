@@ -17,8 +17,6 @@
     "byBay": "Eine Spalte je Arbeitsplatz",
     "byNothing": "Eine Spalte je Tag",
     "weekends": "Wochenende",
-    "zoomIn": "Vergrößern",
-    "zoomOut": "Verkleinern",
     "add": "Hinzufügen",
     "addBay": "Arbeitsplatz hinzufügen",
     "weekNumber": "KW {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Früher in der Woche",
     "panRight": "Später in der Woche",
     "hintPan": "Hintergrund ziehen, um durch die Woche zu blättern.",
-    "wholeWeek": "Ganze Woche anzeigen"
+    "wholeWeek": "Ganze Woche anzeigen",
+    "hintZoom": "Strg halten und scrollen zum Zoomen."
   },
   "bay": {
     "addTitle": "Arbeitsplatz hinzufügen",

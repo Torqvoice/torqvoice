@@ -4,23 +4,21 @@ import { useCallback, useEffect, useState } from 'react'
 import { type LaneGrouping, isLaneGrouping } from '../utils/lanes'
 
 /**
- * How tall the week timeline draws an hour.
+ * How far the week timeline is zoomed in, as a multiple of the height that
+ * fits the whole day on screen.
  *
- * The scale is relative to the height that fits the whole day on screen, not an
- * absolute pixel count: `fit` fills the board exactly, and the wider settings
- * multiply that and scroll. A planner is for seeing the week at a glance, so
- * the default has to fill the window on any screen rather than leave the
- * bottom half of it blank.
+ * A continuous number rather than named steps, because the gesture that drives
+ * it is a wheel: 1 fills the board exactly, and anything above it makes the
+ * hours taller and scrolls.
  */
-export type BoardDensity = 'fit' | 'comfortable' | 'detailed'
+export const MIN_ZOOM = 1
+export const MAX_ZOOM = 6
+export const ZOOM_STEP = 0.15
 
-export const DENSITY_SCALE: Record<BoardDensity, number> = {
-  fit: 1,
-  comfortable: 1.6,
-  detailed: 2.6,
+export function clampZoom(value: number): number {
+  if (!Number.isFinite(value)) return MIN_ZOOM
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(value * 100) / 100))
 }
-
-export const DENSITY_ORDER: BoardDensity[] = ['fit', 'comfortable', 'detailed']
 
 /**
  * How the week draws itself.
@@ -45,7 +43,7 @@ export type SnapMinutes = (typeof SNAP_CHOICES)[number]
 export type BoardPreferences = {
   grouping: LaneGrouping
   layout: BoardLayout
-  density: BoardDensity
+  zoom: number
   /** Saturday and Sunday columns. Most shops do not want them. */
   showWeekends: boolean
   snapMinutes: SnapMinutes
@@ -63,7 +61,7 @@ export type BoardPreferences = {
 export const DEFAULT_PREFERENCES: BoardPreferences = {
   grouping: 'technician',
   layout: 'timeline',
-  density: 'fit',
+  zoom: MIN_ZOOM,
   showWeekends: false,
   snapMinutes: 15,
   hiddenLaneIds: [],
@@ -79,9 +77,7 @@ function readStored(): Partial<BoardPreferences> {
     const out: Partial<BoardPreferences> = {}
     if (isLaneGrouping(parsed.grouping)) out.grouping = parsed.grouping
     if (isBoardLayout(parsed.layout)) out.layout = parsed.layout
-    if (DENSITY_ORDER.includes(parsed.density as BoardDensity)) {
-      out.density = parsed.density as BoardDensity
-    }
+    if (typeof parsed.zoom === 'number') out.zoom = clampZoom(parsed.zoom)
     if (typeof parsed.showWeekends === 'boolean') out.showWeekends = parsed.showWeekends
     if (SNAP_CHOICES.includes(parsed.snapMinutes as SnapMinutes)) {
       out.snapMinutes = parsed.snapMinutes as SnapMinutes

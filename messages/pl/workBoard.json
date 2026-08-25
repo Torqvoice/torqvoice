@@ -17,8 +17,6 @@
     "byBay": "Kolumna na stanowisko",
     "byNothing": "Kolumna na dzień",
     "weekends": "Weekend",
-    "zoomIn": "Powiększ",
-    "zoomOut": "Pomniejsz",
     "add": "Dodaj",
     "addBay": "Dodaj stanowisko",
     "weekNumber": "Tydz. {number}",
@@ -111,7 +109,8 @@
     "panLeft": "Wcześniej w tygodniu",
     "panRight": "Później w tygodniu",
     "hintPan": "Przeciągnij tło, aby przesuwać się po tygodniu.",
-    "wholeWeek": "Pokaż cały tydzień"
+    "wholeWeek": "Pokaż cały tydzień",
+    "hintZoom": "Przytrzymaj Ctrl i przewiń, aby przybliżyć."
   },
   "bay": {
     "addTitle": "Dodaj stanowisko",
