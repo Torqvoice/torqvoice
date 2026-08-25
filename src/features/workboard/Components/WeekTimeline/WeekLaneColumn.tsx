@@ -12,7 +12,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import type { WorkBoardJob } from '../../Actions/boardActions'
-import { minutesToTime } from '../../utils/datetime'
+import { type ClockFormat, formatClock } from '../../utils/clock'
 import type { BoardLane } from '../../utils/lanes'
 import { type TimeWindow, layoutLaneDay } from '../../utils/layout'
 import { columnKey, offsetForMinutes } from './geometry'
@@ -26,13 +26,16 @@ export function WeekLaneColumn({
   date,
   lane,
   endsDay,
+  dropGhost,
   jobs,
   window: timeWindow,
   pxPerMinute,
   slotMinutes,
+  timeFormat,
   workDayStart,
   workDayEnd,
   nowMinutes,
+  readOnly,
   draggingJobId,
   registerColumn,
   onOpenJob,
@@ -43,14 +46,18 @@ export function WeekLaneColumn({
   lane: BoardLane
   /** Last lane of its day, which gets the heavier rule between days. */
   endsDay: boolean
+  /** Where a job dragged in from outside would land, while it is still in the air. */
+  dropGhost?: { startMins: number; endMins: number } | null
   jobs: WorkBoardJob[]
   window: TimeWindow
   pxPerMinute: number
   slotMinutes: number
+  timeFormat: ClockFormat
   workDayStart: number
   workDayEnd: number
   /** Minutes from midnight to draw the "now" line at, or null on other days. */
   nowMinutes: number | null
+  readOnly?: boolean
   draggingJobId: string | null
   registerColumn: (key: string, el: HTMLElement | null) => void
   onOpenJob: (job: WorkBoardJob) => void
@@ -138,6 +145,24 @@ export function WeekLaneColumn({
             <NowLine minutes={nowMinutes} window={timeWindow} pxPerMinute={pxPerMinute} />
           )}
 
+          {dropGhost && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0.5 z-20 flex items-start justify-center overflow-hidden rounded-md border-2 border-dashed border-primary bg-primary/15"
+              style={{
+                top: offsetForMinutes(dropGhost.startMins, timeWindow, pxPerMinute),
+                height: Math.max(
+                  (dropGhost.endMins - dropGhost.startMins) * pxPerMinute,
+                  MIN_BLOCK_HEIGHT
+                ),
+              }}
+            >
+              <span className="truncate px-1 text-[10px] font-semibold tabular-nums text-primary">
+                {formatClock(dropGhost.startMins, timeFormat)}
+              </span>
+            </div>
+          )}
+
           {positioned.map((item) => (
             <WeekJobBlock
               key={item.job.id}
@@ -145,6 +170,8 @@ export function WeekLaneColumn({
               top={offsetForMinutes(item.startMins, timeWindow, pxPerMinute)}
               height={Math.max((item.endMins - item.startMins) * pxPerMinute, MIN_BLOCK_HEIGHT)}
               isDragging={draggingJobId === item.job.id}
+              readOnly={readOnly}
+              timeFormat={timeFormat}
               laneColor={lane.color}
               onOpen={onOpenJob}
               onDragHandle={onDragHandle}
@@ -156,7 +183,7 @@ export function WeekLaneColumn({
         <ContextMenuContent>
           <ContextMenuItem onClick={() => onCreateJob(lane, date, contextMinutes.current)}>
             <Plus className="mr-2 h-4 w-4" />
-            {t('createAt', { time: minutesToTime(contextMinutes.current) })}
+            {t('createAt', { time: formatClock(contextMinutes.current, timeFormat) })}
           </ContextMenuItem>
         </ContextMenuContent>
       )}

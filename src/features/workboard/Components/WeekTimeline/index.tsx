@@ -1,13 +1,22 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useDndMonitor } from '@dnd-kit/core'
 import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
+import { useDateSettings } from '@/components/date-settings-context'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import type { BoardDensity } from '../../hooks/useBoardPreferences'
 import { DENSITY_SCALE } from '../../hooks/useBoardPreferences'
-import { minutesToTime, timeToMinutes } from '../../utils/datetime'
-import { type BoardLane, type LaneGrouping, groupJobsByLane, laneIdForJob } from '../../utils/lanes'
+import { timeToMinutes } from '../../utils/datetime'
+import { formatClock } from '../../utils/clock'
+import {
+  type BoardLane,
+  type LaneGrouping,
+  UNLANED,
+  groupJobsByLane,
+  laneIdForJob,
+} from '../../utils/lanes'
 import {
   MINUTES_IN_DAY,
   bookedMinutesOnDay,
@@ -19,7 +28,13 @@ import {
 import { formatDuration } from '../DurationSlider'
 import { UnscheduledStrip } from './UnscheduledStrip'
 import { WeekLaneColumn } from './WeekLaneColumn'
-import { offsetForMinutes, totalHeight } from './geometry'
+import {
+  DEFAULT_JOB_MINUTES,
+  columnKey,
+  offsetForMinutes,
+  pointerFromDndEvent,
+  totalHeight,
+} from './geometry'
 import { type WeekDropTarget, useWeekDrag } from './useWeekDrag'
 
 /** Candidate rules, finest first. The first one with room to breathe wins. */
@@ -71,6 +86,7 @@ export function WeekTimeline({
   onCreateJob,
   onLaneClick,
   onShowHiddenDays,
+  readOnly = false,
 }: {
   days: string[]
   /** Days left out of the grid, so work on them can still be accounted for. */
@@ -95,9 +111,12 @@ export function WeekTimeline({
   onCreateJob?: (lane: BoardLane, date: string, startMins: number) => void
   onLaneClick?: (lane: BoardLane) => void
   onShowHiddenDays?: () => void
+  /** Wall-display mode: the same board, with nothing to drag or open. */
+  readOnly?: boolean
 }) {
   const t = useTranslations('workBoard.week')
   const locale = useLocale()
+  const { timeFormat } = useDateSettings()
   const scrollRef = useRef<HTMLDivElement>(null)
   const hasScrolled = useRef(false)
 
@@ -154,6 +173,41 @@ export function WeekTimeline({
       dropResolverRef.current = null
     }
   }, [dropResolverRef, drag.resolvePoint])
+
+  // A job dragged in from the unassigned panel is under the cursor as an opaque
+  // card, which says nothing about where it will actually land. This is the
+  // block it would become, drawn snapped in the target column while the drag is
+  // still in the air, from the same resolver the drop itself uses.
+  const [dropGhost, setDropGhost] = useState<{
+    key: string
+    startMins: number
+    endMins: number
+  } | null>(null)
+
+  const trackDropGhost = useCallback(
+    (event: { activatorEvent: Event; delta: { x: number; y: number } }) => {
+      const point = pointerFromDndEvent(event)
+      const target = point ? drag.resolvePoint(point.x, point.y) : null
+      if (!target || target.laneId === UNLANED) {
+        setDropGhost(null)
+        return
+      }
+      const endMins = Math.min(target.startMins + DEFAULT_JOB_MINUTES, timeWindow.endMins)
+      setDropGhost({
+        key: columnKey(target.date, target.laneId),
+        startMins: target.startMins,
+        endMins,
+      })
+    },
+    [drag.resolvePoint, timeWindow.endMins]
+  )
+
+  useDndMonitor({
+    onDragMove: trackDropGhost,
+    onDragOver: trackDropGhost,
+    onDragEnd: () => setDropGhost(null),
+    onDragCancel: () => setDropGhost(null),
+  })
 
   // While a job is being dragged it is laid out from the preview, so it moves
   // between lanes and days through exactly the same code that placed it.
@@ -283,7 +337,7 @@ export function WeekTimeline({
                     <button
                       key={`lane-${day}-${lane.id}`}
                       type="button"
-                      disabled={lane.isPlaceholder || !onLaneClick}
+                      disabled={lane.isPlaceholder || readOnly || !onLaneClick}
                       onClick={() => onLaneClick?.(lane)}
                       className={cn(
                         'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
@@ -333,7 +387,7 @@ export function WeekTimeline({
                 className="absolute right-1 -translate-y-1/2 text-[10px] tabular-nums text-muted-foreground"
                 style={{ top: offsetForMinutes(mins, timeWindow, pxPerMinute) }}
               >
-                {minutesToTime(mins)}
+                {formatClock(mins, timeFormat)}
               </span>
             ))}
           </div>
@@ -345,25 +399,28 @@ export function WeekTimeline({
                 date={day}
                 lane={lane}
                 endsDay={laneIndex === lanes.length - 1}
+                dropGhost={dropGhost?.key === columnKey(day, lane.id) ? dropGhost : null}
                 jobs={byLane.get(lane.id) ?? []}
                 window={timeWindow}
                 pxPerMinute={pxPerMinute}
                 slotMinutes={slotMinutes}
+                timeFormat={timeFormat}
                 workDayStart={dayStartMins}
                 workDayEnd={dayEndMins}
                 nowMinutes={day === todayStr ? nowMinutes : null}
                 draggingJobId={drag.isDragging ? (drag.preview?.jobId ?? null) : null}
                 registerColumn={drag.registerColumn}
+                readOnly={readOnly}
                 onOpenJob={onOpenJob}
                 onDragHandle={drag.startDrag}
-                onCreateJob={lane.isPlaceholder ? undefined : onCreateJob}
+                onCreateJob={lane.isPlaceholder || readOnly ? undefined : onCreateJob}
               />
             ))
           )}
         </div>
       </div>
 
-      <p className="px-1 text-[11px] text-muted-foreground">{t('hint')}</p>
+      {!readOnly && <p className="px-1 text-[11px] text-muted-foreground">{t('hint')}</p>}
     </div>
   )
 }

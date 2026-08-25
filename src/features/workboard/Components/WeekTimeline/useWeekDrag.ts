@@ -51,6 +51,21 @@ function sameDay(a: number, b: number): boolean {
 }
 
 /**
+ * Pull a timestamp onto the nearest snap line of its own day.
+ *
+ * Snapping the movement rather than the result was the earlier mistake: a job
+ * already sitting at 12:07 stayed seven minutes off every line no matter how it
+ * was dragged. Snapping the result means a block dropped near noon is at noon.
+ */
+function snapToGrid(ms: number, snapMinutes: number): number {
+  const date = new Date(ms)
+  const minutes = date.getHours() * 60 + date.getMinutes()
+  const snapped = Math.round(minutes / snapMinutes) * snapMinutes
+  date.setSeconds(0, 0)
+  return date.getTime() + (snapped - minutes) * MINUTE_MS
+}
+
+/**
  * Moving and resizing jobs on the week timeline.
  *
  * Positions are carried as absolute timestamps rather than minutes-into-the-day
@@ -142,8 +157,7 @@ export function useWeekDrag({
       const job = jobRef.current
       if (!drag || !job) return
 
-      const deltaMins =
-        Math.round((clientY - drag.anchorY) / pxPerMinute / snapMinutes) * snapMinutes
+      const deltaMins = (clientY - drag.anchorY) / pxPerMinute
       const duration = drag.origEndMs - drag.origStartMs
       const windowMs = (timeWindow.endMins - timeWindow.startMins) * MINUTE_MS
 
@@ -161,7 +175,7 @@ export function useWeekDrag({
           dayShiftMs = dayStartDate(hit.date).getTime() - origDay.getTime()
         }
 
-        startMs = drag.origStartMs + dayShiftMs + deltaMins * MINUTE_MS
+        startMs = snapToGrid(drag.origStartMs + dayShiftMs + deltaMins * MINUTE_MS, snapMinutes)
         endMs = startMs + duration
 
         // A job that fits inside the visible hours stays inside them, so a
@@ -179,7 +193,7 @@ export function useWeekDrag({
         }
       } else if (drag.mode === 'resize-start') {
         startMs = Math.min(
-          drag.origStartMs + deltaMins * MINUTE_MS,
+          snapToGrid(drag.origStartMs + deltaMins * MINUTE_MS, snapMinutes),
           drag.origEndMs - snapMinutes * MINUTE_MS
         )
         // Only pull the edge back into view while it is still on its own day;
@@ -192,7 +206,7 @@ export function useWeekDrag({
         }
       } else {
         endMs = Math.max(
-          drag.origEndMs + deltaMins * MINUTE_MS,
+          snapToGrid(drag.origEndMs + deltaMins * MINUTE_MS, snapMinutes),
           drag.origStartMs + snapMinutes * MINUTE_MS
         )
         if (sameDay(endMs, drag.origEndMs)) {
