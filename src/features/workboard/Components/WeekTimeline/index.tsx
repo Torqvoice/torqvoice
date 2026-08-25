@@ -322,7 +322,11 @@ export function WeekTimeline({
   })
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2">
+    // `min-w-0` is load-bearing: a flex item's automatic minimum size is its
+    // content's, and this content is a grid eighty-five columns wide. Without
+    // it the board refuses to shrink, and the unassigned panel beside it gets
+    // pushed off the edge of the row instead.
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
       <UnscheduledStrip jobs={unscheduled} onOpenJob={onOpenJob} />
 
       {hiddenCount > 0 && (

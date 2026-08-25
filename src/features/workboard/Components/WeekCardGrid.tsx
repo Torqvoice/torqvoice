@@ -38,7 +38,7 @@ export function WeekCardGrid({
   const gridTemplateColumns = `minmax(120px, 160px) repeat(${days.length}, minmax(140px, 1fr))`
 
   return (
-    <div className="min-h-0 flex-1 overflow-auto rounded-md border">
+    <div className="min-h-0 min-w-0 flex-1 overflow-auto rounded-md border">
       <div className="grid min-w-full gap-px bg-border/60" style={{ gridTemplateColumns }}>
         <div className="sticky left-0 top-0 z-30 bg-background" />
         {days.map((day) => {

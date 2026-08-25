@@ -787,7 +787,7 @@ export function WorkBoardClient({
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="flex min-h-0 flex-1 gap-4 overflow-hidden">
           {view === 'day' ? (
-            <ScrollArea className="flex-1">
+            <ScrollArea className="min-w-0 flex-1">
               <DayTimeline
                 date={selectedDate}
                 technicians={store.technicians}
