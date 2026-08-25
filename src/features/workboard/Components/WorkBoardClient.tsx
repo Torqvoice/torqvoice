@@ -253,6 +253,14 @@ export function WorkBoardClient({
     return lanes.filter((lane) => ids.has(lane.id)).map((lane) => lane.id)
   }, [store.jobs, lanes, preferences.grouping])
 
+  /** Every lane the shop has, by id, whichever grouping is on. */
+  const owners = useMemo(() => {
+    const map = new Map<string, { name: string; color: string }>()
+    for (const tech of store.technicians) map.set(tech.id, { name: tech.name, color: tech.color })
+    for (const bay of store.workBays) map.set(bay.id, { name: bay.name, color: bay.color })
+    return map
+  }, [store.technicians, store.workBays])
+
   /** Jobs bucketed for the card layout, which has no drag preview to fold in. */
   const jobsByLane = useMemo(
     () =>
@@ -815,6 +823,7 @@ export function WorkBoardClient({
               snapMinutes={preferences.snapMinutes}
               workDayStart={boardSettings.workDayStart}
               workDayEnd={boardSettings.workDayEnd}
+              owners={owners}
               dropResolverRef={weekDropResolver}
               onOpenJob={handleCardClick}
               onSchedule={handleWeekSchedule}

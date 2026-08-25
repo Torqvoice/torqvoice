@@ -31,6 +31,7 @@ export function WeekLaneColumn({
   window: timeWindow,
   slotMinutes,
   timeFormat,
+  ownerOf,
   workDayStart,
   workDayEnd,
   nowMinutes,
@@ -51,6 +52,8 @@ export function WeekLaneColumn({
   window: TimeWindow
   slotMinutes: number
   timeFormat: ClockFormat
+  /** Set when the lane column does not name the owner, so the block must. */
+  ownerOf?: (job: WorkBoardJob) => { name: string; color: string } | null
   workDayStart: number
   workDayEnd: number
   /** Minutes from midnight to draw the "now" line at, or null on other days. */
@@ -172,6 +175,7 @@ export function WeekLaneColumn({
               readOnly={readOnly}
               timeFormat={timeFormat}
               laneColor={lane.color}
+              owner={ownerOf?.(item.job) ?? null}
               onOpen={onOpenJob}
               onDragHandle={onDragHandle}
             />

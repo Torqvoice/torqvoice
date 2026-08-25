@@ -28,6 +28,7 @@ export function WeekJobBlock({
   readOnly,
   timeFormat,
   laneColor,
+  owner,
   onOpen,
   onDragHandle,
 }: {
@@ -37,6 +38,8 @@ export function WeekJobBlock({
   readOnly?: boolean
   timeFormat: ClockFormat
   laneColor: string
+  /** Who the job belongs to, when the column itself does not say. */
+  owner?: { name: string; color: string } | null
   onOpen: (job: WorkBoardJob) => void
   onDragHandle: (event: React.PointerEvent, job: WorkBoardJob, mode: WeekDragMode) => void
 }) {
@@ -65,7 +68,7 @@ export function WeekJobBlock({
       role="button"
       tabIndex={0}
       aria-label={`${timeLabel} ${job.title}`}
-      title={`${timeLabel} · ${job.title}${vehicleLabel ? ` · ${vehicleLabel}` : ''}`}
+      title={`${timeLabel} · ${job.title}${owner ? ` · ${owner.name}` : ''}${vehicleLabel ? ` · ${vehicleLabel}` : ''}`}
       className={cn(
         'group absolute overflow-hidden rounded-md border border-black/10 px-1.5 py-0.5 text-[11px] leading-tight shadow-sm select-none',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -85,7 +88,7 @@ export function WeekJobBlock({
         minHeight: MIN_BLOCK_HEIGHT,
         left: `calc(${column * width}% + 1px)`,
         width: `calc(${width}% - 2px)`,
-        borderLeft: `3px solid ${laneColor}`,
+        borderLeft: `3px solid ${owner?.color ?? laneColor}`,
         touchAction: 'none',
       }}
       onPointerDown={pressStart}
@@ -134,6 +137,7 @@ export function WeekJobBlock({
           )}
           <div className="min-w-0 flex-1">
             <div className="truncate font-medium">{job.title}</div>
+            {owner && <div className="truncate font-medium opacity-90">{owner.name}</div>}
             {durationMinutes >= VEHICLE_FROM_MINUTES && vehicleLabel && (
               <div className="truncate opacity-80">{vehicleLabel}</div>
             )}

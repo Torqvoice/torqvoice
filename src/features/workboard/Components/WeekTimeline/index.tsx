@@ -86,6 +86,7 @@ export function WeekTimeline({
   onCreateJob,
   onLaneClick,
   onShowHiddenDays,
+  owners,
   readOnly = false,
 }: {
   days: string[]
@@ -111,6 +112,8 @@ export function WeekTimeline({
   onCreateJob?: (lane: BoardLane, date: string, startMins: number) => void
   onLaneClick?: (lane: BoardLane) => void
   onShowHiddenDays?: () => void
+  /** Technicians and bays by id, so an ungrouped board can still say whose job it is. */
+  owners?: Map<string, { name: string; color: string }>
   /** Wall-display mode: the same board, with nothing to drag or open. */
   readOnly?: boolean
 }) {
@@ -253,6 +256,15 @@ export function WeekTimeline({
   }, [scheduled, hiddenDays])
 
   const slotMinutes = SLOT_MINUTES[density]
+
+  // With one column a day, nothing along the top says who a job belongs to, so
+  // the block carries its owner's colour and name instead. This is what makes
+  // the ungrouped week readable for a shop too big to give everyone a column.
+  const ownerOf = useMemo(() => {
+    if (grouping !== 'none' || !owners) return undefined
+    return (job: WorkBoardJob) =>
+      owners.get(job.technicianId ?? '') ?? owners.get(job.workBayId ?? '') ?? null
+  }, [grouping, owners])
 
   const marks = useMemo(() => hourMarks(timeWindow), [timeWindow])
 
@@ -410,6 +422,7 @@ export function WeekTimeline({
                 window={timeWindow}
                 slotMinutes={slotMinutes}
                 timeFormat={timeFormat}
+                ownerOf={ownerOf}
                 workDayStart={dayStartMins}
                 workDayEnd={dayEndMins}
                 nowMinutes={day === todayStr ? nowMinutes : null}
