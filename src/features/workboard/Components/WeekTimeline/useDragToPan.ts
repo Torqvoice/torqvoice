@@ -62,6 +62,11 @@ export function useDragToPan(ref: React.RefObject<HTMLElement | null>) {
       const target = event.target as HTMLElement | null
       if (target?.closest(IGNORE_SELECTOR)) return
 
+      // A press on the scrollbar itself is the browser's to handle. Without
+      // this the pan drags the board one way while the scrollbar drags it the
+      // other, and horizontal scrolling stops working entirely.
+      if (event.offsetX > el.clientWidth || event.offsetY > el.clientHeight) return
+
       active = true
       moved = false
       startX = event.clientX

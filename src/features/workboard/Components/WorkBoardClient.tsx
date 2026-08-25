@@ -672,10 +672,10 @@ export function WorkBoardClient({
     }
   }
 
-  const handleCardClick = (a: WorkBoardJob) => {
-    setSelectedJob(a)
+  const handleCardClick = useCallback((job: WorkBoardJob) => {
+    setSelectedJob(job)
     setPopoverOpen(true)
-  }
+  }, [])
 
   const handleLaneClick = useCallback(
     (lane: BoardLane) => {

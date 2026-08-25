@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
 import {
   Calendar,
   CalendarDays,
@@ -275,16 +276,10 @@ export function WorkBoardToolbar({
               {t('weekends')}
             </Button>
 
-            <div
-              className={cn(
-                'flex items-center rounded-md border',
-                layout !== 'timeline' && 'hidden'
-              )}
-            >
+            <ButtonGroup className={cn(layout !== 'timeline' && 'hidden')}>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-r-none"
+                variant="outline"
+                size="icon-sm"
                 disabled={densityIndex <= 0}
                 onClick={() => onDensityChange(DENSITY_ORDER[densityIndex - 1])}
                 aria-label={t('zoomOut')}
@@ -292,47 +287,38 @@ export function WorkBoardToolbar({
                 <ZoomOut className="h-4 w-4" />
               </Button>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-l-none"
+                variant="outline"
+                size="icon-sm"
                 disabled={densityIndex >= DENSITY_ORDER.length - 1}
                 onClick={() => onDensityChange(DENSITY_ORDER[densityIndex + 1])}
                 aria-label={t('zoomIn')}
               >
                 <ZoomIn className="h-4 w-4" />
               </Button>
-            </div>
+            </ButtonGroup>
           </>
         )}
 
-        <div className="flex rounded-md border">
-          <button
-            type="button"
+        <ButtonGroup>
+          <Button
+            variant={view === 'day' ? 'default' : 'outline'}
+            size="sm"
             onClick={() => onViewChange('day')}
-            className={cn(
-              'flex items-center gap-1 rounded-l-md px-2.5 py-1.5 text-xs font-medium transition-colors',
-              view === 'day'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted'
-            )}
+            aria-pressed={view === 'day'}
           >
             <Clock className="h-3.5 w-3.5" />
             {t('day')}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant={view === 'week' ? 'default' : 'outline'}
+            size="sm"
             onClick={() => onViewChange('week')}
-            className={cn(
-              'flex items-center gap-1 rounded-r-md px-2.5 py-1.5 text-xs font-medium transition-colors',
-              view === 'week'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-muted'
-            )}
+            aria-pressed={view === 'week'}
           >
             <CalendarDays className="h-3.5 w-3.5" />
             {t('week')}
-          </button>
-        </div>
+          </Button>
+        </ButtonGroup>
 
         <Button variant="outline" size="sm" asChild>
           <Link href="/work-board/presenter" target="_blank">

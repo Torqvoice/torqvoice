@@ -86,6 +86,16 @@ export function useWeekDrag({
   onCommit: (change: { job: WorkBoardJob; laneId: string; start: Date; end: Date }) => void
 }) {
   const columns = useRef<Map<string, HTMLElement>>(new Map())
+  /**
+   * Column boxes, measured once per gesture.
+   *
+   * Every pointer move used to ask all of them for a fresh rect, and a
+   * seventeen-technician week has eighty-five columns: eighty-five forced
+   * layouts per frame, which is what made dragging a job onto the board feel
+   * heavy. Nothing moves them mid-drag except a scroll or a resize, so the
+   * measurements are taken once and thrown away when either happens.
+   */
+  const rects = useRef<Map<string, DOMRect> | null>(null)
   const [preview, setPreview] = useState<WeekDragPreview | null>(null)
   const [armed, setArmed] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -94,10 +104,40 @@ export function useWeekDrag({
   const pendingRef = useRef<ActiveDrag | null>(null)
   const jobRef = useRef<WorkBoardJob | null>(null)
   const previewRef = useRef<WeekDragPreview | null>(null)
+  const frameRef = useRef<number | null>(null)
 
-  const registerColumn = useCallback((key: string, el: HTMLElement | null) => {
-    if (el) columns.current.set(key, el)
-    else columns.current.delete(key)
+  const invalidateRects = useCallback(() => {
+    rects.current = null
+  }, [])
+
+  const registerColumn = useCallback(
+    (key: string, el: HTMLElement | null) => {
+      if (el) columns.current.set(key, el)
+      else columns.current.delete(key)
+      invalidateRects()
+    },
+    [invalidateRects]
+  )
+
+  // A scroll anywhere above the board moves every column, and so does a
+  // resize. Both are rare next to pointer moves, so throwing the cache away is
+  // cheaper than keeping it correct any other way.
+  useEffect(() => {
+    window.addEventListener('scroll', invalidateRects, { capture: true, passive: true })
+    window.addEventListener('resize', invalidateRects)
+    return () => {
+      window.removeEventListener('scroll', invalidateRects, { capture: true })
+      window.removeEventListener('resize', invalidateRects)
+    }
+  }, [invalidateRects])
+
+  const measuredColumns = useCallback(() => {
+    if (!rects.current) {
+      const measured = new Map<string, DOMRect>()
+      for (const [key, el] of columns.current) measured.set(key, el.getBoundingClientRect())
+      rects.current = measured
+    }
+    return rects.current
   }, [])
 
   /**
@@ -107,28 +147,30 @@ export function useWeekDrag({
    * whenever the board had been resized or zoomed; asking the DOM cannot.
    */
   const pxPerMinute = useCallback(() => {
-    for (const el of columns.current.values()) {
-      const value = pxPerMinuteOf(el.getBoundingClientRect(), timeWindow)
+    for (const rect of measuredColumns().values()) {
+      const value = pxPerMinuteOf(rect, timeWindow)
       if (value > 0) return value
     }
     return 0
-  }, [timeWindow])
+  }, [measuredColumns, timeWindow])
 
   /** The column under a point, if any. */
-  const columnAt = useCallback((clientX: number, clientY: number) => {
-    for (const [key, el] of columns.current) {
-      const rect = el.getBoundingClientRect()
-      if (
-        clientX >= rect.left &&
-        clientX <= rect.right &&
-        clientY >= rect.top &&
-        clientY <= rect.bottom
-      ) {
-        return { key, rect, ...parseColumnKey(key) }
+  const columnAt = useCallback(
+    (clientX: number, clientY: number) => {
+      for (const [key, rect] of measuredColumns()) {
+        if (
+          clientX >= rect.left &&
+          clientX <= rect.right &&
+          clientY >= rect.top &&
+          clientY <= rect.bottom
+        ) {
+          return { key, rect, ...parseColumnKey(key) }
+        }
       }
-    }
-    return null
-  }, [])
+      return null
+    },
+    [measuredColumns]
+  )
 
   /**
    * Where a pointer sits on the board, for drops that come from outside the
@@ -158,6 +200,11 @@ export function useWeekDrag({
     activeRef.current = null
     jobRef.current = null
     previewRef.current = null
+    rects.current = null
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current)
+      frameRef.current = null
+    }
     setPreview(null)
     setArmed(false)
     setIsDragging(false)
@@ -233,7 +280,13 @@ export function useWeekDrag({
 
       const next: WeekDragPreview = { jobId: job.id, startMs, endMs, laneId }
       previewRef.current = next
-      setPreview(next)
+      // One paint per frame however many moves the pointer reports.
+      if (frameRef.current === null) {
+        frameRef.current = requestAnimationFrame(() => {
+          frameRef.current = null
+          if (previewRef.current) setPreview(previewRef.current)
+        })
+      }
     },
     [columnAt, pxPerMinute, snapMinutes, timeWindow]
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useRef } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -22,7 +22,7 @@ import type { WeekDragMode } from './useWeekDrag'
 /** Blocks thinner than this are unreadable, so short jobs get a floor. */
 const MIN_BLOCK_HEIGHT = 14
 
-export function WeekLaneColumn({
+function WeekLaneColumnImpl({
   date,
   lane,
   endsDay,
@@ -209,3 +209,10 @@ function NowLine({ minutes, window: timeWindow }: { minutes: number; window: Tim
     />
   )
 }
+
+/**
+ * A week is up to eighty-five of these, and the parent re-renders on every
+ * frame of a drag to move one ghost. Without this, all of them re-laid-out
+ * their jobs to redraw a dashed rectangle in one of them.
+ */
+export const WeekLaneColumn = memo(WeekLaneColumnImpl)
