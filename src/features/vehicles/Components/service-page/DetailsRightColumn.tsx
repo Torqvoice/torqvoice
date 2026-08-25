@@ -13,7 +13,7 @@ import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
 import type { ServiceDetail } from '../service-detail/types'
-import type { BoardTechnicianOption, OrgMemberOption } from './service-page-types'
+import type { BoardTechnicianOption, OrgMemberOption, WorkBayOption } from './service-page-types'
 
 interface DetailsRightColumnProps {
   formState: ReturnType<typeof useServiceFormState>
@@ -31,6 +31,7 @@ interface DetailsRightColumnProps {
     licensePlate: string | null
   } | null
   boardTechnicians: BoardTechnicianOption[]
+  workBays?: WorkBayOption[]
   orgMembers?: OrgMemberOption[]
   notificationHistory?: {
     id: string
@@ -51,6 +52,7 @@ export function DetailsRightColumn({
   taxEnabled,
   initialVehicle,
   boardTechnicians,
+  workBays,
   orgMembers,
   notificationHistory = [],
 }: DetailsRightColumnProps) {
@@ -97,10 +99,12 @@ export function DetailsRightColumn({
       <ScheduleTimesSection
         serviceRecordId={record.id}
         technicians={boardTechnicians}
+        workBays={workBays}
         orgMembers={orgMembers}
         initialStartDateTime={formState.initialData.startDateTime}
         initialEndDateTime={formState.initialData.endDateTime}
         initialTechnicianId={record.technicianId}
+        initialWorkBayId={record.workBayId}
         onSaved={formState.flashSaved}
       />
       <TotalsSection

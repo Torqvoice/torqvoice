@@ -136,7 +136,10 @@
     "tire_set_dispose": "Padangų komplektas nurašytas",
     "tire_set_attach": "Prie padangų komplekto pridėta failų",
     "tire_set_detach": "Failas pašalintas iš padangų komplekto",
-    "whatsapp_send": "Išsiųsta „WhatsApp“ žinutė"
+    "whatsapp_send": "Išsiųsta „WhatsApp“ žinutė",
+    "work_bay_create": "Sukurta darbo vieta",
+    "work_bay_update": "Atnaujinta darbo vieta",
+    "work_bay_delete": "Ištrinta darbo vieta"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -256,6 +259,9 @@
     "vehicle_update": "Atnaujinta transporto priemonė {name}, pakeista: {fields}",
     "vehicle_updateNoChanges": "Atnaujinta transporto priemonė {name}, niekas nepasikeitė",
     "webhook_create": "Sukurtas webhook {name}",
-    "whatsapp_send": "Klientui {name} išsiųsta „WhatsApp“ žinutė"
+    "whatsapp_send": "Klientui {name} išsiųsta „WhatsApp“ žinutė",
+    "work_bay_create": "Sukurta darbo vieta „{name}“",
+    "work_bay_update": "Atnaujinta darbo vieta „{name}“",
+    "work_bay_delete": "Ištrinta darbo vieta {id}"
   }
 }

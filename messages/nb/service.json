@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Les mer",
-    "setDefaults": "Standardinnstillinger"
+    "setDefaults": "Standardinnstillinger",
+    "workBay": "Arbeidsplass",
+    "selectWorkBay": "Velg arbeidsplass …",
+    "noWorkBay": "Ingen arbeidsplass"
   },
   "notifications": {
     "title": "Kundevarsler",

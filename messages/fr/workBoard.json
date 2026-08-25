@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Grouper par",
+    "byTechnician": "Par technicien",
+    "byBay": "Par poste de travail",
+    "byNothing": "Sans groupement",
+    "weekends": "Week-end",
+    "zoomIn": "Agrandir",
+    "zoomOut": "Réduire",
+    "add": "Ajouter",
+    "addBay": "Ajouter un poste"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Impossible de déplacer l'assignation",
     "failedAssign": "Impossible d'assigner le travail",
     "failedRemove": "Impossible de supprimer l'assignation",
-    "createNewWorkorder": "Créer un nouvel ordre de travail"
+    "createNewWorkorder": "Créer un nouvel ordre de travail",
+    "noBays": "Aucun poste de travail. Ajoutez-en un pour planifier la semaine par poste.",
+    "addFirstBay": "Ajouter un poste",
+    "lanes": {
+      "noBay": "Sans poste",
+      "noTechnician": "Sans technicien",
+      "everyone": "Tout le travail"
+    },
+    "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche."
   },
   "unassigned": {
     "title": "Travaux Non Assignés ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Nouvel ordre de travail à {time}",
+    "unscheduled": "Non planifié ({count})",
+    "hint": "Faites glisser une tâche pour la déplacer. Faites glisser son bord haut ou bas pour changer sa durée.",
+    "hiddenDays": "{count} planifié(s) le week-end. Afficher le week-end."
+  },
+  "bay": {
+    "addTitle": "Ajouter un poste de travail",
+    "editTitle": "Modifier le poste de travail",
+    "description": "Un endroit où le travail se fait : un pont, une rampe, une aire de lavage.",
+    "name": "Nom",
+    "namePlaceholder": "ex. Pont 1",
+    "color": "Couleur",
+    "dailyCapacity": "Heures réservables par jour",
+    "hoursPerDay": "heures par jour",
+    "capacityHint": "Sert à montrer le taux de remplissage de chaque journée.",
+    "deleteTitle": "Supprimer le poste de travail",
+    "deleteDescription": "Supprimer « {name} » ? Les tâches qui y sont réservées restent planifiées et passent dans la colonne sans poste.",
+    "addBay": "Ajouter un poste",
+    "saveFailed": "Impossible d'enregistrer le poste de travail"
   }
 }

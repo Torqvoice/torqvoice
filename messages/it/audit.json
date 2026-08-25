@@ -136,7 +136,10 @@
     "tire_set_dispose": "Treno di pneumatici dismesso",
     "tire_set_attach": "File aggiunti a un treno di pneumatici",
     "tire_set_detach": "File rimosso da un treno di pneumatici",
-    "whatsapp_send": "Messaggio WhatsApp inviato"
+    "whatsapp_send": "Messaggio WhatsApp inviato",
+    "work_bay_create": "Postazione creata",
+    "work_bay_update": "Postazione aggiornata",
+    "work_bay_delete": "Postazione eliminata"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -256,6 +259,9 @@
     "vehicle_update": "Veicolo {name} aggiornato, modifiche: {fields}",
     "vehicle_updateNoChanges": "Veicolo {name} aggiornato, nessuna modifica",
     "webhook_create": "Webhook {name} creato",
-    "whatsapp_send": "Inviato un messaggio WhatsApp a {name}"
+    "whatsapp_send": "Inviato un messaggio WhatsApp a {name}",
+    "work_bay_create": "Postazione «{name}» creata",
+    "work_bay_update": "Postazione «{name}» aggiornata",
+    "work_bay_delete": "Postazione {id} eliminata"
   }
 }

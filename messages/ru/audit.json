@@ -136,7 +136,10 @@
     "tire_set_dispose": "Комплект шин списан",
     "tire_set_attach": "Файлы добавлены к комплекту шин",
     "tire_set_detach": "Файл удалён из комплекта шин",
-    "whatsapp_send": "Отправлено сообщение WhatsApp"
+    "whatsapp_send": "Отправлено сообщение WhatsApp",
+    "work_bay_create": "Создан пост",
+    "work_bay_update": "Обновлён пост",
+    "work_bay_delete": "Удалён пост"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -256,6 +259,9 @@
     "vehicle_update": "Обновлён автомобиль {name}, изменено: {fields}",
     "vehicle_updateNoChanges": "Обновлён автомобиль {name}, изменений нет",
     "webhook_create": "Создан вебхук {name}",
-    "whatsapp_send": "Отправлено сообщение WhatsApp клиенту {name}"
+    "whatsapp_send": "Отправлено сообщение WhatsApp клиенту {name}",
+    "work_bay_create": "Создан пост «{name}»",
+    "work_bay_update": "Обновлён пост «{name}»",
+    "work_bay_delete": "Удалён пост {id}"
   }
 }

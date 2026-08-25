@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Groeperen op",
+    "byTechnician": "Op monteur",
+    "byBay": "Op werkplek",
+    "byNothing": "Geen groepering",
+    "weekends": "Weekend",
+    "zoomIn": "Inzoomen",
+    "zoomOut": "Uitzoomen",
+    "add": "Toevoegen",
+    "addBay": "Werkplek toevoegen"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Toewijzing verplaatsen mislukt",
     "failedAssign": "Taak toewijzen mislukt",
     "failedRemove": "Toewijzing verwijderen mislukt",
-    "createNewWorkorder": "Nieuwe werkorder aanmaken"
+    "createNewWorkorder": "Nieuwe werkorder aanmaken",
+    "noBays": "Nog geen werkplekken. Voeg er een toe om de week per werkplek te plannen.",
+    "addFirstBay": "Werkplek toevoegen",
+    "lanes": {
+      "noBay": "Zonder werkplek",
+      "noTechnician": "Zonder monteur",
+      "everyone": "Al het werk"
+    },
+    "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept."
   },
   "unassigned": {
     "title": "Niet-toegewezen taken ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Nieuwe werkorder om {time}",
+    "unscheduled": "Niet ingepland ({count})",
+    "hint": "Sleep een klus om die te verplaatsen. Sleep de boven- of onderrand om de duur te wijzigen.",
+    "hiddenDays": "{count} ingepland in het weekend. Weekend tonen."
+  },
+  "bay": {
+    "addTitle": "Werkplek toevoegen",
+    "editTitle": "Werkplek bewerken",
+    "description": "Een plek waar gewerkt wordt: een brug, een oprit of een wasplaats.",
+    "name": "Naam",
+    "namePlaceholder": "bijv. Brug 1",
+    "color": "Kleur",
+    "dailyCapacity": "Boekbare uren per dag",
+    "hoursPerDay": "uur per dag",
+    "capacityHint": "Laat zien hoe vol elke dag is.",
+    "deleteTitle": "Werkplek verwijderen",
+    "deleteDescription": "\"{name}\" verwijderen? Klussen die erop staan blijven ingepland en gaan naar de kolom zonder werkplek.",
+    "addBay": "Werkplek toevoegen",
+    "saveFailed": "Kon de werkplek niet opslaan"
   }
 }

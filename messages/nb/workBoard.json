@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Grupper etter",
+    "byTechnician": "Etter mekaniker",
+    "byBay": "Etter arbeidsplass",
+    "byNothing": "Ingen gruppering",
+    "weekends": "Helg",
+    "zoomIn": "Zoom inn",
+    "zoomOut": "Zoom ut",
+    "add": "Legg til",
+    "addBay": "Legg til arbeidsplass"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Kunne ikke flytte tilordning",
     "failedAssign": "Kunne ikke tilordne jobb",
     "failedRemove": "Kunne ikke fjerne tilordning",
-    "createNewWorkorder": "Opprett ny arbeidsordre"
+    "createNewWorkorder": "Opprett ny arbeidsordre",
+    "noBays": "Ingen arbeidsplasser ennå. Legg til én for å planlegge uken per plass.",
+    "addFirstBay": "Legg til arbeidsplass",
+    "lanes": {
+      "noBay": "Uten plass",
+      "noTechnician": "Uten mekaniker",
+      "everyone": "Alt arbeid"
+    },
+    "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den."
   },
   "unassigned": {
     "title": "Utildelte jobber ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Ny arbeidsordre kl. {time}",
+    "unscheduled": "Ikke planlagt ({count})",
+    "hint": "Dra en jobb for å flytte den. Dra øverste eller nederste kant for å endre varigheten.",
+    "hiddenDays": "{count} planlagt i helgen. Vis helg."
+  },
+  "bay": {
+    "addTitle": "Legg til arbeidsplass",
+    "editTitle": "Rediger arbeidsplass",
+    "description": "Et sted arbeidet skjer: en løftebukk, en rampe eller en vaskeplass.",
+    "name": "Navn",
+    "namePlaceholder": "f.eks. Løftebukk 1",
+    "color": "Farge",
+    "dailyCapacity": "Bookbare timer per dag",
+    "hoursPerDay": "timer per dag",
+    "capacityHint": "Brukes til å vise hvor full hver dag er.",
+    "deleteTitle": "Slett arbeidsplass",
+    "deleteDescription": "Fjerne «{name}»? Jobber som er booket der forblir planlagt og flyttes til kolonnen uten plass.",
+    "addBay": "Legg til arbeidsplass",
+    "saveFailed": "Kunne ikke lagre arbeidsplassen"
   }
 }

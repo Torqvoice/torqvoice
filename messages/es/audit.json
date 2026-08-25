@@ -136,7 +136,10 @@
     "tire_set_dispose": "Juego de neumáticos dado de baja",
     "tire_set_attach": "Archivos añadidos a un juego de neumáticos",
     "tire_set_detach": "Archivo quitado de un juego de neumáticos",
-    "whatsapp_send": "Mensaje de WhatsApp enviado"
+    "whatsapp_send": "Mensaje de WhatsApp enviado",
+    "work_bay_create": "Puesto de trabajo creado",
+    "work_bay_update": "Puesto de trabajo actualizado",
+    "work_bay_delete": "Puesto de trabajo eliminado"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -256,6 +259,9 @@
     "vehicle_update": "Vehículo {name} actualizado, cambios: {fields}",
     "vehicle_updateNoChanges": "Vehículo {name} actualizado, sin cambios",
     "webhook_create": "Webhook {name} creado",
-    "whatsapp_send": "Envió un mensaje de WhatsApp a {name}"
+    "whatsapp_send": "Envió un mensaje de WhatsApp a {name}",
+    "work_bay_create": "Puesto de trabajo «{name}» creado",
+    "work_bay_update": "Puesto de trabajo «{name}» actualizado",
+    "work_bay_delete": "Puesto de trabajo {id} eliminado"
   }
 }

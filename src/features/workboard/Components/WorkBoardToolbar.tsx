@@ -1,82 +1,125 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, Calendar, Monitor, CalendarDays, Clock } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
-import { cn } from "@/lib/utils";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import {
+  Calendar,
+  CalendarDays,
+  CalendarRange,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Columns3,
+  Monitor,
+  Plus,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+import { cn } from '@/lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { type BoardDensity, DENSITY_ORDER } from '../hooks/useBoardPreferences'
+import type { LaneGrouping } from '../utils/lanes'
 
-export type BoardView = "week" | "day";
+export type BoardView = 'week' | 'day'
 
 function formatWeekRange(weekStart: string, locale?: string) {
-  const start = new Date(weekStart + "T12:00:00");
-  const end = new Date(start);
-  end.setDate(end.getDate() + 6);
+  const start = new Date(weekStart + 'T12:00:00')
+  const end = new Date(start)
+  end.setDate(end.getDate() + 6)
 
-  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
-  const startStr = start.toLocaleDateString(locale, opts);
+  const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+  const startStr = start.toLocaleDateString(locale, opts)
   const endStr = end.toLocaleDateString(locale, {
     ...opts,
-    year: "numeric",
-  });
-  return `${startStr} – ${endStr}`;
+    year: 'numeric',
+  })
+  return `${startStr} – ${endStr}`
 }
 
 function formatDayDate(date: string, locale?: string) {
-  const d = new Date(date + "T12:00:00");
+  const d = new Date(date + 'T12:00:00')
   return d.toLocaleDateString(locale, {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
 export function WorkBoardToolbar({
   weekStart,
   selectedDate,
   view,
+  grouping,
+  density,
+  showWeekends,
   onPrevWeek,
   onNextWeek,
   onPrevDay,
   onNextDay,
   onToday,
   onAddTech,
+  onAddBay,
   onViewChange,
+  onGroupingChange,
+  onDensityChange,
+  onToggleWeekends,
 }: {
-  weekStart: string;
-  selectedDate: string;
-  view: BoardView;
-  onPrevWeek: () => void;
-  onNextWeek: () => void;
-  onPrevDay: () => void;
-  onNextDay: () => void;
-  onToday: () => void;
-  onAddTech: () => void;
-  onViewChange: (view: BoardView) => void;
+  weekStart: string
+  selectedDate: string
+  view: BoardView
+  grouping: LaneGrouping
+  density: BoardDensity
+  showWeekends: boolean
+  onPrevWeek: () => void
+  onNextWeek: () => void
+  onPrevDay: () => void
+  onNextDay: () => void
+  onToday: () => void
+  onAddTech: () => void
+  onAddBay: () => void
+  onViewChange: (view: BoardView) => void
+  onGroupingChange: (grouping: LaneGrouping) => void
+  onDensityChange: (density: BoardDensity) => void
+  onToggleWeekends: () => void
 }) {
-  const t = useTranslations("workBoard.toolbar");
-  const locale = useLocale();
+  const t = useTranslations('workBoard.toolbar')
+  const locale = useLocale()
+
+  const densityIndex = DENSITY_ORDER.indexOf(density)
 
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={onToday}>
           <Calendar className="mr-1.5 h-3.5 w-3.5" />
-          {t("today")}
+          {t('today')}
         </Button>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={view === "week" ? onPrevWeek : onPrevDay}
-            aria-label={view === "week" ? t("previousWeek") : t("previousDay")}
+            onClick={view === 'week' ? onPrevWeek : onPrevDay}
+            aria-label={view === 'week' ? t('previousWeek') : t('previousDay')}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="min-w-[180px] text-center text-sm font-medium">
-            {view === "week"
+            {view === 'week'
               ? formatWeekRange(weekStart, locale)
               : formatDayDate(selectedDate, locale)}
           </span>
@@ -84,54 +127,116 @@ export function WorkBoardToolbar({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={view === "week" ? onNextWeek : onNextDay}
-            aria-label={view === "week" ? t("nextWeek") : t("nextDay")}
+            onClick={view === 'week' ? onNextWeek : onNextDay}
+            aria-label={view === 'week' ? t('nextWeek') : t('nextDay')}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        {/* View toggle */}
+
+      <div className="flex flex-wrap items-center gap-2">
+        {view === 'week' && (
+          <>
+            <Select
+              value={grouping}
+              onValueChange={(value) => onGroupingChange(value as LaneGrouping)}
+            >
+              <SelectTrigger size="sm" className="w-[150px]" aria-label={t('groupBy')}>
+                <Columns3 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="technician">{t('byTechnician')}</SelectItem>
+                <SelectItem value="bay">{t('byBay')}</SelectItem>
+                <SelectItem value="none">{t('byNothing')}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant={showWeekends ? 'secondary' : 'outline'}
+              size="sm"
+              onClick={onToggleWeekends}
+              aria-pressed={showWeekends}
+            >
+              <CalendarRange className="mr-1.5 h-3.5 w-3.5" />
+              {t('weekends')}
+            </Button>
+
+            <div className="flex items-center rounded-md border">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-r-none"
+                disabled={densityIndex <= 0}
+                onClick={() => onDensityChange(DENSITY_ORDER[densityIndex - 1])}
+                aria-label={t('zoomOut')}
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-l-none"
+                disabled={densityIndex >= DENSITY_ORDER.length - 1}
+                onClick={() => onDensityChange(DENSITY_ORDER[densityIndex + 1])}
+                aria-label={t('zoomIn')}
+              >
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
+
         <div className="flex rounded-md border">
           <button
             type="button"
-            onClick={() => onViewChange("day")}
+            onClick={() => onViewChange('day')}
             className={cn(
-              "flex items-center gap-1 rounded-l-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-              view === "day"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted",
+              'flex items-center gap-1 rounded-l-md px-2.5 py-1.5 text-xs font-medium transition-colors',
+              view === 'day'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
             )}
           >
             <Clock className="h-3.5 w-3.5" />
-            {t("day")}
+            {t('day')}
           </button>
           <button
             type="button"
-            onClick={() => onViewChange("week")}
+            onClick={() => onViewChange('week')}
             className={cn(
-              "flex items-center gap-1 rounded-r-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-              view === "week"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted",
+              'flex items-center gap-1 rounded-r-md px-2.5 py-1.5 text-xs font-medium transition-colors',
+              view === 'week'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted'
             )}
           >
             <CalendarDays className="h-3.5 w-3.5" />
-            {t("week")}
+            {t('week')}
           </button>
         </div>
+
         <Button variant="outline" size="sm" asChild>
           <Link href="/work-board/presenter" target="_blank">
             <Monitor className="mr-1.5 h-3.5 w-3.5" />
-            {t("presenter")}
+            {t('presenter')}
           </Link>
         </Button>
-        <Button size="sm" onClick={onAddTech}>
-          <Plus className="mr-1.5 h-3.5 w-3.5" />
-          {t("addTechnician")}
-        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm">
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
+              {t('add')}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onAddTech}>{t('addTechnician')}</DropdownMenuItem>
+            <DropdownMenuItem onClick={onAddBay}>{t('addBay')}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
-  );
+  )
 }

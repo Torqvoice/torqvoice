@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Raggruppa per",
+    "byTechnician": "Per tecnico",
+    "byBay": "Per postazione",
+    "byNothing": "Nessun raggruppamento",
+    "weekends": "Fine settimana",
+    "zoomIn": "Ingrandisci",
+    "zoomOut": "Riduci",
+    "add": "Aggiungi",
+    "addBay": "Aggiungi postazione"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Impossibile spostare l'incarico",
     "failedAssign": "Impossibile assegnare il lavoro",
     "failedRemove": "Impossibile rimuovere l'incarico",
-    "createNewWorkorder": "Crea nuovo ordine di lavoro"
+    "createNewWorkorder": "Crea nuovo ordine di lavoro",
+    "noBays": "Nessuna postazione. Aggiungine una per pianificare la settimana per postazione.",
+    "addFirstBay": "Aggiungi postazione",
+    "lanes": {
+      "noBay": "Senza postazione",
+      "noTechnician": "Senza tecnico",
+      "everyone": "Tutto il lavoro"
+    },
+    "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro."
   },
   "unassigned": {
     "title": "Lavori Non Assegnati ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Nuovo ordine di lavoro alle {time}",
+    "unscheduled": "Non pianificato ({count})",
+    "hint": "Trascina un lavoro per spostarlo. Trascina il bordo superiore o inferiore per cambiarne la durata.",
+    "hiddenDays": "{count} pianificato/i nel fine settimana. Mostra il fine settimana."
+  },
+  "bay": {
+    "addTitle": "Aggiungi postazione",
+    "editTitle": "Modifica postazione",
+    "description": "Un luogo dove si lavora: un ponte, una rampa, un'area di lavaggio.",
+    "name": "Nome",
+    "namePlaceholder": "es. Ponte 1",
+    "color": "Colore",
+    "dailyCapacity": "Ore prenotabili al giorno",
+    "hoursPerDay": "ore al giorno",
+    "capacityHint": "Serve a mostrare quanto è pieno ogni giorno.",
+    "deleteTitle": "Elimina postazione",
+    "deleteDescription": "Rimuovere «{name}»? I lavori prenotati restano pianificati e passano alla colonna senza postazione.",
+    "addBay": "Aggiungi postazione",
+    "saveFailed": "Impossibile salvare la postazione"
   }
 }

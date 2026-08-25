@@ -136,7 +136,10 @@
     "tire_set_dispose": "Spisano komplet opon",
     "tire_set_attach": "Dodano pliki do kompletu opon",
     "tire_set_detach": "Usunięto plik z kompletu opon",
-    "whatsapp_send": "Wysłano wiadomość WhatsApp"
+    "whatsapp_send": "Wysłano wiadomość WhatsApp",
+    "work_bay_create": "Utworzono stanowisko",
+    "work_bay_update": "Zaktualizowano stanowisko",
+    "work_bay_delete": "Usunięto stanowisko"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -256,6 +259,9 @@
     "vehicle_update": "Zaktualizowano pojazd {name}, zmieniono: {fields}",
     "vehicle_updateNoChanges": "Zaktualizowano pojazd {name}, nic nie zmieniono",
     "webhook_create": "Utworzono webhook {name}",
-    "whatsapp_send": "Wysłano wiadomość WhatsApp do {name}"
+    "whatsapp_send": "Wysłano wiadomość WhatsApp do {name}",
+    "work_bay_create": "Utworzono stanowisko „{name}”",
+    "work_bay_update": "Zaktualizowano stanowisko „{name}”",
+    "work_bay_delete": "Usunięto stanowisko {id}"
   }
 }

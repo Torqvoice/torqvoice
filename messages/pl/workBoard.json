@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Grupuj według",
+    "byTechnician": "Według mechanika",
+    "byBay": "Według stanowiska",
+    "byNothing": "Bez grupowania",
+    "weekends": "Weekend",
+    "zoomIn": "Powiększ",
+    "zoomOut": "Pomniejsz",
+    "add": "Dodaj",
+    "addBay": "Dodaj stanowisko"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Nie udało się przenieść przydzielenia",
     "failedAssign": "Nie udało się przydzielić zadania",
     "failedRemove": "Nie udało się usunąć przydzielenia",
-    "createNewWorkorder": "Utwórz nowe zlecenie pracy"
+    "createNewWorkorder": "Utwórz nowe zlecenie pracy",
+    "noBays": "Brak stanowisk. Dodaj jedno, aby planować tydzień według stanowisk.",
+    "addFirstBay": "Dodaj stanowisko",
+    "lanes": {
+      "noBay": "Bez stanowiska",
+      "noTechnician": "Bez mechanika",
+      "everyone": "Cała praca"
+    },
+    "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie."
   },
   "unassigned": {
     "title": "Nieprzyzdzielone Zadania ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Nowe zlecenie o {time}",
+    "unscheduled": "Niezaplanowane ({count})",
+    "hint": "Przeciągnij zlecenie, aby je przenieść. Przeciągnij górną lub dolną krawędź, aby zmienić czas trwania.",
+    "hiddenDays": "{count} zaplanowano w weekend. Pokaż weekend."
+  },
+  "bay": {
+    "addTitle": "Dodaj stanowisko",
+    "editTitle": "Edytuj stanowisko",
+    "description": "Miejsce, w którym wykonywana jest praca: podnośnik, rampa lub myjnia.",
+    "name": "Nazwa",
+    "namePlaceholder": "np. Podnośnik 1",
+    "color": "Kolor",
+    "dailyCapacity": "Godziny do zaplanowania dziennie",
+    "hoursPerDay": "godzin dziennie",
+    "capacityHint": "Pokazuje, jak zapełniony jest każdy dzień.",
+    "deleteTitle": "Usuń stanowisko",
+    "deleteDescription": "Usunąć „{name}”? Zlecenia na tym stanowisku pozostaną zaplanowane i trafią do kolumny bez stanowiska.",
+    "addBay": "Dodaj stanowisko",
+    "saveFailed": "Nie udało się zapisać stanowiska"
   }
 }

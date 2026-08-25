@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Agrupar por",
+    "byTechnician": "Por técnico",
+    "byBay": "Por baia",
+    "byNothing": "Sem agrupamento",
+    "weekends": "Fim de semana",
+    "zoomIn": "Ampliar",
+    "zoomOut": "Reduzir",
+    "add": "Adicionar",
+    "addBay": "Adicionar baia"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Falha ao mover atribuição",
     "failedAssign": "Falha ao atribuir trabalho",
     "failedRemove": "Falha ao remover atribuição",
-    "createNewWorkorder": "Criar nova ordem de serviço"
+    "createNewWorkorder": "Criar nova ordem de serviço",
+    "noBays": "Nenhuma baia ainda. Adicione uma para planejar a semana por baia.",
+    "addFirstBay": "Adicionar baia",
+    "lanes": {
+      "noBay": "Sem baia",
+      "noTechnician": "Sem técnico",
+      "everyone": "Todo o trabalho"
+    },
+    "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele."
   },
   "unassigned": {
     "title": "Trabalhos Não Atribuídos ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Nova ordem de serviço às {time}",
+    "unscheduled": "Não agendado ({count})",
+    "hint": "Arraste um serviço para movê-lo. Arraste a borda superior ou inferior para mudar a duração.",
+    "hiddenDays": "{count} agendado(s) no fim de semana. Mostrar fim de semana."
+  },
+  "bay": {
+    "addTitle": "Adicionar baia",
+    "editTitle": "Editar baia",
+    "description": "Um lugar onde o trabalho acontece: um elevador, uma rampa ou uma área de lavagem.",
+    "name": "Nome",
+    "namePlaceholder": "ex.: Elevador 1",
+    "color": "Cor",
+    "dailyCapacity": "Horas agendáveis por dia",
+    "hoursPerDay": "horas por dia",
+    "capacityHint": "Mostra o quanto cada dia está cheio.",
+    "deleteTitle": "Excluir baia",
+    "deleteDescription": "Remover \"{name}\"? Os serviços agendados nela continuam agendados e vão para a coluna sem baia.",
+    "addBay": "Adicionar baia",
+    "saveFailed": "Não foi possível salvar a baia"
   }
 }

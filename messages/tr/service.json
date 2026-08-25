@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Daha fazla",
-    "setDefaults": "Varsayılanlar"
+    "setDefaults": "Varsayılanlar",
+    "workBay": "Çalışma alanı",
+    "selectWorkBay": "Çalışma alanı seçin…",
+    "noWorkBay": "Çalışma alanı yok"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",

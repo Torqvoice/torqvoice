@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Mehr erfahren",
-    "setDefaults": "Standardwerte"
+    "setDefaults": "Standardwerte",
+    "workBay": "Arbeitsplatz",
+    "selectWorkBay": "Arbeitsplatz wählen …",
+    "noWorkBay": "Kein Arbeitsplatz"
   },
   "notifications": {
     "title": "Kundenbenachrichtigungen",

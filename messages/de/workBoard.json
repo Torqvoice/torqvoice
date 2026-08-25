@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Gruppieren nach",
+    "byTechnician": "Nach Mechaniker",
+    "byBay": "Nach Arbeitsplatz",
+    "byNothing": "Ohne Gruppierung",
+    "weekends": "Wochenende",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "add": "Hinzufügen",
+    "addBay": "Arbeitsplatz hinzufügen"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Zuweisung konnte nicht verschoben werden",
     "failedAssign": "Auftrag konnte nicht zugewiesen werden",
     "failedRemove": "Zuweisung konnte nicht entfernt werden",
-    "createNewWorkorder": "Neuen Arbeitsauftrag erstellen"
+    "createNewWorkorder": "Neuen Arbeitsauftrag erstellen",
+    "noBays": "Noch keine Arbeitsplätze. Legen Sie einen an, um die Woche nach Arbeitsplatz zu planen.",
+    "addFirstBay": "Arbeitsplatz hinzufügen",
+    "lanes": {
+      "noBay": "Ohne Arbeitsplatz",
+      "noTechnician": "Ohne Mechaniker",
+      "everyone": "Alle Arbeiten"
+    },
+    "dropNeedsLane": "Gruppieren Sie das Board nach Mechaniker oder Arbeitsplatz, bevor Sie einen Auftrag darauf ziehen."
   },
   "unassigned": {
     "title": "Nicht zugewiesene Aufträge ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "Neuer Auftrag um {time}",
+    "unscheduled": "Nicht eingeplant ({count})",
+    "hint": "Auftrag ziehen zum Verschieben. Oberen oder unteren Rand ziehen, um die Dauer zu ändern.",
+    "hiddenDays": "{count} am Wochenende eingeplant. Wochenende anzeigen."
+  },
+  "bay": {
+    "addTitle": "Arbeitsplatz hinzufügen",
+    "editTitle": "Arbeitsplatz bearbeiten",
+    "description": "Ein Ort, an dem gearbeitet wird: Bühne, Rampe oder Waschplatz.",
+    "name": "Name",
+    "namePlaceholder": "z. B. Bühne 1",
+    "color": "Farbe",
+    "dailyCapacity": "Buchbare Stunden pro Tag",
+    "hoursPerDay": "Stunden pro Tag",
+    "capacityHint": "Zeigt an, wie voll jeder Tag ist.",
+    "deleteTitle": "Arbeitsplatz löschen",
+    "deleteDescription": "„{name}“ entfernen? Aufträge darin bleiben eingeplant und wechseln in die Spalte ohne Arbeitsplatz.",
+    "addBay": "Arbeitsplatz hinzufügen",
+    "saveFailed": "Arbeitsplatz konnte nicht gespeichert werden"
   }
 }

@@ -94,6 +94,13 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     clearOrder: 70,
   },
   {
+    model: 'WorkBay',
+    key: 'workBays',
+    option: 'technicians',
+    restore: 'replace',
+    clearOrder: 71,
+  },
+  {
     model: 'InspectionTemplate',
     key: 'inspectionTemplates',
     option: 'inspections',

@@ -11,7 +11,16 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Group by",
+    "byTechnician": "By technician",
+    "byBay": "By work bay",
+    "byNothing": "No grouping",
+    "weekends": "Weekends",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "add": "Add",
+    "addBay": "Add work bay"
   },
   "board": {
     "days": {
@@ -28,7 +37,15 @@
     "failedMove": "Failed to move assignment",
     "failedAssign": "Failed to assign job",
     "failedRemove": "Failed to remove assignment",
-    "createNewWorkorder": "Create new Workorder"
+    "createNewWorkorder": "Create new Workorder",
+    "noBays": "No work bays yet. Add one to plan the week bay by bay.",
+    "addFirstBay": "Add work bay",
+    "lanes": {
+      "noBay": "No bay",
+      "noTechnician": "No technician",
+      "everyone": "All work"
+    },
+    "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it."
   },
   "unassigned": {
     "title": "Unassigned Jobs ({count})",
@@ -77,5 +94,26 @@
     },
     "previous": "Previous",
     "next": "Next"
+  },
+  "week": {
+    "createAt": "New work order at {time}",
+    "unscheduled": "Not scheduled ({count})",
+    "hint": "Drag a job to move it. Drag its top or bottom edge to change how long it takes.",
+    "hiddenDays": "{count} booked on the weekend. Show weekends."
+  },
+  "bay": {
+    "addTitle": "Add work bay",
+    "editTitle": "Edit work bay",
+    "description": "A place where work happens: a lift, a ramp, a wash bay.",
+    "name": "Name",
+    "namePlaceholder": "e.g. Lift 1",
+    "color": "Color",
+    "dailyCapacity": "Bookable hours per day",
+    "hoursPerDay": "hours per day",
+    "capacityHint": "Used to show how full each day is.",
+    "deleteTitle": "Delete work bay",
+    "deleteDescription": "Remove \"{name}\"? Jobs booked into it stay scheduled and move to the no-bay column.",
+    "addBay": "Add work bay",
+    "saveFailed": "Could not save the work bay"
   }
 }
