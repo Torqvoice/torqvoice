@@ -21,7 +21,10 @@
     "zoomOut": "Verkleinern",
     "add": "Hinzufügen",
     "addBay": "Arbeitsplatz hinzufügen",
-    "weekNumber": "KW {number}"
+    "weekNumber": "KW {number}",
+    "lanes": "Spalten",
+    "showAllLanes": "Alle anzeigen",
+    "onlyBusyLanes": "Nur mit Aufträgen"
   },
   "board": {
     "days": {

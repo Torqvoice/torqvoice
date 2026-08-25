@@ -32,6 +32,15 @@ export type BoardPreferences = {
   /** Saturday and Sunday columns. Most shops do not want them. */
   showWeekends: boolean
   snapMinutes: SnapMinutes
+  /**
+   * Lanes this person has taken off their board.
+   *
+   * A fifteen-technician shop is seventy-five columns across a week, which is
+   * three screens of sideways scrolling and names truncated to nothing. Most of
+   * the time someone is looking at their own half of the shop, so the board
+   * lets them say which lanes those are.
+   */
+  hiddenLaneIds: string[]
 }
 
 export const DEFAULT_PREFERENCES: BoardPreferences = {
@@ -39,6 +48,7 @@ export const DEFAULT_PREFERENCES: BoardPreferences = {
   density: 'fit',
   showWeekends: false,
   snapMinutes: 15,
+  hiddenLaneIds: [],
 }
 
 const STORAGE_KEY = 'workboard.preferences'
@@ -56,6 +66,9 @@ function readStored(): Partial<BoardPreferences> {
     if (typeof parsed.showWeekends === 'boolean') out.showWeekends = parsed.showWeekends
     if (SNAP_CHOICES.includes(parsed.snapMinutes as SnapMinutes)) {
       out.snapMinutes = parsed.snapMinutes as SnapMinutes
+    }
+    if (Array.isArray(parsed.hiddenLaneIds)) {
+      out.hiddenLaneIds = parsed.hiddenLaneIds.filter((id): id is string => typeof id === 'string')
     }
     return out
   } catch {

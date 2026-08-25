@@ -85,15 +85,26 @@ export function WeekLaneColumn({
 
   const positioned = useMemo(() => layoutLaneDay(jobs, date, timeWindow), [jobs, date, timeWindow])
 
-  const slots = useMemo(() => {
-    const marks: number[] = []
-    for (let m = timeWindow.startMins; m < timeWindow.endMins; m += slotMinutes) {
-      marks.push(m)
-    }
-    return marks
-  }, [timeWindow, slotMinutes])
-
   const height = (timeWindow.endMins - timeWindow.startMins) * pxPerMinute
+
+  // Rules as two stacked gradients rather than one element per slot. A shop
+  // with fifteen technicians draws seventy-five of these columns; at thirty
+  // elements each that was two thousand nodes of pure decoration, re-rendered
+  // on every frame of a drag.
+  const rules = useMemo(() => {
+    const hourPx = 60 * pxPerMinute
+    const slotPx = slotMinutes * pxPerMinute
+    return {
+      backgroundImage: [
+        `repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px ${hourPx}px)`,
+        `repeating-linear-gradient(to bottom, color-mix(in oklch, var(--border) 45%, transparent) 0 1px, transparent 1px ${slotPx}px)`,
+      ].join(', '),
+    }
+  }, [pxPerMinute, slotMinutes])
+
+  /** Hours outside the shop's working day, shaded top and bottom. */
+  const closedBefore = Math.max(workDayStart - timeWindow.startMins, 0) * pxPerMinute
+  const closedAfter = Math.max(timeWindow.endMins - workDayEnd, 0) * pxPerMinute
 
   return (
     <ContextMenu>
@@ -122,24 +133,21 @@ export function WeekLaneColumn({
             )
           }}
         >
-          {slots.map((mins) => {
-            const outsideHours = mins < workDayStart || mins >= workDayEnd
-            return (
-              <div
-                key={mins}
-                aria-hidden
-                className={cn(
-                  'absolute inset-x-0 border-t',
-                  mins % 60 === 0 ? 'border-border/70' : 'border-border/30 border-dashed',
-                  outsideHours && 'bg-muted/40'
-                )}
-                style={{
-                  top: offsetForMinutes(mins, timeWindow, pxPerMinute),
-                  height: slotMinutes * pxPerMinute,
-                }}
-              />
-            )
-          })}
+          <div aria-hidden className="absolute inset-0" style={rules} />
+          {closedBefore > 0 && (
+            <div
+              aria-hidden
+              className="absolute inset-x-0 top-0 bg-muted/40"
+              style={{ height: closedBefore }}
+            />
+          )}
+          {closedAfter > 0 && (
+            <div
+              aria-hidden
+              className="absolute inset-x-0 bottom-0 bg-muted/40"
+              style={{ height: closedAfter }}
+            />
+          )}
 
           {nowMinutes !== null && (
             <NowLine minutes={nowMinutes} window={timeWindow} pxPerMinute={pxPerMinute} />

@@ -21,7 +21,10 @@
     "zoomOut": "Уменьшить",
     "add": "Добавить",
     "addBay": "Добавить пост",
-    "weekNumber": "Нед. {number}"
+    "weekNumber": "Нед. {number}",
+    "lanes": "Колонки",
+    "showAllLanes": "Показать все",
+    "onlyBusyLanes": "Только с работой"
   },
   "board": {
     "days": {

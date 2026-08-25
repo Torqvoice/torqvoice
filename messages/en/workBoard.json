@@ -21,7 +21,10 @@
     "zoomOut": "Zoom out",
     "add": "Add",
     "addBay": "Add work bay",
-    "weekNumber": "Week {number}"
+    "weekNumber": "Week {number}",
+    "lanes": "Lanes",
+    "showAllLanes": "Show all",
+    "onlyBusyLanes": "Only those with work"
   },
   "board": {
     "days": {

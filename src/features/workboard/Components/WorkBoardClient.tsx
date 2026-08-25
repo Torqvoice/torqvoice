@@ -44,6 +44,7 @@ import {
   buildLanes,
   isLaneGrouping,
   laneAssignment,
+  laneIdForJob,
 } from '../utils/lanes'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
@@ -236,6 +237,30 @@ export function WorkBoardClient({
         },
       }),
     [preferences.grouping, store.technicians, store.workBays, store.jobs, t]
+  )
+
+  const visibleLanes = useMemo(
+    () => lanes.filter((lane) => !preferences.hiddenLaneIds.includes(lane.id)),
+    [lanes, preferences.hiddenLaneIds]
+  )
+
+  /** Lanes carrying work in the week on screen, for the "only these" shortcut. */
+  const busyLaneIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const job of store.jobs) ids.add(laneIdForJob(job, preferences.grouping))
+    return lanes.filter((lane) => ids.has(lane.id)).map((lane) => lane.id)
+  }, [store.jobs, lanes, preferences.grouping])
+
+  const toggleLane = useCallback(
+    (laneId: string) => {
+      const hidden = preferences.hiddenLaneIds
+      updatePreferences({
+        hiddenLaneIds: hidden.includes(laneId)
+          ? hidden.filter((id) => id !== laneId)
+          : [...hidden, laneId],
+      })
+    },
+    [preferences.hiddenLaneIds, updatePreferences]
   )
 
   const sensors = useSensors(
@@ -645,6 +670,18 @@ export function WorkBoardClient({
       grouping={preferences.grouping}
       density={preferences.density}
       showWeekends={preferences.showWeekends}
+      lanes={lanes}
+      hiddenLaneIds={preferences.hiddenLaneIds}
+      busyLaneIds={busyLaneIds}
+      onToggleLane={toggleLane}
+      onShowAllLanes={() => updatePreferences({ hiddenLaneIds: [] })}
+      onShowBusyLanes={() =>
+        updatePreferences({
+          hiddenLaneIds: lanes
+            .filter((lane) => !busyLaneIds.includes(lane.id))
+            .map((lane) => lane.id),
+        })
+      }
       onPrevWeek={handlePrevWeek}
       onNextWeek={handleNextWeek}
       onPrevDay={handlePrevDay}
@@ -711,7 +748,7 @@ export function WorkBoardClient({
                 onCreateWorkOrder={handleCreateWorkOrder}
               />
             </ScrollArea>
-          ) : lanes.length === 0 ? (
+          ) : visibleLanes.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 py-20">
               <Columns3 className="h-10 w-10 text-muted-foreground/40" />
               <p className="text-sm text-muted-foreground">{t('noBays')}</p>
@@ -723,7 +760,7 @@ export function WorkBoardClient({
             <WeekTimeline
               days={days}
               hiddenDays={hiddenDays}
-              lanes={lanes}
+              lanes={visibleLanes}
               jobs={store.jobs}
               grouping={preferences.grouping}
               density={preferences.density}

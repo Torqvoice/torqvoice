@@ -21,7 +21,10 @@
     "zoomOut": "Mažinti",
     "add": "Pridėti",
     "addBay": "Pridėti darbo vietą",
-    "weekNumber": "{number} sav."
+    "weekNumber": "{number} sav.",
+    "lanes": "Stulpeliai",
+    "showAllLanes": "Rodyti visus",
+    "onlyBusyLanes": "Tik su darbais"
   },
   "board": {
     "days": {

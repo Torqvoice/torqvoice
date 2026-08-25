@@ -21,7 +21,10 @@
     "zoomOut": "Alejar",
     "add": "Añadir",
     "addBay": "Añadir puesto",
-    "weekNumber": "Sem. {number}"
+    "weekNumber": "Sem. {number}",
+    "lanes": "Columnas",
+    "showAllLanes": "Mostrar todas",
+    "onlyBusyLanes": "Solo con trabajo"
   },
   "board": {
     "days": {

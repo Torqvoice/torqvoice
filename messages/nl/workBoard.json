@@ -21,7 +21,10 @@
     "zoomOut": "Uitzoomen",
     "add": "Toevoegen",
     "addBay": "Werkplek toevoegen",
-    "weekNumber": "Week {number}"
+    "weekNumber": "Week {number}",
+    "lanes": "Kolommen",
+    "showAllLanes": "Alles tonen",
+    "onlyBusyLanes": "Alleen met werk"
   },
   "board": {
     "days": {

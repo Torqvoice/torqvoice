@@ -21,7 +21,10 @@
     "zoomOut": "Zoom ut",
     "add": "Legg til",
     "addBay": "Legg til arbeidsplass",
-    "weekNumber": "Uke {number}"
+    "weekNumber": "Uke {number}",
+    "lanes": "Kolonner",
+    "showAllLanes": "Vis alle",
+    "onlyBusyLanes": "Bare med jobber"
   },
   "board": {
     "days": {

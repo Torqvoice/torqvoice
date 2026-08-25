@@ -11,6 +11,7 @@ import {
   Clock,
   Columns3,
   Monitor,
+  ListFilter,
   Plus,
   ZoomIn,
   ZoomOut,
@@ -19,8 +20,11 @@ import { useTranslations, useLocale } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
@@ -31,7 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { type BoardDensity, DENSITY_ORDER } from '../hooks/useBoardPreferences'
-import type { LaneGrouping } from '../utils/lanes'
+import type { BoardLane, LaneGrouping } from '../utils/lanes'
 
 export type BoardView = 'week' | 'day'
 
@@ -83,6 +87,12 @@ export function WorkBoardToolbar({
   grouping,
   density,
   showWeekends,
+  lanes,
+  hiddenLaneIds,
+  busyLaneIds,
+  onToggleLane,
+  onShowAllLanes,
+  onShowBusyLanes,
   onPrevWeek,
   onNextWeek,
   onPrevDay,
@@ -101,6 +111,14 @@ export function WorkBoardToolbar({
   grouping: LaneGrouping
   density: BoardDensity
   showWeekends: boolean
+  /** Every lane the grouping offers, filtered or not. */
+  lanes: BoardLane[]
+  hiddenLaneIds: string[]
+  /** Lanes carrying work this week, for the "only these" shortcut. */
+  busyLaneIds: string[]
+  onToggleLane: (laneId: string) => void
+  onShowAllLanes: () => void
+  onShowBusyLanes: () => void
   onPrevWeek: () => void
   onNextWeek: () => void
   onPrevDay: () => void
@@ -174,6 +192,47 @@ export function WorkBoardToolbar({
                 <SelectItem value="none">{t('byNothing')}</SelectItem>
               </SelectContent>
             </Select>
+
+            {lanes.length > 1 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={hiddenLaneIds.length > 0 ? 'secondary' : 'outline'} size="sm">
+                    <ListFilter className="mr-1.5 h-3.5 w-3.5" />
+                    {t('lanes')}
+                    <span className="ml-1.5 tabular-nums text-muted-foreground">
+                      {lanes.length - hiddenLaneIds.length}/{lanes.length}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
+                  <DropdownMenuItem onClick={onShowAllLanes}>{t('showAllLanes')}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={onShowBusyLanes} disabled={busyLaneIds.length === 0}>
+                    {t('onlyBusyLanes')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>{t('groupBy')}</DropdownMenuLabel>
+                  {lanes.map((lane) => (
+                    <DropdownMenuCheckboxItem
+                      key={lane.id}
+                      checked={!hiddenLaneIds.includes(lane.id)}
+                      onSelect={(event) => {
+                        // Keep the menu open: hiding lanes is done in batches.
+                        event.preventDefault()
+                        onToggleLane(lane.id)
+                      }}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ backgroundColor: lane.color }}
+                        />
+                        {lane.name}
+                      </span>
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
 
             <Button
               variant={showWeekends ? 'secondary' : 'outline'}

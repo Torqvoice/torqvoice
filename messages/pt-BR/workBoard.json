@@ -21,7 +21,10 @@
     "zoomOut": "Reduzir",
     "add": "Adicionar",
     "addBay": "Adicionar baia",
-    "weekNumber": "Sem. {number}"
+    "weekNumber": "Sem. {number}",
+    "lanes": "Colunas",
+    "showAllLanes": "Mostrar todas",
+    "onlyBusyLanes": "Somente com serviço"
   },
   "board": {
     "days": {

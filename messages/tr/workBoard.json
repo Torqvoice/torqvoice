@@ -21,7 +21,10 @@
     "zoomOut": "Uzaklaştır",
     "add": "Ekle",
     "addBay": "Çalışma alanı ekle",
-    "weekNumber": "{number}. hafta"
+    "weekNumber": "{number}. hafta",
+    "lanes": "Sütunlar",
+    "showAllLanes": "Tümünü göster",
+    "onlyBusyLanes": "Yalnızca işi olanlar"
   },
   "board": {
     "days": {

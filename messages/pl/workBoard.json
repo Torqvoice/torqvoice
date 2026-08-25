@@ -21,7 +21,10 @@
     "zoomOut": "Pomniejsz",
     "add": "Dodaj",
     "addBay": "Dodaj stanowisko",
-    "weekNumber": "Tydz. {number}"
+    "weekNumber": "Tydz. {number}",
+    "lanes": "Kolumny",
+    "showAllLanes": "Pokaż wszystkie",
+    "onlyBusyLanes": "Tylko ze zleceniami"
   },
   "board": {
     "days": {
