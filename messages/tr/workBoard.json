@@ -24,7 +24,10 @@
     "weekNumber": "{number}. hafta",
     "lanes": "Sütunlar",
     "showAllLanes": "Tümünü göster",
-    "onlyBusyLanes": "Yalnızca işi olanlar"
+    "onlyBusyLanes": "Yalnızca işi olanlar",
+    "layout": "Görünüm",
+    "layoutTimeline": "Zaman çizelgesi",
+    "layoutCards": "Kartlar"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Alansız",
       "noTechnician": "Teknisyensiz",
-      "everyone": "Tüm işler"
+      "everyone": "Tüm işler",
+      "thisWeek": "Bu hafta"
     },
     "dropNeedsLane": "Bir işi panoya bırakmadan önce panoyu teknisyene veya çalışma alanına göre gruplayın."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "\"{name}\" kaldırılsın mı? Buraya planlanan işler planlı kalır ve alansız sütuna geçer.",
     "addBay": "Çalışma alanı ekle",
     "saveFailed": "Çalışma alanı kaydedilemedi"
+  },
+  "lane": {
+    "booked": "Planlanan",
+    "capacity": "Kapasite",
+    "free": "Boş",
+    "over": "Aşım",
+    "jobs": "İşler",
+    "utilisation": "Kapasitenin %{pct}'i",
+    "placeholder": "Henüz buraya atanmamış işler."
   }
 }

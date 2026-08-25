@@ -25,7 +25,7 @@ import {
   isUnscheduled,
   resolveJobOnDay,
 } from '../../utils/layout'
-import { formatDuration } from '../DurationSlider'
+import { LaneHeaderTooltip } from '../LaneHeaderTooltip'
 import { UnscheduledStrip } from './UnscheduledStrip'
 import { WeekLaneColumn } from './WeekLaneColumn'
 import {
@@ -334,45 +334,48 @@ export function WeekTimeline({
                   const pct =
                     lane.dailyCapacity > 0 ? Math.round((booked / lane.dailyCapacity) * 100) : null
                   return (
-                    <button
+                    <LaneHeaderTooltip
                       key={`lane-${day}-${lane.id}`}
-                      type="button"
-                      disabled={lane.isPlaceholder || readOnly || !onLaneClick}
-                      onClick={() => onLaneClick?.(lane)}
-                      className={cn(
-                        'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
-                        isLastLane ? 'border-r-2 border-r-border' : 'border-r'
-                      )}
-                      style={{ top: DAY_HEADER_HEIGHT, height: LANE_HEADER_HEIGHT }}
-                      title={
-                        pct === null
-                          ? lane.name
-                          : `${lane.name} · ${formatDuration(booked)} / ${formatDuration(lane.dailyCapacity)}`
-                      }
+                      lane={lane}
+                      jobs={byLane.get(lane.id) ?? []}
+                      days={[day]}
+                      capacityMinutes={lane.dailyCapacity}
+                      periodLabel={dayFormatter.format(new Date(`${day}T12:00:00`))}
                     >
-                      <span className="flex items-center gap-1">
-                        <span
-                          className="h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: lane.color }}
-                        />
-                        <span className="truncate text-[11px] font-medium">{lane.name}</span>
-                      </span>
-                      {pct !== null && (
-                        <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                      <button
+                        type="button"
+                        disabled={lane.isPlaceholder || readOnly || !onLaneClick}
+                        onClick={() => onLaneClick?.(lane)}
+                        className={cn(
+                          'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
+                          isLastLane ? 'border-r-2 border-r-border' : 'border-r'
+                        )}
+                        style={{ top: DAY_HEADER_HEIGHT, height: LANE_HEADER_HEIGHT }}
+                      >
+                        <span className="flex items-center gap-1">
                           <span
-                            className={cn(
-                              'block h-full rounded-full',
-                              pct > 100
-                                ? 'bg-red-500'
-                                : pct >= 75
-                                  ? 'bg-amber-500'
-                                  : 'bg-emerald-500'
-                            )}
-                            style={{ width: `${Math.min(pct, 100)}%` }}
+                            className="h-2 w-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: lane.color }}
                           />
+                          <span className="truncate text-[11px] font-medium">{lane.name}</span>
                         </span>
-                      )}
-                    </button>
+                        {pct !== null && (
+                          <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                            <span
+                              className={cn(
+                                'block h-full rounded-full',
+                                pct > 100
+                                  ? 'bg-red-500'
+                                  : pct >= 75
+                                    ? 'bg-amber-500'
+                                    : 'bg-emerald-500'
+                              )}
+                              style={{ width: `${Math.min(pct, 100)}%` }}
+                            />
+                          </span>
+                        )}
+                      </button>
+                    </LaneHeaderTooltip>
                   )
                 })
               )}

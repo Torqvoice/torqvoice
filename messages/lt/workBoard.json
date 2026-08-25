@@ -24,7 +24,10 @@
     "weekNumber": "{number} sav.",
     "lanes": "Stulpeliai",
     "showAllLanes": "Rodyti visus",
-    "onlyBusyLanes": "Tik su darbais"
+    "onlyBusyLanes": "Tik su darbais",
+    "layout": "Rodinys",
+    "layoutTimeline": "Laiko juosta",
+    "layoutCards": "Kortelės"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Be darbo vietos",
       "noTechnician": "Be meistro",
-      "everyone": "Visi darbai"
+      "everyone": "Visi darbai",
+      "thisWeek": "Ši savaitė"
     },
     "dropNeedsLane": "Prieš vilkdami darbą, sugrupuokite lentą pagal meistrą arba darbo vietą."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Pašalinti „{name}“? Jai priskirti darbai lieka suplanuoti ir persikelia į stulpelį be darbo vietos.",
     "addBay": "Pridėti darbo vietą",
     "saveFailed": "Nepavyko išsaugoti darbo vietos"
+  },
+  "lane": {
+    "booked": "Suplanuota",
+    "capacity": "Pajėgumas",
+    "free": "Laisva",
+    "over": "Viršyta",
+    "jobs": "Darbai",
+    "utilisation": "{pct} % pajėgumo",
+    "placeholder": "Darbai, kurie dar niekam nepriskirti."
   }
 }

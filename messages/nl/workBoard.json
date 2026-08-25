@@ -24,7 +24,10 @@
     "weekNumber": "Week {number}",
     "lanes": "Kolommen",
     "showAllLanes": "Alles tonen",
-    "onlyBusyLanes": "Alleen met werk"
+    "onlyBusyLanes": "Alleen met werk",
+    "layout": "Weergave",
+    "layoutTimeline": "Tijdlijn",
+    "layoutCards": "Kaarten"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Zonder werkplek",
       "noTechnician": "Zonder monteur",
-      "everyone": "Al het werk"
+      "everyone": "Al het werk",
+      "thisWeek": "Deze week"
     },
     "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "\"{name}\" verwijderen? Klussen die erop staan blijven ingepland en gaan naar de kolom zonder werkplek.",
     "addBay": "Werkplek toevoegen",
     "saveFailed": "Kon de werkplek niet opslaan"
+  },
+  "lane": {
+    "booked": "Ingepland",
+    "capacity": "Capaciteit",
+    "free": "Vrij",
+    "over": "Over met",
+    "jobs": "Klussen",
+    "utilisation": "{pct}% van de capaciteit",
+    "placeholder": "Werk dat hier nog niet is toegewezen."
   }
 }

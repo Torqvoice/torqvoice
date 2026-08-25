@@ -24,7 +24,10 @@
     "weekNumber": "KW {number}",
     "lanes": "Spalten",
     "showAllLanes": "Alle anzeigen",
-    "onlyBusyLanes": "Nur mit Aufträgen"
+    "onlyBusyLanes": "Nur mit Aufträgen",
+    "layout": "Ansicht",
+    "layoutTimeline": "Zeitachse",
+    "layoutCards": "Karten"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Ohne Arbeitsplatz",
       "noTechnician": "Ohne Mechaniker",
-      "everyone": "Alle Arbeiten"
+      "everyone": "Alle Arbeiten",
+      "thisWeek": "Diese Woche"
     },
     "dropNeedsLane": "Gruppieren Sie das Board nach Mechaniker oder Arbeitsplatz, bevor Sie einen Auftrag darauf ziehen."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "„{name}“ entfernen? Aufträge darin bleiben eingeplant und wechseln in die Spalte ohne Arbeitsplatz.",
     "addBay": "Arbeitsplatz hinzufügen",
     "saveFailed": "Arbeitsplatz konnte nicht gespeichert werden"
+  },
+  "lane": {
+    "booked": "Verplant",
+    "capacity": "Kapazität",
+    "free": "Frei",
+    "over": "Überbucht um",
+    "jobs": "Aufträge",
+    "utilisation": "{pct} % der Kapazität",
+    "placeholder": "Arbeiten, die hier noch niemandem zugeordnet sind."
   }
 }

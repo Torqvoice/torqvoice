@@ -24,7 +24,10 @@
     "weekNumber": "Sett. {number}",
     "lanes": "Colonne",
     "showAllLanes": "Mostra tutte",
-    "onlyBusyLanes": "Solo con lavoro"
+    "onlyBusyLanes": "Solo con lavoro",
+    "layout": "Vista",
+    "layoutTimeline": "Cronologia",
+    "layoutCards": "Schede"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Senza postazione",
       "noTechnician": "Senza tecnico",
-      "everyone": "Tutto il lavoro"
+      "everyone": "Tutto il lavoro",
+      "thisWeek": "Questa settimana"
     },
     "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Rimuovere «{name}»? I lavori prenotati restano pianificati e passano alla colonna senza postazione.",
     "addBay": "Aggiungi postazione",
     "saveFailed": "Impossibile salvare la postazione"
+  },
+  "lane": {
+    "booked": "Pianificato",
+    "capacity": "Capacità",
+    "free": "Libero",
+    "over": "Eccedenza di",
+    "jobs": "Lavori",
+    "utilisation": "{pct}% della capacità",
+    "placeholder": "Lavoro non ancora assegnato qui."
   }
 }

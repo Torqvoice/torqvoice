@@ -24,7 +24,10 @@
     "weekNumber": "Tydz. {number}",
     "lanes": "Kolumny",
     "showAllLanes": "Pokaż wszystkie",
-    "onlyBusyLanes": "Tylko ze zleceniami"
+    "onlyBusyLanes": "Tylko ze zleceniami",
+    "layout": "Widok",
+    "layoutTimeline": "Oś czasu",
+    "layoutCards": "Karty"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Bez stanowiska",
       "noTechnician": "Bez mechanika",
-      "everyone": "Cała praca"
+      "everyone": "Cała praca",
+      "thisWeek": "Ten tydzień"
     },
     "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Usunąć „{name}”? Zlecenia na tym stanowisku pozostaną zaplanowane i trafią do kolumny bez stanowiska.",
     "addBay": "Dodaj stanowisko",
     "saveFailed": "Nie udało się zapisać stanowiska"
+  },
+  "lane": {
+    "booked": "Zaplanowane",
+    "capacity": "Wydajność",
+    "free": "Wolne",
+    "over": "Przekroczono o",
+    "jobs": "Zlecenia",
+    "utilisation": "{pct}% wydajności",
+    "placeholder": "Praca jeszcze nieprzypisana."
   }
 }

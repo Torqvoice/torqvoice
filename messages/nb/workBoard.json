@@ -24,7 +24,10 @@
     "weekNumber": "Uke {number}",
     "lanes": "Kolonner",
     "showAllLanes": "Vis alle",
-    "onlyBusyLanes": "Bare med jobber"
+    "onlyBusyLanes": "Bare med jobber",
+    "layout": "Visning",
+    "layoutTimeline": "Tidslinje",
+    "layoutCards": "Kort"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Uten plass",
       "noTechnician": "Uten mekaniker",
-      "everyone": "Alt arbeid"
+      "everyone": "Alt arbeid",
+      "thisWeek": "Denne uken"
     },
     "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Fjerne «{name}»? Jobber som er booket der forblir planlagt og flyttes til kolonnen uten plass.",
     "addBay": "Legg til arbeidsplass",
     "saveFailed": "Kunne ikke lagre arbeidsplassen"
+  },
+  "lane": {
+    "booked": "Booket",
+    "capacity": "Kapasitet",
+    "free": "Ledig",
+    "over": "Overbooket med",
+    "jobs": "Jobber",
+    "utilisation": "{pct} % av kapasiteten",
+    "placeholder": "Arbeid som ennå ikke er tildelt her."
   }
 }

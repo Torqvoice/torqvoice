@@ -24,7 +24,10 @@
     "weekNumber": "Sem. {number}",
     "lanes": "Colonnes",
     "showAllLanes": "Tout afficher",
-    "onlyBusyLanes": "Seulement avec du travail"
+    "onlyBusyLanes": "Seulement avec du travail",
+    "layout": "Affichage",
+    "layoutTimeline": "Chronologie",
+    "layoutCards": "Cartes"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Sans poste",
       "noTechnician": "Sans technicien",
-      "everyone": "Tout le travail"
+      "everyone": "Tout le travail",
+      "thisWeek": "Cette semaine"
     },
     "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Supprimer « {name} » ? Les tâches qui y sont réservées restent planifiées et passent dans la colonne sans poste.",
     "addBay": "Ajouter un poste",
     "saveFailed": "Impossible d'enregistrer le poste de travail"
+  },
+  "lane": {
+    "booked": "Planifié",
+    "capacity": "Capacité",
+    "free": "Libre",
+    "over": "Dépassement de",
+    "jobs": "Tâches",
+    "utilisation": "{pct} % de la capacité",
+    "placeholder": "Travail encore non attribué ici."
   }
 }

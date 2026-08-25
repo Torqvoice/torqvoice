@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Clock,
   Columns3,
+  LayoutGrid,
   Monitor,
   ListFilter,
   Plus,
@@ -34,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type BoardDensity, DENSITY_ORDER } from '../hooks/useBoardPreferences'
+import { type BoardDensity, type BoardLayout, DENSITY_ORDER } from '../hooks/useBoardPreferences'
 import type { BoardLane, LaneGrouping } from '../utils/lanes'
 
 export type BoardView = 'week' | 'day'
@@ -85,6 +86,7 @@ export function WorkBoardToolbar({
   selectedDate,
   view,
   grouping,
+  layout,
   density,
   showWeekends,
   lanes,
@@ -102,6 +104,7 @@ export function WorkBoardToolbar({
   onAddBay,
   onViewChange,
   onGroupingChange,
+  onLayoutChange,
   onDensityChange,
   onToggleWeekends,
 }: {
@@ -109,6 +112,7 @@ export function WorkBoardToolbar({
   selectedDate: string
   view: BoardView
   grouping: LaneGrouping
+  layout: BoardLayout
   density: BoardDensity
   showWeekends: boolean
   /** Every lane the grouping offers, filtered or not. */
@@ -128,6 +132,7 @@ export function WorkBoardToolbar({
   onAddBay: () => void
   onViewChange: (view: BoardView) => void
   onGroupingChange: (grouping: LaneGrouping) => void
+  onLayoutChange: (layout: BoardLayout) => void
   onDensityChange: (density: BoardDensity) => void
   onToggleWeekends: () => void
 }) {
@@ -178,6 +183,17 @@ export function WorkBoardToolbar({
       <div className="flex flex-wrap items-center gap-2">
         {view === 'week' && (
           <>
+            <Select value={layout} onValueChange={(value) => onLayoutChange(value as BoardLayout)}>
+              <SelectTrigger size="sm" className="min-w-[130px]" aria-label={t('layout')}>
+                <LayoutGrid className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="timeline">{t('layoutTimeline')}</SelectItem>
+                <SelectItem value="cards">{t('layoutCards')}</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Select
               value={grouping}
               onValueChange={(value) => onGroupingChange(value as LaneGrouping)}
@@ -244,7 +260,12 @@ export function WorkBoardToolbar({
               {t('weekends')}
             </Button>
 
-            <div className="flex items-center rounded-md border">
+            <div
+              className={cn(
+                'flex items-center rounded-md border',
+                layout !== 'timeline' && 'hidden'
+              )}
+            >
               <Button
                 variant="ghost"
                 size="icon"

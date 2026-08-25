@@ -35,6 +35,7 @@ import { WorkBayDialog } from './WorkBayDialog'
 import { JobDetailPopover } from './JobDetailPopover'
 import { BoardJobCard } from './BoardJobCard'
 import { WeekTimeline, type WeekScheduleChange } from './WeekTimeline'
+import { WeekCardGrid } from './WeekCardGrid'
 import type { WeekDropTarget } from './WeekTimeline/useWeekDrag'
 import { useBoardPreferences } from '../hooks/useBoardPreferences'
 import {
@@ -42,6 +43,7 @@ import {
   type LaneGrouping,
   UNLANED,
   buildLanes,
+  groupJobsByLane,
   isLaneGrouping,
   laneAssignment,
   laneIdForJob,
@@ -250,6 +252,17 @@ export function WorkBoardClient({
     for (const job of store.jobs) ids.add(laneIdForJob(job, preferences.grouping))
     return lanes.filter((lane) => ids.has(lane.id)).map((lane) => lane.id)
   }, [store.jobs, lanes, preferences.grouping])
+
+  /** Jobs bucketed for the card layout, which has no drag preview to fold in. */
+  const jobsByLane = useMemo(
+    () =>
+      groupJobsByLane(
+        store.jobs,
+        preferences.grouping,
+        new Set(visibleLanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id))
+      ),
+    [store.jobs, preferences.grouping, visibleLanes]
+  )
 
   const toggleLane = useCallback(
     (laneId: string) => {
@@ -497,6 +510,30 @@ export function WorkBoardClient({
       const assignment = laneAssignment(laneId, preferences.grouping)
       const end = new Date(start.getTime() + DEFAULT_JOB_MINUTES * 60_000)
 
+      // An assigned job dragged between cells of the card layout: it keeps the
+      // time of day it already had and only changes lane and date.
+      if (activeData.job.type && !activeData.unscheduled) {
+        const job = activeData.job as WorkBoardJob
+        const previousStart = job.startDateTime ? new Date(job.startDateTime) : null
+        const previousEnd = job.endDateTime ? new Date(job.endDateTime) : null
+        const duration =
+          previousStart && previousEnd
+            ? previousEnd.getTime() - previousStart.getTime()
+            : DEFAULT_JOB_MINUTES * 60_000
+        const movedStart = new Date(`${date}T00:00:00`)
+        movedStart.setMinutes(
+          previousStart
+            ? previousStart.getHours() * 60 + previousStart.getMinutes()
+            : timeToMinutes(boardSettings.workDayStart)
+        )
+        return handleWeekSchedule({
+          job,
+          laneId,
+          start: movedStart,
+          end: new Date(movedStart.getTime() + duration),
+        })
+      }
+
       // Already on the board, just never given a time.
       if (activeData.unscheduled) {
         return handleWeekSchedule({
@@ -668,6 +705,7 @@ export function WorkBoardClient({
       selectedDate={selectedDate}
       view={view}
       grouping={preferences.grouping}
+      layout={preferences.layout}
       density={preferences.density}
       showWeekends={preferences.showWeekends}
       lanes={lanes}
@@ -691,6 +729,7 @@ export function WorkBoardClient({
       onAddBay={openAddBay}
       onViewChange={setView}
       onGroupingChange={setGrouping}
+      onLayoutChange={(layout) => updatePreferences({ layout })}
       onDensityChange={(density) => updatePreferences({ density })}
       onToggleWeekends={() => updatePreferences({ showWeekends: !preferences.showWeekends })}
     />
@@ -756,6 +795,15 @@ export function WorkBoardClient({
                 {t('addFirstBay')}
               </Button>
             </div>
+          ) : preferences.layout === 'cards' ? (
+            <WeekCardGrid
+              days={days}
+              lanes={visibleLanes}
+              jobsByLane={jobsByLane}
+              todayStr={toLocalDateString(new Date())}
+              onOpenJob={handleCardClick}
+              onLaneClick={handleLaneClick}
+            />
           ) : (
             <WeekTimeline
               days={days}

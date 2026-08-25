@@ -22,12 +22,29 @@ export const DENSITY_SCALE: Record<BoardDensity, number> = {
 
 export const DENSITY_ORDER: BoardDensity[] = ['fit', 'comfortable', 'detailed']
 
+/**
+ * How the week draws itself.
+ *
+ * `timeline` puts every lane on a clock, which is what a shop planning by the
+ * hour wants and what the whole feature was asked for. `cards` is a row per
+ * lane and a column per day: no times, but it fits a fifteen-technician shop on
+ * one screen, which the timeline cannot.
+ */
+export type BoardLayout = 'timeline' | 'cards'
+
+export const BOARD_LAYOUTS: BoardLayout[] = ['timeline', 'cards']
+
+export function isBoardLayout(value: unknown): value is BoardLayout {
+  return typeof value === 'string' && (BOARD_LAYOUTS as string[]).includes(value)
+}
+
 /** Minutes a drag snaps to. Kept separate from the visible slot lines. */
 export const SNAP_CHOICES = [5, 10, 15, 30] as const
 export type SnapMinutes = (typeof SNAP_CHOICES)[number]
 
 export type BoardPreferences = {
   grouping: LaneGrouping
+  layout: BoardLayout
   density: BoardDensity
   /** Saturday and Sunday columns. Most shops do not want them. */
   showWeekends: boolean
@@ -45,6 +62,7 @@ export type BoardPreferences = {
 
 export const DEFAULT_PREFERENCES: BoardPreferences = {
   grouping: 'technician',
+  layout: 'timeline',
   density: 'fit',
   showWeekends: false,
   snapMinutes: 15,
@@ -60,6 +78,7 @@ function readStored(): Partial<BoardPreferences> {
     const parsed = JSON.parse(raw) as Record<string, unknown>
     const out: Partial<BoardPreferences> = {}
     if (isLaneGrouping(parsed.grouping)) out.grouping = parsed.grouping
+    if (isBoardLayout(parsed.layout)) out.layout = parsed.layout
     if (DENSITY_ORDER.includes(parsed.density as BoardDensity)) {
       out.density = parsed.density as BoardDensity
     }

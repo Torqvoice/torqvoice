@@ -24,7 +24,10 @@
     "weekNumber": "Week {number}",
     "lanes": "Lanes",
     "showAllLanes": "Show all",
-    "onlyBusyLanes": "Only those with work"
+    "onlyBusyLanes": "Only those with work",
+    "layout": "Layout",
+    "layoutTimeline": "Timeline",
+    "layoutCards": "Cards"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "No bay",
       "noTechnician": "No technician",
-      "everyone": "All work"
+      "everyone": "All work",
+      "thisWeek": "This week"
     },
     "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Remove \"{name}\"? Jobs booked into it stay scheduled and move to the no-bay column.",
     "addBay": "Add work bay",
     "saveFailed": "Could not save the work bay"
+  },
+  "lane": {
+    "booked": "Booked",
+    "capacity": "Capacity",
+    "free": "Free",
+    "over": "Over by",
+    "jobs": "Jobs",
+    "utilisation": "{pct}% of capacity",
+    "placeholder": "Work with nothing assigned here yet."
   }
 }

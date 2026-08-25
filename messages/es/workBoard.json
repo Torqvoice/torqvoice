@@ -24,7 +24,10 @@
     "weekNumber": "Sem. {number}",
     "lanes": "Columnas",
     "showAllLanes": "Mostrar todas",
-    "onlyBusyLanes": "Solo con trabajo"
+    "onlyBusyLanes": "Solo con trabajo",
+    "layout": "Vista",
+    "layoutTimeline": "Cronología",
+    "layoutCards": "Tarjetas"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Sin puesto",
       "noTechnician": "Sin técnico",
-      "everyone": "Todo el trabajo"
+      "everyone": "Todo el trabajo",
+      "thisWeek": "Esta semana"
     },
     "dropNeedsLane": "Agrupa el tablero por técnico o puesto de trabajo antes de soltar un trabajo en él."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "¿Eliminar «{name}»? Los trabajos reservados en él siguen programados y pasan a la columna sin puesto.",
     "addBay": "Añadir puesto",
     "saveFailed": "No se pudo guardar el puesto de trabajo"
+  },
+  "lane": {
+    "booked": "Programado",
+    "capacity": "Capacidad",
+    "free": "Libre",
+    "over": "Excedido en",
+    "jobs": "Trabajos",
+    "utilisation": "{pct} % de la capacidad",
+    "placeholder": "Trabajo aún sin asignar aquí."
   }
 }

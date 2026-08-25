@@ -24,7 +24,10 @@
     "weekNumber": "Sem. {number}",
     "lanes": "Colunas",
     "showAllLanes": "Mostrar todas",
-    "onlyBusyLanes": "Somente com serviço"
+    "onlyBusyLanes": "Somente com serviço",
+    "layout": "Exibição",
+    "layoutTimeline": "Linha do tempo",
+    "layoutCards": "Cartões"
   },
   "board": {
     "days": {
@@ -47,7 +50,8 @@
     "lanes": {
       "noBay": "Sem baia",
       "noTechnician": "Sem técnico",
-      "everyone": "Todo o trabalho"
+      "everyone": "Todo o trabalho",
+      "thisWeek": "Esta semana"
     },
     "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele."
   },
@@ -119,5 +123,14 @@
     "deleteDescription": "Remover \"{name}\"? Os serviços agendados nela continuam agendados e vão para a coluna sem baia.",
     "addBay": "Adicionar baia",
     "saveFailed": "Não foi possível salvar a baia"
+  },
+  "lane": {
+    "booked": "Agendado",
+    "capacity": "Capacidade",
+    "free": "Livre",
+    "over": "Excedido em",
+    "jobs": "Serviços",
+    "utilisation": "{pct}% da capacidade",
+    "placeholder": "Serviço ainda sem atribuição aqui."
   }
 }
