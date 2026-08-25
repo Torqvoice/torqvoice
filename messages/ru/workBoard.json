@@ -20,7 +20,8 @@
     "zoomIn": "Увеличить",
     "zoomOut": "Уменьшить",
     "add": "Добавить",
-    "addBay": "Добавить пост"
+    "addBay": "Добавить пост",
+    "weekNumber": "Нед. {number}"
   },
   "board": {
     "days": {

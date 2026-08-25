@@ -20,7 +20,8 @@
     "zoomIn": "Yakınlaştır",
     "zoomOut": "Uzaklaştır",
     "add": "Ekle",
-    "addBay": "Çalışma alanı ekle"
+    "addBay": "Çalışma alanı ekle",
+    "weekNumber": "{number}. hafta"
   },
   "board": {
     "days": {

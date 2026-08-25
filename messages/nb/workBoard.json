@@ -20,7 +20,8 @@
     "zoomIn": "Zoom inn",
     "zoomOut": "Zoom ut",
     "add": "Legg til",
-    "addBay": "Legg til arbeidsplass"
+    "addBay": "Legg til arbeidsplass",
+    "weekNumber": "Uke {number}"
   },
   "board": {
     "days": {

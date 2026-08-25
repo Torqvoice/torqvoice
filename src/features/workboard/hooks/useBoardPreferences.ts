@@ -4,19 +4,23 @@ import { useCallback, useEffect, useState } from 'react'
 import { type LaneGrouping, isLaneGrouping } from '../utils/lanes'
 
 /**
- * How tall an hour is on the week timeline. A shop booking half-hour slots
- * wants the rows tight enough to see Monday to Friday at once; one booking
- * quarter-hour slots needs the room.
+ * How tall the week timeline draws an hour.
+ *
+ * The scale is relative to the height that fits the whole day on screen, not an
+ * absolute pixel count: `fit` fills the board exactly, and the wider settings
+ * multiply that and scroll. A planner is for seeing the week at a glance, so
+ * the default has to fill the window on any screen rather than leave the
+ * bottom half of it blank.
  */
-export type BoardDensity = 'compact' | 'comfortable' | 'spacious'
+export type BoardDensity = 'fit' | 'comfortable' | 'detailed'
 
-export const HOUR_HEIGHT: Record<BoardDensity, number> = {
-  compact: 40,
-  comfortable: 60,
-  spacious: 88,
+export const DENSITY_SCALE: Record<BoardDensity, number> = {
+  fit: 1,
+  comfortable: 1.6,
+  detailed: 2.6,
 }
 
-export const DENSITY_ORDER: BoardDensity[] = ['compact', 'comfortable', 'spacious']
+export const DENSITY_ORDER: BoardDensity[] = ['fit', 'comfortable', 'detailed']
 
 /** Minutes a drag snaps to. Kept separate from the visible slot lines. */
 export const SNAP_CHOICES = [5, 10, 15, 30] as const
@@ -32,7 +36,7 @@ export type BoardPreferences = {
 
 export const DEFAULT_PREFERENCES: BoardPreferences = {
   grouping: 'technician',
-  density: 'comfortable',
+  density: 'fit',
   showWeekends: false,
   snapMinutes: 15,
 }

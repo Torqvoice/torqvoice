@@ -20,7 +20,8 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "add": "Add",
-    "addBay": "Add work bay"
+    "addBay": "Add work bay",
+    "weekNumber": "Week {number}"
   },
   "board": {
     "days": {

@@ -60,7 +60,7 @@ export default async function WorkBoardPage() {
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <WorkBoardClient
           initialTechnicians={
             technicians as Parameters<typeof WorkBoardClient>[0]['initialTechnicians']

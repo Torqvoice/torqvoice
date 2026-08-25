@@ -35,6 +35,23 @@ import type { LaneGrouping } from '../utils/lanes'
 
 export type BoardView = 'week' | 'day'
 
+/**
+ * ISO 8601 week number, taken from the middle of the shown range.
+ *
+ * European workshops schedule by week number before they schedule by date
+ * ("that's a KW 36 job"), and the planner this view was modelled on leads with
+ * it. Sampling the midpoint keeps the number right whichever weekday the shop
+ * starts its week on.
+ */
+export function isoWeekNumber(weekStart: string): number {
+  const mid = new Date(weekStart + 'T12:00:00')
+  mid.setDate(mid.getDate() + 3)
+  const utc = new Date(Date.UTC(mid.getFullYear(), mid.getMonth(), mid.getDate()))
+  utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7))
+  const yearStart = Date.UTC(utc.getUTCFullYear(), 0, 1)
+  return Math.ceil(((utc.getTime() - yearStart) / 86_400_000 + 1) / 7)
+}
+
 function formatWeekRange(weekStart: string, locale?: string) {
   const start = new Date(weekStart + 'T12:00:00')
   const end = new Date(start)
@@ -118,7 +135,12 @@ export function WorkBoardToolbar({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="min-w-[180px] text-center text-sm font-medium">
+          <span className="flex min-w-[180px] items-center justify-center gap-2 text-sm font-medium">
+            {view === 'week' && (
+              <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums text-muted-foreground">
+                {t('weekNumber', { number: isoWeekNumber(weekStart) })}
+              </span>
+            )}
             {view === 'week'
               ? formatWeekRange(weekStart, locale)
               : formatDayDate(selectedDate, locale)}
@@ -142,7 +164,7 @@ export function WorkBoardToolbar({
               value={grouping}
               onValueChange={(value) => onGroupingChange(value as LaneGrouping)}
             >
-              <SelectTrigger size="sm" className="w-[150px]" aria-label={t('groupBy')}>
+              <SelectTrigger size="sm" className="min-w-[150px]" aria-label={t('groupBy')}>
                 <Columns3 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>

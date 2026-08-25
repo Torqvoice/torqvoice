@@ -20,7 +20,8 @@
     "zoomIn": "Powiększ",
     "zoomOut": "Pomniejsz",
     "add": "Dodaj",
-    "addBay": "Dodaj stanowisko"
+    "addBay": "Dodaj stanowisko",
+    "weekNumber": "Tydz. {number}"
   },
   "board": {
     "days": {

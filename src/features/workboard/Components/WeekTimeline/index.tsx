@@ -1,11 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import type { BoardDensity } from '../../hooks/useBoardPreferences'
-import { HOUR_HEIGHT } from '../../hooks/useBoardPreferences'
+import { DENSITY_SCALE } from '../../hooks/useBoardPreferences'
 import { minutesToTime, timeToMinutes } from '../../utils/datetime'
 import { type BoardLane, type LaneGrouping, groupJobsByLane, laneIdForJob } from '../../utils/lanes'
 import {
@@ -22,17 +22,24 @@ import { WeekLaneColumn } from './WeekLaneColumn'
 import { offsetForMinutes, totalHeight } from './geometry'
 import { type WeekDropTarget, useWeekDrag } from './useWeekDrag'
 
-/** How fine the horizontal rules are, per density. */
-const SLOT_MINUTES: Record<BoardDensity, number> = {
-  compact: 60,
-  comfortable: 30,
-  spacious: 15,
-}
+/** Candidate rules, finest first. The first one with room to breathe wins. */
+const SLOT_STEPS = [15, 30, 60]
+/** A rule closer than this to the next just makes the board look hatched. */
+const MIN_SLOT_PIXELS = 11
 
 const GUTTER_WIDTH = 60
-const MIN_COLUMN_WIDTH = 104
-/** Fixed so the lane header row knows where to stick underneath it. */
+/** Low enough that a shop with eight bays still sees Monday to Friday at once;
+ *  tracks are `1fr` above it, so a shop with two lanes gets wide columns. */
+const MIN_COLUMN_WIDTH = 44
+/** Both header rows are fixed height: the lane row needs to know where to
+ *  stick underneath the day row, and the body needs to know how much of the
+ *  board is left for it. */
 const DAY_HEADER_HEIGHT = 26
+const LANE_HEADER_HEIGHT = 34
+/** Below this an hour is too thin to drop anything into. */
+const MIN_PX_PER_MINUTE = 0.3
+/** Used for the first paint, before the board has been measured. */
+const FALLBACK_PX_PER_MINUTE = 1
 
 export type WeekScheduleChange = {
   job: WorkBoardJob
@@ -94,8 +101,6 @@ export function WeekTimeline({
   const scrollRef = useRef<HTMLDivElement>(null)
   const hasScrolled = useRef(false)
 
-  const pxPerMinute = HOUR_HEIGHT[density] / 60
-  const slotMinutes = SLOT_MINUTES[density]
   const dayStartMins = timeToMinutes(workDayStart)
   const dayEndMins = timeToMinutes(workDayEnd)
 
@@ -106,6 +111,22 @@ export function WeekTimeline({
     () => computeTimeWindow(scheduled, days, dayStartMins, dayEndMins),
     [scheduled, days, dayStartMins, dayEndMins]
   )
+
+  const showLaneHeaders = grouping !== 'none'
+
+  // The board is sized by the window, not by the clock: whatever height the
+  // page gives it is divided among the hours it has to show. `fit` therefore
+  // fills the board exactly and the wider settings scale up from there, so no
+  // screen ends with an empty half underneath the last hour.
+  const boardHeight = useMeasuredHeight(scrollRef)
+  const pxPerMinute = useMemo(() => {
+    const totalMinutes = Math.max(timeWindow.endMins - timeWindow.startMins, 1)
+    if (boardHeight === null) return FALLBACK_PX_PER_MINUTE * DENSITY_SCALE[density]
+    const headers = DAY_HEADER_HEIGHT + (showLaneHeaders ? LANE_HEADER_HEIGHT : 0)
+    // One pixel back, so an exact fit cannot round into a scrollbar.
+    const fit = Math.max(boardHeight - headers - 1, 60) / totalMinutes
+    return Math.max(fit * DENSITY_SCALE[density], MIN_PX_PER_MINUTE)
+  }, [boardHeight, density, timeWindow, showLaneHeaders])
 
   /** Lane ids the board is actually showing, minus the catch-all itself. */
   const knownLaneIds = useMemo(
@@ -176,9 +197,13 @@ export function WeekTimeline({
     ).length
   }, [scheduled, hiddenDays])
 
+  const slotMinutes = useMemo(
+    () => SLOT_STEPS.find((step) => step * pxPerMinute >= MIN_SLOT_PIXELS) ?? 60,
+    [pxPerMinute]
+  )
+
   const marks = useMemo(() => hourMarks(timeWindow), [timeWindow])
   const bodyHeight = totalHeight(timeWindow, pxPerMinute)
-  const showLaneHeaders = grouping !== 'none'
 
   const gridTemplateColumns = `${GUTTER_WIDTH}px repeat(${days.length * lanes.length}, minmax(${MIN_COLUMN_WIDTH}px, 1fr))`
 
@@ -215,7 +240,7 @@ export function WeekTimeline({
       )}
 
       <div ref={scrollRef} className="relative min-h-0 flex-1 overflow-auto rounded-md border">
-        <div className="grid min-w-max" style={{ gridTemplateColumns }}>
+        <div className="grid min-w-full" style={{ gridTemplateColumns }}>
           {/* Day headers */}
           <div
             className="sticky left-0 top-0 z-50 border-b border-r bg-background"
@@ -249,7 +274,8 @@ export function WeekTimeline({
                 style={{ top: DAY_HEADER_HEIGHT }}
               />
               {days.flatMap((day) =>
-                lanes.map((lane) => {
+                lanes.map((lane, laneIndex) => {
+                  const isLastLane = laneIndex === lanes.length - 1
                   const booked = bookedMinutesOnDay(byLane.get(lane.id) ?? [], day)
                   const pct =
                     lane.dailyCapacity > 0 ? Math.round((booked / lane.dailyCapacity) * 100) : null
@@ -259,8 +285,11 @@ export function WeekTimeline({
                       type="button"
                       disabled={lane.isPlaceholder || !onLaneClick}
                       onClick={() => onLaneClick?.(lane)}
-                      className="sticky z-40 flex flex-col gap-0.5 border-b border-r bg-background px-1.5 py-1 text-left disabled:cursor-default"
-                      style={{ top: DAY_HEADER_HEIGHT }}
+                      className={cn(
+                        'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
+                        isLastLane ? 'border-r-2 border-r-border' : 'border-r'
+                      )}
+                      style={{ top: DAY_HEADER_HEIGHT, height: LANE_HEADER_HEIGHT }}
                       title={
                         pct === null
                           ? lane.name
@@ -310,11 +339,12 @@ export function WeekTimeline({
           </div>
 
           {days.flatMap((day) =>
-            lanes.map((lane) => (
+            lanes.map((lane, laneIndex) => (
               <WeekLaneColumn
                 key={`col-${day}-${lane.id}`}
                 date={day}
                 lane={lane}
+                endsDay={laneIndex === lanes.length - 1}
                 jobs={byLane.get(lane.id) ?? []}
                 window={timeWindow}
                 pxPerMinute={pxPerMinute}
@@ -336,6 +366,37 @@ export function WeekTimeline({
       <p className="px-1 text-[11px] text-muted-foreground">{t('hint')}</p>
     </div>
   )
+}
+
+/**
+ * The height the page has given an element, or null before it is laid out.
+ *
+ * The element must be able to overflow (a `flex-1 min-h-0` box with its own
+ * scrollbar), otherwise the content it sizes would feed back into the
+ * measurement and the two would chase each other.
+ */
+function useMeasuredHeight(ref: React.RefObject<HTMLElement | null>): number | null {
+  const [height, setHeight] = useState<number | null>(null)
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const apply = (next: number) => {
+      setHeight((current) => (current === null || Math.abs(current - next) > 1 ? next : current))
+    }
+    apply(el.clientHeight)
+
+    if (typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver((entries) => {
+      const box = entries[0]?.contentRect
+      if (box) apply(box.height)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [ref])
+
+  return height
 }
 
 /**

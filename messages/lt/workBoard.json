@@ -20,7 +20,8 @@
     "zoomIn": "Didinti",
     "zoomOut": "Mažinti",
     "add": "Pridėti",
-    "addBay": "Pridėti darbo vietą"
+    "addBay": "Pridėti darbo vietą",
+    "weekNumber": "{number} sav."
   },
   "board": {
     "days": {

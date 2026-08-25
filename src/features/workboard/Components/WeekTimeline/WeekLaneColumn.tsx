@@ -25,6 +25,7 @@ const MIN_BLOCK_HEIGHT = 14
 export function WeekLaneColumn({
   date,
   lane,
+  endsDay,
   jobs,
   window: timeWindow,
   pxPerMinute,
@@ -40,6 +41,8 @@ export function WeekLaneColumn({
 }: {
   date: string
   lane: BoardLane
+  /** Last lane of its day, which gets the heavier rule between days. */
+  endsDay: boolean
   jobs: WorkBoardJob[]
   window: TimeWindow
   pxPerMinute: number
@@ -91,7 +94,10 @@ export function WeekLaneColumn({
         <div
           ref={attachRef}
           className={cn(
-            'relative border-r border-border/60 last:border-r-0',
+            'relative',
+            // A heavier rule between days and a light one between lanes, so a
+            // week of columns still reads as five days at a glance.
+            endsDay ? 'border-r-2 border-r-border' : 'border-r border-r-border/50',
             nowMinutes !== null && 'bg-primary/[0.03]',
             isOver && 'bg-primary/10'
           )}

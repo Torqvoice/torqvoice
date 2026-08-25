@@ -20,7 +20,8 @@
     "zoomIn": "Vergrößern",
     "zoomOut": "Verkleinern",
     "add": "Hinzufügen",
-    "addBay": "Arbeitsplatz hinzufügen"
+    "addBay": "Arbeitsplatz hinzufügen",
+    "weekNumber": "KW {number}"
   },
   "board": {
     "days": {

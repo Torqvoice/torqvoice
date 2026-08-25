@@ -20,7 +20,8 @@
     "zoomIn": "Inzoomen",
     "zoomOut": "Uitzoomen",
     "add": "Toevoegen",
-    "addBay": "Werkplek toevoegen"
+    "addBay": "Werkplek toevoegen",
+    "weekNumber": "Week {number}"
   },
   "board": {
     "days": {
