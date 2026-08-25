@@ -107,7 +107,10 @@
     "createAt": "Nueva orden de trabajo a las {time}",
     "unscheduled": "Sin programar ({count})",
     "hint": "Arrastra un trabajo para moverlo. Arrastra su borde superior o inferior para cambiar la duración.",
-    "hiddenDays": "{count} programado(s) el fin de semana. Mostrar fin de semana."
+    "hiddenDays": "{count} programado(s) el fin de semana. Mostrar fin de semana.",
+    "panLeft": "Antes en la semana",
+    "panRight": "Después en la semana",
+    "hintPan": "Arrastra el fondo para recorrer la semana."
   },
   "bay": {
     "addTitle": "Añadir puesto de trabajo",

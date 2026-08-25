@@ -107,7 +107,10 @@
     "createAt": "Neuer Auftrag um {time}",
     "unscheduled": "Nicht eingeplant ({count})",
     "hint": "Auftrag ziehen zum Verschieben. Oberen oder unteren Rand ziehen, um die Dauer zu ändern.",
-    "hiddenDays": "{count} am Wochenende eingeplant. Wochenende anzeigen."
+    "hiddenDays": "{count} am Wochenende eingeplant. Wochenende anzeigen.",
+    "panLeft": "Früher in der Woche",
+    "panRight": "Später in der Woche",
+    "hintPan": "Hintergrund ziehen, um durch die Woche zu blättern."
   },
   "bay": {
     "addTitle": "Arbeitsplatz hinzufügen",

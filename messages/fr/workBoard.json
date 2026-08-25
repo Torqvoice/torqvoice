@@ -107,7 +107,10 @@
     "createAt": "Nouvel ordre de travail à {time}",
     "unscheduled": "Non planifié ({count})",
     "hint": "Faites glisser une tâche pour la déplacer. Faites glisser son bord haut ou bas pour changer sa durée.",
-    "hiddenDays": "{count} planifié(s) le week-end. Afficher le week-end."
+    "hiddenDays": "{count} planifié(s) le week-end. Afficher le week-end.",
+    "panLeft": "Plus tôt dans la semaine",
+    "panRight": "Plus tard dans la semaine",
+    "hintPan": "Faites glisser le fond pour parcourir la semaine."
   },
   "bay": {
     "addTitle": "Ajouter un poste de travail",

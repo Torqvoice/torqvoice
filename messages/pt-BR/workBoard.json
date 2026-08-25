@@ -107,7 +107,10 @@
     "createAt": "Nova ordem de serviço às {time}",
     "unscheduled": "Não agendado ({count})",
     "hint": "Arraste um serviço para movê-lo. Arraste a borda superior ou inferior para mudar a duração.",
-    "hiddenDays": "{count} agendado(s) no fim de semana. Mostrar fim de semana."
+    "hiddenDays": "{count} agendado(s) no fim de semana. Mostrar fim de semana.",
+    "panLeft": "Antes na semana",
+    "panRight": "Depois na semana",
+    "hintPan": "Arraste o fundo para percorrer a semana."
   },
   "bay": {
     "addTitle": "Adicionar baia",

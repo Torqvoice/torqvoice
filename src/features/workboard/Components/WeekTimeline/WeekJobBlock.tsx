@@ -67,6 +67,8 @@ export function WeekJobBlock({
     <div
       role="button"
       tabIndex={0}
+      // The board pans when the background is dragged; a job owns its own drag.
+      data-pan-ignore
       aria-label={`${timeLabel} ${job.title}`}
       title={`${timeLabel} · ${job.title}${owner ? ` · ${owner.name}` : ''}${vehicleLabel ? ` · ${vehicleLabel}` : ''}`}
       className={cn(

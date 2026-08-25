@@ -62,6 +62,7 @@ function UnscheduledChip({
       type="button"
       {...listeners}
       {...attributes}
+      data-pan-ignore
       onClick={() => onOpen(job)}
       className={cn(
         'flex max-w-[220px] cursor-grab items-center gap-1 rounded border bg-card px-1.5 py-0.5 text-[11px] shadow-sm touch-none active:cursor-grabbing',

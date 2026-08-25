@@ -107,7 +107,10 @@
     "createAt": "Ny arbeidsordre kl. {time}",
     "unscheduled": "Ikke planlagt ({count})",
     "hint": "Dra en jobb for å flytte den. Dra øverste eller nederste kant for å endre varigheten.",
-    "hiddenDays": "{count} planlagt i helgen. Vis helg."
+    "hiddenDays": "{count} planlagt i helgen. Vis helg.",
+    "panLeft": "Tidligere i uken",
+    "panRight": "Senere i uken",
+    "hintPan": "Dra bakgrunnen for å bevege deg gjennom uken."
   },
   "bay": {
     "addTitle": "Legg til arbeidsplass",

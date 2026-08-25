@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDndMonitor } from '@dnd-kit/core'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -35,6 +36,7 @@ import {
   pointerFromDndEvent,
   windowMinutes,
 } from './geometry'
+import { useDragToPan } from './useDragToPan'
 import { type WeekDropTarget, useWeekDrag } from './useWeekDrag'
 
 /** How fine the horizontal rules are at each zoom. */
@@ -256,6 +258,14 @@ export function WeekTimeline({
   }, [scheduled, hiddenDays])
 
   const slotMinutes = SLOT_MINUTES[density]
+  const pan = useDragToPan(scrollRef)
+
+  /** One day's worth of columns, so paging lands on a day boundary. */
+  const dayWidth = useCallback(() => {
+    const el = scrollRef.current
+    if (!el || days.length === 0) return MIN_COLUMN_WIDTH * lanes.length
+    return Math.max((el.scrollWidth - GUTTER_WIDTH) / days.length, MIN_COLUMN_WIDTH)
+  }, [days.length, lanes.length])
 
   // With one column a day, nothing along the top says who a job belongs to, so
   // the block carries its owner's colour and name instead. This is what makes
@@ -305,140 +315,189 @@ export function WeekTimeline({
         </button>
       )}
 
-      <div ref={scrollRef} className="relative min-h-0 flex-1 overflow-auto rounded-md border">
+      <div className="relative min-h-0 flex-1">
+        {pan.overflow.left && (
+          <>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 z-40 w-10 rounded-l-md bg-linear-to-r from-background to-transparent"
+            />
+            <button
+              type="button"
+              data-pan-ignore
+              aria-label={t('panLeft')}
+              onClick={() => pan.panBy(-1, dayWidth())}
+              className="absolute left-1 top-1/2 z-40 -translate-y-1/2 rounded-full border bg-background/95 p-1.5 shadow-md transition-colors hover:bg-muted"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          </>
+        )}
+        {pan.overflow.right && (
+          <>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 z-40 w-10 rounded-r-md bg-linear-to-l from-background to-transparent"
+            />
+            <button
+              type="button"
+              data-pan-ignore
+              aria-label={t('panRight')}
+              onClick={() => pan.panBy(1, dayWidth())}
+              className="absolute right-1 top-1/2 z-40 -translate-y-1/2 rounded-full border bg-background/95 p-1.5 shadow-md transition-colors hover:bg-muted"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </>
+        )}
         <div
-          className="grid h-full min-h-full min-w-full"
-          style={{ gridTemplateColumns, gridTemplateRows }}
+          ref={scrollRef}
+          className={cn(
+            'relative h-full overflow-auto rounded-md border',
+            pan.isPanning ? 'cursor-grabbing select-none' : 'cursor-grab'
+          )}
         >
-          {/* Day headers */}
           <div
-            className="sticky left-0 top-0 z-50 border-b border-r bg-background"
-            style={{ height: DAY_HEADER_HEIGHT }}
-          />
-          {days.map((day) => {
-            const isToday = day === todayStr
-            return (
-              <div
-                key={`day-${day}`}
-                className={cn(
-                  'sticky top-0 z-40 border-b border-r bg-background px-2 py-1 text-center text-xs font-medium',
-                  isToday && 'text-primary'
-                )}
-                style={{
-                  gridColumn: `span ${lanes.length}`,
-                  height: DAY_HEADER_HEIGHT,
-                }}
-              >
-                {dayFormatter.format(new Date(`${day}T12:00:00`))}
-              </div>
-            )
-          })}
+            className="grid h-full min-h-full min-w-full"
+            style={{ gridTemplateColumns, gridTemplateRows }}
+          >
+            {/* Day headers */}
+            <div
+              className="sticky left-0 top-0 z-50 border-b border-r bg-background"
+              style={{ height: DAY_HEADER_HEIGHT }}
+            />
+            {days.map((day) => {
+              const isToday = day === todayStr
+              return (
+                <div
+                  key={`day-${day}`}
+                  className={cn(
+                    'sticky top-0 z-40 border-b border-r bg-background px-2 py-1 text-center text-xs font-medium',
+                    isToday && 'text-primary'
+                  )}
+                  style={{
+                    gridColumn: `span ${lanes.length}`,
+                    height: DAY_HEADER_HEIGHT,
+                  }}
+                >
+                  {dayFormatter.format(new Date(`${day}T12:00:00`))}
+                </div>
+              )
+            })}
 
-          {/* Lane headers, repeated under each day so a column is readable
+            {/* Lane headers, repeated under each day so a column is readable
               wherever the board has been scrolled to. */}
-          {showLaneHeaders && (
-            <>
-              <div
-                className="sticky left-0 z-50 border-b border-r bg-background"
-                style={{ top: DAY_HEADER_HEIGHT }}
-              />
-              {days.flatMap((day) =>
-                lanes.map((lane, laneIndex) => {
-                  const isLastLane = laneIndex === lanes.length - 1
-                  const booked = bookedMinutesOnDay(byLane.get(lane.id) ?? [], day)
-                  const pct =
-                    lane.dailyCapacity > 0 ? Math.round((booked / lane.dailyCapacity) * 100) : null
-                  return (
-                    <LaneHeaderTooltip
-                      key={`lane-${day}-${lane.id}`}
-                      lane={lane}
-                      jobs={byLane.get(lane.id) ?? []}
-                      days={[day]}
-                      capacityMinutes={lane.dailyCapacity}
-                      periodLabel={dayFormatter.format(new Date(`${day}T12:00:00`))}
-                    >
-                      <button
-                        type="button"
-                        disabled={lane.isPlaceholder || readOnly || !onLaneClick}
-                        onClick={() => onLaneClick?.(lane)}
-                        className={cn(
-                          'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
-                          isLastLane ? 'border-r-2 border-r-border' : 'border-r'
-                        )}
-                        style={{ top: DAY_HEADER_HEIGHT, height: LANE_HEADER_HEIGHT }}
+            {showLaneHeaders && (
+              <>
+                <div
+                  className="sticky left-0 z-50 border-b border-r bg-background"
+                  style={{ top: DAY_HEADER_HEIGHT }}
+                />
+                {days.flatMap((day) =>
+                  lanes.map((lane, laneIndex) => {
+                    const isLastLane = laneIndex === lanes.length - 1
+                    const booked = bookedMinutesOnDay(byLane.get(lane.id) ?? [], day)
+                    const pct =
+                      lane.dailyCapacity > 0
+                        ? Math.round((booked / lane.dailyCapacity) * 100)
+                        : null
+                    return (
+                      <LaneHeaderTooltip
+                        key={`lane-${day}-${lane.id}`}
+                        lane={lane}
+                        jobs={byLane.get(lane.id) ?? []}
+                        days={[day]}
+                        capacityMinutes={lane.dailyCapacity}
+                        periodLabel={dayFormatter.format(new Date(`${day}T12:00:00`))}
                       >
-                        <span className="flex items-center gap-1">
-                          <span
-                            className="h-2 w-2 shrink-0 rounded-full"
-                            style={{ backgroundColor: lane.color }}
-                          />
-                          <span className="truncate text-[11px] font-medium">{lane.name}</span>
-                        </span>
-                        {pct !== null && (
-                          <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                        <button
+                          type="button"
+                          disabled={lane.isPlaceholder || readOnly || !onLaneClick}
+                          onClick={() => onLaneClick?.(lane)}
+                          className={cn(
+                            'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
+                            isLastLane ? 'border-r-2 border-r-border' : 'border-r'
+                          )}
+                          style={{ top: DAY_HEADER_HEIGHT, height: LANE_HEADER_HEIGHT }}
+                        >
+                          <span className="flex items-center gap-1">
                             <span
-                              className={cn(
-                                'block h-full rounded-full',
-                                pct > 100
-                                  ? 'bg-red-500'
-                                  : pct >= 75
-                                    ? 'bg-amber-500'
-                                    : 'bg-emerald-500'
-                              )}
-                              style={{ width: `${Math.min(pct, 100)}%` }}
+                              className="h-2 w-2 shrink-0 rounded-full"
+                              style={{ backgroundColor: lane.color }}
                             />
+                            <span className="truncate text-[11px] font-medium">{lane.name}</span>
                           </span>
-                        )}
-                      </button>
-                    </LaneHeaderTooltip>
-                  )
-                })
-              )}
-            </>
-          )}
+                          {pct !== null && (
+                            <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                              <span
+                                className={cn(
+                                  'block h-full rounded-full',
+                                  pct > 100
+                                    ? 'bg-red-500'
+                                    : pct >= 75
+                                      ? 'bg-amber-500'
+                                      : 'bg-emerald-500'
+                                )}
+                                style={{ width: `${Math.min(pct, 100)}%` }}
+                              />
+                            </span>
+                          )}
+                        </button>
+                      </LaneHeaderTooltip>
+                    )
+                  })
+                )}
+              </>
+            )}
 
-          {/* Time gutter */}
-          <div className="relative sticky left-0 z-30 border-r bg-background">
-            {marks.map((mins) => (
-              <span
-                key={mins}
-                className="absolute right-1 -translate-y-1/2 text-[10px] tabular-nums text-muted-foreground"
-                style={{ top: `${percentForMinutes(mins, timeWindow)}%` }}
-              >
-                {formatClock(mins, timeFormat)}
-              </span>
-            ))}
+            {/* Time gutter */}
+            <div className="relative sticky left-0 z-30 border-r bg-background">
+              {marks.map((mins) => (
+                <span
+                  key={mins}
+                  className="absolute right-1 -translate-y-1/2 text-[10px] tabular-nums text-muted-foreground"
+                  style={{ top: `${percentForMinutes(mins, timeWindow)}%` }}
+                >
+                  {formatClock(mins, timeFormat)}
+                </span>
+              ))}
+            </div>
+
+            {days.flatMap((day) =>
+              lanes.map((lane, laneIndex) => (
+                <WeekLaneColumn
+                  key={`col-${day}-${lane.id}`}
+                  date={day}
+                  lane={lane}
+                  endsDay={laneIndex === lanes.length - 1}
+                  dropGhost={dropGhost?.key === columnKey(day, lane.id) ? dropGhost : null}
+                  jobs={byLane.get(lane.id) ?? []}
+                  window={timeWindow}
+                  slotMinutes={slotMinutes}
+                  timeFormat={timeFormat}
+                  ownerOf={ownerOf}
+                  workDayStart={dayStartMins}
+                  workDayEnd={dayEndMins}
+                  nowMinutes={day === todayStr ? nowMinutes : null}
+                  draggingJobId={drag.isDragging ? (drag.preview?.jobId ?? null) : null}
+                  registerColumn={drag.registerColumn}
+                  readOnly={readOnly}
+                  onOpenJob={onOpenJob}
+                  onDragHandle={drag.startDrag}
+                  onCreateJob={lane.isPlaceholder || readOnly ? undefined : onCreateJob}
+                />
+              ))
+            )}
           </div>
-
-          {days.flatMap((day) =>
-            lanes.map((lane, laneIndex) => (
-              <WeekLaneColumn
-                key={`col-${day}-${lane.id}`}
-                date={day}
-                lane={lane}
-                endsDay={laneIndex === lanes.length - 1}
-                dropGhost={dropGhost?.key === columnKey(day, lane.id) ? dropGhost : null}
-                jobs={byLane.get(lane.id) ?? []}
-                window={timeWindow}
-                slotMinutes={slotMinutes}
-                timeFormat={timeFormat}
-                ownerOf={ownerOf}
-                workDayStart={dayStartMins}
-                workDayEnd={dayEndMins}
-                nowMinutes={day === todayStr ? nowMinutes : null}
-                draggingJobId={drag.isDragging ? (drag.preview?.jobId ?? null) : null}
-                registerColumn={drag.registerColumn}
-                readOnly={readOnly}
-                onOpenJob={onOpenJob}
-                onDragHandle={drag.startDrag}
-                onCreateJob={lane.isPlaceholder || readOnly ? undefined : onCreateJob}
-              />
-            ))
-          )}
         </div>
       </div>
 
-      {!readOnly && <p className="px-1 text-[11px] text-muted-foreground">{t('hint')}</p>}
+      {!readOnly && (
+        <p className="px-1 text-[11px] text-muted-foreground">
+          {t('hint')}
+          {(pan.overflow.left || pan.overflow.right) && ` ${t('hintPan')}`}
+        </p>
+      )}
     </div>
   )
 }

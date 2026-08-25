@@ -107,7 +107,10 @@
     "createAt": "Nieuwe werkorder om {time}",
     "unscheduled": "Niet ingepland ({count})",
     "hint": "Sleep een klus om die te verplaatsen. Sleep de boven- of onderrand om de duur te wijzigen.",
-    "hiddenDays": "{count} ingepland in het weekend. Weekend tonen."
+    "hiddenDays": "{count} ingepland in het weekend. Weekend tonen.",
+    "panLeft": "Eerder in de week",
+    "panRight": "Later in de week",
+    "hintPan": "Sleep de achtergrond om door de week te bewegen."
   },
   "bay": {
     "addTitle": "Werkplek toevoegen",

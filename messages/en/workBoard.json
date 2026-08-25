@@ -107,7 +107,10 @@
     "createAt": "New work order at {time}",
     "unscheduled": "Not scheduled ({count})",
     "hint": "Drag a job to move it. Drag its top or bottom edge to change how long it takes.",
-    "hiddenDays": "{count} booked on the weekend. Show weekends."
+    "hiddenDays": "{count} booked on the weekend. Show weekends.",
+    "panLeft": "Earlier in the week",
+    "panRight": "Later in the week",
+    "hintPan": "Drag the background to move across the week."
   },
   "bay": {
     "addTitle": "Add work bay",

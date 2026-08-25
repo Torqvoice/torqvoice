@@ -107,7 +107,10 @@
     "createAt": "{time} için yeni iş emri",
     "unscheduled": "Planlanmamış ({count})",
     "hint": "Bir işi taşımak için sürükleyin. Süresini değiştirmek için üst veya alt kenarını sürükleyin.",
-    "hiddenDays": "{count} iş hafta sonuna planlandı. Hafta sonunu göster."
+    "hiddenDays": "{count} iş hafta sonuna planlandı. Hafta sonunu göster.",
+    "panLeft": "Haftanın başına doğru",
+    "panRight": "Haftanın sonuna doğru",
+    "hintPan": "Hafta boyunca ilerlemek için arka planı sürükleyin."
   },
   "bay": {
     "addTitle": "Çalışma alanı ekle",

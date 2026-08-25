@@ -107,7 +107,10 @@
     "createAt": "Nuovo ordine di lavoro alle {time}",
     "unscheduled": "Non pianificato ({count})",
     "hint": "Trascina un lavoro per spostarlo. Trascina il bordo superiore o inferiore per cambiarne la durata.",
-    "hiddenDays": "{count} pianificato/i nel fine settimana. Mostra il fine settimana."
+    "hiddenDays": "{count} pianificato/i nel fine settimana. Mostra il fine settimana.",
+    "panLeft": "Prima nella settimana",
+    "panRight": "Più avanti nella settimana",
+    "hintPan": "Trascina lo sfondo per scorrere la settimana."
   },
   "bay": {
     "addTitle": "Aggiungi postazione",

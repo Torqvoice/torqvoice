@@ -107,7 +107,10 @@
     "createAt": "Naujas darbo užsakymas {time}",
     "unscheduled": "Nesuplanuota ({count})",
     "hint": "Vilkite darbą, kad jį perkeltumėte. Vilkite viršutinį arba apatinį kraštą, kad pakeistumėte trukmę.",
-    "hiddenDays": "{count} suplanuota savaitgalį. Rodyti savaitgalį."
+    "hiddenDays": "{count} suplanuota savaitgalį. Rodyti savaitgalį.",
+    "panLeft": "Anksčiau savaitėje",
+    "panRight": "Vėliau savaitėje",
+    "hintPan": "Vilkite foną, kad judėtumėte per savaitę."
   },
   "bay": {
     "addTitle": "Pridėti darbo vietą",

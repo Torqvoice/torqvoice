@@ -107,7 +107,10 @@
     "createAt": "Nowe zlecenie o {time}",
     "unscheduled": "Niezaplanowane ({count})",
     "hint": "Przeciągnij zlecenie, aby je przenieść. Przeciągnij górną lub dolną krawędź, aby zmienić czas trwania.",
-    "hiddenDays": "{count} zaplanowano w weekend. Pokaż weekend."
+    "hiddenDays": "{count} zaplanowano w weekend. Pokaż weekend.",
+    "panLeft": "Wcześniej w tygodniu",
+    "panRight": "Później w tygodniu",
+    "hintPan": "Przeciągnij tło, aby przesuwać się po tygodniu."
   },
   "bay": {
     "addTitle": "Dodaj stanowisko",
