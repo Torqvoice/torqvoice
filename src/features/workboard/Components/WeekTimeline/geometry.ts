@@ -1,5 +1,19 @@
 import type { TimeWindow } from '../../utils/layout'
 
+/**
+ * The timeline positions everything as a percentage of its own height.
+ *
+ * The first version measured the board in pixels and divided that height among
+ * the hours. That made every position depend on a ResizeObserver having fired
+ * with a sensible number, and when it had not, the board collapsed and the zoom
+ * control did nothing. Percentages let CSS own the height: the grid row is
+ * `1fr` and blocks sit at a fraction of it, so the board is correct on the
+ * first paint with nothing measured at all.
+ */
+
+/** Minutes a job gets when it lands on the week with no duration of its own. */
+export const DEFAULT_JOB_MINUTES = 60
+
 /** Columns are addressed by the day and lane they belong to. */
 export function columnKey(date: string, laneId: string): string {
   return `${date}::${laneId}`
@@ -13,27 +27,36 @@ export function parseColumnKey(key: string): { date: string; laneId: string } {
   }
 }
 
-/** Pixels from the top of a column body for a given time of day. */
-export function offsetForMinutes(mins: number, window: TimeWindow, pxPerMinute: number): number {
-  return (mins - window.startMins) * pxPerMinute
+export function windowMinutes(window: TimeWindow): number {
+  return Math.max(window.endMins - window.startMins, 1)
 }
 
-/** The time of day a pointer is over, in minutes from midnight. */
-export function minutesAtPoint(
-  clientY: number,
-  rect: DOMRect,
-  window: TimeWindow,
-  pxPerMinute: number
-): number {
-  return window.startMins + (clientY - rect.top) / pxPerMinute
+/** How far down the column a time of day sits, as a percentage. */
+export function percentForMinutes(mins: number, window: TimeWindow): number {
+  return ((mins - window.startMins) / windowMinutes(window)) * 100
 }
 
-export function totalHeight(window: TimeWindow, pxPerMinute: number): number {
-  return (window.endMins - window.startMins) * pxPerMinute
+/** How tall a span of minutes is, as a percentage of the column. */
+export function percentForSpan(minutes: number, window: TimeWindow): number {
+  return (minutes / windowMinutes(window)) * 100
 }
 
-/** Minutes a job gets when it lands on the week with no duration of its own. */
-export const DEFAULT_JOB_MINUTES = 60
+/**
+ * The time of day a pointer is over.
+ *
+ * Derived from the column's own box, so it stays right whatever height the
+ * board ended up with, including mid-zoom and mid-resize.
+ */
+export function minutesAtPoint(clientY: number, rect: DOMRect, window: TimeWindow): number {
+  if (rect.height <= 0) return window.startMins
+  const ratio = (clientY - rect.top) / rect.height
+  return window.startMins + ratio * windowMinutes(window)
+}
+
+/** Pixels per minute implied by a rendered column, for turning drags into time. */
+export function pxPerMinuteOf(rect: DOMRect, window: TimeWindow): number {
+  return rect.height > 0 ? rect.height / windowMinutes(window) : 0
+}
 
 /**
  * Where a dnd-kit drag currently is, in client coordinates.

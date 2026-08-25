@@ -6,18 +6,24 @@ import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import { type ClockFormat, formatClockRange } from '../../utils/clock'
 import { statusBlockColor } from '../../utils/job-colors'
-import type { PositionedJob } from '../../utils/layout'
+import type { PositionedJob, TimeWindow } from '../../utils/layout'
+import { percentForMinutes, percentForSpan } from './geometry'
 import type { WeekDragMode } from './useWeekDrag'
 
-/** Below this height there is only room for one line of text. */
-const TERSE_HEIGHT = 34
-/** Below this, not even that. */
-const BARE_HEIGHT = 18
+/**
+ * How much a block says, decided by how long the job is rather than by how many
+ * pixels tall it came out. Duration is data and is known before anything is
+ * laid out; pixels are not, and asking for them was what made the board depend
+ * on a measurement that could arrive wrong or not at all.
+ */
+const VEHICLE_FROM_MINUTES = 25
+const TIMES_FROM_MINUTES = 75
+/** Short jobs still get a floor, so a 15-minute block is clickable. */
+const MIN_BLOCK_HEIGHT = 14
 
 export function WeekJobBlock({
   positioned,
-  top,
-  height,
+  window: timeWindow,
   isDragging,
   readOnly,
   timeFormat,
@@ -26,8 +32,7 @@ export function WeekJobBlock({
   onDragHandle,
 }: {
   positioned: PositionedJob
-  top: number
-  height: number
+  window: TimeWindow
   isDragging: boolean
   readOnly?: boolean
   timeFormat: ClockFormat
@@ -37,6 +42,7 @@ export function WeekJobBlock({
 }) {
   const { job, column, columns, continuesBefore, continuesAfter } = positioned
   const width = 100 / columns
+  const durationMinutes = positioned.endMins - positioned.startMins
   const isServiceRecord = job.type === 'serviceRecord'
   const timeLabel = formatClockRange(positioned.startMins, positioned.endMins, timeFormat)
   const vehicleLabel = job.vehicle
@@ -74,8 +80,9 @@ export function WeekJobBlock({
             : 'cursor-grab active:cursor-grabbing'
       )}
       style={{
-        top,
-        height,
+        top: `${percentForMinutes(positioned.startMins, timeWindow)}%`,
+        height: `${percentForSpan(durationMinutes, timeWindow)}%`,
+        minHeight: MIN_BLOCK_HEIGHT,
         left: `calc(${column * width}% + 1px)`,
         width: `calc(${width}% - 2px)`,
         borderLeft: `3px solid ${laneColor}`,
@@ -116,7 +123,7 @@ export function WeekJobBlock({
         <div className="pointer-events-none flex h-full items-start gap-1 font-semibold tabular-nums">
           <span className="truncate">{timeLabel}</span>
         </div>
-      ) : height >= BARE_HEIGHT ? (
+      ) : (
         <div className="pointer-events-none flex items-start gap-1">
           {continuesBefore ? (
             <ChevronUp className="mt-px h-3 w-3 shrink-0 opacity-70" />
@@ -127,16 +134,16 @@ export function WeekJobBlock({
           )}
           <div className="min-w-0 flex-1">
             <div className="truncate font-medium">{job.title}</div>
-            {height >= TERSE_HEIGHT && vehicleLabel && (
+            {durationMinutes >= VEHICLE_FROM_MINUTES && vehicleLabel && (
               <div className="truncate opacity-80">{vehicleLabel}</div>
             )}
-            {height >= TERSE_HEIGHT * 2 && (
+            {durationMinutes >= TIMES_FROM_MINUTES && (
               <div className="truncate tabular-nums opacity-70">{timeLabel}</div>
             )}
           </div>
           {continuesAfter && <ChevronDown className="mt-px h-3 w-3 shrink-0 opacity-70" />}
         </div>
-      ) : null}
+      )}
 
       {!continuesAfter && !readOnly && (
         <div

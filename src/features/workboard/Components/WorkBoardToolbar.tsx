@@ -220,32 +220,47 @@ export function WorkBoardToolbar({
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
-                  <DropdownMenuItem onClick={onShowAllLanes}>{t('showAllLanes')}</DropdownMenuItem>
-                  <DropdownMenuItem onClick={onShowBusyLanes} disabled={busyLaneIds.length === 0}>
-                    {t('onlyBusyLanes')}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel>{t('groupBy')}</DropdownMenuLabel>
-                  {lanes.map((lane) => (
-                    <DropdownMenuCheckboxItem
-                      key={lane.id}
-                      checked={!hiddenLaneIds.includes(lane.id)}
-                      onSelect={(event) => {
-                        // Keep the menu open: hiding lanes is done in batches.
-                        event.preventDefault()
-                        onToggleLane(lane.id)
-                      }}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: lane.color }}
-                        />
-                        {lane.name}
-                      </span>
-                    </DropdownMenuCheckboxItem>
-                  ))}
+                <DropdownMenuContent
+                  align="end"
+                  className="w-60 p-0"
+                  // Returning focus to the trigger on close scrolls whatever
+                  // ancestor has to move to show it, which yanked the board
+                  // underneath the menu.
+                  onCloseAutoFocus={(event) => event.preventDefault()}
+                >
+                  <div className="p-1">
+                    <DropdownMenuItem onClick={onShowAllLanes}>
+                      {t('showAllLanes')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={onShowBusyLanes} disabled={busyLaneIds.length === 0}>
+                      {t('onlyBusyLanes')}
+                    </DropdownMenuItem>
+                  </div>
+                  <DropdownMenuSeparator className="my-0" />
+                  {/* Only the list scrolls, so the two actions above stay put
+                      however many lanes a shop has. */}
+                  <div className="max-h-[50vh] overflow-y-auto p-1">
+                    <DropdownMenuLabel className="py-1">{t('lanes')}</DropdownMenuLabel>
+                    {lanes.map((lane) => (
+                      <DropdownMenuCheckboxItem
+                        key={lane.id}
+                        checked={!hiddenLaneIds.includes(lane.id)}
+                        onSelect={(event) => {
+                          // Keep the menu open: hiding lanes is done in batches.
+                          event.preventDefault()
+                          onToggleLane(lane.id)
+                        }}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span
+                            className="h-2 w-2 shrink-0 rounded-full"
+                            style={{ backgroundColor: lane.color }}
+                          />
+                          {lane.name}
+                        </span>
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

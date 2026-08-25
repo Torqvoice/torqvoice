@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import type { TimeWindow } from '../../utils/layout'
 import { dayStartDate } from '../../utils/layout'
-import { minutesAtPoint, parseColumnKey } from './geometry'
+import { minutesAtPoint, parseColumnKey, pxPerMinuteOf } from './geometry'
 
 export type WeekDragMode = 'move' | 'resize-start' | 'resize-end'
 
@@ -75,13 +75,11 @@ function snapToGrid(ms: number, snapMinutes: number): number {
  */
 export function useWeekDrag({
   window: timeWindow,
-  pxPerMinute,
   snapMinutes,
   laneIdOf,
   onCommit,
 }: {
   window: TimeWindow
-  pxPerMinute: number
   snapMinutes: number
   /** Lane a job currently belongs to, under the active grouping. */
   laneIdOf: (job: WorkBoardJob) => string
@@ -101,6 +99,20 @@ export function useWeekDrag({
     if (el) columns.current.set(key, el)
     else columns.current.delete(key)
   }, [])
+
+  /**
+   * Pixels per minute, read off a rendered column.
+   *
+   * Taking this as a prop meant the drag maths and the layout could disagree
+   * whenever the board had been resized or zoomed; asking the DOM cannot.
+   */
+  const pxPerMinute = useCallback(() => {
+    for (const el of columns.current.values()) {
+      const value = pxPerMinuteOf(el.getBoundingClientRect(), timeWindow)
+      if (value > 0) return value
+    }
+    return 0
+  }, [timeWindow])
 
   /** The column under a point, if any. */
   const columnAt = useCallback((clientX: number, clientY: number) => {
@@ -126,7 +138,7 @@ export function useWeekDrag({
     (clientX: number, clientY: number): WeekDropTarget | null => {
       const hit = columnAt(clientX, clientY)
       if (!hit) return null
-      const raw = minutesAtPoint(clientY, hit.rect, timeWindow, pxPerMinute)
+      const raw = minutesAtPoint(clientY, hit.rect, timeWindow)
       const snapped = Math.round(raw / snapMinutes) * snapMinutes
       return {
         date: hit.date,
@@ -137,7 +149,7 @@ export function useWeekDrag({
         ),
       }
     },
-    [columnAt, timeWindow, pxPerMinute, snapMinutes]
+    [columnAt, timeWindow, snapMinutes]
   )
 
   const clearDrag = useCallback(() => {
@@ -157,7 +169,9 @@ export function useWeekDrag({
       const job = jobRef.current
       if (!drag || !job) return
 
-      const deltaMins = (clientY - drag.anchorY) / pxPerMinute
+      const scale = pxPerMinute()
+      if (scale <= 0) return
+      const deltaMins = (clientY - drag.anchorY) / scale
       const duration = drag.origEndMs - drag.origStartMs
       const windowMs = (timeWindow.endMins - timeWindow.startMins) * MINUTE_MS
 

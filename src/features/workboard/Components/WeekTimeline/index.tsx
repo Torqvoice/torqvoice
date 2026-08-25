@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDndMonitor } from '@dnd-kit/core'
 import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
@@ -31,16 +31,18 @@ import { WeekLaneColumn } from './WeekLaneColumn'
 import {
   DEFAULT_JOB_MINUTES,
   columnKey,
-  offsetForMinutes,
+  percentForMinutes,
   pointerFromDndEvent,
-  totalHeight,
+  windowMinutes,
 } from './geometry'
 import { type WeekDropTarget, useWeekDrag } from './useWeekDrag'
 
-/** Candidate rules, finest first. The first one with room to breathe wins. */
-const SLOT_STEPS = [15, 30, 60]
-/** A rule closer than this to the next just makes the board look hatched. */
-const MIN_SLOT_PIXELS = 11
+/** How fine the horizontal rules are at each zoom. */
+const SLOT_MINUTES: Record<BoardDensity, number> = {
+  fit: 30,
+  comfortable: 15,
+  detailed: 15,
+}
 
 const GUTTER_WIDTH = 60
 /** Low enough that a shop with eight bays still sees Monday to Friday at once;
@@ -53,8 +55,6 @@ const DAY_HEADER_HEIGHT = 26
 const LANE_HEADER_HEIGHT = 34
 /** Below this an hour is too thin to drop anything into. */
 const MIN_PX_PER_MINUTE = 0.3
-/** Used for the first paint, before the board has been measured. */
-const FALLBACK_PX_PER_MINUTE = 1
 
 export type WeekScheduleChange = {
   job: WorkBoardJob
@@ -133,19 +133,21 @@ export function WeekTimeline({
 
   const showLaneHeaders = grouping !== 'none'
 
-  // The board is sized by the window, not by the clock: whatever height the
-  // page gives it is divided among the hours it has to show. `fit` therefore
-  // fills the board exactly and the wider settings scale up from there, so no
-  // screen ends with an empty half underneath the last hour.
-  const boardHeight = useMeasuredHeight(scrollRef)
-  const pxPerMinute = useMemo(() => {
-    const totalMinutes = Math.max(timeWindow.endMins - timeWindow.startMins, 1)
-    if (boardHeight === null) return FALLBACK_PX_PER_MINUTE * DENSITY_SCALE[density]
-    const headers = DAY_HEADER_HEIGHT + (showLaneHeaders ? LANE_HEADER_HEIGHT : 0)
-    // One pixel back, so an exact fit cannot round into a scrollbar.
-    const fit = Math.max(boardHeight - headers - 1, 60) / totalMinutes
-    return Math.max(fit * DENSITY_SCALE[density], MIN_PX_PER_MINUTE)
-  }, [boardHeight, density, timeWindow, showLaneHeaders])
+  // CSS owns the height. The body row is `minmax(<floor>, 1fr)`, so it fills
+  // the board when there is room and grows past it when zoomed in; everything
+  // inside is placed as a percentage of that row. Nothing has to be measured,
+  // which is what the earlier pixel arithmetic got wrong: when the measurement
+  // was missing the board collapsed and zooming changed nothing.
+  const bodyTrack = useMemo(() => {
+    const scale = DENSITY_SCALE[density]
+    // An absolute floor keeps an hour usable on a short window; the percentage
+    // is what makes zooming mean anything, because it is measured against the
+    // board itself. `1fr` on top of both fills any space left over, so the
+    // board is never short of the bottom of its own frame.
+    const floorPx = Math.round(windowMinutes(timeWindow) * MIN_PX_PER_MINUTE * scale)
+    if (scale === 1) return `minmax(${floorPx}px, 1fr)`
+    return `minmax(max(${floorPx}px, ${Math.round(scale * 100)}%), 1fr)`
+  }, [timeWindow, density])
 
   /** Lane ids the board is actually showing, minus the catch-all itself. */
   const knownLaneIds = useMemo(
@@ -160,7 +162,6 @@ export function WeekTimeline({
 
   const drag = useWeekDrag({
     window: timeWindow,
-    pxPerMinute,
     snapMinutes,
     laneIdOf,
     onCommit: onSchedule,
@@ -251,15 +252,12 @@ export function WeekTimeline({
     ).length
   }, [scheduled, hiddenDays])
 
-  const slotMinutes = useMemo(
-    () => SLOT_STEPS.find((step) => step * pxPerMinute >= MIN_SLOT_PIXELS) ?? 60,
-    [pxPerMinute]
-  )
+  const slotMinutes = SLOT_MINUTES[density]
 
   const marks = useMemo(() => hourMarks(timeWindow), [timeWindow])
-  const bodyHeight = totalHeight(timeWindow, pxPerMinute)
 
   const gridTemplateColumns = `${GUTTER_WIDTH}px repeat(${days.length * lanes.length}, minmax(${MIN_COLUMN_WIDTH}px, 1fr))`
+  const gridTemplateRows = `${DAY_HEADER_HEIGHT}px ${showLaneHeaders ? `${LANE_HEADER_HEIGHT}px ` : ''}${bodyTrack}`
 
   // Open on the current time rather than at the top of the axis: a shop looking
   // at today wants the next hour, not the start of the shift.
@@ -267,9 +265,11 @@ export function WeekTimeline({
     if (hasScrolled.current || !scrollRef.current) return
     if (!days.includes(todayStr) || nowMinutes === null) return
     hasScrolled.current = true
-    const target = offsetForMinutes(nowMinutes, timeWindow, pxPerMinute) - 120
-    scrollRef.current.scrollTop = Math.max(0, target)
-  }, [days, todayStr, nowMinutes, timeWindow, pxPerMinute])
+    const body = scrollRef.current.scrollHeight - scrollRef.current.clientHeight
+    if (body <= 0) return
+    const ratio = percentForMinutes(nowMinutes, timeWindow) / 100
+    scrollRef.current.scrollTop = Math.max(0, scrollRef.current.scrollHeight * ratio - 120)
+  }, [days, todayStr, nowMinutes, timeWindow])
 
   if (lanes.length === 0) return null
 
@@ -294,7 +294,10 @@ export function WeekTimeline({
       )}
 
       <div ref={scrollRef} className="relative min-h-0 flex-1 overflow-auto rounded-md border">
-        <div className="grid min-w-full" style={{ gridTemplateColumns }}>
+        <div
+          className="grid h-full min-h-full min-w-full"
+          style={{ gridTemplateColumns, gridTemplateRows }}
+        >
           {/* Day headers */}
           <div
             className="sticky left-0 top-0 z-50 border-b border-r bg-background"
@@ -383,12 +386,12 @@ export function WeekTimeline({
           )}
 
           {/* Time gutter */}
-          <div className="sticky left-0 z-30 border-r bg-background" style={{ height: bodyHeight }}>
+          <div className="relative sticky left-0 z-30 border-r bg-background">
             {marks.map((mins) => (
               <span
                 key={mins}
                 className="absolute right-1 -translate-y-1/2 text-[10px] tabular-nums text-muted-foreground"
-                style={{ top: offsetForMinutes(mins, timeWindow, pxPerMinute) }}
+                style={{ top: `${percentForMinutes(mins, timeWindow)}%` }}
               >
                 {formatClock(mins, timeFormat)}
               </span>
@@ -405,7 +408,6 @@ export function WeekTimeline({
                 dropGhost={dropGhost?.key === columnKey(day, lane.id) ? dropGhost : null}
                 jobs={byLane.get(lane.id) ?? []}
                 window={timeWindow}
-                pxPerMinute={pxPerMinute}
                 slotMinutes={slotMinutes}
                 timeFormat={timeFormat}
                 workDayStart={dayStartMins}
@@ -426,37 +428,6 @@ export function WeekTimeline({
       {!readOnly && <p className="px-1 text-[11px] text-muted-foreground">{t('hint')}</p>}
     </div>
   )
-}
-
-/**
- * The height the page has given an element, or null before it is laid out.
- *
- * The element must be able to overflow (a `flex-1 min-h-0` box with its own
- * scrollbar), otherwise the content it sizes would feed back into the
- * measurement and the two would chase each other.
- */
-function useMeasuredHeight(ref: React.RefObject<HTMLElement | null>): number | null {
-  const [height, setHeight] = useState<number | null>(null)
-
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const apply = (next: number) => {
-      setHeight((current) => (current === null || Math.abs(current - next) > 1 ? next : current))
-    }
-    apply(el.clientHeight)
-
-    if (typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver((entries) => {
-      const box = entries[0]?.contentRect
-      if (box) apply(box.height)
-    })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [ref])
-
-  return height
 }
 
 /**

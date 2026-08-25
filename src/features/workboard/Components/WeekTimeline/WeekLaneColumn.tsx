@@ -15,7 +15,7 @@ import type { WorkBoardJob } from '../../Actions/boardActions'
 import { type ClockFormat, formatClock } from '../../utils/clock'
 import type { BoardLane } from '../../utils/lanes'
 import { type TimeWindow, layoutLaneDay } from '../../utils/layout'
-import { columnKey, offsetForMinutes } from './geometry'
+import { columnKey, minutesAtPoint, percentForMinutes, percentForSpan } from './geometry'
 import { WeekJobBlock } from './WeekJobBlock'
 import type { WeekDragMode } from './useWeekDrag'
 
@@ -29,7 +29,6 @@ export function WeekLaneColumn({
   dropGhost,
   jobs,
   window: timeWindow,
-  pxPerMinute,
   slotMinutes,
   timeFormat,
   workDayStart,
@@ -50,7 +49,6 @@ export function WeekLaneColumn({
   dropGhost?: { startMins: number; endMins: number } | null
   jobs: WorkBoardJob[]
   window: TimeWindow
-  pxPerMinute: number
   slotMinutes: number
   timeFormat: ClockFormat
   workDayStart: number
@@ -85,26 +83,25 @@ export function WeekLaneColumn({
 
   const positioned = useMemo(() => layoutLaneDay(jobs, date, timeWindow), [jobs, date, timeWindow])
 
-  const height = (timeWindow.endMins - timeWindow.startMins) * pxPerMinute
-
   // Rules as two stacked gradients rather than one element per slot. A shop
   // with fifteen technicians draws seventy-five of these columns; at thirty
   // elements each that was two thousand nodes of pure decoration, re-rendered
-  // on every frame of a drag.
+  // on every frame of a drag. The stops are percentages, so they follow the
+  // column however tall CSS decides it should be.
   const rules = useMemo(() => {
-    const hourPx = 60 * pxPerMinute
-    const slotPx = slotMinutes * pxPerMinute
+    const hour = percentForSpan(60, timeWindow)
+    const slot = percentForSpan(slotMinutes, timeWindow)
     return {
       backgroundImage: [
-        `repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px ${hourPx}px)`,
-        `repeating-linear-gradient(to bottom, color-mix(in oklch, var(--border) 45%, transparent) 0 1px, transparent 1px ${slotPx}px)`,
+        `repeating-linear-gradient(to bottom, var(--border) 0 1px, transparent 1px ${hour}%)`,
+        `repeating-linear-gradient(to bottom, color-mix(in oklch, var(--border) 45%, transparent) 0 1px, transparent 1px ${slot}%)`,
       ].join(', '),
     }
-  }, [pxPerMinute, slotMinutes])
+  }, [timeWindow, slotMinutes])
 
   /** Hours outside the shop's working day, shaded top and bottom. */
-  const closedBefore = Math.max(workDayStart - timeWindow.startMins, 0) * pxPerMinute
-  const closedAfter = Math.max(timeWindow.endMins - workDayEnd, 0) * pxPerMinute
+  const closedBefore = percentForSpan(Math.max(workDayStart - timeWindow.startMins, 0), timeWindow)
+  const closedAfter = percentForSpan(Math.max(timeWindow.endMins - workDayEnd, 0), timeWindow)
 
   return (
     <ContextMenu>
@@ -119,11 +116,10 @@ export function WeekLaneColumn({
             nowMinutes !== null && 'bg-primary/[0.03]',
             isOver && 'bg-primary/10'
           )}
-          style={{ height }}
           onContextMenu={(event) => {
             const rect = bodyRef.current?.getBoundingClientRect()
             if (!rect) return
-            const raw = timeWindow.startMins + (event.clientY - rect.top) / pxPerMinute
+            const raw = minutesAtPoint(event.clientY, rect, timeWindow)
             contextMinutes.current = Math.max(
               timeWindow.startMins,
               Math.min(
@@ -138,31 +134,27 @@ export function WeekLaneColumn({
             <div
               aria-hidden
               className="absolute inset-x-0 top-0 bg-muted/40"
-              style={{ height: closedBefore }}
+              style={{ height: `${closedBefore}%` }}
             />
           )}
           {closedAfter > 0 && (
             <div
               aria-hidden
               className="absolute inset-x-0 bottom-0 bg-muted/40"
-              style={{ height: closedAfter }}
+              style={{ height: `${closedAfter}%` }}
             />
           )}
 
-          {nowMinutes !== null && (
-            <NowLine minutes={nowMinutes} window={timeWindow} pxPerMinute={pxPerMinute} />
-          )}
+          {nowMinutes !== null && <NowLine minutes={nowMinutes} window={timeWindow} />}
 
           {dropGhost && (
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0.5 z-20 flex items-start justify-center overflow-hidden rounded-md border-2 border-dashed border-primary bg-primary/15"
               style={{
-                top: offsetForMinutes(dropGhost.startMins, timeWindow, pxPerMinute),
-                height: Math.max(
-                  (dropGhost.endMins - dropGhost.startMins) * pxPerMinute,
-                  MIN_BLOCK_HEIGHT
-                ),
+                top: `${percentForMinutes(dropGhost.startMins, timeWindow)}%`,
+                height: `${percentForSpan(dropGhost.endMins - dropGhost.startMins, timeWindow)}%`,
+                minHeight: MIN_BLOCK_HEIGHT,
               }}
             >
               <span className="truncate px-1 text-[10px] font-semibold tabular-nums text-primary">
@@ -175,8 +167,7 @@ export function WeekLaneColumn({
             <WeekJobBlock
               key={item.job.id}
               positioned={item}
-              top={offsetForMinutes(item.startMins, timeWindow, pxPerMinute)}
-              height={Math.max((item.endMins - item.startMins) * pxPerMinute, MIN_BLOCK_HEIGHT)}
+              window={timeWindow}
               isDragging={draggingJobId === item.job.id}
               readOnly={readOnly}
               timeFormat={timeFormat}
@@ -203,22 +194,14 @@ export function WeekLaneColumn({
  * The current time, drawn in every column of today so the line reads straight
  * across the day rather than stopping at one lane.
  */
-function NowLine({
-  minutes,
-  window: timeWindow,
-  pxPerMinute,
-}: {
-  minutes: number
-  window: TimeWindow
-  pxPerMinute: number
-}) {
+function NowLine({ minutes, window: timeWindow }: { minutes: number; window: TimeWindow }) {
   if (minutes < timeWindow.startMins || minutes > timeWindow.endMins) return null
 
   return (
     <div
       aria-hidden
       className="pointer-events-none absolute inset-x-0 z-20 h-px bg-red-500"
-      style={{ top: offsetForMinutes(minutes, timeWindow, pxPerMinute) }}
+      style={{ top: `${percentForMinutes(minutes, timeWindow)}%` }}
     />
   )
 }
