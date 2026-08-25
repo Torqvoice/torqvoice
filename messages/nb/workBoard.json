@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Grupper etter",
-    "byTechnician": "Etter mekaniker",
-    "byBay": "Etter arbeidsplass",
-    "byNothing": "Ingen gruppering",
+    "groupBy": "Kolonner",
+    "byTechnician": "Én kolonne per mekaniker",
+    "byBay": "Én kolonne per arbeidsplass",
+    "byNothing": "Én kolonne per dag",
     "weekends": "Helg",
     "zoomIn": "Zoom inn",
     "zoomOut": "Zoom ut",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} planlagt i helgen. Vis helg.",
     "panLeft": "Tidligere i uken",
     "panRight": "Senere i uken",
-    "hintPan": "Dra bakgrunnen for å bevege deg gjennom uken."
+    "hintPan": "Dra bakgrunnen for å bevege deg gjennom uken.",
+    "wholeWeek": "Vis hele uken"
   },
   "bay": {
     "addTitle": "Legg til arbeidsplass",

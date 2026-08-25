@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Raggruppa per",
-    "byTechnician": "Per tecnico",
-    "byBay": "Per postazione",
-    "byNothing": "Nessun raggruppamento",
+    "groupBy": "Colonne",
+    "byTechnician": "Una colonna per tecnico",
+    "byBay": "Una colonna per postazione",
+    "byNothing": "Una colonna per giorno",
     "weekends": "Fine settimana",
     "zoomIn": "Ingrandisci",
     "zoomOut": "Riduci",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} pianificato/i nel fine settimana. Mostra il fine settimana.",
     "panLeft": "Prima nella settimana",
     "panRight": "Più avanti nella settimana",
-    "hintPan": "Trascina lo sfondo per scorrere la settimana."
+    "hintPan": "Trascina lo sfondo per scorrere la settimana.",
+    "wholeWeek": "Vedi tutta la settimana"
   },
   "bay": {
     "addTitle": "Aggiungi postazione",

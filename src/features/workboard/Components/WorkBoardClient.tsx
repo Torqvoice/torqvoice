@@ -830,6 +830,7 @@ export function WorkBoardClient({
               onCreateJob={handleCreateInWeek}
               onLaneClick={handleLaneClick}
               onShowHiddenDays={() => updatePreferences({ showWeekends: true })}
+              onShowWholeWeek={() => setGrouping('none')}
             />
           )}
           <UnassignedJobsPanel />

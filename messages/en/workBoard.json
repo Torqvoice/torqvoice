@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Group by",
-    "byTechnician": "By technician",
-    "byBay": "By work bay",
-    "byNothing": "No grouping",
+    "groupBy": "Columns",
+    "byTechnician": "A column per technician",
+    "byBay": "A column per work bay",
+    "byNothing": "A column per day",
     "weekends": "Weekends",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} booked on the weekend. Show weekends.",
     "panLeft": "Earlier in the week",
     "panRight": "Later in the week",
-    "hintPan": "Drag the background to move across the week."
+    "hintPan": "Drag the background to move across the week.",
+    "wholeWeek": "See the whole week"
   },
   "bay": {
     "addTitle": "Add work bay",

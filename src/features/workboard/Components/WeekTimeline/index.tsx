@@ -88,6 +88,7 @@ export function WeekTimeline({
   onCreateJob,
   onLaneClick,
   onShowHiddenDays,
+  onShowWholeWeek,
   owners,
   readOnly = false,
 }: {
@@ -114,6 +115,8 @@ export function WeekTimeline({
   onCreateJob?: (lane: BoardLane, date: string, startMins: number) => void
   onLaneClick?: (lane: BoardLane) => void
   onShowHiddenDays?: () => void
+  /** Collapses the board to a column per day, which always fits. */
+  onShowWholeWeek?: () => void
   /** Technicians and bays by id, so an ungrouped board can still say whose job it is. */
   owners?: Map<string, { name: string; color: string }>
   /** Wall-display mode: the same board, with nothing to drag or open. */
@@ -259,6 +262,8 @@ export function WeekTimeline({
 
   const slotMinutes = SLOT_MINUTES[density]
   const pan = useDragToPan(scrollRef)
+  /** The week runs off the edge and there is a grouping that would fix it. */
+  const overflowsWeek = (pan.overflow.left || pan.overflow.right) && grouping !== 'none'
 
   /** One day's worth of columns, so paging lands on a day boundary. */
   const dayWidth = useCallback(() => {
@@ -493,10 +498,24 @@ export function WeekTimeline({
       </div>
 
       {!readOnly && (
-        <p className="px-1 text-[11px] text-muted-foreground">
-          {t('hint')}
-          {(pan.overflow.left || pan.overflow.right) && ` ${t('hintPan')}`}
-        </p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[11px] text-muted-foreground">
+          <span>
+            {t('hint')}
+            {(pan.overflow.left || pan.overflow.right) && ` ${t('hintPan')}`}
+          </span>
+          {/* The question this view kept prompting was "how do I see the whole
+              week", and the answer was buried in a dropdown. It is a button
+              now, and it only shows up when the week does not already fit. */}
+          {overflowsWeek && onShowWholeWeek && (
+            <button
+              type="button"
+              onClick={onShowWholeWeek}
+              className="rounded border border-dashed px-1.5 py-0.5 font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              {t('wholeWeek')}
+            </button>
+          )}
+        </div>
       )}
     </div>
   )

@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Gruppieren nach",
-    "byTechnician": "Nach Mechaniker",
-    "byBay": "Nach Arbeitsplatz",
-    "byNothing": "Ohne Gruppierung",
+    "groupBy": "Spalten",
+    "byTechnician": "Eine Spalte je Mechaniker",
+    "byBay": "Eine Spalte je Arbeitsplatz",
+    "byNothing": "Eine Spalte je Tag",
     "weekends": "Wochenende",
     "zoomIn": "Vergrößern",
     "zoomOut": "Verkleinern",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} am Wochenende eingeplant. Wochenende anzeigen.",
     "panLeft": "Früher in der Woche",
     "panRight": "Später in der Woche",
-    "hintPan": "Hintergrund ziehen, um durch die Woche zu blättern."
+    "hintPan": "Hintergrund ziehen, um durch die Woche zu blättern.",
+    "wholeWeek": "Ganze Woche anzeigen"
   },
   "bay": {
     "addTitle": "Arbeitsplatz hinzufügen",

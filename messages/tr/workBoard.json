@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Grupla",
-    "byTechnician": "Teknisyene göre",
-    "byBay": "Çalışma alanına göre",
-    "byNothing": "Gruplama yok",
+    "groupBy": "Sütunlar",
+    "byTechnician": "Teknisyen başına bir sütun",
+    "byBay": "Çalışma alanı başına bir sütun",
+    "byNothing": "Gün başına bir sütun",
     "weekends": "Hafta sonu",
     "zoomIn": "Yakınlaştır",
     "zoomOut": "Uzaklaştır",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} iş hafta sonuna planlandı. Hafta sonunu göster.",
     "panLeft": "Haftanın başına doğru",
     "panRight": "Haftanın sonuna doğru",
-    "hintPan": "Hafta boyunca ilerlemek için arka planı sürükleyin."
+    "hintPan": "Hafta boyunca ilerlemek için arka planı sürükleyin.",
+    "wholeWeek": "Tüm haftayı gör"
   },
   "bay": {
     "addTitle": "Çalışma alanı ekle",

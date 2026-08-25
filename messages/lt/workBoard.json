@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Grupuoti pagal",
-    "byTechnician": "Pagal meistrą",
-    "byBay": "Pagal darbo vietą",
-    "byNothing": "Be grupavimo",
+    "groupBy": "Stulpeliai",
+    "byTechnician": "Stulpelis kiekvienam meistrui",
+    "byBay": "Stulpelis kiekvienai darbo vietai",
+    "byNothing": "Stulpelis kiekvienai dienai",
     "weekends": "Savaitgalis",
     "zoomIn": "Didinti",
     "zoomOut": "Mažinti",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} suplanuota savaitgalį. Rodyti savaitgalį.",
     "panLeft": "Anksčiau savaitėje",
     "panRight": "Vėliau savaitėje",
-    "hintPan": "Vilkite foną, kad judėtumėte per savaitę."
+    "hintPan": "Vilkite foną, kad judėtumėte per savaitę.",
+    "wholeWeek": "Rodyti visą savaitę"
   },
   "bay": {
     "addTitle": "Pridėti darbo vietą",

@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Agrupar por",
-    "byTechnician": "Por técnico",
-    "byBay": "Por baia",
-    "byNothing": "Sem agrupamento",
+    "groupBy": "Colunas",
+    "byTechnician": "Uma coluna por técnico",
+    "byBay": "Uma coluna por baia",
+    "byNothing": "Uma coluna por dia",
     "weekends": "Fim de semana",
     "zoomIn": "Ampliar",
     "zoomOut": "Reduzir",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} agendado(s) no fim de semana. Mostrar fim de semana.",
     "panLeft": "Antes na semana",
     "panRight": "Depois na semana",
-    "hintPan": "Arraste o fundo para percorrer a semana."
+    "hintPan": "Arraste o fundo para percorrer a semana.",
+    "wholeWeek": "Ver a semana inteira"
   },
   "bay": {
     "addTitle": "Adicionar baia",

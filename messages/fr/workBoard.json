@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Grouper par",
-    "byTechnician": "Par technicien",
-    "byBay": "Par poste de travail",
-    "byNothing": "Sans groupement",
+    "groupBy": "Colonnes",
+    "byTechnician": "Une colonne par technicien",
+    "byBay": "Une colonne par poste",
+    "byNothing": "Une colonne par jour",
     "weekends": "Week-end",
     "zoomIn": "Agrandir",
     "zoomOut": "Réduire",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} planifié(s) le week-end. Afficher le week-end.",
     "panLeft": "Plus tôt dans la semaine",
     "panRight": "Plus tard dans la semaine",
-    "hintPan": "Faites glisser le fond pour parcourir la semaine."
+    "hintPan": "Faites glisser le fond pour parcourir la semaine.",
+    "wholeWeek": "Voir toute la semaine"
   },
   "bay": {
     "addTitle": "Ajouter un poste de travail",

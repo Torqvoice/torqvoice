@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Groeperen op",
-    "byTechnician": "Op monteur",
-    "byBay": "Op werkplek",
-    "byNothing": "Geen groepering",
+    "groupBy": "Kolommen",
+    "byTechnician": "Een kolom per monteur",
+    "byBay": "Een kolom per werkplek",
+    "byNothing": "Een kolom per dag",
     "weekends": "Weekend",
     "zoomIn": "Inzoomen",
     "zoomOut": "Uitzoomen",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} ingepland in het weekend. Weekend tonen.",
     "panLeft": "Eerder in de week",
     "panRight": "Later in de week",
-    "hintPan": "Sleep de achtergrond om door de week te bewegen."
+    "hintPan": "Sleep de achtergrond om door de week te bewegen.",
+    "wholeWeek": "Hele week tonen"
   },
   "bay": {
     "addTitle": "Werkplek toevoegen",

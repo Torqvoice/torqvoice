@@ -12,10 +12,10 @@
     "nextWeek": "Next week",
     "previousDay": "Previous day",
     "nextDay": "Next day",
-    "groupBy": "Группировать по",
-    "byTechnician": "По механику",
-    "byBay": "По посту",
-    "byNothing": "Без группировки",
+    "groupBy": "Колонки",
+    "byTechnician": "Колонка на механика",
+    "byBay": "Колонка на пост",
+    "byNothing": "Колонка на день",
     "weekends": "Выходные",
     "zoomIn": "Увеличить",
     "zoomOut": "Уменьшить",
@@ -110,7 +110,8 @@
     "hiddenDays": "{count} запланировано на выходные. Показать выходные.",
     "panLeft": "Раньше на неделе",
     "panRight": "Позже на неделе",
-    "hintPan": "Перетащите фон, чтобы двигаться по неделе."
+    "hintPan": "Перетащите фон, чтобы двигаться по неделе.",
+    "wholeWeek": "Показать всю неделю"
   },
   "bay": {
     "addTitle": "Добавить пост",
