@@ -18,6 +18,7 @@ function makeJob(startDateTime: string | null, endDateTime: string | null): Work
     type: 'serviceRecord',
     technicianId: 't1',
     workBayId: null,
+    customerName: null,
     sortOrder: 0,
     title: 'Test',
     status: 'pending',

@@ -32,6 +32,7 @@ function WeekLaneColumnImpl({
   slotMinutes,
   timeFormat,
   ownerOf,
+  lookup,
   workDayStart,
   workDayEnd,
   nowMinutes,
@@ -54,6 +55,8 @@ function WeekLaneColumnImpl({
   timeFormat: ClockFormat
   /** Set when the lane column does not name the owner, so the block must. */
   ownerOf?: (job: WorkBoardJob) => { name: string; color: string } | null
+  /** Technicians and bays by id, for naming both in a job's tooltip. */
+  lookup?: Map<string, { name: string; color: string }>
   workDayStart: number
   workDayEnd: number
   /** Minutes from midnight to draw the "now" line at, or null on other days. */
@@ -176,6 +179,10 @@ function WeekLaneColumnImpl({
               timeFormat={timeFormat}
               laneColor={lane.color}
               owner={ownerOf?.(item.job) ?? null}
+              technician={
+                item.job.technicianId ? (lookup?.get(item.job.technicianId) ?? null) : null
+              }
+              bayName={item.job.workBayId ? (lookup?.get(item.job.workBayId)?.name ?? null) : null}
               onOpen={onOpenJob}
               onDragHandle={onDragHandle}
             />

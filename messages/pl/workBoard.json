@@ -142,5 +142,14 @@
     "jobs": "Zlecenia",
     "utilisation": "{pct}% wydajności",
     "placeholder": "Praca jeszcze nieprzypisana."
+  },
+  "job": {
+    "time": "Godzina",
+    "duration": "Czas trwania",
+    "technician": "Mechanik",
+    "workBay": "Stanowisko",
+    "status": "Status",
+    "noTime": "Brak godziny",
+    "none": "Jeszcze nikt"
   }
 }

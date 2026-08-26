@@ -14,6 +14,7 @@ export const VEHICLE_SELECT = {
   model: true,
   year: true,
   licensePlate: true,
+  customer: { select: { name: true } },
 } as const
 
 export function serviceRecordToJob(sr: {
@@ -31,7 +32,9 @@ export function serviceRecordToJob(sr: {
     model: string
     year: number
     licensePlate: string | null
+    customer: { name: string } | null
   } | null
+  customer: { name: string } | null
 }): WorkBoardJob {
   return {
     id: sr.id,
@@ -44,6 +47,9 @@ export function serviceRecordToJob(sr: {
     startDateTime: sr.startDateTime?.toISOString() ?? null,
     endDateTime: sr.endDateTime?.toISOString() ?? null,
     vehicle: sr.vehicle,
+    // Counter sales carry the customer directly; everything else reaches it
+    // through the vehicle, so that a reassigned vehicle takes its owner along.
+    customerName: sr.customer?.name ?? sr.vehicle?.customer?.name ?? null,
   }
 }
 
@@ -61,6 +67,7 @@ export function inspectionToJob(insp: {
     model: string
     year: number
     licensePlate: string | null
+    customer: { name: string } | null
   }
   template: { name: string }
 }): WorkBoardJob {
@@ -75,6 +82,7 @@ export function inspectionToJob(insp: {
     startDateTime: insp.startDateTime?.toISOString() ?? null,
     endDateTime: insp.endDateTime?.toISOString() ?? null,
     vehicle: insp.vehicle,
+    customerName: insp.vehicle.customer?.name ?? null,
     templateName: insp.template.name,
   }
 }
@@ -85,6 +93,7 @@ export const SERVICE_JOB_SELECT = {
   id: true,
   title: true,
   status: true,
+  customer: { select: { name: true } },
   startDateTime: true,
   endDateTime: true,
   technicianId: true,

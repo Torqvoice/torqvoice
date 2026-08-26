@@ -35,6 +35,7 @@ function job(
     type: 'serviceRecord',
     technicianId: 't1',
     workBayId: null,
+    customerName: null,
     sortOrder: 0,
     title: id,
     status: 'pending',

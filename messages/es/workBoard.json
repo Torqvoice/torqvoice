@@ -142,5 +142,14 @@
     "jobs": "Trabajos",
     "utilisation": "{pct} % de la capacidad",
     "placeholder": "Trabajo aún sin asignar aquí."
+  },
+  "job": {
+    "time": "Hora",
+    "duration": "Duración",
+    "technician": "Técnico",
+    "workBay": "Puesto de trabajo",
+    "status": "Estado",
+    "noTime": "Sin hora todavía",
+    "none": "Nadie todavía"
   }
 }

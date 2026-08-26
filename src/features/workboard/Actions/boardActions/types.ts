@@ -15,7 +15,10 @@ export type WorkBoardJob = {
     model: string
     year: number
     licensePlate: string | null
+    customer: { name: string } | null
   } | null
+  /** Whose car it is, resolved through the vehicle or set directly. */
+  customerName: string | null
   templateName?: string
 }
 

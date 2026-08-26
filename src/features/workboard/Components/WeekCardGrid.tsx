@@ -6,9 +6,11 @@ import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { getDurationMinutes, getJobDateRange, jobOverlapsDate } from '../utils/datetime'
+import type { ClockFormat } from '../utils/clock'
 import type { BoardLane } from '../utils/lanes'
 import { BoardJobCard } from './BoardJobCard'
 import { formatDuration } from './DurationSlider'
+import { JobTooltip } from './JobTooltip'
 import { LaneHeaderTooltip } from './LaneHeaderTooltip'
 
 /**
@@ -24,6 +26,8 @@ export function WeekCardGrid({
   lanes,
   jobsByLane,
   todayStr,
+  timeFormat,
+  lookup,
   readOnly = false,
   onOpenJob,
   onLaneClick,
@@ -32,6 +36,9 @@ export function WeekCardGrid({
   lanes: BoardLane[]
   jobsByLane: Map<string, WorkBoardJob[]>
   todayStr: string
+  timeFormat: ClockFormat
+  /** Technicians and bays by id, for naming both in a job's tooltip. */
+  lookup?: Map<string, { name: string; color: string }>
   /** Wall-display mode: the same grid, with nothing to pick up. */
   readOnly?: boolean
   onOpenJob: (job: WorkBoardJob) => void
@@ -96,6 +103,8 @@ export function WeekCardGrid({
                   jobs={laneJobs.filter((job) => jobOverlapsDate(job, day))}
                   isToday={day === todayStr}
                   readOnly={readOnly}
+                  timeFormat={timeFormat}
+                  lookup={lookup}
                   onOpenJob={onOpenJob}
                 />
               ))}
@@ -115,6 +124,8 @@ function DayCell({
   jobs,
   isToday,
   readOnly,
+  timeFormat,
+  lookup,
   onOpenJob,
 }: {
   lane: BoardLane
@@ -122,6 +133,8 @@ function DayCell({
   jobs: WorkBoardJob[]
   isToday: boolean
   readOnly?: boolean
+  timeFormat: ClockFormat
+  lookup?: Map<string, { name: string; color: string }>
   onOpenJob: (job: WorkBoardJob) => void
 }) {
   const { isOver, setNodeRef } = useDroppable({
@@ -145,13 +158,24 @@ function DayCell({
         isOver && 'bg-primary/10'
       )}
     >
-      {jobs.map((job) =>
-        readOnly ? (
-          <StaticJobCard key={job.id} job={job} />
-        ) : (
-          <BoardJobCard key={job.id} job={job} onClick={() => onOpenJob(job)} />
-        )
-      )}
+      {jobs.map((job) => (
+        <JobTooltip
+          key={job.id}
+          job={job}
+          timeFormat={timeFormat}
+          ownerName={job.technicianId ? lookup?.get(job.technicianId)?.name : null}
+          ownerColor={job.technicianId ? lookup?.get(job.technicianId)?.color : null}
+          bayName={job.workBayId ? lookup?.get(job.workBayId)?.name : null}
+        >
+          <div>
+            {readOnly ? (
+              <StaticJobCard job={job} />
+            ) : (
+              <BoardJobCard job={job} onClick={() => onOpenJob(job)} />
+            )}
+          </div>
+        </JobTooltip>
+      ))}
 
       {booked > 0 && (
         <div className="mt-auto space-y-0.5 pt-1">

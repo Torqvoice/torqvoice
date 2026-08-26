@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, ClipboardCheck, Wrench } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import { type ClockFormat, formatClockRange } from '../../utils/clock'
+import { JobTooltip } from '../JobTooltip'
 import { statusBlockColor } from '../../utils/job-colors'
 import type { PositionedJob, TimeWindow } from '../../utils/layout'
 import { percentForMinutes, percentForSpan } from './geometry'
@@ -29,6 +30,8 @@ export function WeekJobBlock({
   timeFormat,
   laneColor,
   owner,
+  technician,
+  bayName,
   onOpen,
   onDragHandle,
 }: {
@@ -40,6 +43,9 @@ export function WeekJobBlock({
   laneColor: string
   /** Who the job belongs to, when the column itself does not say. */
   owner?: { name: string; color: string } | null
+  /** Named in the tooltip whatever the columns are grouped by. */
+  technician?: { name: string; color: string } | null
+  bayName?: string | null
   onOpen: (job: WorkBoardJob) => void
   onDragHandle: (event: React.PointerEvent, job: WorkBoardJob, mode: WeekDragMode) => void
 }) {
@@ -64,103 +70,111 @@ export function WeekJobBlock({
   }
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      // The board pans when the background is dragged; a job owns its own drag.
-      data-pan-ignore
-      aria-label={`${timeLabel} ${job.title}`}
-      title={`${timeLabel} · ${job.title}${owner ? ` · ${owner.name}` : ''}${vehicleLabel ? ` · ${vehicleLabel}` : ''}`}
-      className={cn(
-        'group absolute overflow-hidden rounded-md border border-black/10 px-1.5 py-0.5 text-[11px] leading-tight shadow-sm select-none',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        statusBlockColor(job.status),
-        continuesBefore && 'rounded-t-none border-t-dashed',
-        continuesAfter && 'rounded-b-none border-b-dashed',
-        isDragging ? 'z-20 opacity-90 ring-2 ring-primary' : 'z-10',
-        readOnly
-          ? 'cursor-default'
-          : continuesBefore
-            ? 'cursor-pointer'
-            : 'cursor-grab active:cursor-grabbing'
-      )}
-      style={{
-        top: `${percentForMinutes(positioned.startMins, timeWindow)}%`,
-        height: `${percentForSpan(durationMinutes, timeWindow)}%`,
-        minHeight: MIN_BLOCK_HEIGHT,
-        left: `calc(${column * width}% + 1px)`,
-        width: `calc(${width}% - 2px)`,
-        borderLeft: `3px solid ${owner?.color ?? laneColor}`,
-        touchAction: 'none',
-      }}
-      onPointerDown={pressStart}
-      onClick={(event) => {
-        // A release that travelled is the end of a drag, not a click on the job.
-        const origin = pressOrigin.current
-        pressOrigin.current = null
-        if (origin) {
-          const travelled = Math.abs(event.clientX - origin.x) + Math.abs(event.clientY - origin.y)
-          if (travelled > 4) return
-        }
-        onOpen(job)
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          onOpen(job)
-        }
-      }}
+    <JobTooltip
+      job={job}
+      timeFormat={timeFormat}
+      ownerName={technician?.name}
+      ownerColor={technician?.color}
+      bayName={bayName}
     >
-      {!continuesBefore && !readOnly && (
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 z-20 h-1.5 cursor-ns-resize opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/15"
-          onPointerDown={(event) => {
-            event.stopPropagation()
-            onDragHandle(event, job, 'resize-start')
-          }}
-        />
-      )}
+      <div
+        role="button"
+        tabIndex={0}
+        // The board pans when the background is dragged; a job owns its own drag.
+        data-pan-ignore
+        aria-label={`${timeLabel} ${job.title}`}
+        className={cn(
+          'group absolute overflow-hidden rounded-md border border-black/10 px-1.5 py-0.5 text-[11px] leading-tight shadow-sm select-none',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          statusBlockColor(job.status),
+          continuesBefore && 'rounded-t-none border-t-dashed',
+          continuesAfter && 'rounded-b-none border-b-dashed',
+          isDragging ? 'z-20 opacity-90 ring-2 ring-primary' : 'z-10',
+          readOnly
+            ? 'cursor-default'
+            : continuesBefore
+              ? 'cursor-pointer'
+              : 'cursor-grab active:cursor-grabbing'
+        )}
+        style={{
+          top: `${percentForMinutes(positioned.startMins, timeWindow)}%`,
+          height: `${percentForSpan(durationMinutes, timeWindow)}%`,
+          minHeight: MIN_BLOCK_HEIGHT,
+          left: `calc(${column * width}% + 1px)`,
+          width: `calc(${width}% - 2px)`,
+          borderLeft: `3px solid ${owner?.color ?? laneColor}`,
+          touchAction: 'none',
+        }}
+        onPointerDown={pressStart}
+        onClick={(event) => {
+          // A release that travelled is the end of a drag, not a click on the job.
+          const origin = pressOrigin.current
+          pressOrigin.current = null
+          if (origin) {
+            const travelled =
+              Math.abs(event.clientX - origin.x) + Math.abs(event.clientY - origin.y)
+            if (travelled > 4) return
+          }
+          onOpen(job)
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            onOpen(job)
+          }
+        }}
+      >
+        {!continuesBefore && !readOnly && (
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 z-20 h-1.5 cursor-ns-resize opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/15"
+            onPointerDown={(event) => {
+              event.stopPropagation()
+              onDragHandle(event, job, 'resize-start')
+            }}
+          />
+        )}
 
-      {isDragging ? (
-        // Mid-drag the block is the only readout of where it will land, so the
-        // snapped time replaces the description entirely.
-        <div className="pointer-events-none flex h-full items-start gap-1 font-semibold tabular-nums">
-          <span className="truncate">{timeLabel}</span>
-        </div>
-      ) : (
-        <div className="pointer-events-none flex items-start gap-1">
-          {continuesBefore ? (
-            <ChevronUp className="mt-px h-3 w-3 shrink-0 opacity-70" />
-          ) : isServiceRecord ? (
-            <Wrench className="mt-px h-3 w-3 shrink-0 opacity-80" />
-          ) : (
-            <ClipboardCheck className="mt-px h-3 w-3 shrink-0 opacity-80" />
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="truncate font-medium">{job.title}</div>
-            {owner && <div className="truncate font-medium opacity-90">{owner.name}</div>}
-            {durationMinutes >= VEHICLE_FROM_MINUTES && vehicleLabel && (
-              <div className="truncate opacity-80">{vehicleLabel}</div>
-            )}
-            {durationMinutes >= TIMES_FROM_MINUTES && (
-              <div className="truncate tabular-nums opacity-70">{timeLabel}</div>
-            )}
+        {isDragging ? (
+          // Mid-drag the block is the only readout of where it will land, so the
+          // snapped time replaces the description entirely.
+          <div className="pointer-events-none flex h-full items-start gap-1 font-semibold tabular-nums">
+            <span className="truncate">{timeLabel}</span>
           </div>
-          {continuesAfter && <ChevronDown className="mt-px h-3 w-3 shrink-0 opacity-70" />}
-        </div>
-      )}
+        ) : (
+          <div className="pointer-events-none flex items-start gap-1">
+            {continuesBefore ? (
+              <ChevronUp className="mt-px h-3 w-3 shrink-0 opacity-70" />
+            ) : isServiceRecord ? (
+              <Wrench className="mt-px h-3 w-3 shrink-0 opacity-80" />
+            ) : (
+              <ClipboardCheck className="mt-px h-3 w-3 shrink-0 opacity-80" />
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="truncate font-medium">{job.title}</div>
+              {owner && <div className="truncate font-medium opacity-90">{owner.name}</div>}
+              {durationMinutes >= VEHICLE_FROM_MINUTES && vehicleLabel && (
+                <div className="truncate opacity-80">{vehicleLabel}</div>
+              )}
+              {durationMinutes >= TIMES_FROM_MINUTES && (
+                <div className="truncate tabular-nums opacity-70">{timeLabel}</div>
+              )}
+            </div>
+            {continuesAfter && <ChevronDown className="mt-px h-3 w-3 shrink-0 opacity-70" />}
+          </div>
+        )}
 
-      {!continuesAfter && !readOnly && (
-        <div
-          aria-hidden
-          className="absolute inset-x-0 bottom-0 z-20 h-1.5 cursor-ns-resize opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/15"
-          onPointerDown={(event) => {
-            event.stopPropagation()
-            onDragHandle(event, job, 'resize-end')
-          }}
-        />
-      )}
-    </div>
+        {!continuesAfter && !readOnly && (
+          <div
+            aria-hidden
+            className="absolute inset-x-0 bottom-0 z-20 h-1.5 cursor-ns-resize opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/15"
+            onPointerDown={(event) => {
+              event.stopPropagation()
+              onDragHandle(event, job, 'resize-end')
+            }}
+          />
+        )}
+      </div>
+    </JobTooltip>
   )
 }

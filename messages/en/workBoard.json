@@ -142,5 +142,14 @@
     "jobs": "Jobs",
     "utilisation": "{pct}% of capacity",
     "placeholder": "Work with nothing assigned here yet."
+  },
+  "job": {
+    "time": "Time",
+    "duration": "Duration",
+    "technician": "Technician",
+    "workBay": "Work bay",
+    "status": "Status",
+    "noTime": "No time set yet",
+    "none": "Nobody yet"
   }
 }

@@ -142,5 +142,14 @@
     "jobs": "Jobber",
     "utilisation": "{pct} % av kapasiteten",
     "placeholder": "Arbeid som ennå ikke er tildelt her."
+  },
+  "job": {
+    "time": "Tid",
+    "duration": "Varighet",
+    "technician": "Mekaniker",
+    "workBay": "Arbeidsplass",
+    "status": "Status",
+    "noTime": "Ingen tid satt ennå",
+    "none": "Ingen ennå"
   }
 }

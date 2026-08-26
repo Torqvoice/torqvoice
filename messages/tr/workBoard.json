@@ -142,5 +142,14 @@
     "jobs": "İşler",
     "utilisation": "Kapasitenin %{pct}'i",
     "placeholder": "Henüz buraya atanmamış işler."
+  },
+  "job": {
+    "time": "Saat",
+    "duration": "Süre",
+    "technician": "Teknisyen",
+    "workBay": "Çalışma alanı",
+    "status": "Durum",
+    "noTime": "Henüz saat yok",
+    "none": "Henüz kimse"
   }
 }

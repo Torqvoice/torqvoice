@@ -142,5 +142,14 @@
     "jobs": "Serviços",
     "utilisation": "{pct}% da capacidade",
     "placeholder": "Serviço ainda sem atribuição aqui."
+  },
+  "job": {
+    "time": "Horário",
+    "duration": "Duração",
+    "technician": "Técnico",
+    "workBay": "Baia",
+    "status": "Status",
+    "noTime": "Ainda sem horário",
+    "none": "Ainda ninguém"
   }
 }

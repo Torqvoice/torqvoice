@@ -142,5 +142,14 @@
     "jobs": "Darbai",
     "utilisation": "{pct} % pajėgumo",
     "placeholder": "Darbai, kurie dar niekam nepriskirti."
+  },
+  "job": {
+    "time": "Laikas",
+    "duration": "Trukmė",
+    "technician": "Meistras",
+    "workBay": "Darbo vieta",
+    "status": "Būsena",
+    "noTime": "Laikas dar nenustatytas",
+    "none": "Kol kas niekas"
   }
 }

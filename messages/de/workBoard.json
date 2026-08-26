@@ -142,5 +142,14 @@
     "jobs": "Aufträge",
     "utilisation": "{pct} % der Kapazität",
     "placeholder": "Arbeiten, die hier noch niemandem zugeordnet sind."
+  },
+  "job": {
+    "time": "Zeit",
+    "duration": "Dauer",
+    "technician": "Mechaniker",
+    "workBay": "Arbeitsplatz",
+    "status": "Status",
+    "noTime": "Noch keine Zeit",
+    "none": "Noch niemand"
   }
 }

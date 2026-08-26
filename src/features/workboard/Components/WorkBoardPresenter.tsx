@@ -19,6 +19,7 @@ import { WeekCardGrid } from './WeekCardGrid'
 import { type BoardLayout, isBoardLayout } from '../hooks/useBoardPreferences'
 import { type LaneGrouping, buildLanes, groupJobsByLane, isLaneGrouping } from '../utils/lanes'
 import { useTranslations, useLocale } from 'next-intl'
+import { useDateSettings } from '@/components/date-settings-context'
 
 type ViewMode = 'week' | 'day' | 'status' | 'timeline'
 
@@ -103,6 +104,7 @@ export function WorkBoardPresenter({
   const t = useTranslations('workBoard.presenter')
   const tb = useTranslations('workBoard.board')
   const tt = useTranslations('workBoard.toolbar')
+  const { timeFormat } = useDateSettings()
   const locale = useLocale()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -260,6 +262,13 @@ export function WorkBoardPresenter({
       }),
     [grouping, store.technicians, store.workBays, store.jobs, tb]
   )
+
+  const owners = useMemo(() => {
+    const map = new Map<string, { name: string; color: string }>()
+    for (const tech of store.technicians) map.set(tech.id, { name: tech.name, color: tech.color })
+    for (const bay of store.workBays) map.set(bay.id, { name: bay.name, color: bay.color })
+    return map
+  }, [store.technicians, store.workBays])
 
   const jobsByLane = useMemo(
     () =>
@@ -440,6 +449,8 @@ export function WorkBoardPresenter({
                 lanes={lanes}
                 jobsByLane={jobsByLane}
                 todayStr={toLocalDateString(new Date())}
+                timeFormat={timeFormat}
+                lookup={owners}
                 readOnly
                 onOpenJob={noop}
               />

@@ -142,5 +142,14 @@
     "jobs": "Tâches",
     "utilisation": "{pct} % de la capacité",
     "placeholder": "Travail encore non attribué ici."
+  },
+  "job": {
+    "time": "Heure",
+    "duration": "Durée",
+    "technician": "Technicien",
+    "workBay": "Poste de travail",
+    "status": "Statut",
+    "noTime": "Pas encore d'horaire",
+    "none": "Personne pour l'instant"
   }
 }

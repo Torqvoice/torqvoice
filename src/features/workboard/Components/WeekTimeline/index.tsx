@@ -500,6 +500,7 @@ export function WeekTimeline({
                   slotMinutes={slotMinutes}
                   timeFormat={timeFormat}
                   ownerOf={ownerOf}
+                  lookup={owners}
                   workDayStart={dayStartMins}
                   workDayEnd={dayEndMins}
                   nowMinutes={day === todayStr ? nowMinutes : null}

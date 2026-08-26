@@ -142,5 +142,14 @@
     "jobs": "Klussen",
     "utilisation": "{pct}% van de capaciteit",
     "placeholder": "Werk dat hier nog niet is toegewezen."
+  },
+  "job": {
+    "time": "Tijd",
+    "duration": "Duur",
+    "technician": "Monteur",
+    "workBay": "Werkplek",
+    "status": "Status",
+    "noTime": "Nog geen tijd",
+    "none": "Nog niemand"
   }
 }

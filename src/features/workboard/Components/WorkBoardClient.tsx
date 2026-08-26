@@ -27,7 +27,6 @@ import {
   updateServiceTimes,
 } from '../Actions/boardActions'
 import { WorkBoardToolbar, type BoardView } from './WorkBoardToolbar'
-import { DayTimeline } from './DayTimeline'
 import type { WorkBoardSettings } from '../Actions/boardActions'
 import { UnassignedJobsPanel } from './UnassignedJobsPanel'
 import { TechnicianDialog } from './TechnicianDialog'
@@ -48,7 +47,6 @@ import {
   laneAssignment,
   laneIdForJob,
 } from '../utils/lanes'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { Users, Wrench, ClipboardCheck, Columns3 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -56,6 +54,7 @@ import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { timeToMinutes } from '../utils/datetime'
+import { useDateSettings } from '@/components/date-settings-context'
 
 /** Minutes a job gets when it is dropped onto the week with no duration of its own. */
 const DEFAULT_JOB_MINUTES = 60
@@ -145,6 +144,7 @@ export function WorkBoardClient({
 }) {
   const store = useWorkBoardStore()
   const t = useTranslations('workBoard.board')
+  const { timeFormat } = useDateSettings()
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -213,13 +213,20 @@ export function WorkBoardClient({
 
   const weekStart = store.weekStart || initialWeekStart
   const allDays = useMemo(() => getWeekDays(weekStart), [weekStart])
-  const days = useMemo(
+  // Day is the same board with one day's worth of columns, not a different
+  // component. Switching period used to swap in an entirely separate view,
+  // which threw away the grouping, the lane filter, the zoom and the tooltips.
+  const weekDays = useMemo(
     () => (preferences.showWeekends ? allDays : allDays.filter((d) => !isWeekend(d))),
     [allDays, preferences.showWeekends]
   )
+  const days = useMemo(
+    () => (view === 'day' ? [selectedDate] : weekDays),
+    [view, selectedDate, weekDays]
+  )
   const hiddenDays = useMemo(
-    () => (preferences.showWeekends ? [] : allDays.filter(isWeekend)),
-    [allDays, preferences.showWeekends]
+    () => (view === 'day' || preferences.showWeekends ? [] : allDays.filter(isWeekend)),
+    [view, allDays, preferences.showWeekends]
   )
 
   const lanes = useMemo(
@@ -390,14 +397,6 @@ export function WorkBoardClient({
     )
     setVehiclePickerOpen(true)
   }, [])
-
-  const handleCreateWorkOrder = (techId: string, startTime: string, endTime: string) =>
-    openVehiclePicker({
-      boardTech: techId,
-      boardDate: selectedDate,
-      boardStart: startTime,
-      boardEnd: endTime,
-    })
 
   const handleCreateInWeek = useCallback(
     (lane: BoardLane, date: string, startMins: number) => {
@@ -786,23 +785,7 @@ export function WorkBoardClient({
 
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="flex min-h-0 flex-1 gap-4 overflow-hidden">
-          {view === 'day' ? (
-            <ScrollArea className="min-w-0 flex-1">
-              <DayTimeline
-                date={selectedDate}
-                technicians={store.technicians}
-                assignments={store.jobs}
-                workDayStart={boardSettings.workDayStart}
-                workDayEnd={boardSettings.workDayEnd}
-                onCardClick={handleCardClick}
-                onTechClick={(tech) => {
-                  setEditingTech(tech)
-                  setTechDialogOpen(true)
-                }}
-                onCreateWorkOrder={handleCreateWorkOrder}
-              />
-            </ScrollArea>
-          ) : visibleLanes.length === 0 ? (
+          {visibleLanes.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 py-20">
               <Columns3 className="h-10 w-10 text-muted-foreground/40" />
               <p className="text-sm text-muted-foreground">{t('noBays')}</p>
@@ -816,6 +799,8 @@ export function WorkBoardClient({
               lanes={visibleLanes}
               jobsByLane={jobsByLane}
               todayStr={toLocalDateString(new Date())}
+              timeFormat={timeFormat}
+              lookup={owners}
               onOpenJob={handleCardClick}
               onLaneClick={handleLaneClick}
             />
@@ -838,7 +823,7 @@ export function WorkBoardClient({
               onCreateJob={handleCreateInWeek}
               onLaneClick={handleLaneClick}
               onShowHiddenDays={() => updatePreferences({ showWeekends: true })}
-              onShowWholeWeek={() => setGrouping('none')}
+              onShowWholeWeek={view === 'week' ? () => setGrouping('none') : undefined}
             />
           )}
           <UnassignedJobsPanel />
