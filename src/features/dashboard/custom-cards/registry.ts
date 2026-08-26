@@ -98,6 +98,7 @@ export const CARD_ENTITY_FIELDS: Record<CardEntity, CardFieldDef[]> = {
     f('category', 'text'),
     f('quantity', 'number'),
     f('minQuantity', 'number'),
+    f('unit', 'text'),
     f('unitCost', 'number'),
     f('sellPrice', 'number'),
     f('supplier', 'text'),

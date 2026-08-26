@@ -1,6 +1,7 @@
 'use client'
 
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { formatQuantity } from '@/lib/format-quantity'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -95,6 +96,7 @@ export function MyActiveJobs({
     partNumber: string | null
     barcode: string | null
     quantity: number
+    unit: string | null
     category: string | null
     sellPrice: number
     unitCost: number
@@ -133,6 +135,7 @@ export function MyActiveJobs({
       partNumber: scannedPart.partNumber || undefined,
       name: scannedPart.name,
       quantity: qty,
+      unit: scannedPart.unit ?? null,
       unitPrice: price,
       total: price * qty,
       unitCost: scannedPart.unitCost,
@@ -613,7 +616,9 @@ export function MyActiveJobs({
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
-                  {t('inStock', { quantity: scannedPart.quantity })}
+                  {t('inStock', {
+                    quantity: formatQuantity(scannedPart.quantity, scannedPart.unit),
+                  })}
                 </div>
               </div>
 

@@ -1,13 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { formatQuantity } from '@/lib/format-quantity'
 import { useTranslations } from 'next-intl'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,6 +21,7 @@ interface BarcodeScanActionDialogProps {
     partNumber: string | null
     barcode: string | null
     quantity: number
+    unit: string | null
     category: string | null
   } | null
   barcode: string
@@ -56,8 +53,8 @@ export function BarcodeScanActionDialog({
   }
 
   const handleCustomAdd = async () => {
-    const qty = parseInt(customQty, 10)
-    if (qty > 0) await handleAddStock(qty)
+    const qty = Number.parseFloat(customQty)
+    if (Number.isFinite(qty) && qty > 0) await handleAddStock(qty)
   }
 
   return (
@@ -73,24 +70,41 @@ export function BarcodeScanActionDialog({
               <p className="font-medium">{part.name}</p>
               <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                 {part.partNumber && <span className="font-mono">{part.partNumber}</span>}
-                {part.category && <Badge variant="secondary" className="text-xs">{part.category}</Badge>}
+                {part.category && (
+                  <Badge variant="secondary" className="text-xs">
+                    {part.category}
+                  </Badge>
+                )}
               </div>
-              <p className="mt-1 text-sm">{t('currentStock', { quantity: part.quantity })}</p>
+              <p className="mt-1 text-sm">
+                {t('currentStock', { quantity: formatQuantity(part.quantity, part.unit) })}
+              </p>
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium">{t('addStock')}</Label>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => handleAddStock(1)} disabled={loading}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAddStock(1)}
+                  disabled={loading}
+                >
                   +1
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => handleAddStock(5)} disabled={loading}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAddStock(5)}
+                  disabled={loading}
+                >
                   +5
                 </Button>
                 <div className="flex flex-1 gap-1">
                   <Input
                     type="number"
-                    min="1"
+                    min="0"
+                    step="any"
                     placeholder={t('customAmount')}
                     value={customQty}
                     onChange={(e) => setCustomQty(e.target.value)}
@@ -119,9 +133,7 @@ export function BarcodeScanActionDialog({
           <div className="space-y-4">
             <div className="rounded-lg border border-dashed p-4 text-center">
               <Package className="mx-auto h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t('notFound', { barcode })}
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground">{t('notFound', { barcode })}</p>
             </div>
             <Button
               className="w-full"

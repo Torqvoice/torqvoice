@@ -1,11 +1,5 @@
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
+import { formatQuantity } from '@/lib/format-quantity'
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
 import type {
   RevenueReport,
   ServiceReport,
@@ -18,49 +12,49 @@ import type {
   TaxReport,
   PastDueInvoicesReport,
   VehicleReportData,
-} from "../Schema/reportTypes";
-import { formatCurrency } from "@/lib/format";
+} from '../Schema/reportTypes'
+import { formatCurrency } from '@/lib/format'
 
 // --------------- fonts ---------------
 
 Font.register({
-  family: "Roboto",
+  family: 'Roboto',
   fonts: [
-    { src: "/fonts/Roboto-Regular.ttf", fontWeight: 400 },
-    { src: "/fonts/Roboto-Bold.ttf", fontWeight: 700 },
+    { src: '/fonts/Roboto-Regular.ttf', fontWeight: 400 },
+    { src: '/fonts/Roboto-Bold.ttf', fontWeight: 700 },
   ],
-});
-Font.register({ family: "Roboto-Bold", src: "/fonts/Roboto-Bold.ttf" });
-Font.registerHyphenationCallback((word) => [word]);
+})
+Font.register({ family: 'Roboto-Bold', src: '/fonts/Roboto-Bold.ttf' })
+Font.registerHyphenationCallback((word) => [word])
 
 // --------------- colour helpers ---------------
 
-import { lightenColor, darkenColor } from "@/features/vehicles/Components/invoice-pdf/styles";
+import { lightenColor, darkenColor } from '@/features/vehicles/Components/invoice-pdf/styles'
 
-const gray = "#6b7280";
-const grayLight = "#f3f4f6";
-const dark = "#111827";
-const border = "#e5e7eb";
+const gray = '#6b7280'
+const grayLight = '#f3f4f6'
+const dark = '#111827'
+const border = '#e5e7eb'
 
 // --------------- styles (dynamic) ---------------
 
 function createReportStyles(primary: string) {
-  const primaryLight = lightenColor(primary, 0.9);
-  const primaryDark = darkenColor(primary, 0.3);
+  const primaryLight = lightenColor(primary, 0.9)
+  const primaryDark = darkenColor(primary, 0.3)
 
   return StyleSheet.create({
-    page: { padding: 40, fontSize: 9, fontFamily: "Roboto", color: dark },
+    page: { padding: 40, fontSize: 9, fontFamily: 'Roboto', color: dark },
     // header
     headerRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-end",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
       marginBottom: 24,
       paddingBottom: 12,
       borderBottomWidth: 2,
       borderBottomColor: primary,
     },
-    title: { fontSize: 20, fontFamily: "Roboto-Bold", color: primary },
+    title: { fontSize: 20, fontFamily: 'Roboto-Bold', color: primary },
     subtitle: { fontSize: 9, color: gray, marginTop: 2 },
     dateBadge: {
       fontSize: 8,
@@ -74,7 +68,7 @@ function createReportStyles(primary: string) {
     section: { marginBottom: 18 },
     sectionTitle: {
       fontSize: 12,
-      fontFamily: "Roboto-Bold",
+      fontFamily: 'Roboto-Bold',
       color: dark,
       marginBottom: 8,
       paddingBottom: 4,
@@ -82,49 +76,49 @@ function createReportStyles(primary: string) {
       borderBottomColor: border,
     },
     // summary cards row
-    cardsRow: { flexDirection: "row", gap: 8, marginBottom: 14 },
+    cardsRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
     card: {
       flex: 1,
       padding: 10,
       backgroundColor: grayLight,
       borderRadius: 4,
     },
-    cardLabel: { fontSize: 7, color: gray, textTransform: "uppercase", marginBottom: 3 },
-    cardValue: { fontSize: 13, fontFamily: "Roboto-Bold" },
+    cardLabel: { fontSize: 7, color: gray, textTransform: 'uppercase', marginBottom: 3 },
+    cardValue: { fontSize: 13, fontFamily: 'Roboto-Bold' },
     // table
     table: { marginBottom: 4 },
     tableHeader: {
-      flexDirection: "row",
+      flexDirection: 'row',
       backgroundColor: primaryLight,
       paddingVertical: 5,
       paddingHorizontal: 6,
       borderRadius: 2,
     },
     tableRow: {
-      flexDirection: "row",
+      flexDirection: 'row',
       paddingVertical: 4,
       paddingHorizontal: 6,
       borderBottomWidth: 0.5,
       borderBottomColor: border,
     },
     tableRowAlt: {
-      flexDirection: "row",
+      flexDirection: 'row',
       paddingVertical: 4,
       paddingHorizontal: 6,
       borderBottomWidth: 0.5,
       borderBottomColor: border,
-      backgroundColor: "#fafafa",
+      backgroundColor: '#fafafa',
     },
-    th: { fontSize: 7, fontFamily: "Roboto-Bold", color: primaryDark },
+    th: { fontSize: 7, fontFamily: 'Roboto-Bold', color: primaryDark },
     td: { fontSize: 8 },
-    tdRight: { fontSize: 8, textAlign: "right" },
+    tdRight: { fontSize: 8, textAlign: 'right' },
     // footer
     footer: {
-      position: "absolute",
+      position: 'absolute',
       bottom: 25,
       left: 40,
       right: 40,
-      textAlign: "center",
+      textAlign: 'center',
       fontSize: 7,
       color: gray,
       paddingTop: 6,
@@ -132,37 +126,43 @@ function createReportStyles(primary: string) {
       borderTopColor: border,
     },
     pageNumber: { fontSize: 7, color: gray },
-  });
+  })
 }
 
 // --------------- helpers ---------------
 
 interface ReportPDFProps {
-  dateRange: string;
-  currencyCode: string;
-  currencyFormat?: 'symbol' | 'code';
-  primaryColor: string;
-  organizationName?: string;
-  labels: Record<string, string>;
-  revenueData?: RevenueReport | null;
-  serviceData?: ServiceReport | null;
-  customerData?: CustomerReport | null;
-  inventoryData?: InventoryReport | null;
-  technicianData?: TechnicianReport | null;
-  partsData?: PartsUsageReport | null;
-  jobAnalyticsData?: JobAnalyticsReport | null;
-  retentionData?: CustomerRetentionReport | null;
-  taxData?: TaxReport | null;
-  pastDueData?: PastDueInvoicesReport | null;
-  vehicleData?: VehicleReportData | null;
+  dateRange: string
+  currencyCode: string
+  currencyFormat?: 'symbol' | 'code'
+  primaryColor: string
+  organizationName?: string
+  labels: Record<string, string>
+  revenueData?: RevenueReport | null
+  serviceData?: ServiceReport | null
+  customerData?: CustomerReport | null
+  inventoryData?: InventoryReport | null
+  technicianData?: TechnicianReport | null
+  partsData?: PartsUsageReport | null
+  jobAnalyticsData?: JobAnalyticsReport | null
+  retentionData?: CustomerRetentionReport | null
+  taxData?: TaxReport | null
+  pastDueData?: PastDueInvoicesReport | null
+  vehicleData?: VehicleReportData | null
 }
 
-type ReportStyles = ReturnType<typeof createReportStyles>;
+type ReportStyles = ReturnType<typeof createReportStyles>
 
-function SummaryCards({ items, s }: { items: { label: string; value: string }[]; s: ReportStyles }) {
-  const rows: { label: string; value: string }[][] = [];
+function SummaryCards({
+  items,
+  s,
+}: {
+  items: { label: string; value: string }[]
+  s: ReportStyles
+}) {
+  const rows: { label: string; value: string }[][] = []
   for (let i = 0; i < items.length; i += 3) {
-    rows.push(items.slice(i, i + 3));
+    rows.push(items.slice(i, i + 3))
   }
   return (
     <>
@@ -181,7 +181,7 @@ function SummaryCards({ items, s }: { items: { label: string; value: string }[];
         </View>
       ))}
     </>
-  );
+  )
 }
 
 function TableBlock({
@@ -190,10 +190,10 @@ function TableBlock({
   widths,
   s,
 }: {
-  headers: string[];
-  rows: string[][];
-  widths: number[];
-  s: ReportStyles;
+  headers: string[]
+  rows: string[][]
+  widths: number[]
+  s: ReportStyles
 }) {
   return (
     <View style={s.table}>
@@ -201,7 +201,7 @@ function TableBlock({
         {headers.map((h, i) => (
           <Text
             key={i}
-            style={[s.th, { width: `${widths[i]}%`, textAlign: i === 0 ? "left" : "right" }]}
+            style={[s.th, { width: `${widths[i]}%`, textAlign: i === 0 ? 'left' : 'right' }]}
           >
             {h}
           </Text>
@@ -210,20 +210,14 @@ function TableBlock({
       {rows.map((row, ri) => (
         <View key={ri} style={ri % 2 === 0 ? s.tableRow : s.tableRowAlt}>
           {row.map((cell, ci) => (
-            <Text
-              key={ci}
-              style={[
-                ci === 0 ? s.td : s.tdRight,
-                { width: `${widths[ci]}%` },
-              ]}
-            >
+            <Text key={ci} style={[ci === 0 ? s.td : s.tdRight, { width: `${widths[ci]}%` }]}>
               {cell}
             </Text>
           ))}
         </View>
       ))}
     </View>
-  );
+  )
 }
 
 function ProfitBreakdown({
@@ -232,29 +226,47 @@ function ProfitBreakdown({
   lines,
   total,
 }: {
-  s: ReportStyles;
-  title: string;
-  lines: { label: string; value: string; color: string }[];
-  total: { label: string; value: string };
+  s: ReportStyles
+  title: string
+  lines: { label: string; value: string; color: string }[]
+  total: { label: string; value: string }
 }) {
   return (
     <View style={{ marginBottom: 14, backgroundColor: grayLight, borderRadius: 4, padding: 12 }}>
-      <Text style={{ fontSize: 9, fontFamily: "Roboto-Bold", marginBottom: 8 }}>{title}</Text>
+      <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold', marginBottom: 8 }}>{title}</Text>
       {lines.map((line, i) => (
-        <View key={i} style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        <View
+          key={i}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 5,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: line.color }} />
             <Text style={{ fontSize: 8, color: gray }}>{line.label}</Text>
           </View>
-          <Text style={{ fontSize: 8, fontFamily: "Roboto-Bold" }}>{line.value}</Text>
+          <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{line.value}</Text>
         </View>
       ))}
-      <View style={{ borderTopWidth: 0.5, borderTopColor: border, marginTop: 4, paddingTop: 6, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <Text style={{ fontSize: 9, fontFamily: "Roboto-Bold" }}>{total.label}</Text>
-        <Text style={{ fontSize: 11, fontFamily: "Roboto-Bold" }}>{total.value}</Text>
+      <View
+        style={{
+          borderTopWidth: 0.5,
+          borderTopColor: border,
+          marginTop: 4,
+          paddingTop: 6,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{total.label}</Text>
+        <Text style={{ fontSize: 11, fontFamily: 'Roboto-Bold' }}>{total.value}</Text>
       </View>
     </View>
-  );
+  )
 }
 
 function PageFooter({ s }: { s: ReportStyles }) {
@@ -264,7 +276,7 @@ function PageFooter({ s }: { s: ReportStyles }) {
       render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`}
       fixed
     />
-  );
+  )
 }
 
 // --------------- main document ---------------
@@ -288,59 +300,78 @@ export function ReportPDF({
   vehicleData,
   organizationName,
 }: ReportPDFProps) {
-  const fmt = (n: number) => formatCurrency(n, currencyCode, currencyFormat);
-  const s = createReportStyles(primaryColor);
+  const fmt = (n: number) => formatCurrency(n, currencyCode, currencyFormat)
+  const s = createReportStyles(primaryColor)
 
   const ReportHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
     <View style={s.headerRow}>
       <View>
         <Text style={s.title}>{title}</Text>
         <Text style={s.subtitle}>{subtitle}</Text>
-        {organizationName ? <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{organizationName}</Text> : null}
+        {organizationName ? (
+          <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{organizationName}</Text>
+        ) : null}
       </View>
       <Text style={s.dateBadge}>{dateRange}</Text>
     </View>
-  );
+  )
 
   return (
     <Document>
       {/* ==================== REVENUE ==================== */}
       {revenueData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.revenueSection || "Revenue Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.revenueSection || 'Revenue Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.revenue || "Revenue", value: fmt(revenueData.summary.totalRevenue) },
-              { label: l.collected || "Collected", value: fmt(revenueData.summary.totalCollected) },
-              { label: l.outstanding || "Outstanding", value: fmt(revenueData.summary.outstanding) },
+              { label: l.revenue || 'Revenue', value: fmt(revenueData.summary.totalRevenue) },
+              { label: l.collected || 'Collected', value: fmt(revenueData.summary.totalCollected) },
+              {
+                label: l.outstanding || 'Outstanding',
+                value: fmt(revenueData.summary.outstanding),
+              },
             ]}
           />
 
           <ProfitBreakdown
             s={s}
-            title={l.netProfit || "Net Profit"}
+            title={l.netProfit || 'Net Profit'}
             lines={[
-              { label: l.partsNetProfit || "Parts Net Profit", value: fmt(revenueData.summary.totalPartsNetProfit), color: "#22c55e" },
-              { label: l.laborRevenue || "Labor", value: fmt(revenueData.summary.totalLaborRevenue), color: "#3b82f6" },
+              {
+                label: l.partsNetProfit || 'Parts Net Profit',
+                value: fmt(revenueData.summary.totalPartsNetProfit),
+                color: '#22c55e',
+              },
+              {
+                label: l.laborRevenue || 'Labor',
+                value: fmt(revenueData.summary.totalLaborRevenue),
+                color: '#3b82f6',
+              },
             ]}
-            total={{ label: l.netProfit || "Net Profit", value: fmt(revenueData.summary.netProfit) }}
+            total={{
+              label: l.netProfit || 'Net Profit',
+              value: fmt(revenueData.summary.netProfit),
+            }}
           />
 
           <View style={s.section}>
-            <Text style={s.sectionTitle}>{l.monthlyBreakdown || "Monthly Breakdown"}</Text>
+            <Text style={s.sectionTitle}>{l.monthlyBreakdown || 'Monthly Breakdown'}</Text>
             <TableBlock
               s={s}
               headers={[
-                l.month || "Month",
-                l.revenue || "Revenue",
-                l.collected || "Collected",
-                l.partsCost || "Parts Cost",
-                l.partsNetProfit || "Parts Profit",
-                l.laborRevenue || "Labor",
-                l.netProfit || "Net Profit",
-                l.count || "Jobs",
+                l.month || 'Month',
+                l.revenue || 'Revenue',
+                l.collected || 'Collected',
+                l.partsCost || 'Parts Cost',
+                l.partsNetProfit || 'Parts Profit',
+                l.laborRevenue || 'Labor',
+                l.netProfit || 'Net Profit',
+                l.count || 'Jobs',
               ]}
               widths={[16, 14, 14, 12, 12, 12, 12, 8]}
               rows={revenueData.monthly.map((m) => [
@@ -358,16 +389,12 @@ export function ReportPDF({
 
           {revenueData.byType.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.revenueByType || "Revenue by Type"}</Text>
+              <Text style={s.sectionTitle}>{l.revenueByType || 'Revenue by Type'}</Text>
               <TableBlock
                 s={s}
-                headers={[l.type || "Type", l.revenue || "Revenue", l.count || "Count"]}
+                headers={[l.type || 'Type', l.revenue || 'Revenue', l.count || 'Count']}
                 widths={[50, 30, 20]}
-                rows={revenueData.byType.map((t) => [
-                  t.type,
-                  fmt(t.revenue),
-                  String(t.count),
-                ])}
+                rows={revenueData.byType.map((t) => [t.type, fmt(t.revenue), String(t.count)])}
               />
             </View>
           )}
@@ -378,26 +405,35 @@ export function ReportPDF({
       {/* ==================== TAX ==================== */}
       {taxData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.taxSection || "Tax Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.taxSection || 'Tax Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.taxCollected || "Tax Collected", value: fmt(taxData.summary.totalTaxCollected) },
-              { label: l.taxableAmount || "Taxable Amount", value: fmt(taxData.summary.totalTaxableAmount) },
-              { label: l.invoices || "Invoices", value: String(taxData.summary.totalInvoices) },
+              {
+                label: l.taxCollected || 'Tax Collected',
+                value: fmt(taxData.summary.totalTaxCollected),
+              },
+              {
+                label: l.taxableAmount || 'Taxable Amount',
+                value: fmt(taxData.summary.totalTaxableAmount),
+              },
+              { label: l.invoices || 'Invoices', value: String(taxData.summary.totalInvoices) },
             ]}
           />
 
           <View style={s.section}>
-            <Text style={s.sectionTitle}>{l.monthlyBreakdown || "Monthly Breakdown"}</Text>
+            <Text style={s.sectionTitle}>{l.monthlyBreakdown || 'Monthly Breakdown'}</Text>
             <TableBlock
               s={s}
               headers={[
-                l.month || "Month",
-                l.taxCollected || "Tax Collected",
-                l.taxableAmount || "Taxable Amount",
-                l.invoiceCount || "Invoices",
+                l.month || 'Month',
+                l.taxCollected || 'Tax Collected',
+                l.taxableAmount || 'Taxable Amount',
+                l.invoiceCount || 'Invoices',
               ]}
               widths={[30, 25, 25, 20]}
               rows={taxData.monthly.map((m) => [
@@ -411,10 +447,14 @@ export function ReportPDF({
 
           {taxData.byRate.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.taxByRate || "Tax by Rate"}</Text>
+              <Text style={s.sectionTitle}>{l.taxByRate || 'Tax by Rate'}</Text>
               <TableBlock
                 s={s}
-                headers={[l.taxRate || "Tax Rate", l.taxCollected || "Tax Collected", l.invoiceCount || "Invoices"]}
+                headers={[
+                  l.taxRate || 'Tax Rate',
+                  l.taxCollected || 'Tax Collected',
+                  l.invoiceCount || 'Invoices',
+                ]}
                 widths={[40, 35, 25]}
                 rows={taxData.byRate.map((r) => [
                   `${r.taxRate}%`,
@@ -431,16 +471,25 @@ export function ReportPDF({
       {/* ==================== PAST DUE INVOICES ==================== */}
       {pastDueData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.pastDueSection || "Past Due Invoices"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.pastDueSection || 'Past Due Invoices'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalPastDue || "Total Past Due", value: String(pastDueData.summary.totalPastDue) },
-              { label: l.totalAmountDue || "Amount Due", value: fmt(pastDueData.summary.totalAmountDue) },
-              { label: l.over30 || "Over 30 Days", value: String(pastDueData.summary.over30) },
-              { label: l.over60 || "Over 60 Days", value: String(pastDueData.summary.over60) },
-              { label: l.over90 || "Over 90 Days", value: String(pastDueData.summary.over90) },
+              {
+                label: l.totalPastDue || 'Total Past Due',
+                value: String(pastDueData.summary.totalPastDue),
+              },
+              {
+                label: l.totalAmountDue || 'Amount Due',
+                value: fmt(pastDueData.summary.totalAmountDue),
+              },
+              { label: l.over30 || 'Over 30 Days', value: String(pastDueData.summary.over30) },
+              { label: l.over60 || 'Over 60 Days', value: String(pastDueData.summary.over60) },
+              { label: l.over90 || 'Over 90 Days', value: String(pastDueData.summary.over90) },
             ]}
           />
 
@@ -448,17 +497,17 @@ export function ReportPDF({
             <TableBlock
               s={s}
               headers={[
-                l.customer || "Customer",
-                l.invoiceNumber || "Invoice #",
-                l.totalAmount || "Total",
-                l.amountDue || "Due",
-                l.dueDate || "Due Date",
-                l.daysPastDue || "Days",
+                l.customer || 'Customer',
+                l.invoiceNumber || 'Invoice #',
+                l.totalAmount || 'Total',
+                l.amountDue || 'Due',
+                l.dueDate || 'Due Date',
+                l.daysPastDue || 'Days',
               ]}
               widths={[24, 14, 16, 16, 16, 14]}
               rows={pastDueData.invoices.map((inv) => [
                 inv.customerName,
-                inv.invoiceNumber || "-",
+                inv.invoiceNumber || '-',
                 fmt(inv.totalAmount),
                 fmt(inv.amountDue),
                 inv.dueDate,
@@ -473,21 +522,27 @@ export function ReportPDF({
       {/* ==================== SERVICES ==================== */}
       {serviceData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.servicesSection || "Services Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.servicesSection || 'Services Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalServices || "Total Services", value: String(serviceData.totalServices) },
+              {
+                label: l.totalServices || 'Total Services',
+                value: String(serviceData.totalServices),
+              },
             ]}
           />
 
           {serviceData.byStatus.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.servicesByStatus || "By Status"}</Text>
+              <Text style={s.sectionTitle}>{l.servicesByStatus || 'By Status'}</Text>
               <TableBlock
                 s={s}
-                headers={[l.status || "Status", l.count || "Count"]}
+                headers={[l.status || 'Status', l.count || 'Count']}
                 widths={[60, 40]}
                 rows={serviceData.byStatus.map((s) => [s.status, String(s.count)])}
               />
@@ -496,10 +551,10 @@ export function ReportPDF({
 
           {serviceData.byType.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.servicesByType || "By Type"}</Text>
+              <Text style={s.sectionTitle}>{l.servicesByType || 'By Type'}</Text>
               <TableBlock
                 s={s}
-                headers={[l.type || "Type", l.count || "Count"]}
+                headers={[l.type || 'Type', l.count || 'Count']}
                 widths={[60, 40]}
                 rows={serviceData.byType.map((t) => [t.type, String(t.count)])}
               />
@@ -512,31 +567,40 @@ export function ReportPDF({
       {/* ==================== CUSTOMERS ==================== */}
       {customerData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.customersSection || "Customers Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.customersSection || 'Customers Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalCustomers || "Total Customers", value: String(customerData.totalCustomers) },
-              { label: l.activeCustomers || "Active Customers", value: String(customerData.activeCustomers) },
+              {
+                label: l.totalCustomers || 'Total Customers',
+                value: String(customerData.totalCustomers),
+              },
+              {
+                label: l.activeCustomers || 'Active Customers',
+                value: String(customerData.activeCustomers),
+              },
             ]}
           />
 
           {customerData.topCustomers.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.topCustomers || "Top Customers"}</Text>
+              <Text style={s.sectionTitle}>{l.topCustomers || 'Top Customers'}</Text>
               <TableBlock
                 s={s}
                 headers={[
-                  l.name || "Name",
-                  l.company || "Company",
-                  l.services || "Services",
-                  l.totalSpent || "Total Spent",
+                  l.name || 'Name',
+                  l.company || 'Company',
+                  l.services || 'Services',
+                  l.totalSpent || 'Total Spent',
                 ]}
                 widths={[30, 30, 15, 25]}
                 rows={customerData.topCustomers.map((c) => [
                   c.name,
-                  c.company || "-",
+                  c.company || '-',
                   String(c.serviceCount),
                   fmt(c.totalSpent),
                 ])}
@@ -550,13 +614,16 @@ export function ReportPDF({
       {/* ==================== TECHNICIANS ==================== */}
       {technicianData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.techniciansSection || "Technicians Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.techniciansSection || 'Technicians Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalJobs || "Total Jobs", value: String(technicianData.totalJobs) },
-              { label: l.totalRevenue || "Total Revenue", value: fmt(technicianData.totalRevenue) },
+              { label: l.totalJobs || 'Total Jobs', value: String(technicianData.totalJobs) },
+              { label: l.totalRevenue || 'Total Revenue', value: fmt(technicianData.totalRevenue) },
             ]}
           />
 
@@ -564,12 +631,12 @@ export function ReportPDF({
             <TableBlock
               s={s}
               headers={[
-                l.technician || "Technician",
-                l.jobs || "Jobs",
-                l.totalRevenue || "Revenue",
-                l.avgRevenue || "Avg Revenue",
-                l.totalHours || "Hours",
-                l.avgHours || "Avg Hours",
+                l.technician || 'Technician',
+                l.jobs || 'Jobs',
+                l.totalRevenue || 'Revenue',
+                l.avgRevenue || 'Avg Revenue',
+                l.totalHours || 'Hours',
+                l.avgHours || 'Avg Hours',
               ]}
               widths={[22, 12, 18, 18, 15, 15]}
               rows={technicianData.technicians.map((t) => [
@@ -589,15 +656,24 @@ export function ReportPDF({
       {/* ==================== PARTS USAGE ==================== */}
       {partsData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.partsSection || "Parts Usage Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.partsSection || 'Parts Usage Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalPartsUsed || "Parts Used", value: String(partsData.totalPartsUsed) },
-              { label: l.totalPartsRevenue || "Parts Revenue", value: fmt(partsData.totalPartsRevenue) },
-              { label: l.totalPartsCost || "Parts Cost", value: fmt(partsData.totalPartsCost) },
-              { label: l.totalPartsNetProfit || "Net Profit", value: fmt(partsData.totalPartsNetProfit) },
+              { label: l.totalPartsUsed || 'Parts Used', value: String(partsData.totalPartsUsed) },
+              {
+                label: l.totalPartsRevenue || 'Parts Revenue',
+                value: fmt(partsData.totalPartsRevenue),
+              },
+              { label: l.totalPartsCost || 'Parts Cost', value: fmt(partsData.totalPartsCost) },
+              {
+                label: l.totalPartsNetProfit || 'Net Profit',
+                value: fmt(partsData.totalPartsNetProfit),
+              },
             ]}
           />
 
@@ -605,18 +681,18 @@ export function ReportPDF({
             <TableBlock
               s={s}
               headers={[
-                l.partName || "Part",
-                l.partNumber || "Part #",
-                l.usageCount || "Used",
-                l.totalQty || "Qty",
-                l.totalRevenue || "Revenue",
-                l.totalPartsCost || "Cost",
-                l.netProfit || "Profit",
+                l.partName || 'Part',
+                l.partNumber || 'Part #',
+                l.usageCount || 'Used',
+                l.totalQty || 'Qty',
+                l.totalRevenue || 'Revenue',
+                l.totalPartsCost || 'Cost',
+                l.netProfit || 'Profit',
               ]}
               widths={[22, 16, 12, 12, 14, 12, 12]}
               rows={partsData.parts.map((p) => [
                 p.name,
-                p.partNumber || "-",
+                p.partNumber || '-',
                 String(p.usageCount),
                 String(p.totalQuantity),
                 fmt(p.totalRevenue),
@@ -632,26 +708,29 @@ export function ReportPDF({
       {/* ==================== JOB ANALYTICS ==================== */}
       {jobAnalyticsData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.jobAnalyticsSection || "Job Analytics"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.jobAnalyticsSection || 'Job Analytics'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalJobs || "Total Jobs", value: String(jobAnalyticsData.totalJobs) },
-              { label: l.avgJobValue || "Avg Job Value", value: fmt(jobAnalyticsData.avgJobValue) },
+              { label: l.totalJobs || 'Total Jobs', value: String(jobAnalyticsData.totalJobs) },
+              { label: l.avgJobValue || 'Avg Job Value', value: fmt(jobAnalyticsData.avgJobValue) },
             ]}
           />
 
           {jobAnalyticsData.topServiceTypes.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.topServiceTypes || "Top Service Types"}</Text>
+              <Text style={s.sectionTitle}>{l.topServiceTypes || 'Top Service Types'}</Text>
               <TableBlock
                 s={s}
                 headers={[
-                  l.serviceType || "Service Type",
-                  l.count || "Count",
-                  l.avgValue || "Avg Value",
-                  l.avgHours || "Avg Hours",
+                  l.serviceType || 'Service Type',
+                  l.count || 'Count',
+                  l.avgValue || 'Avg Value',
+                  l.avgHours || 'Avg Hours',
                 ]}
                 widths={[35, 20, 25, 20]}
                 rows={jobAnalyticsData.topServiceTypes.map((t) => [
@@ -666,10 +745,10 @@ export function ReportPDF({
 
           {jobAnalyticsData.dayOfWeek.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.dayOfWeek || "Jobs by Day of Week"}</Text>
+              <Text style={s.sectionTitle}>{l.dayOfWeek || 'Jobs by Day of Week'}</Text>
               <TableBlock
                 s={s}
-                headers={[l.day || "Day", l.count || "Count"]}
+                headers={[l.day || 'Day', l.count || 'Count']}
                 widths={[60, 40]}
                 rows={jobAnalyticsData.dayOfWeek.map((d) => [d.day, String(d.count)])}
               />
@@ -678,10 +757,10 @@ export function ReportPDF({
 
           {jobAnalyticsData.monthlyTrend.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.monthlyTrend || "Monthly Trend"}</Text>
+              <Text style={s.sectionTitle}>{l.monthlyTrend || 'Monthly Trend'}</Text>
               <TableBlock
                 s={s}
-                headers={[l.month || "Month", l.count || "Jobs", l.revenue || "Revenue"]}
+                headers={[l.month || 'Month', l.count || 'Jobs', l.revenue || 'Revenue']}
                 widths={[40, 25, 35]}
                 rows={jobAnalyticsData.monthlyTrend.map((m) => [
                   m.month,
@@ -698,42 +777,49 @@ export function ReportPDF({
       {/* ==================== RETENTION ==================== */}
       {retentionData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.retentionSection || "Customer Retention"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.retentionSection || 'Customer Retention'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.returningCustomers || "Returning", value: String(retentionData.returningCustomers) },
-              { label: l.newCustomers || "New", value: String(retentionData.newCustomers) },
-              { label: l.totalActive || "Total Active", value: String(retentionData.totalActive) },
               {
-                label: l.avgTimeBetweenVisits || "Avg Days Between Visits",
-                value: retentionData.avgTimeBetweenVisits != null
-                  ? `${retentionData.avgTimeBetweenVisits} ${l.days || "days"}`
-                  : "-",
+                label: l.returningCustomers || 'Returning',
+                value: String(retentionData.returningCustomers),
+              },
+              { label: l.newCustomers || 'New', value: String(retentionData.newCustomers) },
+              { label: l.totalActive || 'Total Active', value: String(retentionData.totalActive) },
+              {
+                label: l.avgTimeBetweenVisits || 'Avg Days Between Visits',
+                value:
+                  retentionData.avgTimeBetweenVisits != null
+                    ? `${retentionData.avgTimeBetweenVisits} ${l.days || 'days'}`
+                    : '-',
               },
             ]}
           />
 
           {retentionData.topReturning.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.topReturning || "Top Returning Customers"}</Text>
+              <Text style={s.sectionTitle}>{l.topReturning || 'Top Returning Customers'}</Text>
               <TableBlock
                 s={s}
                 headers={[
-                  l.customer || "Customer",
-                  l.company || "Company",
-                  l.visits || "Visits",
-                  l.totalSpent || "Total Spent",
-                  l.avgDaysBetweenVisits || "Avg Days",
+                  l.customer || 'Customer',
+                  l.company || 'Company',
+                  l.visits || 'Visits',
+                  l.totalSpent || 'Total Spent',
+                  l.avgDaysBetweenVisits || 'Avg Days',
                 ]}
                 widths={[25, 22, 13, 22, 18]}
                 rows={retentionData.topReturning.map((c) => [
                   c.name,
-                  c.company || "-",
+                  c.company || '-',
                   String(c.visitCount),
                   fmt(c.totalSpent),
-                  c.avgTimeBetweenVisits != null ? String(c.avgTimeBetweenVisits) : "-",
+                  c.avgTimeBetweenVisits != null ? String(c.avgTimeBetweenVisits) : '-',
                 ])}
               />
             </View>
@@ -745,37 +831,40 @@ export function ReportPDF({
       {/* ==================== INVENTORY ==================== */}
       {inventoryData && (
         <Page size="A4" style={s.page}>
-          <ReportHeader title={l.reportTitle || "Business Report"} subtitle={l.inventorySection || "Inventory Report"} />
+          <ReportHeader
+            title={l.reportTitle || 'Business Report'}
+            subtitle={l.inventorySection || 'Inventory Report'}
+          />
 
           <SummaryCards
             s={s}
             items={[
-              { label: l.totalParts || "Total Parts", value: String(inventoryData.totalParts) },
-              { label: l.totalItems || "Total Items", value: String(inventoryData.totalItems) },
-              { label: l.totalValue || "Total Value", value: fmt(inventoryData.totalValue) },
-              { label: l.totalSellValue || "Sell Value", value: fmt(inventoryData.totalSellValue) },
+              { label: l.totalParts || 'Total Parts', value: String(inventoryData.totalParts) },
+              { label: l.totalItems || 'Total Items', value: String(inventoryData.totalItems) },
+              { label: l.totalValue || 'Total Value', value: fmt(inventoryData.totalValue) },
+              { label: l.totalSellValue || 'Sell Value', value: fmt(inventoryData.totalSellValue) },
             ]}
           />
 
           {inventoryData.lowStock.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.lowStock || "Low Stock Items"}</Text>
+              <Text style={s.sectionTitle}>{l.lowStock || 'Low Stock Items'}</Text>
               <TableBlock
                 s={s}
                 headers={[
-                  l.name || "Name",
-                  l.partNumber || "Part #",
-                  l.quantity || "Qty",
-                  l.minQuantity || "Min Qty",
-                  l.unitCost || "Unit Cost",
+                  l.name || 'Name',
+                  l.partNumber || 'Part #',
+                  l.quantity || 'Qty',
+                  l.minQuantity || 'Min Qty',
+                  l.unitCost || 'Unit Cost',
                 ]}
                 widths={[30, 20, 15, 15, 20]}
                 rows={inventoryData.lowStock.map((p) => [
                   p.name,
-                  p.partNumber || "-",
-                  String(p.quantity),
-                  p.minQuantity != null ? String(p.minQuantity) : "-",
-                  p.unitCost != null ? fmt(p.unitCost) : "-",
+                  p.partNumber || '-',
+                  formatQuantity(p.quantity, p.unit),
+                  p.minQuantity != null ? formatQuantity(p.minQuantity, p.unit) : '-',
+                  p.unitCost != null ? fmt(p.unitCost) : '-',
                 ])}
               />
             </View>
@@ -788,34 +877,57 @@ export function ReportPDF({
       {vehicleData && (
         <Page size="A4" style={s.page}>
           <ReportHeader
-            title={l.vehiclesSection || "Vehicle Report"}
-            subtitle={`${vehicleData.vehicleInfo.year} ${vehicleData.vehicleInfo.make} ${vehicleData.vehicleInfo.model}${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).length > 0 ? ` — ${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}` : ""}`}
+            title={l.vehiclesSection || 'Vehicle Report'}
+            subtitle={`${vehicleData.vehicleInfo.year} ${vehicleData.vehicleInfo.make} ${vehicleData.vehicleInfo.model}${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).length > 0 ? ` — ${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(' · ')}` : ''}`}
           />
 
-          <View style={{ flexDirection: "row", backgroundColor: grayLight, borderRadius: 4, padding: 10, marginBottom: 14, justifyContent: "space-between" }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: grayLight,
+              borderRadius: 4,
+              padding: 10,
+              marginBottom: 14,
+              justifyContent: 'space-between',
+            }}
+          >
             {[
-              { label: l.totalServices || "Total Services", value: String(vehicleData.summary.totalServices) },
-              { label: l.totalCost || "Total Cost", value: fmt(vehicleData.summary.totalCost) },
-              { label: l.totalPartsUsed || "Parts Used", value: String(vehicleData.summary.totalPartsUsed) },
-              { label: l.totalLaborHours || "Labor Hours", value: vehicleData.summary.totalLaborHours.toFixed(1) },
+              {
+                label: l.totalServices || 'Total Services',
+                value: String(vehicleData.summary.totalServices),
+              },
+              { label: l.totalCost || 'Total Cost', value: fmt(vehicleData.summary.totalCost) },
+              {
+                label: l.totalPartsUsed || 'Parts Used',
+                value: String(vehicleData.summary.totalPartsUsed),
+              },
+              {
+                label: l.totalLaborHours || 'Labor Hours',
+                value: vehicleData.summary.totalLaborHours.toFixed(1),
+              },
             ].map((item, i) => (
-              <View key={i} style={{ alignItems: i === 0 ? "flex-start" : i === 3 ? "flex-end" : "center" }}>
-                <Text style={{ fontSize: 7, color: gray, textTransform: "uppercase", marginBottom: 2 }}>{item.label}</Text>
-                <Text style={{ fontSize: 12, fontFamily: "Roboto-Bold" }}>{item.value}</Text>
+              <View
+                key={i}
+                style={{ alignItems: i === 0 ? 'flex-start' : i === 3 ? 'flex-end' : 'center' }}
+              >
+                <Text
+                  style={{ fontSize: 7, color: gray, textTransform: 'uppercase', marginBottom: 2 }}
+                >
+                  {item.label}
+                </Text>
+                <Text style={{ fontSize: 12, fontFamily: 'Roboto-Bold' }}>{item.value}</Text>
               </View>
             ))}
           </View>
 
           {vehicleData.serviceTypeBreakdown.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.serviceTypeBreakdown || "Expenses by Service Type"}</Text>
+              <Text style={s.sectionTitle}>
+                {l.serviceTypeBreakdown || 'Expenses by Service Type'}
+              </Text>
               <TableBlock
                 s={s}
-                headers={[
-                  l.type || "Type",
-                  l.count || "Count",
-                  l.totalCost || "Cost",
-                ]}
+                headers={[l.type || 'Type', l.count || 'Count', l.totalCost || 'Cost']}
                 widths={[40, 20, 40]}
                 rows={[
                   ...vehicleData.serviceTypeBreakdown.map((item) => [
@@ -824,7 +936,7 @@ export function ReportPDF({
                     fmt(item.totalCost),
                   ]),
                   [
-                    l.totalCost || "Total",
+                    l.totalCost || 'Total',
                     String(vehicleData.summary.totalServices),
                     fmt(vehicleData.summary.totalCost),
                   ],
@@ -835,15 +947,15 @@ export function ReportPDF({
 
           {vehicleData.monthlyCosts.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.monthlyBreakdown || "Monthly Breakdown"}</Text>
+              <Text style={s.sectionTitle}>{l.monthlyBreakdown || 'Monthly Breakdown'}</Text>
               <TableBlock
                 s={s}
                 headers={[
-                  l.month || "Month",
-                  l.partsCostLabel || "Parts Cost",
-                  l.laborCostLabel || "Labor Cost",
-                  l.totalCost || "Total Cost",
-                  l.count || "Jobs",
+                  l.month || 'Month',
+                  l.partsCostLabel || 'Parts Cost',
+                  l.laborCostLabel || 'Labor Cost',
+                  l.totalCost || 'Total Cost',
+                  l.count || 'Jobs',
                 ]}
                 widths={[24, 22, 22, 22, 10]}
                 rows={vehicleData.monthlyCosts.map((m) => [
@@ -859,15 +971,15 @@ export function ReportPDF({
 
           {vehicleData.serviceHistory.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>{l.serviceHistory || "Service History"}</Text>
+              <Text style={s.sectionTitle}>{l.serviceHistory || 'Service History'}</Text>
               <TableBlock
                 s={s}
                 headers={[
-                  l.date || "Date",
-                  l.title || "Title",
-                  l.type || "Type",
-                  l.status || "Status",
-                  l.totalAmount || "Total",
+                  l.date || 'Date',
+                  l.title || 'Title',
+                  l.type || 'Type',
+                  l.status || 'Status',
+                  l.totalAmount || 'Total',
                 ]}
                 widths={[18, 32, 16, 16, 18]}
                 rows={vehicleData.serviceHistory.map((r) => [
@@ -884,5 +996,5 @@ export function ReportPDF({
         </Page>
       )}
     </Document>
-  );
+  )
 }

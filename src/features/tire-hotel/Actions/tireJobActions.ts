@@ -393,7 +393,14 @@ export async function createQuoteFromTireSet(input: unknown) {
       const part = data.inventoryPartId
         ? await db.inventoryPart.findFirst({
             where: { id: data.inventoryPartId, organizationId, isArchived: false },
-            select: { id: true, name: true, partNumber: true, unitCost: true, sellPrice: true },
+            select: {
+              id: true,
+              name: true,
+              partNumber: true,
+              unit: true,
+              unitCost: true,
+              sellPrice: true,
+            },
           })
         : null
 
@@ -469,6 +476,7 @@ export async function createQuoteFromTireSet(input: unknown) {
                       name: part?.name ?? describeSet(set, seasons),
                       partNumber: part?.partNumber ?? null,
                       quantity: lineQuantity,
+                      unit: part?.unit ?? null,
                       unitCost: part?.unitCost ?? 0,
                       unitPrice,
                       total: lineTotal,
@@ -538,7 +546,14 @@ export async function createWorkOrderFromTireSet(input: unknown) {
       const part = data.inventoryPartId
         ? await db.inventoryPart.findFirst({
             where: { id: data.inventoryPartId, organizationId, isArchived: false },
-            select: { id: true, name: true, partNumber: true, unitCost: true, sellPrice: true },
+            select: {
+              id: true,
+              name: true,
+              partNumber: true,
+              unit: true,
+              unitCost: true,
+              sellPrice: true,
+            },
           })
         : null
 
@@ -557,6 +572,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
             name: part?.name ?? describeSet(set, seasons),
             partNumber: part?.partNumber ?? null,
             quantity: lineQuantity,
+            unit: part?.unit ?? null,
             unitPrice,
             unitCost: part?.unitCost ?? 0,
             inventoryPartId: part?.id ?? null,
@@ -624,7 +640,10 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         action: 'tire_set.create_work_order',
         entity: 'ServiceRecord',
         entityId: result.id,
-        details: { key: 'tire_set_create_work_order', params: { ref: result.invoiceNumber ?? result.id } },
+        details: {
+          key: 'tire_set_create_work_order',
+          params: { ref: result.invoiceNumber ?? result.id },
+        },
         metadata: { tireSetId: result.tireSetId },
       }),
     }
@@ -695,7 +714,14 @@ export async function addTireSetToWorkOrder(input: unknown) {
       const part = data.inventoryPartId
         ? await db.inventoryPart.findFirst({
             where: { id: data.inventoryPartId, organizationId, isArchived: false },
-            select: { id: true, name: true, partNumber: true, unitCost: true, sellPrice: true },
+            select: {
+              id: true,
+              name: true,
+              partNumber: true,
+              unit: true,
+              unitCost: true,
+              sellPrice: true,
+            },
           })
         : null
 
@@ -711,6 +737,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
             name: part?.name ?? describeSet(set, seasons),
             partNumber: part?.partNumber ?? null,
             quantity: lineQuantity,
+            unit: part?.unit ?? null,
             unitPrice,
             unitCost: part?.unitCost ?? 0,
             inventoryPartId: part?.id ?? null,
@@ -759,7 +786,13 @@ export async function addTireSetToWorkOrder(input: unknown) {
         action: 'tire_set.add_to_work_order',
         entity: 'ServiceRecord',
         entityId: result.id,
-        details: { key: 'tire_set_add_to_work_order', params: { ref: result.reference ?? result.tireSetId, jobRef: result.invoiceNumber ?? result.id } },
+        details: {
+          key: 'tire_set_add_to_work_order',
+          params: {
+            ref: result.reference ?? result.tireSetId,
+            jobRef: result.invoiceNumber ?? result.id,
+          },
+        },
         metadata: { tireSetId: result.tireSetId },
       }),
     }
@@ -816,7 +849,13 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
         action: 'tire_set.unlink_work_order',
         entity: 'ServiceRecord',
         entityId: result.id,
-        details: { key: 'tire_set_unlink_work_order', params: { ref: result.reference ?? result.tireSetId, jobRef: result.invoiceNumber ?? result.id } },
+        details: {
+          key: 'tire_set_unlink_work_order',
+          params: {
+            ref: result.reference ?? result.tireSetId,
+            jobRef: result.invoiceNumber ?? result.id,
+          },
+        },
         metadata: { tireSetId: result.tireSetId },
       }),
     }

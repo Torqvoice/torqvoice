@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { formatQuantity } from '@/lib/format-quantity'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import {
@@ -63,6 +64,7 @@ interface SearchResult {
     name: string
     partNumber: string | null
     quantity: number
+    unit: string | null
   }[]
   quotes: {
     id: string
@@ -487,7 +489,9 @@ export function SearchCommand() {
                     <div className="flex flex-col">
                       <span>{p.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {[p.partNumber, `${p.quantity} in stock`].filter(Boolean).join(' · ')}
+                        {[p.partNumber, `${formatQuantity(p.quantity, p.unit)} in stock`]
+                          .filter(Boolean)
+                          .join(' · ')}
                       </span>
                     </div>
                   </CommandItem>

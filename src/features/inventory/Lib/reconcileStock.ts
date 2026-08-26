@@ -1,12 +1,12 @@
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma } from '@/generated/prisma/client'
 
 /**
  * A part line that may be linked to an inventory item. Only lines with a
  * non-null `inventoryPartId` move stock; free-text parts are ignored.
  */
 export interface StockPartLine {
-  inventoryPartId?: string | null;
-  quantity: number;
+  inventoryPartId?: string | null
+  quantity: number
 }
 
 /**
@@ -15,40 +15,42 @@ export interface StockPartLine {
  * renaming existing ones.
  */
 export type StockMovementReason =
-  | "service_record"
-  | "service_record_deleted"
-  | "quote_conversion"
-  | "manual_adjustment"
-  | "bulk_markup";
+  | 'service_record'
+  | 'service_record_deleted'
+  | 'quote_conversion'
+  | 'manual_adjustment'
+  | 'bulk_markup'
 
 /**
  * Provenance recorded alongside every movement, so the ledger can answer
  * "where was this part used, and who did it?".
  */
 export interface StockMovementContext {
-  reason: StockMovementReason;
-  userId?: string | null;
+  reason: StockMovementReason
+  userId?: string | null
   /** The job the parts were used on, when there is one. */
-  serviceRecordId?: string | null;
+  serviceRecordId?: string | null
   /**
    * Human-readable job label, denormalised so history stays meaningful after
    * the service record is deleted and `serviceRecordId` is nulled out.
    */
-  serviceRecordLabel?: string | null;
-  note?: string | null;
+  serviceRecordLabel?: string | null
+  note?: string | null
 }
 
 /**
- * Convert a (possibly fractional) part quantity into whole stock units.
+ * Normalise a part quantity before it enters the stock ledger.
  *
- * `InventoryPart.quantity` is an integer column while `ServicePart.quantity`
- * is a float, so we round to the nearest whole unit. Rounding is applied
- * identically to the previous and next sets, so any delta stays internally
- * consistent across create / edit / delete.
+ * Quantities are fractional (0.5 l of oil, 250 g of grease), so no whole-unit
+ * rounding happens here. Values are clamped to 3 decimals instead: that is
+ * precise enough for ml/g while stopping float noise (0.1 + 0.2) from
+ * accumulating drift in `quantity = quantity - delta` over many movements.
+ * Rounding is applied identically to the previous and next sets, so any delta
+ * stays internally consistent across create / edit / delete.
  */
 function stockUnits(quantity: number): number {
-  if (!Number.isFinite(quantity) || quantity <= 0) return 0;
-  return Math.round(quantity);
+  if (!Number.isFinite(quantity) || quantity <= 0) return 0
+  return Math.round(quantity * 1000) / 1000
 }
 
 /**
@@ -86,26 +88,26 @@ export async function reconcileInventoryForParts(
   organizationId: string,
   previous: readonly StockPartLine[],
   next: readonly StockPartLine[],
-  context: StockMovementContext,
+  context: StockMovementContext
 ): Promise<void> {
   // inventoryPartId -> net units to DECREMENT (negative = restock)
-  const netDecrement = new Map<string, number>();
+  const netDecrement = new Map<string, number>()
 
   for (const line of previous) {
-    if (!line.inventoryPartId) continue;
-    const current = netDecrement.get(line.inventoryPartId) ?? 0;
-    netDecrement.set(line.inventoryPartId, current - stockUnits(line.quantity));
+    if (!line.inventoryPartId) continue
+    const current = netDecrement.get(line.inventoryPartId) ?? 0
+    netDecrement.set(line.inventoryPartId, current - stockUnits(line.quantity))
   }
   for (const line of next) {
-    if (!line.inventoryPartId) continue;
-    const current = netDecrement.get(line.inventoryPartId) ?? 0;
-    netDecrement.set(line.inventoryPartId, current + stockUnits(line.quantity));
+    if (!line.inventoryPartId) continue
+    const current = netDecrement.get(line.inventoryPartId) ?? 0
+    netDecrement.set(line.inventoryPartId, current + stockUnits(line.quantity))
   }
 
-  const ledgerRows: Prisma.StockMovementCreateManyInput[] = [];
+  const ledgerRows: Prisma.StockMovementCreateManyInput[] = []
 
   for (const [inventoryPartId, decrement] of netDecrement) {
-    if (decrement === 0) continue;
+    if (decrement === 0) continue
 
     // Atomic, org-scoped, and returns the post-write balance in one round trip.
     const updated = await tx.$queryRaw<{ quantity: number }[]>`
@@ -113,10 +115,10 @@ export async function reconcileInventoryForParts(
       SET "quantity" = "quantity" - ${decrement}, "updatedAt" = NOW()
       WHERE "id" = ${inventoryPartId} AND "organizationId" = ${organizationId}
       RETURNING "quantity"
-    `;
+    `
 
     // No row matched — unknown part, or one belonging to another organization.
-    if (updated.length === 0) continue;
+    if (updated.length === 0) continue
 
     ledgerRows.push({
       inventoryPartId,
@@ -129,11 +131,11 @@ export async function reconcileInventoryForParts(
       serviceRecordId: context.serviceRecordId ?? null,
       serviceRecordLabel: context.serviceRecordLabel ?? null,
       note: context.note ?? null,
-    });
+    })
   }
 
   if (ledgerRows.length > 0) {
-    await tx.stockMovement.createMany({ data: ledgerRows });
+    await tx.stockMovement.createMany({ data: ledgerRows })
   }
 }
 
@@ -156,7 +158,7 @@ export async function recordAbsoluteStockChange(
   organizationId: string,
   inventoryPartId: string,
   newQuantity: number,
-  context: StockMovementContext,
+  context: StockMovementContext
 ): Promise<boolean> {
   const updated = await tx.$queryRaw<{ quantity: number; delta: number }[]>`
     UPDATE "inventory_parts" AS p
@@ -166,12 +168,12 @@ export async function recordAbsoluteStockChange(
       AND p."id" = ${inventoryPartId}
       AND p."organizationId" = ${organizationId}
     RETURNING p."quantity" AS "quantity", (p."quantity" - prev."quantity") AS "delta"
-  `;
+  `
 
-  if (updated.length === 0) return false;
+  if (updated.length === 0) return false
 
-  const delta = Number(updated[0].delta);
-  if (delta === 0) return true;
+  const delta = Number(updated[0].delta)
+  if (delta === 0) return true
 
   await tx.stockMovement.create({
     data: {
@@ -185,7 +187,7 @@ export async function recordAbsoluteStockChange(
       serviceRecordLabel: context.serviceRecordLabel ?? null,
       note: context.note ?? null,
     },
-  });
+  })
 
-  return true;
+  return true
 }

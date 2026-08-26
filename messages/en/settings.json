@@ -831,6 +831,8 @@
     "liters": "liters (L)",
     "miles": "miles (mi)",
     "gallons": "gallons (gal)",
+    "defaultStockUnit": "Default stock unit",
+    "defaultStockUnitHint": "Pre-filled on new inventory parts. Each part can still use its own unit.",
     "saveWorkshop": "Save Workshop Settings",
     "saved": "Workshop settings saved",
     "assignDialogTitle": "Assign to existing work orders?",

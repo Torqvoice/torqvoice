@@ -1,21 +1,18 @@
-"use client";
+'use client'
 
-import { interactiveRow } from '@/lib/interactive-row';
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import type { DateRange } from "react-day-picker";
-import { AppCard } from "@/components/app-card";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { interactiveRow } from '@/lib/interactive-row'
+import { formatQuantity } from '@/lib/format-quantity'
+import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import type { DateRange } from 'react-day-picker'
+import { AppCard } from '@/components/app-card'
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -23,17 +20,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   Loader2,
   BarChart3,
@@ -57,7 +54,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
-} from "lucide-react";
+} from 'lucide-react'
 import {
   getRevenueReport,
   getServiceReport,
@@ -70,7 +67,7 @@ import {
   getTaxReport,
   getPastDueInvoicesReport,
   getVehicleReport,
-} from "@/features/reports/Actions/reportActions";
+} from '@/features/reports/Actions/reportActions'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import type {
   RevenueReport,
@@ -84,17 +81,21 @@ import type {
   TaxReport,
   PastDueInvoicesReport,
   VehicleReportData,
-} from "@/features/reports/Schema/reportTypes";
-import { RevenueBarChart, RevenueTypeDonut } from "@/features/reports/Components/RevenueCharts";
-import { ServiceStatusChart, ServiceTypeDonut } from "@/features/reports/Components/ServiceCharts";
-import { TopCustomersChart } from "@/features/reports/Components/CustomerCharts";
-import { TechnicianBarChart } from "@/features/reports/Components/TechnicianCharts";
-import { PartsDonut } from "@/features/reports/Components/PartsCharts";
-import { DayOfWeekChart, ServiceTypeAnalyticsDonut, MonthlyTrendChart } from "@/features/reports/Components/JobAnalyticsCharts";
-import { RetentionBarChart } from "@/features/reports/Components/RetentionCharts";
-import { TaxBarChart } from "@/features/reports/Components/TaxCharts";
-import { VehicleCostBarChart } from "@/features/reports/Components/VehicleCharts";
-import { VehicleCombobox } from "@/features/quotes/Components/VehicleCombobox";
+} from '@/features/reports/Schema/reportTypes'
+import { RevenueBarChart, RevenueTypeDonut } from '@/features/reports/Components/RevenueCharts'
+import { ServiceStatusChart, ServiceTypeDonut } from '@/features/reports/Components/ServiceCharts'
+import { TopCustomersChart } from '@/features/reports/Components/CustomerCharts'
+import { TechnicianBarChart } from '@/features/reports/Components/TechnicianCharts'
+import { PartsDonut } from '@/features/reports/Components/PartsCharts'
+import {
+  DayOfWeekChart,
+  ServiceTypeAnalyticsDonut,
+  MonthlyTrendChart,
+} from '@/features/reports/Components/JobAnalyticsCharts'
+import { RetentionBarChart } from '@/features/reports/Components/RetentionCharts'
+import { TaxBarChart } from '@/features/reports/Components/TaxCharts'
+import { VehicleCostBarChart } from '@/features/reports/Components/VehicleCharts'
+import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 import {
   exportRevenueCsv,
   exportServicesCsv,
@@ -107,180 +108,214 @@ import {
   exportTaxCsv,
   exportPastDueInvoicesCsv,
   exportVehicleReportCsv,
-} from "@/features/reports/Components/csv-export";
-import { ReportPDF } from "@/features/reports/Components/ReportPDF";
-import { pdf } from "@react-pdf/renderer";
+} from '@/features/reports/Components/csv-export'
+import { ReportPDF } from '@/features/reports/Components/ReportPDF'
+import { pdf } from '@react-pdf/renderer'
 
-type ReportTab = "financial" | "services" | "customers" | "inventory" | "technicians" | "parts" | "job-analytics" | "retention" | "vehicles";
-type FinancialSubTab = "revenue" | "past-due-invoices" | "tax";
-type PastDueSortKey = "customerName" | "amountDue" | "daysPastDue";
-type PastDueSortDir = "asc" | "desc";
+type ReportTab =
+  | 'financial'
+  | 'services'
+  | 'customers'
+  | 'inventory'
+  | 'technicians'
+  | 'parts'
+  | 'job-analytics'
+  | 'retention'
+  | 'vehicles'
+type FinancialSubTab = 'revenue' | 'past-due-invoices' | 'tax'
+type PastDueSortKey = 'customerName' | 'amountDue' | 'daysPastDue'
+type PastDueSortDir = 'asc' | 'desc'
 
 interface ReportsClientProps {
-  currencyCode: string;
-  primaryColor: string;
-  organizationName: string;
+  currencyCode: string
+  primaryColor: string
+  organizationName: string
 }
 
-const VALID_TABS: ReportTab[] = ["financial", "services", "customers", "inventory", "technicians", "parts", "job-analytics", "retention", "vehicles"];
-const VALID_SUB_TABS: FinancialSubTab[] = ["revenue", "past-due-invoices", "tax"];
+const VALID_TABS: ReportTab[] = [
+  'financial',
+  'services',
+  'customers',
+  'inventory',
+  'technicians',
+  'parts',
+  'job-analytics',
+  'retention',
+  'vehicles',
+]
+const VALID_SUB_TABS: FinancialSubTab[] = ['revenue', 'past-due-invoices', 'tax']
 
-export default function ReportsClient({ currencyCode, primaryColor, organizationName }: ReportsClientProps) {
-  const formatCurrency = useFormatCurrency();
-  const t = useTranslations("reports");
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const currentYear = new Date().getFullYear();
+export default function ReportsClient({
+  currencyCode,
+  primaryColor,
+  organizationName,
+}: ReportsClientProps) {
+  const formatCurrency = useFormatCurrency()
+  const t = useTranslations('reports')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const currentYear = new Date().getFullYear()
 
-  const initialTab = (VALID_TABS.includes(searchParams.get("tab") as ReportTab) ? searchParams.get("tab") : "financial") as ReportTab;
-  const initialSubTab = (VALID_SUB_TABS.includes(searchParams.get("subtab") as FinancialSubTab) ? searchParams.get("subtab") : "revenue") as FinancialSubTab;
+  const initialTab = (
+    VALID_TABS.includes(searchParams.get('tab') as ReportTab)
+      ? searchParams.get('tab')
+      : 'financial'
+  ) as ReportTab
+  const initialSubTab = (
+    VALID_SUB_TABS.includes(searchParams.get('subtab') as FinancialSubTab)
+      ? searchParams.get('subtab')
+      : 'revenue'
+  ) as FinancialSubTab
 
-  const [activeTab, setActiveTab] = useState<ReportTab>(initialTab);
-  const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>(initialSubTab);
+  const [activeTab, setActiveTab] = useState<ReportTab>(initialTab)
+  const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>(initialSubTab)
 
-  const updateUrl = useCallback((tab: string, subtab?: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", tab);
-    if (subtab) {
-      params.set("subtab", subtab);
-    } else {
-      params.delete("subtab");
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchParams, router, pathname]);
+  const updateUrl = useCallback(
+    (tab: string, subtab?: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('tab', tab)
+      if (subtab) {
+        params.set('subtab', subtab)
+      } else {
+        params.delete('subtab')
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    },
+    [searchParams, router, pathname]
+  )
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(currentYear, 0, 1),
     to: new Date(),
-  });
-  const [pendingDateRange, setPendingDateRange] = useState<DateRange>(dateRange);
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  })
+  const [pendingDateRange, setPendingDateRange] = useState<DateRange>(dateRange)
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   // Past due invoices state
-  const [pastDueFilter, setPastDueFilter] = useState<string>("all");
-  const [pastDueSortKey, setPastDueSortKey] = useState<PastDueSortKey>("daysPastDue");
-  const [pastDueSortDir, setPastDueSortDir] = useState<PastDueSortDir>("desc");
+  const [pastDueFilter, setPastDueFilter] = useState<string>('all')
+  const [pastDueSortKey, setPastDueSortKey] = useState<PastDueSortKey>('daysPastDue')
+  const [pastDueSortDir, setPastDueSortDir] = useState<PastDueSortDir>('desc')
 
-  const [revenueData, setRevenueData] = useState<RevenueReport | null>(null);
-  const [serviceData, setServiceData] = useState<ServiceReport | null>(null);
-  const [customerData, setCustomerData] = useState<CustomerReport | null>(null);
-  const [inventoryData, setInventoryData] = useState<InventoryReport | null>(null);
-  const [technicianData, setTechnicianData] = useState<TechnicianReport | null>(null);
-  const [partsData, setPartsData] = useState<PartsUsageReport | null>(null);
-  const [jobAnalyticsData, setJobAnalyticsData] = useState<JobAnalyticsReport | null>(null);
-  const [retentionData, setRetentionData] = useState<CustomerRetentionReport | null>(null);
-  const [taxData, setTaxData] = useState<TaxReport | null>(null);
-  const [pastDueData, setPastDueData] = useState<PastDueInvoicesReport | null>(null);
-  const [vehicleData, setVehicleData] = useState<VehicleReportData | null>(null);
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
-  const [historyPage, setHistoryPage] = useState(0);
+  const [revenueData, setRevenueData] = useState<RevenueReport | null>(null)
+  const [serviceData, setServiceData] = useState<ServiceReport | null>(null)
+  const [customerData, setCustomerData] = useState<CustomerReport | null>(null)
+  const [inventoryData, setInventoryData] = useState<InventoryReport | null>(null)
+  const [technicianData, setTechnicianData] = useState<TechnicianReport | null>(null)
+  const [partsData, setPartsData] = useState<PartsUsageReport | null>(null)
+  const [jobAnalyticsData, setJobAnalyticsData] = useState<JobAnalyticsReport | null>(null)
+  const [retentionData, setRetentionData] = useState<CustomerRetentionReport | null>(null)
+  const [taxData, setTaxData] = useState<TaxReport | null>(null)
+  const [pastDueData, setPastDueData] = useState<PastDueInvoicesReport | null>(null)
+  const [vehicleData, setVehicleData] = useState<VehicleReportData | null>(null)
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string>('')
+  const [historyPage, setHistoryPage] = useState(0)
 
   const fmtCurrency = useCallback(
     (value: number) => formatCurrency(value, currencyCode),
-    [currencyCode],
-  );
+    [currencyCode]
+  )
 
-  type FetchableReport = ReportTab | FinancialSubTab;
+  type FetchableReport = ReportTab | FinancialSubTab
 
   const fetchReport = useCallback(
     async (type: FetchableReport, overrideDateRange?: DateRange, overrideVehicleId?: string) => {
-      const range = overrideDateRange ?? dateRange;
-      setLoading(true);
+      const range = overrideDateRange ?? dateRange
+      setLoading(true)
       try {
         const dateParams = {
-          startDate: range.from ? format(range.from, "yyyy-MM-dd") : "",
-          endDate: range.to ? format(range.to, "yyyy-MM-dd") : "",
-        };
+          startDate: range.from ? format(range.from, 'yyyy-MM-dd') : '',
+          endDate: range.to ? format(range.to, 'yyyy-MM-dd') : '',
+        }
         switch (type) {
-          case "revenue": {
-            const result = await getRevenueReport(dateParams);
-            if (result.success && result.data) setRevenueData(result.data);
-            break;
+          case 'revenue': {
+            const result = await getRevenueReport(dateParams)
+            if (result.success && result.data) setRevenueData(result.data)
+            break
           }
-          case "past-due-invoices": {
-            const result = await getPastDueInvoicesReport();
-            if (result.success && result.data) setPastDueData(result.data);
-            break;
+          case 'past-due-invoices': {
+            const result = await getPastDueInvoicesReport()
+            if (result.success && result.data) setPastDueData(result.data)
+            break
           }
-          case "tax": {
-            const result = await getTaxReport(dateParams);
-            if (result.success && result.data) setTaxData(result.data);
-            break;
+          case 'tax': {
+            const result = await getTaxReport(dateParams)
+            if (result.success && result.data) setTaxData(result.data)
+            break
           }
-          case "services": {
-            const result = await getServiceReport(dateParams);
-            if (result.success && result.data) setServiceData(result.data);
-            break;
+          case 'services': {
+            const result = await getServiceReport(dateParams)
+            if (result.success && result.data) setServiceData(result.data)
+            break
           }
-          case "customers": {
-            const result = await getCustomerReport(dateParams);
-            if (result.success && result.data) setCustomerData(result.data);
-            break;
+          case 'customers': {
+            const result = await getCustomerReport(dateParams)
+            if (result.success && result.data) setCustomerData(result.data)
+            break
           }
-          case "inventory": {
-            const result = await getInventoryReport();
-            if (result.success && result.data) setInventoryData(result.data);
-            break;
+          case 'inventory': {
+            const result = await getInventoryReport()
+            if (result.success && result.data) setInventoryData(result.data)
+            break
           }
-          case "technicians": {
-            const result = await getTechnicianReport(dateParams);
-            if (result.success && result.data) setTechnicianData(result.data);
-            break;
+          case 'technicians': {
+            const result = await getTechnicianReport(dateParams)
+            if (result.success && result.data) setTechnicianData(result.data)
+            break
           }
-          case "parts": {
-            const result = await getPartsUsageReport(dateParams);
-            if (result.success && result.data) setPartsData(result.data);
-            break;
+          case 'parts': {
+            const result = await getPartsUsageReport(dateParams)
+            if (result.success && result.data) setPartsData(result.data)
+            break
           }
-          case "job-analytics": {
-            const result = await getJobAnalyticsReport(dateParams);
-            if (result.success && result.data) setJobAnalyticsData(result.data);
-            break;
+          case 'job-analytics': {
+            const result = await getJobAnalyticsReport(dateParams)
+            if (result.success && result.data) setJobAnalyticsData(result.data)
+            break
           }
-          case "retention": {
-            const result = await getCustomerRetentionReport(dateParams);
-            if (result.success && result.data) setRetentionData(result.data);
-            break;
+          case 'retention': {
+            const result = await getCustomerRetentionReport(dateParams)
+            if (result.success && result.data) setRetentionData(result.data)
+            break
           }
-          case "vehicles": {
-            const vid = overrideVehicleId ?? selectedVehicleId;
-            if (!vid) break;
-            const result = await getVehicleReport({ ...dateParams, vehicleId: vid });
-            if (result.success && result.data) setVehicleData(result.data);
-            break;
+          case 'vehicles': {
+            const vid = overrideVehicleId ?? selectedVehicleId
+            if (!vid) break
+            const result = await getVehicleReport({ ...dateParams, vehicleId: vid })
+            if (result.success && result.data) setVehicleData(result.data)
+            break
           }
         }
       } catch (error) {
-        console.error("Failed to fetch report:", error);
+        console.error('Failed to fetch report:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     },
-    [dateRange, selectedVehicleId],
-  );
+    [dateRange, selectedVehicleId]
+  )
 
   // Auto-fetch current tab on mount
   useEffect(() => {
-    if (activeTab === "financial") {
-      fetchReport(financialSubTab);
+    if (activeTab === 'financial') {
+      fetchReport(financialSubTab)
     } else {
-      fetchReport(activeTab);
+      fetchReport(activeTab)
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTabChange = (value: string) => {
-    const tab = value as ReportTab;
-    setActiveTab(tab);
-    updateUrl(tab, tab === "financial" ? financialSubTab : undefined);
-    if (tab === "financial") {
+    const tab = value as ReportTab
+    setActiveTab(tab)
+    updateUrl(tab, tab === 'financial' ? financialSubTab : undefined)
+    if (tab === 'financial') {
       const subDataMap: Record<FinancialSubTab, unknown> = {
         revenue: revenueData,
-        "past-due-invoices": pastDueData,
+        'past-due-invoices': pastDueData,
         tax: taxData,
-      };
+      }
       if (!subDataMap[financialSubTab]) {
-        fetchReport(financialSubTab);
+        fetchReport(financialSubTab)
       }
     } else {
       const dataMap: Record<string, unknown> = {
@@ -289,223 +324,308 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         inventory: inventoryData,
         technicians: technicianData,
         parts: partsData,
-        "job-analytics": jobAnalyticsData,
+        'job-analytics': jobAnalyticsData,
         retention: retentionData,
         vehicles: vehicleData,
-      };
+      }
       if (!dataMap[tab]) {
-        if (tab === "vehicles") {
-          if (selectedVehicleId) fetchReport(tab);
+        if (tab === 'vehicles') {
+          if (selectedVehicleId) fetchReport(tab)
         } else {
-          fetchReport(tab);
+          fetchReport(tab)
         }
       }
     }
-  };
+  }
 
   const handleFinancialSubTabChange = (value: string) => {
-    const subTab = value as FinancialSubTab;
-    setFinancialSubTab(subTab);
-    updateUrl("financial", subTab);
+    const subTab = value as FinancialSubTab
+    setFinancialSubTab(subTab)
+    updateUrl('financial', subTab)
     const subDataMap: Record<FinancialSubTab, unknown> = {
       revenue: revenueData,
-      "past-due-invoices": pastDueData,
+      'past-due-invoices': pastDueData,
       tax: taxData,
-    };
-    if (!subDataMap[subTab]) {
-      fetchReport(subTab);
     }
-  };
+    if (!subDataMap[subTab]) {
+      fetchReport(subTab)
+    }
+  }
 
   const handleRefresh = () => {
-    if (activeTab === "financial") {
-      fetchReport(financialSubTab);
-    } else if (activeTab === "vehicles") {
-      if (selectedVehicleId) fetchReport("vehicles");
+    if (activeTab === 'financial') {
+      fetchReport(financialSubTab)
+    } else if (activeTab === 'vehicles') {
+      if (selectedVehicleId) fetchReport('vehicles')
     } else {
-      fetchReport(activeTab);
+      fetchReport(activeTab)
     }
-  };
+  }
 
   const handleExport = () => {
-    const h = (key: string) => t(`csvHeaders.${key}`);
-    if (activeTab === "financial") {
+    const h = (key: string) => t(`csvHeaders.${key}`)
+    if (activeTab === 'financial') {
       switch (financialSubTab) {
-        case "revenue":
-          if (revenueData) exportRevenueCsv(revenueData, currencyCode, [h("month"), h("revenue"), h("collected"), h("count"), h("partsCost"), h("partsNetProfit"), h("laborRevenue"), h("netProfit")]);
-          break;
-        case "past-due-invoices":
-          if (pastDueData) exportPastDueInvoicesCsv(pastDueData, currencyCode, [h("customer"), h("company"), h("invoiceNumber"), h("totalAmount"), h("amountPaid"), h("amountDue"), h("dueDate"), h("daysPastDue")]);
-          break;
-        case "tax":
-          if (taxData) exportTaxCsv(taxData, currencyCode, [h("month"), h("taxCollected"), h("taxableAmount"), h("invoiceCount")]);
-          break;
+        case 'revenue':
+          if (revenueData)
+            exportRevenueCsv(revenueData, currencyCode, [
+              h('month'),
+              h('revenue'),
+              h('collected'),
+              h('count'),
+              h('partsCost'),
+              h('partsNetProfit'),
+              h('laborRevenue'),
+              h('netProfit'),
+            ])
+          break
+        case 'past-due-invoices':
+          if (pastDueData)
+            exportPastDueInvoicesCsv(pastDueData, currencyCode, [
+              h('customer'),
+              h('company'),
+              h('invoiceNumber'),
+              h('totalAmount'),
+              h('amountPaid'),
+              h('amountDue'),
+              h('dueDate'),
+              h('daysPastDue'),
+            ])
+          break
+        case 'tax':
+          if (taxData)
+            exportTaxCsv(taxData, currencyCode, [
+              h('month'),
+              h('taxCollected'),
+              h('taxableAmount'),
+              h('invoiceCount'),
+            ])
+          break
       }
     } else {
       switch (activeTab) {
-        case "services":
-          if (serviceData) exportServicesCsv(serviceData, [h("category"), h("label"), h("count")]);
-          break;
-        case "customers":
-          if (customerData) exportCustomersCsv(customerData, currencyCode, [h("name"), h("company"), h("services"), h("totalSpent")]);
-          break;
-        case "inventory":
-          if (inventoryData) exportInventoryCsv(inventoryData, currencyCode, [h("name"), h("partNumber"), h("quantity"), h("minQuantity"), h("unitCost")]);
-          break;
-        case "technicians":
-          if (technicianData) exportTechniciansCsv(technicianData, currencyCode, [h("technician"), h("jobs"), h("totalRevenue"), h("avgRevenue"), h("totalHours"), h("avgHours")]);
-          break;
-        case "parts":
-          if (partsData) exportPartsCsv(partsData, currencyCode, [h("partName"), h("partNumber"), h("usageCount"), h("totalQty"), h("totalRevenue"), h("partsCost"), h("netProfit")]);
-          break;
-        case "job-analytics":
-          if (jobAnalyticsData) exportJobAnalyticsCsv(jobAnalyticsData, currencyCode, [h("serviceType"), h("count"), h("avgValue"), h("avgHours")]);
-          break;
-        case "retention":
-          if (retentionData) exportRetentionCsv(retentionData, currencyCode, [h("customer"), h("company"), h("visits"), h("totalSpent"), h("avgDaysBetweenVisits")]);
-          break;
-        case "vehicles":
-          if (vehicleData) exportVehicleReportCsv(vehicleData, currencyCode, [h("date"), h("title"), h("type"), h("status"), h("totalAmount"), h("partsUsed"), h("laborHours")]);
-          break;
+        case 'services':
+          if (serviceData) exportServicesCsv(serviceData, [h('category'), h('label'), h('count')])
+          break
+        case 'customers':
+          if (customerData)
+            exportCustomersCsv(customerData, currencyCode, [
+              h('name'),
+              h('company'),
+              h('services'),
+              h('totalSpent'),
+            ])
+          break
+        case 'inventory':
+          if (inventoryData)
+            exportInventoryCsv(inventoryData, currencyCode, [
+              h('name'),
+              h('partNumber'),
+              h('quantity'),
+              h('minQuantity'),
+              h('unitCost'),
+            ])
+          break
+        case 'technicians':
+          if (technicianData)
+            exportTechniciansCsv(technicianData, currencyCode, [
+              h('technician'),
+              h('jobs'),
+              h('totalRevenue'),
+              h('avgRevenue'),
+              h('totalHours'),
+              h('avgHours'),
+            ])
+          break
+        case 'parts':
+          if (partsData)
+            exportPartsCsv(partsData, currencyCode, [
+              h('partName'),
+              h('partNumber'),
+              h('usageCount'),
+              h('totalQty'),
+              h('totalRevenue'),
+              h('partsCost'),
+              h('netProfit'),
+            ])
+          break
+        case 'job-analytics':
+          if (jobAnalyticsData)
+            exportJobAnalyticsCsv(jobAnalyticsData, currencyCode, [
+              h('serviceType'),
+              h('count'),
+              h('avgValue'),
+              h('avgHours'),
+            ])
+          break
+        case 'retention':
+          if (retentionData)
+            exportRetentionCsv(retentionData, currencyCode, [
+              h('customer'),
+              h('company'),
+              h('visits'),
+              h('totalSpent'),
+              h('avgDaysBetweenVisits'),
+            ])
+          break
+        case 'vehicles':
+          if (vehicleData)
+            exportVehicleReportCsv(vehicleData, currencyCode, [
+              h('date'),
+              h('title'),
+              h('type'),
+              h('status'),
+              h('totalAmount'),
+              h('partsUsed'),
+              h('laborHours'),
+            ])
+          break
       }
     }
-  };
+  }
 
-  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false)
 
   const handlePdfExport = async () => {
-    setPdfLoading(true);
+    setPdfLoading(true)
     try {
-      const from = dateRange.from ? format(dateRange.from, "LLL dd, y") : "";
-      const to = dateRange.to ? format(dateRange.to, "LLL dd, y") : "";
-      const dateRangeStr = from && to ? `${from} – ${to}` : from || to;
+      const from = dateRange.from ? format(dateRange.from, 'LLL dd, y') : ''
+      const to = dateRange.to ? format(dateRange.to, 'LLL dd, y') : ''
+      const dateRangeStr = from && to ? `${from} – ${to}` : from || to
 
       const labels: Record<string, string> = {
-        reportTitle: t("pdf.reportTitle"),
-        revenueSection: t("pdf.revenueSection"),
-        taxSection: t("pdf.taxSection"),
-        pastDueSection: t("pdf.pastDueSection"),
-        servicesSection: t("pdf.servicesSection"),
-        customersSection: t("pdf.customersSection"),
-        techniciansSection: t("pdf.techniciansSection"),
-        partsSection: t("pdf.partsSection"),
-        jobAnalyticsSection: t("pdf.jobAnalyticsSection"),
-        retentionSection: t("pdf.retentionSection"),
-        inventorySection: t("pdf.inventorySection"),
-        monthlyBreakdown: t("pdf.monthlyBreakdown"),
-        revenueByType: t("pdf.revenueByType"),
-        taxByRate: t("pdf.taxByRate"),
-        servicesByStatus: t("pdf.servicesByStatus"),
-        servicesByType: t("pdf.servicesByType"),
-        topCustomers: t("pdf.topCustomers"),
-        topServiceTypes: t("pdf.topServiceTypes"),
-        topReturning: t("pdf.topReturning"),
-        dayOfWeek: t("pdf.dayOfWeek"),
-        monthlyTrend: t("pdf.monthlyTrend"),
-        lowStock: t("pdf.lowStock"),
+        reportTitle: t('pdf.reportTitle'),
+        revenueSection: t('pdf.revenueSection'),
+        taxSection: t('pdf.taxSection'),
+        pastDueSection: t('pdf.pastDueSection'),
+        servicesSection: t('pdf.servicesSection'),
+        customersSection: t('pdf.customersSection'),
+        techniciansSection: t('pdf.techniciansSection'),
+        partsSection: t('pdf.partsSection'),
+        jobAnalyticsSection: t('pdf.jobAnalyticsSection'),
+        retentionSection: t('pdf.retentionSection'),
+        inventorySection: t('pdf.inventorySection'),
+        monthlyBreakdown: t('pdf.monthlyBreakdown'),
+        revenueByType: t('pdf.revenueByType'),
+        taxByRate: t('pdf.taxByRate'),
+        servicesByStatus: t('pdf.servicesByStatus'),
+        servicesByType: t('pdf.servicesByType'),
+        topCustomers: t('pdf.topCustomers'),
+        topServiceTypes: t('pdf.topServiceTypes'),
+        topReturning: t('pdf.topReturning'),
+        dayOfWeek: t('pdf.dayOfWeek'),
+        monthlyTrend: t('pdf.monthlyTrend'),
+        lowStock: t('pdf.lowStock'),
         // common labels
-        revenue: t("pdf.revenue"),
-        collected: t("pdf.collected"),
-        outstanding: t("pdf.outstanding"),
-        services: t("pdf.services"),
-        partsCost: t("pdf.partsCost"),
-        partsNetProfit: t("pdf.partsNetProfit"),
-        laborRevenue: t("pdf.laborRevenue"),
-        netProfit: t("pdf.netProfit"),
-        month: t("pdf.month"),
-        count: t("pdf.count"),
-        type: t("pdf.type"),
-        status: t("pdf.status"),
-        name: t("pdf.name"),
-        company: t("pdf.company"),
-        totalSpent: t("pdf.totalSpent"),
-        customer: t("pdf.customer"),
-        invoiceNumber: t("pdf.invoiceNumber"),
-        totalAmount: t("pdf.totalAmount"),
-        amountDue: t("pdf.amountDue"),
-        dueDate: t("pdf.dueDate"),
-        daysPastDue: t("pdf.daysPastDue"),
-        totalPastDue: t("pdf.totalPastDue"),
-        totalAmountDue: t("pdf.totalAmountDue"),
-        over30: t("pdf.over30"),
-        over60: t("pdf.over60"),
-        over90: t("pdf.over90"),
-        taxCollected: t("pdf.taxCollected"),
-        taxableAmount: t("pdf.taxableAmount"),
-        taxRate: t("pdf.taxRate"),
-        invoiceCount: t("pdf.invoiceCount"),
-        invoices: t("pdf.invoices"),
-        totalServices: t("pdf.totalServices"),
-        totalCustomers: t("pdf.totalCustomers"),
-        activeCustomers: t("pdf.activeCustomers"),
-        technician: t("pdf.technician"),
-        jobs: t("pdf.jobs"),
-        totalRevenue: t("pdf.totalRevenue"),
-        avgRevenue: t("pdf.avgRevenue"),
-        totalHours: t("pdf.totalHours"),
-        avgHours: t("pdf.avgHours"),
-        totalJobs: t("pdf.totalJobs"),
-        partName: t("pdf.partName"),
-        partNumber: t("pdf.partNumber"),
-        usageCount: t("pdf.usageCount"),
-        totalQty: t("pdf.totalQty"),
-        totalPartsRevenue: t("pdf.totalPartsRevenue"),
-        totalPartsCost: t("pdf.totalPartsCost"),
-        totalPartsNetProfit: t("pdf.totalPartsNetProfit"),
-        totalPartsUsed: t("pdf.totalPartsUsed"),
-        serviceType: t("pdf.serviceType"),
-        avgValue: t("pdf.avgValue"),
-        avgJobValue: t("pdf.avgJobValue"),
-        returningCustomers: t("pdf.returningCustomers"),
-        newCustomers: t("pdf.newCustomers"),
-        totalActive: t("pdf.totalActive"),
-        avgTimeBetweenVisits: t("pdf.avgTimeBetweenVisits"),
-        avgDaysBetweenVisits: t("pdf.avgDaysBetweenVisits"),
-        visits: t("pdf.visits"),
-        days: t("pdf.days"),
-        totalParts: t("pdf.totalParts"),
-        totalItems: t("pdf.totalItems"),
-        totalValue: t("pdf.totalValue"),
-        totalSellValue: t("pdf.totalSellValue"),
-        quantity: t("pdf.quantity"),
-        minQuantity: t("pdf.minQuantity"),
-        unitCost: t("pdf.unitCost"),
-        vehiclesSection: t("pdf.vehiclesSection"),
-        vehicleLabel: t("pdf.vehicleLabel"),
-        totalCost: t("pdf.totalCost"),
-        partsCostLabel: t("pdf.partsCostLabel"),
-        laborCostLabel: t("pdf.laborCostLabel"),
-        date: t("pdf.date"),
-        repairs: t("vehicles.repairs"),
-        maintenance: t("vehicles.maintenance"),
-        upgrades: t("vehicles.upgrades"),
-        inspections: t("vehicles.inspections"),
-        totalLaborHours: t("vehicles.totalLaborHours"),
-        serviceHistory: t("vehicles.serviceHistory"),
-        serviceTypeBreakdown: t("vehicles.serviceTypeBreakdown"),
-      };
+        revenue: t('pdf.revenue'),
+        collected: t('pdf.collected'),
+        outstanding: t('pdf.outstanding'),
+        services: t('pdf.services'),
+        partsCost: t('pdf.partsCost'),
+        partsNetProfit: t('pdf.partsNetProfit'),
+        laborRevenue: t('pdf.laborRevenue'),
+        netProfit: t('pdf.netProfit'),
+        month: t('pdf.month'),
+        count: t('pdf.count'),
+        type: t('pdf.type'),
+        status: t('pdf.status'),
+        name: t('pdf.name'),
+        company: t('pdf.company'),
+        totalSpent: t('pdf.totalSpent'),
+        customer: t('pdf.customer'),
+        invoiceNumber: t('pdf.invoiceNumber'),
+        totalAmount: t('pdf.totalAmount'),
+        amountDue: t('pdf.amountDue'),
+        dueDate: t('pdf.dueDate'),
+        daysPastDue: t('pdf.daysPastDue'),
+        totalPastDue: t('pdf.totalPastDue'),
+        totalAmountDue: t('pdf.totalAmountDue'),
+        over30: t('pdf.over30'),
+        over60: t('pdf.over60'),
+        over90: t('pdf.over90'),
+        taxCollected: t('pdf.taxCollected'),
+        taxableAmount: t('pdf.taxableAmount'),
+        taxRate: t('pdf.taxRate'),
+        invoiceCount: t('pdf.invoiceCount'),
+        invoices: t('pdf.invoices'),
+        totalServices: t('pdf.totalServices'),
+        totalCustomers: t('pdf.totalCustomers'),
+        activeCustomers: t('pdf.activeCustomers'),
+        technician: t('pdf.technician'),
+        jobs: t('pdf.jobs'),
+        totalRevenue: t('pdf.totalRevenue'),
+        avgRevenue: t('pdf.avgRevenue'),
+        totalHours: t('pdf.totalHours'),
+        avgHours: t('pdf.avgHours'),
+        totalJobs: t('pdf.totalJobs'),
+        partName: t('pdf.partName'),
+        partNumber: t('pdf.partNumber'),
+        usageCount: t('pdf.usageCount'),
+        totalQty: t('pdf.totalQty'),
+        totalPartsRevenue: t('pdf.totalPartsRevenue'),
+        totalPartsCost: t('pdf.totalPartsCost'),
+        totalPartsNetProfit: t('pdf.totalPartsNetProfit'),
+        totalPartsUsed: t('pdf.totalPartsUsed'),
+        serviceType: t('pdf.serviceType'),
+        avgValue: t('pdf.avgValue'),
+        avgJobValue: t('pdf.avgJobValue'),
+        returningCustomers: t('pdf.returningCustomers'),
+        newCustomers: t('pdf.newCustomers'),
+        totalActive: t('pdf.totalActive'),
+        avgTimeBetweenVisits: t('pdf.avgTimeBetweenVisits'),
+        avgDaysBetweenVisits: t('pdf.avgDaysBetweenVisits'),
+        visits: t('pdf.visits'),
+        days: t('pdf.days'),
+        totalParts: t('pdf.totalParts'),
+        totalItems: t('pdf.totalItems'),
+        totalValue: t('pdf.totalValue'),
+        totalSellValue: t('pdf.totalSellValue'),
+        quantity: t('pdf.quantity'),
+        minQuantity: t('pdf.minQuantity'),
+        unitCost: t('pdf.unitCost'),
+        vehiclesSection: t('pdf.vehiclesSection'),
+        vehicleLabel: t('pdf.vehicleLabel'),
+        totalCost: t('pdf.totalCost'),
+        partsCostLabel: t('pdf.partsCostLabel'),
+        laborCostLabel: t('pdf.laborCostLabel'),
+        date: t('pdf.date'),
+        repairs: t('vehicles.repairs'),
+        maintenance: t('vehicles.maintenance'),
+        upgrades: t('vehicles.upgrades'),
+        inspections: t('vehicles.inspections'),
+        totalLaborHours: t('vehicles.totalLaborHours'),
+        serviceHistory: t('vehicles.serviceHistory'),
+        serviceTypeBreakdown: t('vehicles.serviceTypeBreakdown'),
+      }
 
       // Only include data for the current tab
-      const pdfProps: Record<string, unknown> = {};
-      let filename = "report";
-      if (activeTab === "financial") {
-        if (financialSubTab === "revenue") { pdfProps.revenueData = revenueData; filename = "revenue-report"; }
-        else if (financialSubTab === "tax") { pdfProps.taxData = taxData; filename = "tax-report"; }
-        else if (financialSubTab === "past-due-invoices") { pdfProps.pastDueData = pastDueData; filename = "past-due-invoices-report"; }
+      const pdfProps: Record<string, unknown> = {}
+      let filename = 'report'
+      if (activeTab === 'financial') {
+        if (financialSubTab === 'revenue') {
+          pdfProps.revenueData = revenueData
+          filename = 'revenue-report'
+        } else if (financialSubTab === 'tax') {
+          pdfProps.taxData = taxData
+          filename = 'tax-report'
+        } else if (financialSubTab === 'past-due-invoices') {
+          pdfProps.pastDueData = pastDueData
+          filename = 'past-due-invoices-report'
+        }
       } else {
-        filename = `${activeTab}-report`;
+        filename = `${activeTab}-report`
         const dataMap: Record<string, [string, unknown]> = {
-          services: ["serviceData", serviceData],
-          customers: ["customerData", customerData],
-          inventory: ["inventoryData", inventoryData],
-          technicians: ["technicianData", technicianData],
-          parts: ["partsData", partsData],
-          "job-analytics": ["jobAnalyticsData", jobAnalyticsData],
-          retention: ["retentionData", retentionData],
-          vehicles: ["vehicleData", vehicleData],
-        };
-        const entry = dataMap[activeTab];
-        if (entry) pdfProps[entry[0] as string] = entry[1];
+          services: ['serviceData', serviceData],
+          customers: ['customerData', customerData],
+          inventory: ['inventoryData', inventoryData],
+          technicians: ['technicianData', technicianData],
+          parts: ['partsData', partsData],
+          'job-analytics': ['jobAnalyticsData', jobAnalyticsData],
+          retention: ['retentionData', retentionData],
+          vehicles: ['vehicleData', vehicleData],
+        }
+        const entry = dataMap[activeTab]
+        if (entry) pdfProps[entry[0] as string] = entry[1]
       }
 
       const blob = await pdf(
@@ -516,31 +636,31 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
           organizationName={organizationName}
           labels={labels}
           {...pdfProps}
-        />,
-      ).toBlob();
+        />
+      ).toBlob()
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${filename}-${format(new Date(), "yyyy-MM-dd")}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${filename}-${format(new Date(), 'yyyy-MM-dd')}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
     } catch (error) {
-      console.error("Failed to generate PDF:", error);
+      console.error('Failed to generate PDF:', error)
     } finally {
-      setPdfLoading(false);
+      setPdfLoading(false)
     }
-  };
+  }
 
   // Determine if we have data for the current view
   const hasData = (() => {
-    if (activeTab === "financial") {
+    if (activeTab === 'financial') {
       const subDataMap: Record<FinancialSubTab, unknown> = {
         revenue: revenueData,
-        "past-due-invoices": pastDueData,
+        'past-due-invoices': pastDueData,
         tax: taxData,
-      };
-      return !!subDataMap[financialSubTab];
+      }
+      return !!subDataMap[financialSubTab]
     }
     const dataMap: Record<string, unknown> = {
       services: serviceData,
@@ -548,39 +668,43 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
       inventory: inventoryData,
       technicians: technicianData,
       parts: partsData,
-      "job-analytics": jobAnalyticsData,
+      'job-analytics': jobAnalyticsData,
       retention: retentionData,
       vehicles: vehicleData,
-    };
-    return !!dataMap[activeTab];
-  })();
+    }
+    return !!dataMap[activeTab]
+  })()
 
-  const showDateRange = activeTab !== "inventory" && !(activeTab === "financial" && financialSubTab === "past-due-invoices");
+  const showDateRange =
+    activeTab !== 'inventory' &&
+    !(activeTab === 'financial' && financialSubTab === 'past-due-invoices')
 
   // Past due invoice sorting and filtering
-  const sortedFilteredPastDue = pastDueData ? (() => {
-    let filtered = pastDueData.invoices;
-    if (pastDueFilter === "30") filtered = filtered.filter((inv) => inv.daysPastDue > 30);
-    else if (pastDueFilter === "60") filtered = filtered.filter((inv) => inv.daysPastDue > 60);
-    else if (pastDueFilter === "90") filtered = filtered.filter((inv) => inv.daysPastDue > 90);
+  const sortedFilteredPastDue = pastDueData
+    ? (() => {
+        let filtered = pastDueData.invoices
+        if (pastDueFilter === '30') filtered = filtered.filter((inv) => inv.daysPastDue > 30)
+        else if (pastDueFilter === '60') filtered = filtered.filter((inv) => inv.daysPastDue > 60)
+        else if (pastDueFilter === '90') filtered = filtered.filter((inv) => inv.daysPastDue > 90)
 
-    return [...filtered].sort((a, b) => {
-      let cmp = 0;
-      if (pastDueSortKey === "customerName") cmp = a.customerName.localeCompare(b.customerName);
-      else if (pastDueSortKey === "amountDue") cmp = a.amountDue - b.amountDue;
-      else if (pastDueSortKey === "daysPastDue") cmp = a.daysPastDue - b.daysPastDue;
-      return pastDueSortDir === "asc" ? cmp : -cmp;
-    });
-  })() : [];
+        return [...filtered].sort((a, b) => {
+          let cmp = 0
+          if (pastDueSortKey === 'customerName') cmp = a.customerName.localeCompare(b.customerName)
+          else if (pastDueSortKey === 'amountDue') cmp = a.amountDue - b.amountDue
+          else if (pastDueSortKey === 'daysPastDue') cmp = a.daysPastDue - b.daysPastDue
+          return pastDueSortDir === 'asc' ? cmp : -cmp
+        })
+      })()
+    : []
 
   const toggleSort = (key: PastDueSortKey) => {
     if (pastDueSortKey === key) {
-      setPastDueSortDir((d) => (d === "asc" ? "desc" : "asc"));
+      setPastDueSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
     } else {
-      setPastDueSortKey(key);
-      setPastDueSortDir("desc");
+      setPastDueSortKey(key)
+      setPastDueSortDir('desc')
     }
-  };
+  }
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
@@ -589,70 +713,72 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
         <TabsList className="h-auto max-w-full justify-start overflow-x-auto md:flex-wrap">
           <TabsTrigger value="financial" className="gap-1.5">
             <Landmark className="h-4 w-4" />
-            {t("tabs.financial")}
+            {t('tabs.financial')}
           </TabsTrigger>
           <TabsTrigger value="services" className="gap-1.5">
             <BarChart3 className="h-4 w-4" />
-            {t("tabs.services")}
+            {t('tabs.services')}
           </TabsTrigger>
           <TabsTrigger value="vehicles" className="gap-1.5">
             <Car className="h-4 w-4" />
-            {t("tabs.vehicles")}
+            {t('tabs.vehicles')}
           </TabsTrigger>
           <TabsTrigger value="customers" className="gap-1.5">
             <Users className="h-4 w-4" />
-            {t("tabs.customers")}
+            {t('tabs.customers')}
           </TabsTrigger>
           <TabsTrigger value="inventory" className="gap-1.5">
             <Package className="h-4 w-4" />
-            {t("tabs.inventory")}
+            {t('tabs.inventory')}
           </TabsTrigger>
           <TabsTrigger value="technicians" className="gap-1.5">
             <Wrench className="h-4 w-4" />
-            {t("tabs.technicians")}
+            {t('tabs.technicians')}
           </TabsTrigger>
           <TabsTrigger value="parts" className="gap-1.5">
             <Cog className="h-4 w-4" />
-            {t("tabs.parts")}
+            {t('tabs.parts')}
           </TabsTrigger>
           <TabsTrigger value="job-analytics" className="gap-1.5">
             <CalendarDays className="h-4 w-4" />
-            {t("tabs.jobAnalytics")}
+            {t('tabs.jobAnalytics')}
           </TabsTrigger>
           <TabsTrigger value="retention" className="gap-1.5">
             <UserCheck className="h-4 w-4" />
-            {t("tabs.retention")}
+            {t('tabs.retention')}
           </TabsTrigger>
         </TabsList>
 
         {/* Date range and actions */}
         <div className="flex items-center gap-2 flex-wrap justify-end">
           {showDateRange && (
-            <Popover open={datePickerOpen} onOpenChange={(open) => {
-              setDatePickerOpen(open);
-              if (open) setPendingDateRange(dateRange);
-            }}>
+            <Popover
+              open={datePickerOpen}
+              onOpenChange={(open) => {
+                setDatePickerOpen(open)
+                if (open) setPendingDateRange(dateRange)
+              }}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
                   className={cn(
-                    "h-9 justify-start text-left text-xs font-normal md:h-8 md:text-sm",
-                    !dateRange.from && "text-muted-foreground",
+                    'h-9 justify-start text-left text-xs font-normal md:h-8 md:text-sm',
+                    !dateRange.from && 'text-muted-foreground'
                   )}
                 >
                   <CalendarIcon className="mr-2 h-3.5 w-3.5" />
                   {dateRange.from ? (
                     dateRange.to ? (
                       <>
-                        {format(dateRange.from, "LLL dd, y")} –{" "}
-                        {format(dateRange.to, "LLL dd, y")}
+                        {format(dateRange.from, 'LLL dd, y')} – {format(dateRange.to, 'LLL dd, y')}
                       </>
                     ) : (
-                      format(dateRange.from, "LLL dd, y")
+                      format(dateRange.from, 'LLL dd, y')
                     )
                   ) : (
-                    <span>{t("dateRange.pickDate")}</span>
+                    <span>{t('dateRange.pickDate')}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -660,28 +786,88 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 <div className="flex">
                   <Calendar
                     mode="range"
-                    defaultMonth={dateRange.to ? new Date(dateRange.to.getFullYear(), dateRange.to.getMonth() - 1) : dateRange.from}
+                    defaultMonth={
+                      dateRange.to
+                        ? new Date(dateRange.to.getFullYear(), dateRange.to.getMonth() - 1)
+                        : dateRange.from
+                    }
                     selected={pendingDateRange}
                     onSelect={(range) => range && setPendingDateRange(range)}
                     numberOfMonths={2}
                   />
                   <div className="border-l p-2 flex flex-col gap-0.5 min-w-[130px]">
                     {(() => {
-                      const now = new Date();
-                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                      const now = new Date()
+                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
                       const presets: { label: string; from: Date; to: Date }[] = [
-                        { label: t("dateRange.presets.today"), from: today, to: today },
-                        { label: t("dateRange.presets.yesterday"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1), to: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1) },
-                        { label: t("dateRange.presets.last7"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6), to: today },
-                        { label: t("dateRange.presets.last30"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29), to: today },
-                        { label: t("dateRange.presets.last90"), from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 89), to: today },
-                        { label: t("dateRange.presets.thisMonth"), from: new Date(now.getFullYear(), now.getMonth(), 1), to: today },
-                        { label: t("dateRange.presets.lastMonth"), from: new Date(now.getFullYear(), now.getMonth() - 1, 1), to: new Date(now.getFullYear(), now.getMonth(), 0) },
-                        { label: t("dateRange.presets.thisQuarter"), from: new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1), to: today },
-                        { label: t("dateRange.presets.thisYear"), from: new Date(now.getFullYear(), 0, 1), to: today },
-                        { label: t("dateRange.presets.lastYear"), from: new Date(now.getFullYear() - 1, 0, 1), to: new Date(now.getFullYear() - 1, 11, 31) },
-                        { label: t("dateRange.presets.allTime"), from: new Date(2000, 0, 1), to: today },
-                      ];
+                        { label: t('dateRange.presets.today'), from: today, to: today },
+                        {
+                          label: t('dateRange.presets.yesterday'),
+                          from: new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            today.getDate() - 1
+                          ),
+                          to: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1),
+                        },
+                        {
+                          label: t('dateRange.presets.last7'),
+                          from: new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            today.getDate() - 6
+                          ),
+                          to: today,
+                        },
+                        {
+                          label: t('dateRange.presets.last30'),
+                          from: new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            today.getDate() - 29
+                          ),
+                          to: today,
+                        },
+                        {
+                          label: t('dateRange.presets.last90'),
+                          from: new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            today.getDate() - 89
+                          ),
+                          to: today,
+                        },
+                        {
+                          label: t('dateRange.presets.thisMonth'),
+                          from: new Date(now.getFullYear(), now.getMonth(), 1),
+                          to: today,
+                        },
+                        {
+                          label: t('dateRange.presets.lastMonth'),
+                          from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+                          to: new Date(now.getFullYear(), now.getMonth(), 0),
+                        },
+                        {
+                          label: t('dateRange.presets.thisQuarter'),
+                          from: new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1),
+                          to: today,
+                        },
+                        {
+                          label: t('dateRange.presets.thisYear'),
+                          from: new Date(now.getFullYear(), 0, 1),
+                          to: today,
+                        },
+                        {
+                          label: t('dateRange.presets.lastYear'),
+                          from: new Date(now.getFullYear() - 1, 0, 1),
+                          to: new Date(now.getFullYear() - 1, 11, 31),
+                        },
+                        {
+                          label: t('dateRange.presets.allTime'),
+                          from: new Date(2000, 0, 1),
+                          to: today,
+                        },
+                      ]
                       return presets.map((p) => (
                         <Button
                           key={p.label}
@@ -689,19 +875,19 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                           size="sm"
                           className="justify-start text-xs h-7 px-2"
                           onClick={() => {
-                            const range = { from: p.from, to: p.to };
-                            setDateRange(range);
-                            setDatePickerOpen(false);
-                            if (activeTab === "financial") {
-                              fetchReport(financialSubTab, range);
+                            const range = { from: p.from, to: p.to }
+                            setDateRange(range)
+                            setDatePickerOpen(false)
+                            if (activeTab === 'financial') {
+                              fetchReport(financialSubTab, range)
                             } else {
-                              fetchReport(activeTab, range);
+                              fetchReport(activeTab, range)
                             }
                           }}
                         >
                           {p.label}
                         </Button>
-                      ));
+                      ))
                     })()}
                   </div>
                 </div>
@@ -710,16 +896,16 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     size="sm"
                     disabled={!pendingDateRange.from || !pendingDateRange.to}
                     onClick={() => {
-                      setDateRange(pendingDateRange);
-                      setDatePickerOpen(false);
-                      if (activeTab === "financial") {
-                        fetchReport(financialSubTab, pendingDateRange);
+                      setDateRange(pendingDateRange)
+                      setDatePickerOpen(false)
+                      if (activeTab === 'financial') {
+                        fetchReport(financialSubTab, pendingDateRange)
                       } else {
-                        fetchReport(activeTab, pendingDateRange);
+                        fetchReport(activeTab, pendingDateRange)
                       }
                     }}
                   >
-                    {t("dateRange.apply")}
+                    {t('dateRange.apply')}
                   </Button>
                 </div>
               </PopoverContent>
@@ -730,8 +916,8 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             variant="outline"
             onClick={handleRefresh}
             disabled={loading}
-            aria-label={t("actions.refresh")}
-            title={t("actions.refresh")}
+            aria-label={t('actions.refresh')}
+            title={t('actions.refresh')}
             className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
           >
             {loading ? (
@@ -739,7 +925,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             ) : (
               <>
                 <RefreshCw className="h-4 w-4 md:hidden" />
-                <span className="hidden md:inline">{t("actions.refresh")}</span>
+                <span className="hidden md:inline">{t('actions.refresh')}</span>
               </>
             )}
           </Button>
@@ -749,20 +935,20 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 size="sm"
                 variant="outline"
                 onClick={handleExport}
-                aria-label={t("actions.csv")}
-                title={t("actions.csv")}
+                aria-label={t('actions.csv')}
+                title={t('actions.csv')}
                 className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
               >
                 <Download className="h-4 w-4 md:mr-1.5 md:h-3.5 md:w-3.5" />
-                <span className="hidden md:inline">{t("actions.csv")}</span>
+                <span className="hidden md:inline">{t('actions.csv')}</span>
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={handlePdfExport}
                 disabled={pdfLoading}
-                aria-label={t("actions.pdf")}
-                title={t("actions.pdf")}
+                aria-label={t('actions.pdf')}
+                title={t('actions.pdf')}
                 className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
               >
                 {pdfLoading ? (
@@ -770,7 +956,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 ) : (
                   <FileText className="h-4 w-4 md:mr-1.5 md:h-3.5 md:w-3.5" />
                 )}
-                <span className="hidden md:inline">{t("actions.pdf")}</span>
+                <span className="hidden md:inline">{t('actions.pdf')}</span>
               </Button>
             </>
           )}
@@ -778,7 +964,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
       </div>
 
       {/* Loading skeleton (hidden on vehicles tab — it handles its own) */}
-      {loading && activeTab !== "vehicles" && (
+      {loading && activeTab !== 'vehicles' && (
         <div className="space-y-4">
           <div className="grid gap-2 grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -795,19 +981,23 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
 
       {/* Financial Reports Tab */}
       <TabsContent value="financial">
-        <Tabs value={financialSubTab} onValueChange={handleFinancialSubTabChange} className="space-y-4">
+        <Tabs
+          value={financialSubTab}
+          onValueChange={handleFinancialSubTabChange}
+          className="space-y-4"
+        >
           <TabsList variant="line">
             <TabsTrigger value="revenue" className="gap-1.5">
               <DollarSign className="h-4 w-4" />
-              {t("tabs.revenue")}
+              {t('tabs.revenue')}
             </TabsTrigger>
             <TabsTrigger value="past-due-invoices" className="gap-1.5">
               <Clock className="h-4 w-4" />
-              {t("tabs.pastDueInvoices")}
+              {t('tabs.pastDueInvoices')}
             </TabsTrigger>
             <TabsTrigger value="tax" className="gap-1.5">
               <Receipt className="h-4 w-4" />
-              {t("tabs.tax")}
+              {t('tabs.tax')}
             </TabsTrigger>
           </TabsList>
 
@@ -819,118 +1009,144 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 <div className="grid gap-2 grid-cols-3">
                   <Card>
                     <CardContent className="px-3 py-1.5">
-                      <p className="text-[11px] text-muted-foreground">{t("revenue.revenue")}</p>
-                      <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.totalRevenue)}</p>
+                      <p className="text-[11px] text-muted-foreground">{t('revenue.revenue')}</p>
+                      <p className="text-base font-semibold truncate">
+                        {fmtCurrency(revenueData.summary.totalRevenue)}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="px-3 py-1.5">
-                      <p className="text-[11px] text-muted-foreground">{t("revenue.collected")}</p>
-                      <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.totalCollected)}</p>
+                      <p className="text-[11px] text-muted-foreground">{t('revenue.collected')}</p>
+                      <p className="text-base font-semibold truncate">
+                        {fmtCurrency(revenueData.summary.totalCollected)}
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="px-3 py-1.5">
-                      <p className="text-[11px] text-muted-foreground">{t("revenue.outstanding")}</p>
-                      <p className="text-base font-semibold truncate">{fmtCurrency(revenueData.summary.outstanding)}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {t('revenue.outstanding')}
+                      </p>
+                      <p className="text-base font-semibold truncate">
+                        {fmtCurrency(revenueData.summary.outstanding)}
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
 
                 {/* Net Profit breakdown */}
-                <AppCard
-                  title={t("revenue.netProfit")}
-                >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500" />
-                          <span className="text-sm text-muted-foreground">{t("revenue.partsNetProfit")}</span>
-                        </div>
-                        <span className="text-sm font-medium tabular-nums">{fmtCurrency(revenueData.summary.totalPartsNetProfit)}</span>
+                <AppCard title={t('revenue.netProfit')}>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-green-500" />
+                        <span className="text-sm text-muted-foreground">
+                          {t('revenue.partsNetProfit')}
+                        </span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 rounded-full bg-blue-500" />
-                          <span className="text-sm text-muted-foreground">{t("revenue.laborRevenue")}</span>
-                        </div>
-                        <span className="text-sm font-medium tabular-nums">{fmtCurrency(revenueData.summary.totalLaborRevenue)}</span>
-                      </div>
-                      <div className="border-t pt-3 flex items-center justify-between">
-                        <span className="text-sm font-medium">{t("revenue.netProfit")}</span>
-                        <span className="text-base font-semibold tabular-nums">{fmtCurrency(revenueData.summary.netProfit)}</span>
-                      </div>
+                      <span className="text-sm font-medium tabular-nums">
+                        {fmtCurrency(revenueData.summary.totalPartsNetProfit)}
+                      </span>
                     </div>
-                  </AppCard>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-blue-500" />
+                        <span className="text-sm text-muted-foreground">
+                          {t('revenue.laborRevenue')}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium tabular-nums">
+                        {fmtCurrency(revenueData.summary.totalLaborRevenue)}
+                      </span>
+                    </div>
+                    <div className="border-t pt-3 flex items-center justify-between">
+                      <span className="text-sm font-medium">{t('revenue.netProfit')}</span>
+                      <span className="text-base font-semibold tabular-nums">
+                        {fmtCurrency(revenueData.summary.netProfit)}
+                      </span>
+                    </div>
+                  </div>
+                </AppCard>
 
                 <div className="grid gap-4 lg:grid-cols-5">
-                  <AppCard
-                    title={t("revenue.monthlyRevenue")}
-                    className="lg:col-span-3"
-                  >
-                      <RevenueBarChart
-                        data={revenueData.monthly}
-                        formatCurrency={fmtCurrency}
-                        labels={{ revenue: t("charts.revenue"), collected: t("charts.collected"), netProfit: t("revenue.netProfit") }}
-                      />
-                    </AppCard>
-                  <AppCard
-                    title={t("revenue.revenueByType")}
-                    className="lg:col-span-2"
-                  >
-                      <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
-                    </AppCard>
+                  <AppCard title={t('revenue.monthlyRevenue')} className="lg:col-span-3">
+                    <RevenueBarChart
+                      data={revenueData.monthly}
+                      formatCurrency={fmtCurrency}
+                      labels={{
+                        revenue: t('charts.revenue'),
+                        collected: t('charts.collected'),
+                        netProfit: t('revenue.netProfit'),
+                      }}
+                    />
+                  </AppCard>
+                  <AppCard title={t('revenue.revenueByType')} className="lg:col-span-2">
+                    <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
+                  </AppCard>
                 </div>
 
                 {revenueData.monthly.length > 0 && (
-                  <AppCard
-                    title={t("revenue.monthlyBreakdown")}
-                  >
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t("revenue.tableHeaders.month")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.revenue")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.collected")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.partsCost")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.partsNetProfit")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.laborRevenue")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.netProfit")}</TableHead>
-                            <TableHead className="text-right">{t("revenue.tableHeaders.count")}</TableHead>
+                  <AppCard title={t('revenue.monthlyBreakdown')}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('revenue.tableHeaders.month')}</TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.revenue')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.collected')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.partsCost')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.partsNetProfit')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.laborRevenue')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.netProfit')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('revenue.tableHeaders.count')}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {revenueData.monthly.map((row) => (
+                          <TableRow key={row.month}>
+                            <TableCell className="text-sm">{row.month}</TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.revenue)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.collected)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.partsCost)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.partsNetProfit)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.laborRevenue)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.netProfit)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{row.count}</TableCell>
                           </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {revenueData.monthly.map((row) => (
-                            <TableRow key={row.month}>
-                              <TableCell className="text-sm">{row.month}</TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.revenue)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.collected)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.partsCost)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.partsNetProfit)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.laborRevenue)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.netProfit)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">{row.count}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </AppCard>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </AppCard>
                 )}
               </div>
             )}
-            {!loading && !revenueData && <EmptyState message={t("empty")} />}
+            {!loading && !revenueData && <EmptyState message={t('empty')} />}
           </TabsContent>
 
           {/* Past Due Invoices Sub-Tab */}
@@ -945,9 +1161,13 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <AlertTriangle className="h-4 w-4 text-red-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.totalPastDue")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('pastDueInvoices.totalPastDue')}
+                        </p>
                         <p className="text-lg font-semibold">{pastDueData.summary.totalPastDue}</p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("pastDueInvoices.totalPastDueDesc")}</p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">
+                          {t('pastDueInvoices.totalPastDueDesc')}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -957,9 +1177,15 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <DollarSign className="h-4 w-4 text-amber-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.totalAmountDue")}</p>
-                        <p className="text-lg font-semibold truncate">{fmtCurrency(pastDueData.summary.totalAmountDue)}</p>
-                        <p className="text-[10px] leading-tight text-muted-foreground/70">{t("pastDueInvoices.totalAmountDueDesc")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('pastDueInvoices.totalAmountDue')}
+                        </p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(pastDueData.summary.totalAmountDue)}
+                        </p>
+                        <p className="text-[10px] leading-tight text-muted-foreground/70">
+                          {t('pastDueInvoices.totalAmountDueDesc')}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -969,7 +1195,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <Clock className="h-4 w-4 text-orange-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.over30Days")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('pastDueInvoices.over30Days')}
+                        </p>
                         <p className="text-lg font-semibold">{pastDueData.summary.over30}</p>
                       </div>
                     </CardContent>
@@ -980,7 +1208,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <Clock className="h-4 w-4 text-red-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.over60Days")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('pastDueInvoices.over60Days')}
+                        </p>
                         <p className="text-lg font-semibold">{pastDueData.summary.over60}</p>
                       </div>
                     </CardContent>
@@ -991,7 +1221,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <Clock className="h-4 w-4 text-red-600" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("pastDueInvoices.over90Days")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('pastDueInvoices.over90Days')}
+                        </p>
                         <p className="text-lg font-semibold">{pastDueData.summary.over90}</p>
                       </div>
                     </CardContent>
@@ -1002,16 +1234,18 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 <Card>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-medium">{t("pastDueInvoices.pastDueInvoicesList")}</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        {t('pastDueInvoices.pastDueInvoicesList')}
+                      </CardTitle>
                       <Select value={pastDueFilter} onValueChange={setPastDueFilter}>
                         <SelectTrigger className="w-[160px] h-8 text-sm">
-                          <SelectValue placeholder={t("pastDueInvoices.filterByAge")} />
+                          <SelectValue placeholder={t('pastDueInvoices.filterByAge')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">{t("pastDueInvoices.allPastDue")}</SelectItem>
-                          <SelectItem value="30">{t("pastDueInvoices.30plus")}</SelectItem>
-                          <SelectItem value="60">{t("pastDueInvoices.60plus")}</SelectItem>
-                          <SelectItem value="90">{t("pastDueInvoices.90plus")}</SelectItem>
+                          <SelectItem value="all">{t('pastDueInvoices.allPastDue')}</SelectItem>
+                          <SelectItem value="30">{t('pastDueInvoices.30plus')}</SelectItem>
+                          <SelectItem value="60">{t('pastDueInvoices.60plus')}</SelectItem>
+                          <SelectItem value="90">{t('pastDueInvoices.90plus')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1025,35 +1259,47 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                               <button
                                 type="button"
                                 className="flex items-center gap-1 hover:text-foreground"
-                                onClick={() => toggleSort("customerName")}
+                                onClick={() => toggleSort('customerName')}
                               >
-                                {t("pastDueInvoices.tableHeaders.customer")}
+                                {t('pastDueInvoices.tableHeaders.customer')}
                                 <ArrowUpDown className="h-3 w-3" />
                               </button>
                             </TableHead>
-                            <TableHead className="hidden md:table-cell">{t("pastDueInvoices.tableHeaders.company")}</TableHead>
-                            <TableHead className="hidden lg:table-cell">{t("pastDueInvoices.tableHeaders.invoiceNumber")}</TableHead>
-                            <TableHead className="hidden lg:table-cell">{t("pastDueInvoices.tableHeaders.vehicle")}</TableHead>
+                            <TableHead className="hidden md:table-cell">
+                              {t('pastDueInvoices.tableHeaders.company')}
+                            </TableHead>
+                            <TableHead className="hidden lg:table-cell">
+                              {t('pastDueInvoices.tableHeaders.invoiceNumber')}
+                            </TableHead>
+                            <TableHead className="hidden lg:table-cell">
+                              {t('pastDueInvoices.tableHeaders.vehicle')}
+                            </TableHead>
                             <TableHead className="text-right">
                               <button
                                 type="button"
                                 className="flex items-center gap-1 ml-auto hover:text-foreground"
-                                onClick={() => toggleSort("amountDue")}
+                                onClick={() => toggleSort('amountDue')}
                               >
-                                {t("pastDueInvoices.tableHeaders.amountDue")}
+                                {t('pastDueInvoices.tableHeaders.amountDue')}
                                 <ArrowUpDown className="h-3 w-3" />
                               </button>
                             </TableHead>
-                            <TableHead className="text-right hidden sm:table-cell">{t("pastDueInvoices.tableHeaders.totalAmount")}</TableHead>
-                            <TableHead className="text-right hidden sm:table-cell">{t("pastDueInvoices.tableHeaders.amountPaid")}</TableHead>
-                            <TableHead className="text-right hidden md:table-cell">{t("pastDueInvoices.tableHeaders.dueDate")}</TableHead>
+                            <TableHead className="text-right hidden sm:table-cell">
+                              {t('pastDueInvoices.tableHeaders.totalAmount')}
+                            </TableHead>
+                            <TableHead className="text-right hidden sm:table-cell">
+                              {t('pastDueInvoices.tableHeaders.amountPaid')}
+                            </TableHead>
+                            <TableHead className="text-right hidden md:table-cell">
+                              {t('pastDueInvoices.tableHeaders.dueDate')}
+                            </TableHead>
                             <TableHead className="text-right">
                               <button
                                 type="button"
                                 className="flex items-center gap-1 ml-auto hover:text-foreground"
-                                onClick={() => toggleSort("daysPastDue")}
+                                onClick={() => toggleSort('daysPastDue')}
                               >
-                                {t("pastDueInvoices.tableHeaders.daysPastDue")}
+                                {t('pastDueInvoices.tableHeaders.daysPastDue')}
                                 <ArrowUpDown className="h-3 w-3" />
                               </button>
                             </TableHead>
@@ -1062,20 +1308,48 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <TableBody>
                           {sortedFilteredPastDue.map((inv) => (
                             <TableRow key={inv.id}>
-                              <TableCell className="text-sm font-medium">{inv.customerName}</TableCell>
-                              <TableCell className="text-sm hidden md:table-cell">{inv.customerCompany ?? "-"}</TableCell>
-                              <TableCell className="text-sm hidden lg:table-cell">{inv.invoiceNumber ?? "-"}</TableCell>
-                              <TableCell className="text-sm hidden lg:table-cell">{inv.vehicleInfo}</TableCell>
+                              <TableCell className="text-sm font-medium">
+                                {inv.customerName}
+                              </TableCell>
+                              <TableCell className="text-sm hidden md:table-cell">
+                                {inv.customerCompany ?? '-'}
+                              </TableCell>
+                              <TableCell className="text-sm hidden lg:table-cell">
+                                {inv.invoiceNumber ?? '-'}
+                              </TableCell>
+                              <TableCell className="text-sm hidden lg:table-cell">
+                                {inv.vehicleInfo}
+                              </TableCell>
                               <TableCell className="text-right text-sm font-medium text-red-600 dark:text-red-400">
                                 {fmtCurrency(inv.amountDue)}
                               </TableCell>
-                              <TableCell className="text-right text-sm hidden sm:table-cell">{fmtCurrency(inv.totalAmount)}</TableCell>
-                              <TableCell className="text-right text-sm hidden sm:table-cell">{fmtCurrency(inv.amountPaid)}</TableCell>
-                              <TableCell className="text-right text-sm hidden md:table-cell">{inv.dueDate}</TableCell>
+                              <TableCell className="text-right text-sm hidden sm:table-cell">
+                                {fmtCurrency(inv.totalAmount)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm hidden sm:table-cell">
+                                {fmtCurrency(inv.amountPaid)}
+                              </TableCell>
+                              <TableCell className="text-right text-sm hidden md:table-cell">
+                                {inv.dueDate}
+                              </TableCell>
                               <TableCell className="text-right">
                                 <Badge
-                                  variant={inv.daysPastDue > 90 ? "destructive" : inv.daysPastDue > 60 ? "destructive" : inv.daysPastDue > 30 ? "outline" : "secondary"}
-                                  className={inv.daysPastDue > 60 ? "" : inv.daysPastDue > 30 ? "border-amber-500 text-amber-600 dark:text-amber-400" : ""}
+                                  variant={
+                                    inv.daysPastDue > 90
+                                      ? 'destructive'
+                                      : inv.daysPastDue > 60
+                                        ? 'destructive'
+                                        : inv.daysPastDue > 30
+                                          ? 'outline'
+                                          : 'secondary'
+                                  }
+                                  className={
+                                    inv.daysPastDue > 60
+                                      ? ''
+                                      : inv.daysPastDue > 30
+                                        ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                                        : ''
+                                  }
                                 >
                                   {inv.daysPastDue}d
                                 </Badge>
@@ -1086,14 +1360,14 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                       </Table>
                     ) : (
                       <p className="text-sm text-muted-foreground text-center py-8">
-                        {t("pastDueInvoices.noInvoices")}
+                        {t('pastDueInvoices.noInvoices')}
                       </p>
                     )}
                   </CardContent>
                 </Card>
               </div>
             )}
-            {!loading && !pastDueData && <EmptyState message={t("empty")} />}
+            {!loading && !pastDueData && <EmptyState message={t('empty')} />}
           </TabsContent>
 
           {/* Tax Sub-Tab */}
@@ -1107,7 +1381,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <Receipt className="h-4 w-4 text-amber-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("tax.totalTaxCollected")}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('tax.totalTaxCollected')}
+                        </p>
                         <p className="text-lg font-semibold truncate">
                           {fmtCurrency(taxData.summary.totalTaxCollected)}
                         </p>
@@ -1120,7 +1396,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <DollarSign className="h-4 w-4 text-blue-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("tax.taxableRevenue")}</p>
+                        <p className="text-xs text-muted-foreground">{t('tax.taxableRevenue')}</p>
                         <p className="text-lg font-semibold truncate">
                           {fmtCurrency(taxData.summary.totalTaxableAmount)}
                         </p>
@@ -1133,7 +1409,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                         <BarChart3 className="h-4 w-4 text-violet-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">{t("tax.invoicesWithTax")}</p>
+                        <p className="text-xs text-muted-foreground">{t('tax.invoicesWithTax')}</p>
                         <p className="text-lg font-semibold">{taxData.summary.totalInvoices}</p>
                       </div>
                     </CardContent>
@@ -1141,77 +1417,81 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                 </div>
 
                 {taxData.monthly.length > 0 && (
-                  <AppCard
-                    title={t("tax.monthlyTaxCollected")}
-                  >
-                      <TaxBarChart
-                        data={taxData.monthly}
-                        formatCurrency={fmtCurrency}
-                        labels={{ taxCollected: t("charts.taxCollected") }}
-                      />
-                    </AppCard>
+                  <AppCard title={t('tax.monthlyTaxCollected')}>
+                    <TaxBarChart
+                      data={taxData.monthly}
+                      formatCurrency={fmtCurrency}
+                      labels={{ taxCollected: t('charts.taxCollected') }}
+                    />
+                  </AppCard>
                 )}
 
                 {taxData.byRate.length > 0 && (
-                  <AppCard
-                    title={t("tax.taxByRate")}
-                  >
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t("tax.tableHeaders.taxRate")}</TableHead>
-                            <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
-                            <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
+                  <AppCard title={t('tax.taxByRate')}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('tax.tableHeaders.taxRate')}</TableHead>
+                          <TableHead className="text-right">
+                            {t('tax.tableHeaders.taxCollected')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('tax.tableHeaders.invoices')}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {taxData.byRate.map((row) => (
+                          <TableRow key={row.taxRate}>
+                            <TableCell className="text-sm font-medium">{row.taxRate}%</TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.taxCollected)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
                           </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {taxData.byRate.map((row) => (
-                            <TableRow key={row.taxRate}>
-                              <TableCell className="text-sm font-medium">{row.taxRate}%</TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.taxCollected)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </AppCard>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </AppCard>
                 )}
 
                 {taxData.monthly.length > 0 && (
-                  <AppCard
-                    title={t("tax.monthlyBreakdown")}
-                  >
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t("tax.tableHeaders.month")}</TableHead>
-                            <TableHead className="text-right">{t("tax.tableHeaders.taxCollected")}</TableHead>
-                            <TableHead className="text-right">{t("tax.tableHeaders.taxableAmount")}</TableHead>
-                            <TableHead className="text-right">{t("tax.tableHeaders.invoices")}</TableHead>
+                  <AppCard title={t('tax.monthlyBreakdown')}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('tax.tableHeaders.month')}</TableHead>
+                          <TableHead className="text-right">
+                            {t('tax.tableHeaders.taxCollected')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('tax.tableHeaders.taxableAmount')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('tax.tableHeaders.invoices')}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {taxData.monthly.map((row) => (
+                          <TableRow key={row.month}>
+                            <TableCell className="text-sm">{row.month}</TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.taxCollected)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.taxableAmount)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
                           </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {taxData.monthly.map((row) => (
-                            <TableRow key={row.month}>
-                              <TableCell className="text-sm">{row.month}</TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.taxCollected)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">
-                                {fmtCurrency(row.taxableAmount)}
-                              </TableCell>
-                              <TableCell className="text-right text-sm">{row.invoiceCount}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </AppCard>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </AppCard>
                 )}
               </div>
             )}
-            {!loading && !taxData && <EmptyState message={t("empty")} />}
+            {!loading && !taxData && <EmptyState message={t('empty')} />}
           </TabsContent>
         </Tabs>
       </TabsContent>
@@ -1227,7 +1507,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <BarChart3 className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("services.totalServices")}</p>
+                    <p className="text-xs text-muted-foreground">{t('services.totalServices')}</p>
                     <p className="text-lg font-semibold">{serviceData.totalServices}</p>
                   </div>
                 </CardContent>
@@ -1235,23 +1515,22 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               {serviceData.byStatus.length > 0 && (
-                <AppCard
-                  title={t("services.byStatus")}
-                >
-                    <ServiceStatusChart data={serviceData.byStatus} labels={{ count: t("charts.count") }} />
-                  </AppCard>
+                <AppCard title={t('services.byStatus')}>
+                  <ServiceStatusChart
+                    data={serviceData.byStatus}
+                    labels={{ count: t('charts.count') }}
+                  />
+                </AppCard>
               )}
               {serviceData.byType.length > 0 && (
-                <AppCard
-                  title={t("services.byType")}
-                >
-                    <ServiceTypeDonut data={serviceData.byType} />
-                  </AppCard>
+                <AppCard title={t('services.byType')}>
+                  <ServiceTypeDonut data={serviceData.byType} />
+                </AppCard>
               )}
             </div>
           </div>
         )}
-        {!loading && !serviceData && <EmptyState message={t("empty")} />}
+        {!loading && !serviceData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Customers Tab */}
@@ -1265,7 +1544,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Users className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("customers.total")}</p>
+                    <p className="text-xs text-muted-foreground">{t('customers.total')}</p>
                     <p className="text-lg font-semibold">{customerData.totalCustomers}</p>
                   </div>
                 </CardContent>
@@ -1276,54 +1555,54 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Users className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("customers.active")}</p>
+                    <p className="text-xs text-muted-foreground">{t('customers.active')}</p>
                     <p className="text-lg font-semibold">{customerData.activeCustomers}</p>
                   </div>
                 </CardContent>
               </Card>
             </div>
             {customerData.topCustomers.length > 0 && (
-              <AppCard
-                title={t("customers.topCustomersBySpend")}
-              >
-                  <TopCustomersChart
-                    data={customerData.topCustomers}
-                    formatCurrency={fmtCurrency}
-                    labels={{ totalSpent: t("charts.totalSpent") }}
-                  />
-                </AppCard>
+              <AppCard title={t('customers.topCustomersBySpend')}>
+                <TopCustomersChart
+                  data={customerData.topCustomers}
+                  formatCurrency={fmtCurrency}
+                  labels={{ totalSpent: t('charts.totalSpent') }}
+                />
+              </AppCard>
             )}
             {customerData.topCustomers.length > 0 && (
-              <AppCard
-                title={t("customers.topCustomers")}
-              >
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("customers.tableHeaders.name")}</TableHead>
-                        <TableHead>{t("customers.tableHeaders.company")}</TableHead>
-                        <TableHead className="text-right">{t("customers.tableHeaders.services")}</TableHead>
-                        <TableHead className="text-right">{t("customers.tableHeaders.totalSpent")}</TableHead>
+              <AppCard title={t('customers.topCustomers')}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('customers.tableHeaders.name')}</TableHead>
+                      <TableHead>{t('customers.tableHeaders.company')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('customers.tableHeaders.services')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('customers.tableHeaders.totalSpent')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {customerData.topCustomers.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell className="text-sm font-medium">{row.name}</TableCell>
+                        <TableCell className="text-sm">{row.company ?? '-'}</TableCell>
+                        <TableCell className="text-right text-sm">{row.serviceCount}</TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.totalSpent)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {customerData.topCustomers.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell className="text-sm font-medium">{row.name}</TableCell>
-                          <TableCell className="text-sm">{row.company ?? "-"}</TableCell>
-                          <TableCell className="text-right text-sm">{row.serviceCount}</TableCell>
-                          <TableCell className="text-right text-sm">
-                            {fmtCurrency(row.totalSpent)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </AppCard>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AppCard>
             )}
           </div>
         )}
-        {!loading && !customerData && <EmptyState message={t("empty")} />}
+        {!loading && !customerData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Inventory Tab */}
@@ -1337,7 +1616,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Package className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("inventory.parts")}</p>
+                    <p className="text-xs text-muted-foreground">{t('inventory.parts')}</p>
                     <p className="text-lg font-semibold">{inventoryData.totalParts}</p>
                   </div>
                 </CardContent>
@@ -1348,7 +1627,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Package className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("inventory.items")}</p>
+                    <p className="text-xs text-muted-foreground">{t('inventory.items')}</p>
                     <p className="text-lg font-semibold">{inventoryData.totalItems}</p>
                   </div>
                 </CardContent>
@@ -1359,7 +1638,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <DollarSign className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("inventory.costValue")}</p>
+                    <p className="text-xs text-muted-foreground">{t('inventory.costValue')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalValue)}
                     </p>
@@ -1372,7 +1651,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <DollarSign className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("inventory.sellValue")}</p>
+                    <p className="text-xs text-muted-foreground">{t('inventory.sellValue')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalSellValue)}
                     </p>
@@ -1385,7 +1664,9 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <TrendingUp className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("inventory.potentialMargin")}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('inventory.potentialMargin')}
+                    </p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(inventoryData.totalSellValue - inventoryData.totalValue)}
                     </p>
@@ -1394,46 +1675,50 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {inventoryData.lowStock.length > 0 && (
-              <AppCard
-                title={t("inventory.lowStock")}
-              >
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("inventory.tableHeaders.name")}</TableHead>
-                        <TableHead>{t("inventory.tableHeaders.partNumber")}</TableHead>
-                        <TableHead className="text-right">{t("inventory.tableHeaders.qty")}</TableHead>
-                        <TableHead className="text-right">{t("inventory.tableHeaders.minQty")}</TableHead>
+              <AppCard title={t('inventory.lowStock')}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('inventory.tableHeaders.name')}</TableHead>
+                      <TableHead>{t('inventory.tableHeaders.partNumber')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('inventory.tableHeaders.qty')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('inventory.tableHeaders.minQty')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {inventoryData.lowStock.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell className="text-sm font-medium">{row.name}</TableCell>
+                        <TableCell className="text-sm">{row.partNumber ?? '-'}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge
+                            variant={
+                              row.minQuantity != null && row.quantity <= row.minQuantity
+                                ? 'destructive'
+                                : 'outline'
+                            }
+                          >
+                            {formatQuantity(row.quantity, row.unit)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {row.minQuantity != null
+                            ? formatQuantity(row.minQuantity, row.unit)
+                            : '-'}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {inventoryData.lowStock.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell className="text-sm font-medium">{row.name}</TableCell>
-                          <TableCell className="text-sm">{row.partNumber ?? "-"}</TableCell>
-                          <TableCell className="text-right">
-                            <Badge
-                              variant={
-                                row.minQuantity != null && row.quantity <= row.minQuantity
-                                  ? "destructive"
-                                  : "outline"
-                              }
-                            >
-                              {row.quantity}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right text-sm">
-                            {row.minQuantity ?? "-"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </AppCard>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AppCard>
             )}
           </div>
         )}
-        {!loading && !inventoryData && <EmptyState message={t("empty")} />}
+        {!loading && !inventoryData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Technicians Tab */}
@@ -1447,7 +1732,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Wrench className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("technicians.totalJobs")}</p>
+                    <p className="text-xs text-muted-foreground">{t('technicians.totalJobs')}</p>
                     <p className="text-lg font-semibold">{technicianData.totalJobs}</p>
                   </div>
                 </CardContent>
@@ -1458,7 +1743,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <DollarSign className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("technicians.totalRevenue")}</p>
+                    <p className="text-xs text-muted-foreground">{t('technicians.totalRevenue')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(technicianData.totalRevenue)}
                     </p>
@@ -1467,49 +1752,63 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {technicianData.technicians.length > 0 && (
-              <AppCard
-                title={t("technicians.revenueByTechnician")}
-              >
-                  <TechnicianBarChart
-                    data={technicianData.technicians}
-                    formatCurrency={fmtCurrency}
-                    labels={{ revenue: t("charts.revenue") }}
-                  />
-                </AppCard>
+              <AppCard title={t('technicians.revenueByTechnician')}>
+                <TechnicianBarChart
+                  data={technicianData.technicians}
+                  formatCurrency={fmtCurrency}
+                  labels={{ revenue: t('charts.revenue') }}
+                />
+              </AppCard>
             )}
             {technicianData.technicians.length > 0 && (
-              <AppCard
-                title={t("technicians.technicianBreakdown")}
-              >
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("technicians.tableHeaders.technician")}</TableHead>
-                        <TableHead className="text-right">{t("technicians.tableHeaders.jobs")}</TableHead>
-                        <TableHead className="text-right">{t("technicians.tableHeaders.revenue")}</TableHead>
-                        <TableHead className="text-right">{t("technicians.tableHeaders.avgRevenue")}</TableHead>
-                        <TableHead className="text-right">{t("technicians.tableHeaders.totalHours")}</TableHead>
-                        <TableHead className="text-right">{t("technicians.tableHeaders.avgHours")}</TableHead>
+              <AppCard title={t('technicians.technicianBreakdown')}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('technicians.tableHeaders.technician')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('technicians.tableHeaders.jobs')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('technicians.tableHeaders.revenue')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('technicians.tableHeaders.avgRevenue')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('technicians.tableHeaders.totalHours')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('technicians.tableHeaders.avgHours')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {technicianData.technicians.map((row) => (
+                      <TableRow key={row.techName}>
+                        <TableCell className="text-sm font-medium">{row.techName}</TableCell>
+                        <TableCell className="text-right text-sm">{row.jobCount}</TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.totalRevenue)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.avgRevenue)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {row.totalLaborHours.toFixed(1)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {row.avgHours.toFixed(1)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {technicianData.technicians.map((row) => (
-                        <TableRow key={row.techName}>
-                          <TableCell className="text-sm font-medium">{row.techName}</TableCell>
-                          <TableCell className="text-right text-sm">{row.jobCount}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.totalRevenue)}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.avgRevenue)}</TableCell>
-                          <TableCell className="text-right text-sm">{row.totalLaborHours.toFixed(1)}</TableCell>
-                          <TableCell className="text-right text-sm">{row.avgHours.toFixed(1)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </AppCard>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AppCard>
             )}
           </div>
         )}
-        {!loading && !technicianData && <EmptyState message={t("empty")} />}
+        {!loading && !technicianData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Parts Tab */}
@@ -1523,7 +1822,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Cog className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("parts.partsUsed")}</p>
+                    <p className="text-xs text-muted-foreground">{t('parts.partsUsed')}</p>
                     <p className="text-lg font-semibold">{partsData.totalPartsUsed}</p>
                   </div>
                 </CardContent>
@@ -1534,7 +1833,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <DollarSign className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("parts.partsRevenue")}</p>
+                    <p className="text-xs text-muted-foreground">{t('parts.partsRevenue')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(partsData.totalPartsRevenue)}
                     </p>
@@ -1547,7 +1846,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Package className="h-4 w-4 text-orange-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("parts.partsCost")}</p>
+                    <p className="text-xs text-muted-foreground">{t('parts.partsCost')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(partsData.totalPartsCost)}
                     </p>
@@ -1560,7 +1859,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <TrendingUp className="h-4 w-4 text-green-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("parts.netProfit")}</p>
+                    <p className="text-xs text-muted-foreground">{t('parts.netProfit')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(partsData.totalPartsNetProfit)}
                     </p>
@@ -1569,47 +1868,57 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             {partsData.parts.length > 0 && (
-              <AppCard
-                title={t("parts.topPartsByUsage")}
-              >
-                  <PartsDonut data={partsData.parts} />
-                </AppCard>
+              <AppCard title={t('parts.topPartsByUsage')}>
+                <PartsDonut data={partsData.parts} />
+              </AppCard>
             )}
             {partsData.parts.length > 0 && (
-              <AppCard
-                title={t("parts.partsUsage")}
-              >
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("parts.tableHeaders.partName")}</TableHead>
-                        <TableHead>{t("parts.tableHeaders.partNumber")}</TableHead>
-                        <TableHead className="text-right">{t("parts.tableHeaders.usageCount")}</TableHead>
-                        <TableHead className="text-right">{t("parts.tableHeaders.totalQty")}</TableHead>
-                        <TableHead className="text-right">{t("parts.tableHeaders.revenue")}</TableHead>
-                        <TableHead className="text-right">{t("parts.tableHeaders.cost")}</TableHead>
-                        <TableHead className="text-right">{t("parts.tableHeaders.netProfit")}</TableHead>
+              <AppCard title={t('parts.partsUsage')}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('parts.tableHeaders.partName')}</TableHead>
+                      <TableHead>{t('parts.tableHeaders.partNumber')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('parts.tableHeaders.usageCount')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('parts.tableHeaders.totalQty')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('parts.tableHeaders.revenue')}
+                      </TableHead>
+                      <TableHead className="text-right">{t('parts.tableHeaders.cost')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('parts.tableHeaders.netProfit')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {partsData.parts.map((row) => (
+                      <TableRow key={row.name}>
+                        <TableCell className="text-sm font-medium">{row.name}</TableCell>
+                        <TableCell className="text-sm">{row.partNumber ?? '-'}</TableCell>
+                        <TableCell className="text-right text-sm">{row.usageCount}</TableCell>
+                        <TableCell className="text-right text-sm">{row.totalQuantity}</TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.totalRevenue)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.totalCost)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.netProfit)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {partsData.parts.map((row) => (
-                        <TableRow key={row.name}>
-                          <TableCell className="text-sm font-medium">{row.name}</TableCell>
-                          <TableCell className="text-sm">{row.partNumber ?? "-"}</TableCell>
-                          <TableCell className="text-right text-sm">{row.usageCount}</TableCell>
-                          <TableCell className="text-right text-sm">{row.totalQuantity}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.totalRevenue)}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.totalCost)}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.netProfit)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </AppCard>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AppCard>
             )}
           </div>
         )}
-        {!loading && !partsData && <EmptyState message={t("empty")} />}
+        {!loading && !partsData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Job Analytics Tab */}
@@ -1623,7 +1932,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <BarChart3 className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("jobAnalytics.totalJobs")}</p>
+                    <p className="text-xs text-muted-foreground">{t('jobAnalytics.totalJobs')}</p>
                     <p className="text-lg font-semibold">{jobAnalyticsData.totalJobs}</p>
                   </div>
                 </CardContent>
@@ -1634,7 +1943,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <DollarSign className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("jobAnalytics.avgJobValue")}</p>
+                    <p className="text-xs text-muted-foreground">{t('jobAnalytics.avgJobValue')}</p>
                     <p className="text-lg font-semibold truncate">
                       {fmtCurrency(jobAnalyticsData.avgJobValue)}
                     </p>
@@ -1643,59 +1952,64 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
               </Card>
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
-              <AppCard
-                title={t("jobAnalytics.jobsByDayOfWeek")}
-              >
-                  <DayOfWeekChart data={jobAnalyticsData.dayOfWeek} labels={{ jobs: t("charts.jobs") }} />
-                </AppCard>
+              <AppCard title={t('jobAnalytics.jobsByDayOfWeek')}>
+                <DayOfWeekChart
+                  data={jobAnalyticsData.dayOfWeek}
+                  labels={{ jobs: t('charts.jobs') }}
+                />
+              </AppCard>
               {jobAnalyticsData.topServiceTypes.length > 0 && (
-                <AppCard
-                  title={t("jobAnalytics.serviceTypes")}
-                >
-                    <ServiceTypeAnalyticsDonut data={jobAnalyticsData.topServiceTypes} />
-                  </AppCard>
+                <AppCard title={t('jobAnalytics.serviceTypes')}>
+                  <ServiceTypeAnalyticsDonut data={jobAnalyticsData.topServiceTypes} />
+                </AppCard>
               )}
             </div>
             {jobAnalyticsData.monthlyTrend.length > 0 && (
-              <AppCard
-                title={t("jobAnalytics.monthlyTrend")}
-              >
-                  <MonthlyTrendChart
-                    data={jobAnalyticsData.monthlyTrend}
-                    formatCurrency={fmtCurrency}
-                    labels={{ jobs: t("charts.jobs"), revenue: t("charts.revenue") }}
-                  />
-                </AppCard>
+              <AppCard title={t('jobAnalytics.monthlyTrend')}>
+                <MonthlyTrendChart
+                  data={jobAnalyticsData.monthlyTrend}
+                  formatCurrency={fmtCurrency}
+                  labels={{ jobs: t('charts.jobs'), revenue: t('charts.revenue') }}
+                />
+              </AppCard>
             )}
             {jobAnalyticsData.topServiceTypes.length > 0 && (
-              <AppCard
-                title={t("jobAnalytics.serviceTypeBreakdown")}
-              >
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("jobAnalytics.tableHeaders.type")}</TableHead>
-                        <TableHead className="text-right">{t("jobAnalytics.tableHeaders.count")}</TableHead>
-                        <TableHead className="text-right">{t("jobAnalytics.tableHeaders.avgValue")}</TableHead>
-                        <TableHead className="text-right">{t("jobAnalytics.tableHeaders.avgHours")}</TableHead>
+              <AppCard title={t('jobAnalytics.serviceTypeBreakdown')}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('jobAnalytics.tableHeaders.type')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('jobAnalytics.tableHeaders.count')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('jobAnalytics.tableHeaders.avgValue')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('jobAnalytics.tableHeaders.avgHours')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {jobAnalyticsData.topServiceTypes.map((row) => (
+                      <TableRow key={row.type}>
+                        <TableCell className="text-sm font-medium">{row.type}</TableCell>
+                        <TableCell className="text-right text-sm">{row.count}</TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.avgValue)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {row.avgHours.toFixed(1)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {jobAnalyticsData.topServiceTypes.map((row) => (
-                        <TableRow key={row.type}>
-                          <TableCell className="text-sm font-medium">{row.type}</TableCell>
-                          <TableCell className="text-right text-sm">{row.count}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.avgValue)}</TableCell>
-                          <TableCell className="text-right text-sm">{row.avgHours.toFixed(1)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </AppCard>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AppCard>
             )}
           </div>
         )}
-        {!loading && !jobAnalyticsData && <EmptyState message={t("empty")} />}
+        {!loading && !jobAnalyticsData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Retention Tab */}
@@ -1709,7 +2023,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <UserCheck className="h-4 w-4 text-emerald-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("retention.returning")}</p>
+                    <p className="text-xs text-muted-foreground">{t('retention.returning')}</p>
                     <p className="text-lg font-semibold">{retentionData.returningCustomers}</p>
                   </div>
                 </CardContent>
@@ -1720,7 +2034,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Users className="h-4 w-4 text-blue-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("retention.new")}</p>
+                    <p className="text-xs text-muted-foreground">{t('retention.new')}</p>
                     <p className="text-lg font-semibold">{retentionData.newCustomers}</p>
                   </div>
                 </CardContent>
@@ -1731,7 +2045,7 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <Users className="h-4 w-4 text-violet-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("retention.totalActive")}</p>
+                    <p className="text-xs text-muted-foreground">{t('retention.totalActive')}</p>
                     <p className="text-lg font-semibold">{retentionData.totalActive}</p>
                   </div>
                 </CardContent>
@@ -1742,56 +2056,62 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     <CalendarDays className="h-4 w-4 text-amber-500" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t("retention.avgDaysBetween")}</p>
+                    <p className="text-xs text-muted-foreground">{t('retention.avgDaysBetween')}</p>
                     <p className="text-lg font-semibold">
-                      {retentionData.avgTimeBetweenVisits ?? "-"}
+                      {retentionData.avgTimeBetweenVisits ?? '-'}
                     </p>
                   </div>
                 </CardContent>
               </Card>
             </div>
             {retentionData.topReturning.length > 0 && (
-              <AppCard
-                title={t("retention.topReturningCustomers")}
-              >
-                  <RetentionBarChart
-                    data={retentionData.topReturning}
-                    formatCurrency={fmtCurrency}
-                    labels={{ visits: t("charts.visits"), totalSpent: t("charts.totalSpent") }}
-                  />
-                </AppCard>
+              <AppCard title={t('retention.topReturningCustomers')}>
+                <RetentionBarChart
+                  data={retentionData.topReturning}
+                  formatCurrency={fmtCurrency}
+                  labels={{ visits: t('charts.visits'), totalSpent: t('charts.totalSpent') }}
+                />
+              </AppCard>
             )}
             {retentionData.topReturning.length > 0 && (
-              <AppCard
-                title={t("retention.returningCustomers")}
-              >
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{t("retention.tableHeaders.customer")}</TableHead>
-                        <TableHead>{t("retention.tableHeaders.company")}</TableHead>
-                        <TableHead className="text-right">{t("retention.tableHeaders.visits")}</TableHead>
-                        <TableHead className="text-right">{t("retention.tableHeaders.totalSpent")}</TableHead>
-                        <TableHead className="text-right">{t("retention.tableHeaders.avgDaysBetween")}</TableHead>
+              <AppCard title={t('retention.returningCustomers')}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('retention.tableHeaders.customer')}</TableHead>
+                      <TableHead>{t('retention.tableHeaders.company')}</TableHead>
+                      <TableHead className="text-right">
+                        {t('retention.tableHeaders.visits')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('retention.tableHeaders.totalSpent')}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t('retention.tableHeaders.avgDaysBetween')}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {retentionData.topReturning.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell className="text-sm font-medium">{row.name}</TableCell>
+                        <TableCell className="text-sm">{row.company ?? '-'}</TableCell>
+                        <TableCell className="text-right text-sm">{row.visitCount}</TableCell>
+                        <TableCell className="text-right text-sm">
+                          {fmtCurrency(row.totalSpent)}
+                        </TableCell>
+                        <TableCell className="text-right text-sm">
+                          {row.avgTimeBetweenVisits ?? '-'}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {retentionData.topReturning.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell className="text-sm font-medium">{row.name}</TableCell>
-                          <TableCell className="text-sm">{row.company ?? "-"}</TableCell>
-                          <TableCell className="text-right text-sm">{row.visitCount}</TableCell>
-                          <TableCell className="text-right text-sm">{fmtCurrency(row.totalSpent)}</TableCell>
-                          <TableCell className="text-right text-sm">{row.avgTimeBetweenVisits ?? "-"}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </AppCard>
+                    ))}
+                  </TableBody>
+                </Table>
+              </AppCard>
             )}
           </div>
         )}
-        {!loading && !retentionData && <EmptyState message={t("empty")} />}
+        {!loading && !retentionData && <EmptyState message={t('empty')} />}
       </TabsContent>
 
       {/* Vehicle Reports Tab */}
@@ -1800,19 +2120,19 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
           <VehicleCombobox
             value={selectedVehicleId}
             onChange={(id) => {
-              setSelectedVehicleId(id);
-              setVehicleData(null);
-              setHistoryPage(0);
+              setSelectedVehicleId(id)
+              setVehicleData(null)
+              setHistoryPage(0)
               if (id) {
-                fetchReport("vehicles", undefined, id);
+                fetchReport('vehicles', undefined, id)
               }
             }}
-            placeholder={t("vehicles.selectVehicle")}
+            placeholder={t('vehicles.selectVehicle')}
             noneLabel="—"
           />
         </div>
 
-        {loading && activeTab === "vehicles" && (
+        {loading && activeTab === 'vehicles' && (
           <div className="space-y-4">
             <Skeleton className="h-[72px] rounded-lg" />
             <div className="grid gap-4 lg:grid-cols-5">
@@ -1837,18 +2157,43 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
                     </div>
                     <div className="min-w-0">
                       <p className="text-base font-semibold">
-                        {vehicleData.vehicleInfo.year} {vehicleData.vehicleInfo.make} {vehicleData.vehicleInfo.model}
+                        {vehicleData.vehicleInfo.year} {vehicleData.vehicleInfo.make}{' '}
+                        {vehicleData.vehicleInfo.model}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(" · ")}
+                        {[
+                          vehicleData.vehicleInfo.licensePlate,
+                          vehicleData.vehicleInfo.vin,
+                          vehicleData.vehicleInfo.customerName,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm tabular-nums">
-                    <span><span className="text-muted-foreground">{t("vehicles.totalServices")}:</span> <span className="font-medium">{vehicleData.summary.totalServices}</span></span>
-                    <span><span className="text-muted-foreground">{t("vehicles.totalCost")}:</span> <span className="font-medium">{fmtCurrency(vehicleData.summary.totalCost)}</span></span>
-                    <span><span className="text-muted-foreground">{t("vehicles.totalPartsUsed")}:</span> <span className="font-medium">{vehicleData.summary.totalPartsUsed}</span></span>
-                    <span><span className="text-muted-foreground">{t("vehicles.totalLaborHours")}:</span> <span className="font-medium">{vehicleData.summary.totalLaborHours.toFixed(1)}</span></span>
+                    <span>
+                      <span className="text-muted-foreground">{t('vehicles.totalServices')}:</span>{' '}
+                      <span className="font-medium">{vehicleData.summary.totalServices}</span>
+                    </span>
+                    <span>
+                      <span className="text-muted-foreground">{t('vehicles.totalCost')}:</span>{' '}
+                      <span className="font-medium">
+                        {fmtCurrency(vehicleData.summary.totalCost)}
+                      </span>
+                    </span>
+                    <span>
+                      <span className="text-muted-foreground">{t('vehicles.totalPartsUsed')}:</span>{' '}
+                      <span className="font-medium">{vehicleData.summary.totalPartsUsed}</span>
+                    </span>
+                    <span>
+                      <span className="text-muted-foreground">
+                        {t('vehicles.totalLaborHours')}:
+                      </span>{' '}
+                      <span className="font-medium">
+                        {vehicleData.summary.totalLaborHours.toFixed(1)}
+                      </span>
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -1856,156 +2201,209 @@ export default function ReportsClient({ currencyCode, primaryColor, organization
 
             {/* Charts row */}
             <div className="grid gap-4 lg:grid-cols-5">
-              <AppCard
-                title={t("vehicles.monthlyCosts")}
-                className="lg:col-span-3"
-              >
-                  <VehicleCostBarChart
-                    data={vehicleData.monthlyCosts}
-                    formatCurrency={fmtCurrency}
-                    labels={{ partsCost: t("charts.partsCost"), laborCost: t("charts.laborCost") }}
-                  />
-                </AppCard>
-              <AppCard
-                title={t("vehicles.serviceTypeBreakdown")}
-                className="lg:col-span-2"
-              >
-                  <div className="space-y-3">
-                    {vehicleData.serviceTypeBreakdown.map((item) => {
-                      const pct = vehicleData.summary.totalCost > 0
+              <AppCard title={t('vehicles.monthlyCosts')} className="lg:col-span-3">
+                <VehicleCostBarChart
+                  data={vehicleData.monthlyCosts}
+                  formatCurrency={fmtCurrency}
+                  labels={{ partsCost: t('charts.partsCost'), laborCost: t('charts.laborCost') }}
+                />
+              </AppCard>
+              <AppCard title={t('vehicles.serviceTypeBreakdown')} className="lg:col-span-2">
+                <div className="space-y-3">
+                  {vehicleData.serviceTypeBreakdown.map((item) => {
+                    const pct =
+                      vehicleData.summary.totalCost > 0
                         ? (item.totalCost / vehicleData.summary.totalCost) * 100
-                        : 0;
-                      return (
-                        <div key={item.type}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm capitalize">{item.type}</span>
-                            <span className="text-sm font-medium tabular-nums">{fmtCurrency(item.totalCost)}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-                              <div
-                                className="h-full rounded-full bg-blue-500"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-muted-foreground tabular-nums w-16 text-right">
-                              {item.count} · {pct.toFixed(0)}%
-                            </span>
-                          </div>
+                        : 0
+                    return (
+                      <div key={item.type}>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm capitalize">{item.type}</span>
+                          <span className="text-sm font-medium tabular-nums">
+                            {fmtCurrency(item.totalCost)}
+                          </span>
                         </div>
-                      );
-                    })}
-                    {vehicleData.serviceTypeBreakdown.length > 0 && (
-                      <div className="border-t pt-3 flex items-center justify-between">
-                        <span className="text-sm font-medium">{t("vehicles.totalCost")}</span>
-                        <span className="text-sm font-semibold tabular-nums">{fmtCurrency(vehicleData.summary.totalCost)}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-blue-500"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground tabular-nums w-16 text-right">
+                            {item.count} · {pct.toFixed(0)}%
+                          </span>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </AppCard>
+                    )
+                  })}
+                  {vehicleData.serviceTypeBreakdown.length > 0 && (
+                    <div className="border-t pt-3 flex items-center justify-between">
+                      <span className="text-sm font-medium">{t('vehicles.totalCost')}</span>
+                      <span className="text-sm font-semibold tabular-nums">
+                        {fmtCurrency(vehicleData.summary.totalCost)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </AppCard>
             </div>
 
             {/* Top Parts + Service History side by side on large screens */}
             <div className="grid gap-4 lg:grid-cols-5">
               {vehicleData.topParts.length > 0 && (
-                <AppCard
-                  title={t("vehicles.topParts")}
-                  className="lg:col-span-2"
-                >
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>{t("vehicles.tableHeaders.partName")}</TableHead>
-                          <TableHead className="text-right">{t("vehicles.tableHeaders.quantity")}</TableHead>
-                          <TableHead className="text-right">{t("vehicles.tableHeaders.cost")}</TableHead>
+                <AppCard title={t('vehicles.topParts')} className="lg:col-span-2">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('vehicles.tableHeaders.partName')}</TableHead>
+                        <TableHead className="text-right">
+                          {t('vehicles.tableHeaders.quantity')}
+                        </TableHead>
+                        <TableHead className="text-right">
+                          {t('vehicles.tableHeaders.cost')}
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vehicleData.topParts.map((part, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="text-sm">
+                            <span className="font-medium">{part.name}</span>
+                            {part.partNumber && (
+                              <span className="text-muted-foreground ml-1.5 text-xs">
+                                #{part.partNumber}
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">
+                            {formatQuantity(part.quantity, part.unit)}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">
+                            {fmtCurrency(part.totalCost)}
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {vehicleData.topParts.map((part, i) => (
-                          <TableRow key={i}>
-                            <TableCell className="text-sm">
-                              <span className="font-medium">{part.name}</span>
-                              {part.partNumber && <span className="text-muted-foreground ml-1.5 text-xs">#{part.partNumber}</span>}
-                            </TableCell>
-                            <TableCell className="text-right text-sm">{part.quantity}</TableCell>
-                            <TableCell className="text-right text-sm">{fmtCurrency(part.totalCost)}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </AppCard>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </AppCard>
               )}
 
-              {vehicleData.serviceHistory.length > 0 && (() => {
-                const pageSize = 15;
-                const totalPages = Math.ceil(vehicleData.serviceHistory.length / pageSize);
-                const page = Math.min(historyPage, totalPages - 1);
-                const paged = vehicleData.serviceHistory.slice(page * pageSize, (page + 1) * pageSize);
-                return (
-                  <Card className={cn("", vehicleData.topParts.length > 0 ? "lg:col-span-3" : "lg:col-span-5")}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-medium">{t("vehicles.serviceHistory")}</CardTitle>
-                        {totalPages > 1 && (
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <span>{page * pageSize + 1}–{Math.min((page + 1) * pageSize, vehicleData.serviceHistory.length)} / {vehicleData.serviceHistory.length}</span>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page === 0} onClick={() => setHistoryPage(page - 1)} aria-label={t("pagination.previousPage")}>
-                              <ChevronLeft className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" disabled={page >= totalPages - 1} onClick={() => setHistoryPage(page + 1)} aria-label={t("pagination.nextPage")}>
-                              <ChevronRight className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t("vehicles.tableHeaders.date")}</TableHead>
-                            <TableHead>{t("vehicles.tableHeaders.title")}</TableHead>
-                            <TableHead>{t("vehicles.tableHeaders.type")}</TableHead>
-                            <TableHead className="text-right">{t("vehicles.tableHeaders.totalAmount")}</TableHead>
-                            <TableHead className="text-right hidden sm:table-cell">{t("vehicles.tableHeaders.laborHours")}</TableHead>
-                            <TableHead className="hidden md:table-cell">{t("vehicles.tableHeaders.techName")}</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {paged.map((row) => (
-                            <TableRow
-                              key={row.id}
-                              className="cursor-pointer hover:bg-muted/50"
-                              {...interactiveRow(() => router.push(`/vehicles/${vehicleData.vehicleInfo.id}/service/${row.id}`))}
-                            >
-                              <TableCell className="text-sm text-muted-foreground">{row.date}</TableCell>
-                              <TableCell className="text-sm font-medium">{row.title}</TableCell>
-                              <TableCell className="text-sm">
-                                <Badge variant="secondary">{row.type}</Badge>
-                              </TableCell>
-                              <TableCell className="text-right text-sm">{fmtCurrency(row.totalAmount)}</TableCell>
-                              <TableCell className="text-right text-sm hidden sm:table-cell">{row.laborHours.toFixed(1)}</TableCell>
-                              <TableCell className="text-sm hidden md:table-cell">{row.techName ?? "-"}</TableCell>
+              {vehicleData.serviceHistory.length > 0 &&
+                (() => {
+                  const pageSize = 15
+                  const totalPages = Math.ceil(vehicleData.serviceHistory.length / pageSize)
+                  const page = Math.min(historyPage, totalPages - 1)
+                  const paged = vehicleData.serviceHistory.slice(
+                    page * pageSize,
+                    (page + 1) * pageSize
+                  )
+                  return (
+                    <Card
+                      className={cn(
+                        '',
+                        vehicleData.topParts.length > 0 ? 'lg:col-span-3' : 'lg:col-span-5'
+                      )}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm font-medium">
+                            {t('vehicles.serviceHistory')}
+                          </CardTitle>
+                          {totalPages > 1 && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <span>
+                                {page * pageSize + 1}–
+                                {Math.min((page + 1) * pageSize, vehicleData.serviceHistory.length)}{' '}
+                                / {vehicleData.serviceHistory.length}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                disabled={page === 0}
+                                onClick={() => setHistoryPage(page - 1)}
+                                aria-label={t('pagination.previousPage')}
+                              >
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                disabled={page >= totalPages - 1}
+                                onClick={() => setHistoryPage(page + 1)}
+                                aria-label={t('pagination.nextPage')}
+                              >
+                                <ChevronRight className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>{t('vehicles.tableHeaders.date')}</TableHead>
+                              <TableHead>{t('vehicles.tableHeaders.title')}</TableHead>
+                              <TableHead>{t('vehicles.tableHeaders.type')}</TableHead>
+                              <TableHead className="text-right">
+                                {t('vehicles.tableHeaders.totalAmount')}
+                              </TableHead>
+                              <TableHead className="text-right hidden sm:table-cell">
+                                {t('vehicles.tableHeaders.laborHours')}
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell">
+                                {t('vehicles.tableHeaders.techName')}
+                              </TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
-                );
-              })()}
+                          </TableHeader>
+                          <TableBody>
+                            {paged.map((row) => (
+                              <TableRow
+                                key={row.id}
+                                className="cursor-pointer hover:bg-muted/50"
+                                {...interactiveRow(() =>
+                                  router.push(
+                                    `/vehicles/${vehicleData.vehicleInfo.id}/service/${row.id}`
+                                  )
+                                )}
+                              >
+                                <TableCell className="text-sm text-muted-foreground">
+                                  {row.date}
+                                </TableCell>
+                                <TableCell className="text-sm font-medium">{row.title}</TableCell>
+                                <TableCell className="text-sm">
+                                  <Badge variant="secondary">{row.type}</Badge>
+                                </TableCell>
+                                <TableCell className="text-right text-sm">
+                                  {fmtCurrency(row.totalAmount)}
+                                </TableCell>
+                                <TableCell className="text-right text-sm hidden sm:table-cell">
+                                  {row.laborHours.toFixed(1)}
+                                </TableCell>
+                                <TableCell className="text-sm hidden md:table-cell">
+                                  {row.techName ?? '-'}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  )
+                })()}
             </div>
           </div>
         )}
         {!loading && !vehicleData && !selectedVehicleId && (
-          <EmptyState message={t("vehicles.selectVehiclePrompt")} />
+          <EmptyState message={t('vehicles.selectVehiclePrompt')} />
         )}
-        {!loading && !vehicleData && selectedVehicleId && (
-          <EmptyState message={t("empty")} />
-        )}
+        {!loading && !vehicleData && selectedVehicleId && <EmptyState message={t('empty')} />}
       </TabsContent>
     </Tabs>
-  );
+  )
 }
 
 function EmptyState({ message }: { message: string }) {
@@ -2013,10 +2411,8 @@ function EmptyState({ message }: { message: string }) {
     <Card>
       <CardContent className="flex flex-col items-center justify-center py-12">
         <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">
-          {message}
-        </p>
+        <p className="text-muted-foreground">{message}</p>
       </CardContent>
     </Card>
-  );
+  )
 }

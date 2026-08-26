@@ -831,6 +831,8 @@
     "liters": "litre (L)",
     "miles": "mil (mi)",
     "gallons": "galon (gal)",
+    "defaultStockUnit": "Varsayılan stok birimi",
+    "defaultStockUnitHint": "Yeni stok parçalarında önceden doldurulur. Her parça yine de kendi birimini kullanabilir.",
     "saveWorkshop": "Atölye Ayarlarını Kaydet",
     "saved": "Atölye ayarları kaydedildi",
     "assignDialogTitle": "Mevcut iş emirlerine ata?",

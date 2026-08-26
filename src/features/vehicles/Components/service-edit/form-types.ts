@@ -10,6 +10,7 @@ export interface InventoryPartOption {
   barcode: string | null
   name: string
   description: string | null
+  unit: string | null
   unitCost: number
   sellPrice: number
   quantity: number

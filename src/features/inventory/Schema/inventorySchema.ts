@@ -1,37 +1,43 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const createInventoryPartSchema = z.object({
-  name: z.string().min(1, "Part name is required"),
+  name: z.string().min(1, 'Part name is required'),
   partNumber: z.string().optional(),
   barcode: z.string().optional(),
   description: z.string().optional(),
   category: z.string().optional(),
-  quantity: z.coerce.number().int().min(0, "Quantity must be 0 or more").default(0),
-  minQuantity: z.coerce.number().int().min(0, "Min quantity must be 0 or more").default(0),
-  unitCost: z.coerce.number().min(0, "Unit cost must be 0 or more").default(0),
-  sellPrice: z.coerce.number().min(0, "Sell price must be 0 or more").default(0),
+  quantity: z.coerce.number().min(0, 'Quantity must be 0 or more').default(0),
+  minQuantity: z.coerce.number().min(0, 'Min quantity must be 0 or more').default(0),
+  unit: z.string().max(20).optional(),
+  unitCost: z.coerce.number().min(0, 'Unit cost must be 0 or more').default(0),
+  sellPrice: z.coerce.number().min(0, 'Sell price must be 0 or more').default(0),
   supplier: z.string().optional(),
   supplierPhone: z.string().optional(),
   supplierEmail: z.string().optional(),
-  supplierUrl: z.string().url().optional().or(z.literal("")),
-  gallery: z.array(z.object({
-    id: z.string().optional(),
-    url: z.string(),
-    fileName: z.string().optional(),
-    description: z.string().optional(),
-    sortOrder: z.number().int().default(0),
-  })).optional().default([]),
+  supplierUrl: z.string().url().optional().or(z.literal('')),
+  gallery: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        url: z.string(),
+        fileName: z.string().optional(),
+        description: z.string().optional(),
+        sortOrder: z.number().int().default(0),
+      })
+    )
+    .optional()
+    .default([]),
   location: z.string().optional(),
-});
+})
 
 export const updateInventoryPartSchema = createInventoryPartSchema.partial().extend({
   id: z.string(),
-});
+})
 
 export const adjustStockSchema = z.object({
   id: z.string(),
-  adjustment: z.number().int(),
-});
+  adjustment: z.number(),
+})
 
-export type CreateInventoryPartInput = z.infer<typeof createInventoryPartSchema>;
-export type UpdateInventoryPartInput = z.infer<typeof updateInventoryPartSchema>;
+export type CreateInventoryPartInput = z.infer<typeof createInventoryPartSchema>
+export type UpdateInventoryPartInput = z.infer<typeof updateInventoryPartSchema>

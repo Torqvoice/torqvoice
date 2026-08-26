@@ -45,6 +45,7 @@ export interface QuoteRecord {
     partNumber: string | null
     name: string
     quantity: number
+    unit?: string | null
     unitCost?: number
     markupPercent?: number
     unitPrice: number
@@ -94,6 +95,7 @@ export const emptyPart = (): QuotePartInput => ({
   partNumber: '',
   name: '',
   quantity: 1,
+  unit: null,
   unitCost: 0,
   markupPercent: 0,
   unitPrice: 0,

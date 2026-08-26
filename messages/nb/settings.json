@@ -831,6 +831,8 @@
     "liters": "liter (L)",
     "miles": "miles (mi)",
     "gallons": "gallons (gal)",
+    "defaultStockUnit": "Standard lagerenhet",
+    "defaultStockUnitHint": "Fylles ut automatisk for nye lagerdeler. Hver del kan fortsatt ha sin egen enhet.",
     "saveWorkshop": "Lagre verkstedinnstillinger",
     "saved": "Verkstedinnstillinger lagret",
     "assignDialogTitle": "Tildel til eksisterende arbeidsordre?",

@@ -1,5 +1,6 @@
 import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
+import { formatQuantity } from '@/lib/format-quantity'
 import { netLineTotal } from '@/lib/tax'
 import { getFontBold } from './styles'
 import type { InvoiceData } from './types'
@@ -61,7 +62,7 @@ export function PartsTable({
               <Text style={{ ...styles.tableCell, width: '15%' }}>{part.partNumber || '-'}</Text>
               <Text style={{ ...styles.tableCell, width: '35%' }}>{part.name}</Text>
               <Text style={{ ...styles.tableCell, width: '12%', textAlign: 'right' }}>
-                {part.quantity}
+                {formatQuantity(part.quantity, part.unit)}
               </Text>
               <Text style={{ ...styles.tableCell, width: '18%', textAlign: 'right' }}>
                 {formatCurrency(netUnitPrice, currencyCode, currencyFormat)}

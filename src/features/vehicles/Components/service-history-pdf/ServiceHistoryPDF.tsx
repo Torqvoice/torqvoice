@@ -18,7 +18,13 @@ interface ServiceHistoryRecord {
   invoiceNumber: string | null
   cost: number
   totalAmount: number
-  partItems: { name: string; quantity: number; unitPrice: number; total: number }[]
+  partItems: {
+    name: string
+    quantity: number
+    unit: string | null
+    unitPrice: number
+    total: number
+  }[]
   laborItems: { description: string; hours: number; rate: number; total: number }[]
 }
 

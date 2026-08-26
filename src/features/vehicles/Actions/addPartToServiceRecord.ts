@@ -13,6 +13,7 @@ export async function addPartToServiceRecord(input: {
   partNumber?: string
   name: string
   quantity: number
+  unit?: string | null
   unitPrice: number
   total: number
   unitCost: number
@@ -44,6 +45,7 @@ export async function addPartToServiceRecord(input: {
             partNumber: input.partNumber || null,
             name: input.name,
             quantity: input.quantity,
+            unit: input.unit || null,
             unitPrice: input.unitPrice,
             total: input.total,
             unitCost: input.unitCost,

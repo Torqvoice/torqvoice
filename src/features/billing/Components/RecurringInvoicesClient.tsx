@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { useFormatDate } from "@/lib/use-format-date";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -15,128 +15,113 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { DateInput } from "@/components/ui/date-input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { DateInput } from '@/components/ui/date-input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { TableContextMenuHint } from "@/components/table-context-menu-hint";
-import { TableCellLink } from "@/components/table-cell-link";
-import {
-  Car,
-  Loader2,
-  Plus,
-  Pause,
-  Play,
-  Trash2,
-  User,
-  Zap,
-  X,
-} from "lucide-react";
+} from '@/components/ui/context-menu'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { TableCellLink } from '@/components/table-cell-link'
+import { Car, Loader2, Plus, Pause, Play, Trash2, User, Zap, X } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { calculateTotals } from "@/lib/tax";
+import { calculateTotals } from '@/lib/tax'
 import {
   createRecurringInvoice,
   toggleRecurringInvoice,
   deleteRecurringInvoice,
   processRecurringInvoices,
-} from "../Actions/recurringInvoiceActions";
-import { toast } from "sonner";
+} from '../Actions/recurringInvoiceActions'
+import { toast } from 'sonner'
 
 interface Vehicle {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  customer: { id: string; name: string } | null;
+  id: string
+  make: string
+  model: string
+  year: number
+  customer: { id: string; name: string } | null
 }
 
 interface TemplatePart {
-  id: string;
-  name: string;
-  partNumber: string | null;
-  quantity: number;
-  unitPrice: number;
+  id: string
+  name: string
+  partNumber: string | null
+  quantity: number
+  unitPrice: number
 }
 
 interface TemplateLabor {
-  id: string;
-  description: string;
-  hours: number;
-  rate: number;
+  id: string
+  description: string
+  hours: number
+  rate: number
 }
 
 interface RecurringInvoice {
-  id: string;
-  title: string;
-  description: string | null;
-  frequency: string;
-  nextRunDate: Date;
-  endDate: Date | null;
-  isActive: boolean;
-  lastRunAt: Date | null;
-  runCount: number;
-  type: string;
-  cost: number;
-  taxRate: number;
-  taxInclusive: boolean;
-  invoiceNotes: string | null;
-  vehicleId: string;
+  id: string
+  title: string
+  description: string | null
+  frequency: string
+  nextRunDate: Date
+  endDate: Date | null
+  isActive: boolean
+  lastRunAt: Date | null
+  runCount: number
+  type: string
+  cost: number
+  taxRate: number
+  taxInclusive: boolean
+  invoiceNotes: string | null
+  vehicleId: string
   vehicle: {
-    id: string;
-    make: string;
-    model: string;
-    year: number;
-    customer: { id: string; name: string } | null;
-  };
-  templateParts: TemplatePart[];
-  templateLabor: TemplateLabor[];
+    id: string
+    make: string
+    model: string
+    year: number
+    customer: { id: string; name: string } | null
+  }
+  templateParts: TemplatePart[]
+  templateLabor: TemplateLabor[]
 }
 
 interface RecurringInvoicesClientProps {
-  invoices: RecurringInvoice[];
-  vehicles: Vehicle[];
-  currencyCode: string;
+  invoices: RecurringInvoice[]
+  vehicles: Vehicle[]
+  currencyCode: string
 }
 
 const SERVICE_TYPES = [
-  { value: "maintenance", titleKey: "recurring.serviceTypeMaintenance" },
-  { value: "repair", titleKey: "recurring.serviceTypeRepair" },
-  { value: "inspection", titleKey: "recurring.serviceTypeInspection" },
-  { value: "upgrade", titleKey: "recurring.serviceTypeUpgrade" },
-] as const;
+  { value: 'maintenance', titleKey: 'recurring.serviceTypeMaintenance' },
+  { value: 'repair', titleKey: 'recurring.serviceTypeRepair' },
+  { value: 'inspection', titleKey: 'recurring.serviceTypeInspection' },
+  { value: 'upgrade', titleKey: 'recurring.serviceTypeUpgrade' },
+] as const
 
 interface PartRow {
-  name: string;
-  partNumber: string;
-  quantity: number;
-  unitPrice: number;
+  name: string
+  partNumber: string
+  quantity: number
+  unitPrice: number
 }
 
 interface LaborRow {
-  description: string;
-  hours: number;
-  rate: number;
+  description: string
+  hours: number
+  rate: number
 }
 
 export default function RecurringInvoicesClient({
@@ -144,59 +129,59 @@ export default function RecurringInvoicesClient({
   vehicles,
   currencyCode,
 }: RecurringInvoicesClientProps) {
-  const formatCurrency = useFormatCurrency();
-  const router = useRouter();
-  const t = useTranslations("billing");
-  const tcm = useTranslations("common.contextMenu");
-  const { formatDate } = useFormatDate();
-  const [isPending, startTransition] = useTransition();
-  const [showCreate, setShowCreate] = useState(false);
+  const formatCurrency = useFormatCurrency()
+  const router = useRouter()
+  const t = useTranslations('billing')
+  const tcm = useTranslations('common.contextMenu')
+  const { formatDate } = useFormatDate()
+  const [isPending, startTransition] = useTransition()
+  const [showCreate, setShowCreate] = useState(false)
 
   const frequencyKey: Record<string, string> = {
-    weekly: "recurring.frequencyWeekly",
-    biweekly: "recurring.frequencyBiweekly",
-    monthly: "recurring.frequencyMonthly",
-    quarterly: "recurring.frequencyQuarterly",
-    yearly: "recurring.frequencyYearly",
-  };
+    weekly: 'recurring.frequencyWeekly',
+    biweekly: 'recurring.frequencyBiweekly',
+    monthly: 'recurring.frequencyMonthly',
+    quarterly: 'recurring.frequencyQuarterly',
+    yearly: 'recurring.frequencyYearly',
+  }
 
   // Form state
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [frequency, setFrequency] = useState<"weekly" | "biweekly" | "monthly" | "quarterly" | "yearly">("monthly");
-  const [nextRunDate, setNextRunDate] = useState(
-    new Date().toISOString().split("T")[0],
-  );
-  const [endDate, setEndDate] = useState("");
-  const [vehicleId, setVehicleId] = useState("");
-  const [serviceType, setServiceType] = useState("maintenance");
-  const [cost, setCost] = useState("0");
-  const [taxRate, setTaxRate] = useState("0");
-  const [taxInclusive, setTaxInclusive] = useState(false);
-  const [invoiceNotes, setInvoiceNotes] = useState("");
-  const [parts, setParts] = useState<PartRow[]>([]);
-  const [labor, setLabor] = useState<LaborRow[]>([]);
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [frequency, setFrequency] = useState<
+    'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly'
+  >('monthly')
+  const [nextRunDate, setNextRunDate] = useState(new Date().toISOString().split('T')[0])
+  const [endDate, setEndDate] = useState('')
+  const [vehicleId, setVehicleId] = useState('')
+  const [serviceType, setServiceType] = useState('maintenance')
+  const [cost, setCost] = useState('0')
+  const [taxRate, setTaxRate] = useState('0')
+  const [taxInclusive, setTaxInclusive] = useState(false)
+  const [invoiceNotes, setInvoiceNotes] = useState('')
+  const [parts, setParts] = useState<PartRow[]>([])
+  const [labor, setLabor] = useState<LaborRow[]>([])
 
   const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setFrequency("monthly");
-    setNextRunDate(new Date().toISOString().split("T")[0]);
-    setEndDate("");
-    setVehicleId("");
-    setServiceType("maintenance");
-    setCost("0");
-    setTaxRate("0");
-    setTaxInclusive(false);
-    setInvoiceNotes("");
-    setParts([]);
-    setLabor([]);
-  };
+    setTitle('')
+    setDescription('')
+    setFrequency('monthly')
+    setNextRunDate(new Date().toISOString().split('T')[0])
+    setEndDate('')
+    setVehicleId('')
+    setServiceType('maintenance')
+    setCost('0')
+    setTaxRate('0')
+    setTaxInclusive(false)
+    setInvoiceNotes('')
+    setParts([])
+    setLabor([])
+  }
 
   const handleCreate = () => {
     if (!title.trim() || !vehicleId) {
-      toast.error(t("recurring.requiredFields"));
-      return;
+      toast.error(t('recurring.requiredFields'))
+      return
     }
 
     startTransition(async () => {
@@ -227,74 +212,75 @@ export default function RecurringInvoicesClient({
             hours: l.hours,
             rate: l.rate,
           })),
-      });
+      })
 
       if (result.success) {
-        toast.success(t("recurring.created"));
-        setShowCreate(false);
-        resetForm();
-        router.refresh();
+        toast.success(t('recurring.created'))
+        setShowCreate(false)
+        resetForm()
+        router.refresh()
       } else {
-        toast.error(result.error || t("recurring.failedCreate"));
+        toast.error(result.error || t('recurring.failedCreate'))
       }
-    });
-  };
+    })
+  }
 
   const handleToggle = (id: string) => {
     startTransition(async () => {
-      const result = await toggleRecurringInvoice(id);
+      const result = await toggleRecurringInvoice(id)
       if (result.success) {
-        toast.success(t("recurring.statusUpdated"));
-        router.refresh();
+        toast.success(t('recurring.statusUpdated'))
+        router.refresh()
       } else {
-        toast.error(result.error || t("recurring.failedUpdate"));
+        toast.error(result.error || t('recurring.failedUpdate'))
       }
-    });
-  };
+    })
+  }
 
   const handleDelete = (id: string) => {
     startTransition(async () => {
-      const result = await deleteRecurringInvoice(id);
+      const result = await deleteRecurringInvoice(id)
       if (result.success) {
-        toast.success(t("recurring.deleted"));
-        router.refresh();
+        toast.success(t('recurring.deleted'))
+        router.refresh()
       } else {
-        toast.error(result.error || t("recurring.failedDelete"));
+        toast.error(result.error || t('recurring.failedDelete'))
       }
-    });
-  };
+    })
+  }
 
   const handleProcessNow = () => {
     startTransition(async () => {
-      const result = await processRecurringInvoices();
+      const result = await processRecurringInvoices()
       if (result.success && result.data) {
-        toast.success(t("recurring.processed", { count: result.data.processed }));
-        router.refresh();
+        toast.success(t('recurring.processed', { count: result.data.processed }))
+        router.refresh()
       } else {
-        toast.error(result.error || t("recurring.failedProcess"));
+        toast.error(result.error || t('recurring.failedProcess'))
       }
-    });
-  };
+    })
+  }
 
-  const addPart = () => setParts([...parts, { name: "", partNumber: "", quantity: 1, unitPrice: 0 }]);
-  const removePart = (i: number) => setParts(parts.filter((_, idx) => idx !== i));
+  const addPart = () =>
+    setParts([...parts, { name: '', partNumber: '', quantity: 1, unitPrice: 0 }])
+  const removePart = (i: number) => setParts(parts.filter((_, idx) => idx !== i))
   const updatePart = (i: number, field: keyof PartRow, value: string | number) => {
-    const updated = [...parts];
+    const updated = [...parts]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (updated[i] as any)[field] = value;
-    setParts(updated);
-  };
+    ;(updated[i] as any)[field] = value
+    setParts(updated)
+  }
 
-  const addLabor = () => setLabor([...labor, { description: "", hours: 0, rate: 0 }]);
-  const removeLabor = (i: number) => setLabor(labor.filter((_, idx) => idx !== i));
+  const addLabor = () => setLabor([...labor, { description: '', hours: 0, rate: 0 }])
+  const removeLabor = (i: number) => setLabor(labor.filter((_, idx) => idx !== i))
   const updateLabor = (i: number, field: keyof LaborRow, value: string | number) => {
-    const updated = [...labor];
+    const updated = [...labor]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (updated[i] as any)[field] = value;
-    setLabor(updated);
-  };
+    ;(updated[i] as any)[field] = value
+    setLabor(updated)
+  }
 
-  const fmt = (n: number) => formatCurrency(n, currencyCode);
+  const fmt = (n: number) => formatCurrency(n, currencyCode)
 
   return (
     <div className="space-y-4">
@@ -302,9 +288,13 @@ export default function RecurringInvoicesClient({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <Link href="/billing">
-            <Button variant="outline" size="sm">{t("recurring.billingHistory")}</Button>
+            <Button variant="outline" size="sm">
+              {t('recurring.billingHistory')}
+            </Button>
           </Link>
-          <Button variant="outline" size="sm" disabled>{t("recurring.title")}</Button>
+          <Button variant="outline" size="sm" disabled>
+            {t('recurring.title')}
+          </Button>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -312,8 +302,8 @@ export default function RecurringInvoicesClient({
             variant="outline"
             onClick={handleProcessNow}
             disabled={isPending}
-            aria-label={t("recurring.processNow")}
-            title={t("recurring.processNow")}
+            aria-label={t('recurring.processNow')}
+            title={t('recurring.processNow')}
             className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
           >
             {isPending ? (
@@ -321,18 +311,18 @@ export default function RecurringInvoicesClient({
             ) : (
               <Zap className="h-4 w-4 md:mr-1.5" />
             )}
-            <span className="hidden md:inline">{t("recurring.processNow")}</span>
+            <span className="hidden md:inline">{t('recurring.processNow')}</span>
           </Button>
           <Button
             size="sm"
             onClick={() => setShowCreate(true)}
             disabled={isPending}
-            aria-label={t("recurring.newRecurring")}
-            title={t("recurring.newRecurring")}
+            aria-label={t('recurring.newRecurring')}
+            title={t('recurring.newRecurring')}
             className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
           >
             <Plus className="h-4 w-4 md:mr-1.5" />
-            <span className="hidden md:inline">{t("recurring.newRecurring")}</span>
+            <span className="hidden md:inline">{t('recurring.newRecurring')}</span>
           </Button>
         </div>
       </div>
@@ -341,7 +331,7 @@ export default function RecurringInvoicesClient({
       {invoices.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground">{t("recurring.noInvoices")}</p>
+            <p className="text-muted-foreground">{t('recurring.noInvoices')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -350,15 +340,18 @@ export default function RecurringInvoicesClient({
             {/* Card list (phones + small tablets) */}
             <div className="space-y-2 p-3 md:hidden">
               {invoices.map((inv) => {
-                const partsTotal = inv.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0);
-                const laborTotal = inv.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0);
-                const subtotal = inv.cost + partsTotal + laborTotal;
+                const partsTotal = inv.templateParts.reduce(
+                  (s, p) => s + p.quantity * p.unitPrice,
+                  0
+                )
+                const laborTotal = inv.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
+                const subtotal = inv.cost + partsTotal + laborTotal
                 const { totalAmount: total } = calculateTotals({
                   subtotal,
                   discountAmount: 0,
                   taxRate: inv.taxRate,
                   taxInclusive: inv.taxInclusive,
-                });
+                })
                 return (
                   <div key={inv.id} className="rounded-lg border bg-card p-3">
                     <div className="flex items-start justify-between gap-3">
@@ -370,13 +363,13 @@ export default function RecurringInvoicesClient({
                       {inv.vehicle.customer && ` · ${inv.vehicle.customer.name}`}
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                      <Badge variant={inv.isActive ? "default" : "secondary"}>
-                        {inv.isActive ? t("recurring.statusActive") : t("recurring.statusPaused")}
+                      <Badge variant={inv.isActive ? 'default' : 'secondary'}>
+                        {inv.isActive ? t('recurring.statusActive') : t('recurring.statusPaused')}
                       </Badge>
                       <span>{t(frequencyKey[inv.frequency] ?? inv.frequency)}</span>
                       <span className="font-mono">{formatDate(new Date(inv.nextRunDate))}</span>
                       <span>
-                        {t("recurring.columnRuns")}: {inv.runCount}
+                        {t('recurring.columnRuns')}: {inv.runCount}
                       </span>
                     </div>
                     <div className="mt-2 flex items-center justify-end gap-1">
@@ -386,9 +379,13 @@ export default function RecurringInvoicesClient({
                         className="h-9 w-9"
                         onClick={() => handleToggle(inv.id)}
                         disabled={isPending}
-                        aria-label={inv.isActive ? t("recurring.pause") : t("recurring.resume")}
+                        aria-label={inv.isActive ? t('recurring.pause') : t('recurring.resume')}
                       >
-                        {inv.isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                        {inv.isActive ? (
+                          <Pause className="h-4 w-4" />
+                        ) : (
+                          <Play className="h-4 w-4" />
+                        )}
                       </Button>
                       <Button
                         size="icon"
@@ -396,137 +393,155 @@ export default function RecurringInvoicesClient({
                         className="h-9 w-9 text-destructive"
                         onClick={() => handleDelete(inv.id)}
                         disabled={isPending}
-                        aria-label={t("recurring.delete")}
+                        aria-label={t('recurring.delete')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
 
             {/* Table (md and up) */}
             <div className="hidden md:block">
-            <TableContextMenuHint />
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("recurring.columnTitle")}</TableHead>
-                  <TableHead>{t("recurring.columnVehicle")}</TableHead>
-                  <TableHead>{t("recurring.columnCustomer")}</TableHead>
-                  <TableHead>{t("recurring.columnFrequency")}</TableHead>
-                  <TableHead>{t("recurring.columnNextRun")}</TableHead>
-                  <TableHead className="text-right">{t("recurring.columnAmount")}</TableHead>
-                  <TableHead>{t("recurring.columnStatus")}</TableHead>
-                  <TableHead className="text-right">{t("recurring.columnRuns")}</TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((inv) => {
-                  const partsTotal = inv.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0);
-                  const laborTotal = inv.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0);
-                  const subtotal = inv.cost + partsTotal + laborTotal;
-                  const { totalAmount: total } = calculateTotals({
-                    subtotal,
-                    discountAmount: 0,
-                    taxRate: inv.taxRate,
-                    taxInclusive: inv.taxInclusive,
-                  });
+              <TableContextMenuHint />
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t('recurring.columnTitle')}</TableHead>
+                    <TableHead>{t('recurring.columnVehicle')}</TableHead>
+                    <TableHead>{t('recurring.columnCustomer')}</TableHead>
+                    <TableHead>{t('recurring.columnFrequency')}</TableHead>
+                    <TableHead>{t('recurring.columnNextRun')}</TableHead>
+                    <TableHead className="text-right">{t('recurring.columnAmount')}</TableHead>
+                    <TableHead>{t('recurring.columnStatus')}</TableHead>
+                    <TableHead className="text-right">{t('recurring.columnRuns')}</TableHead>
+                    <TableHead />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((inv) => {
+                    const partsTotal = inv.templateParts.reduce(
+                      (s, p) => s + p.quantity * p.unitPrice,
+                      0
+                    )
+                    const laborTotal = inv.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
+                    const subtotal = inv.cost + partsTotal + laborTotal
+                    const { totalAmount: total } = calculateTotals({
+                      subtotal,
+                      discountAmount: 0,
+                      taxRate: inv.taxRate,
+                      taxInclusive: inv.taxInclusive,
+                    })
 
-                  return (
-                    <ContextMenu key={inv.id} modal={false}>
-                    <ContextMenuTrigger asChild>
-                    <TableRow>
-                      <TableCell className="text-sm font-medium">{inv.title}</TableCell>
-                      <TableCell className="text-sm">
-                        <TableCellLink href={`/vehicles/${inv.vehicle.id}`}>
-                          {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
-                        </TableCellLink>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {inv.vehicle.customer ? (
-                          <TableCellLink href={`/customers/${inv.vehicle.customer.id}`}>
-                            {inv.vehicle.customer.name}
-                          </TableCellLink>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm">{t(frequencyKey[inv.frequency] ?? inv.frequency)}</TableCell>
-                      <TableCell className="text-sm">
-                        {formatDate(new Date(inv.nextRunDate))}
-                      </TableCell>
-                      <TableCell className="text-right text-sm">{fmt(total)}</TableCell>
-                      <TableCell>
-                        <Badge variant={inv.isActive ? "default" : "secondary"}>
-                          {inv.isActive ? t("recurring.statusActive") : t("recurring.statusPaused")}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-sm">{inv.runCount}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7"
+                    return (
+                      <ContextMenu key={inv.id} modal={false}>
+                        <ContextMenuTrigger asChild>
+                          <TableRow>
+                            <TableCell className="text-sm font-medium">{inv.title}</TableCell>
+                            <TableCell className="text-sm">
+                              <TableCellLink href={`/vehicles/${inv.vehicle.id}`}>
+                                {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                              </TableCellLink>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {inv.vehicle.customer ? (
+                                <TableCellLink href={`/customers/${inv.vehicle.customer.id}`}>
+                                  {inv.vehicle.customer.name}
+                                </TableCellLink>
+                              ) : (
+                                '-'
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {t(frequencyKey[inv.frequency] ?? inv.frequency)}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {formatDate(new Date(inv.nextRunDate))}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{fmt(total)}</TableCell>
+                            <TableCell>
+                              <Badge variant={inv.isActive ? 'default' : 'secondary'}>
+                                {inv.isActive
+                                  ? t('recurring.statusActive')
+                                  : t('recurring.statusPaused')}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right text-sm">{inv.runCount}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7"
+                                  onClick={() => handleToggle(inv.id)}
+                                  disabled={isPending}
+                                  aria-label={
+                                    inv.isActive ? t('recurring.pause') : t('recurring.resume')
+                                  }
+                                >
+                                  {inv.isActive ? (
+                                    <Pause className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Play className="h-3.5 w-3.5" />
+                                  )}
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-7 w-7 text-destructive"
+                                  onClick={() => handleDelete(inv.id)}
+                                  disabled={isPending}
+                                  aria-label={t('recurring.delete')}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        </ContextMenuTrigger>
+                        <ContextMenuContent className="min-w-52">
+                          <ContextMenuItem
+                            onClick={() => router.push(`/vehicles/${inv.vehicle.id}`)}
+                          >
+                            <Car className="mr-2 h-4 w-4" />
+                            {tcm('openVehicle')}
+                          </ContextMenuItem>
+                          {inv.vehicle.customer && (
+                            <ContextMenuItem
+                              onClick={() => router.push(`/customers/${inv.vehicle.customer?.id}`)}
+                            >
+                              <User className="mr-2 h-4 w-4" />
+                              {tcm('openCustomer')}
+                            </ContextMenuItem>
+                          )}
+                          <ContextMenuSeparator />
+                          <ContextMenuItem
                             onClick={() => handleToggle(inv.id)}
                             disabled={isPending}
-                            aria-label={inv.isActive ? t("recurring.pause") : t("recurring.resume")}
                           >
-                            {inv.isActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7 text-destructive"
+                            {inv.isActive ? (
+                              <Pause className="mr-2 h-4 w-4" />
+                            ) : (
+                              <Play className="mr-2 h-4 w-4" />
+                            )}
+                            {inv.isActive ? t('recurring.pause') : t('recurring.resume')}
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            variant="destructive"
                             onClick={() => handleDelete(inv.id)}
                             disabled={isPending}
-                            aria-label={t("recurring.delete")}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="min-w-52">
-                      <ContextMenuItem onClick={() => router.push(`/vehicles/${inv.vehicle.id}`)}>
-                        <Car className="mr-2 h-4 w-4" />
-                        {tcm("openVehicle")}
-                      </ContextMenuItem>
-                      {inv.vehicle.customer && (
-                        <ContextMenuItem
-                          onClick={() => router.push(`/customers/${inv.vehicle.customer?.id}`)}
-                        >
-                          <User className="mr-2 h-4 w-4" />
-                          {tcm("openCustomer")}
-                        </ContextMenuItem>
-                      )}
-                      <ContextMenuSeparator />
-                      <ContextMenuItem onClick={() => handleToggle(inv.id)} disabled={isPending}>
-                        {inv.isActive ? (
-                          <Pause className="mr-2 h-4 w-4" />
-                        ) : (
-                          <Play className="mr-2 h-4 w-4" />
-                        )}
-                        {inv.isActive ? t("recurring.pause") : t("recurring.resume")}
-                      </ContextMenuItem>
-                      <ContextMenuItem
-                        variant="destructive"
-                        onClick={() => handleDelete(inv.id)}
-                        disabled={isPending}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        {t("recurring.delete")}
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                    </ContextMenu>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {t('recurring.delete')}
+                          </ContextMenuItem>
+                        </ContextMenuContent>
+                      </ContextMenu>
+                    )
+                  })}
+                </TableBody>
+              </Table>
             </div>
           </CardContent>
         </Card>
@@ -536,26 +551,30 @@ export default function RecurringInvoicesClient({
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("recurring.dialogTitle")}</DialogTitle>
+            <DialogTitle>{t('recurring.dialogTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {/* Basic info */}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label>{t("recurring.titleLabel")}</Label>
-                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("recurring.titlePlaceholder")} />
+                <Label>{t('recurring.titleLabel')}</Label>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t('recurring.titlePlaceholder')}
+                />
               </div>
               <div className="space-y-1.5">
-                <Label>{t("recurring.vehicleLabel")}</Label>
+                <Label>{t('recurring.vehicleLabel')}</Label>
                 <Select value={vehicleId} onValueChange={setVehicleId}>
                   <SelectTrigger>
-                    <SelectValue placeholder={t("recurring.selectVehicle")} />
+                    <SelectValue placeholder={t('recurring.selectVehicle')} />
                   </SelectTrigger>
                   <SelectContent>
                     {vehicles.map((v) => (
                       <SelectItem key={v.id} value={v.id}>
                         {v.year} {v.make} {v.model}
-                        {v.customer ? ` (${v.customer.name})` : ""}
+                        {v.customer ? ` (${v.customer.name})` : ''}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -564,33 +583,40 @@ export default function RecurringInvoicesClient({
             </div>
 
             <div className="space-y-1.5">
-              <Label>{t("recurring.descriptionLabel")}</Label>
-              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} />
+              <Label>{t('recurring.descriptionLabel')}</Label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={2}
+              />
             </div>
 
             {/* Schedule */}
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <Label>{t("recurring.frequencyLabel")}</Label>
-                <Select value={frequency} onValueChange={(v) => setFrequency(v as typeof frequency)}>
+                <Label>{t('recurring.frequencyLabel')}</Label>
+                <Select
+                  value={frequency}
+                  onValueChange={(v) => setFrequency(v as typeof frequency)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="weekly">{t("recurring.frequencyWeekly")}</SelectItem>
-                    <SelectItem value="biweekly">{t("recurring.frequencyBiweekly")}</SelectItem>
-                    <SelectItem value="monthly">{t("recurring.frequencyMonthly")}</SelectItem>
-                    <SelectItem value="quarterly">{t("recurring.frequencyQuarterly")}</SelectItem>
-                    <SelectItem value="yearly">{t("recurring.frequencyYearly")}</SelectItem>
+                    <SelectItem value="weekly">{t('recurring.frequencyWeekly')}</SelectItem>
+                    <SelectItem value="biweekly">{t('recurring.frequencyBiweekly')}</SelectItem>
+                    <SelectItem value="monthly">{t('recurring.frequencyMonthly')}</SelectItem>
+                    <SelectItem value="quarterly">{t('recurring.frequencyQuarterly')}</SelectItem>
+                    <SelectItem value="yearly">{t('recurring.frequencyYearly')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>{t("recurring.startDate")}</Label>
+                <Label>{t('recurring.startDate')}</Label>
                 <DateInput value={nextRunDate} onChange={setNextRunDate} />
               </div>
               <div className="space-y-1.5">
-                <Label>{t("recurring.endDate")}</Label>
+                <Label>{t('recurring.endDate')}</Label>
                 <DateInput value={endDate} onChange={setEndDate} />
               </div>
             </div>
@@ -598,52 +624,108 @@ export default function RecurringInvoicesClient({
             {/* Pricing */}
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <Label>{t("recurring.serviceType")}</Label>
+                <Label>{t('recurring.serviceType')}</Label>
                 <Select value={serviceType} onValueChange={setServiceType}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {SERVICE_TYPES.map((st) => (
-                      <SelectItem key={st.value} value={st.value}>{t(st.titleKey)}</SelectItem>
+                      <SelectItem key={st.value} value={st.value}>
+                        {t(st.titleKey)}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>{t("recurring.baseCost")}</Label>
-                <Input type="number" step="0.01" min="0" value={cost} onChange={(e) => setCost(e.target.value)} />
+                <Label>{t('recurring.baseCost')}</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={cost}
+                  onChange={(e) => setCost(e.target.value)}
+                />
               </div>
               <div className="space-y-1.5">
-                <Label>{t("recurring.taxRate")}</Label>
-                <Input type="number" step="0.01" min="0" max="100" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} />
+                <Label>{t('recurring.taxRate')}</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={taxRate}
+                  onChange={(e) => setTaxRate(e.target.value)}
+                />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label>{t("recurring.invoiceNotes")}</Label>
-              <Textarea value={invoiceNotes} onChange={(e) => setInvoiceNotes(e.target.value)} rows={2} />
+              <Label>{t('recurring.invoiceNotes')}</Label>
+              <Textarea
+                value={invoiceNotes}
+                onChange={(e) => setInvoiceNotes(e.target.value)}
+                rows={2}
+              />
             </div>
 
             {/* Template Parts */}
             <Card className="border shadow-none">
               <CardHeader className="pb-2 pt-3 px-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">{t("recurring.templateParts")}</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    {t('recurring.templateParts')}
+                  </CardTitle>
                   <Button size="sm" variant="outline" onClick={addPart}>
-                    <Plus className="h-3.5 w-3.5 mr-1" /> {t("recurring.addPart")}
+                    <Plus className="h-3.5 w-3.5 mr-1" /> {t('recurring.addPart')}
                   </Button>
                 </div>
               </CardHeader>
               {parts.length > 0 && (
                 <CardContent className="px-3 pb-3 space-y-2">
                   {parts.map((p, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 items-end">
-                      <Input placeholder={t("recurring.partName")} value={p.name} onChange={(e) => updatePart(i, "name", e.target.value)} className="text-sm h-8" />
-                      <Input placeholder={t("recurring.partNumber")} value={p.partNumber} onChange={(e) => updatePart(i, "partNumber", e.target.value)} className="text-sm h-8 w-24" />
-                      <Input type="number" min="1" value={p.quantity} onChange={(e) => updatePart(i, "quantity", parseInt(e.target.value) || 1)} className="text-sm h-8 w-16" />
-                      <Input type="number" step="0.01" min="0" value={p.unitPrice} onChange={(e) => updatePart(i, "unitPrice", parseFloat(e.target.value) || 0)} className="text-sm h-8 w-20" />
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removePart(i)} aria-label={t("recurring.removeRow")}>
+                    <div
+                      key={i}
+                      className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 items-end"
+                    >
+                      <Input
+                        placeholder={t('recurring.partName')}
+                        value={p.name}
+                        onChange={(e) => updatePart(i, 'name', e.target.value)}
+                        className="text-sm h-8"
+                      />
+                      <Input
+                        placeholder={t('recurring.partNumber')}
+                        value={p.partNumber}
+                        onChange={(e) => updatePart(i, 'partNumber', e.target.value)}
+                        className="text-sm h-8 w-24"
+                      />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="any"
+                        value={p.quantity}
+                        onChange={(e) => updatePart(i, 'quantity', parseFloat(e.target.value) || 1)}
+                        className="text-sm h-8 w-16"
+                      />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={p.unitPrice}
+                        onChange={(e) =>
+                          updatePart(i, 'unitPrice', parseFloat(e.target.value) || 0)
+                        }
+                        className="text-sm h-8 w-20"
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => removePart(i)}
+                        aria-label={t('recurring.removeRow')}
+                      >
                         <X className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -656,9 +738,11 @@ export default function RecurringInvoicesClient({
             <Card className="border shadow-none">
               <CardHeader className="pb-2 pt-3 px-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">{t("recurring.templateLabor")}</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    {t('recurring.templateLabor')}
+                  </CardTitle>
                   <Button size="sm" variant="outline" onClick={addLabor}>
-                    <Plus className="h-3.5 w-3.5 mr-1" /> {t("recurring.addLabor")}
+                    <Plus className="h-3.5 w-3.5 mr-1" /> {t('recurring.addLabor')}
                   </Button>
                 </div>
               </CardHeader>
@@ -666,10 +750,37 @@ export default function RecurringInvoicesClient({
                 <CardContent className="px-3 pb-3 space-y-2">
                   {labor.map((l, i) => (
                     <div key={i} className="grid grid-cols-[1fr_auto_auto_auto] gap-2 items-end">
-                      <Input placeholder={t("recurring.description")} value={l.description} onChange={(e) => updateLabor(i, "description", e.target.value)} className="text-sm h-8" />
-                      <Input type="number" step="0.5" min="0" placeholder={t("recurring.hours")} value={l.hours} onChange={(e) => updateLabor(i, "hours", parseFloat(e.target.value) || 0)} className="text-sm h-8 w-20" />
-                      <Input type="number" step="0.01" min="0" placeholder={t("recurring.rate")} value={l.rate} onChange={(e) => updateLabor(i, "rate", parseFloat(e.target.value) || 0)} className="text-sm h-8 w-20" />
-                      <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removeLabor(i)} aria-label={t("recurring.removeRow")}>
+                      <Input
+                        placeholder={t('recurring.description')}
+                        value={l.description}
+                        onChange={(e) => updateLabor(i, 'description', e.target.value)}
+                        className="text-sm h-8"
+                      />
+                      <Input
+                        type="number"
+                        step="0.5"
+                        min="0"
+                        placeholder={t('recurring.hours')}
+                        value={l.hours}
+                        onChange={(e) => updateLabor(i, 'hours', parseFloat(e.target.value) || 0)}
+                        className="text-sm h-8 w-20"
+                      />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder={t('recurring.rate')}
+                        value={l.rate}
+                        onChange={(e) => updateLabor(i, 'rate', parseFloat(e.target.value) || 0)}
+                        className="text-sm h-8 w-20"
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => removeLabor(i)}
+                        aria-label={t('recurring.removeRow')}
+                      >
                         <X className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -680,17 +791,23 @@ export default function RecurringInvoicesClient({
 
             {/* Actions */}
             <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => { setShowCreate(false); resetForm(); }}>
-                {t("recurring.cancel")}
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCreate(false)
+                  resetForm()
+                }}
+              >
+                {t('recurring.cancel')}
               </Button>
               <Button onClick={handleCreate} disabled={isPending}>
                 {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
-                {t("recurring.create")}
+                {t('recurring.create')}
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

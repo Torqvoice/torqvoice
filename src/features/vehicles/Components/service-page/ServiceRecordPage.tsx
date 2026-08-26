@@ -178,6 +178,7 @@ export async function ServiceRecordPage({
       partNumber: p.partNumber || '',
       name: p.name,
       quantity: p.quantity,
+      unit: p.unit ?? null,
       unitPrice: p.unitPrice,
       total: p.total,
       unitCost: p.unitCost ?? 0,

@@ -210,6 +210,7 @@
       "category": "Категория",
       "quantity": "Кол-во",
       "minQuantity": "Мин. кол-во",
+      "unit": "Единица",
       "unitCost": "Себестоимость",
       "sellPrice": "Цена",
       "supplier": "Поставщик"

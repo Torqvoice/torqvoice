@@ -128,6 +128,7 @@ export function QuotePageClient({
           name: part.name,
           partNumber: part.partNumber || '',
           quantity: part.quantity,
+          unit: part.unit ?? null,
           unitCost: 0,
           markupPercent: 0,
           unitPrice: part.unitPrice,

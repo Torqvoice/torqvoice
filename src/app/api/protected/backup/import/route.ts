@@ -137,8 +137,14 @@ async function importServiceRecordTree(
         partNumber: (p.partNumber as string) || null,
         name: p.name as string,
         quantity: (p.quantity as number) || 1,
+        unit: (p.unit as string) || null,
         unitPrice: (p.unitPrice as number) || 0,
         total: (p.total as number) || 0,
+        unitCost: (p.unitCost as number) || 0,
+        markupPercent: (p.markupPercent as number) || 0,
+        // Inventory parts are restored earlier in this transaction with their
+        // ids preserved, so the stock link survives a restore verbatim.
+        inventoryPartId: (p.inventoryPartId as string) || null,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -499,7 +505,9 @@ export async function POST(request: NextRequest) {
               category: (p.category as string) || null,
               quantity: (p.quantity as number) || 0,
               minQuantity: (p.minQuantity as number) || 0,
+              unit: (p.unit as string) || null,
               unitCost: (p.unitCost as number) || 0,
+              sellPrice: (p.sellPrice as number) || 0,
               supplier: (p.supplier as string) || null,
               supplierPhone: (p.supplierPhone as string) || null,
               supplierEmail: (p.supplierEmail as string) || null,
@@ -769,8 +777,15 @@ export async function POST(request: NextRequest) {
                 partNumber: (p.partNumber as string) || null,
                 name: p.name as string,
                 quantity: (p.quantity as number) || 1,
+                unit: (p.unit as string) || null,
                 unitPrice: (p.unitPrice as number) || 0,
                 total: (p.total as number) || 0,
+                unitCost: (p.unitCost as number) || 0,
+                markupPercent: (p.markupPercent as number) || 0,
+                excluded: (p.excluded as boolean) || false,
+                // Same-transaction inventory restore keeps ids, so the link
+                // carried into ServicePart on conversion stays intact.
+                inventoryPartId: (p.inventoryPartId as string) || null,
                 quoteId: q.id as string,
               })),
             })

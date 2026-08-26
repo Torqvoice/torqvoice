@@ -154,13 +154,23 @@ function SortablePartRow({
           </div>
         </FieldRow>
         <FieldRow label={t('qty')}>
-          <Input
-            type="number"
-            min="0"
-            step="0.1"
-            value={part.quantity}
-            onChange={(e) => updatePart(index, 'quantity', e.target.value)}
-          />
+          {/* The unit is a property of the stocked part, snapshotted at pick
+              time, so it renders as a suffix rather than an editable field. */}
+          <div className="relative w-full">
+            <Input
+              type="number"
+              min="0"
+              step="any"
+              value={part.quantity}
+              onChange={(e) => updatePart(index, 'quantity', e.target.value)}
+              className={cn(part.unit && 'pr-9')}
+            />
+            {part.unit && (
+              <span className="pointer-events-none absolute right-2 top-1/2 max-w-8 -translate-y-1/2 truncate text-xs text-muted-foreground">
+                {part.unit}
+              </span>
+            )}
+          </div>
         </FieldRow>
         <FieldRow label={t('unitCost')} hint={t('unitCostHint')}>
           <Input
@@ -258,6 +268,7 @@ export function PartsEditor({
             ...row,
             name: picked.name,
             partNumber: picked.partNumber ?? '',
+            unit: picked.unit ?? null,
             unitCost: picked.unitCost,
             unitPrice,
             markupPercent,

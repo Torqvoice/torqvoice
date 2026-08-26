@@ -831,6 +831,8 @@
     "liters": "litry (L)",
     "miles": "mile (mi)",
     "gallons": "galony (gal)",
+    "defaultStockUnit": "Domyślna jednostka magazynowa",
+    "defaultStockUnitHint": "Wstępnie uzupełniana dla nowych części w magazynie. Każda część może nadal mieć własną jednostkę.",
     "saveWorkshop": "Zapisz ustawienia warsztatu",
     "saved": "Ustawienia warsztatu zapisane",
     "assignDialogTitle": "Przypisać do istniejących zleceń?",
