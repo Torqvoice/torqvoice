@@ -72,7 +72,9 @@ export function UnitCombobox({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    // modal: inside a modal Dialog (the part form) a non-modal popover's wheel
+    // events are swallowed by the dialog's scroll lock, making the list unscrollable.
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button
           id={id}

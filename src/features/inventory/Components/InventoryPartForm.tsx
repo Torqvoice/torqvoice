@@ -645,7 +645,7 @@ export function InventoryPartForm({
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-2">
                   <Label>{t('form.category')}</Label>
-                  <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+                  <Popover open={categoryOpen} onOpenChange={setCategoryOpen} modal>
                     <PopoverTrigger asChild>
                       <Button
                         type="button"
