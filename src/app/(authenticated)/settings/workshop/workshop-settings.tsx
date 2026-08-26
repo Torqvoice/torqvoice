@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { unitSuggestions } from '@/features/inventory/Lib/units'
+import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { AppCard } from '@/components/app-card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -60,7 +60,6 @@ export function WorkshopSettings({
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
-  const tInventory = useTranslations('inventory')
   const [saving, setSaving] = useState(false)
   const [serviceType, setServiceType] = useState(
     settings[SETTING_KEYS.SERVICE_TYPE] || 'automotive'
@@ -366,22 +365,15 @@ export function WorkshopSettings({
 
             <div className="space-y-2">
               <Label htmlFor="defaultUnit">{t('workshop.defaultStockUnit')}</Label>
-              <Input
-                id="defaultUnit"
-                list="workshop-default-unit-options"
-                maxLength={20}
-                className="w-48"
-                placeholder={tInventory('form.unitPlaceholder')}
-                value={defaultUnit}
-                onChange={(e) => setDefaultUnit(e.target.value)}
-              />
               {/* Suggestions follow the (unsaved) system picked above, so
                   switching to imperial immediately offers qt/gal/lb. */}
-              <datalist id="workshop-default-unit-options">
-                {unitSuggestions(tInventory('form.unitSuggestions'), unitSystem).map((u) => (
-                  <option key={u} value={u} />
-                ))}
-              </datalist>
+              <UnitCombobox
+                id="defaultUnit"
+                className="w-48"
+                value={defaultUnit}
+                onChange={setDefaultUnit}
+                unitSystem={unitSystem}
+              />
               <p className="text-sm text-muted-foreground">{t('workshop.defaultStockUnitHint')}</p>
             </div>
           </div>
