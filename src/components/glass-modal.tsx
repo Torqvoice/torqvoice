@@ -35,10 +35,10 @@ export const useGlassModal = create<ModalState>((set) => ({
 }))
 
 const icons: Record<ModalType, React.ReactNode> = {
-  error: <XCircle className="h-6 w-6" />,
-  success: <CheckCircle2 className="h-6 w-6" />,
-  info: <Info className="h-6 w-6" />,
-  warning: <AlertTriangle className="h-6 w-6" />,
+  error: <XCircle className="h-5 w-5" />,
+  success: <CheckCircle2 className="h-5 w-5" />,
+  info: <Info className="h-5 w-5" />,
+  warning: <AlertTriangle className="h-5 w-5" />,
 }
 
 /**
@@ -59,23 +59,23 @@ export function GlassModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="glass max-w-sm border-0 shadow-2xl sm:rounded-2xl">
-        <DialogHeader className="items-center gap-1 pt-4 text-center sm:text-center">
+      <DialogContent className="glass max-w-sm gap-4 border-0 p-5 shadow-2xl sm:rounded-xl">
+        <div className="flex items-start gap-3">
           <div
             className={cn(
-              'mb-2 flex h-12 w-12 items-center justify-center rounded-full ring-8',
+              'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ring-4',
               badges[type]
             )}
           >
             {icons[type]}
           </div>
-          <DialogTitle className="text-lg">{title}</DialogTitle>
-          <DialogDescription className="max-w-xs text-balance text-sm leading-relaxed">
-            {message}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="pt-2 sm:justify-center">
-          <Button onClick={close} className="w-full sm:w-auto sm:min-w-28">
+          <DialogHeader className="min-w-0 gap-1 text-left sm:text-left">
+            <DialogTitle className="text-base leading-9">{title}</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed">{message}</DialogDescription>
+          </DialogHeader>
+        </div>
+        <DialogFooter>
+          <Button size="sm" onClick={close} className="min-w-20">
             {t('close')}
           </Button>
         </DialogFooter>
