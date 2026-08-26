@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { useDateSettings } from '@/components/date-settings-context'
 import type { WorkBoardJob } from '../../Actions/boardActions'
-import { MAX_ZOOM, MIN_ZOOM, ZOOM_STEP, clampZoom } from '../../hooks/useBoardPreferences'
+import { ZOOM_STEP, clampZoom } from '../../hooks/useBoardPreferences'
 import { timeToMinutes } from '../../utils/datetime'
 import { formatClock } from '../../utils/clock'
 import {
