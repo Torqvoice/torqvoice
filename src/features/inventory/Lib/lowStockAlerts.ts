@@ -111,8 +111,9 @@ export function canSendDigestEmail(
 export function formatLowStockLine(part: LowStockCandidate, defaultThreshold = 0): string {
   const ref = part.partNumber ? ` (${part.partNumber})` : ''
   const threshold = effectiveThreshold(part, defaultThreshold)
-  const qty = part.unit ? `${part.quantity} ${part.unit}` : `${part.quantity}`
-  return `${part.name}${ref}: ${qty} left, reorder at ${threshold}`
+  // The reorder point is in the part's own unit, so both numbers carry it.
+  const withUnit = (n: number) => (part.unit ? `${n} ${part.unit}` : `${n}`)
+  return `${part.name}${ref}: ${withUnit(part.quantity)} left, reorder at ${withUnit(threshold)}`
 }
 
 /**

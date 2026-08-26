@@ -175,7 +175,7 @@ describe('digest formatting', () => {
       formatLowStockLine(
         part({ name: 'Engine oil 5W-30', partNumber: null, quantity: 1.5, unit: 'l' })
       )
-    ).toBe('Engine oil 5W-30: 1.5 l left, reorder at 5')
+    ).toBe('Engine oil 5W-30: 1.5 l left, reorder at 5 l')
   })
 
   it('omits an absent part number', () => {
