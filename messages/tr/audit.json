@@ -139,7 +139,10 @@
     "whatsapp_send": "WhatsApp mesajı gönderildi",
     "work_bay_create": "Çalışma alanı oluşturuldu",
     "work_bay_update": "Çalışma alanı güncellendi",
-    "work_bay_delete": "Çalışma alanı silindi"
+    "work_bay_delete": "Çalışma alanı silindi",
+    "settings_whatsappUpdated": "WhatsApp ayarları güncellendi",
+    "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
+    "settings_whatsappDisconnected": "WhatsApp bağlantısı kesildi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",

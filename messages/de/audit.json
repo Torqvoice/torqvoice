@@ -139,7 +139,10 @@
     "whatsapp_send": "WhatsApp-Nachricht gesendet",
     "work_bay_create": "Arbeitsplatz erstellt",
     "work_bay_update": "Arbeitsplatz aktualisiert",
-    "work_bay_delete": "Arbeitsplatz gelöscht"
+    "work_bay_delete": "Arbeitsplatz gelöscht",
+    "settings_whatsappUpdated": "WhatsApp-Einstellungen aktualisiert",
+    "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert",
+    "settings_whatsappDisconnected": "WhatsApp getrennt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",

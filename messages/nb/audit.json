@@ -139,7 +139,10 @@
     "whatsapp_send": "WhatsApp-melding sendt",
     "work_bay_create": "Opprettet arbeidsplass",
     "work_bay_update": "Oppdaterte arbeidsplass",
-    "work_bay_delete": "Slettet arbeidsplass"
+    "work_bay_delete": "Slettet arbeidsplass",
+    "settings_whatsappUpdated": "WhatsApp-innstillinger oppdatert",
+    "settings_whatsappNumberRegistered": "WhatsApp-nummer registrert",
+    "settings_whatsappDisconnected": "WhatsApp koblet fra"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

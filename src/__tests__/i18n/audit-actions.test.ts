@@ -26,7 +26,7 @@ function emittedActions(): string[] {
         if (entry.name !== "node_modules" && entry.name !== "__tests__") walk(full);
       } else if (/\.tsx?$/.test(entry.name)) {
         const src = fs.readFileSync(full, "utf-8");
-        for (const m of src.matchAll(/action:\s*"([a-zA-Z][\w]*\.[\w.]+)"/g)) {
+        for (const m of src.matchAll(/action:\s*["']([a-zA-Z][\w]*\.[\w.]+)["']/g)) {
           found.add(m[1]);
         }
       }

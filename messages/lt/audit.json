@@ -139,7 +139,10 @@
     "whatsapp_send": "Išsiųsta „WhatsApp“ žinutė",
     "work_bay_create": "Sukurta darbo vieta",
     "work_bay_update": "Atnaujinta darbo vieta",
-    "work_bay_delete": "Ištrinta darbo vieta"
+    "work_bay_delete": "Ištrinta darbo vieta",
+    "settings_whatsappUpdated": "WhatsApp nustatymai atnaujinti",
+    "settings_whatsappNumberRegistered": "WhatsApp numeris užregistruotas",
+    "settings_whatsappDisconnected": "WhatsApp atjungtas"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
