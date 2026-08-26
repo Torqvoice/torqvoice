@@ -474,17 +474,28 @@ export function WeekTimeline({
               </>
             )}
 
-            {/* Time gutter */}
+            {/* Time gutter. Labels straddle their line, except the first and
+                last: centring those put half the text outside the column,
+                where the sticky header painted over it. Those two tuck inside
+                instead. */}
             <div className="relative sticky left-0 z-30 border-r bg-background">
-              {marks.map((mins) => (
-                <span
-                  key={mins}
-                  className="absolute right-1 -translate-y-1/2 text-[10px] tabular-nums text-muted-foreground"
-                  style={{ top: `${percentForMinutes(mins, timeWindow)}%` }}
-                >
-                  {formatClock(mins, timeFormat)}
-                </span>
-              ))}
+              {marks.map((mins, index) => {
+                const isFirst = index === 0
+                const isLast = index === marks.length - 1
+                return (
+                  <span
+                    key={mins}
+                    className={cn(
+                      'absolute right-1 text-[10px] tabular-nums text-muted-foreground',
+                      !isFirst && !isLast && '-translate-y-1/2',
+                      isLast && '-translate-y-full'
+                    )}
+                    style={{ top: `${percentForMinutes(mins, timeWindow)}%` }}
+                  >
+                    {formatClock(mins, timeFormat)}
+                  </span>
+                )
+              })}
             </div>
 
             {days.flatMap((day) =>
