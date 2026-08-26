@@ -119,6 +119,7 @@ async function importServiceRecordTree(
       discountAmount: (sr.discountAmount as number) || 0,
       publicToken: (sr.publicToken as string) || null,
       technicianId: (sr.technicianId as string) || null,
+      workBayId: (sr.workBayId as string) || null,
       sortOrder: (sr.sortOrder as number) || 0,
       createdAt: toSafeDate(sr.createdAt as string),
       updatedAt: toSafeDate(sr.updatedAt as string),
@@ -359,6 +360,7 @@ export async function POST(request: NextRequest) {
           tx.customFieldDefinition.deleteMany({ where: { organizationId } }),
         InventoryPart: () => tx.inventoryPart.deleteMany({ where: { organizationId } }),
         Technician: () => tx.technician.deleteMany({ where: { organizationId } }),
+        WorkBay: () => tx.workBay.deleteMany({ where: { organizationId } }),
         Customer: () => tx.customer.deleteMany({ where: { organizationId } }),
         LaborPreset: () => tx.laborPreset.deleteMany({ where: { organizationId } }),
         Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
@@ -427,6 +429,24 @@ export async function POST(request: NextRequest) {
               organizationId: ctx.organizationId,
             })
           ),
+        })
+      }
+
+      // 4b. Insert work bays. Service records and inspections point at them, so
+      // they have to exist before either is restored.
+      if (data.workBays?.length) {
+        await tx.workBay.createMany({
+          data: (data.workBays as Record<string, unknown>[]).map((b: Record<string, unknown>) => ({
+            id: b.id as string,
+            name: b.name as string,
+            color: (b.color as string) || '#64748b',
+            isActive: b.isActive !== false,
+            sortOrder: (b.sortOrder as number) || 0,
+            dailyCapacity: (b.dailyCapacity as number) || 480,
+            createdAt: toSafeDate(b.createdAt as string),
+            updatedAt: toSafeDate(b.updatedAt as string),
+            organizationId: ctx.organizationId,
+          })),
         })
       }
 
@@ -843,6 +863,7 @@ export async function POST(request: NextRequest) {
               vehicleId: insp.vehicleId as string,
               templateId: insp.templateId as string,
               technicianId: (insp.technicianId as string) || null,
+              workBayId: (insp.workBayId as string) || null,
               organizationId: ctx.organizationId,
             },
           })

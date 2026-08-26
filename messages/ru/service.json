@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Подробнее",
-    "setDefaults": "Настройки по умолчанию"
+    "setDefaults": "Настройки по умолчанию",
+    "workBay": "Пост",
+    "selectWorkBay": "Выберите пост…",
+    "noWorkBay": "Без поста"
   },
   "notifications": {
     "title": "Уведомления клиента",

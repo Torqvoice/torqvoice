@@ -136,7 +136,10 @@
     "tire_set_dispose": "Lastik takımı hurdaya ayrıldı",
     "tire_set_attach": "Lastik takımına dosya eklendi",
     "tire_set_detach": "Lastik takımından dosya kaldırıldı",
-    "whatsapp_send": "WhatsApp mesajı gönderildi"
+    "whatsapp_send": "WhatsApp mesajı gönderildi",
+    "work_bay_create": "Çalışma alanı oluşturuldu",
+    "work_bay_update": "Çalışma alanı güncellendi",
+    "work_bay_delete": "Çalışma alanı silindi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -256,6 +259,9 @@
     "vehicle_update": "{name} aracı güncellendi, değişenler: {fields}",
     "vehicle_updateNoChanges": "{name} aracı güncellendi, hiçbir şey değişmedi",
     "webhook_create": "{name} webhook'u oluşturuldu",
-    "whatsapp_send": "{name} kişisine WhatsApp mesajı gönderildi"
+    "whatsapp_send": "{name} kişisine WhatsApp mesajı gönderildi",
+    "work_bay_create": "\"{name}\" çalışma alanı oluşturuldu",
+    "work_bay_update": "\"{name}\" çalışma alanı güncellendi",
+    "work_bay_delete": "{id} çalışma alanı silindi"
   }
 }

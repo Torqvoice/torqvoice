@@ -171,7 +171,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       isAdminOrOwner={isOwnerOrAdmin}
                     />
                     <SidebarInset>
-                      <div className="pb-14 md:pb-0">{children}</div>
+                      {/* A flex column with a real height, so the `flex-1` every
+                          page already writes on its wrapper actually resolves.
+                          Without it a page that wants to fill the window (the
+                          work board's week timeline) stopped at its content and
+                          left the rest of the screen blank. */}
+                      <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">{children}</div>
                     </SidebarInset>
                     <SearchCommand />
                     {isOwnerOrAdmin && <NotificationInitializer />}

@@ -266,7 +266,13 @@ model ServiceRecord {
 
   technicianId String?
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
-  sortOrder    Int         @default(0)
+
+  /// Where in the shop the job is booked in: a lift, a ramp, an alignment
+  /// stand. Independent of the technician, because a shop plans its bays and
+  /// its people separately and the work board can lane by either.
+  workBayId String?
+  workBay   WorkBay? @relation(fields: [workBayId], references: [id], onDelete: SetNull)
+  sortOrder Int      @default(0)
 
   partItems      ServicePart[]
   laborItems     ServiceLabor[]
@@ -280,6 +286,7 @@ model ServiceRecord {
 
   @@index([vehicleId])
   @@index([technicianId])
+  @@index([workBayId])
   @@index([organizationId])
   @@index([customerId])
   @@index([inspectionId])
@@ -835,6 +842,7 @@ model Organization {
   telegramMessages       TelegramMessage[]
   whatsappMessages       WhatsappMessage[]
   technicians            Technician[]
+  workBays               WorkBay[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
@@ -1129,7 +1137,12 @@ model Inspection {
 
   technicianId String?
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
-  sortOrder    Int         @default(0)
+
+  /// See ServiceRecord.workBayId — an inspection occupies a bay just as a
+  /// repair does, and the work board lanes both the same way.
+  workBayId String?
+  workBay   WorkBay? @relation(fields: [workBayId], references: [id], onDelete: SetNull)
+  sortOrder Int      @default(0)
 
   // Roadworthiness certificate fields required by Directive 2014/45/EU Annex IV.
   // `inspectorName` and `certificateNumber` are snapshots taken at completion so
@@ -1158,6 +1171,7 @@ model Inspection {
   @@index([vehicleId])
   @@index([organizationId])
   @@index([technicianId])
+  @@index([workBayId])
   @@map("inspections")
 }
 
@@ -1285,7 +1299,7 @@ model TelegramMessage {
 /// provider without its history becoming unreadable, and a status callback
 /// arriving later has to find the row it belongs to.
 model WhatsappMessage {
-  id        String  @id @default(cuid())
+  id        String @id @default(cuid())
   direction String // "inbound" | "outbound"
   provider  String // "meta" | "twilio" | any adapter registered later
 
@@ -1327,7 +1341,6 @@ model WhatsappMessage {
   @@map("whatsapp_messages")
 }
 
-
 model Technician {
   id            String  @id @default(cuid())
   name          String
@@ -1351,6 +1364,35 @@ model Technician {
 
   @@index([organizationId])
   @@map("technicians")
+}
+
+/// A physical place work happens: a lift, a wash bay, an alignment rack. Shops
+/// plan by bay as often as by person — the bay is the scarce resource, and a
+/// technician moves between them during a day. The work board can group its
+/// lanes by either, so both are first-class.
+model WorkBay {
+  id            String  @id @default(cuid())
+  name          String
+  color         String  @default("#64748b")
+  isActive      Boolean @default(true)
+  /// Ordering on the board, left to right. Shops name bays by position
+  /// ("Bay 1", "Lift 2") and expect them in that order, not alphabetically.
+  sortOrder     Int     @default(0)
+  /// Bookable minutes per day, mirroring Technician.dailyCapacity so the board
+  /// can show utilisation for whichever lane grouping is on.
+  dailyCapacity Int     @default(480)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  serviceRecords ServiceRecord[]
+  inspections    Inspection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("work_bays")
 }
 
 model AuditLog {
@@ -1646,12 +1688,12 @@ model WebhookDelivery {
 /// A physical building or room holding tire storage. Most workshops have one;
 /// multi-site operators have several.
 model TireWarehouse {
-  id      String  @id @default(cuid())
-  name    String
-  address String?
-  notes   String?
+  id         String  @id @default(cuid())
+  name       String
+  address    String?
+  notes      String?
   /// Preselected when checking tires in. Exactly one per organization.
-  isDefault Boolean @default(false)
+  isDefault  Boolean @default(false)
   isArchived Boolean @default(false)
 
   organizationId String
@@ -1721,25 +1763,25 @@ model TireSet {
 
   /// summer | winter | all_season | other — see TIRE_SEASONS in
   /// src/features/tire-hotel/Lib/tireConstants.ts
-  season String @default("summer")
+  season  String  @default("summer")
   /// Studded winter tires are legal in some markets and banned in others, so
   /// this is a flag on the season rather than a season of its own.
   studded Boolean @default(false)
 
-  brand String?
-  model String?
+  brand          String?
+  model          String?
   /// Free text so every regional notation fits: "225/45R17", "P225/45R17 94V",
   /// "31x10.5R15".
-  size String?
+  size           String?
   /// DOT / TIN week-year code used to judge tire age.
-  dotCode String?
+  dotCode        String?
   loadSpeedIndex String?
 
   /// Mounted on rims, which changes both handling and what a shelf holds.
   withRims Boolean @default(false)
   rimType  String?
   /// Tire pressure monitoring sensors present — they need care on refit.
-  hasTpms Boolean @default(false)
+  hasTpms  Boolean @default(false)
 
   /// Individual tires in this set. Drives every capacity calculation.
   quantity Int @default(4)
@@ -1768,11 +1810,11 @@ model TireSet {
   checkedInAt  DateTime?
   checkedOutAt DateTime?
 
-  measurements TireMeasurement[]
-  movements    TireMovement[]
-  treatments   TireTreatment[]
-  attachments  TireSetAttachment[]
-  quotes       Quote[]
+  measurements   TireMeasurement[]
+  movements      TireMovement[]
+  treatments     TireTreatment[]
+  attachments    TireSetAttachment[]
+  quotes         Quote[]
   serviceRecords ServiceRecord[]
 
   createdAt DateTime @default(now())
@@ -1840,10 +1882,10 @@ model TireMeasurement {
   /// every market.
   treadDepthMm Float?
   /// Always stored in bar. Converted to psi/kPa for display.
-  pressureBar Float?
+  pressureBar  Float?
 
   /// good | fair | replace — see TIRE_CONDITIONS
-  condition String @default("good")
+  condition String  @default("good")
   damage    String?
   notes     String?
 
@@ -1906,8 +1948,6 @@ model TireMovement {
   @@index([organizationId, createdAt(sort: Desc)])
   @@map("tire_movements")
 }
-
-
 
 /// Work a set needs before it goes back on the car, or before it goes on the
 /// shelf: washing, balancing, a TPMS service.

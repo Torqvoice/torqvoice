@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Sütunlar",
+    "byTechnician": "Teknisyen başına bir sütun",
+    "byBay": "Çalışma alanı başına bir sütun",
+    "byNothing": "Gün başına bir sütun",
+    "weekends": "Hafta sonu",
+    "add": "Ekle",
+    "addBay": "Çalışma alanı ekle",
+    "weekNumber": "{number}. hafta",
+    "lanes": "Sütunlar",
+    "showAllLanes": "Tümünü göster",
+    "onlyBusyLanes": "Yalnızca işi olanlar",
+    "layout": "Görünüm",
+    "layoutTimeline": "Zaman çizelgesi",
+    "layoutCards": "Genel bakış",
+    "rows": "Satırlar",
+    "rowPerTechnician": "Teknisyen başına bir satır",
+    "rowPerBay": "Çalışma alanı başına bir satır",
+    "rowNothing": "Tek satır",
+    "technicians": "Teknisyenler",
+    "workBays": "Çalışma alanları",
+    "weekendsDayHint": "Yalnızca hafta görünümünde geçerlidir"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Atama taşınamadı",
     "failedAssign": "İş atanmadı",
     "failedRemove": "Atama kaldırılamadı",
-    "createNewWorkorder": "Yeni iş emri oluştur"
+    "createNewWorkorder": "Yeni iş emri oluştur",
+    "noBays": "Henüz çalışma alanı yok. Haftayı alana göre planlamak için bir tane ekleyin.",
+    "addFirstBay": "Çalışma alanı ekle",
+    "lanes": {
+      "noBay": "Alansız",
+      "noTechnician": "Teknisyensiz",
+      "everyone": "Tüm işler",
+      "thisWeek": "Bu hafta"
+    },
+    "dropNeedsLane": "Bir işi panoya bırakmadan önce panoyu teknisyene veya çalışma alanına göre gruplayın."
   },
   "unassigned": {
     "title": "Atanmamış İşler ({count})",
@@ -62,7 +92,6 @@
     "status": "Durum",
     "week": "Hafta",
     "today": "Bugün",
-    "timeline": "Zaman çizelgesi",
     "live": "Canlı",
     "disconnected": "Canlı güncellemeler kesildi",
     "noTechnicians": "Hiçbir teknisyen yapılandırılmadı",
@@ -76,6 +105,52 @@
       "completed": "Tamamlandı"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Durum panosu duruma göre gruplar",
+    "connecting": "Bağlanıyor…"
+  },
+  "week": {
+    "createAt": "{time} için yeni iş emri",
+    "unscheduled": "Planlanmamış ({count})",
+    "hint": "Bir işi taşımak için sürükleyin. Süresini değiştirmek için üst veya alt kenarını sürükleyin.",
+    "hiddenDays": "{count} iş hafta sonuna planlandı. Hafta sonunu göster.",
+    "panLeft": "Haftanın başına doğru",
+    "panRight": "Haftanın sonuna doğru",
+    "hintPan": "Hafta boyunca ilerlemek için arka planı sürükleyin.",
+    "wholeWeek": "Tüm haftayı gör",
+    "hintZoom": "Yakınlaştırmak için Ctrl tuşuna basılı tutup kaydırın."
+  },
+  "bay": {
+    "addTitle": "Çalışma alanı ekle",
+    "editTitle": "Çalışma alanını düzenle",
+    "description": "İşin yapıldığı yer: bir lift, bir rampa veya yıkama alanı.",
+    "name": "Ad",
+    "namePlaceholder": "örn. Lift 1",
+    "color": "Renk",
+    "dailyCapacity": "Günlük planlanabilir saat",
+    "hoursPerDay": "saat/gün",
+    "capacityHint": "Her günün ne kadar dolu olduğunu gösterir.",
+    "deleteTitle": "Çalışma alanını sil",
+    "deleteDescription": "\"{name}\" kaldırılsın mı? Buraya planlanan işler planlı kalır ve alansız sütuna geçer.",
+    "addBay": "Çalışma alanı ekle",
+    "saveFailed": "Çalışma alanı kaydedilemedi"
+  },
+  "lane": {
+    "booked": "Planlanan",
+    "capacity": "Kapasite",
+    "free": "Boş",
+    "over": "Aşım",
+    "jobs": "İşler",
+    "utilisation": "Kapasitenin %{pct}'i",
+    "placeholder": "Henüz buraya atanmamış işler."
+  },
+  "job": {
+    "time": "Saat",
+    "duration": "Süre",
+    "technician": "Teknisyen",
+    "workBay": "Çalışma alanı",
+    "status": "Durum",
+    "noTime": "Henüz saat yok",
+    "none": "Henüz kimse"
   }
 }

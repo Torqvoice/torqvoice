@@ -198,6 +198,11 @@ export async function POST(request: NextRequest) {
         data.technicians = result
       })
     )
+    queries.push(
+      db.workBay.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
+        data.workBays = result
+      })
+    )
   }
 
   if (options.inspections) {

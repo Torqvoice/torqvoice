@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Czytaj więcej",
-    "setDefaults": "Ustaw domyślne"
+    "setDefaults": "Ustaw domyślne",
+    "workBay": "Stanowisko",
+    "selectWorkBay": "Wybierz stanowisko…",
+    "noWorkBay": "Bez stanowiska"
   },
   "notifications": {
     "title": "Powiadomienia klienta",

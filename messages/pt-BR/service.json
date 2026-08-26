@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Saiba mais",
-    "setDefaults": "Valores padrão"
+    "setDefaults": "Valores padrão",
+    "workBay": "Baia",
+    "selectWorkBay": "Selecionar baia…",
+    "noWorkBay": "Sem baia"
   },
   "notifications": {
     "title": "Notificações ao cliente",

@@ -136,7 +136,10 @@
     "tire_set_dispose": "Kasserte et dekksett",
     "tire_set_attach": "La til filer på et dekksett",
     "tire_set_detach": "Fjernet en fil fra et dekksett",
-    "whatsapp_send": "WhatsApp-melding sendt"
+    "whatsapp_send": "WhatsApp-melding sendt",
+    "work_bay_create": "Opprettet arbeidsplass",
+    "work_bay_update": "Oppdaterte arbeidsplass",
+    "work_bay_delete": "Slettet arbeidsplass"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -256,6 +259,9 @@
     "vehicle_update": "Oppdaterte kjøretøy {name}, endret: {fields}",
     "vehicle_updateNoChanges": "Oppdaterte kjøretøy {name}, ingenting endret",
     "webhook_create": "Opprettet webhook {name}",
-    "whatsapp_send": "Sendte en WhatsApp-melding til {name}"
+    "whatsapp_send": "Sendte en WhatsApp-melding til {name}",
+    "work_bay_create": "Opprettet arbeidsplass «{name}»",
+    "work_bay_update": "Oppdaterte arbeidsplass «{name}»",
+    "work_bay_delete": "Slettet arbeidsplass {id}"
   }
 }

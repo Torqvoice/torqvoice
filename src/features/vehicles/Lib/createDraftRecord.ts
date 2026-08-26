@@ -15,6 +15,8 @@ export async function createDraftRecord(
     startDateTime?: Date
     endDateTime?: Date
     technicianId?: string
+    /** Bay the job was booked into, when it was created from the work board. */
+    workBayId?: string
   }
 ) {
   const [settings, org, currentUser] = await Promise.all([
@@ -149,6 +151,7 @@ export async function createDraftRecord(
       shopName,
       techName,
       technicianId: resolvedTechId || undefined,
+      workBayId: opts.workBayId || undefined,
       invoiceNumber,
       taxRate: defaultTaxRate,
       taxInclusive,

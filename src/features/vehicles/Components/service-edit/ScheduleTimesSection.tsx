@@ -6,6 +6,13 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -18,17 +25,29 @@ import { Input } from '@/components/ui/input'
 import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
-import { assignTechnician, updateServiceTimes } from '@/features/workboard/Actions/boardActions'
+import {
+  assignTechnician,
+  scheduleJob,
+  updateServiceTimes,
+} from '@/features/workboard/Actions/boardActions'
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
 const HOUR_PRESETS = [1, 2, 4, 5, 7]
 
+/** Sentinel for the "no bay" option: a Select item cannot carry an empty value. */
+const NO_BAY = '__none__'
+
 interface Technician {
   id: string
   name: string
   userId?: string | null
+}
+
+interface WorkBay {
+  id: string
+  name: string
 }
 
 interface OrgMember {
@@ -40,24 +59,29 @@ interface OrgMember {
 interface ScheduleTimesSectionProps {
   serviceRecordId: string
   technicians?: Technician[]
+  workBays?: WorkBay[]
   orgMembers?: OrgMember[]
   initialStartDateTime?: string | null
   initialEndDateTime?: string | null
   initialTechnicianId?: string | null
+  initialWorkBayId?: string | null
   onSaved?: () => void
 }
 
 export function ScheduleTimesSection({
   serviceRecordId,
   technicians: initialTechnicians = [],
+  workBays = [],
   orgMembers = [],
   initialStartDateTime,
   initialEndDateTime,
   initialTechnicianId,
+  initialWorkBayId,
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
+  const [selectedBayId, setSelectedBayId] = useState(initialWorkBayId || NO_BAY)
   const [techOpen, setTechOpen] = useState(false)
   const [technicians, setTechnicians] = useState<Technician[]>(initialTechnicians)
   const [techSearch, setTechSearch] = useState('')
@@ -149,6 +173,22 @@ export function ScheduleTimesSection({
       handleTechSelect(newTech.id)
     } else {
       toast.error(t('failedCreate'))
+    }
+  }
+
+  const handleBaySelect = async (bayId: string) => {
+    const previous = selectedBayId
+    setSelectedBayId(bayId)
+    const res = await scheduleJob({
+      id: serviceRecordId,
+      type: 'serviceRecord',
+      workBayId: bayId === NO_BAY ? null : bayId,
+    })
+    if (res.success) {
+      onSaved?.()
+    } else {
+      toast.error(res.error || t('failedUpdate'))
+      setSelectedBayId(previous)
     }
   }
 
@@ -336,6 +376,25 @@ export function ScheduleTimesSection({
           </PopoverContent>
         </Popover>
       </div>
+
+      {workBays.length > 0 && (
+        <div className="space-y-1">
+          <Label className="text-xs">{t('workBay')}</Label>
+          <Select value={selectedBayId} onValueChange={handleBaySelect}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t('selectWorkBay')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_BAY}>{t('noWorkBay')}</SelectItem>
+              {workBays.map((bay) => (
+                <SelectItem key={bay.id} value={bay.id}>
+                  {bay.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div className="space-y-1.5">
         <Label className="text-xs">{t('startTime')}</Label>

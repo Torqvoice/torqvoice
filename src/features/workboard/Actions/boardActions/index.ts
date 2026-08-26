@@ -1,11 +1,11 @@
-export type { WorkBoardJob, WorkBoardSettings } from "./types";
-export { getWorkBoardSettings } from "./assignments";
+export type { WorkBay, WorkBoardJob, WorkBoardSettings } from './types'
+export { getWorkBoardSettings } from './assignments'
 export {
   getBoardJobs,
   getUnassignedJobs,
   assignTechnician,
   moveJob,
   unassignJob,
-} from "./assignments";
-export { updateServiceTimes, updateInspectionTimes } from "./scheduling";
-export { getServiceRecordTechnician } from "./queries";
+} from './assignments'
+export { scheduleJob, updateServiceTimes, updateInspectionTimes } from './scheduling'
+export { getServiceRecordTechnician } from './queries'

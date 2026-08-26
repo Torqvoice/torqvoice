@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Kolonner",
+    "byTechnician": "Én kolonne per mekaniker",
+    "byBay": "Én kolonne per arbeidsplass",
+    "byNothing": "Én kolonne per dag",
+    "weekends": "Helg",
+    "add": "Legg til",
+    "addBay": "Legg til arbeidsplass",
+    "weekNumber": "Uke {number}",
+    "lanes": "Kolonner",
+    "showAllLanes": "Vis alle",
+    "onlyBusyLanes": "Bare med jobber",
+    "layout": "Visning",
+    "layoutTimeline": "Tidslinje",
+    "layoutCards": "Oversikt",
+    "rows": "Rader",
+    "rowPerTechnician": "Én rad per mekaniker",
+    "rowPerBay": "Én rad per arbeidsplass",
+    "rowNothing": "Én enkelt rad",
+    "technicians": "Mekanikere",
+    "workBays": "Arbeidsplasser",
+    "weekendsDayHint": "Gjelder bare når en uke vises"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Kunne ikke flytte tilordning",
     "failedAssign": "Kunne ikke tilordne jobb",
     "failedRemove": "Kunne ikke fjerne tilordning",
-    "createNewWorkorder": "Opprett ny arbeidsordre"
+    "createNewWorkorder": "Opprett ny arbeidsordre",
+    "noBays": "Ingen arbeidsplasser ennå. Legg til én for å planlegge uken per plass.",
+    "addFirstBay": "Legg til arbeidsplass",
+    "lanes": {
+      "noBay": "Uten plass",
+      "noTechnician": "Uten mekaniker",
+      "everyone": "Alt arbeid",
+      "thisWeek": "Denne uken"
+    },
+    "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den."
   },
   "unassigned": {
     "title": "Utildelte jobber ({count})",
@@ -62,7 +92,6 @@
     "status": "Status",
     "week": "Uke",
     "today": "I dag",
-    "timeline": "Tidslinje",
     "live": "Direkte",
     "disconnected": "Direkteoppdateringer frakoblet",
     "noTechnicians": "Ingen teknikere konfigurert",
@@ -76,6 +105,52 @@
       "completed": "Fullført"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Statustavlen grupperer etter status",
+    "connecting": "Kobler til …"
+  },
+  "week": {
+    "createAt": "Ny arbeidsordre kl. {time}",
+    "unscheduled": "Ikke planlagt ({count})",
+    "hint": "Dra en jobb for å flytte den. Dra øverste eller nederste kant for å endre varigheten.",
+    "hiddenDays": "{count} planlagt i helgen. Vis helg.",
+    "panLeft": "Tidligere i uken",
+    "panRight": "Senere i uken",
+    "hintPan": "Dra bakgrunnen for å bevege deg gjennom uken.",
+    "wholeWeek": "Vis hele uken",
+    "hintZoom": "Hold Ctrl og rull for å zoome."
+  },
+  "bay": {
+    "addTitle": "Legg til arbeidsplass",
+    "editTitle": "Rediger arbeidsplass",
+    "description": "Et sted arbeidet skjer: en løftebukk, en rampe eller en vaskeplass.",
+    "name": "Navn",
+    "namePlaceholder": "f.eks. Løftebukk 1",
+    "color": "Farge",
+    "dailyCapacity": "Bookbare timer per dag",
+    "hoursPerDay": "timer per dag",
+    "capacityHint": "Brukes til å vise hvor full hver dag er.",
+    "deleteTitle": "Slett arbeidsplass",
+    "deleteDescription": "Fjerne «{name}»? Jobber som er booket der forblir planlagt og flyttes til kolonnen uten plass.",
+    "addBay": "Legg til arbeidsplass",
+    "saveFailed": "Kunne ikke lagre arbeidsplassen"
+  },
+  "lane": {
+    "booked": "Booket",
+    "capacity": "Kapasitet",
+    "free": "Ledig",
+    "over": "Overbooket med",
+    "jobs": "Jobber",
+    "utilisation": "{pct} % av kapasiteten",
+    "placeholder": "Arbeid som ennå ikke er tildelt her."
+  },
+  "job": {
+    "time": "Tid",
+    "duration": "Varighet",
+    "technician": "Mekaniker",
+    "workBay": "Arbeidsplass",
+    "status": "Status",
+    "noTime": "Ingen tid satt ennå",
+    "none": "Ingen ennå"
   }
 }

@@ -61,7 +61,14 @@ export default async function NewServicePage({
   }
 
   const boardTechId = query.boardTech
-  const result = await createDraftServiceRecord(id, startDateTime, endDateTime, boardTechId)
+  const boardBayId = query.boardBay
+  const result = await createDraftServiceRecord(
+    id,
+    startDateTime,
+    endDateTime,
+    boardTechId,
+    boardBayId
+  )
 
   if (result.success && result.data?.id) {
     redirect(`/vehicles/${id}/service/${result.data.id}`)

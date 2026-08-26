@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Colunas",
+    "byTechnician": "Uma coluna por técnico",
+    "byBay": "Uma coluna por baia",
+    "byNothing": "Uma coluna por dia",
+    "weekends": "Fim de semana",
+    "add": "Adicionar",
+    "addBay": "Adicionar baia",
+    "weekNumber": "Sem. {number}",
+    "lanes": "Colunas",
+    "showAllLanes": "Mostrar todas",
+    "onlyBusyLanes": "Somente com serviço",
+    "layout": "Exibição",
+    "layoutTimeline": "Linha do tempo",
+    "layoutCards": "Visão geral",
+    "rows": "Linhas",
+    "rowPerTechnician": "Uma linha por técnico",
+    "rowPerBay": "Uma linha por baia",
+    "rowNothing": "Uma única linha",
+    "technicians": "Técnicos",
+    "workBays": "Baias",
+    "weekendsDayHint": "Só se aplica ao ver uma semana"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Falha ao mover atribuição",
     "failedAssign": "Falha ao atribuir trabalho",
     "failedRemove": "Falha ao remover atribuição",
-    "createNewWorkorder": "Criar nova ordem de serviço"
+    "createNewWorkorder": "Criar nova ordem de serviço",
+    "noBays": "Nenhuma baia ainda. Adicione uma para planejar a semana por baia.",
+    "addFirstBay": "Adicionar baia",
+    "lanes": {
+      "noBay": "Sem baia",
+      "noTechnician": "Sem técnico",
+      "everyone": "Todo o trabalho",
+      "thisWeek": "Esta semana"
+    },
+    "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele."
   },
   "unassigned": {
     "title": "Trabalhos Não Atribuídos ({count})",
@@ -62,7 +92,6 @@
     "status": "Status",
     "week": "Semana",
     "today": "Hoje",
-    "timeline": "Linha do tempo",
     "live": "Ao Vivo",
     "disconnected": "Atualizações ao vivo desconectadas",
     "noTechnicians": "Nenhum técnico configurado",
@@ -76,6 +105,52 @@
       "completed": "Concluído"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "O quadro de status agrupa por status",
+    "connecting": "Conectando…"
+  },
+  "week": {
+    "createAt": "Nova ordem de serviço às {time}",
+    "unscheduled": "Não agendado ({count})",
+    "hint": "Arraste um serviço para movê-lo. Arraste a borda superior ou inferior para mudar a duração.",
+    "hiddenDays": "{count} agendado(s) no fim de semana. Mostrar fim de semana.",
+    "panLeft": "Antes na semana",
+    "panRight": "Depois na semana",
+    "hintPan": "Arraste o fundo para percorrer a semana.",
+    "wholeWeek": "Ver a semana inteira",
+    "hintZoom": "Segure Ctrl e role para dar zoom."
+  },
+  "bay": {
+    "addTitle": "Adicionar baia",
+    "editTitle": "Editar baia",
+    "description": "Um lugar onde o trabalho acontece: um elevador, uma rampa ou uma área de lavagem.",
+    "name": "Nome",
+    "namePlaceholder": "ex.: Elevador 1",
+    "color": "Cor",
+    "dailyCapacity": "Horas agendáveis por dia",
+    "hoursPerDay": "horas por dia",
+    "capacityHint": "Mostra o quanto cada dia está cheio.",
+    "deleteTitle": "Excluir baia",
+    "deleteDescription": "Remover \"{name}\"? Os serviços agendados nela continuam agendados e vão para a coluna sem baia.",
+    "addBay": "Adicionar baia",
+    "saveFailed": "Não foi possível salvar a baia"
+  },
+  "lane": {
+    "booked": "Agendado",
+    "capacity": "Capacidade",
+    "free": "Livre",
+    "over": "Excedido em",
+    "jobs": "Serviços",
+    "utilisation": "{pct}% da capacidade",
+    "placeholder": "Serviço ainda sem atribuição aqui."
+  },
+  "job": {
+    "time": "Horário",
+    "duration": "Duração",
+    "technician": "Técnico",
+    "workBay": "Baia",
+    "status": "Status",
+    "noTime": "Ainda sem horário",
+    "none": "Ainda ninguém"
   }
 }

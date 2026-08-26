@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Stulpeliai",
+    "byTechnician": "Stulpelis kiekvienam meistrui",
+    "byBay": "Stulpelis kiekvienai darbo vietai",
+    "byNothing": "Stulpelis kiekvienai dienai",
+    "weekends": "Savaitgalis",
+    "add": "Pridėti",
+    "addBay": "Pridėti darbo vietą",
+    "weekNumber": "{number} sav.",
+    "lanes": "Stulpeliai",
+    "showAllLanes": "Rodyti visus",
+    "onlyBusyLanes": "Tik su darbais",
+    "layout": "Rodinys",
+    "layoutTimeline": "Laiko juosta",
+    "layoutCards": "Apžvalga",
+    "rows": "Eilutės",
+    "rowPerTechnician": "Eilutė kiekvienam meistrui",
+    "rowPerBay": "Eilutė kiekvienai darbo vietai",
+    "rowNothing": "Viena eilutė",
+    "technicians": "Meistrai",
+    "workBays": "Darbo vietos",
+    "weekendsDayHint": "Taikoma tik rodant savaitę"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Nepavyko perkelti priskyrimo",
     "failedAssign": "Nepavyko priskirti darbo",
     "failedRemove": "Nepavyko pašalinti priskyrimo",
-    "createNewWorkorder": "Sukurti naują darbo užsakymą"
+    "createNewWorkorder": "Sukurti naują darbo užsakymą",
+    "noBays": "Darbo vietų dar nėra. Pridėkite bent vieną, kad planuotumėte savaitę pagal darbo vietas.",
+    "addFirstBay": "Pridėti darbo vietą",
+    "lanes": {
+      "noBay": "Be darbo vietos",
+      "noTechnician": "Be meistro",
+      "everyone": "Visi darbai",
+      "thisWeek": "Ši savaitė"
+    },
+    "dropNeedsLane": "Prieš vilkdami darbą, sugrupuokite lentą pagal meistrą arba darbo vietą."
   },
   "unassigned": {
     "title": "Nepriskirti darbai ({count})",
@@ -62,7 +92,6 @@
     "status": "Būsena",
     "week": "Savaitė",
     "today": "Šiandien",
-    "timeline": "Laiko juosta",
     "live": "Tiesiogiai",
     "disconnected": "Tiesioginiai atnaujinimai atjungti",
     "noTechnicians": "Technikai nesukonfigūruoti",
@@ -76,6 +105,52 @@
       "completed": "Užbaigta"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Būsenų lenta grupuoja pagal būseną",
+    "connecting": "Jungiamasi…"
+  },
+  "week": {
+    "createAt": "Naujas darbo užsakymas {time}",
+    "unscheduled": "Nesuplanuota ({count})",
+    "hint": "Vilkite darbą, kad jį perkeltumėte. Vilkite viršutinį arba apatinį kraštą, kad pakeistumėte trukmę.",
+    "hiddenDays": "{count} suplanuota savaitgalį. Rodyti savaitgalį.",
+    "panLeft": "Anksčiau savaitėje",
+    "panRight": "Vėliau savaitėje",
+    "hintPan": "Vilkite foną, kad judėtumėte per savaitę.",
+    "wholeWeek": "Rodyti visą savaitę",
+    "hintZoom": "Laikykite Ctrl ir slinkite, kad priartintumėte."
+  },
+  "bay": {
+    "addTitle": "Pridėti darbo vietą",
+    "editTitle": "Redaguoti darbo vietą",
+    "description": "Vieta, kurioje atliekami darbai: keltuvas, estakada ar plovykla.",
+    "name": "Pavadinimas",
+    "namePlaceholder": "pvz. Keltuvas 1",
+    "color": "Spalva",
+    "dailyCapacity": "Rezervuojamos valandos per dieną",
+    "hoursPerDay": "val. per dieną",
+    "capacityHint": "Rodo, kiek užpildyta kiekviena diena.",
+    "deleteTitle": "Ištrinti darbo vietą",
+    "deleteDescription": "Pašalinti „{name}“? Jai priskirti darbai lieka suplanuoti ir persikelia į stulpelį be darbo vietos.",
+    "addBay": "Pridėti darbo vietą",
+    "saveFailed": "Nepavyko išsaugoti darbo vietos"
+  },
+  "lane": {
+    "booked": "Suplanuota",
+    "capacity": "Pajėgumas",
+    "free": "Laisva",
+    "over": "Viršyta",
+    "jobs": "Darbai",
+    "utilisation": "{pct} % pajėgumo",
+    "placeholder": "Darbai, kurie dar niekam nepriskirti."
+  },
+  "job": {
+    "time": "Laikas",
+    "duration": "Trukmė",
+    "technician": "Meistras",
+    "workBay": "Darbo vieta",
+    "status": "Būsena",
+    "noTime": "Laikas dar nenustatytas",
+    "none": "Kol kas niekas"
   }
 }
