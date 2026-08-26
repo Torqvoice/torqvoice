@@ -529,7 +529,9 @@ export function WeekTimeline({
       </div>
 
       {!readOnly && (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[11px] text-muted-foreground">
+        // Every instruction in it is about a mouse: dragging edges, panning the
+        // background, Ctrl and the wheel. On a phone it is a wasted line.
+        <div className="hidden flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[11px] text-muted-foreground md:flex">
           <span>
             {t('hint')}
             {(pan.overflow.left || pan.overflow.right) && ` ${t('hintPan')}`}

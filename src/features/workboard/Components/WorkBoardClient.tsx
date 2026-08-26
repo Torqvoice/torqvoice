@@ -28,7 +28,7 @@ import {
 } from '../Actions/boardActions'
 import { WorkBoardToolbar, type BoardView } from './WorkBoardToolbar'
 import type { WorkBoardSettings } from '../Actions/boardActions'
-import { UnassignedJobsPanel } from './UnassignedJobsPanel'
+import { UnassignedJobsList, UnassignedJobsPanel } from './UnassignedJobsPanel'
 import { TechnicianDialog } from './TechnicianDialog'
 import { WorkBayDialog } from './WorkBayDialog'
 import { JobDetailPopover } from './JobDetailPopover'
@@ -47,7 +47,14 @@ import {
   laneIdForJob,
 } from '../utils/lanes'
 import { Button } from '@/components/ui/button'
-import { Users, Wrench, ClipboardCheck, Columns3 } from 'lucide-react'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import { Users, Wrench, ClipboardCheck, Columns3, Inbox } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
@@ -144,6 +151,7 @@ export function WorkBoardClient({
   const store = useWorkBoardStore()
   const t = useTranslations('workBoard.board')
   const { timeFormat } = useDateSettings()
+  const tUnassigned = useTranslations('workBoard.unassigned')
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -209,6 +217,8 @@ export function WorkBoardClient({
   const weekDropResolver = useRef<
     ((clientX: number, clientY: number) => WeekDropTarget | null) | null
   >(null)
+
+  const unassignedCount = store.unassignedServiceRecords.length + store.unassignedInspections.length
 
   const weekStart = store.weekStart || initialWeekStart
   const allDays = useMemo(() => getWeekDays(weekStart), [weekStart])
@@ -829,6 +839,22 @@ export function WorkBoardClient({
         </div>
         <DragOverlay dropAnimation={null}>{dragOverlay}</DragOverlay>
       </DndContext>
+
+      {/* The sidebar is hidden below md, so the same list gets a drawer. */}
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full md:hidden">
+            <Inbox className="mr-1.5 h-3.5 w-3.5" />
+            {tUnassigned('title', { count: unassignedCount })}
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent className="max-h-[80svh]">
+          <DrawerHeader>
+            <DrawerTitle>{tUnassigned('title', { count: unassignedCount })}</DrawerTitle>
+          </DrawerHeader>
+          <UnassignedJobsList />
+        </DrawerContent>
+      </Drawer>
 
       {selectedJob && (
         <JobDetailPopover
