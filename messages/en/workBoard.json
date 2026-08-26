@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "The status board groups by status"
+    "groupingUnused": "The status board groups by status",
+    "connecting": "Connecting…"
   },
   "week": {
     "createAt": "New work order at {time}",

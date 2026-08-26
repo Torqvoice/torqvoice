@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "Het statusbord groepeert op status"
+    "groupingUnused": "Het statusbord groepeert op status",
+    "connecting": "Verbinden…"
   },
   "week": {
     "createAt": "Nieuwe werkorder om {time}",

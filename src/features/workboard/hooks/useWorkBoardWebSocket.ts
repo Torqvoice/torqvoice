@@ -21,7 +21,7 @@ export function useWorkBoardWebSocket() {
       wsRef.current = ws
 
       ws.onopen = () => {
-        useWorkBoardStore.getState().setConnected(true)
+        useWorkBoardStore.getState().setConnection('open')
       }
 
       ws.onmessage = (event) => {
@@ -139,7 +139,7 @@ export function useWorkBoardWebSocket() {
       }
 
       ws.onclose = () => {
-        useWorkBoardStore.getState().setConnected(false)
+        useWorkBoardStore.getState().setConnection('closed')
         wsRef.current = null
         if (mountedRef.current) {
           reconnectTimer.current = setTimeout(connect, 3000)

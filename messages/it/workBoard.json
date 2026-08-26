@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "La lavagna di stato raggruppa per stato"
+    "groupingUnused": "La lavagna di stato raggruppa per stato",
+    "connecting": "Connessione…"
   },
   "week": {
     "createAt": "Nuovo ordine di lavoro alle {time}",

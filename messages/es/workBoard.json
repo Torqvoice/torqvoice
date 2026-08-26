@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "El tablero de estado agrupa por estado"
+    "groupingUnused": "El tablero de estado agrupa por estado",
+    "connecting": "Conectando…"
   },
   "week": {
     "createAt": "Nueva orden de trabajo a las {time}",

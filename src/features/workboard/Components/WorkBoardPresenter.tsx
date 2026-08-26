@@ -18,6 +18,8 @@ import { type BoardLayout, isBoardLayout } from '../hooks/useBoardPreferences'
 import { type LaneGrouping, buildLanes, groupJobsByLane, isLaneGrouping } from '../utils/lanes'
 import { useTranslations, useLocale } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 
 type Period = 'day' | 'week'
 /** Timeline and Overview are the board's own layouts; Status is the kanban,
@@ -400,20 +402,34 @@ export function WorkBoardPresenter({
             </Button>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {store.isConnected ? (
-              <span className="flex items-center gap-1.5 text-green-600" title={t('live')}>
-                <Wifi className="h-4 w-4" />
-                <span className="text-xs">{t('live')}</span>
-              </span>
-            ) : (
-              <span
-                className="flex items-center gap-1.5 animate-pulse text-red-500"
-                title={t('disconnected')}
-              >
-                <WifiOff className="h-4 w-4" />
-                <span className="text-xs">{t('disconnected')}</span>
-              </span>
-            )}
+            {/* Icon only, and always the same size. The words "Live updates
+                disconnected" are four times the width of "Live", so swapping
+                between them shoved every control in the header sideways. */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className={cn(
+                    'flex h-4 w-4 items-center justify-center',
+                    store.connection === 'open' && 'text-green-600',
+                    store.connection === 'closed' && 'animate-pulse text-red-500',
+                    store.connection === 'connecting' && 'text-muted-foreground'
+                  )}
+                >
+                  {store.connection === 'closed' ? (
+                    <WifiOff className="h-4 w-4" />
+                  ) : (
+                    <Wifi className="h-4 w-4" />
+                  )}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {store.connection === 'open'
+                  ? t('live')
+                  : store.connection === 'closed'
+                    ? t('disconnected')
+                    : t('connecting')}
+              </TooltipContent>
+            </Tooltip>
             <LiveClock />
           </div>
         </div>

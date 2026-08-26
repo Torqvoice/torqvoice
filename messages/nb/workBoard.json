@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "Statustavlen grupperer etter status"
+    "groupingUnused": "Statustavlen grupperer etter status",
+    "connecting": "Kobler til …"
   },
   "week": {
     "createAt": "Ny arbeidsordre kl. {time}",

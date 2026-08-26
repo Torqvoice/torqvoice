@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "Būsenų lenta grupuoja pagal būseną"
+    "groupingUnused": "Būsenų lenta grupuoja pagal būseną",
+    "connecting": "Jungiamasi…"
   },
   "week": {
     "createAt": "Naujas darbo užsakymas {time}",

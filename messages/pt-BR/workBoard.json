@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "O quadro de status agrupa por status"
+    "groupingUnused": "O quadro de status agrupa por status",
+    "connecting": "Conectando…"
   },
   "week": {
     "createAt": "Nova ordem de serviço às {time}",

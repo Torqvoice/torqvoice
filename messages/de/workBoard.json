@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "Die Statustafel gruppiert nach Status"
+    "groupingUnused": "Die Statustafel gruppiert nach Status",
+    "connecting": "Verbinden …"
   },
   "week": {
     "createAt": "Neuer Auftrag um {time}",

@@ -46,7 +46,14 @@ type WorkBoardState = {
   unassignedServiceRecords: UnassignedServiceRecord[]
   unassignedInspections: UnassignedInspection[]
   weekStart: string
-  isConnected: boolean
+  /**
+   * Three states, not two.
+   *
+   * A board that has not finished opening its socket is not disconnected, and
+   * saying so on first paint put a red warning on screen for the split second
+   * before the connection landed.
+   */
+  connection: 'connecting' | 'open' | 'closed'
 
   setTechnicians: (techs: Technician[]) => void
   addTechnician: (tech: Technician) => void
@@ -72,7 +79,7 @@ type WorkBoardState = {
   ) => void
 
   setWeekStart: (weekStart: string) => void
-  setConnected: (connected: boolean) => void
+  setConnection: (connection: 'connecting' | 'open' | 'closed') => void
 
   updateServiceTimes: (jobId: string, startDateTime: string, endDateTime: string) => void
   optimisticMove: (jobId: string, newTechId: string) => void
@@ -92,7 +99,7 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
   unassignedServiceRecords: [],
   unassignedInspections: [],
   weekStart: '',
-  isConnected: false,
+  connection: 'connecting',
 
   setTechnicians: (technicians) => set({ technicians }),
   addTechnician: (tech) =>
@@ -153,7 +160,7 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
     })),
 
   setWeekStart: (weekStart) => set({ weekStart }),
-  setConnected: (isConnected) => set({ isConnected }),
+  setConnection: (connection) => set({ connection }),
 
   optimisticMove: (jobId, newTechId) =>
     set((s) => ({

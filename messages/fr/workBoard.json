@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "Le tableau de statut regroupe par statut"
+    "groupingUnused": "Le tableau de statut regroupe par statut",
+    "connecting": "Connexion…"
   },
   "week": {
     "createAt": "Nouvel ordre de travail à {time}",

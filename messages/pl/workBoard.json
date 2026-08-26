@@ -106,7 +106,8 @@
     },
     "previous": "Previous",
     "next": "Next",
-    "groupingUnused": "Tablica statusów grupuje według statusu"
+    "groupingUnused": "Tablica statusów grupuje według statusu",
+    "connecting": "Łączenie…"
   },
   "week": {
     "createAt": "Nowe zlecenie o {time}",
