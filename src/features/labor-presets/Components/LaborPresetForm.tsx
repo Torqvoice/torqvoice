@@ -65,6 +65,7 @@ interface LaborPresetFormProps {
     id: string
     name: string
     partNumber: string | null
+    unit: string | null
     sellPrice: number
     unitCost: number
   }[]

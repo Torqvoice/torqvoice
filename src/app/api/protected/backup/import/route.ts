@@ -140,6 +140,11 @@ async function importServiceRecordTree(
         unit: (p.unit as string) || null,
         unitPrice: (p.unitPrice as number) || 0,
         total: (p.total as number) || 0,
+        unitCost: (p.unitCost as number) || 0,
+        markupPercent: (p.markupPercent as number) || 0,
+        // Inventory parts are restored earlier in this transaction with their
+        // ids preserved, so the stock link survives a restore verbatim.
+        inventoryPartId: (p.inventoryPartId as string) || null,
         serviceRecordId: sr.id as string,
       })),
     })
@@ -775,6 +780,12 @@ export async function POST(request: NextRequest) {
                 unit: (p.unit as string) || null,
                 unitPrice: (p.unitPrice as number) || 0,
                 total: (p.total as number) || 0,
+                unitCost: (p.unitCost as number) || 0,
+                markupPercent: (p.markupPercent as number) || 0,
+                excluded: (p.excluded as boolean) || false,
+                // Same-transaction inventory restore keeps ids, so the link
+                // carried into ServicePart on conversion stays intact.
+                inventoryPartId: (p.inventoryPartId as string) || null,
                 quoteId: q.id as string,
               })),
             })

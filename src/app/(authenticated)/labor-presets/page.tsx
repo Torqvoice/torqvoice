@@ -1,48 +1,61 @@
-import { getLaborPresetsPaginated } from "@/features/labor-presets/Actions/laborPresetActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { LaborPresetsClient } from "./labor-presets-client";
-import { PageHeader } from "@/components/page-header";
+import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
+import { getLaborPresetsPaginated } from '@/features/labor-presets/Actions/laborPresetActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { LaborPresetsClient } from './labor-presets-client'
+import { PageHeader } from '@/components/page-header'
 
 export default async function LaborPresetsPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    page?: string;
-    pageSize?: string;
-    search?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }>;
+    page?: string
+    pageSize?: string
+    search?: string
+    sortBy?: string
+    sortOrder?: string
+  }>
 }) {
-  const params = await searchParams;
-  const [result, settingsResult] = await Promise.all([
+  const params = await searchParams
+  const [result, settingsResult, inventoryResult] = await Promise.all([
     getLaborPresetsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       sortBy: params.sortBy,
-      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
+      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.DEFAULT_LABOR_RATE]),
-  ]);
+    // For the "import from inventory" picker in the preset form. A user
+    // without inventory read permission simply gets no picker.
+    getInventoryPartsList(),
+  ])
 
   if (!result.success || !result.data) {
     return (
       <>
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
-          <p className="text-muted-foreground">
-            {result.error || "Failed to load labor presets"}
-          </p>
+          <p className="text-muted-foreground">{result.error || 'Failed to load labor presets'}</p>
         </div>
       </>
-    );
+    )
   }
 
-  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0;
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const inventoryParts =
+    inventoryResult.success && inventoryResult.data
+      ? inventoryResult.data.map((p) => ({
+          id: p.id,
+          name: p.name,
+          partNumber: p.partNumber,
+          unit: p.unit,
+          sellPrice: p.sellPrice,
+          unitCost: p.unitCost,
+        }))
+      : []
+  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
 
   return (
     <>
@@ -50,13 +63,14 @@ export default async function LaborPresetsPage({
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <LaborPresetsClient
           data={result.data}
-          search={params.search || ""}
-          sortBy={params.sortBy || "updatedAt"}
-          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
+          search={params.search || ''}
+          sortBy={params.sortBy || 'updatedAt'}
+          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
           currencyCode={currencyCode}
           defaultLaborRate={defaultLaborRate}
+          inventoryParts={inventoryParts}
         />
       </div>
     </>
-  );
+  )
 }
