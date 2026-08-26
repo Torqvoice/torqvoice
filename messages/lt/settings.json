@@ -831,6 +831,8 @@
     "liters": "litrai (l)",
     "miles": "mylios (mi)",
     "gallons": "galonai (gal)",
+    "defaultStockUnit": "Numatytasis sandėlio vienetas",
+    "defaultStockUnitHint": "Automatiškai įrašomas naujoms sandėlio dalims. Kiekviena dalis vis tiek gali turėti savo vienetą.",
     "saveWorkshop": "Išsaugoti dirbtuvių nustatymus",
     "saved": "Dirbtuvių nustatymai išsaugoti",
     "assignDialogTitle": "Priskirti esamiems darbo užsakymams?",

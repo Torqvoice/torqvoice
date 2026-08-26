@@ -66,6 +66,9 @@ export const SETTING_KEYS = {
   MAINTENANCE_SERVICE_INTERVAL: 'maintenance.serviceInterval',
   MAINTENANCE_APPROACHING_THRESHOLD: 'maintenance.approachingThreshold',
   INVENTORY_MARKUP_MULTIPLIER: 'inventory.markupMultiplier',
+  /// Unit of measure pre-filled on newly created inventory parts ("pcs",
+  /// "l", "qt"...). Empty means new parts start with no unit.
+  INVENTORY_DEFAULT_UNIT: 'inventory.defaultUnit',
   LOW_STOCK_ALERTS_ENABLED: 'inventory.lowStockAlerts.enabled',
   /// Org-wide fallback reorder point, applied to parts with no minQuantity of
   /// their own. 0 means only explicitly configured parts are watched.

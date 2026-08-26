@@ -1,20 +1,21 @@
-"use client";
+'use client'
 
-import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
-import { interactiveRow } from '@/lib/interactive-row';
-import { useDebouncedSearch } from '@/hooks/use-debounced-search';
-import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts';
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { formatQuantity } from '@/lib/format-quantity'
+import { interactiveRow } from '@/lib/interactive-row'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
+import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts'
 
-import { useState, useCallback, useTransition, useEffect } from "react";
-import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog';
-import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog';
-import { useHardwareScanner } from '@/hooks/use-hardware-scanner';
-import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode';
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useCallback, useTransition, useEffect } from 'react'
+import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
+import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog'
+import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
+import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
+import { useTranslations } from 'next-intl'
+import Link from 'next/link'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -22,45 +23,49 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { TableContextMenuHint } from "@/components/table-context-menu-hint";
-import { useGlassModal } from "@/components/glass-modal";
-import { useConfirm } from "@/components/confirm-dialog";
-import { InventoryPartForm } from "@/features/inventory/Components/InventoryPartForm";
-import { deleteInventoryPart, deleteInventoryParts, applyMarkupToAll } from "@/features/inventory/Actions/inventoryActions";
-import { setSetting } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+} from '@/components/ui/context-menu'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { DataTablePagination } from '@/components/data-table-pagination'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { useGlassModal } from '@/components/glass-modal'
+import { useConfirm } from '@/components/confirm-dialog'
+import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
+import {
+  deleteInventoryPart,
+  deleteInventoryParts,
+  applyMarkupToAll,
+} from '@/features/inventory/Actions/inventoryActions'
+import { setSetting } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   Dialog as MarkupDialog,
   DialogContent as MarkupDialogContent,
   DialogHeader as MarkupDialogHeader,
   DialogTitle as MarkupDialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import {
   ArrowDown,
   ArrowUp,
@@ -79,36 +84,43 @@ import {
   Search,
   Trash2,
   X,
-} from "lucide-react";
+} from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { toast } from "sonner";
+import { toast } from 'sonner'
 
 interface InventoryPart {
-  id: string;
-  partNumber: string | null;
-  barcode: string | null;
-  name: string;
-  description: string | null;
-  category: string | null;
-  quantity: number;
-  minQuantity: number;
-  unitCost: number;
-  sellPrice: number;
-  supplier: string | null;
-  supplierPhone: string | null;
-  supplierEmail: string | null;
-  supplierUrl: string | null;
-  imageUrl: string | null;
-  gallery: { id: string; url: string; fileName: string | null; description: string | null; sortOrder: number }[];
-  location: string | null;
+  id: string
+  partNumber: string | null
+  barcode: string | null
+  name: string
+  description: string | null
+  category: string | null
+  quantity: number
+  minQuantity: number
+  unit: string | null
+  unitCost: number
+  sellPrice: number
+  supplier: string | null
+  supplierPhone: string | null
+  supplierEmail: string | null
+  supplierUrl: string | null
+  imageUrl: string | null
+  gallery: {
+    id: string
+    url: string
+    fileName: string | null
+    description: string | null
+    sortOrder: number
+  }[]
+  location: string | null
 }
 
 interface PaginatedData {
-  parts: InventoryPart[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  parts: InventoryPart[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
 export function InventoryClient({
@@ -116,117 +128,129 @@ export function InventoryClient({
   search,
   category,
   categories,
-  currencyCode = "USD",
+  currencyCode = 'USD',
   markupMultiplier: initialMarkup = 1.0,
-  sortBy: initialSortBy = "updatedAt",
-  sortOrder: initialSortOrder = "desc",
+  defaultUnit = '',
+  unitSystem = 'imperial',
+  sortBy: initialSortBy = 'updatedAt',
+  sortOrder: initialSortOrder = 'desc',
   lowStockDefault = 0,
   lowStockOnly = false,
   hasAnyReorderPoint = false,
 }: {
-  data: PaginatedData;
-  search: string;
-  category: string;
-  categories: string[];
-  currencyCode?: string;
-  markupMultiplier?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  data: PaginatedData
+  search: string
+  category: string
+  categories: string[]
+  currencyCode?: string
+  markupMultiplier?: number
+  /** Unit pre-filled on new parts (inventory.defaultUnit setting). */
+  defaultUnit?: string
+  /** workshop.unitSystem, orders unit suggestions in the part form. */
+  unitSystem?: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
   /** Org-wide fallback reorder point for parts with no minQuantity. */
-  lowStockDefault?: number;
+  lowStockDefault?: number
   /** Whether the list is currently filtered to low-stock parts. */
-  lowStockOnly?: boolean;
+  lowStockOnly?: boolean
   /** False when no part and no org default defines a reorder point. */
-  hasAnyReorderPoint?: boolean;
+  hasAnyReorderPoint?: boolean
 }) {
-  const formatCurrency = useFormatCurrency();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const t = useTranslations('inventory');
-  const [isPending, startTransition] = useTransition();
-  const tableNav = useTableKeyboardNav();
-  const [showForm, setShowForm] = useState(false);
-  const [editPart, setEditPart] = useState<InventoryPart | null>(null);
-  const [showMarkup, setShowMarkup] = useState(false);
-  const [markupValue, setMarkupValue] = useState(String(initialMarkup));
-  const [applyingMarkup, setApplyingMarkup] = useState(false);
-  const [overrideExisting, setOverrideExisting] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+  const formatCurrency = useFormatCurrency()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const t = useTranslations('inventory')
+  const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav()
+  const [showForm, setShowForm] = useState(false)
+  const [editPart, setEditPart] = useState<InventoryPart | null>(null)
+  const [showMarkup, setShowMarkup] = useState(false)
+  const [markupValue, setMarkupValue] = useState(String(initialMarkup))
+  const [applyingMarkup, setApplyingMarkup] = useState(false)
+  const [overrideExisting, setOverrideExisting] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
+  const [galleryImages, setGalleryImages] = useState<string[]>([])
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
   const [scannedPart, setScannedPart] = useState<{
-    id: string;
-    name: string;
-    partNumber: string | null;
-    barcode: string | null;
-    quantity: number;
-    category: string | null;
-  } | null>(null);
-  const [scannedBarcode, setScannedBarcode] = useState('');
-  const [showScanActions, setShowScanActions] = useState(false);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+    id: string
+    name: string
+    partNumber: string | null
+    barcode: string | null
+    quantity: number
+    unit: string | null
+    category: string | null
+  } | null>(null)
+  const [scannedBarcode, setScannedBarcode] = useState('')
+  const [showScanActions, setShowScanActions] = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   useEffect(() => {
-    if (searchParams.get("create") === "true") {
-      setShowForm(true);
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("create");
-      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-      window.history.replaceState(null, "", cleanUrl);
+    if (searchParams.get('create') === 'true') {
+      setShowForm(true)
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('create')
+      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+      window.history.replaceState(null, '', cleanUrl)
     }
-  }, [searchParams, pathname]);
-  const modal = useGlassModal();
-  const confirm = useConfirm();
+  }, [searchParams, pathname])
+  const modal = useGlassModal()
+  const confirm = useConfirm()
 
   const handleBarcodeScan = useCallback(async (barcode: string) => {
-    const result = await lookupPartByBarcode(barcode);
-    setScannedBarcode(barcode);
+    const result = await lookupPartByBarcode(barcode)
+    setScannedBarcode(barcode)
     if (result.success && result.data) {
-      setScannedPart(result.data);
+      setScannedPart(result.data)
     } else {
-      setScannedPart(null);
+      setScannedPart(null)
     }
-    setShowScanActions(true);
-  }, []);
+    setShowScanActions(true)
+  }, [])
 
-  useHardwareScanner({ onScan: handleBarcodeScan });
+  useHardwareScanner({ onScan: handleBarcodeScan })
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === "") {
-          newParams.delete(key);
+        if (value === undefined || value === '') {
+          newParams.delete(key)
         } else {
-          newParams.set(key, String(value));
+          newParams.set(key, String(value))
         }
       }
-      if (!("page" in params) && ("search" in params || "category" in params || "lowStock" in params)) {
-        newParams.delete("page");
+      if (
+        !('page' in params) &&
+        ('search' in params || 'category' in params || 'lowStock' in params)
+      ) {
+        newParams.delete('page')
       }
       startTransition(() => {
-        router.push(`${pathname}?${newParams.toString()}`);
-      });
+        router.push(`${pathname}?${newParams.toString()}`)
+      })
     },
     [router, pathname, searchParams]
-  );
+  )
 
   const handleSort = useCallback(
     (column: string) => {
-      const newOrder = initialSortBy === column && initialSortOrder === "asc" ? "desc" : "asc";
-      navigate({ sortBy: column, sortOrder: newOrder });
+      const newOrder = initialSortBy === column && initialSortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
     },
     [navigate, initialSortBy, initialSortOrder]
-  );
+  )
 
   const SortIcon = ({ column }: { column: string }) => {
-    if (initialSortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
-    return initialSortOrder === "asc"
-      ? <ArrowUp className="ml-1 h-3 w-3" />
-      : <ArrowDown className="ml-1 h-3 w-3" />;
-  };
+    if (initialSortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return initialSortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
+  }
 
   // Live search: filters as you type, no Enter required. Submitting the
   // form (Enter) commits immediately, bypassing the debounce.
@@ -234,7 +258,7 @@ export function InventoryClient({
     value: searchInput,
     setValue: setSearchInput,
     commitNow: handleSearch,
-  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
@@ -242,78 +266,78 @@ export function InventoryClient({
       description: t('deletePart.description', { name }),
       confirmLabel: t('deletePart.confirm'),
       destructive: true,
-    });
-    if (!ok) return;
-    const result = await deleteInventoryPart(id);
+    })
+    if (!ok) return
+    const result = await deleteInventoryPart(id)
     if (result.success) {
-      router.refresh();
+      router.refresh()
     } else {
-      modal.open("error", t('errors.error'), result.error || t('errors.deleteFailed'));
+      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
     }
-  };
+  }
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const toggleSelectAll = () => {
     if (selected.size === data.parts.length) {
-      setSelected(new Set());
+      setSelected(new Set())
     } else {
-      setSelected(new Set(data.parts.map((p) => p.id)));
+      setSelected(new Set(data.parts.map((p) => p.id)))
     }
-  };
+  }
 
   const handleBulkDelete = async () => {
-    if (selected.size === 0) return;
+    if (selected.size === 0) return
     const ok = await confirm({
       title: t('bulkDelete.title'),
       description: t('bulkDelete.description', { count: selected.size }),
       confirmLabel: t('bulkDelete.confirm'),
       destructive: true,
-    });
-    if (!ok) return;
-    setIsBulkDeleting(true);
-    const result = await deleteInventoryParts(Array.from(selected));
+    })
+    if (!ok) return
+    setIsBulkDeleting(true)
+    const result = await deleteInventoryParts(Array.from(selected))
     if (result.success) {
-      toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? selected.size }));
-      setSelected(new Set());
-      router.refresh();
+      toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? selected.size }))
+      setSelected(new Set())
+      router.refresh()
     } else {
-      modal.open("error", t('errors.error'), result.error || t('errors.deleteFailed'));
+      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
     }
-    setIsBulkDeleting(false);
-  };
+    setIsBulkDeleting(false)
+  }
 
   const handleApplyMarkup = async () => {
-    const multiplier = Number(markupValue);
+    const multiplier = Number(markupValue)
     if (!multiplier || multiplier <= 0) {
-      modal.open("error", t('errors.error'), t('errors.multiplierPositive'));
-      return;
+      modal.open('error', t('errors.error'), t('errors.multiplierPositive'))
+      return
     }
-    setApplyingMarkup(true);
+    setApplyingMarkup(true)
     try {
       const [result] = await Promise.all([
         applyMarkupToAll({ multiplier, overrideExisting }),
         setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier)),
-      ]);
+      ])
       if (result.success) {
-        setShowMarkup(false);
-        router.refresh();
+        setShowMarkup(false)
+        router.refresh()
       } else {
-        modal.open("error", t('errors.error'), result.error || t('errors.applyFailed'));
+        modal.open('error', t('errors.error'), result.error || t('errors.applyFailed'))
       }
     } catch {
-      modal.open("error", t('errors.error'), t('errors.applyFailed'));
+      modal.open('error', t('errors.error'), t('errors.applyFailed'))
     } finally {
-      setApplyingMarkup(false);
+      setApplyingMarkup(false)
     }
-  };
+  }
 
   // An empty Low view is ambiguous on its own: it means either "nothing is
   // running out" (good) or "nothing is being watched" (needs setup). Say which,
@@ -337,7 +361,7 @@ export function InventoryClient({
     t('empty.noMatch')
   ) : (
     t('empty.noParts')
-  );
+  )
 
   return (
     <div className="space-y-4">
@@ -366,8 +390,8 @@ export function InventoryClient({
               />
             </form>
             <Select
-              value={category || "all"}
-              onValueChange={(v) => navigate({ category: v === "all" ? undefined : v })}
+              value={category || 'all'}
+              onValueChange={(v) => navigate({ category: v === 'all' ? undefined : v })}
             >
               <SelectTrigger className="h-9 w-[120px] shrink-0 sm:w-[150px]">
                 <SelectValue placeholder={t('categoryPlaceholder')} />
@@ -386,8 +410,8 @@ export function InventoryClient({
                 (the dashboard card links straight here with ?lowStock=1). */}
             <Button
               size="sm"
-              variant={lowStockOnly ? "default" : "outline"}
-              onClick={() => navigate({ lowStock: lowStockOnly ? undefined : "1" })}
+              variant={lowStockOnly ? 'default' : 'outline'}
+              onClick={() => navigate({ lowStock: lowStockOnly ? undefined : '1' })}
               aria-pressed={lowStockOnly}
               aria-label={t('table.low')}
               title={t('table.low')}
@@ -408,7 +432,11 @@ export function InventoryClient({
               disabled={isBulkDeleting}
               className="h-9 md:h-8"
             >
-              {isBulkDeleting ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-1 h-3.5 w-3.5" />}
+              {isBulkDeleting ? (
+                <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+              )}
               {t('bulkDelete.deleteSelected', { count: selected.size })}
             </Button>
           ) : (
@@ -460,9 +488,9 @@ export function InventoryClient({
           </div>
         ) : (
           data.parts.map((part) => {
-            const isLow = isLowStock(part, lowStockDefault);
-            const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost;
-            const thumb = part.gallery[0]?.url || part.imageUrl;
+            const isLow = isLowStock(part, lowStockDefault)
+            const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost
+            const thumb = part.gallery[0]?.url || part.imageUrl
             return (
               <div key={part.id} className="flex items-start gap-3 rounded-lg border bg-card p-3">
                 <Checkbox
@@ -474,8 +502,8 @@ export function InventoryClient({
                   type="button"
                   className="flex min-w-0 flex-1 items-start gap-3 text-left"
                   onClick={() => {
-                    setEditPart(part);
-                    setShowForm(true);
+                    setEditPart(part)
+                    setShowForm(true)
                   }}
                 >
                   {thumb && (
@@ -497,7 +525,10 @@ export function InventoryClient({
                     )}
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1.5">
-                        {t('table.inStock')}: <span className="font-medium text-foreground">{part.quantity}</span>
+                        {t('table.inStock')}:{' '}
+                        <span className="font-medium text-foreground">
+                          {formatQuantity(part.quantity, part.unit)}
+                        </span>
                         {isLow && (
                           <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
                             {t('table.low')}
@@ -524,8 +555,8 @@ export function InventoryClient({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() => {
-                        setEditPart(part);
-                        setShowForm(true);
+                        setEditPart(part)
+                        setShowForm(true)
                       }}
                     >
                       <Pencil className="mr-2 h-4 w-4" />
@@ -547,7 +578,7 @@ export function InventoryClient({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            );
+            )
           })
         )}
       </div>
@@ -564,7 +595,7 @@ export function InventoryClient({
                     data.parts.length > 0 && selected.size === data.parts.length
                       ? true
                       : selected.size > 0
-                        ? "indeterminate"
+                        ? 'indeterminate'
                         : false
                   }
                   onCheckedChange={toggleSelectAll}
@@ -572,44 +603,84 @@ export function InventoryClient({
                 />
               </TableHead>
               <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("partNumber")}>
-                  {t('table.partNumber')}<SortIcon column="partNumber" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('partNumber')}
+                >
+                  {t('table.partNumber')}
+                  <SortIcon column="partNumber" />
                 </button>
               </TableHead>
               <TableHead className="hidden lg:table-cell">{t('table.barcode')}</TableHead>
               <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("name")}>
-                  {t('table.name')}<SortIcon column="name" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('name')}
+                >
+                  {t('table.name')}
+                  <SortIcon column="name" />
                 </button>
               </TableHead>
               <TableHead className="hidden sm:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("category")}>
-                  {t('table.category')}<SortIcon column="category" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('category')}
+                >
+                  {t('table.category')}
+                  <SortIcon column="category" />
                 </button>
               </TableHead>
               <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("quantity")}>
-                  {t('table.inStock')}<SortIcon column="quantity" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('quantity')}
+                >
+                  {t('table.inStock')}
+                  <SortIcon column="quantity" />
                 </button>
               </TableHead>
               <TableHead className="text-right">
-                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort("unitCost")}>
-                  {t('table.unitCost')}<SortIcon column="unitCost" />
+                <button
+                  type="button"
+                  className="ml-auto flex items-center hover:text-foreground"
+                  onClick={() => handleSort('unitCost')}
+                >
+                  {t('table.unitCost')}
+                  <SortIcon column="unitCost" />
                 </button>
               </TableHead>
               <TableHead className="text-right">
-                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort("sellPrice")}>
-                  {t('table.sellPrice')}<SortIcon column="sellPrice" />
+                <button
+                  type="button"
+                  className="ml-auto flex items-center hover:text-foreground"
+                  onClick={() => handleSort('sellPrice')}
+                >
+                  {t('table.sellPrice')}
+                  <SortIcon column="sellPrice" />
                 </button>
               </TableHead>
               <TableHead className="hidden md:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("supplier")}>
-                  {t('table.supplier')}<SortIcon column="supplier" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('supplier')}
+                >
+                  {t('table.supplier')}
+                  <SortIcon column="supplier" />
                 </button>
               </TableHead>
               <TableHead className="hidden lg:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("location")}>
-                  {t('table.location')}<SortIcon column="location" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('location')}
+                >
+                  {t('table.location')}
+                  <SortIcon column="location" />
                 </button>
               </TableHead>
               <TableHead className="w-[50px]" />
@@ -624,171 +695,180 @@ export function InventoryClient({
               </TableRow>
             ) : (
               data.parts.map((part) => {
-                const isLow = isLowStock(part, lowStockDefault);
+                const isLow = isLowStock(part, lowStockDefault)
                 return (
                   <ContextMenu key={part.id} modal={false}>
-                  <ContextMenuTrigger asChild>
-                  <TableRow
-                    className="cursor-pointer"
-                    {...interactiveRow(() => {
-                      setEditPart(part);
-                      setShowForm(true);
-                    })}
-                  >
-                    <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selected.has(part.id)}
-                        onCheckedChange={() => toggleSelect(part.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {part.partNumber ? (
-                        <span className="font-mono text-sm">{part.partNumber}</span>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      {part.barcode ? (
-                        <span className="font-mono text-sm">{part.barcode}</span>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {(part.gallery[0]?.url || part.imageUrl) && (
-                          <img
-                            src={part.gallery[0]?.url || part.imageUrl!}
-                            alt={part.name}
-                            className="h-8 w-8 cursor-pointer rounded object-cover hover:opacity-80"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const imgs = part.gallery.length > 0
-                                ? part.gallery.map(g => g.url)
-                                : part.imageUrl ? [part.imageUrl] : [];
-                              if (imgs.length === 0) return;
-                              setGalleryImages(imgs);
-                              setGalleryIndex(0);
-                            }}
+                    <ContextMenuTrigger asChild>
+                      <TableRow
+                        className="cursor-pointer"
+                        {...interactiveRow(() => {
+                          setEditPart(part)
+                          setShowForm(true)
+                        })}
+                      >
+                        <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selected.has(part.id)}
+                            onCheckedChange={() => toggleSelect(part.id)}
                           />
-                        )}
-                        {part.name}
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell text-muted-foreground">
-                      {part.category || "-"}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span>{part.quantity}</span>
-                        {isLow && (
-                          <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                            {t('table.low')}
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrency(part.unitCost, currencyCode)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {(() => {
-                        const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost;
-                        const margin = effective > 0 && part.unitCost > 0 && effective !== part.unitCost
-                          ? Math.round(((effective - part.unitCost) / part.unitCost) * 100)
-                          : null;
-                        return (
-                          <div>
-                            {formatCurrency(effective, currencyCode)}
-                            {margin !== null && (
-                              <span className="block text-[10px] text-muted-foreground">
-                                {margin}%
-                              </span>
+                        </TableCell>
+                        <TableCell>
+                          {part.partNumber ? (
+                            <span className="font-mono text-sm">{part.partNumber}</span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          {part.barcode ? (
+                            <span className="font-mono text-sm">{part.barcode}</span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {(part.gallery[0]?.url || part.imageUrl) && (
+                              <img
+                                src={part.gallery[0]?.url || part.imageUrl!}
+                                alt={part.name}
+                                className="h-8 w-8 cursor-pointer rounded object-cover hover:opacity-80"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  const imgs =
+                                    part.gallery.length > 0
+                                      ? part.gallery.map((g) => g.url)
+                                      : part.imageUrl
+                                        ? [part.imageUrl]
+                                        : []
+                                  if (imgs.length === 0) return
+                                  setGalleryImages(imgs)
+                                  setGalleryIndex(0)
+                                }}
+                              />
+                            )}
+                            {part.name}
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-muted-foreground">
+                          {part.category || '-'}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span>{formatQuantity(part.quantity, part.unit)}</span>
+                            {isLow && (
+                              <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                                {t('table.low')}
+                              </Badge>
                             )}
                           </div>
-                        );
-                      })()}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        {part.supplier || "-"}
-                        {part.supplierUrl && (
-                          <a
-                            href={part.supplierUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-muted-foreground hover:text-foreground"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
-                        )}
-                      </span>
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell text-muted-foreground">
-                      {part.location || "-"}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setEditPart(part);
-                              setShowForm(true);
-                            }}
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            {t('actions.edit')}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/inventory/${part.id}`}>
-                              <History className="mr-2 h-4 w-4" />
-                              {t('actions.details')}
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => handleDelete(part.id, part.name)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            {t('actions.delete')}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className="min-w-52">
-                    <ContextMenuItem
-                      onClick={() => {
-                        setEditPart(part);
-                        setShowForm(true);
-                      }}
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      {t('actions.edit')}
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={() => router.push(`/inventory/${part.id}`)}>
-                      <History className="mr-2 h-4 w-4" />
-                      {t('actions.details')}
-                    </ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem
-                      variant="destructive"
-                      onClick={() => handleDelete(part.id, part.name)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {t('actions.delete')}
-                    </ContextMenuItem>
-                  </ContextMenuContent>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(part.unitCost, currencyCode)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {(() => {
+                            const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost
+                            const margin =
+                              effective > 0 && part.unitCost > 0 && effective !== part.unitCost
+                                ? Math.round(((effective - part.unitCost) / part.unitCost) * 100)
+                                : null
+                            return (
+                              <div>
+                                {formatCurrency(effective, currencyCode)}
+                                {margin !== null && (
+                                  <span className="block text-[10px] text-muted-foreground">
+                                    {margin}%
+                                  </span>
+                                )}
+                              </div>
+                            )
+                          })()}
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            {part.supplier || '-'}
+                            {part.supplierUrl && (
+                              <a
+                                href={part.supplierUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-muted-foreground hover:text-foreground"
+                              >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                          </span>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-muted-foreground">
+                          {part.location || '-'}
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                aria-label={t('openMenu')}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditPart(part)
+                                  setShowForm(true)
+                                }}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                {t('actions.edit')}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem asChild>
+                                <Link href={`/inventory/${part.id}`}>
+                                  <History className="mr-2 h-4 w-4" />
+                                  {t('actions.details')}
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => handleDelete(part.id, part.name)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {t('actions.delete')}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="min-w-52">
+                      <ContextMenuItem
+                        onClick={() => {
+                          setEditPart(part)
+                          setShowForm(true)
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        {t('actions.edit')}
+                      </ContextMenuItem>
+                      <ContextMenuItem onClick={() => router.push(`/inventory/${part.id}`)}>
+                        <History className="mr-2 h-4 w-4" />
+                        {t('actions.details')}
+                      </ContextMenuItem>
+                      <ContextMenuSeparator />
+                      <ContextMenuItem
+                        variant="destructive"
+                        onClick={() => handleDelete(part.id, part.name)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t('actions.delete')}
+                      </ContextMenuItem>
+                    </ContextMenuContent>
                   </ContextMenu>
-                );
+                )
               })
             )}
           </TableBody>
@@ -807,19 +887,21 @@ export function InventoryClient({
         key={editPart?.id ?? scannedBarcode ?? 'new'}
         open={showForm}
         onOpenChange={(open) => {
-          setShowForm(open);
+          setShowForm(open)
           if (!open) {
-            setEditPart(null);
-            setScannedBarcode('');
+            setEditPart(null)
+            setScannedBarcode('')
           }
         }}
         part={editPart ?? undefined}
         markupMultiplier={Number(markupValue) || initialMarkup}
+        defaultUnit={defaultUnit}
+        unitSystem={unitSystem}
         initialBarcode={!editPart ? scannedBarcode : undefined}
         categories={categories}
         onViewImages={(urls, startIndex) => {
-          setGalleryImages(urls);
-          setGalleryIndex(startIndex);
+          setGalleryImages(urls)
+          setGalleryIndex(startIndex)
         }}
       />
 
@@ -841,15 +923,13 @@ export function InventoryClient({
                 onChange={(e) => setMarkupValue(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                {t('markup.description', { multiplier: markupValue || "?", count: data.total })}
-                {Number(markupValue) > 1 && ` ${t('markup.percentage', { percent: Math.round((Number(markupValue) - 1) * 100) })}`}
+                {t('markup.description', { multiplier: markupValue || '?', count: data.total })}
+                {Number(markupValue) > 1 &&
+                  ` ${t('markup.percentage', { percent: Math.round((Number(markupValue) - 1) * 100) })}`}
               </p>
             </div>
             <label className="flex items-center gap-2">
-              <Switch
-                checked={overrideExisting}
-                onCheckedChange={setOverrideExisting}
-              />
+              <Switch checked={overrideExisting} onCheckedChange={setOverrideExisting} />
               <span className="text-sm">{t('markup.overrideExisting')}</span>
             </label>
             <p className="text-xs text-muted-foreground">
@@ -881,16 +961,16 @@ export function InventoryClient({
         part={scannedPart}
         barcode={scannedBarcode}
         onEditPart={(partId) => {
-          const part = data.parts.find((p) => p.id === partId);
+          const part = data.parts.find((p) => p.id === partId)
           if (part) {
-            setEditPart(part);
-            setShowForm(true);
+            setEditPart(part)
+            setShowForm(true)
           }
         }}
         onCreatePart={(barcode) => {
-          setEditPart(null);
-          setScannedBarcode(barcode);
-          setShowForm(true);
+          setEditPart(null)
+          setScannedBarcode(barcode)
+          setShowForm(true)
         }}
       />
 
@@ -914,7 +994,10 @@ export function InventoryClient({
           {galleryIndex > 0 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setGalleryIndex(galleryIndex - 1); }}
+              onClick={(e) => {
+                e.stopPropagation()
+                setGalleryIndex(galleryIndex - 1)
+              }}
               className="absolute left-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 sm:left-4 sm:h-12 sm:w-12"
             >
               <ChevronLeft className="h-6 w-6" />
@@ -923,7 +1006,10 @@ export function InventoryClient({
           {galleryIndex < galleryImages.length - 1 && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); setGalleryIndex(galleryIndex + 1); }}
+              onClick={(e) => {
+                e.stopPropagation()
+                setGalleryIndex(galleryIndex + 1)
+              }}
               className="absolute right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 sm:right-4 sm:h-12 sm:w-12"
             >
               <ChevronRight className="h-6 w-6" />
@@ -939,5 +1025,5 @@ export function InventoryClient({
         </div>
       )}
     </div>
-  );
+  )
 }

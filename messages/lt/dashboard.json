@@ -210,6 +210,7 @@
       "category": "Kategorija",
       "quantity": "Kiekis",
       "minQuantity": "Min. kiekis",
+      "unit": "Vienetas",
       "unitCost": "Savikaina",
       "sellPrice": "Kaina",
       "supplier": "Tiekėjas"

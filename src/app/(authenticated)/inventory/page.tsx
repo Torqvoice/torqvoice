@@ -1,15 +1,27 @@
-import { getInventoryPartsPaginated, getInventoryCategories, hasAnyReorderPoint } from "@/features/inventory/Actions/inventoryActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { InventoryClient } from "./inventory-client";
-import { PageHeader } from "@/components/page-header";
+import {
+  getInventoryPartsPaginated,
+  getInventoryCategories,
+  hasAnyReorderPoint,
+} from '@/features/inventory/Actions/inventoryActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { InventoryClient } from './inventory-client'
+import { PageHeader } from '@/components/page-header'
 
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; category?: string; sortBy?: string; sortOrder?: string; lowStock?: string }>;
+  searchParams: Promise<{
+    page?: string
+    pageSize?: string
+    search?: string
+    category?: string
+    sortBy?: string
+    sortOrder?: string
+    lowStock?: string
+  }>
 }) {
-  const params = await searchParams;
+  const params = await searchParams
   const [result, categoriesResult, settingsResult, reorderResult] = await Promise.all([
     getInventoryPartsPaginated({
       page: params.page ? parseInt(params.page) : 1,
@@ -17,35 +29,35 @@ export default async function InventoryPage({
       search: params.search,
       category: params.category,
       sortBy: params.sortBy,
-      sortOrder: (params.sortOrder as "asc" | "desc") || undefined,
-      lowStock: params.lowStock === "1",
+      sortOrder: (params.sortOrder as 'asc' | 'desc') || undefined,
+      lowStock: params.lowStock === '1',
     }),
     getInventoryCategories(),
     getSettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
+      SETTING_KEYS.INVENTORY_DEFAULT_UNIT,
+      SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
     ]),
     hasAnyReorderPoint(),
-  ]);
+  ])
 
   if (!result.success || !result.data) {
     return (
       <>
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
-          <p className="text-muted-foreground">
-            {result.error || "Failed to load inventory"}
-          </p>
+          <p className="text-muted-foreground">{result.error || 'Failed to load inventory'}</p>
         </div>
       </>
-    );
+    )
   }
 
-  const categories = categoriesResult.success && categoriesResult.data ? categoriesResult.data : [];
-  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const markupMultiplier = Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1.0;
+  const categories = categoriesResult.success && categoriesResult.data ? categoriesResult.data : []
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const markupMultiplier = Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1.0
 
   return (
     <>
@@ -53,20 +65,20 @@ export default async function InventoryPage({
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <InventoryClient
           data={result.data}
-          search={params.search || ""}
-          category={params.category || ""}
+          search={params.search || ''}
+          category={params.category || ''}
           categories={categories}
           currencyCode={currencyCode}
           markupMultiplier={markupMultiplier}
-          sortBy={params.sortBy || "updatedAt"}
-          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
-          lowStockDefault={
-            Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0
-          }
-          lowStockOnly={params.lowStock === "1"}
+          defaultUnit={settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''}
+          unitSystem={settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial'}
+          sortBy={params.sortBy || 'updatedAt'}
+          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}
+          lowStockOnly={params.lowStock === '1'}
           hasAnyReorderPoint={reorderResult.data ?? false}
         />
       </div>
     </>
-  );
+  )
 }

@@ -39,6 +39,7 @@ export interface InvoiceData {
     partNumber: string | null
     name: string
     quantity: number
+    unit?: string | null
     unitPrice: number
     total: number
   }[]

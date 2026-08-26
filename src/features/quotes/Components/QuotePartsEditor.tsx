@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Package, Plus, Trash2 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
+import { cn } from '@/lib/utils'
 import { InventoryPickerDialog } from '@/features/vehicles/Components/service-edit/InventoryPickerDialog'
 import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
 import type { QuotePartInput } from './quote-page-types'
@@ -35,7 +36,11 @@ const QuotePartRow = memo(function QuotePartRow({
   part: QuotePartInput
   index: number
   currencyCode: string
-  onUpdate: (index: number, field: keyof QuotePartInput, value: string | number | boolean) => void
+  onUpdate: (
+    index: number,
+    field: keyof QuotePartInput,
+    value: string | number | boolean | null
+  ) => void
   onDelete: (index: number) => void
   inventoryParts: PartSuggestion[]
   onSelectSuggestion: (index: number, part: PartSuggestion) => void
@@ -80,13 +85,22 @@ const QuotePartRow = memo(function QuotePartRow({
           onSelect={(picked) => onSelectSuggestion(index, picked)}
         />
       </div>
-      <Input
-        type="number"
-        min="0"
-        step="1"
-        value={part.quantity}
-        onChange={(e) => onUpdate(index, 'quantity', e.target.value)}
-      />
+      {/* The unit rides along from the stocked part; shown, not edited. */}
+      <div className="relative">
+        <Input
+          type="number"
+          min="0"
+          step="any"
+          value={part.quantity}
+          onChange={(e) => onUpdate(index, 'quantity', e.target.value)}
+          className={cn(part.unit && 'pr-9')}
+        />
+        {part.unit && (
+          <span className="pointer-events-none absolute right-2 top-1/2 max-w-8 -translate-y-1/2 truncate text-xs text-muted-foreground">
+            {part.unit}
+          </span>
+        )}
+      </div>
       <Input
         type="number"
         min="0"
@@ -139,7 +153,11 @@ interface QuotePartsEditorProps {
   partItems: QuotePartInput[]
   currencyCode: string
   partsSubtotal: number
-  onUpdate: (index: number, field: keyof QuotePartInput, value: string | number | boolean) => void
+  onUpdate: (
+    index: number,
+    field: keyof QuotePartInput,
+    value: string | number | boolean | null
+  ) => void
   onDelete: (index: number) => void
   onAdd: () => void
   onAddBulk?: (items: QuotePartInput[]) => void
@@ -177,6 +195,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
       const unitCost = Number(picked.unitCost) || 0
       onUpdate(index, 'name', picked.name)
       onUpdate(index, 'partNumber', picked.partNumber ?? '')
+      onUpdate(index, 'unit', picked.unit ?? null)
       onUpdate(index, 'unitCost', unitCost)
       onUpdate(index, 'markupPercent', markupFromCostAndPrice(unitCost, unitPrice))
       onUpdate(index, 'unitPrice', unitPrice)
@@ -263,6 +282,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
                 partNumber: picked.partNumber ?? '',
                 name: picked.name,
                 quantity: picked.quantity,
+                unit: picked.unit ?? null,
                 unitCost: Number(picked.unitCost) || 0,
                 markupPercent: Number(picked.markupPercent) || 0,
                 unitPrice: picked.unitPrice,

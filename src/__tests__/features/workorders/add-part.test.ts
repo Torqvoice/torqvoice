@@ -163,6 +163,38 @@ describe('addPartToServiceRecord — totals recalculation', () => {
     expect(updateCall.data.totalAmount).toBeCloseTo(88)
   })
 
+  it('snapshots the unit of measure onto the created line', async () => {
+    setupAuth()
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
+      id: RECORD_ID,
+      vehicleId: VEHICLE_ID,
+      subtotal: 0,
+      taxRate: 0,
+      taxInclusive: false,
+      discountType: null,
+      discountValue: 0,
+    } as any)
+    vi.mocked(db.servicePart.create).mockResolvedValue({ id: 'part-1' } as any)
+    vi.mocked(db.servicePart.aggregate).mockResolvedValue({ _sum: { total: 23 } } as any)
+    vi.mocked(db.serviceLabor.aggregate).mockResolvedValue({ _sum: { total: 0 } } as any)
+
+    await addPartToServiceRecord({
+      serviceRecordId: RECORD_ID,
+      name: 'Engine oil 5W-30',
+      quantity: 2.5,
+      unit: 'l',
+      unitPrice: 9.2,
+      total: 23,
+      unitCost: 6,
+    })
+
+    expect(vi.mocked(db.servicePart.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ quantity: 2.5, unit: 'l' }),
+      })
+    )
+  })
+
   it('rejects when the service record does not belong to the org', async () => {
     setupAuth()
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)

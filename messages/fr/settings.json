@@ -831,6 +831,8 @@
     "liters": "litres (L)",
     "miles": "miles (mi)",
     "gallons": "gallons (gal)",
+    "defaultStockUnit": "Unité de stock par défaut",
+    "defaultStockUnitHint": "Préremplie pour les nouvelles pièces en stock. Chaque pièce peut toujours utiliser sa propre unité.",
     "saveWorkshop": "Enregistrer les paramètres de l'atelier",
     "saved": "Paramètres de l'atelier enregistrés",
     "assignDialogTitle": "Assigner aux ordres de travail existants ?",

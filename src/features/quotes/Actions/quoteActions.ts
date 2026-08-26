@@ -477,6 +477,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
               partNumber: p.partNumber,
               name: p.name,
               quantity: p.quantity,
+              unit: p.unit,
               unitCost: p.unitCost,
               markupPercent: p.markupPercent,
               unitPrice: p.unitPrice,
@@ -577,7 +578,10 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         action: 'quote.convert',
         entity: 'Quote',
         entityId: result.convertedFromQuoteId,
-        details: { key: 'quote_convert', params: { ref: result.convertedFromQuoteId, serviceRecordId: result.id } },
+        details: {
+          key: 'quote_convert',
+          params: { ref: result.convertedFromQuoteId, serviceRecordId: result.id },
+        },
         metadata: { quoteId: result.convertedFromQuoteId, serviceRecordId: result.id },
       }),
     }

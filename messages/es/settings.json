@@ -831,6 +831,8 @@
     "liters": "litros (L)",
     "miles": "millas (mi)",
     "gallons": "galones (gal)",
+    "defaultStockUnit": "Unidad de stock predeterminada",
+    "defaultStockUnitHint": "Se rellena automáticamente en las piezas nuevas del inventario. Cada pieza puede seguir usando su propia unidad.",
     "saveWorkshop": "Guardar configuración del taller",
     "saved": "Configuración del taller guardada",
     "assignDialogTitle": "¿Asignar a órdenes de trabajo existentes?",

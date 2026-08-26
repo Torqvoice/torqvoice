@@ -15,19 +15,20 @@
  */
 
 export interface LowStockCandidate {
-  id: string;
-  name: string;
-  partNumber: string | null;
-  quantity: number;
-  minQuantity: number;
-  lowStockAlertedAt: Date | null;
+  id: string
+  name: string
+  partNumber: string | null
+  quantity: number
+  minQuantity: number
+  unit: string | null
+  lowStockAlertedAt: Date | null
 }
 
 export interface LowStockDecision {
   /** Parts that just crossed below their reorder point — alert on these. */
-  newlyLow: LowStockCandidate[];
+  newlyLow: LowStockCandidate[]
   /** Parts that recovered; clear their marker so a future dip alerts again. */
-  toRearm: string[];
+  toRearm: string[]
 }
 
 /**
@@ -41,11 +42,8 @@ export interface LowStockDecision {
  * A default of 0 means "no org-wide threshold", so only explicitly configured
  * parts are watched. That is the out-of-the-box behaviour.
  */
-export function effectiveThreshold(
-  part: { minQuantity: number },
-  defaultThreshold = 0,
-): number {
-  return part.minQuantity > 0 ? part.minQuantity : Math.max(0, defaultThreshold);
+export function effectiveThreshold(part: { minQuantity: number }, defaultThreshold = 0): number {
+  return part.minQuantity > 0 ? part.minQuantity : Math.max(0, defaultThreshold)
 }
 
 /**
@@ -57,10 +55,10 @@ export function effectiveThreshold(
  */
 export function isLow(
   part: { quantity: number; minQuantity: number },
-  defaultThreshold = 0,
+  defaultThreshold = 0
 ): boolean {
-  const threshold = effectiveThreshold(part, defaultThreshold);
-  return threshold > 0 && part.quantity <= threshold;
+  const threshold = effectiveThreshold(part, defaultThreshold)
+  return threshold > 0 && part.quantity <= threshold
 }
 
 /**
@@ -71,22 +69,22 @@ export function isLow(
  */
 export function decideLowStockAlerts(
   parts: readonly LowStockCandidate[],
-  defaultThreshold = 0,
+  defaultThreshold = 0
 ): LowStockDecision {
-  const newlyLow: LowStockCandidate[] = [];
-  const toRearm: string[] = [];
+  const newlyLow: LowStockCandidate[] = []
+  const toRearm: string[] = []
 
   for (const part of parts) {
     if (isLow(part, defaultThreshold)) {
       // Already alerted for this dip — stay quiet.
-      if (part.lowStockAlertedAt === null) newlyLow.push(part);
+      if (part.lowStockAlertedAt === null) newlyLow.push(part)
     } else if (part.lowStockAlertedAt !== null) {
       // Back above the reorder point: arm it for the next dip.
-      toRearm.push(part.id);
+      toRearm.push(part.id)
     }
   }
 
-  return { newlyLow, toRearm };
+  return { newlyLow, toRearm }
 }
 
 /**
@@ -101,22 +99,20 @@ export function decideLowStockAlerts(
 export function canSendDigestEmail(
   lastSentAt: Date | null,
   now: Date,
-  minIntervalHours: number,
+  minIntervalHours: number
 ): boolean {
-  if (!lastSentAt) return true;
-  if (minIntervalHours <= 0) return true;
-  const elapsedMs = now.getTime() - lastSentAt.getTime();
-  return elapsedMs >= minIntervalHours * 60 * 60 * 1000;
+  if (!lastSentAt) return true
+  if (minIntervalHours <= 0) return true
+  const elapsedMs = now.getTime() - lastSentAt.getTime()
+  return elapsedMs >= minIntervalHours * 60 * 60 * 1000
 }
 
 /** One-line summary per part for the digest body. */
-export function formatLowStockLine(
-  part: LowStockCandidate,
-  defaultThreshold = 0,
-): string {
-  const ref = part.partNumber ? ` (${part.partNumber})` : "";
-  const threshold = effectiveThreshold(part, defaultThreshold);
-  return `${part.name}${ref}: ${part.quantity} left, reorder at ${threshold}`;
+export function formatLowStockLine(part: LowStockCandidate, defaultThreshold = 0): string {
+  const ref = part.partNumber ? ` (${part.partNumber})` : ''
+  const threshold = effectiveThreshold(part, defaultThreshold)
+  const qty = part.unit ? `${part.quantity} ${part.unit}` : `${part.quantity}`
+  return `${part.name}${ref}: ${qty} left, reorder at ${threshold}`
 }
 
 /**
@@ -125,27 +121,27 @@ export function formatLowStockLine(
  */
 export function buildAlertSummary(
   parts: readonly LowStockCandidate[],
-  defaultThreshold = 0,
+  defaultThreshold = 0
 ): {
-  title: string;
-  message: string;
+  title: string
+  message: string
 } {
   if (parts.length === 1) {
-    const p = parts[0];
+    const p = parts[0]
     return {
-      title: "Low stock",
+      title: 'Low stock',
       message: formatLowStockLine(p, defaultThreshold),
-    };
+    }
   }
 
   const preview = parts
     .slice(0, 3)
     .map((p) => p.name)
-    .join(", ");
-  const remainder = parts.length - Math.min(3, parts.length);
+    .join(', ')
+  const remainder = parts.length - Math.min(3, parts.length)
 
   return {
     title: `${parts.length} parts low on stock`,
     message: remainder > 0 ? `${preview} and ${remainder} more` : preview,
-  };
+  }
 }

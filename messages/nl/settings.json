@@ -831,6 +831,8 @@
     "liters": "liters (L)",
     "miles": "mijlen (mi)",
     "gallons": "gallons (gal)",
+    "defaultStockUnit": "Standaard voorraadeenheid",
+    "defaultStockUnitHint": "Vooraf ingevuld bij nieuwe voorraadonderdelen. Elk onderdeel kan nog steeds een eigen eenheid gebruiken.",
     "saveWorkshop": "Werkplaatsinstellingen opslaan",
     "saved": "Werkplaatsinstellingen opgeslagen",
     "assignDialogTitle": "Toewijzen aan bestaande werkorders?",

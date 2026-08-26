@@ -210,6 +210,7 @@
       "category": "Kategorie",
       "quantity": "Menge",
       "minQuantity": "Mindestmenge",
+      "unit": "Einheit",
       "unitCost": "Kosten",
       "sellPrice": "Preis",
       "supplier": "Lieferant"
