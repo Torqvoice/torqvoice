@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Nur mit Aufträgen",
     "layout": "Ansicht",
     "layoutTimeline": "Zeitachse",
-    "layoutCards": "Karten"
+    "layoutCards": "Karten",
+    "rows": "Zeilen",
+    "rowPerTechnician": "Eine Zeile je Mechaniker",
+    "rowPerBay": "Eine Zeile je Arbeitsplatz",
+    "rowNothing": "Eine einzige Zeile",
+    "technicians": "Mechaniker",
+    "workBays": "Arbeitsplätze"
   },
   "board": {
     "days": {

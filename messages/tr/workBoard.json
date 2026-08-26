@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Yalnızca işi olanlar",
     "layout": "Görünüm",
     "layoutTimeline": "Zaman çizelgesi",
-    "layoutCards": "Kartlar"
+    "layoutCards": "Kartlar",
+    "rows": "Satırlar",
+    "rowPerTechnician": "Teknisyen başına bir satır",
+    "rowPerBay": "Çalışma alanı başına bir satır",
+    "rowNothing": "Tek satır",
+    "technicians": "Teknisyenler",
+    "workBays": "Çalışma alanları"
   },
   "board": {
     "days": {

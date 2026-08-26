@@ -338,7 +338,7 @@ export function WorkBoardPresenter({
                 className="rounded-none rounded-l-md"
                 onClick={() => setGrouping('technician')}
               >
-                {tt('byTechnician')}
+                {tt('technicians')}
               </Button>
               <Button
                 variant={grouping === 'bay' ? 'default' : 'ghost'}
@@ -346,7 +346,7 @@ export function WorkBoardPresenter({
                 className="rounded-none rounded-r-md border-l"
                 onClick={() => setGrouping('bay')}
               >
-                {tt('byBay')}
+                {tt('workBays')}
               </Button>
             </div>
           )}

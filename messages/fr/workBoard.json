@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Seulement avec du travail",
     "layout": "Affichage",
     "layoutTimeline": "Chronologie",
-    "layoutCards": "Cartes"
+    "layoutCards": "Cartes",
+    "rows": "Lignes",
+    "rowPerTechnician": "Une ligne par technicien",
+    "rowPerBay": "Une ligne par poste",
+    "rowNothing": "Une seule ligne",
+    "technicians": "Techniciens",
+    "workBays": "Postes de travail"
   },
   "board": {
     "days": {

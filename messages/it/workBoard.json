@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Solo con lavoro",
     "layout": "Vista",
     "layoutTimeline": "Cronologia",
-    "layoutCards": "Schede"
+    "layoutCards": "Schede",
+    "rows": "Righe",
+    "rowPerTechnician": "Una riga per tecnico",
+    "rowPerBay": "Una riga per postazione",
+    "rowNothing": "Una sola riga",
+    "technicians": "Tecnici",
+    "workBays": "Postazioni"
   },
   "board": {
     "days": {

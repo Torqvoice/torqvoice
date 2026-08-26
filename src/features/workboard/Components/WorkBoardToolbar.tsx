@@ -191,14 +191,26 @@ export function WorkBoardToolbar({
               value={grouping}
               onValueChange={(value) => onGroupingChange(value as LaneGrouping)}
             >
-              <SelectTrigger size="sm" className="min-w-[150px]" aria-label={t('groupBy')}>
+              {/* Cards lays its lanes out as rows, so the same setting has to
+                  be described differently there or it names the wrong axis. */}
+              <SelectTrigger
+                size="sm"
+                className="min-w-[150px]"
+                aria-label={layout === 'cards' ? t('rows') : t('groupBy')}
+              >
                 <Columns3 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="technician">{t('byTechnician')}</SelectItem>
-                <SelectItem value="bay">{t('byBay')}</SelectItem>
-                <SelectItem value="none">{t('byNothing')}</SelectItem>
+                <SelectItem value="technician">
+                  {layout === 'cards' ? t('rowPerTechnician') : t('byTechnician')}
+                </SelectItem>
+                <SelectItem value="bay">
+                  {layout === 'cards' ? t('rowPerBay') : t('byBay')}
+                </SelectItem>
+                <SelectItem value="none">
+                  {layout === 'cards' ? t('rowNothing') : t('byNothing')}
+                </SelectItem>
               </SelectContent>
             </Select>
 

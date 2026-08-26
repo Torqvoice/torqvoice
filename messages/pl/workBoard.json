@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Tylko ze zleceniami",
     "layout": "Widok",
     "layoutTimeline": "Oś czasu",
-    "layoutCards": "Karty"
+    "layoutCards": "Karty",
+    "rows": "Wiersze",
+    "rowPerTechnician": "Wiersz na mechanika",
+    "rowPerBay": "Wiersz na stanowisko",
+    "rowNothing": "Jeden wiersz",
+    "technicians": "Mechanicy",
+    "workBays": "Stanowiska"
   },
   "board": {
     "days": {

@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Bare med jobber",
     "layout": "Visning",
     "layoutTimeline": "Tidslinje",
-    "layoutCards": "Kort"
+    "layoutCards": "Kort",
+    "rows": "Rader",
+    "rowPerTechnician": "Én rad per mekaniker",
+    "rowPerBay": "Én rad per arbeidsplass",
+    "rowNothing": "Én enkelt rad",
+    "technicians": "Mekanikere",
+    "workBays": "Arbeidsplasser"
   },
   "board": {
     "days": {

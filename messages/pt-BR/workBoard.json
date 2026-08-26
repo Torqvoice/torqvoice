@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Somente com serviço",
     "layout": "Exibição",
     "layoutTimeline": "Linha do tempo",
-    "layoutCards": "Cartões"
+    "layoutCards": "Cartões",
+    "rows": "Linhas",
+    "rowPerTechnician": "Uma linha por técnico",
+    "rowPerBay": "Uma linha por baia",
+    "rowNothing": "Uma única linha",
+    "technicians": "Técnicos",
+    "workBays": "Baias"
   },
   "board": {
     "days": {

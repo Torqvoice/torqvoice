@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Tik su darbais",
     "layout": "Rodinys",
     "layoutTimeline": "Laiko juosta",
-    "layoutCards": "Kortelės"
+    "layoutCards": "Kortelės",
+    "rows": "Eilutės",
+    "rowPerTechnician": "Eilutė kiekvienam meistrui",
+    "rowPerBay": "Eilutė kiekvienai darbo vietai",
+    "rowNothing": "Viena eilutė",
+    "technicians": "Meistrai",
+    "workBays": "Darbo vietos"
   },
   "board": {
     "days": {

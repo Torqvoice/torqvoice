@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Alleen met werk",
     "layout": "Weergave",
     "layoutTimeline": "Tijdlijn",
-    "layoutCards": "Kaarten"
+    "layoutCards": "Kaarten",
+    "rows": "Rijen",
+    "rowPerTechnician": "Een rij per monteur",
+    "rowPerBay": "Een rij per werkplek",
+    "rowNothing": "Eén enkele rij",
+    "technicians": "Monteurs",
+    "workBays": "Werkplekken"
   },
   "board": {
     "days": {

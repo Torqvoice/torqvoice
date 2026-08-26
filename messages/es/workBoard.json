@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Solo con trabajo",
     "layout": "Vista",
     "layoutTimeline": "Cronología",
-    "layoutCards": "Tarjetas"
+    "layoutCards": "Tarjetas",
+    "rows": "Filas",
+    "rowPerTechnician": "Una fila por técnico",
+    "rowPerBay": "Una fila por puesto",
+    "rowNothing": "Una sola fila",
+    "technicians": "Técnicos",
+    "workBays": "Puestos de trabajo"
   },
   "board": {
     "days": {

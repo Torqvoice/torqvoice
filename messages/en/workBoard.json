@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Only those with work",
     "layout": "Layout",
     "layoutTimeline": "Timeline",
-    "layoutCards": "Cards"
+    "layoutCards": "Cards",
+    "rows": "Rows",
+    "rowPerTechnician": "A row per technician",
+    "rowPerBay": "A row per work bay",
+    "rowNothing": "A single row",
+    "technicians": "Technicians",
+    "workBays": "Work bays"
   },
   "board": {
     "days": {

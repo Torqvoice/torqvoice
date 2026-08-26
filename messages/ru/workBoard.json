@@ -25,7 +25,13 @@
     "onlyBusyLanes": "Только с работой",
     "layout": "Вид",
     "layoutTimeline": "Шкала времени",
-    "layoutCards": "Карточки"
+    "layoutCards": "Карточки",
+    "rows": "Строки",
+    "rowPerTechnician": "Строка на механика",
+    "rowPerBay": "Строка на пост",
+    "rowNothing": "Одна строка",
+    "technicians": "Механики",
+    "workBays": "Посты"
   },
   "board": {
     "days": {
