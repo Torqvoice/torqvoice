@@ -174,113 +174,110 @@ export function WorkBoardToolbar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {view === 'week' && (
-          <>
-            <Select value={layout} onValueChange={(value) => onLayoutChange(value as BoardLayout)}>
-              <SelectTrigger size="sm" className="min-w-[130px]" aria-label={t('layout')}>
-                <LayoutGrid className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="timeline">{t('layoutTimeline')}</SelectItem>
-                <SelectItem value="cards">{t('layoutCards')}</SelectItem>
-              </SelectContent>
-            </Select>
+        {/* Every one of these applies to a day as much as to a week now that
+            both are the same board, so the row stays put when the period
+            changes. Weekends is the exception and is greyed rather than
+            removed: a control that vanishes takes its neighbours with it. */}
+        <Select value={layout} onValueChange={(value) => onLayoutChange(value as BoardLayout)}>
+          <SelectTrigger size="sm" className="min-w-[130px]" aria-label={t('layout')}>
+            <LayoutGrid className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="timeline">{t('layoutTimeline')}</SelectItem>
+            <SelectItem value="cards">{t('layoutCards')}</SelectItem>
+          </SelectContent>
+        </Select>
 
-            <Select
-              value={grouping}
-              onValueChange={(value) => onGroupingChange(value as LaneGrouping)}
-            >
-              {/* Cards lays its lanes out as rows, so the same setting has to
+        <Select value={grouping} onValueChange={(value) => onGroupingChange(value as LaneGrouping)}>
+          {/* Cards lays its lanes out as rows, so the same setting has to
                   be described differently there or it names the wrong axis. */}
-              <SelectTrigger
-                size="sm"
-                className="min-w-[150px]"
-                aria-label={layout === 'cards' ? t('rows') : t('groupBy')}
-              >
-                <Columns3 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="technician">
-                  {layout === 'cards' ? t('rowPerTechnician') : t('byTechnician')}
-                </SelectItem>
-                <SelectItem value="bay">
-                  {layout === 'cards' ? t('rowPerBay') : t('byBay')}
-                </SelectItem>
-                <SelectItem value="none">
-                  {layout === 'cards' ? t('rowNothing') : t('byNothing')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+          <SelectTrigger
+            size="sm"
+            className="min-w-[150px]"
+            aria-label={layout === 'cards' ? t('rows') : t('groupBy')}
+          >
+            <Columns3 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="technician">
+              {layout === 'cards' ? t('rowPerTechnician') : t('byTechnician')}
+            </SelectItem>
+            <SelectItem value="bay">{layout === 'cards' ? t('rowPerBay') : t('byBay')}</SelectItem>
+            <SelectItem value="none">
+              {layout === 'cards' ? t('rowNothing') : t('byNothing')}
+            </SelectItem>
+          </SelectContent>
+        </Select>
 
-            {lanes.length > 1 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant={hiddenLaneIds.length > 0 ? 'secondary' : 'outline'} size="sm">
-                    <ListFilter className="mr-1.5 h-3.5 w-3.5" />
-                    {t('lanes')}
-                    <span className="ml-1.5 tabular-nums text-muted-foreground">
-                      {lanes.length - hiddenLaneIds.length}/{lanes.length}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-60 p-0"
-                  // Returning focus to the trigger on close scrolls whatever
-                  // ancestor has to move to show it, which yanked the board
-                  // underneath the menu.
-                  onCloseAutoFocus={(event) => event.preventDefault()}
-                >
-                  <div className="p-1">
-                    <DropdownMenuItem onClick={onShowAllLanes}>
-                      {t('showAllLanes')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={onShowBusyLanes} disabled={busyLaneIds.length === 0}>
-                      {t('onlyBusyLanes')}
-                    </DropdownMenuItem>
-                  </div>
-                  <DropdownMenuSeparator className="my-0" />
-                  {/* Only the list scrolls, so the two actions above stay put
-                      however many lanes a shop has. */}
-                  <div className="max-h-[50vh] overflow-y-auto p-1">
-                    <DropdownMenuLabel className="py-1">{t('lanes')}</DropdownMenuLabel>
-                    {lanes.map((lane) => (
-                      <DropdownMenuCheckboxItem
-                        key={lane.id}
-                        checked={!hiddenLaneIds.includes(lane.id)}
-                        onSelect={(event) => {
-                          // Keep the menu open: hiding lanes is done in batches.
-                          event.preventDefault()
-                          onToggleLane(lane.id)
-                        }}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span
-                            className="h-2 w-2 shrink-0 rounded-full"
-                            style={{ backgroundColor: lane.color }}
-                          />
-                          {lane.name}
-                        </span>
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              variant={showWeekends ? 'secondary' : 'outline'}
+              variant={hiddenLaneIds.length > 0 ? 'secondary' : 'outline'}
               size="sm"
-              onClick={onToggleWeekends}
-              aria-pressed={showWeekends}
+              disabled={lanes.length <= 1}
             >
-              <CalendarRange className="mr-1.5 h-3.5 w-3.5" />
-              {t('weekends')}
+              <ListFilter className="mr-1.5 h-3.5 w-3.5" />
+              {t('lanes')}
+              <span className="ml-1.5 tabular-nums text-muted-foreground">
+                {lanes.length - hiddenLaneIds.length}/{lanes.length}
+              </span>
             </Button>
-          </>
-        )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-60 p-0"
+            // Returning focus to the trigger on close scrolls whatever
+            // ancestor has to move to show it, which yanked the board
+            // underneath the menu.
+            onCloseAutoFocus={(event) => event.preventDefault()}
+          >
+            <div className="p-1">
+              <DropdownMenuItem onClick={onShowAllLanes}>{t('showAllLanes')}</DropdownMenuItem>
+              <DropdownMenuItem onClick={onShowBusyLanes} disabled={busyLaneIds.length === 0}>
+                {t('onlyBusyLanes')}
+              </DropdownMenuItem>
+            </div>
+            <DropdownMenuSeparator className="my-0" />
+            {/* Only the list scrolls, so the two actions above stay put
+                      however many lanes a shop has. */}
+            <div className="max-h-[50vh] overflow-y-auto p-1">
+              <DropdownMenuLabel className="py-1">{t('lanes')}</DropdownMenuLabel>
+              {lanes.map((lane) => (
+                <DropdownMenuCheckboxItem
+                  key={lane.id}
+                  checked={!hiddenLaneIds.includes(lane.id)}
+                  onSelect={(event) => {
+                    // Keep the menu open: hiding lanes is done in batches.
+                    event.preventDefault()
+                    onToggleLane(lane.id)
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: lane.color }}
+                    />
+                    {lane.name}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button
+          variant={showWeekends ? 'secondary' : 'outline'}
+          size="sm"
+          disabled={view === 'day'}
+          onClick={onToggleWeekends}
+          aria-pressed={showWeekends}
+          title={view === 'day' ? t('weekendsDayHint') : undefined}
+        >
+          <CalendarRange className="mr-1.5 h-3.5 w-3.5" />
+          {t('weekends')}
+        </Button>
 
         <ButtonGroup>
           <Button

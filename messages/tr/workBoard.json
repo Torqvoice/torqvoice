@@ -31,7 +31,8 @@
     "rowPerBay": "Çalışma alanı başına bir satır",
     "rowNothing": "Tek satır",
     "technicians": "Teknisyenler",
-    "workBays": "Çalışma alanları"
+    "workBays": "Çalışma alanları",
+    "weekendsDayHint": "Yalnızca hafta görünümünde geçerlidir"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Tamamlandı"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Durum panosu duruma göre gruplar"
   },
   "week": {
     "createAt": "{time} için yeni iş emri",

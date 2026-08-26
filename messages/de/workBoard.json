@@ -31,7 +31,8 @@
     "rowPerBay": "Eine Zeile je Arbeitsplatz",
     "rowNothing": "Eine einzige Zeile",
     "technicians": "Mechaniker",
-    "workBays": "Arbeitsplätze"
+    "workBays": "Arbeitsplätze",
+    "weekendsDayHint": "Gilt nur in der Wochenansicht"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Abgeschlossen"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Die Statustafel gruppiert nach Status"
   },
   "week": {
     "createAt": "Neuer Auftrag um {time}",

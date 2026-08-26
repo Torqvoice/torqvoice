@@ -31,7 +31,8 @@
     "rowPerBay": "Eilutė kiekvienai darbo vietai",
     "rowNothing": "Viena eilutė",
     "technicians": "Meistrai",
-    "workBays": "Darbo vietos"
+    "workBays": "Darbo vietos",
+    "weekendsDayHint": "Taikoma tik rodant savaitę"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Užbaigta"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Būsenų lenta grupuoja pagal būseną"
   },
   "week": {
     "createAt": "Naujas darbo užsakymas {time}",

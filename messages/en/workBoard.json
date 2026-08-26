@@ -31,7 +31,8 @@
     "rowPerBay": "A row per work bay",
     "rowNothing": "A single row",
     "technicians": "Technicians",
-    "workBays": "Work bays"
+    "workBays": "Work bays",
+    "weekendsDayHint": "Only applies when a week is shown"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Completed"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "The status board groups by status"
   },
   "week": {
     "createAt": "New work order at {time}",

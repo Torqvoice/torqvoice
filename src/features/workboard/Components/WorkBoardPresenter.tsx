@@ -166,6 +166,12 @@ export function WorkBoardPresenter({
     setLayoutState(next)
     updateUrl(p, next, selectedDate, grouping)
   }
+  /** The status board is a day's kanban, so asking for it asks for a day. */
+  const showStatusBoard = () => {
+    setPeriodState('day')
+    setLayoutState('status')
+    updateUrl('day', 'status', selectedDate, grouping)
+  }
   const setLayout = (l: PresenterLayout) => {
     setLayoutState(l)
     updateUrl(period, l, selectedDate, grouping)
@@ -337,47 +343,51 @@ export function WorkBoardPresenter({
             <Button
               variant={layout === 'cards' ? 'default' : 'ghost'}
               size="sm"
-              className={
-                period === 'day' ? 'rounded-none border-x' : 'rounded-none rounded-r-md border-l'
-              }
+              className="rounded-none border-x"
               onClick={() => setLayout('cards')}
             >
               {tt('layoutCards')}
             </Button>
             {/* A kanban of one day's work by status. There is no weekly
-                equivalent, so it only appears for a day. */}
-            {period === 'day' && (
-              <Button
-                variant={layout === 'status' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none rounded-r-md"
-                onClick={() => setLayout('status')}
-              >
-                {t('status')}
-              </Button>
-            )}
+                equivalent, so choosing it switches to a day rather than
+                disappearing when a week is selected: a control that moves
+                around under the pointer is worse than one that acts. */}
+            <Button
+              variant={layout === 'status' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-none rounded-r-md"
+              onClick={() => showStatusBoard()}
+            >
+              {t('status')}
+            </Button>
           </div>
 
-          {layout !== 'status' && (
-            <div className="flex rounded-md border">
-              <Button
-                variant={grouping === 'technician' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none rounded-l-md"
-                onClick={() => setGrouping('technician')}
-              >
-                {tt('technicians')}
-              </Button>
-              <Button
-                variant={grouping === 'bay' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none rounded-r-md border-l"
-                onClick={() => setGrouping('bay')}
-              >
-                {tt('workBays')}
-              </Button>
-            </div>
-          )}
+          {/* Kept in place rather than removed while the status board is up:
+              the kanban groups by status, so these have nothing to do, but
+              hiding them shifts every control beside them. */}
+          <div
+            className="flex rounded-md border"
+            title={layout === 'status' ? t('groupingUnused') : undefined}
+          >
+            <Button
+              variant={grouping === 'technician' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-none rounded-l-md"
+              disabled={layout === 'status'}
+              onClick={() => setGrouping('technician')}
+            >
+              {tt('technicians')}
+            </Button>
+            <Button
+              variant={grouping === 'bay' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-none rounded-r-md border-l"
+              disabled={layout === 'status'}
+              onClick={() => setGrouping('bay')}
+            >
+              {tt('workBays')}
+            </Button>
+          </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" onClick={handlePrev} aria-label={t('previous')}>
               <ChevronLeft className="h-5 w-5" />

@@ -31,7 +31,8 @@
     "rowPerBay": "Строка на пост",
     "rowNothing": "Одна строка",
     "technicians": "Механики",
-    "workBays": "Посты"
+    "workBays": "Посты",
+    "weekendsDayHint": "Действует только при показе недели"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Завершено"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Доска статусов группирует по статусу"
   },
   "week": {
     "createAt": "Новый заказ-наряд в {time}",

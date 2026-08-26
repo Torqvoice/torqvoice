@@ -31,7 +31,8 @@
     "rowPerBay": "Een rij per werkplek",
     "rowNothing": "Eén enkele rij",
     "technicians": "Monteurs",
-    "workBays": "Werkplekken"
+    "workBays": "Werkplekken",
+    "weekendsDayHint": "Geldt alleen bij een week"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Voltooid"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Het statusbord groepeert op status"
   },
   "week": {
     "createAt": "Nieuwe werkorder om {time}",

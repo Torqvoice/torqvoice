@@ -31,7 +31,8 @@
     "rowPerBay": "Én rad per arbeidsplass",
     "rowNothing": "Én enkelt rad",
     "technicians": "Mekanikere",
-    "workBays": "Arbeidsplasser"
+    "workBays": "Arbeidsplasser",
+    "weekendsDayHint": "Gjelder bare når en uke vises"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Fullført"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Statustavlen grupperer etter status"
   },
   "week": {
     "createAt": "Ny arbeidsordre kl. {time}",

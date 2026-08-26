@@ -31,7 +31,8 @@
     "rowPerBay": "Une ligne par poste",
     "rowNothing": "Une seule ligne",
     "technicians": "Techniciens",
-    "workBays": "Postes de travail"
+    "workBays": "Postes de travail",
+    "weekendsDayHint": "Ne s'applique qu'à une semaine"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Complété"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Le tableau de statut regroupe par statut"
   },
   "week": {
     "createAt": "Nouvel ordre de travail à {time}",

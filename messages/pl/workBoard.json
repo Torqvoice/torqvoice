@@ -31,7 +31,8 @@
     "rowPerBay": "Wiersz na stanowisko",
     "rowNothing": "Jeden wiersz",
     "technicians": "Mechanicy",
-    "workBays": "Stanowiska"
+    "workBays": "Stanowiska",
+    "weekendsDayHint": "Dotyczy tylko widoku tygodnia"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Ukończone"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Tablica statusów grupuje według statusu"
   },
   "week": {
     "createAt": "Nowe zlecenie o {time}",

@@ -31,7 +31,8 @@
     "rowPerBay": "Uma linha por baia",
     "rowNothing": "Uma única linha",
     "technicians": "Técnicos",
-    "workBays": "Baias"
+    "workBays": "Baias",
+    "weekendsDayHint": "Só se aplica ao ver uma semana"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Concluído"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "O quadro de status agrupa por status"
   },
   "week": {
     "createAt": "Nova ordem de serviço às {time}",

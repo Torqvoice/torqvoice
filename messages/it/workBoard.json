@@ -31,7 +31,8 @@
     "rowPerBay": "Una riga per postazione",
     "rowNothing": "Una sola riga",
     "technicians": "Tecnici",
-    "workBays": "Postazioni"
+    "workBays": "Postazioni",
+    "weekendsDayHint": "Vale solo quando è mostrata una settimana"
   },
   "board": {
     "days": {
@@ -104,7 +105,8 @@
       "completed": "Completato"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "La lavagna di stato raggruppa per stato"
   },
   "week": {
     "createAt": "Nuovo ordine di lavoro alle {time}",
