@@ -47,7 +47,7 @@ export function LaneHeaderTooltip({
           <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: lane.color }} />
           {lane.name}
         </p>
-        <p className="mt-1 text-muted-foreground">{periodLabel}</p>
+        <p className="mt-1 text-background/70">{periodLabel}</p>
         <dl className="mt-1 space-y-0.5">
           <Row label={t('booked')} value={formatDuration(booked)} />
           {capacityMinutes > 0 && (
@@ -62,18 +62,25 @@ export function LaneHeaderTooltip({
           <Row label={t('jobs')} value={String(jobCount)} />
         </dl>
         {pct !== null && (
-          <p className="mt-1 tabular-nums text-muted-foreground">{t('utilisation', { pct })}</p>
+          <p className="mt-1 tabular-nums text-background/70">{t('utilisation', { pct })}</p>
         )}
-        {lane.isPlaceholder && <p className="mt-1 text-muted-foreground">{t('placeholder')}</p>}
+        {lane.isPlaceholder && <p className="mt-1 text-background/70">{t('placeholder')}</p>}
       </TooltipContent>
     </Tooltip>
   )
 }
 
+/*
+ * Muted text inside a tooltip has to be muted against the tooltip, not against
+ * the page. The tooltip is `bg-foreground text-background`, so it inverts with
+ * the theme, and `text-muted-foreground` is a mid grey that lands at poor
+ * contrast on both the near-black light-theme tooltip and the near-white dark
+ * one. Fading the tooltip's own text colour tracks the inversion.
+ */
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className="text-muted-foreground">{label}</dt>
+      <dt className="text-background/70">{label}</dt>
       <dd className="tabular-nums">{value}</dd>
     </div>
   )

@@ -70,7 +70,7 @@ export function JobTooltip({
 
         {vehicle && <p className="mt-1">{vehicle}</p>}
         {job.customerName && (
-          <p className="flex items-center gap-1.5 text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-background/70">
             <User className="h-3 w-3 shrink-0" />
             {job.customerName}
           </p>
@@ -90,7 +90,7 @@ export function JobTooltip({
               {minutes !== null && <Row label={t('duration')} value={formatDuration(minutes)} />}
             </>
           ) : (
-            <p className="flex items-center gap-1.5 text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-background/70">
               <CalendarClock className="h-3 w-3 shrink-0" />
               {t('noTime')}
             </p>
@@ -109,10 +109,17 @@ export function JobTooltip({
   )
 }
 
+/*
+ * Muted text inside a tooltip has to be muted against the tooltip, not against
+ * the page. The tooltip is `bg-foreground text-background`, so it inverts with
+ * the theme, and `text-muted-foreground` is a mid grey that lands at poor
+ * contrast on both the near-black light-theme tooltip and the near-white dark
+ * one. Fading the tooltip's own text colour tracks the inversion.
+ */
 function Row({ label, value, colour }: { label: string; value: string; colour?: string | null }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className="text-muted-foreground">{label}</dt>
+      <dt className="text-background/70">{label}</dt>
       <dd className="flex items-center gap-1.5 text-right">
         {colour && (
           <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: colour }} />
