@@ -215,6 +215,7 @@ export async function globalSearch(query: string) {
               name: true,
               partNumber: true,
               quantity: true,
+              unit: true,
             },
             take: 10,
           }),

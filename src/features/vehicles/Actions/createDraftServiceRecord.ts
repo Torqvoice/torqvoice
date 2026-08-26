@@ -9,7 +9,8 @@ export async function createDraftServiceRecord(
   vehicleId: string,
   startDateTime?: Date,
   endDateTime?: Date,
-  technicianId?: string
+  technicianId?: string,
+  workBayId?: string
 ) {
   return withAuth(
     async ({ organizationId, userId }) => {
@@ -29,6 +30,7 @@ export async function createDraftServiceRecord(
           startDateTime,
           endDateTime,
           technicianId,
+          workBayId,
         }
       )
     },
@@ -80,7 +82,10 @@ export async function createDraftCounterSale(customerId: string) {
         action: 'service.create',
         entity: 'ServiceRecord',
         entityId: result.id,
-        details: { key: 'service_createCounterSale', params: { ref: result.invoiceNumber || result.id } },
+        details: {
+          key: 'service_createCounterSale',
+          params: { ref: result.invoiceNumber || result.id },
+        },
         metadata: { serviceRecordId: result.id, customerId: result.customerId },
       }),
     }

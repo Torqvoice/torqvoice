@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Meer lezen",
-    "setDefaults": "Standaardwaarden"
+    "setDefaults": "Standaardwaarden",
+    "workBay": "Werkplek",
+    "selectWorkBay": "Werkplek kiezen…",
+    "noWorkBay": "Geen werkplek"
   },
   "notifications": {
     "title": "Klantmeldingen",

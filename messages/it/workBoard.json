@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Colonne",
+    "byTechnician": "Una colonna per tecnico",
+    "byBay": "Una colonna per postazione",
+    "byNothing": "Una colonna per giorno",
+    "weekends": "Fine settimana",
+    "add": "Aggiungi",
+    "addBay": "Aggiungi postazione",
+    "weekNumber": "Sett. {number}",
+    "lanes": "Colonne",
+    "showAllLanes": "Mostra tutte",
+    "onlyBusyLanes": "Solo con lavoro",
+    "layout": "Vista",
+    "layoutTimeline": "Cronologia",
+    "layoutCards": "Panoramica",
+    "rows": "Righe",
+    "rowPerTechnician": "Una riga per tecnico",
+    "rowPerBay": "Una riga per postazione",
+    "rowNothing": "Una sola riga",
+    "technicians": "Tecnici",
+    "workBays": "Postazioni",
+    "weekendsDayHint": "Vale solo quando è mostrata una settimana"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Impossibile spostare l'incarico",
     "failedAssign": "Impossibile assegnare il lavoro",
     "failedRemove": "Impossibile rimuovere l'incarico",
-    "createNewWorkorder": "Crea nuovo ordine di lavoro"
+    "createNewWorkorder": "Crea nuovo ordine di lavoro",
+    "noBays": "Nessuna postazione. Aggiungine una per pianificare la settimana per postazione.",
+    "addFirstBay": "Aggiungi postazione",
+    "lanes": {
+      "noBay": "Senza postazione",
+      "noTechnician": "Senza tecnico",
+      "everyone": "Tutto il lavoro",
+      "thisWeek": "Questa settimana"
+    },
+    "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro."
   },
   "unassigned": {
     "title": "Lavori Non Assegnati ({count})",
@@ -62,7 +92,6 @@
     "status": "Stato",
     "week": "Settimana",
     "today": "Oggi",
-    "timeline": "Cronologia",
     "live": "Dal Vivo",
     "disconnected": "Aggiornamenti dal vivo disconnessi",
     "noTechnicians": "Nessun tecnico configurato",
@@ -76,6 +105,52 @@
       "completed": "Completato"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "La lavagna di stato raggruppa per stato",
+    "connecting": "Connessione…"
+  },
+  "week": {
+    "createAt": "Nuovo ordine di lavoro alle {time}",
+    "unscheduled": "Non pianificato ({count})",
+    "hint": "Trascina un lavoro per spostarlo. Trascina il bordo superiore o inferiore per cambiarne la durata.",
+    "hiddenDays": "{count} pianificato/i nel fine settimana. Mostra il fine settimana.",
+    "panLeft": "Prima nella settimana",
+    "panRight": "Più avanti nella settimana",
+    "hintPan": "Trascina lo sfondo per scorrere la settimana.",
+    "wholeWeek": "Vedi tutta la settimana",
+    "hintZoom": "Tieni premuto Ctrl e scorri per ingrandire."
+  },
+  "bay": {
+    "addTitle": "Aggiungi postazione",
+    "editTitle": "Modifica postazione",
+    "description": "Un luogo dove si lavora: un ponte, una rampa, un'area di lavaggio.",
+    "name": "Nome",
+    "namePlaceholder": "es. Ponte 1",
+    "color": "Colore",
+    "dailyCapacity": "Ore prenotabili al giorno",
+    "hoursPerDay": "ore al giorno",
+    "capacityHint": "Serve a mostrare quanto è pieno ogni giorno.",
+    "deleteTitle": "Elimina postazione",
+    "deleteDescription": "Rimuovere «{name}»? I lavori prenotati restano pianificati e passano alla colonna senza postazione.",
+    "addBay": "Aggiungi postazione",
+    "saveFailed": "Impossibile salvare la postazione"
+  },
+  "lane": {
+    "booked": "Pianificato",
+    "capacity": "Capacità",
+    "free": "Libero",
+    "over": "Eccedenza di",
+    "jobs": "Lavori",
+    "utilisation": "{pct}% della capacità",
+    "placeholder": "Lavoro non ancora assegnato qui."
+  },
+  "job": {
+    "time": "Orario",
+    "duration": "Durata",
+    "technician": "Tecnico",
+    "workBay": "Postazione",
+    "status": "Stato",
+    "noTime": "Nessun orario ancora",
+    "none": "Ancora nessuno"
   }
 }

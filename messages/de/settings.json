@@ -831,6 +831,8 @@
     "liters": "Liter (L)",
     "miles": "Meilen (mi)",
     "gallons": "Gallonen (gal)",
+    "defaultStockUnit": "Standard-Mengeneinheit",
+    "defaultStockUnitHint": "Wird bei neuen Lagerteilen vorausgefüllt. Jedes Teil kann weiterhin eine eigene Einheit haben.",
     "saveWorkshop": "Werkstatteinstellungen speichern",
     "saved": "Werkstatteinstellungen gespeichert",
     "assignDialogTitle": "Bestehenden Aufträgen zuweisen?",

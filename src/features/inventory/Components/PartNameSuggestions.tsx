@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { formatQuantity } from '@/lib/format-quantity'
 import { useTranslations } from 'next-intl'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Package } from 'lucide-react'
@@ -14,6 +15,7 @@ export interface PartSuggestion {
   barcode?: string | null
   category?: string | null
   description?: string | null
+  unit?: string | null
   unitCost: number
   sellPrice: number
   quantity: number
@@ -125,14 +127,12 @@ export function PartNameSuggestions({
   }, [suggestions.length, dismissed])
 
   // An exact name hit means the row already holds that part; nothing to offer.
-  const alreadyExact =
-    suggestions.length === 1 && suggestions[0].name.toLowerCase() === trimmed
+  const alreadyExact = suggestions.length === 1 && suggestions[0].name.toLowerCase() === trimmed
 
   if (dismissed || alreadyExact || suggestions.length === 0) return null
 
   const priceOf = (part: PartSuggestion) =>
-    resolvePartPrice(part, { defaultMarkupPercent, markupAppliesToInventory })
-      .unitPrice
+    resolvePartPrice(part, { defaultMarkupPercent, markupAppliesToInventory }).unitPrice
 
   const choose = (part: PartSuggestion) => {
     onSelect(part)
@@ -181,9 +181,7 @@ export function PartNameSuggestions({
               </span>
             )}
             {part.category && (
-              <span className="shrink-0 text-xs text-muted-foreground">
-                {part.category}
-              </span>
+              <span className="shrink-0 text-xs text-muted-foreground">{part.category}</span>
             )}
           </span>
           <span className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
@@ -198,19 +196,21 @@ export function PartNameSuggestions({
                 the cost in the one case it matters most: markup pricing on a
                 part whose sell price was never set. */}
             {part.unitCost > 0 && priceOf(part) !== part.unitCost && (
-              <span className="line-through">
-                {formatCurrency(part.unitCost, currencyCode)}
-              </span>
+              <span className="line-through">{formatCurrency(part.unitCost, currencyCode)}</span>
             )}
             {part.quantity > 0 ? (
-              <span>{t('suggestions.inStock', { quantity: part.quantity })}</span>
+              <span>
+                {t('suggestions.inStock', { quantity: formatQuantity(part.quantity, part.unit) })}
+              </span>
             ) : part.quantity === 0 ? (
               <span className="font-medium text-amber-600 dark:text-amber-500">
                 {t('suggestions.outOfStock')}
               </span>
             ) : (
               <span className="font-medium text-red-600 dark:text-red-500">
-                {t('suggestions.onBackorder', { count: Math.abs(part.quantity) })}
+                {t('suggestions.onBackorder', {
+                  count: formatQuantity(Math.abs(part.quantity), part.unit),
+                })}
               </span>
             )}
           </span>

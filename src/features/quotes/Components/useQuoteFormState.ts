@@ -70,6 +70,7 @@ export function useQuoteFormState({
       partNumber: p.partNumber || '',
       name: p.name,
       quantity: p.quantity,
+      unit: p.unit ?? null,
       unitCost: p.unitCost ?? 0,
       markupPercent: p.markupPercent ?? 0,
       unitPrice: p.unitPrice,
@@ -188,7 +189,7 @@ export function useQuoteFormState({
   //   unitPrice = unitCost × (1 + markupPercent / 100)
   // Editing any one of the three keeps the others consistent.
   const updatePart = useCallback(
-    (index: number, field: keyof QuotePartInput, value: string | number | boolean) => {
+    (index: number, field: keyof QuotePartInput, value: string | number | boolean | null) => {
       setPartItems((prev) => {
         const updated = [...prev]
         const part = { ...updated[index], [field]: value }

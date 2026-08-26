@@ -4,6 +4,8 @@ export const quotePartSchema = z.object({
   partNumber: z.string().optional(),
   name: z.string().min(1, 'Part name is required'),
   quantity: z.coerce.number().min(0).default(1),
+  /** Unit of measure snapshotted from the picked inventory part. */
+  unit: z.string().nullish(),
   unitCost: z.coerce.number().min(0).default(0),
   markupPercent: z.coerce.number().min(0).default(0),
   unitPrice: z.coerce.number().min(0).default(0),

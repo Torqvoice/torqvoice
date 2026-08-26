@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Columns",
+    "byTechnician": "A column per technician",
+    "byBay": "A column per work bay",
+    "byNothing": "A column per day",
+    "weekends": "Weekends",
+    "add": "Add",
+    "addBay": "Add work bay",
+    "weekNumber": "Week {number}",
+    "lanes": "Lanes",
+    "showAllLanes": "Show all",
+    "onlyBusyLanes": "Only those with work",
+    "layout": "Layout",
+    "layoutTimeline": "Timeline",
+    "layoutCards": "Overview",
+    "rows": "Rows",
+    "rowPerTechnician": "A row per technician",
+    "rowPerBay": "A row per work bay",
+    "rowNothing": "A single row",
+    "technicians": "Technicians",
+    "workBays": "Work bays",
+    "weekendsDayHint": "Only applies when a week is shown"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Failed to move assignment",
     "failedAssign": "Failed to assign job",
     "failedRemove": "Failed to remove assignment",
-    "createNewWorkorder": "Create new Workorder"
+    "createNewWorkorder": "Create new Workorder",
+    "noBays": "No work bays yet. Add one to plan the week bay by bay.",
+    "addFirstBay": "Add work bay",
+    "lanes": {
+      "noBay": "No bay",
+      "noTechnician": "No technician",
+      "everyone": "All work",
+      "thisWeek": "This week"
+    },
+    "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it."
   },
   "unassigned": {
     "title": "Unassigned Jobs ({count})",
@@ -62,7 +92,6 @@
     "status": "Status",
     "week": "Week",
     "today": "Today",
-    "timeline": "Timeline",
     "live": "Live",
     "disconnected": "Live updates disconnected",
     "noTechnicians": "No technicians configured",
@@ -76,6 +105,52 @@
       "completed": "Completed"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "The status board groups by status",
+    "connecting": "Connecting…"
+  },
+  "week": {
+    "createAt": "New work order at {time}",
+    "unscheduled": "Not scheduled ({count})",
+    "hint": "Drag a job to move it. Drag its top or bottom edge to change how long it takes.",
+    "hiddenDays": "{count} booked on the weekend. Show weekends.",
+    "panLeft": "Earlier in the week",
+    "panRight": "Later in the week",
+    "hintPan": "Drag the background to move across the week.",
+    "wholeWeek": "See the whole week",
+    "hintZoom": "Hold Ctrl and scroll to zoom."
+  },
+  "bay": {
+    "addTitle": "Add work bay",
+    "editTitle": "Edit work bay",
+    "description": "A place where work happens: a lift, a ramp, a wash bay.",
+    "name": "Name",
+    "namePlaceholder": "e.g. Lift 1",
+    "color": "Color",
+    "dailyCapacity": "Bookable hours per day",
+    "hoursPerDay": "hours per day",
+    "capacityHint": "Used to show how full each day is.",
+    "deleteTitle": "Delete work bay",
+    "deleteDescription": "Remove \"{name}\"? Jobs booked into it stay scheduled and move to the no-bay column.",
+    "addBay": "Add work bay",
+    "saveFailed": "Could not save the work bay"
+  },
+  "lane": {
+    "booked": "Booked",
+    "capacity": "Capacity",
+    "free": "Free",
+    "over": "Over by",
+    "jobs": "Jobs",
+    "utilisation": "{pct}% of capacity",
+    "placeholder": "Work with nothing assigned here yet."
+  },
+  "job": {
+    "time": "Time",
+    "duration": "Duration",
+    "technician": "Technician",
+    "workBay": "Work bay",
+    "status": "Status",
+    "noTime": "No time set yet",
+    "none": "Nobody yet"
   }
 }

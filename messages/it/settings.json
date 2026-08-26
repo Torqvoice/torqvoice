@@ -831,6 +831,8 @@
     "liters": "litri (L)",
     "miles": "miglia (mi)",
     "gallons": "galloni (gal)",
+    "defaultStockUnit": "Unità di magazzino predefinita",
+    "defaultStockUnitHint": "Precompilata per i nuovi ricambi a magazzino. Ogni ricambio può comunque usare la propria unità.",
     "saveWorkshop": "Salva impostazioni officina",
     "saved": "Impostazioni officina salvate",
     "assignDialogTitle": "Assegnare agli ordini di lavoro esistenti?",

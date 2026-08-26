@@ -1,29 +1,27 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Search } from "lucide-react";
+import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Search } from 'lucide-react'
 
 export interface InventoryPartOption {
-  id: string;
-  name: string;
-  partNumber: string | null;
-  sellPrice: number;
-  unitCost: number;
+  id: string
+  name: string
+  partNumber: string | null
+  unit?: string | null
+  sellPrice: number
+  unitCost: number
+  /** On-hand stock, shown by the inline name suggestions. */
+  quantity: number
 }
 
 interface InventorySearchDialogProps {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  inventoryParts: InventoryPartOption[];
-  onSelect: (part: InventoryPartOption) => void;
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  inventoryParts: InventoryPartOption[]
+  onSelect: (part: InventoryPartOption) => void
 }
 
 export function InventorySearchDialog({
@@ -32,34 +30,33 @@ export function InventorySearchDialog({
   inventoryParts,
   onSelect,
 }: InventorySearchDialogProps) {
-  const t = useTranslations("laborPresets");
-  const [search, setSearch] = useState("");
+  const t = useTranslations('laborPresets')
+  const [search, setSearch] = useState('')
 
   const filtered = inventoryParts.filter((p) => {
-    if (!search) return true;
-    const q = search.toLowerCase();
+    if (!search) return true
+    const q = search.toLowerCase()
     return (
-      p.name.toLowerCase().includes(q) ||
-      (p.partNumber && p.partNumber.toLowerCase().includes(q))
-    );
-  });
+      p.name.toLowerCase().includes(q) || (p.partNumber && p.partNumber.toLowerCase().includes(q))
+    )
+  })
 
   return (
     <Dialog
       open={open}
       onOpenChange={(v) => {
-        onOpenChange(v);
-        if (!v) setSearch("");
+        onOpenChange(v)
+        if (!v) setSearch('')
       }}
     >
       <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{t("form.importFromInventory")}</DialogTitle>
+          <DialogTitle>{t('form.importFromInventory')}</DialogTitle>
         </DialogHeader>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder={t("form.searchInventory")}
+            placeholder={t('form.searchInventory')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -72,8 +69,8 @@ export function InventorySearchDialog({
               type="button"
               className="w-full text-left rounded-md px-2.5 py-1.5 hover:bg-accent transition-colors flex items-center justify-between gap-4"
               onClick={() => {
-                onSelect(ip);
-                onOpenChange(false);
+                onSelect(ip)
+                onOpenChange(false)
               }}
             >
               <div className="min-w-0">
@@ -91,11 +88,11 @@ export function InventorySearchDialog({
           ))}
           {filtered.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              {t("form.noPartsFound")}
+              {t('form.noPartsFound')}
             </p>
           )}
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

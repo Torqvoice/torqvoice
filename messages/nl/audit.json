@@ -136,7 +136,10 @@
     "tire_set_dispose": "Bandenset afgeschreven",
     "tire_set_attach": "Bestanden aan een bandenset toegevoegd",
     "tire_set_detach": "Bestand van een bandenset verwijderd",
-    "whatsapp_send": "WhatsApp-bericht verzonden"
+    "whatsapp_send": "WhatsApp-bericht verzonden",
+    "work_bay_create": "Werkplek aangemaakt",
+    "work_bay_update": "Werkplek bijgewerkt",
+    "work_bay_delete": "Werkplek verwijderd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -256,6 +259,9 @@
     "vehicle_update": "Voertuig {name} bijgewerkt, gewijzigd: {fields}",
     "vehicle_updateNoChanges": "Voertuig {name} bijgewerkt, niets gewijzigd",
     "webhook_create": "Webhook {name} aangemaakt",
-    "whatsapp_send": "WhatsApp-bericht verzonden naar {name}"
+    "whatsapp_send": "WhatsApp-bericht verzonden naar {name}",
+    "work_bay_create": "Werkplek \"{name}\" aangemaakt",
+    "work_bay_update": "Werkplek \"{name}\" bijgewerkt",
+    "work_bay_delete": "Werkplek {id} verwijderd"
   }
 }

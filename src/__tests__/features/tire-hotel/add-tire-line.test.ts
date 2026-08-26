@@ -20,6 +20,7 @@ const LINE: TireLineInput = {
   name: 'Nokian Hakkapeliitta 225/45R18',
   partNumber: 'NOK-2254518',
   quantity: 4,
+  unit: null,
   unitPrice: 1800,
   unitCost: 1200,
   inventoryPartId: 'part-1',

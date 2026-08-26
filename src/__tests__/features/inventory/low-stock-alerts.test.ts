@@ -25,6 +25,7 @@ function part(over: Partial<LowStockCandidate> = {}): LowStockCandidate {
     partNumber: 'BP-1',
     quantity: 1,
     minQuantity: 5,
+    unit: null,
     lowStockAlertedAt: null,
     ...over,
   }
@@ -167,6 +168,14 @@ describe('digest formatting', () => {
     expect(formatLowStockLine(part({ quantity: 2, minQuantity: 5 }))).toBe(
       'Brake pad (BP-1): 2 left, reorder at 5'
     )
+  })
+
+  it('carries the unit of measure into the line', () => {
+    expect(
+      formatLowStockLine(
+        part({ name: 'Engine oil 5W-30', partNumber: null, quantity: 1.5, unit: 'l' })
+      )
+    ).toBe('Engine oil 5W-30: 1.5 l left, reorder at 5 l')
   })
 
   it('omits an absent part number', () => {

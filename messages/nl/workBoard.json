@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Kolommen",
+    "byTechnician": "Een kolom per monteur",
+    "byBay": "Een kolom per werkplek",
+    "byNothing": "Een kolom per dag",
+    "weekends": "Weekend",
+    "add": "Toevoegen",
+    "addBay": "Werkplek toevoegen",
+    "weekNumber": "Week {number}",
+    "lanes": "Kolommen",
+    "showAllLanes": "Alles tonen",
+    "onlyBusyLanes": "Alleen met werk",
+    "layout": "Weergave",
+    "layoutTimeline": "Tijdlijn",
+    "layoutCards": "Overzicht",
+    "rows": "Rijen",
+    "rowPerTechnician": "Een rij per monteur",
+    "rowPerBay": "Een rij per werkplek",
+    "rowNothing": "Eén enkele rij",
+    "technicians": "Monteurs",
+    "workBays": "Werkplekken",
+    "weekendsDayHint": "Geldt alleen bij een week"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Toewijzing verplaatsen mislukt",
     "failedAssign": "Taak toewijzen mislukt",
     "failedRemove": "Toewijzing verwijderen mislukt",
-    "createNewWorkorder": "Nieuwe werkorder aanmaken"
+    "createNewWorkorder": "Nieuwe werkorder aanmaken",
+    "noBays": "Nog geen werkplekken. Voeg er een toe om de week per werkplek te plannen.",
+    "addFirstBay": "Werkplek toevoegen",
+    "lanes": {
+      "noBay": "Zonder werkplek",
+      "noTechnician": "Zonder monteur",
+      "everyone": "Al het werk",
+      "thisWeek": "Deze week"
+    },
+    "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept."
   },
   "unassigned": {
     "title": "Niet-toegewezen taken ({count})",
@@ -62,7 +92,6 @@
     "status": "Status",
     "week": "Week",
     "today": "Vandaag",
-    "timeline": "Tijdlijn",
     "live": "Live",
     "disconnected": "Live-updates verbroken",
     "noTechnicians": "Geen technici geconfigureerd",
@@ -76,6 +105,52 @@
       "completed": "Voltooid"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Het statusbord groepeert op status",
+    "connecting": "Verbinden…"
+  },
+  "week": {
+    "createAt": "Nieuwe werkorder om {time}",
+    "unscheduled": "Niet ingepland ({count})",
+    "hint": "Sleep een klus om die te verplaatsen. Sleep de boven- of onderrand om de duur te wijzigen.",
+    "hiddenDays": "{count} ingepland in het weekend. Weekend tonen.",
+    "panLeft": "Eerder in de week",
+    "panRight": "Later in de week",
+    "hintPan": "Sleep de achtergrond om door de week te bewegen.",
+    "wholeWeek": "Hele week tonen",
+    "hintZoom": "Houd Ctrl ingedrukt en scroll om te zoomen."
+  },
+  "bay": {
+    "addTitle": "Werkplek toevoegen",
+    "editTitle": "Werkplek bewerken",
+    "description": "Een plek waar gewerkt wordt: een brug, een oprit of een wasplaats.",
+    "name": "Naam",
+    "namePlaceholder": "bijv. Brug 1",
+    "color": "Kleur",
+    "dailyCapacity": "Boekbare uren per dag",
+    "hoursPerDay": "uur per dag",
+    "capacityHint": "Laat zien hoe vol elke dag is.",
+    "deleteTitle": "Werkplek verwijderen",
+    "deleteDescription": "\"{name}\" verwijderen? Klussen die erop staan blijven ingepland en gaan naar de kolom zonder werkplek.",
+    "addBay": "Werkplek toevoegen",
+    "saveFailed": "Kon de werkplek niet opslaan"
+  },
+  "lane": {
+    "booked": "Ingepland",
+    "capacity": "Capaciteit",
+    "free": "Vrij",
+    "over": "Over met",
+    "jobs": "Klussen",
+    "utilisation": "{pct}% van de capaciteit",
+    "placeholder": "Werk dat hier nog niet is toegewezen."
+  },
+  "job": {
+    "time": "Tijd",
+    "duration": "Duur",
+    "technician": "Monteur",
+    "workBay": "Werkplek",
+    "status": "Status",
+    "noTime": "Nog geen tijd",
+    "none": "Nog niemand"
   }
 }

@@ -34,6 +34,7 @@ export interface ServiceDetail {
   shopName: string | null
   techName: string | null
   technicianId: string | null
+  workBayId: string | null
   parts: string | null
   laborHours: number | null
   diagnosticNotes: string | null
@@ -65,6 +66,7 @@ export interface PartItem {
   partNumber: string | null
   name: string
   quantity: number
+  unit: string | null
   unitPrice: number
   total: number
 }

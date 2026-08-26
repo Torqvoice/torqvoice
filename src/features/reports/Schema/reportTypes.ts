@@ -1,273 +1,275 @@
 export interface MonthlyRevenue {
-  month: string;
-  revenue: number;
-  collected: number;
-  count: number;
-  partsCost: number;
-  partsRevenue: number;
-  partsNetProfit: number;
-  laborRevenue: number;
-  netProfit: number;
+  month: string
+  revenue: number
+  collected: number
+  count: number
+  partsCost: number
+  partsRevenue: number
+  partsNetProfit: number
+  laborRevenue: number
+  netProfit: number
 }
 
 export interface RevenueByType {
-  type: string;
-  revenue: number;
-  count: number;
+  type: string
+  revenue: number
+  count: number
 }
 
 export interface RevenueSummary {
-  totalRevenue: number;
-  totalCollected: number;
-  outstanding: number;
-  totalCount: number;
-  totalPartsCost: number;
-  totalPartsRevenue: number;
-  totalPartsNetProfit: number;
-  totalLaborRevenue: number;
-  netProfit: number;
+  totalRevenue: number
+  totalCollected: number
+  outstanding: number
+  totalCount: number
+  totalPartsCost: number
+  totalPartsRevenue: number
+  totalPartsNetProfit: number
+  totalLaborRevenue: number
+  netProfit: number
 }
 
 export interface RevenueReport {
-  monthly: MonthlyRevenue[];
-  byType: RevenueByType[];
-  summary: RevenueSummary;
+  monthly: MonthlyRevenue[]
+  byType: RevenueByType[]
+  summary: RevenueSummary
 }
 
 export interface ServiceByStatus {
-  status: string;
-  count: number;
+  status: string
+  count: number
 }
 
 export interface ServiceByType {
-  type: string;
-  count: number;
+  type: string
+  count: number
 }
 
 export interface ServiceReport {
-  totalServices: number;
-  byStatus: ServiceByStatus[];
-  byType: ServiceByType[];
+  totalServices: number
+  byStatus: ServiceByStatus[]
+  byType: ServiceByType[]
 }
 
 export interface TopCustomer {
-  id: string;
-  name: string;
-  company: string | null;
-  totalSpent: number;
-  serviceCount: number;
+  id: string
+  name: string
+  company: string | null
+  totalSpent: number
+  serviceCount: number
 }
 
 export interface CustomerReport {
-  totalCustomers: number;
-  activeCustomers: number;
-  topCustomers: TopCustomer[];
+  totalCustomers: number
+  activeCustomers: number
+  topCustomers: TopCustomer[]
 }
 
 export interface LowStockPart {
-  id: string;
-  name: string;
-  partNumber: string | null;
-  quantity: number;
-  unitCost: number | null;
-  sellPrice: number | null;
-  minQuantity: number | null;
+  id: string
+  name: string
+  partNumber: string | null
+  quantity: number
+  unit?: string | null
+  unitCost: number | null
+  sellPrice: number | null
+  minQuantity: number | null
 }
 
 export interface InventoryReport {
-  totalParts: number;
-  totalItems: number;
-  totalValue: number;
-  totalSellValue: number;
-  lowStock: LowStockPart[];
+  totalParts: number
+  totalItems: number
+  totalValue: number
+  totalSellValue: number
+  lowStock: LowStockPart[]
 }
 
 // Enhanced report types
 
 export interface TechnicianMetrics {
-  techName: string;
-  jobCount: number;
-  totalRevenue: number;
-  avgRevenue: number;
-  totalLaborHours: number;
-  avgHours: number;
+  techName: string
+  jobCount: number
+  totalRevenue: number
+  avgRevenue: number
+  totalLaborHours: number
+  avgHours: number
 }
 
 export interface TechnicianReport {
-  technicians: TechnicianMetrics[];
-  totalJobs: number;
-  totalRevenue: number;
+  technicians: TechnicianMetrics[]
+  totalJobs: number
+  totalRevenue: number
 }
 
 export interface PartUsage {
-  name: string;
-  partNumber: string | null;
-  usageCount: number;
-  totalQuantity: number;
-  totalRevenue: number;
-  totalCost: number;
-  netProfit: number;
+  name: string
+  partNumber: string | null
+  usageCount: number
+  totalQuantity: number
+  totalRevenue: number
+  totalCost: number
+  netProfit: number
 }
 
 export interface PartsUsageReport {
-  parts: PartUsage[];
-  totalPartsRevenue: number;
-  totalPartsCost: number;
-  totalPartsNetProfit: number;
-  totalPartsUsed: number;
+  parts: PartUsage[]
+  totalPartsRevenue: number
+  totalPartsCost: number
+  totalPartsNetProfit: number
+  totalPartsUsed: number
 }
 
 export interface DayOfWeekDistribution {
-  day: string;
-  count: number;
+  day: string
+  count: number
 }
 
 export interface MonthlyTrend {
-  month: string;
-  count: number;
-  revenue: number;
+  month: string
+  count: number
+  revenue: number
 }
 
 export interface ServiceTypeAnalytics {
-  type: string;
-  count: number;
-  avgValue: number;
-  avgHours: number;
+  type: string
+  count: number
+  avgValue: number
+  avgHours: number
 }
 
 export interface JobAnalyticsReport {
-  avgJobValue: number;
-  totalJobs: number;
-  topServiceTypes: ServiceTypeAnalytics[];
-  dayOfWeek: DayOfWeekDistribution[];
-  monthlyTrend: MonthlyTrend[];
+  avgJobValue: number
+  totalJobs: number
+  topServiceTypes: ServiceTypeAnalytics[]
+  dayOfWeek: DayOfWeekDistribution[]
+  monthlyTrend: MonthlyTrend[]
 }
 
 export interface RetentionCustomer {
-  id: string;
-  name: string;
-  company: string | null;
-  visitCount: number;
-  totalSpent: number;
-  avgTimeBetweenVisits: number | null;
+  id: string
+  name: string
+  company: string | null
+  visitCount: number
+  totalSpent: number
+  avgTimeBetweenVisits: number | null
 }
 
 export interface CustomerRetentionReport {
-  returningCustomers: number;
-  newCustomers: number;
-  totalActive: number;
-  avgTimeBetweenVisits: number | null;
-  topReturning: RetentionCustomer[];
+  returningCustomers: number
+  newCustomers: number
+  totalActive: number
+  avgTimeBetweenVisits: number | null
+  topReturning: RetentionCustomer[]
 }
 
 export interface PastDueInvoice {
-  id: string;
-  invoiceNumber: string | null;
-  customerName: string;
-  customerCompany: string | null;
-  vehicleInfo: string;
-  totalAmount: number;
-  amountPaid: number;
-  amountDue: number;
-  dueDate: string;
-  daysPastDue: number;
+  id: string
+  invoiceNumber: string | null
+  customerName: string
+  customerCompany: string | null
+  vehicleInfo: string
+  totalAmount: number
+  amountPaid: number
+  amountDue: number
+  dueDate: string
+  daysPastDue: number
 }
 
 export interface PastDueInvoicesReport {
-  invoices: PastDueInvoice[];
+  invoices: PastDueInvoice[]
   summary: {
-    totalPastDue: number;
-    totalAmountDue: number;
-    totalInvoices: number;
-    over30: number;
-    over60: number;
-    over90: number;
-  };
+    totalPastDue: number
+    totalAmountDue: number
+    totalInvoices: number
+    over30: number
+    over60: number
+    over90: number
+  }
 }
 
 export interface MonthlyTax {
-  month: string;
-  taxCollected: number;
-  invoiceCount: number;
-  taxableAmount: number;
+  month: string
+  taxCollected: number
+  invoiceCount: number
+  taxableAmount: number
 }
 
 export interface TaxByRate {
-  taxRate: number;
-  taxCollected: number;
-  invoiceCount: number;
+  taxRate: number
+  taxCollected: number
+  invoiceCount: number
 }
 
 export interface TaxReport {
-  monthly: MonthlyTax[];
-  byRate: TaxByRate[];
+  monthly: MonthlyTax[]
+  byRate: TaxByRate[]
   summary: {
-    totalTaxCollected: number;
-    totalTaxableAmount: number;
-    totalInvoices: number;
-  };
+    totalTaxCollected: number
+    totalTaxableAmount: number
+    totalInvoices: number
+  }
 }
 
 // --- Vehicle Reports ---
 
 export interface VehicleReportSummary {
-  totalServices: number;
-  totalCost: number;
-  totalPartsUsed: number;
-  totalLaborHours: number;
-  repairCount: number;
-  maintenanceCount: number;
-  upgradeCount: number;
-  inspectionCount: number;
+  totalServices: number
+  totalCost: number
+  totalPartsUsed: number
+  totalLaborHours: number
+  repairCount: number
+  maintenanceCount: number
+  upgradeCount: number
+  inspectionCount: number
 }
 
 export interface VehicleMonthlyCost {
-  month: string;
-  partsCost: number;
-  laborCost: number;
-  totalCost: number;
-  count: number;
+  month: string
+  partsCost: number
+  laborCost: number
+  totalCost: number
+  count: number
 }
 
 export interface VehicleServiceTypeBreakdown {
-  type: string;
-  count: number;
-  totalCost: number;
+  type: string
+  count: number
+  totalCost: number
 }
 
 export interface VehiclePartUsage {
-  name: string;
-  partNumber: string | null;
-  quantity: number;
-  totalCost: number;
+  name: string
+  partNumber: string | null
+  quantity: number
+  unit?: string | null
+  totalCost: number
 }
 
 export interface VehicleServiceHistoryItem {
-  id: string;
-  title: string;
-  type: string;
-  status: string;
-  date: string;
-  totalAmount: number;
-  partsCount: number;
-  laborHours: number;
-  techName: string | null;
+  id: string
+  title: string
+  type: string
+  status: string
+  date: string
+  totalAmount: number
+  partsCount: number
+  laborHours: number
+  techName: string | null
 }
 
 export interface VehicleReportData {
   vehicleInfo: {
-    id: string;
-    year: number;
-    make: string;
-    model: string;
-    vin: string | null;
-    licensePlate: string | null;
-    mileage: number;
-    customerName: string | null;
-  };
-  summary: VehicleReportSummary;
-  monthlyCosts: VehicleMonthlyCost[];
-  serviceTypeBreakdown: VehicleServiceTypeBreakdown[];
-  topParts: VehiclePartUsage[];
-  serviceHistory: VehicleServiceHistoryItem[];
+    id: string
+    year: number
+    make: string
+    model: string
+    vin: string | null
+    licensePlate: string | null
+    mileage: number
+    customerName: string | null
+  }
+  summary: VehicleReportSummary
+  monthlyCosts: VehicleMonthlyCost[]
+  serviceTypeBreakdown: VehicleServiceTypeBreakdown[]
+  topParts: VehiclePartUsage[]
+  serviceHistory: VehicleServiceHistoryItem[]
 }

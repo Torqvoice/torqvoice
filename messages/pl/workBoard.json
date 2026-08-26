@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Kolumny",
+    "byTechnician": "Kolumna na mechanika",
+    "byBay": "Kolumna na stanowisko",
+    "byNothing": "Kolumna na dzień",
+    "weekends": "Weekend",
+    "add": "Dodaj",
+    "addBay": "Dodaj stanowisko",
+    "weekNumber": "Tydz. {number}",
+    "lanes": "Kolumny",
+    "showAllLanes": "Pokaż wszystkie",
+    "onlyBusyLanes": "Tylko ze zleceniami",
+    "layout": "Widok",
+    "layoutTimeline": "Oś czasu",
+    "layoutCards": "Przegląd",
+    "rows": "Wiersze",
+    "rowPerTechnician": "Wiersz na mechanika",
+    "rowPerBay": "Wiersz na stanowisko",
+    "rowNothing": "Jeden wiersz",
+    "technicians": "Mechanicy",
+    "workBays": "Stanowiska",
+    "weekendsDayHint": "Dotyczy tylko widoku tygodnia"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Nie udało się przenieść przydzielenia",
     "failedAssign": "Nie udało się przydzielić zadania",
     "failedRemove": "Nie udało się usunąć przydzielenia",
-    "createNewWorkorder": "Utwórz nowe zlecenie pracy"
+    "createNewWorkorder": "Utwórz nowe zlecenie pracy",
+    "noBays": "Brak stanowisk. Dodaj jedno, aby planować tydzień według stanowisk.",
+    "addFirstBay": "Dodaj stanowisko",
+    "lanes": {
+      "noBay": "Bez stanowiska",
+      "noTechnician": "Bez mechanika",
+      "everyone": "Cała praca",
+      "thisWeek": "Ten tydzień"
+    },
+    "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie."
   },
   "unassigned": {
     "title": "Nieprzyzdzielone Zadania ({count})",
@@ -62,7 +92,6 @@
     "status": "Status",
     "week": "Tydzień",
     "today": "Dzisiaj",
-    "timeline": "Oś czasu",
     "live": "Na Żywo",
     "disconnected": "Aktualizacje na żywo rozłączone",
     "noTechnicians": "Brak skonfigurowanych techników",
@@ -76,6 +105,52 @@
       "completed": "Ukończone"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Tablica statusów grupuje według statusu",
+    "connecting": "Łączenie…"
+  },
+  "week": {
+    "createAt": "Nowe zlecenie o {time}",
+    "unscheduled": "Niezaplanowane ({count})",
+    "hint": "Przeciągnij zlecenie, aby je przenieść. Przeciągnij górną lub dolną krawędź, aby zmienić czas trwania.",
+    "hiddenDays": "{count} zaplanowano w weekend. Pokaż weekend.",
+    "panLeft": "Wcześniej w tygodniu",
+    "panRight": "Później w tygodniu",
+    "hintPan": "Przeciągnij tło, aby przesuwać się po tygodniu.",
+    "wholeWeek": "Pokaż cały tydzień",
+    "hintZoom": "Przytrzymaj Ctrl i przewiń, aby przybliżyć."
+  },
+  "bay": {
+    "addTitle": "Dodaj stanowisko",
+    "editTitle": "Edytuj stanowisko",
+    "description": "Miejsce, w którym wykonywana jest praca: podnośnik, rampa lub myjnia.",
+    "name": "Nazwa",
+    "namePlaceholder": "np. Podnośnik 1",
+    "color": "Kolor",
+    "dailyCapacity": "Godziny do zaplanowania dziennie",
+    "hoursPerDay": "godzin dziennie",
+    "capacityHint": "Pokazuje, jak zapełniony jest każdy dzień.",
+    "deleteTitle": "Usuń stanowisko",
+    "deleteDescription": "Usunąć „{name}”? Zlecenia na tym stanowisku pozostaną zaplanowane i trafią do kolumny bez stanowiska.",
+    "addBay": "Dodaj stanowisko",
+    "saveFailed": "Nie udało się zapisać stanowiska"
+  },
+  "lane": {
+    "booked": "Zaplanowane",
+    "capacity": "Wydajność",
+    "free": "Wolne",
+    "over": "Przekroczono o",
+    "jobs": "Zlecenia",
+    "utilisation": "{pct}% wydajności",
+    "placeholder": "Praca jeszcze nieprzypisana."
+  },
+  "job": {
+    "time": "Godzina",
+    "duration": "Czas trwania",
+    "technician": "Mechanik",
+    "workBay": "Stanowisko",
+    "status": "Status",
+    "noTime": "Brak godziny",
+    "none": "Jeszcze nikt"
   }
 }

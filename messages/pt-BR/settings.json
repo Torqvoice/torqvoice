@@ -831,6 +831,8 @@
     "liters": "litros (L)",
     "miles": "milhas (mi)",
     "gallons": "galoes (gal)",
+    "defaultStockUnit": "Unidade de estoque padrão",
+    "defaultStockUnitHint": "Preenchida automaticamente em novas peças do estoque. Cada peça ainda pode usar sua própria unidade.",
     "saveWorkshop": "Salvar configurações da oficina",
     "saved": "Configurações da oficina salvas",
     "assignDialogTitle": "Atribuir às ordens de serviço existentes?",

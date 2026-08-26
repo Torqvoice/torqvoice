@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { formatQuantity } from '@/lib/format-quantity'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -107,6 +108,7 @@ export function InventoryPickerDialog({
                   partNumber: ip.partNumber || '',
                   name: ip.name,
                   quantity: 1,
+                  unit: ip.unit ?? null,
                   unitPrice: price,
                   total: price,
                   unitCost: ip.unitCost,
@@ -151,7 +153,7 @@ export function InventoryPickerDialog({
                   <span>{formatCurrency(ip.unitCost, currencyCode)}</span>
                 )}
                 {ip.quantity > 0 ? (
-                  <span>{t('inStock', { quantity: ip.quantity })}</span>
+                  <span>{t('inStock', { quantity: formatQuantity(ip.quantity, ip.unit) })}</span>
                 ) : ip.quantity === 0 ? (
                   <span className="font-medium text-amber-600 dark:text-amber-500">
                     {t('outOfStock')}

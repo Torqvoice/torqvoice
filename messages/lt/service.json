@@ -341,7 +341,10 @@
     "platformUsers": "Platformos naudotojai",
     "customTechnicians": "Pasirinktiniai",
     "readMore": "Skaityti daugiau",
-    "setDefaults": "Nustatyti numatytuosius"
+    "setDefaults": "Nustatyti numatytuosius",
+    "workBay": "Darbo vieta",
+    "selectWorkBay": "Pasirinkite darbo vietą…",
+    "noWorkBay": "Be darbo vietos"
   },
   "notifications": {
     "title": "Kliento pranešimai",

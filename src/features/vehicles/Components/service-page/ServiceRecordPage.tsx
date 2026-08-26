@@ -1,4 +1,5 @@
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
+import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { readPartsPricingSettings } from '@/features/inventory/Lib/partPricing'
@@ -40,6 +41,7 @@ export async function ServiceRecordPage({
     orgMembersResult,
     statusReportsResult,
     findingsResult,
+    workBaysResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
     getSettings([
@@ -60,6 +62,7 @@ export async function ServiceRecordPage({
     getOrgMembers(),
     getStatusReportsForService(serviceId),
     getServiceFindings(serviceId),
+    getWorkBays(),
   ])
 
   if (!result.success || !result.data) {
@@ -102,6 +105,9 @@ export async function ServiceRecordPage({
   const boardTechnicians = (
     techniciansResult.success && techniciansResult.data ? techniciansResult.data : []
   ).map((t) => ({ id: t.id, name: t.name, userId: t.userId }))
+  const workBays = (workBaysResult.success && workBaysResult.data ? workBaysResult.data : []).map(
+    (b) => ({ id: b.id, name: b.name })
+  )
   const organizationId = authContext?.organizationId || ''
 
   // Fetch team members and features
@@ -172,6 +178,7 @@ export async function ServiceRecordPage({
       partNumber: p.partNumber || '',
       name: p.name,
       quantity: p.quantity,
+      unit: p.unit ?? null,
       unitPrice: p.unitPrice,
       total: p.total,
       unitCost: p.unitCost ?? 0,
@@ -258,6 +265,7 @@ export async function ServiceRecordPage({
         laborPresets={laborPresets}
         initialVehicle={initialVehicle}
         boardTechnicians={boardTechnicians}
+        workBays={workBays}
         orgMembers={orgMembersResult.success && orgMembersResult.data ? orgMembersResult.data : []}
         currentUserName={currentUserName}
         imageAttachmentsForManager={imageAttachmentsForManager}

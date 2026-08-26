@@ -341,7 +341,10 @@
     "platformUsers": "Platform Users",
     "customTechnicians": "Custom",
     "readMore": "Read More",
-    "setDefaults": "Set Defaults"
+    "setDefaults": "Set Defaults",
+    "workBay": "Work bay",
+    "selectWorkBay": "Select work bay...",
+    "noWorkBay": "No work bay"
   },
   "notifications": {
     "title": "Customer Notifications",

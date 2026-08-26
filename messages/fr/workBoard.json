@@ -11,7 +11,28 @@
     "previousWeek": "Previous week",
     "nextWeek": "Next week",
     "previousDay": "Previous day",
-    "nextDay": "Next day"
+    "nextDay": "Next day",
+    "groupBy": "Colonnes",
+    "byTechnician": "Une colonne par technicien",
+    "byBay": "Une colonne par poste",
+    "byNothing": "Une colonne par jour",
+    "weekends": "Week-end",
+    "add": "Ajouter",
+    "addBay": "Ajouter un poste",
+    "weekNumber": "Sem. {number}",
+    "lanes": "Colonnes",
+    "showAllLanes": "Tout afficher",
+    "onlyBusyLanes": "Seulement avec du travail",
+    "layout": "Affichage",
+    "layoutTimeline": "Chronologie",
+    "layoutCards": "Vue d'ensemble",
+    "rows": "Lignes",
+    "rowPerTechnician": "Une ligne par technicien",
+    "rowPerBay": "Une ligne par poste",
+    "rowNothing": "Une seule ligne",
+    "technicians": "Techniciens",
+    "workBays": "Postes de travail",
+    "weekendsDayHint": "Ne s'applique qu'à une semaine"
   },
   "board": {
     "days": {
@@ -28,7 +49,16 @@
     "failedMove": "Impossible de déplacer l'assignation",
     "failedAssign": "Impossible d'assigner le travail",
     "failedRemove": "Impossible de supprimer l'assignation",
-    "createNewWorkorder": "Créer un nouvel ordre de travail"
+    "createNewWorkorder": "Créer un nouvel ordre de travail",
+    "noBays": "Aucun poste de travail. Ajoutez-en un pour planifier la semaine par poste.",
+    "addFirstBay": "Ajouter un poste",
+    "lanes": {
+      "noBay": "Sans poste",
+      "noTechnician": "Sans technicien",
+      "everyone": "Tout le travail",
+      "thisWeek": "Cette semaine"
+    },
+    "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche."
   },
   "unassigned": {
     "title": "Travaux Non Assignés ({count})",
@@ -62,7 +92,6 @@
     "status": "Statut",
     "week": "Semaine",
     "today": "Aujourd'hui",
-    "timeline": "Chronologie",
     "live": "En Direct",
     "disconnected": "Mises à jour en direct déconnectées",
     "noTechnicians": "Aucun technicien configuré",
@@ -76,6 +105,52 @@
       "completed": "Complété"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "groupingUnused": "Le tableau de statut regroupe par statut",
+    "connecting": "Connexion…"
+  },
+  "week": {
+    "createAt": "Nouvel ordre de travail à {time}",
+    "unscheduled": "Non planifié ({count})",
+    "hint": "Faites glisser une tâche pour la déplacer. Faites glisser son bord haut ou bas pour changer sa durée.",
+    "hiddenDays": "{count} planifié(s) le week-end. Afficher le week-end.",
+    "panLeft": "Plus tôt dans la semaine",
+    "panRight": "Plus tard dans la semaine",
+    "hintPan": "Faites glisser le fond pour parcourir la semaine.",
+    "wholeWeek": "Voir toute la semaine",
+    "hintZoom": "Maintenez Ctrl et faites défiler pour zoomer."
+  },
+  "bay": {
+    "addTitle": "Ajouter un poste de travail",
+    "editTitle": "Modifier le poste de travail",
+    "description": "Un endroit où le travail se fait : un pont, une rampe, une aire de lavage.",
+    "name": "Nom",
+    "namePlaceholder": "ex. Pont 1",
+    "color": "Couleur",
+    "dailyCapacity": "Heures réservables par jour",
+    "hoursPerDay": "heures par jour",
+    "capacityHint": "Sert à montrer le taux de remplissage de chaque journée.",
+    "deleteTitle": "Supprimer le poste de travail",
+    "deleteDescription": "Supprimer « {name} » ? Les tâches qui y sont réservées restent planifiées et passent dans la colonne sans poste.",
+    "addBay": "Ajouter un poste",
+    "saveFailed": "Impossible d'enregistrer le poste de travail"
+  },
+  "lane": {
+    "booked": "Planifié",
+    "capacity": "Capacité",
+    "free": "Libre",
+    "over": "Dépassement de",
+    "jobs": "Tâches",
+    "utilisation": "{pct} % de la capacité",
+    "placeholder": "Travail encore non attribué ici."
+  },
+  "job": {
+    "time": "Heure",
+    "duration": "Durée",
+    "technician": "Technicien",
+    "workBay": "Poste de travail",
+    "status": "Statut",
+    "noTime": "Pas encore d'horaire",
+    "none": "Personne pour l'instant"
   }
 }

@@ -1,35 +1,35 @@
-import { db } from "@/lib/db";
-import { notFound } from "next/navigation";
-import { InvoiceView } from "./invoice-view";
-import { getFeatures } from "@/lib/features";
-import { resolvePortalOrg } from "@/lib/portal-slug";
-import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
-import type { Metadata } from "next";
+import { db } from '@/lib/db'
+import { notFound } from 'next/navigation'
+import { InvoiceView } from './invoice-view'
+import { getFeatures } from '@/lib/features'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { Metadata } from 'next'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
-  const match = fileUrl.match(/^\/api\/protected\/files\/[^/]+\/(.+)$/);
-  if (match) return `/api/public/files/${token}/${match[1]}`;
+  const match = fileUrl.match(/^\/api\/protected\/files\/[^/]+\/(.+)$/)
+  if (match) return `/api/public/files/${token}/${match[1]}`
   // Legacy URLs pass through as-is
-  return fileUrl;
+  return fileUrl
 }
 
-export const revalidate = 60;
+export const revalidate = 60
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
-};
+}
 
 export default async function PublicInvoicePage({
   params,
 }: {
-  params: Promise<{ orgId: string; token: string }>;
+  params: Promise<{ orgId: string; token: string }>
 }) {
-  const { orgId: orgParam, token } = await params;
+  const { orgId: orgParam, token } = await params
 
   // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam);
-  const orgId = resolvedOrg?.id ?? orgParam;
+  const resolvedOrg = await resolvePortalOrg(orgParam)
+  const orgId = resolvedOrg?.id ?? orgParam
 
   const record = await db.serviceRecord.findUnique({
     where: { publicToken: token },
@@ -42,13 +42,14 @@ export default async function PublicInvoicePage({
           partNumber: true,
           name: true,
           quantity: true,
+          unit: true,
           unitPrice: true,
           total: true,
         },
       },
       laborItems: true,
       attachments: true,
-      payments: { orderBy: { date: "desc" } },
+      payments: { orderBy: { date: 'desc' } },
       customer: {
         select: {
           name: true,
@@ -82,10 +83,10 @@ export default async function PublicInvoicePage({
         },
       },
     },
-  });
+  })
 
   if (!record || record.organizationId !== orgId) {
-    notFound();
+    notFound()
   }
 
   // Fetch workshop settings and features
@@ -95,34 +96,34 @@ export default async function PublicInvoicePage({
         organizationId: record.organizationId,
         key: {
           in: [
-            "workshop.address",
-            "workshop.phone",
-            "workshop.email",
-            "workshop.logo",
-            "workshop.currencyCode",
-            "workshop.currencyFormat",
-            "invoice.bankAccount",
-            "invoice.orgNumber",
-            "invoice.paymentTerms",
-            "invoice.footerNote",
-            "invoice.showBankAccount",
-            "invoice.showOrgNumber",
-            "invoice.dueDays",
-            "invoice.showLogo",
-            "invoice.showCompanyName",
-            "invoice.primaryColor",
-            "invoice.headerStyle",
-            "invoice.logoSize",
-            "payment.providersEnabled",
-            "payment.termsOfSale",
-            "payment.termsOfSaleUrl",
-            "workshop.dateFormat",
-            "workshop.timezone",
-            "workshop.serviceType",
-            "workshop.taxLabel",
-            "portal.enabled",
-            "invoice.layoutConfig",
-            "telegram.botUsername",
+            'workshop.address',
+            'workshop.phone',
+            'workshop.email',
+            'workshop.logo',
+            'workshop.currencyCode',
+            'workshop.currencyFormat',
+            'invoice.bankAccount',
+            'invoice.orgNumber',
+            'invoice.paymentTerms',
+            'invoice.footerNote',
+            'invoice.showBankAccount',
+            'invoice.showOrgNumber',
+            'invoice.dueDays',
+            'invoice.showLogo',
+            'invoice.showCompanyName',
+            'invoice.primaryColor',
+            'invoice.headerStyle',
+            'invoice.logoSize',
+            'payment.providersEnabled',
+            'payment.termsOfSale',
+            'payment.termsOfSaleUrl',
+            'workshop.dateFormat',
+            'workshop.timezone',
+            'workshop.serviceType',
+            'workshop.taxLabel',
+            'portal.enabled',
+            'invoice.layoutConfig',
+            'telegram.botUsername',
           ],
         },
       },
@@ -134,60 +135,70 @@ export default async function PublicInvoicePage({
         })
       : null,
     getFeatures(orgId),
-  ]);
+  ])
 
   // Fetch findings for this service record (open ones to show on invoice)
   const findings = await db.vehicleFinding.findMany({
-    where: { serviceRecordId: record.id, status: { not: "resolved" } },
+    where: { serviceRecordId: record.id, status: { not: 'resolved' } },
     select: { description: true, severity: true, notes: true },
-    orderBy: { createdAt: "desc" },
-  });
+    orderBy: { createdAt: 'desc' },
+  })
 
   // Fetch custom field values for this service record
   const customFieldValues = await db.customFieldValue.findMany({
-    where: { entityId: record.id, entityType: "service_record" },
-    include: { field: { select: { id: true, label: true, fieldType: true, isActive: true, sortOrder: true } } },
-    orderBy: { field: { sortOrder: "asc" } },
-  });
+    where: { entityId: record.id, entityType: 'service_record' },
+    include: {
+      field: {
+        select: { id: true, label: true, fieldType: true, isActive: true, sortOrder: true },
+      },
+    },
+    orderBy: { field: { sortOrder: 'asc' } },
+  })
 
   const customFields = customFieldValues
-    .filter(v => v.field.isActive && v.value)
-    .map(v => ({ label: v.field.label, value: v.value, fieldType: v.field.fieldType, fieldId: v.field.id }));
+    .filter((v) => v.field.isActive && v.value)
+    .map((v) => ({
+      label: v.field.label,
+      value: v.value,
+      fieldType: v.field.fieldType,
+      fieldId: v.field.id,
+    }))
 
-  const settingsMap: Record<string, string> = {};
-  for (const s of settings) settingsMap[s.key] = s.value;
+  const settingsMap: Record<string, string> = {}
+  for (const s of settings) settingsMap[s.key] = s.value
 
   const workshop = {
-    name: org?.name || "",
-    address: settingsMap["workshop.address"] || "",
-    phone: settingsMap["workshop.phone"] || "",
-    email: settingsMap["workshop.email"] || "",
-  };
+    name: org?.name || '',
+    address: settingsMap['workshop.address'] || '',
+    phone: settingsMap['workshop.phone'] || '',
+    email: settingsMap['workshop.email'] || '',
+  }
 
-  const currencyCode = settingsMap["workshop.currencyCode"] || "USD";
-  const currencyFormat: "symbol" | "code" = settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol";
+  const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
+  const currencyFormat: 'symbol' | 'code' =
+    settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
 
   const invoiceSettings = {
-    bankAccount: settingsMap["invoice.bankAccount"] || "",
-    orgNumber: settingsMap["invoice.orgNumber"] || "",
-    paymentTerms: settingsMap["invoice.paymentTerms"] || "",
-    footerNote: settingsMap["invoice.footerNote"] || "",
-    showBankAccount: settingsMap["invoice.showBankAccount"] !== "false",
-    showOrgNumber: settingsMap["invoice.showOrgNumber"] !== "false",
-    dueDays: Number(settingsMap["invoice.dueDays"]) || 0,
-  };
+    bankAccount: settingsMap['invoice.bankAccount'] || '',
+    orgNumber: settingsMap['invoice.orgNumber'] || '',
+    paymentTerms: settingsMap['invoice.paymentTerms'] || '',
+    footerNote: settingsMap['invoice.footerNote'] || '',
+    showBankAccount: settingsMap['invoice.showBankAccount'] !== 'false',
+    showOrgNumber: settingsMap['invoice.showOrgNumber'] !== 'false',
+    dueDays: Number(settingsMap['invoice.dueDays']) || 0,
+  }
 
-  const showLogo = settingsMap["invoice.showLogo"] !== "false";
-  const showCompanyName = settingsMap["invoice.showCompanyName"] !== "false";
-  const rawLogoUrl = settingsMap["workshop.logo"] || "";
-  const logoUrl = rawLogoUrl ? toPublicFileUrl(rawLogoUrl, token) : "";
+  const showLogo = settingsMap['invoice.showLogo'] !== 'false'
+  const showCompanyName = settingsMap['invoice.showCompanyName'] !== 'false'
+  const rawLogoUrl = settingsMap['workshop.logo'] || ''
+  const logoUrl = rawLogoUrl ? toPublicFileUrl(rawLogoUrl, token) : ''
 
   // Determine which online payment providers are enabled for this org
-  const enabledProvidersRaw = settingsMap["payment.providersEnabled"] || "";
+  const enabledProvidersRaw = settingsMap['payment.providersEnabled'] || ''
   const enabledProviders = enabledProvidersRaw
-    .split(",")
+    .split(',')
     .map((s) => s.trim())
-    .filter(Boolean);
+    .filter(Boolean)
 
   // Rewrite attachment file URLs to use the public file route (no auth required)
   // Only include attachments marked for invoice display
@@ -199,26 +210,26 @@ export default async function PublicInvoicePage({
         ...att,
         fileUrl: toPublicFileUrl(att.fileUrl, token),
       })),
-  };
+  }
 
   // Parse layout config
   const layoutConfig = mergeWithDefaults(
-    settingsMap["invoice.layoutConfig"] ? JSON.parse(settingsMap["invoice.layoutConfig"]) : {}
-  );
+    settingsMap['invoice.layoutConfig'] ? JSON.parse(settingsMap['invoice.layoutConfig']) : {}
+  )
 
-  const termsOfSaleUrl = settingsMap["payment.termsOfSaleUrl"]
-    || (settingsMap["payment.termsOfSale"] ? `/share/terms/${orgId}` : undefined);
+  const termsOfSaleUrl =
+    settingsMap['payment.termsOfSaleUrl'] ||
+    (settingsMap['payment.termsOfSale'] ? `/share/terms/${orgId}` : undefined)
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  const portalSlug = org?.portalSlug;
-  const portalEnabled = settingsMap["portal.enabled"] === "true";
-  const portalUrl = portalEnabled
-    ? `${appUrl}/portal/${portalSlug || orgId}`
-    : undefined;
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const portalSlug = org?.portalSlug
+  const portalEnabled = settingsMap['portal.enabled'] === 'true'
+  const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
-  const telegramBotUsername = settingsMap["telegram.botUsername"] || "";
-  const telegramBotLink = telegramBotUsername ? `https://t.me/${telegramBotUsername}` : undefined;
+  const telegramBotUsername = settingsMap['telegram.botUsername'] || ''
+  const telegramBotLink = telegramBotUsername ? `https://t.me/${telegramBotUsername}` : undefined
 
   return (
     <InvoiceView
@@ -234,19 +245,19 @@ export default async function PublicInvoicePage({
       showLogo={showLogo}
       showCompanyName={showCompanyName}
       showTorqvoiceBranding={!features.brandingRemoved}
-      dateFormat={settingsMap["workshop.dateFormat"] || undefined}
-      timezone={settingsMap["workshop.timezone"] || undefined}
+      dateFormat={settingsMap['workshop.dateFormat'] || undefined}
+      timezone={settingsMap['workshop.timezone'] || undefined}
       termsOfSaleUrl={termsOfSaleUrl}
-      primaryColor={settingsMap["invoice.primaryColor"] || "#d97706"}
-      headerStyle={settingsMap["invoice.headerStyle"] || "standard"}
-      logoSize={Number(settingsMap["invoice.logoSize"]) || 100}
+      primaryColor={settingsMap['invoice.primaryColor'] || '#d97706'}
+      headerStyle={settingsMap['invoice.headerStyle'] || 'standard'}
+      logoSize={Number(settingsMap['invoice.logoSize']) || 100}
       portalUrl={portalUrl}
       layoutConfig={layoutConfig}
       customFields={customFields}
       findings={findings}
       telegramBotLink={telegramBotLink}
-      serviceType={(settingsMap["workshop.serviceType"] || "automotive") as "automotive" | "marine"}
-      taxLabel={settingsMap["workshop.taxLabel"]?.trim() || undefined}
+      serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
+      taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
     />
-  );
+  )
 }

@@ -7,6 +7,8 @@ export type TireLineInput = {
   name: string
   partNumber: string | null
   quantity: number
+  /** Unit of measure snapshotted from the stocked part; null for a set. */
+  unit: string | null
   unitPrice: number
   unitCost: number
   /** Null for a set that is not a catalogue item, which moves no stock. */
@@ -45,6 +47,7 @@ export async function addTireLineToRecord(
       name: line.name,
       partNumber: line.partNumber,
       quantity: line.quantity,
+      unit: line.unit,
       unitPrice: line.unitPrice,
       unitCost: line.unitCost,
       total: Math.round(line.unitPrice * line.quantity * 100) / 100,

@@ -66,6 +66,7 @@ export function ServicePageClient({
   inventoryParts,
   initialVehicle,
   boardTechnicians = [],
+  workBays = [],
   orgMembers = [],
   currentUserName,
   imageAttachmentsForManager,
@@ -180,6 +181,7 @@ export function ServicePageClient({
             partNumber: part.partNumber || '',
             name: part.name,
             quantity: 1,
+            unit: part.unit ?? null,
             unitPrice,
             total: lineTotal(1, unitPrice),
             unitCost: part.unitCost,
@@ -269,6 +271,7 @@ export function ServicePageClient({
         name: part.name,
         partNumber: part.partNumber || '',
         quantity: part.quantity,
+        unit: part.unit ?? null,
         unitPrice: part.unitPrice,
         total: lineTotal(part.quantity, part.unitPrice),
         unitCost: 0,
@@ -379,6 +382,7 @@ export function ServicePageClient({
                   taxEnabled={taxEnabled}
                   initialVehicle={initialVehicle}
                   boardTechnicians={boardTechnicians}
+                  workBays={workBays}
                   orgMembers={orgMembers}
                   notificationHistory={notificationHistory}
                 />

@@ -9,6 +9,11 @@ export interface BoardTechnicianOption {
   userId?: string | null
 }
 
+export interface WorkBayOption {
+  id: string
+  name: string
+}
+
 export interface OrgMemberOption {
   id: string
   name: string | null
@@ -46,6 +51,7 @@ export interface ServicePageClientProps {
     licensePlate: string | null
   } | null
   boardTechnicians?: BoardTechnicianOption[]
+  workBays?: WorkBayOption[]
   orgMembers?: OrgMemberOption[]
   currentUserName: string
   imageAttachmentsForManager: Attachment[]

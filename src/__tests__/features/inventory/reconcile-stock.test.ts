@@ -154,7 +154,7 @@ describe('reconcileInventoryForParts', () => {
     expect(updates).toHaveLength(2)
   })
 
-  it('rounds fractional quantities to whole stock units', async () => {
+  it('deducts fractional quantities exactly (0.5 l stays 0.5, not 1)', async () => {
     const { tx, updates } = makeTx()
     await reconcileInventoryForParts(
       tx,
@@ -162,12 +162,25 @@ describe('reconcileInventoryForParts', () => {
       [],
       [
         { inventoryPartId: 'p1', quantity: 2.4 },
-        { inventoryPartId: 'p2', quantity: 2.6 },
+        { inventoryPartId: 'p2', quantity: 0.5 },
       ],
       CTX
     )
-    expect(updates).toContainEqual({ id: 'p1', organizationId: ORG, decrement: 2 })
-    expect(updates).toContainEqual({ id: 'p2', organizationId: ORG, decrement: 3 })
+    expect(updates).toContainEqual({ id: 'p1', organizationId: ORG, decrement: 2.4 })
+    expect(updates).toContainEqual({ id: 'p2', organizationId: ORG, decrement: 0.5 })
+  })
+
+  it('clamps quantities to 3 decimals so float noise cannot drift the balance', async () => {
+    const { tx, updates } = makeTx()
+    await reconcileInventoryForParts(
+      tx,
+      ORG,
+      [],
+      // 0.1 + 0.2 style noise: 0.30000000000000004 must enter the ledger as 0.3
+      [{ inventoryPartId: 'p1', quantity: 0.1 + 0.2 }],
+      CTX
+    )
+    expect(updates).toContainEqual({ id: 'p1', organizationId: ORG, decrement: 0.3 })
   })
 
   it("always scopes writes to the caller's organization", async () => {

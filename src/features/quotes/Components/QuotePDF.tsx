@@ -1,6 +1,7 @@
 import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { formatQuantity } from '@/lib/format-quantity'
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
@@ -51,6 +52,7 @@ interface QuoteData {
     partNumber: string | null
     name: string
     quantity: number
+    unit?: string | null
     unitPrice: number
     total: number
     excluded?: boolean
@@ -723,7 +725,7 @@ export function QuotePDF({
                     ...(p.excluded ? { textDecoration: 'line-through' } : {}),
                   }}
                 >
-                  {p.quantity}
+                  {formatQuantity(p.quantity, p.unit)}
                 </Text>
                 <Text
                   style={{
