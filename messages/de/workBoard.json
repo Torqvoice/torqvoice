@@ -91,7 +91,6 @@
     "status": "Status",
     "week": "Woche",
     "today": "Heute",
-    "timeline": "Zeitleiste",
     "live": "Live",
     "disconnected": "Live-Updates unterbrochen",
     "noTechnicians": "Keine Techniker konfiguriert",
@@ -105,8 +104,7 @@
       "completed": "Abgeschlossen"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Liste"
+    "next": "Next"
   },
   "week": {
     "createAt": "Neuer Auftrag um {time}",

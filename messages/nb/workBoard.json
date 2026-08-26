@@ -91,7 +91,6 @@
     "status": "Status",
     "week": "Uke",
     "today": "I dag",
-    "timeline": "Tidslinje",
     "live": "Direkte",
     "disconnected": "Direkteoppdateringer frakoblet",
     "noTechnicians": "Ingen teknikere konfigurert",
@@ -105,8 +104,7 @@
       "completed": "Fullført"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Liste"
+    "next": "Next"
   },
   "week": {
     "createAt": "Ny arbeidsordre kl. {time}",

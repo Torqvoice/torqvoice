@@ -91,7 +91,6 @@
     "status": "Status",
     "week": "Week",
     "today": "Today",
-    "timeline": "Timeline",
     "live": "Live",
     "disconnected": "Live updates disconnected",
     "noTechnicians": "No technicians configured",
@@ -105,8 +104,7 @@
       "completed": "Completed"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "List"
+    "next": "Next"
   },
   "week": {
     "createAt": "New work order at {time}",

@@ -91,7 +91,6 @@
     "status": "Status",
     "week": "Tydzień",
     "today": "Dzisiaj",
-    "timeline": "Oś czasu",
     "live": "Na Żywo",
     "disconnected": "Aktualizacje na żywo rozłączone",
     "noTechnicians": "Brak skonfigurowanych techników",
@@ -105,8 +104,7 @@
       "completed": "Ukończone"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Lista"
+    "next": "Next"
   },
   "week": {
     "createAt": "Nowe zlecenie o {time}",

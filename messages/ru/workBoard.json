@@ -91,7 +91,6 @@
     "status": "Статус",
     "week": "Неделя",
     "today": "Сегодня",
-    "timeline": "Хронология",
     "live": "Онлайн",
     "disconnected": "Обновления в реальном времени отключены",
     "noTechnicians": "Механики не настроены",
@@ -105,8 +104,7 @@
       "completed": "Завершено"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Список"
+    "next": "Next"
   },
   "week": {
     "createAt": "Новый заказ-наряд в {time}",

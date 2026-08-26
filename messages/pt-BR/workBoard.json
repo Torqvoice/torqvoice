@@ -91,7 +91,6 @@
     "status": "Status",
     "week": "Semana",
     "today": "Hoje",
-    "timeline": "Linha do tempo",
     "live": "Ao Vivo",
     "disconnected": "Atualizações ao vivo desconectadas",
     "noTechnicians": "Nenhum técnico configurado",
@@ -105,8 +104,7 @@
       "completed": "Concluído"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Lista"
+    "next": "Next"
   },
   "week": {
     "createAt": "Nova ordem de serviço às {time}",

@@ -91,7 +91,6 @@
     "status": "Statut",
     "week": "Semaine",
     "today": "Aujourd'hui",
-    "timeline": "Chronologie",
     "live": "En Direct",
     "disconnected": "Mises à jour en direct déconnectées",
     "noTechnicians": "Aucun technicien configuré",
@@ -105,8 +104,7 @@
       "completed": "Complété"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Liste"
+    "next": "Next"
   },
   "week": {
     "createAt": "Nouvel ordre de travail à {time}",

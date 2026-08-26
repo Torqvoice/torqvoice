@@ -11,9 +11,7 @@ import type { WorkBay, WorkBoardJob } from '../Actions/boardActions'
 import { getBoardJobs } from '../Actions/boardActions'
 import { getTechnicians } from '../Actions/technicianActions'
 import { getWorkBays } from '../Actions/workBayActions'
-import { PresenterDayView } from './PresenterDayView'
 import { PresenterKanbanView } from './PresenterKanbanView'
-import { PresenterTimeline } from './PresenterTimeline'
 import { WeekTimeline } from './WeekTimeline'
 import { WeekCardGrid } from './WeekCardGrid'
 import { type BoardLayout, isBoardLayout } from '../hooks/useBoardPreferences'
@@ -21,7 +19,18 @@ import { type LaneGrouping, buildLanes, groupJobsByLane, isLaneGrouping } from '
 import { useTranslations, useLocale } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
 
-type ViewMode = 'week' | 'day' | 'status' | 'timeline'
+type Period = 'day' | 'week'
+/** Timeline and Overview are the board's own layouts; Status is the kanban,
+ *  which only makes sense for a single day. */
+type PresenterLayout = BoardLayout | 'status'
+
+/** Older pinned displays carry ?view=; keep those URLs working. */
+const LEGACY_VIEWS: Record<string, { period: Period; layout: PresenterLayout }> = {
+  timeline: { period: 'day', layout: 'timeline' },
+  day: { period: 'day', layout: 'cards' },
+  status: { period: 'day', layout: 'status' },
+  week: { period: 'week', layout: 'timeline' },
+}
 
 function toLocalDateString(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -109,53 +118,61 @@ export function WorkBoardPresenter({
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
-  const VALID_VIEWS: ViewMode[] = ['week', 'day', 'status', 'timeline']
-  const urlView = searchParams.get('view') as ViewMode | null
+  const legacy = LEGACY_VIEWS[searchParams.get('view') ?? '']
+  const urlPeriod = searchParams.get('period')
+  const urlLayout = searchParams.get('layout')
   const urlDate = searchParams.get('date')
-  const [viewMode, setViewMode] = useState<ViewMode>(
-    urlView && VALID_VIEWS.includes(urlView) ? urlView : 'week'
+  const urlGrouping = searchParams.get('group')
+
+  const [period, setPeriodState] = useState<Period>(
+    urlPeriod === 'day' || urlPeriod === 'week' ? urlPeriod : (legacy?.period ?? 'week')
+  )
+  const [layout, setLayoutState] = useState<PresenterLayout>(
+    urlLayout === 'status' || isBoardLayout(urlLayout)
+      ? (urlLayout as PresenterLayout)
+      : (legacy?.layout ?? 'timeline')
   )
   const [selectedDate, setSelectedDateState] = useState(urlDate || toLocalDateString(new Date()))
-  const urlGrouping = searchParams.get('group')
-  const urlLayout = searchParams.get('layout')
+  // The presenter keeps its settings in the address bar rather than reading the
+  // planner's saved preference: a wall display is usually a different machine,
+  // and one that should stay on whatever it was pinned to.
   const [grouping, setGroupingState] = useState<LaneGrouping>(
     isLaneGrouping(urlGrouping) ? urlGrouping : 'technician'
   )
-  // The presenter keeps its own layout in the address bar rather than reading
-  // the planner's saved preference: a wall display is usually a different
-  // machine, and one that should stay on whatever it was pinned to.
-  const [layout, setLayoutState] = useState<BoardLayout>(
-    isBoardLayout(urlLayout) ? urlLayout : 'timeline'
-  )
+
   const updateUrl = useCallback(
-    (v: ViewMode, d: string, g: LaneGrouping, l: BoardLayout) => {
-      const p = new URLSearchParams()
-      p.set('view', v)
-      p.set('date', d)
-      p.set('group', g)
-      p.set('layout', l)
-      router.replace(`${pathname}?${p.toString()}`, { scroll: false })
+    (p: Period, l: PresenterLayout, d: string, g: LaneGrouping) => {
+      const params = new URLSearchParams()
+      params.set('period', p)
+      params.set('layout', l)
+      params.set('date', d)
+      params.set('group', g)
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
     },
     [router, pathname]
   )
+
   const setSelectedDate = useCallback(
     (d: string) => {
       setSelectedDateState(d)
-      updateUrl(viewMode, d, grouping, layout)
+      updateUrl(period, layout, d, grouping)
     },
-    [viewMode, grouping, layout, updateUrl]
+    [period, layout, grouping, updateUrl]
   )
-  const handleSetViewMode = (m: ViewMode) => {
-    setViewMode(m)
-    updateUrl(m, selectedDate, grouping, layout)
+  const setPeriod = (p: Period) => {
+    // Status is a single day's kanban; a week has no such thing to show.
+    const next: PresenterLayout = p === 'week' && layout === 'status' ? 'timeline' : layout
+    setPeriodState(p)
+    setLayoutState(next)
+    updateUrl(p, next, selectedDate, grouping)
   }
-  const setLayout = (l: BoardLayout) => {
+  const setLayout = (l: PresenterLayout) => {
     setLayoutState(l)
-    updateUrl(viewMode, selectedDate, grouping, l)
+    updateUrl(period, l, selectedDate, grouping)
   }
   const setGrouping = (g: LaneGrouping) => {
     setGroupingState(g)
-    updateUrl(viewMode, selectedDate, g, layout)
+    updateUrl(period, layout, selectedDate, g)
   }
 
   useEffect(() => {
@@ -167,7 +184,9 @@ export function WorkBoardPresenter({
   useWorkBoardWebSocket()
 
   const weekStart = store.weekStart || initialWeekStart
-  const days = getWeekDays(weekStart)
+  // Day is the same board given one day's worth of columns, exactly as on the
+  // planner. Switching period used to swap in a different component entirely.
+  const days = period === 'day' ? [selectedDate] : getWeekDays(weekStart)
 
   const loadWeekData = useCallback(
     async (ws: string) => {
@@ -192,7 +211,7 @@ export function WorkBoardPresenter({
     [weekStart, loadWeekData, weekStartDay]
   )
   const handlePrev = () => {
-    if (viewMode === 'week') {
+    if (period === 'week') {
       const d = new Date(weekStart + 'T12:00:00')
       d.setDate(d.getDate() - 7)
       loadWeekData(toLocalDateString(d))
@@ -205,7 +224,7 @@ export function WorkBoardPresenter({
     }
   }
   const handleNext = () => {
-    if (viewMode === 'week') {
+    if (period === 'week') {
       const d = new Date(weekStart + 'T12:00:00')
       d.setDate(d.getDate() + 7)
       loadWeekData(toLocalDateString(d))
@@ -242,11 +261,8 @@ export function WorkBoardPresenter({
     return () => clearTimeout(timeout)
   }, [loadWeekData, setSelectedDate, weekStartDay])
 
-  /** Week is its own period; the other three are ways of drawing one day. */
-  const period: 'day' | 'week' = viewMode === 'week' ? 'week' : 'day'
-
   const dateLabel =
-    viewMode === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)
+    period === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)
 
   const lanes = useMemo(
     () =>
@@ -288,16 +304,14 @@ export function WorkBoardPresenter({
           <span className="text-sm text-muted-foreground">{dateLabel}</span>
         </div>
         <div className="flex items-center gap-3">
-          {/* Two questions, asked separately. The old row mixed them: it put
-              "Timeline" and "Status" (how to draw it) next to "Day" and
-              "Week" (how much to draw), so Timeline appeared twice on screen
-              meaning two different things. */}
+          {/* Period, then how to draw it, then what the lanes are: the same
+              three questions the board asks, in the same order. */}
           <div className="flex rounded-md border">
             <Button
               variant={period === 'day' ? 'default' : 'ghost'}
               size="sm"
               className="rounded-none rounded-l-md"
-              onClick={() => handleSetViewMode('timeline')}
+              onClick={() => setPeriod('day')}
             >
               {t('day')}
             </Button>
@@ -305,63 +319,46 @@ export function WorkBoardPresenter({
               variant={period === 'week' ? 'default' : 'ghost'}
               size="sm"
               className="rounded-none rounded-r-md border-l"
-              onClick={() => handleSetViewMode('week')}
+              onClick={() => setPeriod('week')}
             >
               {t('week')}
             </Button>
           </div>
 
-          {period === 'day' && (
-            <div className="flex rounded-md border">
+          <div className="flex rounded-md border">
+            <Button
+              variant={layout === 'timeline' ? 'default' : 'ghost'}
+              size="sm"
+              className="rounded-none rounded-l-md"
+              onClick={() => setLayout('timeline')}
+            >
+              {tt('layoutTimeline')}
+            </Button>
+            <Button
+              variant={layout === 'cards' ? 'default' : 'ghost'}
+              size="sm"
+              className={
+                period === 'day' ? 'rounded-none border-x' : 'rounded-none rounded-r-md border-l'
+              }
+              onClick={() => setLayout('cards')}
+            >
+              {tt('layoutCards')}
+            </Button>
+            {/* A kanban of one day's work by status. There is no weekly
+                equivalent, so it only appears for a day. */}
+            {period === 'day' && (
               <Button
-                variant={viewMode === 'timeline' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none rounded-l-md"
-                onClick={() => handleSetViewMode('timeline')}
-              >
-                {t('timeline')}
-              </Button>
-              <Button
-                variant={viewMode === 'day' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none border-x"
-                onClick={() => handleSetViewMode('day')}
-              >
-                {t('list')}
-              </Button>
-              <Button
-                variant={viewMode === 'status' ? 'default' : 'ghost'}
+                variant={layout === 'status' ? 'default' : 'ghost'}
                 size="sm"
                 className="rounded-none rounded-r-md"
-                onClick={() => handleSetViewMode('status')}
+                onClick={() => setLayout('status')}
               >
                 {t('status')}
               </Button>
-            </div>
-          )}
+            )}
+          </div>
 
-          {period === 'week' && (
-            <div className="flex rounded-md border">
-              <Button
-                variant={layout === 'timeline' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none rounded-l-md"
-                onClick={() => setLayout('timeline')}
-              >
-                {tt('layoutTimeline')}
-              </Button>
-              <Button
-                variant={layout === 'cards' ? 'default' : 'ghost'}
-                size="sm"
-                className="rounded-none rounded-r-md border-l"
-                onClick={() => setLayout('cards')}
-              >
-                {tt('layoutCards')}
-              </Button>
-            </div>
-          )}
-
-          {viewMode === 'week' && (
+          {layout !== 'status' && (
             <div className="flex rounded-md border">
               <Button
                 variant={grouping === 'technician' ? 'default' : 'ghost'}
@@ -412,21 +409,7 @@ export function WorkBoardPresenter({
         </div>
       </header>
 
-      {viewMode === 'timeline' ? (
-        <PresenterTimeline
-          date={selectedDate}
-          technicians={store.technicians}
-          assignments={store.jobs}
-          workDayStart={workDayStart}
-          workDayEnd={workDayEnd}
-        />
-      ) : viewMode === 'day' ? (
-        <PresenterDayView
-          date={selectedDate}
-          technicians={store.technicians}
-          assignments={store.jobs}
-        />
-      ) : viewMode === 'status' ? (
+      {layout === 'status' ? (
         <PresenterKanbanView
           date={selectedDate}
           technicians={store.technicians}

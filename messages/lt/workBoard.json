@@ -91,7 +91,6 @@
     "status": "Būsena",
     "week": "Savaitė",
     "today": "Šiandien",
-    "timeline": "Laiko juosta",
     "live": "Tiesiogiai",
     "disconnected": "Tiesioginiai atnaujinimai atjungti",
     "noTechnicians": "Technikai nesukonfigūruoti",
@@ -105,8 +104,7 @@
       "completed": "Užbaigta"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Sąrašas"
+    "next": "Next"
   },
   "week": {
     "createAt": "Naujas darbo užsakymas {time}",

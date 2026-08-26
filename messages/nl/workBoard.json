@@ -91,7 +91,6 @@
     "status": "Status",
     "week": "Week",
     "today": "Vandaag",
-    "timeline": "Tijdlijn",
     "live": "Live",
     "disconnected": "Live-updates verbroken",
     "noTechnicians": "Geen technici geconfigureerd",
@@ -105,8 +104,7 @@
       "completed": "Voltooid"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Lijst"
+    "next": "Next"
   },
   "week": {
     "createAt": "Nieuwe werkorder om {time}",

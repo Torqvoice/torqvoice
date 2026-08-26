@@ -91,7 +91,6 @@
     "status": "Durum",
     "week": "Hafta",
     "today": "Bugün",
-    "timeline": "Zaman çizelgesi",
     "live": "Canlı",
     "disconnected": "Canlı güncellemeler kesildi",
     "noTechnicians": "Hiçbir teknisyen yapılandırılmadı",
@@ -105,8 +104,7 @@
       "completed": "Tamamlandı"
     },
     "previous": "Previous",
-    "next": "Next",
-    "list": "Liste"
+    "next": "Next"
   },
   "week": {
     "createAt": "{time} için yeni iş emri",
