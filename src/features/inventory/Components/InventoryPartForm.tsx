@@ -50,7 +50,7 @@ import {
 import { cn } from '@/lib/utils'
 import { compressImage } from '@/lib/compress-image'
 import { priceFromCostAndMultiplier } from '@/features/inventory/Lib/partPricing'
-import { unitSuggestions } from '@/features/inventory/Lib/units'
+import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 
 interface InventoryPartFormProps {
   open: boolean
@@ -111,6 +111,7 @@ export function InventoryPartForm({
   const [analyzing, setAnalyzing] = useState(false)
   const [supplierUrl, setSupplierUrl] = useState(part?.supplierUrl ?? '')
   const [category, setCategory] = useState(part?.category ?? '')
+  const [unit, setUnit] = useState(part ? (part.unit ?? '') : (defaultUnit ?? ''))
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [categorySearch, setCategorySearch] = useState('')
   const sellPriceManualRef = useRef(false)
@@ -138,6 +139,7 @@ export function InventoryPartForm({
       uploadedUrlsRef.current = []
       setSupplierUrl(part?.supplierUrl ?? '')
       setCategory(part?.category ?? '')
+      setUnit(part ? (part.unit ?? '') : (defaultUnit ?? ''))
       setCategorySearch('')
       sellPriceManualRef.current = !!(part?.sellPrice && part.sellPrice > 0)
       if (part?.gallery && part.gallery.length > 0) {
@@ -333,7 +335,7 @@ export function InventoryPartForm({
       if (data.category && !category) setCategory(data.category)
       setIfEmpty('description', data.description)
       setIfEmpty('supplier', data.supplier)
-      setIfEmpty('unit', data.unit)
+      if (data.unit && !unit) setUnit(data.unit)
       toast.success(t('form.aiAnalyzeSuccess'), { id: toastId })
     } catch {
       toast.error(t('form.aiAnalyzeFailed'), { id: toastId })
@@ -355,7 +357,7 @@ export function InventoryPartForm({
       category: category || undefined,
       quantity: Number(formData.get('quantity')) || 0,
       minQuantity: Number(formData.get('minQuantity')) || 0,
-      unit: ((formData.get('unit') as string) || '').trim(),
+      unit: unit.trim(),
       unitCost: Number(formData.get('unitCost')) || 0,
       sellPrice: Number(formData.get('sellPrice')) || 0,
       supplier: (formData.get('supplier') as string) || undefined,
@@ -753,22 +755,7 @@ export function InventoryPartForm({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="unit">{t('form.unit')}</Label>
-                  <Input
-                    id="unit"
-                    name="unit"
-                    list="inventory-unit-options"
-                    maxLength={20}
-                    placeholder={t('form.unitPlaceholder')}
-                    defaultValue={part ? (part.unit ?? '') : (defaultUnit ?? '')}
-                  />
-                  {/* Localized count units ("Stk" vs "pcs") plus both
-                      measurement systems, workshop's own system first.
-                      Free text always wins. */}
-                  <datalist id="inventory-unit-options">
-                    {unitSuggestions(t('form.unitSuggestions'), unitSystem).map((u) => (
-                      <option key={u} value={u} />
-                    ))}
-                  </datalist>
+                  <UnitCombobox id="unit" value={unit} onChange={setUnit} unitSystem={unitSystem} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
