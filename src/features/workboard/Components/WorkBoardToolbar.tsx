@@ -151,7 +151,7 @@ export function WorkBoardToolbar({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="flex min-w-[180px] items-center justify-center gap-2 text-sm font-medium">
+          <span className="flex min-w-[260px] items-center justify-center gap-2 text-sm font-medium">
             {view === 'week' && (
               <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums text-muted-foreground">
                 {t('weekNumber', { number: isoWeekNumber(weekStart) })}

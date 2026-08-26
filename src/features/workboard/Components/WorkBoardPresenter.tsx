@@ -15,6 +15,7 @@ import { PresenterKanbanView } from './PresenterKanbanView'
 import { WeekTimeline } from './WeekTimeline'
 import { WeekCardGrid } from './WeekCardGrid'
 import { type BoardLayout, isBoardLayout } from '../hooks/useBoardPreferences'
+import { type ClockFormat } from '../utils/clock'
 import { type LaneGrouping, buildLanes, groupJobsByLane, isLaneGrouping } from '../utils/lanes'
 import { useTranslations, useLocale } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -74,8 +75,18 @@ function formatDayDate(dateStr: string, locale?: string): string {
   })
 }
 
-function LiveClock() {
+/**
+ * The wall clock in the header.
+ *
+ * Rendered null until the first tick, because the server has no idea what time
+ * it is where the screen is and a mismatched first paint is a hydration error.
+ * That left a one-space-wide element that jumped to full width a moment later,
+ * shoving the header about, so the space is reserved up front: tabular figures
+ * and a width sized for the longest the format can be.
+ */
+function LiveClock({ format }: { format: ClockFormat }) {
   const [time, setTime] = useState<string | null>(null)
+
   useEffect(() => {
     function update() {
       setTime(
@@ -83,15 +94,24 @@ function LiveClock() {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
+          hour12: format === '12h',
         })
       )
     }
     update()
     const timer = setInterval(update, 1000)
     return () => clearInterval(timer)
-  }, [])
-  if (!time) return <span className="tabular-nums">&nbsp;</span>
-  return <span className="tabular-nums">{time}</span>
+  }, [format])
+
+  return (
+    <span
+      className="inline-block text-right tabular-nums"
+      // "11:59:59 PM" against "23:59:59": reserve for whichever is in use.
+      style={{ minWidth: format === '12h' ? '10ch' : '8ch' }}
+    >
+      {time ?? '\u00A0'}
+    </span>
+  )
 }
 
 export function WorkBoardPresenter({
@@ -309,7 +329,7 @@ export function WorkBoardPresenter({
       <header className="flex shrink-0 items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-bold">{t('title')}</h1>
-          <span className="text-sm text-muted-foreground">{dateLabel}</span>
+          <span className="min-w-[240px] text-sm text-muted-foreground">{dateLabel}</span>
         </div>
         <div className="flex items-center gap-3">
           {/* Period, then how to draw it, then what the lanes are: the same
@@ -430,7 +450,7 @@ export function WorkBoardPresenter({
                     : t('connecting')}
               </TooltipContent>
             </Tooltip>
-            <LiveClock />
+            <LiveClock format={timeFormat} />
           </div>
         </div>
       </header>
