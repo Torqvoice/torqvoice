@@ -139,7 +139,10 @@
     "whatsapp_send": "Sent WhatsApp Message",
     "work_bay_create": "Created Work Bay",
     "work_bay_update": "Updated Work Bay",
-    "work_bay_delete": "Deleted Work Bay"
+    "work_bay_delete": "Deleted Work Bay",
+    "settings_whatsappUpdated": "WhatsApp Settings Updated",
+    "settings_whatsappNumberRegistered": "WhatsApp Number Registered",
+    "settings_whatsappDisconnected": "WhatsApp Disconnected"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",

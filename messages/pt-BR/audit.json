@@ -139,7 +139,10 @@
     "whatsapp_send": "Mensagem de WhatsApp enviada",
     "work_bay_create": "Baia criada",
     "work_bay_update": "Baia atualizada",
-    "work_bay_delete": "Baia excluída"
+    "work_bay_delete": "Baia excluída",
+    "settings_whatsappUpdated": "Configurações do WhatsApp atualizadas",
+    "settings_whatsappNumberRegistered": "Número do WhatsApp registrado",
+    "settings_whatsappDisconnected": "WhatsApp desconectado"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",

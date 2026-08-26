@@ -139,7 +139,10 @@
     "whatsapp_send": "Отправлено сообщение WhatsApp",
     "work_bay_create": "Создан пост",
     "work_bay_update": "Обновлён пост",
-    "work_bay_delete": "Удалён пост"
+    "work_bay_delete": "Удалён пост",
+    "settings_whatsappUpdated": "Настройки WhatsApp обновлены",
+    "settings_whatsappNumberRegistered": "Номер WhatsApp зарегистрирован",
+    "settings_whatsappDisconnected": "WhatsApp отключён"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",

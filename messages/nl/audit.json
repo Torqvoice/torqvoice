@@ -139,7 +139,10 @@
     "whatsapp_send": "WhatsApp-bericht verzonden",
     "work_bay_create": "Werkplek aangemaakt",
     "work_bay_update": "Werkplek bijgewerkt",
-    "work_bay_delete": "Werkplek verwijderd"
+    "work_bay_delete": "Werkplek verwijderd",
+    "settings_whatsappUpdated": "WhatsApp-instellingen bijgewerkt",
+    "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd",
+    "settings_whatsappDisconnected": "WhatsApp losgekoppeld"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

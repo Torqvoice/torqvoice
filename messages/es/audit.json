@@ -139,7 +139,10 @@
     "whatsapp_send": "Mensaje de WhatsApp enviado",
     "work_bay_create": "Puesto de trabajo creado",
     "work_bay_update": "Puesto de trabajo actualizado",
-    "work_bay_delete": "Puesto de trabajo eliminado"
+    "work_bay_delete": "Puesto de trabajo eliminado",
+    "settings_whatsappUpdated": "Ajustes de WhatsApp actualizados",
+    "settings_whatsappNumberRegistered": "Número de WhatsApp registrado",
+    "settings_whatsappDisconnected": "WhatsApp desconectado"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",

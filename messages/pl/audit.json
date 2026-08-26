@@ -139,7 +139,10 @@
     "whatsapp_send": "Wysłano wiadomość WhatsApp",
     "work_bay_create": "Utworzono stanowisko",
     "work_bay_update": "Zaktualizowano stanowisko",
-    "work_bay_delete": "Usunięto stanowisko"
+    "work_bay_delete": "Usunięto stanowisko",
+    "settings_whatsappUpdated": "Zaktualizowano ustawienia WhatsApp",
+    "settings_whatsappNumberRegistered": "Zarejestrowano numer WhatsApp",
+    "settings_whatsappDisconnected": "Odłączono WhatsApp"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
