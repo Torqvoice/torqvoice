@@ -698,6 +698,7 @@ async function seed() {
     "workboard.weekStartDay": "1",
     "workboard.workDayStart": "07:00",
     "workboard.workDayEnd": "17:00",
+    "inventory.defaultUnit": "pcs",
     "inventory.lowStockAlerts.enabled": "true",
     "inventory.lowStockAlerts.inApp": "true",
     "parts.defaultMarkupPercent": "35",
@@ -1032,31 +1033,36 @@ async function seed() {
   // -- Inventory Parts (25) --
   console.log("\nCreating inventory parts...");
   const invData = [
-    { name: "Synthetic Engine Oil 5W-30 (5qt)", partNumber: "OIL-5W30-5Q", category: "Fluids & Lubricants", quantity: 24, minQuantity: 10, unitCost: 28, sellPrice: 45, supplier: "AutoZone Commercial", location: "Shelf A-1" },
-    { name: "Synthetic Engine Oil 0W-20 (5qt)", partNumber: "OIL-0W20-5Q", category: "Fluids & Lubricants", quantity: 18, minQuantity: 8, unitCost: 31, sellPrice: 49, supplier: "AutoZone Commercial", location: "Shelf A-1" },
-    { name: "Heavy Duty Engine Oil 15W-40 (5gal)", partNumber: "OIL-15W40-5G", category: "Fluids & Lubricants", quantity: 8, minQuantity: 4, unitCost: 120, sellPrice: 185, supplier: "Shell Fleet", location: "Shelf A-2" },
-    { name: "Hydraulic Oil ISO 46 (55gal)", partNumber: "HYD-ISO46-55G", category: "Fluids & Lubricants", quantity: 3, minQuantity: 2, unitCost: 580, sellPrice: 850, supplier: "Shell Fleet", location: "Floor A-3" },
-    { name: "Brake Pad Set - Universal Light Vehicle", partNumber: "BP-UNI-LV", category: "Brakes", quantity: 14, minQuantity: 6, unitCost: 38, sellPrice: 68, supplier: "NAPA Auto Parts", location: "Shelf B-1" },
-    { name: "Brake Pad Set - Heavy Duty Truck", partNumber: "BP-HD-TRUCK", category: "Brakes", quantity: 6, minQuantity: 4, unitCost: 180, sellPrice: 320, supplier: "FleetPride", location: "Shelf B-2" },
-    { name: "Oil Filter - European Vehicles", partNumber: "OF-EUR-01", category: "Filters", quantity: 30, minQuantity: 10, unitCost: 6.50, sellPrice: 15.50, supplier: "Mann-Filter USA", location: "Shelf C-1" },
-    { name: "Oil Filter - Asian Vehicles", partNumber: "OF-ASN-01", category: "Filters", quantity: 25, minQuantity: 10, unitCost: 4.50, sellPrice: 12, supplier: "Mann-Filter USA", location: "Shelf C-1" },
-    { name: "Hydraulic Filter - CAT/Komatsu", partNumber: "HF-CAT-KOM", category: "Filters", quantity: 5, minQuantity: 3, unitCost: 65, sellPrice: 120, supplier: "Cat Parts Direct", location: "Shelf C-3" },
-    { name: "Spark Plug - Iridium (each)", partNumber: "SP-IRID-01", category: "Ignition", quantity: 40, minQuantity: 16, unitCost: 9.50, sellPrice: 17.50, supplier: "NGK USA", location: "Shelf D-1" },
-    { name: "Car Battery 12V 700CCA", partNumber: "BAT-12V-700CCA", category: "Electrical", quantity: 6, minQuantity: 3, unitCost: 95, sellPrice: 165, supplier: "Interstate Batteries", location: "Floor D-2" },
-    { name: "Truck Battery 12V 1000CCA", partNumber: "BAT-12V-1000CCA", category: "Electrical", quantity: 4, minQuantity: 2, unitCost: 240, sellPrice: 380, supplier: "Interstate Batteries", location: "Floor D-2" },
-    { name: "Coolant Concentrate (1gal)", partNumber: "COOL-CONC-1G", category: "Fluids & Lubricants", quantity: 15, minQuantity: 6, unitCost: 18, sellPrice: 32, supplier: "AutoZone Commercial", location: "Shelf A-2" },
-    { name: "ATF Transmission Fluid (1qt)", partNumber: "ATF-DEXVI-1Q", category: "Fluids & Lubricants", quantity: 20, minQuantity: 8, unitCost: 12, sellPrice: 22, supplier: "AutoZone Commercial", location: "Shelf A-2" },
-    { name: "Serpentine Belt - Universal", partNumber: "SB-UNI-6PK", category: "Engine", quantity: 8, minQuantity: 4, unitCost: 22, sellPrice: 42, supplier: "Gates Corp", location: "Shelf D-3" },
-    { name: "Hydraulic Hose - 1/2\" x 10ft", partNumber: "HH-12-10FT", category: "Hydraulics", quantity: 10, minQuantity: 4, unitCost: 45, sellPrice: 85, supplier: "Parker Hannifin", location: "Rack G-1" },
-    { name: "Track Shoe Bolt Kit (set of 50)", partNumber: "TSB-KIT-50", category: "Undercarriage", quantity: 4, minQuantity: 2, unitCost: 180, sellPrice: 320, supplier: "Cat Parts Direct", location: "Floor G-2" },
-    { name: "R-134a Refrigerant (30oz can)", partNumber: "R134A-30OZ", category: "HVAC", quantity: 8, minQuantity: 4, unitCost: 18, sellPrice: 32, supplier: "AutoZone Commercial", location: "Shelf H-1" },
-    { name: "Fuel Filter - Diesel Universal", partNumber: "FF-DSL-UNI", category: "Filters", quantity: 12, minQuantity: 5, unitCost: 14, sellPrice: 29, supplier: "Mann-Filter USA", location: "Shelf C-2" },
-    { name: "Air Filter - Heavy Equipment", partNumber: "AF-HE-UNI", category: "Filters", quantity: 6, minQuantity: 3, unitCost: 48, sellPrice: 85, supplier: "Cat Parts Direct", location: "Shelf C-3" },
-    { name: "Tractor PTO Shaft Guard", partNumber: "PTO-SG-UNI", category: "Safety", quantity: 3, minQuantity: 2, unitCost: 85, sellPrice: 150, supplier: "Agri Supply Co.", location: "Rack G-3" },
-    { name: "DPF Pressure Sensor", partNumber: "DPF-PS-UNI", category: "Emissions", quantity: 1, minQuantity: 3, unitCost: 65, sellPrice: 120, supplier: "Bosch USA", location: "Shelf D-5" },
-    { name: "Grease Cartridge EP2 (box of 10)", partNumber: "GREASE-EP2-10", category: "Fluids & Lubricants", quantity: 12, minQuantity: 5, unitCost: 28, sellPrice: 48, supplier: "Shell Fleet", location: "Shelf A-3" },
-    { name: "Combine Sickle Section (box of 25)", partNumber: "CSS-UNI-25", category: "Harvest Parts", quantity: 4, minQuantity: 2, unitCost: 65, sellPrice: 110, supplier: "Agri Supply Co.", location: "Rack G-4" },
-    { name: "Wiper Blade 24\" Universal", partNumber: "WB-24-UNI", category: "Body & Exterior", quantity: 12, minQuantity: 6, unitCost: 11, sellPrice: 25, supplier: "Bosch USA", location: "Shelf E-1" },
+    { name: "Synthetic Engine Oil 5W-30 (5qt)", partNumber: "OIL-5W30-5Q", category: "Fluids & Lubricants", quantity: 24, minQuantity: 10, unit: "pcs", unitCost: 28, sellPrice: 45, supplier: "AutoZone Commercial", location: "Shelf A-1" },
+    { name: "Synthetic Engine Oil 0W-20 (5qt)", partNumber: "OIL-0W20-5Q", category: "Fluids & Lubricants", quantity: 18, minQuantity: 8, unit: "pcs", unitCost: 31, sellPrice: 49, supplier: "AutoZone Commercial", location: "Shelf A-1" },
+    { name: "Heavy Duty Engine Oil 15W-40 (5gal)", partNumber: "OIL-15W40-5G", category: "Fluids & Lubricants", quantity: 8, minQuantity: 4, unit: "pcs", unitCost: 120, sellPrice: 185, supplier: "Shell Fleet", location: "Shelf A-2" },
+    { name: "Hydraulic Oil ISO 46 (55gal)", partNumber: "HYD-ISO46-55G", category: "Fluids & Lubricants", quantity: 3, minQuantity: 2, unit: "pcs", unitCost: 580, sellPrice: 850, supplier: "Shell Fleet", location: "Floor A-3" },
+    { name: "Brake Pad Set - Universal Light Vehicle", partNumber: "BP-UNI-LV", category: "Brakes", quantity: 14, minQuantity: 6, unit: "pcs", unitCost: 38, sellPrice: 68, supplier: "NAPA Auto Parts", location: "Shelf B-1" },
+    { name: "Brake Pad Set - Heavy Duty Truck", partNumber: "BP-HD-TRUCK", category: "Brakes", quantity: 6, minQuantity: 4, unit: "pcs", unitCost: 180, sellPrice: 320, supplier: "FleetPride", location: "Shelf B-2" },
+    { name: "Oil Filter - European Vehicles", partNumber: "OF-EUR-01", category: "Filters", quantity: 30, minQuantity: 10, unit: "pcs", unitCost: 6.50, sellPrice: 15.50, supplier: "Mann-Filter USA", location: "Shelf C-1" },
+    { name: "Oil Filter - Asian Vehicles", partNumber: "OF-ASN-01", category: "Filters", quantity: 25, minQuantity: 10, unit: "pcs", unitCost: 4.50, sellPrice: 12, supplier: "Mann-Filter USA", location: "Shelf C-1" },
+    { name: "Hydraulic Filter - CAT/Komatsu", partNumber: "HF-CAT-KOM", category: "Filters", quantity: 5, minQuantity: 3, unit: "pcs", unitCost: 65, sellPrice: 120, supplier: "Cat Parts Direct", location: "Shelf C-3" },
+    { name: "Spark Plug - Iridium (each)", partNumber: "SP-IRID-01", category: "Ignition", quantity: 40, minQuantity: 16, unit: "pcs", unitCost: 9.50, sellPrice: 17.50, supplier: "NGK USA", location: "Shelf D-1" },
+    { name: "Car Battery 12V 700CCA", partNumber: "BAT-12V-700CCA", category: "Electrical", quantity: 6, minQuantity: 3, unit: "pcs", unitCost: 95, sellPrice: 165, supplier: "Interstate Batteries", location: "Floor D-2" },
+    { name: "Truck Battery 12V 1000CCA", partNumber: "BAT-12V-1000CCA", category: "Electrical", quantity: 4, minQuantity: 2, unit: "pcs", unitCost: 240, sellPrice: 380, supplier: "Interstate Batteries", location: "Floor D-2" },
+    { name: "Coolant Concentrate (1gal)", partNumber: "COOL-CONC-1G", category: "Fluids & Lubricants", quantity: 15, minQuantity: 6, unit: "pcs", unitCost: 18, sellPrice: 32, supplier: "AutoZone Commercial", location: "Shelf A-2" },
+    { name: "ATF Transmission Fluid (1qt)", partNumber: "ATF-DEXVI-1Q", category: "Fluids & Lubricants", quantity: 20, minQuantity: 8, unit: "pcs", unitCost: 12, sellPrice: 22, supplier: "AutoZone Commercial", location: "Shelf A-2" },
+    { name: "Serpentine Belt - Universal", partNumber: "SB-UNI-6PK", category: "Engine", quantity: 8, minQuantity: 4, unit: "pcs", unitCost: 22, sellPrice: 42, supplier: "Gates Corp", location: "Shelf D-3" },
+    { name: "Hydraulic Hose - 1/2\" x 10ft", partNumber: "HH-12-10FT", category: "Hydraulics", quantity: 10, minQuantity: 4, unit: "pcs", unitCost: 45, sellPrice: 85, supplier: "Parker Hannifin", location: "Rack G-1" },
+    { name: "Track Shoe Bolt Kit (set of 50)", partNumber: "TSB-KIT-50", category: "Undercarriage", quantity: 4, minQuantity: 2, unit: "pcs", unitCost: 180, sellPrice: 320, supplier: "Cat Parts Direct", location: "Floor G-2" },
+    { name: "R-134a Refrigerant (30oz can)", partNumber: "R134A-30OZ", category: "HVAC", quantity: 8, minQuantity: 4, unit: "pcs", unitCost: 18, sellPrice: 32, supplier: "AutoZone Commercial", location: "Shelf H-1" },
+    { name: "Fuel Filter - Diesel Universal", partNumber: "FF-DSL-UNI", category: "Filters", quantity: 12, minQuantity: 5, unit: "pcs", unitCost: 14, sellPrice: 29, supplier: "Mann-Filter USA", location: "Shelf C-2" },
+    { name: "Air Filter - Heavy Equipment", partNumber: "AF-HE-UNI", category: "Filters", quantity: 6, minQuantity: 3, unit: "pcs", unitCost: 48, sellPrice: 85, supplier: "Cat Parts Direct", location: "Shelf C-3" },
+    { name: "Tractor PTO Shaft Guard", partNumber: "PTO-SG-UNI", category: "Safety", quantity: 3, minQuantity: 2, unit: "pcs", unitCost: 85, sellPrice: 150, supplier: "Agri Supply Co.", location: "Rack G-3" },
+    { name: "DPF Pressure Sensor", partNumber: "DPF-PS-UNI", category: "Emissions", quantity: 1, minQuantity: 3, unit: "pcs", unitCost: 65, sellPrice: 120, supplier: "Bosch USA", location: "Shelf D-5" },
+    { name: "Grease Cartridge EP2 (box of 10)", partNumber: "GREASE-EP2-10", category: "Fluids & Lubricants", quantity: 12, minQuantity: 5, unit: "pcs", unitCost: 28, sellPrice: 48, supplier: "Shell Fleet", location: "Shelf A-3" },
+    { name: "Combine Sickle Section (box of 25)", partNumber: "CSS-UNI-25", category: "Harvest Parts", quantity: 4, minQuantity: 2, unit: "pcs", unitCost: 65, sellPrice: 110, supplier: "Agri Supply Co.", location: "Rack G-4" },
+    { name: "Wiper Blade 24\" Universal", partNumber: "WB-24-UNI", category: "Body & Exterior", quantity: 12, minQuantity: 6, unit: "pcs", unitCost: 11, sellPrice: 25, supplier: "Bosch USA", location: "Shelf E-1" },
+    // Bulk stock measured by volume and weight - shows units of measure and
+    // fractional quantities off (booking 1.4 lb deducts exactly 1.4).
+    { name: "Bulk Synthetic Oil 5W-30", partNumber: "OIL-5W30-BULK", category: "Fluids & Lubricants", quantity: 38.5, minQuantity: 12, unit: "qt", unitCost: 4.80, sellPrice: 8.50, supplier: "Shell Fleet", location: "Tank A-4" },
+    { name: "Refrigerant R-1234yf (bulk)", partNumber: "R1234YF-BULK", category: "HVAC", quantity: 12.4, minQuantity: 4, unit: "lb", unitCost: 38, sellPrice: 68, supplier: "AutoZone Commercial", location: "Cage H-2" },
+    { name: "Windshield Washer Fluid (bulk)", partNumber: "WWF-BULK", category: "Fluids & Lubricants", quantity: 27.5, minQuantity: 10, unit: "gal", unitCost: 2.20, sellPrice: 5, supplier: "AutoZone Commercial", location: "Tank A-5" },
   ];
   const inventoryParts = await Promise.all(invData.map(p => prisma.inventoryPart.create({ data: { ...p, userId: USER_ID, organizationId: ORG_ID } })));
   console.log(`  Created ${inventoryParts.length} inventory parts`);
@@ -1414,7 +1420,7 @@ async function seed() {
   };
 
   // Helper to create service record with parts + labor
-  const sr = (base: Record<string, unknown>, parts: { name: string; partNumber: string; quantity: number; unitPrice: number; total: number }[], labor: { description: string; hours: number; rate: number; total: number }[], notes?: string) => {
+  const sr = (base: Record<string, unknown>, parts: { name: string; partNumber: string; quantity: number; unit?: string; unitPrice: number; total: number }[], labor: { description: string; hours: number; rate: number; total: number }[], notes?: string) => {
     const subtotal = parts.reduce((s, p) => s + p.total, 0) + labor.reduce((s, l) => s + l.total, 0);
     const taxAmount = Math.round(subtotal * 0.08 * 100) / 100;
     return prisma.serviceRecord.create({ data: { ...base, organizationId: ORG_ID, subtotal, taxRate: 8, taxAmount, totalAmount: subtotal + taxAmount, cost: subtotal + taxAmount, diagnosticNotes: notes || null, partItems: { create: parts }, laborItems: { create: labor } } as never });
@@ -1424,7 +1430,7 @@ async function seed() {
   const boardServiceRecords = await Promise.all([
     // 0: Honda Civic AC
     sr({ vehicleId: vehicles[5].id, title: "Honda Civic - AC Compressor", description: "AC not blowing cold. Compressor clutch not engaging.", type: "repair", status: "pending", serviceDate: day(0), mileage: 45200, techName: "Jake Wilson", shopName: "Egeland Auto" },
-      [{ name: "AC Compressor Assembly", partNumber: "HON-ACC-10G", quantity: 1, unitPrice: 480, total: 480 }, { name: "Refrigerant R-134a (2 cans)", partNumber: "REF-134A-2", quantity: 1, unitPrice: 45, total: 45 }],
+      [{ name: "AC Compressor Assembly", partNumber: "HON-ACC-10G", quantity: 1, unitPrice: 480, total: 480 }, { name: "Refrigerant R-1234yf (bulk)", partNumber: "R1234YF-BULK", quantity: 1.4, unit: "lb", unitPrice: 68, total: 95.20 }],
       [{ description: "AC compressor removal and replacement", hours: 2.5, rate: 110, total: 275 }, { description: "System evacuate, recharge and leak test", hours: 1.0, rate: 110, total: 110 }],
       "Compressor clutch not engaging. Checked voltage at clutch connector - 12V present. Clutch coil resistance out of spec. Replace compressor assembly."),
     // 1: Audi A4 timing belt
@@ -1897,6 +1903,8 @@ async function seed() {
     { part: 21, entries: [{ delta: 4, reason: "manual_adjustment", day: -50, note: "Bosch order" }, { delta: -2, reason: "service_record", day: -28 }, { delta: -1, reason: "service_record", day: -7, note: "Kenworth DPF fault" }] },
     { part: 15, entries: [{ delta: 12, reason: "manual_adjustment", day: -44 }, { delta: -1, reason: "service_record", day: -20 }, { delta: -1, reason: "service_record", day: -5 }] },
     { part: 24, entries: [{ delta: 16, reason: "manual_adjustment", day: -38 }, { delta: -2, reason: "service_record", day: -19 }, { delta: -2, reason: "bulk_markup", day: -8, note: "Counter sale" }] },
+    // Fractional deltas: the ledger tracks bulk refrigerant by the pound.
+    { part: 26, entries: [{ delta: 15, reason: "manual_adjustment", day: -33, note: "Bulk cylinder delivery" }, { delta: -1.4, reason: "service_record", day: -15, note: "A/C recharge, F-150" }, { delta: -1.2, reason: "service_record", day: -6, note: "A/C recharge, Camry" }] },
   ];
   let movementCount = 0;
   for (const plan of movementPlan) {
@@ -2290,16 +2298,19 @@ async function seed() {
   const laborPresets = await Promise.all([
     prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Oil service - light vehicle", description: "Standard oil and filter change with a multi-point check.",
       items: { create: [{ description: "Oil and filter change", hours: 0.5, rate: 110, sortOrder: 0 }, { description: "Multi-point inspection", hours: 0.5, rate: 110, sortOrder: 1 }] },
-      parts: { create: [{ name: "Synthetic Engine Oil 5W-30 (5qt)", partNumber: "OIL-5W30-5Q", quantity: 1, unitPrice: 45, sortOrder: 0, inventoryPartId: inventoryParts[0].id }, { name: "Oil Filter - European Vehicles", partNumber: "OF-EUR-01", quantity: 1, unitPrice: 15.5, sortOrder: 1, inventoryPartId: inventoryParts[6].id }] } } }),
+      parts: { create: [{ name: "Synthetic Engine Oil 5W-30 (5qt)", partNumber: "OIL-5W30-5Q", quantity: 1, unit: "pcs", unitPrice: 45, sortOrder: 0, inventoryPartId: inventoryParts[0].id }, { name: "Oil Filter - European Vehicles", partNumber: "OF-EUR-01", quantity: 1, unit: "pcs", unitPrice: 15.5, sortOrder: 1, inventoryPartId: inventoryParts[6].id }] } } }),
     prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Front brake service", description: "Pads and rotors front axle, including road test.",
       items: { create: [{ description: "Front pad and rotor replacement", hours: 2, rate: 110, sortOrder: 0 }, { description: "Brake road test", hours: 0.3, rate: 110, sortOrder: 1 }] },
-      parts: { create: [{ name: "Brake Pad Set - Universal Light Vehicle", partNumber: "BP-UNI-LV", quantity: 1, unitPrice: 68, sortOrder: 0, inventoryPartId: inventoryParts[4].id }] } } }),
+      parts: { create: [{ name: "Brake Pad Set - Universal Light Vehicle", partNumber: "BP-UNI-LV", quantity: 1, unit: "pcs", unitPrice: 68, sortOrder: 0, inventoryPartId: inventoryParts[4].id }] } } }),
     prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Heavy truck PM service", description: "Full preventive maintenance for a class 8 tractor unit.",
       items: { create: [{ description: "Engine oil and all filters", hours: 2.5, rate: 140, sortOrder: 0 }, { description: "Grease service, all points", hours: 1, rate: 140, sortOrder: 1 }, { description: "Brake adjustment and lining measurement", hours: 1.5, rate: 140, sortOrder: 2 }] },
-      parts: { create: [{ name: "Heavy Duty Engine Oil 15W-40 (5gal)", partNumber: "OIL-15W40-5G", quantity: 2, unitPrice: 185, sortOrder: 0, inventoryPartId: inventoryParts[2].id }, { name: "Fuel Filter - Diesel Universal", partNumber: "FF-DSL-UNI", quantity: 2, unitPrice: 29, sortOrder: 1, inventoryPartId: inventoryParts[18].id }] } } }),
+      parts: { create: [{ name: "Heavy Duty Engine Oil 15W-40 (5gal)", partNumber: "OIL-15W40-5G", quantity: 2, unit: "pcs", unitPrice: 185, sortOrder: 0, inventoryPartId: inventoryParts[2].id }, { name: "Fuel Filter - Diesel Universal", partNumber: "FF-DSL-UNI", quantity: 2, unit: "pcs", unitPrice: 29, sortOrder: 1, inventoryPartId: inventoryParts[18].id }] } } }),
     prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Excavator 1000hr service", description: "Fluids, filters, undercarriage and pin play check.",
       items: { create: [{ description: "All fluids and filters", hours: 3, rate: 140, sortOrder: 0 }, { description: "Undercarriage and pin play inspection", hours: 1.5, rate: 140, sortOrder: 1 }] },
-      parts: { create: [{ name: "Hydraulic Filter - CAT/Komatsu", partNumber: "HF-CAT-KOM", quantity: 2, unitPrice: 120, sortOrder: 0, inventoryPartId: inventoryParts[8].id }, { name: "Air Filter - Heavy Equipment", partNumber: "AF-HE-UNI", quantity: 1, unitPrice: 85, sortOrder: 1, inventoryPartId: inventoryParts[19].id }] } } }),
+      parts: { create: [{ name: "Hydraulic Filter - CAT/Komatsu", partNumber: "HF-CAT-KOM", quantity: 2, unit: "pcs", unitPrice: 120, sortOrder: 0, inventoryPartId: inventoryParts[8].id }, { name: "Air Filter - Heavy Equipment", partNumber: "AF-HE-UNI", quantity: 1, unit: "pcs", unitPrice: 85, sortOrder: 1, inventoryPartId: inventoryParts[19].id }] } } }),
+    prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "A/C service - R-1234yf recharge", description: "Evacuate, vacuum test, recharge by weight. Refrigerant books out of stock by the pound.",
+      items: { create: [{ description: "Evacuate and vacuum test", hours: 0.8, rate: 110, sortOrder: 0 }, { description: "Recharge and performance check", hours: 0.7, rate: 110, sortOrder: 1 }] },
+      parts: { create: [{ name: "Refrigerant R-1234yf (bulk)", partNumber: "R1234YF-BULK", quantity: 1.4, unit: "lb", unitPrice: 68, sortOrder: 0, inventoryPartId: inventoryParts[26].id }] } } }),
     prisma.laborPreset.create({ data: { organizationId: ORG_ID, userId: USER_ID, name: "Seasonal tire changeover", description: "Wheel swap, balance and pressure set, four wheels.",
       items: { create: [{ description: "Wheel swap and balance (4)", hours: 1, rate: 95, sortOrder: 0 }, { description: "Pressure set and torque check", hours: 0.2, rate: 95, sortOrder: 1 }] },
       parts: { create: [] } } }),

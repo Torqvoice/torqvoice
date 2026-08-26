@@ -150,7 +150,7 @@ async function sendDigest(
  */
 export async function processOrgLowStock(organizationId: string, now = new Date()) {
   // The digest goes out by email, which the demo cannot send.
-  if (isDemoMode) return { skipped: true as const };
+  if (isDemoMode) return { skipped: true as const }
 
   const settingRows = await db.appSetting.findMany({
     where: {
