@@ -292,7 +292,12 @@ export function WorkBoardToolbar({
         </ButtonGroup>
 
         <Button variant="outline" size="sm" asChild>
-          <Link href="/work-board/presenter" target="_blank">
+          {/* Carry what you are looking at into the display, so opening the
+              presenter shows the same thing rather than resetting to defaults. */}
+          <Link
+            href={`/work-board/presenter?view=week&group=${grouping}&layout=${layout}`}
+            target="_blank"
+          >
             <Monitor className="mr-1.5 h-3.5 w-3.5" />
             {t('presenter')}
           </Link>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useDroppable } from '@dnd-kit/core'
+import { ClipboardCheck, Wrench } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
@@ -23,6 +24,7 @@ export function WeekCardGrid({
   lanes,
   jobsByLane,
   todayStr,
+  readOnly = false,
   onOpenJob,
   onLaneClick,
 }: {
@@ -30,6 +32,8 @@ export function WeekCardGrid({
   lanes: BoardLane[]
   jobsByLane: Map<string, WorkBoardJob[]>
   todayStr: string
+  /** Wall-display mode: the same grid, with nothing to pick up. */
+  readOnly?: boolean
   onOpenJob: (job: WorkBoardJob) => void
   onLaneClick?: (lane: BoardLane) => void
 }) {
@@ -70,7 +74,7 @@ export function WeekCardGrid({
               >
                 <button
                   type="button"
-                  disabled={lane.isPlaceholder || !onLaneClick}
+                  disabled={lane.isPlaceholder || readOnly || !onLaneClick}
                   onClick={() => onLaneClick?.(lane)}
                   className="sticky left-0 z-10 flex flex-col justify-center gap-1 bg-background p-2 text-left disabled:cursor-default"
                 >
@@ -91,6 +95,7 @@ export function WeekCardGrid({
                   date={day}
                   jobs={laneJobs.filter((job) => jobOverlapsDate(job, day))}
                   isToday={day === todayStr}
+                  readOnly={readOnly}
                   onOpenJob={onOpenJob}
                 />
               ))}
@@ -109,17 +114,20 @@ function DayCell({
   date,
   jobs,
   isToday,
+  readOnly,
   onOpenJob,
 }: {
   lane: BoardLane
   date: string
   jobs: WorkBoardJob[]
   isToday: boolean
+  readOnly?: boolean
   onOpenJob: (job: WorkBoardJob) => void
 }) {
   const { isOver, setNodeRef } = useDroppable({
     id: `card::${lane.id}::${date}`,
     data: { laneId: lane.id, date, week: true },
+    disabled: readOnly,
   })
 
   const booked = jobs.reduce((sum, job) => {
@@ -137,9 +145,13 @@ function DayCell({
         isOver && 'bg-primary/10'
       )}
     >
-      {jobs.map((job) => (
-        <BoardJobCard key={job.id} job={job} onClick={() => onOpenJob(job)} />
-      ))}
+      {jobs.map((job) =>
+        readOnly ? (
+          <StaticJobCard key={job.id} job={job} />
+        ) : (
+          <BoardJobCard key={job.id} job={job} onClick={() => onOpenJob(job)} />
+        )
+      )}
 
       {booked > 0 && (
         <div className="mt-auto space-y-0.5 pt-1">
@@ -162,6 +174,34 @@ function DayCell({
             {lane.dailyCapacity > 0 ? ` / ${formatDuration(lane.dailyCapacity)}` : ''}
           </p>
         </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * The same card without a grip or a drag listener.
+ *
+ * A wall display should not offer to pick anything up: the grip appearing on
+ * hover invites a drag that would do nothing, because the presenter wires no
+ * drop handlers at all.
+ */
+function StaticJobCard({ job }: { job: WorkBoardJob }) {
+  return (
+    <div className="rounded-md border bg-card p-1.5 text-xs shadow-sm">
+      <div className="flex items-center gap-1">
+        {job.type === 'serviceRecord' ? (
+          <Wrench className="h-3 w-3 shrink-0 text-blue-500" />
+        ) : (
+          <ClipboardCheck className="h-3 w-3 shrink-0 text-green-500" />
+        )}
+        <span className="truncate font-medium">{job.title}</span>
+      </div>
+      {job.vehicle && (
+        <p className="truncate text-muted-foreground">
+          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
+        </p>
       )}
     </div>
   )

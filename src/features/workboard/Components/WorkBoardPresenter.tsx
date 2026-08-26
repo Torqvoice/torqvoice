@@ -15,7 +15,9 @@ import { PresenterDayView } from './PresenterDayView'
 import { PresenterKanbanView } from './PresenterKanbanView'
 import { PresenterTimeline } from './PresenterTimeline'
 import { WeekTimeline } from './WeekTimeline'
-import { type LaneGrouping, buildLanes, isLaneGrouping } from '../utils/lanes'
+import { WeekCardGrid } from './WeekCardGrid'
+import { type BoardLayout, isBoardLayout } from '../hooks/useBoardPreferences'
+import { type LaneGrouping, buildLanes, groupJobsByLane, isLaneGrouping } from '../utils/lanes'
 import { useTranslations, useLocale } from 'next-intl'
 
 type ViewMode = 'week' | 'day' | 'status' | 'timeline'
@@ -113,15 +115,23 @@ export function WorkBoardPresenter({
   )
   const [selectedDate, setSelectedDateState] = useState(urlDate || toLocalDateString(new Date()))
   const urlGrouping = searchParams.get('group')
+  const urlLayout = searchParams.get('layout')
   const [grouping, setGroupingState] = useState<LaneGrouping>(
     isLaneGrouping(urlGrouping) ? urlGrouping : 'technician'
   )
+  // The presenter keeps its own layout in the address bar rather than reading
+  // the planner's saved preference: a wall display is usually a different
+  // machine, and one that should stay on whatever it was pinned to.
+  const [layout, setLayoutState] = useState<BoardLayout>(
+    isBoardLayout(urlLayout) ? urlLayout : 'timeline'
+  )
   const updateUrl = useCallback(
-    (v: ViewMode, d: string, g: LaneGrouping) => {
+    (v: ViewMode, d: string, g: LaneGrouping, l: BoardLayout) => {
       const p = new URLSearchParams()
       p.set('view', v)
       p.set('date', d)
       p.set('group', g)
+      p.set('layout', l)
       router.replace(`${pathname}?${p.toString()}`, { scroll: false })
     },
     [router, pathname]
@@ -129,17 +139,21 @@ export function WorkBoardPresenter({
   const setSelectedDate = useCallback(
     (d: string) => {
       setSelectedDateState(d)
-      updateUrl(viewMode, d, grouping)
+      updateUrl(viewMode, d, grouping, layout)
     },
-    [viewMode, grouping, updateUrl]
+    [viewMode, grouping, layout, updateUrl]
   )
   const handleSetViewMode = (m: ViewMode) => {
     setViewMode(m)
-    updateUrl(m, selectedDate, grouping)
+    updateUrl(m, selectedDate, grouping, layout)
+  }
+  const setLayout = (l: BoardLayout) => {
+    setLayoutState(l)
+    updateUrl(viewMode, selectedDate, grouping, l)
   }
   const setGrouping = (g: LaneGrouping) => {
     setGroupingState(g)
-    updateUrl(viewMode, selectedDate, g)
+    updateUrl(viewMode, selectedDate, g, layout)
   }
 
   useEffect(() => {
@@ -244,6 +258,16 @@ export function WorkBoardPresenter({
     [grouping, store.technicians, store.workBays, store.jobs, tb]
   )
 
+  const jobsByLane = useMemo(
+    () =>
+      groupJobsByLane(
+        store.jobs,
+        grouping,
+        new Set(lanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id))
+      ),
+    [store.jobs, grouping, lanes]
+  )
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <header className="flex shrink-0 items-center justify-between border-b px-4 py-2">
@@ -286,6 +310,26 @@ export function WorkBoardPresenter({
               {t('week')}
             </Button>
           </div>
+          {viewMode === 'week' && (
+            <div className="flex rounded-md border">
+              <Button
+                variant={layout === 'timeline' ? 'default' : 'ghost'}
+                size="sm"
+                className="rounded-none rounded-l-md"
+                onClick={() => setLayout('timeline')}
+              >
+                {tt('layoutTimeline')}
+              </Button>
+              <Button
+                variant={layout === 'cards' ? 'default' : 'ghost'}
+                size="sm"
+                className="rounded-none rounded-r-md border-l"
+                onClick={() => setLayout('cards')}
+              >
+                {tt('layoutCards')}
+              </Button>
+            </div>
+          )}
           {viewMode === 'week' && (
             <div className="flex rounded-md border">
               <Button
@@ -368,19 +412,30 @@ export function WorkBoardPresenter({
           {/* The board the shop plans on, minus everything you could change:
               a wall display is read while walking past it. */}
           <DndContext>
-            <WeekTimeline
-              days={days}
-              lanes={lanes}
-              jobs={store.jobs}
-              grouping={grouping}
-              zoom={1}
-              snapMinutes={15}
-              workDayStart={workDayStart}
-              workDayEnd={workDayEnd}
-              onOpenJob={noop}
-              onSchedule={noop}
-              readOnly
-            />
+            {layout === 'cards' ? (
+              <WeekCardGrid
+                days={days}
+                lanes={lanes}
+                jobsByLane={jobsByLane}
+                todayStr={toLocalDateString(new Date())}
+                readOnly
+                onOpenJob={noop}
+              />
+            ) : (
+              <WeekTimeline
+                days={days}
+                lanes={lanes}
+                jobs={store.jobs}
+                grouping={grouping}
+                zoom={1}
+                snapMinutes={15}
+                workDayStart={workDayStart}
+                workDayEnd={workDayEnd}
+                onOpenJob={noop}
+                onSchedule={noop}
+                readOnly
+              />
+            )}
           </DndContext>
         </div>
       )}
