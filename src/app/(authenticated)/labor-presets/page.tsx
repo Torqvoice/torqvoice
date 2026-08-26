@@ -52,6 +52,7 @@ export default async function LaborPresetsPage({
           unit: p.unit,
           sellPrice: p.sellPrice,
           unitCost: p.unitCost,
+          quantity: p.quantity,
         }))
       : []
   const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'

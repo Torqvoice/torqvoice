@@ -7,6 +7,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Package, Plus, Search, Trash2 } from 'lucide-react'
 import { InventorySearchDialog, type InventoryPartOption } from './InventorySearchDialog'
+import {
+  PartNameSuggestions,
+  type PartSuggestion,
+} from '@/features/inventory/Components/PartNameSuggestions'
+import { resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 
 export interface PresetPartItem {
   name: string
@@ -29,6 +34,7 @@ export function PresetPartsEditor({
   parts,
   onPartsChange,
   inventoryParts,
+  currencyCode = 'USD',
 }: PresetPartsEditorProps) {
   const t = useTranslations('laborPresets')
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -48,6 +54,27 @@ export function PresetPartsEditor({
 
   const removePart = (index: number) => {
     onPartsChange(parts.filter((_, i) => i !== index))
+  }
+
+  // Same inline typeahead as the work order and quote editors: typing a name
+  // that exists in stock surfaces the match, and picking it links the row so
+  // applying the preset later books the part out of inventory.
+  const applySuggestion = (index: number, picked: PartSuggestion) => {
+    const { unitPrice } = resolvePartPrice(picked)
+    onPartsChange(
+      parts.map((row, j) =>
+        j === index
+          ? {
+              ...row,
+              name: picked.name,
+              partNumber: picked.partNumber ?? '',
+              unit: picked.unit ?? null,
+              unitPrice,
+              inventoryPartId: picked.id,
+            }
+          : row
+      )
+    )
   }
 
   const handleInventorySelect = (ip: InventoryPartOption) => {
@@ -98,12 +125,20 @@ export function PresetPartsEditor({
 
           {parts.map((part, i) => (
             <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_0.5fr_1fr_auto]">
-              <Input
-                placeholder={t('form.partName')}
-                value={part.name}
-                onChange={(e) => updatePart(i, 'name', e.target.value)}
-                className="col-span-2 sm:col-span-1"
-              />
+              <div className="relative col-span-2 sm:col-span-1">
+                <Input
+                  placeholder={t('form.partName')}
+                  value={part.name}
+                  onChange={(e) => updatePart(i, 'name', e.target.value)}
+                />
+                <PartNameSuggestions
+                  query={part.name}
+                  parts={inventoryParts ?? []}
+                  disabled={!!part.inventoryPartId}
+                  currencyCode={currencyCode}
+                  onSelect={(picked) => applySuggestion(i, picked)}
+                />
+              </div>
               <Input
                 placeholder={t('form.partNumber')}
                 value={part.partNumber}

@@ -13,6 +13,8 @@ export interface InventoryPartOption {
   unit?: string | null
   sellPrice: number
   unitCost: number
+  /** On-hand stock, shown by the inline name suggestions. */
+  quantity: number
 }
 
 interface InventorySearchDialogProps {

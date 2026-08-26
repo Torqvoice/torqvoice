@@ -68,6 +68,7 @@ interface LaborPresetFormProps {
     unit: string | null
     sellPrice: number
     unitCost: number
+    quantity: number
   }[]
   currencyCode?: string
 }
