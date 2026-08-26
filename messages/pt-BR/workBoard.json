@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Somente com serviço",
     "layout": "Exibição",
     "layoutTimeline": "Linha do tempo",
-    "layoutCards": "Cartões",
+    "layoutCards": "Visão geral",
     "rows": "Linhas",
     "rowPerTechnician": "Uma linha por técnico",
     "rowPerBay": "Uma linha por baia",
@@ -105,7 +105,8 @@
       "completed": "Concluído"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Lista"
   },
   "week": {
     "createAt": "Nova ordem de serviço às {time}",

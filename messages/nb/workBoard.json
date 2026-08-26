@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Bare med jobber",
     "layout": "Visning",
     "layoutTimeline": "Tidslinje",
-    "layoutCards": "Kort",
+    "layoutCards": "Oversikt",
     "rows": "Rader",
     "rowPerTechnician": "Én rad per mekaniker",
     "rowPerBay": "Én rad per arbeidsplass",
@@ -105,7 +105,8 @@
       "completed": "Fullført"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Liste"
   },
   "week": {
     "createAt": "Ny arbeidsordre kl. {time}",

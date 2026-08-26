@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Только с работой",
     "layout": "Вид",
     "layoutTimeline": "Шкала времени",
-    "layoutCards": "Карточки",
+    "layoutCards": "Обзор",
     "rows": "Строки",
     "rowPerTechnician": "Строка на механика",
     "rowPerBay": "Строка на пост",
@@ -105,7 +105,8 @@
       "completed": "Завершено"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Список"
   },
   "week": {
     "createAt": "Новый заказ-наряд в {time}",

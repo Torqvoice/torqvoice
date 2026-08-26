@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Tik su darbais",
     "layout": "Rodinys",
     "layoutTimeline": "Laiko juosta",
-    "layoutCards": "Kortelės",
+    "layoutCards": "Apžvalga",
     "rows": "Eilutės",
     "rowPerTechnician": "Eilutė kiekvienam meistrui",
     "rowPerBay": "Eilutė kiekvienai darbo vietai",
@@ -105,7 +105,8 @@
       "completed": "Užbaigta"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Sąrašas"
   },
   "week": {
     "createAt": "Naujas darbo užsakymas {time}",

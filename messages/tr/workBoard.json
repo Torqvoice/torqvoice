@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Yalnızca işi olanlar",
     "layout": "Görünüm",
     "layoutTimeline": "Zaman çizelgesi",
-    "layoutCards": "Kartlar",
+    "layoutCards": "Genel bakış",
     "rows": "Satırlar",
     "rowPerTechnician": "Teknisyen başına bir satır",
     "rowPerBay": "Çalışma alanı başına bir satır",
@@ -105,7 +105,8 @@
       "completed": "Tamamlandı"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Liste"
   },
   "week": {
     "createAt": "{time} için yeni iş emri",

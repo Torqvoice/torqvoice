@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Alleen met werk",
     "layout": "Weergave",
     "layoutTimeline": "Tijdlijn",
-    "layoutCards": "Kaarten",
+    "layoutCards": "Overzicht",
     "rows": "Rijen",
     "rowPerTechnician": "Een rij per monteur",
     "rowPerBay": "Een rij per werkplek",
@@ -105,7 +105,8 @@
       "completed": "Voltooid"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Lijst"
   },
   "week": {
     "createAt": "Nieuwe werkorder om {time}",

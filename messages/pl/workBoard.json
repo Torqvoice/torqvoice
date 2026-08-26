@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Tylko ze zleceniami",
     "layout": "Widok",
     "layoutTimeline": "Oś czasu",
-    "layoutCards": "Karty",
+    "layoutCards": "Przegląd",
     "rows": "Wiersze",
     "rowPerTechnician": "Wiersz na mechanika",
     "rowPerBay": "Wiersz na stanowisko",
@@ -105,7 +105,8 @@
       "completed": "Ukończone"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Lista"
   },
   "week": {
     "createAt": "Nowe zlecenie o {time}",

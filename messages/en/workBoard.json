@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Only those with work",
     "layout": "Layout",
     "layoutTimeline": "Timeline",
-    "layoutCards": "Cards",
+    "layoutCards": "Overview",
     "rows": "Rows",
     "rowPerTechnician": "A row per technician",
     "rowPerBay": "A row per work bay",
@@ -105,7 +105,8 @@
       "completed": "Completed"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "List"
   },
   "week": {
     "createAt": "New work order at {time}",

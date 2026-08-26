@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Nur mit Aufträgen",
     "layout": "Ansicht",
     "layoutTimeline": "Zeitachse",
-    "layoutCards": "Karten",
+    "layoutCards": "Übersicht",
     "rows": "Zeilen",
     "rowPerTechnician": "Eine Zeile je Mechaniker",
     "rowPerBay": "Eine Zeile je Arbeitsplatz",
@@ -105,7 +105,8 @@
       "completed": "Abgeschlossen"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Liste"
   },
   "week": {
     "createAt": "Neuer Auftrag um {time}",

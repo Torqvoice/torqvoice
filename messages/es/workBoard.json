@@ -25,7 +25,7 @@
     "onlyBusyLanes": "Solo con trabajo",
     "layout": "Vista",
     "layoutTimeline": "Cronología",
-    "layoutCards": "Tarjetas",
+    "layoutCards": "Resumen",
     "rows": "Filas",
     "rowPerTechnician": "Una fila por técnico",
     "rowPerBay": "Una fila por puesto",
@@ -105,7 +105,8 @@
       "completed": "Completado"
     },
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "list": "Lista"
   },
   "week": {
     "createAt": "Nueva orden de trabajo a las {time}",

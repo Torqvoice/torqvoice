@@ -240,6 +240,9 @@ export function WorkBoardPresenter({
     return () => clearTimeout(timeout)
   }, [loadWeekData, setSelectedDate, weekStartDay])
 
+  /** Week is its own period; the other three are ways of drawing one day. */
+  const period: 'day' | 'week' = viewMode === 'week' ? 'week' : 'day'
+
   const dateLabel =
     viewMode === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)
 
@@ -276,41 +279,59 @@ export function WorkBoardPresenter({
           <span className="text-sm text-muted-foreground">{dateLabel}</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* Two questions, asked separately. The old row mixed them: it put
+              "Timeline" and "Status" (how to draw it) next to "Day" and
+              "Week" (how much to draw), so Timeline appeared twice on screen
+              meaning two different things. */}
           <div className="flex rounded-md border">
             <Button
-              variant={viewMode === 'timeline' ? 'default' : 'ghost'}
+              variant={period === 'day' ? 'default' : 'ghost'}
               size="sm"
               className="rounded-none rounded-l-md"
               onClick={() => handleSetViewMode('timeline')}
             >
-              {t('timeline')}
-            </Button>
-            <Button
-              variant={viewMode === 'day' ? 'default' : 'ghost'}
-              size="sm"
-              className="rounded-none border-l"
-              onClick={() => handleSetViewMode('day')}
-            >
               {t('day')}
             </Button>
             <Button
-              variant={viewMode === 'status' ? 'default' : 'ghost'}
+              variant={period === 'week' ? 'default' : 'ghost'}
               size="sm"
-              className="rounded-none border-x"
-              onClick={() => handleSetViewMode('status')}
-            >
-              {t('status')}
-            </Button>
-            <Button
-              variant={viewMode === 'week' ? 'default' : 'ghost'}
-              size="sm"
-              className="rounded-none rounded-r-md"
+              className="rounded-none rounded-r-md border-l"
               onClick={() => handleSetViewMode('week')}
             >
               {t('week')}
             </Button>
           </div>
-          {viewMode === 'week' && (
+
+          {period === 'day' && (
+            <div className="flex rounded-md border">
+              <Button
+                variant={viewMode === 'timeline' ? 'default' : 'ghost'}
+                size="sm"
+                className="rounded-none rounded-l-md"
+                onClick={() => handleSetViewMode('timeline')}
+              >
+                {t('timeline')}
+              </Button>
+              <Button
+                variant={viewMode === 'day' ? 'default' : 'ghost'}
+                size="sm"
+                className="rounded-none border-x"
+                onClick={() => handleSetViewMode('day')}
+              >
+                {t('list')}
+              </Button>
+              <Button
+                variant={viewMode === 'status' ? 'default' : 'ghost'}
+                size="sm"
+                className="rounded-none rounded-r-md"
+                onClick={() => handleSetViewMode('status')}
+              >
+                {t('status')}
+              </Button>
+            </div>
+          )}
+
+          {period === 'week' && (
             <div className="flex rounded-md border">
               <Button
                 variant={layout === 'timeline' ? 'default' : 'ghost'}
@@ -330,6 +351,7 @@ export function WorkBoardPresenter({
               </Button>
             </div>
           )}
+
           {viewMode === 'week' && (
             <div className="flex rounded-md border">
               <Button
