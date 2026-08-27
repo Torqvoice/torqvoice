@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
+import { MIN_APP_VERSION } from '@/lib/tech-app-version'
 
 /**
  * Who the app is signed in as, which workshop it is looking at, and whether a
@@ -33,6 +34,9 @@ export async function GET(request: Request) {
       const openEntry = await getOpenEntry(ctx.organizationId, ctx.technicianIds)
 
       return apiOk({
+        // Repeated from /health because that one is only read at setup, and a
+        // minimum the app never re-checks is a minimum that cannot be raised.
+        minAppVersion: MIN_APP_VERSION,
         user,
         organization,
         technicians,

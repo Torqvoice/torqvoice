@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/rate-limit'
+import { MIN_APP_VERSION } from '@/lib/tech-app-version'
 
 /**
  * Confirms a URL is a Torqvoice server, for the app's first screen.
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
       service: 'torqvoice',
       api: 'v1',
       /** Bumped when the app must update before it can talk to this server. */
-      minAppVersion: '1.0.0',
+      minAppVersion: MIN_APP_VERSION,
     },
   })
 }
