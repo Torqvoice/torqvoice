@@ -392,7 +392,10 @@
     "failedUpdateRole": "Error al actualizar el rol",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Técnico",
+    "technicianHint": "Puede recibir trabajos asignados y usar la aplicación de técnico",
+    "technicianFailed": "No se pudo cambiar"
   },
   "invoice": {
     "title": "Diseño de factura",

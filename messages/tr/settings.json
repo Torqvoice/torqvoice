@@ -392,7 +392,10 @@
     "failedUpdateRole": "Rol güncellenemedi",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Teknisyen",
+    "technicianHint": "İş atanabilir ve teknisyen uygulamasını kullanabilir",
+    "technicianFailed": "Değiştirilemedi"
   },
   "invoice": {
     "title": "Fatura Düzeni",

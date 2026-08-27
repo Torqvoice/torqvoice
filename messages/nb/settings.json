@@ -392,7 +392,10 @@
     "failedUpdateRole": "Kunne ikke oppdatere rolle",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Tekniker",
+    "technicianHint": "Kan tildeles jobber og bruke teknikerappen",
+    "technicianFailed": "Kunne ikke endres"
   },
   "invoice": {
     "title": "Faktura og tilbud",

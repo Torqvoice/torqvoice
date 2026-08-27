@@ -392,7 +392,10 @@
     "failedUpdateRole": "Rol bijwerken mislukt",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technicus",
+    "technicianHint": "Kan opdrachten toegewezen krijgen en de technicus-app gebruiken",
+    "technicianFailed": "Kon niet worden gewijzigd"
   },
   "invoice": {
     "title": "Factuurindeling",

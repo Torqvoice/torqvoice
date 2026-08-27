@@ -392,7 +392,10 @@
     "failedUpdateRole": "Échec de la mise a jour du role",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technicien",
+    "technicianHint": "Peut se voir attribuer des travaux et utiliser l’application technicien",
+    "technicianFailed": "Modification impossible"
   },
   "invoice": {
     "title": "Mise en page de facture",

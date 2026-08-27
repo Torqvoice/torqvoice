@@ -392,7 +392,10 @@
     "failedUpdateRole": "Falha ao atualizar a função",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Técnico",
+    "technicianHint": "Pode receber serviços atribuídos e usar o aplicativo do técnico",
+    "technicianFailed": "Não foi possível alterar"
   },
   "invoice": {
     "title": "Layout da fatura",

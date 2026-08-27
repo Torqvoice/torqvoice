@@ -392,7 +392,10 @@
     "failedUpdateRole": "Nie udało się zaktualizować roli",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technik",
+    "technicianHint": "Może otrzymywać zlecenia i korzystać z aplikacji technika",
+    "technicianFailed": "Nie udało się zmienić"
   },
   "invoice": {
     "title": "Układ faktury",

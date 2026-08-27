@@ -392,7 +392,10 @@
     "failedUpdateRole": "Не удалось обновить роль",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Механик",
+    "technicianHint": "Может получать заказы и пользоваться приложением механика",
+    "technicianFailed": "Не удалось изменить"
   },
   "invoice": {
     "title": "Счета и предложения",

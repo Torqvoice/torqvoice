@@ -392,7 +392,10 @@
     "failedUpdateRole": "Rolle konnte nicht aktualisiert werden",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Techniker",
+    "technicianHint": "Kann Aufträge zugewiesen bekommen und die Techniker-App nutzen",
+    "technicianFailed": "Konnte nicht geändert werden"
   },
   "invoice": {
     "title": "Rechnungslayout",

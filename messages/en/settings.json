@@ -392,7 +392,10 @@
     "failedUpdateRole": "Failed to update role",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technician",
+    "technicianHint": "Can be assigned jobs and use the technician app",
+    "technicianFailed": "Could not change that"
   },
   "invoice": {
     "title": "Invoice & Quotes",

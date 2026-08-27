@@ -1,17 +1,22 @@
-import { getOrganization } from "@/features/team/Actions/teamActions";
-import { getRoles } from "@/features/team/Actions/getRoles";
-import { getPendingInvitations } from "@/features/team/Actions/getPendingInvitations";
-import { TeamSettings } from "./team-settings";
+import { getOrganization } from '@/features/team/Actions/teamActions'
+import { getRoles } from '@/features/team/Actions/getRoles'
+import { getPendingInvitations } from '@/features/team/Actions/getPendingInvitations'
+import { getTechnicianUserIds } from '@/features/team/Actions/setMemberTechnician'
+import { TeamSettings } from './team-settings'
 
 export default async function TeamPage() {
-  const [result, rolesResult, invitationsResult] = await Promise.all([
+  const [result, rolesResult, invitationsResult, technicianResult] = await Promise.all([
     getOrganization(),
     getRoles(),
     getPendingInvitations(),
-  ]);
-  const orgData = result.success ? result.data : null;
-  const roles = rolesResult.success && rolesResult.data ? rolesResult.data : [];
-  const pendingInvitations = invitationsResult.success && invitationsResult.data ? invitationsResult.data : [];
+    getTechnicianUserIds(),
+  ])
+  const orgData = result.success ? result.data : null
+  const roles = rolesResult.success && rolesResult.data ? rolesResult.data : []
+  const pendingInvitations =
+    invitationsResult.success && invitationsResult.data ? invitationsResult.data : []
+  const technicianUserIds =
+    technicianResult.success && technicianResult.data ? technicianResult.data : []
 
   return (
     <TeamSettings
@@ -19,6 +24,7 @@ export default async function TeamPage() {
       currentRole={orgData?.currentRole || null}
       roles={roles}
       pendingInvitations={pendingInvitations}
+      technicianUserIds={technicianUserIds}
     />
-  );
+  )
 }
