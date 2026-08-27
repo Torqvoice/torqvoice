@@ -54,7 +54,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       const form = await request.formData()
       const title = (form.get('title') as string | null)?.slice(0, 200) || undefined
       const message = (form.get('message') as string | null)?.slice(0, 4000) || undefined
-      const video = form.get('video')
+      // Named 'file' like every other upload, so the client has one shape.
+      const video = form.get('file')
 
       let videoUrl: string | undefined
       let videoFileName: string | undefined
