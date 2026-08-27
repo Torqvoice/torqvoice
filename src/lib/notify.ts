@@ -1,15 +1,15 @@
-import { db } from "@/lib/db";
-import { notificationBus } from "@/lib/notification-bus";
+import { db } from '@/lib/db'
+import { notificationBus } from '@/lib/notification-bus'
 
 type NotifyInput = {
-  organizationId: string;
-  type: string;
-  title: string;
-  message: string;
-  entityType: string;
-  entityId: string;
-  entityUrl: string;
-};
+  organizationId: string
+  type: string
+  title: string
+  message: string
+  entityType: string
+  entityId: string
+  entityUrl: string
+}
 
 export async function notify(input: NotifyInput) {
   try {
@@ -23,11 +23,11 @@ export async function notify(input: NotifyInput) {
         entityUrl: input.entityUrl,
         organizationId: input.organizationId,
       },
-    });
+    })
 
     // Emit to in-process bus — the WS route subscribes and broadcasts
-    notificationBus.emit("notification", notification);
+    notificationBus.emit('notification', notification)
   } catch (error) {
-    console.error("[notify] Failed:", error);
+    console.error('[notify] Failed:', error)
   }
 }

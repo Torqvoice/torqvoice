@@ -91,10 +91,33 @@ export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessag
         return
       }
 
-      const membership = await db.organizationMember.findFirst({
-        where: { userId: session.user.id },
-        select: { organizationId: true },
-      })
+      // Which workshop this socket is for.
+      //
+      // Offered as a second subprotocol by the app, because a WebSocket
+      // handshake carries no headers we control. It only selects: the
+      // membership lookup is what decides, and an id the user is not a member
+      // of falls through to their default rather than granting anything.
+      //
+      // Without this a technician who works for two workshops subscribed to
+      // whichever membership came back first, so they were told about changes
+      // in one shop while using the app against the other.
+      const wantedOrg = (Array.isArray(offered) ? offered.join(',') : (offered ?? ''))
+        .split(',')
+        .map((p) => p.trim())
+        .find((p) => p.startsWith('org.'))
+        ?.slice('org.'.length)
+
+      const membership =
+        (wantedOrg
+          ? await db.organizationMember.findFirst({
+              where: { userId: session.user.id, organizationId: wantedOrg },
+              select: { organizationId: true },
+            })
+          : null) ??
+        (await db.organizationMember.findFirst({
+          where: { userId: session.user.id },
+          select: { organizationId: true },
+        }))
       if (!membership) {
         ws.close(4001, 'No organization')
         return

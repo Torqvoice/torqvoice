@@ -37,7 +37,12 @@ export async function revalidateOrganizationLicense(organizationId: string, lice
     db.appSetting.upsert({
       where: { organizationId_key: { organizationId, key: 'license.valid' } },
       update: { value: String(valid) },
-      create: { userId: orgMember.userId, organizationId, key: 'license.valid', value: String(valid) },
+      create: {
+        userId: orgMember.userId,
+        organizationId,
+        key: 'license.valid',
+        value: String(valid),
+      },
     }),
     db.appSetting.upsert({
       where: { organizationId_key: { organizationId, key: 'license.checkedAt' } },
@@ -56,7 +61,12 @@ export async function revalidateOrganizationLicense(organizationId: string, lice
       db.appSetting.upsert({
         where: { organizationId_key: { organizationId, key: 'license.expiresAt' } },
         update: { value: expiresAt },
-        create: { userId: orgMember.userId, organizationId, key: 'license.expiresAt', value: expiresAt },
+        create: {
+          userId: orgMember.userId,
+          organizationId,
+          key: 'license.expiresAt',
+          value: expiresAt,
+        },
       })
     )
   }
@@ -93,7 +103,12 @@ export async function sendExpiryWarning(organizationId: string, daysLeft: number
   await db.appSetting.upsert({
     where: { organizationId_key: { organizationId, key: 'license.lastExpiryWarning' } },
     update: { value: today },
-    create: { userId: orgMember.userId, organizationId, key: 'license.lastExpiryWarning', value: today },
+    create: {
+      userId: orgMember.userId,
+      organizationId,
+      key: 'license.lastExpiryWarning',
+      value: today,
+    },
   })
 
   // In-app notification
@@ -148,7 +163,10 @@ export function checkLicenses() {
         try {
           await revalidateOrganizationLicense(setting.organizationId, setting.value)
         } catch (error) {
-          console.error(`[cron] Failed to revalidate license for org ${setting.organizationId}:`, error)
+          console.error(
+            `[cron] Failed to revalidate license for org ${setting.organizationId}:`,
+            error
+          )
         }
       }
     } catch (error) {

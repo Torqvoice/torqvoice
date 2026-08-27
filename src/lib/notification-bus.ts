@@ -1,11 +1,10 @@
-import { EventEmitter } from "node:events";
+import { EventEmitter } from 'node:events'
 
 const globalForBus = globalThis as unknown as {
-  notificationBus: EventEmitter | undefined;
-};
+  notificationBus: EventEmitter | undefined
+}
 
-export const notificationBus =
-  globalForBus.notificationBus ?? new EventEmitter();
+export const notificationBus = globalForBus.notificationBus ?? new EventEmitter()
 
 // Survive HMR in dev
-globalForBus.notificationBus = notificationBus;
+globalForBus.notificationBus = notificationBus

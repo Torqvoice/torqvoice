@@ -21,7 +21,9 @@ export function cleanupAuditLogs() {
       })
 
       if (result.count > 0) {
-        console.warn(`[cron] Audit log cleanup: deleted ${result.count} logs older than ${retentionDays} days`)
+        console.warn(
+          `[cron] Audit log cleanup: deleted ${result.count} logs older than ${retentionDays} days`
+        )
       }
     } catch (error) {
       console.error('[cron] Audit log cleanup failed:', error)

@@ -10,11 +10,11 @@
  * the app. The reset cron (every 3 hours) reverts their changes.
  */
 
-export const isDemoMode = process.env.DEMO_MODE === "true";
+export const isDemoMode = process.env.DEMO_MODE === 'true'
 
 /** Credentials the sign-in page auto-fills. The seed script provisions this user. */
-export const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL || "demo@torqvoice.com";
-export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "demo";
+export const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL || 'demo@torqvoice.com'
+export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || 'demo'
 
 /**
  * Throws inside a server action when demo mode is active. `withAuth`
@@ -23,7 +23,9 @@ export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || "demo";
  */
 export function demoGuard(): void {
   if (isDemoMode) {
-    throw new Error("This action is disabled on the demo. Install Torqvoice on your own server to use it.");
+    throw new Error(
+      'This action is disabled on the demo. Install Torqvoice on your own server to use it.'
+    )
   }
 }
 
@@ -34,10 +36,10 @@ export function demoGuard(): void {
 const DEMO_BLOCKED_SETTING_KEY_PATTERNS: RegExp[] = [
   /^payment\.(stripe|vipps|paypal)\./,
   /^payment\.providersEnabled$/,
-];
+]
 
 export function isDemoBlockedSettingKey(key: string): boolean {
-  return DEMO_BLOCKED_SETTING_KEY_PATTERNS.some((p) => p.test(key));
+  return DEMO_BLOCKED_SETTING_KEY_PATTERNS.some((p) => p.test(key))
 }
 
 /**
@@ -46,6 +48,6 @@ export function isDemoBlockedSettingKey(key: string): boolean {
  */
 export function demoGuardSettingKey(key: string): void {
   if (isDemoMode && isDemoBlockedSettingKey(key)) {
-    throw new Error("This setting can't be changed on the demo.");
+    throw new Error("This setting can't be changed on the demo.")
   }
 }

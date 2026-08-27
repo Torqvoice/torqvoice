@@ -92,7 +92,9 @@ export async function withAuth<T>(
             metadata: { requiredPermissions: options.requiredPermissions },
             ip: meta.ip,
             userAgent: meta.userAgent,
-          }).catch(() => { /* best-effort */ })
+          }).catch(() => {
+            /* best-effort */
+          })
           return { success: false, error: 'Insufficient permissions' }
         }
       }
@@ -102,19 +104,23 @@ export async function withAuth<T>(
 
     // Post-success audit logging (fire-and-forget, logAudit handles its own errors)
     if (options.audit) {
-      getRequestMeta().then((meta) => {
-        const event =
-          typeof options.audit === 'function'
-            ? (options.audit as AuditBuilder<T>)({ ctx, result: data })
-            : options.audit
-        if (event && event.action) {
-          logAudit(ctx, {
-            ...event,
-            ip: event.ip ?? meta.ip,
-            userAgent: event.userAgent ?? meta.userAgent,
-          })
-        }
-      }).catch(() => { /* best-effort */ })
+      getRequestMeta()
+        .then((meta) => {
+          const event =
+            typeof options.audit === 'function'
+              ? (options.audit as AuditBuilder<T>)({ ctx, result: data })
+              : options.audit
+          if (event && event.action) {
+            logAudit(ctx, {
+              ...event,
+              ip: event.ip ?? meta.ip,
+              userAgent: event.userAgent ?? meta.userAgent,
+            })
+          }
+        })
+        .catch(() => {
+          /* best-effort */
+        })
     }
 
     return { success: true, data }

@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { createTranslator } from "next-intl";
-import enAudit from "../../messages/en/audit.json";
+import { db } from '@/lib/db'
+import { createTranslator } from 'next-intl'
+import enAudit from '../../messages/en/audit.json'
 
 /**
  * The readable half of an audit row, as ingredients rather than a sentence.
@@ -12,9 +12,9 @@ import enAudit from "../../messages/en/audit.json";
  */
 export type AuditDetails = {
   /** A key under `summary` in messages/<locale>/audit.json. */
-  key: string;
-  params?: Record<string, string | number>;
-};
+  key: string
+  params?: Record<string, string | number>
+}
 
 /**
  * Names an audit sentence and its values.
@@ -24,11 +24,8 @@ export type AuditDetails = {
  * parameter record, and the error that produces points at the call site
  * rather than at the cause. This gives both branches the same type.
  */
-export function auditDetails(
-  key: string,
-  params?: Record<string, string | number>,
-): AuditDetails {
-  return { key, params };
+export function auditDetails(key: string, params?: Record<string, string | number>): AuditDetails {
+  return { key, params }
 }
 
 /**
@@ -42,48 +39,45 @@ export function auditDetails(
 function renderEnglish(details: AuditDetails): string | null {
   try {
     const translate = createTranslator({
-      locale: "en",
+      locale: 'en',
       messages: { audit: enAudit },
-      namespace: "audit.summary",
+      namespace: 'audit.summary',
     } as Parameters<typeof createTranslator>[0]) as unknown as (
       key: string,
-      values?: Record<string, string | number>,
-    ) => string;
-    return translate(details.key, details.params);
+      values?: Record<string, string | number>
+    ) => string
+    return translate(details.key, details.params)
   } catch {
     // An unknown key must not lose the audit row. The key itself is a better
     // record than nothing, and the missing-key test below catches it in CI.
-    return details.key;
+    return details.key
   }
 }
 
 export type AuditEvent = {
-  action: string;
-  entity?: string;
-  entityId?: string;
+  action: string
+  entity?: string
+  entityId?: string
   /**
    * Pre-composed English. Only for events with nothing to translate; prefer
    * `details`, which reads in the viewer's own language.
    */
-  message?: string;
-  details?: AuditDetails;
+  message?: string
+  details?: AuditDetails
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  metadata?: Record<string, any> | null;
-  ip?: string | null;
-  userAgent?: string | null;
-};
+  metadata?: Record<string, any> | null
+  ip?: string | null
+  userAgent?: string | null
+}
 
-export async function logAudit(
-  ctx: { userId: string; organizationId: string },
-  event: AuditEvent,
-) {
-  const message = event.details ? renderEnglish(event.details) : (event.message ?? null);
+export async function logAudit(ctx: { userId: string; organizationId: string }, event: AuditEvent) {
+  const message = event.details ? renderEnglish(event.details) : (event.message ?? null)
   // Carried in metadata rather than its own column, so no existing row has to
   // be migrated and an older deployment reading the same database still finds
   // everything it expects.
   const metadata = event.details
     ? { ...(event.metadata ?? {}), details: event.details }
-    : event.metadata;
+    : event.metadata
 
   try {
     await db.auditLog.create({
@@ -98,17 +92,17 @@ export async function logAudit(
         ip: event.ip ?? null,
         userAgent: event.userAgent ?? null,
       },
-    });
+    })
   } catch (err) {
     // Don't block core flows due to logging failure
-    console.error("[audit] failed to write log:", err);
+    console.error('[audit] failed to write log:', err)
   }
 
   // Fan out to webhooks. Lazy-imported to avoid pulling Prisma webhook code
   // into modules that only need audit logging (and to break a potential
   // circular import if webhooks ever logs audits of its own).
   if (ctx.organizationId && event.action) {
-    import("@/features/webhooks/Lib/dispatcher")
+    import('@/features/webhooks/Lib/dispatcher')
       .then(({ dispatchWebhookEvent }) =>
         dispatchWebhookEvent({
           event: event.action,
@@ -118,10 +112,10 @@ export async function logAudit(
           message,
           data: metadata ?? null,
           userId: ctx.userId || null,
-        }),
+        })
       )
       .catch((err) => {
-        console.error("[webhooks] dispatch failed:", err);
-      });
+        console.error('[webhooks] dispatch failed:', err)
+      })
   }
 }

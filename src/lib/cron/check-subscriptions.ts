@@ -28,7 +28,16 @@ function resolveLicensePlan(internalStatus: string, planName: string): string {
 
 async function syncSubscription(
   stripe: Stripe,
-  sub: { id: string; organizationId: string; stripeSubscriptionId: string | null; status: string; currentPeriodStart: Date | null; currentPeriodEnd: Date | null; cancelAtPeriodEnd: boolean; plan: { name: string } },
+  sub: {
+    id: string
+    organizationId: string
+    stripeSubscriptionId: string | null
+    status: string
+    currentPeriodStart: Date | null
+    currentPeriodEnd: Date | null
+    cancelAtPeriodEnd: boolean
+    plan: { name: string }
+  }
 ) {
   const stripeSub = await stripe.subscriptions.retrieve(sub.stripeSubscriptionId!)
 
@@ -61,13 +70,25 @@ async function syncSubscription(
   await db.$transaction([
     db.subscription.update({
       where: { id: sub.id },
-      data: { status: newStatus, currentPeriodStart: periodStart, currentPeriodEnd: periodEnd, cancelAtPeriodEnd },
+      data: {
+        status: newStatus,
+        currentPeriodStart: periodStart,
+        currentPeriodEnd: periodEnd,
+        cancelAtPeriodEnd,
+      },
     }),
     ...(orgMember
       ? [
           db.appSetting.upsert({
-            where: { organizationId_key: { organizationId: sub.organizationId, key: 'license.plan' } },
-            create: { organizationId: sub.organizationId, key: 'license.plan', value: licensePlan, userId: orgMember.userId },
+            where: {
+              organizationId_key: { organizationId: sub.organizationId, key: 'license.plan' },
+            },
+            create: {
+              organizationId: sub.organizationId,
+              key: 'license.plan',
+              value: licensePlan,
+              userId: orgMember.userId,
+            },
             update: { value: licensePlan },
           }),
         ]
@@ -89,7 +110,12 @@ async function cancelOrphanedSubscription(subId: string, organizationId: string)
       ? [
           db.appSetting.upsert({
             where: { organizationId_key: { organizationId, key: 'license.plan' } },
-            create: { organizationId, key: 'license.plan', value: 'free', userId: orgMember.userId },
+            create: {
+              organizationId,
+              key: 'license.plan',
+              value: 'free',
+              userId: orgMember.userId,
+            },
             update: { value: 'free' },
           }),
         ]
@@ -109,7 +135,10 @@ export function checkSubscriptions() {
 
       const stripe = await getStripeClient()
       const subscriptions = await db.subscription.findMany({
-        where: { status: { in: ['active', 'past_due', 'trialing'] }, stripeSubscriptionId: { not: null } },
+        where: {
+          status: { in: ['active', 'past_due', 'trialing'] },
+          stripeSubscriptionId: { not: null },
+        },
         include: { plan: true },
       })
 
