@@ -5,6 +5,7 @@ import path from 'node:path'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { sendStatusReport } from '@/features/status-reports/Actions/sendStatusReport'
 
 /**
  * A short update for the customer, recorded standing at the car.
@@ -18,10 +19,15 @@ import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
  * nothing to show is something the office finishes, not something a customer
  * should receive as-is.
  *
- * This endpoint creates the report. It never sends it. Choosing to message a
- * customer, over which channel, is an outward-facing decision that belongs
- * with whoever owns the customer relationship, and a technician's phone in a
- * noisy bay is the wrong place to make it irreversible.
+ * Sending is opt-in. The technician has to ask for it explicitly, because a
+ * message to a customer cannot be recalled and the default for an
+ * irreversible outward-facing action should never be "yes". With the box
+ * unticked the report waits for the office, which is the common case.
+ *
+ * Channels are not the technician's decision either. Asking someone in a bay
+ * to choose between SMS, email and Telegram is a question they have no basis
+ * to answer; the report goes out on whatever the customer actually has on
+ * file.
  */
 
 const ALLOWED_VIDEO = new Map<string, string>([
@@ -89,6 +95,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return apiError(400, 'invalid_request', 'Add a message or a video before sending.')
       }
 
+      const wantsSend = form.get('send') === 'true'
+
       const report = await db.statusReport.create({
         data: {
           // 32 bytes of CSPRNG output. This token is the only thing standing
@@ -114,7 +122,57 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         },
       })
 
-      return apiOk({ report }, 201)
+      if (!wantsSend) {
+        return apiOk({ report, sent: null }, 201)
+      }
+
+      // Whatever the customer can actually be reached on. Requesting a channel
+      // with no address on file is counted as a failure by the sender, which
+      // would report a partial failure for something nobody asked for.
+      const customer = await db.serviceRecord
+        .findFirst({
+          where: { id: job.id },
+          select: {
+            customer: { select: { email: true, phone: true, telegramChatId: true } },
+            vehicle: {
+              select: { customer: { select: { email: true, phone: true, telegramChatId: true } } },
+            },
+          },
+        })
+        .then((r) => r?.customer ?? r?.vehicle?.customer ?? null)
+
+      const channels = {
+        email: Boolean(customer?.email),
+        sms: Boolean(customer?.phone),
+        telegram: Boolean(customer?.telegramChatId),
+      }
+
+      if (!channels.email && !channels.sms && !channels.telegram) {
+        // The report is saved either way. Losing the recording because there
+        // was nowhere to send it would be the worse outcome by far.
+        return apiOk(
+          {
+            report,
+            sent: { ok: false, reason: 'This customer has no phone, email or Telegram on file.' },
+          },
+          201
+        )
+      }
+
+      // `sendStatusReport` authenticates the same way this route does: withAuth
+      // resolves the session from request headers, and the bearer plugin reads
+      // the Authorization header the app already sent.
+      const result = await sendStatusReport({ statusReportId: report.id, channels })
+
+      return apiOk(
+        {
+          report,
+          sent: result.success
+            ? { ok: true, channels: result.data?.channels ?? [] }
+            : { ok: false, reason: result.error ?? 'Could not send it.' },
+        },
+        201
+      )
     },
     {
       requireTechnician: true,

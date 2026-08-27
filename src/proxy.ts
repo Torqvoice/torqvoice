@@ -58,7 +58,10 @@ export default function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/api/v1/tech/:path*',
+    // Everything under the technician API except the WebSocket. An upgrade
+    // handshake is not an ordinary response, and putting CORS headers on one
+    // is at best pointless and at worst breaks it.
+    '/api/v1/tech/((?!ws$).*)',
     // Sign-in lives here, so the app hits it before it has a session and
     // would otherwise fail its very first request from a browser.
     '/api/public/auth/:path*',
