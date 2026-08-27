@@ -201,6 +201,19 @@ export async function withApiAuth(
       return apiError(400, 'invalid_request', 'The request body was not valid JSON.')
     }
     console.error('[api]', request.method, new URL(request.url).pathname, err)
+
+    // In development the app is the fastest place to read the failure: the
+    // person holding the phone is the person who can fix it, and making them
+    // go and find the server console for every 500 is a slow way to debug a
+    // client that runs somewhere else. Production says nothing, because an
+    // internal message is a map of the server drawn for whoever asked.
+    if (process.env.NODE_ENV !== 'production') {
+      return apiError(
+        500,
+        'server_error',
+        err instanceof Error ? err.message : 'Something went wrong. Try again.'
+      )
+    }
     return apiError(500, 'server_error', 'Something went wrong. Try again.')
   }
 }
