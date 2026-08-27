@@ -18,19 +18,34 @@ const isProduction = baseURL?.startsWith('https://')
  * sends no Origin header, so it needs nothing added here.
  *
  * Development also trusts the Expo dev server, which serves the technician app
- * in a browser on its own port. Without this, signing in from Expo web is
- * refused as a cross-origin request and the app reports bad credentials for
- * what is actually a CSRF check doing its job.
+ * in a browser. Without this, signing in from Expo web is refused with
+ * "Invalid origin" and the app looks like it rejected the password, when what
+ * actually happened is a CSRF check doing its job.
+ *
+ * Wildcarded on the port rather than pinned, because Expo walks up from 8081
+ * whenever a port is busy and a pinned list goes stale the first time two dev
+ * servers overlap. Better Auth matches these as glob patterns.
  */
-const EXPO_DEV_PORTS = [8081, 8082, 8083, 8084]
 const EXPO_DEV_ORIGINS = [
-  // Expo walks up from 8081 when a port is busy, so a fixed one goes stale the
-  // first time two dev servers overlap. Cheaper to trust the small range than
-  // to debug a sign-in that fails only after a port bump.
-  ...EXPO_DEV_PORTS.flatMap((port) => [`http://localhost:${port}`, `http://127.0.0.1:${port}`]),
-  // The LAN address a phone or a second machine reaches the dev server on.
+  'http://localhost:*',
+  'http://127.0.0.1:*',
+  // Expo also serves on the machine's LAN address, which is the same host the
+  // workshop is reached on during development. Derived rather than hardcoded
+  // so this keeps working on a different network.
+  ...devLanOrigin(),
   ...(process.env.EXPO_DEV_ORIGIN ? [process.env.EXPO_DEV_ORIGIN] : []),
 ]
+
+function devLanOrigin(): string[] {
+  if (!baseURL) return []
+  try {
+    const { hostname } = new URL(baseURL)
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return []
+    return [`http://${hostname}:*`]
+  } catch {
+    return []
+  }
+}
 
 const trustedOrigins = [
   ...(baseURL ? [baseURL] : []),
