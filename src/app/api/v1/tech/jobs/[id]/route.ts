@@ -54,7 +54,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             orderBy: { id: 'asc' },
           },
           attachments: {
-            select: { id: true, category: true, fileUrl: true, fileName: true, fileType: true, createdAt: true },
+            select: {
+              id: true,
+              category: true,
+              fileUrl: true,
+              fileName: true,
+              fileType: true,
+              createdAt: true,
+            },
             orderBy: { createdAt: 'desc' },
             take: 30,
           },

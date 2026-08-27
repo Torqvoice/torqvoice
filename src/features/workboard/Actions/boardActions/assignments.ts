@@ -5,6 +5,7 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { notificationBus } from '@/lib/notification-bus'
+import { pushToTechnician } from '@/features/notifications/Lib/pushToTechnician'
 import {
   assignTechnicianSchema,
   moveJobSchema,
@@ -179,6 +180,19 @@ export async function assignTechnician(input: unknown) {
         type: 'job_assigned',
         organizationId,
         job,
+      })
+
+      // Tells the technician's phone. Not awaited: assigning a job succeeded
+      // the moment the row was written, and a push service having a bad minute
+      // must not turn that into an error on the board.
+      void pushToTechnician({
+        organizationId,
+        technicianId: data.technicianId,
+        message: {
+          title: 'New job assigned',
+          body: job.title,
+          data: data.type === 'serviceRecord' ? { jobId: data.id } : {},
+        },
       })
 
       revalidatePath('/work-board')

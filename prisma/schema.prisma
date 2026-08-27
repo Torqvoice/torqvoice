@@ -30,6 +30,7 @@ model User {
 
   sessions               Session[]
   accounts               Account[]
+  pushDevices            PushDevice[]
   vehicles               Vehicle[]
   customers              Customer[]
   settings               AppSetting[]
@@ -858,6 +859,7 @@ model Organization {
   technicians            Technician[]
   workBays               WorkBay[]
   timeEntries            TimeEntry[]
+  pushDevices            PushDevice[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
@@ -1435,6 +1437,48 @@ model TimeEntry {
   /// runs on every launch and every job screen.
   @@index([technicianId, endedAt])
   @@map("time_entries")
+}
+
+/// A phone that has asked to be told about its technician's work.
+///
+/// Keyed on the Expo push token rather than on the user, because the unit that
+/// receives a notification is a device: one technician may carry a personal
+/// phone and a shared bench tablet, and a shared tablet may be signed into by
+/// several people over a week. Both cases have to work.
+///
+/// The token is a routing address, not a secret, but it is still deleted on
+/// sign-out: a device that has signed out must stop receiving a workshop's job
+/// details, and expiry alone would leave a window where it still did.
+model PushDevice {
+  id String @id @default(cuid())
+
+  /// Expo push token, unique across the estate. A reinstall issues a new one
+  /// and the old becomes invalid, which is why sends prune on rejection.
+  token String @unique
+
+  /// "ios" | "android". Only used to explain failures in logs.
+  platform String
+
+  /// Set false when Expo reports the token as dead, rather than deleting, so
+  /// a flapping device does not churn rows.
+  isActive Boolean @default(true)
+
+  /// Last time the app confirmed this token still belongs to this user, so a
+  /// device that stops checking in can be aged out.
+  lastSeenAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isActive])
+  @@index([organizationId])
+  @@map("push_devices")
 }
 
 /// A physical place work happens: a lift, a wash bay, an alignment rack. Shops
