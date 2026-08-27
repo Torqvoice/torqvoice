@@ -59,11 +59,20 @@ export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessag
       // string. A URL is written to proxy and server logs in full, so a token
       // there ends up on disk in half a dozen places nobody is guarding.
       const offered = request.headers['sec-websocket-protocol']
-      const token = (Array.isArray(offered) ? offered.join(',') : (offered ?? ''))
+      const encoded = (Array.isArray(offered) ? offered.join(',') : (offered ?? ''))
         .split(',')
         .map((p) => p.trim())
         .find((p) => p.startsWith('bearer.'))
         ?.slice('bearer.'.length)
+
+      // Hex, because a subprotocol name may only use RFC 7230 token
+      // characters and a session token is base64: its '=' padding and any '/'
+      // are illegal there, and a browser refuses the connection outright
+      // rather than complaining about one character.
+      const token =
+        encoded && /^[0-9a-f]+$/i.test(encoded) && encoded.length % 2 === 0
+          ? Buffer.from(encoded, 'hex').toString('utf8')
+          : undefined
 
       if (!token) {
         ws.close(4001, 'No token')
