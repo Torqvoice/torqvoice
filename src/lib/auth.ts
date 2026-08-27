@@ -11,10 +11,33 @@ import { isDemoMode } from './demo'
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
 const isProduction = baseURL?.startsWith('https://')
 
+/**
+ * Origins allowed to sign in.
+ *
+ * Production trusts only the app's own URL. The technician app is native and
+ * sends no Origin header, so it needs nothing added here.
+ *
+ * Development also trusts the Expo dev server, which serves the technician app
+ * in a browser on its own port. Without this, signing in from Expo web is
+ * refused as a cross-origin request and the app reports bad credentials for
+ * what is actually a CSRF check doing its job.
+ */
+const EXPO_DEV_ORIGINS = [
+  'http://localhost:8081',
+  'http://127.0.0.1:8081',
+  // The LAN address a phone or a second machine reaches the dev server on.
+  ...(process.env.EXPO_DEV_ORIGIN ? [process.env.EXPO_DEV_ORIGIN] : []),
+]
+
+const trustedOrigins = [
+  ...(baseURL ? [baseURL] : []),
+  ...(process.env.NODE_ENV === 'production' ? [] : EXPO_DEV_ORIGINS),
+]
+
 export const auth = betterAuth({
   baseURL,
   basePath: '/api/public/auth',
-  trustedOrigins: baseURL ? [baseURL] : [],
+  trustedOrigins,
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),
