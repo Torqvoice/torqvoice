@@ -189,8 +189,12 @@ export async function assignTechnician(input: unknown) {
         organizationId,
         technicianId: data.technicianId,
         message: {
-          title: 'New job assigned',
-          body: job.title,
+          title: 'New job assignment',
+          // Plate and job together, matching the running-clock notification.
+          // A plate says which car without saying what to do to it; a title
+          // says the opposite. On a lock screen the technician gets one look.
+          body: [job.vehicle?.licensePlate?.trim(), job.title].filter(Boolean).join(' · '),
+          // Read by the app to open the job rather than just the job list.
           data: data.type === 'serviceRecord' ? { jobId: data.id } : {},
         },
       })
