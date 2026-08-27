@@ -22,9 +22,12 @@ const isProduction = baseURL?.startsWith('https://')
  * refused as a cross-origin request and the app reports bad credentials for
  * what is actually a CSRF check doing its job.
  */
+const EXPO_DEV_PORTS = [8081, 8082, 8083, 8084]
 const EXPO_DEV_ORIGINS = [
-  'http://localhost:8081',
-  'http://127.0.0.1:8081',
+  // Expo walks up from 8081 when a port is busy, so a fixed one goes stale the
+  // first time two dev servers overlap. Cheaper to trust the small range than
+  // to debug a sign-in that fails only after a port bump.
+  ...EXPO_DEV_PORTS.flatMap((port) => [`http://localhost:${port}`, `http://127.0.0.1:${port}`]),
   // The LAN address a phone or a second machine reaches the dev server on.
   ...(process.env.EXPO_DEV_ORIGIN ? [process.env.EXPO_DEV_ORIGIN] : []),
 ]
