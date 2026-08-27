@@ -2,6 +2,7 @@ import { passkey } from '@better-auth/passkey'
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
+import { bearer } from 'better-auth/plugins/bearer'
 import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
@@ -133,7 +134,7 @@ export const auth = betterAuth({
       // Cloudflare (cf-connecting-ip); staging and self-hosted installs hit
       // nginx directly, which sets x-real-ip. Without this, Better Auth falls
       // back to one shared rate-limit bucket for the entire userbase.
-      ipAddressHeaders: ["cf-connecting-ip", "x-real-ip"],
+      ipAddressHeaders: ['cf-connecting-ip', 'x-real-ip'],
     },
   },
   databaseHooks: {
@@ -155,10 +156,12 @@ export const auth = betterAuth({
             {
               action: 'auth.login',
               message: 'User logged in',
-              ip: (session as Record<string, unknown>).ipAddress as string ?? null,
-              userAgent: (session as Record<string, unknown>).userAgent as string ?? null,
-            },
-          ).catch(() => { /* best-effort */ })
+              ip: ((session as Record<string, unknown>).ipAddress as string) ?? null,
+              userAgent: ((session as Record<string, unknown>).userAgent as string) ?? null,
+            }
+          ).catch(() => {
+            /* best-effort */
+          })
         },
       },
     },
@@ -200,12 +203,16 @@ export const auth = betterAuth({
               data: { termsAcceptedAt: new Date() },
             })
           }
-
         },
       },
     },
   },
   plugins: [
+    // Lets the technician app authenticate with `Authorization: Bearer <token>`
+    // instead of a cookie. Session lookup, expiry and revocation stay inside
+    // Better Auth rather than being reimplemented against the session table,
+    // so signing out on the web really does kill the phone's session too.
+    bearer(),
     twoFactor({ issuer: 'Torqvoice' }),
     passkey({
       rpID: baseURL ? new URL(baseURL).hostname : 'localhost',
