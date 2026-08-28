@@ -1454,7 +1454,7 @@
       "readMore": "Mehr erfahren"
     },
     "technicianStatus": {
-      "title": "Techniker-App",
+      "title": "Torqvoice Techniker-App (Android/iOS)",
       "description": "Meldung, wenn ein Techniker einen Auftrag über sein Telefon ändert.",
       "inApp": "Büro benachrichtigen",
       "inAppHint": "Eine Meldung, wenn ein Auftrag abgeschlossen, auf Teile gesetzt oder wieder aufgenommen wird."

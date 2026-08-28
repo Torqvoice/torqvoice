@@ -1454,7 +1454,7 @@
       "readMore": "Saiba mais"
     },
     "technicianStatus": {
-      "title": "Aplicativo do técnico",
+      "title": "Aplicativo do técnico Torqvoice (Android/iOS)",
       "description": "Aviso quando um técnico altera um serviço pelo telefone.",
       "inApp": "Avisar a recepção",
       "inAppHint": "Um aviso quando um serviço é concluído, fica aguardando peças ou é retomado."

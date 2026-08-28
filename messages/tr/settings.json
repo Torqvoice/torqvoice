@@ -1454,7 +1454,7 @@
       "readMore": "Devamını oku"
     },
     "technicianStatus": {
-      "title": "Teknisyen uygulaması",
+      "title": "Torqvoice Teknisyen Uygulaması (Android/iOS)",
       "description": "Bir teknisyen işi telefonundan değiştirdiğinde bildirim.",
       "inApp": "Ofisi bilgilendir",
       "inAppHint": "Bir iş tamamlandığında, parça beklemeye alındığında veya yeniden başlatıldığında bildirim."

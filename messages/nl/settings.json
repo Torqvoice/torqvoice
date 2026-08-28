@@ -1454,7 +1454,7 @@
       "readMore": "Lees meer"
     },
     "technicianStatus": {
-      "title": "Monteurs-app",
+      "title": "Torqvoice monteurs-app (Android/iOS)",
       "description": "Melding wanneer een monteur een opdracht wijzigt vanaf de telefoon.",
       "inApp": "Balie waarschuwen",
       "inAppHint": "Een melding wanneer een opdracht klaar is, op onderdelen wacht of weer wordt opgepakt."
