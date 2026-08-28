@@ -1452,6 +1452,12 @@
       "checkFailed": "Controllo non riuscito",
       "configurePerPart": "Imposta la Qtà min di un ricambio nella pagina magazzino →",
       "readMore": "Scopri di più"
+    },
+    "technicianStatus": {
+      "title": "App tecnico",
+      "description": "Avviso quando un tecnico modifica un lavoro dal telefono.",
+      "inApp": "Avvisa l'accettazione",
+      "inAppHint": "Un avviso quando un lavoro è finito, in attesa di ricambi o ripreso."
     }
   },
   "support": {

@@ -1452,6 +1452,12 @@
       "checkFailed": "Error al comprobar",
       "configurePerPart": "Defina la cantidad mínima de una pieza en la página de inventario →",
       "readMore": "Leer más"
+    },
+    "technicianStatus": {
+      "title": "Aplicación de técnico",
+      "description": "Aviso cuando un técnico cambia un trabajo desde su teléfono.",
+      "inApp": "Avisar a recepción",
+      "inAppHint": "Un aviso cuando un trabajo se termina, queda a la espera de piezas o se retoma."
     }
   },
   "support": {

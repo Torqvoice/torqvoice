@@ -69,6 +69,15 @@ export const SETTING_KEYS = {
   /// Unit of measure pre-filled on newly created inventory parts ("pcs",
   /// "l", "qt"...). Empty means new parts start with no unit.
   INVENTORY_DEFAULT_UNIT: 'inventory.defaultUnit',
+  /**
+   * Whether the desk is told when a technician moves a job from the app.
+   *
+   * On by default: the point of the technician app is that the office stops
+   * having to walk into the bay and ask, and a notification nobody switched on
+   * does not achieve that. A shop that finds it noisy can turn it off.
+   */
+  TECHNICIAN_STATUS_ALERTS: 'workshop.technicianStatusAlerts.inApp',
+
   LOW_STOCK_ALERTS_ENABLED: 'inventory.lowStockAlerts.enabled',
   /// Org-wide fallback reorder point, applied to parts with no minQuantity of
   /// their own. 0 means only explicitly configured parts are watched.

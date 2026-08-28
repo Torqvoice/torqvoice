@@ -1452,6 +1452,12 @@
       "checkFailed": "Patikra nepavyko",
       "configurePerPart": "Nustatykite dalies min. kiekį sandėlio puslapyje →",
       "readMore": "Skaityti daugiau"
+    },
+    "technicianStatus": {
+      "title": "Techniko programėlė",
+      "description": "Pranešimas, kai technikas pakeičia darbą telefone.",
+      "inApp": "Pranešti registratūrai",
+      "inAppHint": "Pranešimas, kai darbas baigtas, laukia dalių arba vėl pradėtas."
     }
   },
   "support": {

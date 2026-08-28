@@ -1452,6 +1452,12 @@
       "checkFailed": "Falha na verificação",
       "configurePerPart": "Defina a Qtd. mín. de uma peça na página de estoque →",
       "readMore": "Saiba mais"
+    },
+    "technicianStatus": {
+      "title": "Aplicativo do técnico",
+      "description": "Aviso quando um técnico altera um serviço pelo telefone.",
+      "inApp": "Avisar a recepção",
+      "inAppHint": "Um aviso quando um serviço é concluído, fica aguardando peças ou é retomado."
     }
   },
   "support": {

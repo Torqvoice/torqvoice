@@ -1452,6 +1452,12 @@
       "checkFailed": "Check failed",
       "configurePerPart": "Set a part's own Min Qty on the inventory page →",
       "readMore": "Read More"
+    },
+    "technicianStatus": {
+      "title": "Technician app",
+      "description": "Told when a technician moves a job from their phone.",
+      "inApp": "Notify the desk",
+      "inAppHint": "A notification when a job is finished, parked for parts, or picked back up."
     }
   },
   "support": {

@@ -1452,6 +1452,12 @@
       "checkFailed": "Kontrol başarısız",
       "configurePerPart": "Bir parçanın min. miktarını stok sayfasında ayarlayın →",
       "readMore": "Devamını oku"
+    },
+    "technicianStatus": {
+      "title": "Teknisyen uygulaması",
+      "description": "Bir teknisyen işi telefonundan değiştirdiğinde bildirim.",
+      "inApp": "Ofisi bilgilendir",
+      "inAppHint": "Bir iş tamamlandığında, parça beklemeye alındığında veya yeniden başlatıldığında bildirim."
     }
   },
   "support": {

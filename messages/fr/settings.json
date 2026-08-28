@@ -1452,6 +1452,12 @@
       "checkFailed": "Échec de la vérification",
       "configurePerPart": "Définir la Qté min d'une pièce sur la page inventaire →",
       "readMore": "En savoir plus"
+    },
+    "technicianStatus": {
+      "title": "Application technicien",
+      "description": "Notification lorsqu'un technicien modifie un travail depuis son téléphone.",
+      "inApp": "Prévenir l'accueil",
+      "inAppHint": "Une notification lorsqu'un travail est terminé, en attente de pièces ou repris."
     }
   },
   "support": {

@@ -1452,6 +1452,12 @@
       "checkFailed": "Controle mislukt",
       "configurePerPart": "Stel het min. aantal van een onderdeel in op de voorraadpagina →",
       "readMore": "Lees meer"
+    },
+    "technicianStatus": {
+      "title": "Monteurs-app",
+      "description": "Melding wanneer een monteur een opdracht wijzigt vanaf de telefoon.",
+      "inApp": "Balie waarschuwen",
+      "inAppHint": "Een melding wanneer een opdracht klaar is, op onderdelen wacht of weer wordt opgepakt."
     }
   },
   "support": {

@@ -1452,6 +1452,12 @@
       "checkFailed": "Sjekken mislyktes",
       "configurePerPart": "Sett delens min. antall på lagersiden →",
       "readMore": "Les mer"
+    },
+    "technicianStatus": {
+      "title": "Teknikerapp",
+      "description": "Varsel når en tekniker endrer en jobb fra telefonen.",
+      "inApp": "Varsle kontoret",
+      "inAppHint": "Et varsel når en jobb er ferdig, venter på deler eller tas opp igjen."
     }
   },
   "support": {

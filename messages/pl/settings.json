@@ -1452,6 +1452,12 @@
       "checkFailed": "Sprawdzenie nie powiodło się",
       "configurePerPart": "Ustaw min. ilość części na stronie magazynu →",
       "readMore": "Czytaj więcej"
+    },
+    "technicianStatus": {
+      "title": "Aplikacja technika",
+      "description": "Powiadomienie, gdy technik zmienia zlecenie z telefonu.",
+      "inApp": "Powiadom biuro",
+      "inAppHint": "Powiadomienie, gdy zlecenie zostanie zakończone, wstrzymane na części lub wznowione."
     }
   },
   "support": {
