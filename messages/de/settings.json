@@ -380,7 +380,7 @@
     "adminLabel": "Administrator",
     "adminDescription": "Kann Mitglieder einladen/entfernen und gemeinsame Daten verwalten.",
     "memberLabel": "Mitglied",
-    "memberDescription": "Berechtigungen werden durch die zugewiesene benutzerdefinierte Rolle bestimmt. Ohne benutzerdefinierte Rolle nur Lesezugriff.",
+    "memberDescription": "Die Rechte ergeben sich aus der zugewiesenen Rolle. Ohne Rolle kann dieses Mitglied nichts tun.",
     "roleAssigned": "Rolle aktualisiert",
     "failedAssignRole": "Rolle konnte nicht aktualisiert werden",
     "removeMemberTitle": "Mitglied entfernen",

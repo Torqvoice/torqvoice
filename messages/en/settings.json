@@ -380,7 +380,7 @@
     "adminLabel": "Admin",
     "adminDescription": "Can invite/remove members and manage shared data.",
     "memberLabel": "Member",
-    "memberDescription": "Permissions determined by assigned custom role. No custom role means read-only access.",
+    "memberDescription": "Permissions are set by the assigned role. Without a role, this member cannot do anything.",
     "roleAssigned": "Role updated",
     "failedAssignRole": "Failed to update role",
     "removeMemberTitle": "Remove Member",

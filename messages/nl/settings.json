@@ -380,7 +380,7 @@
     "adminLabel": "Beheerder",
     "adminDescription": "Kan leden uitnodigen/verwijderen en gedeelde gegevens beheren.",
     "memberLabel": "Lid",
-    "memberDescription": "Machtigingen bepaald door toegewezen aangepaste rol. Geen aangepaste rol betekent alleen-lezen toegang.",
+    "memberDescription": "Rechten volgen uit de toegewezen rol. Zonder rol kan dit lid niets doen.",
     "roleAssigned": "Rol bijgewerkt",
     "failedAssignRole": "Rol bijwerken mislukt",
     "removeMemberTitle": "Lid verwijderen",

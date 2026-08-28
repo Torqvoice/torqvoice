@@ -380,7 +380,7 @@
     "adminLabel": "Administratorius",
     "adminDescription": "Gali kviesti/šalinti narius ir valdyti bendrinamus duomenis.",
     "memberLabel": "Narys",
-    "memberDescription": "Leidimai nustatomi pagal priskirtą pasirinktinę rolę. Be pasirinktinės rolės — tik skaitymo prieiga.",
+    "memberDescription": "Teisės priklauso nuo priskirto vaidmens. Be vaidmens šis narys nieko negali daryti.",
     "roleAssigned": "Rolė atnaujinta",
     "failedAssignRole": "Nepavyko atnaujinti rolės",
     "removeMemberTitle": "Pašalinti narį",

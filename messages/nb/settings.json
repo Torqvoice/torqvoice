@@ -380,7 +380,7 @@
     "adminLabel": "Administrator",
     "adminDescription": "Kan invitere/fjerne medlemmer og administrere delte data.",
     "memberLabel": "Medlem",
-    "memberDescription": "Tillatelser bestemt av tildelt egendefinert rolle. Ingen egendefinert rolle betyr kun lesetilgang.",
+    "memberDescription": "Rettigheter følger av tildelt rolle. Uten rolle kan dette medlemmet ikke gjøre noe.",
     "roleAssigned": "Rolle oppdatert",
     "failedAssignRole": "Kunne ikke oppdatere rolle",
     "removeMemberTitle": "Fjern medlem",

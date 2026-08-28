@@ -380,7 +380,7 @@
     "adminLabel": "Administrador",
     "adminDescription": "Puede invitar/eliminar miembros y gestionar datos compartidos.",
     "memberLabel": "Miembro",
-    "memberDescription": "Permisos determinados por el rol personalizado asignado. Sin rol personalizado significa acceso de solo lectura.",
+    "memberDescription": "Los permisos dependen del rol asignado. Sin rol, este miembro no puede hacer nada.",
     "roleAssigned": "Rol actualizado",
     "failedAssignRole": "Error al actualizar el rol",
     "removeMemberTitle": "Eliminar miembro",

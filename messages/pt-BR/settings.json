@@ -380,7 +380,7 @@
     "adminLabel": "Administrador",
     "adminDescription": "Pode convidar/remover membros e gerenciar dados compartilhados.",
     "memberLabel": "Membro",
-    "memberDescription": "Permissoes determinadas pela função personalizada atribuída. Sem função personalizada significa acesso somente leitura.",
+    "memberDescription": "As permissões vêm da função atribuída. Sem função, este membro não pode fazer nada.",
     "roleAssigned": "Função atualizada",
     "failedAssignRole": "Falha ao atualizar a função",
     "removeMemberTitle": "Remover membro",

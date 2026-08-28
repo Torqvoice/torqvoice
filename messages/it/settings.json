@@ -380,7 +380,7 @@
     "adminLabel": "Amministratore",
     "adminDescription": "Puo invitare/rimuovere membri e gestire i dati condivisi.",
     "memberLabel": "Membro",
-    "memberDescription": "Autorizzazioni determinate dal ruolo personalizzato assegnato. Senza ruolo personalizzato, accesso in sola lettura.",
+    "memberDescription": "I permessi dipendono dal ruolo assegnato. Senza ruolo, questo membro non può fare nulla.",
     "roleAssigned": "Ruolo aggiornato",
     "failedAssignRole": "Aggiornamento ruolo non riuscito",
     "removeMemberTitle": "Rimuovi membro",

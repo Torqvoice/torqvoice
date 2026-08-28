@@ -380,7 +380,7 @@
     "adminLabel": "Administrateur",
     "adminDescription": "Peut inviter/supprimer des membres et gérer les données partagées.",
     "memberLabel": "Membre",
-    "memberDescription": "Permissions determinees par le role personnalise assigne. Sans role personnalise, accès en lecture seule.",
+    "memberDescription": "Les droits découlent du rôle attribué. Sans rôle, ce membre ne peut rien faire.",
     "roleAssigned": "Role mis a jour",
     "failedAssignRole": "Échec de la mise a jour du role",
     "removeMemberTitle": "Retirer le membre",

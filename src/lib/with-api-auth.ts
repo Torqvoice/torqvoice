@@ -149,13 +149,10 @@ export async function withApiAuth(
   const isOwnerOrAdmin = membership.role === 'owner' || membership.role === 'admin'
   const roleIsAdmin = membership.customRole?.isAdmin === true
 
-  // Mirrors `withAuth` exactly, including the part that surprises people: a
-  // member with no custom role assigned is unrestricted. That is the product's
-  // existing meaning of "no role", and the API must not quietly disagree with
-  // the web app about who may do what.
+  // Mirrors `withAuth` exactly, and must continue to: an API that disagrees
+  // with the web app about who may do what is a hole shaped like a client.
   if (!isSuperAdmin && options.requiredPermissions?.length) {
-    const hasNoCustomRole = !membership.roleId
-    if (!isOwnerOrAdmin && !roleIsAdmin && !hasNoCustomRole) {
+    if (!isOwnerOrAdmin && !roleIsAdmin) {
       const granted = membership.customRole?.permissions ?? []
       if (!hasAllPermissions(granted, options.requiredPermissions)) {
         return apiError(403, 'forbidden', 'Your role does not allow this.')

@@ -380,7 +380,7 @@
     "adminLabel": "Yönetici",
     "adminDescription": "Üye davet edebilir/kaldırabilir ve paylaşılan verileri yönetebilir.",
     "memberLabel": "Üye",
-    "memberDescription": "İzinler atanan özel role göre belirlenir. Özel rol atanmamışsa salt okunur erişim.",
+    "memberDescription": "Yetkiler atanan role göre belirlenir. Rol atanmazsa bu üye hiçbir şey yapamaz.",
     "roleAssigned": "Rol güncellendi",
     "failedAssignRole": "Rol güncellenemedi",
     "removeMemberTitle": "Üyeyi Kaldır",

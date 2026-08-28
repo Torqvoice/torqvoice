@@ -380,7 +380,7 @@
     "adminLabel": "Administrator",
     "adminDescription": "Może zapraszac/usuwac czlonkow i zarządzać wspoldzielonymi danymi.",
     "memberLabel": "Czlonek",
-    "memberDescription": "Uprawnienia okreslone przez przypisana role niestandardowa. Brak roli niestandardowej oznacza dostęp tylko do odczytu.",
+    "memberDescription": "Uprawnienia wynikają z przypisanej roli. Bez roli ten członek nie może nic zrobić.",
     "roleAssigned": "Rola zaktualizowana",
     "failedAssignRole": "Nie udało się zaktualizować roli",
     "removeMemberTitle": "Usuń członka",

@@ -78,10 +78,19 @@ export async function withAuth<T>(
 
     // Check permissions if required (super admins bypass all permission checks)
     if (!isSuperAdmin && options.requiredPermissions && options.requiredPermissions.length > 0) {
-      // Members without a custom role have full access (no restrictions)
-      const hasNoCustomRole = !membership?.roleId
-
-      if (!isOwnerOrAdmin && !roleIsAdmin && !hasNoCustomRole) {
+      // A member with no role has no permissions.
+      //
+      // This used to skip the check entirely, which made such an account
+      // unrestricted while the settings screen told admins the opposite:
+      // "No custom role means read-only access." Anyone added as a Member and
+      // never given a role therefore had full access to billing, settings and
+      // the team, and nothing on screen said so.
+      //
+      // scripts/backfill-member-roles.ts must run before this ships. It gives
+      // every existing roleless member an explicit role recording what they
+      // already have, so nobody is locked out by this change and an admin can
+      // see what they are granting before narrowing it.
+      if (!isOwnerOrAdmin && !roleIsAdmin) {
         const userPermissions = membership?.customRole?.permissions ?? []
         if (!hasAllPermissions(userPermissions, options.requiredPermissions)) {
           // Log failed permission attempt
