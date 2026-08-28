@@ -1457,7 +1457,10 @@
       "title": "Torqvoice teknikerapp (Android/iOS)",
       "description": "Varsel når en tekniker endrer en jobb fra telefonen.",
       "inApp": "Varsle kontoret",
-      "inAppHint": "Et varsel når en jobb er ferdig, venter på deler eller tas opp igjen."
+      "inAppHint": "Et varsel når en jobb er ferdig, venter på deler eller tas opp igjen.",
+      "save": "Lagre",
+      "saved": "Varselinnstillinger lagret",
+      "saveFailed": "Kunne ikke lagre innstillingene"
     }
   },
   "support": {

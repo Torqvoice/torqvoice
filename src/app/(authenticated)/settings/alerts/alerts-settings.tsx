@@ -48,21 +48,21 @@ export function AlertsSettings({ settings }: { settings: Record<string, string> 
 
 function TechnicianStatusAlerts({ settings }: { settings: Record<string, string> }) {
   const t = useTranslations('settings')
+  const [saving, setSaving] = useState(false)
   const [enabled, setEnabled] = useState(
     // Absent means on. A shop that has never opened this page should still be
     // told when a technician moves a job; opting out has to be deliberate.
     settings[SETTING_KEYS.TECHNICIAN_STATUS_ALERTS] !== 'false'
   )
-  const [saving, setSaving] = useState(false)
 
-  async function save() {
+  async function handleSave() {
     setSaving(true)
     const result = await setSettings({
       [SETTING_KEYS.TECHNICIAN_STATUS_ALERTS]: enabled ? 'true' : 'false',
     })
     setSaving(false)
-    if (result.success) toast.success(t('alerts.saved'))
-    else toast.error(result.error || t('alerts.saveFailed'))
+    if (result.success) toast.success(t('alerts.technicianStatus.saved'))
+    else toast.error(result.error || t('alerts.technicianStatus.saveFailed'))
   }
 
   return (
@@ -81,9 +81,18 @@ function TechnicianStatusAlerts({ settings }: { settings: Record<string, string>
         <Switch id="technicianStatus" checked={enabled} onCheckedChange={setEnabled} />
       </div>
 
-      <Button onClick={save} disabled={saving}>
-        {saving ? t('alerts.saving') : t('alerts.save')}
-      </Button>
+      {/* Hides the button entirely for a member who may not edit settings,
+          the same as every other card here. */}
+      <SaveButton>
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-2 h-4 w-4" />
+          )}
+          {t('alerts.technicianStatus.save')}
+        </Button>
+      </SaveButton>
     </AppCard>
   )
 }

@@ -1457,7 +1457,10 @@
       "title": "Aplicativo do técnico Torqvoice (Android/iOS)",
       "description": "Aviso quando um técnico altera um serviço pelo telefone.",
       "inApp": "Avisar a recepção",
-      "inAppHint": "Um aviso quando um serviço é concluído, fica aguardando peças ou é retomado."
+      "inAppHint": "Um aviso quando um serviço é concluído, fica aguardando peças ou é retomado.",
+      "save": "Salvar",
+      "saved": "Configurações de aviso salvas",
+      "saveFailed": "Não foi possível salvar as configurações"
     }
   },
   "support": {

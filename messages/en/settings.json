@@ -1457,7 +1457,10 @@
       "title": "Torqvoice Technician App (Android/iOS)",
       "description": "Told when a technician moves a job from their phone.",
       "inApp": "Notify the desk",
-      "inAppHint": "A notification when a job is finished, parked for parts, or picked back up."
+      "inAppHint": "A notification when a job is finished, parked for parts, or picked back up.",
+      "save": "Save",
+      "saved": "Alert settings saved",
+      "saveFailed": "Could not save the settings"
     }
   },
   "support": {

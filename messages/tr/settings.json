@@ -1457,7 +1457,10 @@
       "title": "Torqvoice Teknisyen Uygulaması (Android/iOS)",
       "description": "Bir teknisyen işi telefonundan değiştirdiğinde bildirim.",
       "inApp": "Ofisi bilgilendir",
-      "inAppHint": "Bir iş tamamlandığında, parça beklemeye alındığında veya yeniden başlatıldığında bildirim."
+      "inAppHint": "Bir iş tamamlandığında, parça beklemeye alındığında veya yeniden başlatıldığında bildirim.",
+      "save": "Kaydet",
+      "saved": "Bildirim ayarları kaydedildi",
+      "saveFailed": "Ayarlar kaydedilemedi"
     }
   },
   "support": {

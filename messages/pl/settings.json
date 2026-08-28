@@ -1457,7 +1457,10 @@
       "title": "Aplikacja technika Torqvoice (Android/iOS)",
       "description": "Powiadomienie, gdy technik zmienia zlecenie z telefonu.",
       "inApp": "Powiadom biuro",
-      "inAppHint": "Powiadomienie, gdy zlecenie zostanie zakończone, wstrzymane na części lub wznowione."
+      "inAppHint": "Powiadomienie, gdy zlecenie zostanie zakończone, wstrzymane na części lub wznowione.",
+      "save": "Zapisz",
+      "saved": "Ustawienia powiadomień zapisane",
+      "saveFailed": "Nie udało się zapisać ustawień"
     }
   },
   "support": {

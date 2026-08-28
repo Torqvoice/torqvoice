@@ -1457,7 +1457,10 @@
       "title": "Torqvoice techniko programėlė (Android/iOS)",
       "description": "Pranešimas, kai technikas pakeičia darbą telefone.",
       "inApp": "Pranešti registratūrai",
-      "inAppHint": "Pranešimas, kai darbas baigtas, laukia dalių arba vėl pradėtas."
+      "inAppHint": "Pranešimas, kai darbas baigtas, laukia dalių arba vėl pradėtas.",
+      "save": "Išsaugoti",
+      "saved": "Pranešimų nustatymai išsaugoti",
+      "saveFailed": "Nepavyko išsaugoti nustatymų"
     }
   },
   "support": {

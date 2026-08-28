@@ -1457,7 +1457,10 @@
       "title": "Aplicación de técnico Torqvoice (Android/iOS)",
       "description": "Aviso cuando un técnico cambia un trabajo desde su teléfono.",
       "inApp": "Avisar a recepción",
-      "inAppHint": "Un aviso cuando un trabajo se termina, queda a la espera de piezas o se retoma."
+      "inAppHint": "Un aviso cuando un trabajo se termina, queda a la espera de piezas o se retoma.",
+      "save": "Guardar",
+      "saved": "Ajustes de avisos guardados",
+      "saveFailed": "No se pudieron guardar los ajustes"
     }
   },
   "support": {
