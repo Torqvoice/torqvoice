@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { apiOk, withApiAuth } from '@/lib/with-api-auth'
-import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
+import { getOpenEntry, loggedMinutes } from '@/features/time-tracking/Lib/timeEntries'
 import { MIN_APP_VERSION } from '@/lib/tech-app-version'
 
 /**
@@ -32,6 +32,9 @@ export async function GET(request: Request) {
       ])
 
       const openEntry = await getOpenEntry(ctx.organizationId, ctx.technicianIds)
+      // What the job had banked before this stretch, so the running bar counts
+      // from the same place the job screen does.
+      const banked = openEntry ? await loggedMinutes(openEntry.serviceRecordId) : 0
 
       return apiOk({
         // Repeated from /health because that one is only read at setup, and a
@@ -48,6 +51,7 @@ export async function GET(request: Request) {
               startedAt: openEntry.startedAt,
               serviceRecordId: openEntry.serviceRecordId,
               jobTitle: openEntry.serviceRecord.title,
+              loggedMinutes: banked,
             }
           : null,
       })

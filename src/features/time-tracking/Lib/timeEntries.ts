@@ -48,6 +48,21 @@ export async function getOpenEntry(organizationId: string, technicianIds: string
 }
 
 /**
+ * Minutes already banked on a job, not counting a stretch still running.
+ *
+ * The clock has to continue from this rather than restart at zero: a
+ * technician who stops for a part and starts again has not un-worked the first
+ * twenty minutes, and a display that says otherwise reads as having lost them.
+ */
+export async function loggedMinutes(serviceRecordId: string): Promise<number> {
+  const result = await db.timeEntry.aggregate({
+    where: { serviceRecordId },
+    _sum: { durationMinutes: true },
+  })
+  return result._sum.durationMinutes ?? 0
+}
+
+/**
  * Start the clock on a job.
  *
  * One open entry per person, enforced here rather than in the schema: a
