@@ -18,7 +18,12 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
  * network boundary, where a modified client could change it.
  */
 const bodySchema = z.object({
-  description: z.string().min(1).max(500),
+  /**
+   * Optional, because forcing a technician to describe work the job already
+   * names is a keyboard between them and clocking off. Falls back to the job's
+   * own title below, so the line still reads as something on an invoice.
+   */
+  description: z.string().max(500).optional(),
   hours: z.number().positive().max(1000),
 })
 
@@ -37,6 +42,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         },
         select: {
           id: true,
+          title: true,
           taxRate: true,
           taxInclusive: true,
           discountType: true,
@@ -57,7 +63,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       const line = await db.$transaction(async (tx) => {
         const created = await tx.serviceLabor.create({
           data: {
-            description,
+            description: description?.trim() || job.title,
             hours,
             rate: safeRate,
             total: roundMoney(safeRate * hours),
