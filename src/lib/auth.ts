@@ -171,11 +171,16 @@ export const auth = betterAuth({
   advanced: {
     useSecureCookies: isProduction,
     ipAddress: {
-      // Client IP for per-user rate limiting. Cloud traffic arrives through
-      // Cloudflare (cf-connecting-ip); staging and self-hosted installs hit
-      // nginx directly, which sets x-real-ip. Without this, Better Auth falls
-      // back to one shared rate-limit bucket for the entire userbase.
-      ipAddressHeaders: ['cf-connecting-ip', 'x-real-ip'],
+      // Only headers a proxy we control has overwritten. The proxy sets
+      // x-real-ip from the real connection; cf-connecting-ip is whatever the
+      // caller typed unless Cloudflare genuinely fronts every request, which
+      // it does not while production runs grey-clouded. Trusting it let a
+      // caller change one digit and become a different person to every
+      // per-address limit in the product. See lib/rate-limit.ts.
+      ipAddressHeaders:
+        process.env.TRUST_CF_CONNECTING_IP === 'true'
+          ? ['cf-connecting-ip', 'x-real-ip']
+          : ['x-real-ip'],
     },
   },
   databaseHooks: {

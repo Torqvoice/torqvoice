@@ -8,6 +8,43 @@ interface RateLimitEntry {
 
 const store = new Map<string, RateLimitEntry>()
 
+/**
+ * Whether Cloudflare is actually in front of this deployment.
+ *
+ * `cf-connecting-ip` is only worth anything when every request provably
+ * arrives through Cloudflare. Production runs grey-clouded, and the proxy in
+ * front of it (nginxproxy/nginx-proxy) sets `X-Real-IP` but has no reason to
+ * strip a header from a CDN it is not behind. So the header arrives exactly as
+ * the client wrote it, and trusting it let anyone mint a fresh rate-limit
+ * budget per request simply by changing a digit.
+ *
+ * Off unless someone says otherwise, because the failure of guessing wrong in
+ * this direction is silent and total.
+ */
+const TRUST_CLOUDFLARE = process.env.TRUST_CF_CONNECTING_IP === 'true'
+
+/**
+ * Who to hold responsible for a request.
+ *
+ * Only headers a hop we control has overwritten. `X-Real-IP` is set by the
+ * proxy from the real connection and a client cannot influence it.
+ * `X-Forwarded-For` is appended to rather than replaced, so the entry the
+ * proxy added is the last one and everything before it is whatever the caller
+ * felt like typing.
+ */
+function clientAddress(request: Request): string {
+  if (TRUST_CLOUDFLARE) {
+    const cf = request.headers.get('cf-connecting-ip')?.trim()
+    if (cf) return cf
+  }
+
+  const real = request.headers.get('x-real-ip')?.trim()
+  if (real) return real
+
+  const chain = request.headers.get('x-forwarded-for')?.split(',') ?? []
+  return chain[chain.length - 1]?.trim() || 'unknown'
+}
+
 // Clean up expired entries every 5 minutes
 setInterval(
   () => {
@@ -47,16 +84,7 @@ export function rateLimit(
     anonymous?: boolean
   } = {}
 ): NextResponse | null {
-  // cf-connecting-ip is set by Cloudflare and not client-forgeable on proxied
-  // traffic; x-real-ip is set by nginx for direct/staging traffic. The first
-  // entry of x-forwarded-for is client-controlled (proxies append, not
-  // replace), so it is only a last resort.
-  const forwarded = request.headers.get('x-forwarded-for')
-  const ip =
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-real-ip') ||
-    forwarded?.split(',')[0]?.trim() ||
-    'unknown'
+  const ip = clientAddress(request)
   // Prefer the caller's own token over their IP.
   //
   // A workshop is one public address: eight technicians on the shop wifi share
