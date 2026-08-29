@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Изменён статус механика у участника",
     "settings_whatsappUpdated": "Обновлены настройки WhatsApp",
     "settings_whatsappDisconnected": "WhatsApp отключён",
-    "settings_whatsappNumberRegistered": "Зарегистрирован номер WhatsApp"
+    "settings_whatsappNumberRegistered": "Зарегистрирован номер WhatsApp",
+    "team_giveTechnicianTheApp": "Механику с доски выдана учётная запись"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",

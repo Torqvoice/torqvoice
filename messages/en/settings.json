@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "This is all they get, and all they need. They appear on the work board and on jobs, and there is nothing for them to sign into.",
     "boardColour": "Colour on the board",
     "stepStandaloneTitle": "{name} is on the board",
-    "stepStandaloneBody": "You can schedule them and put them on jobs straight away. If they ever need the app, add a mobile number to them from this list."
+    "stepStandaloneBody": "You can schedule them and put them on jobs straight away. If they ever need the app, add a mobile number to them from this list.",
+    "boardOnly": "On the board only",
+    "boardOnlyHint": "Scheduled and put on jobs, but they never sign in. Give them a mobile number when they need the app.",
+    "boardOnlyNoAccount": "No account",
+    "giveApp": "Give them the app",
+    "giveAppTitle": "Give {name} the app",
+    "giveAppBlurb": "A mobile number is all that is missing. They sign in with it from then on.",
+    "giveAppKeepsHistory": "Everything already recorded against them stays where it is.",
+    "giveAppSubmit": "Create their account"
   },
   "invoice": {
     "title": "Invoice & Quotes",

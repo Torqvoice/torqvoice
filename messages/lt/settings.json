@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "Tai viskas, ką jis gauna, ir viskas, ko reikia. Jis matomas lentoje ir darbuose, o prisijungti niekur nereikia.",
     "boardColour": "Spalva lentoje",
     "stepStandaloneTitle": "{name} yra lentoje",
-    "stepStandaloneBody": "Jį galite iškart planuoti ir skirti darbams. Jei kada prireiks programėlės, iš šio sąrašo pridėkite mobiliojo numerį."
+    "stepStandaloneBody": "Jį galite iškart planuoti ir skirti darbams. Jei kada prireiks programėlės, iš šio sąrašo pridėkite mobiliojo numerį.",
+    "boardOnly": "Tik lentoje",
+    "boardOnlyHint": "Juos planuojate ir skiriate darbams, bet jie niekada neprisijungia. Suteikite mobiliojo numerį, kai prireiks programėlės.",
+    "boardOnlyNoAccount": "Nėra paskyros",
+    "giveApp": "Suteikti programėlę",
+    "giveAppTitle": "Suteikti {name} programėlę",
+    "giveAppBlurb": "Trūksta tik mobiliojo numerio. Nuo tada su juo jis ir prisijungs.",
+    "giveAppKeepsHistory": "Viskas, kas jam jau užfiksuota, lieka savo vietoje.",
+    "giveAppSubmit": "Sukurti paskyrą"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

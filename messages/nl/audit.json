@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Gewijzigd of een lid monteur is",
     "settings_whatsappUpdated": "WhatsApp-instellingen bijgewerkt",
     "settings_whatsappDisconnected": "WhatsApp losgekoppeld",
-    "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd"
+    "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd",
+    "team_giveTechnicianTheApp": "Bordmonteur een account gegeven"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

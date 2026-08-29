@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "Mehr braucht es nicht. Die Person erscheint auf dem Board und auf Aufträgen und hat nichts, wo sie sich anmelden müsste.",
     "boardColour": "Farbe auf dem Board",
     "stepStandaloneTitle": "{name} steht auf dem Board",
-    "stepStandaloneBody": "Sie können sie sofort einplanen und Aufträgen zuweisen. Wird die App später gebraucht, ergänzen Sie hier einfach eine Handynummer."
+    "stepStandaloneBody": "Sie können sie sofort einplanen und Aufträgen zuweisen. Wird die App später gebraucht, ergänzen Sie hier einfach eine Handynummer.",
+    "boardOnly": "Nur auf dem Board",
+    "boardOnlyHint": "Werden eingeplant und Aufträgen zugewiesen, melden sich aber nie an. Geben Sie ihnen eine Handynummer, wenn die App gebraucht wird.",
+    "boardOnlyNoAccount": "Kein Konto",
+    "giveApp": "App geben",
+    "giveAppTitle": "{name} die App geben",
+    "giveAppBlurb": "Es fehlt nur eine Handynummer. Damit meldet sich die Person künftig an.",
+    "giveAppKeepsHistory": "Alles, was bereits auf sie gebucht ist, bleibt erhalten.",
+    "giveAppSubmit": "Konto anlegen"
   },
   "invoice": {
     "title": "Rechnungslayout",

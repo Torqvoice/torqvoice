@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Bir üyenin teknisyen olup olmadığı değiştirildi",
     "settings_whatsappUpdated": "WhatsApp ayarları güncellendi",
     "settings_whatsappDisconnected": "WhatsApp bağlantısı kesildi",
-    "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi"
+    "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
+    "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",

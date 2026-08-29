@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Techniker-Status eines Mitglieds geändert",
     "settings_whatsappUpdated": "WhatsApp-Einstellungen aktualisiert",
     "settings_whatsappDisconnected": "WhatsApp getrennt",
-    "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert"
+    "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert",
+    "team_giveTechnicianTheApp": "Board-Techniker ein Konto gegeben"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",

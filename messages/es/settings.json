@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "Es todo lo que recibe y todo lo que necesita. Aparece en el tablero y en los trabajos, y no hay nada donde iniciar sesión.",
     "boardColour": "Color en el tablero",
     "stepStandaloneTitle": "{name} ya está en el tablero",
-    "stepStandaloneBody": "Puede planificarlo y asignarle trabajos de inmediato. Si algún día necesita la aplicación, añádale un móvil desde esta lista."
+    "stepStandaloneBody": "Puede planificarlo y asignarle trabajos de inmediato. Si algún día necesita la aplicación, añádale un móvil desde esta lista.",
+    "boardOnly": "Solo en el tablero",
+    "boardOnlyHint": "Se planifican y se les asignan trabajos, pero nunca entran. Deles un móvil cuando necesiten la aplicación.",
+    "boardOnlyNoAccount": "Sin cuenta",
+    "giveApp": "Darle la aplicación",
+    "giveAppTitle": "Dar la aplicación a {name}",
+    "giveAppBlurb": "Solo falta un número de móvil. Con él entrará a partir de ahora.",
+    "giveAppKeepsHistory": "Todo lo que ya tiene registrado se queda como está.",
+    "giveAppSubmit": "Crear su cuenta"
   },
   "invoice": {
     "title": "Diseño de factura",

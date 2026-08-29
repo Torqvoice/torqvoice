@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "É tudo o que recebe e tudo o que precisa. Aparece no quadro e nos serviços, e não há onde fazer login.",
     "boardColour": "Cor no quadro",
     "stepStandaloneTitle": "{name} está no quadro",
-    "stepStandaloneBody": "Você já pode agendar e colocar essa pessoa em serviços. Se um dia precisar do aplicativo, adicione um celular por esta lista."
+    "stepStandaloneBody": "Você já pode agendar e colocar essa pessoa em serviços. Se um dia precisar do aplicativo, adicione um celular por esta lista.",
+    "boardOnly": "Apenas no quadro",
+    "boardOnlyHint": "São agendados e colocados em serviços, mas nunca entram. Dê um celular a eles quando precisarem do aplicativo.",
+    "boardOnlyNoAccount": "Sem conta",
+    "giveApp": "Dar o aplicativo",
+    "giveAppTitle": "Dar o aplicativo a {name}",
+    "giveAppBlurb": "Só falta um número de celular. É com ele que a pessoa vai entrar daí em diante.",
+    "giveAppKeepsHistory": "Tudo o que já está registrado para essa pessoa continua como está.",
+    "giveAppSubmit": "Criar a conta"
   },
   "invoice": {
     "title": "Layout da fatura",

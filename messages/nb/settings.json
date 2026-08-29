@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "Dette er alt de får, og alt de trenger. De vises på tavlen og på jobber, og har ingenting å logge inn på.",
     "boardColour": "Farge på tavlen",
     "stepStandaloneTitle": "{name} er på tavlen",
-    "stepStandaloneBody": "Du kan planlegge dem og sette dem på jobber med en gang. Trenger de appen senere, legger du til et mobilnummer herfra."
+    "stepStandaloneBody": "Du kan planlegge dem og sette dem på jobber med en gang. Trenger de appen senere, legger du til et mobilnummer herfra.",
+    "boardOnly": "Bare på tavlen",
+    "boardOnlyHint": "Planlegges og settes på jobber, men logger aldri inn. Gi dem et mobilnummer når de trenger appen.",
+    "boardOnlyNoAccount": "Ingen konto",
+    "giveApp": "Gi dem appen",
+    "giveAppTitle": "Gi {name} appen",
+    "giveAppBlurb": "Det eneste som mangler er et mobilnummer. Med det logger de inn fra nå av.",
+    "giveAppKeepsHistory": "Alt som allerede er ført på dem blir stående.",
+    "giveAppSubmit": "Opprett kontoen"
   },
   "invoice": {
     "title": "Faktura og tilbud",

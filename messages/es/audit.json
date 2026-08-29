@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Cambiado si un miembro es técnico",
     "settings_whatsappUpdated": "Ajustes de WhatsApp actualizados",
     "settings_whatsappDisconnected": "WhatsApp desconectado",
-    "settings_whatsappNumberRegistered": "Número de WhatsApp registrado"
+    "settings_whatsappNumberRegistered": "Número de WhatsApp registrado",
+    "team_giveTechnicianTheApp": "Cuenta dada a un técnico solo de tablero"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",

@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Statut de technicien d'un membre modifié",
     "settings_whatsappUpdated": "Paramètres WhatsApp mis à jour",
     "settings_whatsappDisconnected": "WhatsApp déconnecté",
-    "settings_whatsappNumberRegistered": "Numéro WhatsApp enregistré"
+    "settings_whatsappNumberRegistered": "Numéro WhatsApp enregistré",
+    "team_giveTechnicianTheApp": "Compte donné à un technicien du tableau"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",

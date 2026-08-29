@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "To wszystko, co dostaje, i wszystko, czego trzeba. Pojawia się na tablicy i przy zleceniach, i nie ma się gdzie logować.",
     "boardColour": "Kolor na tablicy",
     "stepStandaloneTitle": "{name} jest na tablicy",
-    "stepStandaloneBody": "Możesz go od razu planować i przypisywać do zleceń. Jeśli kiedyś będzie potrzebował aplikacji, dodaj mu tu numer telefonu."
+    "stepStandaloneBody": "Możesz go od razu planować i przypisywać do zleceń. Jeśli kiedyś będzie potrzebował aplikacji, dodaj mu tu numer telefonu.",
+    "boardOnly": "Tylko na tablicy",
+    "boardOnlyHint": "Są planowani i przypisywani do zleceń, ale nigdy się nie logują. Nadaj im numer telefonu, gdy będą potrzebować aplikacji.",
+    "boardOnlyNoAccount": "Brak konta",
+    "giveApp": "Daj aplikację",
+    "giveAppTitle": "Daj {name} aplikację",
+    "giveAppBlurb": "Brakuje tylko numeru telefonu. Od tej pory nim będzie się logować.",
+    "giveAppKeepsHistory": "Wszystko, co już zapisano na tę osobę, zostaje.",
+    "giveAppSubmit": "Utwórz konto"
   },
   "invoice": {
     "title": "Układ faktury",

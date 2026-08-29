@@ -29,6 +29,7 @@ import { assignRole } from '@/features/team/Actions/assignRole'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 import { contactFor, TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
+import { GiveAppDialog } from '@/features/team/Components/GiveAppDialog'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
 
@@ -115,6 +116,7 @@ export function TeamSettings({
   technicianUserIds = [],
   startAdding = false,
   dialCode = '',
+  standaloneTechnicians = [],
   pendingInvitations = [],
 }: {
   organization: Organization | null
@@ -126,6 +128,8 @@ export function TeamSettings({
   startAdding?: boolean
   /** The workshop's country code, empty until somebody has supplied one. */
   dialCode?: string
+  /** On the board, with nobody behind them. */
+  standaloneTechnicians?: { id: string; name: string; color: string }[]
   pendingInvitations?: PendingInvitation[]
 }) {
   const router = useRouter()
@@ -153,6 +157,7 @@ export function TeamSettings({
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
   const [adding, setAdding] = useState(startAdding)
+  const [givingApp, setGivingApp] = useState<{ id: string; name: string } | null>(null)
 
   /**
    * The address the technician's app should connect to.
@@ -495,6 +500,41 @@ export function TeamSettings({
             </div>
           ))}
         </div>
+
+        {/* On the board with nobody behind them.
+            The Add flow creates these, so the page has to show them, or the
+            desk adds somebody and watches them vanish. */}
+        {standaloneTechnicians.length > 0 && (
+          <div className="space-y-2 border-t pt-4">
+            <p className="font-medium text-sm">{t('team.boardOnly')}</p>
+            <p className="text-muted-foreground text-xs">{t('team.boardOnlyHint')}</p>
+            {standaloneTechnicians.map((tech) => (
+              <div key={tech.id} className="flex items-center gap-3 rounded-lg border p-3">
+                <div
+                  className="h-9 w-9 shrink-0 rounded-full"
+                  style={{ backgroundColor: tech.color }}
+                  aria-hidden
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-sm">{tech.name}</p>
+                  <p className="truncate text-muted-foreground text-xs">
+                    {t('team.boardOnlyNoAccount')}
+                  </p>
+                </div>
+                {isAdmin && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setGivingApp({ id: tech.id, name: tech.name })}
+                  >
+                    <Smartphone className="mr-1 h-4 w-4" />
+                    {t('team.giveApp')}
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </AppCard>
 
       {/* Pending Invitations Card */}
@@ -803,6 +843,14 @@ export function TeamSettings({
         workshopUrl={workshopUrl}
         dialCode={dialCode}
         roles={roles}
+        onChanged={() => router.refresh()}
+      />
+
+      <GiveAppDialog
+        technician={givingApp}
+        workshopUrl={workshopUrl}
+        dialCode={dialCode}
+        onClose={() => setGivingApp(null)}
         onChanged={() => router.refresh()}
       />
 

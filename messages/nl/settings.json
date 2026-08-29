@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "Dit is alles wat ze krijgen en alles wat nodig is. Ze verschijnen op het bord en op opdrachten, en er is niets om op in te loggen.",
     "boardColour": "Kleur op het bord",
     "stepStandaloneTitle": "{name} staat op het bord",
-    "stepStandaloneBody": "U kunt hen meteen inplannen en op opdrachten zetten. Hebben ze later de app nodig, voeg dan hier een mobiel nummer toe."
+    "stepStandaloneBody": "U kunt hen meteen inplannen en op opdrachten zetten. Hebben ze later de app nodig, voeg dan hier een mobiel nummer toe.",
+    "boardOnly": "Alleen op het bord",
+    "boardOnlyHint": "Worden ingepland en op opdrachten gezet, maar loggen nooit in. Geef ze een mobiel nummer wanneer ze de app nodig hebben.",
+    "boardOnlyNoAccount": "Geen account",
+    "giveApp": "Geef ze de app",
+    "giveAppTitle": "Geef {name} de app",
+    "giveAppBlurb": "Alleen een mobiel nummer ontbreekt nog. Daarmee logt hij voortaan in.",
+    "giveAppKeepsHistory": "Alles wat al op hen staat blijft staan.",
+    "giveAppSubmit": "Account aanmaken"
   },
   "invoice": {
     "title": "Factuurindeling",

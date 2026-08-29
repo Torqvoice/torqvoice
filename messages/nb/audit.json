@@ -148,7 +148,8 @@
     "team_setMemberTechnician": "Endret om et medlem er tekniker",
     "settings_whatsappUpdated": "Oppdaterte WhatsApp-innstillinger",
     "settings_whatsappDisconnected": "Koblet fra WhatsApp",
-    "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer"
+    "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer",
+    "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

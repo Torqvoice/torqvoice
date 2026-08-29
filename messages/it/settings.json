@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "È tutto ciò che riceve e tutto ciò che serve. Compare sulla lavagna e sui lavori, e non ha nulla in cui accedere.",
     "boardColour": "Colore sulla lavagna",
     "stepStandaloneTitle": "{name} è sulla lavagna",
-    "stepStandaloneBody": "Puoi pianificarlo e assegnargli lavori subito. Se un giorno gli servirà l'app, aggiungi un numero di cellulare da questo elenco."
+    "stepStandaloneBody": "Puoi pianificarlo e assegnargli lavori subito. Se un giorno gli servirà l'app, aggiungi un numero di cellulare da questo elenco.",
+    "boardOnly": "Solo sulla lavagna",
+    "boardOnlyHint": "Vengono pianificati e assegnati ai lavori, ma non accedono mai. Dagli un numero di cellulare quando serviranno l'app.",
+    "boardOnlyNoAccount": "Nessun account",
+    "giveApp": "Dagli l'app",
+    "giveAppTitle": "Dai l'app a {name}",
+    "giveAppBlurb": "Manca solo un numero di cellulare. Da lì in poi accederà con quello.",
+    "giveAppKeepsHistory": "Tutto ciò che è già registrato a suo nome resta dov’è.",
+    "giveAppSubmit": "Crea il suo account"
   },
   "invoice": {
     "title": "Layout fattura",

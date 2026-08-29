@@ -472,7 +472,15 @@
     "standaloneDetailsBlurb": "Aldığı ve ihtiyaç duyduğu tek şey bu. Panoda ve işlerde görünür, giriş yapacağı bir yer yoktur.",
     "boardColour": "Panodaki renk",
     "stepStandaloneTitle": "{name} panoda",
-    "stepStandaloneBody": "Onu hemen planlayabilir ve işlere atayabilirsiniz. İleride uygulamaya ihtiyaç duyarsa, bu listeden bir cep numarası ekleyin."
+    "stepStandaloneBody": "Onu hemen planlayabilir ve işlere atayabilirsiniz. İleride uygulamaya ihtiyaç duyarsa, bu listeden bir cep numarası ekleyin.",
+    "boardOnly": "Sadece panoda",
+    "boardOnlyHint": "Planlanır ve işlere atanır ama hiç giriş yapmazlar. Uygulamaya ihtiyaç duyduklarında bir cep numarası verin.",
+    "boardOnlyNoAccount": "Hesap yok",
+    "giveApp": "Uygulamayı ver",
+    "giveAppTitle": "{name} kişisine uygulamayı ver",
+    "giveAppBlurb": "Eksik olan tek şey bir cep numarası. Bundan sonra onunla giriş yapar.",
+    "giveAppKeepsHistory": "Onun adına kayıtlı olan her şey olduğu gibi kalır.",
+    "giveAppSubmit": "Hesabını oluştur"
   },
   "invoice": {
     "title": "Fatura Düzeni",
