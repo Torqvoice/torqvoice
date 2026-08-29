@@ -86,10 +86,11 @@ export async function withAuth<T>(
       // never given a role therefore had full access to billing, settings and
       // the team, and nothing on screen said so.
       //
-      // scripts/backfill-member-roles.ts must run before this ships. It gives
-      // every existing roleless member an explicit role recording what they
-      // already have, so nobody is locked out by this change and an admin can
-      // see what they are granting before narrowing it.
+      // The 20260829070534_backfill_member_roles migration runs in the same
+      // deploy, before the container serves anything. It gives every existing
+      // roleless member an explicit role recording what they already have, so
+      // nobody is locked out by this change and an admin can see on the team
+      // page what they are granting before narrowing it.
       if (!isOwnerOrAdmin && !roleIsAdmin) {
         const userPermissions = membership?.customRole?.permissions ?? []
         if (!hasAllPermissions(userPermissions, options.requiredPermissions)) {
