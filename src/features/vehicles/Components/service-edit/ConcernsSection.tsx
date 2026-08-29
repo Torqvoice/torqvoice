@@ -52,14 +52,17 @@ export function ConcernsSection({
     onChange()
   }
 
+  // Empty, this is an offer, not a container. Full width it read as a broken
+  // card sitting above the work; sized to its own text it reads as the small
+  // action it is, and costs one line until somebody actually types something.
   if (concerns.length === 0) {
     return (
       <button
         type="button"
         onClick={add}
-        className="flex w-full items-center gap-2 rounded-lg border border-dashed px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:border-solid hover:text-foreground"
+        className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-muted-foreground text-xs transition-colors hover:bg-muted hover:text-foreground"
       >
-        <MessageSquareQuote className="h-4 w-4 shrink-0" />
+        <MessageSquareQuote className="h-3.5 w-3.5 shrink-0" />
         {t('addFirst')}
       </button>
     )
