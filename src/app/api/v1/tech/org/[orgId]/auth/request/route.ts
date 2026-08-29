@@ -8,7 +8,7 @@ import {
 } from '@/features/technician-auth/Lib/loginCode'
 import { getOrgFromAddress, sendOrgMail } from '@/lib/email'
 import { rateLimit } from '@/lib/rate-limit'
-import { getOrgSmsProvider, normalizeOrgPhone, sendOrgSms } from '@/lib/sms'
+import { normalizeOrgPhone, sendOrgSms } from '@/lib/sms'
 
 /**
  * Sends a technician a code to sign back in with.
@@ -27,13 +27,13 @@ import { getOrgSmsProvider, normalizeOrgPhone, sendOrgSms } from '@/lib/sms'
 const TECHNICIAN_SELECT = { id: true, user: { select: { email: true } } } as const
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
-  const limited = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  const limited = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
   if (limited) return limited
 
   const { orgId } = await params
 
-  let identifier: string
-  let channel: 'sms' | 'email'
+  let identifier = ''
+  let channel: 'sms' | 'email' = 'sms'
   try {
     const body = (await request.json()) as { phone?: unknown; email?: unknown }
     if (typeof body.email === 'string' && body.email.trim()) {
@@ -41,19 +41,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
       channel = 'email'
     } else if (typeof body.phone === 'string' && body.phone.trim()) {
       identifier = body.phone.trim()
-      channel = 'sms'
-    } else {
-      return ok()
     }
   } catch {
-    return ok()
+    /* nothing usable in the body, answered exactly like anything else */
   }
+  if (!identifier) return ok(channel)
 
   const org = await db.organization.findUnique({
     where: { id: orgId },
     select: { id: true, name: true },
   })
-  if (!org) return ok()
+  if (!org) return ok(channel)
 
   const technician =
     channel === 'email'
@@ -69,7 +67,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
       : await findByPhone(org.id, identifier)
 
   // Nothing found, or found and unreachable. Same answer either way.
-  if (!technician) return ok()
+  if (!technician) return ok(channel)
 
   const code = generateLoginCode()
 
@@ -90,32 +88,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     },
   })
 
-  try {
-    if (channel === 'email') {
-      const email = technician.user?.email
-      if (email) {
-        await sendOrgMail(org.id, {
-          from: await getOrgFromAddress(org.id),
-          to: email,
-          // The code in the subject, so it is readable from the notification
-          // without opening anything.
-          subject: `${code} is your Torqvoice Tech sign-in code`,
-          html: emailBody(code, org.name),
-        })
-      }
-    } else {
-      await sendOrgSms(org.id, {
-        to: identifier,
-        body: loginMessage(code, org.name),
-      })
-    }
-  } catch (error) {
-    // The code is already stored, so a delivery failure leaves the technician
-    // able to sign in if the message turns up late. Logged rather than
-    // surfaced: telling an anonymous caller that delivery failed tells them
-    // the account exists.
-    console.error('[tech-auth] could not deliver login code:', error)
-  }
+  // Deliberately not awaited.
+  //
+  // Reaching a provider takes a few hundred milliseconds and not reaching one
+  // takes none, so awaiting it makes a match measurably slower than a miss,
+  // and hands back on the clock exactly what the response body refuses to say.
+  // Nothing after this needs the result: the code is stored, so a message that
+  // arrives late still works.
+  void deliver(channel, org.id, org.name, identifier, technician.user?.email ?? null, code)
 
   return ok(channel)
 }
@@ -155,13 +135,38 @@ async function findByPhone(organizationId: string, phone: string) {
   return matches.find((m) => m.e164 === e164)?.technician ?? null
 }
 
-/**
- * The same answer for every outcome.
- *
- * `channel` is echoed back only so the app can say "check your messages"
- * rather than "check something". It reflects what was asked for, never what
- * was found.
- */
+async function deliver(
+  channel: 'sms' | 'email',
+  organizationId: string,
+  workshop: string,
+  phone: string,
+  email: string | null,
+  code: string
+) {
+  try {
+    if (channel === 'email') {
+      if (!email) return
+      await sendOrgMail(organizationId, {
+        from: await getOrgFromAddress(organizationId),
+        to: email,
+        // The code in the subject, so it is readable from the notification
+        // without opening anything.
+        subject: `${code} is your Torqvoice Tech sign-in code`,
+        html: emailBody(code, workshop),
+      })
+    } else {
+      await sendOrgSms(organizationId, { to: phone, body: loginMessage(code, workshop) })
+    }
+  } catch (error) {
+    // Never the error object itself. Providers quote the request back in their
+    // failure messages, and the request contains a live code.
+    console.error(
+      `[tech-auth] could not deliver a ${channel} login code:`,
+      error instanceof Error ? error.name : 'unknown error'
+    )
+  }
+}
+
 /** Plain and short. A sign-in code that arrives dressed as marketing is a
  * sign-in code somebody hesitates over. */
 function emailBody(code: string, workshop: string): string {
@@ -182,18 +187,13 @@ function escapeHtml(value: string): string {
   )
 }
 
-function ok(channel?: 'sms' | 'email') {
-  return NextResponse.json({ data: { sent: true, channel: channel ?? null } })
-}
-
-/** Whether this workshop can send a code at all, so the app can offer the
- * choice honestly instead of a button that quietly does nothing. */
-export async function GET(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
-  const limited = rateLimit(request, { limit: 20, windowMs: 60_000 })
-  if (limited) return limited
-
-  const { orgId } = await params
-  const sms = await getOrgSmsProvider(orgId).catch(() => null)
-
-  return NextResponse.json({ data: { sms: sms !== null, email: true } })
+/**
+ * The same answer for every outcome, byte for byte.
+ *
+ * `channel` echoes what was asked for and never what was found. It used to be
+ * null when nothing matched, which made this endpoint a way of asking a
+ * workshop whether it employs a given phone number.
+ */
+function ok(channel: 'sms' | 'email') {
+  return NextResponse.json({ data: { sent: true, channel } })
 }

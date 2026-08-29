@@ -18,7 +18,7 @@ import { rateLimit } from '@/lib/rate-limit'
 
 /** Deliberately tight. Nobody types a code five times in a minute by hand, and
  * an attacker guessing at 6.5e11 possibilities needs rather more than that. */
-const LIMIT = { limit: 5, windowMs: 60_000 }
+const LIMIT = { limit: 5, windowMs: 60_000, anonymous: true }
 
 export async function POST(request: Request) {
   const limited = rateLimit(request, LIMIT)

@@ -27,7 +27,25 @@ setInterval(
  */
 export function rateLimit(
   request: Request,
-  { limit = 30, windowMs = 60_000 }: { limit?: number; windowMs?: number } = {}
+  {
+    limit = 30,
+    windowMs = 60_000,
+    anonymous = false,
+  }: {
+    limit?: number
+    windowMs?: number
+    /**
+     * Key on the address alone, for endpoints that do not require a session.
+     *
+     * The token-keyed budget below is right for authenticated traffic and
+     * exactly wrong without it: an endpoint anybody can call will happily
+     * accept `Authorization: Bearer <anything>`, and a caller who changes that
+     * value every request gets a fresh budget every request. On the sign-in
+     * endpoints that is the whole rate limit gone, which is the only thing
+     * standing between a guesser and a six digit code.
+     */
+    anonymous?: boolean
+  } = {}
 ): NextResponse | null {
   // cf-connecting-ip is set by Cloudflare and not client-forgeable on proxied
   // traffic; x-real-ip is set by nginx for direct/staging traffic. The first
@@ -48,7 +66,7 @@ export function rateLimit(
   //
   // Falls back to the IP for unauthenticated callers, which is the only signal
   // available before anyone has proved who they are.
-  const authHeader = request.headers.get('authorization')
+  const authHeader = anonymous ? null : request.headers.get('authorization')
   const identity = authHeader?.toLowerCase().startsWith('bearer ')
     ? `t:${createHash('sha256').update(authHeader.slice(7)).digest('hex').slice(0, 32)}`
     : `ip:${ip}`
