@@ -1652,8 +1652,21 @@ model CustomerMagicLink {
 }
 
 model CustomerSmsCode {
-  id             String    @id @default(cuid())
-  code           String
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits, not the digits.
+  ///
+  /// The code reaches the customer in a text message and lives in their head
+  /// for a minute. It has no business also sitting in a table where reading a
+  /// row hands over somebody's portal session.
+  code String
+
+  /// Wrong guesses so far. Six digits is a million, which sounds like plenty
+  /// and is not: limiting by address does nothing about a hundred machines
+  /// sharing the work. Five attempts against one code makes the space
+  /// irrelevant, because the code is gone long before the guessing arrives.
+  attempts Int @default(0)
+
   phone          String
   organizationId String
   expiresAt      DateTime
