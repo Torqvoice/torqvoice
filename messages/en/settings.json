@@ -380,7 +380,7 @@
     "adminLabel": "Admin",
     "adminDescription": "Can invite/remove members and manage shared data.",
     "memberLabel": "Member",
-    "memberDescription": "Permissions determined by assigned custom role. No custom role means read-only access.",
+    "memberDescription": "Permissions are set by the assigned role. Without a role, this member cannot do anything.",
     "roleAssigned": "Role updated",
     "failedAssignRole": "Failed to update role",
     "removeMemberTitle": "Remove Member",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Failed to update role",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technician",
+    "technicianHint": "Can be assigned jobs and use the technician app",
+    "technicianFailed": "Could not change that"
   },
   "invoice": {
     "title": "Invoice & Quotes",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Check failed",
       "configurePerPart": "Set a part's own Min Qty on the inventory page →",
       "readMore": "Read More"
+    },
+    "technicianStatus": {
+      "title": "Torqvoice Technician App (Android/iOS)",
+      "description": "Told when a technician moves a job from their phone.",
+      "inApp": "Notify the desk",
+      "inAppHint": "A notification when a job is finished, parked for parts, or picked back up.",
+      "save": "Save",
+      "saved": "Alert settings saved",
+      "saveFailed": "Could not save the settings"
     }
   },
   "support": {

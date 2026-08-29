@@ -380,7 +380,7 @@
     "adminLabel": "Administrator",
     "adminDescription": "Kann Mitglieder einladen/entfernen und gemeinsame Daten verwalten.",
     "memberLabel": "Mitglied",
-    "memberDescription": "Berechtigungen werden durch die zugewiesene benutzerdefinierte Rolle bestimmt. Ohne benutzerdefinierte Rolle nur Lesezugriff.",
+    "memberDescription": "Die Rechte ergeben sich aus der zugewiesenen Rolle. Ohne Rolle kann dieses Mitglied nichts tun.",
     "roleAssigned": "Rolle aktualisiert",
     "failedAssignRole": "Rolle konnte nicht aktualisiert werden",
     "removeMemberTitle": "Mitglied entfernen",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Rolle konnte nicht aktualisiert werden",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Techniker",
+    "technicianHint": "Kann Aufträge zugewiesen bekommen und die Techniker-App nutzen",
+    "technicianFailed": "Konnte nicht geändert werden"
   },
   "invoice": {
     "title": "Rechnungslayout",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Prüfung fehlgeschlagen",
       "configurePerPart": "Mindestmenge eines Teils auf der Lagerseite festlegen →",
       "readMore": "Mehr erfahren"
+    },
+    "technicianStatus": {
+      "title": "Torqvoice Techniker-App (Android/iOS)",
+      "description": "Meldung, wenn ein Techniker einen Auftrag über sein Telefon ändert.",
+      "inApp": "Büro benachrichtigen",
+      "inAppHint": "Eine Meldung, wenn ein Auftrag abgeschlossen, auf Teile gesetzt oder wieder aufgenommen wird.",
+      "save": "Speichern",
+      "saved": "Benachrichtigungen gespeichert",
+      "saveFailed": "Einstellungen konnten nicht gespeichert werden"
     }
   },
   "support": {

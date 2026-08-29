@@ -380,7 +380,7 @@
     "adminLabel": "Administrateur",
     "adminDescription": "Peut inviter/supprimer des membres et gérer les données partagées.",
     "memberLabel": "Membre",
-    "memberDescription": "Permissions determinees par le role personnalise assigne. Sans role personnalise, accès en lecture seule.",
+    "memberDescription": "Les droits découlent du rôle attribué. Sans rôle, ce membre ne peut rien faire.",
     "roleAssigned": "Role mis a jour",
     "failedAssignRole": "Échec de la mise a jour du role",
     "removeMemberTitle": "Retirer le membre",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Échec de la mise a jour du role",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technicien",
+    "technicianHint": "Peut se voir attribuer des travaux et utiliser l’application technicien",
+    "technicianFailed": "Modification impossible"
   },
   "invoice": {
     "title": "Mise en page de facture",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Échec de la vérification",
       "configurePerPart": "Définir la Qté min d'une pièce sur la page inventaire →",
       "readMore": "En savoir plus"
+    },
+    "technicianStatus": {
+      "title": "Application technicien Torqvoice (Android/iOS)",
+      "description": "Notification lorsqu'un technicien modifie un travail depuis son téléphone.",
+      "inApp": "Prévenir l'accueil",
+      "inAppHint": "Une notification lorsqu'un travail est terminé, en attente de pièces ou repris.",
+      "save": "Enregistrer",
+      "saved": "Paramètres de notification enregistrés",
+      "saveFailed": "Impossible d'enregistrer les paramètres"
     }
   },
   "support": {

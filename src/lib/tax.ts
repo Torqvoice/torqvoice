@@ -55,11 +55,7 @@ export function calculateTotals({
  * - Inclusive mode with rate > 0: line totals are gross, divide by (1 + rate/100).
  * - Tax rate of 0: no tax to back out, return as-is.
  */
-export function netLineTotal(
-  lineTotal: number,
-  taxRate: number,
-  taxInclusive: boolean,
-): number {
+export function netLineTotal(lineTotal: number, taxRate: number, taxInclusive: boolean): number {
   if (!taxInclusive || taxRate <= 0) return lineTotal
   return lineTotal / (1 + taxRate / 100)
 }

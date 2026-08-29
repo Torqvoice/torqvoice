@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
+import { setMemberTechnician } from '@/features/team/Actions/setMemberTechnician'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
 
 /**
@@ -108,11 +110,14 @@ export function TeamSettings({
   organization,
   currentRole,
   roles = [],
+  technicianUserIds = [],
   pendingInvitations = [],
 }: {
   organization: Organization | null
   currentRole: string | null
   roles?: RoleData[]
+  /** User ids that already have an active technician record. */
+  technicianUserIds?: string[]
   pendingInvitations?: PendingInvitation[]
 }) {
   const router = useRouter()
@@ -129,6 +134,35 @@ export function TeamSettings({
   // Role form state
   const [showRoleForm, setShowRoleForm] = useState(false)
   const [editingRole, setEditingRole] = useState<RoleData | null>(null)
+  // Tracked locally so the switch answers the tap immediately. A revalidate
+  // round trip is a long time to sit on a toggle that has already moved.
+  const [technicians, setTechnicians] = useState<Set<string>>(() => new Set(technicianUserIds))
+  const [technicianBusy, setTechnicianBusy] = useState<string | null>(null)
+
+  const handleTechnicianToggle = async (userId: string, enabled: boolean) => {
+    setTechnicianBusy(userId)
+    setTechnicians((prev) => {
+      const next = new Set(prev)
+      if (enabled) next.add(userId)
+      else next.delete(userId)
+      return next
+    })
+    const result = await setMemberTechnician({ userId, enabled })
+    if (!result.success) {
+      // Put it back where it was; the server is the one that decides.
+      setTechnicians((prev) => {
+        const next = new Set(prev)
+        if (enabled) next.delete(userId)
+        else next.add(userId)
+        return next
+      })
+      toast.error(result.error || t('team.technicianFailed'))
+    } else {
+      router.refresh()
+    }
+    setTechnicianBusy(null)
+  }
+
   const [roleName, setRoleName] = useState('')
   const [roleIsAdmin, setRoleIsAdmin] = useState(false)
   const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(new Set())
@@ -407,6 +441,26 @@ export function TeamSettings({
                 <p className="truncate text-xs text-muted-foreground">{member.user.email}</p>
               </div>
               <div className="flex items-center gap-2">
+                {/* The other place this lives is the work board's technician
+                    dialog, which also carries colour, capacity and technicians
+                    with no login. This is the yes-or-no version, on the screen
+                    where someone adds the person in the first place. */}
+                {isAdmin && (
+                  <label className="flex cursor-pointer items-center gap-2 pr-1">
+                    <Switch
+                      checked={technicians.has(member.user.id)}
+                      disabled={technicianBusy === member.user.id}
+                      onCheckedChange={(v) => handleTechnicianToggle(member.user.id, v)}
+                      aria-label={t('team.technician')}
+                    />
+                    <span
+                      className="hidden text-muted-foreground text-xs sm:inline"
+                      title={t('team.technicianHint')}
+                    >
+                      {t('team.technician')}
+                    </span>
+                  </label>
+                )}
                 {isOwner && member.role !== 'owner' ? (
                   <Select
                     value={member.roleId || member.role}

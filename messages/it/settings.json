@@ -380,7 +380,7 @@
     "adminLabel": "Amministratore",
     "adminDescription": "Puo invitare/rimuovere membri e gestire i dati condivisi.",
     "memberLabel": "Membro",
-    "memberDescription": "Autorizzazioni determinate dal ruolo personalizzato assegnato. Senza ruolo personalizzato, accesso in sola lettura.",
+    "memberDescription": "I permessi dipendono dal ruolo assegnato. Senza ruolo, questo membro non può fare nulla.",
     "roleAssigned": "Ruolo aggiornato",
     "failedAssignRole": "Aggiornamento ruolo non riuscito",
     "removeMemberTitle": "Rimuovi membro",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Aggiornamento ruolo non riuscito",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Tecnico",
+    "technicianHint": "Può ricevere lavori assegnati e usare l’app tecnico",
+    "technicianFailed": "Impossibile modificare"
   },
   "invoice": {
     "title": "Layout fattura",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Controllo non riuscito",
       "configurePerPart": "Imposta la Qtà min di un ricambio nella pagina magazzino →",
       "readMore": "Scopri di più"
+    },
+    "technicianStatus": {
+      "title": "App tecnico Torqvoice (Android/iOS)",
+      "description": "Avviso quando un tecnico modifica un lavoro dal telefono.",
+      "inApp": "Avvisa l'accettazione",
+      "inAppHint": "Un avviso quando un lavoro è finito, in attesa di ricambi o ripreso.",
+      "save": "Salva",
+      "saved": "Impostazioni avvisi salvate",
+      "saveFailed": "Impossibile salvare le impostazioni"
     }
   },
   "support": {

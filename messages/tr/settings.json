@@ -380,7 +380,7 @@
     "adminLabel": "Yönetici",
     "adminDescription": "Üye davet edebilir/kaldırabilir ve paylaşılan verileri yönetebilir.",
     "memberLabel": "Üye",
-    "memberDescription": "İzinler atanan özel role göre belirlenir. Özel rol atanmamışsa salt okunur erişim.",
+    "memberDescription": "Yetkiler atanan role göre belirlenir. Rol atanmazsa bu üye hiçbir şey yapamaz.",
     "roleAssigned": "Rol güncellendi",
     "failedAssignRole": "Rol güncellenemedi",
     "removeMemberTitle": "Üyeyi Kaldır",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Rol güncellenemedi",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Teknisyen",
+    "technicianHint": "İş atanabilir ve teknisyen uygulamasını kullanabilir",
+    "technicianFailed": "Değiştirilemedi"
   },
   "invoice": {
     "title": "Fatura Düzeni",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Kontrol başarısız",
       "configurePerPart": "Bir parçanın min. miktarını stok sayfasında ayarlayın →",
       "readMore": "Devamını oku"
+    },
+    "technicianStatus": {
+      "title": "Torqvoice Teknisyen Uygulaması (Android/iOS)",
+      "description": "Bir teknisyen işi telefonundan değiştirdiğinde bildirim.",
+      "inApp": "Ofisi bilgilendir",
+      "inAppHint": "Bir iş tamamlandığında, parça beklemeye alındığında veya yeniden başlatıldığında bildirim.",
+      "save": "Kaydet",
+      "saved": "Bildirim ayarları kaydedildi",
+      "saveFailed": "Ayarlar kaydedilemedi"
     }
   },
   "support": {

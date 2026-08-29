@@ -1,111 +1,24 @@
 'use server'
 
-import { db } from '@/lib/db'
-import { withAuth } from '@/lib/with-auth'
-import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { withAuth } from '@/lib/with-auth'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { calculateTotals } from '@/lib/tax'
-import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
+import { addPart, type AddPartInput } from '../Lib/addPart'
 
-export async function addPartToServiceRecord(input: {
-  serviceRecordId: string
-  partNumber?: string
-  name: string
-  quantity: number
-  unit?: string | null
-  unitPrice: number
-  total: number
-  unitCost: number
-  inventoryPartId?: string
-}) {
+/**
+ * Web-side wrapper. The work itself lives in `../Lib/addPart` so the
+ * technician API adds parts the same way, stock movements included.
+ */
+export async function addPartToServiceRecord(input: AddPartInput) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const record = await db.serviceRecord.findFirst({
-        where: { id: input.serviceRecordId, organizationId },
-        select: {
-          id: true,
-          vehicleId: true,
-          subtotal: true,
-          taxRate: true,
-          taxInclusive: true,
-          discountType: true,
-          discountValue: true,
-          title: true,
-          invoiceNumber: true,
-        },
-      })
-      if (!record) throw new Error('Service record not found')
-
-      // Create the part, recalculate totals and deduct inventory stock in one
-      // transaction so the line and its stock movement commit together.
-      const part = await db.$transaction(async (tx) => {
-        const created = await tx.servicePart.create({
-          data: {
-            partNumber: input.partNumber || null,
-            name: input.name,
-            quantity: input.quantity,
-            unit: input.unit || null,
-            unitPrice: input.unitPrice,
-            total: input.total,
-            unitCost: input.unitCost,
-            inventoryPartId: input.inventoryPartId || null,
-            serviceRecordId: record.id,
-          },
-        })
-
-        // Recalculate totals
-        const [partsAgg, laborAgg] = await Promise.all([
-          tx.servicePart.aggregate({
-            where: { serviceRecordId: record.id },
-            _sum: { total: true },
-          }),
-          tx.serviceLabor.aggregate({
-            where: { serviceRecordId: record.id },
-            _sum: { total: true },
-          }),
-        ])
-
-        const subtotal = (partsAgg._sum.total || 0) + (laborAgg._sum.total || 0)
-        const discountAmount =
-          record.discountType === 'percentage'
-            ? subtotal * ((record.discountValue ?? 0) / 100)
-            : record.discountType === 'fixed'
-              ? Math.min(record.discountValue ?? 0, subtotal)
-              : 0
-        const { taxAmount, totalAmount } = calculateTotals({
-          subtotal,
-          discountAmount,
-          taxRate: record.taxRate,
-          taxInclusive: record.taxInclusive,
-        })
-
-        await tx.serviceRecord.update({
-          where: { id: record.id },
-          data: { subtotal, taxAmount, totalAmount },
-        })
-
-        // Deduct inventory stock for the newly added line (delta from empty).
-        await reconcileInventoryForParts(
-          tx,
-          organizationId,
-          [],
-          [{ inventoryPartId: input.inventoryPartId, quantity: input.quantity }],
-          {
-            reason: 'service_record',
-            userId,
-            serviceRecordId: record.id,
-            serviceRecordLabel: record.invoiceNumber || record.title,
-          }
-        )
-
-        return created
-      })
+      const { part, vehicleId } = await addPart({ organizationId, userId, input })
 
       revalidatePath(
-        record.vehicleId
-          ? `/vehicles/${record.vehicleId}/service/${record.id}`
-          : `/sales/${record.id}`
+        vehicleId
+          ? `/vehicles/${vehicleId}/service/${input.serviceRecordId}`
+          : `/sales/${input.serviceRecordId}`
       )
       if (input.inventoryPartId) await onInventoryChanged(organizationId)
 

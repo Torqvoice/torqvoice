@@ -380,7 +380,7 @@
     "adminLabel": "Administrador",
     "adminDescription": "Pode convidar/remover membros e gerenciar dados compartilhados.",
     "memberLabel": "Membro",
-    "memberDescription": "Permissoes determinadas pela função personalizada atribuída. Sem função personalizada significa acesso somente leitura.",
+    "memberDescription": "As permissões vêm da função atribuída. Sem função, este membro não pode fazer nada.",
     "roleAssigned": "Função atualizada",
     "failedAssignRole": "Falha ao atualizar a função",
     "removeMemberTitle": "Remover membro",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Falha ao atualizar a função",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Técnico",
+    "technicianHint": "Pode receber serviços atribuídos e usar o aplicativo do técnico",
+    "technicianFailed": "Não foi possível alterar"
   },
   "invoice": {
     "title": "Layout da fatura",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Falha na verificação",
       "configurePerPart": "Defina a Qtd. mín. de uma peça na página de estoque →",
       "readMore": "Saiba mais"
+    },
+    "technicianStatus": {
+      "title": "Aplicativo do técnico Torqvoice (Android/iOS)",
+      "description": "Aviso quando um técnico altera um serviço pelo telefone.",
+      "inApp": "Avisar a recepção",
+      "inAppHint": "Um aviso quando um serviço é concluído, fica aguardando peças ou é retomado.",
+      "save": "Salvar",
+      "saved": "Configurações de aviso salvas",
+      "saveFailed": "Não foi possível salvar as configurações"
     }
   },
   "support": {

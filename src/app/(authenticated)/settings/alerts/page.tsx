@@ -1,6 +1,6 @@
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { AlertsSettings } from "./alerts-settings";
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { AlertsSettings } from './alerts-settings'
 
 export default async function AlertsSettingsPage() {
   const result = await getSettings([
@@ -11,8 +11,8 @@ export default async function AlertsSettingsPage() {
     SETTING_KEYS.LOW_STOCK_ALERTS_EMAIL_MIN_INTERVAL_HOURS,
     SETTING_KEYS.SERVICE_REQUEST_ALERTS_EMAIL,
     SETTING_KEYS.SERVICE_REQUEST_ALERTS_RECIPIENTS,
-  ]);
-  const settings = result.success && result.data ? result.data : {};
+  ])
+  const settings = result.success && result.data ? result.data : {}
 
-  return <AlertsSettings settings={settings} />;
+  return <AlertsSettings settings={settings} />
 }

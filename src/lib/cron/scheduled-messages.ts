@@ -1,14 +1,14 @@
-import { CronJob } from "cron";
-import { db } from "@/lib/db";
+import { CronJob } from 'cron'
+import { db } from '@/lib/db'
 import {
   dispatchScheduledMessage,
   nextSendAt,
-} from "@/features/scheduled-messages/Lib/dispatchScheduledMessage";
+} from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
 
-const LOG_PREFIX = "[scheduled-messages]";
+const LOG_PREFIX = '[scheduled-messages]'
 
 /** Nothing older than this is sent on a late start; it is marked failed instead. */
-const MAX_LATENESS_MS = 24 * 60 * 60 * 1000;
+const MAX_LATENESS_MS = 24 * 60 * 60 * 1000
 
 /**
  * Send everything whose time has come.
@@ -19,7 +19,7 @@ const MAX_LATENESS_MS = 24 * 60 * 60 * 1000;
  */
 export async function processDueMessages(now = new Date()): Promise<number> {
   const due = await db.scheduledMessage.findMany({
-    where: { status: "scheduled", sendAt: { lte: now } },
+    where: { status: 'scheduled', sendAt: { lte: now } },
     select: {
       id: true,
       channel: true,
@@ -34,15 +34,15 @@ export async function processDueMessages(now = new Date()): Promise<number> {
       endDate: true,
       runCount: true,
     },
-    orderBy: { sendAt: "asc" },
+    orderBy: { sendAt: 'asc' },
     take: 200,
-  });
+  })
 
-  let sent = 0;
+  let sent = 0
 
   for (const message of due) {
-    const isStale = now.getTime() - message.sendAt.getTime() > MAX_LATENESS_MS;
-    const following = nextSendAt(message.sendAt, message.frequency, message.endDate);
+    const isStale = now.getTime() - message.sendAt.getTime() > MAX_LATENESS_MS
+    const following = nextSendAt(message.sendAt, message.frequency, message.endDate)
 
     if (isStale) {
       // A day late is no longer the message the workshop meant to send, so it
@@ -50,61 +50,61 @@ export async function processDueMessages(now = new Date()): Promise<number> {
       await db.scheduledMessage.update({
         where: { id: message.id },
         data: {
-          status: following ? "scheduled" : "failed",
+          status: following ? 'scheduled' : 'failed',
           sendAt: following ?? message.sendAt,
           lastRunAt: now,
-          errorMessage: "Missed its send window and was skipped",
+          errorMessage: 'Missed its send window and was skipped',
         },
-      });
-      console.warn(`${LOG_PREFIX} skipped stale message ${message.id}`);
-      continue;
+      })
+      console.warn(`${LOG_PREFIX} skipped stale message ${message.id}`)
+      continue
     }
 
     try {
-      await dispatchScheduledMessage(message);
+      await dispatchScheduledMessage(message)
       await db.scheduledMessage.update({
         where: { id: message.id },
         data: {
-          status: following ? "scheduled" : "sent",
+          status: following ? 'scheduled' : 'sent',
           sendAt: following ?? message.sendAt,
           sentAt: now,
           lastRunAt: now,
           runCount: message.runCount + 1,
           errorMessage: null,
         },
-      });
-      sent++;
+      })
+      sent++
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       await db.scheduledMessage.update({
         where: { id: message.id },
         data: {
-          status: following ? "scheduled" : "failed",
+          status: following ? 'scheduled' : 'failed',
           sendAt: following ?? message.sendAt,
           lastRunAt: now,
           runCount: message.runCount + 1,
           errorMessage,
         },
-      });
-      console.error(`${LOG_PREFIX} send failed for ${message.id}:`, errorMessage);
+      })
+      console.error(`${LOG_PREFIX} send failed for ${message.id}:`, errorMessage)
     }
   }
 
-  return sent;
+  return sent
 }
 
 /** Minute-by-minute scan, so a message goes out on the minute it was set for. */
 export function processScheduledMessages() {
-  const job = new CronJob("* * * * *", async () => {
+  const job = new CronJob('* * * * *', async () => {
     try {
-      const sent = await processDueMessages();
+      const sent = await processDueMessages()
       if (sent > 0) {
-        console.warn(`${LOG_PREFIX} sent ${sent} scheduled message(s)`);
+        console.warn(`${LOG_PREFIX} sent ${sent} scheduled message(s)`)
       }
     } catch (error) {
-      console.error(`${LOG_PREFIX} scan failed:`, error);
+      console.error(`${LOG_PREFIX} scan failed:`, error)
     }
-  });
-  job.start();
-  console.warn(`${LOG_PREFIX} Scheduled-message processor started (every minute)`);
+  })
+  job.start()
+  console.warn(`${LOG_PREFIX} Scheduled-message processor started (every minute)`)
 }

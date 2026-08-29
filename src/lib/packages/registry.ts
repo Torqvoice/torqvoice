@@ -1,5 +1,5 @@
-import type { ZodType } from "zod";
-import { PackageFormatError, type PackageContent } from "./format";
+import type { ZodType } from 'zod'
+import { PackageFormatError, type PackageContent } from './format'
 
 /**
  * The extension point.
@@ -14,31 +14,31 @@ import { PackageFormatError, type PackageContent } from "./format";
  */
 export interface PackageInstaller<T> {
   /** Stable key written into the package, e.g. "inspection-template". */
-  type: string;
+  type: string
   /** Human name for the review screen. */
-  label: string;
+  label: string
   /** Nothing from a file is trusted until it has been through this. */
-  schema: ZodType<T>;
+  schema: ZodType<T>
   /** Lines shown before installing, e.g. "9 sections", "92 checks". */
-  describe(data: T): string[];
+  describe(data: T): string[]
 }
 
-const installers = new Map<string, PackageInstaller<unknown>>();
+const installers = new Map<string, PackageInstaller<unknown>>()
 
 export function registerInstaller<T>(installer: PackageInstaller<T>): void {
-  installers.set(installer.type, installer as PackageInstaller<unknown>);
+  installers.set(installer.type, installer as PackageInstaller<unknown>)
 }
 
 export function getInstaller(type: string): PackageInstaller<unknown> | undefined {
-  return installers.get(type);
+  return installers.get(type)
 }
 
 export interface ReviewedContent {
-  type: string;
-  label: string;
+  type: string
+  label: string
   /** Validated payload, safe to hand to the installer. */
-  data: unknown;
-  details: string[];
+  data: unknown
+  details: string[]
 }
 
 /**
@@ -50,21 +50,21 @@ export interface ReviewedContent {
  */
 export function reviewContents(contents: PackageContent[]): ReviewedContent[] {
   return contents.map((content) => {
-    const installer = getInstaller(content.type);
+    const installer = getInstaller(content.type)
     if (!installer) {
       throw new PackageFormatError(
         `This package contains "${content.type}", which this version of Torqvoice cannot install.`
-      );
+      )
     }
-    const parsed = installer.schema.safeParse(content.data);
+    const parsed = installer.schema.safeParse(content.data)
     if (!parsed.success) {
-      throw new PackageFormatError(`The ${installer.label} in this package is not valid.`);
+      throw new PackageFormatError(`The ${installer.label} in this package is not valid.`)
     }
     return {
       type: installer.type,
       label: installer.label,
       data: parsed.data,
       details: installer.describe(parsed.data),
-    };
-  });
+    }
+  })
 }

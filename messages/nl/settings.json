@@ -380,7 +380,7 @@
     "adminLabel": "Beheerder",
     "adminDescription": "Kan leden uitnodigen/verwijderen en gedeelde gegevens beheren.",
     "memberLabel": "Lid",
-    "memberDescription": "Machtigingen bepaald door toegewezen aangepaste rol. Geen aangepaste rol betekent alleen-lezen toegang.",
+    "memberDescription": "Rechten volgen uit de toegewezen rol. Zonder rol kan dit lid niets doen.",
     "roleAssigned": "Rol bijgewerkt",
     "failedAssignRole": "Rol bijwerken mislukt",
     "removeMemberTitle": "Lid verwijderen",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Rol bijwerken mislukt",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technicus",
+    "technicianHint": "Kan opdrachten toegewezen krijgen en de technicus-app gebruiken",
+    "technicianFailed": "Kon niet worden gewijzigd"
   },
   "invoice": {
     "title": "Factuurindeling",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Controle mislukt",
       "configurePerPart": "Stel het min. aantal van een onderdeel in op de voorraadpagina →",
       "readMore": "Lees meer"
+    },
+    "technicianStatus": {
+      "title": "Torqvoice monteurs-app (Android/iOS)",
+      "description": "Melding wanneer een monteur een opdracht wijzigt vanaf de telefoon.",
+      "inApp": "Balie waarschuwen",
+      "inAppHint": "Een melding wanneer een opdracht klaar is, op onderdelen wacht of weer wordt opgepakt.",
+      "save": "Opslaan",
+      "saved": "Meldingsinstellingen opgeslagen",
+      "saveFailed": "Kon de instellingen niet opslaan"
     }
   },
   "support": {

@@ -380,7 +380,7 @@
     "adminLabel": "Administratorius",
     "adminDescription": "Gali kviesti/šalinti narius ir valdyti bendrinamus duomenis.",
     "memberLabel": "Narys",
-    "memberDescription": "Leidimai nustatomi pagal priskirtą pasirinktinę rolę. Be pasirinktinės rolės — tik skaitymo prieiga.",
+    "memberDescription": "Teisės priklauso nuo priskirto vaidmens. Be vaidmens šis narys nieko negali daryti.",
     "roleAssigned": "Rolė atnaujinta",
     "failedAssignRole": "Nepavyko atnaujinti rolės",
     "removeMemberTitle": "Pašalinti narį",
@@ -392,7 +392,10 @@
     "failedUpdateRole": "Nepavyko atnaujinti rolės",
     "removeMember": "Remove member",
     "cancelInvite": "Cancel invitation",
-    "editRole": "Edit role"
+    "editRole": "Edit role",
+    "technician": "Technikas",
+    "technicianHint": "Gali gauti priskirtus darbus ir naudotis techniko programa",
+    "technicianFailed": "Nepavyko pakeisti"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
@@ -1449,6 +1452,15 @@
       "checkFailed": "Patikra nepavyko",
       "configurePerPart": "Nustatykite dalies min. kiekį sandėlio puslapyje →",
       "readMore": "Skaityti daugiau"
+    },
+    "technicianStatus": {
+      "title": "Torqvoice techniko programėlė (Android/iOS)",
+      "description": "Pranešimas, kai technikas pakeičia darbą telefone.",
+      "inApp": "Pranešti registratūrai",
+      "inAppHint": "Pranešimas, kai darbas baigtas, laukia dalių arba vėl pradėtas.",
+      "save": "Išsaugoti",
+      "saved": "Pranešimų nustatymai išsaugoti",
+      "saveFailed": "Nepavyko išsaugoti nustatymų"
     }
   },
   "support": {

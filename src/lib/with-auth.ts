@@ -78,10 +78,28 @@ export async function withAuth<T>(
 
     // Check permissions if required (super admins bypass all permission checks)
     if (!isSuperAdmin && options.requiredPermissions && options.requiredPermissions.length > 0) {
-      // Members without a custom role have full access (no restrictions)
-      const hasNoCustomRole = !membership?.roleId
-
-      if (!isOwnerOrAdmin && !roleIsAdmin && !hasNoCustomRole) {
+      // A member with no role has no permissions.
+      //
+      // This used to skip the check entirely, which made such an account
+      // unrestricted while the settings screen told admins the opposite:
+      // "No custom role means read-only access." Anyone added as a Member and
+      // never given a role therefore had full access to billing, settings and
+      // the team, and nothing on screen said so.
+      //
+      // Shipped without a backfill deliberately. Cloud production was checked
+      // first and had no roleless members outside owners and admins, so this
+      // locks nobody out there.
+      //
+      // Self-hosted installs were not checked, because their databases are
+      // theirs. On one that does hold a roleless member, that person loses
+      // access on upgrade and an owner or admin has to give them a role. That
+      // is the correct end state and the settings screen already describes it;
+      // it just arrives without warning. Worth a release note.
+      //
+      // Invitations still allow no role (see sendInvitation), so a member can
+      // be created this way again. Under this check they simply get nothing,
+      // which is what the UI has always claimed.
+      if (!isOwnerOrAdmin && !roleIsAdmin) {
         const userPermissions = membership?.customRole?.permissions ?? []
         if (!hasAllPermissions(userPermissions, options.requiredPermissions)) {
           // Log failed permission attempt
@@ -92,7 +110,9 @@ export async function withAuth<T>(
             metadata: { requiredPermissions: options.requiredPermissions },
             ip: meta.ip,
             userAgent: meta.userAgent,
-          }).catch(() => { /* best-effort */ })
+          }).catch(() => {
+            /* best-effort */
+          })
           return { success: false, error: 'Insufficient permissions' }
         }
       }
@@ -102,19 +122,23 @@ export async function withAuth<T>(
 
     // Post-success audit logging (fire-and-forget, logAudit handles its own errors)
     if (options.audit) {
-      getRequestMeta().then((meta) => {
-        const event =
-          typeof options.audit === 'function'
-            ? (options.audit as AuditBuilder<T>)({ ctx, result: data })
-            : options.audit
-        if (event && event.action) {
-          logAudit(ctx, {
-            ...event,
-            ip: event.ip ?? meta.ip,
-            userAgent: event.userAgent ?? meta.userAgent,
-          })
-        }
-      }).catch(() => { /* best-effort */ })
+      getRequestMeta()
+        .then((meta) => {
+          const event =
+            typeof options.audit === 'function'
+              ? (options.audit as AuditBuilder<T>)({ ctx, result: data })
+              : options.audit
+          if (event && event.action) {
+            logAudit(ctx, {
+              ...event,
+              ip: event.ip ?? meta.ip,
+              userAgent: event.userAgent ?? meta.userAgent,
+            })
+          }
+        })
+        .catch(() => {
+          /* best-effort */
+        })
     }
 
     return { success: true, data }
