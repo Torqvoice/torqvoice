@@ -8,7 +8,7 @@ import { getOrgSmsProvider, sendOrgSms } from '@/lib/sms'
 import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
-  const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
   if (rateLimitResponse) return rateLimitResponse
 
   const { orgId: orgParam } = await params
