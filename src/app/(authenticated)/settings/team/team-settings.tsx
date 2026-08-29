@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -28,7 +27,6 @@ import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
-import { setMemberTechnician } from '@/features/team/Actions/setMemberTechnician'
 import { AddTechnicianCard } from '@/features/team/Components/AddTechnicianCard'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
@@ -141,50 +139,8 @@ export function TeamSettings({
   // Tracked locally so the switch answers the tap immediately. A revalidate
   // round trip is a long time to sit on a toggle that has already moved.
   const [technicians, setTechnicians] = useState<Set<string>>(() => new Set(technicianUserIds))
-  const [technicianBusy, setTechnicianBusy] = useState<string | null>(null)
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
-
-  const handleTechnicianToggle = async (userId: string, enabled: boolean, name: string) => {
-    // Turning this off signs them out of their phone there and then, which is
-    // not something to discover by flicking a switch.
-    if (!enabled) {
-      const ok = await confirm({
-        title: t('team.revokeTechnicianTitle'),
-        description: t('team.revokeTechnicianBody', { name }),
-        confirmLabel: t('team.revokeTechnicianConfirm'),
-        destructive: true,
-      })
-      if (!ok) return
-    }
-
-    setTechnicianBusy(userId)
-    setTechnicians((prev) => {
-      const next = new Set(prev)
-      if (enabled) next.add(userId)
-      else next.delete(userId)
-      return next
-    })
-    // Switching on is only a technician record. Switching off is a revocation:
-    // the row, their sessions, anything outstanding, and their push devices,
-    // all together. See removeTechnicianAccess.
-    const result = enabled
-      ? await setMemberTechnician({ userId, enabled })
-      : await removeTechnicianAccess({ userId })
-    if (!result.success) {
-      // Put it back where it was; the server is the one that decides.
-      setTechnicians((prev) => {
-        const next = new Set(prev)
-        if (enabled) next.delete(userId)
-        else next.add(userId)
-        return next
-      })
-      toast.error(result.error || t('team.technicianFailed'))
-    } else {
-      router.refresh()
-    }
-    setTechnicianBusy(null)
-  }
 
   const [roleName, setRoleName] = useState('')
   const [roleIsAdmin, setRoleIsAdmin] = useState(false)
@@ -277,20 +233,33 @@ export function TeamSettings({
     }
   }
 
-  const handleAssignRole = async (memberId: string, value: string) => {
-    let role: 'admin' | 'member'
+  const handleAssignRole = async (memberId: string, value: string, member?: Member) => {
+    let role: 'admin' | 'member' | 'technician'
     let roleId: string | null
 
-    if (value === 'admin') {
-      role = 'admin'
-      roleId = null
-    } else if (value === 'member') {
-      role = 'member'
+    if (value === 'admin' || value === 'member' || value === 'technician') {
+      role = value
       roleId = null
     } else {
       // Custom role ID
       role = 'member'
       roleId = value
+    }
+
+    // Moving somebody off Technician takes their phone with them, which is not
+    // something to discover from a dropdown.
+    const wasTechnician = member ? technicians.has(member.user.id) : false
+    if (wasTechnician && value !== 'technician') {
+      const ok = await confirm({
+        title: t('team.revokeTechnicianTitle'),
+        description: t('team.revokeTechnicianBody', {
+          name: member?.user.name || member?.user.email || '',
+        }),
+        confirmLabel: t('team.revokeTechnicianConfirm'),
+        destructive: true,
+      })
+      if (!ok) return
+      if (member) await removeTechnicianAccess({ userId: member.user.id })
     }
 
     const result = await assignRole({ memberId, role, roleId })
@@ -464,32 +433,6 @@ export function TeamSettings({
                 <p className="truncate text-xs text-muted-foreground">{member.user.email}</p>
               </div>
               <div className="flex items-center gap-2">
-                {/* The other place this lives is the work board's technician
-                    dialog, which also carries colour, capacity and technicians
-                    with no login. This is the yes-or-no version, on the screen
-                    where someone adds the person in the first place. */}
-                {isAdmin && (
-                  <label className="flex cursor-pointer items-center gap-2 pr-1">
-                    <Switch
-                      checked={technicians.has(member.user.id)}
-                      disabled={technicianBusy === member.user.id}
-                      onCheckedChange={(v) =>
-                        handleTechnicianToggle(
-                          member.user.id,
-                          v,
-                          member.user.name || member.user.email
-                        )
-                      }
-                      aria-label={t('team.technician')}
-                    />
-                    <span
-                      className="hidden text-muted-foreground text-xs sm:inline"
-                      title={t('team.technicianHint')}
-                    >
-                      {t('team.technician')}
-                    </span>
-                  </label>
-                )}
                 {isAdmin && technicians.has(member.user.id) && (
                   <Button
                     variant="ghost"
@@ -509,8 +452,10 @@ export function TeamSettings({
                 )}
                 {isOwner && member.role !== 'owner' ? (
                   <Select
-                    value={member.roleId || member.role}
-                    onValueChange={(v) => handleAssignRole(member.id, v)}
+                    value={
+                      technicians.has(member.user.id) ? 'technician' : member.roleId || member.role
+                    }
+                    onValueChange={(v) => handleAssignRole(member.id, v, member)}
                   >
                     <SelectTrigger className="h-8 w-36 text-xs">
                       <SelectValue />
@@ -518,14 +463,23 @@ export function TeamSettings({
                     <SelectContent>
                       <SelectItem value="admin">{t('team.admin')}</SelectItem>
                       <SelectItem value="member">{t('team.member')}</SelectItem>
+                      {/* One answer to one question. Choosing this puts them on
+                          the work board and gives them what the app needs;
+                          choosing anything else takes both away. */}
+                      <SelectItem value="technician">{t('team.technician')}</SelectItem>
                       {roles.length > 0 && (
                         <>
                           <SelectSeparator />
-                          {roles.map((r) => (
-                            <SelectItem key={r.id} value={r.id}>
-                              {r.name}
-                            </SelectItem>
-                          ))}
+                          {roles
+                            // The technician permissions are what the dropdown
+                            // entry above grants, so offering the role again
+                            // underneath is the same choice listed twice.
+                            .filter((r) => r.name !== 'Technician')
+                            .map((r) => (
+                              <SelectItem key={r.id} value={r.id}>
+                                {r.name}
+                              </SelectItem>
+                            ))}
                         </>
                       )}
                     </SelectContent>

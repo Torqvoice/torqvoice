@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
+import { ensureTechnicianRole } from '../Lib/technicianRole'
 
 /**
  * Marks a team member as a technician, or stops doing so.
@@ -43,6 +44,28 @@ export async function setMemberTechnician(input: unknown) {
         where: { userId, organizationId },
         select: { id: true, isActive: true },
       })
+
+      // Being a technician and being allowed to use the app are two different
+      // facts, and the desk has no reason to know that. withApiAuth enforces
+      // permissions exactly as the web app does, so a member with no role is
+      // refused by every screen in the technician app: the switch would go on
+      // and nothing would work.
+      //
+      // Only when they have no role at all. A role somebody chose by hand is a
+      // decision, and quietly widening it here would undo it.
+      if (enabled) {
+        const membership = await db.organizationMember.findFirst({
+          where: { userId, organizationId },
+          select: { id: true, roleId: true, role: true },
+        })
+        const isOwnerOrAdmin = membership?.role === 'owner' || membership?.role === 'admin'
+        if (membership && !membership.roleId && !isOwnerOrAdmin) {
+          await db.organizationMember.update({
+            where: { id: membership.id },
+            data: { roleId: await ensureTechnicianRole(db, organizationId) },
+          })
+        }
+      }
 
       if (!enabled) {
         // Deactivated, never deleted. The row is what past jobs, inspections

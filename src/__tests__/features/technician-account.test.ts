@@ -16,6 +16,7 @@ vi.mock('@/lib/auth', () => ({
 }))
 vi.mock('@/lib/db', () => ({
   db: {
+    role: { findFirst: vi.fn(), create: vi.fn() },
     user: { findUnique: vi.fn(), create: vi.fn() },
     technician: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn(), aggregate: vi.fn() },
     organizationMember: { create: vi.fn(), findFirst: vi.fn(), count: vi.fn() },
@@ -57,6 +58,7 @@ beforeEach(() => {
     userId: 'user-1',
   } as never)
   vi.mocked(db.user.create).mockResolvedValue({ id: 'user-1' } as never)
+  vi.mocked(db.role.findFirst).mockResolvedValue({ id: 'role-tech' } as never)
   vi.mocked(db.$transaction).mockImplementation(async (arg: unknown) =>
     typeof arg === 'function' ? (arg as (tx: unknown) => unknown)(db) : arg
   )
@@ -74,7 +76,7 @@ describe('creating a technician account at the counter', () => {
     )
     expect(db.organizationMember.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ organizationId: ORG, role: 'member', roleId: null }),
+        data: expect.objectContaining({ organizationId: ORG, role: 'member', roleId: 'role-tech' }),
       })
     )
     expect(db.technician.create).toHaveBeenCalled()
@@ -95,12 +97,40 @@ describe('creating a technician account at the counter', () => {
     expect(data.email.endsWith('.invalid')).toBe(true)
   })
 
-  it('gives them no permissions in the web app', async () => {
+  it('gives them the role the app needs, and reuses the workshop’s own', async () => {
+    // Creating them with no role at all was the bug: withApiAuth enforces
+    // permissions exactly as the web app does, so every screen in the
+    // technician app answered "Your role does not allow this".
     await createTechnicianAccount({ name: 'Ola', phone: '912 34 567' })
+
     const data = vi.mocked(db.organizationMember.create).mock.calls[0]?.[0]?.data as {
-      roleId: null
+      roleId: string
     }
-    expect(data.roleId).toBeNull()
+    expect(data.roleId).toBe('role-tech')
+    // Found rather than made, so five mechanics share one role instead of
+    // filling the team page with five identical ones.
+    expect(db.role.create).not.toHaveBeenCalled()
+  })
+
+  it('creates the technician role once, when the workshop has none yet', async () => {
+    vi.mocked(db.role.findFirst).mockResolvedValue(null as never)
+    vi.mocked(db.role.create).mockResolvedValue({ id: 'role-new' } as never)
+
+    await createTechnicianAccount({ name: 'Ola', phone: '912 34 567' })
+
+    const data = vi.mocked(db.role.create).mock.calls[0]?.[0]?.data as {
+      isAdmin: boolean
+      permissions: { create: { action: string; subject: string }[] }
+    }
+    // Not isAdmin: that bypasses permission checks entirely and hides what the
+    // account can reach behind a flag, which is the shape of the bug this
+    // product just finished removing.
+    expect(data.isAdmin).toBe(false)
+    expect(data.permissions.create).toEqual([
+      { action: 'read', subject: 'services' },
+      { action: 'update', subject: 'services' },
+      { action: 'read', subject: 'inventory' },
+    ])
   })
 
   it('refuses a number this workshop already has', async () => {

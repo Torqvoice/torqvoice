@@ -139,7 +139,16 @@
     "whatsapp_send": "Išsiųsta „WhatsApp“ žinutė",
     "work_bay_create": "Sukurta darbo vieta",
     "work_bay_update": "Atnaujinta darbo vieta",
-    "work_bay_delete": "Ištrinta darbo vieta"
+    "work_bay_delete": "Ištrinta darbo vieta",
+    "auth_appSetupRedeemed": "Prisijungta su nustatymo kodu",
+    "auth_technicianCodeSignIn": "Prisijungta su vienkartiniu kodu",
+    "team_createAppSetupCode": "Išduotas programėlės nustatymo kodas",
+    "team_createTechnicianAccount": "Sukurta techniko paskyra",
+    "team_removeTechnicianAccess": "Technikas pašalintas, prieiga atšaukta",
+    "team_setMemberTechnician": "Pakeista, ar narys yra technikas",
+    "settings_whatsappUpdated": "Atnaujinti „WhatsApp“ nustatymai",
+    "settings_whatsappDisconnected": "Atjungtas „WhatsApp“",
+    "settings_whatsappNumberRegistered": "Užregistruotas „WhatsApp“ numeris"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",

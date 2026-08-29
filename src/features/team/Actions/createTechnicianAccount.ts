@@ -8,6 +8,7 @@ import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { withAuth } from '@/lib/with-auth'
+import { ensureTechnicianRole } from '../Lib/technicianRole'
 
 /**
  * Creates a mechanic's account outright, at the counter, in one step.
@@ -79,16 +80,19 @@ export async function createTechnicianAccount(input: unknown) {
           select: { id: true },
         })
 
+        // The role the app actually needs, which is not "none".
+        //
+        // withApiAuth enforces requiredPermissions exactly as withAuth does, so
+        // an account with no role is refused by every screen in the technician
+        // app and not merely by the office. See Lib/technicianRole.
+        const roleId = await ensureTechnicianRole(tx, organizationId)
+
         await tx.organizationMember.create({
           data: {
             userId: user.id,
             organizationId,
             role: 'member',
-            // No custom role, which since the permission fix means no access
-            // to anything in the web app. The technician API is gated on the
-            // technician record below, not on permissions, so the app works
-            // and the office does not open up.
-            roleId: null,
+            roleId,
           },
         })
 

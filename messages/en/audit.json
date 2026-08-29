@@ -139,7 +139,16 @@
     "whatsapp_send": "Sent WhatsApp Message",
     "work_bay_create": "Created Work Bay",
     "work_bay_update": "Updated Work Bay",
-    "work_bay_delete": "Deleted Work Bay"
+    "work_bay_delete": "Deleted Work Bay",
+    "auth_appSetupRedeemed": "Signed in with a setup code",
+    "auth_technicianCodeSignIn": "Signed in with a one-time code",
+    "team_createAppSetupCode": "Issued an app setup code",
+    "team_createTechnicianAccount": "Created a technician account",
+    "team_removeTechnicianAccess": "Removed a technician and revoked their access",
+    "team_setMemberTechnician": "Changed whether a member is a technician",
+    "settings_whatsappUpdated": "Updated WhatsApp settings",
+    "settings_whatsappDisconnected": "Disconnected WhatsApp",
+    "settings_whatsappNumberRegistered": "Registered a WhatsApp number"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",

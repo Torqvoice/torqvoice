@@ -139,7 +139,16 @@
     "whatsapp_send": "WhatsApp-melding sendt",
     "work_bay_create": "Opprettet arbeidsplass",
     "work_bay_update": "Oppdaterte arbeidsplass",
-    "work_bay_delete": "Slettet arbeidsplass"
+    "work_bay_delete": "Slettet arbeidsplass",
+    "auth_appSetupRedeemed": "Logget inn med oppsettskode",
+    "auth_technicianCodeSignIn": "Logget inn med engangskode",
+    "team_createAppSetupCode": "Utstedte en oppsettskode for appen",
+    "team_createTechnicianAccount": "Opprettet en teknikerkonto",
+    "team_removeTechnicianAccess": "Fjernet en tekniker og trakk tilbake tilgangen",
+    "team_setMemberTechnician": "Endret om et medlem er tekniker",
+    "settings_whatsappUpdated": "Oppdaterte WhatsApp-innstillinger",
+    "settings_whatsappDisconnected": "Koblet fra WhatsApp",
+    "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

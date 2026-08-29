@@ -26,7 +26,11 @@ function emittedActions(): string[] {
         if (entry.name !== "node_modules" && entry.name !== "__tests__") walk(full);
       } else if (/\.tsx?$/.test(entry.name)) {
         const src = fs.readFileSync(full, "utf-8");
-        for (const m of src.matchAll(/action:\s*"([a-zA-Z][\w]*\.[\w.]+)"/g)) {
+        // Either quote. The codebase is mid-migration between the two and
+        // biome rewrites a file's quotes the first time anybody touches it, so
+        // a pattern that only knows about double quotes quietly stops seeing
+        // actions that are still very much being emitted.
+        for (const m of src.matchAll(/action:\s*['"]([a-zA-Z][\w]*\.[\w.]+)['"]/g)) {
           found.add(m[1]);
         }
       }
