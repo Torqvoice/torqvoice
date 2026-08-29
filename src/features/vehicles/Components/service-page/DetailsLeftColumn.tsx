@@ -1,5 +1,6 @@
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
+import { CustomerConcernBanner } from '../service-edit/CustomerConcernBanner'
 import { NotesSection } from '../service-edit/NotesSection'
 import { PaymentsSection } from '../service-detail/PaymentsSection'
 import { InvoiceSummary } from '../service-detail/InvoiceSummary'
@@ -78,6 +79,10 @@ export function DetailsLeftColumn({
 }: DetailsLeftColumnProps) {
   return (
     <div className="space-y-3">
+      {/* First thing on the job, above the work itself: why the car is here,
+          in the customer's words. */}
+      <CustomerConcernBanner defaultValue={record.customerConcern ?? ''} />
+
       {/* Above the parts, inside the working column: the tires are the first
           thing this job needs and the last thing the invoice sidebar cares
           about, so it belongs here rather than spanning both. */}

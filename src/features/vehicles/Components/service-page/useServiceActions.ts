@@ -102,7 +102,13 @@ export function useServiceActions({
     // formData.get() returns the first (hidden/stale) one, so read the visible input via offsetParent.
     // For hidden inputs (offsetParent is always null), take the last one in DOM order.
     const getVisible = (name: string) => {
-      const inputs = Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`))
+      // Textareas too. This read only ever looked at inputs, so a multi-line
+      // field would have submitted nothing at all and done it quietly.
+      const inputs = Array.from(
+        form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+          `input[name="${name}"], textarea[name="${name}"]`
+        )
+      )
       const visible = inputs.find((el) => el.offsetParent !== null)
       if (visible) return visible.value
       // All hidden — take last (active layout renders second)
@@ -117,6 +123,10 @@ export function useServiceActions({
       vehicleId: selectedVehicleId,
       title: getVisible('title'),
       description: notesRef.current.description || undefined,
+      // What the customer said at drop-off. Typed at intake beside the vehicle,
+      // not in the notes section, so it is read from the form rather than from
+      // the notes state.
+      customerConcern: getVisible('customerConcern') || undefined,
       type,
       status,
       cost: totalAmount,

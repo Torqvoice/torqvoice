@@ -163,7 +163,6 @@ export async function ServiceRecordPage({
     startDateTime: isRenderable(record.startDateTime) ? record.startDateTime.toISOString() : null,
     endDateTime: isRenderable(record.endDateTime) ? record.endDateTime.toISOString() : null,
     techName: record.techName || '',
-    customerConcern: record.customerConcern || '',
     diagnosticNotes: record.diagnosticNotes || '',
     invoiceNotes: record.invoiceNotes || '',
     invoiceNumber: record.invoiceNumber || '',
