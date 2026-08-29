@@ -72,7 +72,9 @@
     "vehicle": "Araç",
     "quote": "Teklif",
     "part": "Parça",
-    "inspection": "Muayene"
+    "inspection": "Muayene",
+    "shopActions": "Servis",
+    "person": "Kişi ekle"
   },
   "purchaseWhiteLabel": "Beyaz Etiket Satın Al",
   "licenseExpired": "Lisansınız sona erdi. Özellikler sınırlı olabilir.",

@@ -72,7 +72,9 @@
     "vehicle": "Kjøretøy",
     "quote": "Tilbud",
     "part": "Del",
-    "inspection": "Inspeksjon"
+    "inspection": "Inspeksjon",
+    "shopActions": "Verkstedet",
+    "person": "Legg til en person"
   },
   "purchaseWhiteLabel": "Kjøp White-Label",
   "licenseExpired": "Lisensen din har utløpt. Funksjoner kan være begrenset.",

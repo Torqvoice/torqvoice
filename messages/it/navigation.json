@@ -72,7 +72,9 @@
     "vehicle": "Veicolo",
     "quote": "Preventivo",
     "part": "Ricambio",
-    "inspection": "Ispezione"
+    "inspection": "Ispezione",
+    "shopActions": "Officina",
+    "person": "Aggiungi una persona"
   },
   "purchaseWhiteLabel": "Acquista White-Label",
   "licenseExpired": "La tua licenza è scaduta. Le funzionalità potrebbero essere limitate.",

@@ -8,7 +8,7 @@ import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { withAuth } from '@/lib/with-auth'
-import { ensureTechnicianRole } from '../Lib/technicianRole'
+import { ensureTechnicianRole, PLACEHOLDER_EMAIL_DOMAIN } from '../Lib/technicianRole'
 
 /**
  * Creates a mechanic's account outright, at the counter, in one step.
@@ -71,7 +71,7 @@ export async function createTechnicianAccount(input: unknown) {
             // counter has none. This one is unroutable on purpose: it exists
             // so the row is valid and is never shown to anybody. Giving them a
             // real one later is what promotion looks like.
-            email: email || `tech-${randomUUID()}@technician.torqvoice.invalid`,
+            email: email || `tech-${randomUUID()}@${PLACEHOLDER_EMAIL_DOMAIN}`,
             // Nothing was sent anywhere, so nothing has been verified. The one
             // thing that proves this number is theirs is the first sign-in
             // code arriving on it.

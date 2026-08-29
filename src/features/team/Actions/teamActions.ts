@@ -39,7 +39,7 @@ export async function getOrganization() {
       const memberUserIds = membership.organization.members.map((m) => m.userId)
       const users = await db.user.findMany({
         where: { id: { in: memberUserIds } },
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, phone: true },
       })
       const userMap = new Map(users.map((u) => [u.id, u]))
 
@@ -48,7 +48,7 @@ export async function getOrganization() {
         role: m.role,
         roleId: m.roleId,
         customRoleName: m.customRole?.name || null,
-        user: userMap.get(m.userId) || { id: m.userId, name: 'Unknown', email: '' },
+        user: userMap.get(m.userId) || { id: m.userId, name: 'Unknown', email: '', phone: null },
       }))
 
       return {

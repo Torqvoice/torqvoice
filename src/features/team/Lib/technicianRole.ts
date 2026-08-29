@@ -64,3 +64,33 @@ export async function ensureTechnicianRole(tx: Tx, organizationId: string): Prom
   })
   return created.id
 }
+
+/**
+ * The domain the desk-created accounts get instead of an email address.
+ *
+ * `.invalid` is reserved by RFC 2606 and can never resolve or be registered,
+ * so a placeholder here fails locally rather than escaping to somebody's real
+ * inbox. It exists because `User.email` is required and unique, and a mechanic
+ * set up at a counter has no address to put there.
+ *
+ * It is never shown to anybody. See `contactFor`.
+ */
+export const PLACEHOLDER_EMAIL_DOMAIN = 'technician.torqvoice.invalid'
+
+/** Whether this address is one of ours rather than a real one. */
+export function isPlaceholderEmail(email: string | null | undefined): boolean {
+  return !!email && email.endsWith(`@${PLACEHOLDER_EMAIL_DOMAIN}`)
+}
+
+/**
+ * What to show under somebody's name.
+ *
+ * Their email if they have one, their mobile if the address is a placeholder,
+ * and nothing rather than a machine-generated string nobody can act on. A
+ * technician is identified by the number they sign in with, so that is the
+ * useful thing to print.
+ */
+export function contactFor(user: { email?: string | null; phone?: string | null }): string {
+  if (!isPlaceholderEmail(user.email)) return user.email ?? ''
+  return user.phone ?? ''
+}

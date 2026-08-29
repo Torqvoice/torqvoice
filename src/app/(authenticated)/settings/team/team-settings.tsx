@@ -20,14 +20,14 @@ import {
 } from '@/components/ui/select'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
-import { createOrganization, inviteMember, removeMember } from '@/features/team/Actions/teamActions'
-import { sendInvitation } from '@/features/team/Actions/sendInvitation'
+import { createOrganization, removeMember } from '@/features/team/Actions/teamActions'
 import { cancelInvitation } from '@/features/team/Actions/cancelInvitation'
 import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
-import { AddTechnicianForm } from '@/features/team/Components/AddTechnicianForm'
+import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
+import { contactFor } from '@/features/team/Lib/technicianRole'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
@@ -68,7 +68,7 @@ interface Member {
   role: string
   roleId: string | null
   customRoleName: string | null
-  user: { id: string; name: string; email: string }
+  user: { id: string; name: string; email: string; phone?: string | null }
 }
 
 interface Organization {
@@ -113,6 +113,7 @@ export function TeamSettings({
   currentRole,
   roles = [],
   technicianUserIds = [],
+  startAdding = false,
   pendingInvitations = [],
 }: {
   organization: Organization | null
@@ -120,6 +121,8 @@ export function TeamSettings({
   roles?: RoleData[]
   /** User ids that already have an active technician record. */
   technicianUserIds?: string[]
+  /** Arrived from Quick Add, so open the dialog rather than the page. */
+  startAdding?: boolean
   pendingInvitations?: PendingInvitation[]
 }) {
   const router = useRouter()
@@ -129,9 +132,6 @@ export function TeamSettings({
   const confirm = useConfirm()
   const [loading, setLoading] = useState(false)
   const [orgName, setOrgName] = useState('')
-  const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState<string>('member')
-  const [inviteRoleId, setInviteRoleId] = useState<string | null>(null)
 
   // Role form state
   const [showRoleForm, setShowRoleForm] = useState(false)
@@ -141,6 +141,17 @@ export function TeamSettings({
   const [technicians, setTechnicians] = useState<Set<string>>(() => new Set(technicianUserIds))
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
+  const [adding, setAdding] = useState(startAdding)
+
+  /**
+   * The address the technician's app should connect to.
+   *
+   * Configured first, current origin second. They agree in production; in
+   * development the origin is localhost, which is an address the technician's
+   * phone cannot reach.
+   */
+  const workshopUrl =
+    process.env.NEXT_PUBLIC_APP_URL || (typeof window === 'undefined' ? '' : window.location.origin)
 
   const [roleName, setRoleName] = useState('')
   const [roleIsAdmin, setRoleIsAdmin] = useState(false)
@@ -284,58 +295,6 @@ export function TeamSettings({
     setLoading(false)
   }
 
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inviteEmail.trim()) return
-    setLoading(true)
-    const result = await inviteMember({
-      email: inviteEmail,
-      role: inviteRole,
-      roleId: inviteRoleId || undefined,
-    })
-    if (result.success) {
-      const data = result.data as { invited: boolean; userNotFound?: boolean }
-      if (data.userNotFound) {
-        // User doesn't exist — ask to send invitation email
-        const emailToInvite = inviteEmail
-        const roleToInvite = inviteRole
-        setLoading(false)
-        const ok = await confirm({
-          title: t('team.userNotFoundTitle'),
-          description: t('team.userNotFoundDescription', { email: emailToInvite }),
-          confirmLabel: t('team.sendInvitation'),
-        })
-        if (ok) {
-          setLoading(true)
-          const sendResult = await sendInvitation({
-            email: emailToInvite,
-            role: roleToInvite,
-            roleId: inviteRoleId || undefined,
-          })
-          if (sendResult.success) {
-            setInviteEmail('')
-            router.refresh()
-            modal.open(
-              'success',
-              t('team.invitationSentTitle'),
-              t('team.invitationSentDescription', { email: emailToInvite })
-            )
-          } else {
-            modal.open('error', 'Error', sendResult.error || t('team.failedSendInvitation'))
-          }
-          setLoading(false)
-        }
-      } else {
-        setInviteEmail('')
-        router.refresh()
-        modal.open('success', t('team.invite'), t('team.invited'))
-      }
-    } else {
-      modal.open('error', 'Error', result.error || t('team.failedInvite'))
-    }
-    setLoading(false)
-  }
-
   const handleCancelInvitation = async (invitation: PendingInvitation) => {
     const ok = await confirm({
       title: t('team.cancelInvitation'),
@@ -421,6 +380,14 @@ export function TeamSettings({
           </>
         }
         contentClassName="space-y-4"
+        action={
+          isAdmin ? (
+            <Button size="sm" onClick={() => setAdding(true)}>
+              <Plus className="mr-1 h-4 w-4" />
+              {t('team.addPerson')}
+            </Button>
+          ) : undefined
+        }
       >
         <div className="space-y-2">
           {organization.members.map((member) => (
@@ -430,7 +397,10 @@ export function TeamSettings({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-sm">{member.user.name}</p>
-                <p className="truncate text-xs text-muted-foreground">{member.user.email}</p>
+                {/* The mobile for a mechanic set up at the counter, whose
+                    address is a placeholder nobody can act on, and the email
+                    for everybody else. Whichever one identifies them. */}
+                <p className="truncate text-xs text-muted-foreground">{contactFor(member.user)}</p>
               </div>
               <div className="flex items-center gap-2">
                 {isAdmin && technicians.has(member.user.id) && (
@@ -505,70 +475,6 @@ export function TeamSettings({
             </div>
           ))}
         </div>
-
-        {isAdmin && (
-          <form onSubmit={handleInvite} className="flex items-end gap-3 border-t pt-4">
-            <div className="flex-1 space-y-2">
-              <Label>{t('team.inviteByEmail')}</Label>
-              <Input
-                type="email"
-                placeholder={t('team.inviteEmailPlaceholder')}
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                required
-              />
-            </div>
-            <Select
-              value={inviteRoleId ? `custom:${inviteRoleId}` : inviteRole}
-              onValueChange={(v) => {
-                if (v.startsWith('custom:')) {
-                  const id = v.replace('custom:', '')
-                  setInviteRole('member')
-                  setInviteRoleId(id)
-                } else {
-                  setInviteRole(v)
-                  setInviteRoleId(null)
-                }
-              }}
-            >
-              <SelectTrigger className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">{t('team.admin')}</SelectItem>
-                <SelectItem value="member">{t('team.member')}</SelectItem>
-                {roles.length > 0 && (
-                  <>
-                    <SelectSeparator />
-                    {roles.map((r) => (
-                      <SelectItem key={r.id} value={`custom:${r.id}`}>
-                        {r.name}
-                      </SelectItem>
-                    ))}
-                  </>
-                )}
-              </SelectContent>
-            </Select>
-            <Button type="submit" disabled={loading || !inviteEmail.trim()}>
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Plus className="mr-1 h-4 w-4" />
-              )}
-              {t('team.invite')}
-            </Button>
-          </form>
-        )}
-
-        {isAdmin && (
-          <AddTechnicianForm
-            onCreated={(tech) => {
-              setTechnicians((prev) => new Set(prev).add(tech.userId))
-              setSettingUp({ userId: tech.userId, name: tech.name })
-              router.refresh()
-            }}
-          />
-        )}
       </AppCard>
 
       {/* Pending Invitations Card */}
@@ -871,13 +777,18 @@ export function TeamSettings({
       {/* Configured address first, current origin second. They agree in
           production; in development the origin is localhost, which is an
           address the technician's phone cannot reach. */}
+      <AddPersonDialog
+        open={adding}
+        onOpenChange={setAdding}
+        workshopUrl={workshopUrl}
+        roles={roles}
+        onChanged={() => router.refresh()}
+      />
+
       <AppSetupCodeDialog
         userId={settingUp?.userId ?? null}
         memberName={settingUp?.name ?? ''}
-        workshopUrl={
-          process.env.NEXT_PUBLIC_APP_URL ||
-          (typeof window === 'undefined' ? '' : window.location.origin)
-        }
+        workshopUrl={workshopUrl}
         onClose={() => setSettingUp(null)}
       />
     </div>

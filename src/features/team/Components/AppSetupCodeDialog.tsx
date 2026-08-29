@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { QRCodeSVG } from 'qrcode.react'
-import { Check, Copy, Loader2, Smartphone } from 'lucide-react'
+import { Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -13,26 +12,20 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { createAppSetupCode, revokeAppSetupCode } from '@/features/team/Actions/createAppSetupCode'
+import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 
 /**
- * The desk's half of putting a technician's phone onto the workshop.
+ * A fresh code for somebody who is already a technician.
  *
- * Designed for two people standing at a counter with the car outside: the
- * screen shows a QR, the phone reads it, and nothing is typed. The characters
- * underneath are for the technician who has already left and is on the phone.
+ * Setting them up the first time happens inside the add flow, where it is one
+ * step of several. This is the other occasion: a new phone, a factory reset,
+ * or a message that never turned up. Same code, same instructions, same
+ * screen, so there is one thing to learn rather than two.
  *
  * The code is shown once and never fetched again. Closing this revokes it, so
- * a code left up on an unattended screen stops working when whoever made it
+ * one left up on an unattended screen stops working when whoever made it
  * walks away.
  */
-
-interface Issued {
-  code: string
-  display: string
-  expiresAt: string
-  name: string
-}
-
 export function AppSetupCodeDialog({
   userId,
   memberName,
@@ -42,15 +35,12 @@ export function AppSetupCodeDialog({
   /** The member being set up. Null when the dialog is closed. */
   userId: string | null
   memberName: string
-  /** The address the app should connect to, which is this server. */
   workshopUrl: string
   onClose: () => void
 }) {
   const t = useTranslations('settings')
-  const [issued, setIssued] = useState<Issued | null>(null)
+  const [issued, setIssued] = useState<IssuedCode | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [remaining, setRemaining] = useState(0)
-  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (!userId) {
@@ -63,7 +53,7 @@ export function AppSetupCodeDialog({
     setError(null)
     createAppSetupCode({ userId }).then((result) => {
       if (cancelled) return
-      if (result.success) setIssued(result.data as Issued)
+      if (result.success) setIssued(result.data as IssuedCode)
       else setError(result.error || t('team.setupAppFailed'))
     })
     return () => {
@@ -71,30 +61,13 @@ export function AppSetupCodeDialog({
     }
   }, [userId, t])
 
-  // Counts down rather than showing a clock time, because "expires in 7:12" is
-  // something a desk operator can act on and "expires at 14:07" is arithmetic.
-  useEffect(() => {
-    if (!issued) return
-    const tick = () => {
-      const left = Math.max(0, new Date(issued.expiresAt).getTime() - Date.now())
-      setRemaining(Math.ceil(left / 1000))
-    }
-    tick()
-    const timer = setInterval(tick, 1000)
-    return () => clearInterval(timer)
-  }, [issued])
-
   const close = useCallback(() => {
     // Not awaited: the dialog should shut the moment it is asked to, and the
-    // revoke is the server's problem. It is also belt and braces, since the
-    // code expires on its own.
+    // revoke is the server's problem. Belt and braces anyway, since the code
+    // expires on its own.
     if (userId) void revokeAppSetupCode({ userId })
     onClose()
   }, [userId, onClose])
-
-  const expired = issued !== null && remaining <= 0
-  const minutes = Math.floor(remaining / 60)
-  const seconds = String(remaining % 60).padStart(2, '0')
 
   return (
     <Dialog open={userId !== null} onOpenChange={(open) => !open && close()}>
@@ -104,102 +77,15 @@ export function AppSetupCodeDialog({
             <Smartphone className="h-4 w-4" />
             {t('team.setupAppTitle')}
           </DialogTitle>
-          <DialogDescription>
-            {t('team.setupAppInstruction', { name: memberName })}
-          </DialogDescription>
+          <DialogDescription>{t('team.techHandoffBlurb')}</DialogDescription>
         </DialogHeader>
 
-        {/* Numbered, because the one-sentence version was read as "scan this"
-            and everybody reaches for the phone's own camera. Step two is the
-            one that matters and it names the button verbatim. */}
-        <ol className="space-y-2 text-sm">
-          {[t('team.setupAppStep1'), t('team.setupAppStep2'), t('team.setupAppStep3')].map(
-            (step, i) => (
-              <li key={step} className="flex gap-3">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted font-medium text-xs">
-                  {i + 1}
-                </span>
-                <span>{step}</span>
-              </li>
-            )
-          )}
-        </ol>
-
-        {error && <p className="text-destructive text-sm">{error}</p>}
-
-        {!issued && !error && (
-          <div className="flex justify-center py-10">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        )}
-
-        {issued && (
-          <div className="space-y-4">
-            {/* White plate behind it regardless of theme: a dark-mode QR with
-                an inverted quiet zone is a QR most scanners refuse. */}
-            <div className="flex justify-center rounded-lg bg-white p-6">
-              {/* A URL, not a payload of our own.
-                  A technician points their phone's own camera at this before
-                  anyone tells them not to, and a camera that finds JSON offers
-                  to open it in a text editor. A URL lands them on the
-                  workshop's own page, which tells them what to do next.
-                  The code rides in the fragment so it never reaches a server
-                  log or a Referer header, and the origin is the workshop
-                  address, so nothing else has to be encoded at all. */}
-              <QRCodeSVG
-                value={`${workshopUrl}/app-setup#${issued.code}`}
-                size={200}
-                level="H"
-                marginSize={2}
-              />
-            </div>
-
-            <div className="space-y-1 text-center">
-              <p className="text-muted-foreground text-xs">{t('team.setupAppOrType')}</p>
-              <p className="font-mono font-semibold text-2xl tracking-[0.2em]">{issued.display}</p>
-            </div>
-
-            {/* The failure this exists to prevent: a technician points their
-                own camera at the QR, lands on a web page, and concludes the
-                thing is broken. */}
-            <p className="rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-center text-amber-700 text-xs dark:text-amber-400">
-              {t('team.setupAppNotCamera')}
-            </p>
-
-            <p className="text-center text-muted-foreground text-xs">
-              {expired
-                ? t('team.setupAppExpired')
-                : t('team.setupAppExpiry', { time: `${minutes}:${seconds}` })}
-            </p>
-          </div>
-        )}
-
-        {/* For a technician who is not standing here.
-            Deliberately a copy rather than a send: SMS needs the workshop to
-            have configured a provider, and plenty never will, while every shop
-            already has some way of messaging its own staff. This works for all
-            of them and costs nothing. */}
-        {issued && !expired && (
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              const link = `${workshopUrl}/app-setup#${issued.code}`
-              navigator.clipboard
-                .writeText(link)
-                .then(() => {
-                  setCopied(true)
-                  setTimeout(() => setCopied(false), 2000)
-                })
-                .catch(() => {
-                  /* clipboard refused; the code is on screen to read out */
-                })
-            }}
-          >
-            {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-            {copied ? t('team.setupAppCopied') : t('team.setupAppCopyLink')}
-          </Button>
-        )}
+        <SetupCodeHandoff
+          issued={issued}
+          error={error}
+          workshopUrl={workshopUrl}
+          memberName={memberName}
+        />
 
         <Button variant="secondary" onClick={close} className="w-full">
           {t('team.setupAppDone')}

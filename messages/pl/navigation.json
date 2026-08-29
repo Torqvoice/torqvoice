@@ -72,7 +72,9 @@
     "vehicle": "Pojazd",
     "quote": "Wycena",
     "part": "Część",
-    "inspection": "Przegląd"
+    "inspection": "Przegląd",
+    "shopActions": "Warsztat",
+    "person": "Dodaj osobę"
   },
   "purchaseWhiteLabel": "Kup White-Label",
   "licenseExpired": "Twoja licencja wygasła. Funkcje mogą być ograniczone.",
