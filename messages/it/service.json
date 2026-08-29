@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Cosa ha segnalato il cliente",
-    "addFirst": "Aggiungi cosa ha segnalato il cliente",
+    "title": "Segnalazioni del cliente",
+    "addFirst": "Aggiungi una segnalazione del cliente",
     "add": "Aggiungine un altro",
     "placeholder": "C'è un rumore dietro quando freno",
     "remove": "Rimuovi questo punto",

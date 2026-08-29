@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Ką nurodė klientas",
-    "addFirst": "Pridėti tai, ką nurodė klientas",
+    "title": "Kliento pranešimai",
+    "addFirst": "Pridėti kliento pranešimą",
     "add": "Pridėti dar vieną",
     "placeholder": "Stabdant gale girdisi garsas",
     "remove": "Pašalinti šį punktą",

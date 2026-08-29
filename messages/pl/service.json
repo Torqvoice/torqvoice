@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Z czym przyjechał klient",
-    "addFirst": "Dodaj to, z czym przyjechał klient",
+    "title": "Zgłoszenia klienta",
+    "addFirst": "Dodaj zgłoszenie klienta",
     "add": "Dodaj kolejne",
     "placeholder": "Przy hamowaniu słychać hałas z tyłu",
     "remove": "Usuń ten punkt",

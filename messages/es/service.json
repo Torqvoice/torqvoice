@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Lo que preguntó el cliente",
-    "addFirst": "Añadir lo que preguntó el cliente",
+    "title": "Motivos del cliente",
+    "addFirst": "Añadir un motivo del cliente",
     "add": "Añadir otro",
     "placeholder": "Hace un ruido detrás cuando freno",
     "remove": "Quitar este punto",

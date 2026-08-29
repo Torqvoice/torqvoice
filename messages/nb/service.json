@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Dette spurte kunden om",
-    "addFirst": "Legg til det kunden spurte om",
+    "title": "Kundens beskrivelse",
+    "addFirst": "Legg til kundens beskrivelse",
     "add": "Legg til en til",
     "placeholder": "Det kommer en lyd bakfra når jeg bremser",
     "remove": "Fjern dette punktet",

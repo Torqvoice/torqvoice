@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Ce que le client a signalé",
-    "addFirst": "Ajouter ce que le client a signalé",
+    "title": "Demandes du client",
+    "addFirst": "Ajouter une demande du client",
     "add": "En ajouter un autre",
     "placeholder": "Il y a un bruit à l'arrière quand je freine",
     "remove": "Retirer ce point",

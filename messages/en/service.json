@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "What the customer asked about",
-    "addFirst": "Add what the customer asked about",
+    "title": "Customer concerns",
+    "addFirst": "Add a customer concern",
     "add": "Add another",
     "placeholder": "There is a noise from the back when I brake",
     "remove": "Remove this concern",

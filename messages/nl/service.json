@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Waar de klant naar vroeg",
-    "addFirst": "Voeg toe waar de klant naar vroeg",
+    "title": "Klantmeldingen",
+    "addFirst": "Klantmelding toevoegen",
     "add": "Nog een toevoegen",
     "placeholder": "Er komt een geluid van achteren als ik rem",
     "remove": "Dit punt verwijderen",

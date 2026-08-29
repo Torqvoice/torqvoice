@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Das Anliegen des Kunden",
-    "addFirst": "Anliegen des Kunden hinzufügen",
+    "title": "Kundenanliegen",
+    "addFirst": "Kundenanliegen hinzufügen",
     "add": "Weiteres hinzufügen",
     "placeholder": "Beim Bremsen kommt hinten ein Geräusch",
     "remove": "Dieses Anliegen entfernen",

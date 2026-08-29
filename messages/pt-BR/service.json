@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "O que o cliente relatou",
-    "addFirst": "Adicionar o que o cliente relatou",
+    "title": "Relatos do cliente",
+    "addFirst": "Adicionar um relato do cliente",
     "add": "Adicionar outro",
     "placeholder": "Faz um barulho atrás quando eu freio",
     "remove": "Remover este item",

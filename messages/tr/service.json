@@ -387,8 +387,8 @@
     }
   },
   "concerns": {
-    "title": "Müşterinin bildirdiği",
-    "addFirst": "Müşterinin bildirdiğini ekle",
+    "title": "Müşteri bildirimleri",
+    "addFirst": "Müşteri bildirimi ekle",
     "add": "Bir tane daha ekle",
     "placeholder": "Fren yapınca arkadan ses geliyor",
     "remove": "Bu maddeyi kaldır",
