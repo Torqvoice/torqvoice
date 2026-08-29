@@ -78,6 +78,7 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     clearOrder: 48,
   },
   { model: 'StatusReport', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
+  { model: 'TimeEntry', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
   {
     model: 'Reminder',
     key: 'orgReminders',
@@ -273,6 +274,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   CustomerSmsCode: 'One-time code, valid for minutes.',
   DashboardWidget: 'Per-user dashboard layout, tied to user accounts a backup does not carry.',
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
+  PushDevice:
+    'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',
   Subscription: 'Billing state owned by Stripe, not by us.',
   TeamInvitation: 'Pending invitation, expires on its own.',
   WebhookDelivery: 'Delivery log for a webhook, rewritten every time one fires.',

@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
                 attachments: true,
                 payments: true,
                 statusReports: true,
+                timeEntries: true,
               },
             },
           },
@@ -167,6 +168,7 @@ export async function POST(request: NextRequest) {
             laborItems: true,
             attachments: true,
             payments: true,
+            timeEntries: true,
           },
         })
         .then((result) => {
