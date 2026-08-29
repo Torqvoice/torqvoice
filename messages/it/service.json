@@ -78,7 +78,10 @@
       "typePrompt": "Digita un nome...",
       "boardTechnicians": "Tecnici della Lavagna",
       "teamMembers": "Membri del Team"
-    }
+    },
+    "customerConcern": "Cosa ha detto il cliente",
+    "customerConcernPlaceholder": "C’è un rumore dietro quando freno",
+    "customerConcernHint": "Con le sue parole, come le ha dette al banco. È a questo che rispondi quando riconsegni l’auto."
   },
   "parts": {
     "title": "Pezzi",

@@ -46,6 +46,7 @@ export const createServiceSchema = z.object({
   techName: z.string().optional(),
   parts: z.string().optional(),
   laborHours: z.coerce.number().optional(),
+  customerConcern: z.string().optional(),
   diagnosticNotes: z.string().optional(),
   invoiceNotes: z.string().optional(),
   partItems: z.array(servicePartSchema).optional(),

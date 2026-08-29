@@ -78,7 +78,10 @@
       "typePrompt": "Escriba un nombre...",
       "boardTechnicians": "Técnicos del Tablero",
       "teamMembers": "Miembros del Equipo"
-    }
+    },
+    "customerConcern": "Lo que dijo el cliente",
+    "customerConcernPlaceholder": "Hay un ruido en la parte de atrás al frenar",
+    "customerConcernHint": "Con sus palabras, tal como lo dijo en el mostrador. Es a lo que responde cuando devuelve el coche."
   },
   "parts": {
     "title": "Piezas",

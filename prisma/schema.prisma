@@ -208,6 +208,18 @@ model ServiceRecord {
   id              String    @id @default(cuid())
   title           String
   description     String?
+  /// What the customer said when they handed the keys over, in their words.
+  ///
+  /// Deliberately not `description`, which is what the shop is going to do,
+  /// nor `diagnosticNotes`, which is what the shop found. The trade calls
+  /// these the three Cs: concern, cause, correction. Only the first belongs to
+  /// the customer, and only the first is something they can later dispute, so
+  /// mixing it into a field the shop rewrites loses the one account nobody
+  /// else can give.
+  ///
+  /// Written at intake by whoever books the car in. The technician app shows
+  /// it and cannot change it.
+  customerConcern String?
   type            String    @default("maintenance")
   status          String    @default("completed")
   cost            Float     @default(0)

@@ -78,7 +78,10 @@
       "typePrompt": "Įveskite vardą...",
       "boardTechnicians": "Lentos technikai",
       "teamMembers": "Komandos nariai"
-    }
+    },
+    "customerConcern": "Ką pasakė klientas",
+    "customerConcernPlaceholder": "Stabdant iš galo girdisi garsas",
+    "customerConcernHint": "Jo paties žodžiais, kaip pasakė prie registratūros. Į tai jūs ir atsakote grąžindami automobilį."
   },
   "parts": {
     "title": "Dalys",

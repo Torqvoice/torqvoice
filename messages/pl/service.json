@@ -78,7 +78,10 @@
       "typePrompt": "Wpisz nazwę...",
       "boardTechnicians": "Technicy z Tablicy",
       "teamMembers": "Członkowie Zespołu"
-    }
+    },
+    "customerConcern": "Co powiedział klient",
+    "customerConcernPlaceholder": "Z tyłu słychać hałas przy hamowaniu",
+    "customerConcernHint": "Jego własnymi słowami, tak jak powiedział przy ladzie. To na to odpowiadasz przy wydaniu auta."
   },
   "parts": {
     "title": "Części",

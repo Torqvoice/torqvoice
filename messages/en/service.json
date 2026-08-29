@@ -78,7 +78,10 @@
       "typePrompt": "Type a name...",
       "boardTechnicians": "Board Technicians",
       "teamMembers": "Team Members"
-    }
+    },
+    "customerConcern": "What the customer said",
+    "customerConcernPlaceholder": "There is a noise from the back when I brake",
+    "customerConcernHint": "In their words, as they said it at the counter. What you are answering when you hand the car back."
   },
   "parts": {
     "title": "Parts",

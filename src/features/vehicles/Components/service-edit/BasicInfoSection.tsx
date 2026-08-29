@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { useServiceType } from '@/components/service-type-context'
@@ -112,6 +113,24 @@ export function BasicInfoSection({
           />
         </div>
       )}
+
+      {/* What the customer said, at the moment somebody is writing down why
+          the car is here. Not in the notes section: that is the shop writing
+          about its own work, and this is the one line on the job that belongs
+          to somebody else. */}
+      <div className="space-y-1">
+        <Label htmlFor="customerConcern" className="text-xs">
+          {t('customerConcern')}
+        </Label>
+        <Textarea
+          id="customerConcern"
+          name="customerConcern"
+          rows={2}
+          placeholder={t('customerConcernPlaceholder')}
+          defaultValue={initialData.customerConcern}
+        />
+        <p className="text-muted-foreground text-xs">{t('customerConcernHint')}</p>
+      </div>
 
       <input type="hidden" name="techName" value={techName} />
     </div>

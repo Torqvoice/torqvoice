@@ -78,7 +78,10 @@
       "typePrompt": "Typ een naam...",
       "boardTechnicians": "Werkbordtechnici",
       "teamMembers": "Teamleden"
-    }
+    },
+    "customerConcern": "Wat de klant zei",
+    "customerConcernPlaceholder": "Er komt een geluid van achteren als ik rem",
+    "customerConcernHint": "In hun eigen woorden, zoals aan de balie gezegd. Dit is waar u antwoord op geeft bij het teruggeven van de auto."
   },
   "parts": {
     "title": "Onderdelen",

@@ -78,7 +78,10 @@
       "typePrompt": "Введите имя...",
       "boardTechnicians": "Механики доски",
       "teamMembers": "Участники команды"
-    }
+    },
+    "customerConcern": "Что сказал клиент",
+    "customerConcernPlaceholder": "Сзади шум при торможении",
+    "customerConcernHint": "Его словами, как он сказал у стойки. Именно на это вы отвечаете при выдаче машины."
   },
   "parts": {
     "title": "Запчасти",

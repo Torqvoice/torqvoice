@@ -78,7 +78,10 @@
       "typePrompt": "Geben Sie einen Namen ein...",
       "boardTechnicians": "Board-Techniker",
       "teamMembers": "Teamitglieder"
-    }
+    },
+    "customerConcern": "Kundenangabe",
+    "customerConcernPlaceholder": "Beim Bremsen kommt hinten ein Geräusch",
+    "customerConcernHint": "In den Worten des Kunden, so wie am Tresen gesagt. Das ist es, worauf Sie bei der Rückgabe antworten."
   },
   "parts": {
     "title": "Teile",

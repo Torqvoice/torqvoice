@@ -78,7 +78,10 @@
       "typePrompt": "Adını yazın...",
       "boardTechnicians": "Pano Teknisyenleri",
       "teamMembers": "Takım Üyeleri"
-    }
+    },
+    "customerConcern": "Müşterinin söyledikleri",
+    "customerConcernPlaceholder": "Fren yapınca arkadan ses geliyor",
+    "customerConcernHint": "Bankoda söylediği şekliyle, kendi sözleriyle. Aracı teslim ederken yanıtladığınız şey budur."
   },
   "parts": {
     "title": "Parçalar",

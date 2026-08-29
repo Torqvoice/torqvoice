@@ -21,6 +21,8 @@ export interface InitialData {
   id: string
   title: string
   description: string
+  /** What the customer said at drop-off, in their words. */
+  customerConcern: string
   type: string
   status: string
   mileage: number | null

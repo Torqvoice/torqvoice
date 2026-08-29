@@ -78,7 +78,10 @@
       "typePrompt": "Digite um nome...",
       "boardTechnicians": "Técnicos do Quadro",
       "teamMembers": "Membros do Time"
-    }
+    },
+    "customerConcern": "O que o cliente disse",
+    "customerConcernPlaceholder": "Tem um barulho atrás quando eu freio",
+    "customerConcernHint": "Nas palavras dele, como disse no balcão. É a isso que você responde ao devolver o carro."
   },
   "parts": {
     "title": "Peças",

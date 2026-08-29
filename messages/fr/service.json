@@ -78,7 +78,10 @@
       "typePrompt": "Tapez un nom...",
       "boardTechnicians": "Techniciens du Tableau",
       "teamMembers": "Membres de l'Équipe"
-    }
+    },
+    "customerConcern": "Ce que le client a dit",
+    "customerConcernPlaceholder": "Il y a un bruit à l’arrière quand je freine",
+    "customerConcernHint": "Avec ses mots, tels qu'ils ont été dits au comptoir. C'est ce à quoi vous répondez à la restitution du véhicule."
   },
   "parts": {
     "title": "Pièces",

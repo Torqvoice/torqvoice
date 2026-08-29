@@ -78,7 +78,10 @@
       "typePrompt": "Skriv navn...",
       "boardTechnicians": "Tavleteknikere",
       "teamMembers": "Lagmedlemmer"
-    }
+    },
+    "customerConcern": "Kundens beskrivelse",
+    "customerConcernPlaceholder": "Det kommer en lyd bakfra når jeg bremser",
+    "customerConcernHint": "Med kundens egne ord, slik det ble sagt i skranken. Det er dette du svarer på når bilen leveres tilbake."
   },
   "parts": {
     "title": "Deler",

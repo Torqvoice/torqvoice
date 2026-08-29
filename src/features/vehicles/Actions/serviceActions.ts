@@ -67,6 +67,7 @@ export async function getServiceRecordsPaginated(
         where.OR = [
           { title: { contains: params.search, mode: 'insensitive' } },
           { description: { contains: params.search, mode: 'insensitive' } },
+          { customerConcern: { contains: params.search, mode: 'insensitive' } },
           { diagnosticNotes: { contains: params.search, mode: 'insensitive' } },
           { techName: { contains: params.search, mode: 'insensitive' } },
           { shopName: { contains: params.search, mode: 'insensitive' } },
@@ -591,6 +592,10 @@ export async function updateServiceRecord(input: unknown) {
             description:
               recordData.description !== undefined ? recordData.description || null : undefined,
             techName: recordData.techName !== undefined ? recordData.techName || null : undefined,
+            customerConcern:
+              recordData.customerConcern !== undefined
+                ? recordData.customerConcern || null
+                : undefined,
             diagnosticNotes:
               recordData.diagnosticNotes !== undefined
                 ? recordData.diagnosticNotes || null

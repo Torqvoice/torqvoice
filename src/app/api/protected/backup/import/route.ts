@@ -108,6 +108,10 @@ async function importServiceRecordTree(
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
       laborHours: (sr.laborHours as number) || null,
+      // Restored by name like every other column here. The export sends the
+      // whole row, but this side names each field, so a column added to the
+      // schema and not to this list is a column every restore silently drops.
+      customerConcern: (sr.customerConcern as string) || null,
       diagnosticNotes: (sr.diagnosticNotes as string) || null,
       invoiceNotes: (sr.invoiceNotes as string) || null,
       subtotal: (sr.subtotal as number) || 0,

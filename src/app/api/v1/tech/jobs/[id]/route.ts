@@ -27,6 +27,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           id: true,
           title: true,
           description: true,
+          // Read only in the app: the value of it is that it is the
+          // customer's account, not the shop's.
+          customerConcern: true,
           status: true,
           diagnosticNotes: true,
           mileage: true,
