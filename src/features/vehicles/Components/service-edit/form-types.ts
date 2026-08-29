@@ -1,4 +1,5 @@
 import type {
+  ServiceConcernInput,
   ServicePartInput,
   ServiceLaborInput,
   ServiceAttachmentInput,
@@ -21,6 +22,7 @@ export interface InitialData {
   id: string
   title: string
   description: string
+  /** What the customer said at drop-off, in their words. */
   type: string
   status: string
   mileage: number | null
@@ -33,6 +35,7 @@ export interface InitialData {
   invoiceNumber?: string
   invoiceDate: string
   invoiceDueDate: string
+  concerns: ServiceConcernInput[]
   partItems: ServicePartInput[]
   laborItems: ServiceLaborInput[]
   attachments: (ServiceAttachmentInput & { includeInInvoice?: boolean })[]

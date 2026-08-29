@@ -385,5 +385,14 @@
       "title": "Varsayılan garanti ayarları",
       "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
     }
+  },
+  "concerns": {
+    "title": "Müşteri bildirimleri",
+    "addFirst": "Müşteri bildirimi ekle",
+    "add": "Bir tane daha ekle",
+    "placeholder": "Fren yapınca arkadan ses geliyor",
+    "remove": "Bu maddeyi kaldır",
+    "notAnswered": "Bu konuda henüz bir şey bulunmadı",
+    "answered": "Bu konuda {count} tespit"
   }
 }

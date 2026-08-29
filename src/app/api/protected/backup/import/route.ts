@@ -152,6 +152,20 @@ async function importServiceRecordTree(
     })
   }
 
+  // Concerns. Restored before findings so a finding's concernId still has a
+  // row to point at.
+  const concerns = sr.concerns as Record<string, unknown>[] | undefined
+  if (concerns?.length) {
+    await tx.serviceConcern.createMany({
+      data: concerns.map((c, index) => ({
+        id: c.id as string,
+        description: c.description as string,
+        sortOrder: (c.sortOrder as number) ?? index,
+        serviceRecordId: sr.id as string,
+      })),
+    })
+  }
+
   // Service labor
   const laborItems = sr.laborItems as Record<string, unknown>[] | undefined
   if (laborItems?.length) {

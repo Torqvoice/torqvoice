@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "Answers which concern?",
+    "concernNone": "Not something the customer asked about"
   },
   "observationsPage": {
     "searchPlaceholder": "Search description, notes, or vehicle...",

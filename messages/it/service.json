@@ -385,5 +385,14 @@
       "title": "Impostazioni garanzia predefinite",
       "description": "Imposta i termini di garanzia predefiniti per i nuovi interventi"
     }
+  },
+  "concerns": {
+    "title": "Segnalazioni del cliente",
+    "addFirst": "Aggiungi una segnalazione del cliente",
+    "add": "Aggiungine un altro",
+    "placeholder": "C'è un rumore dietro quando freno",
+    "remove": "Rimuovi questo punto",
+    "notAnswered": "Non è ancora stato trovato nulla",
+    "answered": "{count} riscontro/i su questo"
   }
 }

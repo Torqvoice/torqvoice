@@ -385,5 +385,14 @@
       "title": "Default Warranty Settings",
       "description": "Set default warranty terms for new service records"
     }
+  },
+  "concerns": {
+    "title": "Customer concerns",
+    "addFirst": "Add a customer concern",
+    "add": "Add another",
+    "placeholder": "There is a noise from the back when I brake",
+    "remove": "Remove this concern",
+    "notAnswered": "Nothing found against this yet",
+    "answered": "{count} finding(s) against this"
   }
 }

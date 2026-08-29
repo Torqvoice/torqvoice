@@ -37,6 +37,8 @@ interface ObservationsManagerProps {
   onAddObservations: (selectedIds: string[]) => Promise<void>
   addingObservations: boolean
   onControlsReady: (controls: ObservationsControls) => void
+  /** The concerns on this job, so a finding can say which one it answers. */
+  concerns?: { id: string; description: string }[]
 }
 
 export function ObservationsManager({
@@ -46,6 +48,7 @@ export function ObservationsManager({
   onAddObservations,
   addingObservations,
   onControlsReady,
+  concerns = [],
 }: ObservationsManagerProps) {
   const tf = useTranslations('vehicles.findings')
   const [openFindingForm, setOpenFindingForm] = useState(false)
@@ -90,6 +93,7 @@ export function ObservationsManager({
         open={openFindingForm}
         onOpenChange={setOpenFindingForm}
         finding={editingFinding}
+        concerns={concerns}
       />
 
       <Dialog open={showExistingDialog} onOpenChange={setShowExistingDialog}>

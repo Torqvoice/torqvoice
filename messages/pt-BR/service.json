@@ -385,5 +385,14 @@
       "title": "Configurações padrão de garantia",
       "description": "Definir termos de garantia padrão para novos registros de serviço"
     }
+  },
+  "concerns": {
+    "title": "Relatos do cliente",
+    "addFirst": "Adicionar um relato do cliente",
+    "add": "Adicionar outro",
+    "placeholder": "Faz um barulho atrás quando eu freio",
+    "remove": "Remover este item",
+    "notAnswered": "Nada encontrado sobre isso ainda",
+    "answered": "{count} constatação(ões) sobre isso"
   }
 }

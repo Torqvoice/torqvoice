@@ -385,5 +385,14 @@
       "title": "Configuración de garantía predeterminada",
       "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
     }
+  },
+  "concerns": {
+    "title": "Motivos del cliente",
+    "addFirst": "Añadir un motivo del cliente",
+    "add": "Añadir otro",
+    "placeholder": "Hace un ruido detrás cuando freno",
+    "remove": "Quitar este punto",
+    "notAnswered": "Todavía no se ha encontrado nada",
+    "answered": "{count} hallazgo(s) sobre esto"
   }
 }

@@ -173,6 +173,24 @@ export async function getVehicleFindings(
   )
 }
 
+/**
+ * A concern id is only usable if it belongs to this workshop.
+ *
+ * Without this check the id travels straight from the client into a foreign
+ * key, and a finding on one workshop's vehicle could be pointed at another
+ * workshop's concern. Nothing renders it across the boundary, but it is a
+ * cross-organization write, and those do not get to depend on the UI for
+ * their safety.
+ */
+async function assertConcernInOrg(concernId: string | null | undefined, organizationId: string) {
+  if (!concernId) return
+  const concern = await db.serviceConcern.findFirst({
+    where: { id: concernId, serviceRecord: { organizationId } },
+    select: { id: true },
+  })
+  if (!concern) throw new Error('Concern not found')
+}
+
 export async function createFinding(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
@@ -181,6 +199,7 @@ export async function createFinding(input: unknown) {
         where: { id: data.vehicleId, organizationId },
       })
       if (!vehicle) throw new Error('Vehicle not found')
+      await assertConcernInOrg(data.concernId, organizationId)
 
       const finding = await db.vehicleFinding.create({ data })
       revalidatePath(`/vehicles/${data.vehicleId}`)
@@ -198,7 +217,10 @@ export async function createFinding(input: unknown) {
         action: 'finding.create',
         entity: 'VehicleFinding',
         entityId: result.id,
-        details: { key: 'finding_create', params: { description: result.description, vehicleId: result.vehicleId } },
+        details: {
+          key: 'finding_create',
+          params: { description: result.description, vehicleId: result.vehicleId },
+        },
         metadata: { findingId: result.id, vehicleId: result.vehicleId },
       }),
     }
@@ -213,6 +235,7 @@ export async function updateFinding(input: unknown) {
         where: { id, vehicle: { organizationId } },
       })
       if (!finding) throw new Error('Finding not found')
+      await assertConcernInOrg(data.concernId, organizationId)
 
       const updated = await db.vehicleFinding.update({
         where: { id },

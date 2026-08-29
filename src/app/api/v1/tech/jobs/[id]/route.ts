@@ -27,6 +27,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           id: true,
           title: true,
           description: true,
+          // Read only in the app: the value of these is that they are the
+          // customer's account, not the shop's. Ordered the way the customer
+          // raised them, with whatever the shop has found against each one.
+          concerns: {
+            orderBy: { sortOrder: 'asc' },
+            select: {
+              id: true,
+              description: true,
+              findings: {
+                select: { id: true, description: true, severity: true, status: true },
+              },
+            },
+          },
           status: true,
           diagnosticNotes: true,
           mileage: true,

@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "К какому пункту относится?",
+    "concernNone": "Клиент об этом не спрашивал"
   },
   "observationsPage": {
     "searchPlaceholder": "Поиск по описанию, заметкам или транспорту...",

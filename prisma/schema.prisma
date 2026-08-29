@@ -293,6 +293,7 @@ model ServiceRecord {
   stockMovements StockMovement[]
   timeEntries    TimeEntry[]
 
+  concerns           ServiceConcern[]
   discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
   resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
 
@@ -372,6 +373,38 @@ model Reminder {
   @@map("reminders")
 }
 
+/// One thing the customer asked about, in their words.
+///
+/// A job is a list of these rather than a single note, because that is how the
+/// work actually divides: "it pulls right when braking" and "the aircon smells"
+/// are two conversations, two diagnoses and two lines on the bill. Storing them
+/// as one blob means the shop can answer one and quietly drop the other, which
+/// is the single most common reason a car comes back.
+///
+/// This is the first of the trade's three Cs. The cause is a VehicleFinding
+/// pointing back here, carrying its own notes and photographs; the correction
+/// is the labour and parts on the job. Together they let the invoice explain
+/// itself: you said this, we found that, we did this about it.
+model ServiceConcern {
+  id          String   @id @default(cuid())
+  /// The customer's own words, kept as they said them.
+  description String
+  /// The order the customer raised them in, which is the order they care about.
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  /// What the shop found when it went looking. Empty means nobody has answered
+  /// this one yet, which is worth being able to ask about before closing a job.
+  findings VehicleFinding[]
+
+  @@index([serviceRecordId])
+  @@map("service_concerns")
+}
+
 model VehicleFinding {
   id          String   @id @default(cuid())
   description String
@@ -391,8 +424,19 @@ model VehicleFinding {
   resolvedServiceRecordId String?
   resolvedServiceRecord   ServiceRecord? @relation("FindingResolvedIn", fields: [resolvedServiceRecordId], references: [id], onDelete: SetNull)
 
+  /// The customer concern this finding answers, if it answers one.
+  ///
+  /// Nullable because plenty of findings are things nobody asked about: the
+  /// perished bush somebody noticed while the car was on the lift. Those are
+  /// worth just as much, they just are not part of the story the customer
+  /// started. SetNull rather than Cascade because a finding is a fact about
+  /// the vehicle and outlives the concern that prompted the look.
+  concernId String?
+  concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
+
   @@index([vehicleId])
   @@index([serviceRecordId])
+  @@index([concernId])
   @@map("vehicle_findings")
 }
 

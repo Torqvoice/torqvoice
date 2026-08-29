@@ -385,5 +385,14 @@
       "title": "Paramètres de garantie par défaut",
       "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
     }
+  },
+  "concerns": {
+    "title": "Demandes du client",
+    "addFirst": "Ajouter une demande du client",
+    "add": "En ajouter un autre",
+    "placeholder": "Il y a un bruit à l'arrière quand je freine",
+    "remove": "Retirer ce point",
+    "notAnswered": "Rien trouvé à ce sujet pour l'instant",
+    "answered": "{count} constat(s) à ce sujet"
   }
 }

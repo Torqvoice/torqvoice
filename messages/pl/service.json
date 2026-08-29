@@ -385,5 +385,14 @@
       "title": "Domyślne ustawienia gwarancji",
       "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
     }
+  },
+  "concerns": {
+    "title": "Zgłoszenia klienta",
+    "addFirst": "Dodaj zgłoszenie klienta",
+    "add": "Dodaj kolejne",
+    "placeholder": "Przy hamowaniu słychać hałas z tyłu",
+    "remove": "Usuń ten punkt",
+    "notAnswered": "Nic jeszcze nie ustalono",
+    "answered": "Ustalenia: {count}"
   }
 }

@@ -385,5 +385,14 @@
       "title": "Standard garantiinnstillinger",
       "description": "Angi standard garantivilkår for nye serviceoppføringer"
     }
+  },
+  "concerns": {
+    "title": "Kundens beskrivelse",
+    "addFirst": "Legg til kundens beskrivelse",
+    "add": "Legg til en til",
+    "placeholder": "Det kommer en lyd bakfra når jeg bremser",
+    "remove": "Fjern dette punktet",
+    "notAnswered": "Ingenting funnet på dette ennå",
+    "answered": "{count} funn på dette"
   }
 }

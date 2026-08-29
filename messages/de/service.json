@@ -385,5 +385,14 @@
       "title": "Standard-Garantieeinstellungen",
       "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
     }
+  },
+  "concerns": {
+    "title": "Kundenanliegen",
+    "addFirst": "Kundenanliegen hinzufügen",
+    "add": "Weiteres hinzufügen",
+    "placeholder": "Beim Bremsen kommt hinten ein Geräusch",
+    "remove": "Dieses Anliegen entfernen",
+    "notAnswered": "Dazu wurde noch nichts festgestellt",
+    "answered": "{count} Feststellung(en) dazu"
   }
 }

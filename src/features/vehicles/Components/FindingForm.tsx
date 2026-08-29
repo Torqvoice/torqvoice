@@ -27,6 +27,7 @@ interface FindingData {
   status: string
   notes: string | null
   serviceRecordId?: string | null
+  concernId?: string | null
 }
 
 interface FindingFormProps {
@@ -35,6 +36,8 @@ interface FindingFormProps {
   onOpenChange: (open: boolean) => void
   finding?: FindingData
   serviceRecordId?: string
+  /** The concerns on this job, so a finding can say which one it answers. */
+  concerns?: { id: string; description: string }[]
 }
 
 export function FindingForm({
@@ -43,6 +46,7 @@ export function FindingForm({
   onOpenChange,
   finding,
   serviceRecordId,
+  concerns = [],
 }: FindingFormProps) {
   const router = useRouter()
   const modal = useGlassModal()
@@ -52,6 +56,8 @@ export function FindingForm({
   const [description, setDescription] = useState('')
   const [severity, setSeverity] = useState('needs_work')
   const [notes, setNotes] = useState('')
+  // 'none' rather than '' because Radix treats an empty value as unset.
+  const [concernId, setConcernId] = useState('none')
 
   const isEdit = !!finding
 
@@ -60,10 +66,12 @@ export function FindingForm({
       setDescription(finding.description)
       setSeverity(finding.severity)
       setNotes(finding.notes || '')
+      setConcernId(finding.concernId || 'none')
     } else if (open) {
       setDescription('')
       setSeverity('needs_work')
       setNotes('')
+      setConcernId('none')
     }
   }, [open, finding])
 
@@ -77,6 +85,7 @@ export function FindingForm({
       severity: severity as 'needs_work' | 'monitor' | 'urgent',
       notes: notes || undefined,
       serviceRecordId: serviceRecordId || undefined,
+      concernId: concernId === 'none' ? null : concernId,
     }
 
     const result = isEdit
@@ -126,6 +135,27 @@ export function FindingForm({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Which question this answers. Only on a job that has concerns:
+              on a vehicle-level observation there is nothing to answer. */}
+          {concerns.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="finding-concern">{t('concernLabel')}</Label>
+              <Select value={concernId} onValueChange={setConcernId}>
+                <SelectTrigger id="finding-concern">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t('concernNone')}</SelectItem>
+                  {concerns.map((concern) => (
+                    <SelectItem key={concern.id} value={concern.id}>
+                      {concern.description}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="finding-notes">{t('notesLabel')}</Label>

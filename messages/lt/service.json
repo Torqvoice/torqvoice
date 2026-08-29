@@ -385,5 +385,14 @@
       "title": "Numatytieji garantijos nustatymai",
       "description": "Nustatyti numatytas garantijos sąlygas naujiems aptarnavimo įrašams"
     }
+  },
+  "concerns": {
+    "title": "Kliento pranešimai",
+    "addFirst": "Pridėti kliento pranešimą",
+    "add": "Pridėti dar vieną",
+    "placeholder": "Stabdant gale girdisi garsas",
+    "remove": "Pašalinti šį punktą",
+    "notAnswered": "Kol kas nieko nenustatyta",
+    "answered": "Nustatymų: {count}"
   }
 }

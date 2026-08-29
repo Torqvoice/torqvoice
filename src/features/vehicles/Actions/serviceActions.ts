@@ -67,6 +67,7 @@ export async function getServiceRecordsPaginated(
         where.OR = [
           { title: { contains: params.search, mode: 'insensitive' } },
           { description: { contains: params.search, mode: 'insensitive' } },
+          { concerns: { some: { description: { contains: params.search, mode: 'insensitive' } } } },
           { diagnosticNotes: { contains: params.search, mode: 'insensitive' } },
           { techName: { contains: params.search, mode: 'insensitive' } },
           { shopName: { contains: params.search, mode: 'insensitive' } },
@@ -201,6 +202,7 @@ export async function getServiceRecord(recordId: string) {
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
         include: {
+          concerns: { orderBy: { sortOrder: 'asc' } },
           partItems: true,
           laborItems: true,
           attachments: true,
@@ -366,6 +368,7 @@ export async function createServiceRecord(input: unknown) {
       }
 
       const {
+        concerns,
         partItems,
         laborItems,
         attachments,
@@ -441,6 +444,16 @@ export async function createServiceRecord(input: unknown) {
             userId,
             serviceRecordId: created.id,
             serviceRecordLabel: created.invoiceNumber || created.title,
+          })
+        }
+
+        if (concerns && concerns.length > 0) {
+          await tx.serviceConcern.createMany({
+            data: concerns.map((concern, index) => ({
+              description: concern.description,
+              sortOrder: concern.sortOrder ?? index,
+              serviceRecordId: created.id,
+            })),
           })
         }
 
@@ -536,6 +549,7 @@ export async function updateServiceRecord(input: unknown) {
         id,
         partItems,
         laborItems,
+        concerns,
         attachments,
         customerId: _cid,
         serviceDate: _sd,
@@ -658,6 +672,49 @@ export async function updateServiceRecord(input: unknown) {
             serviceRecordId: id,
             serviceRecordLabel: existing.invoiceNumber || existing.title,
           })
+        }
+
+        /**
+         * Reconcile concerns by id, rather than replacing them like the rows
+         * above.
+         *
+         * Parts and labour can be deleted and rewritten on every save because
+         * nothing points at them. Findings point at concerns, and the relation
+         * is SetNull, so deleting the whole list on an autosave would silently
+         * cut every diagnosis loose from the question it answered. The rows
+         * that survive an edit have to keep their ids.
+         */
+        if (concerns !== undefined) {
+          const existingConcerns = await tx.serviceConcern.findMany({
+            where: { serviceRecordId: id },
+            select: { id: true },
+          })
+          const keptIds = new Set(
+            concerns.map((concern) => concern.id).filter((cid): cid is string => Boolean(cid))
+          )
+
+          const removedIds = existingConcerns
+            .map((concern) => concern.id)
+            .filter((cid) => !keptIds.has(cid))
+          if (removedIds.length > 0) {
+            await tx.serviceConcern.deleteMany({ where: { id: { in: removedIds } } })
+          }
+
+          for (const [index, concern] of concerns.entries()) {
+            const sortOrder = concern.sortOrder ?? index
+            // An id the client sent that is not on this job is not ours to
+            // trust: fall through to a create rather than updating by id.
+            if (concern.id && keptIds.has(concern.id)) {
+              const { count } = await tx.serviceConcern.updateMany({
+                where: { id: concern.id, serviceRecordId: id },
+                data: { description: concern.description, sortOrder },
+              })
+              if (count > 0) continue
+            }
+            await tx.serviceConcern.create({
+              data: { description: concern.description, sortOrder, serviceRecordId: id },
+            })
+          }
         }
 
         // Replace labor if provided

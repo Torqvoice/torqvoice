@@ -385,5 +385,14 @@
       "title": "Standaard garantie-instellingen",
       "description": "Stel standaard garantievoorwaarden in voor nieuwe serviceregistraties"
     }
+  },
+  "concerns": {
+    "title": "Klantmeldingen",
+    "addFirst": "Klantmelding toevoegen",
+    "add": "Nog een toevoegen",
+    "placeholder": "Er komt een geluid van achteren als ik rem",
+    "remove": "Dit punt verwijderen",
+    "notAnswered": "Hier is nog niets op gevonden",
+    "answered": "{count} bevinding(en) hierop"
   }
 }

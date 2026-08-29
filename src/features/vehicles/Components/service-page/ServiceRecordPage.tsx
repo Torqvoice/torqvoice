@@ -174,6 +174,11 @@ export async function ServiceRecordPage({
             .toISOString()
             .split('T')[0]
         : '',
+    concerns: record.concerns.map((c) => ({
+      id: c.id,
+      description: c.description,
+      sortOrder: c.sortOrder,
+    })),
     partItems: record.partItems.map((p) => ({
       partNumber: p.partNumber || '',
       name: p.name,

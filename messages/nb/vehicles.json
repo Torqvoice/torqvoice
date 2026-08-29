@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "Svarer på hvilket punkt?",
+    "concernNone": "Ikke noe kunden spurte om"
   },
   "observationsPage": {
     "searchPlaceholder": "Søk i beskrivelse, notater eller kjøretøy...",

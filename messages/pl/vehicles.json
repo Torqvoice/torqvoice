@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "Której sprawy dotyczy?",
+    "concernNone": "Klient o to nie pytał"
   },
   "observationsPage": {
     "searchPlaceholder": "Szukaj opisu, notatek lub pojazdu...",
