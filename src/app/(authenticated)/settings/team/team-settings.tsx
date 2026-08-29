@@ -58,6 +58,7 @@ import {
   Shield,
   ShieldCheck,
   Smartphone,
+  Wrench,
   Trash2,
   User,
   Users,
@@ -154,6 +155,8 @@ export function TeamSettings({
    * id with no matching option and rendered blank until a manual reload.
    */
   const technicians = useMemo(() => new Set(technicianUserIds), [technicianUserIds])
+  /** The workshop's technician role, if it has one yet. */
+  const technicianRoleId = roles.find((r) => r.name === TECHNICIAN_ROLE_NAME)?.id ?? null
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
   const [adding, setAdding] = useState(startAdding)
@@ -419,6 +422,12 @@ export function TeamSettings({
                 <p className="truncate text-xs text-muted-foreground">{contactFor(member.user)}</p>
               </div>
               <div className="flex items-center gap-2">
+                {technicians.has(member.user.id) && member.roleId !== technicianRoleId && (
+                  <Badge variant="outline" className="text-xs">
+                    <Wrench className="mr-1 h-3 w-3" />
+                    {t('team.technician')}
+                  </Badge>
+                )}
                 {isAdmin && technicians.has(member.user.id) && (
                   <Button
                     variant="ghost"
@@ -439,7 +448,16 @@ export function TeamSettings({
                 {isOwner && member.role !== 'owner' ? (
                   <Select
                     value={
-                      technicians.has(member.user.id)
+                      // Read from the role they hold, not from whether they
+                      // are on the board.
+                      //
+                      // An install that predates this has technicians holding
+                      // all sorts of roles. Showing Technician for them would
+                      // both misreport what they can do and overwrite it the
+                      // moment anybody touched the field. Their real role shows
+                      // here; the badge beside it says they are also on the
+                      // board.
+                      member.roleId === technicianRoleId
                         ? 'technician'
                         : // Never a value with no option behind it, or the
                           // trigger renders empty and the member looks

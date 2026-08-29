@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -34,6 +34,8 @@ import {
 import { createAppSetupCode, revokeAppSetupCode } from '@/features/team/Actions/createAppSetupCode'
 import { createTechnicianAccount } from '@/features/team/Actions/createTechnicianAccount'
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
+import { getWorkshopDialCode } from '@/features/team/Actions/createTechnicianAccount'
+import { getRoles } from '@/features/team/Actions/getRoles'
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
@@ -94,17 +96,25 @@ interface RoleOption {
 export function AddPersonDialog({
   open,
   onOpenChange,
-  workshopUrl,
-  dialCode,
-  roles,
+  workshopUrl: workshopUrlProp,
+  dialCode: dialCodeProp,
+  roles: rolesProp,
   onChanged,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  workshopUrl: string
+  /**
+   * Everything below is optional so this can be opened from anywhere.
+   *
+   * There is one way to add somebody, and it should be reachable from
+   * wherever the need arises: the team page, Quick Add, the technician picker
+   * on a work order. Callers that already hold this data pass it and save a
+   * round trip; callers that do not get it fetched when the dialog opens.
+   */
+  workshopUrl?: string
   /** The workshop's country code. Empty until somebody has supplied one. */
-  dialCode: string
-  roles: RoleOption[]
+  dialCode?: string
+  roles?: RoleOption[]
   onChanged: () => void
 }) {
   const t = useTranslations('settings')
@@ -120,6 +130,32 @@ export function AddPersonDialog({
    * Asked once per workshop and then never again, because the answer is saved
    * the first time somebody gives it.
    */
+  // Fetched only when the caller had nothing to give, and only once open.
+  const [fetched, setFetched] = useState<{ dialCode: string; roles: RoleOption[] } | null>(null)
+  useEffect(() => {
+    if (!open || fetched || (dialCodeProp !== undefined && rolesProp)) return
+    let cancelled = false
+    Promise.all([getWorkshopDialCode(), getRoles()]).then(([dial, roleList]) => {
+      if (cancelled) return
+      setFetched({
+        dialCode: (dial.success && dial.data?.dialCode) || '',
+        roles: roleList.success && roleList.data ? (roleList.data as RoleOption[]) : [],
+      })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open, fetched, dialCodeProp, rolesProp])
+
+  const dialCode = dialCodeProp ?? fetched?.dialCode ?? ''
+  const roles = rolesProp ?? fetched?.roles ?? []
+  // Configured address first; the current origin is right in production and
+  // is localhost in development, which a technician's phone cannot reach.
+  const workshopUrl =
+    workshopUrlProp ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (typeof window === 'undefined' ? '' : window.location.origin)
+
   const [region, setRegion] = useState('')
   const [color, setColor] = useState(BOARD_COLOURS[0])
   const countries = useMemo(() => countriesFor(locale), [locale])

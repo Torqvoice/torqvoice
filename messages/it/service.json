@@ -384,5 +384,6 @@
   },
   "technicians": "Tecnici",
   "otherTeamMembers": "Altri membri del team",
-  "makeTechnician": "Lo rende un tecnico"
+  "makeTechnician": "Lo rende un tecnico",
+  "addSomeoneNew": "Aggiungi qualcuno"
 }

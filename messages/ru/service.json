@@ -384,5 +384,6 @@
   },
   "technicians": "Механики",
   "otherTeamMembers": "Другие участники",
-  "makeTechnician": "Сделает механиком"
+  "makeTechnician": "Сделает механиком",
+  "addSomeoneNew": "Добавить человека"
 }

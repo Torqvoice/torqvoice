@@ -384,5 +384,6 @@
   },
   "technicians": "Monteurs",
   "otherTeamMembers": "Andere teamleden",
-  "makeTechnician": "Maakt hen monteur"
+  "makeTechnician": "Maakt hen monteur",
+  "addSomeoneNew": "Iemand nieuw toevoegen"
 }
