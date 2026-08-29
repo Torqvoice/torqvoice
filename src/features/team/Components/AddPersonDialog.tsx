@@ -27,6 +27,7 @@ import { createTechnicianAccount } from '@/features/team/Actions/createTechnicia
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
+import { TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
 import { CountryPicker } from './CountryPicker'
 import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
@@ -415,7 +416,7 @@ export function AddPersonDialog({
                         // Technicians are added through the other door, so
                         // offering their role here is a path to an account
                         // with app permissions and no phone to use them on.
-                        .filter((r) => r.name !== 'Technician')
+                        .filter((r) => r.name !== TECHNICIAN_ROLE_NAME)
                         .map((r) => (
                           <SelectItem key={r.id} value={r.id}>
                             {r.name}

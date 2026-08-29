@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
-import { contactFor } from '@/features/team/Lib/technicianRole'
+import { contactFor, TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
@@ -141,7 +141,15 @@ export function TeamSettings({
   const [editingRole, setEditingRole] = useState<RoleData | null>(null)
   // Tracked locally so the switch answers the tap immediately. A revalidate
   // round trip is a long time to sit on a toggle that has already moved.
-  const [technicians, setTechnicians] = useState<Set<string>>(() => new Set(technicianUserIds))
+  /**
+   * Who is a technician, read from the server rather than remembered.
+   *
+   * This was useState seeded from the prop, which only runs on mount. Adding
+   * somebody refreshed the page, the prop arrived with them in it, and the set
+   * ignored it: the new technician's role dropdown then fell through to a role
+   * id with no matching option and rendered blank until a manual reload.
+   */
+  const technicians = useMemo(() => new Set(technicianUserIds), [technicianUserIds])
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
   const [adding, setAdding] = useState(startAdding)
@@ -426,7 +434,16 @@ export function TeamSettings({
                 {isOwner && member.role !== 'owner' ? (
                   <Select
                     value={
-                      technicians.has(member.user.id) ? 'technician' : member.roleId || member.role
+                      technicians.has(member.user.id)
+                        ? 'technician'
+                        : // Never a value with no option behind it, or the
+                          // trigger renders empty and the member looks
+                          // roleless when they are not.
+                          roles.some(
+                              (r) => r.id === member.roleId && r.name !== TECHNICIAN_ROLE_NAME
+                            )
+                          ? (member.roleId as string)
+                          : member.role
                     }
                     onValueChange={(v) => handleAssignRole(member.id, v, member)}
                   >
@@ -447,7 +464,7 @@ export function TeamSettings({
                             // The technician permissions are what the dropdown
                             // entry above grants, so offering the role again
                             // underneath is the same choice listed twice.
-                            .filter((r) => r.name !== 'Technician')
+                            .filter((r) => r.name !== TECHNICIAN_ROLE_NAME)
                             .map((r) => (
                               <SelectItem key={r.id} value={r.id}>
                                 {r.name}
