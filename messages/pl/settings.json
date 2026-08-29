@@ -398,12 +398,21 @@
     "technicianFailed": "Nie udało się zmienić",
     "setupApp": "Skonfiguruj aplikację",
     "setupAppTitle": "Skonfiguruj aplikację technika",
-    "setupAppInstruction": "Poproś {name}, aby zainstalował Torqvoice Tech, otworzył ją i zeskanował ten kod.",
+    "setupAppInstruction": "Poproś {name}, aby zrobił to na telefonie:",
     "setupAppOrType": "Albo podaj ten kod:",
     "setupAppExpiry": "Działa raz i wygasa za {time}.",
     "setupAppExpired": "Ten kod wygasł. Zamknij i zacznij od nowa.",
     "setupAppDone": "Gotowe",
-    "setupAppFailed": "Nie udało się utworzyć kodu konfiguracji"
+    "setupAppFailed": "Nie udało się utworzyć kodu konfiguracji",
+    "setupPageTitle": "Skonfiguruj aplikację technika",
+    "setupPageBody": "Otwórz Torqvoice Tech na tym telefonie, dotknij Zeskanuj kod konfiguracji i ponownie wyceluj w ten sam kod.",
+    "setupPageCode": "Albo wpisz ten kod w aplikacji",
+    "setupPageOpenApp": "Otwórz Torqvoice Tech",
+    "setupPageExpiry": "Ten kod działa raz i wygasa dziesięć minut po utworzeniu go przez warsztat.",
+    "setupAppStep1": "Zainstaluj Torqvoice Tech",
+    "setupAppStep2": "Otworzyć ją i dotknąć „Zeskanuj kod konfiguracji”",
+    "setupAppStep3": "Wycelować telefon w ten kod",
+    "setupAppNotCamera": "Zwykły aparat telefonu nie zadziała. Trzeba zeskanować z poziomu Torqvoice Tech."
   },
   "invoice": {
     "title": "Układ faktury",

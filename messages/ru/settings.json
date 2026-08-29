@@ -398,12 +398,21 @@
     "technicianFailed": "Не удалось изменить",
     "setupApp": "Настроить приложение",
     "setupAppTitle": "Настройка приложения механика",
-    "setupAppInstruction": "Попросите {name} установить Torqvoice Tech, открыть приложение и отсканировать этот код.",
+    "setupAppInstruction": "Попросите {name} сделать это на телефоне:",
     "setupAppOrType": "Или продиктуйте этот код:",
     "setupAppExpiry": "Действует один раз, истекает через {time}.",
     "setupAppExpired": "Код истёк. Закройте и начните заново.",
     "setupAppDone": "Готово",
-    "setupAppFailed": "Не удалось создать код настройки"
+    "setupAppFailed": "Не удалось создать код настройки",
+    "setupPageTitle": "Настройка приложения механика",
+    "setupPageBody": "Откройте Torqvoice Tech на этом телефоне, нажмите «Отсканировать код настройки» и снова наведите на тот же код.",
+    "setupPageCode": "Или введите этот код в приложении",
+    "setupPageOpenApp": "Открыть Torqvoice Tech",
+    "setupPageExpiry": "Код действует один раз и истекает через десять минут после создания мастерской.",
+    "setupAppStep1": "Установить Torqvoice Tech",
+    "setupAppStep2": "Открыть его и нажать «Отсканировать код настройки»",
+    "setupAppStep3": "Навести телефон на этот код",
+    "setupAppNotCamera": "Обычная камера телефона не подойдёт. Сканировать нужно в приложении Torqvoice Tech."
   },
   "invoice": {
     "title": "Счета и предложения",

@@ -398,12 +398,21 @@
     "technicianFailed": "Kunne ikke endres",
     "setupApp": "Sett opp app",
     "setupAppTitle": "Sett opp teknikerappen",
-    "setupAppInstruction": "Be {name} installere Torqvoice Tech, åpne den og skanne denne koden.",
+    "setupAppInstruction": "Be {name} gjøre dette på telefonen:",
     "setupAppOrType": "Eller les opp denne koden:",
     "setupAppExpiry": "Virker én gang og utløper om {time}.",
     "setupAppExpired": "Denne koden er utløpt. Lukk og start på nytt.",
     "setupAppDone": "Ferdig",
-    "setupAppFailed": "Kunne ikke lage en oppsettskode"
+    "setupAppFailed": "Kunne ikke lage en oppsettskode",
+    "setupPageTitle": "Sett opp teknikerappen",
+    "setupPageBody": "Åpne Torqvoice Tech på denne telefonen, trykk Skann oppsettskode, og rett den mot den samme koden igjen.",
+    "setupPageCode": "Eller skriv inn denne koden i appen",
+    "setupPageOpenApp": "Åpne Torqvoice Tech",
+    "setupPageExpiry": "Denne koden virker én gang og utløper ti minutter etter at verkstedet laget den.",
+    "setupAppStep1": "Installer Torqvoice Tech",
+    "setupAppStep2": "Åpne den og trykke «Skann oppsettskode»",
+    "setupAppStep3": "Rette telefonen mot denne koden",
+    "setupAppNotCamera": "Telefonens vanlige kameraapp virker ikke. Det må skannes inne i Torqvoice Tech."
   },
   "invoice": {
     "title": "Faktura og tilbud",

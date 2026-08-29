@@ -398,12 +398,21 @@
     "technicianFailed": "Could not change that",
     "setupApp": "Set up app",
     "setupAppTitle": "Set up the technician app",
-    "setupAppInstruction": "Ask {name} to install Torqvoice Tech, open it, and scan this code.",
+    "setupAppInstruction": "Ask {name} to do this on their phone:",
     "setupAppOrType": "Or read them this code:",
     "setupAppExpiry": "Works once, and expires in {time}.",
     "setupAppExpired": "This code has expired. Close and start again.",
     "setupAppDone": "Done",
-    "setupAppFailed": "Could not create a setup code"
+    "setupAppFailed": "Could not create a setup code",
+    "setupPageTitle": "Set up the technician app",
+    "setupPageBody": "Open Torqvoice Tech on this phone, tap Scan setup code, and point it at the same code again.",
+    "setupPageCode": "Or type this code in the app",
+    "setupPageOpenApp": "Open Torqvoice Tech",
+    "setupPageExpiry": "This code works once and expires ten minutes after your workshop created it.",
+    "setupAppStep1": "Install Torqvoice Tech",
+    "setupAppStep2": "Open it and tap “Scan setup code”",
+    "setupAppStep3": "Point the phone at this code",
+    "setupAppNotCamera": "The phone's own camera app will not work. It has to be scanned from inside Torqvoice Tech."
   },
   "invoice": {
     "title": "Invoice & Quotes",

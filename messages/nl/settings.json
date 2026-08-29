@@ -398,12 +398,21 @@
     "technicianFailed": "Kon niet worden gewijzigd",
     "setupApp": "App instellen",
     "setupAppTitle": "Monteurs-app instellen",
-    "setupAppInstruction": "Vraag {name} om Torqvoice Tech te installeren, te openen en deze code te scannen.",
+    "setupAppInstruction": "Vraag {name} om dit op de telefoon te doen:",
     "setupAppOrType": "Of lees deze code voor:",
     "setupAppExpiry": "Werkt eenmalig en verloopt over {time}.",
     "setupAppExpired": "Deze code is verlopen. Sluit af en begin opnieuw.",
     "setupAppDone": "Klaar",
-    "setupAppFailed": "Kon geen installatiecode aanmaken"
+    "setupAppFailed": "Kon geen installatiecode aanmaken",
+    "setupPageTitle": "Monteurs-app instellen",
+    "setupPageBody": "Open Torqvoice Tech op deze telefoon, tik op Installatiecode scannen en richt hem opnieuw op dezelfde code.",
+    "setupPageCode": "Of voer deze code in de app in",
+    "setupPageOpenApp": "Torqvoice Tech openen",
+    "setupPageExpiry": "Deze code werkt eenmalig en verloopt tien minuten nadat uw werkplaats hem heeft aangemaakt.",
+    "setupAppStep1": "Torqvoice Tech installeren",
+    "setupAppStep2": "Hem openen en op “Installatiecode scannen” tikken",
+    "setupAppStep3": "De telefoon op deze code richten",
+    "setupAppNotCamera": "De gewone camera-app van de telefoon werkt niet. Het moet in Torqvoice Tech worden gescand."
   },
   "invoice": {
     "title": "Factuurindeling",

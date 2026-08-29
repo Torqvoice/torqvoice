@@ -398,12 +398,21 @@
     "technicianFailed": "Değiştirilemedi",
     "setupApp": "Uygulamayı kur",
     "setupAppTitle": "Teknisyen uygulamasını kur",
-    "setupAppInstruction": "{name} kişisinden Torqvoice Tech'i kurmasını, açmasını ve bu kodu taratmasını isteyin.",
+    "setupAppInstruction": "{name} kişisinden telefonunda şunu yapmasını isteyin:",
     "setupAppOrType": "Ya da bu kodu okuyun:",
     "setupAppExpiry": "Bir kez geçerlidir, {time} sonra sona erer.",
     "setupAppExpired": "Bu kodun süresi doldu. Kapatıp yeniden başlayın.",
     "setupAppDone": "Tamam",
-    "setupAppFailed": "Kurulum kodu oluşturulamadı"
+    "setupAppFailed": "Kurulum kodu oluşturulamadı",
+    "setupPageTitle": "Teknisyen uygulamasını kur",
+    "setupPageBody": "Bu telefonda Torqvoice Tech uygulamasını açın, Kurulum kodunu tara seçeneğine dokunun ve aynı koda tekrar doğrultun.",
+    "setupPageCode": "Ya da bu kodu uygulamaya yazın",
+    "setupPageOpenApp": "Torqvoice Tech'i aç",
+    "setupPageExpiry": "Bu kod bir kez geçerlidir ve servisiniz oluşturduktan on dakika sonra sona erer.",
+    "setupAppStep1": "Torqvoice Tech'i kurmak",
+    "setupAppStep2": "Uygulamayı açıp “Kurulum kodunu tara”ya dokunmak",
+    "setupAppStep3": "Telefonu bu koda doğrultmak",
+    "setupAppNotCamera": "Telefonun normal kamera uygulaması işe yaramaz. Torqvoice Tech içinden taranmalıdır."
   },
   "invoice": {
     "title": "Fatura Düzeni",

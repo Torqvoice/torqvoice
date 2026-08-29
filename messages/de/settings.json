@@ -398,12 +398,21 @@
     "technicianFailed": "Konnte nicht geändert werden",
     "setupApp": "Für App einrichten",
     "setupAppTitle": "Techniker-App einrichten",
-    "setupAppInstruction": "Bitten Sie {name}, Torqvoice Tech zu installieren, zu öffnen und diesen Code zu scannen.",
+    "setupAppInstruction": "Bitten Sie {name}, dies auf dem Telefon zu tun:",
     "setupAppOrType": "Oder lesen Sie ihm diesen Code vor:",
     "setupAppExpiry": "Gilt einmalig und läuft in {time} ab.",
     "setupAppExpired": "Dieser Code ist abgelaufen. Schließen und neu beginnen.",
     "setupAppDone": "Fertig",
-    "setupAppFailed": "Einrichtungscode konnte nicht erstellt werden"
+    "setupAppFailed": "Einrichtungscode konnte nicht erstellt werden",
+    "setupPageTitle": "Techniker-App einrichten",
+    "setupPageBody": "Öffnen Sie Torqvoice Tech auf diesem Telefon, tippen Sie auf Einrichtungscode scannen und halten Sie es erneut auf denselben Code.",
+    "setupPageCode": "Oder geben Sie diesen Code in der App ein",
+    "setupPageOpenApp": "Torqvoice Tech öffnen",
+    "setupPageExpiry": "Dieser Code gilt einmalig und läuft zehn Minuten nach der Erstellung durch Ihre Werkstatt ab.",
+    "setupAppStep1": "Torqvoice Tech installieren",
+    "setupAppStep2": "Sie öffnen und auf „Einrichtungscode scannen“ tippen",
+    "setupAppStep3": "Das Telefon auf diesen Code halten",
+    "setupAppNotCamera": "Die normale Kamera-App des Telefons funktioniert nicht. Es muss in Torqvoice Tech gescannt werden."
   },
   "invoice": {
     "title": "Rechnungslayout",

@@ -398,12 +398,21 @@
     "technicianFailed": "Modification impossible",
     "setupApp": "Configurer l'application",
     "setupAppTitle": "Configurer l'application technicien",
-    "setupAppInstruction": "Demandez à {name} d'installer Torqvoice Tech, de l'ouvrir et de scanner ce code.",
+    "setupAppInstruction": "Demandez à {name} de faire ceci sur son téléphone :",
     "setupAppOrType": "Ou communiquez-lui ce code :",
     "setupAppExpiry": "Utilisable une seule fois, expire dans {time}.",
     "setupAppExpired": "Ce code a expiré. Fermez et recommencez.",
     "setupAppDone": "Terminé",
-    "setupAppFailed": "Impossible de créer un code de configuration"
+    "setupAppFailed": "Impossible de créer un code de configuration",
+    "setupPageTitle": "Configurer l'application technicien",
+    "setupPageBody": "Ouvrez Torqvoice Tech sur ce téléphone, appuyez sur Scanner le code de configuration, et visez à nouveau le même code.",
+    "setupPageCode": "Ou saisissez ce code dans l'application",
+    "setupPageOpenApp": "Ouvrir Torqvoice Tech",
+    "setupPageExpiry": "Ce code est utilisable une seule fois et expire dix minutes après sa création par votre atelier.",
+    "setupAppStep1": "Installer Torqvoice Tech",
+    "setupAppStep2": "L’ouvrir et appuyer sur « Scanner le code de configuration »",
+    "setupAppStep3": "Viser ce code avec le téléphone",
+    "setupAppNotCamera": "L'appareil photo du téléphone ne fonctionnera pas. Le code doit être scanné depuis Torqvoice Tech."
   },
   "invoice": {
     "title": "Mise en page de facture",

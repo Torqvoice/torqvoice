@@ -398,12 +398,21 @@
     "technicianFailed": "Nepavyko pakeisti",
     "setupApp": "Nustatyti programėlę",
     "setupAppTitle": "Nustatyti techniko programėlę",
-    "setupAppInstruction": "Paprašykite {name} įdiegti „Torqvoice Tech“, ją atidaryti ir nuskaityti šį kodą.",
+    "setupAppInstruction": "Paprašykite {name} tai atlikti telefone:",
     "setupAppOrType": "Arba padiktuokite šį kodą:",
     "setupAppExpiry": "Galioja vieną kartą, baigia galioti po {time}.",
     "setupAppExpired": "Šis kodas nebegalioja. Uždarykite ir pradėkite iš naujo.",
     "setupAppDone": "Atlikta",
-    "setupAppFailed": "Nepavyko sukurti nustatymo kodo"
+    "setupAppFailed": "Nepavyko sukurti nustatymo kodo",
+    "setupPageTitle": "Nustatyti techniko programėlę",
+    "setupPageBody": "Atidarykite „Torqvoice Tech“ šiame telefone, bakstelėkite „Nuskaityti nustatymo kodą“ ir vėl nukreipkite į tą patį kodą.",
+    "setupPageCode": "Arba įveskite šį kodą programėlėje",
+    "setupPageOpenApp": "Atidaryti „Torqvoice Tech“",
+    "setupPageExpiry": "Šis kodas galioja vieną kartą ir baigia galioti praėjus dešimčiai minučių nuo serviso sukūrimo.",
+    "setupAppStep1": "Įdiegti „Torqvoice Tech“",
+    "setupAppStep2": "Ją atidaryti ir bakstelėti „Nuskaityti nustatymo kodą“",
+    "setupAppStep3": "Nukreipti telefoną į šį kodą",
+    "setupAppNotCamera": "Įprasta telefono kamera neveiks. Nuskaityti reikia „Torqvoice Tech“ programėlėje."
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

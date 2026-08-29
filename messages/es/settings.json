@@ -398,12 +398,21 @@
     "technicianFailed": "No se pudo cambiar",
     "setupApp": "Configurar la aplicación",
     "setupAppTitle": "Configurar la aplicación de técnico",
-    "setupAppInstruction": "Pida a {name} que instale Torqvoice Tech, la abra y escanee este código.",
+    "setupAppInstruction": "Pida a {name} que haga esto en su teléfono:",
     "setupAppOrType": "O léale este código:",
     "setupAppExpiry": "Se usa una sola vez y caduca en {time}.",
     "setupAppExpired": "Este código ha caducado. Cierre y empiece de nuevo.",
     "setupAppDone": "Hecho",
-    "setupAppFailed": "No se pudo crear un código de configuración"
+    "setupAppFailed": "No se pudo crear un código de configuración",
+    "setupPageTitle": "Configurar la aplicación de técnico",
+    "setupPageBody": "Abra Torqvoice Tech en este teléfono, toque Escanear código de configuración y apunte otra vez al mismo código.",
+    "setupPageCode": "O escriba este código en la aplicación",
+    "setupPageOpenApp": "Abrir Torqvoice Tech",
+    "setupPageExpiry": "Este código se usa una sola vez y caduca diez minutos después de que su taller lo creara.",
+    "setupAppStep1": "Instalar Torqvoice Tech",
+    "setupAppStep2": "Abrirla y tocar «Escanear código de configuración»",
+    "setupAppStep3": "Apuntar el teléfono a este código",
+    "setupAppNotCamera": "La cámara normal del teléfono no funciona. Hay que escanearlo desde dentro de Torqvoice Tech."
   },
   "invoice": {
     "title": "Diseño de factura",

@@ -108,6 +108,22 @@ export function AppSetupCodeDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Numbered, because the one-sentence version was read as "scan this"
+            and everybody reaches for the phone's own camera. Step two is the
+            one that matters and it names the button verbatim. */}
+        <ol className="space-y-2 text-sm">
+          {[t('team.setupAppStep1'), t('team.setupAppStep2'), t('team.setupAppStep3')].map(
+            (step, i) => (
+              <li key={step} className="flex gap-3">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted font-medium text-xs">
+                  {i + 1}
+                </span>
+                <span>{step}</span>
+              </li>
+            )
+          )}
+        </ol>
+
         {error && <p className="text-destructive text-sm">{error}</p>}
 
         {!issued && !error && (
@@ -121,8 +137,16 @@ export function AppSetupCodeDialog({
             {/* White plate behind it regardless of theme: a dark-mode QR with
                 an inverted quiet zone is a QR most scanners refuse. */}
             <div className="flex justify-center rounded-lg bg-white p-6">
+              {/* A URL, not a payload of our own.
+                  A technician points their phone's own camera at this before
+                  anyone tells them not to, and a camera that finds JSON offers
+                  to open it in a text editor. A URL lands them on the
+                  workshop's own page, which tells them what to do next.
+                  The code rides in the fragment so it never reaches a server
+                  log or a Referer header, and the origin is the workshop
+                  address, so nothing else has to be encoded at all. */}
               <QRCodeSVG
-                value={JSON.stringify({ v: 1, url: workshopUrl, code: issued.code })}
+                value={`${workshopUrl}/app-setup#${issued.code}`}
                 size={200}
                 level="H"
                 marginSize={2}
@@ -133,6 +157,13 @@ export function AppSetupCodeDialog({
               <p className="text-muted-foreground text-xs">{t('team.setupAppOrType')}</p>
               <p className="font-mono font-semibold text-2xl tracking-[0.2em]">{issued.display}</p>
             </div>
+
+            {/* The failure this exists to prevent: a technician points their
+                own camera at the QR, lands on a web page, and concludes the
+                thing is broken. */}
+            <p className="rounded-md border border-amber-500/40 bg-amber-500/10 p-2 text-center text-amber-700 text-xs dark:text-amber-400">
+              {t('team.setupAppNotCamera')}
+            </p>
 
             <p className="text-center text-muted-foreground text-xs">
               {expired
