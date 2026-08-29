@@ -45,14 +45,29 @@ export async function createTechnicianAccount(input: unknown) {
         throw new Error('That does not look like a mobile number this workshop can reach.')
       }
 
-      // Already here, under this number? Adding them twice gives one person
-      // two accounts and their hours end up split between them.
+      /**
+       * Somebody who has been here before, under this number.
+       *
+       * Removing a technician deactivates the row rather than deleting it,
+       * because past jobs, inspections and clocked hours all point at it. So a
+       * mechanic who leaves and comes back is a row that already exists, and
+       * refusing them was the same as saying they could never return.
+       *
+       * Adding a second account instead would be worse: two technicians with
+       * one phone number makes the sign-in lookup ambiguous, and splits their
+       * hours across two people who are the same person.
+       */
       const existing = await db.technician.findFirst({
         where: { organizationId, userId: { not: null }, user: { phone: e164 } },
-        select: { name: true },
+        select: { id: true, name: true, isActive: true, userId: true },
       })
-      if (existing) {
+
+      if (existing?.isActive) {
         throw new Error(`${existing.name} already uses that number at this workshop.`)
+      }
+
+      if (existing?.userId) {
+        return reinstate(existing.id, existing.userId, organizationId, name, email || null)
       }
 
       if (email) {
@@ -119,7 +134,12 @@ export async function createTechnicianAccount(input: unknown) {
       revalidatePath('/settings/team')
       revalidatePath('/work-board')
 
-      return { technicianId: technician.id, userId: technician.userId as string, name }
+      return {
+        technicianId: technician.id,
+        userId: technician.userId as string,
+        name,
+        reinstated: false,
+      }
     },
     {
       requiredPermissions: [
@@ -132,4 +152,60 @@ export async function createTechnicianAccount(input: unknown) {
       }),
     }
   )
+}
+
+/**
+ * Brings a former technician back, rather than making a second of them.
+ *
+ * Everything they did is still attached to the row being reactivated, so this
+ * is a homecoming and not a new hire. Their membership may or may not still
+ * exist: deactivating leaves it, removing them from the team page deletes it,
+ * and both roads lead here.
+ */
+async function reinstate(
+  technicianId: string,
+  userId: string,
+  organizationId: string,
+  name: string,
+  email: string | null
+) {
+  const technician = await db.$transaction(async (tx) => {
+    // A married name, a corrected spelling. Whatever the desk typed now is
+    // more current than whatever was typed before.
+    await tx.user.update({
+      where: { id: userId },
+      data: { name, ...(email ? { email } : {}) },
+    })
+
+    const roleId = await ensureTechnicianRole(tx, organizationId)
+    const membership = await tx.organizationMember.findFirst({
+      where: { userId, organizationId },
+      select: { id: true, roleId: true },
+    })
+
+    if (!membership) {
+      await tx.organizationMember.create({
+        data: { userId, organizationId, role: 'member', roleId },
+      })
+    } else if (!membership.roleId) {
+      // Left with no role, which since the permission fix means the app would
+      // refuse them on every screen.
+      await tx.organizationMember.update({ where: { id: membership.id }, data: { roleId } })
+    }
+
+    return tx.technician.update({
+      where: { id: technicianId },
+      data: { isActive: true, name },
+    })
+  })
+
+  notificationBus.emit('workboard', {
+    type: 'technician_updated',
+    organizationId,
+    technician,
+  })
+  revalidatePath('/settings/team')
+  revalidatePath('/work-board')
+
+  return { technicianId: technician.id, userId, name, reinstated: true }
 }

@@ -17,9 +17,14 @@ vi.mock('@/lib/auth', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     role: { findFirst: vi.fn(), create: vi.fn() },
-    user: { findUnique: vi.fn(), create: vi.fn() },
     technician: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn(), aggregate: vi.fn() },
-    organizationMember: { create: vi.fn(), findFirst: vi.fn(), count: vi.fn() },
+    organizationMember: {
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn(),
+      count: vi.fn(),
+    },
+    user: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
     technicianLoginCode: { deleteMany: vi.fn() },
     technicianSetupCode: { deleteMany: vi.fn() },
     pushDevice: { updateMany: vi.fn() },
@@ -133,13 +138,94 @@ describe('creating a technician account at the counter', () => {
     ])
   })
 
-  it('refuses a number this workshop already has', async () => {
-    vi.mocked(db.technician.findFirst).mockResolvedValue({ name: 'Kari' } as never)
+  it('refuses a number somebody here is already using', async () => {
+    vi.mocked(db.technician.findFirst).mockResolvedValue({
+      id: 'tech-9',
+      name: 'Kari',
+      isActive: true,
+      userId: 'user-9',
+    } as never)
 
     const result = await createTechnicianAccount({ name: 'Ola', phone: '912 34 567' })
     expect(result.success).toBe(false)
     expect(result.error).toContain('Kari')
     expect(db.user.create).not.toHaveBeenCalled()
+  })
+
+  describe('somebody who worked here before', () => {
+    // Removing a technician deactivates the row rather than deleting it, so a
+    // mechanic who leaves and comes back is a row that already exists. Refusing
+    // them meant they could never return.
+    beforeEach(() => {
+      vi.mocked(db.technician.findFirst).mockResolvedValue({
+        id: 'tech-old',
+        name: 'Petter',
+        isActive: false,
+        userId: 'user-old',
+      } as never)
+      vi.mocked(db.technician.update).mockResolvedValue({
+        id: 'tech-old',
+        userId: 'user-old',
+      } as never)
+      vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
+        id: 'mem-old',
+        roleId: 'role-tech',
+      } as never)
+    })
+
+    it('brings them back rather than refusing them', async () => {
+      const result = await createTechnicianAccount({ name: 'Petter', phone: '912 34 567' })
+
+      expect(result.success).toBe(true)
+      expect((result.data as { reinstated: boolean }).reinstated).toBe(true)
+      expect(db.technician.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'tech-old' },
+          data: { isActive: true, name: 'Petter' },
+        })
+      )
+    })
+
+    it('keeps their history by reusing the row, not making a second one', async () => {
+      await createTechnicianAccount({ name: 'Petter', phone: '912 34 567' })
+
+      expect(db.technician.create).not.toHaveBeenCalled()
+      expect(db.user.create).not.toHaveBeenCalled()
+    })
+
+    it('takes the name as typed now, in case it changed', async () => {
+      await createTechnicianAccount({ name: 'Petter Stordalen', phone: '912 34 567' })
+
+      expect(db.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ name: 'Petter Stordalen' }) })
+      )
+    })
+
+    it('rebuilds the membership when they were removed from the team entirely', async () => {
+      // The trash icon deletes the membership and leaves the technician row.
+      vi.mocked(db.organizationMember.findFirst).mockResolvedValue(null as never)
+
+      await createTechnicianAccount({ name: 'Petter', phone: '912 34 567' })
+
+      expect(db.organizationMember.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ userId: 'user-old', roleId: 'role-tech' }),
+        })
+      )
+    })
+
+    it('gives back the role if they came back without one', async () => {
+      vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
+        id: 'mem-old',
+        roleId: null,
+      } as never)
+
+      await createTechnicianAccount({ name: 'Petter', phone: '912 34 567' })
+
+      expect(db.organizationMember.update).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'mem-old' }, data: { roleId: 'role-tech' } })
+      )
+    })
   })
 
   it('looks for that number only inside this workshop', async () => {
