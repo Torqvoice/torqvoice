@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Ingen av delene, la meg endre nummeret",
     "workshopCountry": "Hvilket land ligger verkstedet i?",
     "workshopCountryPlaceholder": "Velg land",
-    "workshopCountryHint": "Spørres bare én gang. Etter dette kan mobilnumre skrives kort.",
+    "workshopCountryHint": "Spørres bare én gang. Etter dette kan mobilnumre skrives kort. Du kan endre det senere under <link>Språkinnstillinger</link>.",
     "phonePreview": "Lagres som",
-    "stepScannedTitle": "{name} er inne"
+    "stepScannedTitle": "{name} er inne",
+    "countrySearch": "Søk etter land",
+    "countryNoMatch": "Ingen land passer"
   },
   "invoice": {
     "title": "Faktura og tilbud",

@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Geen van beide, ik pas het nummer aan",
     "workshopCountry": "In welk land staat uw werkplaats?",
     "workshopCountryPlaceholder": "Kies een land",
-    "workshopCountryHint": "Wordt één keer gevraagd. Daarna kunnen mobiele nummers kort worden ingevoerd.",
+    "workshopCountryHint": "Wordt één keer gevraagd. Daarna kunnen mobiele nummers kort worden ingevoerd. U kunt het later wijzigen bij <link>Taalinstellingen</link>.",
     "phonePreview": "Opgeslagen als",
-    "stepScannedTitle": "{name} is binnen"
+    "stepScannedTitle": "{name} is binnen",
+    "countrySearch": "Landen zoeken",
+    "countryNoMatch": "Geen land komt overeen"
   },
   "invoice": {
     "title": "Factuurindeling",

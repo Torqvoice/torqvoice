@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Hiçbiri, numarayı değiştireyim",
     "workshopCountry": "Servisiniz hangi ülkede?",
     "workshopCountryPlaceholder": "Bir ülke seçin",
-    "workshopCountryHint": "Sadece bir kez sorulur. Sonrasında cep numaraları kısa şekilde yazılabilir.",
+    "workshopCountryHint": "Sadece bir kez sorulur. Sonrasında cep numaraları kısa şekilde yazılabilir. Daha sonra <link>Yerelleştirme ayarları</link> bölümünden değiştirebilirsiniz.",
     "phonePreview": "Şöyle kaydedilir",
-    "stepScannedTitle": "{name} girdi"
+    "stepScannedTitle": "{name} girdi",
+    "countrySearch": "Ülke ara",
+    "countryNoMatch": "Eşleşen ülke yok"
   },
   "invoice": {
     "title": "Fatura Düzeni",

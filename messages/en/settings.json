@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Neither, let me change the number",
     "workshopCountry": "Which country is your workshop in?",
     "workshopCountryPlaceholder": "Choose a country",
-    "workshopCountryHint": "Asked once. After this, mobile numbers can be typed the short way.",
+    "workshopCountryHint": "Asked once. After this, mobile numbers can be typed the short way. You can change it later in <link>Localisation settings</link>.",
     "phonePreview": "Saved as",
-    "stepScannedTitle": "{name} is in"
+    "stepScannedTitle": "{name} is in",
+    "countrySearch": "Search countries",
+    "countryNoMatch": "No country matches that"
   },
   "invoice": {
     "title": "Invoice & Quotes",

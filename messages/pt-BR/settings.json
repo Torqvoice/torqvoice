@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Nenhum, quero mudar o número",
     "workshopCountry": "Em que país fica sua oficina?",
     "workshopCountryPlaceholder": "Escolha um país",
-    "workshopCountryHint": "Perguntado uma vez só. Depois os celulares podem ser digitados na forma curta.",
+    "workshopCountryHint": "Perguntado uma vez só. Depois os celulares podem ser digitados na forma curta. Você pode mudar isso depois em <link>Configurações de localização</link>.",
     "phonePreview": "Salvo como",
-    "stepScannedTitle": "{name} entrou"
+    "stepScannedTitle": "{name} entrou",
+    "countrySearch": "Buscar países",
+    "countryNoMatch": "Nenhum país corresponde"
   },
   "invoice": {
     "title": "Layout da fatura",

@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Żadne, chcę zmienić numer",
     "workshopCountry": "W jakim kraju jest twój warsztat?",
     "workshopCountryPlaceholder": "Wybierz kraj",
-    "workshopCountryHint": "Pytamy tylko raz. Potem numery można wpisywać w skróconej formie.",
+    "workshopCountryHint": "Pytamy tylko raz. Potem numery można wpisywać w skróconej formie. Możesz to zmienić później w <link>Ustawieniach lokalizacji</link>.",
     "phonePreview": "Zapisany jako",
-    "stepScannedTitle": "{name} jest w środku"
+    "stepScannedTitle": "{name} jest w środku",
+    "countrySearch": "Szukaj krajów",
+    "countryNoMatch": "Żaden kraj nie pasuje"
   },
   "invoice": {
     "title": "Układ faktury",

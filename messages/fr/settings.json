@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Ni l’un ni l’autre, je corrige le numéro",
     "workshopCountry": "Dans quel pays se trouve votre atelier ?",
     "workshopCountryPlaceholder": "Choisissez un pays",
-    "workshopCountryHint": "Demandé une seule fois. Ensuite, les numéros de mobile peuvent être saisis en format court.",
+    "workshopCountryHint": "Demandé une seule fois. Ensuite, les numéros de mobile peuvent être saisis en format court. Vous pourrez le modifier dans les <link>paramètres de localisation</link>.",
     "phonePreview": "Enregistré comme",
-    "stepScannedTitle": "{name} est connecté"
+    "stepScannedTitle": "{name} est connecté",
+    "countrySearch": "Rechercher un pays",
+    "countryNoMatch": "Aucun pays ne correspond"
   },
   "invoice": {
     "title": "Mise en page de facture",

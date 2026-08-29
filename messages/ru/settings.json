@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Ни то ни другое, изменю номер",
     "workshopCountry": "В какой стране ваша мастерская?",
     "workshopCountryPlaceholder": "Выберите страну",
-    "workshopCountryHint": "Спрашиваем один раз. Дальше номера можно вводить коротко.",
+    "workshopCountryHint": "Спрашиваем один раз. Дальше номера можно вводить коротко. Позже это можно изменить в <link>настройках локализации</link>.",
     "phonePreview": "Сохранится как",
-    "stepScannedTitle": "{name} вошёл"
+    "stepScannedTitle": "{name} вошёл",
+    "countrySearch": "Поиск страны",
+    "countryNoMatch": "Ничего не найдено"
   },
   "invoice": {
     "title": "Счета и предложения",

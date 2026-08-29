@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { ArrowLeft, ArrowRightLeft, Check, Loader2, Mail, UserCheck, Wrench } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,7 @@ import { createTechnicianAccount } from '@/features/team/Actions/createTechnicia
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
+import { CountryPicker } from './CountryPicker'
 import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 
@@ -329,19 +331,18 @@ export function AddPersonDialog({
             {!dialCode && (
               <div className="space-y-2">
                 <Label>{t('team.workshopCountry')}</Label>
-                <Select value={region} onValueChange={setRegion}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('team.workshopCountryPlaceholder')} />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-72">
-                    {countries.map((c) => (
-                      <SelectItem key={c.region} value={c.region}>
-                        {c.name} ({c.dial})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-muted-foreground text-xs">{t('team.workshopCountryHint')}</p>
+                <CountryPicker value={region} onChange={setRegion} disabled={busy} />
+                <p className="text-muted-foreground text-xs">
+                  {/* Where the answer lives afterwards, so a desk operator who
+                      picks the wrong one knows it is not permanent. */}
+                  {t.rich('team.workshopCountryHint', {
+                    link: (chunks) => (
+                      <Link href="/settings/localization" className="underline underline-offset-2">
+                        {chunks}
+                      </Link>
+                    ),
+                  })}
+                </p>
               </div>
             )}
 

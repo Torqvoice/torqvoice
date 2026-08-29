@@ -461,9 +461,11 @@
     "clashDifferentNumber": "Keins davon, Nummer ändern",
     "workshopCountry": "In welchem Land ist Ihre Werkstatt?",
     "workshopCountryPlaceholder": "Land auswählen",
-    "workshopCountryHint": "Wird nur einmal gefragt. Danach können Handynummern kurz eingegeben werden.",
+    "workshopCountryHint": "Wird nur einmal gefragt. Danach können Handynummern kurz eingegeben werden. Sie können es später unter <link>Spracheinstellungen</link> ändern.",
     "phonePreview": "Gespeichert als",
-    "stepScannedTitle": "{name} ist drin"
+    "stepScannedTitle": "{name} ist drin",
+    "countrySearch": "Länder durchsuchen",
+    "countryNoMatch": "Kein Land passt dazu"
   },
   "invoice": {
     "title": "Rechnungslayout",
