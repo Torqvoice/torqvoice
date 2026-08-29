@@ -862,6 +862,7 @@ model Organization {
   timeEntries            TimeEntry[]
   pushDevices            PushDevice[]
   appSetupCodes          TechnicianSetupCode[]
+  technicianLoginCodes   TechnicianLoginCode[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
@@ -1368,12 +1369,19 @@ model Technician {
   sortOrder     Int     @default(0)
   dailyCapacity Int     @default(480)
 
+  /// How this technician signs back in, and the only identifier they have to
+  /// remember. Stored per workshop rather than on the user, so the same person
+  /// working Saturdays at another shop is two employment records and never one
+  /// account two workshops can both reach.
+  phone String?
+
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  loginCodes     TechnicianLoginCode[]
   serviceRecords ServiceRecord[]
   inspections    Inspection[]
   statusReports  StatusReport[]
@@ -1383,6 +1391,9 @@ model Technician {
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
+  /// Signing in looks a technician up by workshop and phone together, never
+  /// by phone alone.
+  @@index([organizationId, phone])
   @@map("technicians")
 }
 
@@ -1460,6 +1471,44 @@ model TimeEntry {
 /// It is a bearer credential in a picture, so it is deliberately short-lived,
 /// single-use, and bound to one person in one workshop. It exchanges for a
 /// normal session and is then dead; it is never itself a way to authenticate.
+/// A one-time code that signs a technician back in.
+///
+/// Modelled on CustomerSmsCode, which does the same job for the customer
+/// portal: org-scoped, single use, short-lived. The organisation is not
+/// optional and is never inferred from the phone number. A technician's phone
+/// is only ever looked up inside the workshop their app already belongs to,
+/// so nothing here can reach across workshops even if a person works at two.
+model TechnicianLoginCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits. The code exists in a text message and in the
+  /// technician's head, and nowhere that can be read back out of a database.
+  codeHash String
+
+  /// How it was sent, so the app can say "check your messages" or "check your
+  /// email" rather than guessing on the technician's behalf.
+  channel String
+
+  /// Wrong guesses so far. Six digits is a million, which a rate limiter alone
+  /// does not protect: this burns the code after a handful of attempts.
+  attempts Int @default(0)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, technicianId])
+  @@index([expiresAt])
+  @@map("technician_login_codes")
+}
+
 model TechnicianSetupCode {
   id String @id @default(cuid())
 
