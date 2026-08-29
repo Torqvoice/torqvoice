@@ -9,19 +9,26 @@ interface RateLimitEntry {
 const store = new Map<string, RateLimitEntry>()
 
 /**
- * Whether Cloudflare is actually in front of this deployment.
+ * Whether Cloudflare genuinely fronts every request to this deployment.
  *
- * `cf-connecting-ip` is only worth anything when every request provably
- * arrives through Cloudflare. Production runs grey-clouded, and the proxy in
- * front of it (nginxproxy/nginx-proxy) sets `X-Real-IP` but has no reason to
- * strip a header from a CDN it is not behind. So the header arrives exactly as
- * the client wrote it, and trusting it let anyone mint a fresh rate-limit
- * budget per request simply by changing a digit.
+ * `cf-connecting-ip` is the only header carrying the real visitor when
+ * Cloudflare is proxying, because the proxy behind it sets `X-Real-IP` from
+ * the connection it can see, which is a Cloudflare edge address shared by
+ * thousands of people. Trusting it there is not optional: without it every
+ * visitor collapses into a handful of buckets and real users start collecting
+ * 429s.
  *
- * Off unless someone says otherwise, because the failure of guessing wrong in
- * this direction is silent and total.
+ * It is also worthless the moment anybody can reach the origin without going
+ * through Cloudflare, because then it is simply a header the caller wrote.
+ * Turning this on is a statement that the origin refuses direct traffic.
+ *
+ * Off by default, for the self-hosted install behind nothing but its own
+ * nginx, where trusting it would hand every caller their own rate limit.
  */
 const TRUST_CLOUDFLARE = process.env.TRUST_CF_CONNECTING_IP === 'true'
+
+/** Said once, not per request. */
+let warnedAboutCloudflare = false
 
 /**
  * Who to hold responsible for a request.
@@ -33,9 +40,22 @@ const TRUST_CLOUDFLARE = process.env.TRUST_CF_CONNECTING_IP === 'true'
  * felt like typing.
  */
 function clientAddress(request: Request): string {
+  const cf = request.headers.get('cf-connecting-ip')?.trim()
+
   if (TRUST_CLOUDFLARE) {
-    const cf = request.headers.get('cf-connecting-ip')?.trim()
     if (cf) return cf
+  } else if (cf && !warnedAboutCloudflare) {
+    // The expensive misconfiguration, and a silent one in both directions.
+    // Seeing this header at all means either Cloudflare is in front and every
+    // visitor is about to be counted as the same handful of edge addresses, or
+    // somebody is sending it who should not be.
+    warnedAboutCloudflare = true
+    console.warn(
+      '[rate-limit] cf-connecting-ip is arriving but is not trusted, so every ' +
+        'visitor is being counted as the proxy address they arrived through. ' +
+        'If Cloudflare fronts this deployment and the origin refuses direct ' +
+        'traffic, set TRUST_CF_CONNECTING_IP=true.'
+    )
   }
 
   const real = request.headers.get('x-real-ip')?.trim()
