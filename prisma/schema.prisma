@@ -12,6 +12,15 @@ model User {
   name          String
   email         String   @unique
   emailVerified Boolean  @default(false)
+  /// The mobile a technician signs in with, and the number a workshop holds
+  /// for whoever this is.
+  ///
+  /// Deliberately not unique. When a desk creates an account for a mechanic
+  /// standing at the counter, a second workshop may create another for the
+  /// same human, and neither should be able to block the other. Every lookup
+  /// reaches it through a technician row and so is already scoped to one
+  /// workshop; the number alone is never the question being asked.
+  phone         String?
   image         String?
   isSuperAdmin  Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -31,6 +40,7 @@ model User {
   sessions               Session[]
   accounts               Account[]
   pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
   vehicles               Vehicle[]
   customers              Customer[]
   settings               AppSetting[]
@@ -860,6 +870,8 @@ model Organization {
   workBays               WorkBay[]
   timeEntries            TimeEntry[]
   pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
+  technicianLoginCodes   TechnicianLoginCode[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
@@ -1372,6 +1384,7 @@ model Technician {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  loginCodes     TechnicianLoginCode[]
   serviceRecords ServiceRecord[]
   inspections    Inspection[]
   statusReports  StatusReport[]
@@ -1449,6 +1462,83 @@ model TimeEntry {
 /// The token is a routing address, not a secret, but it is still deleted on
 /// sign-out: a device that has signed out must stop receiving a workshop's job
 /// details, and expiry alone would leave a window where it still did.
+/// A one-time code that puts a technician's phone onto a workshop.
+///
+/// Typing a URL and a password is the worst moment in the app, and it lands on
+/// the person least equipped for it: a technician with dirty hands, on a
+/// phone, being watched. The desk shows a QR instead and the phone reads it.
+///
+/// It is a bearer credential in a picture, so it is deliberately short-lived,
+/// single-use, and bound to one person in one workshop. It exchanges for a
+/// normal session and is then dead; it is never itself a way to authenticate.
+/// A one-time code that signs a technician back in.
+///
+/// Modelled on CustomerSmsCode, which does the same job for the customer
+/// portal: org-scoped, single use, short-lived. The organisation is not
+/// optional and is never inferred from the phone number. A technician's phone
+/// is only ever looked up inside the workshop their app already belongs to,
+/// so nothing here can reach across workshops even if a person works at two.
+model TechnicianLoginCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits. The code exists in a text message and in the
+  /// technician's head, and nowhere that can be read back out of a database.
+  codeHash String
+
+  /// How it was sent, so the app can say "check your messages" or "check your
+  /// email" rather than guessing on the technician's behalf.
+  channel String
+
+  /// Wrong guesses so far. Six digits is a million, which a rate limiter alone
+  /// does not protect: this burns the code after a handful of attempts.
+  attempts Int @default(0)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, technicianId])
+  @@index([expiresAt])
+  @@map("technician_login_codes")
+}
+
+model TechnicianSetupCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the code. The code itself is shown once, on the screen that
+  /// asked for it, and is never written down anywhere it could be read back.
+  codeHash String @unique
+
+  expiresAt DateTime
+  /// Set on redemption. Kept rather than deleted so a second scan can say the
+  /// code was already used, which is a different problem from a wrong code.
+  usedAt    DateTime?
+
+  /// Who the code signs in.
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Who issued it, for the audit trail. Not a relation: the issuer may be
+  /// removed from the workshop later and that must not delete the record.
+  issuedByUserId String
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, expiresAt])
+  @@index([userId])
+  @@map("technician_setup_codes")
+}
+
 model PushDevice {
   id String @id @default(cuid())
 
@@ -1562,8 +1652,21 @@ model CustomerMagicLink {
 }
 
 model CustomerSmsCode {
-  id             String    @id @default(cuid())
-  code           String
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits, not the digits.
+  ///
+  /// The code reaches the customer in a text message and lives in their head
+  /// for a minute. It has no business also sitting in a table where reading a
+  /// row hands over somebody's portal session.
+  code String
+
+  /// Wrong guesses so far. Six digits is a million, which sounds like plenty
+  /// and is not: limiting by address does nothing about a hundred machines
+  /// sharing the work. Five attempts against one code makes the space
+  /// irrelevant, because the code is gone long before the guessing arrives.
+  attempts Int @default(0)
+
   phone          String
   organizationId String
   expiresAt      DateTime

@@ -139,7 +139,17 @@
     "whatsapp_send": "Mensagem de WhatsApp enviada",
     "work_bay_create": "Baia criada",
     "work_bay_update": "Baia atualizada",
-    "work_bay_delete": "Baia excluída"
+    "work_bay_delete": "Baia excluída",
+    "auth_appSetupRedeemed": "Entrou com código de configuração",
+    "auth_technicianCodeSignIn": "Entrou com código de uso único",
+    "team_createAppSetupCode": "Código de configuração do aplicativo emitido",
+    "team_createTechnicianAccount": "Conta de técnico criada",
+    "team_removeTechnicianAccess": "Técnico removido e acesso revogado",
+    "team_setMemberTechnician": "Alterado se um membro é técnico",
+    "settings_whatsappUpdated": "Configurações do WhatsApp atualizadas",
+    "settings_whatsappDisconnected": "WhatsApp desconectado",
+    "settings_whatsappNumberRegistered": "Número do WhatsApp registrado",
+    "team_giveTechnicianTheApp": "Conta dada a um técnico só do quadro"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",

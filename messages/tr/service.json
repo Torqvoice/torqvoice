@@ -344,7 +344,11 @@
     "setDefaults": "Varsayılanlar",
     "workBay": "Çalışma alanı",
     "selectWorkBay": "Çalışma alanı seçin…",
-    "noWorkBay": "Çalışma alanı yok"
+    "noWorkBay": "Çalışma alanı yok",
+    "technicians": "Teknisyenler",
+    "otherTeamMembers": "Diğer ekip üyeleri",
+    "makeTechnician": "Onu teknisyen yapar",
+    "addSomeoneNew": "Yeni birini ekle"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",

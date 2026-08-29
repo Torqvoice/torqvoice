@@ -139,7 +139,17 @@
     "whatsapp_send": "Wysłano wiadomość WhatsApp",
     "work_bay_create": "Utworzono stanowisko",
     "work_bay_update": "Zaktualizowano stanowisko",
-    "work_bay_delete": "Usunięto stanowisko"
+    "work_bay_delete": "Usunięto stanowisko",
+    "auth_appSetupRedeemed": "Zalogowano kodem konfiguracji",
+    "auth_technicianCodeSignIn": "Zalogowano kodem jednorazowym",
+    "team_createAppSetupCode": "Wydano kod konfiguracji aplikacji",
+    "team_createTechnicianAccount": "Utworzono konto technika",
+    "team_removeTechnicianAccess": "Usunięto technika i cofnięto dostęp",
+    "team_setMemberTechnician": "Zmieniono, czy członek jest technikiem",
+    "settings_whatsappUpdated": "Zaktualizowano ustawienia WhatsApp",
+    "settings_whatsappDisconnected": "Odłączono WhatsApp",
+    "settings_whatsappNumberRegistered": "Zarejestrowano numer WhatsApp",
+    "team_giveTechnicianTheApp": "Nadano konto technikowi z tablicy"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",

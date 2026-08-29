@@ -75,7 +75,10 @@
     "standalone": "Bağımsız teknisyen",
     "deleteTitle": "Teknisyeni Sil",
     "deleteDescription": "\"{name}\" öğesini iş panosundan kaldırılsın mı? Mevcut atamaları da kaldırılacaktır.",
-    "addTechnician": "Teknisyen Ekle"
+    "addTechnician": "Teknisyen Ekle",
+    "standaloneOnly": "Panoda giriş yapmayan biri için bir isim, örneğin çırak ya da taşeron. Uygulamayı kullanan bir tamirciyi Ekip sayfasından ekleyin.",
+    "linkedTo": "{name} olarak giriş yapar",
+    "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir."
   },
   "jobDetail": {
     "viewDetails": "Ayrıntıları Görüntüle",

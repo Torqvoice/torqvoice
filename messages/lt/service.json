@@ -344,7 +344,11 @@
     "setDefaults": "Nustatyti numatytuosius",
     "workBay": "Darbo vieta",
     "selectWorkBay": "Pasirinkite darbo vietą…",
-    "noWorkBay": "Be darbo vietos"
+    "noWorkBay": "Be darbo vietos",
+    "technicians": "Technikai",
+    "otherTeamMembers": "Kiti komandos nariai",
+    "makeTechnician": "Padarys jį techniku",
+    "addSomeoneNew": "Pridėti naują žmogų"
   },
   "notifications": {
     "title": "Kliento pranešimai",

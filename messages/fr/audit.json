@@ -139,7 +139,17 @@
     "whatsapp_send": "Message WhatsApp envoyé",
     "work_bay_create": "Poste de travail créé",
     "work_bay_update": "Poste de travail mis à jour",
-    "work_bay_delete": "Poste de travail supprimé"
+    "work_bay_delete": "Poste de travail supprimé",
+    "auth_appSetupRedeemed": "Connexion avec un code de configuration",
+    "auth_technicianCodeSignIn": "Connexion avec un code à usage unique",
+    "team_createAppSetupCode": "Code de configuration de l'application émis",
+    "team_createTechnicianAccount": "Compte technicien créé",
+    "team_removeTechnicianAccess": "Technicien retiré et accès révoqué",
+    "team_setMemberTechnician": "Statut de technicien d'un membre modifié",
+    "settings_whatsappUpdated": "Paramètres WhatsApp mis à jour",
+    "settings_whatsappDisconnected": "WhatsApp déconnecté",
+    "settings_whatsappNumberRegistered": "Numéro WhatsApp enregistré",
+    "team_giveTechnicianTheApp": "Compte donné à un technicien du tableau"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",

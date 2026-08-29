@@ -13,7 +13,7 @@ import { MIN_APP_VERSION } from '@/lib/tech-app-version'
  * of server, and it speaks v1".
  */
 export async function GET(request: Request) {
-  const limited = rateLimit(request, { limit: 20, windowMs: 60_000 })
+  const limited = rateLimit(request, { limit: 20, windowMs: 60_000, anonymous: true })
   if (limited) return limited
 
   return NextResponse.json({

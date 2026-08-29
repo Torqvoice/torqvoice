@@ -75,7 +75,10 @@
     "standalone": "Uavhengig tekniker",
     "deleteTitle": "Slett tekniker",
     "deleteDescription": "Fjern \"{name}\" fra arbeidstavlen? Deres eksisterende tilordninger vil også bli fjernet.",
-    "addTechnician": "Legg til tekniker"
+    "addTechnician": "Legg til tekniker",
+    "standaloneOnly": "Et navn på tavlen for noen som ikke logger inn, for eksempel en lærling eller innleid. En mekaniker som bruker appen legger du til på Team-siden.",
+    "linkedTo": "Logger inn som {name}",
+    "linkedManagedOnTeam": "Styres fra Team-siden, sammen med apptilgangen."
   },
   "jobDetail": {
     "viewDetails": "Vis detaljer",

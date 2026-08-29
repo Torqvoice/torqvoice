@@ -72,7 +72,9 @@
     "vehicle": "Fahrzeug",
     "quote": "Angebot",
     "part": "Ersatzteil",
-    "inspection": "Inspektion"
+    "inspection": "Inspektion",
+    "shopActions": "Werkstatt",
+    "person": "Person hinzufügen"
   },
   "purchaseWhiteLabel": "White-Label erwerben",
   "licenseExpired": "Ihre Lizenz ist abgelaufen. Funktionen können eingeschränkt sein.",

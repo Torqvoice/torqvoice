@@ -72,7 +72,9 @@
     "vehicle": "Veículo",
     "quote": "Orçamento",
     "part": "Peça",
-    "inspection": "Inspeção"
+    "inspection": "Inspeção",
+    "shopActions": "Oficina",
+    "person": "Adicionar uma pessoa"
   },
   "purchaseWhiteLabel": "Adquirir White-Label",
   "licenseExpired": "Sua licença expirou. Os recursos podem estar limitados.",

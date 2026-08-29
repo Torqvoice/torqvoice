@@ -72,7 +72,9 @@
     "vehicle": "Vehicle",
     "quote": "Quote",
     "part": "Part",
-    "inspection": "Inspection"
+    "inspection": "Inspection",
+    "shopActions": "Shop actions",
+    "person": "Add a person"
   },
   "purchaseWhiteLabel": "Purchase White-Label",
   "licenseExpired": "Your license has expired. Features may be limited.",

@@ -75,7 +75,10 @@
     "standalone": "Tecnico indipendente",
     "deleteTitle": "Elimina Tecnico",
     "deleteDescription": "Rimuovere \"{name}\" dalla lavagna di lavoro? Anche i loro incarichi esistenti verranno rimossi.",
-    "addTechnician": "Aggiungi Tecnico"
+    "addTechnician": "Aggiungi Tecnico",
+    "standaloneOnly": "Un nome sulla lavagna per chi non accede, come un apprendista o un esterno. Per un meccanico che usa l'app, aggiungilo dalla pagina Team.",
+    "linkedTo": "Accede come {name}",
+    "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app."
   },
   "jobDetail": {
     "viewDetails": "Visualizza Dettagli",

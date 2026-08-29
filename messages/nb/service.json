@@ -344,7 +344,11 @@
     "setDefaults": "Standardinnstillinger",
     "workBay": "Arbeidsplass",
     "selectWorkBay": "Velg arbeidsplass …",
-    "noWorkBay": "Ingen arbeidsplass"
+    "noWorkBay": "Ingen arbeidsplass",
+    "technicians": "Teknikere",
+    "otherTeamMembers": "Andre i teamet",
+    "makeTechnician": "Gjør dem til tekniker",
+    "addSomeoneNew": "Legg til noen ny"
   },
   "notifications": {
     "title": "Kundevarsler",

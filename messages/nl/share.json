@@ -71,7 +71,8 @@
     "findingSeverityUrgent": "Hoog",
     "findingSeverityNeedsWork": "Gemiddeld",
     "findingSeverityMonitor": "Laag",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFields": "Aanvullende informatie"
   },
   "quote": {
     "title": "Offerte",
@@ -125,7 +126,8 @@
       "converted": "Omgezet",
       "changes_requested": "Wijzigingen aangevraagd"
     },
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFields": "Aanvullende informatie"
   },
   "inspection": {
     "title": "Voertuiginspectie",

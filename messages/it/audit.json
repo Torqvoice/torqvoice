@@ -139,7 +139,17 @@
     "whatsapp_send": "Messaggio WhatsApp inviato",
     "work_bay_create": "Postazione creata",
     "work_bay_update": "Postazione aggiornata",
-    "work_bay_delete": "Postazione eliminata"
+    "work_bay_delete": "Postazione eliminata",
+    "auth_appSetupRedeemed": "Accesso con codice di configurazione",
+    "auth_technicianCodeSignIn": "Accesso con codice monouso",
+    "team_createAppSetupCode": "Codice di configurazione dell'app emesso",
+    "team_createTechnicianAccount": "Account tecnico creato",
+    "team_removeTechnicianAccess": "Tecnico rimosso e accesso revocato",
+    "team_setMemberTechnician": "Modificato se un membro è tecnico",
+    "settings_whatsappUpdated": "Impostazioni WhatsApp aggiornate",
+    "settings_whatsappDisconnected": "WhatsApp disconnesso",
+    "settings_whatsappNumberRegistered": "Numero WhatsApp registrato",
+    "team_giveTechnicianTheApp": "Account dato a un tecnico solo da lavagna"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",

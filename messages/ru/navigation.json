@@ -72,7 +72,9 @@
     "vehicle": "Транспорт",
     "quote": "Предложение",
     "part": "Запчасть",
-    "inspection": "Осмотр"
+    "inspection": "Осмотр",
+    "shopActions": "Мастерская",
+    "person": "Добавить человека"
   },
   "purchaseWhiteLabel": "Купить White-Label",
   "licenseExpired": "Ваша лицензия истекла. Функции могут быть ограничены.",

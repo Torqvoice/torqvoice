@@ -72,7 +72,9 @@
     "vehicle": "Voertuig",
     "quote": "Offerte",
     "part": "Onderdeel",
-    "inspection": "Keuring"
+    "inspection": "Keuring",
+    "shopActions": "Werkplaats",
+    "person": "Persoon toevoegen"
   },
   "purchaseWhiteLabel": "White-label aanschaffen",
   "licenseExpired": "Uw licentie is verlopen. Functies kunnen beperkt zijn.",

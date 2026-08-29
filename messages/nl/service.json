@@ -344,7 +344,11 @@
     "setDefaults": "Standaardwaarden",
     "workBay": "Werkplek",
     "selectWorkBay": "Werkplek kiezen…",
-    "noWorkBay": "Geen werkplek"
+    "noWorkBay": "Geen werkplek",
+    "technicians": "Monteurs",
+    "otherTeamMembers": "Andere teamleden",
+    "makeTechnician": "Maakt hen monteur",
+    "addSomeoneNew": "Iemand nieuw toevoegen"
   },
   "notifications": {
     "title": "Klantmeldingen",

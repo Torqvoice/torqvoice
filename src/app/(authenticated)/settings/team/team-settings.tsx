@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -21,14 +20,17 @@ import {
 } from '@/components/ui/select'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
-import { createOrganization, inviteMember, removeMember } from '@/features/team/Actions/teamActions'
-import { sendInvitation } from '@/features/team/Actions/sendInvitation'
+import { createOrganization, removeMember } from '@/features/team/Actions/teamActions'
 import { cancelInvitation } from '@/features/team/Actions/cancelInvitation'
 import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
-import { setMemberTechnician } from '@/features/team/Actions/setMemberTechnician'
+import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
+import { contactFor, TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
+import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
+import { GiveAppDialog } from '@/features/team/Components/GiveAppDialog'
+import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
 
 /**
@@ -55,6 +57,8 @@ import {
   Plus,
   Shield,
   ShieldCheck,
+  Smartphone,
+  Wrench,
   Trash2,
   User,
   Users,
@@ -66,7 +70,7 @@ interface Member {
   role: string
   roleId: string | null
   customRoleName: string | null
-  user: { id: string; name: string; email: string }
+  user: { id: string; name: string; email: string; phone?: string | null }
 }
 
 interface Organization {
@@ -111,6 +115,9 @@ export function TeamSettings({
   currentRole,
   roles = [],
   technicianUserIds = [],
+  startAdding = false,
+  dialCode = '',
+  standaloneTechnicians = [],
   pendingInvitations = [],
 }: {
   organization: Organization | null
@@ -118,6 +125,12 @@ export function TeamSettings({
   roles?: RoleData[]
   /** User ids that already have an active technician record. */
   technicianUserIds?: string[]
+  /** Arrived from Quick Add, so open the dialog rather than the page. */
+  startAdding?: boolean
+  /** The workshop's country code, empty until somebody has supplied one. */
+  dialCode?: string
+  /** On the board, with nobody behind them. */
+  standaloneTechnicians?: { id: string; name: string; color: string }[]
   pendingInvitations?: PendingInvitation[]
 }) {
   const router = useRouter()
@@ -127,41 +140,37 @@ export function TeamSettings({
   const confirm = useConfirm()
   const [loading, setLoading] = useState(false)
   const [orgName, setOrgName] = useState('')
-  const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState<string>('member')
-  const [inviteRoleId, setInviteRoleId] = useState<string | null>(null)
 
   // Role form state
   const [showRoleForm, setShowRoleForm] = useState(false)
   const [editingRole, setEditingRole] = useState<RoleData | null>(null)
   // Tracked locally so the switch answers the tap immediately. A revalidate
   // round trip is a long time to sit on a toggle that has already moved.
-  const [technicians, setTechnicians] = useState<Set<string>>(() => new Set(technicianUserIds))
-  const [technicianBusy, setTechnicianBusy] = useState<string | null>(null)
+  /**
+   * Who is a technician, read from the server rather than remembered.
+   *
+   * This was useState seeded from the prop, which only runs on mount. Adding
+   * somebody refreshed the page, the prop arrived with them in it, and the set
+   * ignored it: the new technician's role dropdown then fell through to a role
+   * id with no matching option and rendered blank until a manual reload.
+   */
+  const technicians = useMemo(() => new Set(technicianUserIds), [technicianUserIds])
+  /** The workshop's technician role, if it has one yet. */
+  const technicianRoleId = roles.find((r) => r.name === TECHNICIAN_ROLE_NAME)?.id ?? null
+  /** The member whose app is being set up, and their name for the copy. */
+  const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
+  const [adding, setAdding] = useState(startAdding)
+  const [givingApp, setGivingApp] = useState<{ id: string; name: string } | null>(null)
 
-  const handleTechnicianToggle = async (userId: string, enabled: boolean) => {
-    setTechnicianBusy(userId)
-    setTechnicians((prev) => {
-      const next = new Set(prev)
-      if (enabled) next.add(userId)
-      else next.delete(userId)
-      return next
-    })
-    const result = await setMemberTechnician({ userId, enabled })
-    if (!result.success) {
-      // Put it back where it was; the server is the one that decides.
-      setTechnicians((prev) => {
-        const next = new Set(prev)
-        if (enabled) next.delete(userId)
-        else next.add(userId)
-        return next
-      })
-      toast.error(result.error || t('team.technicianFailed'))
-    } else {
-      router.refresh()
-    }
-    setTechnicianBusy(null)
-  }
+  /**
+   * The address the technician's app should connect to.
+   *
+   * Configured first, current origin second. They agree in production; in
+   * development the origin is localhost, which is an address the technician's
+   * phone cannot reach.
+   */
+  const workshopUrl =
+    process.env.NEXT_PUBLIC_APP_URL || (typeof window === 'undefined' ? '' : window.location.origin)
 
   const [roleName, setRoleName] = useState('')
   const [roleIsAdmin, setRoleIsAdmin] = useState(false)
@@ -254,20 +263,33 @@ export function TeamSettings({
     }
   }
 
-  const handleAssignRole = async (memberId: string, value: string) => {
-    let role: 'admin' | 'member'
+  const handleAssignRole = async (memberId: string, value: string, member?: Member) => {
+    let role: 'admin' | 'member' | 'technician'
     let roleId: string | null
 
-    if (value === 'admin') {
-      role = 'admin'
-      roleId = null
-    } else if (value === 'member') {
-      role = 'member'
+    if (value === 'admin' || value === 'member' || value === 'technician') {
+      role = value
       roleId = null
     } else {
       // Custom role ID
       role = 'member'
       roleId = value
+    }
+
+    // Moving somebody off Technician takes their phone with them, which is not
+    // something to discover from a dropdown.
+    const wasTechnician = member ? technicians.has(member.user.id) : false
+    if (wasTechnician && value !== 'technician') {
+      const ok = await confirm({
+        title: t('team.revokeTechnicianTitle'),
+        description: t('team.revokeTechnicianBody', {
+          name: member?.user.name || member?.user.email || '',
+        }),
+        confirmLabel: t('team.revokeTechnicianConfirm'),
+        destructive: true,
+      })
+      if (!ok) return
+      if (member) await removeTechnicianAccess({ userId: member.user.id })
     }
 
     const result = await assignRole({ memberId, role, roleId })
@@ -288,58 +310,6 @@ export function TeamSettings({
       router.refresh()
     } else {
       modal.open('error', 'Error', result.error || t('team.failedCreateOrg'))
-    }
-    setLoading(false)
-  }
-
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inviteEmail.trim()) return
-    setLoading(true)
-    const result = await inviteMember({
-      email: inviteEmail,
-      role: inviteRole,
-      roleId: inviteRoleId || undefined,
-    })
-    if (result.success) {
-      const data = result.data as { invited: boolean; userNotFound?: boolean }
-      if (data.userNotFound) {
-        // User doesn't exist — ask to send invitation email
-        const emailToInvite = inviteEmail
-        const roleToInvite = inviteRole
-        setLoading(false)
-        const ok = await confirm({
-          title: t('team.userNotFoundTitle'),
-          description: t('team.userNotFoundDescription', { email: emailToInvite }),
-          confirmLabel: t('team.sendInvitation'),
-        })
-        if (ok) {
-          setLoading(true)
-          const sendResult = await sendInvitation({
-            email: emailToInvite,
-            role: roleToInvite,
-            roleId: inviteRoleId || undefined,
-          })
-          if (sendResult.success) {
-            setInviteEmail('')
-            router.refresh()
-            modal.open(
-              'success',
-              t('team.invitationSentTitle'),
-              t('team.invitationSentDescription', { email: emailToInvite })
-            )
-          } else {
-            modal.open('error', 'Error', sendResult.error || t('team.failedSendInvitation'))
-          }
-          setLoading(false)
-        }
-      } else {
-        setInviteEmail('')
-        router.refresh()
-        modal.open('success', t('team.invite'), t('team.invited'))
-      }
-    } else {
-      modal.open('error', 'Error', result.error || t('team.failedInvite'))
     }
     setLoading(false)
   }
@@ -429,6 +399,14 @@ export function TeamSettings({
           </>
         }
         contentClassName="space-y-4"
+        action={
+          isAdmin ? (
+            <Button size="sm" onClick={() => setAdding(true)}>
+              <Plus className="mr-1 h-4 w-4" />
+              {t('team.addPerson')}
+            </Button>
+          ) : undefined
+        }
       >
         <div className="space-y-2">
           {organization.members.map((member) => (
@@ -438,33 +416,59 @@ export function TeamSettings({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-sm">{member.user.name}</p>
-                <p className="truncate text-xs text-muted-foreground">{member.user.email}</p>
+                {/* The mobile for a mechanic set up at the counter, whose
+                    address is a placeholder nobody can act on, and the email
+                    for everybody else. Whichever one identifies them. */}
+                <p className="truncate text-xs text-muted-foreground">{contactFor(member.user)}</p>
               </div>
               <div className="flex items-center gap-2">
-                {/* The other place this lives is the work board's technician
-                    dialog, which also carries colour, capacity and technicians
-                    with no login. This is the yes-or-no version, on the screen
-                    where someone adds the person in the first place. */}
-                {isAdmin && (
-                  <label className="flex cursor-pointer items-center gap-2 pr-1">
-                    <Switch
-                      checked={technicians.has(member.user.id)}
-                      disabled={technicianBusy === member.user.id}
-                      onCheckedChange={(v) => handleTechnicianToggle(member.user.id, v)}
-                      aria-label={t('team.technician')}
-                    />
-                    <span
-                      className="hidden text-muted-foreground text-xs sm:inline"
-                      title={t('team.technicianHint')}
-                    >
-                      {t('team.technician')}
-                    </span>
-                  </label>
+                {technicians.has(member.user.id) && member.roleId !== technicianRoleId && (
+                  <Badge variant="outline" className="text-xs">
+                    <Wrench className="mr-1 h-3 w-3" />
+                    {t('team.technician')}
+                  </Badge>
+                )}
+                {isAdmin && technicians.has(member.user.id) && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={() =>
+                      setSettingUp({
+                        userId: member.user.id,
+                        name: member.user.name || member.user.email,
+                      })
+                    }
+                    aria-label={t('team.setupApp')}
+                    title={t('team.setupApp')}
+                  >
+                    <Smartphone className="h-4 w-4" />
+                  </Button>
                 )}
                 {isOwner && member.role !== 'owner' ? (
                   <Select
-                    value={member.roleId || member.role}
-                    onValueChange={(v) => handleAssignRole(member.id, v)}
+                    value={
+                      // Read from the role they hold, not from whether they
+                      // are on the board.
+                      //
+                      // An install that predates this has technicians holding
+                      // all sorts of roles. Showing Technician for them would
+                      // both misreport what they can do and overwrite it the
+                      // moment anybody touched the field. Their real role shows
+                      // here; the badge beside it says they are also on the
+                      // board.
+                      member.roleId === technicianRoleId
+                        ? 'technician'
+                        : // Never a value with no option behind it, or the
+                          // trigger renders empty and the member looks
+                          // roleless when they are not.
+                          roles.some(
+                              (r) => r.id === member.roleId && r.name !== TECHNICIAN_ROLE_NAME
+                            )
+                          ? (member.roleId as string)
+                          : member.role
+                    }
+                    onValueChange={(v) => handleAssignRole(member.id, v, member)}
                   >
                     <SelectTrigger className="h-8 w-36 text-xs">
                       <SelectValue />
@@ -472,14 +476,23 @@ export function TeamSettings({
                     <SelectContent>
                       <SelectItem value="admin">{t('team.admin')}</SelectItem>
                       <SelectItem value="member">{t('team.member')}</SelectItem>
+                      {/* One answer to one question. Choosing this puts them on
+                          the work board and gives them what the app needs;
+                          choosing anything else takes both away. */}
+                      <SelectItem value="technician">{t('team.technician')}</SelectItem>
                       {roles.length > 0 && (
                         <>
                           <SelectSeparator />
-                          {roles.map((r) => (
-                            <SelectItem key={r.id} value={r.id}>
-                              {r.name}
-                            </SelectItem>
-                          ))}
+                          {roles
+                            // The technician permissions are what the dropdown
+                            // entry above grants, so offering the role again
+                            // underneath is the same choice listed twice.
+                            .filter((r) => r.name !== TECHNICIAN_ROLE_NAME)
+                            .map((r) => (
+                              <SelectItem key={r.id} value={r.id}>
+                                {r.name}
+                              </SelectItem>
+                            ))}
                         </>
                       )}
                     </SelectContent>
@@ -506,58 +519,39 @@ export function TeamSettings({
           ))}
         </div>
 
-        {isAdmin && (
-          <form onSubmit={handleInvite} className="flex items-end gap-3 border-t pt-4">
-            <div className="flex-1 space-y-2">
-              <Label>{t('team.inviteByEmail')}</Label>
-              <Input
-                type="email"
-                placeholder={t('team.inviteEmailPlaceholder')}
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                required
-              />
-            </div>
-            <Select
-              value={inviteRoleId ? `custom:${inviteRoleId}` : inviteRole}
-              onValueChange={(v) => {
-                if (v.startsWith('custom:')) {
-                  const id = v.replace('custom:', '')
-                  setInviteRole('member')
-                  setInviteRoleId(id)
-                } else {
-                  setInviteRole(v)
-                  setInviteRoleId(null)
-                }
-              }}
-            >
-              <SelectTrigger className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">{t('team.admin')}</SelectItem>
-                <SelectItem value="member">{t('team.member')}</SelectItem>
-                {roles.length > 0 && (
-                  <>
-                    <SelectSeparator />
-                    {roles.map((r) => (
-                      <SelectItem key={r.id} value={`custom:${r.id}`}>
-                        {r.name}
-                      </SelectItem>
-                    ))}
-                  </>
+        {/* On the board with nobody behind them.
+            The Add flow creates these, so the page has to show them, or the
+            desk adds somebody and watches them vanish. */}
+        {standaloneTechnicians.length > 0 && (
+          <div className="space-y-2 border-t pt-4">
+            <p className="font-medium text-sm">{t('team.boardOnly')}</p>
+            <p className="text-muted-foreground text-xs">{t('team.boardOnlyHint')}</p>
+            {standaloneTechnicians.map((tech) => (
+              <div key={tech.id} className="flex items-center gap-3 rounded-lg border p-3">
+                <div
+                  className="h-9 w-9 shrink-0 rounded-full"
+                  style={{ backgroundColor: tech.color }}
+                  aria-hidden
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-sm">{tech.name}</p>
+                  <p className="truncate text-muted-foreground text-xs">
+                    {t('team.boardOnlyNoAccount')}
+                  </p>
+                </div>
+                {isAdmin && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setGivingApp({ id: tech.id, name: tech.name })}
+                  >
+                    <Smartphone className="mr-1 h-4 w-4" />
+                    {t('team.giveApp')}
+                  </Button>
                 )}
-              </SelectContent>
-            </Select>
-            <Button type="submit" disabled={loading || !inviteEmail.trim()}>
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Plus className="mr-1 h-4 w-4" />
-              )}
-              {t('team.invite')}
-            </Button>
-          </form>
+              </div>
+            ))}
+          </div>
         )}
       </AppCard>
 
@@ -857,6 +851,33 @@ export function TeamSettings({
           </div>
         </div>
       </AppCard>
+
+      {/* Configured address first, current origin second. They agree in
+          production; in development the origin is localhost, which is an
+          address the technician's phone cannot reach. */}
+      <AddPersonDialog
+        open={adding}
+        onOpenChange={setAdding}
+        workshopUrl={workshopUrl}
+        dialCode={dialCode}
+        roles={roles}
+        onChanged={() => router.refresh()}
+      />
+
+      <GiveAppDialog
+        technician={givingApp}
+        workshopUrl={workshopUrl}
+        dialCode={dialCode}
+        onClose={() => setGivingApp(null)}
+        onChanged={() => router.refresh()}
+      />
+
+      <AppSetupCodeDialog
+        userId={settingUp?.userId ?? null}
+        memberName={settingUp?.name ?? ''}
+        workshopUrl={workshopUrl}
+        onClose={() => setSettingUp(null)}
+      />
     </div>
   )
 }

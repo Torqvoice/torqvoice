@@ -75,7 +75,10 @@
     "standalone": "Technicien autonome",
     "deleteTitle": "Supprimer le Technicien",
     "deleteDescription": "Supprimer \"{name}\" du tableau de bord des travaux? Ses assignations existantes seront également supprimées.",
-    "addTechnician": "Ajouter un Technicien"
+    "addTechnician": "Ajouter un Technicien",
+    "standaloneOnly": "Un nom sur le tableau pour quelqu'un qui ne se connecte pas, un apprenti ou un sous-traitant. Pour un mécanicien qui utilise l'application, passez par la page Équipe.",
+    "linkedTo": "Se connecte en tant que {name}",
+    "linkedManagedOnTeam": "Géré depuis la page Équipe, avec son accès à l'application."
   },
   "jobDetail": {
     "viewDetails": "Voir les Détails",

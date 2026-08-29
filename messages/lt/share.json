@@ -71,7 +71,8 @@
     "findingSeverityUrgent": "Aukšta",
     "findingSeverityNeedsWork": "Vidutinė",
     "findingSeverityMonitor": "Žema",
-    "tel": "Tel.: {phone}"
+    "tel": "Tel.: {phone}",
+    "customFields": "Papildoma informacija"
   },
   "quote": {
     "title": "Pasiūlymas",
@@ -125,7 +126,8 @@
       "converted": "Konvertuotas",
       "changes_requested": "Prašomi pakeitimai"
     },
-    "tel": "Tel.: {phone}"
+    "tel": "Tel.: {phone}",
+    "customFields": "Papildoma informacija"
   },
   "inspection": {
     "title": "Transporto priemonės apžiūra",

@@ -139,7 +139,17 @@
     "whatsapp_send": "WhatsApp-bericht verzonden",
     "work_bay_create": "Werkplek aangemaakt",
     "work_bay_update": "Werkplek bijgewerkt",
-    "work_bay_delete": "Werkplek verwijderd"
+    "work_bay_delete": "Werkplek verwijderd",
+    "auth_appSetupRedeemed": "Ingelogd met installatiecode",
+    "auth_technicianCodeSignIn": "Ingelogd met eenmalige code",
+    "team_createAppSetupCode": "Installatiecode voor de app uitgegeven",
+    "team_createTechnicianAccount": "Monteursaccount aangemaakt",
+    "team_removeTechnicianAccess": "Monteur verwijderd en toegang ingetrokken",
+    "team_setMemberTechnician": "Gewijzigd of een lid monteur is",
+    "settings_whatsappUpdated": "WhatsApp-instellingen bijgewerkt",
+    "settings_whatsappDisconnected": "WhatsApp losgekoppeld",
+    "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd",
+    "team_giveTechnicianTheApp": "Bordmonteur een account gegeven"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

@@ -277,6 +277,10 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',
   Subscription: 'Billing state owned by Stripe, not by us.',
+  TechnicianLoginCode:
+    'One-time code for signing a technician back in, dead five minutes after it is sent.',
+  TechnicianSetupCode:
+    'One-time code for putting a phone onto the workshop, dead ten minutes after it is issued.',
   TeamInvitation: 'Pending invitation, expires on its own.',
   WebhookDelivery: 'Delivery log for a webhook, rewritten every time one fires.',
 }

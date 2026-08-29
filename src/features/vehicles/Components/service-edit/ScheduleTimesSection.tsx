@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -19,9 +21,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from '@/components/ui/command'
-import { Input } from '@/components/ui/input'
 import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
@@ -80,12 +80,14 @@ export function ScheduleTimesSection({
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
+  const router = useRouter()
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
   const [selectedBayId, setSelectedBayId] = useState(initialWorkBayId || NO_BAY)
   const [techOpen, setTechOpen] = useState(false)
   const [technicians, setTechnicians] = useState<Technician[]>(initialTechnicians)
   const [techSearch, setTechSearch] = useState('')
   const [creating, setCreating] = useState(false)
+  const [addingPerson, setAddingPerson] = useState(false)
   const [showNewInput, setShowNewInput] = useState(false)
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
@@ -261,9 +263,15 @@ export function ScheduleTimesSection({
               />
               <CommandList className="max-h-60 overflow-y-auto">
                 <CommandEmpty className="p-0" />
-                {/* Platform users (linked technicians + unlinked org members) */}
-                {(linkedTechnicians.length > 0 || unlinkedMembers.length > 0) && (
-                  <CommandGroup heading={t('platformUsers')}>
+                {/* Two different kinds of person, under two headings.
+                    They used to share one, so somebody who books cars in read
+                    as a mechanic, and choosing them quietly created a
+                    technician record for an account the desk had never said
+                    was one. The list still offers them, because assigning a
+                    colleague on the spot is worth keeping; it just says which
+                    is which. */}
+                {linkedTechnicians.length > 0 && (
+                  <CommandGroup heading={t('technicians')}>
                     {linkedTechnicians.map((tech) => (
                       <CommandItem
                         key={tech.id}
@@ -277,20 +285,6 @@ export function ScheduleTimesSection({
                           )}
                         />
                         {tech.name}
-                      </CommandItem>
-                    ))}
-                    {unlinkedMembers.map((member) => (
-                      <CommandItem
-                        key={`member-${member.id}`}
-                        value={member.name!}
-                        onSelect={() => handleMemberSelect(member)}
-                        disabled={creating}
-                      >
-                        <Check className="mr-2 h-4 w-4 opacity-0" />
-                        {member.name}
-                        <span className="ml-auto text-[10px] text-muted-foreground">
-                          {member.email}
-                        </span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -315,67 +309,28 @@ export function ScheduleTimesSection({
                     ))}
                   </CommandGroup>
                 )}
-                {techSearch.trim() && !exactMatch && (
-                  <CommandGroup>
-                    <CommandItem
-                      value={`__create__${techSearch}`}
-                      onSelect={() => doCreateTechnician(techSearch)}
-                      disabled={creating}
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      {creating
-                        ? t('creating')
-                        : t('createTechnician', { name: techSearch.trim() })}
-                    </CommandItem>
-                  </CommandGroup>
-                )}
-                <CommandSeparator />
+                {/* Adding somebody is one workflow, and this is a door into
+                    it rather than a fourth way of doing it. The picker used to
+                    create people itself: choosing an office colleague quietly
+                    made them a technician, and typing a name made a second
+                    kind nobody had asked about. */}
                 <CommandGroup>
-                  {showNewInput ? (
-                    <div
-                      className="flex items-center gap-1.5 px-2 py-1.5"
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <Input
-                        autoFocus
-                        placeholder={t('newTechPlaceholder')}
-                        value={newTechName}
-                        onChange={(e) => setNewTechName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault()
-                            doCreateTechnician(newTechName)
-                          }
-                          if (e.key === 'Escape') {
-                            setShowNewInput(false)
-                            setNewTechName('')
-                          }
-                        }}
-                        className="h-7 text-sm"
-                        disabled={creating}
-                      />
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 px-2 shrink-0"
-                        disabled={creating || !newTechName.trim()}
-                        onClick={() => doCreateTechnician(newTechName)}
-                      >
-                        {creating ? t('creating') : t('add')}
-                      </Button>
-                    </div>
-                  ) : (
-                    <CommandItem value="__add_new__" onSelect={() => setShowNewInput(true)}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      {t('addNew')}
-                    </CommandItem>
-                  )}
+                  <CommandItem value="__add_person__" onSelect={() => setAddingPerson(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t('addSomeoneNew')}
+                  </CommandItem>
                 </CommandGroup>
               </CommandList>
             </Command>
           </PopoverContent>
         </Popover>
       </div>
+
+      <AddPersonDialog
+        open={addingPerson}
+        onOpenChange={setAddingPerson}
+        onChanged={() => router.refresh()}
+      />
 
       {workBays.length > 0 && (
         <div className="space-y-1">

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { randomInt } from 'crypto'
 import { db } from '@/lib/db'
+import { generatePortalCode, hashPortalCode } from '@/lib/portal-code'
 import { rateLimit } from '@/lib/rate-limit'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolvePortalOrg } from '@/lib/portal-slug'
@@ -8,7 +8,7 @@ import { getOrgSmsProvider, sendOrgSms } from '@/lib/sms'
 import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
-  const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
   if (rateLimitResponse) return rateLimitResponse
 
   const { orgId: orgParam } = await params
@@ -79,11 +79,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     }
 
     // Generate a 6-digit code
-    const code = String(randomInt(0, 1_000_000)).padStart(6, '0')
+    const code = generatePortalCode()
 
     await db.customerSmsCode.create({
       data: {
-        code,
+        code: hashPortalCode(code),
         phone: e164,
         organizationId: orgId,
         expiresAt: new Date(Date.now() + 15 * 60 * 1000),

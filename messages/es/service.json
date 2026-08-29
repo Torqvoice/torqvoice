@@ -344,7 +344,11 @@
     "setDefaults": "Configurar valores",
     "workBay": "Puesto de trabajo",
     "selectWorkBay": "Seleccionar puesto…",
-    "noWorkBay": "Sin puesto"
+    "noWorkBay": "Sin puesto",
+    "technicians": "Técnicos",
+    "otherTeamMembers": "Otros miembros del equipo",
+    "makeTechnician": "Lo convierte en técnico",
+    "addSomeoneNew": "Añadir a alguien nuevo"
   },
   "notifications": {
     "title": "Notificaciones al cliente",
