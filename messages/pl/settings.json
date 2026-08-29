@@ -480,7 +480,9 @@
     "giveAppTitle": "Daj {name} aplikację",
     "giveAppBlurb": "Brakuje tylko numeru telefonu. Od tej pory nim będzie się logować.",
     "giveAppKeepsHistory": "Wszystko, co już zapisano na tę osobę, zostaje.",
-    "giveAppSubmit": "Utwórz konto"
+    "giveAppSubmit": "Utwórz konto",
+    "role": "Rola",
+    "inviteMemberHint": "Otrzyma e-mail i sam wybierze hasło."
   },
   "invoice": {
     "title": "Układ faktury",

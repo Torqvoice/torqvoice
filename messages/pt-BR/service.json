@@ -344,7 +344,11 @@
     "setDefaults": "Valores padrão",
     "workBay": "Baia",
     "selectWorkBay": "Selecionar baia…",
-    "noWorkBay": "Sem baia"
+    "noWorkBay": "Sem baia",
+    "technicians": "Técnicos",
+    "otherTeamMembers": "Outros membros da equipe",
+    "makeTechnician": "Torna essa pessoa técnica",
+    "addSomeoneNew": "Adicionar alguém novo"
   },
   "notifications": {
     "title": "Notificações ao cliente",
@@ -381,9 +385,5 @@
       "title": "Configurações padrão de garantia",
       "description": "Definir termos de garantia padrão para novos registros de serviço"
     }
-  },
-  "technicians": "Técnicos",
-  "otherTeamMembers": "Outros membros da equipe",
-  "makeTechnician": "Torna essa pessoa técnica",
-  "addSomeoneNew": "Adicionar alguém novo"
+  }
 }

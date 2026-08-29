@@ -480,7 +480,9 @@
     "giveAppTitle": "Gi {name} appen",
     "giveAppBlurb": "Det eneste som mangler er et mobilnummer. Med det logger de inn fra nå av.",
     "giveAppKeepsHistory": "Alt som allerede er ført på dem blir stående.",
-    "giveAppSubmit": "Opprett kontoen"
+    "giveAppSubmit": "Opprett kontoen",
+    "role": "Rolle",
+    "inviteMemberHint": "Personen får en e-post og velger sitt eget passord."
   },
   "invoice": {
     "title": "Faktura og tilbud",

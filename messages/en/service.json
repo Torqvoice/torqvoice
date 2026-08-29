@@ -344,7 +344,11 @@
     "setDefaults": "Set Defaults",
     "workBay": "Work bay",
     "selectWorkBay": "Select work bay...",
-    "noWorkBay": "No work bay"
+    "noWorkBay": "No work bay",
+    "technicians": "Technicians",
+    "otherTeamMembers": "Other team members",
+    "makeTechnician": "Makes them a technician",
+    "addSomeoneNew": "Add someone new"
   },
   "notifications": {
     "title": "Customer Notifications",
@@ -381,9 +385,5 @@
       "title": "Default Warranty Settings",
       "description": "Set default warranty terms for new service records"
     }
-  },
-  "technicians": "Technicians",
-  "otherTeamMembers": "Other team members",
-  "makeTechnician": "Makes them a technician",
-  "addSomeoneNew": "Add someone new"
+  }
 }

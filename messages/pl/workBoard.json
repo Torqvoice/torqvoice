@@ -75,7 +75,10 @@
     "standalone": "Niezależny technik",
     "deleteTitle": "Usuń Technika",
     "deleteDescription": "Usunąć \"{name}\" z tablicy pracy? Jego istniejące przydzielenia również zostaną usunięte.",
-    "addTechnician": "Dodaj Technika"
+    "addTechnician": "Dodaj Technika",
+    "standaloneOnly": "Nazwisko na tablicy dla kogoś, kto się nie loguje, na przykład ucznia lub podwykonawcy. Mechanika korzystającego z aplikacji dodasz na stronie Zespół.",
+    "linkedTo": "Loguje się jako {name}",
+    "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji."
   },
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",
@@ -152,8 +155,5 @@
     "status": "Status",
     "noTime": "Brak godziny",
     "none": "Jeszcze nikt"
-  },
-  "standaloneOnly": "Nazwisko na tablicy dla kogoś, kto się nie loguje, na przykład ucznia lub podwykonawcy. Mechanika korzystającego z aplikacji dodasz na stronie Zespół.",
-  "linkedTo": "Loguje się jako {name}",
-  "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji."
+  }
 }

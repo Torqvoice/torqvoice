@@ -480,7 +480,9 @@
     "giveAppTitle": "Donner l'application à {name}",
     "giveAppBlurb": "Il ne manque qu'un numéro de mobile. C'est avec lui qu'il se connectera ensuite.",
     "giveAppKeepsHistory": "Tout ce qui lui est déjà attribué reste en place.",
-    "giveAppSubmit": "Créer son compte"
+    "giveAppSubmit": "Créer son compte",
+    "role": "Rôle",
+    "inviteMemberHint": "La personne reçoit un e-mail et choisit son propre mot de passe."
   },
   "invoice": {
     "title": "Mise en page de facture",

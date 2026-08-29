@@ -344,7 +344,11 @@
     "setDefaults": "Standardwerte",
     "workBay": "Arbeitsplatz",
     "selectWorkBay": "Arbeitsplatz wählen …",
-    "noWorkBay": "Kein Arbeitsplatz"
+    "noWorkBay": "Kein Arbeitsplatz",
+    "technicians": "Techniker",
+    "otherTeamMembers": "Weitere Teammitglieder",
+    "makeTechnician": "Macht sie zum Techniker",
+    "addSomeoneNew": "Jemanden hinzufügen"
   },
   "notifications": {
     "title": "Kundenbenachrichtigungen",
@@ -381,9 +385,5 @@
       "title": "Standard-Garantieeinstellungen",
       "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
     }
-  },
-  "technicians": "Techniker",
-  "otherTeamMembers": "Weitere Teammitglieder",
-  "makeTechnician": "Macht sie zum Techniker",
-  "addSomeoneNew": "Jemanden hinzufügen"
+  }
 }

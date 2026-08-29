@@ -344,7 +344,11 @@
     "setDefaults": "Ustaw domyślne",
     "workBay": "Stanowisko",
     "selectWorkBay": "Wybierz stanowisko…",
-    "noWorkBay": "Bez stanowiska"
+    "noWorkBay": "Bez stanowiska",
+    "technicians": "Technicy",
+    "otherTeamMembers": "Pozostali członkowie zespołu",
+    "makeTechnician": "Uczyni tę osobę technikiem",
+    "addSomeoneNew": "Dodaj nową osobę"
   },
   "notifications": {
     "title": "Powiadomienia klienta",
@@ -381,9 +385,5 @@
       "title": "Domyślne ustawienia gwarancji",
       "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
     }
-  },
-  "technicians": "Technicy",
-  "otherTeamMembers": "Pozostali członkowie zespołu",
-  "makeTechnician": "Uczyni tę osobę technikiem",
-  "addSomeoneNew": "Dodaj nową osobę"
+  }
 }

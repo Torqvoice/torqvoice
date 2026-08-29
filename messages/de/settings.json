@@ -480,7 +480,9 @@
     "giveAppTitle": "{name} die App geben",
     "giveAppBlurb": "Es fehlt nur eine Handynummer. Damit meldet sich die Person künftig an.",
     "giveAppKeepsHistory": "Alles, was bereits auf sie gebucht ist, bleibt erhalten.",
-    "giveAppSubmit": "Konto anlegen"
+    "giveAppSubmit": "Konto anlegen",
+    "role": "Rolle",
+    "inviteMemberHint": "Die Person erhält eine E-Mail und wählt ihr eigenes Passwort."
   },
   "invoice": {
     "title": "Rechnungslayout",

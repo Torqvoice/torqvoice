@@ -480,7 +480,9 @@
     "giveAppTitle": "Dar o aplicativo a {name}",
     "giveAppBlurb": "Só falta um número de celular. É com ele que a pessoa vai entrar daí em diante.",
     "giveAppKeepsHistory": "Tudo o que já está registrado para essa pessoa continua como está.",
-    "giveAppSubmit": "Criar a conta"
+    "giveAppSubmit": "Criar a conta",
+    "role": "Função",
+    "inviteMemberHint": "Ela recebe um e-mail e escolhe a própria senha."
   },
   "invoice": {
     "title": "Layout da fatura",

@@ -344,7 +344,11 @@
     "setDefaults": "Paramètres par défaut",
     "workBay": "Poste de travail",
     "selectWorkBay": "Choisir un poste…",
-    "noWorkBay": "Aucun poste"
+    "noWorkBay": "Aucun poste",
+    "technicians": "Techniciens",
+    "otherTeamMembers": "Autres membres de l’équipe",
+    "makeTechnician": "En fait un technicien",
+    "addSomeoneNew": "Ajouter quelqu’un"
   },
   "notifications": {
     "title": "Notifications client",
@@ -381,9 +385,5 @@
       "title": "Paramètres de garantie par défaut",
       "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
     }
-  },
-  "technicians": "Techniciens",
-  "otherTeamMembers": "Autres membres de l’équipe",
-  "makeTechnician": "En fait un technicien",
-  "addSomeoneNew": "Ajouter quelqu’un"
+  }
 }

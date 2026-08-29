@@ -71,7 +71,8 @@
     "findingSeverityUrgent": "Høy",
     "findingSeverityNeedsWork": "Middels",
     "findingSeverityMonitor": "Lav",
-    "tel": "Tlf: {phone}"
+    "tel": "Tlf: {phone}",
+    "customFields": "Tilleggsinformasjon"
   },
   "quote": {
     "title": "Tilbud",
@@ -125,7 +126,8 @@
       "converted": "Konvertert",
       "changes_requested": "Endringer forespurt"
     },
-    "tel": "Tlf: {phone}"
+    "tel": "Tlf: {phone}",
+    "customFields": "Tilleggsinformasjon"
   },
   "inspection": {
     "title": "Kjøretøykontroll",

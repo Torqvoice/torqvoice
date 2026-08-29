@@ -480,7 +480,9 @@
     "giveAppTitle": "Give {name} the app",
     "giveAppBlurb": "A mobile number is all that is missing. They sign in with it from then on.",
     "giveAppKeepsHistory": "Everything already recorded against them stays where it is.",
-    "giveAppSubmit": "Create their account"
+    "giveAppSubmit": "Create their account",
+    "role": "Role",
+    "inviteMemberHint": "They get an email and choose their own password."
   },
   "invoice": {
     "title": "Invoice & Quotes",

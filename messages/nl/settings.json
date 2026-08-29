@@ -480,7 +480,9 @@
     "giveAppTitle": "Geef {name} de app",
     "giveAppBlurb": "Alleen een mobiel nummer ontbreekt nog. Daarmee logt hij voortaan in.",
     "giveAppKeepsHistory": "Alles wat al op hen staat blijft staan.",
-    "giveAppSubmit": "Account aanmaken"
+    "giveAppSubmit": "Account aanmaken",
+    "role": "Rol",
+    "inviteMemberHint": "Deze persoon krijgt een e-mail en kiest zelf een wachtwoord."
   },
   "invoice": {
     "title": "Factuurindeling",

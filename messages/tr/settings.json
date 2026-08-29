@@ -480,7 +480,9 @@
     "giveAppTitle": "{name} kişisine uygulamayı ver",
     "giveAppBlurb": "Eksik olan tek şey bir cep numarası. Bundan sonra onunla giriş yapar.",
     "giveAppKeepsHistory": "Onun adına kayıtlı olan her şey olduğu gibi kalır.",
-    "giveAppSubmit": "Hesabını oluştur"
+    "giveAppSubmit": "Hesabını oluştur",
+    "role": "Rol",
+    "inviteMemberHint": "Bir e-posta alır ve kendi parolasını seçer."
   },
   "invoice": {
     "title": "Fatura Düzeni",

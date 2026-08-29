@@ -480,7 +480,9 @@
     "giveAppTitle": "Suteikti {name} programėlę",
     "giveAppBlurb": "Trūksta tik mobiliojo numerio. Nuo tada su juo jis ir prisijungs.",
     "giveAppKeepsHistory": "Viskas, kas jam jau užfiksuota, lieka savo vietoje.",
-    "giveAppSubmit": "Sukurti paskyrą"
+    "giveAppSubmit": "Sukurti paskyrą",
+    "role": "Vaidmuo",
+    "inviteMemberHint": "Jis gaus laišką ir pats pasirinks slaptažodį."
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

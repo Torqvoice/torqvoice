@@ -344,7 +344,11 @@
     "setDefaults": "Настройки по умолчанию",
     "workBay": "Пост",
     "selectWorkBay": "Выберите пост…",
-    "noWorkBay": "Без поста"
+    "noWorkBay": "Без поста",
+    "technicians": "Механики",
+    "otherTeamMembers": "Другие участники",
+    "makeTechnician": "Сделает механиком",
+    "addSomeoneNew": "Добавить человека"
   },
   "notifications": {
     "title": "Уведомления клиента",
@@ -381,9 +385,5 @@
       "title": "Настройки гарантии по умолчанию",
       "description": "Установить условия гарантии по умолчанию для новых записей обслуживания"
     }
-  },
-  "technicians": "Механики",
-  "otherTeamMembers": "Другие участники",
-  "makeTechnician": "Сделает механиком",
-  "addSomeoneNew": "Добавить человека"
+  }
 }
