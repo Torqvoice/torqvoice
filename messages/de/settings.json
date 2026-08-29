@@ -412,7 +412,22 @@
     "setupAppStep1": "Torqvoice Tech installieren",
     "setupAppStep2": "Sie öffnen und auf „Einrichtungscode scannen“ tippen",
     "setupAppStep3": "Das Telefon auf diesen Code halten",
-    "setupAppNotCamera": "Die normale Kamera-App des Telefons funktioniert nicht. Es muss in Torqvoice Tech gescannt werden."
+    "setupAppNotCamera": "Die normale Kamera-App des Telefons funktioniert nicht. Es muss in Torqvoice Tech gescannt werden.",
+    "addTechnician": "Techniker hinzufügen",
+    "addTechnicianHint": "Für einen Mechaniker, der am Tresen steht. Ohne E-Mail, ohne Wartezeit.",
+    "technicianName": "Name",
+    "technicianNamePlaceholder": "Vollständiger Name",
+    "technicianPhone": "Handynummer",
+    "technicianPhonePlaceholder": "Das Telefon in seiner Tasche",
+    "addTechnicianSubmit": "Anlegen",
+    "addTechnicianNote": "Ab dann meldet er sich mit dieser Nummer an. Kein Passwort zum Merken und nichts, was auf dem ersten Bildschirm der App eingetippt werden muss.",
+    "addTechnicianDone": "{name} ist angelegt. Zeigen Sie ihm den Code.",
+    "addTechnicianFailed": "Techniker konnte nicht angelegt werden",
+    "setupAppCopyLink": "Link zum Senden kopieren",
+    "setupAppCopied": "Kopiert",
+    "revokeTechnicianTitle": "Aus der App abmelden?",
+    "revokeTechnicianBody": "{name} verliert sofort den Zugriff auf dem Telefon, und jeder Code wird ungültig. Erledigte Arbeit und Stunden bleiben unverändert.",
+    "revokeTechnicianConfirm": "Abmelden"
   },
   "invoice": {
     "title": "Rechnungslayout",

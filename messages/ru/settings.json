@@ -412,7 +412,22 @@
     "setupAppStep1": "Установить Torqvoice Tech",
     "setupAppStep2": "Открыть его и нажать «Отсканировать код настройки»",
     "setupAppStep3": "Навести телефон на этот код",
-    "setupAppNotCamera": "Обычная камера телефона не подойдёт. Сканировать нужно в приложении Torqvoice Tech."
+    "setupAppNotCamera": "Обычная камера телефона не подойдёт. Сканировать нужно в приложении Torqvoice Tech.",
+    "addTechnician": "Добавить механика",
+    "addTechnicianHint": "Для механика, который стоит у стойки. Без почты и без ожидания.",
+    "technicianName": "Имя",
+    "technicianNamePlaceholder": "Полное имя",
+    "technicianPhone": "Номер телефона",
+    "technicianPhonePlaceholder": "Телефон, который у него с собой",
+    "addTechnicianSubmit": "Создать",
+    "addTechnicianNote": "Дальше он входит по этому номеру. Пароль запоминать не нужно, и на первом экране приложения ничего вводить не придётся.",
+    "addTechnicianDone": "{name} создан. Покажите ему код.",
+    "addTechnicianFailed": "Не удалось создать механика",
+    "setupAppCopyLink": "Скопировать ссылку для отправки",
+    "setupAppCopied": "Скопировано",
+    "revokeTechnicianTitle": "Выйти из приложения за него?",
+    "revokeTechnicianBody": "{name} сразу теряет доступ на телефоне, и все коды перестают работать. Выполненная работа и часы остаются как есть.",
+    "revokeTechnicianConfirm": "Выйти"
   },
   "invoice": {
     "title": "Счета и предложения",

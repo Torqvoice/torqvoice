@@ -412,7 +412,22 @@
     "setupAppStep1": "Installer Torqvoice Tech",
     "setupAppStep2": "L’ouvrir et appuyer sur « Scanner le code de configuration »",
     "setupAppStep3": "Viser ce code avec le téléphone",
-    "setupAppNotCamera": "L'appareil photo du téléphone ne fonctionnera pas. Le code doit être scanné depuis Torqvoice Tech."
+    "setupAppNotCamera": "L'appareil photo du téléphone ne fonctionnera pas. Le code doit être scanné depuis Torqvoice Tech.",
+    "addTechnician": "Ajouter un technicien",
+    "addTechnicianHint": "Pour un mécanicien présent au comptoir. Sans e-mail, sans attente.",
+    "technicianName": "Nom",
+    "technicianNamePlaceholder": "Son nom complet",
+    "technicianPhone": "Numéro de mobile",
+    "technicianPhonePlaceholder": "Le téléphone qu’il a sur lui",
+    "addTechnicianSubmit": "Créer",
+    "addTechnicianNote": "Il se connectera ensuite avec ce numéro. Aucun mot de passe à retenir et rien à saisir sur le premier écran de l'application.",
+    "addTechnicianDone": "{name} est créé. Montrez-lui le code.",
+    "addTechnicianFailed": "Impossible de créer ce technicien",
+    "setupAppCopyLink": "Copier le lien à envoyer",
+    "setupAppCopied": "Copié",
+    "revokeTechnicianTitle": "Le déconnecter de l'application ?",
+    "revokeTechnicianBody": "{name} perd immédiatement l'accès sur son téléphone et tout code cesse de fonctionner. Le travail terminé et les heures restent tels quels.",
+    "revokeTechnicianConfirm": "Le déconnecter"
   },
   "invoice": {
     "title": "Mise en page de facture",

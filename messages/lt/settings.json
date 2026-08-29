@@ -412,7 +412,22 @@
     "setupAppStep1": "Įdiegti „Torqvoice Tech“",
     "setupAppStep2": "Ją atidaryti ir bakstelėti „Nuskaityti nustatymo kodą“",
     "setupAppStep3": "Nukreipti telefoną į šį kodą",
-    "setupAppNotCamera": "Įprasta telefono kamera neveiks. Nuskaityti reikia „Torqvoice Tech“ programėlėje."
+    "setupAppNotCamera": "Įprasta telefono kamera neveiks. Nuskaityti reikia „Torqvoice Tech“ programėlėje.",
+    "addTechnician": "Pridėti techniką",
+    "addTechnicianHint": "Mechanikui, stovinčiam prie registratūros. Be el. pašto ir be laukimo.",
+    "technicianName": "Vardas",
+    "technicianNamePlaceholder": "Pilnas vardas",
+    "technicianPhone": "Mobiliojo numeris",
+    "technicianPhonePlaceholder": "Telefonas, kurį jie turi",
+    "addTechnicianSubmit": "Sukurti",
+    "addTechnicianNote": "Nuo tada jis prisijungia su tuo numeriu. Nereikia atsiminti slaptažodžio ir nieko rašyti pirmame programėlės ekrane.",
+    "addTechnicianDone": "{name} paruoštas. Parodykite jam kodą.",
+    "addTechnicianFailed": "Nepavyko sukurti techniko",
+    "setupAppCopyLink": "Kopijuoti nuorodą siuntimui",
+    "setupAppCopied": "Nukopijuota",
+    "revokeTechnicianTitle": "Atjungti jį nuo programėlės?",
+    "revokeTechnicianBody": "{name} iškart praranda prieigą telefone, o visi kodai nustoja veikti. Atliktas darbas ir valandos lieka kaip buvę.",
+    "revokeTechnicianConfirm": "Atjungti"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

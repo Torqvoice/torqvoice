@@ -412,7 +412,22 @@
     "setupAppStep1": "Install Torqvoice Tech",
     "setupAppStep2": "Open it and tap “Scan setup code”",
     "setupAppStep3": "Point the phone at this code",
-    "setupAppNotCamera": "The phone's own camera app will not work. It has to be scanned from inside Torqvoice Tech."
+    "setupAppNotCamera": "The phone's own camera app will not work. It has to be scanned from inside Torqvoice Tech.",
+    "addTechnician": "Add a technician",
+    "addTechnicianHint": "For a mechanic standing at the counter. No email, no waiting.",
+    "technicianName": "Name",
+    "technicianNamePlaceholder": "Their full name",
+    "technicianPhone": "Mobile number",
+    "technicianPhonePlaceholder": "The phone in their pocket",
+    "addTechnicianSubmit": "Create",
+    "addTechnicianNote": "They sign in with that number from then on. No password to remember, and nothing to type on the app’s first screen.",
+    "addTechnicianDone": "{name} is set up. Show them the code.",
+    "addTechnicianFailed": "Could not create that technician",
+    "setupAppCopyLink": "Copy link to send them",
+    "setupAppCopied": "Copied",
+    "revokeTechnicianTitle": "Sign them out of the app?",
+    "revokeTechnicianBody": "{name} loses access on their phone straight away, and any code they have stops working. Their finished work and hours stay exactly as they are.",
+    "revokeTechnicianConfirm": "Sign them out"
   },
   "invoice": {
     "title": "Invoice & Quotes",

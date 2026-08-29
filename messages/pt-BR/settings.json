@@ -412,7 +412,22 @@
     "setupAppStep1": "Instalar o Torqvoice Tech",
     "setupAppStep2": "Abrir e tocar em “Escanear código de configuração”",
     "setupAppStep3": "Apontar o celular para este código",
-    "setupAppNotCamera": "A câmera comum do celular não funciona. Precisa ser escaneado dentro do Torqvoice Tech."
+    "setupAppNotCamera": "A câmera comum do celular não funciona. Precisa ser escaneado dentro do Torqvoice Tech.",
+    "addTechnician": "Adicionar um técnico",
+    "addTechnicianHint": "Para um mecânico no balcão. Sem e-mail e sem espera.",
+    "technicianName": "Nome",
+    "technicianNamePlaceholder": "Nome completo",
+    "technicianPhone": "Número do celular",
+    "technicianPhonePlaceholder": "O celular que ele tem no bolso",
+    "addTechnicianSubmit": "Criar",
+    "addTechnicianNote": "A partir daí ele entra com esse número. Sem senha para lembrar e sem nada para digitar na primeira tela do aplicativo.",
+    "addTechnicianDone": "{name} está pronto. Mostre o código a ele.",
+    "addTechnicianFailed": "Não foi possível criar esse técnico",
+    "setupAppCopyLink": "Copiar o link para enviar",
+    "setupAppCopied": "Copiado",
+    "revokeTechnicianTitle": "Desconectar do aplicativo?",
+    "revokeTechnicianBody": "{name} perde o acesso no celular na hora e qualquer código para de funcionar. O trabalho concluído e as horas ficam como estão.",
+    "revokeTechnicianConfirm": "Desconectar"
   },
   "invoice": {
     "title": "Layout da fatura",

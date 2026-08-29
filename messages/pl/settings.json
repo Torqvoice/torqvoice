@@ -412,7 +412,22 @@
     "setupAppStep1": "Zainstaluj Torqvoice Tech",
     "setupAppStep2": "Otworzyć ją i dotknąć „Zeskanuj kod konfiguracji”",
     "setupAppStep3": "Wycelować telefon w ten kod",
-    "setupAppNotCamera": "Zwykły aparat telefonu nie zadziała. Trzeba zeskanować z poziomu Torqvoice Tech."
+    "setupAppNotCamera": "Zwykły aparat telefonu nie zadziała. Trzeba zeskanować z poziomu Torqvoice Tech.",
+    "addTechnician": "Dodaj technika",
+    "addTechnicianHint": "Dla mechanika stojącego przy ladzie. Bez e-maila i bez czekania.",
+    "technicianName": "Imię i nazwisko",
+    "technicianNamePlaceholder": "Imię i nazwisko",
+    "technicianPhone": "Numer telefonu",
+    "technicianPhonePlaceholder": "Telefon, który ma przy sobie",
+    "addTechnicianSubmit": "Utwórz",
+    "addTechnicianNote": "Od tej pory loguje się tym numerem. Bez hasła do zapamiętania i bez wpisywania czegokolwiek na pierwszym ekranie aplikacji.",
+    "addTechnicianDone": "{name} jest gotowy. Pokaż mu kod.",
+    "addTechnicianFailed": "Nie udało się utworzyć technika",
+    "setupAppCopyLink": "Skopiuj link do wysłania",
+    "setupAppCopied": "Skopiowano",
+    "revokeTechnicianTitle": "Wylogować go z aplikacji?",
+    "revokeTechnicianBody": "{name} natychmiast traci dostęp na telefonie, a każdy kod przestaje działać. Wykonana praca i godziny zostają bez zmian.",
+    "revokeTechnicianConfirm": "Wyloguj"
   },
   "invoice": {
     "title": "Układ faktury",

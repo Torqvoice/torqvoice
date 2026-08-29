@@ -412,7 +412,22 @@
     "setupAppStep1": "Installer Torqvoice Tech",
     "setupAppStep2": "Åpne den og trykke «Skann oppsettskode»",
     "setupAppStep3": "Rette telefonen mot denne koden",
-    "setupAppNotCamera": "Telefonens vanlige kameraapp virker ikke. Det må skannes inne i Torqvoice Tech."
+    "setupAppNotCamera": "Telefonens vanlige kameraapp virker ikke. Det må skannes inne i Torqvoice Tech.",
+    "addTechnician": "Legg til en tekniker",
+    "addTechnicianHint": "For en mekaniker som står i skranken. Ingen e-post, ingen venting.",
+    "technicianName": "Navn",
+    "technicianNamePlaceholder": "Fullt navn",
+    "technicianPhone": "Mobilnummer",
+    "technicianPhonePlaceholder": "Telefonen i lomma",
+    "addTechnicianSubmit": "Opprett",
+    "addTechnicianNote": "Fra da av logger han inn med det nummeret. Ingen passord å huske, og ingenting å skrive på appens første skjerm.",
+    "addTechnicianDone": "{name} er opprettet. Vis ham koden.",
+    "addTechnicianFailed": "Kunne ikke opprette teknikeren",
+    "setupAppCopyLink": "Kopier lenke å sende",
+    "setupAppCopied": "Kopiert",
+    "revokeTechnicianTitle": "Logge ham ut av appen?",
+    "revokeTechnicianBody": "{name} mister tilgangen på telefonen umiddelbart, og alle koder slutter å virke. Utført arbeid og timer blir stående som de er.",
+    "revokeTechnicianConfirm": "Logg ut"
   },
   "invoice": {
     "title": "Faktura og tilbud",

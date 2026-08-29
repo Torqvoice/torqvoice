@@ -29,7 +29,9 @@ import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
 import { setMemberTechnician } from '@/features/team/Actions/setMemberTechnician'
+import { AddTechnicianCard } from '@/features/team/Components/AddTechnicianCard'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
+import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
 
 /**
@@ -143,7 +145,19 @@ export function TeamSettings({
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
 
-  const handleTechnicianToggle = async (userId: string, enabled: boolean) => {
+  const handleTechnicianToggle = async (userId: string, enabled: boolean, name: string) => {
+    // Turning this off signs them out of their phone there and then, which is
+    // not something to discover by flicking a switch.
+    if (!enabled) {
+      const ok = await confirm({
+        title: t('team.revokeTechnicianTitle'),
+        description: t('team.revokeTechnicianBody', { name }),
+        confirmLabel: t('team.revokeTechnicianConfirm'),
+        destructive: true,
+      })
+      if (!ok) return
+    }
+
     setTechnicianBusy(userId)
     setTechnicians((prev) => {
       const next = new Set(prev)
@@ -151,7 +165,12 @@ export function TeamSettings({
       else next.delete(userId)
       return next
     })
-    const result = await setMemberTechnician({ userId, enabled })
+    // Switching on is only a technician record. Switching off is a revocation:
+    // the row, their sessions, anything outstanding, and their push devices,
+    // all together. See removeTechnicianAccess.
+    const result = enabled
+      ? await setMemberTechnician({ userId, enabled })
+      : await removeTechnicianAccess({ userId })
     if (!result.success) {
       // Put it back where it was; the server is the one that decides.
       setTechnicians((prev) => {
@@ -454,7 +473,13 @@ export function TeamSettings({
                     <Switch
                       checked={technicians.has(member.user.id)}
                       disabled={technicianBusy === member.user.id}
-                      onCheckedChange={(v) => handleTechnicianToggle(member.user.id, v)}
+                      onCheckedChange={(v) =>
+                        handleTechnicianToggle(
+                          member.user.id,
+                          v,
+                          member.user.name || member.user.email
+                        )
+                      }
                       aria-label={t('team.technician')}
                     />
                     <span
@@ -581,6 +606,16 @@ export function TeamSettings({
           </form>
         )}
       </AppCard>
+
+      {isAdmin && (
+        <AddTechnicianCard
+          onCreated={(tech) => {
+            setTechnicians((prev) => new Set(prev).add(tech.userId))
+            setSettingUp({ userId: tech.userId, name: tech.name })
+            router.refresh()
+          }}
+        />
+      )}
 
       {/* Pending Invitations Card */}
       {isAdmin && pendingInvitations.length > 0 && (

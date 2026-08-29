@@ -412,7 +412,22 @@
     "setupAppStep1": "Torqvoice Tech installeren",
     "setupAppStep2": "Hem openen en op “Installatiecode scannen” tikken",
     "setupAppStep3": "De telefoon op deze code richten",
-    "setupAppNotCamera": "De gewone camera-app van de telefoon werkt niet. Het moet in Torqvoice Tech worden gescand."
+    "setupAppNotCamera": "De gewone camera-app van de telefoon werkt niet. Het moet in Torqvoice Tech worden gescand.",
+    "addTechnician": "Monteur toevoegen",
+    "addTechnicianHint": "Voor een monteur die aan de balie staat. Geen e-mail, geen wachten.",
+    "technicianName": "Naam",
+    "technicianNamePlaceholder": "Volledige naam",
+    "technicianPhone": "Mobiel nummer",
+    "technicianPhonePlaceholder": "De telefoon in hun zak",
+    "addTechnicianSubmit": "Aanmaken",
+    "addTechnicianNote": "Vanaf dan logt hij in met dat nummer. Geen wachtwoord om te onthouden en niets te typen op het eerste scherm van de app.",
+    "addTechnicianDone": "{name} is aangemaakt. Laat de code zien.",
+    "addTechnicianFailed": "Kon die monteur niet aanmaken",
+    "setupAppCopyLink": "Link kopiëren om te sturen",
+    "setupAppCopied": "Gekopieerd",
+    "revokeTechnicianTitle": "Uitloggen uit de app?",
+    "revokeTechnicianBody": "{name} verliest direct toegang op de telefoon en elke code werkt niet meer. Afgerond werk en uren blijven precies zoals ze zijn.",
+    "revokeTechnicianConfirm": "Uitloggen"
   },
   "invoice": {
     "title": "Factuurindeling",

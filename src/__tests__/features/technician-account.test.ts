@@ -157,14 +157,14 @@ describe('removing a technician', () => {
   })
 
   it('deactivates rather than deletes, so the work still has an author', async () => {
-    await removeTechnicianAccess({ technicianId: 'tech-1' })
+    await removeTechnicianAccess({ userId: 'user-1' })
     expect(db.technician.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: { isActive: false } })
     )
   })
 
   it('kills every session, so the token on the phone stops being one', async () => {
-    await removeTechnicianAccess({ technicianId: 'tech-1' })
+    await removeTechnicianAccess({ userId: 'user-1' })
     expect(deleteSession).toHaveBeenCalledWith('tok-1')
     expect(deleteSession).toHaveBeenCalledWith('tok-2')
   })
@@ -172,12 +172,12 @@ describe('removing a technician', () => {
   it('leaves sessions alone when they still work at another branch', async () => {
     vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
 
-    await removeTechnicianAccess({ technicianId: 'tech-1' })
+    await removeTechnicianAccess({ userId: 'user-1' })
     expect(deleteSession).not.toHaveBeenCalled()
   })
 
   it('destroys anything outstanding that could still be redeemed', async () => {
-    await removeTechnicianAccess({ technicianId: 'tech-1' })
+    await removeTechnicianAccess({ userId: 'user-1' })
     expect(db.technicianLoginCode.deleteMany).toHaveBeenCalledWith({
       where: { technicianId: 'tech-1' },
     })
@@ -187,7 +187,7 @@ describe('removing a technician', () => {
   })
 
   it('stops the wrong phone being told about jobs', async () => {
-    await removeTechnicianAccess({ technicianId: 'tech-1' })
+    await removeTechnicianAccess({ userId: 'user-1' })
     expect(db.pushDevice.updateMany).toHaveBeenCalledWith({
       where: { userId: 'user-1', organizationId: ORG },
       data: { isActive: false },
@@ -197,7 +197,7 @@ describe('removing a technician', () => {
   it('refuses a technician from another workshop', async () => {
     vi.mocked(db.technician.findFirst).mockResolvedValue(null as never)
 
-    const result = await removeTechnicianAccess({ technicianId: 'tech-elsewhere' })
+    const result = await removeTechnicianAccess({ userId: 'user-elsewhere' })
     expect(result.success).toBe(false)
     expect(db.technician.update).not.toHaveBeenCalled()
     expect(deleteSession).not.toHaveBeenCalled()

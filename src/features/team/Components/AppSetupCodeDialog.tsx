@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { QRCodeSVG } from 'qrcode.react'
-import { Loader2, Smartphone } from 'lucide-react'
+import { Check, Copy, Loader2, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -50,6 +50,7 @@ export function AppSetupCodeDialog({
   const [issued, setIssued] = useState<Issued | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [remaining, setRemaining] = useState(0)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (!userId) {
@@ -171,6 +172,33 @@ export function AppSetupCodeDialog({
                 : t('team.setupAppExpiry', { time: `${minutes}:${seconds}` })}
             </p>
           </div>
+        )}
+
+        {/* For a technician who is not standing here.
+            Deliberately a copy rather than a send: SMS needs the workshop to
+            have configured a provider, and plenty never will, while every shop
+            already has some way of messaging its own staff. This works for all
+            of them and costs nothing. */}
+        {issued && !expired && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              const link = `${workshopUrl}/app-setup#${issued.code}`
+              navigator.clipboard
+                .writeText(link)
+                .then(() => {
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                })
+                .catch(() => {
+                  /* clipboard refused; the code is on screen to read out */
+                })
+            }}
+          >
+            {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+            {copied ? t('team.setupAppCopied') : t('team.setupAppCopyLink')}
+          </Button>
         )}
 
         <Button variant="secondary" onClick={close} className="w-full">

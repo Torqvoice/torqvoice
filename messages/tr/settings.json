@@ -412,7 +412,22 @@
     "setupAppStep1": "Torqvoice Tech'i kurmak",
     "setupAppStep2": "Uygulamayı açıp “Kurulum kodunu tara”ya dokunmak",
     "setupAppStep3": "Telefonu bu koda doğrultmak",
-    "setupAppNotCamera": "Telefonun normal kamera uygulaması işe yaramaz. Torqvoice Tech içinden taranmalıdır."
+    "setupAppNotCamera": "Telefonun normal kamera uygulaması işe yaramaz. Torqvoice Tech içinden taranmalıdır.",
+    "addTechnician": "Teknisyen ekle",
+    "addTechnicianHint": "Bankoda duran bir tamirci için. E-posta yok, bekleme yok.",
+    "technicianName": "Ad",
+    "technicianNamePlaceholder": "Tam adı",
+    "technicianPhone": "Cep numarası",
+    "technicianPhonePlaceholder": "Cebindeki telefon",
+    "addTechnicianSubmit": "Oluştur",
+    "addTechnicianNote": "Bundan sonra bu numarayla giriş yapar. Hatırlanacak parola yok ve uygulamanın ilk ekranında yazılacak bir şey yok.",
+    "addTechnicianDone": "{name} hazır. Kodu gösterin.",
+    "addTechnicianFailed": "Teknisyen oluşturulamadı",
+    "setupAppCopyLink": "Göndermek için bağlantıyı kopyala",
+    "setupAppCopied": "Kopyalandı",
+    "revokeTechnicianTitle": "Uygulamadan çıkışı yapılsın mı?",
+    "revokeTechnicianBody": "{name} telefonundaki erişimi hemen kaybeder ve tüm kodlar geçersiz olur. Tamamlanan işler ve saatler olduğu gibi kalır.",
+    "revokeTechnicianConfirm": "Çıkışı yap"
   },
   "invoice": {
     "title": "Fatura Düzeni",

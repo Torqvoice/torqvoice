@@ -30,17 +30,20 @@ import { withAuth } from '@/lib/with-auth'
  * history to say nobody did the work.
  */
 
+/** Keyed on the person rather than the technician row, because everything
+ * being revoked below hangs off the account: their sessions, their devices,
+ * their outstanding codes. */
 const schema = z.object({
-  technicianId: z.string().min(1),
+  userId: z.string().min(1),
 })
 
 export async function removeTechnicianAccess(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      const { technicianId } = schema.parse(input)
+      const { userId } = schema.parse(input)
 
       const technician = await db.technician.findFirst({
-        where: { id: technicianId, organizationId },
+        where: { userId, organizationId },
         select: { id: true, name: true, userId: true },
       })
       if (!technician) throw new Error('That technician is not part of this workshop.')
