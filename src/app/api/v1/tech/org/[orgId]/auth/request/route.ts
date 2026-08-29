@@ -125,21 +125,31 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
  *
  * A desk types `912 34 567` and a technician types `+4791234567`, and both
  * mean the same person. The workshop's own default country code is what
- * bridges them, which is why this is org-scoped rather than a string compare.
+ * bridges them, which is why this compares normalised numbers rather than
+ * strings.
+ *
+ * The number lives on the person, next to their name and their email. The
+ * scoping is in this query instead: only technicians of this workshop, only
+ * active ones, so a number is never asked about on its own.
  */
 async function findByPhone(organizationId: string, phone: string) {
   const e164 = await normalizeOrgPhone(organizationId, phone)
   if (!e164) return null
 
   const candidates = await db.technician.findMany({
-    where: { organizationId, isActive: true, phone: { not: null }, userId: { not: null } },
-    select: { ...TECHNICIAN_SELECT, phone: true },
+    where: {
+      organizationId,
+      isActive: true,
+      userId: { not: null },
+      user: { phone: { not: null } },
+    },
+    select: { ...TECHNICIAN_SELECT, user: { select: { email: true, phone: true } } },
   })
 
   const matches = await Promise.all(
     candidates.map(async (t) => ({
       technician: t,
-      e164: t.phone ? await normalizeOrgPhone(organizationId, t.phone) : null,
+      e164: t.user?.phone ? await normalizeOrgPhone(organizationId, t.user.phone) : null,
     }))
   )
   return matches.find((m) => m.e164 === e164)?.technician ?? null

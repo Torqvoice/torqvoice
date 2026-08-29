@@ -78,7 +78,7 @@ beforeEach(() => {
 describe('requesting a code', () => {
   it('sends one to a technician of this workshop', async () => {
     vi.mocked(db.technician.findMany).mockResolvedValue([
-      { id: 'tech-1', phone: '+4791234567', user: { email: 'a@x.test' } },
+      { id: 'tech-1', user: { email: 'a@x.test', phone: '+4791234567' } },
     ] as never)
 
     const res = await call(requestCode, ORG, { phone: '+47 912 34 567' })
@@ -91,7 +91,7 @@ describe('requesting a code', () => {
   it('matches a number however either side wrote it', async () => {
     // Desk stored local digits, technician typed full international.
     vi.mocked(db.technician.findMany).mockResolvedValue([
-      { id: 'tech-1', phone: '912 34 567', user: { email: 'a@x.test' } },
+      { id: 'tech-1', user: { email: 'a@x.test', phone: '912 34 567' } },
     ] as never)
 
     await call(requestCode, ORG, { phone: '+4791234567' })
@@ -122,6 +122,8 @@ describe('requesting a code', () => {
     await call(requestCode, ORG, { phone: '+4791234567' })
 
     const where = vi.mocked(db.technician.findMany).mock.calls[0]?.[0]?.where
+    // The number lives on the user, so the workshop scoping has to come from
+    // this query. If it ever stops doing so, a phone becomes a global lookup.
     expect(where).toEqual(expect.objectContaining({ organizationId: ORG, isActive: true }))
   })
 
@@ -148,7 +150,7 @@ describe('requesting a code', () => {
 
   it('replaces an outstanding code rather than adding one', async () => {
     vi.mocked(db.technician.findMany).mockResolvedValue([
-      { id: 'tech-1', phone: '+4791234567', user: { email: 'a@x.test' } },
+      { id: 'tech-1', user: { email: 'a@x.test', phone: '+4791234567' } },
     ] as never)
 
     await call(requestCode, ORG, { phone: '+4791234567' })
@@ -160,7 +162,7 @@ describe('requesting a code', () => {
 
   it('still answers success when delivery throws', async () => {
     vi.mocked(db.technician.findMany).mockResolvedValue([
-      { id: 'tech-1', phone: '+4791234567', user: { email: 'a@x.test' } },
+      { id: 'tech-1', user: { email: 'a@x.test', phone: '+4791234567' } },
     ] as never)
     vi.mocked(sendOrgSms).mockRejectedValue(new Error('provider down'))
 

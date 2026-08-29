@@ -12,6 +12,15 @@ model User {
   name          String
   email         String   @unique
   emailVerified Boolean  @default(false)
+  /// The mobile a technician signs in with, and the number a workshop holds
+  /// for whoever this is.
+  ///
+  /// Deliberately not unique. When a desk creates an account for a mechanic
+  /// standing at the counter, a second workshop may create another for the
+  /// same human, and neither should be able to block the other. Every lookup
+  /// reaches it through a technician row and so is already scoped to one
+  /// workshop; the number alone is never the question being asked.
+  phone         String?
   image         String?
   isSuperAdmin  Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -1369,12 +1378,6 @@ model Technician {
   sortOrder     Int     @default(0)
   dailyCapacity Int     @default(480)
 
-  /// How this technician signs back in, and the only identifier they have to
-  /// remember. Stored per workshop rather than on the user, so the same person
-  /// working Saturdays at another shop is two employment records and never one
-  /// account two workshops can both reach.
-  phone String?
-
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -1391,9 +1394,6 @@ model Technician {
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
-  /// Signing in looks a technician up by workshop and phone together, never
-  /// by phone alone.
-  @@index([organizationId, phone])
   @@map("technicians")
 }
 
