@@ -86,11 +86,19 @@ export async function withAuth<T>(
       // never given a role therefore had full access to billing, settings and
       // the team, and nothing on screen said so.
       //
-      // The 20260829070534_backfill_member_roles migration runs in the same
-      // deploy, before the container serves anything. It gives every existing
-      // roleless member an explicit role recording what they already have, so
-      // nobody is locked out by this change and an admin can see on the team
-      // page what they are granting before narrowing it.
+      // Shipped without a backfill deliberately. Cloud production was checked
+      // first and had no roleless members outside owners and admins, so this
+      // locks nobody out there.
+      //
+      // Self-hosted installs were not checked, because their databases are
+      // theirs. On one that does hold a roleless member, that person loses
+      // access on upgrade and an owner or admin has to give them a role. That
+      // is the correct end state and the settings screen already describes it;
+      // it just arrives without warning. Worth a release note.
+      //
+      // Invitations still allow no role (see sendInvitation), so a member can
+      // be created this way again. Under this check they simply get nothing,
+      // which is what the UI has always claimed.
       if (!isOwnerOrAdmin && !roleIsAdmin) {
         const userPermissions = membership?.customRole?.permissions ?? []
         if (!hasAllPermissions(userPermissions, options.requiredPermissions)) {
