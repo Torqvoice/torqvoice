@@ -462,7 +462,8 @@
     "workshopCountry": "¿En qué país está su taller?",
     "workshopCountryPlaceholder": "Elija un país",
     "workshopCountryHint": "Se pregunta una sola vez. Después los móviles se pueden escribir en formato corto.",
-    "phonePreview": "Se guarda como"
+    "phonePreview": "Se guarda como",
+    "stepScannedTitle": "{name} ya está dentro"
   },
   "invoice": {
     "title": "Diseño de factura",

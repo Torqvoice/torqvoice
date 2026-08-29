@@ -462,7 +462,8 @@
     "workshopCountry": "In welchem Land ist Ihre Werkstatt?",
     "workshopCountryPlaceholder": "Land auswählen",
     "workshopCountryHint": "Wird nur einmal gefragt. Danach können Handynummern kurz eingegeben werden.",
-    "phonePreview": "Gespeichert als"
+    "phonePreview": "Gespeichert als",
+    "stepScannedTitle": "{name} ist drin"
   },
   "invoice": {
     "title": "Rechnungslayout",

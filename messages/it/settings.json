@@ -462,7 +462,8 @@
     "workshopCountry": "In quale paese si trova la tua officina?",
     "workshopCountryPlaceholder": "Scegli un paese",
     "workshopCountryHint": "Chiesto una sola volta. Dopo, i numeri di cellulare si possono scrivere in forma breve.",
-    "phonePreview": "Salvato come"
+    "phonePreview": "Salvato come",
+    "stepScannedTitle": "{name} è dentro"
   },
   "invoice": {
     "title": "Layout fattura",

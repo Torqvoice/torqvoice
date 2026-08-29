@@ -462,7 +462,8 @@
     "workshopCountry": "Dans quel pays se trouve votre atelier ?",
     "workshopCountryPlaceholder": "Choisissez un pays",
     "workshopCountryHint": "Demandé une seule fois. Ensuite, les numéros de mobile peuvent être saisis en format court.",
-    "phonePreview": "Enregistré comme"
+    "phonePreview": "Enregistré comme",
+    "stepScannedTitle": "{name} est connecté"
   },
   "invoice": {
     "title": "Mise en page de facture",

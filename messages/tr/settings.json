@@ -462,7 +462,8 @@
     "workshopCountry": "Servisiniz hangi ülkede?",
     "workshopCountryPlaceholder": "Bir ülke seçin",
     "workshopCountryHint": "Sadece bir kez sorulur. Sonrasında cep numaraları kısa şekilde yazılabilir.",
-    "phonePreview": "Şöyle kaydedilir"
+    "phonePreview": "Şöyle kaydedilir",
+    "stepScannedTitle": "{name} girdi"
   },
   "invoice": {
     "title": "Fatura Düzeni",

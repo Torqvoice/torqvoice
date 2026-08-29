@@ -26,6 +26,7 @@ import { createTechnicianAccount } from '@/features/team/Actions/createTechnicia
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
+import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 
 /**
@@ -86,6 +87,8 @@ export function AddPersonDialog({
   const [issued, setIssued] = useState<IssuedCode | null>(null)
   /** Somebody here already holds that number. Their name, for the question. */
   const [clash, setClash] = useState<string | null>(null)
+  /** True when we watched the phone come through rather than being told. */
+  const [scanned, setScanned] = useState(false)
 
   // Team member
   const [email, setEmail] = useState('')
@@ -100,6 +103,7 @@ export function AddPersonDialog({
     setCreated(null)
     setIssued(null)
     setClash(null)
+    setScanned(false)
     setEmail('')
     setRoleValue('member')
   }, [])
@@ -215,6 +219,12 @@ export function AddPersonDialog({
     if (/^(\+|00)/.test(digits)) return digits.replace(/^00/, '+')
     return country ? `${country}${digits.replace(/^0+/, '')}` : ''
   })()
+
+  // The scan ends the step, so the desk never has to decide whether it worked.
+  useTechnicianConnected(step === 'handoff' ? (created?.userId ?? null) : null, () => {
+    setScanned(true)
+    setStep('done')
+  })
 
   const steps: Step[] = kind === 'technician' ? ['who', 'details', 'handoff'] : ['who', 'details']
   const position = steps.indexOf(step === 'done' ? steps[steps.length - 1] : step)
@@ -487,7 +497,9 @@ export function AddPersonDialog({
             <div className="space-y-1">
               <p className="font-medium">
                 {kind === 'technician'
-                  ? t('team.stepDoneTitle', { name: created?.name ?? '' })
+                  ? t(scanned ? 'team.stepScannedTitle' : 'team.stepDoneTitle', {
+                      name: created?.name ?? '',
+                    })
                   : t('team.stepInvitedTitle', { email })}
               </p>
               <p className="text-muted-foreground text-sm">

@@ -462,7 +462,8 @@
     "workshopCountry": "In welk land staat uw werkplaats?",
     "workshopCountryPlaceholder": "Kies een land",
     "workshopCountryHint": "Wordt één keer gevraagd. Daarna kunnen mobiele nummers kort worden ingevoerd.",
-    "phonePreview": "Opgeslagen als"
+    "phonePreview": "Opgeslagen als",
+    "stepScannedTitle": "{name} is binnen"
   },
   "invoice": {
     "title": "Factuurindeling",

@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { hashSetupCode, normalizeSetupCode } from '@/features/team/Lib/appSetupCode'
 import { logAudit } from '@/lib/audit'
+import { notificationBus } from '@/lib/notification-bus'
 import { rateLimit } from '@/lib/rate-limit'
 
 /**
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
   // between, and checking at redemption is the only moment that can catch it.
   const technician = await db.technician.findFirst({
     where: { userId: record.userId, organizationId: record.organizationId, isActive: true },
-    select: { id: true },
+    select: { id: true, name: true },
   })
   if (!technician) return bad('not_technician')
 
@@ -84,6 +85,23 @@ export async function POST(request: Request) {
     }
   ).catch(() => {
     /* best-effort, as everywhere else */
+  })
+
+  /**
+   * Tells the desk the phone is in.
+   *
+   * The screen holding the QR has no other way to know it worked: the desk
+   * operator is watching a technician's phone from the wrong side, and closing
+   * the dialog on a guess is how somebody ends up unsure whether to issue
+   * another code. The scan itself is the confirmation, so it should be the
+   * thing that ends the dialog.
+   */
+  notificationBus.emit('workboard', {
+    type: 'technician_app_connected',
+    organizationId: record.organizationId,
+    userId: record.userId,
+    technicianId: technician.id,
+    name: technician.name,
   })
 
   return NextResponse.json({

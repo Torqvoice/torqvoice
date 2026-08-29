@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Smartphone } from 'lucide-react'
+import { Check, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { createAppSetupCode, revokeAppSetupCode } from '@/features/team/Actions/createAppSetupCode'
+import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 
 /**
@@ -41,11 +42,13 @@ export function AppSetupCodeDialog({
   const t = useTranslations('settings')
   const [issued, setIssued] = useState<IssuedCode | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [scanned, setScanned] = useState(false)
 
   useEffect(() => {
     if (!userId) {
       setIssued(null)
       setError(null)
+      setScanned(false)
       return
     }
     let cancelled = false
@@ -69,6 +72,9 @@ export function AppSetupCodeDialog({
     onClose()
   }, [userId, onClose])
 
+  // No need for the desk to guess. The phone says so itself.
+  useTechnicianConnected(scanned ? null : userId, () => setScanned(true))
+
   return (
     <Dialog open={userId !== null} onOpenChange={(open) => !open && close()}>
       <DialogContent className="sm:max-w-md">
@@ -80,14 +86,26 @@ export function AppSetupCodeDialog({
           <DialogDescription>{t('team.techHandoffBlurb')}</DialogDescription>
         </DialogHeader>
 
-        <SetupCodeHandoff
-          issued={issued}
-          error={error}
-          workshopUrl={workshopUrl}
-          memberName={memberName}
-        />
+        {scanned ? (
+          <div className="space-y-4 py-4 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
+              <Check className="h-6 w-6 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium">{t('team.stepScannedTitle', { name: memberName })}</p>
+              <p className="text-muted-foreground text-sm">{t('team.stepDoneBody')}</p>
+            </div>
+          </div>
+        ) : (
+          <SetupCodeHandoff
+            issued={issued}
+            error={error}
+            workshopUrl={workshopUrl}
+            memberName={memberName}
+          />
+        )}
 
-        <Button variant="secondary" onClick={close} className="w-full">
+        <Button variant={scanned ? 'default' : 'secondary'} onClick={close} className="w-full">
           {t('team.setupAppDone')}
         </Button>
       </DialogContent>

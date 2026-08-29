@@ -462,7 +462,8 @@
     "workshopCountry": "W jakim kraju jest twój warsztat?",
     "workshopCountryPlaceholder": "Wybierz kraj",
     "workshopCountryHint": "Pytamy tylko raz. Potem numery można wpisywać w skróconej formie.",
-    "phonePreview": "Zapisany jako"
+    "phonePreview": "Zapisany jako",
+    "stepScannedTitle": "{name} jest w środku"
   },
   "invoice": {
     "title": "Układ faktury",

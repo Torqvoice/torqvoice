@@ -462,7 +462,8 @@
     "workshopCountry": "Hvilket land ligger verkstedet i?",
     "workshopCountryPlaceholder": "Velg land",
     "workshopCountryHint": "Spørres bare én gang. Etter dette kan mobilnumre skrives kort.",
-    "phonePreview": "Lagres som"
+    "phonePreview": "Lagres som",
+    "stepScannedTitle": "{name} er inne"
   },
   "invoice": {
     "title": "Faktura og tilbud",

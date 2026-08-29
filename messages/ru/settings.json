@@ -462,7 +462,8 @@
     "workshopCountry": "В какой стране ваша мастерская?",
     "workshopCountryPlaceholder": "Выберите страну",
     "workshopCountryHint": "Спрашиваем один раз. Дальше номера можно вводить коротко.",
-    "phonePreview": "Сохранится как"
+    "phonePreview": "Сохранится как",
+    "stepScannedTitle": "{name} вошёл"
   },
   "invoice": {
     "title": "Счета и предложения",
