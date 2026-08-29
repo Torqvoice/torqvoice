@@ -21,9 +21,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from '@/components/ui/command'
-import { Input } from '@/components/ui/input'
 import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
