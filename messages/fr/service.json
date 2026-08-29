@@ -381,5 +381,8 @@
       "title": "Paramètres de garantie par défaut",
       "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
     }
-  }
+  },
+  "technicians": "Techniciens",
+  "otherTeamMembers": "Autres membres de l’équipe",
+  "makeTechnician": "En fait un technicien"
 }

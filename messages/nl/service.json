@@ -381,5 +381,8 @@
       "title": "Standaard garantie-instellingen",
       "description": "Stel standaard garantievoorwaarden in voor nieuwe serviceregistraties"
     }
-  }
+  },
+  "technicians": "Monteurs",
+  "otherTeamMembers": "Andere teamleden",
+  "makeTechnician": "Maakt hen monteur"
 }

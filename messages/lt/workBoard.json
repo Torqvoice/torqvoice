@@ -152,5 +152,8 @@
     "status": "Būsena",
     "noTime": "Laikas dar nenustatytas",
     "none": "Kol kas niekas"
-  }
+  },
+  "standaloneOnly": "Vardas lentoje tam, kuris neprisijungia: praktikantui ar rangovui. Mechaniką, kuris naudoja programėlę, pridėkite Komandos puslapyje.",
+  "linkedTo": "Prisijungia kaip {name}",
+  "linkedManagedOnTeam": "Valdoma Komandos puslapyje kartu su prieiga prie programėlės."
 }

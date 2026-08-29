@@ -152,5 +152,8 @@
     "status": "Durum",
     "noTime": "Henüz saat yok",
     "none": "Henüz kimse"
-  }
+  },
+  "standaloneOnly": "Panoda giriş yapmayan biri için bir isim, örneğin çırak ya da taşeron. Uygulamayı kullanan bir tamirciyi Ekip sayfasından ekleyin.",
+  "linkedTo": "{name} olarak giriş yapar",
+  "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir."
 }

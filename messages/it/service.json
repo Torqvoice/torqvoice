@@ -381,5 +381,8 @@
       "title": "Impostazioni garanzia predefinite",
       "description": "Imposta i termini di garanzia predefiniti per i nuovi interventi"
     }
-  }
+  },
+  "technicians": "Tecnici",
+  "otherTeamMembers": "Altri membri del team",
+  "makeTechnician": "Lo rende un tecnico"
 }

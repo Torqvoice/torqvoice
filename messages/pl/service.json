@@ -381,5 +381,8 @@
       "title": "Domyślne ustawienia gwarancji",
       "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
     }
-  }
+  },
+  "technicians": "Technicy",
+  "otherTeamMembers": "Pozostali członkowie zespołu",
+  "makeTechnician": "Uczyni tę osobę technikiem"
 }

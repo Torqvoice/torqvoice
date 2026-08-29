@@ -381,5 +381,8 @@
       "title": "Varsayılan garanti ayarları",
       "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
     }
-  }
+  },
+  "technicians": "Teknisyenler",
+  "otherTeamMembers": "Diğer ekip üyeleri",
+  "makeTechnician": "Onu teknisyen yapar"
 }

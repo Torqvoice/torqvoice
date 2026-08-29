@@ -381,5 +381,8 @@
       "title": "Configurações padrão de garantia",
       "description": "Definir termos de garantia padrão para novos registros de serviço"
     }
-  }
+  },
+  "technicians": "Técnicos",
+  "otherTeamMembers": "Outros membros da equipe",
+  "makeTechnician": "Torna essa pessoa técnica"
 }

@@ -152,5 +152,8 @@
     "status": "Status",
     "noTime": "Brak godziny",
     "none": "Jeszcze nikt"
-  }
+  },
+  "standaloneOnly": "Nazwisko na tablicy dla kogoś, kto się nie loguje, na przykład ucznia lub podwykonawcy. Mechanika korzystającego z aplikacji dodasz na stronie Zespół.",
+  "linkedTo": "Loguje się jako {name}",
+  "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji."
 }

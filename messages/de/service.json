@@ -381,5 +381,8 @@
       "title": "Standard-Garantieeinstellungen",
       "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
     }
-  }
+  },
+  "technicians": "Techniker",
+  "otherTeamMembers": "Weitere Teammitglieder",
+  "makeTechnician": "Macht sie zum Techniker"
 }

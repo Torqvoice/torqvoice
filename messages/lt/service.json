@@ -381,5 +381,8 @@
       "title": "Numatytieji garantijos nustatymai",
       "description": "Nustatyti numatytas garantijos sąlygas naujiems aptarnavimo įrašams"
     }
-  }
+  },
+  "technicians": "Technikai",
+  "otherTeamMembers": "Kiti komandos nariai",
+  "makeTechnician": "Padarys jį techniku"
 }

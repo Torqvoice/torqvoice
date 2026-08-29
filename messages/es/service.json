@@ -381,5 +381,8 @@
       "title": "Configuración de garantía predeterminada",
       "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
     }
-  }
+  },
+  "technicians": "Técnicos",
+  "otherTeamMembers": "Otros miembros del equipo",
+  "makeTechnician": "Lo convierte en técnico"
 }

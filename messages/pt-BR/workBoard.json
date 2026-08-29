@@ -152,5 +152,8 @@
     "status": "Status",
     "noTime": "Ainda sem horário",
     "none": "Ainda ninguém"
-  }
+  },
+  "standaloneOnly": "Um nome no quadro para alguém que não faz login, como um aprendiz ou terceirizado. Para um mecânico que usa o aplicativo, adicione na página Equipe.",
+  "linkedTo": "Entra como {name}",
+  "linkedManagedOnTeam": "Gerenciado na página Equipe, junto com o acesso ao aplicativo."
 }

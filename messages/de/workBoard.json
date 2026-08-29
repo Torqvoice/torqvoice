@@ -152,5 +152,8 @@
     "status": "Status",
     "noTime": "Noch keine Zeit",
     "none": "Noch niemand"
-  }
+  },
+  "standaloneOnly": "Ein Name auf dem Board für jemanden ohne Anmeldung, etwa einen Azubi oder Subunternehmer. Einen Mechaniker mit App fügen Sie auf der Team-Seite hinzu.",
+  "linkedTo": "Meldet sich als {name} an",
+  "linkedManagedOnTeam": "Wird auf der Team-Seite verwaltet, zusammen mit dem App-Zugang."
 }

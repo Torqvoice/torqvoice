@@ -152,5 +152,8 @@
     "status": "Status",
     "noTime": "Nog geen tijd",
     "none": "Nog niemand"
-  }
+  },
+  "standaloneOnly": "Een naam op het bord voor iemand die niet inlogt, zoals een leerling of een externe. Een monteur die de app gebruikt voegt u toe op de Team-pagina.",
+  "linkedTo": "Logt in als {name}",
+  "linkedManagedOnTeam": "Wordt beheerd op de Team-pagina, samen met de app-toegang."
 }

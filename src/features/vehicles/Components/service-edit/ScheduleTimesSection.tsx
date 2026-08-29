@@ -261,9 +261,15 @@ export function ScheduleTimesSection({
               />
               <CommandList className="max-h-60 overflow-y-auto">
                 <CommandEmpty className="p-0" />
-                {/* Platform users (linked technicians + unlinked org members) */}
-                {(linkedTechnicians.length > 0 || unlinkedMembers.length > 0) && (
-                  <CommandGroup heading={t('platformUsers')}>
+                {/* Two different kinds of person, under two headings.
+                    They used to share one, so somebody who books cars in read
+                    as a mechanic, and choosing them quietly created a
+                    technician record for an account the desk had never said
+                    was one. The list still offers them, because assigning a
+                    colleague on the spot is worth keeping; it just says which
+                    is which. */}
+                {linkedTechnicians.length > 0 && (
+                  <CommandGroup heading={t('technicians')}>
                     {linkedTechnicians.map((tech) => (
                       <CommandItem
                         key={tech.id}
@@ -279,6 +285,10 @@ export function ScheduleTimesSection({
                         {tech.name}
                       </CommandItem>
                     ))}
+                  </CommandGroup>
+                )}
+                {unlinkedMembers.length > 0 && (
+                  <CommandGroup heading={t('otherTeamMembers')}>
                     {unlinkedMembers.map((member) => (
                       <CommandItem
                         key={`member-${member.id}`}
@@ -288,8 +298,10 @@ export function ScheduleTimesSection({
                       >
                         <Check className="mr-2 h-4 w-4 opacity-0" />
                         {member.name}
+                        {/* Says what choosing them does, since it is not
+                            simply picking from a list: it makes them one. */}
                         <span className="ml-auto text-[10px] text-muted-foreground">
-                          {member.email}
+                          {t('makeTechnician')}
                         </span>
                       </CommandItem>
                     ))}

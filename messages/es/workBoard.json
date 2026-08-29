@@ -152,5 +152,8 @@
     "status": "Estado",
     "noTime": "Sin hora todavía",
     "none": "Nadie todavía"
-  }
+  },
+  "standaloneOnly": "Un nombre en el tablero para alguien que no inicia sesión, como un aprendiz o un externo. Para un mecánico que usa la aplicación, añádalo en la página de Equipo.",
+  "linkedTo": "Entra como {name}",
+  "linkedManagedOnTeam": "Se gestiona en la página de Equipo, junto con su acceso a la aplicación."
 }
