@@ -458,7 +458,11 @@
     "clashSamePersonHint": "La même personne qui revient, ou un nom orthographié autrement. Ses travaux et ses heures restent avec elle, et le nom que vous venez de saisir remplace l'ancien.",
     "clashTakeover": "Non, il s’agit de {name}",
     "clashTakeoverHint": "Une autre personne qui a désormais ce numéro. {name} conserve tout ce qu'elle a fait ici mais ne peut plus se connecter, et vous pourrez lui donner un nouveau numéro plus tard.",
-    "clashDifferentNumber": "Ni l’un ni l’autre, je corrige le numéro"
+    "clashDifferentNumber": "Ni l’un ni l’autre, je corrige le numéro",
+    "workshopCountry": "Dans quel pays se trouve votre atelier ?",
+    "workshopCountryPlaceholder": "Choisissez un pays",
+    "workshopCountryHint": "Demandé une seule fois. Ensuite, les numéros de mobile peuvent être saisis en format court.",
+    "phonePreview": "Enregistré comme"
   },
   "invoice": {
     "title": "Mise en page de facture",

@@ -458,7 +458,11 @@
     "clashSamePersonHint": "La stessa persona che torna, o un nome scritto diversamente. I suoi lavori e le sue ore restano con lei, e il nome appena inserito sostituisce il vecchio.",
     "clashTakeover": "No, è {name}",
     "clashTakeoverHint": "Un’altra persona che ora ha quel numero. {name} conserva tutto ciò che ha fatto qui ma non può più accedere, e potrai dargli un nuovo numero più avanti.",
-    "clashDifferentNumber": "Nessuno dei due, cambio il numero"
+    "clashDifferentNumber": "Nessuno dei due, cambio il numero",
+    "workshopCountry": "In quale paese si trova la tua officina?",
+    "workshopCountryPlaceholder": "Scegli un paese",
+    "workshopCountryHint": "Chiesto una sola volta. Dopo, i numeri di cellulare si possono scrivere in forma breve.",
+    "phonePreview": "Salvato come"
   },
   "invoice": {
     "title": "Layout fattura",

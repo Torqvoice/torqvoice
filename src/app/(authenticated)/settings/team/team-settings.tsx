@@ -114,6 +114,7 @@ export function TeamSettings({
   roles = [],
   technicianUserIds = [],
   startAdding = false,
+  dialCode = '',
   pendingInvitations = [],
 }: {
   organization: Organization | null
@@ -123,6 +124,8 @@ export function TeamSettings({
   technicianUserIds?: string[]
   /** Arrived from Quick Add, so open the dialog rather than the page. */
   startAdding?: boolean
+  /** The workshop's country code, empty until somebody has supplied one. */
+  dialCode?: string
   pendingInvitations?: PendingInvitation[]
 }) {
   const router = useRouter()
@@ -781,6 +784,7 @@ export function TeamSettings({
         open={adding}
         onOpenChange={setAdding}
         workshopUrl={workshopUrl}
+        dialCode={dialCode}
         roles={roles}
         onChanged={() => router.refresh()}
       />

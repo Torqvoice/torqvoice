@@ -458,7 +458,11 @@
     "clashSamePersonHint": "Dieselbe Person kommt zurück oder der Name war anders geschrieben. Aufträge und Stunden bleiben erhalten, und der eben eingegebene Name ersetzt den alten.",
     "clashTakeover": "Nein, das ist {name}",
     "clashTakeoverHint": "Eine andere Person, die diese Nummer jetzt hat. {name} behält alles Geleistete, kann sich aber nicht mehr anmelden, und Sie können später eine neue Nummer hinterlegen.",
-    "clashDifferentNumber": "Keins davon, Nummer ändern"
+    "clashDifferentNumber": "Keins davon, Nummer ändern",
+    "workshopCountry": "In welchem Land ist Ihre Werkstatt?",
+    "workshopCountryPlaceholder": "Land auswählen",
+    "workshopCountryHint": "Wird nur einmal gefragt. Danach können Handynummern kurz eingegeben werden.",
+    "phonePreview": "Gespeichert als"
   },
   "invoice": {
     "title": "Rechnungslayout",

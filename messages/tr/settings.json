@@ -458,7 +458,11 @@
     "clashSamePersonHint": "Aynı kişi geri dönüyor ya da adı farklı yazılmış. İşleri ve saatleri kendisinde kalır, az önce yazdığınız ad eskisinin yerini alır.",
     "clashTakeover": "Hayır, bu {name}",
     "clashTakeoverHint": "Bu numaraya artık sahip olan başka biri. {name} burada yaptığı her şeyi korur ama artık giriş yapamaz, sonra yeni bir numara verebilirsiniz.",
-    "clashDifferentNumber": "Hiçbiri, numarayı değiştireyim"
+    "clashDifferentNumber": "Hiçbiri, numarayı değiştireyim",
+    "workshopCountry": "Servisiniz hangi ülkede?",
+    "workshopCountryPlaceholder": "Bir ülke seçin",
+    "workshopCountryHint": "Sadece bir kez sorulur. Sonrasında cep numaraları kısa şekilde yazılabilir.",
+    "phonePreview": "Şöyle kaydedilir"
   },
   "invoice": {
     "title": "Fatura Düzeni",

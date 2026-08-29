@@ -458,7 +458,11 @@
     "clashSamePersonHint": "Dezelfde persoon die terugkomt, of een naam anders geschreven. Hun opdrachten en uren blijven bij hen, en de naam die u net typte vervangt de oude.",
     "clashTakeover": "Nee, dit is {name}",
     "clashTakeoverHint": "Een andere persoon die dat nummer nu heeft. {name} behoudt alles wat ze hier deden maar kan niet meer inloggen, en u kunt later een nieuw nummer geven.",
-    "clashDifferentNumber": "Geen van beide, ik pas het nummer aan"
+    "clashDifferentNumber": "Geen van beide, ik pas het nummer aan",
+    "workshopCountry": "In welk land staat uw werkplaats?",
+    "workshopCountryPlaceholder": "Kies een land",
+    "workshopCountryHint": "Wordt één keer gevraagd. Daarna kunnen mobiele nummers kort worden ingevoerd.",
+    "phonePreview": "Opgeslagen als"
   },
   "invoice": {
     "title": "Factuurindeling",

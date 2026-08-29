@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useCallback, useMemo, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { ArrowLeft, ArrowRightLeft, Check, Loader2, Mail, UserCheck, Wrench } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,6 +25,7 @@ import { createAppSetupCode, revokeAppSetupCode } from '@/features/team/Actions/
 import { createTechnicianAccount } from '@/features/team/Actions/createTechnicianAccount'
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
+import { countriesFor } from '@/features/team/Lib/dialCodes'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 
 /**
@@ -54,16 +55,24 @@ export function AddPersonDialog({
   open,
   onOpenChange,
   workshopUrl,
+  dialCode,
   roles,
   onChanged,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   workshopUrl: string
+  /** The workshop's country code. Empty until somebody has supplied one. */
+  dialCode: string
   roles: RoleOption[]
   onChanged: () => void
 }) {
   const t = useTranslations('settings')
+  const locale = useLocale()
+  // Asked once per workshop and then never again, because the answer is
+  // stored the first time somebody gives it.
+  const [country, setCountry] = useState(dialCode)
+  const countries = useMemo(() => countriesFor(locale), [locale])
 
   const [kind, setKind] = useState<Kind | null>(null)
   const [step, setStep] = useState<Step>('who')
@@ -120,6 +129,7 @@ export function AddPersonDialog({
         name: name.trim(),
         phone: phone.trim(),
         resolve,
+        dialCode: country || undefined,
       })
       if (!result.success) {
         setError(result.error || t('team.addTechnicianFailed'))
@@ -152,7 +162,7 @@ export function AddPersonDialog({
       else setError(code.error || t('team.setupAppFailed'))
       setBusy(false)
     },
-    [busy, name, phone, onChanged, t]
+    [busy, name, phone, country, onChanged, t]
   )
 
   const addMember = useCallback(
@@ -191,6 +201,20 @@ export function AddPersonDialog({
     },
     [busy, email, roleValue, roles, onChanged, t]
   )
+
+  /**
+   * The number as it will be stored, shown while they type it.
+   *
+   * Nothing is normalised properly until the server sees it, so this only has
+   * to be honest about the shape: local digits get the country code in front,
+   * anything already international is left alone.
+   */
+  const preview = (() => {
+    const digits = phone.replace(/[\s()-]/g, '')
+    if (!digits) return ''
+    if (/^(\+|00)/.test(digits)) return digits.replace(/^00/, '+')
+    return country ? `${country}${digits.replace(/^0+/, '')}` : ''
+  })()
 
   const steps: Step[] = kind === 'technician' ? ['who', 'details', 'handoff'] : ['who', 'details']
   const position = steps.indexOf(step === 'done' ? steps[steps.length - 1] : step)
@@ -282,6 +306,25 @@ export function AddPersonDialog({
                 required
               />
             </div>
+            {!dialCode && (
+              <div className="space-y-2">
+                <Label>{t('team.workshopCountry')}</Label>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('team.workshopCountryPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-72">
+                    {countries.map((c) => (
+                      <SelectItem key={c.region} value={c.dial}>
+                        {c.name} ({c.dial})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-muted-foreground text-xs">{t('team.workshopCountryHint')}</p>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="tech-phone">{t('team.technicianPhone')}</Label>
               <Input
@@ -294,6 +337,14 @@ export function AddPersonDialog({
                 autoComplete="off"
                 required
               />
+              {preview ? (
+                // Confirms the country code was applied the way they meant,
+                // before it becomes the thing they sign in with.
+                <p className="text-xs">
+                  {t('team.phonePreview')}{' '}
+                  <span className="font-medium tabular-nums">{preview}</span>
+                </p>
+              ) : null}
               <p className="text-muted-foreground text-xs">{t('team.addTechnicianNote')}</p>
             </div>
 

@@ -6,6 +6,8 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { normalizeCountryCode } from '@/lib/portal-phone'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { withAuth } from '@/lib/with-auth'
 import { ensureTechnicianRole, PLACEHOLDER_EMAIL_DOMAIN } from '../Lib/technicianRole'
@@ -44,17 +46,37 @@ const schema = z.object({
    * question.
    */
   resolve: z.enum(['reuse', 'takeover']).optional(),
+  /**
+   * The country code to put in front of a locally typed number.
+   *
+   * Making the desk type +47 on every mechanic is a small tax paid many
+   * times, and getting it wrong silently produces somebody who can never sign
+   * in. The field carries it instead, and the first one supplied is
+   * remembered as the workshop's default so it is only ever answered once.
+   */
+  dialCode: z.string().trim().max(6).optional(),
 })
 
 export async function createTechnicianAccount(input: unknown) {
   return withAuth(
-    async ({ organizationId }) => {
-      const { name, phone, email, resolve } = schema.parse(input)
+    async ({ organizationId, userId }) => {
+      const { name, phone, email, resolve, dialCode } = schema.parse(input)
 
-      const e164 = await normalizeOrgPhone(organizationId, phone)
+      const dial = normalizeCountryCode(dialCode)
+      // Already international, so the code in front of the field is irrelevant.
+      const typedInternational = /^(\+|00)/.test(phone.replace(/[\s()-]/g, ''))
+      const e164 = await normalizeOrgPhone(
+        organizationId,
+        typedInternational || !dial ? phone : `${dial}${phone.replace(/^0+/, '')}`
+      )
       if (!e164) {
         throw new Error('That does not look like a mobile number this workshop can reach.')
       }
+
+      // Answered once, for this workshop, and never asked again. It is the same
+      // setting the customer portal already uses to read a locally typed
+      // number, so filling it in here fixes that too.
+      if (dial) await rememberDialCode(organizationId, userId, dial)
 
       /**
        * Somebody who has been here before, under this number.
@@ -252,4 +274,48 @@ async function reinstate(
   revalidatePath('/work-board')
 
   return { conflict: null, technicianId: technician.id, userId, name, reinstated: true }
+}
+
+/** Stores the workshop's country code the first time somebody supplies one. */
+async function rememberDialCode(organizationId: string, userId: string, dial: string) {
+  const existing = await db.appSetting.findUnique({
+    where: {
+      organizationId_key: { organizationId, key: SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE },
+    },
+    select: { value: true },
+  })
+  // Only when there is nothing there. Somebody who set it deliberately in
+  // settings should not have it changed by an unrelated screen.
+  if (existing?.value) return
+
+  await db.appSetting.upsert({
+    where: {
+      organizationId_key: { organizationId, key: SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE },
+    },
+    update: { value: dial },
+    create: {
+      userId,
+      organizationId,
+      key: SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE,
+      value: dial,
+    },
+  })
+}
+
+/** The country code the phone field should start with, if the workshop has one. */
+export async function getWorkshopDialCode() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const setting = await db.appSetting.findUnique({
+        where: {
+          organizationId_key: { organizationId, key: SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE },
+        },
+        select: { value: true },
+      })
+      return { dialCode: normalizeCountryCode(setting?.value) }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }

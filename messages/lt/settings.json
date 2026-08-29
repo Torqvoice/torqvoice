@@ -458,7 +458,11 @@
     "clashSamePersonHint": "Tas pats žmogus grįžta arba vardas parašytas kitaip. Jo darbai ir valandos lieka su juo, o ką tik įvestas vardas pakeis senąjį.",
     "clashTakeover": "Ne, tai {name}",
     "clashTakeoverHint": "Kitas žmogus, kuris dabar turi šį numerį. {name} išlaiko viską, ką čia atliko, bet nebegali prisijungti, o naują numerį galėsite suteikti vėliau.",
-    "clashDifferentNumber": "Nei vienas, pakeisiu numerį"
+    "clashDifferentNumber": "Nei vienas, pakeisiu numerį",
+    "workshopCountry": "Kurioje šalyje yra jūsų servisas?",
+    "workshopCountryPlaceholder": "Pasirinkite šalį",
+    "workshopCountryHint": "Klausiama vieną kartą. Vėliau numerius galima rašyti trumpai.",
+    "phonePreview": "Išsaugoma kaip"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

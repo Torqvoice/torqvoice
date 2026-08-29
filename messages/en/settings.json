@@ -458,7 +458,11 @@
     "clashSamePersonHint": "The same person coming back, or a name spelled differently. Their jobs and hours stay with them, and the name you just typed replaces the old one.",
     "clashTakeover": "No, this is {name}",
     "clashTakeoverHint": "A different person who now has that number. {name} keeps everything they did here but can no longer sign in, and you can give them a new number later.",
-    "clashDifferentNumber": "Neither, let me change the number"
+    "clashDifferentNumber": "Neither, let me change the number",
+    "workshopCountry": "Which country is your workshop in?",
+    "workshopCountryPlaceholder": "Choose a country",
+    "workshopCountryHint": "Asked once. After this, mobile numbers can be typed the short way.",
+    "phonePreview": "Saved as"
   },
   "invoice": {
     "title": "Invoice & Quotes",

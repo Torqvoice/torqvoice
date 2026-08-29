@@ -458,7 +458,11 @@
     "clashSamePersonHint": "Samme person som kommer tilbake, eller et navn stavet annerledes. Jobbene og timene følger dem, og navnet du nettopp skrev erstatter det gamle.",
     "clashTakeover": "Nei, dette er {name}",
     "clashTakeoverHint": "En annen person som nå har det nummeret. {name} beholder alt de har gjort her, men kan ikke lenger logge inn, og du kan gi dem et nytt nummer senere.",
-    "clashDifferentNumber": "Ingen av delene, la meg endre nummeret"
+    "clashDifferentNumber": "Ingen av delene, la meg endre nummeret",
+    "workshopCountry": "Hvilket land ligger verkstedet i?",
+    "workshopCountryPlaceholder": "Velg land",
+    "workshopCountryHint": "Spørres bare én gang. Etter dette kan mobilnumre skrives kort.",
+    "phonePreview": "Lagres som"
   },
   "invoice": {
     "title": "Faktura og tilbud",
