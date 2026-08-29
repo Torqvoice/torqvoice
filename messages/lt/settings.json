@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Technikas",
     "technicianHint": "Gali gauti priskirtus darbus ir naudotis techniko programa",
-    "technicianFailed": "Nepavyko pakeisti"
+    "technicianFailed": "Nepavyko pakeisti",
+    "setupApp": "Nustatyti programėlę",
+    "setupAppTitle": "Nustatyti techniko programėlę",
+    "setupAppInstruction": "Paprašykite {name} įdiegti „Torqvoice Tech“, ją atidaryti ir nuskaityti šį kodą.",
+    "setupAppOrType": "Arba padiktuokite šį kodą:",
+    "setupAppExpiry": "Galioja vieną kartą, baigia galioti po {time}.",
+    "setupAppExpired": "Šis kodas nebegalioja. Uždarykite ir pradėkite iš naujo.",
+    "setupAppDone": "Atlikta",
+    "setupAppFailed": "Nepavyko sukurti nustatymo kodo"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

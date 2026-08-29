@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Механик",
     "technicianHint": "Может получать заказы и пользоваться приложением механика",
-    "technicianFailed": "Не удалось изменить"
+    "technicianFailed": "Не удалось изменить",
+    "setupApp": "Настроить приложение",
+    "setupAppTitle": "Настройка приложения механика",
+    "setupAppInstruction": "Попросите {name} установить Torqvoice Tech, открыть приложение и отсканировать этот код.",
+    "setupAppOrType": "Или продиктуйте этот код:",
+    "setupAppExpiry": "Действует один раз, истекает через {time}.",
+    "setupAppExpired": "Код истёк. Закройте и начните заново.",
+    "setupAppDone": "Готово",
+    "setupAppFailed": "Не удалось создать код настройки"
   },
   "invoice": {
     "title": "Счета и предложения",

@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Técnico",
     "technicianHint": "Puede recibir trabajos asignados y usar la aplicación de técnico",
-    "technicianFailed": "No se pudo cambiar"
+    "technicianFailed": "No se pudo cambiar",
+    "setupApp": "Configurar la aplicación",
+    "setupAppTitle": "Configurar la aplicación de técnico",
+    "setupAppInstruction": "Pida a {name} que instale Torqvoice Tech, la abra y escanee este código.",
+    "setupAppOrType": "O léale este código:",
+    "setupAppExpiry": "Se usa una sola vez y caduca en {time}.",
+    "setupAppExpired": "Este código ha caducado. Cierre y empiece de nuevo.",
+    "setupAppDone": "Hecho",
+    "setupAppFailed": "No se pudo crear un código de configuración"
   },
   "invoice": {
     "title": "Diseño de factura",

@@ -31,6 +31,7 @@ model User {
   sessions               Session[]
   accounts               Account[]
   pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
   vehicles               Vehicle[]
   customers              Customer[]
   settings               AppSetting[]
@@ -860,6 +861,7 @@ model Organization {
   workBays               WorkBay[]
   timeEntries            TimeEntry[]
   pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
@@ -1449,6 +1451,45 @@ model TimeEntry {
 /// The token is a routing address, not a secret, but it is still deleted on
 /// sign-out: a device that has signed out must stop receiving a workshop's job
 /// details, and expiry alone would leave a window where it still did.
+/// A one-time code that puts a technician's phone onto a workshop.
+///
+/// Typing a URL and a password is the worst moment in the app, and it lands on
+/// the person least equipped for it: a technician with dirty hands, on a
+/// phone, being watched. The desk shows a QR instead and the phone reads it.
+///
+/// It is a bearer credential in a picture, so it is deliberately short-lived,
+/// single-use, and bound to one person in one workshop. It exchanges for a
+/// normal session and is then dead; it is never itself a way to authenticate.
+model TechnicianSetupCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the code. The code itself is shown once, on the screen that
+  /// asked for it, and is never written down anywhere it could be read back.
+  codeHash String @unique
+
+  expiresAt DateTime
+  /// Set on redemption. Kept rather than deleted so a second scan can say the
+  /// code was already used, which is a different problem from a wrong code.
+  usedAt    DateTime?
+
+  /// Who the code signs in.
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Who issued it, for the audit trail. Not a relation: the issuer may be
+  /// removed from the workshop later and that must not delete the record.
+  issuedByUserId String
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, expiresAt])
+  @@index([userId])
+  @@map("technician_setup_codes")
+}
+
 model PushDevice {
   id String @id @default(cuid())
 

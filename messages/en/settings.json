@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Technician",
     "technicianHint": "Can be assigned jobs and use the technician app",
-    "technicianFailed": "Could not change that"
+    "technicianFailed": "Could not change that",
+    "setupApp": "Set up app",
+    "setupAppTitle": "Set up the technician app",
+    "setupAppInstruction": "Ask {name} to install Torqvoice Tech, open it, and scan this code.",
+    "setupAppOrType": "Or read them this code:",
+    "setupAppExpiry": "Works once, and expires in {time}.",
+    "setupAppExpired": "This code has expired. Close and start again.",
+    "setupAppDone": "Done",
+    "setupAppFailed": "Could not create a setup code"
   },
   "invoice": {
     "title": "Invoice & Quotes",

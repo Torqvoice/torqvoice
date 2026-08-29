@@ -29,6 +29,7 @@ import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
 import { setMemberTechnician } from '@/features/team/Actions/setMemberTechnician'
+import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
 
 /**
@@ -55,6 +56,7 @@ import {
   Plus,
   Shield,
   ShieldCheck,
+  Smartphone,
   Trash2,
   User,
   Users,
@@ -138,6 +140,8 @@ export function TeamSettings({
   // round trip is a long time to sit on a toggle that has already moved.
   const [technicians, setTechnicians] = useState<Set<string>>(() => new Set(technicianUserIds))
   const [technicianBusy, setTechnicianBusy] = useState<string | null>(null)
+  /** The member whose app is being set up, and their name for the copy. */
+  const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
 
   const handleTechnicianToggle = async (userId: string, enabled: boolean) => {
     setTechnicianBusy(userId)
@@ -460,6 +464,23 @@ export function TeamSettings({
                       {t('team.technician')}
                     </span>
                   </label>
+                )}
+                {isAdmin && technicians.has(member.user.id) && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={() =>
+                      setSettingUp({
+                        userId: member.user.id,
+                        name: member.user.name || member.user.email,
+                      })
+                    }
+                    aria-label={t('team.setupApp')}
+                    title={t('team.setupApp')}
+                  >
+                    <Smartphone className="h-4 w-4" />
+                  </Button>
                 )}
                 {isOwner && member.role !== 'owner' ? (
                   <Select
@@ -857,6 +878,19 @@ export function TeamSettings({
           </div>
         </div>
       </AppCard>
+
+      {/* Configured address first, current origin second. They agree in
+          production; in development the origin is localhost, which is an
+          address the technician's phone cannot reach. */}
+      <AppSetupCodeDialog
+        userId={settingUp?.userId ?? null}
+        memberName={settingUp?.name ?? ''}
+        workshopUrl={
+          process.env.NEXT_PUBLIC_APP_URL ||
+          (typeof window === 'undefined' ? '' : window.location.origin)
+        }
+        onClose={() => setSettingUp(null)}
+      />
     </div>
   )
 }

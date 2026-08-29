@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Teknisyen",
     "technicianHint": "İş atanabilir ve teknisyen uygulamasını kullanabilir",
-    "technicianFailed": "Değiştirilemedi"
+    "technicianFailed": "Değiştirilemedi",
+    "setupApp": "Uygulamayı kur",
+    "setupAppTitle": "Teknisyen uygulamasını kur",
+    "setupAppInstruction": "{name} kişisinden Torqvoice Tech'i kurmasını, açmasını ve bu kodu taratmasını isteyin.",
+    "setupAppOrType": "Ya da bu kodu okuyun:",
+    "setupAppExpiry": "Bir kez geçerlidir, {time} sonra sona erer.",
+    "setupAppExpired": "Bu kodun süresi doldu. Kapatıp yeniden başlayın.",
+    "setupAppDone": "Tamam",
+    "setupAppFailed": "Kurulum kodu oluşturulamadı"
   },
   "invoice": {
     "title": "Fatura Düzeni",

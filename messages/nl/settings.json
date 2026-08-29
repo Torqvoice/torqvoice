@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Technicus",
     "technicianHint": "Kan opdrachten toegewezen krijgen en de technicus-app gebruiken",
-    "technicianFailed": "Kon niet worden gewijzigd"
+    "technicianFailed": "Kon niet worden gewijzigd",
+    "setupApp": "App instellen",
+    "setupAppTitle": "Monteurs-app instellen",
+    "setupAppInstruction": "Vraag {name} om Torqvoice Tech te installeren, te openen en deze code te scannen.",
+    "setupAppOrType": "Of lees deze code voor:",
+    "setupAppExpiry": "Werkt eenmalig en verloopt over {time}.",
+    "setupAppExpired": "Deze code is verlopen. Sluit af en begin opnieuw.",
+    "setupAppDone": "Klaar",
+    "setupAppFailed": "Kon geen installatiecode aanmaken"
   },
   "invoice": {
     "title": "Factuurindeling",

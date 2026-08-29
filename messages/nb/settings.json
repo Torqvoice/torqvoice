@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Tekniker",
     "technicianHint": "Kan tildeles jobber og bruke teknikerappen",
-    "technicianFailed": "Kunne ikke endres"
+    "technicianFailed": "Kunne ikke endres",
+    "setupApp": "Sett opp app",
+    "setupAppTitle": "Sett opp teknikerappen",
+    "setupAppInstruction": "Be {name} installere Torqvoice Tech, åpne den og skanne denne koden.",
+    "setupAppOrType": "Eller les opp denne koden:",
+    "setupAppExpiry": "Virker én gang og utløper om {time}.",
+    "setupAppExpired": "Denne koden er utløpt. Lukk og start på nytt.",
+    "setupAppDone": "Ferdig",
+    "setupAppFailed": "Kunne ikke lage en oppsettskode"
   },
   "invoice": {
     "title": "Faktura og tilbud",

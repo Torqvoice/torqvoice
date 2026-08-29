@@ -395,7 +395,15 @@
     "editRole": "Edit role",
     "technician": "Technik",
     "technicianHint": "Może otrzymywać zlecenia i korzystać z aplikacji technika",
-    "technicianFailed": "Nie udało się zmienić"
+    "technicianFailed": "Nie udało się zmienić",
+    "setupApp": "Skonfiguruj aplikację",
+    "setupAppTitle": "Skonfiguruj aplikację technika",
+    "setupAppInstruction": "Poproś {name}, aby zainstalował Torqvoice Tech, otworzył ją i zeskanował ten kod.",
+    "setupAppOrType": "Albo podaj ten kod:",
+    "setupAppExpiry": "Działa raz i wygasa za {time}.",
+    "setupAppExpired": "Ten kod wygasł. Zamknij i zacznij od nowa.",
+    "setupAppDone": "Gotowe",
+    "setupAppFailed": "Nie udało się utworzyć kodu konfiguracji"
   },
   "invoice": {
     "title": "Układ faktury",
