@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Alles, was bereits auf sie gebucht ist, bleibt erhalten.",
     "giveAppSubmit": "Konto anlegen",
     "role": "Rolle",
-    "inviteMemberHint": "Die Person erhält eine E-Mail und wählt ihr eigenes Passwort."
+    "inviteMemberHint": "Die Person erhält eine E-Mail und wählt ihr eigenes Passwort.",
+    "removeBoardOnlyTitle": "{name} von der Tafel nehmen?",
+    "removeBoardOnlyBody": "{name} erscheint nicht mehr auf der Werkstatttafel und kann keinen Aufträgen mehr zugewiesen werden. Bereits erfasste Arbeit und gestempelte Stunden bleiben genau so, wie sie sind.",
+    "removeBoardOnlyDone": "{name} ist von der Tafel",
+    "noRole": "Keine Rolle",
+    "worksOnJobs": "Arbeitet an Aufträgen",
+    "createDefaultRoles": "Standardrollen anlegen",
+    "defaultRolesCreated": "Standardrollen angelegt",
+    "noRolesYet": "Diese Werkstatt hat noch keine Rollen, außer Admin gibt es also nichts zu vergeben. Legen Sie die Standardrollen an und schränken Sie die Rechte später ein.",
+    "noRoleDescription": "Überhaupt keine Rechte. Sie können sich anmelden, aber jeder Bildschirm weist sie ab, bis Sie ihnen unten eine Rolle geben.",
+    "cannotUseApp": "Diese Rolle kann keine Aufträge bearbeiten. Geben Sie ihr zuerst Techniker oder eine Rolle mit denselben Rechten.",
+    "revokeTechnicianDone": "{name} wurde aus der App abgemeldet"
   },
   "invoice": {
     "title": "Rechnungslayout",

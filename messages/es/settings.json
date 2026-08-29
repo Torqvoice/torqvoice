@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Todo lo que ya tiene registrado se queda como está.",
     "giveAppSubmit": "Crear su cuenta",
     "role": "Rol",
-    "inviteMemberHint": "Recibe un correo y elige su propia contraseña."
+    "inviteMemberHint": "Recibe un correo y elige su propia contraseña.",
+    "removeBoardOnlyTitle": "¿Quitar a {name} del tablero?",
+    "removeBoardOnlyBody": "{name} deja de aparecer en el tablero y ya no se le puede asignar trabajos. El trabajo ya registrado y las horas fichadas quedan exactamente igual.",
+    "removeBoardOnlyDone": "{name} está fuera del tablero",
+    "noRole": "Sin rol",
+    "worksOnJobs": "Trabaja en los coches",
+    "createDefaultRoles": "Crear los roles estándar",
+    "defaultRolesCreated": "Roles estándar creados",
+    "noRolesYet": "Este taller aún no tiene roles, así que no hay nada que darle aparte de Admin. Cree los estándar y ajuste los permisos después.",
+    "noRoleDescription": "Sin permisos. Puede iniciar sesión, pero todas las pantallas lo rechazarán hasta que le dé un rol de los de abajo.",
+    "cannotUseApp": "Su rol no puede trabajar en los trabajos. Déle primero Técnico, o un rol con los mismos permisos.",
+    "revokeTechnicianDone": "{name} ha salido de la aplicación"
   },
   "invoice": {
     "title": "Diseño de factura",

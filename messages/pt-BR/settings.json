@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Tudo o que já está registrado para essa pessoa continua como está.",
     "giveAppSubmit": "Criar a conta",
     "role": "Função",
-    "inviteMemberHint": "Ela recebe um e-mail e escolhe a própria senha."
+    "inviteMemberHint": "Ela recebe um e-mail e escolhe a própria senha.",
+    "removeBoardOnlyTitle": "Tirar {name} do quadro?",
+    "removeBoardOnlyBody": "{name} deixa de aparecer no quadro e não pode mais ser colocado em serviços. O trabalho já registrado e as horas marcadas ficam exatamente como estão.",
+    "removeBoardOnlyDone": "{name} saiu do quadro",
+    "noRole": "Sem função",
+    "worksOnJobs": "Trabalha nos serviços",
+    "createDefaultRoles": "Criar as funções padrão",
+    "defaultRolesCreated": "Funções padrão criadas",
+    "noRolesYet": "Esta oficina ainda não tem funções, então não há o que dar além de Admin. Crie as padrão e ajuste as permissões depois.",
+    "noRoleDescription": "Nenhuma permissão. A pessoa consegue entrar, mas todas as telas a recusam até você dar uma função abaixo.",
+    "cannotUseApp": "A função dela não permite trabalhar em serviços. Dê primeiro Técnico, ou uma função com as mesmas permissões.",
+    "revokeTechnicianDone": "{name} foi desconectado do aplicativo"
   },
   "invoice": {
     "title": "Layout da fatura",

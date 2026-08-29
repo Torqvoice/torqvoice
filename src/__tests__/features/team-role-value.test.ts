@@ -6,16 +6,20 @@ import { TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
  *
  * The trigger renders blank when the value matches no option, and a blank
  * trigger reads as "this person has no role", which is the one thing it must
- * never say about somebody who does. That happened for a newly added
- * technician: their role id was real but deliberately absent from the list,
- * because the Technician entry above it is what grants it.
+ * never say about somebody who does.
+ *
+ * Mirrors team-settings.tsx. It has been wrong before by drifting: this helper
+ * kept deciding from the set of technician user ids long after the component
+ * had moved to comparing role ids, so it went on passing while the component
+ * shipped the null bug below.
  */
 function selectedValue(
   member: { user: { id: string }; role: string; roleId: string | null },
-  technicians: Set<string>,
+  technicianRoleId: string | null,
   roles: { id: string; name: string }[]
 ): string {
-  if (technicians.has(member.user.id)) return 'technician'
+  const isTechnicianRole = technicianRoleId !== null && member.roleId === technicianRoleId
+  if (isTechnicianRole) return 'technician'
   if (roles.some((r) => r.id === member.roleId && r.name !== TECHNICIAN_ROLE_NAME)) {
     return member.roleId as string
   }
@@ -29,6 +33,7 @@ describe('the role dropdown value', () => {
     { id: 'role-tech', name: TECHNICIAN_ROLE_NAME },
     { id: 'role-desk', name: 'Front desk' },
   ]
+  const techId = roles.find((r) => r.name === TECHNICIAN_ROLE_NAME)?.id ?? null
   const options = [
     ...OFFERED,
     ...roles.filter((r) => r.name !== TECHNICIAN_ROLE_NAME).map((r) => r.id),
@@ -44,32 +49,50 @@ describe('the role dropdown value', () => {
       { user: { id: 'u5' }, role: 'member', roleId: 'role-gone' },
     ]
     for (const member of cases) {
-      const value = selectedValue(member, new Set(['u1']), roles)
+      const value = selectedValue(member, techId, roles)
       expect(options, `${member.user.id} selected "${value}"`).toContain(value)
     }
   })
 
-  it('shows Technician for somebody on the board', () => {
+  it('shows Technician for somebody holding the technician role', () => {
     expect(
-      selectedValue(
-        { user: { id: 'u1' }, role: 'member', roleId: 'role-tech' },
-        new Set(['u1']),
-        roles
-      )
+      selectedValue({ user: { id: 'u1' }, role: 'member', roleId: 'role-tech' }, techId, roles)
     ).toBe('technician')
-  })
-
-  it('does not fall through to a role id the list hides', () => {
-    // The bug: a technician missing from the set fell through to role-tech,
-    // which is filtered out of the options, so the trigger rendered empty.
-    expect(
-      selectedValue({ user: { id: 'u1' }, role: 'member', roleId: 'role-tech' }, new Set(), roles)
-    ).toBe('member')
   })
 
   it('keeps a real custom role selected', () => {
     expect(
-      selectedValue({ user: { id: 'u2' }, role: 'member', roleId: 'role-desk' }, new Set(), roles)
+      selectedValue({ user: { id: 'u2' }, role: 'member', roleId: 'role-desk' }, techId, roles)
     ).toBe('role-desk')
+  })
+
+  /**
+   * A workshop that has never added a technician has no technician role, so
+   * the id to compare against is null. An ordinary member with no custom role
+   * has a null roleId too, and comparing the two directly made null === null
+   * true: every plain member rendered as Technician, and setting them back to
+   * Member wrote the null already there, so the save succeeded and the
+   * dropdown never moved.
+   */
+  describe('in a workshop with no technician role yet', () => {
+    const fresh = [{ id: 'role-desk', name: 'Front desk' }]
+
+    it('does not call a plain member a technician', () => {
+      expect(selectedValue({ user: { id: 'u4' }, role: 'member', roleId: null }, null, fresh)).toBe(
+        'member'
+      )
+    })
+
+    it('does not call an admin a technician', () => {
+      expect(selectedValue({ user: { id: 'u3' }, role: 'admin', roleId: null }, null, fresh)).toBe(
+        'admin'
+      )
+    })
+
+    it('still resolves a custom role', () => {
+      expect(
+        selectedValue({ user: { id: 'u2' }, role: 'member', roleId: 'role-desk' }, null, fresh)
+      ).toBe('role-desk')
+    })
   })
 })

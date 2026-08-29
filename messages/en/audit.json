@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Updated WhatsApp settings",
     "settings_whatsappDisconnected": "Disconnected WhatsApp",
     "settings_whatsappNumberRegistered": "Registered a WhatsApp number",
-    "team_giveTechnicianTheApp": "Gave a board-only technician an account"
+    "team_giveTechnicianTheApp": "Gave a board-only technician an account",
+    "team_createDefaultRoles": "Created the standard roles"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",

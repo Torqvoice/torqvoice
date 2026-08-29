@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "WhatsApp ayarları güncellendi",
     "settings_whatsappDisconnected": "WhatsApp bağlantısı kesildi",
     "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
-    "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi"
+    "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi",
+    "team_createDefaultRoles": "Standart roller oluşturuldu"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",

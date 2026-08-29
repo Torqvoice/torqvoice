@@ -30,6 +30,45 @@ export const TECHNICIAN_PERMISSIONS = [
  * called Technician, meaning different things, which is a sentence nobody
  * should have to read twice.
  */
+/**
+ * What somebody at the desk needs to run the day, expressed once.
+ *
+ * `member` is Better Auth's membership tier, not a permission set: a member
+ * with no role has `granted = []` and is refused by every screen, which made
+ * the word in the role dropdown a promise the product did not keep. This is
+ * the role that word should have meant.
+ *
+ * Deliberately short of Settings, Billing and Reports. Those are the owner's
+ * business, and a role that quietly included them would be worse than one that
+ * is easy to widen by hand.
+ */
+export const MEMBER_PERMISSIONS = [
+  { action: PermissionAction.READ, subject: PermissionSubject.DASHBOARD },
+  // The day's work: booking cars in, writing jobs up, taking payment.
+  { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+  { action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS },
+  { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
+  { action: PermissionAction.READ, subject: PermissionSubject.VEHICLES },
+  { action: PermissionAction.CREATE, subject: PermissionSubject.VEHICLES },
+  { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
+  { action: PermissionAction.READ, subject: PermissionSubject.WORK_ORDERS },
+  { action: PermissionAction.CREATE, subject: PermissionSubject.WORK_ORDERS },
+  { action: PermissionAction.UPDATE, subject: PermissionSubject.WORK_ORDERS },
+  { action: PermissionAction.READ, subject: PermissionSubject.SERVICES },
+  { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
+  { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+  { action: PermissionAction.READ, subject: PermissionSubject.QUOTES },
+  { action: PermissionAction.CREATE, subject: PermissionSubject.QUOTES },
+  { action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES },
+  // Looking parts up and seeing the week. Neither changes anything on its own.
+  { action: PermissionAction.READ, subject: PermissionSubject.INVENTORY },
+  { action: PermissionAction.READ, subject: PermissionSubject.WORK_BOARD },
+  { action: PermissionAction.READ, subject: PermissionSubject.LABOR_PRESETS },
+] as const
+
+/** The name the seeded desk role carries. */
+export const MEMBER_ROLE_NAME = 'Member'
+
 export const TECHNICIAN_ROLE_NAME = 'Technician'
 
 /** The value the role dropdown uses for it, alongside `admin` and `member`. */
@@ -44,6 +83,34 @@ type Tx = Pick<PrismaClient, 'role'>
  * the account can reach behind a flag, which is the exact shape of the bug
  * this product just finished removing.
  */
+/**
+ * The workshop's desk role, made once and reused after that.
+ *
+ * Same contract as the technician one below: created on demand rather than at
+ * signup, so an install that predates it gains the role the first time anybody
+ * asks for it instead of needing a migration.
+ */
+export async function ensureMemberRole(tx: Tx, organizationId: string): Promise<string> {
+  const existing = await tx.role.findFirst({
+    where: { organizationId, name: MEMBER_ROLE_NAME },
+    select: { id: true },
+  })
+  if (existing) return existing.id
+
+  const created = await tx.role.create({
+    data: {
+      name: MEMBER_ROLE_NAME,
+      organizationId,
+      isAdmin: false,
+      permissions: {
+        create: MEMBER_PERMISSIONS.map((p) => ({ action: p.action, subject: p.subject })),
+      },
+    },
+    select: { id: true },
+  })
+  return created.id
+}
+
 export async function ensureTechnicianRole(tx: Tx, organizationId: string): Promise<string> {
   const existing = await tx.role.findFirst({
     where: { organizationId, name: TECHNICIAN_ROLE_NAME },

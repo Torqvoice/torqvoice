@@ -176,6 +176,9 @@ export async function deleteTechnician(id: string) {
       })
 
       revalidatePath('/work-board')
+      // Board-only technicians are listed on the team page too, and that is now
+      // where they can be removed from.
+      revalidatePath('/settings/team')
       return { success: true, technicianId: id }
     },
     {

@@ -24,13 +24,17 @@ for (const file of fs.readdirSync(MESSAGES)) {
   }
 }
 
-function resolves(dotted: string): boolean {
+function lookup(dotted: string): unknown {
   let node: unknown = bundle
   for (const part of dotted.split('.')) {
-    if (node == null || typeof node !== 'object' || !(part in (node as object))) return false
+    if (node == null || typeof node !== 'object' || !(part in (node as object))) return undefined
     node = (node as Record<string, unknown>)[part]
   }
-  return typeof node === 'string'
+  return node
+}
+
+function resolves(dotted: string): boolean {
+  return typeof lookup(dotted) === 'string'
 }
 
 function sourceFiles(dir: string, out: string[] = []): string[] {
@@ -53,8 +57,8 @@ function sourceFiles(dir: string, out: string[] = []): string[] {
  * than guessed at. Skipping loses coverage; guessing invents failures, and a
  * test nobody trusts gets deleted.
  */
-function requestedKeys(): { file: string; key: string }[] {
-  const found: { file: string; key: string }[] = []
+function requestedKeys(): { file: string; key: string; hasArgs: boolean }[] {
+  const found: { file: string; key: string; hasArgs: boolean }[] = []
 
   for (const file of sourceFiles(path.join(ROOT, 'src'))) {
     const src = fs.readFileSync(file, 'utf-8')
@@ -70,12 +74,21 @@ function requestedKeys(): { file: string; key: string }[] {
 
     for (const [binding, namespace] of namespaces) {
       if (counts.get(binding) !== 1) continue
-      const call = new RegExp(`\\b${binding}(?:\\.rich|\\.raw)?\\(\\s*['"]([\\w.]+)['"]`, 'g')
+      // The trailing group tells us whether anything followed the key, which
+      // is what says the call passed values for the message's placeholders.
+      const call = new RegExp(
+        `\\b${binding}(?:\\.rich|\\.raw)?\\(\\s*['"]([\\w.]+)['"]\\s*(,?)`,
+        'g'
+      )
       for (const m of src.matchAll(call)) {
         // `t(`prefix.${code}`)` leaves a trailing dot on the literal part.
         // The key is assembled at runtime and there is nothing to check.
         if (m[1].endsWith('.')) continue
-        found.push({ file: path.relative(ROOT, file), key: `${namespace}.${m[1]}` })
+        found.push({
+          file: path.relative(ROOT, file),
+          key: `${namespace}.${m[1]}`,
+          hasArgs: m[2] === ',',
+        })
       }
     }
   }
@@ -87,6 +100,30 @@ const REQUESTED = requestedKeys()
 describe('translation keys the code asks for', () => {
   it('finds enough of them to be worth running', () => {
     expect(REQUESTED.length).toBeGreaterThan(200)
+  })
+
+  it('are given the values their message asks for', () => {
+    /**
+     * next-intl throws at render time, not build time, when a message has a
+     * placeholder and the call site passes nothing. That is a blank page in
+     * production from a missing second argument, and neither tsc nor the lint
+     * sees it: `t('team.removeBoardOnlyTitle')` against "Take {name} off the
+     * board?" shipped exactly that.
+     *
+     * Only flags a message with placeholders called with no arguments at all.
+     * Checking each name against the object would mean parsing the call, and a
+     * test that guesses invents failures.
+     */
+    const unformatted = REQUESTED.filter((r) => {
+      if (r.hasArgs) return false
+      const message = lookup(r.key)
+      return typeof message === 'string' && /\{\s*\w+/.test(message)
+    })
+    const lines = [...new Set(unformatted.map((r) => `${r.key}  (${r.file})`))].sort()
+    expect(
+      lines,
+      `These messages take a value the call site never passes:\n  ${lines.join('\n  ')}`
+    ).toEqual([])
   })
 
   it('all resolve to a string in English', () => {

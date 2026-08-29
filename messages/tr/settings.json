@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Onun adına kayıtlı olan her şey olduğu gibi kalır.",
     "giveAppSubmit": "Hesabını oluştur",
     "role": "Rol",
-    "inviteMemberHint": "Bir e-posta alır ve kendi parolasını seçer."
+    "inviteMemberHint": "Bir e-posta alır ve kendi parolasını seçer.",
+    "removeBoardOnlyTitle": "{name} panodan kaldırılsın mı?",
+    "removeBoardOnlyBody": "{name} artık iş panosunda görünmez ve işlere atanamaz. Daha önce kaydedilen işler ve girilen saatler olduğu gibi kalır.",
+    "removeBoardOnlyDone": "{name} panodan kaldırıldı",
+    "noRole": "Rol yok",
+    "worksOnJobs": "Araçlarda çalışır",
+    "createDefaultRoles": "Standart rolleri oluştur",
+    "defaultRolesCreated": "Standart roller oluşturuldu",
+    "noRolesYet": "Bu atölyede henüz rol yok, bu yüzden Yönetici dışında verilecek bir şey bulunmuyor. Standart rolleri oluşturup izinleri sonra daraltın.",
+    "noRoleDescription": "Hiçbir izni yok. Giriş yapabilir ama aşağıdan bir rol verene kadar her ekran onu reddeder.",
+    "cannotUseApp": "Rolü işler üzerinde çalışmaya izin vermiyor. Önce Teknisyen ya da aynı izinlere sahip bir rol verin.",
+    "revokeTechnicianDone": "{name} uygulamadan çıkarıldı"
   },
   "invoice": {
     "title": "Fatura Düzeni",

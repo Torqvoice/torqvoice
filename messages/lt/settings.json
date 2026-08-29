@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Viskas, kas jam jau užfiksuota, lieka savo vietoje.",
     "giveAppSubmit": "Sukurti paskyrą",
     "role": "Vaidmuo",
-    "inviteMemberHint": "Jis gaus laišką ir pats pasirinks slaptažodį."
+    "inviteMemberHint": "Jis gaus laišką ir pats pasirinks slaptažodį.",
+    "removeBoardOnlyTitle": "Pašalinti {name} iš lentos?",
+    "removeBoardOnlyBody": "{name} nebesirodo darbų lentoje ir jo nebegalima priskirti darbams. Jau užfiksuotas darbas ir pažymėtos valandos lieka lygiai tokie patys.",
+    "removeBoardOnlyDone": "{name} pašalintas iš lentos",
+    "noRole": "Nėra rolės",
+    "worksOnJobs": "Dirba su automobiliais",
+    "createDefaultRoles": "Sukurti standartines roles",
+    "defaultRolesCreated": "Standartinės rolės sukurtos",
+    "noRolesYet": "Šios dirbtuvės dar neturi rolių, todėl, be administratoriaus, nėra ko suteikti. Sukurkite standartines ir teises patikslinkite vėliau.",
+    "noRoleDescription": "Jokių teisių. Gali prisijungti, bet kiekvienas ekranas jį atmes, kol nesuteiksite rolės žemiau.",
+    "cannotUseApp": "Jo rolė neleidžia dirbti su užsakymais. Pirma suteikite meistro rolę arba rolę su tomis pačiomis teisėmis.",
+    "revokeTechnicianDone": "{name} atjungtas nuo programėlės"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

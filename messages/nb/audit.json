@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Oppdaterte WhatsApp-innstillinger",
     "settings_whatsappDisconnected": "Koblet fra WhatsApp",
     "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer",
-    "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto"
+    "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto",
+    "team_createDefaultRoles": "Opprettet standardrollene"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",

@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Everything already recorded against them stays where it is.",
     "giveAppSubmit": "Create their account",
     "role": "Role",
-    "inviteMemberHint": "They get an email and choose their own password."
+    "inviteMemberHint": "They get an email and choose their own password.",
+    "removeBoardOnlyTitle": "Take {name} off the board?",
+    "removeBoardOnlyBody": "{name} stops appearing on the work board and can no longer be put on jobs. Work already recorded against them, and the hours they clocked, stay exactly as they are.",
+    "removeBoardOnlyDone": "{name} is off the board",
+    "noRole": "No role",
+    "worksOnJobs": "Works on jobs",
+    "createDefaultRoles": "Create the standard roles",
+    "defaultRolesCreated": "Standard roles created",
+    "noRolesYet": "This workshop has no roles yet, so there is nothing to give them beyond Admin. Create the standard ones and narrow the permissions later.",
+    "noRoleDescription": "No permissions at all. They can sign in and every screen will refuse them until you give them a role below.",
+    "cannotUseApp": "Their role cannot work on jobs. Give them Technician, or a role with the same permissions, first.",
+    "revokeTechnicianDone": "{name} has been signed out of the app"
   },
   "invoice": {
     "title": "Invoice & Quotes",

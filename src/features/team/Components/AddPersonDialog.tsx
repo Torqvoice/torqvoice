@@ -40,6 +40,9 @@ import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
 import { TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { createDefaultRoles } from '@/features/team/Actions/createDefaultRoles'
 import { CountryPicker } from './CountryPicker'
 import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
@@ -148,7 +151,15 @@ export function AddPersonDialog({
   }, [open, fetched, dialCodeProp, rolesProp])
 
   const dialCode = dialCodeProp ?? fetched?.dialCode ?? ''
+  const router = useRouter()
   const roles = rolesProp ?? fetched?.roles ?? []
+  /**
+   * The roles this step may offer.
+   *
+   * Technicians are added through the other door, so offering their role here
+   * is a path to an account with app permissions and no phone to use them on.
+   */
+  const deskRoles = roles.filter((r) => r.name !== TECHNICIAN_ROLE_NAME)
   // Configured address first; the current origin is right in production and
   // is localhost in development, which a technician's phone cannot reach.
   const workshopUrl =
@@ -565,24 +576,44 @@ export function AddPersonDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">{t('team.admin')}</SelectItem>
-                  <SelectItem value="member">{t('team.member')}</SelectItem>
-                  {roles.length > 0 && (
-                    <>
-                      <SelectSeparator />
-                      {roles
-                        // Technicians are added through the other door, so
-                        // offering their role here is a path to an account
-                        // with app permissions and no phone to use them on.
-                        .filter((r) => r.name !== TECHNICIAN_ROLE_NAME)
-                        .map((r) => (
-                          <SelectItem key={r.id} value={r.id}>
-                            {r.name}
-                          </SelectItem>
-                        ))}
-                    </>
-                  )}
+                  {deskRoles.map((r) => (
+                    <SelectItem key={r.id} value={r.id}>
+                      {r.name}
+                    </SelectItem>
+                  ))}
+                  <SelectSeparator />
+                  <SelectItem value="none">{t('team.noRole')}</SelectItem>
                 </SelectContent>
               </Select>
+              {/* A workshop with no roles has nothing to give this person
+                  beyond Admin, and an invite that grants nothing is a person
+                  who signs in and finds every screen refuses them. Offer the
+                  standard desk role rather than sending them off to build one
+                  before they can finish adding somebody. */}
+              {deskRoles.length === 0 && (
+                <div className="rounded-md border border-dashed p-3 text-xs">
+                  <p className="text-muted-foreground">{t('team.noRolesYet')}</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    disabled={busy}
+                    onClick={async () => {
+                      setBusy(true)
+                      const result = await createDefaultRoles()
+                      setBusy(false)
+                      if (result.success) {
+                        toast.success(t('team.defaultRolesCreated'))
+                        onChanged?.()
+                        router.refresh()
+                      }
+                    }}
+                  >
+                    {t('team.createDefaultRoles')}
+                  </Button>
+                </div>
+              )}
               {/* Which of the two they should pick, in one line, without the
                   word "permissions". */}
               <p className="text-muted-foreground text-xs">{t('team.roleHint')}</p>

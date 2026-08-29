@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Tutto ciò che è già registrato a suo nome resta dov’è.",
     "giveAppSubmit": "Crea il suo account",
     "role": "Ruolo",
-    "inviteMemberHint": "Riceve un’email e sceglie la propria password."
+    "inviteMemberHint": "Riceve un’email e sceglie la propria password.",
+    "removeBoardOnlyTitle": "Togliere {name} dalla lavagna?",
+    "removeBoardOnlyBody": "{name} non compare più sulla lavagna e non può più essere assegnato ai lavori. Il lavoro già registrato e le ore timbrate restano esattamente come sono.",
+    "removeBoardOnlyDone": "{name} è fuori dalla lavagna",
+    "noRole": "Nessun ruolo",
+    "worksOnJobs": "Lavora sui veicoli",
+    "createDefaultRoles": "Crea i ruoli standard",
+    "defaultRolesCreated": "Ruoli standard creati",
+    "noRolesYet": "Questa officina non ha ancora ruoli, quindi non c’è nulla da assegnare oltre ad Admin. Crea quelli standard e restringi i permessi dopo.",
+    "noRoleDescription": "Nessun permesso. Può accedere, ma ogni schermata lo rifiuta finché non gli assegni un ruolo qui sotto.",
+    "cannotUseApp": "Il suo ruolo non può lavorare sui lavori. Assegnagli prima Tecnico, o un ruolo con gli stessi permessi.",
+    "revokeTechnicianDone": "{name} è stato disconnesso dall’app"
   },
   "invoice": {
     "title": "Layout fattura",

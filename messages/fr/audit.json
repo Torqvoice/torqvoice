@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Paramètres WhatsApp mis à jour",
     "settings_whatsappDisconnected": "WhatsApp déconnecté",
     "settings_whatsappNumberRegistered": "Numéro WhatsApp enregistré",
-    "team_giveTechnicianTheApp": "Compte donné à un technicien du tableau"
+    "team_giveTechnicianTheApp": "Compte donné à un technicien du tableau",
+    "team_createDefaultRoles": "Rôles standard créés"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",

@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Atnaujinti „WhatsApp“ nustatymai",
     "settings_whatsappDisconnected": "Atjungtas „WhatsApp“",
     "settings_whatsappNumberRegistered": "Užregistruotas „WhatsApp“ numeris",
-    "team_giveTechnicianTheApp": "Lentos technikui suteikta paskyra"
+    "team_giveTechnicianTheApp": "Lentos technikui suteikta paskyra",
+    "team_createDefaultRoles": "Sukurtos standartinės rolės"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
