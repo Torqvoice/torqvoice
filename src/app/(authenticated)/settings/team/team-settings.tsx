@@ -27,7 +27,7 @@ import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
-import { AddTechnicianCard } from '@/features/team/Components/AddTechnicianCard'
+import { AddTechnicianForm } from '@/features/team/Components/AddTechnicianForm'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
@@ -559,17 +559,17 @@ export function TeamSettings({
             </Button>
           </form>
         )}
-      </AppCard>
 
-      {isAdmin && (
-        <AddTechnicianCard
-          onCreated={(tech) => {
-            setTechnicians((prev) => new Set(prev).add(tech.userId))
-            setSettingUp({ userId: tech.userId, name: tech.name })
-            router.refresh()
-          }}
-        />
-      )}
+        {isAdmin && (
+          <AddTechnicianForm
+            onCreated={(tech) => {
+              setTechnicians((prev) => new Set(prev).add(tech.userId))
+              setSettingUp({ userId: tech.userId, name: tech.name })
+              router.refresh()
+            }}
+          />
+        )}
+      </AppCard>
 
       {/* Pending Invitations Card */}
       {isAdmin && pendingInvitations.length > 0 && (

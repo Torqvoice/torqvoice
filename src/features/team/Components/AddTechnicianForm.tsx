@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Loader2, Plus, Wrench } from 'lucide-react'
-import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,6 +11,11 @@ import { createTechnicianAccount } from '@/features/team/Actions/createTechnicia
 
 /**
  * Adding a mechanic, at the counter, while they stand there.
+ *
+ * Sits inside the members card under the email invite, because both answer the
+ * same question and putting them in separate cards made them look like
+ * separate decisions. They are two doors into one room: the invite for the
+ * office, this for somebody holding a spanner.
  *
  * The invite form above this one is for the office: it sends an email, waits
  * for someone to accept, and only then can they be made a technician. That is
@@ -23,7 +27,7 @@ import { createTechnicianAccount } from '@/features/team/Actions/createTechnicia
  * exists immediately, and the code to put it on their phone comes up the
  * moment it does, because the person it is for is standing right there.
  */
-export function AddTechnicianCard({
+export function AddTechnicianForm({
   onCreated,
 }: {
   /** Hands the new technician straight to the setup-code dialog. */
@@ -57,16 +61,15 @@ export function AddTechnicianCard({
   }
 
   return (
-    <AppCard
-      title={
-        <span className="flex items-center gap-2">
+    <div className="space-y-3 border-t pt-4">
+      <div>
+        <p className="flex items-center gap-2 font-medium text-sm">
           <Wrench className="h-4 w-4" />
           {t('team.addTechnician')}
-        </span>
-      }
-      description={t('team.addTechnicianHint')}
-      contentClassName="space-y-4"
-    >
+        </p>
+        <p className="text-muted-foreground text-xs">{t('team.addTechnicianHint')}</p>
+      </div>
+
       <form onSubmit={submit} className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1 space-y-2">
           <Label htmlFor="tech-name">{t('team.technicianName')}</Label>
@@ -103,6 +106,6 @@ export function AddTechnicianCard({
       </form>
 
       <p className="text-muted-foreground text-xs">{t('team.addTechnicianNote')}</p>
-    </AppCard>
+    </div>
   )
 }
