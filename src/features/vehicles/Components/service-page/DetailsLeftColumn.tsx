@@ -85,44 +85,62 @@ export function DetailsLeftColumn({
     return counts
   }, {})
 
+  const concerns = (
+    <ConcernsSection
+      concerns={formState.concerns}
+      setConcerns={formState.setConcerns}
+      onChange={formState.markDirty}
+      answeredCounts={answeredCounts}
+    />
+  )
+
+  // No set on this job yet. The tires that came off the car are standing in the
+  // corner while the desk writes it up, so the offer to store them belongs here
+  // rather than three screens away.
+  const storeTires =
+    !tireSet && tireHotelEnabled && record.vehicle ? (
+      <StoreTiresButton
+        serviceRecordId={record.id}
+        vehicle={{
+          id: record.vehicle.id,
+          make: record.vehicle.make,
+          model: record.vehicle.model,
+          year: record.vehicle.year,
+          licensePlate: record.vehicle.licensePlate ?? null,
+          customerId: record.customer?.id ?? null,
+        }}
+        imperial={unitSystem === 'imperial'}
+        thresholds={tireThresholds}
+      />
+    ) : null
+
+  // Two short things, one line. Stacked, an empty concerns prompt and a lone
+  // Store tires button read as two abandoned rows above the parts; side by
+  // side they read as the toolbar they actually are. Once somebody types a
+  // concern the block needs the full width, so it gets its own row back.
+  const pairable = formState.concerns.length === 0
+
   return (
     <div className="space-y-3">
       {/* First thing on the job, above the work itself: why the car is here,
-          in the customer's words. */}
-      <ConcernsSection
-        concerns={formState.concerns}
-        setConcerns={formState.setConcerns}
-        onChange={formState.markDirty}
-        answeredCounts={answeredCounts}
-      />
-
-      {/* Above the parts, inside the working column: the tires are the first
-          thing this job needs and the last thing the invoice sidebar cares
-          about, so it belongs here rather than spanning both. */}
-      {tireSet ? (
-        <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />
+          in the customer's words. Above the parts, inside the working column:
+          the tires are the first thing this job needs and the last thing the
+          invoice sidebar cares about, so they belong here rather than spanning
+          both columns. */}
+      {pairable ? (
+        <div className="flex items-center justify-between gap-2">
+          {concerns}
+          {storeTires}
+        </div>
       ) : (
-        // No set on this job yet. The tires that came off the car are standing
-        // in the corner while the desk writes it up, so the offer to store
-        // them belongs here rather than three screens away.
-        tireHotelEnabled &&
-        record.vehicle && (
-          <div className="flex justify-end">
-            <StoreTiresButton
-              serviceRecordId={record.id}
-              vehicle={{
-                id: record.vehicle.id,
-                make: record.vehicle.make,
-                model: record.vehicle.model,
-                year: record.vehicle.year,
-                licensePlate: record.vehicle.licensePlate ?? null,
-                customerId: record.customer?.id ?? null,
-              }}
-              imperial={unitSystem === 'imperial'}
-              thresholds={tireThresholds}
-            />
-          </div>
-        )
+        <>
+          {concerns}
+          {storeTires && <div className="flex justify-end">{storeTires}</div>}
+        </>
+      )}
+
+      {tireSet && (
+        <TireSetBanner set={tireSet} serviceRecordId={record.id} thresholds={tireThresholds} />
       )}
 
       <PartsEditor
