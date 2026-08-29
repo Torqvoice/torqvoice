@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Zaktualizowano ustawienia WhatsApp",
     "settings_whatsappDisconnected": "Odłączono WhatsApp",
     "settings_whatsappNumberRegistered": "Zarejestrowano numer WhatsApp",
-    "team_giveTechnicianTheApp": "Nadano konto technikowi z tablicy"
+    "team_giveTechnicianTheApp": "Nadano konto technikowi z tablicy",
+    "team_createDefaultRoles": "Utworzono role standardowe"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",

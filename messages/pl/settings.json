@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Wszystko, co już zapisano na tę osobę, zostaje.",
     "giveAppSubmit": "Utwórz konto",
     "role": "Rola",
-    "inviteMemberHint": "Otrzyma e-mail i sam wybierze hasło."
+    "inviteMemberHint": "Otrzyma e-mail i sam wybierze hasło.",
+    "removeBoardOnlyTitle": "Zdjąć {name} z tablicy?",
+    "removeBoardOnlyBody": "{name} przestaje pojawiać się na tablicy i nie można go przypisywać do zleceń. Zapisana już praca i zarejestrowane godziny pozostają bez zmian.",
+    "removeBoardOnlyDone": "{name} zdjęty z tablicy",
+    "noRole": "Brak roli",
+    "worksOnJobs": "Pracuje przy autach",
+    "createDefaultRoles": "Utwórz role standardowe",
+    "defaultRolesCreated": "Utworzono role standardowe",
+    "noRolesYet": "Ten warsztat nie ma jeszcze żadnych ról, więc poza Adminem nie ma czego przydzielić. Utwórz standardowe i dopracuj uprawnienia później.",
+    "noRoleDescription": "Brak jakichkolwiek uprawnień. Może się zalogować, ale każdy ekran go odrzuci, dopóki nie nadasz mu roli poniżej.",
+    "cannotUseApp": "Ta rola nie może pracować przy zleceniach. Nadaj najpierw rolę Technik lub inną z tymi samymi uprawnieniami.",
+    "revokeTechnicianDone": "{name} został wylogowany z aplikacji"
   },
   "invoice": {
     "title": "Układ faktury",

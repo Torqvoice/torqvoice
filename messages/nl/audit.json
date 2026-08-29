@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "WhatsApp-instellingen bijgewerkt",
     "settings_whatsappDisconnected": "WhatsApp losgekoppeld",
     "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd",
-    "team_giveTechnicianTheApp": "Bordmonteur een account gegeven"
+    "team_giveTechnicianTheApp": "Bordmonteur een account gegeven",
+    "team_createDefaultRoles": "Standaardrollen aangemaakt"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",

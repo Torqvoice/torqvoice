@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Alt som allerede er ført på dem blir stående.",
     "giveAppSubmit": "Opprett kontoen",
     "role": "Rolle",
-    "inviteMemberHint": "Personen får en e-post og velger sitt eget passord."
+    "inviteMemberHint": "Personen får en e-post og velger sitt eget passord.",
+    "removeBoardOnlyTitle": "Ta {name} av tavlen?",
+    "removeBoardOnlyBody": "{name} vises ikke lenger på arbeidstavlen og kan ikke settes på jobber. Arbeid som allerede er registrert på dem, og timene de har stemplet, blir stående nøyaktig som de er.",
+    "removeBoardOnlyDone": "{name} er tatt av tavlen",
+    "noRole": "Ingen rolle",
+    "worksOnJobs": "Jobber på biler",
+    "createDefaultRoles": "Opprett standardrollene",
+    "defaultRolesCreated": "Standardroller opprettet",
+    "noRolesYet": "Dette verkstedet har ingen roller ennå, så det finnes ingenting å gi dem utover Admin. Opprett standardrollene og juster tillatelsene senere.",
+    "noRoleDescription": "Ingen tillatelser i det hele tatt. De kan logge inn, men hver skjerm avviser dem til du gir dem en rolle nedenfor.",
+    "cannotUseApp": "Rollen deres kan ikke jobbe på jobber. Gi dem Tekniker, eller en rolle med de samme tillatelsene, først.",
+    "revokeTechnicianDone": "{name} er logget ut av appen"
   },
   "invoice": {
     "title": "Faktura og tilbud",

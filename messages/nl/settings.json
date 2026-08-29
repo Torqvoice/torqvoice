@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Alles wat al op hen staat blijft staan.",
     "giveAppSubmit": "Account aanmaken",
     "role": "Rol",
-    "inviteMemberHint": "Deze persoon krijgt een e-mail en kiest zelf een wachtwoord."
+    "inviteMemberHint": "Deze persoon krijgt een e-mail en kiest zelf een wachtwoord.",
+    "removeBoardOnlyTitle": "{name} van het bord halen?",
+    "removeBoardOnlyBody": "{name} verschijnt niet meer op het planbord en kan niet meer op klussen worden gezet. Al vastgelegd werk en geklokte uren blijven precies zoals ze zijn.",
+    "removeBoardOnlyDone": "{name} staat niet meer op het bord",
+    "noRole": "Geen rol",
+    "worksOnJobs": "Werkt aan klussen",
+    "createDefaultRoles": "Standaardrollen aanmaken",
+    "defaultRolesCreated": "Standaardrollen aangemaakt",
+    "noRolesYet": "Deze werkplaats heeft nog geen rollen, dus er valt niets te geven behalve Admin. Maak de standaardrollen aan en verfijn de rechten later.",
+    "noRoleDescription": "Geen rechten. Ze kunnen inloggen, maar elk scherm weigert ze tot u hieronder een rol toekent.",
+    "cannotUseApp": "Hun rol kan niet aan klussen werken. Geef ze eerst Monteur, of een rol met dezelfde rechten.",
+    "revokeTechnicianDone": "{name} is uitgelogd uit de app"
   },
   "invoice": {
     "title": "Factuurindeling",

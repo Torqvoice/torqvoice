@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Configurações do WhatsApp atualizadas",
     "settings_whatsappDisconnected": "WhatsApp desconectado",
     "settings_whatsappNumberRegistered": "Número do WhatsApp registrado",
-    "team_giveTechnicianTheApp": "Conta dada a um técnico só do quadro"
+    "team_giveTechnicianTheApp": "Conta dada a um técnico só do quadro",
+    "team_createDefaultRoles": "Funções padrão criadas"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",

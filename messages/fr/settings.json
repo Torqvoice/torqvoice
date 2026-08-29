@@ -482,7 +482,18 @@
     "giveAppKeepsHistory": "Tout ce qui lui est déjà attribué reste en place.",
     "giveAppSubmit": "Créer son compte",
     "role": "Rôle",
-    "inviteMemberHint": "La personne reçoit un e-mail et choisit son propre mot de passe."
+    "inviteMemberHint": "La personne reçoit un e-mail et choisit son propre mot de passe.",
+    "removeBoardOnlyTitle": "Retirer {name} du planning ?",
+    "removeBoardOnlyBody": "{name} n’apparaît plus sur le planning et ne peut plus être affecté à des travaux. Le travail déjà enregistré et les heures pointées restent exactement tels quels.",
+    "removeBoardOnlyDone": "{name} est retiré du planning",
+    "noRole": "Aucun rôle",
+    "worksOnJobs": "Travaille sur les véhicules",
+    "createDefaultRoles": "Créer les rôles standard",
+    "defaultRolesCreated": "Rôles standard créés",
+    "noRolesYet": "Cet atelier n’a encore aucun rôle, il n’y a donc rien à leur donner en dehors d’Admin. Créez les rôles standard et affinez les permissions plus tard.",
+    "noRoleDescription": "Aucune permission. La personne peut se connecter, mais chaque écran la refusera tant que vous ne lui aurez pas donné un rôle ci-dessous.",
+    "cannotUseApp": "Son rôle ne permet pas de travailler sur les travaux. Donnez-lui d’abord Technicien, ou un rôle ayant les mêmes permissions.",
+    "revokeTechnicianDone": "{name} a été déconnecté de l’application"
   },
   "invoice": {
     "title": "Mise en page de facture",

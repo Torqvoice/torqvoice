@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
   Select,
   SelectContent,
@@ -26,11 +27,19 @@ import { createRole } from '@/features/team/Actions/createRole'
 import { updateRole } from '@/features/team/Actions/updateRole'
 import { deleteRole } from '@/features/team/Actions/deleteRole'
 import { assignRole } from '@/features/team/Actions/assignRole'
+import { setMemberTechnician } from '@/features/team/Actions/setMemberTechnician'
+import { createDefaultRoles } from '@/features/team/Actions/createDefaultRoles'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
-import { contactFor, TECHNICIAN_ROLE_NAME } from '@/features/team/Lib/technicianRole'
+import {
+  contactFor,
+  MEMBER_ROLE_NAME,
+  TECHNICIAN_PERMISSIONS,
+  TECHNICIAN_ROLE_NAME,
+} from '@/features/team/Lib/technicianRole'
 import { AppSetupCodeDialog } from '@/features/team/Components/AppSetupCodeDialog'
 import { GiveAppDialog } from '@/features/team/Components/GiveAppDialog'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
+import { deleteTechnician } from '@/features/workboard/Actions/technicianActions'
 import { permissionGroups, PermissionAction } from '@/lib/permissions'
 
 /**
@@ -52,6 +61,7 @@ import {
   Copy,
   Crown,
   Loader2,
+  LogOut,
   Mail,
   Pencil,
   Plus,
@@ -157,6 +167,18 @@ export function TeamSettings({
   const technicians = useMemo(() => new Set(technicianUserIds), [technicianUserIds])
   /** The workshop's technician role, if it has one yet. */
   const technicianRoleId = roles.find((r) => r.name === TECHNICIAN_ROLE_NAME)?.id ?? null
+  /**
+   * Whether a member holds the technician role.
+   *
+   * The null check is the whole point. A workshop that has never added a
+   * technician has no technician role, so `technicianRoleId` is null, and an
+   * ordinary member with no custom role has a null `roleId` too. Comparing the
+   * two directly made `null === null` true, so every plain member rendered as
+   * Technician, and setting them back to Member wrote the null that was
+   * already there: the save succeeded and the dropdown never moved.
+   */
+  const isTechnicianRole = (roleId: string | null | undefined) =>
+    technicianRoleId !== null && roleId === technicianRoleId
   /** The member whose app is being set up, and their name for the copy. */
   const [settingUp, setSettingUp] = useState<{ userId: string; name: string } | null>(null)
   const [adding, setAdding] = useState(startAdding)
@@ -263,33 +285,29 @@ export function TeamSettings({
     }
   }
 
-  const handleAssignRole = async (memberId: string, value: string, member?: Member) => {
-    let role: 'admin' | 'member' | 'technician'
+  /**
+   * Changes what somebody may do. Never what they work on.
+   *
+   * This used to revoke the technician app as a side effect of a role change,
+   * behind a confirmation, because role and board membership were the same
+   * decision. They are two now: the switch beside the dropdown owns the board,
+   * and it carries that confirmation.
+   */
+  const handleAssignRole = async (memberId: string, value: string) => {
+    let role: 'admin' | 'member'
     let roleId: string | null
 
-    if (value === 'admin' || value === 'member' || value === 'technician') {
-      role = value
+    if (value === 'admin') {
+      role = 'admin'
+      roleId = null
+    } else if (value === 'none') {
+      // A real state, and the one that refuses every screen, so it is offered
+      // by name rather than reached by accident.
+      role = 'member'
       roleId = null
     } else {
-      // Custom role ID
       role = 'member'
       roleId = value
-    }
-
-    // Moving somebody off Technician takes their phone with them, which is not
-    // something to discover from a dropdown.
-    const wasTechnician = member ? technicians.has(member.user.id) : false
-    if (wasTechnician && value !== 'technician') {
-      const ok = await confirm({
-        title: t('team.revokeTechnicianTitle'),
-        description: t('team.revokeTechnicianBody', {
-          name: member?.user.name || member?.user.email || '',
-        }),
-        confirmLabel: t('team.revokeTechnicianConfirm'),
-        destructive: true,
-      })
-      if (!ok) return
-      if (member) await removeTechnicianAccess({ userId: member.user.id })
     }
 
     const result = await assignRole({ memberId, role, roleId })
@@ -299,6 +317,93 @@ export function TeamSettings({
     } else {
       modal.open('error', 'Error', result.error || t('team.failedAssignRole'))
     }
+  }
+
+  /**
+   * Whether this person's role can actually work a job from the phone.
+   *
+   * The app enforces the same permissions as the web, so an account whose role
+   * does not carry them signs in and is refused by every screen. Answering the
+   * question here means the button can say so instead of handing somebody a
+   * setup code that leads nowhere.
+   */
+  const canUseApp = (member: Member) => {
+    if (member.role === 'owner' || member.role === 'admin') return true
+    const role = roles.find((r) => r.id === member.roleId)
+    if (!role) return false
+    if (role.isAdmin) return true
+    return TECHNICIAN_PERMISSIONS.every((needed) =>
+      role.permissions.some((p) => p.action === needed.action && p.subject === needed.subject)
+    )
+  }
+
+  /**
+   * Puts the app on somebody's phone.
+   *
+   * Being on the board is part of having the app rather than a separate
+   * switch beside it: the API refuses anybody without a technician record, so
+   * a code issued to somebody who has none is a code that cannot be redeemed.
+   * This makes the record first if it is missing, then hands over the code.
+   */
+  const handleSetUpApp = async (member: Member) => {
+    if (!technicians.has(member.user.id)) {
+      const result = await setMemberTechnician({ userId: member.user.id, enabled: true })
+      if (!result.success) {
+        modal.open('error', 'Error', result.error || t('team.technicianFailed'))
+        return
+      }
+      router.refresh()
+    }
+    setSettingUp({ userId: member.user.id, name: member.user.name || member.user.email })
+  }
+
+  /**
+   * Takes the app back off somebody's phone, and them off the board.
+   *
+   * Deactivates rather than deletes: past jobs, inspections and clocked hours
+   * all point at the technician record, and removing it would rewrite history
+   * to say nobody did the work.
+   */
+  const handleRevokeApp = async (member: Member) => {
+    const ok = await confirm({
+      title: t('team.revokeTechnicianTitle'),
+      description: t('team.revokeTechnicianBody', {
+        name: member.user.name || member.user.email,
+      }),
+      confirmLabel: t('team.revokeTechnicianConfirm'),
+      destructive: true,
+    })
+    if (!ok) return
+
+    await removeTechnicianAccess({ userId: member.user.id })
+    const result = await setMemberTechnician({ userId: member.user.id, enabled: false })
+    if (result.success) {
+      toast.success(t('team.revokeTechnicianDone', { name: member.user.name || member.user.email }))
+      router.refresh()
+    } else {
+      modal.open('error', 'Error', result.error || t('team.technicianFailed'))
+    }
+  }
+
+  /**
+   * True while the workshop is missing one of the two roles nearly every
+   * workshop wants. Nothing is created automatically: an install that has
+   * carefully narrowed its own roles should not find two more appearing.
+   */
+  const missingDefaultRoles =
+    !roles.some((r) => r.name === MEMBER_ROLE_NAME) ||
+    !roles.some((r) => r.name === TECHNICIAN_ROLE_NAME)
+
+  const handleCreateDefaultRoles = async () => {
+    setLoading(true)
+    const result = await createDefaultRoles()
+    if (result.success) {
+      toast.success(t('team.defaultRolesCreated'))
+      router.refresh()
+    } else {
+      modal.open('error', 'Error', result.error || t('team.failedSaveRole'))
+    }
+    setLoading(false)
   }
 
   const handleCreateOrg = async () => {
@@ -342,6 +447,32 @@ export function TeamSettings({
     const result = await removeMember(member.id)
     if (result.success) {
       toast.success(t('team.memberRemoved'))
+      router.refresh()
+    } else {
+      modal.open('error', 'Error', result.error || t('team.failedRemoveMember'))
+    }
+  }
+
+  /**
+   * Takes a board-only technician off the board.
+   *
+   * The same action the work board uses, rather than a second path: it
+   * deactivates rather than deletes, because TimeEntry cascades from
+   * Technician and a hard delete would take every hour they ever clocked.
+   * Adding somebody happens here, so removing them should too, instead of
+   * sending people to a scheduling screen to finish the job.
+   */
+  const handleRemoveStandalone = async (tech: { id: string; name: string }) => {
+    const ok = await confirm({
+      title: t('team.removeBoardOnlyTitle', { name: tech.name }),
+      description: t('team.removeBoardOnlyBody', { name: tech.name }),
+      confirmLabel: t('team.removeButton'),
+      destructive: true,
+    })
+    if (!ok) return
+    const result = await deleteTechnician(tech.id)
+    if (result.success) {
+      toast.success(t('team.removeBoardOnlyDone', { name: tech.name }))
       router.refresh()
     } else {
       modal.open('error', 'Error', result.error || t('team.failedRemoveMember'))
@@ -422,79 +553,91 @@ export function TeamSettings({
                 <p className="truncate text-xs text-muted-foreground">{contactFor(member.user)}</p>
               </div>
               <div className="flex items-center gap-2">
-                {technicians.has(member.user.id) && member.roleId !== technicianRoleId && (
+                {technicians.has(member.user.id) && (
                   <Badge variant="outline" className="text-xs">
                     <Wrench className="mr-1 h-3 w-3" />
-                    {t('team.technician')}
+                    {t('team.worksOnJobs')}
                   </Badge>
                 )}
-                {isAdmin && technicians.has(member.user.id) && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    onClick={() =>
-                      setSettingUp({
-                        userId: member.user.id,
-                        name: member.user.name || member.user.email,
-                      })
-                    }
-                    aria-label={t('team.setupApp')}
-                    title={t('team.setupApp')}
-                  >
-                    <Smartphone className="h-4 w-4" />
-                  </Button>
+                {/* The way back off. Setting somebody up and signing them out
+                    are both one click, and neither hides inside the other. */}
+                {isAdmin && member.role !== 'owner' && technicians.has(member.user.id) && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleRevokeApp(member)}
+                        aria-label={t('team.revokeTechnicianTitle')}
+                      >
+                        <LogOut className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t('team.revokeTechnicianTitle')}</TooltipContent>
+                  </Tooltip>
+                )}
+                {isAdmin && member.role !== 'owner' && (
+                  /* Shown for everybody, because "can this person have the
+                     app" is a question about their role, and hiding the
+                     button left no way to find out the answer. Disabled with
+                     the reason rather than absent. */
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                          disabled={!canUseApp(member)}
+                          onClick={() => handleSetUpApp(member)}
+                          aria-label={t('team.setupApp')}
+                        >
+                          <Smartphone className="h-4 w-4" />
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {canUseApp(member) ? t('team.setupApp') : t('team.cannotUseApp')}
+                    </TooltipContent>
+                  </Tooltip>
                 )}
                 {isOwner && member.role !== 'owner' ? (
                   <Select
                     value={
-                      // Read from the role they hold, not from whether they
-                      // are on the board.
-                      //
-                      // An install that predates this has technicians holding
-                      // all sorts of roles. Showing Technician for them would
-                      // both misreport what they can do and overwrite it the
-                      // moment anybody touched the field. Their real role shows
-                      // here; the badge beside it says they are also on the
-                      // board.
-                      member.roleId === technicianRoleId
-                        ? 'technician'
-                        : // Never a value with no option behind it, or the
-                          // trigger renders empty and the member looks
-                          // roleless when they are not.
-                          roles.some(
-                              (r) => r.id === member.roleId && r.name !== TECHNICIAN_ROLE_NAME
-                            )
+                      /**
+                       * Only ever a value the list actually offers.
+                       *
+                       * The list used to mix Better Auth's membership tiers
+                       * with this product's roles, so "Member" sat beside real
+                       * permission sets while granting nothing at all. Now it
+                       * offers Admin, every role the workshop has, and an
+                       * explicit "No role" for somebody who genuinely has
+                       * none, which is a state that has to be nameable
+                       * because it is the one that refuses every screen.
+                       */
+                      member.role === 'admin'
+                        ? 'admin'
+                        : roles.some((r) => r.id === member.roleId)
                           ? (member.roleId as string)
-                          : member.role
+                          : 'none'
                     }
-                    onValueChange={(v) => handleAssignRole(member.id, v, member)}
+                    onValueChange={(v) => handleAssignRole(member.id, v)}
                   >
-                    <SelectTrigger className="h-8 w-36 text-xs">
+                    <SelectTrigger className="h-8 w-40 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      {/* A real tier: it short-circuits every permission
+                          check, so it grants something on its own. */}
                       <SelectItem value="admin">{t('team.admin')}</SelectItem>
-                      <SelectItem value="member">{t('team.member')}</SelectItem>
-                      {/* One answer to one question. Choosing this puts them on
-                          the work board and gives them what the app needs;
-                          choosing anything else takes both away. */}
-                      <SelectItem value="technician">{t('team.technician')}</SelectItem>
-                      {roles.length > 0 && (
-                        <>
-                          <SelectSeparator />
-                          {roles
-                            // The technician permissions are what the dropdown
-                            // entry above grants, so offering the role again
-                            // underneath is the same choice listed twice.
-                            .filter((r) => r.name !== TECHNICIAN_ROLE_NAME)
-                            .map((r) => (
-                              <SelectItem key={r.id} value={r.id}>
-                                {r.name}
-                              </SelectItem>
-                            ))}
-                        </>
-                      )}
+                      {roles.map((r) => (
+                        <SelectItem key={r.id} value={r.id}>
+                          {r.name}
+                        </SelectItem>
+                      ))}
+                      <SelectSeparator />
+                      <SelectItem value="none">{t('team.noRole')}</SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (
@@ -540,14 +683,25 @@ export function TeamSettings({
                   </p>
                 </div>
                 {isAdmin && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setGivingApp({ id: tech.id, name: tech.name })}
-                  >
-                    <Smartphone className="mr-1 h-4 w-4" />
-                    {t('team.giveApp')}
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setGivingApp({ id: tech.id, name: tech.name })}
+                    >
+                      <Smartphone className="mr-1 h-4 w-4" />
+                      {t('team.giveApp')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={t('team.removeButton')}
+                      className="text-muted-foreground hover:text-destructive"
+                      onClick={() => handleRemoveStandalone(tech)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </>
                 )}
               </div>
             ))}
@@ -629,10 +783,25 @@ export function TeamSettings({
           title={t('team.customRoles')}
           action={
             !showRoleForm && (
-              <Button size="sm" variant="outline" onClick={() => openRoleForm()}>
-                <Plus className="mr-1 h-4 w-4" />
-                {t('team.newRole')}
-              </Button>
+              <div className="flex gap-2">
+                {/* Only while one of them is missing. A workshop that has both,
+                    or has renamed them, is left alone. */}
+                {missingDefaultRoles && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCreateDefaultRoles}
+                    disabled={loading}
+                  >
+                    <ShieldCheck className="mr-1 h-4 w-4" />
+                    {t('team.createDefaultRoles')}
+                  </Button>
+                )}
+                <Button size="sm" variant="outline" onClick={() => openRoleForm()}>
+                  <Plus className="mr-1 h-4 w-4" />
+                  {t('team.newRole')}
+                </Button>
+              </div>
             )
           }
           contentClassName="space-y-4"
@@ -843,11 +1012,14 @@ export function TeamSettings({
             </Badge>
             <span className="text-muted-foreground">{t('team.adminDescription')}</span>
           </div>
+          {/* Not "Member". That was Better Auth's membership tier listed as
+              though it were a role, while granting nothing at all. What it
+              actually describes is the absence of a role, so it says so. */}
           <div className="flex items-center gap-3">
             <Badge variant="outline" className={`${roleColors.member}`}>
-              <User className="mr-1 h-3 w-3" /> {t('team.memberLabel')}
+              <User className="mr-1 h-3 w-3" /> {t('team.noRole')}
             </Badge>
-            <span className="text-muted-foreground">{t('team.memberDescription')}</span>
+            <span className="text-muted-foreground">{t('team.noRoleDescription')}</span>
           </div>
         </div>
       </AppCard>

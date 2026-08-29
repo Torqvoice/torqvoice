@@ -149,7 +149,8 @@
     "settings_whatsappUpdated": "Impostazioni WhatsApp aggiornate",
     "settings_whatsappDisconnected": "WhatsApp disconnesso",
     "settings_whatsappNumberRegistered": "Numero WhatsApp registrato",
-    "team_giveTechnicianTheApp": "Account dato a un tecnico solo da lavagna"
+    "team_giveTechnicianTheApp": "Account dato a un tecnico solo da lavagna",
+    "team_createDefaultRoles": "Ruoli standard creati"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
