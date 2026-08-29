@@ -465,7 +465,14 @@
     "phonePreview": "Enregistré comme",
     "stepScannedTitle": "{name} est connecté",
     "countrySearch": "Rechercher un pays",
-    "countryNoMatch": "Aucun pays ne correspond"
+    "countryNoMatch": "Aucun pays ne correspond",
+    "choiceStandalone": "Un nom pour le tableau seulement",
+    "choiceStandaloneHint": "Un apprenti, un sous-traitant, toute personne que vous planifiez mais qui ne se connecte jamais. Ni téléphone, ni e-mail, ni compte. Vous pourrez lui en donner un plus tard.",
+    "standaloneDetailsTitle": "Son nom, et une couleur",
+    "standaloneDetailsBlurb": "C'est tout ce qu'il obtient, et tout ce qu'il lui faut. Il apparaît sur le tableau et sur les travaux, et n'a rien où se connecter.",
+    "boardColour": "Couleur sur le tableau",
+    "stepStandaloneTitle": "{name} est sur le tableau",
+    "stepStandaloneBody": "Vous pouvez le planifier et l'affecter à des travaux tout de suite. S'il lui faut un jour l'application, ajoutez-lui un numéro de mobile depuis cette liste."
   },
   "invoice": {
     "title": "Mise en page de facture",

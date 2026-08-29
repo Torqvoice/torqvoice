@@ -465,7 +465,14 @@
     "phonePreview": "Saved as",
     "stepScannedTitle": "{name} is in",
     "countrySearch": "Search countries",
-    "countryNoMatch": "No country matches that"
+    "countryNoMatch": "No country matches that",
+    "choiceStandalone": "A name for the board only",
+    "choiceStandaloneHint": "An apprentice, a contractor, anyone you schedule but who never signs in. No phone, no email, no account. You can give them one later.",
+    "standaloneDetailsTitle": "Their name, and a colour",
+    "standaloneDetailsBlurb": "This is all they get, and all they need. They appear on the work board and on jobs, and there is nothing for them to sign into.",
+    "boardColour": "Colour on the board",
+    "stepStandaloneTitle": "{name} is on the board",
+    "stepStandaloneBody": "You can schedule them and put them on jobs straight away. If they ever need the app, add a mobile number to them from this list."
   },
   "invoice": {
     "title": "Invoice & Quotes",

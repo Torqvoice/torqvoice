@@ -465,7 +465,14 @@
     "phonePreview": "Lagres som",
     "stepScannedTitle": "{name} er inne",
     "countrySearch": "Søk etter land",
-    "countryNoMatch": "Ingen land passer"
+    "countryNoMatch": "Ingen land passer",
+    "choiceStandalone": "Bare et navn på tavlen",
+    "choiceStandaloneHint": "En lærling, en innleid, alle du planlegger inn men som aldri logger inn. Ingen telefon, ingen e-post, ingen konto. Du kan gi dem det senere.",
+    "standaloneDetailsTitle": "Navn og farge",
+    "standaloneDetailsBlurb": "Dette er alt de får, og alt de trenger. De vises på tavlen og på jobber, og har ingenting å logge inn på.",
+    "boardColour": "Farge på tavlen",
+    "stepStandaloneTitle": "{name} er på tavlen",
+    "stepStandaloneBody": "Du kan planlegge dem og sette dem på jobber med en gang. Trenger de appen senere, legger du til et mobilnummer herfra."
   },
   "invoice": {
     "title": "Faktura og tilbud",

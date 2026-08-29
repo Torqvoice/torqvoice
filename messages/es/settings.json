@@ -465,7 +465,14 @@
     "phonePreview": "Se guarda como",
     "stepScannedTitle": "{name} ya está dentro",
     "countrySearch": "Buscar países",
-    "countryNoMatch": "Ningún país coincide"
+    "countryNoMatch": "Ningún país coincide",
+    "choiceStandalone": "Solo un nombre para el tablero",
+    "choiceStandaloneHint": "Un aprendiz, un externo, cualquiera a quien planifique pero que nunca entra. Sin teléfono, sin correo, sin cuenta. Puede dársela más adelante.",
+    "standaloneDetailsTitle": "Su nombre y un color",
+    "standaloneDetailsBlurb": "Es todo lo que recibe y todo lo que necesita. Aparece en el tablero y en los trabajos, y no hay nada donde iniciar sesión.",
+    "boardColour": "Color en el tablero",
+    "stepStandaloneTitle": "{name} ya está en el tablero",
+    "stepStandaloneBody": "Puede planificarlo y asignarle trabajos de inmediato. Si algún día necesita la aplicación, añádale un móvil desde esta lista."
   },
   "invoice": {
     "title": "Diseño de factura",

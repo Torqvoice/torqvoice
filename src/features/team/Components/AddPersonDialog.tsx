@@ -3,7 +3,16 @@
 import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { ArrowLeft, ArrowRightLeft, Check, Loader2, Mail, UserCheck, Wrench } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRightLeft,
+  CalendarClock,
+  Check,
+  Loader2,
+  Mail,
+  UserCheck,
+  Wrench,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,6 +33,7 @@ import {
 } from '@/components/ui/select'
 import { createAppSetupCode, revokeAppSetupCode } from '@/features/team/Actions/createAppSetupCode'
 import { createTechnicianAccount } from '@/features/team/Actions/createTechnicianAccount'
+import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { sendInvitation } from '@/features/team/Actions/sendInvitation'
 import { inviteMember } from '@/features/team/Actions/teamActions'
 import { countriesFor } from '@/features/team/Lib/dialCodes'
@@ -47,7 +57,33 @@ import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
  * those are the same shape is what made the old page confusing.
  */
 
-type Kind = 'member' | 'technician'
+/**
+ * Three kinds of person, and the differences between them are real.
+ *
+ *   member     works in the office, has an email, signs in on a computer
+ *   technician works on the cars, has a phone, signs in with their mobile
+ *   standalone a name on the board and nothing else, for an apprentice or a
+ *              contractor who never signs into anything
+ *
+ * The third used to live on the work board, so a workshop had two screens for
+ * adding people and no way to tell which one applied. One question, three
+ * answers, and the steps after it follow from the answer.
+ */
+/** The board's palette, so a name added here looks like one added there. */
+const BOARD_COLOURS = [
+  '#3b82f6',
+  '#ef4444',
+  '#22c55e',
+  '#f59e0b',
+  '#a855f7',
+  '#ec4899',
+  '#06b6d4',
+  '#f97316',
+  '#14b8a6',
+  '#6366f1',
+]
+
+type Kind = 'member' | 'technician' | 'standalone'
 type Step = 'who' | 'details' | 'clash' | 'handoff' | 'done'
 
 interface RoleOption {
@@ -85,6 +121,7 @@ export function AddPersonDialog({
    * the first time somebody gives it.
    */
   const [region, setRegion] = useState('')
+  const [color, setColor] = useState(BOARD_COLOURS[0])
   const countries = useMemo(() => countriesFor(locale), [locale])
   const country = dialCode || countries.find((c) => c.region === region)?.dial || ''
 
@@ -118,6 +155,7 @@ export function AddPersonDialog({
     setClash(null)
     setScanned(false)
     setEmail('')
+    setColor(BOARD_COLOURS[0])
     setRoleValue('member')
   }, [])
 
@@ -239,6 +277,26 @@ export function AddPersonDialog({
     setStep('done')
   })
 
+  const addStandalone = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (busy || !name.trim()) return
+      setBusy(true)
+      setError(null)
+
+      const result = await createTechnician({ name: name.trim(), color })
+      setBusy(false)
+      if (!result.success) {
+        setError(result.error || t('team.addTechnicianFailed'))
+        return
+      }
+      setCreated({ userId: '', name: name.trim() })
+      onChanged()
+      setStep('done')
+    },
+    [busy, name, color, onChanged, t]
+  )
+
   const steps: Step[] = kind === 'technician' ? ['who', 'details', 'handoff'] : ['who', 'details']
   const position = steps.indexOf(step === 'done' ? steps[steps.length - 1] : step)
 
@@ -259,7 +317,9 @@ export function AddPersonDialog({
               ? t('team.addPersonWho')
               : kind === 'technician'
                 ? t('team.addTechnicianHint')
-                : t('team.inviteMemberHint')}
+                : kind === 'standalone'
+                  ? t('team.choiceStandaloneHint')
+                  : t('team.inviteMemberHint')}
           </DialogDescription>
         </DialogHeader>
 
@@ -305,6 +365,12 @@ export function AddPersonDialog({
               title={t('team.choiceMember')}
               hint={t('team.choiceMemberHint')}
               onClick={() => choose('member')}
+            />
+            <ChoiceButton
+              icon={<CalendarClock className="h-5 w-5" />}
+              title={t('team.choiceStandalone')}
+              hint={t('team.choiceStandaloneHint')}
+              onClick={() => choose('standalone')}
             />
           </div>
         )}
@@ -381,6 +447,61 @@ export function AddPersonDialog({
               submitLabel={t('team.addTechnicianSubmit')}
               busy={busy}
               disabled={!name.trim() || !phone.trim()}
+            />
+          </form>
+        )}
+
+        {step === 'details' && kind === 'standalone' && (
+          <form onSubmit={addStandalone} className="space-y-4">
+            <StepIntro
+              title={t('team.standaloneDetailsTitle')}
+              blurb={t('team.standaloneDetailsBlurb')}
+            />
+            <div className="space-y-2">
+              <Label htmlFor="standalone-name">{t('team.technicianName')}</Label>
+              <Input
+                id="standalone-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('team.technicianNamePlaceholder')}
+                autoComplete="off"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('team.boardColour')}</Label>
+              {/* How they read at a glance on the board, which is the only
+                  place this person appears. */}
+              <div className="flex flex-wrap gap-2">
+                {BOARD_COLOURS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    aria-label={c}
+                    aria-pressed={color === c}
+                    onClick={() => setColor(c)}
+                    className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110"
+                    style={{
+                      backgroundColor: c,
+                      borderColor: color === c ? 'currentColor' : 'transparent',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {error && <p className="text-destructive text-sm">{error}</p>}
+
+            <Footer
+              backLabel={t('team.stepBack')}
+              onBack={() => {
+                setKind(null)
+                setStep('who')
+              }}
+              submitLabel={t('team.addTechnicianSubmit')}
+              busy={busy}
+              disabled={!name.trim()}
             />
           </form>
         )}
@@ -508,14 +629,20 @@ export function AddPersonDialog({
             </div>
             <div className="space-y-1">
               <p className="font-medium">
-                {kind === 'technician'
-                  ? t(scanned ? 'team.stepScannedTitle' : 'team.stepDoneTitle', {
-                      name: created?.name ?? '',
-                    })
-                  : t('team.stepInvitedTitle', { email })}
+                {kind === 'standalone'
+                  ? t('team.stepStandaloneTitle', { name: created?.name ?? '' })
+                  : kind === 'technician'
+                    ? t(scanned ? 'team.stepScannedTitle' : 'team.stepDoneTitle', {
+                        name: created?.name ?? '',
+                      })
+                    : t('team.stepInvitedTitle', { email })}
               </p>
               <p className="text-muted-foreground text-sm">
-                {kind === 'technician' ? t('team.stepDoneBody') : t('team.stepInvitedBody')}
+                {kind === 'standalone'
+                  ? t('team.stepStandaloneBody')
+                  : kind === 'technician'
+                    ? t('team.stepDoneBody')
+                    : t('team.stepInvitedBody')}
               </p>
             </div>
             <div className="flex gap-2">

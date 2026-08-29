@@ -465,7 +465,14 @@
     "phonePreview": "Išsaugoma kaip",
     "stepScannedTitle": "{name} prisijungė",
     "countrySearch": "Ieškoti šalies",
-    "countryNoMatch": "Nėra atitinkančios šalies"
+    "countryNoMatch": "Nėra atitinkančios šalies",
+    "choiceStandalone": "Tik vardas lentoje",
+    "choiceStandaloneHint": "Praktikantas, rangovas, bet kas, ką planuojate, bet kas niekada neprisijungia. Be telefono, be el. pašto, be paskyros. Ją galėsite suteikti vėliau.",
+    "standaloneDetailsTitle": "Vardas ir spalva",
+    "standaloneDetailsBlurb": "Tai viskas, ką jis gauna, ir viskas, ko reikia. Jis matomas lentoje ir darbuose, o prisijungti niekur nereikia.",
+    "boardColour": "Spalva lentoje",
+    "stepStandaloneTitle": "{name} yra lentoje",
+    "stepStandaloneBody": "Jį galite iškart planuoti ir skirti darbams. Jei kada prireiks programėlės, iš šio sąrašo pridėkite mobiliojo numerį."
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

@@ -465,7 +465,14 @@
     "phonePreview": "Salvato come",
     "stepScannedTitle": "{name} è dentro",
     "countrySearch": "Cerca paesi",
-    "countryNoMatch": "Nessun paese corrisponde"
+    "countryNoMatch": "Nessun paese corrisponde",
+    "choiceStandalone": "Solo un nome per la lavagna",
+    "choiceStandaloneHint": "Un apprendista, un esterno, chiunque pianifichi ma che non accede mai. Nessun telefono, nessuna email, nessun account. Potrai dargliene uno più avanti.",
+    "standaloneDetailsTitle": "Nome e colore",
+    "standaloneDetailsBlurb": "È tutto ciò che riceve e tutto ciò che serve. Compare sulla lavagna e sui lavori, e non ha nulla in cui accedere.",
+    "boardColour": "Colore sulla lavagna",
+    "stepStandaloneTitle": "{name} è sulla lavagna",
+    "stepStandaloneBody": "Puoi pianificarlo e assegnargli lavori subito. Se un giorno gli servirà l'app, aggiungi un numero di cellulare da questo elenco."
   },
   "invoice": {
     "title": "Layout fattura",

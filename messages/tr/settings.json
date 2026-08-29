@@ -465,7 +465,14 @@
     "phonePreview": "Şöyle kaydedilir",
     "stepScannedTitle": "{name} girdi",
     "countrySearch": "Ülke ara",
-    "countryNoMatch": "Eşleşen ülke yok"
+    "countryNoMatch": "Eşleşen ülke yok",
+    "choiceStandalone": "Sadece pano için bir isim",
+    "choiceStandaloneHint": "Bir çırak, bir taşeron, planladığınız ama hiç giriş yapmayan herkes. Telefon yok, e-posta yok, hesap yok. Sonra verebilirsiniz.",
+    "standaloneDetailsTitle": "Adı ve bir renk",
+    "standaloneDetailsBlurb": "Aldığı ve ihtiyaç duyduğu tek şey bu. Panoda ve işlerde görünür, giriş yapacağı bir yer yoktur.",
+    "boardColour": "Panodaki renk",
+    "stepStandaloneTitle": "{name} panoda",
+    "stepStandaloneBody": "Onu hemen planlayabilir ve işlere atayabilirsiniz. İleride uygulamaya ihtiyaç duyarsa, bu listeden bir cep numarası ekleyin."
   },
   "invoice": {
     "title": "Fatura Düzeni",

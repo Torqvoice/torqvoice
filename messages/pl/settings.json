@@ -465,7 +465,14 @@
     "phonePreview": "Zapisany jako",
     "stepScannedTitle": "{name} jest w środku",
     "countrySearch": "Szukaj krajów",
-    "countryNoMatch": "Żaden kraj nie pasuje"
+    "countryNoMatch": "Żaden kraj nie pasuje",
+    "choiceStandalone": "Tylko nazwisko na tablicy",
+    "choiceStandaloneHint": "Uczeń, podwykonawca, każdy, kogo planujesz, ale kto nigdy się nie loguje. Bez telefonu, bez e-maila, bez konta. Możesz je dodać później.",
+    "standaloneDetailsTitle": "Imię i kolor",
+    "standaloneDetailsBlurb": "To wszystko, co dostaje, i wszystko, czego trzeba. Pojawia się na tablicy i przy zleceniach, i nie ma się gdzie logować.",
+    "boardColour": "Kolor na tablicy",
+    "stepStandaloneTitle": "{name} jest na tablicy",
+    "stepStandaloneBody": "Możesz go od razu planować i przypisywać do zleceń. Jeśli kiedyś będzie potrzebował aplikacji, dodaj mu tu numer telefonu."
   },
   "invoice": {
     "title": "Układ faktury",

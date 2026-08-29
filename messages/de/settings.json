@@ -465,7 +465,14 @@
     "phonePreview": "Gespeichert als",
     "stepScannedTitle": "{name} ist drin",
     "countrySearch": "Länder durchsuchen",
-    "countryNoMatch": "Kein Land passt dazu"
+    "countryNoMatch": "Kein Land passt dazu",
+    "choiceStandalone": "Nur ein Name fürs Board",
+    "choiceStandaloneHint": "Ein Azubi, ein Subunternehmer, jeder, den Sie einplanen, der sich aber nie anmeldet. Kein Telefon, keine E-Mail, kein Konto. Sie können das später ergänzen.",
+    "standaloneDetailsTitle": "Name und Farbe",
+    "standaloneDetailsBlurb": "Mehr braucht es nicht. Die Person erscheint auf dem Board und auf Aufträgen und hat nichts, wo sie sich anmelden müsste.",
+    "boardColour": "Farbe auf dem Board",
+    "stepStandaloneTitle": "{name} steht auf dem Board",
+    "stepStandaloneBody": "Sie können sie sofort einplanen und Aufträgen zuweisen. Wird die App später gebraucht, ergänzen Sie hier einfach eine Handynummer."
   },
   "invoice": {
     "title": "Rechnungslayout",

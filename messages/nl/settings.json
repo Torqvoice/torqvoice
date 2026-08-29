@@ -465,7 +465,14 @@
     "phonePreview": "Opgeslagen als",
     "stepScannedTitle": "{name} is binnen",
     "countrySearch": "Landen zoeken",
-    "countryNoMatch": "Geen land komt overeen"
+    "countryNoMatch": "Geen land komt overeen",
+    "choiceStandalone": "Alleen een naam voor het bord",
+    "choiceStandaloneHint": "Een leerling, een externe, iedereen die u inplant maar die nooit inlogt. Geen telefoon, geen e-mail, geen account. U kunt dat later geven.",
+    "standaloneDetailsTitle": "Naam en een kleur",
+    "standaloneDetailsBlurb": "Dit is alles wat ze krijgen en alles wat nodig is. Ze verschijnen op het bord en op opdrachten, en er is niets om op in te loggen.",
+    "boardColour": "Kleur op het bord",
+    "stepStandaloneTitle": "{name} staat op het bord",
+    "stepStandaloneBody": "U kunt hen meteen inplannen en op opdrachten zetten. Hebben ze later de app nodig, voeg dan hier een mobiel nummer toe."
   },
   "invoice": {
     "title": "Factuurindeling",
