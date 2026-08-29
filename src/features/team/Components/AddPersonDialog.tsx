@@ -70,10 +70,20 @@ export function AddPersonDialog({
 }) {
   const t = useTranslations('settings')
   const locale = useLocale()
-  // Asked once per workshop and then never again, because the answer is
-  // stored the first time somebody gives it.
-  const [country, setCountry] = useState(dialCode)
+  /**
+   * The country, held as a region code rather than a dial code.
+   *
+   * They are not interchangeable: the United States and Canada are both +1,
+   * so a list keyed on the dial code has two entries claiming to be the same
+   * option. The region is what identifies a row; the dial code is what gets
+   * stored.
+   *
+   * Asked once per workshop and then never again, because the answer is saved
+   * the first time somebody gives it.
+   */
+  const [region, setRegion] = useState('')
   const countries = useMemo(() => countriesFor(locale), [locale])
+  const country = dialCode || countries.find((c) => c.region === region)?.dial || ''
 
   const [kind, setKind] = useState<Kind | null>(null)
   const [step, setStep] = useState<Step>('who')
@@ -319,13 +329,13 @@ export function AddPersonDialog({
             {!dialCode && (
               <div className="space-y-2">
                 <Label>{t('team.workshopCountry')}</Label>
-                <Select value={country} onValueChange={setCountry}>
+                <Select value={region} onValueChange={setRegion}>
                   <SelectTrigger>
                     <SelectValue placeholder={t('team.workshopCountryPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent className="max-h-72">
                     {countries.map((c) => (
-                      <SelectItem key={c.region} value={c.dial}>
+                      <SelectItem key={c.region} value={c.region}>
                         {c.name} ({c.dial})
                       </SelectItem>
                     ))}
