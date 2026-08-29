@@ -78,10 +78,7 @@
       "typePrompt": "Tapez un nom...",
       "boardTechnicians": "Techniciens du Tableau",
       "teamMembers": "Membres de l'Équipe"
-    },
-    "customerConcern": "Ce que le client a dit",
-    "customerConcernPlaceholder": "Il y a un bruit à l’arrière quand je freine",
-    "customerConcernHint": "Avec ses mots, tels qu'ils ont été dits au comptoir. C'est ce à quoi vous répondez à la restitution du véhicule."
+    }
   },
   "parts": {
     "title": "Pièces",
@@ -388,5 +385,14 @@
       "title": "Paramètres de garantie par défaut",
       "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
     }
+  },
+  "concerns": {
+    "title": "Ce que le client a signalé",
+    "addFirst": "Ajouter ce que le client a signalé",
+    "add": "En ajouter un autre",
+    "placeholder": "Il y a un bruit à l'arrière quand je freine",
+    "remove": "Retirer ce point",
+    "notAnswered": "Rien trouvé à ce sujet pour l'instant",
+    "answered": "{count} constat(s) à ce sujet"
   }
 }

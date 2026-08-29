@@ -396,6 +396,12 @@ export function ServicePageClient({
               openObservations={openObservations}
               onAddObservations={handleAddObservationsToWorkOrder}
               addingObservations={addingObservations}
+              // Saved concerns only: a row still being typed has no id yet, so
+              // there is nothing a finding could point at.
+              concerns={formState.concerns.filter(
+                (c): c is { id: string; description: string; sortOrder: number } =>
+                  Boolean(c.id) && Boolean(c.description.trim())
+              )}
               onControlsReady={(c) => {
                 obsControlsRef.current = c
               }}

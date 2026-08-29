@@ -78,10 +78,7 @@
       "typePrompt": "Skriv navn...",
       "boardTechnicians": "Tavleteknikere",
       "teamMembers": "Lagmedlemmer"
-    },
-    "customerConcern": "Kundens beskrivelse",
-    "customerConcernPlaceholder": "Det kommer en lyd bakfra når jeg bremser",
-    "customerConcernHint": "Med kundens egne ord, slik det ble sagt i skranken. Det er dette du svarer på når bilen leveres tilbake."
+    }
   },
   "parts": {
     "title": "Deler",
@@ -388,5 +385,14 @@
       "title": "Standard garantiinnstillinger",
       "description": "Angi standard garantivilkår for nye serviceoppføringer"
     }
+  },
+  "concerns": {
+    "title": "Dette spurte kunden om",
+    "addFirst": "Legg til det kunden spurte om",
+    "add": "Legg til en til",
+    "placeholder": "Det kommer en lyd bakfra når jeg bremser",
+    "remove": "Fjern dette punktet",
+    "notAnswered": "Ingenting funnet på dette ennå",
+    "answered": "{count} funn på dette"
   }
 }

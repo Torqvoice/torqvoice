@@ -78,10 +78,7 @@
       "typePrompt": "Typ een naam...",
       "boardTechnicians": "Werkbordtechnici",
       "teamMembers": "Teamleden"
-    },
-    "customerConcern": "Wat de klant zei",
-    "customerConcernPlaceholder": "Er komt een geluid van achteren als ik rem",
-    "customerConcernHint": "In hun eigen woorden, zoals aan de balie gezegd. Dit is waar u antwoord op geeft bij het teruggeven van de auto."
+    }
   },
   "parts": {
     "title": "Onderdelen",
@@ -388,5 +385,14 @@
       "title": "Standaard garantie-instellingen",
       "description": "Stel standaard garantievoorwaarden in voor nieuwe serviceregistraties"
     }
+  },
+  "concerns": {
+    "title": "Waar de klant naar vroeg",
+    "addFirst": "Voeg toe waar de klant naar vroeg",
+    "add": "Nog een toevoegen",
+    "placeholder": "Er komt een geluid van achteren als ik rem",
+    "remove": "Dit punt verwijderen",
+    "notAnswered": "Hier is nog niets op gevonden",
+    "answered": "{count} bevinding(en) hierop"
   }
 }

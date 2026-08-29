@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
             serviceRequests: true,
             serviceRecords: {
               include: {
+                concerns: true,
                 partItems: true,
                 laborItems: true,
                 attachments: true,
@@ -164,6 +165,7 @@ export async function POST(request: NextRequest) {
         .findMany({
           where: { organizationId: ctx.organizationId, vehicleId: null },
           include: {
+            concerns: true,
             partItems: true,
             laborItems: true,
             attachments: true,

@@ -78,10 +78,7 @@
       "typePrompt": "Escriba un nombre...",
       "boardTechnicians": "Técnicos del Tablero",
       "teamMembers": "Miembros del Equipo"
-    },
-    "customerConcern": "Lo que dijo el cliente",
-    "customerConcernPlaceholder": "Hay un ruido en la parte de atrás al frenar",
-    "customerConcernHint": "Con sus palabras, tal como lo dijo en el mostrador. Es a lo que responde cuando devuelve el coche."
+    }
   },
   "parts": {
     "title": "Piezas",
@@ -388,5 +385,14 @@
       "title": "Configuración de garantía predeterminada",
       "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
     }
+  },
+  "concerns": {
+    "title": "Lo que preguntó el cliente",
+    "addFirst": "Añadir lo que preguntó el cliente",
+    "add": "Añadir otro",
+    "placeholder": "Hace un ruido detrás cuando freno",
+    "remove": "Quitar este punto",
+    "notAnswered": "Todavía no se ha encontrado nada",
+    "answered": "{count} hallazgo(s) sobre esto"
   }
 }

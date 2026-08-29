@@ -78,10 +78,7 @@
       "typePrompt": "Type a name...",
       "boardTechnicians": "Board Technicians",
       "teamMembers": "Team Members"
-    },
-    "customerConcern": "What the customer said",
-    "customerConcernPlaceholder": "There is a noise from the back when I brake",
-    "customerConcernHint": "In their words, as they said it at the counter. What you are answering when you hand the car back."
+    }
   },
   "parts": {
     "title": "Parts",
@@ -388,5 +385,14 @@
       "title": "Default Warranty Settings",
       "description": "Set default warranty terms for new service records"
     }
+  },
+  "concerns": {
+    "title": "What the customer asked about",
+    "addFirst": "Add what the customer asked about",
+    "add": "Add another",
+    "placeholder": "There is a noise from the back when I brake",
+    "remove": "Remove this concern",
+    "notAnswered": "Nothing found against this yet",
+    "answered": "{count} finding(s) against this"
   }
 }

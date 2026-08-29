@@ -108,10 +108,6 @@ async function importServiceRecordTree(
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
       laborHours: (sr.laborHours as number) || null,
-      // Restored by name like every other column here. The export sends the
-      // whole row, but this side names each field, so a column added to the
-      // schema and not to this list is a column every restore silently drops.
-      customerConcern: (sr.customerConcern as string) || null,
       diagnosticNotes: (sr.diagnosticNotes as string) || null,
       invoiceNotes: (sr.invoiceNotes as string) || null,
       subtotal: (sr.subtotal as number) || 0,
@@ -151,6 +147,20 @@ async function importServiceRecordTree(
         // Inventory parts are restored earlier in this transaction with their
         // ids preserved, so the stock link survives a restore verbatim.
         inventoryPartId: (p.inventoryPartId as string) || null,
+        serviceRecordId: sr.id as string,
+      })),
+    })
+  }
+
+  // Concerns. Restored before findings so a finding's concernId still has a
+  // row to point at.
+  const concerns = sr.concerns as Record<string, unknown>[] | undefined
+  if (concerns?.length) {
+    await tx.serviceConcern.createMany({
+      data: concerns.map((c, index) => ({
+        id: c.id as string,
+        description: c.description as string,
+        sortOrder: (c.sortOrder as number) ?? index,
         serviceRecordId: sr.id as string,
       })),
     })

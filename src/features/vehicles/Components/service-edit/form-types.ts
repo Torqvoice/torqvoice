@@ -1,4 +1,5 @@
 import type {
+  ServiceConcernInput,
   ServicePartInput,
   ServiceLaborInput,
   ServiceAttachmentInput,
@@ -34,6 +35,7 @@ export interface InitialData {
   invoiceNumber?: string
   invoiceDate: string
   invoiceDueDate: string
+  concerns: ServiceConcernInput[]
   partItems: ServicePartInput[]
   laborItems: ServiceLaborInput[]
   attachments: (ServiceAttachmentInput & { includeInInvoice?: boolean })[]

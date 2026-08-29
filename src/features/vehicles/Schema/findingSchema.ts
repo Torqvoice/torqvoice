@@ -6,6 +6,14 @@ export const createFindingSchema = z.object({
   severity: z.enum(['needs_work', 'monitor', 'urgent']).default('needs_work'),
   notes: z.string().optional(),
   serviceRecordId: z.string().optional(),
+  /**
+   * The customer concern this finding answers.
+   *
+   * Nullable rather than absent, because "this answers nothing the customer
+   * asked about" is a real answer: it is the perished bush somebody spotted
+   * while the car was on the lift, and it is worth just as much.
+   */
+  concernId: z.string().nullish(),
 })
 
 export type CreateFindingInput = z.infer<typeof createFindingSchema>

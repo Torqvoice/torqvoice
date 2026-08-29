@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "Beantwoordt welk punt?",
+    "concernNone": "Niet iets waar de klant naar vroeg"
   },
   "observationsPage": {
     "searchPlaceholder": "Zoek in beschrijving, notities of voertuig...",

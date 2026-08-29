@@ -78,10 +78,7 @@
       "typePrompt": "Digite um nome...",
       "boardTechnicians": "Técnicos do Quadro",
       "teamMembers": "Membros do Time"
-    },
-    "customerConcern": "O que o cliente disse",
-    "customerConcernPlaceholder": "Tem um barulho atrás quando eu freio",
-    "customerConcernHint": "Nas palavras dele, como disse no balcão. É a isso que você responde ao devolver o carro."
+    }
   },
   "parts": {
     "title": "Peças",
@@ -388,5 +385,14 @@
       "title": "Configurações padrão de garantia",
       "description": "Definir termos de garantia padrão para novos registros de serviço"
     }
+  },
+  "concerns": {
+    "title": "O que o cliente relatou",
+    "addFirst": "Adicionar o que o cliente relatou",
+    "add": "Adicionar outro",
+    "placeholder": "Faz um barulho atrás quando eu freio",
+    "remove": "Remover este item",
+    "notAnswered": "Nada encontrado sobre isso ainda",
+    "answered": "{count} constatação(ões) sobre isso"
   }
 }

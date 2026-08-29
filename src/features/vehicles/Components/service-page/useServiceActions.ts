@@ -51,6 +51,7 @@ export function useServiceActions({
     selectedVehicleId,
     type,
     status,
+    concerns,
     partItems,
     laborItems,
     subtotal,
@@ -126,7 +127,6 @@ export function useServiceActions({
       // What the customer said at drop-off. Typed at intake beside the vehicle,
       // not in the notes section, so it is read from the form rather than from
       // the notes state.
-      customerConcern: getVisible('customerConcern') || undefined,
       type,
       status,
       cost: totalAmount,
@@ -141,6 +141,10 @@ export function useServiceActions({
       invoiceNumber: getVisible('invoiceNumber') || undefined,
       invoiceDate: getVisible('invoiceDate') || undefined,
       invoiceDueDate: getVisible('invoiceDueDate') || undefined,
+      // Blank rows are somebody halfway through typing, not a concern.
+      concerns: concerns
+        .filter((c) => c.description.trim())
+        .map((c, index) => ({ ...c, description: c.description.trim(), sortOrder: index })),
       partItems: partItems.filter((p) => p.name),
       laborItems: laborItems.filter((l) => l.description),
       subtotal,

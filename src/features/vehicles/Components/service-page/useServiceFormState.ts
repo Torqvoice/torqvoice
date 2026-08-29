@@ -5,6 +5,7 @@ import {
   markupFromCostAndPrice,
   priceFromCostAndMarkup,
 } from '@/features/inventory/Lib/partPricing'
+import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 
@@ -28,6 +29,7 @@ export function useServiceFormState({
   const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
   const [status, setStatus] = useState(initialData.status || 'completed')
+  const [concerns, setConcerns] = useState<ServiceConcernInput[]>(initialData.concerns || [])
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData.partItems || [])
   const [laborItems, setLaborItems] = useState<ServiceLaborInput[]>(initialData.laborItems || [])
   const [taxRate, setTaxRate] = useState(initialData.taxRate ?? defaultTaxRate)
@@ -297,6 +299,8 @@ export function useServiceFormState({
     techName,
     type,
     status,
+    concerns,
+    setConcerns,
     partItems,
     laborItems,
     taxRate,

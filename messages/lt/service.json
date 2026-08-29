@@ -78,10 +78,7 @@
       "typePrompt": "Įveskite vardą...",
       "boardTechnicians": "Lentos technikai",
       "teamMembers": "Komandos nariai"
-    },
-    "customerConcern": "Ką pasakė klientas",
-    "customerConcernPlaceholder": "Stabdant iš galo girdisi garsas",
-    "customerConcernHint": "Jo paties žodžiais, kaip pasakė prie registratūros. Į tai jūs ir atsakote grąžindami automobilį."
+    }
   },
   "parts": {
     "title": "Dalys",
@@ -388,5 +385,14 @@
       "title": "Numatytieji garantijos nustatymai",
       "description": "Nustatyti numatytas garantijos sąlygas naujiems aptarnavimo įrašams"
     }
+  },
+  "concerns": {
+    "title": "Ką nurodė klientas",
+    "addFirst": "Pridėti tai, ką nurodė klientas",
+    "add": "Pridėti dar vieną",
+    "placeholder": "Stabdant gale girdisi garsas",
+    "remove": "Pašalinti šį punktą",
+    "notAnswered": "Kol kas nieko nenustatyta",
+    "answered": "Nustatymų: {count}"
   }
 }

@@ -1,6 +1,6 @@
 import { PartsEditor } from '../service-edit/PartsEditor'
 import { LaborEditor } from '../service-edit/LaborEditor'
-import { CustomerConcernBanner } from '../service-edit/CustomerConcernBanner'
+import { ConcernsSection } from '../service-edit/ConcernsSection'
 import { NotesSection } from '../service-edit/NotesSection'
 import { PaymentsSection } from '../service-detail/PaymentsSection'
 import { InvoiceSummary } from '../service-detail/InvoiceSummary'
@@ -40,6 +40,7 @@ interface DetailsLeftColumnProps {
     severity: string
     status: string
     notes: string | null
+    concernId?: string | null
   }[]
   onAddFinding?: () => void
   onEditFinding?: (finding: {
@@ -77,11 +78,23 @@ export function DetailsLeftColumn({
   openObservationsCount = 0,
   onShowExistingObservations,
 }: DetailsLeftColumnProps) {
+  // Which concerns somebody has actually looked at. Counted here rather than
+  // queried, because the findings are already loaded for the section below.
+  const answeredCounts = findings.reduce<Record<string, number>>((counts, finding) => {
+    if (finding.concernId) counts[finding.concernId] = (counts[finding.concernId] ?? 0) + 1
+    return counts
+  }, {})
+
   return (
     <div className="space-y-3">
       {/* First thing on the job, above the work itself: why the car is here,
           in the customer's words. */}
-      <CustomerConcernBanner defaultValue={record.customerConcern ?? ''} />
+      <ConcernsSection
+        concerns={formState.concerns}
+        setConcerns={formState.setConcerns}
+        onChange={formState.markDirty}
+        answeredCounts={answeredCounts}
+      />
 
       {/* Above the parts, inside the working column: the tires are the first
           thing this job needs and the last thing the invoice sidebar cares

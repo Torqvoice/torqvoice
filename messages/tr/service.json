@@ -78,10 +78,7 @@
       "typePrompt": "Adını yazın...",
       "boardTechnicians": "Pano Teknisyenleri",
       "teamMembers": "Takım Üyeleri"
-    },
-    "customerConcern": "Müşterinin söyledikleri",
-    "customerConcernPlaceholder": "Fren yapınca arkadan ses geliyor",
-    "customerConcernHint": "Bankoda söylediği şekliyle, kendi sözleriyle. Aracı teslim ederken yanıtladığınız şey budur."
+    }
   },
   "parts": {
     "title": "Parçalar",
@@ -388,5 +385,14 @@
       "title": "Varsayılan garanti ayarları",
       "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
     }
+  },
+  "concerns": {
+    "title": "Müşterinin bildirdiği",
+    "addFirst": "Müşterinin bildirdiğini ekle",
+    "add": "Bir tane daha ekle",
+    "placeholder": "Fren yapınca arkadan ses geliyor",
+    "remove": "Bu maddeyi kaldır",
+    "notAnswered": "Bu konuda henüz bir şey bulunmadı",
+    "answered": "Bu konuda {count} tespit"
   }
 }

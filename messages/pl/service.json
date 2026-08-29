@@ -78,10 +78,7 @@
       "typePrompt": "Wpisz nazwę...",
       "boardTechnicians": "Technicy z Tablicy",
       "teamMembers": "Członkowie Zespołu"
-    },
-    "customerConcern": "Co powiedział klient",
-    "customerConcernPlaceholder": "Z tyłu słychać hałas przy hamowaniu",
-    "customerConcernHint": "Jego własnymi słowami, tak jak powiedział przy ladzie. To na to odpowiadasz przy wydaniu auta."
+    }
   },
   "parts": {
     "title": "Części",
@@ -388,5 +385,14 @@
       "title": "Domyślne ustawienia gwarancji",
       "description": "Ustaw domyślne warunki gwarancji dla nowych wpisów serwisowych"
     }
+  },
+  "concerns": {
+    "title": "Z czym przyjechał klient",
+    "addFirst": "Dodaj to, z czym przyjechał klient",
+    "add": "Dodaj kolejne",
+    "placeholder": "Przy hamowaniu słychać hałas z tyłu",
+    "remove": "Usuń ten punkt",
+    "notAnswered": "Nic jeszcze nie ustalono",
+    "answered": "Ustalenia: {count}"
   }
 }
