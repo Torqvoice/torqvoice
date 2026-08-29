@@ -10,6 +10,8 @@ import {
 } from '../Schema/teamSchema'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { setTechnicianStanding } from '../Lib/technicianStanding'
+import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 import { getFeatures, getMaxOrganizations, isCloudMode, FeatureGatedError } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 
@@ -254,9 +256,25 @@ export async function removeMember(memberId: string) {
       if (target.role === 'owner') throw new Error('Cannot remove the owner')
       if (target.userId === userId) throw new Error('Cannot remove yourself')
 
+      /**
+       * Taking somebody off the team takes their technician standing with it.
+       *
+       * Deleting the membership alone left an active technician row pointing at
+       * an account that no longer belonged to the workshop. It kept drawing on
+       * the work board, it held onto their phone number so they could never be
+       * added back, and their session stayed live because nothing had revoked
+       * it. Removing somebody has to mean removing them.
+       *
+       * The technician row is deactivated rather than deleted, as everywhere
+       * else, so the jobs and hours they did still have an author.
+       */
+      await setTechnicianStanding(organizationId, target.userId, false)
+      await revokeTechnicianCredentials(organizationId, target.userId)
+
       await db.organizationMember.delete({ where: { id: memberId } })
 
       revalidatePath('/settings/team')
+      revalidatePath('/work-board')
       return { removed: true, memberId }
     },
     {

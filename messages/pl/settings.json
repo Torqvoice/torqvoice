@@ -451,7 +451,14 @@
     "stepDoneBody": "Może otworzyć aplikację i zobaczyć swoje zlecenia. Następnym razem loguje się samym numerem telefonu, bez kodu.",
     "stepInvitedTitle": "Zaproszenie wysłane do {email}",
     "stepInvitedBody": "Pojawi się na liście, gdy otworzy e-mail i zaakceptuje. Link działa siedem dni.",
-    "stepDoneAnother": "Dodaj kolejną osobę"
+    "stepDoneAnother": "Dodaj kolejną osobę",
+    "clashTitle": "{name} ma już ten numer",
+    "clashBlurb": "Dwie osoby nie mogą dzielić numeru telefonu, bo to nim się logują. Który to przypadek?",
+    "clashSamePerson": "To jest {name}",
+    "clashSamePersonHint": "Ta sama osoba wraca albo imię zapisane inaczej. Jej zlecenia i godziny zostają przy niej, a wpisane teraz imię zastąpi stare.",
+    "clashTakeover": "Nie, to {name}",
+    "clashTakeoverHint": "Inna osoba, która ma teraz ten numer. {name} zachowuje wszystko, co tu zrobił, ale nie może się już logować, a nowy numer możesz nadać później.",
+    "clashDifferentNumber": "Żadne, chcę zmienić numer"
   },
   "invoice": {
     "title": "Układ faktury",

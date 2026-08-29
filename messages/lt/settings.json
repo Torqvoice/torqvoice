@@ -451,7 +451,14 @@
     "stepDoneBody": "Jis gali atidaryti programėlę ir matyti savo darbus. Kitą kartą prisijungs tik su mobiliojo numeriu, be kodo.",
     "stepInvitedTitle": "Kvietimas išsiųstas į {email}",
     "stepInvitedBody": "Jis atsiras sąraše, kai atidarys laišką ir priims kvietimą. Nuoroda galioja septynias dienas.",
-    "stepDoneAnother": "Pridėti dar vieną"
+    "stepDoneAnother": "Pridėti dar vieną",
+    "clashTitle": "{name} jau turi šį numerį",
+    "clashBlurb": "Du žmonės negali dalytis vienu numeriu, nes su juo jie prisijungia. Kuris variantas?",
+    "clashSamePerson": "Tai {name}",
+    "clashSamePersonHint": "Tas pats žmogus grįžta arba vardas parašytas kitaip. Jo darbai ir valandos lieka su juo, o ką tik įvestas vardas pakeis senąjį.",
+    "clashTakeover": "Ne, tai {name}",
+    "clashTakeoverHint": "Kitas žmogus, kuris dabar turi šį numerį. {name} išlaiko viską, ką čia atliko, bet nebegali prisijungti, o naują numerį galėsite suteikti vėliau.",
+    "clashDifferentNumber": "Nei vienas, pakeisiu numerį"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",

@@ -17,11 +17,18 @@ vi.mock('@/lib/auth', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     role: { findFirst: vi.fn(), create: vi.fn() },
-    technician: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn(), aggregate: vi.fn() },
+    technician: {
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      aggregate: vi.fn(),
+    },
     organizationMember: {
       create: vi.fn(),
       findFirst: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
       count: vi.fn(),
     },
     user: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
@@ -39,6 +46,7 @@ import { db } from '@/lib/db'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { createTechnicianAccount } from '@/features/team/Actions/createTechnicianAccount'
 import { removeTechnicianAccess } from '@/features/team/Actions/removeTechnicianAccess'
+import { removeMember } from '@/features/team/Actions/teamActions'
 
 const deleteSession = vi.mocked(
   (await auth.$context).internalAdapter.deleteSession as ReturnType<typeof vi.fn>
@@ -64,6 +72,10 @@ beforeEach(() => {
   } as never)
   vi.mocked(db.user.create).mockResolvedValue({ id: 'user-1' } as never)
   vi.mocked(db.role.findFirst).mockResolvedValue({ id: 'role-tech' } as never)
+  vi.mocked(db.organizationMember.count).mockResolvedValue(0 as never)
+  vi.mocked(db.technician.findMany).mockResolvedValue([] as never)
+  vi.mocked(db.technicianLoginCode.deleteMany).mockResolvedValue({ count: 0 } as never)
+  vi.mocked(db.technicianSetupCode.deleteMany).mockResolvedValue({ count: 0 } as never)
   vi.mocked(db.$transaction).mockImplementation(async (arg: unknown) =>
     typeof arg === 'function' ? (arg as (tx: unknown) => unknown)(db) : arg
   )
@@ -138,18 +150,79 @@ describe('creating a technician account at the counter', () => {
     ])
   })
 
-  it('refuses a number somebody here is already using', async () => {
+  it('reports a clash rather than refusing, so the desk is never stuck', async () => {
+    // A dead end here is a showstopper: a recycled number or a name typed
+    // differently has to have a way forward.
     vi.mocked(db.technician.findFirst).mockResolvedValue({
       id: 'tech-9',
       name: 'Kari',
       isActive: true,
       userId: 'user-9',
     } as never)
+    vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
 
     const result = await createTechnicianAccount({ name: 'Ola', phone: '912 34 567' })
-    expect(result.success).toBe(false)
-    expect(result.error).toContain('Kari')
+
+    expect(result.success).toBe(true)
+    expect((result.data as { conflict: { name: string } }).conflict.name).toBe('Kari')
     expect(db.user.create).not.toHaveBeenCalled()
+  })
+
+  it('reuses the clashing record when the desk says it is the same person', async () => {
+    vi.mocked(db.technician.findFirst).mockResolvedValue({
+      id: 'tech-9',
+      name: 'Kari',
+      isActive: true,
+      userId: 'user-9',
+    } as never)
+    vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
+    vi.mocked(db.technician.update).mockResolvedValue({ id: 'tech-9', userId: 'user-9' } as never)
+    vi.mocked(db.organizationMember.findFirst).mockResolvedValue({
+      id: 'mem-9',
+      roleId: 'role-tech',
+    } as never)
+
+    const result = await createTechnicianAccount({
+      name: 'Kari Nordmann',
+      phone: '912 34 567',
+      resolve: 'reuse',
+    })
+
+    expect((result.data as { reinstated: boolean }).reinstated).toBe(true)
+    expect(db.technician.create).not.toHaveBeenCalled()
+  })
+
+  it('frees the number and starts fresh when the desk says it is somebody else', async () => {
+    vi.mocked(db.technician.findFirst).mockResolvedValue({
+      id: 'tech-9',
+      name: 'Kari',
+      isActive: true,
+      userId: 'user-9',
+    } as never)
+    vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
+
+    await createTechnicianAccount({ name: 'Ola', phone: '912 34 567', resolve: 'takeover' })
+
+    // Kari keeps everything she did and loses only the way in.
+    expect(db.user.update).toHaveBeenCalledWith({
+      where: { id: 'user-9' },
+      data: { phone: null },
+    })
+    expect(db.user.create).toHaveBeenCalled()
+  })
+
+  it('never refuses outright', async () => {
+    vi.mocked(db.technician.findFirst).mockResolvedValue({
+      id: 'tech-9',
+      name: 'Kari',
+      isActive: true,
+      userId: 'user-9',
+    } as never)
+    vi.mocked(db.organizationMember.count).mockResolvedValue(1 as never)
+
+    const result = await createTechnicianAccount({ name: 'Ola', phone: '912 34 567' })
+    // Whatever the state, the answer is a question and not a wall.
+    expect(result.success).toBe(true)
   })
 
   describe('somebody who worked here before', () => {
@@ -266,6 +339,7 @@ describe('removing a technician', () => {
     vi.mocked(db.organizationMember.count).mockResolvedValue(0 as never)
     // The real deleteSession is async and the code chains .catch onto it.
     deleteSession.mockResolvedValue(undefined)
+    vi.mocked(db.technician.findMany).mockResolvedValue([{ id: 'tech-1' }] as never)
     vi.mocked(db.session.findMany).mockResolvedValue([
       { token: 'tok-1' },
       { token: 'tok-2' },
@@ -295,7 +369,7 @@ describe('removing a technician', () => {
   it('destroys anything outstanding that could still be redeemed', async () => {
     await removeTechnicianAccess({ userId: 'user-1' })
     expect(db.technicianLoginCode.deleteMany).toHaveBeenCalledWith({
-      where: { technicianId: 'tech-1' },
+      where: { technicianId: { in: ['tech-1'] } },
     })
     expect(db.technicianSetupCode.deleteMany).toHaveBeenCalledWith({
       where: { organizationId: ORG, userId: 'user-1' },
@@ -317,5 +391,50 @@ describe('removing a technician', () => {
     expect(result.success).toBe(false)
     expect(db.technician.update).not.toHaveBeenCalled()
     expect(deleteSession).not.toHaveBeenCalled()
+  })
+})
+
+describe('removing somebody from the team entirely', () => {
+  // The trash icon used to delete only the membership, leaving an active
+  // technician on the work board pointing at an account that no longer
+  // belonged to the workshop, holding their phone number so they could never
+  // be added back, and with a live session nobody had revoked.
+  beforeEach(() => {
+    vi.mocked(getCachedMembership).mockResolvedValue({
+      organizationId: ORG,
+      role: 'owner',
+      roleId: null,
+      customRole: null,
+    } as never)
+    vi.mocked(db.organizationMember.findFirst)
+      .mockResolvedValueOnce({ id: 'mine', role: 'owner', userId: 'desk-1' } as never)
+      .mockResolvedValueOnce({ id: 'theirs', role: 'member', userId: 'user-1' } as never)
+    vi.mocked(db.technician.findFirst).mockResolvedValue({ id: 'tech-1' } as never)
+    vi.mocked(db.technician.findMany).mockResolvedValue([{ id: 'tech-1' }] as never)
+    vi.mocked(db.technician.update).mockResolvedValue({ id: 'tech-1' } as never)
+    vi.mocked(db.organizationMember.delete).mockResolvedValue({} as never)
+    vi.mocked(db.session.findMany).mockResolvedValue([{ token: 'tok-1' }] as never)
+    deleteSession.mockResolvedValue(undefined)
+  })
+
+  it('takes their technician standing with them', async () => {
+    await removeMember('theirs')
+
+    expect(db.technician.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { isActive: false } })
+    )
+    expect(db.organizationMember.delete).toHaveBeenCalledWith({ where: { id: 'theirs' } })
+  })
+
+  it('revokes the session on their phone', async () => {
+    await removeMember('theirs')
+    expect(deleteSession).toHaveBeenCalledWith('tok-1')
+  })
+
+  it('destroys anything outstanding they could still redeem', async () => {
+    await removeMember('theirs')
+    expect(db.technicianSetupCode.deleteMany).toHaveBeenCalledWith({
+      where: { organizationId: ORG, userId: 'user-1' },
+    })
   })
 })

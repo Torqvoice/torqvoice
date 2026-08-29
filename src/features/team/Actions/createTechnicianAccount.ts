@@ -9,6 +9,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { withAuth } from '@/lib/with-auth'
 import { ensureTechnicianRole, PLACEHOLDER_EMAIL_DOMAIN } from '../Lib/technicianRole'
+import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 
 /**
  * Creates a mechanic's account outright, at the counter, in one step.
@@ -33,12 +34,22 @@ const schema = z.object({
   phone: z.string().trim().min(3).max(40),
   /** Optional from the start, for a mechanic who does have one. */
   email: z.string().trim().email().optional().or(z.literal('')),
+  /**
+   * What to do when somebody here already holds that number.
+   *
+   * Absent, this reports the clash and does nothing, so the desk can decide.
+   * Refusing outright was a dead end: a workshop with a recycled number or a
+   * mechanic whose name was typed differently had no way forward at all, and
+   * an onboarding screen that can trap somebody is worse than one that asks a
+   * question.
+   */
+  resolve: z.enum(['reuse', 'takeover']).optional(),
 })
 
 export async function createTechnicianAccount(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
-      const { name, phone, email } = schema.parse(input)
+      const { name, phone, email, resolve } = schema.parse(input)
 
       const e164 = await normalizeOrgPhone(organizationId, phone)
       if (!e164) {
@@ -62,11 +73,43 @@ export async function createTechnicianAccount(input: unknown) {
         select: { id: true, name: true, isActive: true, userId: true },
       })
 
-      if (existing?.isActive) {
-        throw new Error(`${existing.name} already uses that number at this workshop.`)
-      }
+      // Standing on the board is not the same as belonging to the workshop.
+      // A row can be left active with no membership behind it, and somebody
+      // who is not a member is not somebody this can refuse on behalf of.
+      const stillHere =
+        existing?.isActive &&
+        (await db.organizationMember.count({
+          where: { userId: existing.userId ?? '', organizationId },
+        })) > 0
 
-      if (existing?.userId) {
+      if (stillHere && existing?.userId) {
+        // Reported, not thrown. The desk gets to choose, and the two answers
+        // below are the only two that make sense.
+        if (!resolve) {
+          return {
+            conflict: { name: existing.name, userId: existing.userId },
+            technicianId: null,
+            userId: null,
+            name,
+            reinstated: false,
+          }
+        }
+
+        if (resolve === 'reuse') {
+          return reinstate(existing.id, existing.userId, organizationId, name, email || null)
+        }
+
+        // Takeover. The number moves to the new person and the old record keeps
+        // everything it ever did, minus the ability to sign in. Nobody's work
+        // is rewritten; somebody's way in is closed.
+        await db.user.update({ where: { id: existing.userId }, data: { phone: null } })
+        await revokeTechnicianCredentials(organizationId, existing.userId)
+        // Falls through to a fresh account below, deliberately. This is a
+        // different human, so reusing the row would hang somebody else's jobs
+        // and hours off their name.
+      } else if (existing?.userId) {
+        // Not here any more: deactivated, or left with no membership behind
+        // them. Either way this is a homecoming and the row already exists.
         return reinstate(existing.id, existing.userId, organizationId, name, email || null)
       }
 
@@ -135,6 +178,7 @@ export async function createTechnicianAccount(input: unknown) {
       revalidatePath('/work-board')
 
       return {
+        conflict: null,
         technicianId: technician.id,
         userId: technician.userId as string,
         name,
@@ -207,5 +251,5 @@ async function reinstate(
   revalidatePath('/settings/team')
   revalidatePath('/work-board')
 
-  return { technicianId: technician.id, userId, name, reinstated: true }
+  return { conflict: null, technicianId: technician.id, userId, name, reinstated: true }
 }

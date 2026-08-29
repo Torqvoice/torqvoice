@@ -451,7 +451,14 @@
     "stepDoneBody": "Uygulamayı açıp işlerini görebilir. Bir dahaki sefere sadece cep numarasıyla, koda gerek kalmadan girer.",
     "stepInvitedTitle": "{email} adresine davet gönderildi",
     "stepInvitedBody": "E-postayı açıp kabul ettiğinde listede görünür. Bağlantı yedi gün geçerlidir.",
-    "stepDoneAnother": "Başka birini ekle"
+    "stepDoneAnother": "Başka birini ekle",
+    "clashTitle": "{name} bu numaraya zaten sahip",
+    "clashBlurb": "İki kişi bir cep numarasını paylaşamaz, çünkü giriş bununla yapılır. Hangisi geçerli?",
+    "clashSamePerson": "Bu {name}",
+    "clashSamePersonHint": "Aynı kişi geri dönüyor ya da adı farklı yazılmış. İşleri ve saatleri kendisinde kalır, az önce yazdığınız ad eskisinin yerini alır.",
+    "clashTakeover": "Hayır, bu {name}",
+    "clashTakeoverHint": "Bu numaraya artık sahip olan başka biri. {name} burada yaptığı her şeyi korur ama artık giriş yapamaz, sonra yeni bir numara verebilirsiniz.",
+    "clashDifferentNumber": "Hiçbiri, numarayı değiştireyim"
   },
   "invoice": {
     "title": "Fatura Düzeni",

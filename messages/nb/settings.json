@@ -451,7 +451,14 @@
     "stepDoneBody": "Han kan åpne appen og se jobbene sine. Neste gang logger han inn med bare mobilnummeret, uten kode.",
     "stepInvitedTitle": "Invitasjon sendt til {email}",
     "stepInvitedBody": "Han dukker opp i listen så snart han har åpnet e-posten og takket ja. Lenken virker i sju dager.",
-    "stepDoneAnother": "Legg til en til"
+    "stepDoneAnother": "Legg til en til",
+    "clashTitle": "{name} har allerede det nummeret",
+    "clashBlurb": "To personer kan ikke dele et mobilnummer, siden det er det de logger inn med. Hvilket av disse er det?",
+    "clashSamePerson": "Dette er {name}",
+    "clashSamePersonHint": "Samme person som kommer tilbake, eller et navn stavet annerledes. Jobbene og timene følger dem, og navnet du nettopp skrev erstatter det gamle.",
+    "clashTakeover": "Nei, dette er {name}",
+    "clashTakeoverHint": "En annen person som nå har det nummeret. {name} beholder alt de har gjort her, men kan ikke lenger logge inn, og du kan gi dem et nytt nummer senere.",
+    "clashDifferentNumber": "Ingen av delene, la meg endre nummeret"
   },
   "invoice": {
     "title": "Faktura og tilbud",

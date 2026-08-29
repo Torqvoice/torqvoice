@@ -451,7 +451,14 @@
     "stepDoneBody": "Hij kan de app openen en zijn opdrachten zien. De volgende keer logt hij in met alleen zijn mobiele nummer, zonder code.",
     "stepInvitedTitle": "Uitnodiging verstuurd naar {email}",
     "stepInvitedBody": "Hij verschijnt in de lijst zodra hij de e-mail heeft geopend en geaccepteerd. De link werkt zeven dagen.",
-    "stepDoneAnother": "Nog iemand toevoegen"
+    "stepDoneAnother": "Nog iemand toevoegen",
+    "clashTitle": "{name} heeft dat nummer al",
+    "clashBlurb": "Twee mensen kunnen geen mobiel nummer delen, want daarmee loggen ze in. Welke van deze is het?",
+    "clashSamePerson": "Dit is {name}",
+    "clashSamePersonHint": "Dezelfde persoon die terugkomt, of een naam anders geschreven. Hun opdrachten en uren blijven bij hen, en de naam die u net typte vervangt de oude.",
+    "clashTakeover": "Nee, dit is {name}",
+    "clashTakeoverHint": "Een andere persoon die dat nummer nu heeft. {name} behoudt alles wat ze hier deden maar kan niet meer inloggen, en u kunt later een nieuw nummer geven.",
+    "clashDifferentNumber": "Geen van beide, ik pas het nummer aan"
   },
   "invoice": {
     "title": "Factuurindeling",

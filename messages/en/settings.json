@@ -451,7 +451,14 @@
     "stepDoneBody": "They can open the app and see their jobs. Next time they sign in it is just their mobile number, no code needed.",
     "stepInvitedTitle": "Invitation sent to {email}",
     "stepInvitedBody": "They will show up in the list once they have opened the email and accepted. The link works for seven days.",
-    "stepDoneAnother": "Add someone else"
+    "stepDoneAnother": "Add someone else",
+    "clashTitle": "{name} already has that number",
+    "clashBlurb": "Two people cannot share a mobile number, because it is what they sign in with. Which of these is it?",
+    "clashSamePerson": "This is {name}",
+    "clashSamePersonHint": "The same person coming back, or a name spelled differently. Their jobs and hours stay with them, and the name you just typed replaces the old one.",
+    "clashTakeover": "No, this is {name}",
+    "clashTakeoverHint": "A different person who now has that number. {name} keeps everything they did here but can no longer sign in, and you can give them a new number later.",
+    "clashDifferentNumber": "Neither, let me change the number"
   },
   "invoice": {
     "title": "Invoice & Quotes",

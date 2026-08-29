@@ -2,11 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
+import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 
 /**
  * Cuts a technician off, and means it.
@@ -53,42 +53,7 @@ export async function removeTechnicianAccess(input: unknown) {
         data: { isActive: false },
       })
 
-      // Nothing outstanding survives, whether it was ever delivered or not.
-      await db.$transaction([
-        db.technicianLoginCode.deleteMany({
-          where: { technicianId: technician.id },
-        }),
-        db.technicianSetupCode.deleteMany({
-          where: { organizationId, userId: technician.userId ?? '__none__' },
-        }),
-      ])
-
-      if (technician.userId) {
-        // Only where this person is a member of nowhere else. Someone covering
-        // two branches of a chain should not be signed out of the other one
-        // because this branch let them go.
-        const elsewhere = await db.organizationMember.count({
-          where: { userId: technician.userId, organizationId: { not: organizationId } },
-        })
-
-        if (elsewhere === 0) {
-          const ctx = await auth.$context
-          const sessions = await db.session.findMany({
-            where: { userId: technician.userId },
-            select: { token: true },
-          })
-          // Through Better Auth rather than a raw delete, so its own caches
-          // let go of them too.
-          await Promise.all(
-            sessions.map((s) => ctx.internalAdapter.deleteSession(s.token).catch(() => undefined))
-          )
-        }
-
-        await db.pushDevice.updateMany({
-          where: { userId: technician.userId, organizationId },
-          data: { isActive: false },
-        })
-      }
+      await revokeTechnicianCredentials(organizationId, technician.userId)
 
       notificationBus.emit('workboard', {
         type: 'technician_updated',

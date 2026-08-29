@@ -451,7 +451,14 @@
     "stepDoneBody": "Il peut ouvrir l'application et voir ses travaux. La prochaine fois, il se connecte avec son seul numéro de mobile, sans code.",
     "stepInvitedTitle": "Invitation envoyée à {email}",
     "stepInvitedBody": "Il apparaîtra dans la liste dès qu'il aura ouvert l'e-mail et accepté. Le lien reste valable sept jours.",
-    "stepDoneAnother": "Ajouter quelqu’un d’autre"
+    "stepDoneAnother": "Ajouter quelqu’un d’autre",
+    "clashTitle": "{name} a déjà ce numéro",
+    "clashBlurb": "Deux personnes ne peuvent pas partager un numéro de mobile, puisque c'est avec lui qu'elles se connectent. Duquel s'agit-il ?",
+    "clashSamePerson": "C'est {name}",
+    "clashSamePersonHint": "La même personne qui revient, ou un nom orthographié autrement. Ses travaux et ses heures restent avec elle, et le nom que vous venez de saisir remplace l'ancien.",
+    "clashTakeover": "Non, il s’agit de {name}",
+    "clashTakeoverHint": "Une autre personne qui a désormais ce numéro. {name} conserve tout ce qu'elle a fait ici mais ne peut plus se connecter, et vous pourrez lui donner un nouveau numéro plus tard.",
+    "clashDifferentNumber": "Ni l’un ni l’autre, je corrige le numéro"
   },
   "invoice": {
     "title": "Mise en page de facture",

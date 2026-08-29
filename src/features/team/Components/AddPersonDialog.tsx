@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Check, Loader2, Mail, Wrench } from 'lucide-react'
+import { ArrowLeft, ArrowRightLeft, Check, Loader2, Mail, UserCheck, Wrench } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -43,7 +43,7 @@ import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
  */
 
 type Kind = 'member' | 'technician'
-type Step = 'who' | 'details' | 'handoff' | 'done'
+type Step = 'who' | 'details' | 'clash' | 'handoff' | 'done'
 
 interface RoleOption {
   id: string
@@ -75,6 +75,8 @@ export function AddPersonDialog({
   const [phone, setPhone] = useState('')
   const [created, setCreated] = useState<{ userId: string; name: string } | null>(null)
   const [issued, setIssued] = useState<IssuedCode | null>(null)
+  /** Somebody here already holds that number. Their name, for the question. */
+  const [clash, setClash] = useState<string | null>(null)
 
   // Team member
   const [email, setEmail] = useState('')
@@ -88,6 +90,7 @@ export function AddPersonDialog({
     setPhone('')
     setCreated(null)
     setIssued(null)
+    setClash(null)
     setEmail('')
     setRoleValue('member')
   }, [])
@@ -108,20 +111,38 @@ export function AddPersonDialog({
   }, [])
 
   const addTechnician = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault()
+    async (resolve?: 'reuse' | 'takeover') => {
       if (busy || !name.trim() || !phone.trim()) return
       setBusy(true)
       setError(null)
 
-      const result = await createTechnicianAccount({ name: name.trim(), phone: phone.trim() })
+      const result = await createTechnicianAccount({
+        name: name.trim(),
+        phone: phone.trim(),
+        resolve,
+      })
       if (!result.success) {
         setError(result.error || t('team.addTechnicianFailed'))
         setBusy(false)
         return
       }
 
-      const technician = result.data as { userId: string; name: string }
+      const data = result.data as {
+        conflict: { name: string } | null
+        userId: string | null
+        name: string
+      }
+
+      // Somebody here already has that number. Ask rather than refuse: a
+      // recycled number or a name typed differently must not be a dead end.
+      if (data.conflict) {
+        setClash(data.conflict.name)
+        setStep('clash')
+        setBusy(false)
+        return
+      }
+
+      const technician = { userId: data.userId as string, name: data.name }
       setCreated(technician)
       onChanged()
       setStep('handoff')
@@ -242,7 +263,13 @@ export function AddPersonDialog({
         )}
 
         {step === 'details' && kind === 'technician' && (
-          <form onSubmit={addTechnician} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              void addTechnician()
+            }}
+            className="space-y-4"
+          >
             <StepIntro title={t('team.techDetailsTitle')} blurb={t('team.techDetailsBlurb')} />
             <div className="space-y-2">
               <Label htmlFor="tech-name">{t('team.technicianName')}</Label>
@@ -344,6 +371,46 @@ export function AddPersonDialog({
               disabled={!email.trim()}
             />
           </form>
+        )}
+
+        {step === 'clash' && (
+          <div className="space-y-4">
+            <StepIntro
+              title={t('team.clashTitle', { name: clash ?? '' })}
+              blurb={t('team.clashBlurb')}
+            />
+
+            {error && <p className="text-destructive text-sm">{error}</p>}
+
+            <div className="space-y-3">
+              <ChoiceButton
+                icon={<UserCheck className="h-5 w-5" />}
+                title={t('team.clashSamePerson', { name: clash ?? '' })}
+                hint={t('team.clashSamePersonHint')}
+                onClick={() => void addTechnician('reuse')}
+              />
+              <ChoiceButton
+                icon={<ArrowRightLeft className="h-5 w-5" />}
+                title={t('team.clashTakeover', { name: name.trim() })}
+                hint={t('team.clashTakeoverHint', { name: clash ?? '' })}
+                onClick={() => void addTechnician('takeover')}
+              />
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={busy}
+              onClick={() => {
+                setClash(null)
+                setStep('details')
+              }}
+            >
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {t('team.clashDifferentNumber')}
+            </Button>
+          </div>
         )}
 
         {step === 'handoff' && (

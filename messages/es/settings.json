@@ -451,7 +451,14 @@
     "stepDoneBody": "Puede abrir la aplicación y ver sus trabajos. La próxima vez entra solo con su móvil, sin código.",
     "stepInvitedTitle": "Invitación enviada a {email}",
     "stepInvitedBody": "Aparecerá en la lista en cuanto abra el correo y acepte. El enlace vale siete días.",
-    "stepDoneAnother": "Añadir a otra persona"
+    "stepDoneAnother": "Añadir a otra persona",
+    "clashTitle": "{name} ya tiene ese número",
+    "clashBlurb": "Dos personas no pueden compartir un móvil, porque es con lo que entran. ¿Cuál de estos casos es?",
+    "clashSamePerson": "Es {name}",
+    "clashSamePersonHint": "La misma persona que vuelve, o un nombre escrito de otra forma. Sus trabajos y horas siguen con ella, y el nombre que acaba de escribir sustituye al anterior.",
+    "clashTakeover": "No, es {name}",
+    "clashTakeoverHint": "Otra persona que ahora tiene ese número. {name} conserva todo lo que hizo aquí pero ya no puede entrar, y más adelante puede darle un número nuevo.",
+    "clashDifferentNumber": "Ninguno, quiero cambiar el número"
   },
   "invoice": {
     "title": "Diseño de factura",

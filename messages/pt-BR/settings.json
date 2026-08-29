@@ -451,7 +451,14 @@
     "stepDoneBody": "Ele pode abrir o aplicativo e ver os serviços dele. Na próxima vez entra só com o celular, sem código.",
     "stepInvitedTitle": "Convite enviado para {email}",
     "stepInvitedBody": "Ele aparece na lista assim que abrir o e-mail e aceitar. O link vale sete dias.",
-    "stepDoneAnother": "Adicionar outra pessoa"
+    "stepDoneAnother": "Adicionar outra pessoa",
+    "clashTitle": "{name} já tem esse número",
+    "clashBlurb": "Duas pessoas não podem dividir um número de celular, porque é com ele que entram. Qual destes casos é?",
+    "clashSamePerson": "É {name}",
+    "clashSamePersonHint": "A mesma pessoa voltando, ou um nome escrito de outro jeito. Os serviços e as horas continuam com ela, e o nome que você digitou substitui o antigo.",
+    "clashTakeover": "Não, é {name}",
+    "clashTakeoverHint": "Outra pessoa que agora tem esse número. {name} mantém tudo o que fez aqui mas não pode mais entrar, e você pode dar um número novo depois.",
+    "clashDifferentNumber": "Nenhum, quero mudar o número"
   },
   "invoice": {
     "title": "Layout da fatura",

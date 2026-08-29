@@ -451,7 +451,14 @@
     "stepDoneBody": "Può aprire l’app e vedere i suoi lavori. La prossima volta accede con il solo numero di cellulare, senza codice.",
     "stepInvitedTitle": "Invito inviato a {email}",
     "stepInvitedBody": "Comparirà nell’elenco appena aprirà l’email e accetterà. Il link vale sette giorni.",
-    "stepDoneAnother": "Aggiungi qualcun altro"
+    "stepDoneAnother": "Aggiungi qualcun altro",
+    "clashTitle": "{name} ha già quel numero",
+    "clashBlurb": "Due persone non possono condividere un numero di cellulare, perché è con quello che accedono. Quale dei due casi è?",
+    "clashSamePerson": "È {name}",
+    "clashSamePersonHint": "La stessa persona che torna, o un nome scritto diversamente. I suoi lavori e le sue ore restano con lei, e il nome appena inserito sostituisce il vecchio.",
+    "clashTakeover": "No, è {name}",
+    "clashTakeoverHint": "Un’altra persona che ora ha quel numero. {name} conserva tutto ciò che ha fatto qui ma non può più accedere, e potrai dargli un nuovo numero più avanti.",
+    "clashDifferentNumber": "Nessuno dei due, cambio il numero"
   },
   "invoice": {
     "title": "Layout fattura",
