@@ -591,14 +591,14 @@ export function TeamSettings({
                           className="h-8 w-8 text-muted-foreground hover:text-foreground"
                           disabled={!canUseApp(member)}
                           onClick={() => handleSetUpApp(member)}
-                          aria-label={t('team.setupApp')}
+                          aria-label={t('team.giveApp')}
                         >
                           <Smartphone className="h-4 w-4" />
                         </Button>
                       </span>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {canUseApp(member) ? t('team.setupApp') : t('team.cannotUseApp')}
+                      {canUseApp(member) ? t('team.giveApp') : t('team.cannotUseApp')}
                     </TooltipContent>
                   </Tooltip>
                 )}
