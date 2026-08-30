@@ -14,7 +14,7 @@ import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { createStyles, FRAMED } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
-import { templatePresets } from '@/features/settings/Schema/templatePresets'
+import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
 import {
   BOXED_ELIGIBLE_SECTIONS,
   getDefaultInvoiceLayout,
@@ -23,7 +23,11 @@ import {
   withLetterheadMark,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
-const framed = templatePresets.find((p) => p.id === 'framed')
+// The Letterhead template is the framed sheet: the band, the rail, and one
+// numbered list. It is what a workshop picks in the designer, so the layout
+// asserted here is the one the designer actually builds from it.
+const letterhead = layoutPresets.find((p) => p.id === 'letterhead')!
+const framedLayout = buildLayoutFromPreset(letterhead)
 
 /** The page style, widened past the union createStyles returns per variant. */
 function pageStyle(headerStyle: string, background?: string): Record<string, unknown> {
@@ -110,8 +114,7 @@ describe('framed template preset', () => {
   })
 
   it('swaps the two tables for the combined one and moves the title down', () => {
-    expect(framed?.layoutConfig).toBeDefined()
-    const seen = visibility(framed!.layoutConfig!)
+    const seen = visibility(framedLayout)
     expect(seen.items_table).toBe(true)
     expect(seen.document_title).toBe(true)
     expect(seen.parts_table).toBe(false)
@@ -119,7 +122,7 @@ describe('framed template preset', () => {
   })
 
   it('stands the vehicle opposite the customer', () => {
-    const sections = framed!.layoutConfig!.sections
+    const sections = framedLayout.sections
     expect(sections.find((s) => s.id === 'customer')?.column).toBe('left')
     expect(sections.find((s) => s.id === 'vehicle')?.column).toBe('right')
   })
@@ -178,7 +181,7 @@ describe('framed template preset', () => {
   })
 
   it('moves the company details down to the footer', () => {
-    const sections = framed!.layoutConfig!.sections
+    const sections = framedLayout.sections
     const shown = (id: string) =>
       sections
         .find((s) => s.id === id)
@@ -236,10 +239,10 @@ describe('framed template preset', () => {
 
   it('renders an invoice and a quote through the framed sheet', async () => {
     const template = {
-      primaryColor: framed!.primaryColor,
-      fontFamily: framed!.fontFamily,
-      headerStyle: framed!.headerStyle,
-      layoutConfig: framed!.layoutConfig,
+      primaryColor: letterhead.template.primaryColor,
+      fontFamily: letterhead.template.fontFamily,
+      headerStyle: letterhead.template.headerStyle,
+      layoutConfig: framedLayout,
     }
 
     const invoice = await renderToBuffer(
@@ -257,7 +260,7 @@ describe('framed template preset', () => {
     expect(invoice.byteLength).toBeGreaterThan(1000)
 
     const quote = await renderToBuffer(
-      <QuotePDF data={QUOTE_DATA} template={template} layoutConfig={framed!.layoutConfig} />
+      <QuotePDF data={QUOTE_DATA} template={template} layoutConfig={framedLayout} />
     )
     expect(quote.byteLength).toBeGreaterThan(1000)
   })

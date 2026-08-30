@@ -90,7 +90,6 @@ const DEFAULT_PROPS = {
  * The sheet is built server-side in production; the tests build it the same
  * way from the record, so what they assert on is what a customer sees.
  */
-// biome-ignore lint/suspicious/noExplicitAny: test helper over loose fixtures
 function renderView(props: any) {
   const record = props.record
   const paid = (record.payments ?? []).reduce(

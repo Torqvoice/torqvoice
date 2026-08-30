@@ -1,7 +1,7 @@
 'use client'
 
 import { AppCard } from '@/components/app-card'
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
@@ -18,10 +18,6 @@ import { FileText, Loader2, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { useConfirm } from '@/components/confirm-dialog'
-import {
-  saveInvoiceLayoutConfig,
-  saveQuoteLayoutConfig,
-} from '@/features/settings/Actions/invoiceLayoutActions'
 import {
   type InvoiceLayoutConfig,
   getDefaultInvoiceLayout,
