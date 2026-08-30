@@ -7,6 +7,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { describe, it, expect } from 'vitest'
 import { layoutPresets, buildLayoutFromPreset } from '@/features/settings/Schema/layoutPresets'
 import {
+  BUILTIN_FOOTER_FIELDS,
   BUILTIN_SECTIONS,
   invoiceLayoutConfigSchema,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -59,6 +60,16 @@ describe('layout presets', () => {
         id
       ).toBe(true)
     }
+  })
+
+  it('shows the whole footer on the detailed arrangement', () => {
+    const detailed = layoutPresets.find((p) => p.id === 'detailed')
+    const footer = buildLayoutFromPreset(detailed!).sections.find((s) => s.id === 'footer')
+    // Every footer field, derived rather than listed, so one added later is
+    // carried here instead of quietly missing.
+    expect(footer?.fields?.filter((f) => f.visible).map((f) => f.id)).toEqual(
+      BUILTIN_FOOTER_FIELDS.map((f) => f.id)
+    )
   })
 
   it('gives every arrangement a different one', () => {

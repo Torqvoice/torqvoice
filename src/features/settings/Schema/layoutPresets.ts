@@ -1,5 +1,7 @@
 import {
   type InvoiceLayoutConfig,
+  BUILTIN_FOOTER_FIELDS,
+  BUILTIN_HEADER_FIELDS,
   BUILTIN_SECTIONS,
   getDefaultInvoiceLayout,
 } from './invoiceLayoutSchema'
@@ -26,15 +28,10 @@ export interface LayoutPreset {
   footerFields?: string[]
 }
 
-const ALL_HEADER_FIELDS = [
-  'logo',
-  'company_name',
-  'company_slogan',
-  'company_address',
-  'company_phone',
-  'company_email',
-  'company_org_number',
-]
+// Derived, not written out: a field added to either list is then carried by
+// the presets that show everything, rather than quietly missing from them.
+const ALL_HEADER_FIELDS = BUILTIN_HEADER_FIELDS.map((f) => f.id as string)
+const ALL_FOOTER_FIELDS = BUILTIN_FOOTER_FIELDS.map((f) => f.id as string)
 
 export const layoutPresets: LayoutPreset[] = [
   {
@@ -117,7 +114,7 @@ export const layoutPresets: LayoutPreset[] = [
     ],
     columns: { customer: 'left', service: 'left', vehicle: 'right' },
     headerFields: ALL_HEADER_FIELDS,
-    footerFields: ['footer_note'],
+    footerFields: ALL_FOOTER_FIELDS,
   },
 ]
 
