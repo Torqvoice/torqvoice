@@ -1,0 +1,468 @@
+'use client'
+
+import type { ReactNode } from 'react'
+import type {
+  InvoiceDocumentStyle,
+  InvoiceLayoutConfig,
+  InvoiceSection,
+  InvoiceSectionStyle,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  BOXED_ELIGIBLE_SECTIONS,
+  COLUMN_ELIGIBLE_SECTIONS,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { DesignerTemplate } from './types'
+
+const SWATCHES = [
+  '#d97706',
+  '#2563eb',
+  '#059669',
+  '#dc2626',
+  '#7c3aed',
+  '#475569',
+  '#e11d48',
+  '#ee7623',
+]
+
+function Group({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="border-t border-[#eceef1] pt-2">
+      <div className="pb-2 text-[11.5px] font-semibold uppercase tracking-[0.07em] text-[#8a8f97]">
+        {title}
+      </div>
+      <div className="space-y-2">{children}</div>
+    </div>
+  )
+}
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="text-[13px] font-medium">{label}</span>
+      {children}
+    </div>
+  )
+}
+
+function Toggle({ on, onChange }: { on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!on)}
+      className="relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors"
+      style={{ background: on ? '#2563eb' : '#d7dade' }}
+    >
+      <span
+        className="absolute top-[3px] h-4 w-4 rounded-full bg-white transition-all"
+        style={{ left: on ? 19 : 3 }}
+      />
+    </button>
+  )
+}
+
+/** A color with its hex beside it, and a clear when the value is optional. */
+function Color({
+  label,
+  value,
+  fallback,
+  onChange,
+  clearable = true,
+}: {
+  label: string
+  value: string
+  fallback: string
+  onChange: (value: string) => void
+  clearable?: boolean
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <input
+        type="color"
+        value={value || fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-[30px] w-[34px] cursor-pointer rounded-md border border-[#e3e5e9] bg-white p-0.5"
+      />
+      <span className="flex-1 text-[13px] font-medium">{label}</span>
+      <span className="font-mono text-[11px] text-[#8a8f97]">{value || 'auto'}</span>
+      {clearable && (
+        <button
+          type="button"
+          onClick={() => onChange('')}
+          disabled={!value}
+          className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21] disabled:opacity-30"
+        >
+          ×
+        </button>
+      )}
+    </div>
+  )
+}
+
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  suffix,
+  onChange,
+}: {
+  label: string
+  value: number
+  min: number
+  max: number
+  suffix: string
+  onChange: (value: number) => void
+}) {
+  return (
+    <div>
+      <div className="mb-1.5 flex justify-between text-[13px] font-medium">
+        <span>{label}</span>
+        <span className="font-normal text-[#8a8f97]">
+          {value}
+          {suffix}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-[#2563eb]"
+      />
+    </div>
+  )
+}
+
+function Choice({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: string; label: string }[]
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <div className="flex gap-0.5 rounded-md bg-[#f0f1f4] p-[3px]">
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          onClick={() => onChange(option.value)}
+          className="flex-1 rounded-[5px] py-1.5 text-[12.5px] transition-colors"
+          style={{
+            background: value === option.value ? '#fff' : 'transparent',
+            fontWeight: value === option.value ? 600 : 400,
+            boxShadow: value === option.value ? '0 1px 2px rgba(26,29,33,0.08)' : undefined,
+          }}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+const HEADER_STYLES = [
+  { value: 'standard', label: 'Standard', desc: 'Name and details on white, rule beneath' },
+  { value: 'compact', label: 'Compact', desc: 'Tighter, with the title alongside' },
+  { value: 'modern', label: 'Modern', desc: 'Full-width colored banner' },
+  { value: 'framed', label: 'Framed', desc: 'Band across the top, rail down the left' },
+]
+
+export function DesignerInspector({
+  layout,
+  template,
+  selected,
+  onSelect,
+  onSection,
+  onSectionStyle,
+  onDocument,
+  onTemplate,
+}: {
+  layout: InvoiceLayoutConfig
+  template: DesignerTemplate
+  selected: string | null
+  onSelect: (id: string | null) => void
+  onSection: (id: string, patch: Partial<InvoiceSection>) => void
+  onSectionStyle: (id: string, style: InvoiceSectionStyle | undefined) => void
+  onDocument: (patch: InvoiceDocumentStyle) => void
+  onTemplate: (patch: Partial<DesignerTemplate>) => void
+}) {
+  const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
+  const doc = layout.document ?? {}
+
+  if (section) {
+    const style = section.style ?? {}
+    const setStyle = (patch: InvoiceSectionStyle) => {
+      const next = { ...style, ...patch }
+      const kept = Object.fromEntries(
+        Object.entries(next).filter(([, v]) => v !== undefined && v !== '')
+      )
+      onSectionStyle(section.id, Object.keys(kept).length ? kept : undefined)
+    }
+
+    return (
+      <div className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4">
+        <div className="mb-0.5 flex items-center justify-between">
+          <div className="text-[15px] font-bold capitalize">{section.id.replace(/_/g, ' ')}</div>
+          <button
+            type="button"
+            onClick={() => onSelect(null)}
+            className="text-[15px] text-[#8a8f97]"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="mb-4 text-xs text-[#8a8f97]">Section settings</div>
+
+        <div className="space-y-3">
+          <Group title="Placement">
+            <Row label="Visible">
+              <Toggle
+                on={section.visible}
+                onChange={(visible) => onSection(section.id, { visible })}
+              />
+            </Row>
+            {COLUMN_ELIGIBLE_SECTIONS.has(section.id) && (
+              <Choice
+                value={section.column ?? 'full'}
+                options={[
+                  { value: 'full', label: 'Full' },
+                  { value: 'left', label: 'Left' },
+                  { value: 'right', label: 'Right' },
+                ]}
+                onChange={(v) =>
+                  onSection(section.id, {
+                    column: v === 'full' ? undefined : (v as 'left' | 'right'),
+                  })
+                }
+              />
+            )}
+            {BOXED_ELIGIBLE_SECTIONS.has(section.id) && (
+              <Row label="Draw a box">
+                <Toggle
+                  on={section.boxed !== false}
+                  onChange={(boxed) => onSection(section.id, { boxed })}
+                />
+              </Row>
+            )}
+          </Group>
+
+          {section.id === 'header' && (
+            <Group title="Header style">
+              <div className="flex flex-col gap-1">
+                {HEADER_STYLES.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => onTemplate({ headerStyle: option.value })}
+                    className="rounded-md border px-3 py-2 text-left text-[13px]"
+                    style={{
+                      borderColor: template.headerStyle === option.value ? '#2563eb' : '#e3e5e9',
+                      background: template.headerStyle === option.value ? '#eef2ff' : '#fff',
+                      fontWeight: template.headerStyle === option.value ? 600 : 400,
+                    }}
+                  >
+                    {option.label}
+                    <span className="block text-[11.5px] font-normal text-[#8a8f97]">
+                      {option.desc}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Group>
+          )}
+
+          <Group title="Appearance">
+            <Color
+              label="Text"
+              value={style.textColor ?? ''}
+              fallback="#111827"
+              onChange={(textColor) => setStyle({ textColor })}
+            />
+            <Color
+              label="Heading"
+              value={style.labelColor ?? ''}
+              fallback={template.primaryColor}
+              onChange={(labelColor) => setStyle({ labelColor })}
+            />
+            <Color
+              label="Fill"
+              value={style.backgroundColor ?? ''}
+              fallback="#f3f4f6"
+              onChange={(backgroundColor) => setStyle({ backgroundColor })}
+            />
+            <Color
+              label="Border"
+              value={style.borderColor ?? ''}
+              fallback="#111827"
+              onChange={(borderColor) => setStyle({ borderColor })}
+            />
+            <Row label="Size">
+              <input
+                type="number"
+                min={5}
+                max={24}
+                value={style.fontSize ?? ''}
+                placeholder="auto"
+                onChange={(e) =>
+                  setStyle({ fontSize: e.target.value ? Number(e.target.value) : undefined })
+                }
+                className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+              />
+            </Row>
+            <Row label="Font">
+              <select
+                value={style.fontFamily ?? ''}
+                onChange={(e) => setStyle({ fontFamily: e.target.value || undefined })}
+                className="h-7 rounded-md border border-[#e3e5e9] bg-white px-1.5 text-[12px]"
+              >
+                <option value="">Inherit</option>
+                <option value="Helvetica">Sans</option>
+                <option value="Times-Roman">Serif</option>
+                <option value="Courier">Mono</option>
+              </select>
+            </Row>
+          </Group>
+        </div>
+
+        <div className="mt-4 rounded-md bg-[#f8f9fa] px-3 py-2.5 text-xs leading-relaxed text-[#8a8f97]">
+          Drag this section in the list, or on the page, to move it.
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4">
+      <div className="text-[15px] font-bold">Document</div>
+      <div className="mb-4 text-xs text-[#8a8f97]">Applies to the whole sheet</div>
+
+      <div className="space-y-3">
+        <Group title="Colors">
+          <Color
+            label="Primary"
+            value={template.primaryColor}
+            fallback="#d97706"
+            clearable={false}
+            onChange={(primaryColor) => onTemplate({ primaryColor })}
+          />
+          <div className="flex flex-wrap gap-1.5">
+            {SWATCHES.map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => onTemplate({ primaryColor: color })}
+                className="h-6 w-6 rounded-full"
+                style={{
+                  background: color,
+                  border:
+                    template.primaryColor === color ? '2px solid #1a1d21' : '2px solid transparent',
+                }}
+              />
+            ))}
+          </div>
+          <Color
+            label="Background"
+            value={template.backgroundColor}
+            fallback="#ffffff"
+            onChange={(backgroundColor) => onTemplate({ backgroundColor })}
+          />
+          <Color
+            label="Text"
+            value={template.textColor}
+            fallback="#111827"
+            onChange={(textColor) => onTemplate({ textColor })}
+          />
+          <Color
+            label="Company name"
+            value={template.companyTextColor}
+            fallback="#ffffff"
+            onChange={(companyTextColor) => onTemplate({ companyTextColor })}
+          />
+          <Color
+            label="Accent"
+            value={doc.accentColor ?? ''}
+            fallback={template.primaryColor}
+            onChange={(accentColor) => onDocument({ accentColor: accentColor || undefined })}
+          />
+        </Group>
+
+        {template.headerStyle === 'framed' && (
+          <Group title="Frame">
+            <Color
+              label="Frame line"
+              value={template.frameBorderColor}
+              fallback="#111827"
+              onChange={(frameBorderColor) => onTemplate({ frameBorderColor })}
+            />
+            <Row label="Shadow">
+              <Toggle
+                on={template.frameShadow !== 'false'}
+                onChange={(on) => onTemplate({ frameShadow: on ? 'true' : 'false' })}
+              />
+            </Row>
+          </Group>
+        )}
+
+        <Group title="Typography">
+          <select
+            value={template.fontFamily}
+            onChange={(e) => onTemplate({ fontFamily: e.target.value })}
+            className="w-full rounded-md border border-[#e3e5e9] bg-white px-2.5 py-2 text-[13px]"
+          >
+            <option value="Helvetica">Sans (Roboto)</option>
+            <option value="Times-Roman">Serif (Noto Serif)</option>
+            <option value="Courier">Mono (Noto Sans Mono)</option>
+          </select>
+          <Slider
+            label="Base size"
+            value={doc.fontSize ?? 10}
+            min={6}
+            max={14}
+            suffix="pt"
+            onChange={(fontSize) => onDocument({ fontSize })}
+          />
+        </Group>
+
+        <Group title="Page">
+          <Slider
+            label="Margins"
+            value={doc.margin ?? 40}
+            min={12}
+            max={72}
+            suffix="pt"
+            onChange={(margin) => onDocument({ margin })}
+          />
+          <Slider
+            label="Row height"
+            value={doc.rowPadding ?? 5}
+            min={0}
+            max={12}
+            suffix="pt"
+            onChange={(rowPadding) => onDocument({ rowPadding })}
+          />
+          <Row label="Row banding">
+            <Toggle on={doc.stripes !== false} onChange={(stripes) => onDocument({ stripes })} />
+          </Row>
+          <Color
+            label="Band"
+            value={doc.stripeColor ?? ''}
+            fallback="#f3f4f6"
+            onChange={(stripeColor) => onDocument({ stripeColor: stripeColor || undefined })}
+          />
+          <Slider
+            label="Logo size"
+            value={template.logoSize}
+            min={50}
+            max={200}
+            suffix="%"
+            onChange={(logoSize) => onTemplate({ logoSize })}
+          />
+        </Group>
+      </div>
+    </div>
+  )
+}
