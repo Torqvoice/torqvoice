@@ -9,7 +9,10 @@
  */
 import { describe, expect, it } from 'vitest'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
-import { getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  DESIGNER_LAYOUT_VERSION,
+  getDefaultInvoiceLayout,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { InvoiceData } from '@/features/vehicles/Components/invoice-pdf/types'
 
 const data: InvoiceData = {
@@ -36,7 +39,9 @@ const data: InvoiceData = {
 }
 
 function specWithTitleVisible(visible: boolean) {
-  const layout = getDefaultInvoiceLayout()
+  // A designer-saved layout: an unstamped one keeps the classic letterhead,
+  // which carries the title itself and has no separate block to place.
+  const layout = { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION }
   layout.sections = layout.sections.map((s) => (s.id === 'document_title' ? { ...s, visible } : s))
   return buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
 }

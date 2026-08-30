@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
 import {
   COLUMN_ELIGIBLE_SECTIONS,
+  DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
   materializeHiddenSection,
   toCustomFieldId,
@@ -580,8 +581,11 @@ export function InvoiceDesigner({
     setSaving(true)
     try {
       const prefix = docType === 'invoice' ? 'invoice' : 'quote'
+      // The stamp that graduates this organization from the classic
+      // pre-designer rendering to whatever this designer shows.
+      const stamped = { ...layout, version: DESIGNER_LAYOUT_VERSION }
       await Promise.all([
-        docType === 'invoice' ? saveInvoiceLayoutConfig(layout) : saveQuoteLayoutConfig(layout),
+        docType === 'invoice' ? saveInvoiceLayoutConfig(stamped) : saveQuoteLayoutConfig(stamped),
         setSettings({
           [`${prefix}.primaryColor`]: template.primaryColor,
           [`${prefix}.backgroundColor`]: template.backgroundColor,
