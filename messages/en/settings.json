@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Assigned numbers to {count} customers",
     "allCustomersNumbered": "All customers have a number.",
     "assignCustomerNumbersConfirmTitle": "Assign customer numbers?",
-    "assignCustomerNumbersConfirmDescription": "This will give sequential numbers to the {count} customers that have no number yet, in the order they were created, continuing after your highest existing number. Customers that already have a number are not changed. Numbers can be edited afterwards."
+    "assignCustomerNumbersConfirmDescription": "This will give sequential numbers to the {count} customers that have no number yet, in the order they were created, continuing after your highest existing number. Customers that already have a number are not changed. Numbers can be edited afterwards.",
+    "layoutColorsHint": "Colors, fonts and the header style live in Templates.",
+    "goToTemplates": "Open Templates"
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",
@@ -634,6 +636,20 @@
         "name": "Detailed",
         "description": "Title up top, vehicle on its own, both tables and every optional block"
       }
+    },
+    "style": {
+      "documentTitle": "Whole sheet",
+      "documentHint": "size, spacing, accent, banding",
+      "textColor": "Text",
+      "labelColor": "Heading",
+      "backgroundColor": "Fill",
+      "borderColor": "Border",
+      "fontSize": "Size",
+      "rowPadding": "Row height",
+      "margin": "Margin",
+      "accentColor": "Accent",
+      "stripeColor": "Band",
+      "stripes": "Banding"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
       "slate": "Slate",
       "rose": "Rose",
       "indigo": "Indigo"
-    }
+    },
+    "goToLayout": "Layout and sections"
   },
   "payment": {
     "readMore": "Read More",

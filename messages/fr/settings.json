@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Numéros attribués à {count} clients",
     "allCustomersNumbered": "Tous les clients ont un numéro.",
     "assignCustomerNumbersConfirmTitle": "Attribuer des numéros clients ?",
-    "assignCustomerNumbersConfirmDescription": "Les {count} clients sans numéro recevront des numéros séquentiels dans leur ordre de création, à la suite du numéro existant le plus élevé. Les clients ayant déjà un numéro ne sont pas modifiés. Les numéros restent modifiables ensuite."
+    "assignCustomerNumbersConfirmDescription": "Les {count} clients sans numéro recevront des numéros séquentiels dans leur ordre de création, à la suite du numéro existant le plus élevé. Les clients ayant déjà un numéro ne sont pas modifiés. Les numéros restent modifiables ensuite.",
+    "layoutColorsHint": "Les couleurs, les polices et le style d’en-tête sont dans Modèles.",
+    "goToTemplates": "Ouvrir Modèles"
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",
@@ -634,6 +636,20 @@
         "name": "Détaillée",
         "description": "Titre en haut, véhicule seul, les deux tableaux et tous les blocs optionnels"
       }
+    },
+    "style": {
+      "documentTitle": "Feuille entière",
+      "documentHint": "taille, espacement, accent, bandes",
+      "textColor": "Texte",
+      "labelColor": "Titre",
+      "backgroundColor": "Fond",
+      "borderColor": "Bordure",
+      "fontSize": "Taille",
+      "rowPadding": "Hauteur de ligne",
+      "margin": "Marge",
+      "accentColor": "Accent",
+      "stripeColor": "Bande",
+      "stripes": "Bandes"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Personnalisez l'ordre et la visibilité des sections dans vos factures et devis.",
     "layoutSaved": "Mise en page enregistrée",
     "layoutDocInvoice": "Facture",
-    "layoutDocQuote": "Devis"
+    "layoutDocQuote": "Devis",
+    "goToLayout": "Disposition et sections"
   },
   "payment": {
     "readMore": "En savoir plus",

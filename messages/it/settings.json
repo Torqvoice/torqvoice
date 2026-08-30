@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Numeri assegnati a {count} clienti",
     "allCustomersNumbered": "Tutti i clienti hanno un numero.",
     "assignCustomerNumbersConfirmTitle": "Assegnare i numeri cliente?",
-    "assignCustomerNumbersConfirmDescription": "I {count} clienti senza numero riceveranno numeri sequenziali nell'ordine di creazione, proseguendo dal numero esistente più alto. I clienti che hanno già un numero non vengono modificati. I numeri restano modificabili."
+    "assignCustomerNumbersConfirmDescription": "I {count} clienti senza numero riceveranno numeri sequenziali nell'ordine di creazione, proseguendo dal numero esistente più alto. I clienti che hanno già un numero non vengono modificati. I numeri restano modificabili.",
+    "layoutColorsHint": "Colori, caratteri e stile dell’intestazione sono in Modelli.",
+    "goToTemplates": "Apri Modelli"
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",
@@ -634,6 +636,20 @@
         "name": "Dettagliata",
         "description": "Titolo in alto, veicolo da solo, entrambe le tabelle e ogni blocco opzionale"
       }
+    },
+    "style": {
+      "documentTitle": "Intero foglio",
+      "documentHint": "dimensione, spaziatura, accento, bande",
+      "textColor": "Testo",
+      "labelColor": "Titolo",
+      "backgroundColor": "Sfondo",
+      "borderColor": "Bordo",
+      "fontSize": "Dimensione",
+      "rowPadding": "Altezza riga",
+      "margin": "Margine",
+      "accentColor": "Accento",
+      "stripeColor": "Banda",
+      "stripes": "Bande"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Personalizza l'ordine e la visibilita delle sezioni nelle fatture e nei preventivi.",
     "layoutSaved": "Layout salvato con successo",
     "layoutDocInvoice": "Fattura",
-    "layoutDocQuote": "Preventivo"
+    "layoutDocQuote": "Preventivo",
+    "goToLayout": "Disposizione e sezioni"
   },
   "payment": {
     "readMore": "Scopri di più",

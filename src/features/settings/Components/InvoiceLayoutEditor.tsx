@@ -51,6 +51,8 @@ import {
   type InvoiceLayoutConfig,
   type InvoiceSection,
   type InvoiceFieldConfig,
+  type InvoiceSectionStyle,
+  type InvoiceDocumentStyle,
 } from '../Schema/invoiceLayoutSchema'
 
 // ---------------------------------------------------------------------------
@@ -398,6 +400,212 @@ function WidthToggle({
 }
 
 // ---------------------------------------------------------------------------
+// Style controls
+// ---------------------------------------------------------------------------
+
+/** One color on one line, at the density the rest of these settings use. */
+function StyleColor({
+  label,
+  value,
+  fallback,
+  onChange,
+}: {
+  label: string
+  value?: string
+  fallback: string
+  onChange: (value: string | undefined) => void
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">{label}</span>
+      <input
+        type="color"
+        value={value || fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-6 w-8 shrink-0 cursor-pointer rounded border p-0.5"
+      />
+      <button
+        type="button"
+        onClick={() => onChange(undefined)}
+        disabled={!value}
+        className="text-[11px] text-muted-foreground hover:text-foreground disabled:opacity-30"
+      >
+        ×
+      </button>
+    </div>
+  )
+}
+
+function StyleNumber({
+  label,
+  value,
+  placeholder,
+  min,
+  max,
+  onChange,
+}: {
+  label: string
+  value?: number
+  placeholder: string
+  min: number
+  max: number
+  onChange: (value: number | undefined) => void
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">{label}</span>
+      <input
+        type="number"
+        min={min}
+        max={max}
+        value={value ?? ''}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
+        className="h-6 w-16 rounded border bg-background px-1.5 text-[11px]"
+      />
+    </div>
+  )
+}
+
+/** The five keys a section can override. */
+function SectionStylePanel({
+  style,
+  onChange,
+  t,
+}: {
+  style?: InvoiceSectionStyle
+  onChange: (style: InvoiceSectionStyle | undefined) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  const set = (patch: InvoiceSectionStyle) => {
+    const next = { ...style, ...patch }
+    // An empty bag is the same as none, and keeps the saved layout clean.
+    onChange(Object.values(next).some((v) => v !== undefined && v !== '') ? next : undefined)
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t pt-2">
+      <StyleColor
+        label={t('layoutEditor.style.textColor')}
+        value={style?.textColor}
+        fallback="#111827"
+        onChange={(textColor) => set({ textColor })}
+      />
+      <StyleColor
+        label={t('layoutEditor.style.labelColor')}
+        value={style?.labelColor}
+        fallback="#d97706"
+        onChange={(labelColor) => set({ labelColor })}
+      />
+      <StyleColor
+        label={t('layoutEditor.style.backgroundColor')}
+        value={style?.backgroundColor}
+        fallback="#f3f4f6"
+        onChange={(backgroundColor) => set({ backgroundColor })}
+      />
+      <StyleColor
+        label={t('layoutEditor.style.borderColor')}
+        value={style?.borderColor}
+        fallback="#111827"
+        onChange={(borderColor) => set({ borderColor })}
+      />
+      <StyleNumber
+        label={t('layoutEditor.style.fontSize')}
+        value={style?.fontSize}
+        placeholder="10"
+        min={5}
+        max={24}
+        onChange={(fontSize) => set({ fontSize })}
+      />
+    </div>
+  )
+}
+
+/** Appearance that belongs to the whole sheet rather than to one section. */
+function DocumentStylePanel({
+  document,
+  onChange,
+  t,
+}: {
+  document?: InvoiceDocumentStyle
+  onChange: (document: InvoiceDocumentStyle | undefined) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  const [open, setOpen] = useState(false)
+  const set = (patch: InvoiceDocumentStyle) => {
+    const next = { ...document, ...patch }
+    onChange(Object.values(next).some((v) => v !== undefined && v !== '') ? next : undefined)
+  }
+
+  return (
+    <div className="mb-3 rounded-lg border bg-card px-3 py-2">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center gap-2 text-sm font-medium"
+      >
+        {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        {t('layoutEditor.style.documentTitle')}
+        <span className="ml-auto text-[11px] font-normal text-muted-foreground">
+          {t('layoutEditor.style.documentHint')}
+        </span>
+      </button>
+
+      {open && (
+        <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t pt-2 sm:grid-cols-3">
+          <StyleNumber
+            label={t('layoutEditor.style.fontSize')}
+            value={document?.fontSize}
+            placeholder="10"
+            min={6}
+            max={14}
+            onChange={(fontSize) => set({ fontSize })}
+          />
+          <StyleNumber
+            label={t('layoutEditor.style.rowPadding')}
+            value={document?.rowPadding}
+            placeholder="5"
+            min={0}
+            max={12}
+            onChange={(rowPadding) => set({ rowPadding })}
+          />
+          <StyleNumber
+            label={t('layoutEditor.style.margin')}
+            value={document?.margin}
+            placeholder="40"
+            min={12}
+            max={72}
+            onChange={(margin) => set({ margin })}
+          />
+          <StyleColor
+            label={t('layoutEditor.style.accentColor')}
+            value={document?.accentColor}
+            fallback="#d97706"
+            onChange={(accentColor) => set({ accentColor })}
+          />
+          <StyleColor
+            label={t('layoutEditor.style.stripeColor')}
+            value={document?.stripeColor}
+            fallback="#f3f4f6"
+            onChange={(stripeColor) => set({ stripeColor })}
+          />
+          <div className="flex items-center gap-1.5">
+            <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">
+              {t('layoutEditor.style.stripes')}
+            </span>
+            <Switch
+              size="sm"
+              checked={document?.stripes !== false}
+              onCheckedChange={(stripes) => set({ stripes })}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Preset row – starting arrangements
 // ---------------------------------------------------------------------------
 
@@ -477,6 +685,7 @@ function SectionCard({
   onReorderFields,
   onSetColumn,
   onSetBoxed,
+  onSetStyle,
   isExpanded,
   onToggleExpand,
   availableCustomFields,
@@ -491,6 +700,7 @@ function SectionCard({
   onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void
   onSetColumn: (sectionId: string, column: 'left' | 'right' | undefined) => void
   onSetBoxed: (sectionId: string, boxed: boolean) => void
+  onSetStyle: (sectionId: string, style: InvoiceSectionStyle | undefined) => void
   isExpanded: boolean
   onToggleExpand: (sectionId: string) => void
   availableCustomFields: FieldDef[]
@@ -506,6 +716,8 @@ function SectionCard({
   }
 
   const hasFields = SECTIONS_WITH_FIELDS.has(section.id)
+  // Every section can be styled, so every section can be opened.
+  const canExpand = true
   const isColumnEligible = COLUMN_ELIGIBLE_SECTIONS.has(section.id)
   const isBoxEligible = BOXED_ELIGIBLE_SECTIONS.has(section.id)
 
@@ -531,8 +743,9 @@ function SectionCard({
           <GripVertical className="h-4 w-4" />
         </button>
 
-        {/* Expand toggle for sections with fields */}
-        {hasFields && (
+        {/* Every section opens: those with fields to pick them, all of them
+            to style. */}
+        {canExpand && (
           <button
             type="button"
             onClick={() => onToggleExpand(section.id)}
@@ -582,17 +795,23 @@ function SectionCard({
         </div>
       </div>
 
-      {/* Expandable fields panel */}
-      {hasFields && isExpanded && (
-        <div className="ml-6">
-          <FieldsPanel
-            section={section}
-            customFields={customFields}
-            availableCustomFields={availableCustomFields}
-            onToggleFieldVisibility={onToggleFieldVisibility}
-            onRemoveField={onRemoveField}
-            onAddCustomField={onAddCustomField}
-            onReorderFields={onReorderFields}
+      {isExpanded && (
+        <div className="ml-6 space-y-2 rounded-lg border bg-muted/30 p-2">
+          {hasFields && (
+            <FieldsPanel
+              section={section}
+              customFields={customFields}
+              availableCustomFields={availableCustomFields}
+              onToggleFieldVisibility={onToggleFieldVisibility}
+              onRemoveField={onRemoveField}
+              onAddCustomField={onAddCustomField}
+              onReorderFields={onReorderFields}
+              t={t}
+            />
+          )}
+          <SectionStylePanel
+            style={section.style}
+            onChange={(style) => onSetStyle(section.id, style)}
             t={t}
           />
         </div>
@@ -652,7 +871,7 @@ export function InvoiceLayoutEditor({
       const updatedSections = config.sections.map((s) =>
         s.id === sectionId ? { ...s, visible: !s.visible } : s
       )
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange]
   )
@@ -666,7 +885,7 @@ export function InvoiceLayoutEditor({
           fields: s.fields.map((f) => (f.id === fieldId ? { ...f, visible: !f.visible } : f)),
         }
       })
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange]
   )
@@ -677,7 +896,7 @@ export function InvoiceLayoutEditor({
         if (s.id !== sectionId || !s.fields) return s
         return { ...s, fields: s.fields.filter((f) => f.id !== fieldId) }
       })
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange]
   )
@@ -690,7 +909,7 @@ export function InvoiceLayoutEditor({
         const currentFields = s.fields ?? []
         return { ...s, fields: [...currentFields, { id: cfId, visible: true }] }
       })
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange]
   )
@@ -701,15 +920,28 @@ export function InvoiceLayoutEditor({
         if (s.id !== sectionId || !s.fields) return s
         return { ...s, fields: arrayMove(s.fields, oldIndex, newIndex) }
       })
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
+    [config, onChange]
+  )
+
+  const handleSetStyle = useCallback(
+    (sectionId: string, style: InvoiceSectionStyle | undefined) => {
+      const updatedSections = config.sections.map((s) => (s.id === sectionId ? { ...s, style } : s))
+      onChange({ ...config, sections: updatedSections })
+    },
+    [config, onChange]
+  )
+
+  const handleSetDocumentStyle = useCallback(
+    (document: InvoiceDocumentStyle | undefined) => onChange({ ...config, document }),
     [config, onChange]
   )
 
   const handleSetBoxed = useCallback(
     (sectionId: string, boxed: boolean) => {
       const updatedSections = config.sections.map((s) => (s.id === sectionId ? { ...s, boxed } : s))
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange]
   )
@@ -719,7 +951,7 @@ export function InvoiceLayoutEditor({
       const updatedSections = config.sections.map((s) =>
         s.id === sectionId ? { ...s, column } : s
       )
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange]
   )
@@ -740,7 +972,7 @@ export function InvoiceLayoutEditor({
         const idx = reordered.findIndex((r) => r.id === s.id)
         return { ...s, order: idx }
       })
-      onChange({ sections: updatedSections })
+      onChange({ ...config, sections: updatedSections })
     },
     [config, onChange, sortedSections]
   )
@@ -748,6 +980,7 @@ export function InvoiceLayoutEditor({
   return (
     <div className="space-y-1">
       <PresetRow onPick={onChange} t={t} />
+      <DocumentStylePanel document={config.document} onChange={handleSetDocumentStyle} t={t} />
       <p className="text-xs text-muted-foreground mb-2">{t('layoutEditor.helpText')}</p>
 
       <DndContext
@@ -772,6 +1005,7 @@ export function InvoiceLayoutEditor({
               onReorderFields={handleReorderFields}
               onSetColumn={handleSetColumn}
               onSetBoxed={handleSetBoxed}
+              onSetStyle={handleSetStyle}
               isExpanded={expandedSections.has(section.id)}
               onToggleExpand={toggleExpand}
               availableCustomFields={availableCustomFields}

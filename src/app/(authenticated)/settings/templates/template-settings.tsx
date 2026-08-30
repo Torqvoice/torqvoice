@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -726,7 +727,19 @@ export function TemplateSettings({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <div>
-        <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-lg font-semibold">{t('templates.title')}</h2>
+          {/* Colors live here and arrangement lives there, which is easy to
+              get lost in. Each page says where the other half is. */}
+          {tab !== 'inspections' && tab !== 'sms' && (
+            <Link
+              href="/settings/invoice?tab=layout"
+              className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+            >
+              {t('templates.goToLayout')}
+            </Link>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">
           {tab === 'inspections'
             ? t('templates.inspectionsDescription')

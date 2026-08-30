@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Numeriai priskirti {count} klientams",
     "allCustomersNumbered": "Visi klientai turi numerį.",
     "assignCustomerNumbersConfirmTitle": "Priskirti klientų numerius?",
-    "assignCustomerNumbersConfirmDescription": "{count} klientams be numerio bus priskirti eilės numeriai sukūrimo tvarka, tęsiant nuo didžiausio esamo numerio. Klientai, jau turintys numerį, nekeičiami. Numerius galima redaguoti vėliau."
+    "assignCustomerNumbersConfirmDescription": "{count} klientams be numerio bus priskirti eilės numeriai sukūrimo tvarka, tęsiant nuo didžiausio esamo numerio. Klientai, jau turintys numerį, nekeičiami. Numerius galima redaguoti vėliau.",
+    "layoutColorsHint": "Spalvos, šriftai ir antraštės stilius yra skiltyje Šablonai.",
+    "goToTemplates": "Atverti šablonus"
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -634,6 +636,20 @@
         "name": "Išsamus",
         "description": "Antraštė viršuje, transporto priemonė atskirai, abi lentelės ir visi blokai"
       }
+    },
+    "style": {
+      "documentTitle": "Visas lapas",
+      "documentHint": "dydis, tarpai, akcentas, juostos",
+      "textColor": "Tekstas",
+      "labelColor": "Antraštė",
+      "backgroundColor": "Užpildas",
+      "borderColor": "Rėmelis",
+      "fontSize": "Dydis",
+      "rowPadding": "Eilutės aukštis",
+      "margin": "Paraštė",
+      "accentColor": "Akcentas",
+      "stripeColor": "Juosta",
+      "stripes": "Juostos"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
       "slate": "Šiferinė",
       "rose": "Rožinė",
       "indigo": "Indigo"
-    }
+    },
+    "goToLayout": "Išdėstymas ir skiltys"
   },
   "payment": {
     "readMore": "Skaityti daugiau",

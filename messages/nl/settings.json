@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Nummers toegewezen aan {count} klanten",
     "allCustomersNumbered": "Alle klanten hebben een nummer.",
     "assignCustomerNumbersConfirmTitle": "Klantnummers toewijzen?",
-    "assignCustomerNumbersConfirmDescription": "De {count} klanten zonder nummer krijgen opeenvolgende nummers in volgorde van aanmaak, doorlopend na het hoogste bestaande nummer. Klanten met een nummer worden niet gewijzigd. Nummers zijn achteraf te bewerken."
+    "assignCustomerNumbersConfirmDescription": "De {count} klanten zonder nummer krijgen opeenvolgende nummers in volgorde van aanmaak, doorlopend na het hoogste bestaande nummer. Klanten met een nummer worden niet gewijzigd. Nummers zijn achteraf te bewerken.",
+    "layoutColorsHint": "Kleuren, lettertypen en de briefhoofdstijl staan bij Sjablonen.",
+    "goToTemplates": "Sjablonen openen"
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",
@@ -634,6 +636,20 @@
         "name": "Uitgebreid",
         "description": "Titel bovenaan, voertuig apart, beide tabellen en alle optionele blokken"
       }
+    },
+    "style": {
+      "documentTitle": "Hele vel",
+      "documentHint": "grootte, ruimte, accent, banen",
+      "textColor": "Tekst",
+      "labelColor": "Kop",
+      "backgroundColor": "Vulling",
+      "borderColor": "Rand",
+      "fontSize": "Grootte",
+      "rowPadding": "Rijhoogte",
+      "margin": "Marge",
+      "accentColor": "Accent",
+      "stripeColor": "Baan",
+      "stripes": "Banen"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Pas de volgorde en zichtbaarheid van secties in uw facturen en offertes aan.",
     "layoutSaved": "Indeling succesvol opgeslagen",
     "layoutDocInvoice": "Factuur",
-    "layoutDocQuote": "Offerte"
+    "layoutDocQuote": "Offerte",
+    "goToLayout": "Indeling en secties"
   },
   "payment": {
     "readMore": "Lees meer",

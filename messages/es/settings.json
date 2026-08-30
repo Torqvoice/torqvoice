@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Números asignados a {count} clientes",
     "allCustomersNumbered": "Todos los clientes tienen número.",
     "assignCustomerNumbersConfirmTitle": "¿Asignar números de cliente?",
-    "assignCustomerNumbersConfirmDescription": "Los {count} clientes sin número recibirán números secuenciales en el orden en que se crearon, continuando después del número existente más alto. Los clientes que ya tienen número no cambian. Los números se pueden editar después."
+    "assignCustomerNumbersConfirmDescription": "Los {count} clientes sin número recibirán números secuenciales en el orden en que se crearon, continuando después del número existente más alto. Los clientes que ya tienen número no cambian. Los números se pueden editar después.",
+    "layoutColorsHint": "Los colores, las fuentes y el estilo de encabezado están en Plantillas.",
+    "goToTemplates": "Abrir Plantillas"
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",
@@ -634,6 +636,20 @@
         "name": "Detallada",
         "description": "Título arriba, vehículo aparte, ambas tablas y todos los bloques opcionales"
       }
+    },
+    "style": {
+      "documentTitle": "Hoja completa",
+      "documentHint": "tamaño, espaciado, acento, franjas",
+      "textColor": "Texto",
+      "labelColor": "Título",
+      "backgroundColor": "Relleno",
+      "borderColor": "Borde",
+      "fontSize": "Tamaño",
+      "rowPadding": "Alto de fila",
+      "margin": "Margen",
+      "accentColor": "Acento",
+      "stripeColor": "Franja",
+      "stripes": "Franjas"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
     "layoutSaved": "Disposición guardada correctamente",
     "layoutDocInvoice": "Factura",
-    "layoutDocQuote": "Presupuesto"
+    "layoutDocQuote": "Presupuesto",
+    "goToLayout": "Diseño y secciones"
   },
   "payment": {
     "readMore": "Leer más",

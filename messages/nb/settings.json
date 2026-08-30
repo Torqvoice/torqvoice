@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Tildelte numre til {count} kunder",
     "allCustomersNumbered": "Alle kunder har et nummer.",
     "assignCustomerNumbersConfirmTitle": "Tildele kundenumre?",
-    "assignCustomerNumbersConfirmDescription": "De {count} kundene uten nummer får fortløpende numre i opprettelsesrekkefølge, fortsettende etter det høyeste eksisterende nummeret. Kunder som allerede har nummer endres ikke. Numrene kan redigeres etterpå."
+    "assignCustomerNumbersConfirmDescription": "De {count} kundene uten nummer får fortløpende numre i opprettelsesrekkefølge, fortsettende etter det høyeste eksisterende nummeret. Kunder som allerede har nummer endres ikke. Numrene kan redigeres etterpå.",
+    "layoutColorsHint": "Farger, skrifter og brevhodestilen ligger under Maler.",
+    "goToTemplates": "Åpne Maler"
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",
@@ -634,6 +636,20 @@
         "name": "Detaljert",
         "description": "Tittel øverst, kjøretøyet for seg, begge tabeller og alle valgfrie blokker"
       }
+    },
+    "style": {
+      "documentTitle": "Hele arket",
+      "documentHint": "størrelse, avstand, aksent, striper",
+      "textColor": "Tekst",
+      "labelColor": "Overskrift",
+      "backgroundColor": "Fyll",
+      "borderColor": "Ramme",
+      "fontSize": "Størrelse",
+      "rowPadding": "Radhøyde",
+      "margin": "Marg",
+      "accentColor": "Aksent",
+      "stripeColor": "Stripe",
+      "stripes": "Striper"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
       "slate": "Skifer",
       "rose": "Rosa",
       "indigo": "Indigo"
-    }
+    },
+    "goToLayout": "Oppsett og seksjoner"
   },
   "payment": {
     "readMore": "Les mer",

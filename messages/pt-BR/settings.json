@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Números atribuídos a {count} clientes",
     "allCustomersNumbered": "Todos os clientes têm número.",
     "assignCustomerNumbersConfirmTitle": "Atribuir números de cliente?",
-    "assignCustomerNumbersConfirmDescription": "Os {count} clientes sem número receberão números sequenciais na ordem de criação, continuando após o maior número existente. Clientes que já têm número não são alterados. Os números podem ser editados depois."
+    "assignCustomerNumbersConfirmDescription": "Os {count} clientes sem número receberão números sequenciais na ordem de criação, continuando após o maior número existente. Clientes que já têm número não são alterados. Os números podem ser editados depois.",
+    "layoutColorsHint": "Cores, fontes e o estilo do timbre ficam em Modelos.",
+    "goToTemplates": "Abrir Modelos"
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",
@@ -634,6 +636,20 @@
         "name": "Detalhada",
         "description": "Título no topo, veículo sozinho, as duas tabelas e todos os blocos opcionais"
       }
+    },
+    "style": {
+      "documentTitle": "Folha inteira",
+      "documentHint": "tamanho, espaçamento, acento, faixas",
+      "textColor": "Texto",
+      "labelColor": "Título",
+      "backgroundColor": "Preenchimento",
+      "borderColor": "Borda",
+      "fontSize": "Tamanho",
+      "rowPadding": "Altura da linha",
+      "margin": "Margem",
+      "accentColor": "Acento",
+      "stripeColor": "Faixa",
+      "stripes": "Faixas"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Personalize a ordem e visibilidade das seções nas suas faturas e orçamentos.",
     "layoutSaved": "Layout salvo com sucesso",
     "layoutDocInvoice": "Fatura",
-    "layoutDocQuote": "Orçamento"
+    "layoutDocQuote": "Orçamento",
+    "goToLayout": "Disposição e seções"
   },
   "payment": {
     "readMore": "Saiba mais",

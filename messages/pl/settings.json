@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "Przydzielono numery {count} klientom",
     "allCustomersNumbered": "Wszyscy klienci mają numer.",
     "assignCustomerNumbersConfirmTitle": "Przydzielić numery klientów?",
-    "assignCustomerNumbersConfirmDescription": "{count} klientów bez numeru otrzyma kolejne numery w kolejności utworzenia, kontynuując od najwyższego istniejącego numeru. Klienci z numerem nie zostaną zmienieni. Numery można później edytować."
+    "assignCustomerNumbersConfirmDescription": "{count} klientów bez numeru otrzyma kolejne numery w kolejności utworzenia, kontynuując od najwyższego istniejącego numeru. Klienci z numerem nie zostaną zmienieni. Numery można później edytować.",
+    "layoutColorsHint": "Kolory, czcionki i styl nagłówka są w Szablonach.",
+    "goToTemplates": "Otwórz Szablony"
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",
@@ -634,6 +636,20 @@
         "name": "Szczegółowy",
         "description": "Tytuł na górze, pojazd osobno, obie tabele i wszystkie bloki opcjonalne"
       }
+    },
+    "style": {
+      "documentTitle": "Cały arkusz",
+      "documentHint": "rozmiar, odstępy, akcent, pasy",
+      "textColor": "Tekst",
+      "labelColor": "Nagłówek",
+      "backgroundColor": "Wypełnienie",
+      "borderColor": "Ramka",
+      "fontSize": "Rozmiar",
+      "rowPadding": "Wysokość wiersza",
+      "margin": "Margines",
+      "accentColor": "Akcent",
+      "stripeColor": "Pas",
+      "stripes": "Pasy"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Dostosuj kolejność i widoczność sekcji w fakturach i wycenach.",
     "layoutSaved": "Układ zapisany pomyślnie",
     "layoutDocInvoice": "Faktura",
-    "layoutDocQuote": "Wycena"
+    "layoutDocQuote": "Wycena",
+    "goToLayout": "Układ i sekcje"
   },
   "payment": {
     "readMore": "Czytaj więcej",

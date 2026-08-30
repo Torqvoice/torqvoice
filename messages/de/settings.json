@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "{count} Kunden nummeriert",
     "allCustomersNumbered": "Alle Kunden haben eine Nummer.",
     "assignCustomerNumbersConfirmTitle": "Kundennummern vergeben?",
-    "assignCustomerNumbersConfirmDescription": "Die {count} Kunden ohne Nummer erhalten fortlaufende Nummern in der Reihenfolge ihrer Erstellung, beginnend nach der höchsten vorhandenen Nummer. Kunden mit Nummer bleiben unverändert. Nummern können danach bearbeitet werden."
+    "assignCustomerNumbersConfirmDescription": "Die {count} Kunden ohne Nummer erhalten fortlaufende Nummern in der Reihenfolge ihrer Erstellung, beginnend nach der höchsten vorhandenen Nummer. Kunden mit Nummer bleiben unverändert. Nummern können danach bearbeitet werden.",
+    "layoutColorsHint": "Farben, Schriften und der Briefkopf-Stil liegen unter Vorlagen.",
+    "goToTemplates": "Vorlagen öffnen"
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
@@ -634,6 +636,20 @@
         "name": "Ausführlich",
         "description": "Titel oben, Fahrzeug für sich, beide Tabellen und alle optionalen Blöcke"
       }
+    },
+    "style": {
+      "documentTitle": "Ganzes Blatt",
+      "documentHint": "Größe, Abstände, Akzent, Streifen",
+      "textColor": "Text",
+      "labelColor": "Überschrift",
+      "backgroundColor": "Füllung",
+      "borderColor": "Rahmen",
+      "fontSize": "Größe",
+      "rowPadding": "Zeilenhöhe",
+      "margin": "Rand",
+      "accentColor": "Akzent",
+      "stripeColor": "Streifen",
+      "stripes": "Streifen an"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
     "layoutSaved": "Layout erfolgreich gespeichert",
     "layoutDocInvoice": "Rechnung",
-    "layoutDocQuote": "Angebot"
+    "layoutDocQuote": "Angebot",
+    "goToLayout": "Layout und Abschnitte"
   },
   "payment": {
     "readMore": "Mehr erfahren",

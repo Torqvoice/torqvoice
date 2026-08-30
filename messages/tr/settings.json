@@ -554,7 +554,9 @@
     "customerNumbersAssigned": "{count} müşteriye numara atandı",
     "allCustomersNumbered": "Tüm müşterilerin numarası var.",
     "assignCustomerNumbersConfirmTitle": "Müşteri numaraları atansın mı?",
-    "assignCustomerNumbersConfirmDescription": "Numarası olmayan {count} müşteriye, oluşturulma sırasına göre ve mevcut en yüksek numaradan devam eden sıralı numaralar verilecek. Numarası olan müşteriler değişmez. Numaralar sonradan düzenlenebilir."
+    "assignCustomerNumbersConfirmDescription": "Numarası olmayan {count} müşteriye, oluşturulma sırasına göre ve mevcut en yüksek numaradan devam eden sıralı numaralar verilecek. Numarası olan müşteriler değişmez. Numaralar sonradan düzenlenebilir.",
+    "layoutColorsHint": "Renkler, yazı tipleri ve antet stili Şablonlar’da bulunur.",
+    "goToTemplates": "Şablonları aç"
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",
@@ -634,6 +636,20 @@
         "name": "Ayrıntılı",
         "description": "Başlık üstte, araç tek başına, iki tablo ve tüm isteğe bağlı bloklar"
       }
+    },
+    "style": {
+      "documentTitle": "Tüm sayfa",
+      "documentHint": "boyut, boşluk, vurgu, şeritler",
+      "textColor": "Metin",
+      "labelColor": "Başlık",
+      "backgroundColor": "Dolgu",
+      "borderColor": "Kenarlık",
+      "fontSize": "Boyut",
+      "rowPadding": "Satır yüksekliği",
+      "margin": "Kenar boşluğu",
+      "accentColor": "Vurgu",
+      "stripeColor": "Şerit",
+      "stripes": "Şeritler"
     }
   },
   "templates": {
@@ -746,7 +762,8 @@
     "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
     "layoutSaved": "Düzen başarıyla kaydedildi",
     "layoutDocInvoice": "Fatura",
-    "layoutDocQuote": "Teklif"
+    "layoutDocQuote": "Teklif",
+    "goToLayout": "Düzen ve bölümler"
   },
   "payment": {
     "readMore": "Devamını oku",

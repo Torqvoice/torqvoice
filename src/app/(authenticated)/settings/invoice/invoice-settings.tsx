@@ -2,6 +2,7 @@
 
 import { AppCard } from '@/components/app-card'
 import { useState, useCallback, useMemo } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
@@ -451,6 +452,17 @@ export function InvoiceSettings({
         <>
           <ReadOnlyWrapper>
             <div className="space-y-4">
+              {/* Arrangement lives here and colors live there, which is easy
+                  to get lost in. Each page says where the other half is. */}
+              <p className="text-xs text-muted-foreground">
+                {t('invoice.layoutColorsHint')}{' '}
+                <Link
+                  href="/settings/templates"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  {t('invoice.goToTemplates')}
+                </Link>
+              </p>
               <div className="flex items-center justify-between">
                 <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
                   <button

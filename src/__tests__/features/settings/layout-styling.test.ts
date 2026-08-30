@@ -98,3 +98,29 @@ describe('document styling', () => {
     expect(read(styled, 'totalDivider', 'borderTopColor')).toBe('#334155')
   })
 })
+
+describe('layout config carries its styling', () => {
+  it('keeps the whole-sheet block through a merge with defaults', async () => {
+    const { mergeWithDefaults, getSectionStyle } = await import(
+      '@/features/settings/Schema/invoiceLayoutSchema'
+    )
+    const saved = {
+      document: { fontSize: 8, accentColor: '#334155' },
+      sections: [{ id: 'customer', visible: true, order: 0, style: { textColor: '#111111' } }],
+    }
+    const merged = mergeWithDefaults(saved)
+    // Sections a saved layout has never seen are appended; what it does carry
+    // has to survive, or styling the sheet and then reordering would drop it.
+    expect(merged.document).toEqual(saved.document)
+    expect(getSectionStyle(merged, 'customer')?.textColor).toBe('#111111')
+    expect(getSectionStyle(merged, 'vehicle')).toBeUndefined()
+  })
+
+  it('treats an emptied style bag as none', async () => {
+    const { getSectionStyle } = await import('@/features/settings/Schema/invoiceLayoutSchema')
+    const config = {
+      sections: [{ id: 'customer', visible: true, order: 0, style: { textColor: undefined } }],
+    }
+    expect(getSectionStyle(config, 'customer')).toBeUndefined()
+  })
+})
