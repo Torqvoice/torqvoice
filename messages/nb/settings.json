@@ -493,7 +493,9 @@
     "noRolesYet": "Dette verkstedet har ingen roller ennå, så det finnes ingenting å gi dem utover Admin. Opprett standardrollene og juster tillatelsene senere.",
     "noRoleDescription": "Ingen tillatelser i det hele tatt. De kan logge inn, men hver skjerm avviser dem til du gir dem en rolle nedenfor.",
     "cannotUseApp": "Rollen deres kan ikke jobbe på jobber. Gi dem Tekniker, eller en rolle med de samme tillatelsene, først.",
-    "revokeTechnicianDone": "{name} er logget ut av appen"
+    "revokeTechnicianDone": "{name} er logget ut av appen",
+    "noAccessTitle": "Ingen tilgang ennå",
+    "noAccessBody": "Kontoen din tilhører {workshop}, men den har ikke fått en rolle ennå, så det er ingenting her du kan åpne. Be en eier eller administrator på verkstedet om å gi deg en."
   },
   "invoice": {
     "title": "Faktura og tilbud",

@@ -493,7 +493,9 @@
     "noRolesYet": "Deze werkplaats heeft nog geen rollen, dus er valt niets te geven behalve Admin. Maak de standaardrollen aan en verfijn de rechten later.",
     "noRoleDescription": "Geen rechten. Ze kunnen inloggen, maar elk scherm weigert ze tot u hieronder een rol toekent.",
     "cannotUseApp": "Hun rol kan niet aan klussen werken. Geef ze eerst Monteur, of een rol met dezelfde rechten.",
-    "revokeTechnicianDone": "{name} is uitgelogd uit de app"
+    "revokeTechnicianDone": "{name} is uitgelogd uit de app",
+    "noAccessTitle": "Nog geen toegang",
+    "noAccessBody": "Uw account hoort bij {workshop}, maar heeft nog geen rol, dus er is hier niets te openen. Vraag een eigenaar of beheerder van uw werkplaats om een rol."
   },
   "invoice": {
     "title": "Factuurindeling",

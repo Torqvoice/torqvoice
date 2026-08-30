@@ -493,7 +493,9 @@
     "noRolesYet": "Questa officina non ha ancora ruoli, quindi non c’è nulla da assegnare oltre ad Admin. Crea quelli standard e restringi i permessi dopo.",
     "noRoleDescription": "Nessun permesso. Può accedere, ma ogni schermata lo rifiuta finché non gli assegni un ruolo qui sotto.",
     "cannotUseApp": "Il suo ruolo non può lavorare sui lavori. Assegnagli prima Tecnico, o un ruolo con gli stessi permessi.",
-    "revokeTechnicianDone": "{name} è stato disconnesso dall’app"
+    "revokeTechnicianDone": "{name} è stato disconnesso dall’app",
+    "noAccessTitle": "Ancora nessun accesso",
+    "noAccessBody": "Il tuo account fa parte di {workshop}, ma non ha ancora un ruolo, quindi qui non c’è nulla da aprire. Chiedi un ruolo a un titolare o a un amministratore della tua officina."
   },
   "invoice": {
     "title": "Layout fattura",

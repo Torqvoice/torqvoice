@@ -493,7 +493,9 @@
     "noRolesYet": "This workshop has no roles yet, so there is nothing to give them beyond Admin. Create the standard ones and narrow the permissions later.",
     "noRoleDescription": "No permissions at all. They can sign in and every screen will refuse them until you give them a role below.",
     "cannotUseApp": "Their role cannot work on jobs. Give them Technician, or a role with the same permissions, first.",
-    "revokeTechnicianDone": "{name} has been signed out of the app"
+    "revokeTechnicianDone": "{name} has been signed out of the app",
+    "noAccessTitle": "No access yet",
+    "noAccessBody": "Your account is part of {workshop}, but it has not been given a role, so there is nothing here you can open yet. Ask an owner or an admin at your workshop to give you one."
   },
   "invoice": {
     "title": "Invoice & Quotes",

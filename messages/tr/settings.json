@@ -493,7 +493,9 @@
     "noRolesYet": "Bu atölyede henüz rol yok, bu yüzden Yönetici dışında verilecek bir şey bulunmuyor. Standart rolleri oluşturup izinleri sonra daraltın.",
     "noRoleDescription": "Hiçbir izni yok. Giriş yapabilir ama aşağıdan bir rol verene kadar her ekran onu reddeder.",
     "cannotUseApp": "Rolü işler üzerinde çalışmaya izin vermiyor. Önce Teknisyen ya da aynı izinlere sahip bir rol verin.",
-    "revokeTechnicianDone": "{name} uygulamadan çıkarıldı"
+    "revokeTechnicianDone": "{name} uygulamadan çıkarıldı",
+    "noAccessTitle": "Henüz erişim yok",
+    "noAccessBody": "Hesabınız {workshop} atölyesine ait, ancak henüz bir rol verilmemiş; bu yüzden burada açabileceğiniz bir şey yok. Atölyenizdeki bir sahip ya da yöneticiden rol isteyin."
   },
   "invoice": {
     "title": "Fatura Düzeni",

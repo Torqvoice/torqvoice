@@ -493,7 +493,9 @@
     "noRolesYet": "Cet atelier n’a encore aucun rôle, il n’y a donc rien à leur donner en dehors d’Admin. Créez les rôles standard et affinez les permissions plus tard.",
     "noRoleDescription": "Aucune permission. La personne peut se connecter, mais chaque écran la refusera tant que vous ne lui aurez pas donné un rôle ci-dessous.",
     "cannotUseApp": "Son rôle ne permet pas de travailler sur les travaux. Donnez-lui d’abord Technicien, ou un rôle ayant les mêmes permissions.",
-    "revokeTechnicianDone": "{name} a été déconnecté de l’application"
+    "revokeTechnicianDone": "{name} a été déconnecté de l’application",
+    "noAccessTitle": "Pas encore d’accès",
+    "noAccessBody": "Votre compte fait partie de {workshop}, mais aucun rôle ne lui a été attribué, donc il n’y a rien à ouvrir ici. Demandez un rôle à un propriétaire ou un administrateur de votre atelier."
   },
   "invoice": {
     "title": "Mise en page de facture",
