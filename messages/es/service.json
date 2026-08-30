@@ -348,7 +348,9 @@
     "technicians": "Técnicos",
     "otherTeamMembers": "Otros miembros del equipo",
     "makeTechnician": "Lo convierte en técnico",
-    "addSomeoneNew": "Añadir a alguien nuevo"
+    "addSomeoneNew": "Añadir a alguien nuevo",
+    "notOnBoard": "Aún no está en el tablero",
+    "putOnBoard": "Poner en el tablero"
   },
   "notifications": {
     "title": "Notificaciones al cliente",

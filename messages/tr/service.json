@@ -348,7 +348,9 @@
     "technicians": "Teknisyenler",
     "otherTeamMembers": "Diğer ekip üyeleri",
     "makeTechnician": "Onu teknisyen yapar",
-    "addSomeoneNew": "Yeni birini ekle"
+    "addSomeoneNew": "Yeni birini ekle",
+    "notOnBoard": "Henüz panoda değil",
+    "putOnBoard": "Panoya ekle"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",

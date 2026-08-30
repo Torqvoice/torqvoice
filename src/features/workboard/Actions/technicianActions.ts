@@ -25,9 +25,26 @@ export async function getTechnicians() {
           organizationId: true,
           createdAt: true,
           updatedAt: true,
+          user: { select: { name: true, email: true } },
         },
       })
-      return technicians
+
+      /**
+       * The account's name wins over the copy stored on the row.
+       *
+       * A technician row carries its own name, written once when the row was
+       * made and never since. Rename somebody, or attach an existing row to a
+       * different account, and the two drift: the work board went on calling
+       * one member "Petter" while the team page called the same person John
+       * Doe, and nobody could tell they were looking at one person.
+       *
+       * Only when a row belongs to an account. A board-only technician has no
+       * account to ask, and the stored name is the only name there is.
+       */
+      return technicians.map(({ user, ...technician }) => ({
+        ...technician,
+        name: user?.name || user?.email || technician.name,
+      }))
     },
     {
       requiredPermissions: [

@@ -22,7 +22,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
+import { Check, ChevronsUpDown, Clock, Plus, Settings, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import {
@@ -309,11 +309,32 @@ export function ScheduleTimesSection({
                     ))}
                   </CommandGroup>
                 )}
+                {/* Colleagues who are not on the board yet.
+                    This list was computed and then not rendered, which left no
+                    way at all to put somebody on a job from here: the only
+                    route was a phone icon on the team page, labelled as
+                    something else. It was dropped because choosing a colleague
+                    quietly turned them into a technician, and that is the part
+                    worth keeping fixed, so the heading says what will happen
+                    rather than the click doing it silently. */}
+                {unlinkedMembers.length > 0 && (
+                  <CommandGroup heading={t('notOnBoard')}>
+                    {unlinkedMembers.map((member) => (
+                      <CommandItem
+                        key={member.id}
+                        value={member.name ?? ''}
+                        disabled={creating}
+                        onSelect={() => handleMemberSelect(member)}
+                      >
+                        <UserPlus className="mr-2 h-4 w-4 text-muted-foreground" />
+                        <span className="flex-1">{member.name}</span>
+                        <span className="text-muted-foreground text-xs">{t('putOnBoard')}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
                 {/* Adding somebody is one workflow, and this is a door into
-                    it rather than a fourth way of doing it. The picker used to
-                    create people itself: choosing an office colleague quietly
-                    made them a technician, and typing a name made a second
-                    kind nobody had asked about. */}
+                    it rather than a fourth way of doing it. */}
                 <CommandGroup>
                   <CommandItem value="__add_person__" onSelect={() => setAddingPerson(true)}>
                     <Plus className="mr-2 h-4 w-4" />

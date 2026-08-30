@@ -348,7 +348,9 @@
     "technicians": "Techniciens",
     "otherTeamMembers": "Autres membres de l’équipe",
     "makeTechnician": "En fait un technicien",
-    "addSomeoneNew": "Ajouter quelqu’un"
+    "addSomeoneNew": "Ajouter quelqu’un",
+    "notOnBoard": "Pas encore sur le planning",
+    "putOnBoard": "Mettre au planning"
   },
   "notifications": {
     "title": "Notifications client",

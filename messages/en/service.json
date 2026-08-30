@@ -348,7 +348,9 @@
     "technicians": "Technicians",
     "otherTeamMembers": "Other team members",
     "makeTechnician": "Makes them a technician",
-    "addSomeoneNew": "Add someone new"
+    "addSomeoneNew": "Add someone new",
+    "notOnBoard": "Not on the board yet",
+    "putOnBoard": "Put on board"
   },
   "notifications": {
     "title": "Customer Notifications",

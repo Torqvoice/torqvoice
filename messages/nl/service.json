@@ -348,7 +348,9 @@
     "technicians": "Monteurs",
     "otherTeamMembers": "Andere teamleden",
     "makeTechnician": "Maakt hen monteur",
-    "addSomeoneNew": "Iemand nieuw toevoegen"
+    "addSomeoneNew": "Iemand nieuw toevoegen",
+    "notOnBoard": "Nog niet op het bord",
+    "putOnBoard": "Op het bord zetten"
   },
   "notifications": {
     "title": "Klantmeldingen",
