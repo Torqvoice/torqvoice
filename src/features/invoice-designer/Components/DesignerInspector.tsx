@@ -278,6 +278,24 @@ export function DesignerInspector({
           </Group>
 
           {section.id === 'header' && (
+            <Group title="Logo">
+              {/* The logo is printed by the header, so its size is set where
+                  the header is rather than in a list of sheet properties. */}
+              <Slider
+                label="Size"
+                value={template.logoSize}
+                min={50}
+                max={200}
+                suffix="%"
+                onChange={(logoSize) => onTemplate({ logoSize })}
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                Turn the logo off under Fields to print the company name instead.
+              </p>
+            </Group>
+          )}
+
+          {section.id === 'header' && (
             <Group title="Header style">
               <div className="flex flex-col gap-1">
                 {HEADER_STYLES.map((option) => (
@@ -479,6 +497,17 @@ export function DesignerInspector({
 
         {template.headerStyle === 'framed' && (
           <Group title="Frame">
+            <div>
+              <div className="mb-1.5 text-[13px] font-medium">Rail</div>
+              <Choice
+                value={template.frameSide === 'right' ? 'right' : 'left'}
+                options={[
+                  { value: 'left', label: 'Left edge' },
+                  { value: 'right', label: 'Right edge' },
+                ]}
+                onChange={(frameSide) => onTemplate({ frameSide })}
+              />
+            </div>
             <Color
               label="Frame line"
               value={template.frameBorderColor}
@@ -539,14 +568,6 @@ export function DesignerInspector({
             value={doc.stripeColor ?? ''}
             fallback="#f3f4f6"
             onChange={(stripeColor) => onDocument({ stripeColor: stripeColor || undefined })}
-          />
-          <Slider
-            label="Logo size"
-            value={template.logoSize}
-            min={50}
-            max={200}
-            suffix="%"
-            onChange={(logoSize) => onTemplate({ logoSize })}
           />
         </Group>
       </div>

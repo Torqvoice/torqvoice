@@ -117,6 +117,9 @@ export async function sendQuoteEmail(input: {
         companyTextColor: settings['invoice.companyTextColor'] || undefined,
         frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
         frameShadow: settings['invoice.frameShadow'] !== 'false',
+        frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+          | 'left'
+          | 'right',
         fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
@@ -287,6 +290,9 @@ export async function sendInvoiceEmail(input: {
         companyTextColor: settings['invoice.companyTextColor'] || undefined,
         frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
         frameShadow: settings['invoice.frameShadow'] !== 'false',
+        frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+          | 'left'
+          | 'right',
         fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
@@ -419,6 +425,9 @@ export async function sendInspectionEmail(input: {
         companyTextColor: settings['invoice.companyTextColor'] || undefined,
         frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
         frameShadow: settings['invoice.frameShadow'] !== 'false',
+        frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+          | 'left'
+          | 'right',
         fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',

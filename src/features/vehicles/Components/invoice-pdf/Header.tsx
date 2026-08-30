@@ -1,6 +1,6 @@
 import { Text, View, Image } from '@react-pdf/renderer'
 import type { WorkshopInfo, InvoiceSettingsProps } from './types'
-import { getFontBold, inkColors } from './styles'
+import { getFontBold, inkColors, type FrameSide } from './styles'
 import type { Style } from '@react-pdf/types'
 import { getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { FramedLetterhead } from './FramedLetterhead'
@@ -43,6 +43,8 @@ interface HeaderProps {
   /** The line and shadow where the sheet meets a framed letterhead. */
   frameBorderColor?: string
   frameShadow?: boolean
+  /** Which edge the rail runs down. */
+  frameSide?: FrameSide
   /**
    * False when the layout has a Document Title section of its own. The header
    * then prints no title, number or date, so the block appears exactly once and
@@ -73,6 +75,7 @@ export function Header({
   mutedColor,
   frameBorderColor,
   frameShadow,
+  frameSide,
   showTitle = true,
   styles,
   labels,
@@ -112,6 +115,7 @@ export function Header({
         shopDisplayName={shopDisplayName}
         muted={muted}
         nameColor={companyTextColor}
+        side={frameSide}
         borderColor={frameBorderColor}
         shadow={frameShadow}
         labels={labels}

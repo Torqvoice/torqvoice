@@ -98,16 +98,19 @@ export function InvoicePDF({
   const showCompanyName = template?.showCompanyName !== false
   const headerStyle = template?.headerStyle || 'standard'
   const isFramed = headerStyle === 'framed'
+  const frameSide = template?.frameSide === 'right' ? 'right' : 'left'
   const styles = withDocumentStyle(
     createStyles(
       primaryColor,
       fontFamily,
       headerStyle,
       template?.backgroundColor,
-      template?.textColor
+      template?.textColor,
+      frameSide
     ),
     template?.layoutConfig?.document,
-    isFramed
+    isFramed,
+    frameSide
   )
   const companyTextColor = template?.companyTextColor || undefined
   const frameBorderColor = template?.frameBorderColor || undefined
@@ -254,6 +257,7 @@ export function InvoicePDF({
           mutedColor={headerSectionStyle?.textColor}
           frameBorderColor={frameBorderColor}
           frameShadow={frameShadow}
+          frameSide={frameSide}
           showTitle={!documentTitleVisible}
           labels={labels}
         />
@@ -505,11 +509,11 @@ export function InvoicePDF({
               position: 'absolute',
               top: 0,
               // Absolute offsets are measured from inside the page border, so
-              // zero lands exactly against the rail.
-              left: 0,
+              // zero lands exactly against the rail, whichever edge it is on.
+              [frameSide === 'right' ? 'right' : 'left']: 0,
               height: A4_HEIGHT,
               width: (frameBorderColor ? 0.6 : 0) + (frameShadow ? SHADOW.length * SHADOW_STEP : 0),
-              flexDirection: 'row',
+              flexDirection: frameSide === 'right' ? 'row-reverse' : 'row',
             }}
           >
             {frameBorderColor ? (

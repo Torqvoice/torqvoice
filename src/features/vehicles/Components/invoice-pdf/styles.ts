@@ -1,8 +1,9 @@
 import { StyleSheet } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
-import { FRAMED, framedPageInset } from './frame'
+import { FRAMED, framedPageInset, type FrameSide } from './frame'
 
 export { FRAMED, framedPageInset }
+export type { FrameSide }
 
 export const gray = '#6b7280'
 export const grayLight = '#f3f4f6'
@@ -233,7 +234,8 @@ export interface DocumentStyle {
 export function withDocumentStyle(
   base: Record<string, Style>,
   doc?: DocumentStyle,
-  framed = false
+  framed = false,
+  frameSide: FrameSide = 'left'
 ): Record<string, Style> {
   if (!doc) return base
   const out: Record<string, Style> = { ...base }
@@ -242,13 +244,15 @@ export function withDocumentStyle(
   }
 
   if (doc.margin) {
+    set('page', framed ? framedPageInset(doc.margin, frameSide) : { padding: doc.margin })
     set(
-      'page',
+      'footer',
       framed
-        ? { paddingRight: doc.margin, paddingBottom: doc.margin + 20 }
-        : { padding: doc.margin }
+        ? frameSide === 'right'
+          ? { left: doc.margin }
+          : { right: doc.margin }
+        : { left: doc.margin, right: doc.margin }
     )
-    set('footer', framed ? { right: doc.margin } : { left: doc.margin, right: doc.margin })
   }
 
   if (doc.fontFamily) {
@@ -301,9 +305,11 @@ export function createStyles(
   font: string,
   headerStyle = 'standard',
   background?: string,
-  text?: string
+  text?: string,
+  frameSide: FrameSide = 'left'
 ) {
   const framed = headerStyle === 'framed'
+  const railOnRight = framed && frameSide === 'right'
   // Every piece of text takes its color from these two. The muted one is the
   // ink carried partway toward the sheet, so secondary lines stay secondary at
   // any ink: fixing them at one gray would leave them unreadable on a dark
@@ -323,11 +329,12 @@ export function createStyles(
     page: framed
       ? {
           paddingTop: FRAMED.padTop,
-          paddingLeft: FRAMED.padLeft,
-          paddingRight: FRAMED.padRight,
+          paddingLeft: railOnRight ? FRAMED.padRight : FRAMED.padLeft,
+          paddingRight: railOnRight ? FRAMED.padLeft : FRAMED.padRight,
           paddingBottom: FRAMED.padBottom,
-          borderLeftWidth: FRAMED.railWidth,
-          borderLeftColor: primary,
+          ...(railOnRight
+            ? { borderRightWidth: FRAMED.railWidth, borderRightColor: primary }
+            : { borderLeftWidth: FRAMED.railWidth, borderLeftColor: primary }),
           fontSize: 10,
           fontFamily: resolved,
           color: ink,
@@ -438,8 +445,8 @@ export function createStyles(
     footer: {
       position: 'absolute' as const,
       bottom: framed ? 22 : 30,
-      left: framed ? FRAMED.padLeft : 40,
-      right: framed ? FRAMED.padRight : 40,
+      left: framed ? (railOnRight ? FRAMED.padRight : FRAMED.padLeft) : 40,
+      right: framed ? (railOnRight ? FRAMED.padLeft : FRAMED.padRight) : 40,
       textAlign: 'center' as const,
       fontSize: 8,
       color: muted,

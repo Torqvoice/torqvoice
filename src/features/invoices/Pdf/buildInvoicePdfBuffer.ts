@@ -242,6 +242,9 @@ export async function buildInvoicePdfBuffer(
     companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
     frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
     frameShadow: settingsMap['invoice.frameShadow'] !== 'false',
+    frameSide: (settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+      | 'left'
+      | 'right',
     fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
     showLogo: settingsMap['invoice.showLogo'] !== 'false',
     showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',

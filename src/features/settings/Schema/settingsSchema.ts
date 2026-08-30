@@ -45,6 +45,8 @@ export const SETTING_KEYS = {
   INVOICE_FRAME_BORDER_COLOR: 'invoice.frameBorderColor',
   /// "false" prints the frame flat against the sheet, with no shadow.
   INVOICE_FRAME_SHADOW: 'invoice.frameShadow',
+  /// Which edge the framed rail runs down: "left" or "right".
+  INVOICE_FRAME_SIDE: 'invoice.frameSide',
   INVOICE_FONT_FAMILY: 'invoice.fontFamily',
   INVOICE_SHOW_LOGO: 'invoice.showLogo',
   INVOICE_SHOW_COMPANY_NAME: 'invoice.showCompanyName',
@@ -79,6 +81,7 @@ export const SETTING_KEYS = {
   QUOTE_COMPANY_TEXT_COLOR: 'quote.companyTextColor',
   QUOTE_FRAME_BORDER_COLOR: 'quote.frameBorderColor',
   QUOTE_FRAME_SHADOW: 'quote.frameShadow',
+  QUOTE_FRAME_SIDE: 'quote.frameSide',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',
   QUOTE_HEADER_STYLE: 'quote.headerStyle',
   PREDICTED_MAINTENANCE_ENABLED: 'maintenance.enabled',

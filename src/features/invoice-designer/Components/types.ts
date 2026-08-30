@@ -10,6 +10,8 @@ export interface DesignerTemplate {
   companyTextColor: string
   frameBorderColor: string
   frameShadow: string
+  /** Which edge the rail runs down. */
+  frameSide: string
   fontFamily: string
   headerStyle: string
   logoSize: number

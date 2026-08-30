@@ -22,11 +22,20 @@ export const FRAMED = {
  * two would compound and push the content into the middle of the page. Only the
  * edges without frame take the margin.
  */
-export function framedPageInset(margin: number) {
-  return {
-    paddingTop: FRAMED.padTop,
-    paddingLeft: FRAMED.padLeft,
-    paddingRight: margin,
-    paddingBottom: margin + 20,
-  }
+export type FrameSide = 'left' | 'right'
+
+export function framedPageInset(margin: number, side: FrameSide = 'left') {
+  return side === 'right'
+    ? {
+        paddingTop: FRAMED.padTop,
+        paddingRight: FRAMED.padLeft,
+        paddingLeft: margin,
+        paddingBottom: margin + 20,
+      }
+    : {
+        paddingTop: FRAMED.padTop,
+        paddingLeft: FRAMED.padLeft,
+        paddingRight: margin,
+        paddingBottom: margin + 20,
+      }
 }

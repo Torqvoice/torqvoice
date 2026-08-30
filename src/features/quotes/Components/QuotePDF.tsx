@@ -168,16 +168,19 @@ export function QuotePDF({
     ? headerFieldOrder.includes('company_name')
     : showCompanyName
   const isFramed = headerStyle === 'framed'
+  const frameSide = template?.frameSide === 'right' ? 'right' : 'left'
   const styles = withDocumentStyle(
     createStyles(
       primaryColor,
       fontFamily,
       headerStyle,
       template?.backgroundColor,
-      template?.textColor
+      template?.textColor,
+      frameSide
     ),
     layoutConfig?.document,
-    isFramed
+    isFramed,
+    frameSide
   )
   const companyTextColor = template?.companyTextColor || undefined
   const { muted } = inkColors(styles)
@@ -765,6 +768,7 @@ export function QuotePDF({
         shopDisplayName={shopName}
         muted={muted}
         nameColor={companyTextColor}
+        side={frameSide}
         labels={labels}
       />
       {documentTitleVisible ? null : renderDocumentTitle()}

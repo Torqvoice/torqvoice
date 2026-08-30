@@ -1,43 +1,43 @@
-import { NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import "@/features/vehicles/Components/invoice-pdf/fonts";
-import { headers } from "next/headers";
-import { db } from "@/lib/db";
-import { QuotePDF } from "@/features/quotes/Components/QuotePDF";
-import React from "react";
-import { readFile } from "fs/promises";
-import { PDFDocument } from "pdf-lib";
-import { resolveUploadPath } from "@/lib/resolve-upload-path";
-import { getFeatures } from "@/lib/features";
-import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
-import { resolvePortalOrg } from "@/lib/portal-slug";
-import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
-import { resolveCustomerLocale } from "@/i18n/locale-from-request";
+import { NextResponse } from 'next/server'
+import { renderToBuffer } from '@react-pdf/renderer'
+import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { headers } from 'next/headers'
+import { db } from '@/lib/db'
+import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
+import React from 'react'
+import { readFile } from 'fs/promises'
+import { PDFDocument } from 'pdf-lib'
+import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { getFeatures } from '@/lib/features'
+import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ orgId: string; token: string }> }
 ) {
   try {
-    const { orgId: orgParam, token } = await params;
+    const { orgId: orgParam, token } = await params
 
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-    const resolvedOrg = await resolvePortalOrg(orgParam);
-    const orgId = resolvedOrg?.id ?? orgParam;
+    const resolvedOrg = await resolvePortalOrg(orgParam)
+    const orgId = resolvedOrg?.id ?? orgParam
 
     // Load locale-based PDF translations
-    const headerStore = await headers();
-    const locale = await resolveCustomerLocale(orgId, headerStore.get("accept-language"));
-    let pdfMessages: Record<string, Record<string, string>>;
+    const headerStore = await headers()
+    const locale = await resolveCustomerLocale(orgId, headerStore.get('accept-language'))
+    let pdfMessages: Record<string, Record<string, string>>
     try {
-      pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default;
+      pdfMessages = (await import(`../../../../../../../../../messages/${locale}/pdf.json`)).default
     } catch {
-      pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default;
+      pdfMessages = (await import(`../../../../../../../../../messages/en/pdf.json`)).default
     }
     const labels = {
       ...pdfMessages.quote,
       ...pdfMessages.common,
-    };
+    }
 
     const quote = await db.quote.findFirst({
       where: { publicToken: token, organizationId: orgId },
@@ -46,16 +46,23 @@ export async function GET(
         laborItems: true,
         attachments: true,
         customer: {
-          select: { name: true, email: true, phone: true, address: true, company: true, taxId: true },
+          select: {
+            name: true,
+            email: true,
+            phone: true,
+            address: true,
+            company: true,
+            taxId: true,
+          },
         },
         vehicle: {
           select: { make: true, model: true, year: true, vin: true, licensePlate: true },
         },
       },
-    });
+    })
 
     if (!quote) {
-      return NextResponse.json({ error: "Quote not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
     }
 
     const [settings, org] = await Promise.all([
@@ -64,154 +71,171 @@ export async function GET(
         where: { id: orgId },
         select: { name: true, portalSlug: true },
       }),
-    ]);
+    ])
 
-    const settingsMap: Record<string, string> = {};
-    for (const s of settings) settingsMap[s.key] = s.value;
+    const settingsMap: Record<string, string> = {}
+    for (const s of settings) settingsMap[s.key] = s.value
 
     // Override labels for marine service type
-    const serviceType = settingsMap["workshop.serviceType"] || "automotive";
-    if (serviceType === "marine") {
-      if (pdfMessages.quote.vinMarine) labels.vin = pdfMessages.quote.vinMarine;
-      if (pdfMessages.quote.plateMarine) labels.plate = pdfMessages.quote.plateMarine;
-      if (pdfMessages.quote.vehicleMarine) labels.vehicle = pdfMessages.quote.vehicleMarine;
+    const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
+    if (serviceType === 'marine') {
+      if (pdfMessages.quote.vinMarine) labels.vin = pdfMessages.quote.vinMarine
+      if (pdfMessages.quote.plateMarine) labels.plate = pdfMessages.quote.plateMarine
+      if (pdfMessages.quote.vehicleMarine) labels.vehicle = pdfMessages.quote.vehicleMarine
     }
 
     // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
-    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()
     if (customTaxLabel) {
-      labels.tax = `${customTaxLabel} ({rate}%)`;
+      labels.tax = `${customTaxLabel} ({rate}%)`
     }
 
-    let logoDataUri: string | undefined;
-    const logoPath = settingsMap["workshop.logo"];
+    let logoDataUri: string | undefined
+    const logoPath = settingsMap['workshop.logo']
     if (logoPath) {
       try {
-        const fullPath = resolveUploadPath(logoPath);
-        const logoBuffer = await readFile(fullPath);
-        const ext = logoPath.split(".").pop()?.toLowerCase() || "png";
+        const fullPath = resolveUploadPath(logoPath)
+        const logoBuffer = await readFile(fullPath)
+        const ext = logoPath.split('.').pop()?.toLowerCase() || 'png'
         const mimeMap: Record<string, string> = {
-          png: "image/png",
-          jpg: "image/jpeg",
-          jpeg: "image/jpeg",
-          webp: "image/webp",
-          svg: "image/svg+xml",
-        };
-        const mime = mimeMap[ext] || "image/png";
-        logoDataUri = `data:${mime};base64,${logoBuffer.toString("base64")}`;
+          png: 'image/png',
+          jpg: 'image/jpeg',
+          jpeg: 'image/jpeg',
+          webp: 'image/webp',
+          svg: 'image/svg+xml',
+        }
+        const mime = mimeMap[ext] || 'image/png'
+        logoDataUri = `data:${mime};base64,${logoBuffer.toString('base64')}`
       } catch {
         // Skip
       }
     }
 
     // Process attachments for PDF
-    const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = [];
-    const otherAttachments: { fileName: string; fileType: string }[] = [];
-    const pdfAttachments: { fileName: string; buffer: Buffer }[] = [];
+    const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = []
+    const otherAttachments: { fileName: string; fileType: string }[] = []
+    const pdfAttachments: { fileName: string; buffer: Buffer }[] = []
 
-    const seenNames = new Set<string>();
+    const seenNames = new Set<string>()
     const uniqueAttachments = (quote.attachments || [])
       .filter((att) => att.includeInInvoice !== false)
       .filter((att) => {
-        if (seenNames.has(att.fileName)) return false;
-        seenNames.add(att.fileName);
-        return true;
-      });
+        if (seenNames.has(att.fileName)) return false
+        seenNames.add(att.fileName)
+        return true
+      })
 
     for (const att of uniqueAttachments) {
-      if (att.fileType.startsWith("image/")) {
+      if (att.fileType.startsWith('image/')) {
         try {
-          const filePath = resolveUploadPath(att.fileUrl);
-          const buffer = await readFile(filePath);
-          const base64 = buffer.toString("base64");
+          const filePath = resolveUploadPath(att.fileUrl)
+          const buffer = await readFile(filePath)
+          const base64 = buffer.toString('base64')
           imageAttachments.push({
             fileName: att.fileName,
             dataUri: `data:${att.fileType};base64,${base64}`,
             description: att.description || undefined,
-          });
+          })
         } catch {
-          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
         }
-      } else if (att.fileType === "application/pdf") {
+      } else if (att.fileType === 'application/pdf') {
         try {
-          const filePath = resolveUploadPath(att.fileUrl);
-          const buffer = await readFile(filePath);
-          pdfAttachments.push({ fileName: att.fileName, buffer });
+          const filePath = resolveUploadPath(att.fileUrl)
+          const buffer = await readFile(filePath)
+          pdfAttachments.push({ fileName: att.fileName, buffer })
         } catch {
-          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
         }
       } else {
-        otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+        otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
       }
     }
 
     // Fetch custom field values for the quote
     const customFieldValues = await db.customFieldValue.findMany({
-      where: { entityId: quote.id, entityType: "quote" },
-      include: { field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } } },
-      orderBy: { field: { sortOrder: "asc" } },
-    });
+      where: { entityId: quote.id, entityType: 'quote' },
+      include: {
+        field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
+      },
+      orderBy: { field: { sortOrder: 'asc' } },
+    })
 
     const customFields = customFieldValues
       .filter((v) => v.field.isActive && v.value)
-      .map((v) => ({ fieldId: v.fieldId, label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
+      .map((v) => ({
+        fieldId: v.fieldId,
+        label: v.field.label,
+        value: v.value,
+        fieldType: v.field.fieldType,
+      }))
 
-    const features = await getFeatures(orgId);
-    let torqvoiceLogoDataUri: string | undefined;
+    const features = await getFeatures(orgId)
+    let torqvoiceLogoDataUri: string | undefined
     if (!features.brandingRemoved) {
-      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
+      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
     }
 
     // Fetch layout config for quotes
     const layoutConfigSetting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: orgId, key: "quote.layoutConfig" } },
-    });
+      where: { organizationId_key: { organizationId: orgId, key: 'quote.layoutConfig' } },
+    })
     const layoutConfig = mergeWithDefaults(
       layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
-    );
+    )
 
     const template = {
-      primaryColor: settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706",
-      backgroundColor: settingsMap["quote.backgroundColor"] || settingsMap["invoice.backgroundColor"] || undefined,
-      textColor: settingsMap["quote.textColor"] || settingsMap["invoice.textColor"] || undefined,
+      primaryColor:
+        settingsMap['quote.primaryColor'] || settingsMap['invoice.primaryColor'] || '#d97706',
+      backgroundColor:
+        settingsMap['quote.backgroundColor'] || settingsMap['invoice.backgroundColor'] || undefined,
+      textColor: settingsMap['quote.textColor'] || settingsMap['invoice.textColor'] || undefined,
       companyTextColor:
-        settingsMap["quote.companyTextColor"] ||
-        settingsMap["invoice.companyTextColor"] ||
+        settingsMap['quote.companyTextColor'] ||
+        settingsMap['invoice.companyTextColor'] ||
         undefined,
       frameBorderColor:
-        settingsMap["quote.frameBorderColor"] || settingsMap["invoice.frameBorderColor"] || undefined,
+        settingsMap['quote.frameBorderColor'] ||
+        settingsMap['invoice.frameBorderColor'] ||
+        undefined,
       frameShadow:
-        (settingsMap["quote.frameShadow"] ?? settingsMap["invoice.frameShadow"]) !== "false",
-      fontFamily: settingsMap["quote.fontFamily"] || settingsMap["invoice.fontFamily"] || "Helvetica",
-      showLogo: settingsMap["invoice.showLogo"] !== "false",
-      showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
-      headerStyle: settingsMap["quote.headerStyle"] || settingsMap["invoice.headerStyle"] || "standard",
-      logoSize: Number(settingsMap["quote.logoSize"]) || 100,
-    };
+        (settingsMap['quote.frameShadow'] ?? settingsMap['invoice.frameShadow']) !== 'false',
+      frameSide: ((settingsMap['quote.frameSide'] ?? settingsMap['invoice.frameSide']) === 'right'
+        ? 'right'
+        : 'left') as 'left' | 'right',
+      fontFamily:
+        settingsMap['quote.fontFamily'] || settingsMap['invoice.fontFamily'] || 'Helvetica',
+      showLogo: settingsMap['invoice.showLogo'] !== 'false',
+      showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
+      headerStyle:
+        settingsMap['quote.headerStyle'] || settingsMap['invoice.headerStyle'] || 'standard',
+      logoSize: Number(settingsMap['quote.logoSize']) || 100,
+    }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL
-      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-    const portalSlug = org?.portalSlug;
-    const portalEnabled = settingsMap["portal.enabled"] === "true";
-    const portalUrl = portalEnabled
-      ? `${appUrl}/portal/${portalSlug || orgId}`
-      : undefined;
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const portalSlug = org?.portalSlug
+    const portalEnabled = settingsMap['portal.enabled'] === 'true'
+    const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
     const element = React.createElement(QuotePDF, {
       data: quote,
       workshop: {
-        name: org?.name || "",
-        address: settingsMap["workshop.address"] || "",
-        phone: settingsMap["workshop.phone"] || "",
-        email: settingsMap["workshop.email"] || "",
-        slogan: settingsMap["workshop.slogan"] || undefined,
+        name: org?.name || '',
+        address: settingsMap['workshop.address'] || '',
+        phone: settingsMap['workshop.phone'] || '',
+        email: settingsMap['workshop.email'] || '',
+        slogan: settingsMap['workshop.slogan'] || undefined,
       },
-      currencyCode: settingsMap["workshop.currencyCode"] || "USD",
-      currencyFormat: (settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol") as "symbol" | "code",
+      currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
+      currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
+        | 'symbol'
+        | 'code',
       logoDataUri,
       torqvoiceLogoDataUri,
-      dateFormat: settingsMap["workshop.dateFormat"] || undefined,
-      timezone: settingsMap["workshop.timezone"] || undefined,
+      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
+      timezone: settingsMap['workshop.timezone'] || undefined,
       template,
       portalUrl,
       imageAttachments,
@@ -221,44 +245,46 @@ export async function GET(
       labels,
       layoutConfig,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any;
-    const quoteBuffer = await renderToBuffer(element);
+    }) as any
+    const quoteBuffer = await renderToBuffer(element)
 
-    const quoteNum =
-      quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`;
+    const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
 
     // Merge attached PDFs into the quote PDF
-    let finalBuffer: ArrayBuffer;
+    let finalBuffer: ArrayBuffer
     if (pdfAttachments.length > 0) {
-      const mergedPdf = await PDFDocument.load(quoteBuffer);
+      const mergedPdf = await PDFDocument.load(quoteBuffer)
       for (const att of pdfAttachments) {
         try {
-          const attachedPdf = await PDFDocument.load(att.buffer);
-          const pages = await mergedPdf.copyPages(attachedPdf, attachedPdf.getPageIndices());
+          const attachedPdf = await PDFDocument.load(att.buffer)
+          const pages = await mergedPdf.copyPages(attachedPdf, attachedPdf.getPageIndices())
           for (const page of pages) {
-            mergedPdf.addPage(page);
+            mergedPdf.addPage(page)
           }
         } catch {
           // Skip corrupted/unreadable PDFs silently
         }
       }
-      const saved = await mergedPdf.save();
-      finalBuffer = saved.buffer.slice(saved.byteOffset, saved.byteOffset + saved.byteLength) as ArrayBuffer;
+      const saved = await mergedPdf.save()
+      finalBuffer = saved.buffer.slice(
+        saved.byteOffset,
+        saved.byteOffset + saved.byteLength
+      ) as ArrayBuffer
     } else {
-      finalBuffer = quoteBuffer.buffer.slice(quoteBuffer.byteOffset, quoteBuffer.byteOffset + quoteBuffer.byteLength) as ArrayBuffer;
+      finalBuffer = quoteBuffer.buffer.slice(
+        quoteBuffer.byteOffset,
+        quoteBuffer.byteOffset + quoteBuffer.byteLength
+      ) as ArrayBuffer
     }
 
     return new NextResponse(finalBuffer, {
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${quoteNum}.pdf"`,
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${quoteNum}.pdf"`,
       },
-    });
+    })
   } catch (error) {
-    console.error("[Public Quote PDF] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate PDF" },
-      { status: 500 }
-    );
+    console.error('[Public Quote PDF] Error:', error)
+    return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })
   }
 }

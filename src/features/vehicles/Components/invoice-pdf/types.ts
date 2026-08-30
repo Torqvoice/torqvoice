@@ -19,6 +19,8 @@ export interface TemplateConfig {
   frameBorderColor?: string
   /** The frame's drop shadow onto the sheet. Off prints a flat edge. */
   frameShadow?: boolean
+  /** Which edge the rail runs down. Defaults to the left. */
+  frameSide?: 'left' | 'right'
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean

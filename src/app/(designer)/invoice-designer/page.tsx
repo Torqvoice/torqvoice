@@ -50,6 +50,7 @@ export default async function InvoiceDesignerPage({
     companyTextColor: settings[`${prefix}.companyTextColor`] || '',
     frameBorderColor: settings[`${prefix}.frameBorderColor`] || '',
     frameShadow: settings[`${prefix}.frameShadow`] || 'true',
+    frameSide: settings[`${prefix}.frameSide`] || 'left',
     fontFamily: settings[`${prefix}.fontFamily`] || 'Helvetica',
     headerStyle: settings[`${prefix}.headerStyle`] || 'standard',
     logoSize: Number(settings[`${prefix}.logoSize`]) || 100,

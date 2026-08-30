@@ -1,5 +1,5 @@
 import { Text, View, Image } from '@react-pdf/renderer'
-import { gray, getFontBold, FRAMED, SHADOW, SHADOW_STEP } from './styles'
+import { gray, getFontBold, FRAMED, SHADOW, SHADOW_STEP, type FrameSide } from './styles'
 import type { WorkshopInfo } from './types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -40,6 +40,7 @@ export function FramedLetterhead({
   workshop,
   orgNumber,
   shopDisplayName,
+  side = 'left',
   muted = gray,
   nameColor,
   borderColor,
@@ -56,6 +57,8 @@ export function FramedLetterhead({
   workshop?: WorkshopInfo
   orgNumber?: string | null
   shopDisplayName: string
+  /** Which edge the rail runs down, so the band clears it on that side. */
+  side?: FrameSide
   /** Secondary text color, so the strapline follows the chosen ink. */
   muted?: string
   /** The company name's color on the band. Unset is white. */
@@ -105,8 +108,11 @@ export function FramedLetterhead({
         // Out past the rail, not just past the padding: the band has to paint
         // over the page's left border or a hairline of white shows through
         // where the two rectangles meet.
-        marginLeft: -(FRAMED.padLeft + FRAMED.railWidth),
-        marginRight: -FRAMED.padRight,
+        // Out past the rail on whichever edge it runs down: the band has to
+        // paint over the page's border or a hairline of white shows through
+        // where the two rectangles meet.
+        marginLeft: -(side === 'right' ? FRAMED.padRight : FRAMED.padLeft + FRAMED.railWidth),
+        marginRight: -(side === 'right' ? FRAMED.padLeft + FRAMED.railWidth : FRAMED.padRight),
         marginBottom: 20,
       }}
     >
@@ -116,8 +122,8 @@ export function FramedLetterhead({
           backgroundColor: primaryColor,
           justifyContent: 'center',
           alignItems: 'flex-end',
-          paddingRight: 26,
-          paddingLeft: FRAMED.railWidth + 26,
+          paddingRight: side === 'right' ? FRAMED.railWidth + 26 : 26,
+          paddingLeft: side === 'right' ? 26 : FRAMED.railWidth + 26,
         }}
       >
         {mark === 'logo' ? (
@@ -138,7 +144,11 @@ export function FramedLetterhead({
       </View>
 
       {/* The band sits above the sheet, so it drops a shadow onto it. */}
-      <View style={{ marginLeft: FRAMED.railWidth }}>
+      <View
+        style={
+          side === 'right' ? { marginRight: FRAMED.railWidth } : { marginLeft: FRAMED.railWidth }
+        }
+      >
         {borderColor ? <View style={{ height: 0.6, backgroundColor: borderColor }} /> : null}
         {shadow
           ? SHADOW.map((color, i) => (
@@ -150,7 +160,9 @@ export function FramedLetterhead({
       {slogan || strapline ? (
         <View
           style={{
-            marginLeft: FRAMED.railWidth,
+            ...(side === 'right'
+              ? { marginRight: FRAMED.railWidth }
+              : { marginLeft: FRAMED.railWidth }),
             paddingRight: 26,
             paddingLeft: 26,
             paddingTop: 8,

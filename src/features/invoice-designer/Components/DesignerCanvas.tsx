@@ -1,12 +1,14 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import {
+  getBuiltinFieldsForSection,
   groupSectionsForRendering,
   type InvoiceLayoutConfig,
   type InvoiceSection,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
+import { FRAMED, type FrameSide } from '@/features/vehicles/Components/invoice-pdf/frame'
+import { fieldValues, SAMPLE_TABLES } from './sample'
 import { fontStack, type DesignerWorkshop, type ResolvedTheme } from './types'
 
 /**
@@ -14,38 +16,18 @@ import { fontStack, type DesignerWorkshop, type ResolvedTheme } from './types'
  *
  * Deliberately not the PDF renderer: the point of this page is a sheet you can
  * click and drag, which react-pdf draws into an iframe and cannot offer. It
- * reads the same layout config the PDF reads, so what moves here moves there;
- * it is a schematic rather than a pixel proof, and the PDF stays the last word.
+ * renders from the same layout the PDF renders from — the same sections, the
+ * same field visibility, the same frame geometry — so what changes here changes
+ * there. It is a schematic rather than a pixel proof, and the PDF is the last
+ * word on how the paper comes out.
  */
-export interface SampleData {
-  customer: { name: string; lines: string[] }
-  vehicle: { name: string; lines: string[] }
-  service: { name: string; lines: string[] }
-  items: {
-    n: number
-    qty: string
-    unit: string
-    desc: string
-    sku?: string
-    price: string
-    total: string
-  }[]
-  findings: { severity: string; color: string; description: string; notes: string }[]
-  subtotal: string
-  tax: string
-  total: string
-  number: string
-  date: string
-  due: string
-  customerNumber: string
-  notes: string
-}
 
 /** A4 at 72dpi, the unit react-pdf lays the real page out in. */
 const PAPER_W = 595
 const PAPER_H = 842
 /** The gap the PDF leaves between sections. */
 const BLOCK_GAP = 14
+const SHADOW_SHADES = ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)']
 
 /** Blend two colors, for deriving a section's secondary tone from its own ink. */
 function mix(from: string, to: string, amount: number) {
@@ -59,12 +41,7 @@ function mix(from: string, to: string, amount: number) {
   return `rgb(${at(0)}, ${at(1)}, ${at(2)})`
 }
 
-/**
- * One section's resolved appearance. Every body reads from this rather than
- * from the theme directly, so a key set on a section reaches all of it: text
- * colour used to stop at the first line of a panel, which read as the control
- * doing nothing.
- */
+/** One section's resolved appearance; every line inside it reads from this. */
 interface SectionLook {
   text: string
   muted: string
@@ -89,18 +66,30 @@ function lookOf(section: InvoiceSection, theme: ResolvedTheme): SectionLook {
   }
 }
 
+/**
+ * The fields a section shows, in the order it shows them.
+ *
+ * A section with no field list of its own shows all of them, which is what the
+ * PDF does when a layout predates the fields being configurable.
+ */
+function visibleFields(section: InvoiceSection): string[] {
+  if (!section.fields) return getBuiltinFieldsForSection(section.id).map((f) => f.id)
+  return section.fields.filter((f) => f.visible).map((f) => f.id)
+}
+
 function Panel({
   section,
   look,
   tag,
-  title,
   lines,
+  leadIndex = 0,
 }: {
   section: InvoiceSection
   look: SectionLook
   tag: string
-  title: string
   lines: string[]
+  /** Which line is the section's own headline, printed bold. */
+  leadIndex?: number
 }) {
   const boxed = section.boxed !== false
   const style: CSSProperties = {
@@ -127,12 +116,22 @@ function Panel({
       >
         {tag}
       </div>
-      <div style={{ fontWeight: 700, marginBottom: 2 }}>{title}</div>
-      {lines.map((line) => (
-        <div key={line} style={{ color: look.muted, lineHeight: 1.55 }}>
-          {line}
-        </div>
-      ))}
+      {lines.length === 0 ? (
+        <div style={{ color: look.muted, fontStyle: 'italic' }}>No fields shown</div>
+      ) : (
+        lines.map((line, i) => (
+          <div
+            key={line}
+            style={{
+              fontWeight: i === leadIndex ? 700 : 400,
+              color: i === leadIndex ? look.text : look.muted,
+              lineHeight: 1.55,
+            }}
+          >
+            {line}
+          </div>
+        ))
+      )}
     </div>
   )
 }
@@ -141,70 +140,64 @@ function SectionBody({
   section,
   look,
   theme,
-  sample,
+  values,
   workshop,
   headerStyle,
+  frameSide,
   companyText,
   logoSize,
-  frameBorderColor,
-  frameShadow,
 }: {
   section: InvoiceSection
   look: SectionLook
   theme: ResolvedTheme
-  sample: SampleData
+  values: Record<string, string>
   workshop: DesignerWorkshop
   headerStyle: string
+  frameSide: FrameSide
   companyText: string
   logoSize: number
-  frameBorderColor?: string
-  frameShadow: boolean
 }) {
+  const fields = visibleFields(section)
+  const lines = (ids: string[]) => ids.map((id) => values[id]).filter((v): v is string => !!v)
+
   switch (section.id) {
     case 'header': {
       const framed = headerStyle === 'framed'
       const banded = framed || headerStyle === 'modern'
-      const showLogo =
-        !!workshop.logoUrl && section.fields?.find((f) => f.id === 'logo')?.visible !== false
+      const showLogo = fields.includes('logo') && !!workshop.logoUrl
+      const showName = fields.includes('company_name')
+      const strapline = lines(
+        fields.filter((id) =>
+          ['company_address', 'company_phone', 'company_email', 'company_org_number'].includes(id)
+        )
+      ).join('  ·  ')
+      const slogan = fields.includes('company_slogan') ? values.company_slogan : ''
+
       const mark = showLogo ? (
-        // eslint-disable-next-line @next/next/no-img-element
+        // A workshop upload rather than a static asset: next/image would need
+        // a loader for it and buys nothing at this size.
         <img
           src={workshop.logoUrl}
           alt=""
           style={{
             maxHeight: (banded ? 46 : 40) * (logoSize / 100),
-            maxWidth: 220,
+            maxWidth: 240,
             objectFit: 'contain',
           }}
         />
-      ) : (
-        <div style={{ fontSize: '1.8em', fontWeight: 800 }}>{workshop.name || 'Your Workshop'}</div>
-      )
+      ) : showName ? (
+        <div style={{ fontSize: '1.8em', fontWeight: 800 }}>{values.company_name}</div>
+      ) : null
 
+      // On a framed sheet the band is drawn by the page, and this sits on it.
       return (
-        <div
-          style={
-            // On a framed sheet the band spans the whole paper, rail included,
-            // so it climbs back out of the page inset the way the PDF's does.
-            framed
-              ? {
-                  marginTop: -FRAMED.padTop,
-                  marginLeft: -(FRAMED.padLeft + FRAMED.railWidth),
-                  marginRight: -theme.margin,
-                }
-              : undefined
-          }
-        >
+        <div>
           <div
             style={{
-              background: banded ? theme.primary : undefined,
-              color: banded ? companyText : look.label,
               height: framed ? FRAMED.bandHeight : undefined,
-              padding: framed
-                ? `0 26px 0 ${FRAMED.railWidth + 26}px`
-                : banded
-                  ? '18px 16px'
-                  : '0 0 10px',
+              background: banded && !framed ? theme.primary : undefined,
+              color: banded ? companyText : look.label,
+              padding: framed ? 0 : banded ? '18px 16px' : '0 0 10px',
               borderBottom: banded ? undefined : `2px solid ${theme.primary}`,
               display: 'flex',
               justifyContent: headerStyle === 'modern' ? 'center' : 'flex-end',
@@ -214,29 +207,21 @@ function SectionBody({
             {mark}
           </div>
 
-          {framed && (
-            <div style={{ marginLeft: FRAMED.railWidth }}>
-              {frameBorderColor && <div style={{ height: 1, background: frameBorderColor }} />}
-              {frameShadow &&
-                ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)'].map((shade) => (
-                  <div key={shade} style={{ height: 1.5, background: shade }} />
-                ))}
-            </div>
-          )}
-
-          {workshop.slogan && (
+          {(slogan || strapline) && (
             <div
               style={{
                 textAlign: 'right',
-                color: look.muted,
                 paddingTop: 8,
                 paddingBottom: 8,
-                paddingRight: framed ? 26 : 0,
-                paddingLeft: framed ? FRAMED.railWidth + 26 : 0,
-                borderBottom: framed ? '1px solid #e5e7eb' : undefined,
+                borderBottom: framed ? `1px solid ${look.border || '#e5e7eb'}` : undefined,
               }}
             >
-              {workshop.slogan}
+              {slogan && <div style={{ color: look.muted, fontSize: '1.05em' }}>{slogan}</div>}
+              {strapline && (
+                <div style={{ color: look.muted, fontSize: '0.9em', marginTop: slogan ? 3 : 0 }}>
+                  {strapline}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -244,46 +229,32 @@ function SectionBody({
     }
 
     case 'customer':
-      return (
-        <Panel
-          section={section}
-          look={look}
-          tag="Bill to"
-          title={sample.customer.name}
-          lines={sample.customer.lines}
-        />
-      )
+      return <Panel section={section} look={look} tag="Bill to" lines={lines(fields)} />
     case 'vehicle':
-      return (
-        <Panel
-          section={section}
-          look={look}
-          tag="Vehicle"
-          title={sample.vehicle.name}
-          lines={sample.vehicle.lines}
-        />
-      )
+      return <Panel section={section} look={look} tag="Vehicle" lines={lines(fields)} />
     case 'service':
+      return <Panel section={section} look={look} tag="Service" lines={lines(fields)} />
+    case 'bank_account':
       return (
         <Panel
           section={section}
           look={look}
-          tag="Service"
-          title={sample.service.name}
-          lines={sample.service.lines}
+          tag="Payment information"
+          lines={lines(fields)}
+          leadIndex={-1}
         />
       )
 
     case 'document_title':
       return (
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: '2em', fontWeight: 800 }}>INVOICE</div>
+          <div style={{ fontSize: '2em', fontWeight: 800 }}>{SAMPLE_TABLES.title}</div>
           <div style={{ display: 'flex', border: `1px solid ${look.border || look.text}` }}>
             {[
-              ['Invoice No.', sample.number],
-              ['Customer No.', sample.customerNumber],
-              ['Date', sample.date],
-              ['Due', sample.due],
+              ['Invoice No.', SAMPLE_TABLES.number],
+              ['Customer No.', SAMPLE_TABLES.customerNumber],
+              ['Date', SAMPLE_TABLES.date],
+              ['Due', SAMPLE_TABLES.due],
             ].map(([label, value]) => (
               <div
                 key={label}
@@ -310,7 +281,7 @@ function SectionBody({
             style={{
               display: 'flex',
               background: look.fill || look.text,
-              color: look.label && look.fill ? look.label : theme.background,
+              color: look.fill ? look.label : theme.background,
               fontSize: '0.78em',
               fontWeight: 600,
               padding: '7px 10px',
@@ -323,7 +294,7 @@ function SectionBody({
             <span style={{ width: 74, textAlign: 'right' }}>Unit price</span>
             <span style={{ width: 74, textAlign: 'right' }}>Total</span>
           </div>
-          {sample.items.map((item, i) => (
+          {SAMPLE_TABLES.items.map((item, i) => (
             <div
               key={item.n}
               style={{
@@ -357,7 +328,7 @@ function SectionBody({
       return (
         <div>
           <div style={{ fontWeight: 700, fontSize: '1.05em', color: look.label }}>Observations</div>
-          {sample.findings.map((f) => (
+          {SAMPLE_TABLES.findings.map((f) => (
             <div
               key={f.description}
               style={{
@@ -395,7 +366,7 @@ function SectionBody({
               }}
             >
               <span style={{ color: look.muted }}>Subtotal</span>
-              <span style={{ fontWeight: 600 }}>{sample.subtotal}</span>
+              <span style={{ fontWeight: 600 }}>{SAMPLE_TABLES.subtotal}</span>
             </div>
             <div
               style={{
@@ -406,7 +377,7 @@ function SectionBody({
               }}
             >
               <span style={{ color: look.muted }}>Tax</span>
-              <span style={{ fontWeight: 600 }}>{sample.tax}</span>
+              <span style={{ fontWeight: 600 }}>{SAMPLE_TABLES.tax}</span>
             </div>
             <div
               style={{
@@ -417,7 +388,7 @@ function SectionBody({
               }}
             >
               <span style={{ fontWeight: 700 }}>Total</span>
-              <span style={{ fontWeight: 800, color: theme.accent }}>{sample.total}</span>
+              <span style={{ fontWeight: 800, color: theme.accent }}>{SAMPLE_TABLES.total}</span>
             </div>
           </div>
         </div>
@@ -425,7 +396,6 @@ function SectionBody({
 
     case 'notes':
     case 'warranty':
-    case 'bank_account':
     case 'general':
       return (
         <div
@@ -449,31 +419,50 @@ function SectionBody({
               ? 'Notes'
               : section.id === 'warranty'
                 ? 'Warranty'
-                : section.id === 'bank_account'
-                  ? 'Payment information'
-                  : 'Additional information'}
+                : 'Additional information'}
           </div>
           <div style={{ color: look.muted, fontSize: '0.9em', lineHeight: 1.6 }}>
-            {sample.notes}
+            {section.id === 'warranty' ? SAMPLE_TABLES.warranty : SAMPLE_TABLES.notes}
           </div>
         </div>
       )
 
-    case 'footer':
+    case 'footer': {
+      // Three columns, the way printed stationery groups them: who the shop is,
+      // how to reach it, how to pay it. Empty columns are dropped.
+      const columns = [
+        ['company_name', 'company_address'],
+        ['company_phone', 'company_email'],
+        ['bank_account', 'company_org_number'],
+      ]
+        .map((column) => lines(column.filter((id) => fields.includes(id))))
+        .filter((column) => column.length > 0)
+
       return (
-        <div
-          style={{
-            borderTop: `2px solid ${look.border || theme.accent}`,
-            paddingTop: 8,
-            textAlign: 'center',
-            color: look.muted,
-            fontSize: '0.78em',
-            lineHeight: 1.6,
-          }}
-        >
-          {workshop.name} · {workshop.address} · {workshop.phone} · {workshop.email}
+        <div style={{ borderTop: `2px solid ${look.border || theme.accent}`, paddingTop: 8 }}>
+          {columns.length > 0 && (
+            <div style={{ display: 'flex', gap: 16, fontSize: '0.72em', color: look.muted }}>
+              {columns.map((column) => (
+                <div key={column[0]} style={{ flex: 1 }}>
+                  {column.map((line, i) => (
+                    <div key={line} style={{ fontWeight: i === 0 ? 700 : 400 }}>
+                      {line}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          {fields.includes('footer_note') && (
+            <div
+              style={{ textAlign: 'center', color: look.muted, fontSize: '0.78em', marginTop: 6 }}
+            >
+              {values.footer_note}
+            </div>
+          )}
         </div>
       )
+    }
 
     default:
       return <div style={{ color: look.muted, fontSize: '0.85em' }}>{section.id}</div>
@@ -483,9 +472,9 @@ function SectionBody({
 export function DesignerCanvas({
   layout,
   theme,
-  sample,
   workshop,
   headerStyle,
+  frameSide,
   companyText,
   logoSize,
   frameBorderColor,
@@ -498,9 +487,9 @@ export function DesignerCanvas({
 }: {
   layout: InvoiceLayoutConfig
   theme: ResolvedTheme
-  sample: SampleData
   workshop: DesignerWorkshop
   headerStyle: string
+  frameSide: FrameSide
   companyText: string
   logoSize: number
   frameBorderColor?: string
@@ -514,19 +503,21 @@ export function DesignerCanvas({
   const byId = new Map(layout.sections.map((s) => [s.id, s]))
   const groups = groupSectionsForRendering(layout.sections)
   const framed = headerStyle === 'framed'
+  const values = fieldValues(workshop)
   const visible = layout.sections.filter((s) => s.visible)
+  const headerSelected = selected === 'header'
 
   // The sheet is A4 and stays A4. Base size and margins change how much fits on
-  // it, never how big it is, so the page has to break the way the printed one
-  // does: measure each block once it is laid out, then deal the blocks into
-  // pages that hold them.
+  // it, never how big it is, so blocks are measured once laid out and dealt
+  // into pages that hold them.
   const measureRef = useRef<HTMLDivElement>(null)
   const [heights, setHeights] = useState<number[]>([])
 
+  const railEdge = frameSide === 'right' ? 'right' : 'left'
   const inset = {
     top: framed ? FRAMED.padTop : theme.margin,
-    left: framed ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
-    right: theme.margin,
+    left: framed && railEdge === 'left' ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
+    right: framed && railEdge === 'right' ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
     bottom: theme.margin,
   }
 
@@ -539,12 +530,10 @@ export function DesignerCanvas({
     )
   })
 
-  /** Blocks dealt into pages, each page holding what fits on an A4 sheet. */
   const pages: number[][] = []
   if (groups.length > 0) {
     let page: number[] = []
     let used = 0
-    // The first page loses its top inset to the letterhead; the rest do not.
     let budget = PAPER_H - inset.top - inset.bottom
     groups.forEach((_, i) => {
       const height = (heights[i] ?? 0) + (page.length ? BLOCK_GAP : 0)
@@ -560,15 +549,14 @@ export function DesignerCanvas({
     pages.push(page)
   }
 
-  const block = (id: string, measuring = false) => {
+  const block = (id: string, measuring = false): ReactNode => {
     const section = byId.get(id)
     if (!section) return null
     const look = lookOf(section, theme)
     const isSelected = !measuring && selected === id
-    // The framed letterhead bleeds to the sheet edge, and the sheet clips to
-    // A4. An outline drawn outside its box lands on that boundary and is cut
-    // away, so this one is drawn inside.
-    const bleeds = framed && id === 'header'
+    // The framed letterhead sits on chrome the page draws; its own outline is
+    // drawn over that chrome instead, so it does not get one here.
+    const onFrame = framed && id === 'header'
 
     return (
       <div
@@ -587,28 +575,38 @@ export function DesignerCanvas({
         }}
         style={{
           position: 'relative',
+          zIndex: 2,
           cursor: 'pointer',
-          outline: isSelected ? '2px solid #2563eb' : undefined,
-          outlineOffset: bleeds ? -2 : 3,
+          outline: isSelected && !onFrame ? '2px solid #2563eb' : undefined,
+          outlineOffset: 3,
           // Set once here so every line inside the section inherits it.
           color: look.text,
           fontFamily: look.font ? fontStack(look.font) : undefined,
           fontSize: look.size ? `${look.size}px` : undefined,
+          ...(onFrame
+            ? {
+                marginTop: -FRAMED.padTop,
+                marginLeft: -inset.left,
+                marginRight: -inset.right,
+                paddingLeft: railEdge === 'left' ? FRAMED.railWidth + 26 : 26,
+                paddingRight: railEdge === 'right' ? FRAMED.railWidth + 26 : 26,
+              }
+            : {}),
         }}
       >
-        {isSelected && (
+        {isSelected && !onFrame && (
           <div
             style={{
               position: 'absolute',
-              top: bleeds ? 4 : -20,
-              left: bleeds ? FRAMED.railWidth + 4 : -3,
+              top: -20,
+              left: -3,
               background: '#2563eb',
               color: '#fff',
               fontFamily: "'IBM Plex Sans', sans-serif",
               fontSize: 10,
               fontWeight: 600,
               padding: '2px 7px',
-              borderRadius: bleeds ? 4 : '4px 4px 0 0',
+              borderRadius: '4px 4px 0 0',
               zIndex: 5,
             }}
           >
@@ -619,23 +617,17 @@ export function DesignerCanvas({
           section={section}
           look={look}
           theme={theme}
-          sample={sample}
+          values={values}
           workshop={workshop}
           headerStyle={headerStyle}
+          frameSide={railEdge}
           companyText={companyText}
           logoSize={logoSize}
-          frameBorderColor={frameBorderColor}
-          frameShadow={frameShadow}
         />
       </div>
     )
   }
 
-  /**
-   * One render group: a full-width section, or the pair that share a row. The
-   * group is the unit a page break can fall between, because a two-column row
-   * is laid out as one thing.
-   */
   const groupBlock = (group: (typeof groups)[number], key: number, measuring = false) => {
     if (group.type === 'full-width') return block(group.sectionId, measuring)
     return (
@@ -650,7 +642,122 @@ export function DesignerCanvas({
     )
   }
 
-  /** One A4 sheet with the blocks that belong on it. */
+  /**
+   * The band and the rail are one shape, drawn by the page rather than by the
+   * header, so they cannot come apart or leave a seam of paper between them.
+   */
+  const frameChrome = (pageNumber: number) => (
+    <>
+      {pageNumber === 1 && (
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            onSelect('header')
+          }}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: FRAMED.bandHeight,
+            background: theme.primary,
+            cursor: 'pointer',
+            zIndex: 1,
+          }}
+        />
+      )}
+      <div
+        onClick={(e) => {
+          // The rail is the sheet's edge, not a section: it asks about the
+          // document, the way clicking the paper does.
+          e.stopPropagation()
+          onSelect(null)
+        }}
+        style={{
+          position: 'absolute',
+          [railEdge]: 0,
+          top: 0,
+          bottom: 0,
+          width: FRAMED.railWidth,
+          background: theme.primary,
+          zIndex: 1,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          [railEdge]: FRAMED.railWidth,
+          top: pageNumber === 1 ? FRAMED.bandHeight : 0,
+          bottom: 0,
+          display: 'flex',
+          flexDirection: railEdge === 'right' ? 'row-reverse' : 'row',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      >
+        {frameBorderColor && <div style={{ width: 1, background: frameBorderColor }} />}
+        {frameShadow &&
+          SHADOW_SHADES.map((shade) => (
+            <div key={shade} style={{ width: 1.5, background: shade }} />
+          ))}
+      </div>
+      {pageNumber === 1 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: railEdge === 'left' ? FRAMED.railWidth : 0,
+            right: railEdge === 'right' ? FRAMED.railWidth : 0,
+            top: FRAMED.bandHeight,
+            display: 'flex',
+            flexDirection: 'column',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        >
+          {frameBorderColor && <div style={{ height: 1, background: frameBorderColor }} />}
+          {frameShadow &&
+            SHADOW_SHADES.map((shade) => (
+              <div key={shade} style={{ height: 1.5, background: shade }} />
+            ))}
+        </div>
+      )}
+      {/* The letterhead is the band and the rail together, and it appears on
+          the first sheet only. Outlining the pair says what selecting the
+          header actually covers; the earlier version outlined the whole of
+          every page after the first, which said nothing at all. */}
+      {headerSelected && pageNumber === 1 && (
+        <>
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: FRAMED.bandHeight,
+              outline: '2px solid #2563eb',
+              outlineOffset: -2,
+              pointerEvents: 'none',
+              zIndex: 4,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              [railEdge]: 0,
+              top: FRAMED.bandHeight,
+              bottom: 0,
+              width: FRAMED.railWidth,
+              outline: '2px solid #2563eb',
+              outlineOffset: -2,
+              pointerEvents: 'none',
+              zIndex: 4,
+            }}
+          />
+        </>
+      )}
+    </>
+  )
+
   const sheet = (indices: number[], pageNumber: number) => (
     <div
       key={pageNumber}
@@ -674,64 +781,7 @@ export function DesignerCanvas({
         gap: BLOCK_GAP,
       }}
     >
-      {framed && (
-        <>
-          {/* The band and the rail are one shape the header owns, so selecting
-              the header outlines both rather than the band alone. */}
-          {selected === 'header' && pageNumber === 1 && (
-            <div
-              style={{
-                position: 'absolute',
-                left: 0,
-                // Below the band, which carries its own outline: together they
-                // read as one selection around the shape the header owns.
-                top: FRAMED.bandHeight,
-                bottom: 0,
-                width: FRAMED.railWidth,
-                outline: '2px solid #2563eb',
-                outlineOffset: -2,
-                pointerEvents: 'none',
-                zIndex: 4,
-              }}
-            />
-          )}
-          <div
-            onClick={(e) => {
-              // The rail is the sheet's edge, not a section. Clicking it asks
-              // about the document, the way clicking the paper does.
-              e.stopPropagation()
-              onSelect(null)
-            }}
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: FRAMED.railWidth,
-              background: theme.primary,
-              cursor: 'default',
-              zIndex: 3,
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              left: FRAMED.railWidth,
-              top: 0,
-              bottom: 0,
-              display: 'flex',
-              pointerEvents: 'none',
-              zIndex: 3,
-            }}
-          >
-            {frameBorderColor && <div style={{ width: 1, background: frameBorderColor }} />}
-            {frameShadow &&
-              ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)'].map((shade) => (
-                <div key={shade} style={{ width: 1.5, background: shade }} />
-              ))}
-          </div>
-        </>
-      )}
+      {framed && frameChrome(pageNumber)}
 
       {rulers && (
         <div
@@ -743,6 +793,7 @@ export function DesignerCanvas({
             bottom: inset.bottom,
             border: '1px dashed rgba(37,99,235,0.35)',
             pointerEvents: 'none',
+            zIndex: 3,
           }}
         />
       )}
@@ -770,8 +821,8 @@ export function DesignerCanvas({
         />
       )}
 
-      {/* Laid out but not shown: the blocks have to be measured at the width
-          they will print at before they can be dealt into pages. */}
+      {/* Laid out but not shown: blocks have to be measured at the width they
+          will print at before they can be dealt into pages. */}
       <div
         ref={measureRef}
         aria-hidden
@@ -788,7 +839,9 @@ export function DesignerCanvas({
         }}
       >
         {groups.map((group, i) => (
-          <div key={`m-${i}`}>{groupBlock(group, i, true)}</div>
+          <div key={`m-${group.type === 'full-width' ? group.sectionId : group.left[0]}`}>
+            {groupBlock(group, i, true)}
+          </div>
         ))}
       </div>
 

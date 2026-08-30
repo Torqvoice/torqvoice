@@ -16,64 +16,9 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
-import { DesignerCanvas, type SampleData } from './DesignerCanvas'
+import { DesignerCanvas } from './DesignerCanvas'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
 import type { DesignerTemplate, DesignerWorkshop, DocumentType, ResolvedTheme } from './types'
-
-const SAMPLE: SampleData = {
-  customer: { name: 'Carl Hinrichs', lines: ['Südgeorgsfehner Straße 5-7', '26689 Augustfehn'] },
-  vehicle: {
-    name: '2021 BMW M340d xDrive',
-    lines: ['VIN: WBA51DZ050FL79472', 'Plate: WST-X340', 'Mileage: 105,866 km'],
-  },
-  service: { name: 'Brakes and coolant', lines: ['Type: Repair', 'Tech: Manuel Lücking'] },
-  items: [
-    {
-      n: 1,
-      qty: '4.8',
-      unit: 'hrs',
-      desc: 'Front brakes replaced',
-      price: '56,50 €',
-      total: '271,20 €',
-    },
-    {
-      n: 2,
-      qty: '1',
-      unit: 'Stk.',
-      desc: 'Brake disc, front left',
-      sku: '34116860018',
-      price: '256,12 €',
-      total: '256,12 €',
-    },
-    {
-      n: 3,
-      qty: '1',
-      unit: 'Satz',
-      desc: 'Brake pad set, front axle',
-      sku: '34106889266',
-      price: '239,94 €',
-      total: '239,94 €',
-    },
-    { n: 4, qty: '1', unit: 'x', desc: 'Consumables', price: '4,96 €', total: '4,96 €' },
-  ],
-  findings: [
-    {
-      severity: 'Needs work',
-      color: '#f59e0b',
-      description: 'Rear pads at 15%',
-      notes: 'Replace within 5,000 km',
-    },
-    { severity: 'Monitor', color: '#3b82f6', description: 'Weep at valve cover', notes: '' },
-  ],
-  subtotal: '1.053,63 €',
-  tax: '200,19 €',
-  total: '1.253,82 €',
-  number: 'RE241096',
-  date: '14.08.2026',
-  due: '24.08.2026',
-  customerNumber: 'D035156',
-  notes: 'Please re-torque the wheel nuts after 100 km.',
-}
 
 /** Blend two hex colors, used to derive the secondary tone the PDF derives. */
 function mix(from: string, to: string, amount: number) {
@@ -219,6 +164,7 @@ export function InvoiceDesigner({
           [`${prefix}.companyTextColor`]: template.companyTextColor,
           [`${prefix}.frameBorderColor`]: template.frameBorderColor,
           [`${prefix}.frameShadow`]: template.frameShadow,
+          [`${prefix}.frameSide`]: template.frameSide,
           [`${prefix}.fontFamily`]: template.fontFamily,
           [`${prefix}.headerStyle`]: template.headerStyle,
           [`${prefix}.logoSize`]: String(template.logoSize),
@@ -444,9 +390,9 @@ export function InvoiceDesigner({
         <DesignerCanvas
           layout={layout}
           theme={theme}
-          sample={SAMPLE}
           workshop={workshop}
           headerStyle={template.headerStyle}
+          frameSide={template.frameSide === 'right' ? 'right' : 'left'}
           companyText={theme.companyText}
           logoSize={template.logoSize}
           frameBorderColor={template.frameBorderColor || undefined}

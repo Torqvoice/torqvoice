@@ -107,6 +107,46 @@ describe('the designer can reach everything the layout can express', () => {
   })
 })
 
+describe('the canvas renders from the layout, not from prose', () => {
+  const SAMPLE = readFileSync('src/features/invoice-designer/Components/sample.ts', 'utf8')
+
+  it('reads which fields a section shows', () => {
+    // Turning a field on used to change nothing, because the canvas held a
+    // paragraph per section rather than a value per field.
+    expect(CANVAS).toContain('visibleFields')
+    expect(CANVAS).toContain('getBuiltinFieldsForSection')
+  })
+
+  it('has a value for every field a layout can show', () => {
+    const schema = readFileSync('src/features/settings/Schema/invoiceLayoutSchema.ts', 'utf8')
+    const ids = new Set<string>()
+    for (const list of [
+      'BUILTIN_CUSTOMER_FIELDS',
+      'BUILTIN_VEHICLE_FIELDS',
+      'BUILTIN_SERVICE_FIELDS',
+      'BUILTIN_HEADER_FIELDS',
+      'BUILTIN_FOOTER_FIELDS',
+      'BUILTIN_BANK_ACCOUNT_FIELDS',
+    ]) {
+      const block = schema.slice(
+        schema.indexOf(`${list} = [`),
+        schema.indexOf('] as const', schema.indexOf(`${list} = [`))
+      )
+      for (const m of block.matchAll(/id: '([a-z_]+)'/g)) ids.add(m[1])
+    }
+    // `logo` is drawn from the workshop's upload rather than a sample string.
+    const missing = [...ids].filter((id) => id !== 'logo' && !SAMPLE.includes(`${id}:`))
+    expect(missing).toEqual([])
+  })
+
+  it('draws the frame as page chrome, on either edge', () => {
+    // The band and the rail are one shape. Drawn separately they came apart,
+    // and left a seam of paper between them.
+    expect(CANVAS).toContain('frameChrome')
+    expect(CANVAS).toContain('railEdge')
+  })
+})
+
 describe('every section is styleable in the PDF', () => {
   it('hands each one its own derived stylesheet', () => {
     const map = INVOICE_PDF.slice(

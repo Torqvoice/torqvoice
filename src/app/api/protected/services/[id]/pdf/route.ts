@@ -275,6 +275,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
       frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
       frameShadow: settingsMap['invoice.frameShadow'] !== 'false',
+      frameSide: (settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+        | 'left'
+        | 'right',
       fontFamily:
         settingsMap['invoice.fontFamily'] ||
         settingsMap['invoice.template.fontFamily'] ||
