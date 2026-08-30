@@ -151,6 +151,12 @@ export function QuotePDF({
     ? getVisibleFieldsForSectionHelper(layoutConfig, 'header')
     : null
   const headerFieldOrder = getOrderedFieldIds(headerFields, DEFAULT_HEADER_FIELD_ORDER)
+  // The layout's header fields win over the legacy template flags, the same way
+  // they do on the invoice, so the letterhead toggle reaches quotes too.
+  const showLogoField = headerFields ? headerFieldOrder.includes('logo') : showLogo
+  const showCompanyNameField = headerFields
+    ? headerFieldOrder.includes('company_name')
+    : showCompanyName
   const styles = createStyles(primaryColor, fontFamily, headerStyle)
   const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
@@ -705,8 +711,8 @@ export function QuotePDF({
       <FramedLetterhead
         primaryColor={primaryColor}
         fontFamily={fontFamily}
-        showLogo={showLogo}
-        showCompanyName={showCompanyName}
+        showLogo={showLogoField}
+        showCompanyName={showCompanyNameField}
         fieldOrder={headerFieldOrder}
         logoDataUri={logoDataUri}
         logoScale={logoScale}

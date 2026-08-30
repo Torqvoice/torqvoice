@@ -216,6 +216,50 @@ export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
 }
 
 // ---------------------------------------------------------------------------
+// Letterhead mark
+// ---------------------------------------------------------------------------
+
+export type LetterheadMark = 'logo' | 'company_name'
+
+/**
+ * Which of the two the header band carries. Layouts that show neither, or that
+ * have no header fields at all, read as the logo, which is what every header
+ * has always preferred.
+ */
+export function getLetterheadMark(config: InvoiceLayoutConfig | undefined | null): LetterheadMark {
+  const fields = config?.sections.find((s) => s.id === 'header')?.fields
+  if (!fields) return 'logo'
+  return fields.find((f) => f.id === 'logo')?.visible === false ? 'company_name' : 'logo'
+}
+
+/**
+ * Flip the band from one mark to the other. It sets both fields, because the
+ * band shows one and leaving the other visible would only mislead whoever opens
+ * the layout editor next.
+ */
+export function withLetterheadMark(
+  config: InvoiceLayoutConfig,
+  mark: LetterheadMark
+): InvoiceLayoutConfig {
+  return {
+    sections: config.sections.map((section) => {
+      if (section.id !== 'header') return section
+      const fields = section.fields ?? getDefaultFieldsForSection('header') ?? []
+      return {
+        ...section,
+        fields: fields.map((field) =>
+          field.id === 'logo'
+            ? { ...field, visible: mark === 'logo' }
+            : field.id === 'company_name'
+              ? { ...field, visible: mark === 'company_name' }
+              : field
+        ),
+      }
+    }),
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Field lookup helpers (for rendering)
 // ---------------------------------------------------------------------------
 

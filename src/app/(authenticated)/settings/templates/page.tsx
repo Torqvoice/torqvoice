@@ -41,6 +41,9 @@ export default async function TemplatePage() {
         SETTING_KEYS.QUOTE_HEADER_STYLE,
         SETTING_KEYS.QUOTE_LOGO_SIZE,
         SETTING_KEYS.COMPANY_LOGO,
+        SETTING_KEYS.WORKSHOP_ADDRESS,
+        SETTING_KEYS.WORKSHOP_PHONE,
+        SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
         SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
         SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
@@ -62,6 +65,15 @@ export default async function TemplatePage() {
       : []
 
   const t = await getTranslations('settings')
+
+  // The preview is meant to look like this workshop's own paper, so it gets the
+  // real company details rather than the sample shop's.
+  const workshop = {
+    name: data.organizations.find((o) => o.id === data.organizationId)?.name,
+    address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
+    phone: settings[SETTING_KEYS.WORKSHOP_PHONE],
+    email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
+  }
 
   const smsDefaultMap: Record<string, string> = {
     [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]: t.raw('templates.smsDefaults.invoiceReady'),
@@ -99,6 +111,7 @@ export default async function TemplatePage() {
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
+      workshop={workshop}
       invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
     />

@@ -27,6 +27,8 @@ import { InvoiceLayoutPreview } from '@/features/settings/Components/InvoiceLayo
 import {
   type InvoiceLayoutConfig,
   getDefaultInvoiceLayout,
+  getLetterheadMark,
+  withLetterheadMark,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import {
   saveInvoiceLayoutConfig,
@@ -41,6 +43,13 @@ interface TemplateValues {
 }
 
 type TabType = 'invoice' | 'quotation' | 'inspections' | 'sms'
+
+interface WorkshopPreviewInfo {
+  name?: string
+  address?: string
+  phone?: string
+  email?: string
+}
 
 const fontMap: Record<string, string> = {
   Helvetica: 'Helvetica, Arial, sans-serif',
@@ -65,6 +74,7 @@ function TemplateTab({
   documentLabel,
   documentType,
   logoUrl,
+  workshop,
   layoutConfig,
   setLayoutConfig,
 }: {
@@ -73,6 +83,7 @@ function TemplateTab({
   documentLabel: string
   documentType: 'invoice' | 'quote'
   logoUrl?: string
+  workshop?: WorkshopPreviewInfo
   layoutConfig: InvoiceLayoutConfig
   setLayoutConfig: (c: InvoiceLayoutConfig) => void
 }) {
@@ -247,6 +258,33 @@ function TemplateTab({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* The framed band carries one mark, so which one it is has to be
+                  a choice rather than whatever the workshop happens to have
+                  uploaded. Other header styles show both and need no control. */}
+              {values.headerStyle === 'framed' && (
+                <div className="space-y-2">
+                  <Label>{t('templates.letterheadMark')}</Label>
+                  <Select
+                    value={getLetterheadMark(layoutConfig)}
+                    onValueChange={(v) =>
+                      setLayoutConfig(
+                        withLetterheadMark(layoutConfig, v as 'logo' | 'company_name')
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="logo">{t('templates.letterheadLogo')}</SelectItem>
+                      <SelectItem value="company_name">
+                        {t('templates.letterheadCompanyName')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -465,6 +503,7 @@ export function TemplateSettings({
   smsEnabled = false,
   initialSmsTemplates = {},
   logoUrl,
+  workshop,
   invoiceLayoutConfig,
   quoteLayoutConfig,
 }: {
@@ -474,6 +513,7 @@ export function TemplateSettings({
   smsEnabled?: boolean
   initialSmsTemplates?: Record<string, string>
   logoUrl?: string
+  workshop?: WorkshopPreviewInfo
   invoiceLayoutConfig?: InvoiceLayoutConfig
   quoteLayoutConfig?: InvoiceLayoutConfig
 }) {
@@ -649,6 +689,7 @@ export function TemplateSettings({
                 documentLabel={t('templates.tabs.invoice')}
                 documentType="invoice"
                 logoUrl={logoUrl}
+                workshop={workshop}
                 layoutConfig={invoiceLayout}
                 setLayoutConfig={applyInvoiceLayout}
               />
@@ -659,6 +700,7 @@ export function TemplateSettings({
                 documentLabel={t('templates.tabs.quotation')}
                 documentType="quote"
                 logoUrl={logoUrl}
+                workshop={workshop}
                 layoutConfig={quoteLayout}
                 setLayoutConfig={applyQuoteLayout}
               />

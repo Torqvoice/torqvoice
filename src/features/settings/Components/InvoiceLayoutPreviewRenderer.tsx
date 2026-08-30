@@ -178,7 +178,7 @@ const DUMMY_QUOTE_DATA = {
   },
 }
 
-const DUMMY_WORKSHOP = {
+const SAMPLE_WORKSHOP = {
   name: 'Your Workshop',
   address: '123 Main Street, Springfield',
   phone: '(555) 123-4567',
@@ -202,15 +202,28 @@ const DUMMY_INVOICE_SETTINGS = {
 // Renderer (loaded only client-side via dynamic import)
 // ---------------------------------------------------------------------------
 
+/** The workshop's own details where it has them, the sample's where it has not. */
+function resolveWorkshop(workshop: InvoiceLayoutPreviewProps['workshop']) {
+  return {
+    name: workshop?.name?.trim() || SAMPLE_WORKSHOP.name,
+    address: workshop?.address?.trim() || SAMPLE_WORKSHOP.address,
+    phone: workshop?.phone?.trim() || SAMPLE_WORKSHOP.phone,
+    email: workshop?.email?.trim() || SAMPLE_WORKSHOP.email,
+  }
+}
+
 export function InvoiceLayoutPreviewRenderer({
   config,
   documentType,
   customFields,
   template,
   logoUrl,
+  workshop,
 }: InvoiceLayoutPreviewProps) {
   const messages = useMessages()
   const serviceType = useServiceType()
+
+  const previewWorkshop = useMemo(() => resolveWorkshop(workshop), [workshop])
 
   const labels = useMemo(() => {
     const pdf = (messages?.pdf ?? {}) as Record<string, Record<string, string>>
@@ -285,7 +298,7 @@ export function InvoiceLayoutPreviewRenderer({
         {isQuote ? (
           <QuotePDF
             data={DUMMY_QUOTE_DATA}
-            workshop={DUMMY_WORKSHOP}
+            workshop={previewWorkshop}
             currencyCode={DUMMY_INVOICE_SETTINGS.currencyCode}
             logoDataUri={logoUrl || undefined}
             template={templateConfig}
@@ -296,7 +309,7 @@ export function InvoiceLayoutPreviewRenderer({
         ) : (
           <InvoicePDF
             data={invoiceData}
-            workshop={DUMMY_WORKSHOP}
+            workshop={previewWorkshop}
             invoiceSettings={DUMMY_INVOICE_SETTINGS}
             logoDataUri={logoUrl || undefined}
             template={templateConfig}

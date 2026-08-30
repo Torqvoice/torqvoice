@@ -32,6 +32,12 @@ export interface InvoiceLayoutPreviewProps {
   customFields?: FieldDef[]
   template: TemplateValues
   logoUrl?: string
+  /**
+   * The workshop's own details. Whatever is missing falls back to the sample
+   * shop, so a workshop that has filled in Company details sees its own
+   * letterhead rather than "Your Workshop".
+   */
+  workshop?: { name?: string; address?: string; phone?: string; email?: string }
 }
 
 // The actual renderer must be in a separate file loaded only client-side

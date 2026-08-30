@@ -15,7 +15,11 @@ import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { createStyles, FRAMED } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { letterheadMark } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
 import { templatePresets } from '@/features/settings/Schema/templatePresets'
-import { getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  getDefaultInvoiceLayout,
+  getLetterheadMark,
+  withLetterheadMark,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const framed = templatePresets.find((p) => p.id === 'framed')
 
@@ -138,6 +142,22 @@ describe('framed template preset', () => {
       'logo'
     )
     expect(letterheadMark({ showLogo: false, showCompanyName: false })).toBe('none')
+  })
+
+  it('lets a workshop put its name on the band instead of its logo', () => {
+    const layout = getDefaultInvoiceLayout()
+    expect(getLetterheadMark(layout)).toBe('logo')
+
+    const named = withLetterheadMark(layout, 'company_name')
+    expect(getLetterheadMark(named)).toBe('company_name')
+
+    // Both fields move together: the band shows one, and leaving the other
+    // visible would mislead whoever opens the layout editor next.
+    const header = named.sections.find((s) => s.id === 'header')
+    expect(header?.fields?.find((f) => f.id === 'logo')?.visible).toBe(false)
+    expect(header?.fields?.find((f) => f.id === 'company_name')?.visible).toBe(true)
+
+    expect(getLetterheadMark(withLetterheadMark(named, 'logo'))).toBe('logo')
   })
 
   it('lines the footer up with the content, not the rail', () => {
