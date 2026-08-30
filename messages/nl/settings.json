@@ -495,7 +495,8 @@
     "cannotUseApp": "Hun rol kan niet aan klussen werken. Geef ze eerst Monteur, of een rol met dezelfde rechten.",
     "revokeTechnicianDone": "{name} is uitgelogd uit de app",
     "noAccessTitle": "Nog geen toegang",
-    "noAccessBody": "Uw account hoort bij {workshop}, maar heeft nog geen rol, dus er is hier niets te openen. Vraag een eigenaar of beheerder van uw werkplaats om een rol."
+    "noAccessBody": "Uw account hoort bij {workshop}, maar heeft nog geen rol, dus er is hier niets te openen. Vraag een eigenaar of beheerder van uw werkplaats om een rol.",
+    "setupPageInstall": "Downloaden via Google Play"
   },
   "invoice": {
     "title": "Factuurindeling",

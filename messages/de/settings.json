@@ -495,7 +495,8 @@
     "cannotUseApp": "Diese Rolle kann keine Aufträge bearbeiten. Geben Sie ihr zuerst Techniker oder eine Rolle mit denselben Rechten.",
     "revokeTechnicianDone": "{name} wurde aus der App abgemeldet",
     "noAccessTitle": "Noch kein Zugriff",
-    "noAccessBody": "Ihr Konto gehört zu {workshop}, hat aber noch keine Rolle, deshalb gibt es hier nichts zu öffnen. Bitten Sie einen Inhaber oder Administrator Ihrer Werkstatt um eine Rolle."
+    "noAccessBody": "Ihr Konto gehört zu {workshop}, hat aber noch keine Rolle, deshalb gibt es hier nichts zu öffnen. Bitten Sie einen Inhaber oder Administrator Ihrer Werkstatt um eine Rolle.",
+    "setupPageInstall": "Bei Google Play laden"
   },
   "invoice": {
     "title": "Rechnungslayout",
