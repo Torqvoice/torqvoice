@@ -348,7 +348,9 @@
     "technicians": "Tecnici",
     "otherTeamMembers": "Altri membri del team",
     "makeTechnician": "Lo rende un tecnico",
-    "addSomeoneNew": "Aggiungi qualcuno"
+    "addSomeoneNew": "Aggiungi qualcuno",
+    "notOnBoard": "Non ancora sulla lavagna",
+    "putOnBoard": "Metti sulla lavagna"
   },
   "notifications": {
     "title": "Notifiche al cliente",

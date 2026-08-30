@@ -348,7 +348,9 @@
     "technicians": "Механики",
     "otherTeamMembers": "Другие участники",
     "makeTechnician": "Сделает механиком",
-    "addSomeoneNew": "Добавить человека"
+    "addSomeoneNew": "Добавить человека",
+    "notOnBoard": "Ещё не на доске",
+    "putOnBoard": "Добавить на доску"
   },
   "notifications": {
     "title": "Уведомления клиента",

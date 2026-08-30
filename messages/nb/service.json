@@ -348,7 +348,9 @@
     "technicians": "Teknikere",
     "otherTeamMembers": "Andre i teamet",
     "makeTechnician": "Gjør dem til tekniker",
-    "addSomeoneNew": "Legg til noen ny"
+    "addSomeoneNew": "Legg til noen ny",
+    "notOnBoard": "Ikke på tavlen ennå",
+    "putOnBoard": "Sett på tavlen"
   },
   "notifications": {
     "title": "Kundevarsler",

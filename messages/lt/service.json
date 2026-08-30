@@ -348,7 +348,9 @@
     "technicians": "Technikai",
     "otherTeamMembers": "Kiti komandos nariai",
     "makeTechnician": "Padarys jį techniku",
-    "addSomeoneNew": "Pridėti naują žmogų"
+    "addSomeoneNew": "Pridėti naują žmogų",
+    "notOnBoard": "Dar nėra lentoje",
+    "putOnBoard": "Įtraukti į lentą"
   },
   "notifications": {
     "title": "Kliento pranešimai",

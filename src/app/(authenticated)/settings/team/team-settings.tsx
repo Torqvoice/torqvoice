@@ -561,7 +561,7 @@ export function TeamSettings({
                 )}
                 {/* The way back off. Setting somebody up and signing them out
                     are both one click, and neither hides inside the other. */}
-                {isAdmin && member.role !== 'owner' && technicians.has(member.user.id) && (
+                {isAdmin && technicians.has(member.user.id) && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
@@ -577,8 +577,14 @@ export function TeamSettings({
                     <TooltipContent>{t('team.revokeTechnicianTitle')}</TooltipContent>
                   </Tooltip>
                 )}
-                {isAdmin && member.role !== 'owner' && (
-                  /* Shown for everybody, because "can this person have the
+                {isAdmin && (
+                  /* Shown for everybody, the owner included: a one-person
+                     workshop is the desk and the bay, and the owner is the
+                     likeliest technician in it. Only role changes and removal
+                     exclude the owner, because those are the two things that
+                     would lock the workshop out of itself.
+
+                     Shown for everybody else too, because "can this person have the
                      app" is a question about their role, and hiding the
                      button left no way to find out the answer. Disabled with
                      the reason rather than absent. */
