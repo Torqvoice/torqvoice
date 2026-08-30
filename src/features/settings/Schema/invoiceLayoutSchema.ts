@@ -104,9 +104,26 @@ export const BUILTIN_INFO_FIELDS = [
 export const BUILTIN_HEADER_FIELDS = [
   { id: 'logo', name: 'Logo' },
   { id: 'company_name', name: 'Company Name' },
+  { id: 'company_slogan', name: 'Slogan' },
   { id: 'company_address', name: 'Address' },
   { id: 'company_phone', name: 'Phone' },
   { id: 'company_email', name: 'Email' },
+  { id: 'company_org_number', name: 'Organization Number' },
+] as const
+
+/**
+ * Company details a workshop can move down to the footer, the way printed
+ * stationery carries them: the shop up top, the ways to reach it along the
+ * bottom. All off by default, so a footer stays the one line it has always
+ * been until somebody asks for more.
+ */
+export const BUILTIN_FOOTER_FIELDS = [
+  { id: 'footer_note', name: 'Footer Note' },
+  { id: 'company_name', name: 'Company Name' },
+  { id: 'company_address', name: 'Address' },
+  { id: 'company_phone', name: 'Phone' },
+  { id: 'company_email', name: 'Email' },
+  { id: 'bank_account', name: 'Bank Account' },
   { id: 'company_org_number', name: 'Organization Number' },
 ] as const
 
@@ -122,10 +139,12 @@ export type BuiltinVehicleFieldId = (typeof BUILTIN_VEHICLE_FIELDS)[number]['id'
 export type BuiltinServiceFieldId = (typeof BUILTIN_SERVICE_FIELDS)[number]['id']
 export type BuiltinHeaderFieldId = (typeof BUILTIN_HEADER_FIELDS)[number]['id']
 export type BuiltinBankAccountFieldId = (typeof BUILTIN_BANK_ACCOUNT_FIELDS)[number]['id']
+export type BuiltinFooterFieldId = (typeof BUILTIN_FOOTER_FIELDS)[number]['id']
 
 /** Sections that have configurable fields */
 export const SECTIONS_WITH_FIELDS = new Set<string>([
   'header',
+  'footer',
   'customer',
   'vehicle',
   'service',
@@ -178,6 +197,9 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
       return BUILTIN_HEADER_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'footer':
+      // Only the note, which is the footer every existing invoice already has.
+      return BUILTIN_FOOTER_FIELDS.map((f) => ({ id: f.id, visible: f.id === 'footer_note' }))
     case 'general':
       return [] // no built-in fields, only custom fields
     default:
@@ -278,6 +300,8 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_HEADER_FIELDS
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS
+    case 'footer':
+      return BUILTIN_FOOTER_FIELDS
     default:
       return []
   }
@@ -291,6 +315,7 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_SERVICE_FIELDS,
     ...BUILTIN_HEADER_FIELDS,
     ...BUILTIN_BANK_ACCOUNT_FIELDS,
+    ...BUILTIN_FOOTER_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
 }

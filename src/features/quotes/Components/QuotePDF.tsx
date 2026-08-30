@@ -29,6 +29,7 @@ import {
 const DEFAULT_HEADER_FIELD_ORDER = [
   'logo',
   'company_name',
+  'company_slogan',
   'company_address',
   'company_phone',
   'company_email',
@@ -93,6 +94,8 @@ interface WorkshopInfo {
   address: string
   phone: string
   email: string
+  /** One line under the name, set in Company details. */
+  slogan?: string
 }
 
 interface ImageAttachmentPDF {
@@ -157,7 +160,7 @@ export function QuotePDF({
   const showCompanyNameField = headerFields
     ? headerFieldOrder.includes('company_name')
     : showCompanyName
-  const styles = createStyles(primaryColor, fontFamily, headerStyle)
+  const styles = createStyles(primaryColor, fontFamily, headerStyle, template?.backgroundColor)
   const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
 

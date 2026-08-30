@@ -37,6 +37,7 @@ import {
 
 interface TemplateValues {
   primaryColor: string
+  backgroundColor: string
   fontFamily: string
   headerStyle: string
   logoSize: number
@@ -49,6 +50,7 @@ interface WorkshopPreviewInfo {
   address?: string
   phone?: string
   email?: string
+  slogan?: string
 }
 
 const fontMap: Record<string, string> = {
@@ -564,6 +566,7 @@ export function TemplateSettings({
       if (tab === 'invoice') {
         await Promise.all([
           setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
+          setSetting(SETTING_KEYS.INVOICE_BACKGROUND_COLOR, invoiceValues.backgroundColor),
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
           setSetting(SETTING_KEYS.INVOICE_LOGO_SIZE, String(invoiceValues.logoSize)),
@@ -574,6 +577,7 @@ export function TemplateSettings({
       } else if (tab === 'quotation') {
         await Promise.all([
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
+          setSetting(SETTING_KEYS.QUOTE_BACKGROUND_COLOR, quoteValues.backgroundColor),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
           setSetting(SETTING_KEYS.QUOTE_LOGO_SIZE, String(quoteValues.logoSize)),

@@ -183,6 +183,7 @@ const SAMPLE_WORKSHOP = {
   address: '123 Main Street, Springfield',
   phone: '(555) 123-4567',
   email: 'shop@example.com',
+  slogan: 'Independent service and repair, every make',
 }
 
 const DUMMY_INVOICE_SETTINGS = {
@@ -209,6 +210,7 @@ export function resolveWorkshop(workshop: InvoiceLayoutPreviewProps['workshop'])
     address: workshop?.address?.trim() || SAMPLE_WORKSHOP.address,
     phone: workshop?.phone?.trim() || SAMPLE_WORKSHOP.phone,
     email: workshop?.email?.trim() || SAMPLE_WORKSHOP.email,
+    slogan: workshop?.slogan?.trim() || SAMPLE_WORKSHOP.slogan,
   }
 }
 
@@ -257,6 +259,8 @@ export function InvoiceLayoutPreviewRenderer({
   const templateConfig = useMemo(
     () => ({
       primaryColor: template.primaryColor,
+      // Empty means the workshop has not chosen one, which is white paper.
+      backgroundColor: template.backgroundColor || undefined,
       fontFamily: template.fontFamily,
       headerStyle: template.headerStyle,
       logoSize: template.logoSize,

@@ -2,6 +2,8 @@ import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayo
 
 export interface TemplateConfig {
   primaryColor?: string
+  /** Sheet color behind the document. Unset leaves the paper white. */
+  backgroundColor?: string
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean
@@ -89,6 +91,8 @@ export interface WorkshopInfo {
   address: string
   phone: string
   email: string
+  /** One line under the name, set in Company details. */
+  slogan?: string
 }
 
 export interface InvoiceSettingsProps {

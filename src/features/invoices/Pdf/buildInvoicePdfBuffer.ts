@@ -237,6 +237,7 @@ export async function buildInvoicePdfBuffer(
 
   const template = {
     primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
+    backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
     fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
     showLogo: settingsMap['invoice.showLogo'] !== 'false',
     showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
@@ -277,6 +278,7 @@ export async function buildInvoicePdfBuffer(
       address: settingsMap['workshop.address'] || '',
       phone: settingsMap['workshop.phone'] || '',
       email: settingsMap['workshop.email'] || '',
+      slogan: settingsMap['workshop.slogan'] || undefined,
     },
     invoiceSettings,
     paymentSummary,

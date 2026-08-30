@@ -270,6 +270,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         settingsMap['invoice.primaryColor'] ||
         settingsMap['invoice.template.primaryColor'] ||
         '#d97706',
+      backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
       fontFamily:
         settingsMap['invoice.fontFamily'] ||
         settingsMap['invoice.template.fontFamily'] ||
@@ -317,6 +318,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         address: settingsMap['workshop.address'] || '',
         phone: settingsMap['workshop.phone'] || '',
         email: settingsMap['workshop.email'] || '',
+        slogan: settingsMap['workshop.slogan'] || undefined,
       },
       invoiceSettings,
       paymentSummary,

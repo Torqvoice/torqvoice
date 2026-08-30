@@ -57,6 +57,8 @@ export function FramedLetterhead({
   const fontBold = getFontBold(fontFamily)
   const mark = letterheadMark({ showLogo, logoDataUri, showCompanyName })
 
+  const slogan = fieldOrder.includes('company_slogan') ? workshop?.slogan?.trim() : null
+
   const strapline = ['company_address', 'company_phone', 'company_email', 'company_org_number']
     .filter((id) => fieldOrder.includes(id))
     .map((id) => {
@@ -130,7 +132,7 @@ export function FramedLetterhead({
         ))}
       </View>
 
-      {strapline ? (
+      {slogan || strapline ? (
         <View
           style={{
             marginLeft: FRAMED.railWidth,
@@ -143,7 +145,10 @@ export function FramedLetterhead({
             borderBottomColor: '#e5e7eb',
           }}
         >
-          <Text style={{ fontSize: 9, color: gray }}>{strapline}</Text>
+          {slogan ? <Text style={{ fontSize: 11, color: gray }}>{slogan}</Text> : null}
+          {strapline ? (
+            <Text style={{ fontSize: 9, color: gray, marginTop: slogan ? 3 : 0 }}>{strapline}</Text>
+          ) : null}
         </View>
       ) : null}
     </View>

@@ -47,7 +47,7 @@ interface FieldDef {
 interface InvoiceSettingsProps {
   settings: Record<string, string>
   /** Fills the layout preview with this workshop's own letterhead. */
-  workshop?: { name?: string; address?: string; phone?: string; email?: string }
+  workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
   unnumberedCustomers?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig

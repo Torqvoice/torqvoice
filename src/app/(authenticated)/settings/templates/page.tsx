@@ -34,15 +34,18 @@ export default async function TemplatePage() {
     await Promise.all([
       getSettings([
         SETTING_KEYS.INVOICE_PRIMARY_COLOR,
+        SETTING_KEYS.INVOICE_BACKGROUND_COLOR,
         SETTING_KEYS.INVOICE_FONT_FAMILY,
         SETTING_KEYS.INVOICE_HEADER_STYLE,
         SETTING_KEYS.INVOICE_LOGO_SIZE,
         SETTING_KEYS.QUOTE_PRIMARY_COLOR,
+        SETTING_KEYS.QUOTE_BACKGROUND_COLOR,
         SETTING_KEYS.QUOTE_FONT_FAMILY,
         SETTING_KEYS.QUOTE_HEADER_STYLE,
         SETTING_KEYS.QUOTE_LOGO_SIZE,
         SETTING_KEYS.COMPANY_LOGO,
         SETTING_KEYS.WORKSHOP_ADDRESS,
+        SETTING_KEYS.WORKSHOP_SLOGAN,
         SETTING_KEYS.WORKSHOP_PHONE,
         SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
@@ -81,6 +84,7 @@ export default async function TemplatePage() {
     address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
     phone: settings[SETTING_KEYS.WORKSHOP_PHONE],
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
+    slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN],
   }
 
   const smsDefaultMap: Record<string, string> = {
@@ -105,12 +109,14 @@ export default async function TemplatePage() {
     <TemplateSettings
       initialInvoiceValues={{
         primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
+        backgroundColor: settings[SETTING_KEYS.INVOICE_BACKGROUND_COLOR] || '',
         fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
         headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
         logoSize: Number(settings[SETTING_KEYS.INVOICE_LOGO_SIZE]) || 100,
       }}
       initialQuoteValues={{
         primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || '#d97706',
+        backgroundColor: settings[SETTING_KEYS.QUOTE_BACKGROUND_COLOR] || '',
         fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || 'Helvetica',
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || 'standard',
         logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,

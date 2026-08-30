@@ -16,6 +16,7 @@ import {
   BUILTIN_SERVICE_FIELDS,
   BUILTIN_HEADER_FIELDS,
   BUILTIN_BANK_ACCOUNT_FIELDS,
+  BUILTIN_FOOTER_FIELDS,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const LOCALES = readdirSync('messages')
@@ -26,6 +27,7 @@ const FIELD_IDS = [
   ...BUILTIN_SERVICE_FIELDS,
   ...BUILTIN_HEADER_FIELDS,
   ...BUILTIN_BANK_ACCOUNT_FIELDS,
+  ...BUILTIN_FOOTER_FIELDS,
 ].map((f) => f.id)
 
 function layoutEditorMessages(locale: string) {

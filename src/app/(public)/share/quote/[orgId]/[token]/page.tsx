@@ -130,6 +130,7 @@ export default async function PublicQuotePage({
     address: settingsMap['workshop.address'] || '',
     phone: settingsMap['workshop.phone'] || '',
     email: settingsMap['workshop.email'] || '',
+        slogan: settingsMap['workshop.slogan'] || undefined,
   }
 
   const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'

@@ -87,7 +87,7 @@ export function InvoicePDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const headerStyle = template?.headerStyle || 'standard'
-  const styles = createStyles(primaryColor, fontFamily, headerStyle)
+  const styles = createStyles(primaryColor, fontFamily, headerStyle, template?.backgroundColor)
   const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
 
@@ -408,6 +408,8 @@ export function InvoicePDF({
         fontFamily={fontFamily}
         torqvoiceLogoDataUri={torqvoiceLogoDataUri}
         portalUrl={portalUrl}
+        workshop={workshop}
+        visibleFields={getVisibleFieldsForSection(layoutConfig, 'footer')}
         styles={styles}
         labels={labels}
       />

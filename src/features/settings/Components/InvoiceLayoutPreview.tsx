@@ -21,6 +21,8 @@ interface FieldDef {
 
 interface TemplateValues {
   primaryColor: string
+  /** Sheet color behind the document. Empty leaves the paper white. */
+  backgroundColor?: string
   fontFamily: string
   headerStyle: string
   logoSize?: number
@@ -37,7 +39,7 @@ export interface InvoiceLayoutPreviewProps {
    * shop, so a workshop that has filled in Company details sees its own
    * letterhead rather than "Your Workshop".
    */
-  workshop?: { name?: string; address?: string; phone?: string; email?: string }
+  workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
 }
 
 // The actual renderer must be in a separate file loaded only client-side

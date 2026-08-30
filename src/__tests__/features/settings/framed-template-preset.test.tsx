@@ -23,6 +23,14 @@ import {
 
 const framed = templatePresets.find((p) => p.id === 'framed')
 
+/** The page style, widened past the union createStyles returns per variant. */
+function pageStyle(headerStyle: string, background?: string): Record<string, unknown> {
+  return createStyles('#ee7623', 'Helvetica', headerStyle, background).page as Record<
+    string,
+    unknown
+  >
+}
+
 function visibility(config: { sections: { id: string; visible: boolean }[] }) {
   return Object.fromEntries(config.sections.map((s) => [s.id, s.visible]))
 }
@@ -115,18 +123,18 @@ describe('framed template preset', () => {
   })
 
   it('draws the rail as the page border, so it repeats on every page', () => {
-    const styles = createStyles('#ee7623', 'Helvetica', 'framed')
-    expect(styles.page.borderLeftWidth).toBe(FRAMED.railWidth)
-    expect(styles.page.borderLeftColor).toBe('#ee7623')
+    const page = pageStyle('framed')
+    expect(page.borderLeftWidth).toBe(FRAMED.railWidth)
+    expect(page.borderLeftColor).toBe('#ee7623')
     // The letterhead escapes the padding by exactly this much to reach the
     // sheet edge, so the two numbers must stay in step.
-    expect(styles.page.paddingTop).toBe(FRAMED.padTop)
-    expect(styles.page.paddingLeft).toBe(FRAMED.padLeft)
+    expect(page.paddingTop).toBe(FRAMED.padTop)
+    expect(page.paddingLeft).toBe(FRAMED.padLeft)
   })
 
   it('leaves every other header style unframed', () => {
     for (const style of ['standard', 'compact', 'modern']) {
-      expect(createStyles('#ee7623', 'Helvetica', style).page.borderLeftWidth).toBeUndefined()
+      expect(pageStyle(style).borderLeftWidth).toBeUndefined()
     }
   })
 
@@ -160,11 +168,41 @@ describe('framed template preset', () => {
     expect(getLetterheadMark(withLetterheadMark(named, 'logo'))).toBe('logo')
   })
 
+  it('leaves the footer the one note line it has always been by default', () => {
+    const footer = getDefaultInvoiceLayout().sections.find((s) => s.id === 'footer')
+    const visible = footer?.fields?.filter((f) => f.visible).map((f) => f.id)
+    expect(visible).toEqual(['footer_note'])
+  })
+
+  it('moves the company details down to the footer', () => {
+    const sections = framed!.layoutConfig!.sections
+    const shown = (id: string) =>
+      sections
+        .find((s) => s.id === id)
+        ?.fields?.filter((f) => f.visible)
+        .map((f) => f.id) ?? []
+
+    // The letterhead keeps who the shop is; the ways to reach it print along
+    // the bottom, the way printed stationery sets them.
+    expect(shown('header')).toEqual(['logo', 'company_name', 'company_slogan'])
+    expect(shown('footer')).toContain('company_address')
+    expect(shown('footer')).toContain('company_phone')
+    expect(shown('footer')).toContain('company_email')
+    expect(shown('footer')).not.toContain('footer_note')
+  })
+
   it('lines the footer up with the content, not the rail', () => {
     const styles = createStyles('#ee7623', 'Helvetica', 'framed')
     // Absolute offsets are measured from inside the page border, so the rail's
     // width is already accounted for.
     expect(styles.footer.left).toBe(FRAMED.padLeft)
+  })
+
+  it('leaves the sheet white until a background is asked for', () => {
+    expect(pageStyle('framed').backgroundColor).toBeUndefined()
+    expect(pageStyle('standard').backgroundColor).toBeUndefined()
+    expect(pageStyle('framed', '#f3f4f6').backgroundColor).toBe('#f3f4f6')
+    expect(pageStyle('standard', '#f3f4f6').backgroundColor).toBe('#f3f4f6')
   })
 
   it('renders an invoice and a quote through the framed sheet', async () => {

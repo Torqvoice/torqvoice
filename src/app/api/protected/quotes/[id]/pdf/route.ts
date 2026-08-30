@@ -162,6 +162,7 @@ export async function GET(
 
     const template = {
       primaryColor: settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706",
+      backgroundColor: settingsMap["quote.backgroundColor"] || settingsMap["invoice.backgroundColor"] || undefined,
       fontFamily: settingsMap["quote.fontFamily"] || settingsMap["invoice.fontFamily"] || "Helvetica",
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
@@ -176,6 +177,7 @@ export async function GET(
         address: settingsMap["workshop.address"] || "",
         phone: settingsMap["workshop.phone"] || "",
         email: settingsMap["workshop.email"] || "",
+        slogan: settingsMap["workshop.slogan"] || undefined,
       },
       currencyCode: settingsMap["workshop.currencyCode"] || "USD",
       currencyFormat: (settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol") as "symbol" | "code",

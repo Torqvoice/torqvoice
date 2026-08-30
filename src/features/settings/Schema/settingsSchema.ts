@@ -3,6 +3,9 @@ import { z } from 'zod'
 export const SETTING_KEYS = {
   COMPANY_LOGO: 'workshop.logo',
   WORKSHOP_ADDRESS: 'workshop.address',
+  /// One line under the shop's name on its documents, e.g. what it specialises
+  /// in and where. Empty means the letterhead carries the name alone.
+  WORKSHOP_SLOGAN: 'workshop.slogan',
   WORKSHOP_PHONE: 'workshop.phone',
   WORKSHOP_EMAIL: 'workshop.email',
   DEFAULT_TAX_RATE: 'workshop.defaultTaxRate',
@@ -31,6 +34,8 @@ export const SETTING_KEYS = {
   EMAIL_ENABLED: 'email.enabled',
   INVOICE_TEMPLATE: 'invoice.template',
   INVOICE_PRIMARY_COLOR: 'invoice.primaryColor',
+  /// Sheet color behind the document. Empty means the paper stays white.
+  INVOICE_BACKGROUND_COLOR: 'invoice.backgroundColor',
   INVOICE_FONT_FAMILY: 'invoice.fontFamily',
   INVOICE_SHOW_LOGO: 'invoice.showLogo',
   INVOICE_SHOW_COMPANY_NAME: 'invoice.showCompanyName',
@@ -60,6 +65,7 @@ export const SETTING_KEYS = {
   TIME_FORMAT: 'workshop.timeFormat',
   TIMEZONE: 'workshop.timezone',
   QUOTE_PRIMARY_COLOR: 'quote.primaryColor',
+  QUOTE_BACKGROUND_COLOR: 'quote.backgroundColor',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',
   QUOTE_HEADER_STYLE: 'quote.headerStyle',
   PREDICTED_MAINTENANCE_ENABLED: 'maintenance.enabled',
@@ -170,6 +176,7 @@ export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]
 
 export const workshopSettingsSchema = z.object({
   [SETTING_KEYS.WORKSHOP_ADDRESS]: z.string().optional(),
+  [SETTING_KEYS.WORKSHOP_SLOGAN]: z.string().max(160).optional(),
   [SETTING_KEYS.WORKSHOP_PHONE]: z.string().optional(),
   [SETTING_KEYS.WORKSHOP_EMAIL]: z.string().email('Invalid email').optional().or(z.literal('')),
   [SETTING_KEYS.DEFAULT_TAX_RATE]: z.string().optional(),

@@ -3,6 +3,19 @@ import {
   getDefaultInvoiceLayout,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
+/** The letterhead keeps the name and the slogan; the rest goes to the footer. */
+const FRAMED_HEADER_FIELDS = new Set(['logo', 'company_name', 'company_slogan'])
+
+/** What the printed footer carries along the bottom of the sheet. */
+const FRAMED_FOOTER_FIELDS = new Set([
+  'company_name',
+  'company_address',
+  'company_phone',
+  'company_email',
+  'bank_account',
+  'company_org_number',
+])
+
 export interface TemplatePreset {
   id: string
   name: string
@@ -29,6 +42,16 @@ function framedLayout(): InvoiceLayoutConfig {
         case 'document_title':
         case 'items_table':
           return { ...section, visible: true }
+        case 'header':
+          return {
+            ...section,
+            fields: section.fields?.map((f) => ({ ...f, visible: FRAMED_HEADER_FIELDS.has(f.id) })),
+          }
+        case 'footer':
+          return {
+            ...section,
+            fields: section.fields?.map((f) => ({ ...f, visible: FRAMED_FOOTER_FIELDS.has(f.id) })),
+          }
         case 'parts_table':
         case 'labor_table':
           return { ...section, visible: false }

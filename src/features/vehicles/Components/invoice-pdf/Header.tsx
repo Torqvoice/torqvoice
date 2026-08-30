@@ -12,6 +12,7 @@ function fillTemplate(template: string, values: Record<string, string>): string 
 const DEFAULT_HEADER_FIELD_ORDER = [
   'logo',
   'company_name',
+  'company_slogan',
   'company_address',
   'company_phone',
   'company_email',
@@ -120,6 +121,12 @@ export function Header({
               {shopDisplayName}
             </Text>
           ) : null
+        case 'company_slogan':
+          return workshop?.slogan ? (
+            <Text key="company_slogan" style={{ fontSize: 8.5, color: gray, marginBottom: 2 }}>
+              {workshop.slogan}
+            </Text>
+          ) : null
         case 'company_address':
           return workshop?.address ? (
             <Text key="company_address" style={{ fontSize: 8, color: gray }}>
@@ -217,6 +224,15 @@ export function Header({
           return showCompanyName ? (
             <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
               {shopDisplayName}
+            </Text>
+          ) : null
+        case 'company_slogan':
+          return workshop?.slogan ? (
+            <Text
+              key="company_slogan"
+              style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.85)', marginTop: 3 }}
+            >
+              {workshop.slogan}
             </Text>
           ) : null
         case 'company_address':
@@ -338,6 +354,12 @@ export function Header({
         return showCompanyName ? (
           <Text key="company_name" style={styles.brandName}>
             {shopDisplayName}
+          </Text>
+        ) : null
+      case 'company_slogan':
+        return workshop?.slogan ? (
+          <Text key="company_slogan" style={styles.brandSub}>
+            {workshop.slogan}
           </Text>
         ) : null
       case 'company_address':

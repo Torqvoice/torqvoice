@@ -65,7 +65,12 @@ export const SHADOW = ['rgba(0, 0, 0, 0.13)', 'rgba(0, 0, 0, 0.07)', 'rgba(0, 0,
 /** Width of one shadow hairline, in points. */
 export const SHADOW_STEP = 1.1
 
-export function createStyles(primary: string, font: string, headerStyle = 'standard') {
+export function createStyles(
+  primary: string,
+  font: string,
+  headerStyle = 'standard',
+  background?: string
+) {
   const framed = headerStyle === 'framed'
   const primaryLight = lightenColor(primary)
   const primaryDark = darkenColor(primary)
@@ -84,8 +89,15 @@ export function createStyles(primary: string, font: string, headerStyle = 'stand
           fontSize: 10,
           fontFamily: resolved,
           color: dark,
+          ...(background ? { backgroundColor: background } : {}),
         }
-      : { padding: 40, fontSize: 10, fontFamily: resolved, color: dark },
+      : {
+          padding: 40,
+          fontSize: 10,
+          fontFamily: resolved,
+          color: dark,
+          ...(background ? { backgroundColor: background } : {}),
+        },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',

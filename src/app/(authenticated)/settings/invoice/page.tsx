@@ -56,6 +56,7 @@ export default async function InvoiceSettingsPage() {
     address: settings['workshop.address'],
     phone: settings['workshop.phone'],
     email: settings['workshop.email'],
+    slogan: settings['workshop.slogan'],
   }
 
   return (

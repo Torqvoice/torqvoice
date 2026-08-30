@@ -14,12 +14,14 @@ describe('layout preview workshop', () => {
         address: 'Hauptstraße 480',
         phone: '044 89 12 27',
         email: 'info@autofabrik.net',
+        slogan: 'Ihre Mehrmarken-Meisterwerkstatt',
       })
     ).toEqual({
       name: 'Die Autofabrik',
       address: 'Hauptstraße 480',
       phone: '044 89 12 27',
       email: 'info@autofabrik.net',
+      slogan: 'Ihre Mehrmarken-Meisterwerkstatt',
     })
   })
 
