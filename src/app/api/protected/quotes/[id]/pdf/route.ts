@@ -198,6 +198,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         settingsMap['invoice.frameBorderColor'] ||
         undefined,
       frameShadow: settingsMap['quote.frameShadow'] ?? settingsMap['invoice.frameShadow'],
+      frameRadius:
+        Number(settingsMap['quote.frameRadius'] ?? settingsMap['invoice.frameRadius']) || 0,
       frameSide: ((settingsMap['quote.frameSide'] ?? settingsMap['invoice.frameSide']) === 'right'
         ? 'right'
         : 'left') as 'left' | 'right',

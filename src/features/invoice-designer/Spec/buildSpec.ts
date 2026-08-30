@@ -94,6 +94,8 @@ export interface DocumentTheme {
   frameBorderColor?: string
   /** Drop shadow width in points; 0 is off. */
   frameShadow: number
+  /** Rounding where the rail meets the band, in points. */
+  frameRadius: number
   logoSize: number
 }
 
@@ -134,6 +136,8 @@ function lookOf(section: InvoiceSection, theme: DocumentTheme) {
     ruleWidth: s?.borderWidth,
     /** A border around the whole table, not only rules between rows. */
     outerBorder: s?.outerBorder === true,
+    /** Banding behind alternate rows; unset follows the sheet's setting. */
+    stripes: s?.stripes,
     fontSize: s?.fontSize,
     fontFamily: s?.fontFamily,
   }
@@ -181,13 +185,22 @@ function panel(
     gap: 2,
     style: {
       background: look.fill || (boxed ? '#f3f4f6' : undefined),
-      borderColor: look.border || (boxed ? '#e3e5e9' : undefined),
+      borderColor:
+        look.border || (look.ruleWidth !== undefined ? look.muted : boxed ? '#e3e5e9' : undefined),
       borderWidth: boxed || look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
       padding: boxed || look.fill ? 10 : 0,
     },
     children: [
-      { kind: 'text', text: data.sectionLabels[section.id] ?? section.id, style: heading },
+      ...(section.heading === false
+        ? []
+        : [
+            {
+              kind: 'text',
+              text: data.sectionLabels[section.id] ?? section.id,
+              style: heading,
+            } as Node,
+          ]),
       ...lines.map<Node>((line, i) => ({
         kind: 'text',
         id: `${section.id}.${line.id}`,
@@ -430,9 +443,12 @@ function itemsTable(
     id: section.id,
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
-    stripe: theme.stripes ? theme.stripeColor : undefined,
+    stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
     style: {
-      borderColor: look.border || '#eceef1',
+      // The hairline default is nearly invisible ink; a custom width without
+      // a chosen color would look like nothing happened, so it takes the
+      // section's muted ink instead.
+      borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
       borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
     },
     headerStyle: {
@@ -474,13 +490,14 @@ function titledTable(
 ): Node {
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
-  const children: Node[] = [
-    {
+  const children: Node[] = []
+  if (section.heading !== false) {
+    children.push({
       kind: 'text',
       text: title,
       style: { color: look.label, bold: true, fontSize: scale(size, 1.05) },
-    },
-  ]
+    })
+  }
   if (intro) {
     children.push({
       kind: 'text',
@@ -504,9 +521,12 @@ function partsTable(
     kind: 'table',
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
-    stripe: theme.stripes ? theme.stripeColor : undefined,
+    stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
     style: {
-      borderColor: look.border || '#eceef1',
+      // The hairline default is nearly invisible ink; a custom width without
+      // a chosen color would look like nothing happened, so it takes the
+      // section's muted ink instead.
+      borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
       borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
     },
     headerStyle: {
@@ -546,9 +566,12 @@ function laborTable(
     kind: 'table',
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
-    stripe: theme.stripes ? theme.stripeColor : undefined,
+    stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
     style: {
-      borderColor: look.border || '#eceef1',
+      // The hairline default is nearly invisible ink; a custom width without
+      // a chosen color would look like nothing happened, so it takes the
+      // section's muted ink instead.
+      borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
       borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
     },
     headerStyle: {
@@ -595,8 +618,9 @@ function findingsBlock(
       kind: 'table',
       rowPadding: theme.rowPadding,
       ruleWidth: look.ruleWidth,
+      stripe: look.stripes === true ? theme.stripeColor : undefined,
       style: {
-        borderColor: look.border || '#eceef1',
+        borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
         borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
       },
       headerStyle: {
@@ -736,11 +760,13 @@ function notesBlock(
 
   const children: Node[] = []
   if (hasNotes) {
-    children.push({
-      kind: 'text',
-      text: label(data, 'notes', 'Notes'),
-      style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
-    })
+    if (section.heading !== false) {
+      children.push({
+        kind: 'text',
+        text: label(data, 'notes', 'Notes'),
+        style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
+      })
+    }
     children.push({
       kind: 'richtext',
       html: data.notes.html as string,
@@ -787,13 +813,14 @@ function warrantyBlock(
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
 
-  const children: Node[] = [
-    {
+  const children: Node[] = []
+  if (section.heading !== false) {
+    children.push({
       kind: 'text',
       text: label(data, 'warrantyTitle', 'Warranty'),
       style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
-    },
-  ]
+    })
+  }
   if (duration) {
     children.push({
       kind: 'text',
@@ -936,19 +963,23 @@ function paymentBlock(
     gap: 6,
     style: boxStyle,
     children: [
-      {
-        kind: 'text',
-        text:
-          data.sectionLabels.bank_account ??
-          label(data, 'paymentInformation', 'Payment Information'),
-        style: {
-          color: look.label || theme.primary,
-          fontSize: scale(size, 0.78),
-          bold: true,
-          uppercase: true,
-          letterSpacing: 0.5,
-        },
-      },
+      ...(section.heading === false
+        ? []
+        : [
+            {
+              kind: 'text',
+              text:
+                data.sectionLabels.bank_account ??
+                label(data, 'paymentInformation', 'Payment Information'),
+              style: {
+                color: look.label || theme.primary,
+                fontSize: scale(size, 0.78),
+                bold: true,
+                uppercase: true,
+                letterSpacing: 0.5,
+              },
+            } as Node,
+          ]),
       ...rows,
     ],
   }
@@ -1235,6 +1266,7 @@ export function buildDocumentSpec(
           color: theme.primary,
           borderColor: theme.frameBorderColor,
           shadow: theme.frameShadow,
+          radius: theme.frameRadius,
         }
       : undefined,
     blocks,

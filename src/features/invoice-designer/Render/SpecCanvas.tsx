@@ -655,7 +655,7 @@ export function SpecCanvas({
 
   const chrome = (pageNumber: number) => {
     if (!spec.frame) return null
-    const { side, railWidth, bandHeight, color, borderColor, shadow } = spec.frame
+    const { side, railWidth, bandHeight, color, borderColor, shadow, radius } = spec.frame
     const headerSelected = selected === 'header'
     return (
       <>
@@ -690,11 +690,75 @@ export function SpecCanvas({
             background: color,
           }}
         />
+        {pageNumber === 1 && radius > 0 && (
+          /* The fillet where the rail meets the band: a square of frame color
+             with the sheet rounded back out of it, the border stroke and the
+             shadow bands wrapping the curve so they meet the straight runs. */
+          <div
+            style={{
+              position: 'absolute',
+              [side]: railWidth,
+              top: bandHeight,
+              width: radius,
+              height: radius,
+              background: color,
+              pointerEvents: 'none',
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                [side]: 0,
+                width: radius,
+                height: radius,
+                background: spec.page.background || '#ffffff',
+                [side === 'left' ? 'borderTopLeftRadius' : 'borderTopRightRadius']: radius,
+              }}
+            />
+            {shadow > 0 &&
+              SHADOW_SHADES.map((shade, i) => {
+                const step = shadow / SHADOW_SHADES.length
+                const inset = (borderColor ? 1 : 0) + i * step
+                const size = radius - inset
+                if (size <= 0) return null
+                return (
+                  <div
+                    key={shade}
+                    style={{
+                      position: 'absolute',
+                      top: inset,
+                      [side]: inset,
+                      width: size,
+                      height: size,
+                      [side === 'left' ? 'borderTopLeftRadius' : 'borderTopRightRadius']: size,
+                      borderTop: `${step}px solid ${shade}`,
+                      [side === 'left' ? 'borderLeft' : 'borderRight']: `${step}px solid ${shade}`,
+                    }}
+                  />
+                )
+              })}
+            {borderColor && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  [side]: 0,
+                  width: radius,
+                  height: radius,
+                  [side === 'left' ? 'borderTopLeftRadius' : 'borderTopRightRadius']: radius,
+                  borderTop: `1px solid ${borderColor}`,
+                  [side === 'left' ? 'borderLeft' : 'borderRight']: `1px solid ${borderColor}`,
+                }}
+              />
+            )}
+          </div>
+        )}
         <div
           style={{
             position: 'absolute',
             [side]: railWidth,
-            top: pageNumber === 1 ? bandHeight : 0,
+            top: pageNumber === 1 ? bandHeight + radius : 0,
             bottom: 0,
             display: 'flex',
             flexDirection: side === 'right' ? 'row-reverse' : 'row',
@@ -711,8 +775,8 @@ export function SpecCanvas({
           <div
             style={{
               position: 'absolute',
-              left: side === 'left' ? railWidth : 0,
-              right: side === 'right' ? railWidth : 0,
+              left: side === 'left' ? railWidth + radius : 0,
+              right: side === 'right' ? railWidth + radius : 0,
               top: bandHeight,
               display: 'flex',
               flexDirection: 'column',

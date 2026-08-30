@@ -359,6 +359,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     frameSide: template?.frameSide === 'right' ? 'right' : 'left',
     frameBorderColor: template?.frameBorderColor || undefined,
     frameShadow: frameShadowWidth(template?.frameShadow),
+    frameRadius: template?.frameRadius ?? 0,
     logoSize: template?.logoSize ?? 100,
   }
 

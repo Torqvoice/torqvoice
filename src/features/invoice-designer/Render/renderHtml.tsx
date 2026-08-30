@@ -170,9 +170,25 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
               </span>
             ))}
           </div>
-          {node.rows.map((row, i) => {
+          {node.rows.flatMap((row, i) => {
             const struck = node.strikeKey ? !!row[node.strikeKey] : false
-            return (
+            // Rules are their own elements between rows, overlapping both
+            // neighbours by a hair so scaled rendering cannot leave seams;
+            // a banded background paints after the rule and covers the
+            // overlap. The outer border already closes the table's bottom.
+            const rule =
+              i < node.rows.length - 1 || !node.style?.borderWidth ? (
+                <div
+                  key={`rule-${i}`}
+                  style={{
+                    height: (node.ruleWidth ?? 0.75) + 0.7,
+                    marginTop: -0.35,
+                    marginBottom: -0.35,
+                    background: node.style?.borderColor ?? '#eceef1',
+                  }}
+                />
+              ) : null
+            const body = (
               <div
                 key={`${row[node.columns[0].key]}-${i}`}
                 style={{
@@ -180,7 +196,6 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
                   alignItems: 'flex-start',
                   padding: `${node.rowPadding ?? 5}px 8px`,
                   background: node.stripe && i % 2 === 1 ? node.stripe : undefined,
-                  borderBottom: `${node.ruleWidth ?? 0.75}px solid ${node.style?.borderColor ?? '#eceef1'}`,
                   opacity: struck ? 0.5 : undefined,
                   textDecoration: struck ? 'line-through' : undefined,
                 }}
@@ -197,6 +212,7 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
                 ))}
               </div>
             )
+            return rule ? [body, rule] : [body]
           })}
         </div>
       )

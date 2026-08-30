@@ -185,9 +185,28 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
               </Text>
             ))}
           </View>
-          {node.rows.map((row, i) => {
+          {node.rows.flatMap((row, i) => {
             const struck = node.strikeKey ? !!row[node.strikeKey] : false
-            return (
+            // Rules are their own elements between rows, and they overlap both
+            // neighbours by a hair: PDF viewers leave antialiasing seams
+            // between rectangles that merely touch, which showed as white
+            // slivers around every banded row. A banded background paints
+            // after the rule and covers the overlap, so the rule still
+            // measures exactly its width. The outer border already closes the
+            // table's bottom.
+            const rule =
+              i < node.rows.length - 1 || !node.style?.borderWidth ? (
+                <View
+                  key={`rule-${i}`}
+                  style={{
+                    height: (node.ruleWidth ?? 0.75) + 0.7,
+                    marginTop: -0.35,
+                    marginBottom: -0.35,
+                    backgroundColor: borderColor,
+                  }}
+                />
+              ) : null
+            const body = (
               <View
                 key={`${row[node.columns[0].key]}-${i}`}
                 style={{
@@ -196,8 +215,6 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                   paddingVertical: node.rowPadding ?? 5,
                   paddingHorizontal: 8,
                   ...(node.stripe && i % 2 === 1 ? { backgroundColor: node.stripe } : {}),
-                  borderBottomWidth: node.ruleWidth ?? 0.75,
-                  borderBottomColor: borderColor,
                   ...(struck ? { opacity: 0.5 } : {}),
                 }}
               >
@@ -227,6 +244,7 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                 ))}
               </View>
             )
+            return rule ? [body, rule] : [body]
           })}
         </View>
       )

@@ -43,6 +43,7 @@ async function getWorkshopSettings(organizationId: string) {
             'invoice.companyTextColor',
             'invoice.frameBorderColor',
             'invoice.frameShadow',
+            'invoice.frameRadius',
             'invoice.frameSide',
             'invoice.fontFamily',
             'invoice.showLogo',
@@ -59,6 +60,7 @@ async function getWorkshopSettings(organizationId: string) {
             'quote.companyTextColor',
             'quote.frameBorderColor',
             'quote.frameShadow',
+            'quote.frameRadius',
             'quote.frameSide',
             'quote.fontFamily',
             'quote.headerStyle',
@@ -144,6 +146,7 @@ export async function sendQuoteEmail(input: {
         companyTextColor: pick('companyTextColor') || undefined,
         frameBorderColor: pick('frameBorderColor') || undefined,
         frameShadow: pick('frameShadow'),
+        frameRadius: Number(pick('frameRadius')) || 0,
         frameSide: (pick('frameSide') === 'right' ? 'right' : 'left') as 'left' | 'right',
         fontFamily: pick('fontFamily') || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
@@ -326,6 +329,7 @@ export async function sendInvoiceEmail(input: {
         companyTextColor: settings['invoice.companyTextColor'] || undefined,
         frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
         frameShadow: settings['invoice.frameShadow'],
+        frameRadius: Number(settings['invoice.frameRadius']) || 0,
         frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
           | 'left'
           | 'right',

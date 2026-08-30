@@ -24,6 +24,20 @@ import type { DesignerTemplate } from './types'
 /** Sections whose body is a table, and so offer line controls. */
 const TABLE_SECTIONS = new Set(['items_table', 'parts_table', 'labor_table', 'findings'])
 
+/** Sections that print a small heading of their own, which can be hidden. */
+const HEADED_SECTIONS = new Set([
+  'customer',
+  'vehicle',
+  'service',
+  'general',
+  'notes',
+  'warranty',
+  'bank_account',
+  'parts_table',
+  'labor_table',
+  'findings',
+])
+
 const SWATCHES = [
   '#d97706',
   '#2563eb',
@@ -323,6 +337,14 @@ export function DesignerInspector({
                 />
               </Row>
             )}
+            {HEADED_SECTIONS.has(section.id) && (
+              <Row label="Show heading">
+                <Toggle
+                  on={section.heading !== false}
+                  onChange={(heading) => onSection(section.id, { heading })}
+                />
+              </Row>
+            )}
           </Group>
 
           <Group title="Spacing">
@@ -484,6 +506,20 @@ export function DesignerInspector({
                 />
               </Row>
             )}
+            {TABLE_SECTIONS.has(section.id) && (
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">Row banding</div>
+                <Choice
+                  value={style.stripes === true ? 'on' : style.stripes === false ? 'off' : 'auto'}
+                  options={[
+                    { value: 'auto', label: 'Like sheet' },
+                    { value: 'on', label: 'On' },
+                    { value: 'off', label: 'Off' },
+                  ]}
+                  onChange={(v) => setStyle({ stripes: v === 'auto' ? undefined : v === 'on' })}
+                />
+              </div>
+            )}
             <Row label="Size">
               <input
                 type="number"
@@ -620,6 +656,14 @@ export function DesignerInspector({
               value={template.frameBorderColor}
               fallback="#111827"
               onChange={(frameBorderColor) => onTemplate({ frameBorderColor })}
+            />
+            <Slider
+              label="Corner radius"
+              value={template.frameRadius}
+              min={0}
+              max={24}
+              suffix="pt"
+              onChange={(frameRadius) => onTemplate({ frameRadius })}
             />
             <div>
               <div className="mb-1.5 text-[13px] font-medium">Shadow</div>

@@ -19,6 +19,17 @@ import { pdfFamily, RenderNodePdf } from './renderPdf'
  */
 
 const SHADOW_SHADES = ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)']
+const SHADOW_ALPHAS = [0.13, 0.07, 0.03]
+
+/** A shadow shade as opaque ink over the sheet, for fills that must stack. */
+function shadeOn(background: string | undefined, alpha: number): string {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(background || '#ffffff')
+  const [r, g, b] = m
+    ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)]
+    : [255, 255, 255]
+  const mix = (v: number) => Math.round(v * (1 - alpha))
+  return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`
+}
 
 function baseFor(spec: DocumentSpec, block: Block): TextStyle {
   return {
@@ -77,7 +88,7 @@ export function SpecPdfPage({
   /** The band and rail of a framed sheet: chrome the page owns. */
   const chrome = (pageNumber: number) => {
     if (!frame) return null
-    const { side, railWidth, bandHeight, color, borderColor, shadow } = frame
+    const { side, railWidth, bandHeight, color, borderColor, shadow, radius } = frame
     return (
       <>
         <View
@@ -102,11 +113,66 @@ export function SpecPdfPage({
             }}
           />
         )}
+        {pageNumber === 1 && radius > 0 && (
+          /* The fillet where the rail meets the band. react-pdf strokes
+             partial borders poorly around a radius, so the curve is built
+             from stacked rounded fills: border ink, then each shadow band,
+             then the sheet, each inset by the band before it. */
+          <View
+            style={{
+              position: 'absolute',
+              [side]: railWidth,
+              top: bandHeight,
+              width: radius,
+              height: radius,
+              backgroundColor: color,
+            }}
+          >
+            {(() => {
+              const step = shadow > 0 ? shadow / SHADOW_ALPHAS.length : 0
+              const layers: { inset: number; fill: string }[] = []
+              if (borderColor) layers.push({ inset: 0, fill: borderColor })
+              const borderInset = borderColor ? 0.6 : 0
+              if (shadow > 0) {
+                SHADOW_ALPHAS.forEach((alpha, i) => {
+                  layers.push({
+                    inset: borderInset + i * step,
+                    fill: shadeOn(page.background, alpha),
+                  })
+                })
+              } else if (!borderColor) {
+                layers.push({ inset: 0, fill: page.background || '#ffffff' })
+              }
+              layers.push({
+                inset: borderInset + (shadow > 0 ? shadow : 0),
+                fill: page.background || '#ffffff',
+              })
+              return layers.map((layer, i) => {
+                const size = radius - layer.inset
+                if (size <= 0) return null
+                return (
+                  <View
+                    key={`${layer.fill}-${i}`}
+                    style={{
+                      position: 'absolute',
+                      top: layer.inset,
+                      [side]: layer.inset,
+                      width: size,
+                      height: size,
+                      backgroundColor: layer.fill,
+                      [side === 'left' ? 'borderTopLeftRadius' : 'borderTopRightRadius']: size,
+                    }}
+                  />
+                )
+              })
+            })()}
+          </View>
+        )}
         <View
           style={{
             position: 'absolute',
             [side]: railWidth,
-            top: pageNumber === 1 ? bandHeight : 0,
+            top: pageNumber === 1 ? bandHeight + radius : 0,
             height: page.height,
             flexDirection: side === 'right' ? 'row-reverse' : 'row',
           }}
@@ -125,8 +191,8 @@ export function SpecPdfPage({
           <View
             style={{
               position: 'absolute',
-              left: side === 'left' ? railWidth : 0,
-              width: page.width - railWidth,
+              left: side === 'left' ? railWidth + radius : 0,
+              width: page.width - railWidth - radius,
               top: bandHeight,
             }}
           >

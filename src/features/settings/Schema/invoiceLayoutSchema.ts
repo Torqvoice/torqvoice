@@ -31,6 +31,8 @@ export const invoiceSectionStyleSchema = z.object({
   borderWidth: z.number().min(0).max(4).optional(),
   /** Draw a border around the whole table, not only rules between rows. */
   outerBorder: z.boolean().optional(),
+  /** Banding behind alternate rows for this table. Unset follows the sheet. */
+  stripes: z.boolean().optional(),
   /** Body text size in points. Headings scale with it. */
   fontSize: z.number().min(5).max(24).optional(),
   /** Typeface for this section, from the families the app embeds. */
@@ -59,6 +61,11 @@ export const invoiceSectionSchema = z.object({
    * lines. Unset means the section's default.
    */
   variant: z.string().optional(),
+  /**
+   * Whether the section prints its own small heading, like BILL TO over the
+   * customer card. Unset means shown, which every layout has always done.
+   */
+  heading: z.boolean().optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */

@@ -24,6 +24,8 @@ export interface TemplateConfig {
   frameShadow?: boolean | string
   /** Which edge the rail runs down. Defaults to the left. */
   frameSide?: 'left' | 'right'
+  /** Rounding, in points, where the rail meets the header band. */
+  frameRadius?: number
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean

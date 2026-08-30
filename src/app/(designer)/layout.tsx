@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { ServiceTypeProvider } from '@/components/service-type-context'
+import { ConfirmProvider } from '@/components/confirm-dialog'
 // The faces the PDFs embed, so the canvas measures what the paper prints.
 import '@/features/invoice-designer/Render/documentFonts.css'
 
@@ -17,7 +18,9 @@ export default async function DesignerLayout({ children }: { children: React.Rea
 
   return (
     <ServiceTypeProvider serviceType={data.serviceType ?? 'automotive'}>
-      <div className="h-screen overflow-hidden bg-[#eceef1] text-[#1a1d21]">{children}</div>
+      <ConfirmProvider>
+        <div className="h-screen overflow-hidden bg-[#eceef1] text-[#1a1d21]">{children}</div>
+      </ConfirmProvider>
     </ServiceTypeProvider>
   )
 }

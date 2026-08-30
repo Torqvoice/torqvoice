@@ -4,6 +4,17 @@ import { useCallback, useMemo, useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { useConfirm } from '@/components/confirm-dialog'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
 import {
   COLUMN_ELIGIBLE_SECTIONS,
@@ -27,7 +38,13 @@ import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/
 import { SAMPLE_TABLES, fieldValues } from './sample'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
-import type { DesignerTemplate, DesignerWorkshop, DocumentType, ResolvedTheme } from './types'
+import type {
+  DesignerTemplate,
+  DesignerWorkshop,
+  DocumentType,
+  ResolvedTheme,
+  SavedDesign,
+} from './types'
 
 /** Blend two hex colors, used to derive the secondary tone the PDF derives. */
 function mix(from: string, to: string, amount: number) {
@@ -41,6 +58,46 @@ function mix(from: string, to: string, amount: number) {
   return `rgb(${at(0)}, ${at(1)}, ${at(2)})`
 }
 
+/**
+ * An id for a saved design. crypto.randomUUID only exists in secure contexts,
+ * and a dev server reached over a LAN address is not one, so it gets a plain
+ * random fallback rather than a crash.
+ */
+function designId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `design-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+/** The theme a designer template and layout resolve to, for the generator. */
+function themeOf(template: DesignerTemplate, layout: InvoiceLayoutConfig) {
+  const doc = layout.document ?? {}
+  const text = template.textColor || '#111827'
+  const background = template.backgroundColor || '#ffffff'
+  const banded = template.headerStyle === 'framed' || template.headerStyle === 'modern'
+  return {
+    primary: template.primaryColor,
+    background,
+    text,
+    muted: template.textColor ? mix(text, background, 0.42) : '#6b7280',
+    accent: doc.accentColor || template.primaryColor,
+    companyText: template.companyTextColor || (banded ? '#ffffff' : template.primaryColor),
+    fontFamily: doc.fontFamily || template.fontFamily,
+    fontSize: doc.fontSize ?? BASE_FONT_SIZE,
+    margin: doc.margin ?? 40,
+    rowPadding: doc.rowPadding ?? 5,
+    stripes: doc.stripes !== false,
+    stripeColor: doc.stripeColor || '#f3f4f6',
+    headerStyle: template.headerStyle,
+    frameSide: template.frameSide === 'right' ? ('right' as const) : ('left' as const),
+    frameBorderColor: template.frameBorderColor || undefined,
+    frameShadow: frameShadowWidth(template.frameShadow),
+    frameRadius: template.frameRadius,
+    logoSize: template.logoSize,
+  }
+}
+
 export function InvoiceDesigner({
   initialDocumentType,
   initialView,
@@ -48,6 +105,7 @@ export function InvoiceDesigner({
   quoteLayout,
   invoiceTemplate,
   quoteTemplate,
+  initialSavedDesigns = [],
   workshop,
   customFields,
 }: {
@@ -57,6 +115,7 @@ export function InvoiceDesigner({
   quoteLayout?: InvoiceLayoutConfig
   invoiceTemplate: DesignerTemplate
   quoteTemplate: DesignerTemplate
+  initialSavedDesigns?: SavedDesign[]
   workshop: DesignerWorkshop
   customFields: DesignerFieldDef[]
 }) {
@@ -76,6 +135,11 @@ export function InvoiceDesigner({
   const [rulers, setRulers] = useState(false)
   const [saving, setSaving] = useState(false)
   const [dirty, setDirty] = useState(false)
+  const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(initialSavedDesigns)
+  /** Open state and draft name for the save-design dialog. */
+  const [namingDesign, setNamingDesign] = useState(false)
+  const [designName, setDesignName] = useState('')
+  const confirm = useConfirm()
 
   const layout = layouts[docType]
   const template = templates[docType]
@@ -219,6 +283,7 @@ export function InvoiceDesigner({
           frameSide: template.frameSide === 'right' ? 'right' : 'left',
           frameBorderColor: template.frameBorderColor || undefined,
           frameShadow: frameShadowWidth(template.frameShadow),
+          frameRadius: template.frameRadius,
           logoSize: template.logoSize,
         },
         data
@@ -241,6 +306,49 @@ export function InvoiceDesigner({
       setView('designer')
     },
     [setLayout, setTemplate]
+  )
+
+  /** Keep the named designs, in state and in settings, in one move. */
+  const persistDesigns = useCallback((next: SavedDesign[]) => {
+    setSavedDesigns(next)
+    setSettings({ 'designer.savedDesigns': JSON.stringify(next) }).catch(() => {
+      toast.error('Could not save your designs')
+    })
+  }, [])
+
+  /** Snapshot the current design under the name typed into the dialog. */
+  const saveDesignAs = useCallback(() => {
+    const name = designName.trim()
+    if (!name) return
+    const design: SavedDesign = {
+      id: designId(),
+      name,
+      savedAt: new Date().toISOString(),
+      layout: JSON.parse(JSON.stringify(layout)) as InvoiceLayoutConfig,
+      template: { ...template },
+    }
+    persistDesigns([design, ...savedDesigns].slice(0, 24))
+    setNamingDesign(false)
+    toast.success(`Saved as "${name}"`)
+  }, [designName, layout, template, savedDesigns, persistDesigns])
+
+  /** Bring a saved design back, onto whichever document is being edited. */
+  const applyDesign = useCallback(
+    (design: SavedDesign) => {
+      setLayout(JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig)
+      setTemplates((prev) => ({ ...prev, [docType]: { ...design.template } }))
+      setSelected(null)
+      setDirty(true)
+      setView('designer')
+    },
+    [docType, setLayout]
+  )
+
+  /** What a saved design would produce, for its card in the gallery. */
+  const specForDesign = useCallback(
+    (design: SavedDesign) =>
+      buildDocumentSpec(design.layout, themeOf(design.template, design.layout), data),
+    [data]
   )
 
   /** What a template would produce, for its card in the gallery. */
@@ -267,6 +375,7 @@ export function InvoiceDesigner({
           headerStyle: preset.template.headerStyle,
           frameSide: preset.template.frameSide ?? 'left',
           frameShadow: frameShadowWidth(undefined),
+          frameRadius: 0,
           logoSize: 100,
         },
         data
@@ -434,6 +543,7 @@ export function InvoiceDesigner({
           [`${prefix}.companyTextColor`]: template.companyTextColor,
           [`${prefix}.frameBorderColor`]: template.frameBorderColor,
           [`${prefix}.frameShadow`]: template.frameShadow,
+          [`${prefix}.frameRadius`]: String(template.frameRadius),
           [`${prefix}.frameSide`]: template.frameSide,
           [`${prefix}.fontFamily`]: template.fontFamily,
           [`${prefix}.headerStyle`]: template.headerStyle,
@@ -459,6 +569,49 @@ export function InvoiceDesigner({
           <p className="mb-8 text-[15px] text-[#5b6068]">
             Pick a starting point. You can change everything in the designer.
           </p>
+
+          {savedDesigns.length > 0 && (
+            <>
+              <h2 className="mb-3 text-[15px] font-semibold">Your designs</h2>
+              <div className="mb-8 grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
+                {savedDesigns.map((design) => (
+                  <div
+                    key={design.id}
+                    className="group relative rounded-[10px] border border-[#e3e5e9] bg-white p-3.5 text-left transition-shadow hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(26,29,33,0.12)]"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => applyDesign(design)}
+                      className="block w-full text-left"
+                    >
+                      <SpecThumbnail spec={specForDesign(design)} />
+                      <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
+                      <div className="text-xs leading-snug text-[#71767e]">
+                        Saved {new Date(design.savedAt).toLocaleDateString()}
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const ok = await confirm({
+                          title: 'Delete design',
+                          description: `Delete the design "${design.name}"? The invoice and quote keep whatever is applied; only the saved copy goes.`,
+                          confirmLabel: 'Delete',
+                          destructive: true,
+                        })
+                        if (ok) persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
+                      }}
+                      title="Delete this design"
+                      className="absolute right-2 top-2 hidden h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] shadow group-hover:flex hover:text-[#dc2626]"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <h2 className="mb-3 text-[15px] font-semibold">Templates</h2>
+            </>
+          )}
 
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
             {layoutPresets.map((preset) => (
@@ -591,6 +744,18 @@ export function InvoiceDesigner({
             +
           </button>
         </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setDesignName(`My ${docType} design`)
+            setNamingDesign(true)
+          }}
+          title="Keep a named copy of this design, to come back to from the template gallery"
+          className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
+        >
+          ♡ Save design
+        </button>
 
         <button
           type="button"
@@ -729,6 +894,40 @@ export function InvoiceDesigner({
           onTemplate={setTemplate}
         />
       </div>
+
+      <Dialog open={namingDesign} onOpenChange={setNamingDesign}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Save this design</DialogTitle>
+            <DialogDescription>
+              Keeps a named copy of the current arrangement and look. Find it again under Your
+              designs in the template gallery.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              saveDesignAs()
+            }}
+          >
+            <Input
+              value={designName}
+              onChange={(e) => setDesignName(e.target.value)}
+              placeholder="Design name"
+              maxLength={60}
+              autoFocus
+            />
+            <DialogFooter className="mt-4">
+              <Button type="button" variant="outline" onClick={() => setNamingDesign(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!designName.trim()}>
+                Save design
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

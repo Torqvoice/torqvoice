@@ -160,6 +160,8 @@ export interface FrameSpec {
   borderColor?: string
   /** The width of the drop shadow the frame casts, in points. 0 draws none. */
   shadow: number
+  /** Rounding where the rail meets the band, in points. 0 keeps the corner. */
+  radius: number
 }
 
 export interface DocumentSpec {

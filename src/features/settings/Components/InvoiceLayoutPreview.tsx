@@ -31,6 +31,7 @@ interface TemplateValues {
   frameBorderColor?: string
   /** "false" prints the frame flat against the sheet. */
   frameShadow?: string
+  frameRadius?: string | number
   /** Which edge the framed rail runs down. */
   frameSide?: string
   fontFamily: string

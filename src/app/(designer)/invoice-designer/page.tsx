@@ -10,6 +10,7 @@ import {
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
 import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceDesigner'
+import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 
 export default async function InvoiceDesignerPage({
   searchParams,
@@ -38,6 +39,16 @@ export default async function InvoiceDesignerPage({
     ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+
+  let savedDesigns: unknown = []
+  try {
+    savedDesigns = settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS]
+      ? JSON.parse(settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS])
+      : []
+    if (!Array.isArray(savedDesigns)) savedDesigns = []
+  } catch {
+    savedDesigns = []
+  }
   const { doc, view } = await searchParams
 
   const templateFor = (prefix: 'invoice' | 'quote') => ({
@@ -51,6 +62,7 @@ export default async function InvoiceDesignerPage({
     frameBorderColor: settings[`${prefix}.frameBorderColor`] || '',
     frameShadow: settings[`${prefix}.frameShadow`] || 'true',
     frameSide: settings[`${prefix}.frameSide`] || 'left',
+    frameRadius: Number(settings[`${prefix}.frameRadius`]) || 0,
     fontFamily: settings[`${prefix}.fontFamily`] || 'Helvetica',
     headerStyle: settings[`${prefix}.headerStyle`] || 'standard',
     logoSize: Number(settings[`${prefix}.logoSize`]) || 100,
@@ -64,6 +76,7 @@ export default async function InvoiceDesignerPage({
       quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
       invoiceTemplate={templateFor('invoice')}
       quoteTemplate={templateFor('quote')}
+      initialSavedDesigns={savedDesigns as SavedDesign[]}
       customFields={
         customFieldsResult.success && customFieldsResult.data
           ? customFieldsResult.data

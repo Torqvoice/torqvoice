@@ -12,9 +12,23 @@ export interface DesignerTemplate {
   frameShadow: string
   /** Which edge the rail runs down. */
   frameSide: string
+  /** Rounding, in points, where the rail meets the header band. */
+  frameRadius: number
   fontFamily: string
   headerStyle: string
   logoSize: number
+}
+
+/**
+ * A design a workshop saved under a name: the whole arrangement and look at
+ * that moment, so trying another template never costs them their own work.
+ */
+export interface SavedDesign {
+  id: string
+  name: string
+  savedAt: string
+  layout: InvoiceLayoutConfig
+  template: DesignerTemplate
 }
 
 export interface DesignerWorkshop {

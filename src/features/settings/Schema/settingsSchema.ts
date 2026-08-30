@@ -47,6 +47,8 @@ export const SETTING_KEYS = {
   INVOICE_FRAME_SHADOW: 'invoice.frameShadow',
   /// Which edge the framed rail runs down: "left" or "right".
   INVOICE_FRAME_SIDE: 'invoice.frameSide',
+  /// Rounding, in points, where the framed rail meets the header band.
+  INVOICE_FRAME_RADIUS: 'invoice.frameRadius',
   INVOICE_FONT_FAMILY: 'invoice.fontFamily',
   INVOICE_SHOW_LOGO: 'invoice.showLogo',
   INVOICE_SHOW_COMPANY_NAME: 'invoice.showCompanyName',
@@ -82,6 +84,10 @@ export const SETTING_KEYS = {
   QUOTE_FRAME_BORDER_COLOR: 'quote.frameBorderColor',
   QUOTE_FRAME_SHADOW: 'quote.frameShadow',
   QUOTE_FRAME_SIDE: 'quote.frameSide',
+  QUOTE_FRAME_RADIUS: 'quote.frameRadius',
+  /// The workshop's own saved designs: a JSON list of named layout+template
+  /// snapshots the designer can bring back after trying something else.
+  DESIGNER_SAVED_DESIGNS: 'designer.savedDesigns',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',
   QUOTE_HEADER_STYLE: 'quote.headerStyle',
   PREDICTED_MAINTENANCE_ENABLED: 'maintenance.enabled',
