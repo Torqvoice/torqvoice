@@ -65,6 +65,48 @@ describe('designer controls reach the canvas', () => {
   })
 })
 
+const INSPECTOR = readFileSync(
+  'src/features/invoice-designer/Components/DesignerInspector.tsx',
+  'utf8'
+)
+
+describe('the designer can reach everything the layout can express', () => {
+  const SCHEMA = readFileSync('src/features/settings/Schema/invoiceLayoutSchema.ts', 'utf8')
+
+  const keysOf = (from: string, to: string) =>
+    [...SCHEMA.slice(SCHEMA.indexOf(from), SCHEMA.indexOf(to)).matchAll(/^ {2}(\w+): z\./gm)].map(
+      (m) => m[1]
+    )
+
+  it('offers every property a section carries', () => {
+    // `fields` was the one this caught: no way to turn the logo off, and so no
+    // way to print the company name instead.
+    const missing = keysOf(
+      'export const invoiceSectionSchema',
+      'export const invoiceDocumentStyleSchema'
+    )
+      .filter((key) => !['id', 'order'].includes(key))
+      .filter((key) => !INSPECTOR.includes(key))
+    expect(missing).toEqual([])
+  })
+
+  it('offers every appearance key a section carries', () => {
+    const missing = keysOf(
+      'export const invoiceSectionStyleSchema',
+      'export const invoiceSectionSchema'
+    ).filter((key) => !INSPECTOR.includes(key))
+    expect(missing).toEqual([])
+  })
+
+  it('offers every appearance key the sheet carries', () => {
+    const missing = keysOf(
+      'export const invoiceDocumentStyleSchema',
+      'export const invoiceLayoutConfigSchema'
+    ).filter((key) => !INSPECTOR.includes(key))
+    expect(missing).toEqual([])
+  })
+})
+
 describe('every section is styleable in the PDF', () => {
   it('hands each one its own derived stylesheet', () => {
     const map = INVOICE_PDF.slice(

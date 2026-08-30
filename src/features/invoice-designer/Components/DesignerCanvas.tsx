@@ -1,6 +1,6 @@
 'use client'
 
-import type { CSSProperties } from 'react'
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import {
   groupSectionsForRendering,
   type InvoiceLayoutConfig,
@@ -40,6 +40,12 @@ export interface SampleData {
   customerNumber: string
   notes: string
 }
+
+/** A4 at 72dpi, the unit react-pdf lays the real page out in. */
+const PAPER_W = 595
+const PAPER_H = 842
+/** The gap the PDF leaves between sections. */
+const BLOCK_GAP = 14
 
 /** Blend two colors, for deriving a section's secondary tone from its own ink. */
 function mix(from: string, to: string, amount: number) {
@@ -507,15 +513,58 @@ export function DesignerCanvas({
 }) {
   const byId = new Map(layout.sections.map((s) => [s.id, s]))
   const groups = groupSectionsForRendering(layout.sections)
-  const paperWidth = 595
   const framed = headerStyle === 'framed'
   const visible = layout.sections.filter((s) => s.visible)
 
-  const block = (id: string) => {
+  // The sheet is A4 and stays A4. Base size and margins change how much fits on
+  // it, never how big it is, so the page has to break the way the printed one
+  // does: measure each block once it is laid out, then deal the blocks into
+  // pages that hold them.
+  const measureRef = useRef<HTMLDivElement>(null)
+  const [heights, setHeights] = useState<number[]>([])
+
+  const inset = {
+    top: framed ? FRAMED.padTop : theme.margin,
+    left: framed ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
+    right: theme.margin,
+    bottom: theme.margin,
+  }
+
+  useLayoutEffect(() => {
+    const node = measureRef.current
+    if (!node) return
+    const next = Array.from(node.children).map((child) => (child as HTMLElement).offsetHeight)
+    setHeights((prev) =>
+      prev.length === next.length && prev.every((h, i) => h === next[i]) ? prev : next
+    )
+  })
+
+  /** Blocks dealt into pages, each page holding what fits on an A4 sheet. */
+  const pages: number[][] = []
+  if (groups.length > 0) {
+    let page: number[] = []
+    let used = 0
+    // The first page loses its top inset to the letterhead; the rest do not.
+    let budget = PAPER_H - inset.top - inset.bottom
+    groups.forEach((_, i) => {
+      const height = (heights[i] ?? 0) + (page.length ? BLOCK_GAP : 0)
+      if (page.length && used + height > budget) {
+        pages.push(page)
+        page = []
+        used = 0
+        budget = PAPER_H - theme.margin - inset.bottom
+      }
+      page.push(i)
+      used += height
+    })
+    pages.push(page)
+  }
+
+  const block = (id: string, measuring = false) => {
     const section = byId.get(id)
     if (!section) return null
     const look = lookOf(section, theme)
-    const isSelected = selected === id
+    const isSelected = !measuring && selected === id
 
     return (
       <div
@@ -578,6 +627,124 @@ export function DesignerCanvas({
     )
   }
 
+  /**
+   * One render group: a full-width section, or the pair that share a row. The
+   * group is the unit a page break can fall between, because a two-column row
+   * is laid out as one thing.
+   */
+  const groupBlock = (group: (typeof groups)[number], key: number, measuring = false) => {
+    if (group.type === 'full-width') return block(group.sectionId, measuring)
+    return (
+      <div key={`col-${key}`} style={{ display: 'flex', gap: BLOCK_GAP, alignItems: 'flex-start' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: BLOCK_GAP }}>
+          {group.left.map((id) => block(id, measuring))}
+        </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: BLOCK_GAP }}>
+          {group.right.map((id) => block(id, measuring))}
+        </div>
+      </div>
+    )
+  }
+
+  /** One A4 sheet with the blocks that belong on it. */
+  const sheet = (indices: number[], pageNumber: number) => (
+    <div
+      key={pageNumber}
+      style={{
+        width: PAPER_W,
+        height: PAPER_H,
+        background: theme.background,
+        boxShadow: '0 12px 32px rgba(26,29,33,0.18)',
+        position: 'relative',
+        overflow: 'hidden',
+        fontFamily: fontStack(theme.fontFamily),
+        color: theme.text,
+        fontSize: theme.baseSize,
+        paddingTop: pageNumber === 1 ? inset.top : theme.margin,
+        paddingLeft: inset.left,
+        paddingRight: inset.right,
+        paddingBottom: inset.bottom,
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: BLOCK_GAP,
+      }}
+    >
+      {framed && (
+        <>
+          {/* The band and the rail are one shape the header owns, so selecting
+              the header outlines both rather than the band alone. */}
+          {selected === 'header' && (
+            <div
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: FRAMED.railWidth,
+                outline: '2px solid #2563eb',
+                outlineOffset: -1,
+                pointerEvents: 'none',
+                zIndex: 4,
+              }}
+            />
+          )}
+          <div
+            onClick={(e) => {
+              // The rail is the sheet's edge, not a section. Clicking it asks
+              // about the document, the way clicking the paper does.
+              e.stopPropagation()
+              onSelect(null)
+            }}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: FRAMED.railWidth,
+              background: theme.primary,
+              cursor: 'default',
+              zIndex: 3,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              left: FRAMED.railWidth,
+              top: 0,
+              bottom: 0,
+              display: 'flex',
+              pointerEvents: 'none',
+              zIndex: 3,
+            }}
+          >
+            {frameBorderColor && <div style={{ width: 1, background: frameBorderColor }} />}
+            {frameShadow &&
+              ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)'].map((shade) => (
+                <div key={shade} style={{ width: 1.5, background: shade }} />
+              ))}
+          </div>
+        </>
+      )}
+
+      {rulers && (
+        <div
+          style={{
+            position: 'absolute',
+            top: pageNumber === 1 ? inset.top : theme.margin,
+            left: inset.left,
+            right: inset.right,
+            bottom: inset.bottom,
+            border: '1px dashed rgba(37,99,235,0.35)',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
+      {indices.map((i) => groupBlock(groups[i], i))}
+    </div>
+  )
+
   return (
     <div
       onClick={() => onSelect(null)}
@@ -586,7 +753,7 @@ export function DesignerCanvas({
       {rulers && (
         <div
           style={{
-            width: paperWidth * zoom,
+            width: PAPER_W * zoom,
             height: 16,
             flex: 'none',
             background:
@@ -596,106 +763,64 @@ export function DesignerCanvas({
           }}
         />
       )}
-      <div style={{ width: paperWidth * zoom }}>
+
+      {/* Laid out but not shown: the blocks have to be measured at the width
+          they will print at before they can be dealt into pages. */}
+      <div
+        ref={measureRef}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: -99999,
+          width: PAPER_W - inset.left - inset.right,
+          fontFamily: fontStack(theme.fontFamily),
+          fontSize: theme.baseSize,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: BLOCK_GAP,
+        }}
+      >
+        {groups.map((group, i) => (
+          <div key={`m-${i}`}>{groupBlock(group, i, true)}</div>
+        ))}
+      </div>
+
+      {visible.length === 0 ? (
         <div
           style={{
-            width: paperWidth,
-            minHeight: 842,
-            transform: `scale(${zoom})`,
-            transformOrigin: 'top left',
+            width: PAPER_W * zoom,
+            height: PAPER_H * zoom,
             background: theme.background,
             boxShadow: '0 12px 32px rgba(26,29,33,0.18)',
-            position: 'relative',
-            fontFamily: fontStack(theme.fontFamily),
-            color: theme.text,
-            fontSize: theme.baseSize,
-            // The rail occupies its edge. A margin on top of it would compound
-            // and push the content into the middle of the page.
-            ...(framed
-              ? {
-                  paddingTop: FRAMED.padTop,
-                  paddingLeft: FRAMED.padLeft + FRAMED.railWidth,
-                  paddingRight: theme.margin,
-                  paddingBottom: theme.margin,
-                }
-              : { padding: theme.margin }),
-            boxSizing: 'border-box',
             display: 'flex',
-            flexDirection: 'column',
-            gap: 14,
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#b3b7bd',
+            fontSize: 14,
           }}
         >
-          {framed && (
-            <>
-              <div
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: FRAMED.railWidth,
-                  background: theme.primary,
-                  pointerEvents: 'none',
-                }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  left: FRAMED.railWidth,
-                  top: 0,
-                  bottom: 0,
-                  display: 'flex',
-                  pointerEvents: 'none',
-                }}
-              >
-                {frameBorderColor && <div style={{ width: 1, background: frameBorderColor }} />}
-                {frameShadow &&
-                  ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)'].map((shade) => (
-                    <div key={shade} style={{ width: 1.5, background: shade }} />
-                  ))}
-              </div>
-            </>
-          )}
-
-          {rulers && (
-            <div
-              style={{
-                position: 'absolute',
-                top: framed ? FRAMED.padTop : theme.margin,
-                left: framed ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
-                right: theme.margin,
-                bottom: theme.margin,
-                border: '1px dashed rgba(37,99,235,0.35)',
-                pointerEvents: 'none',
-              }}
-            />
-          )}
-
-          {visible.length === 0 ? (
-            <div style={{ color: '#b3b7bd', textAlign: 'center', padding: '60px 0', fontSize: 14 }}>
-              All sections are hidden — turn some on in the left panel.
-            </div>
-          ) : (
-            groups.map((group) =>
-              group.type === 'full-width' ? (
-                block(group.sectionId)
-              ) : (
+          All sections are hidden — turn some on in the left panel.
+        </div>
+      ) : (
+        <div style={{ width: PAPER_W * zoom }}>
+          <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {pages.map((indices, i) => (
                 <div
-                  key={`col-${group.left[0] ?? group.right[0]}`}
-                  style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}
+                  key={indices[0] ?? i}
+                  style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
                 >
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    {group.left.map(block)}
-                  </div>
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    {group.right.map(block)}
+                  {sheet(indices, i + 1)}
+                  <div style={{ textAlign: 'center', fontSize: 12, color: '#8a8f97' }}>
+                    Page {i + 1} of {pages.length}
                   </div>
                 </div>
-              )
-            )
-          )}
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

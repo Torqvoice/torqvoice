@@ -8,6 +8,7 @@ import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
+import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
 import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceDesigner'
 
 export default async function InvoiceDesignerPage({
@@ -24,15 +25,17 @@ export default async function InvoiceDesignerPage({
   // gate the settings page used applies here.
   if (!features.customTemplates) redirect('/settings/templates')
 
-  const [settingsResult, invoiceLayout, quoteLayout, organization] = await Promise.all([
-    getSettings(),
-    getInvoiceLayoutConfig(),
-    getQuoteLayoutConfig(),
-    db.organization.findUnique({
-      where: { id: data.organizationId },
-      select: { name: true },
-    }),
-  ])
+  const [settingsResult, invoiceLayout, quoteLayout, organization, customFieldsResult] =
+    await Promise.all([
+      getSettings(),
+      getInvoiceLayoutConfig(),
+      getQuoteLayoutConfig(),
+      db.organization.findUnique({
+        where: { id: data.organizationId },
+        select: { name: true },
+      }),
+      features.customFields ? getFieldDefinitions() : Promise.resolve({ success: true, data: [] }),
+    ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const { doc, view } = await searchParams
@@ -60,6 +63,13 @@ export default async function InvoiceDesignerPage({
       quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
       invoiceTemplate={templateFor('invoice')}
       quoteTemplate={templateFor('quote')}
+      customFields={
+        customFieldsResult.success && customFieldsResult.data
+          ? customFieldsResult.data
+              .filter((f) => f.entityType === 'service_record')
+              .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
+          : []
+      }
       workshop={{
         name: organization?.name ?? '',
         address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] ?? '',

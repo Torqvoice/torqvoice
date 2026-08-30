@@ -10,6 +10,12 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  SECTIONS_WITH_FIELDS,
+  fromCustomFieldId,
+  getBuiltinFieldName,
+  getBuiltinFieldsForSection,
+  isCustomFieldId,
+  toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { DesignerTemplate } from './types'
 
@@ -171,9 +177,17 @@ const HEADER_STYLES = [
   { value: 'framed', label: 'Framed', desc: 'Band across the top, rail down the left' },
 ]
 
+export interface DesignerFieldDef {
+  id: string
+  label: string
+  name: string
+  isActive: boolean
+}
+
 export function DesignerInspector({
   layout,
   template,
+  customFields,
   selected,
   onSelect,
   onSection,
@@ -183,6 +197,7 @@ export function DesignerInspector({
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
+  customFields: DesignerFieldDef[]
   selected: string | null
   onSelect: (id: string | null) => void
   onSection: (id: string, patch: Partial<InvoiceSection>) => void
@@ -190,11 +205,23 @@ export function DesignerInspector({
   onDocument: (patch: InvoiceDocumentStyle) => void
   onTemplate: (patch: Partial<DesignerTemplate>) => void
 }) {
+  /** A field's name, whether it is one of ours or one the workshop defined. */
+  const fieldName = (fieldId: string) => {
+    if (!isCustomFieldId(fieldId)) return getBuiltinFieldName(fieldId) ?? fieldId
+    const definition = customFields.find((f) => f.id === fromCustomFieldId(fieldId))
+    return definition?.label ?? definition?.name ?? fieldId
+  }
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
   const doc = layout.document ?? {}
 
   if (section) {
     const style = section.style ?? {}
+    const assigned = new Set(
+      layout.sections.flatMap((s) =>
+        (s.fields ?? []).filter((f) => isCustomFieldId(f.id)).map((f) => fromCustomFieldId(f.id))
+      )
+    )
+    const unassignedCustomFields = customFields.filter((f) => f.isActive && !assigned.has(f.id))
     const setStyle = (patch: InvoiceSectionStyle) => {
       const next = { ...style, ...patch }
       const kept = Object.fromEntries(
@@ -272,6 +299,66 @@ export function DesignerInspector({
                   </button>
                 ))}
               </div>
+            </Group>
+          )}
+
+          {SECTIONS_WITH_FIELDS.has(section.id) && (
+            <Group title="Fields">
+              {/* The header's two marks live here: turn the logo off and the
+                  company name prints instead, which is the whole of that
+                  choice rather than a separate control that duplicates it. */}
+              {(section.fields ?? []).map((field) => (
+                <Row key={field.id} label={fieldName(field.id)}>
+                  <Toggle
+                    on={field.visible}
+                    onChange={(visible) =>
+                      onSection(section.id, {
+                        fields: (section.fields ?? []).map((f) =>
+                          f.id === field.id ? { ...f, visible } : f
+                        ),
+                      })
+                    }
+                  />
+                </Row>
+              ))}
+
+              {getBuiltinFieldsForSection(section.id)
+                .filter((builtin) => !(section.fields ?? []).some((f) => f.id === builtin.id))
+                .map((builtin) => (
+                  <Row key={builtin.id} label={builtin.name}>
+                    <Toggle
+                      on={false}
+                      onChange={() =>
+                        onSection(section.id, {
+                          fields: [...(section.fields ?? []), { id: builtin.id, visible: true }],
+                        })
+                      }
+                    />
+                  </Row>
+                ))}
+
+              {unassignedCustomFields.length > 0 && (
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (!e.target.value) return
+                    onSection(section.id, {
+                      fields: [
+                        ...(section.fields ?? []),
+                        { id: toCustomFieldId(e.target.value), visible: true },
+                      ],
+                    })
+                  }}
+                  className="mt-1 w-full rounded-md border border-[#e3e5e9] bg-white px-2 py-1.5 text-[12.5px]"
+                >
+                  <option value="">Add a custom field…</option>
+                  {unassignedCustomFields.map((definition) => (
+                    <option key={definition.id} value={definition.id}>
+                      {definition.label || definition.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </Group>
           )}
 

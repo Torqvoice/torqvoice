@@ -17,7 +17,7 @@ import {
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { DesignerCanvas, type SampleData } from './DesignerCanvas'
-import { DesignerInspector } from './DesignerInspector'
+import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
 import type { DesignerTemplate, DesignerWorkshop, DocumentType, ResolvedTheme } from './types'
 
 const SAMPLE: SampleData = {
@@ -95,6 +95,7 @@ export function InvoiceDesigner({
   invoiceTemplate,
   quoteTemplate,
   workshop,
+  customFields,
 }: {
   initialDocumentType: DocumentType
   initialView: 'gallery' | 'designer'
@@ -103,6 +104,7 @@ export function InvoiceDesigner({
   invoiceTemplate: DesignerTemplate
   quoteTemplate: DesignerTemplate
   workshop: DesignerWorkshop
+  customFields: DesignerFieldDef[]
 }) {
   const router = useRouter()
   const [view, setView] = useState<'gallery' | 'designer'>(initialView)
@@ -459,6 +461,7 @@ export function InvoiceDesigner({
         <DesignerInspector
           layout={layout}
           template={template}
+          customFields={customFields}
           selected={selected}
           onSelect={setSelected}
           onSection={patchSection}
