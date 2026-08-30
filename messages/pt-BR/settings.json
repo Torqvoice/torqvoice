@@ -653,6 +653,8 @@
     "colors": "Cores",
     "textColor": "Texto",
     "textColorHint": "A cor dos títulos e do texto",
+    "companyTextColor": "Nome da empresa",
+    "companyTextColorHint": "A cor do nome no timbre",
     "frameBorderColor": "Linha da moldura",
     "frameBorderColorHint": "A linha onde a moldura encontra o papel",
     "frameShadow": "Sombra da moldura",

@@ -25,6 +25,8 @@ interface TemplateValues {
   backgroundColor?: string
   /** Body and heading color. Empty leaves the near-black default. */
   textColor?: string
+  /** The company name on the letterhead. Empty leaves the style's default. */
+  companyTextColor?: string
   /** Line where the sheet meets a framed letterhead. Empty means no line. */
   frameBorderColor?: string
   /** "false" prints the frame flat against the sheet. */

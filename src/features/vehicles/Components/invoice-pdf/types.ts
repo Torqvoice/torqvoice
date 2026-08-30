@@ -7,6 +7,12 @@ export interface TemplateConfig {
   /** Body and heading color. Unset leaves the near-black default. */
   textColor?: string
   /**
+   * The company name on the letterhead. Unset leaves each header style its own
+   * default, which is white on the styles that set the name into a colored band
+   * and the primary color on the styles that set it on white.
+   */
+  companyTextColor?: string
+  /**
    * The line where the sheet meets the frame, on header styles that have one.
    * Empty means no line.
    */

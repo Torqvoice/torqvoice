@@ -653,6 +653,8 @@
     "colors": "Farger",
     "textColor": "Tekst",
     "textColorHint": "Fargen på overskrifter og brødtekst",
+    "companyTextColor": "Firmanavn",
+    "companyTextColorHint": "Fargen på navnet i brevhodet",
     "frameBorderColor": "Rammelinje",
     "frameBorderColorHint": "Linjen der rammen møter papiret",
     "frameShadow": "Rammeskygge",

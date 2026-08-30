@@ -653,6 +653,8 @@
     "colors": "Kolory",
     "textColor": "Tekst",
     "textColorHint": "Kolor nagłówków i tekstu",
+    "companyTextColor": "Nazwa firmy",
+    "companyTextColorHint": "Kolor nazwy w nagłówku firmowym",
     "frameBorderColor": "Linia ramki",
     "frameBorderColorHint": "Linia w miejscu styku ramki z papierem",
     "frameShadow": "Cień ramki",

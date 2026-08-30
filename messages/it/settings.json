@@ -653,6 +653,8 @@
     "colors": "Colori",
     "textColor": "Testo",
     "textColorHint": "Il colore di titoli e testo",
+    "companyTextColor": "Nome azienda",
+    "companyTextColorHint": "Il colore del nome sull’intestazione",
     "frameBorderColor": "Filetto della cornice",
     "frameBorderColorHint": "Il filetto dove la cornice incontra la carta",
     "frameShadow": "Ombra della cornice",

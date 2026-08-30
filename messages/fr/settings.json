@@ -653,6 +653,8 @@
     "colors": "Couleurs",
     "textColor": "Texte",
     "textColorHint": "La couleur des titres et du corps de texte",
+    "companyTextColor": "Nom de la société",
+    "companyTextColorHint": "La couleur du nom sur l’en-tête",
     "frameBorderColor": "Filet du cadre",
     "frameBorderColorHint": "Le filet où le cadre rencontre le papier",
     "frameShadow": "Ombre du cadre",

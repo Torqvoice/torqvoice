@@ -41,6 +41,7 @@ export function FramedLetterhead({
   orgNumber,
   shopDisplayName,
   muted = gray,
+  nameColor,
   borderColor,
   shadow = true,
   labels,
@@ -57,6 +58,8 @@ export function FramedLetterhead({
   shopDisplayName: string
   /** Secondary text color, so the strapline follows the chosen ink. */
   muted?: string
+  /** The company name's color on the band. Unset is white. */
+  nameColor?: string
   /** Line under the band where it meets the sheet. Unset means no line. */
   borderColor?: string
   /** Whether the band drops a shadow onto the sheet. */
@@ -128,7 +131,7 @@ export function FramedLetterhead({
           />
         ) : null}
         {mark === 'name' ? (
-          <Text style={{ fontSize: 24, fontFamily: fontBold, color: '#ffffff' }}>
+          <Text style={{ fontSize: 24, fontFamily: fontBold, color: nameColor || '#ffffff' }}>
             {shopDisplayName}
           </Text>
         ) : null}

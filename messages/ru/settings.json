@@ -653,6 +653,8 @@
     "colors": "Цвета",
     "textColor": "Текст",
     "textColorHint": "Цвет заголовков и основного текста",
+    "companyTextColor": "Название компании",
+    "companyTextColorHint": "Цвет названия на фирменном бланке",
     "frameBorderColor": "Линия рамки",
     "frameBorderColorHint": "Линия там, где рамка встречается с бумагой",
     "frameShadow": "Тень рамки",

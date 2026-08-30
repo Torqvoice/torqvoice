@@ -653,6 +653,8 @@
     "colors": "Kleuren",
     "textColor": "Tekst",
     "textColorHint": "De kleur van koppen en lopende tekst",
+    "companyTextColor": "Bedrijfsnaam",
+    "companyTextColorHint": "De kleur van de naam op het briefhoofd",
     "frameBorderColor": "Kaderlijn",
     "frameBorderColorHint": "De lijn waar het kader het papier raakt",
     "frameShadow": "Kaderschaduw",

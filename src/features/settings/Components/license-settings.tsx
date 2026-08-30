@@ -71,42 +71,40 @@ export function LicenseSettings({
         }
         contentClassName="space-y-4"
       >
-          <div className="flex items-center gap-2">
-            <Label>{t('license.status')}</Label>
-            {licenseValid ? (
-              <Badge variant="default">{t('license.active')}</Badge>
+        <div className="flex items-center gap-2">
+          <Label>{t('license.status')}</Label>
+          {licenseValid ? (
+            <Badge variant="default">{t('license.active')}</Badge>
+          ) : (
+            <Badge variant="secondary">{t('license.inactive')}</Badge>
+          )}
+          {initialCheckedAt && (
+            <span className="text-xs text-muted-foreground">
+              {t('license.lastChecked', { date: new Date(initialCheckedAt).toLocaleDateString() })}
+            </span>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Input
+            placeholder={t('license.enterLicenseKey')}
+            value={licenseKey}
+            onChange={(e) => setLicenseKey(e.target.value)}
+            className="font-mono"
+          />
+          <Button
+            onClick={handleValidateLicense}
+            disabled={isValidating || !licenseKey.trim()}
+            variant="outline"
+          >
+            {isValidating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              <Badge variant="secondary">{t('license.inactive')}</Badge>
+              <Key className="mr-2 h-4 w-4" />
             )}
-            {initialCheckedAt && (
-              <span className="text-xs text-muted-foreground">
-                {t('license.lastChecked', { date: new Date(initialCheckedAt).toLocaleDateString() })}
-              </span>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder={t('license.enterLicenseKey')}
-              value={licenseKey}
-              onChange={(e) => setLicenseKey(e.target.value)}
-              className="font-mono"
-            />
-            <Button
-              onClick={handleValidateLicense}
-              disabled={isValidating || !licenseKey.trim()}
-              variant="outline"
-            >
-              {isValidating ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Key className="mr-2 h-4 w-4" />
-              )}
-              {t('license.validate')}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {t('license.keyHint')}
-          </p>
+            {t('license.validate')}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">{t('license.keyHint')}</p>
       </AppCard>
     </div>
   )

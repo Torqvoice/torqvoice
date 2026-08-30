@@ -38,6 +38,9 @@ export const SETTING_KEYS = {
   INVOICE_BACKGROUND_COLOR: 'invoice.backgroundColor',
   /// Body and heading color. Empty means the near-black default.
   INVOICE_TEXT_COLOR: 'invoice.textColor',
+  /// The company name on the letterhead. Empty leaves each header style its own
+  /// default: white on a colored band, the primary color on white.
+  INVOICE_COMPANY_TEXT_COLOR: 'invoice.companyTextColor',
   /// Line where the sheet meets a framed letterhead. Empty means no line.
   INVOICE_FRAME_BORDER_COLOR: 'invoice.frameBorderColor',
   /// "false" prints the frame flat against the sheet, with no shadow.
@@ -73,6 +76,7 @@ export const SETTING_KEYS = {
   QUOTE_PRIMARY_COLOR: 'quote.primaryColor',
   QUOTE_BACKGROUND_COLOR: 'quote.backgroundColor',
   QUOTE_TEXT_COLOR: 'quote.textColor',
+  QUOTE_COMPANY_TEXT_COLOR: 'quote.companyTextColor',
   QUOTE_FRAME_BORDER_COLOR: 'quote.frameBorderColor',
   QUOTE_FRAME_SHADOW: 'quote.frameShadow',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',

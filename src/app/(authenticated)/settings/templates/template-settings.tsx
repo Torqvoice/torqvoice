@@ -39,6 +39,7 @@ interface TemplateValues {
   primaryColor: string
   backgroundColor: string
   textColor: string
+  companyTextColor: string
   frameBorderColor: string
   frameShadow: string
   fontFamily: string
@@ -300,6 +301,19 @@ function TemplateTab({
             title={t('templates.textColorHint')}
             onChange={(v) => setValues({ ...values, textColor: v })}
             onClear={() => setValues({ ...values, textColor: '' })}
+            clearLabel={t('templates.backgroundColorClear')}
+          />
+
+          {/* The name is set into a colored band on some header styles and
+              onto white on others, so its default is not one color and a
+              workshop that drops the logo needs to be able to say. */}
+          <ColorRow
+            label={t('templates.companyTextColor')}
+            value={values.companyTextColor}
+            fallback={values.headerStyle === 'framed' ? '#ffffff' : values.primaryColor}
+            title={t('templates.companyTextColorHint')}
+            onChange={(v) => setValues({ ...values, companyTextColor: v })}
+            onClear={() => setValues({ ...values, companyTextColor: '' })}
             clearLabel={t('templates.backgroundColorClear')}
           />
 
@@ -669,6 +683,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
           setSetting(SETTING_KEYS.INVOICE_BACKGROUND_COLOR, invoiceValues.backgroundColor),
           setSetting(SETTING_KEYS.INVOICE_TEXT_COLOR, invoiceValues.textColor),
+          setSetting(SETTING_KEYS.INVOICE_COMPANY_TEXT_COLOR, invoiceValues.companyTextColor),
           setSetting(SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR, invoiceValues.frameBorderColor),
           setSetting(SETTING_KEYS.INVOICE_FRAME_SHADOW, invoiceValues.frameShadow),
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
@@ -683,6 +698,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_BACKGROUND_COLOR, quoteValues.backgroundColor),
           setSetting(SETTING_KEYS.QUOTE_TEXT_COLOR, quoteValues.textColor),
+          setSetting(SETTING_KEYS.QUOTE_COMPANY_TEXT_COLOR, quoteValues.companyTextColor),
           setSetting(SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR, quoteValues.frameBorderColor),
           setSetting(SETTING_KEYS.QUOTE_FRAME_SHADOW, quoteValues.frameShadow),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),

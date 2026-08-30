@@ -173,6 +173,7 @@ export function QuotePDF({
     template?.textColor
   )
   const isFramed = headerStyle === 'framed'
+  const companyTextColor = template?.companyTextColor || undefined
   const { muted } = inkColors(styles)
   const fontBold = getFontBold(fontFamily)
 
@@ -234,7 +235,11 @@ export function QuotePDF({
         return showCompanyName ? (
           <Text
             key="company_name"
-            style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}
+            style={{
+              fontSize: 16,
+              fontFamily: fontBold,
+              color: companyTextColor || primaryColor,
+            }}
           >
             {shopName}
           </Text>
@@ -332,7 +337,10 @@ export function QuotePDF({
         ) : null
       case 'company_name':
         return showCompanyName ? (
-          <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+          <Text
+            key="company_name"
+            style={{ fontSize: 22, fontFamily: fontBold, color: companyTextColor || 'white' }}
+          >
             {shopName}
           </Text>
         ) : null
@@ -450,7 +458,12 @@ export function QuotePDF({
         ) : null
       case 'company_name':
         return showCompanyName ? (
-          <Text key="company_name" style={styles.brandName}>
+          <Text
+            key="company_name"
+            style={
+              companyTextColor ? { ...styles.brandName, color: companyTextColor } : styles.brandName
+            }
+          >
             {shopName}
           </Text>
         ) : null
@@ -745,6 +758,7 @@ export function QuotePDF({
         orgNumber={null}
         shopDisplayName={shopName}
         muted={muted}
+        nameColor={companyTextColor}
         labels={labels}
       />
       {documentTitleVisible ? null : renderDocumentTitle()}

@@ -653,6 +653,8 @@
     "colors": "Spalvos",
     "textColor": "Tekstas",
     "textColorHint": "Antraščių ir teksto spalva",
+    "companyTextColor": "Įmonės pavadinimas",
+    "companyTextColorHint": "Pavadinimo spalva firminiame blanke",
     "frameBorderColor": "Rėmelio linija",
     "frameBorderColorHint": "Linija ten, kur rėmelis liečia popierių",
     "frameShadow": "Rėmelio šešėlis",

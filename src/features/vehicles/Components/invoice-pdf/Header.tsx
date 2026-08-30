@@ -36,6 +36,8 @@ interface HeaderProps {
   serviceDate: string
   dueDate: string | null
   logoSize?: number
+  /** The company name's own color, overriding each style's default. */
+  companyTextColor?: string
   /** The line and shadow where the sheet meets a framed letterhead. */
   frameBorderColor?: string
   frameShadow?: boolean
@@ -65,6 +67,7 @@ export function Header({
   serviceDate,
   dueDate,
   logoSize,
+  companyTextColor,
   frameBorderColor,
   frameShadow,
   showTitle = true,
@@ -104,6 +107,7 @@ export function Header({
         }
         shopDisplayName={shopDisplayName}
         muted={muted}
+        nameColor={companyTextColor}
         borderColor={frameBorderColor}
         shadow={frameShadow}
         labels={labels}
@@ -132,7 +136,11 @@ export function Header({
           return showCompanyName ? (
             <Text
               key="company_name"
-              style={{ fontSize: 16, fontFamily: fontBold, color: primaryColor }}
+              style={{
+                fontSize: 16,
+                fontFamily: fontBold,
+                color: companyTextColor || primaryColor,
+              }}
             >
               {shopDisplayName}
             </Text>
@@ -244,7 +252,10 @@ export function Header({
           ) : null
         case 'company_name':
           return showCompanyName ? (
-            <Text key="company_name" style={{ fontSize: 22, fontFamily: fontBold, color: 'white' }}>
+            <Text
+              key="company_name"
+              style={{ fontSize: 22, fontFamily: fontBold, color: companyTextColor || 'white' }}
+            >
               {shopDisplayName}
             </Text>
           ) : null
@@ -376,7 +387,12 @@ export function Header({
         ) : null
       case 'company_name':
         return showCompanyName ? (
-          <Text key="company_name" style={styles.brandName}>
+          <Text
+            key="company_name"
+            style={
+              companyTextColor ? { ...styles.brandName, color: companyTextColor } : styles.brandName
+            }
+          >
             {shopDisplayName}
           </Text>
         ) : null

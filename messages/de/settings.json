@@ -653,6 +653,8 @@
     "colors": "Farben",
     "textColor": "Text",
     "textColorHint": "Die Farbe von Überschriften und Fließtext",
+    "companyTextColor": "Firmenname",
+    "companyTextColorHint": "Die Farbe des Namens im Briefkopf",
     "frameBorderColor": "Rahmenlinie",
     "frameBorderColorHint": "Die Linie, wo der Rahmen auf das Papier trifft",
     "frameShadow": "Rahmenschatten",

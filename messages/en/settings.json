@@ -653,6 +653,8 @@
     "colors": "Colors",
     "textColor": "Text",
     "textColorHint": "The color of headings and body text",
+    "companyTextColor": "Company name",
+    "companyTextColorHint": "The color of the name on the letterhead",
     "frameBorderColor": "Frame line",
     "frameBorderColorHint": "The line where the frame meets the paper",
     "frameShadow": "Frame shadow",

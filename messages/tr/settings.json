@@ -653,6 +653,8 @@
     "colors": "Renkler",
     "textColor": "Metin",
     "textColorHint": "Başlıkların ve metnin rengi",
+    "companyTextColor": "Firma adı",
+    "companyTextColorHint": "Antetteki adın rengi",
     "frameBorderColor": "Çerçeve çizgisi",
     "frameBorderColorHint": "Çerçevenin kâğıtla buluştuğu çizgi",
     "frameShadow": "Çerçeve gölgesi",

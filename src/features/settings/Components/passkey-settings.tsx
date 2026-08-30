@@ -119,88 +119,75 @@ export function PasskeySettings() {
 
   return (
     <>
-      <AppCard
-        icon={Fingerprint}
-        title={t('account.passkey.title')}
-        contentClassName="space-y-4"
-      >
-          <p className="text-sm text-muted-foreground">
-            {t('account.passkey.description')}
-          </p>
+      <AppCard icon={Fingerprint} title={t('account.passkey.title')} contentClassName="space-y-4">
+        <p className="text-sm text-muted-foreground">{t('account.passkey.description')}</p>
 
-          {loading ? (
-            <div className="flex items-center gap-2 py-4">
-              <Loader2 className="h-4 w-4 animate-spin" />
-            </div>
-          ) : passkeys.length === 0 ? (
-            <p className="text-sm text-muted-foreground italic">
-              {t('account.passkey.noPasskeys')}
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {passkeys.map((pk) => (
-                <div
-                  key={pk.id}
-                  className="flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">
-                      {pk.name || t('account.passkey.unnamed')}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {pk.deviceType === 'singleDevice'
-                        ? t('account.passkey.singleDevice')
-                        : t('account.passkey.multiDevice')}{' '}
-                      &middot; {formatDate(pk.createdAt)}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => {
-                        setRenamingPasskey(pk)
-                        setNewName(pk.name || '')
-                        setRenameDialogOpen(true)
-                      }}
-                      aria-label={t('account.passkey.rename')}
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      disabled={deletingId === pk.id}
-                      onClick={() => {
-                        setPassKeyToDelete(pk)
-                        setDeleteDialogOpen(true)
-                      }}
-                      aria-label={t('account.passkey.delete')}
-                    >
-                      {deletingId === pk.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
-                  </div>
+        {loading ? (
+          <div className="flex items-center gap-2 py-4">
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </div>
+        ) : passkeys.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic">{t('account.passkey.noPasskeys')}</p>
+        ) : (
+          <div className="space-y-2">
+            {passkeys.map((pk) => (
+              <div key={pk.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium">{pk.name || t('account.passkey.unnamed')}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {pk.deviceType === 'singleDevice'
+                      ? t('account.passkey.singleDevice')
+                      : t('account.passkey.multiDevice')}{' '}
+                    &middot; {formatDate(pk.createdAt)}
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => {
+                      setRenamingPasskey(pk)
+                      setNewName(pk.name || '')
+                      setRenameDialogOpen(true)
+                    }}
+                    aria-label={t('account.passkey.rename')}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    disabled={deletingId === pk.id}
+                    onClick={() => {
+                      setPassKeyToDelete(pk)
+                      setDeleteDialogOpen(true)
+                    }}
+                    aria-label={t('account.passkey.delete')}
+                  >
+                    {deletingId === pk.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-          <Separator />
-          <Button onClick={handleRegister} disabled={registering}>
-            {registering ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Plus className="mr-2 h-4 w-4" />
-            )}
-            {registering ? t('account.passkey.registering') : t('account.passkey.register')}
-          </Button>
-        </AppCard>
+        <Separator />
+        <Button onClick={handleRegister} disabled={registering}>
+          {registering ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
+          {registering ? t('account.passkey.registering') : t('account.passkey.register')}
+        </Button>
+      </AppCard>
 
       {/* Rename Dialog */}
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
@@ -238,19 +225,13 @@ export function PasskeySettings() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('account.passkey.confirmDeleteTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('account.passkey.confirmDelete')}
-            </DialogDescription>
+            <DialogDescription>{t('account.passkey.confirmDelete')}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
               {t('account.passkey.cancel')}
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deletingId !== null}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deletingId !== null}>
               {deletingId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('account.passkey.delete')}
             </Button>

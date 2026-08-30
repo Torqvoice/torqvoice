@@ -95,6 +95,7 @@ export function InvoicePDF({
     template?.textColor
   )
   const isFramed = headerStyle === 'framed'
+  const companyTextColor = template?.companyTextColor || undefined
   const frameBorderColor = template?.frameBorderColor || undefined
   const frameShadow = template?.frameShadow !== false
   const fontBold = getFontBold(fontFamily)
@@ -224,6 +225,7 @@ export function InvoicePDF({
           serviceDate={serviceDate}
           dueDate={dueDate}
           logoSize={template?.logoSize}
+          companyTextColor={companyTextColor}
           frameBorderColor={frameBorderColor}
           frameShadow={frameShadow}
           showTitle={!documentTitleVisible}
