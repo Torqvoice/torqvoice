@@ -174,6 +174,10 @@ export async function GET(
       primaryColor: settingsMap["quote.primaryColor"] || settingsMap["invoice.primaryColor"] || "#d97706",
       backgroundColor: settingsMap["quote.backgroundColor"] || settingsMap["invoice.backgroundColor"] || undefined,
       textColor: settingsMap["quote.textColor"] || settingsMap["invoice.textColor"] || undefined,
+      frameBorderColor:
+        settingsMap["quote.frameBorderColor"] || settingsMap["invoice.frameBorderColor"] || undefined,
+      frameShadow:
+        (settingsMap["quote.frameShadow"] ?? settingsMap["invoice.frameShadow"]) !== "false",
       fontFamily: settingsMap["quote.fontFamily"] || settingsMap["invoice.fontFamily"] || "Helvetica",
       showLogo: settingsMap["invoice.showLogo"] !== "false",
       showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",

@@ -39,6 +39,8 @@ interface TemplateValues {
   primaryColor: string
   backgroundColor: string
   textColor: string
+  frameBorderColor: string
+  frameShadow: string
   fontFamily: string
   headerStyle: string
   logoSize: number
@@ -300,6 +302,20 @@ function TemplateTab({
             onClear={() => setValues({ ...values, textColor: '' })}
             clearLabel={t('templates.backgroundColorClear')}
           />
+
+          {/* Only the framed sheet has an edge where the frame meets the
+              paper, so only it has a line and a shadow to set. */}
+          {values.headerStyle === 'framed' && (
+            <ColorRow
+              label={t('templates.frameBorderColor')}
+              value={values.frameBorderColor}
+              fallback="#111827"
+              title={t('templates.frameBorderColorHint')}
+              onChange={(v) => setValues({ ...values, frameBorderColor: v })}
+              onClear={() => setValues({ ...values, frameBorderColor: '' })}
+              clearLabel={t('templates.backgroundColorClear')}
+            />
+          )}
         </AppCard>
 
         {/* Font & Layout Settings */}
@@ -357,6 +373,23 @@ function TemplateTab({
                     <SelectItem value="company_name">
                       {t('templates.letterheadCompanyName')}
                     </SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+            )}
+
+            {values.headerStyle === 'framed' && (
+              <Field label={t('templates.frameShadow')}>
+                <Select
+                  value={values.frameShadow}
+                  onValueChange={(v) => setValues({ ...values, frameShadow: v })}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">{t('templates.frameShadowOn')}</SelectItem>
+                    <SelectItem value="false">{t('templates.frameShadowOff')}</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>
@@ -636,6 +669,8 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
           setSetting(SETTING_KEYS.INVOICE_BACKGROUND_COLOR, invoiceValues.backgroundColor),
           setSetting(SETTING_KEYS.INVOICE_TEXT_COLOR, invoiceValues.textColor),
+          setSetting(SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR, invoiceValues.frameBorderColor),
+          setSetting(SETTING_KEYS.INVOICE_FRAME_SHADOW, invoiceValues.frameShadow),
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
           setSetting(SETTING_KEYS.INVOICE_LOGO_SIZE, String(invoiceValues.logoSize)),
@@ -648,6 +683,8 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_BACKGROUND_COLOR, quoteValues.backgroundColor),
           setSetting(SETTING_KEYS.QUOTE_TEXT_COLOR, quoteValues.textColor),
+          setSetting(SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR, quoteValues.frameBorderColor),
+          setSetting(SETTING_KEYS.QUOTE_FRAME_SHADOW, quoteValues.frameShadow),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
           setSetting(SETTING_KEYS.QUOTE_LOGO_SIZE, String(quoteValues.logoSize)),

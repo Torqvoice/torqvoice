@@ -2,7 +2,12 @@ import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { formatQuantity } from '@/lib/format-quantity'
-import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
+import {
+  createStyles,
+  gray,
+  getFontBold,
+  inkColors,
+} from '@/features/vehicles/Components/invoice-pdf/styles'
 import { FramedLetterhead } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
 import { DocumentTitle } from '@/features/vehicles/Components/invoice-pdf/DocumentTitle'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
@@ -168,6 +173,7 @@ export function QuotePDF({
     template?.textColor
   )
   const isFramed = headerStyle === 'framed'
+  const { muted } = inkColors(styles)
   const fontBold = getFontBold(fontFamily)
 
   // Layout config helpers
@@ -235,13 +241,13 @@ export function QuotePDF({
         ) : null
       case 'company_address':
         return workshop?.address ? (
-          <Text key="company_address" style={{ fontSize: 8, color: gray }}>
+          <Text key="company_address" style={{ fontSize: 8, color: muted }}>
             {workshop.address}
           </Text>
         ) : null
       case 'company_phone':
         return workshop?.phone ? (
-          <Text key="company_phone" style={{ fontSize: 8, color: gray }}>
+          <Text key="company_phone" style={{ fontSize: 8, color: muted }}>
             {labels.tel
               ? fillTemplate(labels.tel, { phone: workshop.phone })
               : `Tel: ${workshop.phone}`}
@@ -249,7 +255,7 @@ export function QuotePDF({
         ) : null
       case 'company_email':
         return workshop?.email ? (
-          <Text key="company_email" style={{ fontSize: 8, color: gray }}>
+          <Text key="company_email" style={{ fontSize: 8, color: muted }}>
             {workshop.email}
           </Text>
         ) : null
@@ -278,10 +284,10 @@ export function QuotePDF({
             <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>
               {labels.title || 'QUOTE'}
             </Text>
-            <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{quoteNum}</Text>
-            <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
+            <Text style={{ fontSize: 9, color: muted, marginTop: 2 }}>{quoteNum}</Text>
+            <Text style={{ fontSize: 9, color: muted }}>{createdDate}</Text>
             {validDate && (
-              <Text style={{ fontSize: 9, color: gray }}>
+              <Text style={{ fontSize: 9, color: muted }}>
                 {labels.validUntil
                   ? fillTemplate(labels.validUntil, { date: validDate })
                   : `Valid until: ${validDate}`}
@@ -302,7 +308,7 @@ export function QuotePDF({
           }}
         >
           <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-          <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+          <Text style={{ fontSize: 7, fontFamily: fontBold, color: muted }}>Torqvoice</Text>
         </View>
       )}
     </View>
@@ -409,10 +415,10 @@ export function QuotePDF({
               {labels.title || 'QUOTE'}
             </Text>
             <View style={{ flexDirection: 'row', gap: 16 }}>
-              <Text style={{ fontSize: 9, color: gray }}>{quoteNum}</Text>
-              <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
+              <Text style={{ fontSize: 9, color: muted }}>{quoteNum}</Text>
+              <Text style={{ fontSize: 9, color: muted }}>{createdDate}</Text>
               {validDate && (
-                <Text style={{ fontSize: 9, color: gray }}>
+                <Text style={{ fontSize: 9, color: muted }}>
                   {labels.validUntil
                     ? fillTemplate(labels.validUntil, { date: validDate })
                     : `Valid until: ${validDate}`}
@@ -490,7 +496,7 @@ export function QuotePDF({
             }}
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 9, fontFamily: fontBold, color: muted }}>Torqvoice</Text>
           </View>
         )}
         {documentTitleVisible ? null : (
@@ -738,6 +744,7 @@ export function QuotePDF({
         workshop={workshop}
         orgNumber={null}
         shopDisplayName={shopName}
+        muted={muted}
         labels={labels}
       />
       {documentTitleVisible ? null : renderDocumentTitle()}
@@ -1064,7 +1071,7 @@ export function QuotePDF({
     <>
       {portalUrl && (
         <View style={{ marginTop: 8 }}>
-          <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+          <Text style={{ fontSize: 8, color: muted, textAlign: 'center' }}>
             {labels.viewPortal
               ? fillTemplate(labels.viewPortal, { url: portalUrl })
               : `View your portal: ${portalUrl}`}
@@ -1079,12 +1086,12 @@ export function QuotePDF({
             {labels.attachedDocuments || 'Attached Documents'}
           </Text>
           {otherAttachments.map((att, i) => (
-            <Text key={`other-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
+            <Text key={`other-${i}`} style={{ fontSize: 9, color: muted, marginBottom: 2 }}>
               {att.fileName}
             </Text>
           ))}
           {pdfAttachmentNames.map((name, i) => (
-            <Text key={`pdf-${i}`} style={{ fontSize: 9, color: gray, marginBottom: 2 }}>
+            <Text key={`pdf-${i}`} style={{ fontSize: 9, color: muted, marginBottom: 2 }}>
               {labels.attached ? fillTemplate(labels.attached, { name }) : `${name} (attached)`}
             </Text>
           ))}
@@ -1101,7 +1108,7 @@ export function QuotePDF({
             gap: 4,
           }}
         >
-          <Text style={{ fontSize: 8, color: gray }}>
+          <Text style={{ fontSize: 8, color: muted }}>
             {validDate
               ? labels.validityFooterUntil
                 ? fillTemplate(labels.validityFooterUntil, { date: validDate })
@@ -1109,9 +1116,9 @@ export function QuotePDF({
               : labels.validityFooter30 || 'This quote is valid for 30 days'}{' '}
             ·{' '}
           </Text>
-          <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
+          <Text style={{ fontSize: 7, color: muted }}>{labels.poweredBy || 'Powered by'}</Text>
           <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-          <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+          <Text style={{ fontSize: 7, color: muted, fontFamily: fontBold }}>Torqvoice</Text>
         </View>
       ) : (
         <Text style={styles.footer}>
@@ -1166,9 +1173,11 @@ export function QuotePDF({
                   marginTop: 6,
                 }}
               >
-                <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
+                <Text style={{ fontSize: 7, color: muted }}>
+                  {labels.poweredBy || 'Powered by'}
+                </Text>
                 <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-                <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+                <Text style={{ fontSize: 7, color: muted, fontFamily: fontBold }}>Torqvoice</Text>
               </View>
             )}
           </>
@@ -1235,9 +1244,9 @@ export function QuotePDF({
                   }}
                 />
                 {img.description ? (
-                  <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{img.description}</Text>
+                  <Text style={{ fontSize: 8, color: muted, marginTop: 2 }}>{img.description}</Text>
                 ) : (
-                  <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{img.fileName}</Text>
+                  <Text style={{ fontSize: 8, color: muted, marginTop: 2 }}>{img.fileName}</Text>
                 )}
               </View>
             ))}

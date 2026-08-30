@@ -6,6 +6,13 @@ export interface TemplateConfig {
   backgroundColor?: string
   /** Body and heading color. Unset leaves the near-black default. */
   textColor?: string
+  /**
+   * The line where the sheet meets the frame, on header styles that have one.
+   * Empty means no line.
+   */
+  frameBorderColor?: string
+  /** The frame's drop shadow onto the sheet. Off prints a flat edge. */
+  frameShadow?: boolean
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean

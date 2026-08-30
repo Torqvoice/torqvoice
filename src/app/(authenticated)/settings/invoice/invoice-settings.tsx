@@ -125,6 +125,8 @@ export function InvoiceSettings({
     primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
     backgroundColor: settings[SETTING_KEYS.INVOICE_BACKGROUND_COLOR] || '',
     textColor: settings[SETTING_KEYS.INVOICE_TEXT_COLOR] || '',
+    frameBorderColor: settings[SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR] || '',
+    frameShadow: settings[SETTING_KEYS.INVOICE_FRAME_SHADOW] || 'true',
     fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
     headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
   }
@@ -133,6 +135,9 @@ export function InvoiceSettings({
     backgroundColor:
       settings[SETTING_KEYS.QUOTE_BACKGROUND_COLOR] || invoiceTemplate.backgroundColor,
     textColor: settings[SETTING_KEYS.QUOTE_TEXT_COLOR] || invoiceTemplate.textColor,
+    frameBorderColor:
+      settings[SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR] || invoiceTemplate.frameBorderColor,
+    frameShadow: settings[SETTING_KEYS.QUOTE_FRAME_SHADOW] || invoiceTemplate.frameShadow,
     fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || invoiceTemplate.fontFamily,
     headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || invoiceTemplate.headerStyle,
   }

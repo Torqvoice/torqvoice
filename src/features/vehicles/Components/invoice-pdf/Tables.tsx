@@ -2,7 +2,7 @@ import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
 import { formatQuantity } from '@/lib/format-quantity'
 import { netLineTotal } from '@/lib/tax'
-import { getFontBold } from './styles'
+import { getFontBold, inkColors } from './styles'
 import type { InvoiceData } from './types'
 import type { Style } from '@react-pdf/types'
 
@@ -154,6 +154,7 @@ export function FindingsPdfSection({
 }) {
   if (!findings || findings.length === 0) return null
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles)
 
   const severityLabels: Record<string, string> = {
     urgent: labels.findingSeverityUrgent || 'Urgent',
@@ -170,7 +171,7 @@ export function FindingsPdfSection({
   return (
     <View>
       <Text style={styles.sectionTitle}>{labels.findings || 'Findings'}</Text>
-      <Text style={{ fontSize: 8, color: '#666', marginBottom: 4, lineHeight: 1.4 }}>
+      <Text style={{ fontSize: 8, color: muted, marginBottom: 4, lineHeight: 1.4 }}>
         {labels.findingsDescription ||
           'The following items were observed during this service and may require attention.'}
       </Text>
@@ -201,7 +202,7 @@ export function FindingsPdfSection({
               {severityLabels[f.severity] || f.severity}
             </Text>
             <Text style={{ ...styles.tableCell, width: '40%' }}>{f.description}</Text>
-            <Text style={{ ...styles.tableCell, width: '45%', color: '#666' }}>
+            <Text style={{ ...styles.tableCell, width: '45%', color: muted }}>
               {f.notes || '-'}
             </Text>
           </View>

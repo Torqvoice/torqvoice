@@ -16,6 +16,23 @@ export function lightenColor(hex: string, factor: number = 0.9) {
   return `rgb(${Math.round(r + (255 - r) * factor)}, ${Math.round(g + (255 - g) * factor)}, ${Math.round(b + (255 - b) * factor)})`
 }
 
+/** Blend two colors, `amount` of the way from `from` to `to`. */
+export function mixColor(from: string, to: string, amount: number) {
+  const a = hexToRgb(from)
+  const b = hexToRgb(to)
+  const at = (x: number, y: number) => Math.round(x + (y - x) * amount)
+  return `rgb(${at(a.r, b.r)}, ${at(a.g, b.g)}, ${at(a.b, b.b)})`
+}
+
+/** The ink and its muted companion, for components that style text inline. */
+export function inkColors(styles: Record<string, unknown>) {
+  const read = (key: string) => (styles[key] as { color?: string } | undefined)?.color
+  return {
+    ink: read('ink') || dark,
+    muted: read('muted') || gray,
+  }
+}
+
 export function darkenColor(hex: string, factor: number = 0.3) {
   const { r, g, b } = hexToRgb(hex)
   return `rgb(${Math.round(r * (1 - factor))}, ${Math.round(g * (1 - factor))}, ${Math.round(b * (1 - factor))})`
@@ -73,16 +90,22 @@ export function createStyles(
   text?: string
 ) {
   const framed = headerStyle === 'framed'
-  // Body copy and headings only. Rules, panel borders and the table header bar
-  // stay as they are: they read as structure rather than as text, and following
-  // a light ink onto a light sheet would erase them.
+  // Every piece of text takes its color from these two. The muted one is the
+  // ink carried partway toward the sheet, so secondary lines stay secondary at
+  // any ink: fixing them at one gray would leave them unreadable on a dark
+  // sheet and mismatched on a tinted one. Rules, panel borders and the table
+  // header bar are deliberately not text and keep their own color.
   const ink = text || dark
+  const muted = text ? mixColor(ink, background || '#ffffff', 0.42) : gray
   const primaryLight = lightenColor(primary)
   const primaryDark = darkenColor(primary)
   const resolved = resolveFont(font)
   const resolvedBold = resolveFontBold(font)
 
   return StyleSheet.create({
+    /** Read by components that style text inline; see inkColors. */
+    ink: { color: ink },
+    muted: { color: muted },
     page: framed
       ? {
           paddingTop: FRAMED.padTop,
@@ -112,10 +135,10 @@ export function createStyles(
       borderBottomColor: primary,
     },
     brandName: { fontSize: 22, fontFamily: resolvedBold, color: primary },
-    brandSub: { fontSize: 9, color: gray, marginTop: 2 },
-    brandContact: { fontSize: 8, color: gray, marginTop: 1 },
+    brandSub: { fontSize: 9, color: muted, marginTop: 2 },
+    brandContact: { fontSize: 8, color: muted, marginTop: 1 },
     invoiceTitle: { fontSize: 18, fontFamily: resolvedBold, textAlign: 'right' as const },
-    invoiceNumber: { fontSize: 9, color: gray, textAlign: 'right' as const, marginTop: 4 },
+    invoiceNumber: { fontSize: 9, color: muted, textAlign: 'right' as const, marginTop: 4 },
     infoRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
     infoBox: framed
       ? { padding: 8, borderWidth: 0.5, borderColor: dark, marginBottom: 4 }
@@ -129,7 +152,7 @@ export function createStyles(
     },
     infoText: { fontSize: 10, marginBottom: 2 },
     infoTextBold: { fontSize: 10, fontFamily: resolvedBold, marginBottom: 2 },
-    infoTextSmall: { fontSize: 9, color: gray, marginBottom: 2 },
+    infoTextSmall: { fontSize: 9, color: muted, marginBottom: 2 },
     sectionTitle: {
       fontSize: 12,
       fontFamily: resolvedBold,
@@ -178,7 +201,7 @@ export function createStyles(
         }
       : { marginTop: 16, marginLeft: 'auto', width: 250 },
     totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
-    totalLabel: { fontSize: 10, color: gray },
+    totalLabel: { fontSize: 10, color: muted },
     totalValue: { fontSize: 10 },
     totalDivider: { borderTopWidth: 1, borderTopColor: primary, marginVertical: 4 },
     grandTotalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
@@ -194,8 +217,8 @@ export function createStyles(
       textTransform: 'uppercase' as const,
       marginBottom: 4,
     },
-    notesText: { fontSize: 9, color: gray, lineHeight: 1.5 },
-    attachmentFileName: { fontSize: 8, color: gray, marginTop: 4, marginBottom: 8 },
+    notesText: { fontSize: 9, color: muted, lineHeight: 1.5 },
+    attachmentFileName: { fontSize: 8, color: muted, marginTop: 4, marginBottom: 8 },
     footer: {
       position: 'absolute' as const,
       bottom: framed ? 22 : 30,
@@ -203,7 +226,7 @@ export function createStyles(
       right: framed ? FRAMED.padRight : 40,
       textAlign: 'center' as const,
       fontSize: 8,
-      color: gray,
+      color: muted,
       paddingTop: 8,
       borderTopWidth: 0.5,
       borderTopColor: '#e5e7eb',

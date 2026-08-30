@@ -40,6 +40,9 @@ export function FramedLetterhead({
   workshop,
   orgNumber,
   shopDisplayName,
+  muted = gray,
+  borderColor,
+  shadow = true,
   labels,
 }: {
   primaryColor: string
@@ -52,6 +55,12 @@ export function FramedLetterhead({
   workshop?: WorkshopInfo
   orgNumber?: string | null
   shopDisplayName: string
+  /** Secondary text color, so the strapline follows the chosen ink. */
+  muted?: string
+  /** Line under the band where it meets the sheet. Unset means no line. */
+  borderColor?: string
+  /** Whether the band drops a shadow onto the sheet. */
+  shadow?: boolean
   labels: Record<string, string>
 }) {
   const fontBold = getFontBold(fontFamily)
@@ -127,9 +136,12 @@ export function FramedLetterhead({
 
       {/* The band sits above the sheet, so it drops a shadow onto it. */}
       <View style={{ marginLeft: FRAMED.railWidth }}>
-        {SHADOW.map((color, i) => (
-          <View key={i} style={{ height: SHADOW_STEP, backgroundColor: color }} />
-        ))}
+        {borderColor ? <View style={{ height: 0.6, backgroundColor: borderColor }} /> : null}
+        {shadow
+          ? SHADOW.map((color, i) => (
+              <View key={i} style={{ height: SHADOW_STEP, backgroundColor: color }} />
+            ))
+          : null}
       </View>
 
       {slogan || strapline ? (
@@ -145,9 +157,11 @@ export function FramedLetterhead({
             borderBottomColor: '#e5e7eb',
           }}
         >
-          {slogan ? <Text style={{ fontSize: 11, color: gray }}>{slogan}</Text> : null}
+          {slogan ? <Text style={{ fontSize: 11, color: muted }}>{slogan}</Text> : null}
           {strapline ? (
-            <Text style={{ fontSize: 9, color: gray, marginTop: slogan ? 3 : 0 }}>{strapline}</Text>
+            <Text style={{ fontSize: 9, color: muted, marginTop: slogan ? 3 : 0 }}>
+              {strapline}
+            </Text>
           ) : null}
         </View>
       ) : null}

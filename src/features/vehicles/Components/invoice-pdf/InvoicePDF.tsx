@@ -95,6 +95,8 @@ export function InvoicePDF({
     template?.textColor
   )
   const isFramed = headerStyle === 'framed'
+  const frameBorderColor = template?.frameBorderColor || undefined
+  const frameShadow = template?.frameShadow !== false
   const fontBold = getFontBold(fontFamily)
 
   const cc = invoiceSettings?.currencyCode || 'USD'
@@ -222,6 +224,8 @@ export function InvoicePDF({
           serviceDate={serviceDate}
           dueDate={dueDate}
           logoSize={template?.logoSize}
+          frameBorderColor={frameBorderColor}
+          frameShadow={frameShadow}
           showTitle={!documentTitleVisible}
           styles={styles}
           labels={labels}
@@ -467,7 +471,7 @@ export function InvoicePDF({
             same shadow down the left edge. Drawn before the sections so the
             band paints over it on the first page, and `fixed` so it reaches
             the full height of every page after it. */}
-        {isFramed && (
+        {isFramed && (frameShadow || frameBorderColor) && (
           <View
             fixed
             style={{
@@ -477,13 +481,18 @@ export function InvoicePDF({
               // zero lands exactly against the rail.
               left: 0,
               height: A4_HEIGHT,
-              width: SHADOW.length * SHADOW_STEP,
+              width: (frameBorderColor ? 0.6 : 0) + (frameShadow ? SHADOW.length * SHADOW_STEP : 0),
               flexDirection: 'row',
             }}
           >
-            {SHADOW.map((color, i) => (
-              <View key={i} style={{ width: SHADOW_STEP, backgroundColor: color }} />
-            ))}
+            {frameBorderColor ? (
+              <View style={{ width: 0.6, backgroundColor: frameBorderColor }} />
+            ) : null}
+            {frameShadow
+              ? SHADOW.map((color, i) => (
+                  <View key={i} style={{ width: SHADOW_STEP, backgroundColor: color }} />
+                ))
+              : null}
           </View>
         )}
         {renderedSections}

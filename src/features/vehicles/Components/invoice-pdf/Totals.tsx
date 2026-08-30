@@ -2,7 +2,7 @@ import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
 import { netLineTotal } from '@/lib/tax'
 import type { InvoiceData, PaymentSummary } from './types'
-import { gray, lightenColor, getFontBold } from './styles'
+import { lightenColor, getFontBold, inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -48,6 +48,7 @@ export function Totals({
   labels,
 }: TotalsProps) {
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles)
 
   // Universal display: always show net subtotal + net discount + tax + gross
   // total, regardless of how the record was entered. For exclusive records
@@ -125,7 +126,7 @@ export function Totals({
           </Text>
           {paymentSummary.payments.map((p, i) => (
             <View key={i} style={styles.totalRow}>
-              <Text style={{ fontSize: 8, color: gray }}>
+              <Text style={{ fontSize: 8, color: muted }}>
                 {p.date} ({p.method})
               </Text>
               <Text style={{ fontSize: 9, color: '#059669' }}>

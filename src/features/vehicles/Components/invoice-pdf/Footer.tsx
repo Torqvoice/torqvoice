@@ -1,6 +1,6 @@
 import { Text, View, Image } from '@react-pdf/renderer'
 import type { InvoiceSettingsProps, WorkshopInfo } from './types'
-import { gray, getFontBold } from './styles'
+import { getFontBold, inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -49,6 +49,7 @@ export function Footer({
   labels,
 }: FooterProps) {
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles)
 
   const footerValue = (fieldId: string): string | null => {
     switch (fieldId) {
@@ -96,7 +97,7 @@ export function Footer({
                 key={entry.fieldId}
                 style={{
                   fontSize: 7.5,
-                  color: gray,
+                  color: muted,
                   textAlign: 'left',
                   fontFamily: entry.fieldId === 'company_name' ? fontBold : undefined,
                 }}
@@ -117,7 +118,7 @@ export function Footer({
     <>
       {portalUrl && (
         <View style={{ marginTop: 8 }}>
-          <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+          <Text style={{ fontSize: 8, color: muted, textAlign: 'center' }}>
             {labels.viewPortal
               ? fillTemplate(labels.viewPortal, { url: portalUrl })
               : `View your portal: ${portalUrl}`}
@@ -140,14 +141,14 @@ export function Footer({
             }}
           >
             {showNote && invoiceSettings?.footerNote ? (
-              <Text style={{ fontSize: 8, color: gray }}>{invoiceSettings.footerNote} · </Text>
+              <Text style={{ fontSize: 8, color: muted }}>{invoiceSettings.footerNote} · </Text>
             ) : null}
-            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
+            <Text style={{ fontSize: 7, color: muted }}>{labels.poweredBy || 'Powered by'}</Text>
             <Image src={torqvoiceLogoDataUri} style={{ width: 14, height: 14 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, color: muted, fontFamily: fontBold }}>Torqvoice</Text>
           </View>
         ) : showNote ? (
-          <Text style={{ fontSize: 8, color: gray, textAlign: 'center' }}>
+          <Text style={{ fontSize: 8, color: muted, textAlign: 'center' }}>
             {invoiceSettings?.footerNote || `${shopDisplayName} · ${serviceDate}`}
           </Text>
         ) : null}

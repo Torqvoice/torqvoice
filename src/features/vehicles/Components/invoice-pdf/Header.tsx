@@ -1,6 +1,6 @@
 import { Text, View, Image } from '@react-pdf/renderer'
 import type { WorkshopInfo, InvoiceSettingsProps } from './types'
-import { gray, getFontBold } from './styles'
+import { getFontBold, inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 import { getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { FramedLetterhead } from './FramedLetterhead'
@@ -36,6 +36,9 @@ interface HeaderProps {
   serviceDate: string
   dueDate: string | null
   logoSize?: number
+  /** The line and shadow where the sheet meets a framed letterhead. */
+  frameBorderColor?: string
+  frameShadow?: boolean
   /**
    * False when the layout has a Document Title section of its own. The header
    * then prints no title, number or date, so the block appears exactly once and
@@ -62,11 +65,14 @@ export function Header({
   serviceDate,
   dueDate,
   logoSize,
+  frameBorderColor,
+  frameShadow,
   showTitle = true,
   styles,
   labels,
 }: HeaderProps) {
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles)
 
   // Logo size scale factor (default 100 = 1x)
   const scale = (logoSize || 100) / 100
@@ -97,6 +103,9 @@ export function Header({
             : null
         }
         shopDisplayName={shopDisplayName}
+        muted={muted}
+        borderColor={frameBorderColor}
+        shadow={frameShadow}
         labels={labels}
       />
     )
@@ -130,19 +139,19 @@ export function Header({
           ) : null
         case 'company_slogan':
           return workshop?.slogan ? (
-            <Text key="company_slogan" style={{ fontSize: 8.5, color: gray, marginBottom: 2 }}>
+            <Text key="company_slogan" style={{ fontSize: 8.5, color: muted, marginBottom: 2 }}>
               {workshop.slogan}
             </Text>
           ) : null
         case 'company_address':
           return workshop?.address ? (
-            <Text key="company_address" style={{ fontSize: 8, color: gray }}>
+            <Text key="company_address" style={{ fontSize: 8, color: muted }}>
               {workshop.address}
             </Text>
           ) : null
         case 'company_phone':
           return workshop?.phone ? (
-            <Text key="company_phone" style={{ fontSize: 8, color: gray }}>
+            <Text key="company_phone" style={{ fontSize: 8, color: muted }}>
               {labels.tel
                 ? fillTemplate(labels.tel, { phone: workshop.phone })
                 : `Tel: ${workshop.phone}`}
@@ -150,13 +159,13 @@ export function Header({
           ) : null
         case 'company_email':
           return workshop?.email ? (
-            <Text key="company_email" style={{ fontSize: 8, color: gray }}>
+            <Text key="company_email" style={{ fontSize: 8, color: muted }}>
               {workshop.email}
             </Text>
           ) : null
         case 'company_org_number':
           return invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber ? (
-            <Text key="company_org_number" style={{ fontSize: 8, color: gray }}>
+            <Text key="company_org_number" style={{ fontSize: 8, color: muted }}>
               {labels.org
                 ? fillTemplate(labels.org, { org: invoiceSettings.orgNumber })
                 : `Org: ${invoiceSettings.orgNumber}`}
@@ -186,10 +195,10 @@ export function Header({
                 <Text style={{ fontSize: 14, fontFamily: fontBold }}>
                   {labels.title || 'INVOICE'}
                 </Text>
-                <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{invoiceNum}</Text>
-                <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
+                <Text style={{ fontSize: 9, color: muted, marginTop: 2 }}>{invoiceNum}</Text>
+                <Text style={{ fontSize: 9, color: muted }}>{serviceDate}</Text>
                 {dueDate && (
-                  <Text style={{ fontSize: 9, color: gray }}>
+                  <Text style={{ fontSize: 9, color: muted }}>
                     {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
                   </Text>
                 )}
@@ -209,7 +218,7 @@ export function Header({
             }}
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 7, fontFamily: fontBold, color: muted }}>Torqvoice</Text>
           </View>
         )}
       </View>
@@ -333,10 +342,10 @@ export function Header({
           >
             <Text style={{ fontSize: 18, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
             <View style={{ flexDirection: 'row', gap: 16 }}>
-              <Text style={{ fontSize: 9, color: gray }}>{invoiceNum}</Text>
-              <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
+              <Text style={{ fontSize: 9, color: muted }}>{invoiceNum}</Text>
+              <Text style={{ fontSize: 9, color: muted }}>{serviceDate}</Text>
               {dueDate && (
-                <Text style={{ fontSize: 9, color: gray }}>
+                <Text style={{ fontSize: 9, color: muted }}>
                   {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
                 </Text>
               )}
@@ -429,7 +438,7 @@ export function Header({
             }}
           >
             <Image src={torqvoiceLogoDataUri} style={{ width: 16, height: 16 }} />
-            <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
+            <Text style={{ fontSize: 9, fontFamily: fontBold, color: muted }}>Torqvoice</Text>
           </View>
         )}
       </View>

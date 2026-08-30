@@ -1,6 +1,6 @@
 import { Text, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
-import { getFontBold } from './styles'
+import { getFontBold, inkColors } from './styles'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 
 interface WarrantyProps {
@@ -30,6 +30,7 @@ export function WarrantySection({
   if (!warrantyMonths && !warrantyNotes) return null
 
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles)
 
   // Build the duration/mileage line, e.g. "12 months / 20,000 km"
   const parts: string[] = []
@@ -63,20 +64,20 @@ export function WarrantySection({
           <Text style={{ fontSize: 9, fontFamily: fontBold }}>
             {labels.warrantyDuration || 'Duration'}:{' '}
           </Text>
-          <Text style={{ fontSize: 9, color: '#6b7280' }}>{durationLine}</Text>
+          <Text style={{ fontSize: 9, color: muted }}>{durationLine}</Text>
         </View>
       )}
 
       {expiresLine && (
-        <Text style={{ fontSize: 9, color: '#6b7280', marginBottom: 2 }}>{expiresLine}</Text>
+        <Text style={{ fontSize: 9, color: muted, marginBottom: 2 }}>{expiresLine}</Text>
       )}
 
       {warrantyNotes && (
         <View style={{ marginTop: 2 }}>
-          <Text style={{ fontSize: 8, fontFamily: fontBold, color: '#6b7280', marginBottom: 1 }}>
+          <Text style={{ fontSize: 8, fontFamily: fontBold, color: muted, marginBottom: 1 }}>
             {labels.warrantyNotes || 'Terms'}
           </Text>
-          <Text style={{ fontSize: 9, color: '#6b7280', lineHeight: 1.5 }}>{warrantyNotes}</Text>
+          <Text style={{ fontSize: 9, color: muted, lineHeight: 1.5 }}>{warrantyNotes}</Text>
         </View>
       )}
     </View>

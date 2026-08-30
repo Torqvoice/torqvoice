@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
 import { netLineTotal } from '@/lib/tax'
-import { gray, grayLight } from './styles'
+import { grayLight, inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 
 /**
@@ -58,6 +58,8 @@ export function ItemsTable({
 }) {
   if (items.length === 0) return null
 
+  const { muted } = inkColors(styles)
+
   return (
     <View>
       {showTitle ? <Text style={styles.sectionTitle}>{labels.items || 'Items'}</Text> : null}
@@ -98,21 +100,21 @@ export function ItemsTable({
                 ...(item.excluded ? { opacity: 0.5 } : {}),
               }}
             >
-              <Text style={{ ...styles.tableCell, width: COLUMNS.pos, color: gray }}>{i + 1}</Text>
+              <Text style={{ ...styles.tableCell, width: COLUMNS.pos, color: muted }}>{i + 1}</Text>
               <Text
                 style={{ ...styles.tableCell, width: COLUMNS.qty, textAlign: 'right', ...struck }}
               >
                 {item.quantity}
               </Text>
               <Text
-                style={{ ...styles.tableCell, width: COLUMNS.unit, paddingLeft: 6, color: gray }}
+                style={{ ...styles.tableCell, width: COLUMNS.unit, paddingLeft: 6, color: muted }}
               >
                 {item.unit || ''}
               </Text>
               <View style={{ width: COLUMNS.description }}>
                 <Text style={{ ...styles.tableCell, ...struck }}>{item.description}</Text>
                 {item.reference ? (
-                  <Text style={{ ...styles.tableCell, fontSize: 7.5, color: gray }}>
+                  <Text style={{ ...styles.tableCell, fontSize: 7.5, color: muted }}>
                     {item.reference}
                   </Text>
                 ) : null}

@@ -1,5 +1,5 @@
 import { Text, View } from '@react-pdf/renderer'
-import { dark, gray, getFontBold } from './styles'
+import { dark, getFontBold, inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 
 /**
@@ -17,6 +17,7 @@ export function DocumentTitle({
   invoiceDate,
   dueDate,
   fontFamily,
+  styles,
   labels,
 }: {
   title: string
@@ -29,6 +30,7 @@ export function DocumentTitle({
   labels: Record<string, string>
 }) {
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles ?? {})
 
   const cells = [
     { label: labels.invoiceNumberLabel || 'Invoice No.', value: invoiceNum },
@@ -61,7 +63,7 @@ export function DocumentTitle({
               ...(i < cells.length - 1 ? { borderRightWidth: 1, borderRightColor: dark } : {}),
             }}
           >
-            <Text style={{ fontSize: 6.5, color: gray }}>{cell.label}</Text>
+            <Text style={{ fontSize: 6.5, color: muted }}>{cell.label}</Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>{cell.value}</Text>
           </View>
         ))}

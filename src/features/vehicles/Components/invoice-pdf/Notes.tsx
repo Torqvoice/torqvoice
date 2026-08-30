@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, View } from '@react-pdf/renderer'
 import type { InvoiceSettingsProps, OtherAttachment } from './types'
-import { getFontBold } from './styles'
+import { getFontBold, inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 
@@ -298,6 +298,7 @@ export function BankAccountSection({
   framed?: boolean
 }) {
   const fontBold = getFontBold(fontFamily)
+  const { muted } = inkColors(styles)
 
   // layoutConfig fields take priority over individual toggle props
   const showBankAccount = visibleFields
@@ -359,7 +360,7 @@ export function BankAccountSection({
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
         {hasBankAccount && (
           <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+            <Text style={{ fontSize: 8, color: muted, marginBottom: 2 }}>
               {labels.bankAccount || 'Bank Account'}
             </Text>
             {invoiceSettings!
@@ -374,7 +375,7 @@ export function BankAccountSection({
         )}
         {hasOrgNumber && (
           <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+            <Text style={{ fontSize: 8, color: muted, marginBottom: 2 }}>
               {labels.orgNumberLabel || 'Org. Number'}
             </Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>{invoiceSettings!.orgNumber}</Text>
@@ -382,7 +383,7 @@ export function BankAccountSection({
         )}
         {hasPaymentTerms && (
           <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+            <Text style={{ fontSize: 8, color: muted, marginBottom: 2 }}>
               {labels.paymentTermsLabel || 'Payment Terms'}
             </Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>{paymentTermsText}</Text>
@@ -390,7 +391,7 @@ export function BankAccountSection({
         )}
         {hasDueDate && (
           <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
+            <Text style={{ fontSize: 8, color: muted, marginBottom: 2 }}>
               {labels.dueDateLabel || 'Due Date'}
             </Text>
             <Text style={{ fontSize: 10, fontFamily: fontBold }}>{dueDate}</Text>

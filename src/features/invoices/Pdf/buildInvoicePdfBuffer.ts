@@ -239,6 +239,8 @@ export async function buildInvoicePdfBuffer(
     primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
     backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
     textColor: settingsMap['invoice.textColor'] || undefined,
+    frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
+    frameShadow: settingsMap['invoice.frameShadow'] !== 'false',
     fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
     showLogo: settingsMap['invoice.showLogo'] !== 'false',
     showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
