@@ -565,6 +565,10 @@ export function DesignerCanvas({
     if (!section) return null
     const look = lookOf(section, theme)
     const isSelected = !measuring && selected === id
+    // The framed letterhead bleeds to the sheet edge, and the sheet clips to
+    // A4. An outline drawn outside its box lands on that boundary and is cut
+    // away, so this one is drawn inside.
+    const bleeds = framed && id === 'header'
 
     return (
       <div
@@ -585,7 +589,7 @@ export function DesignerCanvas({
           position: 'relative',
           cursor: 'pointer',
           outline: isSelected ? '2px solid #2563eb' : undefined,
-          outlineOffset: 3,
+          outlineOffset: bleeds ? -2 : 3,
           // Set once here so every line inside the section inherits it.
           color: look.text,
           fontFamily: look.font ? fontStack(look.font) : undefined,
@@ -596,16 +600,16 @@ export function DesignerCanvas({
           <div
             style={{
               position: 'absolute',
-              top: -20,
-              left: -3,
+              top: bleeds ? 4 : -20,
+              left: bleeds ? FRAMED.railWidth + 4 : -3,
               background: '#2563eb',
               color: '#fff',
               fontFamily: "'IBM Plex Sans', sans-serif",
               fontSize: 10,
               fontWeight: 600,
               padding: '2px 7px',
-              borderRadius: '4px 4px 0 0',
-              zIndex: 2,
+              borderRadius: bleeds ? 4 : '4px 4px 0 0',
+              zIndex: 5,
             }}
           >
             {section.id.replace(/_/g, ' ')}
@@ -674,16 +678,18 @@ export function DesignerCanvas({
         <>
           {/* The band and the rail are one shape the header owns, so selecting
               the header outlines both rather than the band alone. */}
-          {selected === 'header' && (
+          {selected === 'header' && pageNumber === 1 && (
             <div
               style={{
                 position: 'absolute',
                 left: 0,
-                top: 0,
+                // Below the band, which carries its own outline: together they
+                // read as one selection around the shape the header owns.
+                top: FRAMED.bandHeight,
                 bottom: 0,
                 width: FRAMED.railWidth,
                 outline: '2px solid #2563eb',
-                outlineOffset: -1,
+                outlineOffset: -2,
                 pointerEvents: 'none',
                 zIndex: 4,
               }}
