@@ -1,5 +1,8 @@
 import { StyleSheet } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
+import { FRAMED, framedPageInset } from './frame'
+
+export { FRAMED, framedPageInset }
 
 export const gray = '#6b7280'
 export const grayLight = '#f3f4f6'
@@ -82,16 +85,6 @@ export function getFontRegular(font: string) {
  * itself back out to the sheet edge with negative margins, so these numbers and
  * that block have to move together.
  */
-export const FRAMED = {
-  bandHeight: 74,
-  /** Drawn as the page's own left border, so it repeats on every page for free. */
-  railWidth: 26,
-  padTop: 92,
-  /** Padding inside the rail. The sheet's left inset is this plus railWidth. */
-  padLeft: 26,
-  padRight: 34,
-  padBottom: 54,
-} as const
 
 /**
  * Stacked hairlines standing in for a drop shadow, darkest first. react-pdf has
@@ -163,13 +156,18 @@ export function withSectionStyle(
       'notesText',
       'totalLabel',
       'totalValue',
+      // The letterhead's own body lines, so styling the header section is not
+      // the one selection in the designer that does nothing.
+      'brandSub',
+      'brandContact',
     ]) {
       set(key, { color: style.textColor })
     }
   }
 
   if (style.labelColor) {
-    for (const key of ['infoLabel', 'sectionTitle', 'tableHeaderCell', 'notesLabel']) {
+    // A section's heading: the company name is the letterhead's.
+    for (const key of ['infoLabel', 'sectionTitle', 'tableHeaderCell', 'notesLabel', 'brandName']) {
       set(key, { color: style.labelColor })
     }
   }

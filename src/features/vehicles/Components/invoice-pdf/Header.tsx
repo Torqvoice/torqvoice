@@ -38,6 +38,8 @@ interface HeaderProps {
   logoSize?: number
   /** The company name's own color, overriding each style's default. */
   companyTextColor?: string
+  /** Secondary text color, when the header section overrides its own. */
+  mutedColor?: string
   /** The line and shadow where the sheet meets a framed letterhead. */
   frameBorderColor?: string
   frameShadow?: boolean
@@ -68,6 +70,7 @@ export function Header({
   dueDate,
   logoSize,
   companyTextColor,
+  mutedColor,
   frameBorderColor,
   frameShadow,
   showTitle = true,
@@ -75,7 +78,8 @@ export function Header({
   labels,
 }: HeaderProps) {
   const fontBold = getFontBold(fontFamily)
-  const { muted } = inkColors(styles)
+  const { muted: documentMuted } = inkColors(styles)
+  const muted = mutedColor || documentMuted
 
   // Logo size scale factor (default 100 = 1x)
   const scale = (logoSize || 100) / 100

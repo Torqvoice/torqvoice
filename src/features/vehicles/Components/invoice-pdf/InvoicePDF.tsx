@@ -198,6 +198,14 @@ export function InvoicePDF({
   const isBoxed = (id: string) => effectiveSections.find((s) => s.id === id)?.boxed !== false
   const documentTitleVisible = isVisible('document_title')
 
+  // Each section is drawn with the document's stylesheet plus whatever the
+  // layout overrides for that section. Sections already take their stylesheet
+  // as a prop, so this styles them without any of them knowing.
+  const stylesFor = (sectionId: string) =>
+    withSectionStyle(styles, getSectionStyle(layoutConfig, sectionId))
+
+  const headerSectionStyle = getSectionStyle(layoutConfig, 'header')
+
   const documentTitle = (
     <DocumentTitle
       title={labels.title || 'INVOICE'}
@@ -205,7 +213,8 @@ export function InvoicePDF({
       customerNumber={customerNumber}
       invoiceDate={serviceDate}
       dueDate={dueDate}
-      fontFamily={fontFamily}
+      fontFamily={getSectionStyle(layoutConfig, 'document_title')?.fontFamily || fontFamily}
+      styles={stylesFor('document_title')}
       labels={labels}
     />
   )
@@ -220,11 +229,6 @@ export function InvoicePDF({
 
   // Map each section ID to its JSX. Sections that have no data naturally
   // return null and will be skipped by React.
-  // Each section is drawn with the document's stylesheet plus whatever the
-  // layout overrides for that section. Sections already take their stylesheet
-  // as a prop, so this styles them without any of them knowing.
-  const stylesFor = (sectionId: string) =>
-    withSectionStyle(styles, getSectionStyle(layoutConfig, sectionId))
 
   const sectionMap: Record<string, React.ReactNode> = {
     header: (
@@ -232,7 +236,7 @@ export function InvoicePDF({
         <Header
           headerStyle={headerStyle}
           primaryColor={primaryColor}
-          fontFamily={getSectionStyle(layoutConfig, 'header')?.fontFamily || fontFamily}
+          fontFamily={headerSectionStyle?.fontFamily || fontFamily}
           showLogo={showLogo}
           showCompanyName={showCompanyName}
           visibleFields={visibleHeaderFields}
@@ -245,11 +249,12 @@ export function InvoicePDF({
           serviceDate={serviceDate}
           dueDate={dueDate}
           logoSize={template?.logoSize}
-          companyTextColor={companyTextColor}
+          styles={stylesFor('header')}
+          companyTextColor={headerSectionStyle?.labelColor || companyTextColor}
+          mutedColor={headerSectionStyle?.textColor}
           frameBorderColor={frameBorderColor}
           frameShadow={frameShadow}
           showTitle={!documentTitleVisible}
-          styles={styles}
           labels={labels}
         />
         {/* The framed letterhead prints no title of its own, so it borrows the

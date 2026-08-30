@@ -6,15 +6,16 @@ import {
   type InvoiceLayoutConfig,
   type InvoiceSection,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import { fontStack, type DesignerWorkshop, type ResolvedTheme } from './types'
 
 /**
  * The sheet, drawn in HTML.
  *
- * Deliberately not the PDF renderer: the point here is a page you can click and
- * drag, which react-pdf renders into an iframe and cannot offer. It is a
- * schematic of the same layout config the PDF reads, so what moves here moves
- * there; it is not a pixel-exact proof, and the PDF stays the last word.
+ * Deliberately not the PDF renderer: the point of this page is a sheet you can
+ * click and drag, which react-pdf draws into an iframe and cannot offer. It
+ * reads the same layout config the PDF reads, so what moves here moves there;
+ * it is a schematic rather than a pixel proof, and the PDF stays the last word.
  */
 export interface SampleData {
   customer: { name: string; lines: string[] }
@@ -40,10 +41,40 @@ export interface SampleData {
   notes: string
 }
 
-function sectionStyleOf(section: InvoiceSection | undefined, theme: ResolvedTheme) {
-  const s = section?.style
+/** Blend two colors, for deriving a section's secondary tone from its own ink. */
+function mix(from: string, to: string, amount: number) {
+  const parse = (hex: string) => {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [17, 24, 39]
+  }
+  const a = parse(from)
+  const b = parse(to)
+  const at = (i: number) => Math.round(a[i] + (b[i] - a[i]) * amount)
+  return `rgb(${at(0)}, ${at(1)}, ${at(2)})`
+}
+
+/**
+ * One section's resolved appearance. Every body reads from this rather than
+ * from the theme directly, so a key set on a section reaches all of it: text
+ * colour used to stop at the first line of a panel, which read as the control
+ * doing nothing.
+ */
+interface SectionLook {
+  text: string
+  muted: string
+  label: string
+  fill?: string
+  border?: string
+  size?: number
+  font?: string
+}
+
+function lookOf(section: InvoiceSection, theme: ResolvedTheme): SectionLook {
+  const s = section.style
+  const text = s?.textColor || theme.text
   return {
-    text: s?.textColor || theme.text,
+    text,
+    muted: s?.textColor ? mix(text, theme.background, 0.42) : theme.muted,
     label: s?.labelColor || theme.accent,
     fill: s?.backgroundColor,
     border: s?.borderColor,
@@ -54,30 +85,26 @@ function sectionStyleOf(section: InvoiceSection | undefined, theme: ResolvedThem
 
 function Panel({
   section,
-  theme,
+  look,
   tag,
   title,
   lines,
 }: {
   section: InvoiceSection
-  theme: ResolvedTheme
+  look: SectionLook
   tag: string
   title: string
   lines: string[]
 }) {
-  const st = sectionStyleOf(section, theme)
   const boxed = section.boxed !== false
   const style: CSSProperties = {
-    color: st.text,
-    fontFamily: st.font ? fontStack(st.font) : undefined,
-    fontSize: st.size ? `${st.size}px` : undefined,
-    background: st.fill || (boxed ? '#f3f4f6' : undefined),
+    background: look.fill || (boxed ? '#f3f4f6' : undefined),
     border: boxed
-      ? `1px solid ${st.border || '#e3e5e9'}`
-      : st.border
-        ? `1px solid ${st.border}`
+      ? `1px solid ${look.border || '#e3e5e9'}`
+      : look.border
+        ? `1px solid ${look.border}`
         : undefined,
-    padding: boxed || st.fill ? '10px 12px' : undefined,
+    padding: boxed || look.fill ? '10px 12px' : undefined,
     borderRadius: boxed ? 4 : undefined,
   }
   return (
@@ -88,7 +115,7 @@ function Panel({
           fontWeight: 700,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: st.label,
+          color: look.label,
           marginBottom: 5,
         }}
       >
@@ -96,7 +123,7 @@ function Panel({
       </div>
       <div style={{ fontWeight: 700, marginBottom: 2 }}>{title}</div>
       {lines.map((line) => (
-        <div key={line} style={{ color: theme.muted, lineHeight: 1.55 }}>
+        <div key={line} style={{ color: look.muted, lineHeight: 1.55 }}>
           {line}
         </div>
       ))}
@@ -106,44 +133,103 @@ function Panel({
 
 function SectionBody({
   section,
+  look,
   theme,
   sample,
   workshop,
   headerStyle,
   companyText,
+  logoSize,
+  frameBorderColor,
+  frameShadow,
 }: {
   section: InvoiceSection
+  look: SectionLook
   theme: ResolvedTheme
   sample: SampleData
   workshop: DesignerWorkshop
   headerStyle: string
   companyText: string
+  logoSize: number
+  frameBorderColor?: string
+  frameShadow: boolean
 }) {
-  const st = sectionStyleOf(section, theme)
-
   switch (section.id) {
     case 'header': {
       const framed = headerStyle === 'framed'
       const banded = framed || headerStyle === 'modern'
+      const showLogo =
+        !!workshop.logoUrl && section.fields?.find((f) => f.id === 'logo')?.visible !== false
+      const mark = showLogo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={workshop.logoUrl}
+          alt=""
+          style={{
+            maxHeight: (banded ? 46 : 40) * (logoSize / 100),
+            maxWidth: 220,
+            objectFit: 'contain',
+          }}
+        />
+      ) : (
+        <div style={{ fontSize: '1.8em', fontWeight: 800 }}>{workshop.name || 'Your Workshop'}</div>
+      )
+
       return (
-        <div style={{ fontFamily: st.font ? fontStack(st.font) : undefined }}>
+        <div
+          style={
+            // On a framed sheet the band spans the whole paper, rail included,
+            // so it climbs back out of the page inset the way the PDF's does.
+            framed
+              ? {
+                  marginTop: -FRAMED.padTop,
+                  marginLeft: -(FRAMED.padLeft + FRAMED.railWidth),
+                  marginRight: -theme.margin,
+                }
+              : undefined
+          }
+        >
           <div
             style={{
               background: banded ? theme.primary : undefined,
-              color: banded ? companyText : theme.primary,
-              padding: banded ? '18px 16px' : '0 0 10px',
+              color: banded ? companyText : look.label,
+              height: framed ? FRAMED.bandHeight : undefined,
+              padding: framed
+                ? `0 26px 0 ${FRAMED.railWidth + 26}px`
+                : banded
+                  ? '18px 16px'
+                  : '0 0 10px',
               borderBottom: banded ? undefined : `2px solid ${theme.primary}`,
               display: 'flex',
               justifyContent: headerStyle === 'modern' ? 'center' : 'flex-end',
               alignItems: 'center',
             }}
           >
-            <div style={{ fontSize: '1.8em', fontWeight: 800 }}>
-              {workshop.name || 'Your Workshop'}
-            </div>
+            {mark}
           </div>
+
+          {framed && (
+            <div style={{ marginLeft: FRAMED.railWidth }}>
+              {frameBorderColor && <div style={{ height: 1, background: frameBorderColor }} />}
+              {frameShadow &&
+                ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)'].map((shade) => (
+                  <div key={shade} style={{ height: 1.5, background: shade }} />
+                ))}
+            </div>
+          )}
+
           {workshop.slogan && (
-            <div style={{ textAlign: 'right', color: theme.muted, paddingTop: 6 }}>
+            <div
+              style={{
+                textAlign: 'right',
+                color: look.muted,
+                paddingTop: 8,
+                paddingBottom: 8,
+                paddingRight: framed ? 26 : 0,
+                paddingLeft: framed ? FRAMED.railWidth + 26 : 0,
+                borderBottom: framed ? '1px solid #e5e7eb' : undefined,
+              }}
+            >
               {workshop.slogan}
             </div>
           )}
@@ -155,7 +241,7 @@ function SectionBody({
       return (
         <Panel
           section={section}
-          theme={theme}
+          look={look}
           tag="Bill to"
           title={sample.customer.name}
           lines={sample.customer.lines}
@@ -165,7 +251,7 @@ function SectionBody({
       return (
         <Panel
           section={section}
-          theme={theme}
+          look={look}
           tag="Vehicle"
           title={sample.vehicle.name}
           lines={sample.vehicle.lines}
@@ -175,7 +261,7 @@ function SectionBody({
       return (
         <Panel
           section={section}
-          theme={theme}
+          look={look}
           tag="Service"
           title={sample.service.name}
           lines={sample.service.lines}
@@ -185,8 +271,8 @@ function SectionBody({
     case 'document_title':
       return (
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <div style={{ fontSize: '2em', fontWeight: 800, color: st.text }}>INVOICE</div>
-          <div style={{ display: 'flex', border: `1px solid ${st.border || theme.text}` }}>
+          <div style={{ fontSize: '2em', fontWeight: 800 }}>INVOICE</div>
+          <div style={{ display: 'flex', border: `1px solid ${look.border || look.text}` }}>
             {[
               ['Invoice No.', sample.number],
               ['Customer No.', sample.customerNumber],
@@ -198,10 +284,10 @@ function SectionBody({
                 style={{
                   padding: '4px 10px',
                   textAlign: 'center',
-                  borderRight: `1px solid ${st.border || '#c9ccd1'}`,
+                  borderRight: `1px solid ${look.border || '#c9ccd1'}`,
                 }}
               >
-                <div style={{ fontSize: '0.62em', color: theme.muted }}>{label}</div>
+                <div style={{ fontSize: '0.62em', color: look.muted }}>{label}</div>
                 <div style={{ fontWeight: 700, fontSize: '0.85em' }}>{value}</div>
               </div>
             ))}
@@ -213,12 +299,12 @@ function SectionBody({
     case 'parts_table':
     case 'labor_table':
       return (
-        <div style={{ fontFamily: st.font ? fontStack(st.font) : undefined }}>
+        <div>
           <div
             style={{
               display: 'flex',
-              background: st.fill || theme.text,
-              color: st.label || theme.background || '#fff',
+              background: look.fill || look.text,
+              color: look.label && look.fill ? look.label : theme.background,
               fontSize: '0.78em',
               fontWeight: 600,
               padding: '7px 10px',
@@ -240,16 +326,16 @@ function SectionBody({
                 padding: `${theme.rowPadding}px 10px`,
                 background: theme.stripes && i % 2 === 1 ? theme.stripeColor : undefined,
                 fontSize: '0.85em',
-                borderBottom: `1px solid ${st.border || '#eceef1'}`,
+                borderBottom: `1px solid ${look.border || '#eceef1'}`,
               }}
             >
-              <span style={{ width: 22, color: theme.muted }}>{item.n}</span>
+              <span style={{ width: 22, color: look.muted }}>{item.n}</span>
               <span style={{ width: 48, textAlign: 'right', fontWeight: 600 }}>{item.qty}</span>
-              <span style={{ width: 40, paddingLeft: 8, color: theme.muted }}>{item.unit}</span>
+              <span style={{ width: 40, paddingLeft: 8, color: look.muted }}>{item.unit}</span>
               <span style={{ flex: 1, paddingLeft: 10 }}>
                 <span style={{ fontWeight: 600 }}>{item.desc}</span>
                 {item.sku && (
-                  <span style={{ display: 'block', color: theme.muted, fontSize: '0.85em' }}>
+                  <span style={{ display: 'block', color: look.muted, fontSize: '0.85em' }}>
                     {item.sku}
                   </span>
                 )}
@@ -264,7 +350,7 @@ function SectionBody({
     case 'findings':
       return (
         <div>
-          <div style={{ fontWeight: 700, fontSize: '1.05em', color: st.text }}>Observations</div>
+          <div style={{ fontWeight: 700, fontSize: '1.05em', color: look.label }}>Observations</div>
           {sample.findings.map((f) => (
             <div
               key={f.description}
@@ -273,12 +359,12 @@ function SectionBody({
                 gap: 10,
                 fontSize: '0.85em',
                 padding: '6px 0',
-                borderBottom: '1px solid #eceef1',
+                borderBottom: `1px solid ${look.border || '#eceef1'}`,
               }}
             >
               <span style={{ width: 80, fontWeight: 700, color: f.color }}>{f.severity}</span>
               <span style={{ flex: 1, fontWeight: 600 }}>{f.description}</span>
-              <span style={{ flex: 1, color: theme.muted }}>{f.notes}</span>
+              <span style={{ flex: 1, color: look.muted }}>{f.notes}</span>
             </div>
           ))}
         </div>
@@ -290,8 +376,8 @@ function SectionBody({
           <div
             style={{
               width: '46%',
-              border: `1px solid ${st.border || theme.text}`,
-              background: st.fill,
+              border: `1px solid ${look.border || look.text}`,
+              background: look.fill,
             }}
           >
             <div
@@ -302,7 +388,7 @@ function SectionBody({
                 fontSize: '0.9em',
               }}
             >
-              <span style={{ color: theme.muted }}>Subtotal</span>
+              <span style={{ color: look.muted }}>Subtotal</span>
               <span style={{ fontWeight: 600 }}>{sample.subtotal}</span>
             </div>
             <div
@@ -313,7 +399,7 @@ function SectionBody({
                 fontSize: '0.9em',
               }}
             >
-              <span style={{ color: theme.muted }}>Tax</span>
+              <span style={{ color: look.muted }}>Tax</span>
               <span style={{ fontWeight: 600 }}>{sample.tax}</span>
             </div>
             <div
@@ -338,8 +424,8 @@ function SectionBody({
       return (
         <div
           style={{
-            background: st.fill || '#f3f4f6',
-            border: st.border ? `1px solid ${st.border}` : undefined,
+            background: look.fill || '#f3f4f6',
+            border: look.border ? `1px solid ${look.border}` : undefined,
             padding: '10px 12px',
             borderRadius: 4,
           }}
@@ -350,7 +436,7 @@ function SectionBody({
               fontWeight: 700,
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
-              color: st.label,
+              color: look.label,
             }}
           >
             {section.id === 'notes'
@@ -361,7 +447,7 @@ function SectionBody({
                   ? 'Payment information'
                   : 'Additional information'}
           </div>
-          <div style={{ color: theme.muted, fontSize: '0.9em', lineHeight: 1.6 }}>
+          <div style={{ color: look.muted, fontSize: '0.9em', lineHeight: 1.6 }}>
             {sample.notes}
           </div>
         </div>
@@ -371,10 +457,10 @@ function SectionBody({
       return (
         <div
           style={{
-            borderTop: `2px solid ${theme.accent}`,
+            borderTop: `2px solid ${look.border || theme.accent}`,
             paddingTop: 8,
             textAlign: 'center',
-            color: theme.muted,
+            color: look.muted,
             fontSize: '0.78em',
             lineHeight: 1.6,
           }}
@@ -384,7 +470,7 @@ function SectionBody({
       )
 
     default:
-      return <div style={{ color: theme.muted, fontSize: '0.85em' }}>{section.id}</div>
+      return <div style={{ color: look.muted, fontSize: '0.85em' }}>{section.id}</div>
   }
 }
 
@@ -395,6 +481,9 @@ export function DesignerCanvas({
   workshop,
   headerStyle,
   companyText,
+  logoSize,
+  frameBorderColor,
+  frameShadow,
   selected,
   onSelect,
   onMove,
@@ -407,6 +496,9 @@ export function DesignerCanvas({
   workshop: DesignerWorkshop
   headerStyle: string
   companyText: string
+  logoSize: number
+  frameBorderColor?: string
+  frameShadow: boolean
   selected: string | null
   onSelect: (id: string | null) => void
   onMove: (draggedId: string, overId: string) => void
@@ -415,11 +507,16 @@ export function DesignerCanvas({
 }) {
   const byId = new Map(layout.sections.map((s) => [s.id, s]))
   const groups = groupSectionsForRendering(layout.sections)
+  const paperWidth = 595
+  const framed = headerStyle === 'framed'
+  const visible = layout.sections.filter((s) => s.visible)
 
   const block = (id: string) => {
     const section = byId.get(id)
     if (!section) return null
+    const look = lookOf(section, theme)
     const isSelected = selected === id
+
     return (
       <div
         key={id}
@@ -440,6 +537,10 @@ export function DesignerCanvas({
           cursor: 'pointer',
           outline: isSelected ? '2px solid #2563eb' : undefined,
           outlineOffset: 3,
+          // Set once here so every line inside the section inherits it.
+          color: look.text,
+          fontFamily: look.font ? fontStack(look.font) : undefined,
+          fontSize: look.size ? `${look.size}px` : undefined,
         }}
       >
         {isSelected && (
@@ -455,6 +556,7 @@ export function DesignerCanvas({
               fontWeight: 600,
               padding: '2px 7px',
               borderRadius: '4px 4px 0 0',
+              zIndex: 2,
             }}
           >
             {section.id.replace(/_/g, ' ')}
@@ -462,18 +564,19 @@ export function DesignerCanvas({
         )}
         <SectionBody
           section={section}
+          look={look}
           theme={theme}
           sample={sample}
           workshop={workshop}
           headerStyle={headerStyle}
           companyText={companyText}
+          logoSize={logoSize}
+          frameBorderColor={frameBorderColor}
+          frameShadow={frameShadow}
         />
       </div>
     )
   }
-
-  const paperWidth = 595
-  const visible = layout.sections.filter((s) => s.visible)
 
   return (
     <div
@@ -506,18 +609,62 @@ export function DesignerCanvas({
             fontFamily: fontStack(theme.fontFamily),
             color: theme.text,
             fontSize: theme.baseSize,
-            padding: theme.margin,
+            // The rail occupies its edge. A margin on top of it would compound
+            // and push the content into the middle of the page.
+            ...(framed
+              ? {
+                  paddingTop: FRAMED.padTop,
+                  paddingLeft: FRAMED.padLeft + FRAMED.railWidth,
+                  paddingRight: theme.margin,
+                  paddingBottom: theme.margin,
+                }
+              : { padding: theme.margin }),
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
             gap: 14,
           }}
         >
+          {framed && (
+            <>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: FRAMED.railWidth,
+                  background: theme.primary,
+                  pointerEvents: 'none',
+                }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  left: FRAMED.railWidth,
+                  top: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  pointerEvents: 'none',
+                }}
+              >
+                {frameBorderColor && <div style={{ width: 1, background: frameBorderColor }} />}
+                {frameShadow &&
+                  ['rgba(0,0,0,0.13)', 'rgba(0,0,0,0.07)', 'rgba(0,0,0,0.03)'].map((shade) => (
+                    <div key={shade} style={{ width: 1.5, background: shade }} />
+                  ))}
+              </div>
+            </>
+          )}
+
           {rulers && (
             <div
               style={{
                 position: 'absolute',
-                inset: theme.margin,
+                top: framed ? FRAMED.padTop : theme.margin,
+                left: framed ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
+                right: theme.margin,
+                bottom: theme.margin,
                 border: '1px dashed rgba(37,99,235,0.35)',
                 pointerEvents: 'none',
               }}

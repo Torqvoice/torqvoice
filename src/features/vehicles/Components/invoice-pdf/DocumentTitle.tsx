@@ -30,7 +30,11 @@ export function DocumentTitle({
   labels: Record<string, string>
 }) {
   const fontBold = getFontBold(fontFamily)
-  const { muted } = inkColors(styles ?? {})
+  // The section's own colors when the layout sets them, the document's when it
+  // does not: this block used to be the one that ignored its section entirely.
+  const { ink, muted } = inkColors(styles ?? {})
+  const rule = (styles?.infoBox as { borderColor?: string } | undefined)?.borderColor || dark
+  const fill = (styles?.infoBox as { backgroundColor?: string } | undefined)?.backgroundColor
 
   const cells = [
     { label: labels.invoiceNumberLabel || 'Invoice No.', value: invoiceNum },
@@ -50,8 +54,15 @@ export function DocumentTitle({
         marginBottom: 16,
       }}
     >
-      <Text style={{ fontSize: 24, fontFamily: fontBold }}>{title}</Text>
-      <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: dark }}>
+      <Text style={{ fontSize: 24, fontFamily: fontBold, color: ink }}>{title}</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          borderWidth: 1,
+          borderColor: rule,
+          ...(fill ? { backgroundColor: fill } : {}),
+        }}
+      >
         {cells.map((cell, i) => (
           <View
             key={cell.label}
@@ -60,11 +71,11 @@ export function DocumentTitle({
               paddingTop: 2,
               paddingBottom: 3,
               alignItems: 'center',
-              ...(i < cells.length - 1 ? { borderRightWidth: 1, borderRightColor: dark } : {}),
+              ...(i < cells.length - 1 ? { borderRightWidth: 1, borderRightColor: rule } : {}),
             }}
           >
             <Text style={{ fontSize: 6.5, color: muted }}>{cell.label}</Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{cell.value}</Text>
+            <Text style={{ fontSize: 10, fontFamily: fontBold, color: ink }}>{cell.value}</Text>
           </View>
         ))}
       </View>

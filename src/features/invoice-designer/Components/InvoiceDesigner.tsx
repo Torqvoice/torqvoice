@@ -446,6 +446,9 @@ export function InvoiceDesigner({
           workshop={workshop}
           headerStyle={template.headerStyle}
           companyText={theme.companyText}
+          logoSize={template.logoSize}
+          frameBorderColor={template.frameBorderColor || undefined}
+          frameShadow={template.frameShadow !== 'false'}
           selected={selected}
           onSelect={setSelected}
           onMove={moveSection}
