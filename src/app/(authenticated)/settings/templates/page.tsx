@@ -6,6 +6,7 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { FeatureLockedMessage } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
 import {
   getInvoiceLayoutConfig,
@@ -29,7 +30,7 @@ export default async function TemplatePage() {
     )
   }
 
-  const [result, inspectionTemplatesResult, invoiceLayoutResult, quoteLayoutResult] =
+  const [result, inspectionTemplatesResult, invoiceLayoutResult, quoteLayoutResult, organization] =
     await Promise.all([
       getSettings([
         SETTING_KEYS.INVOICE_PRIMARY_COLOR,
@@ -56,6 +57,13 @@ export default async function TemplatePage() {
       getTemplates(),
       getInvoiceLayoutConfig(),
       getQuoteLayoutConfig(),
+      // Read straight off the organization, the way the real PDF does. Going
+      // through the membership list would miss anyone viewing a workshop they
+      // are not a member of.
+      db.organization.findUnique({
+        where: { id: data.organizationId },
+        select: { name: true },
+      }),
     ])
 
   const settings = result.success && result.data ? result.data : {}
@@ -69,7 +77,7 @@ export default async function TemplatePage() {
   // The preview is meant to look like this workshop's own paper, so it gets the
   // real company details rather than the sample shop's.
   const workshop = {
-    name: data.organizations.find((o) => o.id === data.organizationId)?.name,
+    name: organization?.name,
     address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
     phone: settings[SETTING_KEYS.WORKSHOP_PHONE],
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],

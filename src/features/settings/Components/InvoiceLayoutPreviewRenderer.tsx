@@ -203,7 +203,7 @@ const DUMMY_INVOICE_SETTINGS = {
 // ---------------------------------------------------------------------------
 
 /** The workshop's own details where it has them, the sample's where it has not. */
-function resolveWorkshop(workshop: InvoiceLayoutPreviewProps['workshop']) {
+export function resolveWorkshop(workshop: InvoiceLayoutPreviewProps['workshop']) {
   return {
     name: workshop?.name?.trim() || SAMPLE_WORKSHOP.name,
     address: workshop?.address?.trim() || SAMPLE_WORKSHOP.address,

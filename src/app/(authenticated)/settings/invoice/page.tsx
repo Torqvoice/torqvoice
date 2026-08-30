@@ -46,8 +46,13 @@ export default async function InvoiceSettingsPage() {
 
   // The preview is meant to look like this workshop's own paper, so it gets the
   // real company details rather than the sample shop's.
+  const organization = await db.organization.findUnique({
+    where: { id: data.organizationId },
+    select: { name: true },
+  })
+
   const workshop = {
-    name: data.organizations.find((o) => o.id === data.organizationId)?.name,
+    name: organization?.name,
     address: settings['workshop.address'],
     phone: settings['workshop.phone'],
     email: settings['workshop.email'],
