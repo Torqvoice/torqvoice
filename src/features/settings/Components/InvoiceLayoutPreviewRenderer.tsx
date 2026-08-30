@@ -13,6 +13,16 @@ import { useServiceType } from '@/components/service-type-context'
 // Dummy data matching InvoiceData type exactly
 // ---------------------------------------------------------------------------
 
+/** The value once it has stopped changing for `delay` milliseconds. */
+function useSettled<T>(value: T, delay: number): T {
+  const [settled, setSettled] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return settled
+}
+
 function buildDummyCustomFields(customFields?: InvoiceLayoutPreviewProps['customFields']) {
   if (!customFields) return []
   return customFields
@@ -251,13 +261,6 @@ export function InvoiceLayoutPreviewRenderer({
 
   const dummyCf = useMemo(() => buildDummyCustomFields(customFields), [customFields])
 
-  // Stable key to force PDFViewer remount when layout changes
-  const configKey = useMemo(
-    () =>
-      config.sections.map((s) => `${s.id}:${s.order}:${s.visible}:${s.column ?? 'f'}`).join('|'),
-    [config]
-  )
-
   const templateConfig = useMemo(
     () => ({
       primaryColor: template.primaryColor,
@@ -275,6 +278,19 @@ export function InvoiceLayoutPreviewRenderer({
     }),
     [template, config]
   )
+
+  // Remount on anything the document is drawn from, not a hand-picked subset.
+  // The key used to list four properties of each section, so every option added
+  // since — the colors, the frame edge, whether a section is boxed, which
+  // header fields show — changed the document without changing the key, and
+  // looked from the outside like it did nothing.
+  const documentKey = useMemo(
+    () => JSON.stringify({ config, templateConfig, logoUrl, previewWorkshop }),
+    [config, templateConfig, logoUrl, previewWorkshop]
+  )
+  // Settled, because a color picker fires on every step of a drag and each
+  // distinct key is a full re-render of the document.
+  const configKey = useSettled(documentKey, 250)
 
   const invoiceData = useMemo(() => ({ ...DUMMY_INVOICE_DATA, customFields: dummyCf }), [dummyCf])
 
