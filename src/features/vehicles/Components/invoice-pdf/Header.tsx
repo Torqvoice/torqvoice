@@ -116,6 +116,11 @@ export function Header({
         muted={muted}
         nameColor={companyTextColor}
         side={frameSide}
+        inset={{
+          top: Number(styles.page?.paddingTop ?? 0),
+          left: Number(styles.page?.paddingLeft ?? 0),
+          right: Number(styles.page?.paddingRight ?? 0),
+        }}
         borderColor={frameBorderColor}
         shadow={frameShadow}
         labels={labels}

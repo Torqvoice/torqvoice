@@ -300,6 +300,18 @@ export function withDocumentStyle(
   return out
 }
 
+/**
+ * The size body text is set in, and the size every other size is measured from.
+ *
+ * A document that has not chosen a size uses this one, so moving it moves the
+ * whole sheet together rather than leaving a table at one scale and a heading
+ * at another.
+ */
+export const BASE_FONT_SIZE = 11
+
+/** A size relative to the body, so the relationships survive a change of base. */
+const step = (delta: number) => Math.max(5, BASE_FONT_SIZE + delta)
+
 export function createStyles(
   primary: string,
   font: string,
@@ -335,14 +347,14 @@ export function createStyles(
           ...(railOnRight
             ? { borderRightWidth: FRAMED.railWidth, borderRightColor: primary }
             : { borderLeftWidth: FRAMED.railWidth, borderLeftColor: primary }),
-          fontSize: 10,
+          fontSize: BASE_FONT_SIZE,
           fontFamily: resolved,
           color: ink,
           ...(background ? { backgroundColor: background } : {}),
         }
       : {
           padding: 40,
-          fontSize: 10,
+          fontSize: BASE_FONT_SIZE,
           fontFamily: resolved,
           color: ink,
           ...(background ? { backgroundColor: background } : {}),
@@ -355,27 +367,27 @@ export function createStyles(
       borderBottomWidth: 3,
       borderBottomColor: primary,
     },
-    brandName: { fontSize: 22, fontFamily: resolvedBold, color: primary },
-    brandSub: { fontSize: 9, color: muted, marginTop: 2 },
-    brandContact: { fontSize: 8, color: muted, marginTop: 1 },
-    invoiceTitle: { fontSize: 18, fontFamily: resolvedBold, textAlign: 'right' as const },
-    invoiceNumber: { fontSize: 9, color: muted, textAlign: 'right' as const, marginTop: 4 },
+    brandName: { fontSize: step(11), fontFamily: resolvedBold, color: primary },
+    brandSub: { fontSize: step(-1), color: muted, marginTop: 2 },
+    brandContact: { fontSize: step(-2), color: muted, marginTop: 1 },
+    invoiceTitle: { fontSize: step(7), fontFamily: resolvedBold, textAlign: 'right' as const },
+    invoiceNumber: { fontSize: step(-1), color: muted, textAlign: 'right' as const, marginTop: 4 },
     infoRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
     infoBox: framed
       ? { padding: 8, borderWidth: 0.5, borderColor: dark, marginBottom: 4 }
       : { padding: 12, backgroundColor: grayLight, borderRadius: 4, marginBottom: 4 },
     infoLabel: {
-      fontSize: 8,
+      fontSize: step(-2),
       fontFamily: resolvedBold,
       color: primary,
       textTransform: 'uppercase' as const,
       marginBottom: 6,
     },
-    infoText: { fontSize: 10, marginBottom: 2 },
-    infoTextBold: { fontSize: 10, fontFamily: resolvedBold, marginBottom: 2 },
-    infoTextSmall: { fontSize: 9, color: muted, marginBottom: 2 },
+    infoText: { fontSize: step(0), marginBottom: 2 },
+    infoTextBold: { fontSize: step(0), fontFamily: resolvedBold, marginBottom: 2 },
+    infoTextSmall: { fontSize: step(-1), color: muted, marginBottom: 2 },
     sectionTitle: {
-      fontSize: 12,
+      fontSize: step(2),
       fontFamily: resolvedBold,
       marginBottom: 8,
       marginTop: 16,
@@ -405,10 +417,10 @@ export function createStyles(
     },
     /** Banding behind alternate rows. An empty background turns it off. */
     tableRowAlt: { backgroundColor: grayLight },
-    tableCell: { fontSize: 9 },
-    tableCellBold: { fontSize: 9, fontFamily: resolvedBold },
+    tableCell: { fontSize: step(-1) },
+    tableCellBold: { fontSize: step(-1), fontFamily: resolvedBold },
     tableHeaderCell: {
-      fontSize: 8,
+      fontSize: step(-2),
       fontFamily: resolvedBold,
       color: framed ? '#ffffff' : primaryDark,
     },
@@ -424,31 +436,31 @@ export function createStyles(
         }
       : { marginTop: 16, marginLeft: 'auto', width: 250 },
     totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
-    totalLabel: { fontSize: 10, color: muted },
-    totalValue: { fontSize: 10 },
+    totalLabel: { fontSize: step(0), color: muted },
+    totalValue: { fontSize: step(0) },
     totalDivider: { borderTopWidth: 1, borderTopColor: primary, marginVertical: 4 },
     grandTotalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-    grandTotalLabel: { fontSize: 14, fontFamily: resolvedBold },
-    grandTotalValue: { fontSize: 14, fontFamily: resolvedBold, color: primary },
+    grandTotalLabel: { fontSize: step(4), fontFamily: resolvedBold },
+    grandTotalValue: { fontSize: step(4), fontFamily: resolvedBold, color: primary },
     notesSection: framed
       ? { marginTop: 20, padding: 10, borderWidth: 0.5, borderColor: dark }
       : { marginTop: 20, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
     notesLabel: {
-      fontSize: 8,
+      fontSize: step(-2),
       fontFamily: resolvedBold,
       color: primary,
       textTransform: 'uppercase' as const,
       marginBottom: 4,
     },
-    notesText: { fontSize: 9, color: muted, lineHeight: 1.5 },
-    attachmentFileName: { fontSize: 8, color: muted, marginTop: 4, marginBottom: 8 },
+    notesText: { fontSize: step(-1), color: muted, lineHeight: 1.5 },
+    attachmentFileName: { fontSize: step(-2), color: muted, marginTop: 4, marginBottom: 8 },
     footer: {
       position: 'absolute' as const,
       bottom: framed ? 22 : 30,
       left: framed ? (railOnRight ? FRAMED.padRight : FRAMED.padLeft) : 40,
       right: framed ? (railOnRight ? FRAMED.padLeft : FRAMED.padRight) : 40,
       textAlign: 'center' as const,
-      fontSize: 8,
+      fontSize: step(-2),
       color: muted,
       paddingTop: 8,
       borderTopWidth: 0.5,

@@ -21,6 +21,22 @@ describe('invoice appearance', () => {
     expect(read(styles, 'footer')).toBe('#6b7280')
   })
 
+  it('measures every size from the body size', async () => {
+    const { BASE_FONT_SIZE } = await import('@/features/vehicles/Components/invoice-pdf/styles')
+    const styles = createStyles('#d97706', 'Helvetica') as unknown as Record<
+      string,
+      { fontSize?: number }
+    >
+    // Sizes used to be written out one by one, so raising the body size left a
+    // table at one scale and a heading at another.
+    expect(styles.page.fontSize).toBe(BASE_FONT_SIZE)
+    expect(styles.infoText.fontSize).toBe(BASE_FONT_SIZE)
+    expect(styles.infoTextSmall.fontSize).toBe(BASE_FONT_SIZE - 1)
+    expect(styles.tableHeaderCell.fontSize).toBe(BASE_FONT_SIZE - 2)
+    expect(styles.sectionTitle.fontSize).toBe(BASE_FONT_SIZE + 2)
+    expect(styles.grandTotalValue.fontSize).toBe(BASE_FONT_SIZE + 4)
+  })
+
   it('carries a chosen ink into every text style, primary and secondary', () => {
     const styles = createStyles('#d97706', 'Helvetica', 'standard', undefined, '#1e3a5f')
     const { ink, muted } = inkColors(styles)

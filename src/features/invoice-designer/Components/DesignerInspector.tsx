@@ -17,6 +17,7 @@ import {
   isCustomFieldId,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import type { DesignerTemplate } from './types'
 
 const SWATCHES = [
@@ -538,7 +539,7 @@ export function DesignerInspector({
           </select>
           <Slider
             label="Base size"
-            value={doc.fontSize ?? 10}
+            value={doc.fontSize ?? BASE_FONT_SIZE}
             min={6}
             max={14}
             suffix="pt"

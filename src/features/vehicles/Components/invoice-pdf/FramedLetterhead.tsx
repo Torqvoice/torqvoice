@@ -41,6 +41,7 @@ export function FramedLetterhead({
   orgNumber,
   shopDisplayName,
   side = 'left',
+  inset,
   muted = gray,
   nameColor,
   borderColor,
@@ -59,6 +60,12 @@ export function FramedLetterhead({
   shopDisplayName: string
   /** Which edge the rail runs down, so the band clears it on that side. */
   side?: FrameSide
+  /**
+   * The page's actual insets. The band reaches back out over them, and they
+   * move with the margin setting, so assuming the defaults left the band short
+   * of the right edge on any sheet whose margin had been changed.
+   */
+  inset?: { top: number; left: number; right: number }
   /** Secondary text color, so the strapline follows the chosen ink. */
   muted?: string
   /** The company name's color on the band. Unset is white. */
@@ -70,6 +77,14 @@ export function FramedLetterhead({
   labels: Record<string, string>
 }) {
   const fontBold = getFontBold(fontFamily)
+  const padding = inset ?? { top: FRAMED.padTop, left: FRAMED.padLeft, right: FRAMED.padRight }
+  // The rail is a border rather than padding, so the bleed on its side clears
+  // both.
+  const bleed = {
+    top: padding.top,
+    left: padding.left + (side === 'left' ? FRAMED.railWidth : 0),
+    right: padding.right + (side === 'right' ? FRAMED.railWidth : 0),
+  }
   const mark = letterheadMark({ showLogo, logoDataUri, showCompanyName })
 
   const slogan = fieldOrder.includes('company_slogan') ? workshop?.slogan?.trim() : null
@@ -104,15 +119,12 @@ export function FramedLetterhead({
   return (
     <View
       style={{
-        marginTop: -FRAMED.padTop,
-        // Out past the rail, not just past the padding: the band has to paint
-        // over the page's left border or a hairline of white shows through
-        // where the two rectangles meet.
         // Out past the rail on whichever edge it runs down: the band has to
-        // paint over the page's border or a hairline of white shows through
+        // paint over the page's border, or a hairline of white shows through
         // where the two rectangles meet.
-        marginLeft: -(side === 'right' ? FRAMED.padRight : FRAMED.padLeft + FRAMED.railWidth),
-        marginRight: -(side === 'right' ? FRAMED.padLeft + FRAMED.railWidth : FRAMED.padRight),
+        marginTop: -bleed.top,
+        marginLeft: -bleed.left,
+        marginRight: -bleed.right,
         marginBottom: 20,
       }}
     >

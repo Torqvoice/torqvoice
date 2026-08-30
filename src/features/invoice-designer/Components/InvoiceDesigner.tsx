@@ -16,6 +16,7 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { SpecCanvas } from '../Render/SpecCanvas'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { SAMPLE_TABLES, fieldValues } from './sample'
@@ -106,7 +107,7 @@ export function InvoiceDesigner({
           ? '#ffffff'
           : template.primaryColor),
       fontFamily: doc.fontFamily || template.fontFamily,
-      baseSize: doc.fontSize ?? 10,
+      baseSize: doc.fontSize ?? BASE_FONT_SIZE,
       margin: doc.margin ?? 40,
       rowPadding: doc.rowPadding ?? 5,
       stripes: doc.stripes !== false,
@@ -190,6 +191,37 @@ export function InvoiceDesigner({
         data
       ),
     [layout, template, theme, data]
+  )
+
+  /**
+   * Dropped back into the flow, before the row at this index: it takes its
+   * place among the others and everything below it moves down, which is what
+   * putting something back is supposed to do.
+   */
+  const reorder = useCallback(
+    (id: string, index: number) => {
+      const anchors = { ...(layout.anchors ?? {}) }
+      delete anchors[id]
+
+      const ordered = [...layout.sections].sort((a, b) => a.order - b.order)
+      const flowIds = ordered
+        .filter((s) => s.visible && s.id !== id && !anchors[s.id] && s.id !== 'footer')
+        .map((s) => s.id)
+      const before = flowIds[index]
+
+      const without = ordered.filter((s) => s.id !== id)
+      const moved = ordered.find((s) => s.id === id)
+      if (!moved) return
+      const at = before ? without.findIndex((s) => s.id === before) : without.length
+      without.splice(at === -1 ? without.length : at, 0, moved)
+
+      setLayout({
+        ...layout,
+        anchors: Object.keys(anchors).length ? anchors : undefined,
+        sections: without.map((s, i) => ({ ...s, order: i })),
+      })
+    },
+    [layout, setLayout]
   )
 
   /** Where a dragged block came to rest, or nothing to put it back in the flow. */
@@ -507,6 +539,7 @@ export function InvoiceDesigner({
           selected={selected}
           onSelect={setSelected}
           onAnchor={setAnchor}
+          onReorder={reorder}
           zoom={zoom}
           rulers={rulers}
         />

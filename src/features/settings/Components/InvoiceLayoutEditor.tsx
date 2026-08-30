@@ -34,6 +34,7 @@ import {
   SquareDashed,
 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
+import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { buildLayoutFromPreset, layoutPresets } from '../Schema/layoutPresets'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -540,7 +541,7 @@ function SectionStylePanel({
       <StyleNumber
         label={t('layoutEditor.style.fontSize')}
         value={style?.fontSize}
-        placeholder="10"
+        placeholder={String(BASE_FONT_SIZE)}
         min={5}
         max={24}
         onChange={(fontSize) => set({ fontSize })}
@@ -590,7 +591,7 @@ function DocumentStylePanel({
           <StyleNumber
             label={t('layoutEditor.style.fontSize')}
             value={document?.fontSize}
-            placeholder="10"
+            placeholder={String(BASE_FONT_SIZE)}
             min={6}
             max={14}
             onChange={(fontSize) => set({ fontSize })}

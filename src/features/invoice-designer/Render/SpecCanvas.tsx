@@ -19,6 +19,21 @@ const BLOCK_GAP = 14
 /** How close a dragged edge has to come before it takes the guide. */
 const SNAP = 6
 
+/** Where a dropped block would land in the flow. */
+function DropLine() {
+  return (
+    <div
+      style={{
+        height: 2,
+        background: '#2563eb',
+        borderRadius: 1,
+        margin: '4px 0',
+        pointerEvents: 'none',
+      }}
+    />
+  )
+}
+
 export interface Guide {
   axis: 'x' | 'y'
   at: number
@@ -33,6 +48,9 @@ interface Drag {
   /** Where in the block the pointer took hold, so it does not jump. */
   grabX: number
   grabY: number
+  /** Where it started, and where it is now: the commit happens on release. */
+  startX: number
+  startY: number
   x: number
   y: number
   width: number
@@ -77,6 +95,7 @@ export function SpecCanvas({
   selected,
   onSelect,
   onAnchor,
+  onReorder,
   zoom,
   rulers,
 }: {
@@ -84,6 +103,8 @@ export function SpecCanvas({
   selected: string | null
   onSelect: (id: string | null) => void
   onAnchor: (id: string, anchor: Anchor | undefined) => void
+  /** Dropped back into the flow, before the row at this index. */
+  onReorder: (id: string, index: number) => void
   zoom: number
   rulers: boolean
 }) {
@@ -101,6 +122,9 @@ export function SpecCanvas({
   const rectsRef = useRef<Map<string, DOMRect>>(new Map())
   const [drag, setDrag] = useState<Drag | null>(null)
   const [guides, setGuides] = useState<Guide[]>([])
+  /** The gap in the flow a drop would go into, or nothing to leave it placed. */
+  const [dropIndex, setDropIndex] = useState<number | null>(null)
+  const rowRectsRef = useRef<{ index: number; top: number; bottom: number; page: number }[]>([])
 
   // Rows, not blocks: two half-width sections share one row, and a row is the
   // unit a page break can fall between.
@@ -126,6 +150,7 @@ export function SpecCanvas({
     if (!root) return
     const next = rectsRef.current
     next.clear()
+    const rows: { index: number; top: number; bottom: number; page: number }[] = []
     for (const sheet of Array.from(root.querySelectorAll('[data-sheet]'))) {
       const base = sheet.getBoundingClientRect()
       for (const element of Array.from(sheet.querySelectorAll('[data-node-id]'))) {
@@ -143,6 +168,7 @@ export function SpecCanvas({
         )
       }
     }
+    rowRectsRef.current = rows
   })
 
   const contentWidth = spec.page.width - spec.page.margin.left - spec.page.margin.right
@@ -186,6 +212,8 @@ export function SpecCanvas({
         mode,
         grabX: (event.clientX - base.x) / zoom - rect.x,
         grabY: (event.clientY - base.y) / zoom - rect.y,
+        startX: rect.x,
+        startY: rect.y,
         x: rect.x,
         y: rect.y,
         width: rect.width,
@@ -220,18 +248,35 @@ export function SpecCanvas({
           shown.push({ axis: 'y', at: snapY.at, page: drag.page })
         }
         setGuides(shown)
-        onAnchor(drag.id, {
-          x: Math.round(x),
-          y: Math.round(y),
-          width: Math.round(drag.width),
-          page: drag.page,
-        })
+        setDrag({ ...drag, x, y })
+
+        // Over the column the flow runs down, this is a reorder rather than a
+        // placement: the drop goes into the nearest gap and everything below
+        // it moves down to make room.
+        const left = spec.page.margin.left
+        const rightEdge = spec.page.width - spec.page.margin.right
+        const centre = x + drag.width / 2
+        const overFlow = centre > left - 40 && centre < rightEdge + 40
+        if (!overFlow) {
+          setDropIndex(null)
+          return
+        }
+        const rows = rowRectsRef.current.filter((r) => r.page === drag.page)
+        const middle = y + drag.height / 2
+        let index = rows.length
+        for (const row of rows) {
+          if (middle < (row.top + row.bottom) / 2) {
+            index = row.index
+            break
+          }
+        }
+        setDropIndex(index)
         return
       }
 
       // Pulling an edge: the opposite edge stays put, and the edge under the
       // pointer takes the nearest guide, so two boxes line up exactly.
-      const right = drag.x + drag.width
+      const right = drag.startX + drag.width
       let edge = pointerX
       const nearest = xs.reduce<{ at: number; delta: number } | null>((best, candidate) => {
         const delta = candidate - edge
@@ -248,16 +293,16 @@ export function SpecCanvas({
       const MIN = 40
       if (drag.mode === 'resize-right') {
         onAnchor(drag.id, {
-          x: Math.round(drag.x),
-          y: Math.round(drag.y),
-          width: Math.round(Math.max(MIN, edge - drag.x)),
+          x: Math.round(drag.startX),
+          y: Math.round(drag.startY),
+          width: Math.round(Math.max(MIN, edge - drag.startX)),
           page: drag.page,
         })
       } else {
         const x = Math.min(edge, right - MIN)
         onAnchor(drag.id, {
           x: Math.round(x),
-          y: Math.round(drag.y),
+          y: Math.round(drag.startY),
           width: Math.round(right - x),
           page: drag.page,
         })
@@ -267,9 +312,22 @@ export function SpecCanvas({
   )
 
   const endDrag = useCallback(() => {
+    if (drag && drag.mode === 'move') {
+      // One commit, on release: dropped into the flow, or left where it lies.
+      if (dropIndex !== null) onReorder(drag.id, dropIndex)
+      else if (drag.x !== drag.startX || drag.y !== drag.startY) {
+        onAnchor(drag.id, {
+          x: Math.round(drag.x),
+          y: Math.round(drag.y),
+          width: Math.round(drag.width),
+          page: drag.page,
+        })
+      }
+    }
     setDrag(null)
     setGuides([])
-  }, [])
+    setDropIndex(null)
+  }, [drag, dropIndex, onAnchor, onReorder])
 
   const chrome = (pageNumber: number) => {
     if (!spec.frame) return null
@@ -491,34 +549,39 @@ export function SpecCanvas({
           >
             {indices.map((i) => {
               const row = rows[i]
-              if (row.type === 'single') return blockShell(row.block, pageNumber, {})
+              const body =
+                row.type === 'single' ? (
+                  blockShell(row.block, pageNumber, {})
+                ) : (
+                  <div style={{ display: 'flex', gap: BLOCK_GAP, alignItems: 'flex-start' }}>
+                    <div
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: BLOCK_GAP,
+                      }}
+                    >
+                      {row.left.map((block) => blockShell(block, pageNumber, {}))}
+                    </div>
+                    <div
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: BLOCK_GAP,
+                      }}
+                    >
+                      {row.right.map((block) => blockShell(block, pageNumber, {}))}
+                    </div>
+                  </div>
+                )
               return (
-                <div
-                  key={`row-${row.left[0]?.id ?? row.right[0]?.id}`}
-                  style={{ display: 'flex', gap: BLOCK_GAP, alignItems: 'flex-start' }}
-                >
-                  <div
-                    style={{
-                      flex: 1,
-                      minWidth: 0,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: BLOCK_GAP,
-                    }}
-                  >
-                    {row.left.map((block) => blockShell(block, pageNumber, {}))}
-                  </div>
-                  <div
-                    style={{
-                      flex: 1,
-                      minWidth: 0,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: BLOCK_GAP,
-                    }}
-                  >
-                    {row.right.map((block) => blockShell(block, pageNumber, {}))}
-                  </div>
+                <div key={`row-${i}`} data-row-index={i} data-row-page={pageNumber}>
+                  {dropIndex === i && <DropLine />}
+                  {body}
                 </div>
               )
             })}
