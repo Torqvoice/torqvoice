@@ -136,6 +136,33 @@ export const layoutPresets: LayoutPreset[] = [
     footerFields: ['footer_note'],
   },
   {
+    // One numbered list instead of a parts table above a labor table, for a
+    // workshop that quotes and bills a job as a sequence of positions.
+    id: 'itemized',
+    template: {
+      primaryColor: '#ea580c',
+      headerStyle: 'modern',
+      fontFamily: 'Helvetica',
+    },
+    order: [
+      'header',
+      'slogan',
+      'customer',
+      'vehicle',
+      'service',
+      'items_table',
+      'findings',
+      'totals',
+      'notes',
+      'warranty',
+      'bank_account',
+      'footer',
+    ],
+    columns: { customer: 'left', vehicle: 'right', service: 'right' },
+    headerFields: ALL_HEADER_FIELDS,
+    footerFields: ALL_FOOTER_FIELDS,
+  },
+  {
     // The long version: title up top, the vehicle standing on its own, both
     // tables kept apart, and every optional block shown.
     id: 'detailed',

@@ -498,7 +498,8 @@
     "cannotUseApp": "Su rol no puede trabajar en los trabajos. Déle primero Técnico, o un rol con los mismos permisos.",
     "revokeTechnicianDone": "{name} ha salido de la aplicación",
     "noAccessTitle": "Sin acceso todavía",
-    "noAccessBody": "Su cuenta pertenece a {workshop}, pero no tiene un rol asignado, así que aquí no hay nada que pueda abrir. Pida un rol a un propietario o administrador de su taller."
+    "noAccessBody": "Su cuenta pertenece a {workshop}, pero no tiene un rol asignado, así que aquí no hay nada que pueda abrir. Pida un rol a un propietario o administrador de su taller.",
+    "setupPageInstall": "Consíguelo en Google Play"
   },
   "invoice": {
     "title": "Diseño de factura",
@@ -632,6 +633,10 @@
       "compact": {
         "name": "Compacta",
         "description": "Sin paneles, una lista numerada, solo lo esencial"
+      },
+      "itemized": {
+        "name": "Detallado",
+        "description": "Una lista de posiciones numerada con columna de unidad"
       },
       "detailed": {
         "name": "Detallada",

@@ -498,7 +498,8 @@
     "cannotUseApp": "Rollen deres kan ikke jobbe på jobber. Gi dem Tekniker, eller en rolle med de samme tillatelsene, først.",
     "revokeTechnicianDone": "{name} er logget ut av appen",
     "noAccessTitle": "Ingen tilgang ennå",
-    "noAccessBody": "Kontoen din tilhører {workshop}, men den har ikke fått en rolle ennå, så det er ingenting her du kan åpne. Be en eier eller administrator på verkstedet om å gi deg en."
+    "noAccessBody": "Kontoen din tilhører {workshop}, men den har ikke fått en rolle ennå, så det er ingenting her du kan åpne. Be en eier eller administrator på verkstedet om å gi deg en.",
+    "setupPageInstall": "Last ned fra Google Play"
   },
   "invoice": {
     "title": "Faktura og tilbud",
@@ -632,6 +633,10 @@
       "compact": {
         "name": "Kompakt",
         "description": "Uten rammer, én nummerert liste, bare det nødvendige"
+      },
+      "itemized": {
+        "name": "Spesifisert",
+        "description": "Én nummerert liste med egen kolonne for enhet"
       },
       "detailed": {
         "name": "Detaljert",

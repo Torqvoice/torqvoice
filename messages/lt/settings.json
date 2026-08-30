@@ -498,7 +498,8 @@
     "cannotUseApp": "Jo rolė neleidžia dirbti su užsakymais. Pirma suteikite meistro rolę arba rolę su tomis pačiomis teisėmis.",
     "revokeTechnicianDone": "{name} atjungtas nuo programėlės",
     "noAccessTitle": "Prieigos kol kas nėra",
-    "noAccessBody": "Jūsų paskyra priklauso {workshop}, bet jai dar nesuteikta rolė, todėl čia nėra ką atidaryti. Paprašykite dirbtuvių savininko arba administratoriaus suteikti jums rolę."
+    "noAccessBody": "Jūsų paskyra priklauso {workshop}, bet jai dar nesuteikta rolė, todėl čia nėra ką atidaryti. Paprašykite dirbtuvių savininko arba administratoriaus suteikti jums rolę.",
+    "setupPageInstall": "Atsisiųsti iš „Google Play“"
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
@@ -632,6 +633,10 @@
       "compact": {
         "name": "Kompaktiškas",
         "description": "Be rėmelių, vienas numeruotas sąrašas, tik būtiniausia"
+      },
+      "itemized": {
+        "name": "Detalizuotas",
+        "description": "Vienas numeruotas eilučių sąrašas su mato vieneto stulpeliu"
       },
       "detailed": {
         "name": "Išsamus",

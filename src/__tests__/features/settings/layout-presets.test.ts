@@ -1,7 +1,6 @@
 /**
- * The layout editor's starting arrangements. They choose nothing but where
- * things sit, which is what separates them from the template presets on the
- * Templates page.
+ * The designer's starting arrangements: where every section sits, and the
+ * colors, header style and typeface that go with it.
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { describe, it, expect } from 'vitest'
@@ -15,8 +14,14 @@ import {
 const LOCALES = readdirSync('messages')
 
 describe('layout presets', () => {
-  it('offers four arrangements', () => {
-    expect(layoutPresets.map((p) => p.id)).toEqual(['classic', 'letterhead', 'compact', 'detailed'])
+  it('offers five arrangements', () => {
+    expect(layoutPresets.map((p) => p.id)).toEqual([
+      'classic',
+      'letterhead',
+      'compact',
+      'itemized',
+      'detailed',
+    ])
   })
 
   it.each(layoutPresets)('$id only names sections that exist', (preset) => {

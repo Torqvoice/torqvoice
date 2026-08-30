@@ -498,7 +498,8 @@
     "cannotUseApp": "Il suo ruolo non può lavorare sui lavori. Assegnagli prima Tecnico, o un ruolo con gli stessi permessi.",
     "revokeTechnicianDone": "{name} è stato disconnesso dall’app",
     "noAccessTitle": "Ancora nessun accesso",
-    "noAccessBody": "Il tuo account fa parte di {workshop}, ma non ha ancora un ruolo, quindi qui non c’è nulla da aprire. Chiedi un ruolo a un titolare o a un amministratore della tua officina."
+    "noAccessBody": "Il tuo account fa parte di {workshop}, ma non ha ancora un ruolo, quindi qui non c’è nulla da aprire. Chiedi un ruolo a un titolare o a un amministratore della tua officina.",
+    "setupPageInstall": "Scaricala su Google Play"
   },
   "invoice": {
     "title": "Layout fattura",
@@ -632,6 +633,10 @@
       "compact": {
         "name": "Compatta",
         "description": "Senza riquadri, un elenco numerato, solo l’essenziale"
+      },
+      "itemized": {
+        "name": "Dettagliato",
+        "description": "Un unico elenco numerato di voci con la colonna unità"
       },
       "detailed": {
         "name": "Dettagliata",

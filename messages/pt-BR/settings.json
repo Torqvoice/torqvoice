@@ -498,7 +498,8 @@
     "cannotUseApp": "A função dela não permite trabalhar em serviços. Dê primeiro Técnico, ou uma função com as mesmas permissões.",
     "revokeTechnicianDone": "{name} foi desconectado do aplicativo",
     "noAccessTitle": "Ainda sem acesso",
-    "noAccessBody": "Sua conta faz parte da {workshop}, mas ainda não recebeu uma função, então não há nada aqui que você possa abrir. Peça uma função ao proprietário ou a um administrador da sua oficina."
+    "noAccessBody": "Sua conta faz parte da {workshop}, mas ainda não recebeu uma função, então não há nada aqui que você possa abrir. Peça uma função ao proprietário ou a um administrador da sua oficina.",
+    "setupPageInstall": "Baixar no Google Play"
   },
   "invoice": {
     "title": "Layout da fatura",
@@ -632,6 +633,10 @@
       "compact": {
         "name": "Compacta",
         "description": "Sem painéis, uma lista numerada, só o essencial"
+      },
+      "itemized": {
+        "name": "Discriminado",
+        "description": "Uma lista de itens numerada com coluna de unidade"
       },
       "detailed": {
         "name": "Detalhada",

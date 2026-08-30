@@ -498,7 +498,8 @@
     "cannotUseApp": "Ta rola nie może pracować przy zleceniach. Nadaj najpierw rolę Technik lub inną z tymi samymi uprawnieniami.",
     "revokeTechnicianDone": "{name} został wylogowany z aplikacji",
     "noAccessTitle": "Brak dostępu",
-    "noAccessBody": "Twoje konto należy do {workshop}, ale nie ma jeszcze przypisanej roli, więc nie ma tu nic, co możesz otworzyć. Poproś właściciela lub administratora warsztatu o rolę."
+    "noAccessBody": "Twoje konto należy do {workshop}, ale nie ma jeszcze przypisanej roli, więc nie ma tu nic, co możesz otworzyć. Poproś właściciela lub administratora warsztatu o rolę.",
+    "setupPageInstall": "Pobierz z Google Play"
   },
   "invoice": {
     "title": "Układ faktury",
@@ -632,6 +633,10 @@
       "compact": {
         "name": "Kompaktowy",
         "description": "Bez ramek, jedna numerowana lista, tylko to, co konieczne"
+      },
+      "itemized": {
+        "name": "Pozycjami",
+        "description": "Jedna numerowana lista pozycji z kolumną jednostki"
       },
       "detailed": {
         "name": "Szczegółowy",
