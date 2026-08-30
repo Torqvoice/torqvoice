@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import type { Anchor, Block, DocumentSpec, FlowRow, PageSpec } from '../Spec/documentSpec'
 import {
   BLOCK_GAP,
@@ -257,6 +258,7 @@ export function SpecCanvas({
   zoom: number
   rulers: boolean
 }) {
+  const t = useTranslations('settings.designer')
   const measureRef = useRef<HTMLDivElement>(null)
   const pagesRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -903,12 +905,12 @@ export function SpecCanvas({
       preview?.kind === 'pair' ? colWidth : preview?.kind === 'gap' ? contentWidth : drag.width
     const label =
       preview?.kind === 'gap'
-        ? 'Insert here'
+        ? t('insertHere')
         : preview?.kind === 'pair'
           ? preview.side === 'left'
-            ? 'Left column'
-            : 'Right column'
-          : 'Free position'
+            ? t('dropLeftColumn')
+            : t('dropRightColumn')
+          : t('freePosition')
     return (
       <div
         style={{

@@ -22,8 +22,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     getInventoryPartsList(),
     getAuthContext(),
   ])
-  const inventoryParts =
-    inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
+  const inventoryParts = inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
 
   const orgId = authContext?.organizationId
   const features = orgId ? await getFeatures(orgId) : null

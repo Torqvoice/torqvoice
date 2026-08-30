@@ -70,7 +70,9 @@
     "professionalWorkshop": "Profesjonell verkstedadministrasjon",
     "tel": "Tlf: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Tilleggsinformasjon",
+    "telegramConnect": "Chat med oss på Telegram"
   },
   "quote": {
     "title": "TILBUD",
@@ -106,7 +108,10 @@
     "validityFooter30": "Dette tilbudet er gyldig i 30 dager",
     "viewPortal": "Se portalen din: {url}",
     "tel": "Tlf: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Tilleggsinformasjon",
+    "quoteNumberLabel": "Tilbudsnr.",
+    "validUntilLabel": "Gyldig til"
   },
   "inspection": {
     "title": "KJØRETØYKONTROLL",

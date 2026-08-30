@@ -1,15 +1,9 @@
-import { db } from "@/lib/db";
-import {
-  getPreset,
-  presetToTemplateCreate,
-} from "@/features/inspections/Lib/templatePresets";
+import { db } from '@/lib/db'
+import { getPreset, presetToTemplateCreate } from '@/features/inspections/Lib/templatePresets'
 
 /** Minimal shape of a next-intl translator; keeps this lib decoupled from
  *  next-intl's generics. */
-export type Translator = (
-  key: string,
-  values?: Record<string, string | number | Date>
-) => string;
+export type Translator = (key: string, values?: Record<string, string | number | Date>) => string
 
 /**
  * The inspection template a brand-new workshop starts with.
@@ -22,18 +16,18 @@ export type Translator = (
  */
 export function pickCountryPresetId(locale: string): string | null {
   switch (locale) {
-    case "de":
-      return "de-hauptuntersuchung";
-    case "nl":
-      return "nl-apk";
-    case "nb":
-      return "no-eu-kontroll";
+    case 'de':
+      return 'de-hauptuntersuchung'
+    case 'nl':
+      return 'nl-apk'
+    case 'nb':
+      return 'no-eu-kontroll'
     default:
-      return null;
+      return null
   }
 }
 
-export const DEFAULT_TEMPLATE_PRESET_ID = "standard-multipoint";
+export const DEFAULT_TEMPLATE_PRESET_ID = 'standard-multipoint'
 
 /**
  * Installs the default inspection template(s) for a fresh organization and
@@ -41,44 +35,41 @@ export const DEFAULT_TEMPLATE_PRESET_ID = "standard-multipoint";
  * can build an inspection from it. Records preset provenance, so the
  * template library recognises these as already installed.
  */
-export async function installDefaultInspectionTemplates(
-  organizationId: string,
-  locale: string
-) {
-  const generic = getPreset(DEFAULT_TEMPLATE_PRESET_ID);
-  if (!generic) throw new Error("Default template preset not found");
+export async function installDefaultInspectionTemplates(organizationId: string, locale: string) {
+  const generic = getPreset(DEFAULT_TEMPLATE_PRESET_ID)
+  if (!generic) throw new Error('Default template preset not found')
 
   const template = await db.inspectionTemplate.create({
     data: presetToTemplateCreate(generic, organizationId, true),
     include: {
       sections: {
-        include: { items: { orderBy: { sortOrder: "asc" } } },
-        orderBy: { sortOrder: "asc" },
+        include: { items: { orderBy: { sortOrder: 'asc' } } },
+        orderBy: { sortOrder: 'asc' },
       },
     },
-  });
+  })
 
-  const countryPresetId = pickCountryPresetId(locale);
-  const countryPreset = countryPresetId ? getPreset(countryPresetId) : null;
+  const countryPresetId = pickCountryPresetId(locale)
+  const countryPreset = countryPresetId ? getPreset(countryPresetId) : null
   if (countryPreset) {
     await db.inspectionTemplate.create({
       data: presetToTemplateCreate(countryPreset, organizationId, false),
-    });
+    })
   }
 
-  return template;
+  return template
 }
 
 /** Common jobs every workshop quotes daily. Hours only; rates stay at zero so
  *  the workshop's own hourly rate applies when the preset is used. */
 const DEFAULT_LABOR_PRESETS: { key: string; hours: number }[] = [
-  { key: "oilChange", hours: 0.8 },
-  { key: "frontBrakePads", hours: 1.5 },
-  { key: "tireSwap", hours: 0.7 },
-  { key: "batteryReplacement", hours: 0.5 },
-  { key: "diagnostics", hours: 1 },
-  { key: "annualService", hours: 2.5 },
-];
+  { key: 'oilChange', hours: 0.8 },
+  { key: 'frontBrakePads', hours: 1.5 },
+  { key: 'tireSwap', hours: 0.7 },
+  { key: 'batteryReplacement', hours: 0.5 },
+  { key: 'diagnostics', hours: 1 },
+  { key: 'annualService', hours: 2.5 },
+]
 
 export async function installDefaultLaborPresets(
   organizationId: string,
@@ -99,7 +90,7 @@ export async function installDefaultLaborPresets(
                 description: t(`presets.${key}.name`),
                 hours,
                 rate: 0,
-                pricingType: "hourly",
+                pricingType: 'hourly',
                 sortOrder: 0,
               },
             ],
@@ -107,5 +98,5 @@ export async function installDefaultLaborPresets(
         },
       })
     )
-  );
+  )
 }

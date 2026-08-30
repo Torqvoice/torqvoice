@@ -1,51 +1,46 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useTranslations } from "next-intl";
-import { Building2, CreditCard, DollarSign, Users } from "lucide-react";
+import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTranslations } from 'next-intl'
+import { Building2, CreditCard, DollarSign, Users } from 'lucide-react'
 
 type AdminStats = {
-  totalUsers: number;
-  totalOrganizations: number;
-  totalActiveSubscriptions: number;
-  totalRevenue: number;
-};
+  totalUsers: number
+  totalOrganizations: number
+  totalActiveSubscriptions: number
+  totalRevenue: number
+}
 
 export function AdminOverview({ stats }: { stats: AdminStats }) {
-  const t = useTranslations("admin");
+  const t = useTranslations('admin')
 
   const cards = [
     {
-      title: t("overview.totalUsers"),
+      title: t('overview.totalUsers'),
       value: stats.totalUsers,
       icon: Users,
-      href: "/admin/users",
+      href: '/admin/users',
     },
     {
-      title: t("overview.organizations"),
+      title: t('overview.organizations'),
       value: stats.totalOrganizations,
       icon: Building2,
-      href: "/admin/organizations",
+      href: '/admin/organizations',
     },
     {
-      title: t("overview.activeSubscriptions"),
+      title: t('overview.activeSubscriptions'),
       value: stats.totalActiveSubscriptions,
       icon: CreditCard,
-      href: "/admin/organizations",
+      href: '/admin/organizations',
     },
     {
-      title: t("overview.monthlyRevenue"),
+      title: t('overview.monthlyRevenue'),
       value: `$${stats.totalRevenue.toFixed(2)}`,
       icon: DollarSign,
-      href: "/admin/organizations",
+      href: '/admin/organizations',
     },
-  ];
+  ]
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -63,5 +58,5 @@ export function AdminOverview({ stats }: { stats: AdminStats }) {
         </Link>
       ))}
     </div>
-  );
+  )
 }

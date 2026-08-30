@@ -1,14 +1,23 @@
-"use client";
+'use client'
 
-import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
-import { interactiveRow } from "@/lib/interactive-row";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Plus, Copy, Send, ExternalLink, FileVideo, Video, Trash2, MessageCircle } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { interactiveRow } from '@/lib/interactive-row'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import {
+  Plus,
+  Copy,
+  Send,
+  ExternalLink,
+  FileVideo,
+  Video,
+  Trash2,
+  MessageCircle,
+} from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -16,21 +25,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { TableContextMenuHint } from "@/components/table-context-menu-hint";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/context-menu'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,50 +44,50 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
-import { CreateStatusReportDialog } from "./CreateStatusReportDialog";
-import { SendStatusReportDialog } from "./SendStatusReportDialog";
-import { deleteStatusReport } from "../Actions/deleteStatusReport";
+} from '@/components/ui/alert-dialog'
+import { toast } from 'sonner'
+import { CreateStatusReportDialog } from './CreateStatusReportDialog'
+import { SendStatusReportDialog } from './SendStatusReportDialog'
+import { deleteStatusReport } from '../Actions/deleteStatusReport'
 
 interface StatusReportSummary {
-  id: string;
-  title: string | null;
-  message: string | null;
-  status: string;
-  videoUrl: string | null;
-  createdAt: string;
-  expiresAt: string | null;
-  publicToken: string;
-  customerFeedback: string | null;
-  feedbackAt: string | null;
-  sentVia: string | null;
-  sentAt: string | null;
+  id: string
+  title: string | null
+  message: string | null
+  status: string
+  videoUrl: string | null
+  createdAt: string
+  expiresAt: string | null
+  publicToken: string
+  customerFeedback: string | null
+  feedbackAt: string | null
+  sentVia: string | null
+  sentAt: string | null
 }
 
 interface StatusReportListProps {
-  serviceRecordId: string;
-  organizationId: string;
-  vehicleName: string;
+  serviceRecordId: string
+  organizationId: string
+  vehicleName: string
   customer: {
-    id: string;
-    name: string;
-    email: string | null;
-    phone: string | null;
-    telegramChatId: string | null;
-  } | null;
-  smsEnabled: boolean;
-  emailEnabled: boolean;
-  telegramEnabled: boolean;
-  initialReports: StatusReportSummary[];
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+    telegramChatId: string | null
+  } | null
+  smsEnabled: boolean
+  emailEnabled: boolean
+  telegramEnabled: boolean
+  initialReports: StatusReportSummary[]
 }
 
 const STATUS_VARIANT: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  published: "bg-blue-500/10 text-blue-600",
-  sent: "bg-green-500/10 text-green-600",
-  viewed: "bg-purple-500/10 text-purple-600",
-};
+  draft: 'bg-muted text-muted-foreground',
+  published: 'bg-blue-500/10 text-blue-600',
+  sent: 'bg-green-500/10 text-green-600',
+  viewed: 'bg-purple-500/10 text-purple-600',
+}
 
 export function StatusReportList({
   serviceRecordId,
@@ -95,48 +99,52 @@ export function StatusReportList({
   telegramEnabled,
   initialReports,
 }: StatusReportListProps) {
-  const t = useTranslations("statusReport.list");
-  const router = useRouter();
-  const [showCreate, setShowCreate] = useState(false);
-  const tableNav = useTableKeyboardNav();
-  const [sendReportId, setSendReportId] = useState<string | null>(null);
-  const [deleteReportId, setDeleteReportId] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
-  const [detailReport, setDetailReport] = useState<StatusReportSummary | null>(null);
+  const t = useTranslations('statusReport.list')
+  const router = useRouter()
+  const [showCreate, setShowCreate] = useState(false)
+  const tableNav = useTableKeyboardNav()
+  const [sendReportId, setSendReportId] = useState<string | null>(null)
+  const [deleteReportId, setDeleteReportId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [detailReport, setDetailReport] = useState<StatusReportSummary | null>(null)
 
   function copyLink(publicToken: string) {
-    const url = `${window.location.origin}/share/status-report/${organizationId}/${publicToken}`;
-    navigator.clipboard.writeText(url);
-    toast.success(t("linkCopied"));
+    const url = `${window.location.origin}/share/status-report/${organizationId}/${publicToken}`
+    navigator.clipboard.writeText(url)
+    toast.success(t('linkCopied'))
   }
 
   function openReport(publicToken: string) {
-    window.open(`/share/status-report/${organizationId}/${publicToken}`, "_blank");
+    window.open(`/share/status-report/${organizationId}/${publicToken}`, '_blank')
   }
 
   async function confirmDelete() {
-    if (!deleteReportId) return;
-    setDeleting(true);
+    if (!deleteReportId) return
+    setDeleting(true)
     try {
-      const result = await deleteStatusReport(deleteReportId);
+      const result = await deleteStatusReport(deleteReportId)
       if (result.success) {
-        toast.success(t("deleted"));
-        router.refresh();
+        toast.success(t('deleted'))
+        router.refresh()
       } else {
-        toast.error(result.error || t("deleteFailed"));
+        toast.error(result.error || t('deleteFailed'))
       }
     } catch {
-      toast.error(t("deleteFailed"));
+      toast.error(t('deleteFailed'))
     } finally {
-      setDeleting(false);
-      setDeleteReportId(null);
+      setDeleting(false)
+      setDeleteReportId(null)
     }
   }
 
   function fmtDate(iso: string) {
     return new Date(iso).toLocaleDateString(undefined, {
-      month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit",
-    });
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   return (
@@ -144,25 +152,25 @@ export function StatusReportList({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-baseline gap-2">
-            <h3 className="text-sm font-medium">{t("title")}</h3>
+            <h3 className="text-sm font-medium">{t('title')}</h3>
             <a
               href="https://torqvoice.com/docs/features/status-reports"
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0 rounded text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              {t("readMore")} →
+              {t('readMore')} →
             </a>
           </div>
           <Button
             size="sm"
             onClick={() => setShowCreate(true)}
-            aria-label={t("newReport")}
-            title={t("newReport")}
+            aria-label={t('newReport')}
+            title={t('newReport')}
             className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
           >
             <Plus className="h-4 w-4 md:mr-1.5" />
-            <span className="hidden md:inline">{t("newReport")}</span>
+            <span className="hidden md:inline">{t('newReport')}</span>
           </Button>
         </div>
 
@@ -170,239 +178,293 @@ export function StatusReportList({
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-10 text-center">
               <FileVideo className="mb-3 h-10 w-10 text-muted-foreground/40" />
-              <p className="font-medium text-sm">{t("empty")}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{t("emptyDescription")}</p>
+              <p className="font-medium text-sm">{t('empty')}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t('emptyDescription')}</p>
             </CardContent>
           </Card>
         ) : (
           <>
-          {/* Card list (phones + small tablets) */}
-          <div className="space-y-2 md:hidden">
-            {initialReports.map((report) => (
-              <div key={report.id} className="rounded-lg border bg-card p-3">
-                <button
-                  type="button"
-                  className="w-full text-left"
-                  onClick={() => setDetailReport(report)}
-                >
-                  <div className="flex min-w-0 items-center gap-1.5">
-                    {report.videoUrl && (
-                      <Video className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                    )}
-                    <span className="truncate text-sm font-medium">
-                      {report.title || t("title")}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] ${STATUS_VARIANT[report.status] || ""}`}
-                    >
-                      {t(report.status as "draft" | "published" | "sent" | "viewed")}
-                    </Badge>
-                    {report.customerFeedback && (
-                      <Badge variant="outline" className="bg-green-500/10 text-[10px] text-green-600">
-                        <MessageCircle className="mr-1 h-3 w-3" />
-                        {t("hasComment")}
-                      </Badge>
-                    )}
-                    <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                      {new Date(report.createdAt).toLocaleDateString(undefined, {
-                        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </button>
-                <div className="mt-2 flex items-center justify-end gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => copyLink(report.publicToken)}
-                    aria-label={t("copyLink")}
+            {/* Card list (phones + small tablets) */}
+            <div className="space-y-2 md:hidden">
+              {initialReports.map((report) => (
+                <div key={report.id} className="rounded-lg border bg-card p-3">
+                  <button
+                    type="button"
+                    className="w-full text-left"
+                    onClick={() => setDetailReport(report)}
                   >
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  {customer && (
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      {report.videoUrl && (
+                        <Video className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      )}
+                      <span className="truncate text-sm font-medium">
+                        {report.title || t('title')}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] ${STATUS_VARIANT[report.status] || ''}`}
+                      >
+                        {t(report.status as 'draft' | 'published' | 'sent' | 'viewed')}
+                      </Badge>
+                      {report.customerFeedback && (
+                        <Badge
+                          variant="outline"
+                          className="bg-green-500/10 text-[10px] text-green-600"
+                        >
+                          <MessageCircle className="mr-1 h-3 w-3" />
+                          {t('hasComment')}
+                        </Badge>
+                      )}
+                      <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+                        {new Date(report.createdAt).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                  </button>
+                  <div className="mt-2 flex items-center justify-end gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9"
-                      onClick={() => setSendReportId(report.id)}
-                      aria-label={t("send")}
+                      onClick={() => copyLink(report.publicToken)}
+                      aria-label={t('copyLink')}
                     >
-                      <Send className="h-4 w-4" />
+                      <Copy className="h-4 w-4" />
                     </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9"
-                    onClick={() => openReport(report.publicToken)}
-                    aria-label={t("view")}
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 text-destructive hover:text-destructive"
-                    onClick={() => setDeleteReportId(report.id)}
-                    aria-label={t("delete")}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                    {customer && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9"
+                        onClick={() => setSendReportId(report.id)}
+                        aria-label={t('send')}
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9"
+                      onClick={() => openReport(report.publicToken)}
+                      aria-label={t('view')}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-destructive hover:text-destructive"
+                      onClick={() => setDeleteReportId(report.id)}
+                      aria-label={t('delete')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Table (md and up) */}
-          <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
-            <TableContextMenuHint />
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[35%]">{t("title")}</TableHead>
-                  <TableHead>{t("statusLabel")}</TableHead>
-                  <TableHead className="hidden sm:table-cell">{t("created")}</TableHead>
-                  <TableHead className="hidden md:table-cell">{t("feedback")}</TableHead>
-                  <TableHead className="text-right" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {initialReports.map((report) => (
-                  <ContextMenu key={report.id} modal={false}>
-                  <ContextMenuTrigger asChild>
-                  <TableRow
-                    className="cursor-pointer"
-                    {...interactiveRow(() => setDetailReport(report))}
-                  >
-                    <TableCell className="py-2">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        {report.videoUrl && <Video className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
-                        <span className="truncate text-sm font-medium">{report.title || t("title")}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-2">
-                      <Badge variant="outline" className={`text-[10px] ${STATUS_VARIANT[report.status] || ""}`}>
-                        {t(report.status as "draft" | "published" | "sent" | "viewed")}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="py-2 text-xs text-muted-foreground hidden sm:table-cell" suppressHydrationWarning>
-                      {new Date(report.createdAt).toLocaleDateString(undefined, {
-                        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell className="py-2 hidden md:table-cell">
-                      {report.customerFeedback ? (
-                        <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600">
-                          <MessageCircle className="h-3 w-3 mr-1" />
-                          {t("hasComment")}
-                        </Badge>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="py-2 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => copyLink(report.publicToken)}>
-                          <Copy className="h-3.5 w-3.5" />
-                          <span className="hidden xl:inline ml-1.5">{t("copyLink")}</span>
-                        </Button>
+            {/* Table (md and up) */}
+            <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
+              <TableContextMenuHint />
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[35%]">{t('title')}</TableHead>
+                    <TableHead>{t('statusLabel')}</TableHead>
+                    <TableHead className="hidden sm:table-cell">{t('created')}</TableHead>
+                    <TableHead className="hidden md:table-cell">{t('feedback')}</TableHead>
+                    <TableHead className="text-right" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {initialReports.map((report) => (
+                    <ContextMenu key={report.id} modal={false}>
+                      <ContextMenuTrigger asChild>
+                        <TableRow
+                          className="cursor-pointer"
+                          {...interactiveRow(() => setDetailReport(report))}
+                        >
+                          <TableCell className="py-2">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              {report.videoUrl && (
+                                <Video className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                              )}
+                              <span className="truncate text-sm font-medium">
+                                {report.title || t('title')}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Badge
+                              variant="outline"
+                              className={`text-[10px] ${STATUS_VARIANT[report.status] || ''}`}
+                            >
+                              {t(report.status as 'draft' | 'published' | 'sent' | 'viewed')}
+                            </Badge>
+                          </TableCell>
+                          <TableCell
+                            className="py-2 text-xs text-muted-foreground hidden sm:table-cell"
+                            suppressHydrationWarning
+                          >
+                            {new Date(report.createdAt).toLocaleDateString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </TableCell>
+                          <TableCell className="py-2 hidden md:table-cell">
+                            {report.customerFeedback ? (
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] bg-green-500/10 text-green-600"
+                              >
+                                <MessageCircle className="h-3 w-3 mr-1" />
+                                {t('hasComment')}
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell
+                            className="py-2 text-right"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2"
+                                onClick={() => copyLink(report.publicToken)}
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                                <span className="hidden xl:inline ml-1.5">{t('copyLink')}</span>
+                              </Button>
+                              {customer && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 px-2"
+                                  onClick={() => setSendReportId(report.id)}
+                                >
+                                  <Send className="h-3.5 w-3.5" />
+                                  <span className="hidden xl:inline ml-1.5">{t('send')}</span>
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2"
+                                onClick={() => openReport(report.publicToken)}
+                              >
+                                <ExternalLink className="h-3.5 w-3.5" />
+                                <span className="hidden xl:inline ml-1.5">{t('view')}</span>
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2 text-destructive hover:text-destructive"
+                                onClick={() => setDeleteReportId(report.id)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span className="hidden xl:inline ml-1.5">{t('delete')}</span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="min-w-52">
+                        <ContextMenuItem onClick={() => openReport(report.publicToken)}>
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          {t('view')}
+                        </ContextMenuItem>
+                        <ContextMenuItem onClick={() => copyLink(report.publicToken)}>
+                          <Copy className="mr-2 h-4 w-4" />
+                          {t('copyLink')}
+                        </ContextMenuItem>
                         {customer && (
-                          <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => setSendReportId(report.id)}>
-                            <Send className="h-3.5 w-3.5" />
-                            <span className="hidden xl:inline ml-1.5">{t("send")}</span>
-                          </Button>
+                          <ContextMenuItem onClick={() => setSendReportId(report.id)}>
+                            <Send className="mr-2 h-4 w-4" />
+                            {t('send')}
+                          </ContextMenuItem>
                         )}
-                        <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => openReport(report.publicToken)}>
-                          <ExternalLink className="h-3.5 w-3.5" />
-                          <span className="hidden xl:inline ml-1.5">{t("view")}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 px-2 text-destructive hover:text-destructive"
+                        <ContextMenuSeparator />
+                        <ContextMenuItem
+                          variant="destructive"
                           onClick={() => setDeleteReportId(report.id)}
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span className="hidden xl:inline ml-1.5">{t("delete")}</span>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className="min-w-52">
-                    <ContextMenuItem onClick={() => openReport(report.publicToken)}>
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      {t("view")}
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={() => copyLink(report.publicToken)}>
-                      <Copy className="mr-2 h-4 w-4" />
-                      {t("copyLink")}
-                    </ContextMenuItem>
-                    {customer && (
-                      <ContextMenuItem onClick={() => setSendReportId(report.id)}>
-                        <Send className="mr-2 h-4 w-4" />
-                        {t("send")}
-                      </ContextMenuItem>
-                    )}
-                    <ContextMenuSeparator />
-                    <ContextMenuItem
-                      variant="destructive"
-                      onClick={() => setDeleteReportId(report.id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      {t("delete")}
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                  </ContextMenu>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          {t('delete')}
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </>
         )}
       </div>
 
       {/* Detail dialog */}
-      <Dialog open={!!detailReport} onOpenChange={(open) => { if (!open) setDetailReport(null); }}>
+      <Dialog
+        open={!!detailReport}
+        onOpenChange={(open) => {
+          if (!open) setDetailReport(null)
+        }}
+      >
         <DialogContent className="sm:max-w-lg">
           {detailReport && (
             <>
               <DialogHeader>
-                <DialogTitle>{detailReport.title || t("title")}</DialogTitle>
+                <DialogTitle>{detailReport.title || t('title')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 {/* Status & dates */}
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <p className="text-xs text-muted-foreground">{t("statusLabel")}</p>
-                    <Badge variant="outline" className={`mt-0.5 text-[10px] ${STATUS_VARIANT[detailReport.status] || ""}`}>
-                      {t(detailReport.status as "draft" | "published" | "sent" | "viewed")}
+                    <p className="text-xs text-muted-foreground">{t('statusLabel')}</p>
+                    <Badge
+                      variant="outline"
+                      className={`mt-0.5 text-[10px] ${STATUS_VARIANT[detailReport.status] || ''}`}
+                    >
+                      {t(detailReport.status as 'draft' | 'published' | 'sent' | 'viewed')}
                     </Badge>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t("created")}</p>
+                    <p className="text-xs text-muted-foreground">{t('created')}</p>
                     <p className="mt-0.5">{fmtDate(detailReport.createdAt)}</p>
                   </div>
                   {detailReport.sentAt && (
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("sentAt")}</p>
+                      <p className="text-xs text-muted-foreground">{t('sentAt')}</p>
                       <p className="mt-0.5">{fmtDate(detailReport.sentAt)}</p>
                     </div>
                   )}
                   {detailReport.sentVia && (
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("sentVia")}</p>
+                      <p className="text-xs text-muted-foreground">{t('sentVia')}</p>
                       <p className="mt-0.5 capitalize">{detailReport.sentVia}</p>
                     </div>
                   )}
                   {detailReport.expiresAt && (
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("expires")}</p>
-                      <p className="mt-0.5">{new Date(detailReport.expiresAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</p>
+                      <p className="text-xs text-muted-foreground">{t('expires')}</p>
+                      <p className="mt-0.5">
+                        {new Date(detailReport.expiresAt).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -410,31 +472,41 @@ export function StatusReportList({
                 {/* Message */}
                 {detailReport.message && (
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">{t("messageLabel")}</p>
-                    <p className="text-sm whitespace-pre-wrap rounded-md bg-muted/50 p-3">{detailReport.message}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t('messageLabel')}</p>
+                    <p className="text-sm whitespace-pre-wrap rounded-md bg-muted/50 p-3">
+                      {detailReport.message}
+                    </p>
                   </div>
                 )}
 
                 {/* Video */}
                 {detailReport.videoUrl && (
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">{t("videoLabel")}</p>
-                    <video src={detailReport.videoUrl} controls preload="metadata" playsInline className="w-full rounded-md max-h-64" />
+                    <p className="text-xs text-muted-foreground mb-1">{t('videoLabel')}</p>
+                    <video
+                      src={detailReport.videoUrl}
+                      controls
+                      preload="metadata"
+                      playsInline
+                      className="w-full rounded-md max-h-64"
+                    />
                   </div>
                 )}
 
                 {/* Customer feedback */}
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t("feedback")}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('feedback')}</p>
                   {detailReport.customerFeedback ? (
                     <div className="rounded-md border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30 p-3">
                       <p className="text-sm whitespace-pre-wrap">{detailReport.customerFeedback}</p>
                       {detailReport.feedbackAt && (
-                        <p className="mt-2 text-xs text-muted-foreground">{fmtDate(detailReport.feedbackAt)}</p>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {fmtDate(detailReport.feedbackAt)}
+                        </p>
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">{t("noFeedback")}</p>
+                    <p className="text-sm text-muted-foreground">{t('noFeedback')}</p>
                   )}
                 </div>
               </div>
@@ -453,15 +525,20 @@ export function StatusReportList({
         emailEnabled={emailEnabled}
         telegramEnabled={telegramEnabled}
         onCreated={(reportId) => {
-          if (customer) setSendReportId(reportId);
-          else router.refresh();
+          if (customer) setSendReportId(reportId)
+          else router.refresh()
         }}
       />
 
       {sendReportId && customer && (
         <SendStatusReportDialog
           open={!!sendReportId}
-          onOpenChange={(open) => { if (!open) { setSendReportId(null); router.refresh(); } }}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSendReportId(null)
+              router.refresh()
+            }
+          }}
           reportId={sendReportId}
           customer={customer}
           smsEnabled={smsEnabled}
@@ -470,20 +547,25 @@ export function StatusReportList({
         />
       )}
 
-      <AlertDialog open={!!deleteReportId} onOpenChange={(open) => { if (!open) setDeleteReportId(null); }}>
+      <AlertDialog
+        open={!!deleteReportId}
+        onOpenChange={(open) => {
+          if (!open) setDeleteReportId(null)
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>{t("deleteConfirm")}</AlertDialogDescription>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('deleteConfirm')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleting}>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction variant="destructive" disabled={deleting} onClick={confirmDelete}>
-              {t("delete")}
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
+  )
 }

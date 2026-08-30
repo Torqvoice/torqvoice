@@ -1,50 +1,45 @@
-"use client";
+'use client'
 
-import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-import { ArrowLeft, CalendarClock, Loader2, Phone, Search, Send, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { DocsLink } from "@/components/docs-link";
-import { useDebouncedSearch } from "@/hooks/use-debounced-search";
-import { searchSmsRecipients, sendSmsToCustomer } from "../Actions/smsActions";
-import { SmsTemplateMenu } from "./SmsTemplateMenu";
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
+import { ArrowLeft, CalendarClock, Loader2, Phone, Search, Send, User } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DocsLink } from '@/components/docs-link'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
+import { searchSmsRecipients, sendSmsToCustomer } from '../Actions/smsActions'
+import { SmsTemplateMenu } from './SmsTemplateMenu'
 
 interface Recipient {
-  id: string;
-  name: string;
-  company: string | null;
-  phone: string | null;
+  id: string
+  name: string
+  company: string | null
+  phone: string | null
 }
 
 /** GSM-7 segment sizes; a single message, then concatenated ones. */
-const SINGLE_SEGMENT = 160;
-const MULTI_SEGMENT = 153;
+const SINGLE_SEGMENT = 160
+const MULTI_SEGMENT = 153
 
 function segmentCount(length: number): number {
-  if (length === 0) return 0;
-  if (length <= SINGLE_SEGMENT) return 1;
-  return Math.ceil(length / MULTI_SEGMENT);
+  if (length === 0) return 0
+  if (length <= SINGLE_SEGMENT) return 1
+  return Math.ceil(length / MULTI_SEGMENT)
 }
 
 interface NewSmsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
   /** Preselected recipient, e.g. the thread that is open */
-  defaultRecipient?: Recipient | null;
+  defaultRecipient?: Recipient | null
   /** Called with the customer id once a message is on its way */
-  onSent?: (customerId: string) => void;
+  onSent?: (customerId: string) => void
   /** Hands the drafted text over to the scheduling dialog */
-  onSchedule?: (recipient: Recipient | null, body: string) => void;
+  onSchedule?: (recipient: Recipient | null, body: string) => void
 }
 
 export function NewSmsDialog({
@@ -54,61 +49,61 @@ export function NewSmsDialog({
   onSent,
   onSchedule,
 }: NewSmsDialogProps) {
-  const t = useTranslations("messages.compose");
-  const tc = useTranslations("common.buttons");
+  const t = useTranslations('messages.compose')
+  const tc = useTranslations('common.buttons')
 
-  const [recipient, setRecipient] = useState<Recipient | null>(defaultRecipient);
-  const [results, setResults] = useState<Recipient[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
+  const [recipient, setRecipient] = useState<Recipient | null>(defaultRecipient)
+  const [results, setResults] = useState<Recipient[]>([])
+  const [searching, setSearching] = useState(false)
+  const [body, setBody] = useState('')
+  const [sending, setSending] = useState(false)
 
   const runSearch = useMemo(
     () => async (term: string | undefined) => {
-      setSearching(true);
-      const result = await searchSmsRecipients(term ?? undefined);
-      if (result.success && result.data) setResults(result.data);
-      setSearching(false);
+      setSearching(true)
+      const result = await searchSmsRecipients(term ?? undefined)
+      if (result.success && result.data) setResults(result.data)
+      setSearching(false)
     },
-    [],
-  );
+    []
+  )
 
-  const { value: search, setValue: setSearch } = useDebouncedSearch("", runSearch);
+  const { value: search, setValue: setSearch } = useDebouncedSearch('', runSearch)
 
   // Re-seed on every open, and load the first page of recipients
   useEffect(() => {
-    if (!open) return;
-    setRecipient(defaultRecipient);
-    setBody("");
-    setSearch("");
-    runSearch("");
-  }, [open, defaultRecipient, runSearch, setSearch]);
+    if (!open) return
+    setRecipient(defaultRecipient)
+    setBody('')
+    setSearch('')
+    runSearch('')
+  }, [open, defaultRecipient, runSearch, setSearch])
 
   const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!recipient || !body.trim()) return;
-    setSending(true);
+    e.preventDefault()
+    if (!recipient || !body.trim()) return
+    setSending(true)
 
-    const result = await sendSmsToCustomer({ customerId: recipient.id, body: body.trim() });
+    const result = await sendSmsToCustomer({ customerId: recipient.id, body: body.trim() })
 
     if (result.success) {
-      toast.success(t("sent", { name: recipient.name }));
-      onOpenChange(false);
-      onSent?.(recipient.id);
+      toast.success(t('sent', { name: recipient.name }))
+      onOpenChange(false)
+      onSent?.(recipient.id)
     } else {
-      toast.error(result.error || t("sendError"));
+      toast.error(result.error || t('sendError'))
     }
-    setSending(false);
-  };
+    setSending(false)
+  }
 
-  const chars = body.length;
-  const segments = segmentCount(chars);
+  const chars = body.length
+  const segments = segmentCount(chars)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DocsLink href="/docs/integrations/sms" variant="hint" className="self-start" />
         </DialogHeader>
 
@@ -119,7 +114,7 @@ export function NewSmsDialog({
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("searchPlaceholder")}
+                placeholder={t('searchPlaceholder')}
                 className="pl-9"
                 autoFocus
               />
@@ -132,9 +127,9 @@ export function NewSmsDialog({
               {results.length === 0 ? (
                 <div className="px-2 py-8 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {search ? t("noMatches") : t("noRecipients")}
+                    {search ? t('noMatches') : t('noRecipients')}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{t("noRecipientsHint")}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('noRecipientsHint')}</p>
                 </div>
               ) : (
                 <div className="space-y-1">
@@ -177,7 +172,7 @@ export function NewSmsDialog({
                 size="icon"
                 className="h-7 w-7 shrink-0"
                 onClick={() => setRecipient(null)}
-                aria-label={t("changeRecipient")}
+                aria-label={t('changeRecipient')}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -189,7 +184,7 @@ export function NewSmsDialog({
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="new-sms-body">{t("messageLabel")}</Label>
+                <Label htmlFor="new-sms-body">{t('messageLabel')}</Label>
                 <SmsTemplateMenu
                   className="h-7 px-2 text-xs text-muted-foreground"
                   onPick={(template) =>
@@ -201,31 +196,31 @@ export function NewSmsDialog({
                 id="new-sms-body"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                placeholder={t("messagePlaceholder", { name: recipient.name })}
+                placeholder={t('messagePlaceholder', { name: recipient.name })}
                 rows={5}
                 autoFocus
                 required
               />
               <p className="text-right text-xs text-muted-foreground tabular-nums">
-                {t("segments", { chars, segments })}
+                {t('segments', { chars, segments })}
               </p>
             </div>
 
             <div className="flex flex-wrap justify-end gap-2 pt-1">
               <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
-                {tc("cancel")}
+                {tc('cancel')}
               </Button>
               {onSchedule && (
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    onOpenChange(false);
-                    onSchedule(recipient, body.trim());
+                    onOpenChange(false)
+                    onSchedule(recipient, body.trim())
                   }}
                 >
                   <CalendarClock className="mr-2 h-4 w-4" />
-                  {t("scheduleInstead")}
+                  {t('scheduleInstead')}
                 </Button>
               )}
               <Button type="submit" disabled={sending || !body.trim()}>
@@ -234,12 +229,12 @@ export function NewSmsDialog({
                 ) : (
                   <Send className="mr-2 h-4 w-4" />
                 )}
-                {t("send")}
+                {t('send')}
               </Button>
             </div>
           </form>
         )}
       </DialogContent>
     </Dialog>
-  );
+  )
 }

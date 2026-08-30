@@ -47,16 +47,12 @@ export default function ForgotPasswordPage() {
             <AuthLogo alt={tc('brandName')} />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t('description')}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{t('description')}</p>
         </div>
 
         {sent ? (
           <div className="space-y-4">
-            <p className="text-center text-sm text-muted-foreground">
-              {t('successMessage')}
-            </p>
+            <p className="text-center text-sm text-muted-foreground">{t('successMessage')}</p>
             <Link href="/auth/sign-in" className="block">
               <Button variant="outline" className="h-11 w-full">
                 <ArrowLeft className="mr-2 h-4 w-4" />

@@ -1,9 +1,5 @@
-import { db } from "@/lib/db";
-import {
-  INVOICE_ISSUED_KEY,
-  SAMPLE_DATA_IDS_KEY,
-  parseSampleDataIds,
-} from "./onboardingKeys";
+import { db } from '@/lib/db'
+import { INVOICE_ISSUED_KEY, SAMPLE_DATA_IDS_KEY, parseSampleDataIds } from './onboardingKeys'
 
 /**
  * Records that the organization has produced a real invoice PDF.
@@ -25,12 +21,12 @@ export async function markInvoiceIssued(
         key: { in: [INVOICE_ISSUED_KEY, SAMPLE_DATA_IDS_KEY] },
       },
       select: { key: true, value: true },
-    });
-    const byKey = new Map(rows.map((r) => [r.key, r.value]));
-    if (byKey.get(INVOICE_ISSUED_KEY) === "true") return;
+    })
+    const byKey = new Map(rows.map((r) => [r.key, r.value]))
+    if (byKey.get(INVOICE_ISSUED_KEY) === 'true') return
 
-    const sampleIds = parseSampleDataIds(byKey.get(SAMPLE_DATA_IDS_KEY));
-    if (sampleIds.serviceRecords.includes(serviceRecordId)) return;
+    const sampleIds = parseSampleDataIds(byKey.get(SAMPLE_DATA_IDS_KEY))
+    if (sampleIds.serviceRecords.includes(serviceRecordId)) return
 
     await db.appSetting.upsert({
       where: {
@@ -39,15 +35,12 @@ export async function markInvoiceIssued(
       create: {
         organizationId,
         key: INVOICE_ISSUED_KEY,
-        value: "true",
+        value: 'true',
         userId,
       },
-      update: { value: "true" },
-    });
+      update: { value: 'true' },
+    })
   } catch (error) {
-    console.error(
-      "[markInvoiceIssued] Failed:",
-      error instanceof Error ? error.message : error
-    );
+    console.error('[markInvoiceIssued] Failed:', error instanceof Error ? error.message : error)
   }
 }

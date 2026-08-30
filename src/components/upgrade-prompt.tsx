@@ -1,27 +1,21 @@
-import Link from "next/link";
-import { isCloudMode } from "@/lib/features";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Zap } from "lucide-react";
-import { useTranslations } from "next-intl";
+import Link from 'next/link'
+import { isCloudMode } from '@/lib/features'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Zap } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export function UpgradePrompt({
   feature,
-  title = "Upgrade Required",
+  title = 'Upgrade Required',
   description,
 }: {
-  feature: string;
-  title?: string;
-  description?: string;
+  feature: string
+  title?: string
+  description?: string
 }) {
-  const t = useTranslations("common.shared");
-  const cloud = isCloudMode();
+  const t = useTranslations('common.shared')
+  const cloud = isCloudMode()
 
   return (
     <div className="flex flex-1 items-center justify-center p-4">
@@ -32,22 +26,21 @@ export function UpgradePrompt({
             {title}
           </CardTitle>
           <CardDescription>
-            {description ??
-              `The ${feature} feature is not available on your current plan.`}
+            {description ?? `The ${feature} feature is not available on your current plan.`}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {cloud ? (
             <Button asChild>
-              <Link href="/settings/subscription">{t("viewPlans")}</Link>
+              <Link href="/settings/subscription">{t('viewPlans')}</Link>
             </Button>
           ) : (
             <Button asChild>
-              <Link href="/settings/license">{t("manageLicense")}</Link>
+              <Link href="/settings/license">{t('manageLicense')}</Link>
             </Button>
           )}
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

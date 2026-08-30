@@ -1,7 +1,7 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { getCachedSession } from "@/lib/cached-session";
+import { db } from '@/lib/db'
+import { getCachedSession } from '@/lib/cached-session'
 
 /**
  * Records that the current user has seen (or dismissed) the update banner for
@@ -10,15 +10,15 @@ import { getCachedSession } from "@/lib/cached-session";
  * than org-scoped: the version is a property of the deployment, not the org.
  */
 export async function markVersionSeen(version: string) {
-  const session = await getCachedSession();
-  if (!session?.user?.id) return { success: false };
+  const session = await getCachedSession()
+  if (!session?.user?.id) return { success: false }
 
-  const clean = version.slice(0, 64);
-  if (!clean) return { success: false };
+  const clean = version.slice(0, 64)
+  if (!clean) return { success: false }
 
   await db.user.update({
     where: { id: session.user.id },
     data: { lastSeenVersion: clean },
-  });
-  return { success: true };
+  })
+  return { success: true }
 }

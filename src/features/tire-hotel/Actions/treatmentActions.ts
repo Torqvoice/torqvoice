@@ -136,7 +136,14 @@ export async function markTreatment(input: unknown) {
         action: 'tire_treatment.mark',
         entity: 'TireTreatment',
         entityId: result.id,
-        details: { key: 'tire_treatment_mark', params: { type: result.type, status: result.status, ref: result.reference ?? result.tireSetId } },
+        details: {
+          key: 'tire_treatment_mark',
+          params: {
+            type: result.type,
+            status: result.status,
+            ref: result.reference ?? result.tireSetId,
+          },
+        },
         metadata: { tireSetId: result.tireSetId },
       }),
     }
@@ -169,7 +176,10 @@ export async function completeAllTreatments(tireSetId: string) {
         action: 'tire_treatment.complete_all',
         entity: 'TireSet',
         entityId: result.id,
-        details: { key: 'tire_treatment_complete_all', params: { count: result.count, ref: result.reference ?? result.id } },
+        details: {
+          key: 'tire_treatment_complete_all',
+          params: { count: result.count, ref: result.reference ?? result.id },
+        },
       }),
     }
   )

@@ -1,22 +1,14 @@
-"use client";
+'use client'
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import {
-  Loader2,
-  Lock,
-  MessageSquarePlus,
-  Send,
-  Sparkles,
-  Trash2,
-  User,
-} from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Card } from '@/components/ui/card'
+import { Loader2, Lock, MessageSquarePlus, Send, Sparkles, Trash2, User } from 'lucide-react'
 import {
   aiChat,
   listAiChats,
@@ -24,135 +16,121 @@ import {
   deleteAiChat,
   type ChatMessage,
   type ChatSummary,
-} from "../Actions/aiChatActions";
-import { cn } from "@/lib/utils";
+} from '../Actions/aiChatActions'
+import { cn } from '@/lib/utils'
 
-const SUGGESTIONS_KEYS = [
-  "suggestion1",
-  "suggestion2",
-  "suggestion3",
-  "suggestion4",
-] as const;
+const SUGGESTIONS_KEYS = ['suggestion1', 'suggestion2', 'suggestion3', 'suggestion4'] as const
 
 export function AiChatPage() {
-  const t = useTranslations("aiChat");
-  const router = useRouter();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [chatId, setChatId] = useState<string | null>(null);
-  const [chats, setChats] = useState<ChatSummary[]>([]);
-  const [loadingChats, setLoadingChats] = useState(true);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const t = useTranslations('aiChat')
+  const router = useRouter()
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [chatId, setChatId] = useState<string | null>(null)
+  const [chats, setChats] = useState<ChatSummary[]>([])
+  const [loadingChats, setLoadingChats] = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading, scrollToBottom]);
+    scrollToBottom()
+  }, [messages, loading, scrollToBottom])
 
   // Load chat list on mount
   useEffect(() => {
-    loadChatList();
-  }, []);
+    loadChatList()
+  }, [])
 
   const loadChatList = async () => {
-    setLoadingChats(true);
+    setLoadingChats(true)
     try {
-      const result = await listAiChats();
+      const result = await listAiChats()
       if (result.success && result.data) {
-        setChats(result.data);
+        setChats(result.data)
       }
     } catch {
       // ignore
     } finally {
-      setLoadingChats(false);
+      setLoadingChats(false)
     }
-  };
+  }
 
   const handleNewChat = () => {
-    setChatId(null);
-    setMessages([]);
-    setInput("");
-    textareaRef.current?.focus();
-  };
+    setChatId(null)
+    setMessages([])
+    setInput('')
+    textareaRef.current?.focus()
+  }
 
   const handleSelectChat = async (id: string) => {
-    if (id === chatId) return;
+    if (id === chatId) return
     try {
-      const result = await loadAiChat(id);
+      const result = await loadAiChat(id)
       if (result.success && result.data) {
-        setChatId(id);
-        setMessages(result.data);
+        setChatId(id)
+        setMessages(result.data)
       }
     } catch {
       // ignore
     }
-  };
+  }
 
   const handleDeleteChat = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     try {
-      await deleteAiChat(id);
-      setChats((prev) => prev.filter((c) => c.id !== id));
+      await deleteAiChat(id)
+      setChats((prev) => prev.filter((c) => c.id !== id))
       if (chatId === id) {
-        handleNewChat();
+        handleNewChat()
       }
     } catch {
       // ignore
     }
-  };
+  }
 
   const sendMessage = async (text: string) => {
-    if (!text.trim() || loading) return;
+    if (!text.trim() || loading) return
 
-    const userMessage: ChatMessage = { role: "user", content: text.trim() };
-    const updated = [...messages, userMessage];
-    setMessages(updated);
-    setInput("");
-    setLoading(true);
+    const userMessage: ChatMessage = { role: 'user', content: text.trim() }
+    const updated = [...messages, userMessage]
+    setMessages(updated)
+    setInput('')
+    setLoading(true)
 
     try {
-      const result = await aiChat(chatId, updated);
+      const result = await aiChat(chatId, updated)
       if (result.success && result.data) {
-        const { content, chatId: returnedChatId } = result.data;
-        setMessages([
-          ...updated,
-          { role: "assistant", content },
-        ]);
+        const { content, chatId: returnedChatId } = result.data
+        setMessages([...updated, { role: 'assistant', content }])
         if (returnedChatId && returnedChatId !== chatId) {
-          setChatId(returnedChatId);
+          setChatId(returnedChatId)
         }
         // Refresh chat list to show new/updated chat
-        loadChatList();
+        loadChatList()
       } else {
-        setMessages([
-          ...updated,
-          { role: "assistant", content: result.error || t("error") },
-        ]);
+        setMessages([...updated, { role: 'assistant', content: result.error || t('error') }])
       }
     } catch {
-      setMessages([
-        ...updated,
-        { role: "assistant", content: t("error") },
-      ]);
+      setMessages([...updated, { role: 'assistant', content: t('error') }])
     } finally {
-      setLoading(false);
-      textareaRef.current?.focus();
+      setLoading(false)
+      textareaRef.current?.focus()
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage(input);
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage(input)
     }
-  };
+  }
 
   return (
     <div className="flex flex-1 overflow-hidden">
@@ -166,11 +144,11 @@ export function AiChatPage() {
             onClick={handleNewChat}
           >
             <MessageSquarePlus className="h-4 w-4" />
-            {t("newChat")}
+            {t('newChat')}
           </Button>
           <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Lock className="h-3 w-3 shrink-0" />
-            {t("chatsPrivate")}
+            {t('chatsPrivate')}
           </p>
         </div>
 
@@ -180,9 +158,7 @@ export function AiChatPage() {
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>
           ) : chats.length === 0 ? (
-            <p className="p-4 text-center text-xs text-muted-foreground">
-              {t("noChats")}
-            </p>
+            <p className="p-4 text-center text-xs text-muted-foreground">{t('noChats')}</p>
           ) : (
             <div className="flex flex-col gap-0.5 p-2">
               {chats.map((chat) => (
@@ -191,10 +167,12 @@ export function AiChatPage() {
                   role="button"
                   tabIndex={0}
                   onClick={() => handleSelectChat(chat.id)}
-                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleSelectChat(chat.id); }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') handleSelectChat(chat.id)
+                  }}
                   className={cn(
-                    "group flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent",
-                    chat.id === chatId && "bg-accent"
+                    'group flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent',
+                    chat.id === chatId && 'bg-accent'
                   )}
                 >
                   <span className="flex-1 truncate">{chat.title}</span>
@@ -202,7 +180,7 @@ export function AiChatPage() {
                     type="button"
                     onClick={(e) => handleDeleteChat(chat.id, e)}
                     className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                    title={t("deleteChat")}
+                    title={t('deleteChat')}
                   >
                     <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
                   </button>
@@ -223,10 +201,8 @@ export function AiChatPage() {
                 <div className="rounded-full bg-primary/10 p-3">
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
-                <h2 className="text-lg font-semibold">{t("title")}</h2>
-                <p className="max-w-md text-sm text-muted-foreground">
-                  {t("description")}
-                </p>
+                <h2 className="text-lg font-semibold">{t('title')}</h2>
+                <p className="max-w-md text-sm text-muted-foreground">{t('description')}</p>
               </div>
               <div className="grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2">
                 {SUGGESTIONS_KEYS.map((key) => (
@@ -244,21 +220,21 @@ export function AiChatPage() {
           ) : (
             <div className="mx-auto max-w-5xl space-y-4 pb-4">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
-                  {msg.role === "assistant" && (
+                <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+                  {msg.role === 'assistant' && (
                     <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10">
                       <Sparkles className="h-3.5 w-3.5 text-primary" />
                     </div>
                   )}
                   <Card
                     className={cn(
-                      "px-4 py-3",
-                      msg.role === "user"
-                        ? "max-w-[85%] bg-primary text-primary-foreground"
-                        : "max-w-full bg-card"
+                      'px-4 py-3',
+                      msg.role === 'user'
+                        ? 'max-w-[85%] bg-primary text-primary-foreground'
+                        : 'max-w-full bg-card'
                     )}
                   >
-                    {msg.role === "user" ? (
+                    {msg.role === 'user' ? (
                       <div className="whitespace-pre-wrap text-sm">{msg.content}</div>
                     ) : (
                       <div className="ai-markdown text-sm">
@@ -271,25 +247,30 @@ export function AiChatPage() {
                               </div>
                             ),
                             a: ({ href, children }) => {
-                              if (href?.startsWith("/")) {
+                              if (href?.startsWith('/')) {
                                 return (
                                   <a
                                     href={href}
                                     onClick={(e) => {
-                                      e.preventDefault();
-                                      router.push(href);
+                                      e.preventDefault()
+                                      router.push(href)
                                     }}
                                     className="text-primary underline underline-offset-2 hover:text-primary/80"
                                   >
                                     {children}
                                   </a>
-                                );
+                                )
                               }
                               return (
-                                <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+                                <a
+                                  href={href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary underline underline-offset-2"
+                                >
                                   {children}
                                 </a>
-                              );
+                              )
                             },
                           }}
                         >
@@ -298,7 +279,7 @@ export function AiChatPage() {
                       </div>
                     )}
                   </Card>
-                  {msg.role === "user" && (
+                  {msg.role === 'user' && (
                     <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted">
                       <User className="h-3.5 w-3.5" />
                     </div>
@@ -327,7 +308,7 @@ export function AiChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={t("placeholder")}
+              placeholder={t('placeholder')}
               rows={1}
               className="min-h-[44px] max-h-32 resize-none"
               disabled={loading}
@@ -338,7 +319,7 @@ export function AiChatPage() {
               className="shrink-0"
               onClick={() => sendMessage(input)}
               disabled={loading || !input.trim()}
-              aria-label={t("sendMessage")}
+              aria-label={t('sendMessage')}
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -350,5 +331,5 @@ export function AiChatPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

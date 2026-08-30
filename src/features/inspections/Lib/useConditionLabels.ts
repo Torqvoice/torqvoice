@@ -1,13 +1,8 @@
-"use client";
+'use client'
 
-import { useTranslations } from "next-intl";
-import { useCallback } from "react";
-import {
-  conditionGrade,
-  type Condition,
-  type SeverityScale,
-  type TestResult,
-} from "./conditions";
+import { useTranslations } from 'next-intl'
+import { useCallback } from 'react'
+import { conditionGrade, type Condition, type SeverityScale, type TestResult } from './conditions'
 
 /**
  * Translated names for the defect grades and the overall result.
@@ -19,32 +14,29 @@ import {
  * whichever language the reader has.
  */
 export function useConditionLabels(scale: SeverityScale, country?: string | null) {
-  const t = useTranslations("inspections");
+  const t = useTranslations('inspections')
 
   const label = useCallback(
-    (condition: Condition) => t(`grades.${scale === "basic" ? "basic" : "eu"}.${condition}`),
+    (condition: Condition) => t(`grades.${scale === 'basic' ? 'basic' : 'eu'}.${condition}`),
     [t, scale]
-  );
+  )
 
-  const short = useCallback(
-    (condition: Condition) => t(`grades.short.${condition}`),
-    [t]
-  );
+  const short = useCallback((condition: Condition) => t(`grades.short.${condition}`), [t])
 
-  const hint = useCallback((condition: Condition) => t(`grades.hint.${condition}`), [t]);
+  const hint = useCallback((condition: Condition) => t(`grades.hint.${condition}`), [t])
 
   /** "2 — Vesentlig mangel" where the country numbers its grades, else the name. */
   const graded = useCallback(
     (condition: Condition) => {
-      const grade = conditionGrade(condition, scale, country);
-      const text = label(condition);
-      return grade === null ? text : `${grade} — ${text}`;
+      const grade = conditionGrade(condition, scale, country)
+      const text = label(condition)
+      return grade === null ? text : `${grade} — ${text}`
     },
     [label, scale, country]
-  );
+  )
 
-  const result = useCallback((value: TestResult) => t(`results.${value}`), [t]);
-  const resultDetail = useCallback((value: TestResult) => t(`results.detail.${value}`), [t]);
+  const result = useCallback((value: TestResult) => t(`results.${value}`), [t])
+  const resultDetail = useCallback((value: TestResult) => t(`results.detail.${value}`), [t])
 
-  return { label, short, hint, graded, result, resultDetail };
+  return { label, short, hint, graded, result, resultDetail }
 }

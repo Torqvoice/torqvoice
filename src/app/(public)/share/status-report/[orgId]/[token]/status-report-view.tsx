@@ -1,55 +1,64 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle, User, Calendar, Wrench, CarFront } from "lucide-react";
-import { submitStatusReportFeedback } from "@/features/status-reports/Actions/submitFeedback";
+import { useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Loader2, CheckCircle, User, Calendar, Wrench, CarFront } from 'lucide-react'
+import { submitStatusReportFeedback } from '@/features/status-reports/Actions/submitFeedback'
 
 interface StatusReportViewProps {
   report: {
-    id: string;
-    title: string | null;
-    message: string | null;
-    videoUrl: string | null;
-    videoFileName: string | null;
-    status: string;
-    createdAt: string;
-    customerFeedback: string | null;
-    feedbackAt: string | null;
-  };
-  vehicle: { make: string; model: string; year: number; licensePlate: string | null } | null;
-  serviceTitle: string;
-  technicianName: string | null;
-  workshopName: string;
-  workshopPhone: string;
-  primaryColor: string;
-  token: string;
-  showBranding: boolean;
+    id: string
+    title: string | null
+    message: string | null
+    videoUrl: string | null
+    videoFileName: string | null
+    status: string
+    createdAt: string
+    customerFeedback: string | null
+    feedbackAt: string | null
+  }
+  vehicle: { make: string; model: string; year: number; licensePlate: string | null } | null
+  serviceTitle: string
+  technicianName: string | null
+  workshopName: string
+  workshopPhone: string
+  primaryColor: string
+  token: string
+  showBranding: boolean
 }
 
 export function StatusReportView({
-  report, vehicle, serviceTitle, technicianName,
-  workshopName, workshopPhone, primaryColor, token, showBranding,
+  report,
+  vehicle,
+  serviceTitle,
+  technicianName,
+  workshopName,
+  workshopPhone,
+  primaryColor,
+  token,
+  showBranding,
 }: StatusReportViewProps) {
-  const [feedback, setFeedback] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(!!report.customerFeedback);
+  const [feedback, setFeedback] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(!!report.customerFeedback)
 
   const createdDate = new Date(report.createdAt).toLocaleDateString(undefined, {
-    year: "numeric", month: "long", day: "numeric",
-  });
-  const vehicleLabel = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : null;
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  const vehicleLabel = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : null
 
   async function handleSubmitFeedback() {
-    if (!feedback.trim() || submitting) return;
-    setSubmitting(true);
+    if (!feedback.trim() || submitting) return
+    setSubmitting(true)
     try {
-      await submitStatusReportFeedback({ token, feedback: feedback.trim() });
-      setSubmitted(true);
+      await submitStatusReportFeedback({ token, feedback: feedback.trim() })
+      setSubmitted(true)
     } catch {
-      setSubmitting(false);
+      setSubmitting(false)
     }
   }
 
@@ -118,9 +127,7 @@ export function StatusReportView({
               <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
                 Message from technician
               </h2>
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                {report.message}
-              </p>
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{report.message}</p>
             </CardContent>
           </Card>
         )}
@@ -176,5 +183,5 @@ export function StatusReportView({
         )}
       </div>
     </div>
-  );
+  )
 }

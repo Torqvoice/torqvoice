@@ -1,25 +1,18 @@
-"use client";
+'use client'
 
-import { interactiveRow } from "@/lib/interactive-row";
-import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
-import { Clock, GripVertical, Wrench, ClipboardCheck } from "lucide-react";
-import type { WorkBoardJob } from "../Actions/boardActions";
-import { getJobDateRange, getDurationMinutes } from "../utils/datetime";
-import { formatDuration } from "./DurationSlider";
+import { interactiveRow } from '@/lib/interactive-row'
+import { useDraggable } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
+import { Clock, GripVertical, Wrench, ClipboardCheck } from 'lucide-react'
+import type { WorkBoardJob } from '../Actions/boardActions'
+import { getJobDateRange, getDurationMinutes } from '../utils/datetime'
+import { formatDuration } from './DurationSlider'
 
-export function BoardJobCard({
-  job,
-  onClick,
-}: {
-  job: WorkBoardJob;
-  onClick?: () => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: job.id,
-      data: { job },
-    });
+export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: job.id,
+    data: { job },
+  })
 
   const style = transform
     ? {
@@ -27,12 +20,12 @@ export function BoardJobCard({
         zIndex: isDragging ? 50 : undefined,
         opacity: isDragging ? 0.5 : undefined,
       }
-    : undefined;
+    : undefined
 
-  const isServiceRecord = job.type === "serviceRecord";
+  const isServiceRecord = job.type === 'serviceRecord'
 
-  const { start, end } = getJobDateRange(job);
-  const durationMins = start && end ? getDurationMinutes(start, end) : null;
+  const { start, end } = getJobDateRange(job)
+  const durationMins = start && end ? getDurationMinutes(start, end) : null
 
   return (
     <div
@@ -61,13 +54,13 @@ export function BoardJobCard({
         {job.vehicle && (
           <p className="truncate text-muted-foreground">
             {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
-            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ""}
+            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
           </p>
         )}
         <div className="flex items-center gap-1.5">
           {job.status && (
             <span className="inline-block rounded bg-muted px-1 py-0.5 text-[10px] capitalize">
-              {job.status.replace(/_/g, " ")}
+              {job.status.replace(/_/g, ' ')}
             </span>
           )}
           {durationMins != null && durationMins > 0 && (
@@ -79,7 +72,7 @@ export function BoardJobCard({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export function UnassignedJobCard({
@@ -88,27 +81,37 @@ export function UnassignedJobCard({
 }: {
   job:
     | {
-        id: string;
-        title: string;
-        status: string;
-        vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null } | null;
+        id: string
+        title: string
+        status: string
+        vehicle: {
+          id: string
+          make: string
+          model: string
+          year: number
+          licensePlate: string | null
+        } | null
       }
     | {
-        id: string;
-        status: string;
-        vehicle: { id: string; make: string; model: string; year: number; licensePlate: string | null };
-        template: { name: string };
-      };
-  type: "serviceRecord" | "inspection";
+        id: string
+        status: string
+        vehicle: {
+          id: string
+          make: string
+          model: string
+          year: number
+          licensePlate: string | null
+        }
+        template: { name: string }
+      }
+  type: 'serviceRecord' | 'inspection'
 }) {
-  const dragId =
-    type === "serviceRecord" ? `unassigned-sr-${job.id}` : `unassigned-insp-${job.id}`;
+  const dragId = type === 'serviceRecord' ? `unassigned-sr-${job.id}` : `unassigned-insp-${job.id}`
 
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: dragId,
-      data: { job, type },
-    });
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: dragId,
+    data: { job, type },
+  })
 
   const style = transform
     ? {
@@ -116,12 +119,12 @@ export function UnassignedJobCard({
         zIndex: isDragging ? 50 : undefined,
         opacity: isDragging ? 0.5 : undefined,
       }
-    : undefined;
+    : undefined
 
-  const isServiceRecord = type === "serviceRecord";
+  const isServiceRecord = type === 'serviceRecord'
   const title = isServiceRecord
     ? (job as { title: string }).title
-    : (job as { template: { name: string } }).template.name;
+    : (job as { template: { name: string } }).template.name
 
   return (
     <div
@@ -143,10 +146,10 @@ export function UnassignedJobCard({
         {job.vehicle && (
           <p className="truncate text-muted-foreground">
             {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
-            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ""}
+            {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
           </p>
         )}
       </div>
     </div>
-  );
+  )
 }

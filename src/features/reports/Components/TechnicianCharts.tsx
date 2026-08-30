@@ -1,29 +1,21 @@
-"use client";
+'use client'
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import type { TechnicianMetrics } from "../Schema/reportTypes";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import type { TechnicianMetrics } from '../Schema/reportTypes'
 
 interface TechnicianBarChartProps {
-  data: TechnicianMetrics[];
-  formatCurrency: (value: number) => string;
-  labels?: { revenue: string };
+  data: TechnicianMetrics[]
+  formatCurrency: (value: number) => string
+  labels?: { revenue: string }
 }
 
 export function TechnicianBarChart({ data, formatCurrency, labels }: TechnicianBarChartProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) return null
 
   const chartData = data.slice(0, 10).map((t) => ({
-    name: t.techName.length > 20 ? t.techName.slice(0, 18) + "\u2026" : t.techName,
+    name: t.techName.length > 20 ? t.techName.slice(0, 18) + '\u2026' : t.techName,
     totalRevenue: t.totalRevenue,
-  }));
+  }))
 
   return (
     <ResponsiveContainer width="100%" height={Math.max(200, chartData.length * 40)}>
@@ -48,16 +40,21 @@ export function TechnicianBarChart({ data, formatCurrency, labels }: TechnicianB
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
-          wrapperStyle={{ outline: "none" }}
+          wrapperStyle={{ outline: 'none' }}
           contentStyle={{
-            backgroundColor: "var(--popover)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--popover-foreground)",
+            backgroundColor: 'var(--popover)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--popover-foreground)',
           }}
         />
-        <Bar dataKey="totalRevenue" name={labels?.revenue ?? "Revenue"} fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+        <Bar
+          dataKey="totalRevenue"
+          name={labels?.revenue ?? 'Revenue'}
+          fill="#8b5cf6"
+          radius={[0, 4, 4, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
-  );
+  )
 }

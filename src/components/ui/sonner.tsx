@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import {
   CircleCheckIcon,
@@ -6,11 +6,11 @@ import {
   Loader2Icon,
   OctagonXIcon,
   TriangleAlertIcon,
-} from "lucide-react"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { useEffect, useState } from "react"
-import { useTheme } from "@/components/theme-provider"
-import { DEFAULT_THEME, getThemeMode } from "@/lib/themes"
+} from 'lucide-react'
+import { Toaster as Sonner, type ToasterProps } from 'sonner'
+import { useEffect, useState } from 'react'
+import { useTheme } from '@/components/theme-provider'
+import { DEFAULT_THEME, getThemeMode } from '@/lib/themes'
 
 const Toaster = ({ ...props }: ToasterProps) => {
   // Presets resolve to a light or dark mode; sonner only understands those.
@@ -33,10 +33,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          '--normal-bg': 'var(--popover)',
+          '--normal-text': 'var(--popover-foreground)',
+          '--normal-border': 'var(--border)',
+          '--border-radius': 'var(--radius)',
         } as React.CSSProperties
       }
       {...props}

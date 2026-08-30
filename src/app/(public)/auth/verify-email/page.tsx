@@ -96,9 +96,7 @@ export default function VerifyEmailPage() {
             <Mail className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t('description', { email })}
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">{t('description', { email })}</p>
         </div>
 
         <div className="space-y-4">
@@ -122,21 +120,13 @@ export default function VerifyEmailPage() {
               ) : (
                 <Mail className="mr-2 h-4 w-4" />
               )}
-              {cooldown > 0
-                ? t('resendCooldown', { seconds: cooldown })
-                : t('resend')}
+              {cooldown > 0 ? t('resendCooldown', { seconds: cooldown }) : t('resend')}
             </Button>
           )}
 
-          <p className="text-center text-xs text-muted-foreground">
-            {t('checkSpam')}
-          </p>
+          <p className="text-center text-xs text-muted-foreground">{t('checkSpam')}</p>
 
-          <Button
-            variant="ghost"
-            className="h-11 w-full"
-            onClick={handleSignOut}
-          >
+          <Button variant="ghost" className="h-11 w-full" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             {t('signOut')}
           </Button>

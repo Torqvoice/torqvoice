@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const createStatusReportSchema = z.object({
   serviceRecordId: z.string(),
@@ -7,7 +7,7 @@ export const createStatusReportSchema = z.object({
   videoUrl: z.string().optional(),
   videoFileName: z.string().optional(),
   expiresAt: z.string().optional(),
-});
+})
 
 export const sendStatusReportSchema = z.object({
   statusReportId: z.string(),
@@ -17,13 +17,13 @@ export const sendStatusReportSchema = z.object({
     telegram: z.boolean(),
   }),
   customMessage: z.string().optional(),
-});
+})
 
 export const submitFeedbackSchema = z.object({
   token: z.string(),
   feedback: z.string().min(1).max(2000),
-});
+})
 
-export type CreateStatusReportInput = z.infer<typeof createStatusReportSchema>;
-export type SendStatusReportInput = z.infer<typeof sendStatusReportSchema>;
-export type SubmitFeedbackInput = z.infer<typeof submitFeedbackSchema>;
+export type CreateStatusReportInput = z.infer<typeof createStatusReportSchema>
+export type SendStatusReportInput = z.infer<typeof sendStatusReportSchema>
+export type SubmitFeedbackInput = z.infer<typeof submitFeedbackSchema>

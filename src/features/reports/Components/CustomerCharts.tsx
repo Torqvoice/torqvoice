@@ -1,29 +1,21 @@
-"use client";
+'use client'
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import type { TopCustomer } from "../Schema/reportTypes";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import type { TopCustomer } from '../Schema/reportTypes'
 
 interface TopCustomersChartProps {
-  data: TopCustomer[];
-  formatCurrency: (value: number) => string;
-  labels?: { totalSpent: string };
+  data: TopCustomer[]
+  formatCurrency: (value: number) => string
+  labels?: { totalSpent: string }
 }
 
 export function TopCustomersChart({ data, formatCurrency, labels }: TopCustomersChartProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) return null
 
   const chartData = data.slice(0, 10).map((c) => ({
-    name: c.name.length > 20 ? c.name.slice(0, 18) + "\u2026" : c.name,
+    name: c.name.length > 20 ? c.name.slice(0, 18) + '\u2026' : c.name,
     totalSpent: c.totalSpent,
-  }));
+  }))
 
   return (
     <ResponsiveContainer width="100%" height={Math.max(200, chartData.length * 40)}>
@@ -48,16 +40,21 @@ export function TopCustomersChart({ data, formatCurrency, labels }: TopCustomers
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
-          wrapperStyle={{ outline: "none" }}
+          wrapperStyle={{ outline: 'none' }}
           contentStyle={{
-            backgroundColor: "var(--popover)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--popover-foreground)",
+            backgroundColor: 'var(--popover)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--popover-foreground)',
           }}
         />
-        <Bar dataKey="totalSpent" name={labels?.totalSpent ?? "Total Spent"} fill="#3b82f6" radius={[0, 4, 4, 0]} />
+        <Bar
+          dataKey="totalSpent"
+          name={labels?.totalSpent ?? 'Total Spent'}
+          fill="#3b82f6"
+          radius={[0, 4, 4, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
-  );
+  )
 }

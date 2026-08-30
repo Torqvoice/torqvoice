@@ -1,30 +1,30 @@
-import { db } from "@/lib/db";
-import { notFound } from "next/navigation";
-import { StatusReportView } from "./status-report-view";
-import { resolvePortalOrg } from "@/lib/portal-slug";
-import { getFeatures } from "@/lib/features";
-import type { Metadata } from "next";
+import { db } from '@/lib/db'
+import { notFound } from 'next/navigation'
+import { StatusReportView } from './status-report-view'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { getFeatures } from '@/lib/features'
+import type { Metadata } from 'next'
 
 function toPublicFileUrl(fileUrl: string, token: string): string {
-  const match = fileUrl.match(/^\/api\/protected\/files\/[^/]+\/(.+)$/);
-  if (match) return `/api/public/files/${token}/${match[1]}`;
-  return fileUrl;
+  const match = fileUrl.match(/^\/api\/protected\/files\/[^/]+\/(.+)$/)
+  if (match) return `/api/public/files/${token}/${match[1]}`
+  return fileUrl
 }
 
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
+export const revalidate = 0
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true, noarchive: true, nosnippet: true },
-};
+}
 
 export default async function PublicStatusReportPage({
   params,
 }: {
-  params: Promise<{ orgId: string; token: string }>;
+  params: Promise<{ orgId: string; token: string }>
 }) {
-  const { orgId: orgParam, token } = await params;
-  const resolvedOrg = await resolvePortalOrg(orgParam);
-  const orgId = resolvedOrg?.id ?? orgParam;
+  const { orgId: orgParam, token } = await params
+  const resolvedOrg = await resolvePortalOrg(orgParam)
+  const orgId = resolvedOrg?.id ?? orgParam
 
   const report = await db.statusReport.findUnique({
     where: { publicToken: token },
@@ -43,15 +43,15 @@ export default async function PublicStatusReportPage({
         select: { name: true },
       },
     },
-  });
+  })
 
   if (!report || report.organizationId !== orgId) {
-    notFound();
+    notFound()
   }
 
   // Check if expired
   if (report.expiresAt && report.expiresAt < new Date()) {
-    notFound();
+    notFound()
   }
 
   // Get vehicle info through service record
@@ -67,16 +67,16 @@ export default async function PublicStatusReportPage({
         },
       },
     },
-  });
+  })
 
-  if (!serviceWithVehicle) notFound();
+  if (!serviceWithVehicle) notFound()
 
   // Mark as viewed on first visit
   if (!report.viewedAt) {
     await db.statusReport.update({
       where: { id: report.id },
-      data: { viewedAt: new Date(), status: "viewed" },
-    });
+      data: { viewedAt: new Date(), status: 'viewed' },
+    })
   }
 
   // Fetch workshop settings
@@ -86,26 +86,24 @@ export default async function PublicStatusReportPage({
         organizationId: orgId,
         key: {
           in: [
-            "workshop.address",
-            "workshop.phone",
-            "workshop.email",
-            "workshop.logo",
-            "invoice.primaryColor",
-            "workshop.serviceType",
+            'workshop.address',
+            'workshop.phone',
+            'workshop.email',
+            'workshop.logo',
+            'invoice.primaryColor',
+            'workshop.serviceType',
           ],
         },
       },
     }),
     getFeatures(orgId),
-  ]);
+  ])
 
-  const settingsMap: Record<string, string> = {};
-  for (const s of settings) settingsMap[s.key] = s.value;
+  const settingsMap: Record<string, string> = {}
+  for (const s of settings) settingsMap[s.key] = s.value
 
   // Rewrite video URL if needed
-  const videoUrl = report.videoUrl
-    ? toPublicFileUrl(report.videoUrl, token)
-    : null;
+  const videoUrl = report.videoUrl ? toPublicFileUrl(report.videoUrl, token) : null
 
   return (
     <StatusReportView
@@ -124,10 +122,10 @@ export default async function PublicStatusReportPage({
       serviceTitle={report.serviceRecord.title}
       technicianName={report.technician?.name || null}
       workshopName={report.organization.name}
-      workshopPhone={settingsMap["workshop.phone"] || ""}
-      primaryColor={settingsMap["invoice.primaryColor"] || "#3b82f6"}
+      workshopPhone={settingsMap['workshop.phone'] || ''}
+      primaryColor={settingsMap['invoice.primaryColor'] || '#3b82f6'}
       token={token}
       showBranding={!features.brandingRemoved}
     />
-  );
+  )
 }

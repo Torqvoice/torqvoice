@@ -103,10 +103,7 @@ export function BroadcastCard({
           screen in every workshop is worth seeing before it does. */}
       {trimmed.length > 0 && (
         <div className="overflow-hidden rounded-md border">
-          <BroadcastBanner
-            preview
-            broadcast={{ message: trimmed, level, updatedAt: 'preview' }}
-          />
+          <BroadcastBanner preview broadcast={{ message: trimmed, level, updatedAt: 'preview' }} />
         </div>
       )}
 

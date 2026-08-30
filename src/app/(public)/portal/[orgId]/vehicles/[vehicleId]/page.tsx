@@ -98,9 +98,12 @@ export default async function PortalVehicleDetailPage({
                   {t('noServiceRecords')}
                 </p>
               ) : (
-              <div className="divide-y">
-                {v.serviceRecords.map((sr) => (
-                    <div key={sr.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="divide-y">
+                  {v.serviceRecords.map((sr) => (
+                    <div
+                      key={sr.id}
+                      className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium">
                           {sr.invoiceNumber ? `#${sr.invoiceNumber} - ` : ''}
@@ -117,7 +120,7 @@ export default async function PortalVehicleDetailPage({
                             sr.warrantyExpiresAt,
                             sr.warrantyMileage,
                             sr.mileage,
-                            v.mileage,
+                            v.mileage
                           )
                           return ws !== 'none' ? (
                             <Badge
@@ -147,8 +150,8 @@ export default async function PortalVehicleDetailPage({
                         </a>
                       </div>
                     </div>
-                ))}
-              </div>
+                  ))}
+                </div>
               )}
             </AppCard>
           </TabsContent>
@@ -161,20 +164,25 @@ export default async function PortalVehicleDetailPage({
               contentClassName="p-0"
             >
               {v.inspections.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">{t('noInspections')}</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  {t('noInspections')}
+                </p>
               ) : (
-              <div className="divide-y">
-                {v.inspections.map((insp) => {
-                  const conditions = insp.items.reduce(
-                    (acc, item) => {
-                      acc[item.condition] = (acc[item.condition] || 0) + 1
-                      return acc
-                    },
-                    {} as Record<string, number>
-                  )
+                <div className="divide-y">
+                  {v.inspections.map((insp) => {
+                    const conditions = insp.items.reduce(
+                      (acc, item) => {
+                        acc[item.condition] = (acc[item.condition] || 0) + 1
+                        return acc
+                      },
+                      {} as Record<string, number>
+                    )
 
-                  return (
-                    <div key={insp.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    return (
+                      <div
+                        key={insp.id}
+                        className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                      >
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium">{insp.template.name}</p>
                           <p className="text-xs text-muted-foreground">
@@ -212,9 +220,9 @@ export default async function PortalVehicleDetailPage({
                           )}
                         </div>
                       </div>
-                  )
-                })}
-              </div>
+                    )
+                  })}
+                </div>
               )}
             </AppCard>
           </TabsContent>

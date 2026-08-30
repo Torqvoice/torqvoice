@@ -1,18 +1,18 @@
-import { getAuthContext } from "@/lib/get-auth-context";
-import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
-import { isCloudMode } from "@/lib/features";
-import { LicenseSettings } from "@/features/settings/Components/license-settings";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { isDemoMode } from "@/lib/demo";
+import { getAuthContext } from '@/lib/get-auth-context'
+import { db } from '@/lib/db'
+import { redirect } from 'next/navigation'
+import { isCloudMode } from '@/lib/features'
+import { LicenseSettings } from '@/features/settings/Components/license-settings'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { isDemoMode } from '@/lib/demo'
 
 export default async function LicensePage() {
   if (isCloudMode()) {
-    redirect("/settings");
+    redirect('/settings')
   }
 
-  const authContext = await getAuthContext();
-  if (!authContext) redirect("/auth/sign-in");
+  const authContext = await getAuthContext()
+  if (!authContext) redirect('/auth/sign-in')
 
   const settings = await db.appSetting.findMany({
     where: {
@@ -27,16 +27,16 @@ export default async function LicensePage() {
       },
     },
     select: { key: true, value: true },
-  });
+  })
 
-  const map = new Map(settings.map((s) => [s.key, s.value]));
+  const map = new Map(settings.map((s) => [s.key, s.value]))
 
   return (
     <LicenseSettings
-      initialKey={map.get(SETTING_KEYS.LICENSE_KEY) || ""}
-      initialValid={map.get(SETTING_KEYS.LICENSE_VALID) === "true"}
-      initialCheckedAt={map.get(SETTING_KEYS.LICENSE_CHECKED_AT) || ""}
+      initialKey={map.get(SETTING_KEYS.LICENSE_KEY) || ''}
+      initialValid={map.get(SETTING_KEYS.LICENSE_VALID) === 'true'}
+      initialCheckedAt={map.get(SETTING_KEYS.LICENSE_CHECKED_AT) || ''}
       demoMode={isDemoMode}
     />
-  );
+  )
 }

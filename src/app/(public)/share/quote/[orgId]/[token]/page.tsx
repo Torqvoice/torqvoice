@@ -204,7 +204,7 @@ export default async function PublicQuotePage({
   const pick = (key: string) => settingsMap[`quote.${key}`] || settingsMap[`invoice.${key}`]
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
-  const labels = await loadPrintLabels(locale, settingsMap)
+  const labels = await loadPrintLabels(locale, settingsMap, 'quote')
 
   const torqvoiceLogoDataUri = features.brandingRemoved
     ? undefined
@@ -233,10 +233,7 @@ export default async function PublicQuotePage({
       logoSize: Number(settingsMap['quote.logoSize']) || 100,
     },
     customFields,
-    labels: {
-      ...labels,
-      title: labels.quoteTitle || 'QUOTE',
-    },
+    labels,
     layoutConfig,
   })
 

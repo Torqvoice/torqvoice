@@ -1,54 +1,54 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const SYSTEM_SETTING_KEYS = {
   // Registration
-  REGISTRATION_DISABLED: "registration.disabled",
+  REGISTRATION_DISABLED: 'registration.disabled',
 
   // Email Verification
-  EMAIL_VERIFICATION_REQUIRED: "email.verificationRequired",
+  EMAIL_VERIFICATION_REQUIRED: 'email.verificationRequired',
 
   // Email Provider
-  EMAIL_PROVIDER: "email.provider",
+  EMAIL_PROVIDER: 'email.provider',
 
   // SMTP
-  SMTP_HOST: "smtp.host",
-  SMTP_PORT: "smtp.port",
-  SMTP_USER: "smtp.user",
-  SMTP_PASS: "smtp.pass",
-  SMTP_SECURE: "smtp.secure",
-  SMTP_FROM_EMAIL: "smtp.fromEmail",
-  SMTP_FROM_NAME: "smtp.fromName",
-  SMTP_REJECT_UNAUTHORIZED: "smtp.rejectUnauthorized",
-  SMTP_REQUIRE_TLS: "smtp.requireTls",
+  SMTP_HOST: 'smtp.host',
+  SMTP_PORT: 'smtp.port',
+  SMTP_USER: 'smtp.user',
+  SMTP_PASS: 'smtp.pass',
+  SMTP_SECURE: 'smtp.secure',
+  SMTP_FROM_EMAIL: 'smtp.fromEmail',
+  SMTP_FROM_NAME: 'smtp.fromName',
+  SMTP_REJECT_UNAUTHORIZED: 'smtp.rejectUnauthorized',
+  SMTP_REQUIRE_TLS: 'smtp.requireTls',
 
   // Resend
-  RESEND_API_KEY: "resend.apiKey",
-  RESEND_FROM_EMAIL: "resend.fromEmail",
-  RESEND_FROM_NAME: "resend.fromName",
+  RESEND_API_KEY: 'resend.apiKey',
+  RESEND_FROM_EMAIL: 'resend.fromEmail',
+  RESEND_FROM_NAME: 'resend.fromName',
 
   // Postmark
-  POSTMARK_API_KEY: "postmark.apiKey",
-  POSTMARK_FROM_EMAIL: "postmark.fromEmail",
-  POSTMARK_FROM_NAME: "postmark.fromName",
+  POSTMARK_API_KEY: 'postmark.apiKey',
+  POSTMARK_FROM_EMAIL: 'postmark.fromEmail',
+  POSTMARK_FROM_NAME: 'postmark.fromName',
 
   // Mailgun
-  MAILGUN_API_KEY: "mailgun.apiKey",
-  MAILGUN_DOMAIN: "mailgun.domain",
-  MAILGUN_REGION: "mailgun.region",
-  MAILGUN_FROM_EMAIL: "mailgun.fromEmail",
-  MAILGUN_FROM_NAME: "mailgun.fromName",
+  MAILGUN_API_KEY: 'mailgun.apiKey',
+  MAILGUN_DOMAIN: 'mailgun.domain',
+  MAILGUN_REGION: 'mailgun.region',
+  MAILGUN_FROM_EMAIL: 'mailgun.fromEmail',
+  MAILGUN_FROM_NAME: 'mailgun.fromName',
 
   // SendGrid
-  SENDGRID_API_KEY: "sendgrid.apiKey",
-  SENDGRID_FROM_EMAIL: "sendgrid.fromEmail",
-  SENDGRID_FROM_NAME: "sendgrid.fromName",
+  SENDGRID_API_KEY: 'sendgrid.apiKey',
+  SENDGRID_FROM_EMAIL: 'sendgrid.fromEmail',
+  SENDGRID_FROM_NAME: 'sendgrid.fromName',
 
   // Amazon SES
-  SES_ACCESS_KEY_ID: "ses.accessKeyId",
-  SES_SECRET_ACCESS_KEY: "ses.secretAccessKey",
-  SES_REGION: "ses.region",
-  SES_FROM_EMAIL: "ses.fromEmail",
-  SES_FROM_NAME: "ses.fromName",
+  SES_ACCESS_KEY_ID: 'ses.accessKeyId',
+  SES_SECRET_ACCESS_KEY: 'ses.secretAccessKey',
+  SES_REGION: 'ses.region',
+  SES_FROM_EMAIL: 'ses.fromEmail',
+  SES_FROM_NAME: 'ses.fromName',
 
   // A notice shown to everyone, set from the admin panel. Meant for the
   // things nobody can work around and everybody needs to hear at once, an
@@ -58,29 +58,28 @@ export const SYSTEM_SETTING_KEYS = {
   // dismissal is remembered against, so editing the text brings the banner
   // back for everybody rather than leaving it hidden from whoever had already
   // waved the last one away.
-  BROADCAST_MESSAGE: "broadcast.message",
-  BROADCAST_LEVEL: "broadcast.level",
-  BROADCAST_UPDATED_AT: "broadcast.updatedAt",
+  BROADCAST_MESSAGE: 'broadcast.message',
+  BROADCAST_LEVEL: 'broadcast.level',
+  BROADCAST_UPDATED_AT: 'broadcast.updatedAt',
 
   // In-app support requests. Written from the torqvoice.com admin dashboard
   // rather than from this app: whether a workshop may reach support is a
   // platform decision, not one the workshop makes for itself.
-  SUPPORT_ENABLED: "support.enabled",
-  SUPPORT_RECIPIENT_EMAIL: "support.recipientEmail",
-} as const;
+  SUPPORT_ENABLED: 'support.enabled',
+  SUPPORT_RECIPIENT_EMAIL: 'support.recipientEmail',
+} as const
 
-export type SystemSettingKey =
-  (typeof SYSTEM_SETTING_KEYS)[keyof typeof SYSTEM_SETTING_KEYS];
+export type SystemSettingKey = (typeof SYSTEM_SETTING_KEYS)[keyof typeof SYSTEM_SETTING_KEYS]
 
-export const ALL_SYSTEM_KEYS = Object.values(SYSTEM_SETTING_KEYS);
+export const ALL_SYSTEM_KEYS = Object.values(SYSTEM_SETTING_KEYS)
 
-export const systemSettingsUpdateSchema = z.record(z.string(), z.string());
+export const systemSettingsUpdateSchema = z.record(z.string(), z.string())
 
 /** How loudly the global notice is shown. */
-export const BROADCAST_LEVELS = ["info", "warning", "critical"] as const;
-export type BroadcastLevel = (typeof BROADCAST_LEVELS)[number];
+export const BROADCAST_LEVELS = ['info', 'warning', 'critical'] as const
+export type BroadcastLevel = (typeof BROADCAST_LEVELS)[number]
 
 /** Long enough for what happened and what is being done, short enough to read. */
-export const BROADCAST_MAX_LENGTH = 400;
+export const BROADCAST_MAX_LENGTH = 400
 
-export type SystemSettingsMap = Partial<Record<SystemSettingKey, string>>;
+export type SystemSettingsMap = Partial<Record<SystemSettingKey, string>>

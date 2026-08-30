@@ -1,6 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
 import type {
   InvoiceDocumentStyle,
   InvoiceLayoutConfig,
@@ -99,6 +100,7 @@ function Color({
   onChange: (value: string) => void
   clearable?: boolean
 }) {
+  const t = useTranslations('settings.designer')
   return (
     <div className="flex items-center gap-2.5">
       <input
@@ -108,7 +110,7 @@ function Color({
         className="h-[30px] w-[34px] cursor-pointer rounded-md border border-[#e3e5e9] bg-white p-0.5"
       />
       <span className="flex-1 text-[13px] font-medium">{label}</span>
-      <span className="font-mono text-[11px] text-[#8a8f97]">{value || 'auto'}</span>
+      <span className="font-mono text-[11px] text-[#8a8f97]">{value || t('auto')}</span>
       {clearable && (
         <button
           type="button"
@@ -189,12 +191,7 @@ function Choice({
   )
 }
 
-const HEADER_STYLES = [
-  { value: 'standard', label: 'Standard', desc: 'Name and details on white, rule beneath' },
-  { value: 'compact', label: 'Compact', desc: 'Tighter, with the title alongside' },
-  { value: 'modern', label: 'Modern', desc: 'Full-width colored banner' },
-  { value: 'framed', label: 'Framed', desc: 'Band across the top, rail down the left' },
-]
+const HEADER_STYLES = ['standard', 'compact', 'modern', 'framed']
 
 export interface DesignerFieldDef {
   id: string
@@ -227,12 +224,19 @@ export function DesignerInspector({
   onDocument: (patch: InvoiceDocumentStyle) => void
   onTemplate: (patch: Partial<DesignerTemplate>) => void
 }) {
+  const t = useTranslations('settings.designer')
+  const tSection = useTranslations('settings.layoutEditor.sections')
+  const tField = useTranslations('settings.layoutEditor.fields')
   /** A field's name, whether it is one of ours or one the workshop defined. */
   const fieldName = (fieldId: string) => {
-    if (!isCustomFieldId(fieldId)) return getBuiltinFieldName(fieldId) ?? fieldId
+    if (!isCustomFieldId(fieldId)) {
+      return tField.has(fieldId) ? tField(fieldId) : (getBuiltinFieldName(fieldId) ?? fieldId)
+    }
     const definition = customFields.find((f) => f.id === fromCustomFieldId(fieldId))
     return definition?.label ?? definition?.name ?? fieldId
   }
+  /** A section's name, or its id spaced out when nothing has named it. */
+  const sectionName = (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' '))
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
   const doc = layout.document ?? {}
 
@@ -271,10 +275,10 @@ export function DesignerInspector({
           onClick={() => onSelect(null)}
           className="mb-2 text-[12.5px] font-medium text-[#2563eb] hover:underline"
         >
-          ◂ Document styling
+          ◂ {t('documentStyling')}
         </button>
         <div className="mb-0.5 flex items-center justify-between">
-          <div className="text-[15px] font-bold capitalize">{section.id.replace(/_/g, ' ')}</div>
+          <div className="text-[15px] font-bold">{sectionName(section.id)}</div>
           <button
             type="button"
             onClick={() => onSelect(null)}
@@ -283,32 +287,29 @@ export function DesignerInspector({
             ✕
           </button>
         </div>
-        <div className="mb-4 text-xs text-[#8a8f97]">Section settings</div>
+        <div className="mb-4 text-xs text-[#8a8f97]">{t('sectionSettings')}</div>
 
         <div className="space-y-3">
           {section.id === 'bank_account' && (
-            <Group title="Panel style">
+            <Group title={t('panelStyle')}>
               <Choice
                 value={
                   section.variant ?? (template.headerStyle === 'framed' ? 'outline' : 'accent')
                 }
                 options={[
-                  { value: 'accent', label: 'Accent' },
-                  { value: 'panel', label: 'Panel' },
-                  { value: 'outline', label: 'Outline' },
-                  { value: 'lines', label: 'Lines' },
+                  { value: 'accent', label: t('variant.accent') },
+                  { value: 'panel', label: t('variant.panel') },
+                  { value: 'outline', label: t('variant.outline') },
+                  { value: 'lines', label: t('variant.lines') },
                 ]}
                 onChange={(variant) => onSection(section.id, { variant })}
               />
-              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
-                Accent tints the card with the primary color. Panel matches the other detail cards.
-                Outline draws only a border, and Lines prints without a box.
-              </p>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('variant.hint')}</p>
             </Group>
           )}
 
-          <Group title="Placement">
-            <Row label="Visible">
+          <Group title={t('placement')}>
+            <Row label={t('visible')}>
               <Toggle
                 on={section.visible}
                 onChange={(visible) => onSection(section.id, { visible })}
@@ -318,9 +319,9 @@ export function DesignerInspector({
               <Choice
                 value={section.column ?? 'full'}
                 options={[
-                  { value: 'full', label: 'Full' },
-                  { value: 'left', label: 'Left' },
-                  { value: 'right', label: 'Right' },
+                  { value: 'full', label: t('columnFull') },
+                  { value: 'left', label: t('columnLeft') },
+                  { value: 'right', label: t('columnRight') },
                 ]}
                 onChange={(v) =>
                   // Choosing a column is choosing to be in the flow, so a block
@@ -330,7 +331,7 @@ export function DesignerInspector({
               />
             )}
             {BOXED_ELIGIBLE_SECTIONS.has(section.id) && (
-              <Row label="Draw a box">
+              <Row label={t('drawBox')}>
                 <Toggle
                   on={section.boxed !== false}
                   onChange={(boxed) => onSection(section.id, { boxed })}
@@ -338,7 +339,7 @@ export function DesignerInspector({
               </Row>
             )}
             {HEADED_SECTIONS.has(section.id) && (
-              <Row label="Show heading">
+              <Row label={t('showHeading')}>
                 <Toggle
                   on={section.heading !== false}
                   onChange={(heading) => onSection(section.id, { heading })}
@@ -347,27 +348,27 @@ export function DesignerInspector({
             )}
           </Group>
 
-          <Group title="Spacing">
+          <Group title={t('spacing')}>
             {(layout.anchors?.[section.id] ||
               (section.id === 'header' && template.headerStyle === 'framed')) && (
               <p className="rounded-md bg-[#fef3c7] px-2.5 py-2 text-[11.5px] leading-snug text-[#92400e]">
-                This section is placed by hand, so flow spacing does not move it.
+                {t('placedByHand')}{' '}
                 {section.id === 'header' && template.headerStyle === 'framed'
-                  ? ' The framed letterhead sits on the band; drag it to move it.'
-                  : ' Drag it, or return it to the flow, to use spacing.'}
+                  ? t('placedByHandFramed')
+                  : t('placedByHandDrag')}
               </p>
             )}
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  ['marginTop', 'Top'],
-                  ['marginBottom', 'Bottom'],
-                  ['marginLeft', 'Left'],
-                  ['marginRight', 'Right'],
+                  ['marginTop', 'marginTop'],
+                  ['marginBottom', 'marginBottom'],
+                  ['marginLeft', 'marginLeft'],
+                  ['marginRight', 'marginRight'],
                 ] as const
-              ).map(([key, label]) => (
+              ).map(([key, labelKey]) => (
                 <label key={key} className="flex items-center justify-between gap-1.5">
-                  <span className="text-[12.5px] font-medium">{label}</span>
+                  <span className="text-[12.5px] font-medium">{t(labelKey)}</span>
                   <input
                     type="number"
                     min={0}
@@ -382,31 +383,27 @@ export function DesignerInspector({
                 </label>
               ))}
             </div>
-            <p className="text-[11.5px] leading-snug text-[#8a8f97]">
-              Points of empty room the section keeps around itself in the flow.
-            </p>
+            <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('spacingHint')}</p>
           </Group>
 
           {section.id === 'header' && (
-            <Group title="Logo">
+            <Group title={t('logo')}>
               {/* The logo is printed by the header, so its size is set where
                   the header is rather than in a list of sheet properties. */}
               <Slider
-                label="Size"
+                label={t('size')}
                 value={template.logoSize}
                 min={50}
                 max={200}
                 suffix="%"
                 onChange={(logoSize) => onTemplate({ logoSize })}
               />
-              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
-                Turn the logo off under Fields to print the company name instead.
-              </p>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('logoHint')}</p>
             </Group>
           )}
 
           {SECTIONS_WITH_FIELDS.has(section.id) && (
-            <Group title="Fields">
+            <Group title={t('fields')}>
               {resolvedFields.map((field) => (
                 <div key={field.id} className="flex items-center justify-between gap-2">
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
@@ -417,7 +414,7 @@ export function DesignerInspector({
                       type="button"
                       onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
                       className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
-                      title="Remove from this section"
+                      title={t('removeField')}
                     >
                       ×
                     </button>
@@ -434,7 +431,7 @@ export function DesignerInspector({
               ))}
               {unassignedCustomFields.length > 0 && (
                 <div className="pt-1">
-                  <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">Your custom fields</div>
+                  <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>
                   <div className="flex flex-wrap gap-1.5">
                     {unassignedCustomFields.map((field) => (
                       <button
@@ -457,41 +454,41 @@ export function DesignerInspector({
             </Group>
           )}
 
-          <Group title="Appearance">
+          <Group title={t('appearance')}>
             {/* The header has no body text and no panel heading, so the same
                 two inks get names that say what they actually color there. */}
             <Color
-              label={section.id === 'header' ? 'Details' : 'Text'}
+              label={section.id === 'header' ? t('details') : t('text')}
               value={style.textColor ?? ''}
               fallback="#111827"
               onChange={(textColor) => setStyle({ textColor })}
             />
             <Color
-              label={section.id === 'header' ? 'Company name' : 'Heading'}
+              label={section.id === 'header' ? t('companyName') : t('heading')}
               value={style.labelColor ?? ''}
               fallback={template.primaryColor}
               onChange={(labelColor) => setStyle({ labelColor })}
             />
             <Color
-              label="Fill"
+              label={t('fill')}
               value={style.backgroundColor ?? ''}
               fallback="#f3f4f6"
               onChange={(backgroundColor) => setStyle({ backgroundColor })}
             />
             <Color
-              label="Border"
+              label={t('border')}
               value={style.borderColor ?? ''}
               fallback="#111827"
               onChange={(borderColor) => setStyle({ borderColor })}
             />
-            <Row label={TABLE_SECTIONS.has(section.id) ? 'Line width' : 'Border width'}>
+            <Row label={TABLE_SECTIONS.has(section.id) ? t('lineWidth') : t('borderWidth')}>
               <input
                 type="number"
                 min={0}
                 max={4}
                 step={0.25}
                 value={style.borderWidth ?? ''}
-                placeholder="auto"
+                placeholder={t('auto')}
                 onChange={(e) =>
                   setStyle({ borderWidth: e.target.value ? Number(e.target.value) : undefined })
                 }
@@ -499,7 +496,7 @@ export function DesignerInspector({
               />
             </Row>
             {TABLE_SECTIONS.has(section.id) && (
-              <Row label="Outer border">
+              <Row label={t('outerBorder')}>
                 <Toggle
                   on={style.outerBorder === true}
                   onChange={(on) => setStyle({ outerBorder: on ? true : undefined })}
@@ -508,38 +505,38 @@ export function DesignerInspector({
             )}
             {TABLE_SECTIONS.has(section.id) && (
               <div>
-                <div className="mb-1.5 text-[13px] font-medium">Row banding</div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('rowBanding')}</div>
                 <Choice
                   value={style.stripes === true ? 'on' : style.stripes === false ? 'off' : 'auto'}
                   options={[
-                    { value: 'auto', label: 'Like sheet' },
-                    { value: 'on', label: 'On' },
-                    { value: 'off', label: 'Off' },
+                    { value: 'auto', label: t('likeSheet') },
+                    { value: 'on', label: t('on') },
+                    { value: 'off', label: t('off') },
                   ]}
                   onChange={(v) => setStyle({ stripes: v === 'auto' ? undefined : v === 'on' })}
                 />
               </div>
             )}
-            <Row label="Size">
+            <Row label={t('size')}>
               <input
                 type="number"
                 min={5}
                 max={24}
                 value={style.fontSize ?? ''}
-                placeholder="auto"
+                placeholder={t('auto')}
                 onChange={(e) =>
                   setStyle({ fontSize: e.target.value ? Number(e.target.value) : undefined })
                 }
                 className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
               />
             </Row>
-            <Row label="Font">
+            <Row label={t('font')}>
               <select
                 value={style.fontFamily ?? ''}
                 onChange={(e) => setStyle({ fontFamily: e.target.value || undefined })}
                 className="h-7 rounded-md border border-[#e3e5e9] bg-white px-1.5 text-[12px]"
               >
-                <option value="">Inherit</option>
+                <option value="">{t('inherit')}</option>
                 {FONT_OPTIONS.map((font) => (
                   <option key={font.value} value={font.value}>
                     {font.label}
@@ -551,8 +548,7 @@ export function DesignerInspector({
         </div>
 
         <div className="mt-4 rounded-md bg-[#f8f9fa] px-3 py-2.5 text-xs leading-relaxed text-[#8a8f97]">
-          Drag this section in the list, or on the page, to move it. Once placed by hand, the arrow
-          keys nudge it a point at a time, ten with Shift, and Escape cancels a drag.
+          {t('sectionDragHint')}
         </div>
       </div>
     )
@@ -560,38 +556,38 @@ export function DesignerInspector({
 
   return (
     <div className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4">
-      <div className="text-[15px] font-bold">Document</div>
-      <div className="mb-4 text-xs text-[#8a8f97]">Applies to the whole sheet</div>
+      <div className="text-[15px] font-bold">{t('document')}</div>
+      <div className="mb-4 text-xs text-[#8a8f97]">{t('documentSubtitle')}</div>
 
       <div className="space-y-3">
-        <Group title="Header style">
+        <Group title={t('headerStyleTitle')}>
           {/* Not a property of the header section: it decides whether the sheet
               has a band and a rail at all, and what the page's insets are. */}
           <div className="flex flex-col gap-1">
-            {HEADER_STYLES.map((option) => (
+            {HEADER_STYLES.map((style) => (
               <button
-                key={option.value}
+                key={style}
                 type="button"
-                onClick={() => onTemplate({ headerStyle: option.value })}
+                onClick={() => onTemplate({ headerStyle: style })}
                 className="rounded-md border px-3 py-2 text-left text-[13px]"
                 style={{
-                  borderColor: template.headerStyle === option.value ? '#2563eb' : '#e3e5e9',
-                  background: template.headerStyle === option.value ? '#eef2ff' : '#fff',
-                  fontWeight: template.headerStyle === option.value ? 600 : 400,
+                  borderColor: template.headerStyle === style ? '#2563eb' : '#e3e5e9',
+                  background: template.headerStyle === style ? '#eef2ff' : '#fff',
+                  fontWeight: template.headerStyle === style ? 600 : 400,
                 }}
               >
-                {option.label}
+                {t(`headerStyle.${style}.name`)}
                 <span className="block text-[11.5px] font-normal text-[#8a8f97]">
-                  {option.desc}
+                  {t(`headerStyle.${style}.desc`)}
                 </span>
               </button>
             ))}
           </div>
         </Group>
 
-        <Group title="Colors">
+        <Group title={t('colors')}>
           <Color
-            label="Primary"
+            label={t('primary')}
             value={template.primaryColor}
             fallback="#d97706"
             clearable={false}
@@ -613,25 +609,25 @@ export function DesignerInspector({
             ))}
           </div>
           <Color
-            label="Background"
+            label={t('background')}
             value={template.backgroundColor}
             fallback="#ffffff"
             onChange={(backgroundColor) => onTemplate({ backgroundColor })}
           />
           <Color
-            label="Text"
+            label={t('text')}
             value={template.textColor}
             fallback="#111827"
             onChange={(textColor) => onTemplate({ textColor })}
           />
           <Color
-            label="Company name"
+            label={t('companyName')}
             value={template.companyTextColor}
             fallback="#ffffff"
             onChange={(companyTextColor) => onTemplate({ companyTextColor })}
           />
           <Color
-            label="Accent"
+            label={t('accent')}
             value={doc.accentColor ?? ''}
             fallback={template.primaryColor}
             onChange={(accentColor) => onDocument({ accentColor: accentColor || undefined })}
@@ -639,26 +635,26 @@ export function DesignerInspector({
         </Group>
 
         {template.headerStyle === 'framed' && (
-          <Group title="Frame">
+          <Group title={t('frame')}>
             <div>
-              <div className="mb-1.5 text-[13px] font-medium">Rail</div>
+              <div className="mb-1.5 text-[13px] font-medium">{t('rail')}</div>
               <Choice
                 value={template.frameSide === 'right' ? 'right' : 'left'}
                 options={[
-                  { value: 'left', label: 'Left edge' },
-                  { value: 'right', label: 'Right edge' },
+                  { value: 'left', label: t('leftEdge') },
+                  { value: 'right', label: t('rightEdge') },
                 ]}
                 onChange={(frameSide) => onTemplate({ frameSide })}
               />
             </div>
             <Color
-              label="Frame line"
+              label={t('frameLine')}
               value={template.frameBorderColor}
               fallback="#111827"
               onChange={(frameBorderColor) => onTemplate({ frameBorderColor })}
             />
             <Slider
-              label="Corner radius"
+              label={t('cornerRadius')}
               value={template.frameRadius}
               min={0}
               max={24}
@@ -666,7 +662,7 @@ export function DesignerInspector({
               onChange={(frameRadius) => onTemplate({ frameRadius })}
             />
             <div>
-              <div className="mb-1.5 text-[13px] font-medium">Shadow</div>
+              <div className="mb-1.5 text-[13px] font-medium">{t('shadow')}</div>
               <Choice
                 value={
                   template.frameShadow === 'false' ||
@@ -676,10 +672,10 @@ export function DesignerInspector({
                     : 'true'
                 }
                 options={[
-                  { value: 'false', label: 'Off' },
-                  { value: 'thin', label: 'Thin' },
-                  { value: 'true', label: 'Normal' },
-                  { value: 'wide', label: 'Wide' },
+                  { value: 'false', label: t('off') },
+                  { value: 'thin', label: t('shadowThin') },
+                  { value: 'true', label: t('shadowNormal') },
+                  { value: 'wide', label: t('shadowWide') },
                 ]}
                 onChange={(frameShadow) => onTemplate({ frameShadow })}
               />
@@ -687,7 +683,7 @@ export function DesignerInspector({
           </Group>
         )}
 
-        <Group title="Typography">
+        <Group title={t('typography')}>
           <select
             value={template.fontFamily}
             onChange={(e) => onTemplate({ fontFamily: e.target.value })}
@@ -705,7 +701,7 @@ export function DesignerInspector({
             ))}
           </select>
           <Slider
-            label="Base size"
+            label={t('baseSize')}
             value={doc.fontSize ?? BASE_FONT_SIZE}
             min={6}
             max={14}
@@ -714,9 +710,9 @@ export function DesignerInspector({
           />
         </Group>
 
-        <Group title="Page">
+        <Group title={t('page')}>
           <Slider
-            label="Margins"
+            label={t('margins')}
             value={doc.margin ?? 40}
             min={12}
             max={72}
@@ -724,18 +720,18 @@ export function DesignerInspector({
             onChange={(margin) => onDocument({ margin })}
           />
           <Slider
-            label="Row height"
+            label={t('rowHeight')}
             value={doc.rowPadding ?? 5}
             min={0}
             max={12}
             suffix="pt"
             onChange={(rowPadding) => onDocument({ rowPadding })}
           />
-          <Row label="Row banding">
+          <Row label={t('rowBanding')}>
             <Toggle on={doc.stripes !== false} onChange={(stripes) => onDocument({ stripes })} />
           </Row>
           <Color
-            label="Band"
+            label={t('band')}
             value={doc.stripeColor ?? ''}
             fallback="#f3f4f6"
             onChange={(stripeColor) => onDocument({ stripeColor: stripeColor || undefined })}

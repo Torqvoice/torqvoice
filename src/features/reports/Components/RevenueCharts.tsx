@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   BarChart,
@@ -12,38 +12,43 @@ import {
   Pie,
   Cell,
   Legend,
-} from "recharts";
-import type { MonthlyRevenue, RevenueByType } from "../Schema/reportTypes";
+} from 'recharts'
+import type { MonthlyRevenue, RevenueByType } from '../Schema/reportTypes'
 
 const CHART_COLORS = [
-  "#3b82f6",
-  "#10b981",
-  "#f59e0b",
-  "#8b5cf6",
-  "#f43f5e",
-  "#06b6d4",
-  "#ec4899",
-  "#84cc16",
-];
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#f43f5e',
+  '#06b6d4',
+  '#ec4899',
+  '#84cc16',
+]
 
 interface RevenueBarChartProps {
-  data: MonthlyRevenue[];
-  formatCurrency: (value: number) => string;
-  labels?: { revenue: string; collected: string; netProfit?: string };
+  data: MonthlyRevenue[]
+  formatCurrency: (value: number) => string
+  labels?: { revenue: string; collected: string; netProfit?: string }
 }
 
 export function RevenueBarChart({ data, formatCurrency, labels }: RevenueBarChartProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) return null
 
   const compactCurrency = (value: number) => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
-    return value.toString();
-  };
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
+    if (value >= 1000) return `${(value / 1000).toFixed(0)}k`
+    return value.toString()
+  }
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={1} barCategoryGap="20%">
+      <BarChart
+        data={data}
+        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+        barGap={1}
+        barCategoryGap="20%"
+      >
         <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
         <XAxis
           dataKey="month"
@@ -62,36 +67,49 @@ export function RevenueBarChart({ data, formatCurrency, labels }: RevenueBarChar
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
-          wrapperStyle={{ outline: "none" }}
+          wrapperStyle={{ outline: 'none' }}
           contentStyle={{
-            backgroundColor: "var(--popover)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--popover-foreground)",
-            fontSize: "13px",
+            backgroundColor: 'var(--popover)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--popover-foreground)',
+            fontSize: '13px',
           }}
-          cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+          cursor={{ fill: 'var(--muted)', opacity: 0.5 }}
         />
         <Legend
-          formatter={(value) => (
-            <span className="text-xs text-muted-foreground">{value}</span>
-          )}
+          formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
         />
-        <Bar dataKey="revenue" name={labels?.revenue ?? "Revenue"} fill="#3b82f6" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="collected" name={labels?.collected ?? "Collected"} fill="#10b981" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="netProfit" name={labels?.netProfit ?? "Net Profit"} fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+        <Bar
+          dataKey="revenue"
+          name={labels?.revenue ?? 'Revenue'}
+          fill="#3b82f6"
+          radius={[4, 4, 0, 0]}
+        />
+        <Bar
+          dataKey="collected"
+          name={labels?.collected ?? 'Collected'}
+          fill="#10b981"
+          radius={[4, 4, 0, 0]}
+        />
+        <Bar
+          dataKey="netProfit"
+          name={labels?.netProfit ?? 'Net Profit'}
+          fill="#8b5cf6"
+          radius={[4, 4, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
-  );
+  )
 }
 
 interface RevenueTypeDonutProps {
-  data: RevenueByType[];
-  formatCurrency: (value: number) => string;
+  data: RevenueByType[]
+  formatCurrency: (value: number) => string
 }
 
 export function RevenueTypeDonut({ data, formatCurrency }: RevenueTypeDonutProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) return null
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -112,20 +130,18 @@ export function RevenueTypeDonut({ data, formatCurrency }: RevenueTypeDonutProps
         </Pie>
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
-          wrapperStyle={{ outline: "none" }}
+          wrapperStyle={{ outline: 'none' }}
           contentStyle={{
-            backgroundColor: "var(--popover)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--popover-foreground)",
+            backgroundColor: 'var(--popover)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--popover-foreground)',
           }}
         />
         <Legend
-          formatter={(value) => (
-            <span className="text-xs text-muted-foreground">{value}</span>
-          )}
+          formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>
-  );
+  )
 }

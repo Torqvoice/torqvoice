@@ -59,8 +59,8 @@ const FONT_FAMILIES: Record<string, string> = {
   Courier: 'Noto Sans Mono',
   'Noto Sans Mono': 'Noto Sans Mono',
   'Open Sans': 'Open Sans',
-  'Lato': 'Lato',
-  'Montserrat': 'Montserrat',
+  Lato: 'Lato',
+  Montserrat: 'Montserrat',
   'PT Sans': 'PT Sans',
 }
 

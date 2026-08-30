@@ -55,8 +55,11 @@ async function POST(request: Request) {
 
   if (isDemoMode && demoBlockedPrefixes.some((p) => pathname.startsWith(p))) {
     return NextResponse.json(
-      { error: 'This action is disabled on the demo. Install Torqvoice on your own server to use it.' },
-      { status: 403 },
+      {
+        error:
+          'This action is disabled on the demo. Install Torqvoice on your own server to use it.',
+      },
+      { status: 403 }
     )
   }
 
@@ -82,9 +85,7 @@ async function POST(request: Request) {
           const rawEmail = body?.email
           // Sanitize: must be a string, cap length to prevent log pollution
           const email =
-            typeof rawEmail === 'string' && rawEmail.length <= 255
-              ? rawEmail
-              : 'unknown'
+            typeof rawEmail === 'string' && rawEmail.length <= 255 ? rawEmail : 'unknown'
           // Try to find user to attach userId
           const user =
             email !== 'unknown'

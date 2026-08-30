@@ -1,17 +1,17 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Link2, Copy, Check, Trash2, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useState } from 'react'
+import { Link2, Copy, Check, Trash2, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface SharedLinkCardProps {
-  publicToken: string;
-  organizationId: string;
-  type: "quote" | "invoice";
-  sharedAt: Date | null;
-  viewCount: number;
-  lastViewedAt: Date | null;
-  onRevoke?: () => Promise<void>;
+  publicToken: string
+  organizationId: string
+  type: 'quote' | 'invoice'
+  sharedAt: Date | null
+  viewCount: number
+  lastViewedAt: Date | null
+  onRevoke?: () => Promise<void>
 }
 
 export function SharedLinkCard({
@@ -23,40 +23,41 @@ export function SharedLinkCard({
   lastViewedAt,
   onRevoke,
 }: SharedLinkCardProps) {
-  const t = useTranslations(type === "quote" ? "quotes" : "service");
-  const [copied, setCopied] = useState(false);
-  const [revoking, setRevoking] = useState(false);
+  const t = useTranslations(type === 'quote' ? 'quotes' : 'service')
+  const [copied, setCopied] = useState(false)
+  const [revoking, setRevoking] = useState(false)
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "");
-  const publicUrl = `${baseUrl}/share/${type === "quote" ? "quote" : "invoice"}/${organizationId}/${publicToken}`;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '')
+  const publicUrl = `${baseUrl}/share/${type === 'quote' ? 'quote' : 'invoice'}/${organizationId}/${publicToken}`
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(publicUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(publicUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch {
       // silent
     }
-  };
+  }
 
   const handleRevoke = async () => {
-    if (!onRevoke) return;
-    setRevoking(true);
+    if (!onRevoke) return
+    setRevoking(true)
     try {
-      await onRevoke();
+      await onRevoke()
     } finally {
-      setRevoking(false);
+      setRevoking(false)
     }
-  };
+  }
 
-  const hasViews = viewCount > 0;
+  const hasViews = viewCount > 0
 
   return (
     <div className="rounded-lg border p-3 space-y-2">
       <div className="flex items-center gap-2">
         <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="flex-1 text-sm font-semibold">{t("sidebar.sharedLink.title")}</h3>
+        <h3 className="flex-1 text-sm font-semibold">{t('sidebar.sharedLink.title')}</h3>
         {onRevoke && (
           <button
             type="button"
@@ -94,11 +95,11 @@ export function SharedLinkCard({
       {/* Shared date */}
       {sharedAt && (
         <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-          {t("sidebar.sharedLink.sharedOn", {
+          {t('sidebar.sharedLink.sharedOn', {
             date: new Date(sharedAt).toLocaleDateString(undefined, {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
             }),
           })}
         </p>
@@ -108,32 +109,30 @@ export function SharedLinkCard({
       <div className="flex items-center gap-1.5">
         <span
           className={`inline-block h-2 w-2 rounded-full ${
-            hasViews ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
+            hasViews ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
           }`}
         />
         {hasViews ? (
           <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-            {t("sidebar.sharedLink.viewedTimes", { count: viewCount })}
+            {t('sidebar.sharedLink.viewedTimes', { count: viewCount })}
             {lastViewedAt && (
               <>
-                {" · "}
-                {t("sidebar.sharedLink.lastViewed", {
+                {' · '}
+                {t('sidebar.sharedLink.lastViewed', {
                   date: new Date(lastViewedAt).toLocaleDateString(undefined, {
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   }),
                 })}
               </>
             )}
           </span>
         ) : (
-          <span className="text-xs text-muted-foreground">
-            {t("sidebar.sharedLink.notViewed")}
-          </span>
+          <span className="text-xs text-muted-foreground">{t('sidebar.sharedLink.notViewed')}</span>
         )}
       </div>
     </div>
-  );
+  )
 }

@@ -1,20 +1,16 @@
-import { db } from "@/lib/db";
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { getTranslations } from 'next-intl/server';
+import { db } from '@/lib/db'
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const revalidate = 60;
+export const revalidate = 60
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
-};
+}
 
-export default async function PublicTermsPage({
-  params,
-}: {
-  params: Promise<{ orgId: string }>;
-}) {
-  const { orgId } = await params;
+export default async function PublicTermsPage({ params }: { params: Promise<{ orgId: string }> }) {
+  const { orgId } = await params
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({
@@ -22,11 +18,11 @@ export default async function PublicTermsPage({
         organizationId: orgId,
         key: {
           in: [
-            "payment.termsOfSale",
-            "workshop.address",
-            "workshop.phone",
-            "workshop.email",
-            "workshop.logo",
+            'payment.termsOfSale',
+            'workshop.address',
+            'workshop.phone',
+            'workshop.email',
+            'workshop.logo',
           ],
         },
       },
@@ -35,23 +31,23 @@ export default async function PublicTermsPage({
       where: { id: orgId },
       select: { name: true },
     }),
-  ]);
+  ])
 
-  if (!org) notFound();
+  if (!org) notFound()
 
-  const settingsMap: Record<string, string> = {};
-  for (const s of settings) settingsMap[s.key] = s.value;
+  const settingsMap: Record<string, string> = {}
+  for (const s of settings) settingsMap[s.key] = s.value
 
-  const termsContent = settingsMap["payment.termsOfSale"];
-  if (!termsContent) notFound();
+  const termsContent = settingsMap['payment.termsOfSale']
+  if (!termsContent) notFound()
 
-  const t = await getTranslations('share.terms');
+  const t = await getTranslations('share.terms')
 
-  const workshopName = org.name || "";
-  const logoUrl = settingsMap["workshop.logo"] || "";
-  const address = settingsMap["workshop.address"] || "";
-  const phone = settingsMap["workshop.phone"] || "";
-  const email = settingsMap["workshop.email"] || "";
+  const workshopName = org.name || ''
+  const logoUrl = settingsMap['workshop.logo'] || ''
+  const address = settingsMap['workshop.address'] || ''
+  const phone = settingsMap['workshop.phone'] || ''
+  const email = settingsMap['workshop.email'] || ''
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
@@ -67,9 +63,7 @@ export default async function PublicTermsPage({
               />
             )}
             {workshopName && (
-              <h1 className="text-xl font-bold text-amber-600 sm:text-2xl">
-                {workshopName}
-              </h1>
+              <h1 className="text-xl font-bold text-amber-600 sm:text-2xl">{workshopName}</h1>
             )}
           </div>
           <h2 className="mt-4 text-lg font-semibold">{t('title')}</h2>
@@ -77,9 +71,7 @@ export default async function PublicTermsPage({
 
         {/* Terms Content */}
         <div className="mt-6">
-          <p className="whitespace-pre-wrap text-sm text-gray-700">
-            {termsContent}
-          </p>
+          <p className="whitespace-pre-wrap text-sm text-gray-700">{termsContent}</p>
         </div>
 
         {/* Footer */}
@@ -95,5 +87,5 @@ export default async function PublicTermsPage({
         )}
       </div>
     </div>
-  );
+  )
 }

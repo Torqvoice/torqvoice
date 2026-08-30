@@ -1,12 +1,12 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const onboardingSchema = z.object({
   workshopName: z
     .string()
-    .min(2, "Workshop name must be at least 2 characters")
-    .max(100, "Workshop name must be at most 100 characters")
+    .min(2, 'Workshop name must be at least 2 characters')
+    .max(100, 'Workshop name must be at most 100 characters')
     .trim(),
   loadSampleData: z.boolean().default(true),
-});
+})
 
-export type OnboardingInput = z.infer<typeof onboardingSchema>;
+export type OnboardingInput = z.infer<typeof onboardingSchema>

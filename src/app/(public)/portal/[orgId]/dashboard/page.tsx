@@ -115,51 +115,49 @@ export default async function PortalDashboardPage({
               </Link>
             }
           >
-              {d.recentInvoices.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">
-                  {t('noInvoicesYet')}
-                </p>
-              ) : (
-                <ul className="divide-y">
-                  {d.recentInvoices.map((inv) => (
-                    <li
-                      key={inv.id}
-                      className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {inv.invoiceNumber ? `#${inv.invoiceNumber}` : inv.title}
-                        </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {inv.vehicle?.make} {inv.vehicle?.model} ·{' '}
-                          {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-3">
-                        <Badge variant="outline" className="text-xs">
-                          {inv.status}
-                        </Badge>
-                        {inv.publicToken && (
-                          <Link
-                            href={`/share/invoice/${orgId}/${inv.publicToken}`}
-                            className="text-xs font-medium text-primary hover:underline"
-                          >
-                            {t('view')}
-                          </Link>
-                        )}
-                        <a
-                          href={`/portal/${orgId}/invoices/${inv.id}/pdf`}
-                          download
-                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                          aria-label={tInvoices('download')}
+            {d.recentInvoices.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">{t('noInvoicesYet')}</p>
+            ) : (
+              <ul className="divide-y">
+                {d.recentInvoices.map((inv) => (
+                  <li
+                    key={inv.id}
+                    className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">
+                        {inv.invoiceNumber ? `#${inv.invoiceNumber}` : inv.title}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {inv.vehicle?.make} {inv.vehicle?.model} ·{' '}
+                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Badge variant="outline" className="text-xs">
+                        {inv.status}
+                      </Badge>
+                      {inv.publicToken && (
+                        <Link
+                          href={`/share/invoice/${orgId}/${inv.publicToken}`}
+                          className="text-xs font-medium text-primary hover:underline"
                         >
-                          <Download className="h-3.5 w-3.5" />
-                        </a>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+                          {t('view')}
+                        </Link>
+                      )}
+                      <a
+                        href={`/portal/${orgId}/invoices/${inv.id}/pdf`}
+                        download
+                        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                        aria-label={tInvoices('download')}
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </AppCard>
 
           {/* Recent quotes — narrower */}
@@ -176,70 +174,66 @@ export default async function PortalDashboardPage({
               </Link>
             }
           >
-              {d.recentQuotes.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">{t('noQuotesYet')}</p>
-              ) : (
-                <ul className="divide-y">
-                  {d.recentQuotes.map((q) => (
-                    <li
-                      key={q.id}
-                      className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {q.quoteNumber ? `#${q.quoteNumber}` : q.title}
-                        </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {q.vehicle?.make} {q.vehicle?.model}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          {q.status}
-                        </Badge>
-                        {q.publicToken && (
-                          <Link
-                            href={`/share/quote/${orgId}/${q.publicToken}`}
-                            className="text-xs font-medium text-primary hover:underline"
-                          >
-                            {t('view')}
-                          </Link>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+            {d.recentQuotes.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">{t('noQuotesYet')}</p>
+            ) : (
+              <ul className="divide-y">
+                {d.recentQuotes.map((q) => (
+                  <li
+                    key={q.id}
+                    className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">
+                        {q.quoteNumber ? `#${q.quoteNumber}` : q.title}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {q.vehicle?.make} {q.vehicle?.model}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        {q.status}
+                      </Badge>
+                      {q.publicToken && (
+                        <Link
+                          href={`/share/quote/${orgId}/${q.publicToken}`}
+                          className="text-xs font-medium text-primary hover:underline"
+                        >
+                          {t('view')}
+                        </Link>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </AppCard>
         </div>
 
         {/* Active jobs (only if any) */}
         {d.activeJobs.length > 0 && (
-          <AppCard
-            icon={Activity}
-            title={t('activeJobs')}
-            contentClassName="pt-0"
-          >
-              <ul className="divide-y">
-                {d.activeJobs.map((job) => (
-                  <li
-                    key={job.id}
-                    className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{job.title}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {job.vehicle?.make} {job.vehicle?.model} ·{' '}
-                        {new Date(job.startDateTime ?? job.serviceDate).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {job.status}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
-            </AppCard>
+          <AppCard icon={Activity} title={t('activeJobs')} contentClassName="pt-0">
+            <ul className="divide-y">
+              {d.activeJobs.map((job) => (
+                <li
+                  key={job.id}
+                  className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{job.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {job.vehicle?.make} {job.vehicle?.model} ·{' '}
+                      {new Date(job.startDateTime ?? job.serviceDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {job.status}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          </AppCard>
         )}
 
         {/* Pending requests (only if any) */}
@@ -256,25 +250,25 @@ export default async function PortalDashboardPage({
             }
             contentClassName="pt-4"
           >
-              <ul className="divide-y">
-                {d.pendingRequests.map((req) => (
-                  <li
-                    key={req.id}
-                    className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{req.description.slice(0, 80)}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {req.vehicle?.make} {req.vehicle?.model} ·{' '}
-                        {new Date(req.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {t('pending')}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
+            <ul className="divide-y">
+              {d.pendingRequests.map((req) => (
+                <li
+                  key={req.id}
+                  className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{req.description.slice(0, 80)}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {req.vehicle?.make} {req.vehicle?.model} ·{' '}
+                      {new Date(req.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {t('pending')}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
           </AppCard>
         )}
       </div>

@@ -6,6 +6,9 @@
 
 type PdfMessages = Record<string, Record<string, string>>
 
+/** Which document's wording wins where the invoice and the quote differ. */
+export type PrintDocumentType = 'invoice' | 'quote'
+
 async function loadPdfMessages(locale: string): Promise<PdfMessages> {
   try {
     return (await import(`../../../../messages/${locale}/pdf.json`)).default
@@ -16,20 +19,28 @@ async function loadPdfMessages(locale: string): Promise<PdfMessages> {
 
 export async function loadPrintLabels(
   locale: string,
-  settingsMap: Record<string, string>
+  settingsMap: Record<string, string>,
+  documentType: PrintDocumentType = 'invoice'
 ): Promise<Record<string, string>> {
   const pdfMessages = await loadPdfMessages(locale)
+  const quote = documentType === 'quote'
+  // A quote sheet is an invoice sheet with different wording in a handful of
+  // places, and the two are drawn by the same builder. Layering the quote over
+  // the invoice means every shared label (column heads, panel titles, warranty)
+  // is translated for a quote too, instead of falling through to English.
   const labels: Record<string, string> = {
     ...pdfMessages.invoice,
+    ...(quote ? pdfMessages.quote : {}),
     ...pdfMessages.common,
   }
 
   const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
   if (serviceType === 'marine') {
-    if (pdfMessages.invoice.mileageMarine) labels.mileage = pdfMessages.invoice.mileageMarine
-    if (pdfMessages.invoice.vinMarine) labels.vin = pdfMessages.invoice.vinMarine
-    if (pdfMessages.invoice.plateMarine) labels.plate = pdfMessages.invoice.plateMarine
-    if (pdfMessages.invoice.vehicleMarine) labels.vehicle = pdfMessages.invoice.vehicleMarine
+    const source = quote ? { ...pdfMessages.invoice, ...pdfMessages.quote } : pdfMessages.invoice
+    if (source.mileageMarine) labels.mileage = source.mileageMarine
+    if (source.vinMarine) labels.vin = source.vinMarine
+    if (source.plateMarine) labels.plate = source.plateMarine
+    if (source.vehicleMarine) labels.vehicle = source.vehicleMarine
     // Engine hours, not distance.
     labels.km = 'hrs'
     labels.mi = 'hrs'

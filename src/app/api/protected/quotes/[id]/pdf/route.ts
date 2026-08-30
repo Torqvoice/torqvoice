@@ -29,7 +29,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     } catch {
       pdfMessages = (await import(`../../../../../../../messages/en/pdf.json`)).default
     }
+    // The quote sheet shares its builder, and so its column heads and panel
+    // titles, with the invoice. Layering quote wording over the invoice's keeps
+    // every shared label translated instead of falling back to English.
     const labels = {
+      ...pdfMessages.invoice,
       ...pdfMessages.quote,
       ...pdfMessages.common,
     }

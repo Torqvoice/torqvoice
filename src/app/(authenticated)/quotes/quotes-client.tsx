@@ -1,8 +1,8 @@
 'use client'
 
-import { interactiveRow } from '@/lib/interactive-row';
-import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav';
-import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { interactiveRow } from '@/lib/interactive-row'
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
 import { useState, useCallback, useTransition, useEffect } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
@@ -28,7 +28,17 @@ import {
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
-import { ArrowDown, ArrowUp, ArrowUpDown, Car, ExternalLink, Loader2, Plus, Search, User } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Car,
+  ExternalLink,
+  Loader2,
+  Plus,
+  Search,
+  User,
+} from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 
@@ -139,7 +149,7 @@ export function QuotesClient({
     value: searchInput,
     setValue: setSearchInput,
     commitNow: handleSearch,
-  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const openNewDialog = () => setShowNewDialog(true)
 
@@ -153,9 +163,11 @@ export function QuotesClient({
 
   const SortIcon = ({ column }: { column: string }) => {
     if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
-    return sortOrder === 'asc'
-      ? <ArrowUp className="ml-1 h-3 w-3" />
-      : <ArrowDown className="ml-1 h-3 w-3" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
   }
 
   return (
@@ -266,38 +278,73 @@ export function QuotesClient({
           <TableHeader>
             <TableRow>
               <TableHead className="w-25">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('quoteNumber')}>
-                  {t('list.columnQuoteNumber')}<SortIcon column="quoteNumber" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('quoteNumber')}
+                >
+                  {t('list.columnQuoteNumber')}
+                  <SortIcon column="quoteNumber" />
                 </button>
               </TableHead>
               <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('title')}>
-                  {t('list.columnTitle')}<SortIcon column="title" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('title')}
+                >
+                  {t('list.columnTitle')}
+                  <SortIcon column="title" />
                 </button>
               </TableHead>
               <TableHead className="hidden w-[18%] md:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('customer')}>
-                  {t('list.columnCustomer')}<SortIcon column="customer" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('customer')}
+                >
+                  {t('list.columnCustomer')}
+                  <SortIcon column="customer" />
                 </button>
               </TableHead>
               <TableHead className="hidden w-[18%] lg:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('vehicle')}>
-                  {t('list.columnVehicle')}<SortIcon column="vehicle" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('vehicle')}
+                >
+                  {t('list.columnVehicle')}
+                  <SortIcon column="vehicle" />
                 </button>
               </TableHead>
               <TableHead className="w-27.5">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('status')}>
-                  {t('list.columnStatus')}<SortIcon column="status" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('status')}
+                >
+                  {t('list.columnStatus')}
+                  <SortIcon column="status" />
                 </button>
               </TableHead>
               <TableHead className="w-22.5">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort('createdAt')}>
-                  {t('list.columnDate')}<SortIcon column="createdAt" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('createdAt')}
+                >
+                  {t('list.columnDate')}
+                  <SortIcon column="createdAt" />
                 </button>
               </TableHead>
               <TableHead className="w-22.5">
-                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort('totalAmount')}>
-                  {t('list.columnTotal')}<SortIcon column="totalAmount" />
+                <button
+                  type="button"
+                  className="ml-auto flex items-center hover:text-foreground"
+                  onClick={() => handleSort('totalAmount')}
+                >
+                  {t('list.columnTotal')}
+                  <SortIcon column="totalAmount" />
                 </button>
               </TableHead>
             </TableRow>
@@ -312,64 +359,67 @@ export function QuotesClient({
             ) : (
               data.records.map((q) => (
                 <ContextMenu key={q.id} modal={false}>
-                <ContextMenuTrigger asChild>
-                <TableRow
-                  className="cursor-pointer"
-                  {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
-                >
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {q.quoteNumber || '-'}
-                  </TableCell>
-                  <TableCell className="truncate font-medium">{q.title}</TableCell>
-                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                    {q.customer ? (
-                      <TableCellLink href={`/customers/${q.customer.id}`}>
-                        {q.customer.name}
-                      </TableCellLink>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
-                    {q.vehicle ? (
-                      <TableCellLink href={`/vehicles/${q.vehicle.id}`}>
-                        {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
-                      </TableCellLink>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
-                      {q.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">
-                    {formatDate(new Date(q.createdAt))}
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">
-                    {formatCurrency(q.totalAmount, currencyCode)}
-                  </TableCell>
-                </TableRow>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="min-w-52">
-                  <ContextMenuItem onClick={() => router.push(`/quotes/${q.id}`)}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {tcm('open')}
-                  </ContextMenuItem>
-                  {q.vehicle && (
-                    <ContextMenuItem onClick={() => router.push(`/vehicles/${q.vehicle?.id}`)}>
-                      <Car className="mr-2 h-4 w-4" />
-                      {tcm('openVehicle')}
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      className="cursor-pointer"
+                      {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
+                    >
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {q.quoteNumber || '-'}
+                      </TableCell>
+                      <TableCell className="truncate font-medium">{q.title}</TableCell>
+                      <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                        {q.customer ? (
+                          <TableCellLink href={`/customers/${q.customer.id}`}>
+                            {q.customer.name}
+                          </TableCellLink>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
+                        {q.vehicle ? (
+                          <TableCellLink href={`/vehicles/${q.vehicle.id}`}>
+                            {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                          </TableCellLink>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${statusColors[q.status] || ''}`}
+                        >
+                          {q.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {formatDate(new Date(q.createdAt))}
+                      </TableCell>
+                      <TableCell className="text-right font-semibold">
+                        {formatCurrency(q.totalAmount, currencyCode)}
+                      </TableCell>
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem onClick={() => router.push(`/quotes/${q.id}`)}>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tcm('open')}
                     </ContextMenuItem>
-                  )}
-                  {q.customer && (
-                    <ContextMenuItem onClick={() => router.push(`/customers/${q.customer?.id}`)}>
-                      <User className="mr-2 h-4 w-4" />
-                      {tcm('openCustomer')}
-                    </ContextMenuItem>
-                  )}
-                </ContextMenuContent>
+                    {q.vehicle && (
+                      <ContextMenuItem onClick={() => router.push(`/vehicles/${q.vehicle?.id}`)}>
+                        <Car className="mr-2 h-4 w-4" />
+                        {tcm('openVehicle')}
+                      </ContextMenuItem>
+                    )}
+                    {q.customer && (
+                      <ContextMenuItem onClick={() => router.push(`/customers/${q.customer?.id}`)}>
+                        <User className="mr-2 h-4 w-4" />
+                        {tcm('openCustomer')}
+                      </ContextMenuItem>
+                    )}
+                  </ContextMenuContent>
                 </ContextMenu>
               ))
             )}

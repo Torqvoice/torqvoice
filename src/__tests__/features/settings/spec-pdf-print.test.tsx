@@ -32,7 +32,8 @@ const invoice: InvoiceData = {
   techName: 'Jamie Lee',
   mileage: 105866,
   diagnosticNotes: null,
-  invoiceNotes: '<p>Thank you for choosing our workshop. <strong>Contact us</strong> if you have any questions.</p>',
+  invoiceNotes:
+    '<p>Thank you for choosing our workshop. <strong>Contact us</strong> if you have any questions.</p>',
   subtotal: 1053.63,
   taxRate: 19,
   taxAmount: 200.19,

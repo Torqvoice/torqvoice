@@ -57,7 +57,7 @@ export function NewInspectionDialog({
   templates: TemplateOption[]
   preselectedVehicleId?: string
 }) {
-  const t = useTranslations("inspections.new");
+  const t = useTranslations('inspections.new')
   const router = useRouter()
   const serviceType = useServiceType()
   const [isPending, startTransition] = useTransition()
@@ -121,16 +121,16 @@ export function NewInspectionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DocsLink href="/docs/features/inspections" variant="hint" className="self-start" />
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>{t("vehicle")}</Label>
+            <Label>{t('vehicle')}</Label>
             {loadingVehicles ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {t("loadingVehicles")}
+                {t('loadingVehicles')}
               </div>
             ) : (
               <Popover open={vehiclePopoverOpen} onOpenChange={setVehiclePopoverOpen}>
@@ -154,9 +154,9 @@ export function NewInspectionDialog({
                 </PopoverTrigger>
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                   <Command>
-                    <CommandInput placeholder={t("searchVehicles")} />
+                    <CommandInput placeholder={t('searchVehicles')} />
                     <CommandList>
-                      <CommandEmpty>{t("noVehicles")}</CommandEmpty>
+                      <CommandEmpty>{t('noVehicles')}</CommandEmpty>
                       <CommandGroup>
                         {vehicles.map((v) => {
                           const label = `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
@@ -189,19 +189,19 @@ export function NewInspectionDialog({
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>{t("template")}</Label>
+              <Label>{t('template')}</Label>
               <Link
                 href="/settings/templates?tab=inspections"
                 className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => onOpenChange(false)}
               >
                 <Settings className="h-3 w-3" />
-                {t("manageTemplates")}
+                {t('manageTemplates')}
               </Link>
             </div>
             <Select value={templateId} onValueChange={setTemplateId} required>
               <SelectTrigger>
-                <SelectValue placeholder={t("selectTemplate")} />
+                <SelectValue placeholder={t('selectTemplate')} />
               </SelectTrigger>
               <SelectContent>
                 {templates.map((t) => (
@@ -227,7 +227,7 @@ export function NewInspectionDialog({
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t("cancel")}
+              {t('cancel')}
             </Button>
             <Button type="submit" disabled={isPending || !vehicleId || !templateId}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

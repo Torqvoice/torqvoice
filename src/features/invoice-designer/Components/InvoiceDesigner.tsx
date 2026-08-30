@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
+import { useMessages, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -35,7 +36,7 @@ import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/style
 import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/buildSpec'
-import { SAMPLE_TABLES, fieldValues } from './sample'
+import { fieldValues, fillTemplate, sampleTables, type PrintLabels } from './sample'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
 import type { DesignerTemplate, DesignerWorkshop, DocumentType, SavedDesign } from './types'
@@ -132,6 +133,12 @@ export function InvoiceDesigner({
   customFields: DesignerFieldDef[]
 }) {
   const router = useRouter()
+  const t = useTranslations('settings.designer')
+  const tSection = useTranslations('settings.layoutEditor.sections')
+  const tPreset = useTranslations('settings.layoutEditor.presets')
+  const messages = useMessages() as {
+    pdf?: Record<string, Record<string, string>>
+  }
   // Arriving with ?preset= means a starting point was picked in settings:
   // land in the designer with it applied, as unsaved work.
   const initialPreset = initialPresetId
@@ -191,6 +198,30 @@ export function InvoiceDesigner({
   const layout = layouts[docType]
   const template = templates[docType]
 
+  /**
+   * The labels the printed sheet uses, resolved from the same `pdf.json` the
+   * print path reads. Without this the preview named its columns and panels in
+   * English while the document it stands for printed in the reader's language.
+   * Quote wording wins over the invoice's where the two differ.
+   */
+  const printLabels = useMemo<PrintLabels>(() => {
+    const pdf = messages.pdf ?? {}
+    return {
+      ...(pdf.invoice ?? {}),
+      ...(docType === 'quote' ? (pdf.quote ?? {}) : {}),
+      ...(pdf.common ?? {}),
+    }
+  }, [messages, docType])
+  const L = useCallback(
+    (key: string, fallback: string) => printLabels[key] || fallback,
+    [printLabels]
+  )
+  /** A section's name, or its id spaced out when nothing has named it. */
+  const sectionName = useCallback(
+    (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' ')),
+    [tSection]
+  )
+
   const setLayout = useCallback(
     (next: InvoiceLayoutConfig) => {
       setLayouts((prev) => ({ ...prev, [docType]: next }))
@@ -208,28 +239,30 @@ export function InvoiceDesigner({
   )
 
   /** What a workshop's own sheet says, with the sample standing in for a job. */
-  const data: DocumentData = useMemo(
-    () => ({
+  const data: DocumentData = useMemo(() => {
+    const sample = sampleTables(t, printLabels)
+    const values = fieldValues(workshop, t, printLabels)
+    return {
       fields: {
-        ...fieldValues(workshop),
+        ...values,
         // A custom field prints whatever the job carries; here it shows its
         // own name so the workshop can see where it will sit.
         ...Object.fromEntries(
           customFields
             .filter((f) => f.isActive)
-            .map((f) => [toCustomFieldId(f.id), `${f.label || f.name}: Sample`])
+            .map((f) => [toCustomFieldId(f.id), `${f.label || f.name}: ${t('sample.value')}`])
         ),
       },
       logoUrl: workshop.logoUrl || undefined,
-      labels: {},
+      labels: printLabels,
       meta: {
-        title: docType === 'quote' ? 'QUOTE' : 'INVOICE',
-        number: SAMPLE_TABLES.number,
-        customerNumber: SAMPLE_TABLES.customerNumber,
-        date: SAMPLE_TABLES.date,
-        due: SAMPLE_TABLES.due,
+        title: sample.title,
+        number: sample.number,
+        customerNumber: sample.customerNumber,
+        date: sample.date,
+        due: sample.due,
       },
-      items: SAMPLE_TABLES.items.map((item) => ({
+      items: sample.items.map((item) => ({
         n: String(item.n),
         qty: item.qty,
         unit: item.unit,
@@ -238,7 +271,7 @@ export function InvoiceDesigner({
         price: item.price,
         total: item.total,
       })),
-      parts: SAMPLE_TABLES.items
+      parts: sample.items
         .filter((item) => item.sku)
         .map((item) => ({
           ref: item.sku as string,
@@ -247,7 +280,7 @@ export function InvoiceDesigner({
           price: item.price,
           total: item.total,
         })),
-      labor: SAMPLE_TABLES.items
+      labor: sample.items
         .filter((item) => !item.sku)
         .map((item) => ({
           desc: item.desc,
@@ -255,35 +288,42 @@ export function InvoiceDesigner({
           rate: item.price,
           total: item.total,
         })),
-      findings: SAMPLE_TABLES.findings,
+      findings: sample.findings,
       totals: [
-        { label: 'Subtotal', value: SAMPLE_TABLES.subtotal, kind: 'line' as const },
-        { label: 'Tax', value: SAMPLE_TABLES.tax, kind: 'line' as const },
-        { label: 'Total', value: SAMPLE_TABLES.total, kind: 'total' as const },
+        { label: L('subtotal', 'Subtotal'), value: sample.subtotal, kind: 'line' as const },
+        {
+          // The tax label carries the rate, the way the printed sheet does.
+          label: fillTemplate(L('tax', 'Tax ({rate}%)'), { rate: '25' }),
+          value: sample.tax,
+          kind: 'line' as const,
+        },
+        { label: L('total', 'Total'), value: sample.total, kind: 'total' as const },
       ],
-      notes: { html: SAMPLE_TABLES.notes },
-      warranty: { duration: SAMPLE_TABLES.warranty },
+      notes: { html: sample.notes },
+      warranty: { duration: sample.warranty },
       payment: [
-        { id: 'bank_account', label: 'Bank Account', value: fieldValues(workshop).bank_account },
+        { id: 'bank_account', label: L('bankAccount', 'Bank Account'), value: values.bank_account },
         {
           id: 'org_number',
-          label: 'Org. Number',
-          value: workshop.orgNumber || 'Org: 123 456 789',
+          label: L('orgNumberLabel', 'Org. Number'),
+          value: values.org_number || `${L('org', 'Org: {org}').replace('{org}', '123 456 789')}`,
         },
-        { label: 'Payment Terms', value: 'Net 10 Days' },
-        { label: 'Due Date', value: SAMPLE_TABLES.due },
+        {
+          label: L('paymentTermsLabel', 'Payment Terms'),
+          value: fillTemplate(L('netDays', '{days} Days'), { days: '10' }),
+        },
+        { label: L('dueDateLabel', 'Due Date'), value: sample.due },
       ],
       sectionLabels: {
-        customer: 'Bill to',
-        vehicle: 'Vehicle',
-        service: 'Service',
-        bank_account: 'Payment information',
-        general: 'Additional information',
-        findings: 'Observations',
+        customer: L('billTo', 'Bill To'),
+        vehicle: L('vehicle', 'Vehicle'),
+        service: L('service', 'Service'),
+        bank_account: L('paymentInformation', 'Payment Information'),
+        general: L('customFieldsTitle', 'Additional Information'),
+        findings: L('findings', 'Observations'),
       },
-    }),
-    [workshop, docType, customFields]
-  )
+    }
+  }, [workshop, customFields, t, printLabels, L])
 
   const spec = useMemo(
     () => buildDocumentSpec(layout, themeOf(template, layout), data),
@@ -305,7 +345,7 @@ export function InvoiceDesigner({
   const persistDesigns = useCallback((next: SavedDesign[]) => {
     setSavedDesigns(next)
     setSettings({ 'designer.savedDesigns': JSON.stringify(next) }).catch(() => {
-      toast.error('Could not save your designs')
+      toast.error(t('couldNotSaveDesigns'))
     })
   }, [])
 
@@ -325,12 +365,12 @@ export function InvoiceDesigner({
     if (existing) {
       persistDesigns(savedDesigns.map((d) => (d.id === existing.id ? { ...d, ...snapshot } : d)))
       setActiveDesigns((prev) => ({ ...prev, [docType]: `design:${existing.id}` }))
-      toast.success(`Updated "${name}"`)
+      toast.success(t('designUpdated', { name }))
     } else {
       const id = designId()
       persistDesigns([{ id, ...snapshot }, ...savedDesigns].slice(0, 24))
       setActiveDesigns((prev) => ({ ...prev, [docType]: `design:${id}` }))
-      toast.success(`Saved as "${name}"`)
+      toast.success(t('designSaved', { name }))
     }
     setNamingDesign(false)
   }, [designName, docType, layout, template, savedDesigns, persistDesigns])
@@ -558,9 +598,9 @@ export function InvoiceDesigner({
         }),
       ])
       setDirty(false)
-      toast.success('Saved')
+      toast.success(t('saved'))
     } catch {
-      toast.error('Could not save')
+      toast.error(t('couldNotSave'))
     }
     setSaving(false)
   }
@@ -570,16 +610,14 @@ export function InvoiceDesigner({
       <div className="flex min-h-screen flex-col items-center overflow-y-auto px-8 py-14">
         <div className="w-full max-w-[1060px]">
           <div className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#2563eb]">
-            Invoice designer
+            {t('eyebrow')}
           </div>
-          <h1 className="mb-1.5 mt-2 text-[30px] tracking-tight">Start from a template</h1>
-          <p className="mb-8 text-[15px] text-[#5b6068]">
-            Pick a starting point. You can change everything in the designer.
-          </p>
+          <h1 className="mb-1.5 mt-2 text-[30px] tracking-tight">{t('galleryTitle')}</h1>
+          <p className="mb-8 text-[15px] text-[#5b6068]">{t('galleryHint')}</p>
 
           {savedDesigns.length > 0 && (
             <>
-              <h2 className="mb-3 text-[15px] font-semibold">Your designs</h2>
+              <h2 className="mb-3 text-[15px] font-semibold">{t('yourDesigns')}</h2>
               <div className="mb-8 grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
                 {savedDesigns.map((design) => {
                   const active = activeDesigns[docType] === `design:${design.id}`
@@ -591,7 +629,7 @@ export function InvoiceDesigner({
                     >
                       {active && (
                         <span className="absolute left-2 top-2 z-10 rounded-full bg-[#2563eb] px-2 py-0.5 text-[10.5px] font-semibold text-white shadow">
-                          In use
+                          {t('inUse')}
                         </span>
                       )}
                       <button
@@ -602,21 +640,21 @@ export function InvoiceDesigner({
                         <SpecThumbnail spec={specForDesign(design)} />
                         <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
                         <div className="text-xs leading-snug text-[#71767e]">
-                          Saved {new Date(design.savedAt).toLocaleDateString()}
+                          {t('savedOn', { date: new Date(design.savedAt).toLocaleDateString() })}
                         </div>
                       </button>
                       <button
                         type="button"
                         onClick={async () => {
                           const ok = await confirm({
-                            title: 'Delete design',
-                            description: `Delete the design "${design.name}"? The invoice and quote keep whatever is applied; only the saved copy goes.`,
-                            confirmLabel: 'Delete',
+                            title: t('deleteDesignTitle'),
+                            description: t('deleteDesignBody', { name: design.name }),
+                            confirmLabel: t('delete'),
                             destructive: true,
                           })
                           if (ok) persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
                         }}
-                        title="Delete this design"
+                        title={t('deleteDesign')}
                         className="absolute right-2 top-2 z-10 hidden h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] shadow group-hover:flex hover:text-[#dc2626]"
                       >
                         ✕
@@ -625,7 +663,7 @@ export function InvoiceDesigner({
                   )
                 })}
               </div>
-              <h2 className="mb-3 text-[15px] font-semibold">Templates</h2>
+              <h2 className="mb-3 text-[15px] font-semibold">{t('templates')}</h2>
             </>
           )}
 
@@ -642,19 +680,15 @@ export function InvoiceDesigner({
                 >
                   {active && (
                     <span className="absolute left-2 top-2 z-10 rounded-full bg-[#2563eb] px-2 py-0.5 text-[10.5px] font-semibold text-white shadow">
-                      In use
+                      {t('inUse')}
                     </span>
                   )}
                   <SpecThumbnail spec={specFor(preset)} />
-                  <div className="mt-2.5 text-sm font-semibold capitalize">{preset.id}</div>
+                  <div className="mt-2.5 text-sm font-semibold">
+                    {tPreset.has(`${preset.id}.name`) ? tPreset(`${preset.id}.name`) : preset.id}
+                  </div>
                   <div className="text-xs leading-snug text-[#71767e]">
-                    {preset.template.headerStyle === 'framed'
-                      ? 'Banded letterhead with a rail'
-                      : preset.template.headerStyle === 'modern'
-                        ? 'Full-width colored banner'
-                        : preset.template.headerStyle === 'compact'
-                          ? 'Tight header, dense rows'
-                          : 'Name and rule on white'}
+                    {t(`headerStyle.${preset.template.headerStyle}.desc`)}
                   </div>
                 </button>
               )
@@ -667,14 +701,14 @@ export function InvoiceDesigner({
               onClick={() => setView('designer')}
               className="text-sm font-medium text-[#2563eb]"
             >
-              Continue with my current layout →
+              {t('continueCurrent')} →
             </button>
             <button
               type="button"
               onClick={() => router.push('/settings/templates')}
               className="text-sm text-[#71767e]"
             >
-              Back to settings
+              {t('backToSettings')}
             </button>
           </div>
         </div>
@@ -694,7 +728,7 @@ export function InvoiceDesigner({
           onClick={() => setView('gallery')}
           className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
         >
-          ◂ Templates
+          ◂ {t('templates')}
         </button>
 
         <div className="flex gap-0.5 rounded-lg bg-[#f0f1f4] p-[3px]">
@@ -706,14 +740,14 @@ export function InvoiceDesigner({
                 setDocType(type)
                 setSelected(null)
               }}
-              className="rounded-md px-3.5 py-1 text-[13px] capitalize"
+              className="rounded-md px-3.5 py-1 text-[13px]"
               style={{
                 background: docType === type ? '#fff' : 'transparent',
                 fontWeight: docType === type ? 600 : 400,
                 boxShadow: docType === type ? '0 1px 2px rgba(26,29,33,0.08)' : undefined,
               }}
             >
-              {type}
+              {t(type)}
             </button>
           ))}
         </div>
@@ -731,11 +765,11 @@ export function InvoiceDesigner({
               setTemplates((prev) => ({ ...prev, quote: { ...prev.invoice } }))
               setSelected(null)
               setDirty(true)
-              toast.success('Invoice design copied to the quote')
+              toast.success(t('copiedToQuote'))
             }}
             className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
           >
-            ⧉ Use invoice design
+            ⧉ {t('useInvoiceDesign')}
           </button>
         )}
 
@@ -747,7 +781,7 @@ export function InvoiceDesigner({
           className="rounded-[7px] border border-[#e3e5e9] px-2.5 py-1.5 text-[13px]"
           style={{ background: rulers ? '#eef2ff' : '#fff', color: rulers ? '#2563eb' : undefined }}
         >
-          ⊞ Rulers
+          ⊞ {t('rulers')}
         </button>
 
         <div className="flex items-center overflow-hidden rounded-[7px] border border-[#e3e5e9]">
@@ -773,13 +807,13 @@ export function InvoiceDesigner({
         <button
           type="button"
           onClick={() => {
-            setDesignName((prev) => prev.trim() || `My ${docType} design`)
+            setDesignName((prev) => prev.trim() || t('defaultDesignName', { doc: t(docType) }))
             setNamingDesign(true)
           }}
-          title="Keep a named copy of this design, to come back to from the template gallery"
+          title={t('saveDesignHint')}
           className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
         >
-          ♡ Save design
+          ♡ {t('saveDesign')}
         </button>
 
         <button
@@ -790,7 +824,7 @@ export function InvoiceDesigner({
           }}
           className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
         >
-          Reset
+          {t('reset')}
         </button>
 
         <button
@@ -799,7 +833,7 @@ export function InvoiceDesigner({
           disabled={saving || !dirty}
           className="rounded-[7px] bg-[#2563eb] px-4 py-[7px] text-[13px] font-semibold text-white hover:bg-[#1d4ed8] disabled:opacity-50"
         >
-          {saving ? 'Saving…' : dirty ? 'Save' : 'Saved'}
+          {saving ? t('saving') : dirty ? t('save') : t('saved')}
         </button>
       </div>
 
@@ -815,11 +849,11 @@ export function InvoiceDesigner({
               style={{ background: selected === null ? '#eef2ff' : undefined }}
             >
               <span className="text-[13px]">🎨</span>
-              <span className="flex-1 text-[13.5px] font-medium">Document styling</span>
+              <span className="flex-1 text-[13.5px] font-medium">{t('documentStyling')}</span>
             </button>
           </div>
           <div className="px-3.5 pb-2.5 pt-3 text-[11.5px] font-semibold uppercase tracking-[0.07em] text-[#8a8f97]">
-            Sections
+            {t('sections')}
           </div>
           <div className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-2 pb-3.5">
             {rail.map((section) => (
@@ -841,9 +875,7 @@ export function InvoiceDesigner({
                 }}
               >
                 <span className="cursor-grab text-[13px] tracking-tighter text-[#b3b7bd]">⠿</span>
-                <span className="flex-1 truncate text-[13.5px] capitalize">
-                  {section.id.replace(/_/g, ' ')}
-                </span>
+                <span className="flex-1 truncate text-[13.5px]">{sectionName(section.id)}</span>
                 {section.column && (
                   <span className="rounded bg-[#eef2ff] px-1.5 py-0.5 text-[10.5px] font-semibold uppercase text-[#2563eb]">
                     {section.column[0]}
@@ -855,9 +887,9 @@ export function InvoiceDesigner({
                 {section.visible && !renderedIds.has(section.id) && (
                   <span
                     className="rounded bg-[#f4f5f7] px-1.5 py-0.5 text-[10px] text-[#8a8f97]"
-                    title="Shown, but there is nothing to print in it with the current data."
+                    title={t('sectionEmptyHint')}
                   >
-                    empty
+                    {t('sectionEmpty')}
                   </span>
                 )}
                 <button
@@ -868,11 +900,7 @@ export function InvoiceDesigner({
                   }}
                   className="px-0.5"
                   style={{ color: section.visible ? '#5b6068' : '#c9ccd1' }}
-                  title={
-                    section.visible
-                      ? 'Shown on the sheet. Click to hide it.'
-                      : 'Hidden from the sheet. Click to show it.'
-                  }
+                  title={section.visible ? t('sectionShownHint') : t('sectionHiddenHint')}
                 >
                   {section.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
@@ -880,8 +908,7 @@ export function InvoiceDesigner({
             ))}
           </div>
           <div className="border-t border-[#eceef1] px-3.5 py-2.5 text-[11.5px] leading-relaxed text-[#8a8f97]">
-            Drag a section on the page: drop it between blocks to reorder, onto a card to sit beside
-            it, or anywhere else to place it freely. The page makes room around it.
+            {t('railHint')}
           </div>
         </div>
 
@@ -891,7 +918,7 @@ export function InvoiceDesigner({
             onClick={() => setAnchor(selected, undefined)}
             className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-md bg-[#1a1d21] px-3 py-1.5 text-xs font-medium text-white shadow-lg"
           >
-            Return {selected.replace(/_/g, ' ')} to the flow
+            {t('returnToFlow', { section: sectionName(selected) })}
           </button>
         )}
         <SpecCanvas
@@ -923,11 +950,8 @@ export function InvoiceDesigner({
       <Dialog open={namingDesign} onOpenChange={setNamingDesign}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Save this design</DialogTitle>
-            <DialogDescription>
-              Keeps a named copy of the current arrangement and look. Find it again under Your
-              designs in the template gallery.
-            </DialogDescription>
+            <DialogTitle>{t('saveDialogTitle')}</DialogTitle>
+            <DialogDescription>{t('saveDialogBody')}</DialogDescription>
           </DialogHeader>
           <form
             onSubmit={(e) => {
@@ -938,27 +962,23 @@ export function InvoiceDesigner({
             <Input
               value={designName}
               onChange={(e) => setDesignName(e.target.value)}
-              placeholder="Design name"
+              placeholder={t('designNamePlaceholder')}
               maxLength={60}
               autoFocus
             />
             {savedDesigns.some(
               (d) => d.name.trim().toLowerCase() === designName.trim().toLowerCase()
-            ) && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                A design with this name exists; saving updates it.
-              </p>
-            )}
+            ) && <p className="mt-2 text-xs text-muted-foreground">{t('nameExists')}</p>}
             <DialogFooter className="mt-4">
               <Button type="button" variant="outline" onClick={() => setNamingDesign(false)}>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button type="submit" disabled={!designName.trim()}>
                 {savedDesigns.some(
                   (d) => d.name.trim().toLowerCase() === designName.trim().toLowerCase()
                 )
-                  ? 'Update design'
-                  : 'Save design'}
+                  ? t('updateDesign')
+                  : t('saveDesign')}
               </Button>
             </DialogFooter>
           </form>

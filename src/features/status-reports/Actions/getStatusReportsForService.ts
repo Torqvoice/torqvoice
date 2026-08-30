@@ -1,8 +1,8 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
 export async function getStatusReportsForService(serviceRecordId: string) {
   return withAuth(
@@ -14,8 +14,8 @@ export async function getStatusReportsForService(serviceRecordId: string) {
       const serviceRecord = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
         select: { id: true },
-      });
-      if (!serviceRecord) return [];
+      })
+      if (!serviceRecord) return []
 
       const reports = await db.statusReport.findMany({
         where: { serviceRecordId, organizationId },
@@ -33,15 +33,13 @@ export async function getStatusReportsForService(serviceRecordId: string) {
           sentVia: true,
           sentAt: true,
         },
-        orderBy: { createdAt: "desc" },
-      });
+        orderBy: { createdAt: 'desc' },
+      })
 
-      return reports;
+      return reports
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SERVICES },
-      ],
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
     }
-  );
+  )
 }

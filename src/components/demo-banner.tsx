@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useTranslations } from "next-intl";
-import { BANNER_PRIORITY, useBannerSlot } from "./banner-slot";
+import { useTranslations } from 'next-intl'
+import { BANNER_PRIORITY, useBannerSlot } from './banner-slot'
 
 /**
  * Permanent context for the public demo.
@@ -11,20 +11,21 @@ import { BANNER_PRIORITY, useBannerSlot } from "./banner-slot";
  * in order to queue behind a platform notice rather than stack under one.
  */
 export function DemoBanner({ isDemo }: { isDemo: boolean }) {
-  const t = useTranslations("common.shared");
-  const mine = useBannerSlot("demo", BANNER_PRIORITY.demo, isDemo);
+  const t = useTranslations('common.shared')
+  const mine = useBannerSlot('demo', BANNER_PRIORITY.demo, isDemo)
 
-  if (!isDemo || !mine) return null;
+  if (!isDemo || !mine) return null
 
   return (
     <div className="bg-amber-500 text-center text-xs font-medium text-amber-950 py-1.5 px-4">
-      Demo instance — data resets every few hours. Outgoing email, SMS, Telegram and team invites are disabled.{" "}
+      Demo instance — data resets every few hours. Outgoing email, SMS, Telegram and team invites
+      are disabled.{' '}
       <a
         href="https://torqvoice.com/docs/installation"
         className="underline underline-offset-2 hover:text-amber-900"
       >
-        {t("installOwn")} →
+        {t('installOwn')} →
       </a>
     </div>
-  );
+  )
 }

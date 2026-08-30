@@ -55,7 +55,9 @@ export function useHardwareScanner({ onScan, enabled = true }: UseHardwareScanne
           if (avgGap < 80) {
             cooldownRef.current = true
             onScan(buffer)
-            setTimeout(() => { cooldownRef.current = false }, 500)
+            setTimeout(() => {
+              cooldownRef.current = false
+            }, 500)
           }
         }
         reset()

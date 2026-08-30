@@ -1,47 +1,45 @@
-import { getInspectionsPaginated } from "@/features/inspections/Actions/inspectionActions";
-import { getTemplates } from "@/features/inspections/Actions/templateActions";
-import { InspectionsClient } from "./inspections-client";
-import { PageHeader } from "@/components/page-header";
+import { getInspectionsPaginated } from '@/features/inspections/Actions/inspectionActions'
+import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { InspectionsClient } from './inspections-client'
+import { PageHeader } from '@/components/page-header'
 
 export default async function InspectionsPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    page?: string;
-    pageSize?: string;
-    search?: string;
-    status?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }>;
+    page?: string
+    pageSize?: string
+    search?: string
+    status?: string
+    sortBy?: string
+    sortOrder?: string
+  }>
 }) {
-  const params = await searchParams;
+  const params = await searchParams
   const [result, templatesResult] = await Promise.all([
     getInspectionsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
-      status: params.status || "all",
+      status: params.status || 'all',
       sortBy: params.sortBy,
-      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
+      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
     }),
     getTemplates(),
-  ]);
+  ])
 
   if (!result.success || !result.data) {
     return (
       <>
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
-          <p className="text-muted-foreground">
-            {result.error || "Failed to load inspections"}
-          </p>
+          <p className="text-muted-foreground">{result.error || 'Failed to load inspections'}</p>
         </div>
       </>
-    );
+    )
   }
 
-  const templates = templatesResult.success && templatesResult.data ? templatesResult.data : [];
+  const templates = templatesResult.success && templatesResult.data ? templatesResult.data : []
 
   return (
     <>
@@ -50,12 +48,12 @@ export default async function InspectionsPage({
         <InspectionsClient
           data={result.data}
           templates={templates}
-          search={params.search || ""}
-          statusFilter={params.status || "all"}
-          sortBy={params.sortBy || ""}
-          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
+          search={params.search || ''}
+          statusFilter={params.status || 'all'}
+          sortBy={params.sortBy || ''}
+          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
         />
       </div>
     </>
-  );
+  )
 }

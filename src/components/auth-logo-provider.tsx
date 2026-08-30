@@ -1,23 +1,19 @@
-"use client";
+'use client'
 
-import { createContext, useContext } from "react";
+import { createContext, useContext } from 'react'
 
-const AuthLogoContext = createContext(false);
+const AuthLogoContext = createContext(false)
 
 export function AuthLogoProvider({
   hasCustomLogo,
   children,
 }: {
-  hasCustomLogo: boolean;
-  children: React.ReactNode;
+  hasCustomLogo: boolean
+  children: React.ReactNode
 }) {
-  return (
-    <AuthLogoContext value={hasCustomLogo}>
-      {children}
-    </AuthLogoContext>
-  );
+  return <AuthLogoContext value={hasCustomLogo}>{children}</AuthLogoContext>
 }
 
 export function useHasCustomLogo() {
-  return useContext(AuthLogoContext);
+  return useContext(AuthLogoContext)
 }

@@ -1,12 +1,12 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { STOCK_MOVEMENT_REASONS } from "../Lib/stockMovementReasons";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { STOCK_MOVEMENT_REASONS } from '../Lib/stockMovementReasons'
 
-const DEFAULT_PAGE_SIZE = 50;
-const MAX_PAGE_SIZE = 200;
+const DEFAULT_PAGE_SIZE = 50
+const MAX_PAGE_SIZE = 200
 
 /**
  * Paginated movement history for a single part — the answer to "where was this
@@ -20,33 +20,29 @@ const MAX_PAGE_SIZE = 200;
  * belonging to another tenant can never be returned even with a guessed id.
  */
 export async function getStockMovementsPaginated(params: {
-  inventoryPartId: string;
-  page?: number;
-  pageSize?: number;
-  reason?: string;
+  inventoryPartId: string
+  page?: number
+  pageSize?: number
+  reason?: string
 }) {
   return withAuth(
     async ({ organizationId }) => {
-      const page = Math.max(1, params.page ?? 1);
-      const pageSize = Math.min(
-        Math.max(params.pageSize ?? DEFAULT_PAGE_SIZE, 1),
-        MAX_PAGE_SIZE,
-      );
+      const page = Math.max(1, params.page ?? 1)
+      const pageSize = Math.min(Math.max(params.pageSize ?? DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE)
 
       const where = {
         inventoryPartId: params.inventoryPartId,
         organizationId,
         // Ignore an unrecognised reason rather than returning an empty page.
-        ...(params.reason &&
-        (STOCK_MOVEMENT_REASONS as readonly string[]).includes(params.reason)
+        ...(params.reason && (STOCK_MOVEMENT_REASONS as readonly string[]).includes(params.reason)
           ? { reason: params.reason }
           : {}),
-      };
+      }
 
       const [rows, total] = await Promise.all([
         db.stockMovement.findMany({
           where,
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
           skip: (page - 1) * pageSize,
           take: pageSize,
           select: {
@@ -72,7 +68,7 @@ export async function getStockMovementsPaginated(params: {
           },
         }),
         db.stockMovement.count({ where }),
-      ]);
+      ])
 
       return {
         movements: rows.map((m) => ({
@@ -100,21 +96,21 @@ export async function getStockMovementsPaginated(params: {
                   : null,
               ]
                 .filter(Boolean)
-                .join(" ")
+                .join(' ')
             : null,
         })),
         total,
         page,
         pageSize,
         totalPages: Math.max(1, Math.ceil(total / pageSize)),
-      };
+      }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.INVENTORY },
       ],
-    },
-  );
+    }
+  )
 }
 
 /**
@@ -152,15 +148,15 @@ export async function getInventoryPart(id: string) {
               description: true,
               sortOrder: true,
             },
-            orderBy: { sortOrder: "asc" },
+            orderBy: { sortOrder: 'asc' },
           },
         },
-      });
+      })
     },
     {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.INVENTORY },
       ],
-    },
-  );
+    }
+  )
 }
