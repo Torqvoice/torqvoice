@@ -69,9 +69,14 @@ export function createStyles(
   primary: string,
   font: string,
   headerStyle = 'standard',
-  background?: string
+  background?: string,
+  text?: string
 ) {
   const framed = headerStyle === 'framed'
+  // Body copy and headings only. Rules, panel borders and the table header bar
+  // stay as they are: they read as structure rather than as text, and following
+  // a light ink onto a light sheet would erase them.
+  const ink = text || dark
   const primaryLight = lightenColor(primary)
   const primaryDark = darkenColor(primary)
   const resolved = resolveFont(font)
@@ -88,14 +93,14 @@ export function createStyles(
           borderLeftColor: primary,
           fontSize: 10,
           fontFamily: resolved,
-          color: dark,
+          color: ink,
           ...(background ? { backgroundColor: background } : {}),
         }
       : {
           padding: 40,
           fontSize: 10,
           fontFamily: resolved,
-          color: dark,
+          color: ink,
           ...(background ? { backgroundColor: background } : {}),
         },
     header: {
@@ -130,7 +135,7 @@ export function createStyles(
       fontFamily: resolvedBold,
       marginBottom: 8,
       marginTop: 16,
-      color: dark,
+      color: ink,
     },
     table: { marginBottom: 4 },
     tableHeader: framed

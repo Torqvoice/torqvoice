@@ -35,11 +35,13 @@ export default async function TemplatePage() {
       getSettings([
         SETTING_KEYS.INVOICE_PRIMARY_COLOR,
         SETTING_KEYS.INVOICE_BACKGROUND_COLOR,
+        SETTING_KEYS.INVOICE_TEXT_COLOR,
         SETTING_KEYS.INVOICE_FONT_FAMILY,
         SETTING_KEYS.INVOICE_HEADER_STYLE,
         SETTING_KEYS.INVOICE_LOGO_SIZE,
         SETTING_KEYS.QUOTE_PRIMARY_COLOR,
         SETTING_KEYS.QUOTE_BACKGROUND_COLOR,
+        SETTING_KEYS.QUOTE_TEXT_COLOR,
         SETTING_KEYS.QUOTE_FONT_FAMILY,
         SETTING_KEYS.QUOTE_HEADER_STYLE,
         SETTING_KEYS.QUOTE_LOGO_SIZE,
@@ -110,6 +112,7 @@ export default async function TemplatePage() {
       initialInvoiceValues={{
         primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
         backgroundColor: settings[SETTING_KEYS.INVOICE_BACKGROUND_COLOR] || '',
+        textColor: settings[SETTING_KEYS.INVOICE_TEXT_COLOR] || '',
         fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
         headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
         logoSize: Number(settings[SETTING_KEYS.INVOICE_LOGO_SIZE]) || 100,
@@ -117,6 +120,7 @@ export default async function TemplatePage() {
       initialQuoteValues={{
         primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || '#d97706',
         backgroundColor: settings[SETTING_KEYS.QUOTE_BACKGROUND_COLOR] || '',
+        textColor: settings[SETTING_KEYS.QUOTE_TEXT_COLOR] || '',
         fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || 'Helvetica',
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || 'standard',
         logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,

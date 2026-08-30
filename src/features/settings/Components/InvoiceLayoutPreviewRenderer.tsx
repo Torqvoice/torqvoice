@@ -263,6 +263,7 @@ export function InvoiceLayoutPreviewRenderer({
       primaryColor: template.primaryColor,
       // Empty means the workshop has not chosen one, which is white paper.
       backgroundColor: template.backgroundColor || undefined,
+      textColor: template.textColor || undefined,
       fontFamily: template.fontFamily,
       headerStyle: template.headerStyle,
       logoSize: template.logoSize,

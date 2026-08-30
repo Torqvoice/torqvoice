@@ -271,6 +271,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
         settingsMap['invoice.template.primaryColor'] ||
         '#d97706',
       backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
+      textColor: settingsMap['invoice.textColor'] || undefined,
       fontFamily:
         settingsMap['invoice.fontFamily'] ||
         settingsMap['invoice.template.fontFamily'] ||

@@ -87,7 +87,13 @@ export function InvoicePDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const headerStyle = template?.headerStyle || 'standard'
-  const styles = createStyles(primaryColor, fontFamily, headerStyle, template?.backgroundColor)
+  const styles = createStyles(
+    primaryColor,
+    fontFamily,
+    headerStyle,
+    template?.backgroundColor,
+    template?.textColor
+  )
   const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
 

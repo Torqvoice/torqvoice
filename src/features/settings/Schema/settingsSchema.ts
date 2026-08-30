@@ -36,6 +36,8 @@ export const SETTING_KEYS = {
   INVOICE_PRIMARY_COLOR: 'invoice.primaryColor',
   /// Sheet color behind the document. Empty means the paper stays white.
   INVOICE_BACKGROUND_COLOR: 'invoice.backgroundColor',
+  /// Body and heading color. Empty means the near-black default.
+  INVOICE_TEXT_COLOR: 'invoice.textColor',
   INVOICE_FONT_FAMILY: 'invoice.fontFamily',
   INVOICE_SHOW_LOGO: 'invoice.showLogo',
   INVOICE_SHOW_COMPANY_NAME: 'invoice.showCompanyName',
@@ -66,6 +68,7 @@ export const SETTING_KEYS = {
   TIMEZONE: 'workshop.timezone',
   QUOTE_PRIMARY_COLOR: 'quote.primaryColor',
   QUOTE_BACKGROUND_COLOR: 'quote.backgroundColor',
+  QUOTE_TEXT_COLOR: 'quote.textColor',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',
   QUOTE_HEADER_STYLE: 'quote.headerStyle',
   PREDICTED_MAINTENANCE_ENABLED: 'maintenance.enabled',

@@ -38,6 +38,7 @@ import {
 interface TemplateValues {
   primaryColor: string
   backgroundColor: string
+  textColor: string
   fontFamily: string
   headerStyle: string
   logoSize: number
@@ -69,6 +70,72 @@ const colorPresets = [
   { key: 'rose', value: '#e11d48' },
   { key: 'indigo', value: '#4f46e5' },
 ]
+
+/** A label above a control, at the density the rest of the app uses. */
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      {children}
+    </div>
+  )
+}
+
+/**
+ * One color on one line: swatch, hex, and whatever the row needs after it.
+ * Empty means "not chosen", which is why the swatch falls back for display
+ * only and the hex field is left blank rather than filled in with the default.
+ */
+function ColorRow({
+  label,
+  value,
+  fallback,
+  title,
+  onChange,
+  onClear,
+  clearLabel,
+  children,
+}: {
+  label: string
+  value: string
+  fallback: string
+  title?: string
+  onChange: (value: string) => void
+  onClear?: () => void
+  clearLabel?: string
+  children?: React.ReactNode
+}) {
+  return (
+    <div className="flex items-center gap-2" title={title}>
+      <Label className="w-24 shrink-0 text-xs text-muted-foreground">{label}</Label>
+      <Input
+        type="color"
+        value={value || fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-7 w-9 shrink-0 cursor-pointer p-0.5"
+      />
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={fallback}
+        className="h-7 w-24 shrink-0 font-mono text-xs"
+      />
+      {onClear && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2 text-xs"
+          onClick={onClear}
+          disabled={!value}
+        >
+          {clearLabel}
+        </Button>
+      )}
+      {children}
+    </div>
+  )
+}
 
 function TemplateTab({
   values,
@@ -189,151 +256,123 @@ function TemplateTab({
       </AppCard>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Color Settings */}
-        <AppCard icon={Palette} title={t('templates.primaryColor')} contentClassName="space-y-4">
-          <div className="flex items-center gap-3">
-            <Input
-              type="color"
-              value={values.primaryColor}
-              onChange={(e) => setValues({ ...values, primaryColor: e.target.value })}
-              className="h-10 w-14 cursor-pointer p-1"
-            />
-            <Input
-              value={values.primaryColor}
-              onChange={(e) => setValues({ ...values, primaryColor: e.target.value })}
-              className="flex-1 font-mono"
-              placeholder="#d97706"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {colorPresets.map((preset) => (
-              <button
-                key={preset.value}
-                onClick={() => setValues({ ...values, primaryColor: preset.value })}
-                className="flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors hover:bg-muted"
-                style={{
-                  borderColor: values.primaryColor === preset.value ? preset.value : undefined,
-                }}
-              >
-                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: preset.value }} />
-                {t('templates.colorPresets.' + preset.key)}
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-2 border-t pt-4">
-            <Label>{t('templates.backgroundColor')}</Label>
-            <div className="flex items-center gap-3">
-              <Input
-                type="color"
-                value={values.backgroundColor || '#ffffff'}
-                onChange={(e) => setValues({ ...values, backgroundColor: e.target.value })}
-                className="h-10 w-14 cursor-pointer p-1"
-              />
-              <Input
-                value={values.backgroundColor}
-                onChange={(e) => setValues({ ...values, backgroundColor: e.target.value })}
-                className="flex-1 font-mono"
-                placeholder="#ffffff"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setValues({ ...values, backgroundColor: '' })}
-                disabled={!values.backgroundColor}
-              >
-                {t('templates.backgroundColorClear')}
-              </Button>
+        {/* Colors */}
+        <AppCard icon={Palette} title={t('templates.colors')} contentClassName="space-y-2">
+          <ColorRow
+            label={t('templates.primaryColor')}
+            value={values.primaryColor}
+            fallback="#d97706"
+            onChange={(v) => setValues({ ...values, primaryColor: v })}
+          >
+            <div className="flex flex-wrap gap-1">
+              {colorPresets.map((preset) => (
+                <button
+                  key={preset.value}
+                  type="button"
+                  title={t('templates.colorPresets.' + preset.key)}
+                  onClick={() => setValues({ ...values, primaryColor: preset.value })}
+                  style={{ backgroundColor: preset.value }}
+                  className={cn(
+                    'h-5 w-5 rounded-full ring-offset-1 transition-shadow',
+                    values.primaryColor === preset.value && 'ring-2 ring-foreground'
+                  )}
+                />
+              ))}
             </div>
-            <p className="text-xs text-muted-foreground">{t('templates.backgroundColorHint')}</p>
-          </div>
+          </ColorRow>
+
+          <ColorRow
+            label={t('templates.backgroundColor')}
+            value={values.backgroundColor}
+            fallback="#ffffff"
+            title={t('templates.backgroundColorHint')}
+            onChange={(v) => setValues({ ...values, backgroundColor: v })}
+            onClear={() => setValues({ ...values, backgroundColor: '' })}
+            clearLabel={t('templates.backgroundColorClear')}
+          />
+
+          <ColorRow
+            label={t('templates.textColor')}
+            value={values.textColor}
+            fallback="#111827"
+            title={t('templates.textColorHint')}
+            onChange={(v) => setValues({ ...values, textColor: v })}
+            onClear={() => setValues({ ...values, textColor: '' })}
+            clearLabel={t('templates.backgroundColorClear')}
+          />
         </AppCard>
 
         {/* Font & Layout Settings */}
-        <AppCard title={t('templates.fontAndLayout')}>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>{t('templates.fontFamily')}</Label>
+        <AppCard title={t('templates.fontAndLayout')} contentClassName="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label={t('templates.fontFamily')}>
+              <Select
+                value={values.fontFamily}
+                onValueChange={(v) => setValues({ ...values, fontFamily: v })}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
+                  <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
+                  <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field label={t('templates.headerStyle')}>
+              <Select
+                value={values.headerStyle}
+                onValueChange={(v) => setValues({ ...values, headerStyle: v })}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">{t('templates.standard')}</SelectItem>
+                  <SelectItem value="compact">{t('templates.compact')}</SelectItem>
+                  <SelectItem value="modern">{t('templates.modern')}</SelectItem>
+                  <SelectItem value="framed">{t('templates.framed')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+
+            {/* The framed band carries one mark, so which one it is has to be a
+                choice rather than whatever the workshop happens to have
+                uploaded. Other header styles show both and need no control. */}
+            {values.headerStyle === 'framed' && (
+              <Field label={t('templates.letterheadMark')}>
                 <Select
-                  value={values.fontFamily}
-                  onValueChange={(v) => setValues({ ...values, fontFamily: v })}
+                  value={getLetterheadMark(layoutConfig)}
+                  onValueChange={(v) =>
+                    setLayoutConfig(withLetterheadMark(layoutConfig, v as 'logo' | 'company_name'))
+                  }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Helvetica">{t('templates.helveticaDefault')}</SelectItem>
-                    <SelectItem value="Times-Roman">{t('templates.timesRoman')}</SelectItem>
-                    <SelectItem value="Courier">{t('templates.courier')}</SelectItem>
+                    <SelectItem value="logo">{t('templates.letterheadLogo')}</SelectItem>
+                    <SelectItem value="company_name">
+                      {t('templates.letterheadCompanyName')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </Field>
+            )}
 
-              <div className="space-y-2">
-                <Label>{t('templates.headerStyle')}</Label>
-                <Select
-                  value={values.headerStyle}
-                  onValueChange={(v) => setValues({ ...values, headerStyle: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">{t('templates.standard')}</SelectItem>
-                    <SelectItem value="compact">{t('templates.compact')}</SelectItem>
-                    <SelectItem value="modern">{t('templates.modern')}</SelectItem>
-                    <SelectItem value="framed">{t('templates.framed')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* The framed band carries one mark, so which one it is has to be
-                  a choice rather than whatever the workshop happens to have
-                  uploaded. Other header styles show both and need no control. */}
-              {values.headerStyle === 'framed' && (
-                <div className="space-y-2">
-                  <Label>{t('templates.letterheadMark')}</Label>
-                  <Select
-                    value={getLetterheadMark(layoutConfig)}
-                    onValueChange={(v) =>
-                      setLayoutConfig(
-                        withLetterheadMark(layoutConfig, v as 'logo' | 'company_name')
-                      )
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="logo">{t('templates.letterheadLogo')}</SelectItem>
-                      <SelectItem value="company_name">
-                        {t('templates.letterheadCompanyName')}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('templates.logoSize')}</Label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min={50}
-                  max={200}
-                  step={10}
-                  value={values.logoSize}
-                  onChange={(e) => setValues({ ...values, logoSize: Number(e.target.value) })}
-                  className="flex-1"
-                />
-                <span className="w-12 text-right text-sm text-muted-foreground">
-                  {values.logoSize}%
-                </span>
-              </div>
-            </div>
+            <Field label={`${t('templates.logoSize')} · ${values.logoSize}%`}>
+              <input
+                type="range"
+                min={50}
+                max={200}
+                step={10}
+                value={values.logoSize}
+                onChange={(e) => setValues({ ...values, logoSize: Number(e.target.value) })}
+                className="h-8 w-full"
+              />
+            </Field>
           </div>
         </AppCard>
       </div>
@@ -345,6 +384,7 @@ function TemplateTab({
           documentType={documentType}
           template={values}
           logoUrl={logoUrl}
+          workshop={workshop}
         />
       </AppCard>
     </>
@@ -595,6 +635,7 @@ export function TemplateSettings({
         await Promise.all([
           setSetting(SETTING_KEYS.INVOICE_PRIMARY_COLOR, invoiceValues.primaryColor),
           setSetting(SETTING_KEYS.INVOICE_BACKGROUND_COLOR, invoiceValues.backgroundColor),
+          setSetting(SETTING_KEYS.INVOICE_TEXT_COLOR, invoiceValues.textColor),
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
           setSetting(SETTING_KEYS.INVOICE_LOGO_SIZE, String(invoiceValues.logoSize)),
@@ -606,6 +647,7 @@ export function TemplateSettings({
         await Promise.all([
           setSetting(SETTING_KEYS.QUOTE_PRIMARY_COLOR, quoteValues.primaryColor),
           setSetting(SETTING_KEYS.QUOTE_BACKGROUND_COLOR, quoteValues.backgroundColor),
+          setSetting(SETTING_KEYS.QUOTE_TEXT_COLOR, quoteValues.textColor),
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
           setSetting(SETTING_KEYS.QUOTE_LOGO_SIZE, String(quoteValues.logoSize)),

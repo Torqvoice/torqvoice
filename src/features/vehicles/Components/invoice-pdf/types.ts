@@ -4,6 +4,8 @@ export interface TemplateConfig {
   primaryColor?: string
   /** Sheet color behind the document. Unset leaves the paper white. */
   backgroundColor?: string
+  /** Body and heading color. Unset leaves the near-black default. */
+  textColor?: string
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean

@@ -160,7 +160,13 @@ export function QuotePDF({
   const showCompanyNameField = headerFields
     ? headerFieldOrder.includes('company_name')
     : showCompanyName
-  const styles = createStyles(primaryColor, fontFamily, headerStyle, template?.backgroundColor)
+  const styles = createStyles(
+    primaryColor,
+    fontFamily,
+    headerStyle,
+    template?.backgroundColor,
+    template?.textColor
+  )
   const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
 

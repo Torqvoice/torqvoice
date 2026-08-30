@@ -123,11 +123,16 @@ export function InvoiceSettings({
   // Template values from saved settings
   const invoiceTemplate = {
     primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
+    backgroundColor: settings[SETTING_KEYS.INVOICE_BACKGROUND_COLOR] || '',
+    textColor: settings[SETTING_KEYS.INVOICE_TEXT_COLOR] || '',
     fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
     headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
   }
   const quoteTemplate = {
     primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || invoiceTemplate.primaryColor,
+    backgroundColor:
+      settings[SETTING_KEYS.QUOTE_BACKGROUND_COLOR] || invoiceTemplate.backgroundColor,
+    textColor: settings[SETTING_KEYS.QUOTE_TEXT_COLOR] || invoiceTemplate.textColor,
     fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || invoiceTemplate.fontFamily,
     headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || invoiceTemplate.headerStyle,
   }

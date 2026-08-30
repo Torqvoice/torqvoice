@@ -23,6 +23,8 @@ interface TemplateValues {
   primaryColor: string
   /** Sheet color behind the document. Empty leaves the paper white. */
   backgroundColor?: string
+  /** Body and heading color. Empty leaves the near-black default. */
+  textColor?: string
   fontFamily: string
   headerStyle: string
   logoSize?: number

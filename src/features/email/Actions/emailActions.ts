@@ -113,6 +113,7 @@ export async function sendQuoteEmail(input: {
       const template = {
         primaryColor: settings['invoice.primaryColor'] || '#d97706',
         backgroundColor: settings['invoice.backgroundColor'] || undefined,
+        textColor: settings['invoice.textColor'] || undefined,
         fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
@@ -279,6 +280,7 @@ export async function sendInvoiceEmail(input: {
       const invoiceTemplate = {
         primaryColor: settings['invoice.primaryColor'] || '#d97706',
         backgroundColor: settings['invoice.backgroundColor'] || undefined,
+        textColor: settings['invoice.textColor'] || undefined,
         fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
@@ -407,6 +409,7 @@ export async function sendInspectionEmail(input: {
       const template = {
         primaryColor: settings['invoice.primaryColor'] || '#d97706',
         backgroundColor: settings['invoice.backgroundColor'] || undefined,
+        textColor: settings['invoice.textColor'] || undefined,
         fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
