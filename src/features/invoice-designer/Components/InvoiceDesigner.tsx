@@ -18,6 +18,7 @@ import {
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { SpecCanvas } from '../Render/SpecCanvas'
+import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { SAMPLE_TABLES, fieldValues } from './sample'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -193,6 +194,54 @@ export function InvoiceDesigner({
     [layout, template, theme, data]
   )
 
+  /** A template is the whole look, not only which sections are on. */
+  const applyPreset = useCallback(
+    (preset: (typeof layoutPresets)[number]) => {
+      setLayout(buildLayoutFromPreset(preset))
+      setTemplate({
+        primaryColor: preset.template.primaryColor,
+        headerStyle: preset.template.headerStyle,
+        fontFamily: preset.template.fontFamily,
+        frameSide: preset.template.frameSide ?? 'left',
+        backgroundColor: preset.template.backgroundColor ?? '',
+        textColor: preset.template.textColor ?? '',
+      })
+      setView('designer')
+    },
+    [setLayout, setTemplate]
+  )
+
+  /** What a template would produce, for its card in the gallery. */
+  const specFor = useCallback(
+    (preset: (typeof layoutPresets)[number]) =>
+      buildDocumentSpec(
+        buildLayoutFromPreset(preset),
+        {
+          primary: preset.template.primaryColor,
+          background: preset.template.backgroundColor || '#ffffff',
+          text: preset.template.textColor || '#111827',
+          muted: '#6b7280',
+          accent: preset.document?.accentColor || preset.template.primaryColor,
+          companyText:
+            preset.template.headerStyle === 'framed' || preset.template.headerStyle === 'modern'
+              ? '#ffffff'
+              : preset.template.primaryColor,
+          fontFamily: preset.template.fontFamily,
+          fontSize: preset.document?.fontSize ?? BASE_FONT_SIZE,
+          margin: preset.document?.margin ?? 40,
+          rowPadding: preset.document?.rowPadding ?? 5,
+          stripes: preset.document?.stripes !== false,
+          stripeColor: preset.document?.stripeColor || '#f3f4f6',
+          headerStyle: preset.template.headerStyle,
+          frameSide: preset.template.frameSide ?? 'left',
+          frameShadow: true,
+          logoSize: 100,
+        },
+        data
+      ),
+    [data]
+  )
+
   /**
    * Dropped back into the flow, before the row at this index: it takes its
    * place among the others and everything below it moves down, which is what
@@ -333,32 +382,19 @@ export function InvoiceDesigner({
               <button
                 key={preset.id}
                 type="button"
-                onClick={() => {
-                  setLayout(buildLayoutFromPreset(preset))
-                  setView('designer')
-                }}
+                onClick={() => applyPreset(preset)}
                 className="rounded-[10px] border border-[#e3e5e9] bg-white p-3.5 text-left transition-shadow hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(26,29,33,0.12)]"
               >
-                <div className="overflow-hidden rounded-md border border-[#eceef1] bg-white">
-                  <div
-                    className="flex h-[26px] items-center justify-end px-2"
-                    style={{ background: template.primaryColor }}
-                  >
-                    <div className="h-1.5 w-[52px] rounded-sm bg-white/85" />
-                  </div>
-                  <div className="flex flex-col gap-1.5 px-2 py-2.5">
-                    <div className="h-1.5 w-3/5 rounded-sm bg-[#d7dade]" />
-                    <div className="h-1.5 w-4/5 rounded-sm bg-[#e7e9ec]" />
-                    <div className="h-1.5 w-[72%] rounded-sm bg-[#e7e9ec]" />
-                    <div
-                      className="mt-1 h-2.5 w-full rounded-sm"
-                      style={{ background: `${template.primaryColor}33` }}
-                    />
-                  </div>
-                </div>
+                <SpecThumbnail spec={specFor(preset)} />
                 <div className="mt-2.5 text-sm font-semibold capitalize">{preset.id}</div>
                 <div className="text-xs leading-snug text-[#71767e]">
-                  {preset.order.filter((id) => id !== 'header' && id !== 'footer').length} sections
+                  {preset.template.headerStyle === 'framed'
+                    ? 'Banded letterhead with a rail'
+                    : preset.template.headerStyle === 'modern'
+                      ? 'Full-width colored banner'
+                      : preset.template.headerStyle === 'compact'
+                        ? 'Tight header, dense rows'
+                        : 'Name and rule on white'}
                 </div>
               </button>
             ))}

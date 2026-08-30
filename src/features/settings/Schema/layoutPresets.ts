@@ -1,4 +1,5 @@
 import {
+  type InvoiceDocumentStyle,
   type InvoiceLayoutConfig,
   BUILTIN_FOOTER_FIELDS,
   BUILTIN_HEADER_FIELDS,
@@ -14,8 +15,28 @@ import {
  * consequence. These choose nothing but where things sit, so a workshop can
  * rearrange its invoice without also restyling it.
  */
+/** The look a template carries, alongside the arrangement. */
+export interface PresetTemplate {
+  primaryColor: string
+  headerStyle: string
+  fontFamily: string
+  frameSide?: 'left' | 'right'
+  backgroundColor?: string
+  textColor?: string
+}
+
 export interface LayoutPreset {
   id: string
+  /**
+   * Colors, header style and typeface.
+   *
+   * A template that only rearranged sections looked identical to every other
+   * one, because the things a person actually sees — the band, the rail, the
+   * color — were saved somewhere else and never touched.
+   */
+  template: PresetTemplate
+  /** Whole-sheet appearance this template sets. */
+  document?: InvoiceDocumentStyle
   /** Sections in print order. Anything left out is hidden. */
   order: string[]
   /** Which half of a two-column row a section sits in. */
@@ -37,6 +58,7 @@ export const layoutPresets: LayoutPreset[] = [
   {
     // What every invoice has printed as until now.
     id: 'classic',
+    template: { primaryColor: '#d97706', headerStyle: 'standard', fontFamily: 'Helvetica' },
     order: [
       'header',
       'customer',
@@ -59,6 +81,12 @@ export const layoutPresets: LayoutPreset[] = [
     // Printed stationery: the shop at the top, the ways to reach it along the
     // bottom, and the title down below the addresses where a letter puts it.
     id: 'letterhead',
+    template: {
+      primaryColor: '#ee7623',
+      headerStyle: 'framed',
+      frameSide: 'left',
+      fontFamily: 'Helvetica',
+    },
     order: [
       'header',
       'customer',
@@ -87,6 +115,8 @@ export const layoutPresets: LayoutPreset[] = [
   {
     // Everything on one page: no panels, one list, nothing optional.
     id: 'compact',
+    template: { primaryColor: '#475569', headerStyle: 'compact', fontFamily: 'Helvetica' },
+    document: { fontSize: 9, rowPadding: 2, margin: 30, stripes: false },
     order: ['header', 'customer', 'vehicle', 'service', 'items_table', 'totals', 'notes', 'footer'],
     columns: { customer: 'left', vehicle: 'right', service: 'right' },
     plain: ['customer', 'vehicle', 'service'],
@@ -97,6 +127,12 @@ export const layoutPresets: LayoutPreset[] = [
     // The long version: title up top, the vehicle standing on its own, both
     // tables kept apart, and every optional block shown.
     id: 'detailed',
+    template: {
+      primaryColor: '#2563eb',
+      headerStyle: 'modern',
+      fontFamily: 'Times-Roman',
+    },
+    document: { accentColor: '#1e3a8a' },
     order: [
       'header',
       'document_title',
@@ -156,5 +192,5 @@ export function buildLayoutFromPreset(preset: LayoutPreset): InvoiceLayoutConfig
     }
   })
 
-  return { sections }
+  return { sections, ...(preset.document ? { document: preset.document } : {}) }
 }

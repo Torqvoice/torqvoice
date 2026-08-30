@@ -299,91 +299,6 @@ export function DesignerInspector({
             </Group>
           )}
 
-          {section.id === 'header' && (
-            <Group title="Header style">
-              <div className="flex flex-col gap-1">
-                {HEADER_STYLES.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => onTemplate({ headerStyle: option.value })}
-                    className="rounded-md border px-3 py-2 text-left text-[13px]"
-                    style={{
-                      borderColor: template.headerStyle === option.value ? '#2563eb' : '#e3e5e9',
-                      background: template.headerStyle === option.value ? '#eef2ff' : '#fff',
-                      fontWeight: template.headerStyle === option.value ? 600 : 400,
-                    }}
-                  >
-                    {option.label}
-                    <span className="block text-[11.5px] font-normal text-[#8a8f97]">
-                      {option.desc}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </Group>
-          )}
-
-          {SECTIONS_WITH_FIELDS.has(section.id) && (
-            <Group title="Fields">
-              {/* The header's two marks live here: turn the logo off and the
-                  company name prints instead, which is the whole of that
-                  choice rather than a separate control that duplicates it. */}
-              {(section.fields ?? []).map((field) => (
-                <Row key={field.id} label={fieldName(field.id)}>
-                  <Toggle
-                    on={field.visible}
-                    onChange={(visible) =>
-                      onSection(section.id, {
-                        fields: (section.fields ?? []).map((f) =>
-                          f.id === field.id ? { ...f, visible } : f
-                        ),
-                      })
-                    }
-                  />
-                </Row>
-              ))}
-
-              {getBuiltinFieldsForSection(section.id)
-                .filter((builtin) => !(section.fields ?? []).some((f) => f.id === builtin.id))
-                .map((builtin) => (
-                  <Row key={builtin.id} label={builtin.name}>
-                    <Toggle
-                      on={false}
-                      onChange={() =>
-                        onSection(section.id, {
-                          fields: [...(section.fields ?? []), { id: builtin.id, visible: true }],
-                        })
-                      }
-                    />
-                  </Row>
-                ))}
-
-              {unassignedCustomFields.length > 0 && (
-                <select
-                  value=""
-                  onChange={(e) => {
-                    if (!e.target.value) return
-                    onSection(section.id, {
-                      fields: [
-                        ...(section.fields ?? []),
-                        { id: toCustomFieldId(e.target.value), visible: true },
-                      ],
-                    })
-                  }}
-                  className="mt-1 w-full rounded-md border border-[#e3e5e9] bg-white px-2 py-1.5 text-[12.5px]"
-                >
-                  <option value="">Add a custom field…</option>
-                  {unassignedCustomFields.map((definition) => (
-                    <option key={definition.id} value={definition.id}>
-                      {definition.label || definition.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </Group>
-          )}
-
           <Group title="Appearance">
             <Color
               label="Text"
@@ -450,6 +365,31 @@ export function DesignerInspector({
       <div className="mb-4 text-xs text-[#8a8f97]">Applies to the whole sheet</div>
 
       <div className="space-y-3">
+        <Group title="Header style">
+          {/* Not a property of the header section: it decides whether the sheet
+              has a band and a rail at all, and what the page's insets are. */}
+          <div className="flex flex-col gap-1">
+            {HEADER_STYLES.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onTemplate({ headerStyle: option.value })}
+                className="rounded-md border px-3 py-2 text-left text-[13px]"
+                style={{
+                  borderColor: template.headerStyle === option.value ? '#2563eb' : '#e3e5e9',
+                  background: template.headerStyle === option.value ? '#eef2ff' : '#fff',
+                  fontWeight: template.headerStyle === option.value ? 600 : 400,
+                }}
+              >
+                {option.label}
+                <span className="block text-[11.5px] font-normal text-[#8a8f97]">
+                  {option.desc}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Group>
+
         <Group title="Colors">
           <Color
             label="Primary"

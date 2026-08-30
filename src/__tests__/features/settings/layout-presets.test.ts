@@ -72,6 +72,19 @@ describe('layout presets', () => {
     )
   })
 
+  it('gives every template its own look, not only its own arrangement', () => {
+    // Four templates that changed nothing but which sections were on looked
+    // identical, because the band, the rail and the color were saved elsewhere
+    // and never touched by picking one.
+    const looks = layoutPresets.map((p) => JSON.stringify(p.template))
+    expect(new Set(looks).size).toBe(layoutPresets.length)
+
+    const headers = layoutPresets.map((p) => p.template.headerStyle)
+    expect(new Set(headers).size).toBeGreaterThan(1)
+    const colors = layoutPresets.map((p) => p.template.primaryColor)
+    expect(new Set(colors).size).toBe(layoutPresets.length)
+  })
+
   it('gives every arrangement a different one', () => {
     const shapes = layoutPresets.map((p) => JSON.stringify(buildLayoutFromPreset(p)))
     expect(new Set(shapes).size).toBe(layoutPresets.length)
