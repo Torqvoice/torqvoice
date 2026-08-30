@@ -3,6 +3,7 @@ import type { WorkshopInfo, InvoiceSettingsProps } from './types'
 import { gray, getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 import { getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { FramedLetterhead } from './FramedLetterhead'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
@@ -70,6 +71,28 @@ export function Header({
   // For legacy prop fallback (no layoutConfig)
   const showLogo = visibleFields ? fieldOrder.includes('logo') : showLogoProp
   const showCompanyName = visibleFields ? fieldOrder.includes('company_name') : showCompanyNameProp
+
+  if (headerStyle === 'framed') {
+    return (
+      <FramedLetterhead
+        primaryColor={primaryColor}
+        fontFamily={fontFamily}
+        showLogo={showLogo}
+        showCompanyName={showCompanyName}
+        fieldOrder={fieldOrder}
+        logoDataUri={logoDataUri}
+        logoScale={scale}
+        workshop={workshop}
+        orgNumber={
+          invoiceSettings?.showOrgNumber && invoiceSettings?.orgNumber
+            ? invoiceSettings.orgNumber
+            : null
+        }
+        shopDisplayName={shopDisplayName}
+        labels={labels}
+      />
+    )
+  }
 
   if (headerStyle === 'compact') {
     const renderCompactField = (fieldId: string) => {

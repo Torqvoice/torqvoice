@@ -37,14 +37,44 @@ export function getFontBold(_font: string) {
   return resolveFontBold(_font)
 }
 
-export function createStyles(primary: string, font: string) {
+/**
+ * Geometry of the framed sheet: a colored band across the top and a rail down
+ * the left edge, with the page inset far enough to clear both. The header pulls
+ * itself back out to the sheet edge with negative margins, so these numbers and
+ * that block have to move together.
+ */
+export const FRAMED = {
+  bandHeight: 74,
+  /** Drawn as the page's own left border, so it repeats on every page for free. */
+  railWidth: 26,
+  padTop: 92,
+  /** Padding inside the rail. The sheet's left inset is this plus railWidth. */
+  padLeft: 26,
+  padRight: 34,
+  padBottom: 54,
+} as const
+
+export function createStyles(primary: string, font: string, headerStyle = 'standard') {
+  const framed = headerStyle === 'framed'
   const primaryLight = lightenColor(primary)
   const primaryDark = darkenColor(primary)
   const resolved = resolveFont(font)
   const resolvedBold = resolveFontBold(font)
 
   return StyleSheet.create({
-    page: { padding: 40, fontSize: 10, fontFamily: resolved, color: dark },
+    page: framed
+      ? {
+          paddingTop: FRAMED.padTop,
+          paddingLeft: FRAMED.padLeft,
+          paddingRight: FRAMED.padRight,
+          paddingBottom: FRAMED.padBottom,
+          borderLeftWidth: FRAMED.railWidth,
+          borderLeftColor: primary,
+          fontSize: 10,
+          fontFamily: resolved,
+          color: dark,
+        }
+      : { padding: 40, fontSize: 10, fontFamily: resolved, color: dark },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -59,7 +89,9 @@ export function createStyles(primary: string, font: string) {
     invoiceTitle: { fontSize: 18, fontFamily: resolvedBold, textAlign: 'right' as const },
     invoiceNumber: { fontSize: 9, color: gray, textAlign: 'right' as const, marginTop: 4 },
     infoRow: { flexDirection: 'row', gap: 20, marginBottom: 20 },
-    infoBox: { padding: 12, backgroundColor: grayLight, borderRadius: 4, marginBottom: 4 },
+    infoBox: framed
+      ? { padding: 8, borderWidth: 0.5, borderColor: dark, marginBottom: 4 }
+      : { padding: 12, backgroundColor: grayLight, borderRadius: 4, marginBottom: 4 },
     infoLabel: {
       fontSize: 8,
       fontFamily: resolvedBold,
@@ -78,13 +110,20 @@ export function createStyles(primary: string, font: string) {
       color: dark,
     },
     table: { marginBottom: 4 },
-    tableHeader: {
-      flexDirection: 'row',
-      backgroundColor: primaryLight,
-      paddingVertical: 6,
-      paddingHorizontal: 8,
-      borderRadius: 2,
-    },
+    tableHeader: framed
+      ? {
+          flexDirection: 'row',
+          backgroundColor: dark,
+          paddingVertical: 5,
+          paddingHorizontal: 8,
+        }
+      : {
+          flexDirection: 'row',
+          backgroundColor: primaryLight,
+          paddingVertical: 6,
+          paddingHorizontal: 8,
+          borderRadius: 2,
+        },
     tableRow: {
       flexDirection: 'row',
       paddingVertical: 5,
@@ -94,8 +133,22 @@ export function createStyles(primary: string, font: string) {
     },
     tableCell: { fontSize: 9 },
     tableCellBold: { fontSize: 9, fontFamily: resolvedBold },
-    tableHeaderCell: { fontSize: 8, fontFamily: resolvedBold, color: primaryDark },
-    totalsBox: { marginTop: 16, marginLeft: 'auto', width: 250 },
+    tableHeaderCell: {
+      fontSize: 8,
+      fontFamily: resolvedBold,
+      color: framed ? '#ffffff' : primaryDark,
+    },
+    totalsBox: framed
+      ? {
+          marginTop: 16,
+          marginLeft: 'auto',
+          width: 250,
+          borderWidth: 1,
+          borderColor: dark,
+          paddingHorizontal: 10,
+          paddingVertical: 6,
+        }
+      : { marginTop: 16, marginLeft: 'auto', width: 250 },
     totalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
     totalLabel: { fontSize: 10, color: gray },
     totalValue: { fontSize: 10 },
@@ -103,7 +156,9 @@ export function createStyles(primary: string, font: string) {
     grandTotalRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
     grandTotalLabel: { fontSize: 14, fontFamily: resolvedBold },
     grandTotalValue: { fontSize: 14, fontFamily: resolvedBold, color: primary },
-    notesSection: { marginTop: 20, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
+    notesSection: framed
+      ? { marginTop: 20, padding: 10, borderWidth: 0.5, borderColor: dark }
+      : { marginTop: 20, padding: 12, backgroundColor: grayLight, borderRadius: 4 },
     notesLabel: {
       fontSize: 8,
       fontFamily: resolvedBold,
@@ -115,9 +170,9 @@ export function createStyles(primary: string, font: string) {
     attachmentFileName: { fontSize: 8, color: gray, marginTop: 4, marginBottom: 8 },
     footer: {
       position: 'absolute' as const,
-      bottom: 30,
-      left: 40,
-      right: 40,
+      bottom: framed ? 22 : 30,
+      left: framed ? FRAMED.railWidth + FRAMED.padLeft : 40,
+      right: framed ? FRAMED.padRight : 40,
       textAlign: 'center' as const,
       fontSize: 8,
       color: gray,

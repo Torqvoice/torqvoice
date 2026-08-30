@@ -283,6 +283,7 @@ export function BankAccountSection({
   primaryColor = '#d97706',
   dueDate,
   invoiceDate,
+  framed = false,
 }: {
   invoiceSettings?: InvoiceSettingsProps
   fontFamily: string
@@ -293,6 +294,8 @@ export function BankAccountSection({
   primaryColor?: string
   dueDate?: string | null
   invoiceDate?: string | null
+  /** Square, unfilled panel to match the framed sheet's other boxes. */
+  framed?: boolean
 }) {
   const fontBold = getFontBold(fontFamily)
 
@@ -328,14 +331,18 @@ export function BankAccountSection({
   return (
     <View
       wrap={false}
-      style={{
-        marginTop: 12,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: borderColor,
-        borderRadius: 4,
-        backgroundColor: bgColor,
-      }}
+      style={
+        framed
+          ? { marginTop: 12, padding: 10, borderWidth: 0.5, borderColor: '#111827' }
+          : {
+              marginTop: 12,
+              padding: 12,
+              borderWidth: 1,
+              borderColor: borderColor,
+              borderRadius: 4,
+              backgroundColor: bgColor,
+            }
+      }
     >
       <Text
         style={{

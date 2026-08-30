@@ -6,6 +6,8 @@ import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
+import { ItemsTable, type CombinedItem } from './ItemsTable'
+import { DocumentTitle } from './DocumentTitle'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection } from './Notes'
 import { WarrantySection } from './Warranty'
@@ -85,7 +87,8 @@ export function InvoicePDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const headerStyle = template?.headerStyle || 'standard'
-  const styles = createStyles(primaryColor, fontFamily)
+  const styles = createStyles(primaryColor, fontFamily, headerStyle)
+  const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
 
   const cc = invoiceSettings?.currencyCode || 'USD'
@@ -132,6 +135,27 @@ export function InvoicePDF({
   const isPaidInFull = paymentSummary ? paymentSummary.totalPaid >= displayTotal : false
 
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
+  const customerNumber = (data.customer ?? data.vehicle?.customer)?.customerNumber ?? null
+
+  // Labor first, then parts: a job reads as the work that was done followed by
+  // what it took, and that is the order the numbered positions run in.
+  const combinedItems: CombinedItem[] = [
+    ...data.laborItems.map((l) => ({
+      quantity: l.hours,
+      unit: l.pricingType === 'service' ? labels.unit || 'unit' : labels.hrs || 'hrs',
+      description: l.description,
+      unitPrice: l.rate,
+      total: l.total,
+    })),
+    ...data.partItems.map((p) => ({
+      quantity: p.quantity,
+      unit: p.unit,
+      description: p.name,
+      reference: p.partNumber,
+      unitPrice: p.unitPrice,
+      total: p.total,
+    })),
+  ]
   const hasAttachments = imageAttachments.length > 0 || otherAttachments.length > 0
 
   // ---------------------------------------------------------------------------
@@ -143,6 +167,23 @@ export function InvoicePDF({
   const visibleServiceFields = getVisibleFieldsForSection(layoutConfig, 'service')
   const visibleHeaderFields = getVisibleFieldsForSection(layoutConfig, 'header')
   const visibleBankAccountFields = getVisibleFieldsForSection(layoutConfig, 'bank_account')
+
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const isVisible = (id: string) => effectiveSections.some((s) => s.id === id && s.visible)
+  const itemsTableVisible = isVisible('items_table')
+  const documentTitleVisible = isVisible('document_title')
+
+  const documentTitle = (
+    <DocumentTitle
+      title={labels.title || 'INVOICE'}
+      invoiceNum={invoiceNum}
+      customerNumber={customerNumber}
+      invoiceDate={serviceDate}
+      dueDate={dueDate}
+      fontFamily={fontFamily}
+      labels={labels}
+    />
+  )
 
   const allCf = data.customFields || []
   const customerCf = getCustomFieldsForSection(layoutConfig, 'customer', allCf)
@@ -156,26 +197,33 @@ export function InvoicePDF({
   // return null and will be skipped by React.
   const sectionMap: Record<string, React.ReactNode> = {
     header: (
-      <Header
-        headerStyle={headerStyle}
-        primaryColor={primaryColor}
-        fontFamily={fontFamily}
-        showLogo={showLogo}
-        showCompanyName={showCompanyName}
-        visibleFields={visibleHeaderFields}
-        logoDataUri={logoDataUri}
-        torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-        workshop={workshop}
-        invoiceSettings={invoiceSettings}
-        shopDisplayName={shopDisplayName}
-        invoiceNum={invoiceNum}
-        serviceDate={serviceDate}
-        dueDate={dueDate}
-        logoSize={template?.logoSize}
-        styles={styles}
-        labels={labels}
-      />
+      <>
+        <Header
+          headerStyle={headerStyle}
+          primaryColor={primaryColor}
+          fontFamily={fontFamily}
+          showLogo={showLogo}
+          showCompanyName={showCompanyName}
+          visibleFields={visibleHeaderFields}
+          logoDataUri={logoDataUri}
+          torqvoiceLogoDataUri={torqvoiceLogoDataUri}
+          workshop={workshop}
+          invoiceSettings={invoiceSettings}
+          shopDisplayName={shopDisplayName}
+          invoiceNum={invoiceNum}
+          serviceDate={serviceDate}
+          dueDate={dueDate}
+          logoSize={template?.logoSize}
+          styles={styles}
+          labels={labels}
+        />
+        {/* The framed letterhead prints no title of its own, so it borrows the
+            title block whenever the layout has not placed one further down. */}
+        {isFramed && !documentTitleVisible ? documentTitle : null}
+      </>
     ),
+
+    document_title: documentTitle,
 
     customer: (
       <CustomerSection
@@ -206,6 +254,19 @@ export function InvoicePDF({
         labels={labels}
         visibleFields={visibleServiceFields}
         customFields={serviceCf}
+      />
+    ),
+
+    items_table: (
+      <ItemsTable
+        items={combinedItems}
+        currencyCode={cc}
+        currencyFormat={cf}
+        taxRate={data.taxRate}
+        taxInclusive={data.taxInclusive ?? false}
+        showTitle={!isFramed}
+        styles={styles}
+        labels={labels}
       />
     ),
 
@@ -243,6 +304,7 @@ export function InvoicePDF({
           balanceDue={balanceDue}
           isPaidInFull={isPaidInFull}
           paymentSummary={paymentSummary}
+          showCategorySubtotals={!itemsTableVisible}
           styles={styles}
           labels={labels}
         />
@@ -313,6 +375,7 @@ export function InvoicePDF({
         primaryColor={primaryColor}
         dueDate={dueDate}
         invoiceDate={serviceDate}
+        framed={isFramed}
       />
     ),
 
@@ -352,7 +415,6 @@ export function InvoicePDF({
   }
 
   // Use column-based grouping from layout config.
-  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
   const renderGroups = groupSectionsForRendering(effectiveSections)
   const renderedSections: React.ReactNode[] = []
 

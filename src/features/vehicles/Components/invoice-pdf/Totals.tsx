@@ -21,6 +21,12 @@ interface TotalsProps {
   balanceDue: number
   isPaidInFull: boolean
   paymentSummary?: PaymentSummary
+  /**
+   * Off when every line is already on one combined table: splitting the sum
+   * back into parts and labor would break it into halves the reader never saw
+   * split.
+   */
+  showCategorySubtotals?: boolean
   styles: Record<string, Style>
   labels: Record<string, string>
 }
@@ -37,6 +43,7 @@ export function Totals({
   balanceDue,
   isPaidInFull,
   paymentSummary,
+  showCategorySubtotals = true,
   styles,
   labels,
 }: TotalsProps) {
@@ -55,7 +62,7 @@ export function Totals({
 
   return (
     <View style={styles.totalsBox}>
-      {data.partItems.length > 0 && (
+      {showCategorySubtotals && data.partItems.length > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
           <Text style={styles.totalValue}>
@@ -63,7 +70,7 @@ export function Totals({
           </Text>
         </View>
       )}
-      {data.laborItems.length > 0 && (
+      {showCategorySubtotals && data.laborItems.length > 0 && (
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
           <Text style={styles.totalValue}>

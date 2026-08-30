@@ -1,3 +1,8 @@
+import {
+  type InvoiceLayoutConfig,
+  getDefaultInvoiceLayout,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
+
 export interface TemplatePreset {
   id: string
   name: string
@@ -5,6 +10,36 @@ export interface TemplatePreset {
   primaryColor: string
   fontFamily: string
   headerStyle: string
+  /**
+   * Sections the preset arranges for you. Presets without one only set colors
+   * and fonts, and leave whatever layout the workshop has already built alone.
+   */
+  layoutConfig?: InvoiceLayoutConfig
+}
+
+/**
+ * The arrangement the framed sheet expects: letterhead, then the customer
+ * opposite the vehicle, then the title with its reference box, then every line
+ * on one numbered list.
+ */
+function framedLayout(): InvoiceLayoutConfig {
+  return {
+    sections: getDefaultInvoiceLayout().sections.map((section) => {
+      switch (section.id) {
+        case 'document_title':
+        case 'items_table':
+          return { ...section, visible: true }
+        case 'parts_table':
+        case 'labor_table':
+          return { ...section, visible: false }
+        case 'vehicle':
+        case 'service':
+          return { ...section, column: 'right' as const }
+        default:
+          return section
+      }
+    }),
+  }
 }
 
 export const templatePresets: TemplatePreset[] = [
@@ -47,6 +82,15 @@ export const templatePresets: TemplatePreset[] = [
     primaryColor: '#059669',
     fontFamily: 'Helvetica',
     headerStyle: 'modern',
+  },
+  {
+    id: 'framed',
+    name: 'Framed',
+    description: 'Banded letterhead with a left rail and one numbered item list',
+    primaryColor: '#ee7623',
+    fontFamily: 'Helvetica',
+    headerStyle: 'framed',
+    layoutConfig: framedLayout(),
   },
   {
     id: 'bold',

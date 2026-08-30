@@ -3,8 +3,14 @@ import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatCurrency, formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { formatQuantity } from '@/lib/format-quantity'
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
+import { FramedLetterhead } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
+import { DocumentTitle } from '@/features/vehicles/Components/invoice-pdf/DocumentTitle'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
+import {
+  ItemsTable,
+  type CombinedItem,
+} from '@/features/vehicles/Components/invoice-pdf/ItemsTable'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type {
   InvoiceLayoutConfig,
@@ -145,12 +151,20 @@ export function QuotePDF({
     ? getVisibleFieldsForSectionHelper(layoutConfig, 'header')
     : null
   const headerFieldOrder = getOrderedFieldIds(headerFields, DEFAULT_HEADER_FIELD_ORDER)
-  const styles = createStyles(primaryColor, fontFamily)
+  const styles = createStyles(primaryColor, fontFamily, headerStyle)
+  const isFramed = headerStyle === 'framed'
   const fontBold = getFontBold(fontFamily)
 
   // Layout config helpers
   const sections = layoutConfig?.sections ?? []
   const sectionMap = new Map<string, InvoiceSection>(sections.map((s) => [s.id, s]))
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const isSectionVisible = (id: string) =>
+    effectiveSections.some((section) => section.id === id && section.visible)
+  // Splitting the sum back into parts and labor would break it into halves the
+  // reader never saw split, so the combined table suppresses those rows.
+  const itemsTableVisible = isSectionVisible('items_table')
+  const documentTitleVisible = isSectionVisible('document_title')
 
   const getVisibleFieldsForSection = (sectionId: string): Set<string> | null => {
     const section = sectionMap.get(sectionId)
@@ -671,6 +685,76 @@ export function QuotePDF({
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
 
+  const renderDocumentTitle = () => (
+    <DocumentTitle
+      title={labels.title || 'QUOTE'}
+      invoiceNum={quoteNum}
+      invoiceDate={createdDate}
+      dueDate={validDate}
+      fontFamily={fontFamily}
+      labels={{
+        ...labels,
+        invoiceNumberLabel: labels.quoteNumberLabel || labels.invoiceNumberLabel || 'Quote No.',
+        dueDateLabel: labels.validUntilLabel || labels.dueDateLabel || 'Valid Until',
+      }}
+    />
+  )
+
+  const renderFramedHeader = () => (
+    <>
+      <FramedLetterhead
+        primaryColor={primaryColor}
+        fontFamily={fontFamily}
+        showLogo={showLogo}
+        showCompanyName={showCompanyName}
+        fieldOrder={headerFieldOrder}
+        logoDataUri={logoDataUri}
+        logoScale={logoScale}
+        workshop={workshop}
+        orgNumber={null}
+        shopDisplayName={shopName}
+        labels={labels}
+      />
+      {documentTitleVisible ? null : renderDocumentTitle()}
+    </>
+  )
+
+  const renderItemsTable = () => {
+    // Labor first, then parts: a job reads as the work that was done followed
+    // by what it took, and that is the order the numbered positions run in.
+    const items: CombinedItem[] = [
+      ...data.laborItems.map((l) => ({
+        quantity: l.hours,
+        unit: l.pricingType === 'service' ? labels.unit || 'unit' : labels.hrs || 'hrs',
+        description: l.description,
+        unitPrice: l.rate,
+        total: l.total,
+        excluded: l.excluded,
+      })),
+      ...data.partItems.map((p) => ({
+        quantity: p.quantity,
+        unit: p.unit,
+        description: p.name,
+        reference: p.partNumber,
+        unitPrice: p.unitPrice,
+        total: p.total,
+        excluded: p.excluded,
+      })),
+    ]
+    return (
+      <ItemsTable
+        items={items}
+        currencyCode={currencyCode}
+        currencyFormat={currencyFormat}
+        taxRate={taxRate}
+        taxInclusive={taxInclusive}
+        showTitle={!isFramed}
+        styles={styles}
+        labels={labels}
+      />
+    )
+  }
+
   const renderPartsTable = () => {
     if (data.partItems.length === 0) return null
     return (
@@ -871,7 +955,7 @@ export function QuotePDF({
 
     return (
       <View style={styles.totalsBox}>
-        {data.laborItems.length > 0 && (
+        {!itemsTableVisible && data.laborItems.length > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
             <Text style={styles.totalValue}>
@@ -879,7 +963,7 @@ export function QuotePDF({
             </Text>
           </View>
         )}
-        {data.partItems.length > 0 && (
+        {!itemsTableVisible && data.partItems.length > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
             <Text style={styles.totalValue}>
@@ -1022,11 +1106,17 @@ export function QuotePDF({
   const renderSection = (sectionId: string) => {
     switch (sectionId) {
       case 'header':
-        return headerStyle === 'compact'
-          ? renderCompactHeader()
-          : headerStyle === 'modern'
-            ? renderModernHeader()
-            : renderStandardHeader()
+        return isFramed
+          ? renderFramedHeader()
+          : headerStyle === 'compact'
+            ? renderCompactHeader()
+            : headerStyle === 'modern'
+              ? renderModernHeader()
+              : renderStandardHeader()
+      case 'document_title':
+        return renderDocumentTitle()
+      case 'items_table':
+        return renderItemsTable()
       case 'customer':
         return renderCustomerSection()
       case 'vehicle':
@@ -1070,7 +1160,6 @@ export function QuotePDF({
   }
 
   // Use column-based grouping from layout config
-  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
   const renderGroups = groupSectionsForRendering(effectiveSections)
   const renderedSections: React.ReactNode[] = []
 

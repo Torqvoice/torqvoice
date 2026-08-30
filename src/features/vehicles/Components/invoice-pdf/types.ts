@@ -63,6 +63,7 @@ export interface InvoiceData {
     address: string | null
     company: string | null
     taxId?: string | null
+    customerNumber?: string | null
   } | null
   vehicle: {
     make: string
@@ -78,6 +79,7 @@ export interface InvoiceData {
       address: string | null
       company: string | null
       taxId?: string | null
+      customerNumber?: string | null
     } | null
   } | null
 }
