@@ -765,7 +765,10 @@
     "layoutSaved": "Layout erfolgreich gespeichert",
     "layoutDocInvoice": "Rechnung",
     "layoutDocQuote": "Angebot",
-    "goToLayout": "Layout und Abschnitte"
+    "goToLayout": "Layout und Abschnitte",
+    "openDesigner": "Vorlagen-Designer öffnen",
+    "designerIntro": "Wählen Sie einen Ausgangspunkt und öffnen Sie den Designer, um alles zu ändern.",
+    "designerHint": "Farben, Schriften, Abstände und alle Abschnitte liegen im Designer."
   },
   "payment": {
     "readMore": "Mehr erfahren",

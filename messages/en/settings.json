@@ -765,7 +765,10 @@
       "rose": "Rose",
       "indigo": "Indigo"
     },
-    "goToLayout": "Layout and sections"
+    "goToLayout": "Layout and sections",
+    "openDesigner": "Open Template Designer",
+    "designerIntro": "Pick a starting point, then open the designer to change anything.",
+    "designerHint": "Colors, fonts, spacing and every section live in the designer."
   },
   "payment": {
     "readMore": "Read More",

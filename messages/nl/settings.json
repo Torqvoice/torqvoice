@@ -765,7 +765,10 @@
     "layoutSaved": "Indeling succesvol opgeslagen",
     "layoutDocInvoice": "Factuur",
     "layoutDocQuote": "Offerte",
-    "goToLayout": "Indeling en secties"
+    "goToLayout": "Indeling en secties",
+    "openDesigner": "Ontwerper openen",
+    "designerIntro": "Kies een startpunt en open de ontwerper om alles aan te passen.",
+    "designerHint": "Kleuren, lettertypen, ruimte en alle secties staan in de ontwerper."
   },
   "payment": {
     "readMore": "Lees meer",

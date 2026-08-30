@@ -765,7 +765,10 @@
     "layoutSaved": "Düzen başarıyla kaydedildi",
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Teklif",
-    "goToLayout": "Düzen ve bölümler"
+    "goToLayout": "Düzen ve bölümler",
+    "openDesigner": "Tasarımcıyı aç",
+    "designerIntro": "Bir başlangıç noktası seçin, sonra her şeyi değiştirmek için tasarımcıyı açın.",
+    "designerHint": "Renkler, yazı tipleri, boşluklar ve tüm bölümler tasarımcıda."
   },
   "payment": {
     "readMore": "Devamını oku",

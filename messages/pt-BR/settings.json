@@ -765,7 +765,10 @@
     "layoutSaved": "Layout salvo com sucesso",
     "layoutDocInvoice": "Fatura",
     "layoutDocQuote": "Orçamento",
-    "goToLayout": "Disposição e seções"
+    "goToLayout": "Disposição e seções",
+    "openDesigner": "Abrir o designer",
+    "designerIntro": "Escolha um ponto de partida e abra o designer para mudar tudo.",
+    "designerHint": "Cores, fontes, espaçamento e todas as seções ficam no designer."
   },
   "payment": {
     "readMore": "Saiba mais",

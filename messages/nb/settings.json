@@ -765,7 +765,10 @@
       "rose": "Rosa",
       "indigo": "Indigo"
     },
-    "goToLayout": "Oppsett og seksjoner"
+    "goToLayout": "Oppsett og seksjoner",
+    "openDesigner": "Åpne designeren",
+    "designerIntro": "Velg et utgangspunkt, og åpne designeren for å endre alt.",
+    "designerHint": "Farger, skrifter, avstander og alle seksjoner ligger i designeren."
   },
   "payment": {
     "readMore": "Les mer",

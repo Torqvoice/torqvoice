@@ -765,7 +765,10 @@
       "rose": "Rožinė",
       "indigo": "Indigo"
     },
-    "goToLayout": "Išdėstymas ir skiltys"
+    "goToLayout": "Išdėstymas ir skiltys",
+    "openDesigner": "Atverti dizainerį",
+    "designerIntro": "Pasirinkite pradžios tašką ir atverkite dizainerį, kad pakeistumėte viską.",
+    "designerHint": "Spalvos, šriftai, tarpai ir visos skiltys yra dizaineryje."
   },
   "payment": {
     "readMore": "Skaityti daugiau",

@@ -765,7 +765,10 @@
     "layoutSaved": "Układ zapisany pomyślnie",
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Wycena",
-    "goToLayout": "Układ i sekcje"
+    "goToLayout": "Układ i sekcje",
+    "openDesigner": "Otwórz kreator",
+    "designerIntro": "Wybierz punkt wyjścia, a potem otwórz kreator, aby zmienić wszystko.",
+    "designerHint": "Kolory, czcionki, odstępy i wszystkie sekcje są w kreatorze."
   },
   "payment": {
     "readMore": "Czytaj więcej",

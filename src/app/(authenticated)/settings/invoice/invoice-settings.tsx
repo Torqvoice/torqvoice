@@ -2,7 +2,6 @@
 
 import { AppCard } from '@/components/app-card'
 import { useState, useCallback, useMemo } from 'react'
-import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
@@ -19,8 +18,6 @@ import { FileText, Loader2, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { useConfirm } from '@/components/confirm-dialog'
-import { InvoiceLayoutEditor } from '@/features/settings/Components/InvoiceLayoutEditor'
-import { InvoiceLayoutPreview } from '@/features/settings/Components/InvoiceLayoutPreview'
 import {
   saveInvoiceLayoutConfig,
   saveQuoteLayoutConfig,
@@ -31,7 +28,7 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
 
-type TabType = 'general' | 'layout' | 'customFields'
+type TabType = 'general' | 'customFields'
 
 interface FieldDef {
   id: string
@@ -107,45 +104,6 @@ export function InvoiceSettings({
     settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
 
-  // Sections to hide from layout editor when features are disabled
-  const hiddenLayoutSections = useMemo(() => {
-    const hidden = new Set<string>()
-    if (!telegramEnabled) hidden.add('telegram_qr')
-    return hidden
-  }, [telegramEnabled])
-
-  // Layout tab state
-  const [invoiceLayout, setInvoiceLayout] = useState(
-    initialInvoiceLayout ?? getDefaultInvoiceLayout()
-  )
-  const [quoteLayout, setQuoteLayout] = useState(initialQuoteLayout ?? getDefaultInvoiceLayout())
-  const [layoutDocType, setLayoutDocType] = useState<'invoice' | 'quote'>('invoice')
-
-  // Template values from saved settings
-  const invoiceTemplate = {
-    primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
-    backgroundColor: settings[SETTING_KEYS.INVOICE_BACKGROUND_COLOR] || '',
-    textColor: settings[SETTING_KEYS.INVOICE_TEXT_COLOR] || '',
-    companyTextColor: settings[SETTING_KEYS.INVOICE_COMPANY_TEXT_COLOR] || '',
-    frameBorderColor: settings[SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR] || '',
-    frameShadow: settings[SETTING_KEYS.INVOICE_FRAME_SHADOW] || 'true',
-    fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
-    headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
-  }
-  const quoteTemplate = {
-    primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || invoiceTemplate.primaryColor,
-    backgroundColor:
-      settings[SETTING_KEYS.QUOTE_BACKGROUND_COLOR] || invoiceTemplate.backgroundColor,
-    textColor: settings[SETTING_KEYS.QUOTE_TEXT_COLOR] || invoiceTemplate.textColor,
-    companyTextColor:
-      settings[SETTING_KEYS.QUOTE_COMPANY_TEXT_COLOR] || invoiceTemplate.companyTextColor,
-    frameBorderColor:
-      settings[SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR] || invoiceTemplate.frameBorderColor,
-    frameShadow: settings[SETTING_KEYS.QUOTE_FRAME_SHADOW] || invoiceTemplate.frameShadow,
-    fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || invoiceTemplate.fontFamily,
-    headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || invoiceTemplate.headerStyle,
-  }
-
   const handleSaveGeneral = async () => {
     setSaving(true)
     await setSettings({
@@ -185,32 +143,13 @@ export function InvoiceSettings({
     }
   }
 
-  const handleSaveLayout = async () => {
-    setSaving(true)
-    try {
-      if (layoutDocType === 'invoice') {
-        await saveInvoiceLayoutConfig(invoiceLayout)
-      } else {
-        await saveQuoteLayoutConfig(quoteLayout)
-      }
-      toast.success(t('invoice.layoutSaved'))
-    } catch {
-      toast.error(t('templates.failedSave'))
-    }
-    setSaving(false)
-  }
-
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
       <div>
         <h2 className="text-lg font-semibold">{t('invoice.title')}</h2>
         <p className="text-sm text-muted-foreground">
-          {tab === 'layout'
-            ? t('invoice.layoutDescription')
-            : tab === 'customFields'
-              ? t('customFields.description')
-              : t('invoice.description')}
+          {tab === 'customFields' ? t('customFields.description') : t('invoice.description')}
         </p>
       </div>
 
@@ -227,18 +166,6 @@ export function InvoiceSettings({
           )}
         >
           {t('invoice.tabs.general')}
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('layout')}
-          className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            tab === 'layout'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          {t('invoice.tabs.layout')}
         </button>
         {customFieldsEnabled && (
           <button
@@ -448,114 +375,12 @@ export function InvoiceSettings({
             </SaveButton>
           </AppCard>
         </ReadOnlyWrapper>
-      ) : tab === 'layout' ? (
-        <>
-          <ReadOnlyWrapper>
-            <div className="space-y-4">
-              {/* Arrangement lives here and colors live there, which is easy
-                  to get lost in. Each page says where the other half is. */}
-              <p className="text-xs text-muted-foreground">
-                {t('invoice.layoutColorsHint')}{' '}
-                <Link
-                  href="/settings/templates"
-                  className="underline underline-offset-2 hover:text-foreground"
-                >
-                  {t('invoice.goToTemplates')}
-                </Link>
-              </p>
-              <div className="flex items-center justify-between">
-                <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
-                  <button
-                    type="button"
-                    onClick={() => setLayoutDocType('invoice')}
-                    className={cn(
-                      'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                      layoutDocType === 'invoice'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t('invoice.layoutDocInvoice')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLayoutDocType('quote')}
-                    className={cn(
-                      'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                      layoutDocType === 'quote'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t('invoice.layoutDocQuote')}
-                  </button>
-                </div>
-                <div className="flex items-center gap-2 mr-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (layoutDocType === 'invoice') {
-                        setInvoiceLayout(getDefaultInvoiceLayout())
-                      } else {
-                        setQuoteLayout(getDefaultInvoiceLayout())
-                      }
-                    }}
-                  >
-                    {t('invoice.resetLayout')}
-                  </Button>
-                  <Button onClick={handleSaveLayout} disabled={saving} size="sm">
-                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('invoice.saveLayout')}
-                  </Button>
-                </div>
-              </div>
-              <div className="grid gap-6 xl:grid-cols-2">
-                <InvoiceLayoutEditor
-                  config={layoutDocType === 'invoice' ? invoiceLayout : quoteLayout}
-                  onChange={layoutDocType === 'invoice' ? setInvoiceLayout : setQuoteLayout}
-                  documentType={layoutDocType}
-                  customFields={customFields}
-                  hiddenSections={hiddenLayoutSections}
-                />
-                <div className="hidden xl:block pr-2">
-                  <div className="sticky top-6 space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      {t('invoice.preview')}
-                    </p>
-                    <InvoiceLayoutPreview
-                      config={{
-                        sections: (layoutDocType === 'invoice'
-                          ? invoiceLayout
-                          : quoteLayout
-                        ).sections.map((s) =>
-                          hiddenLayoutSections.has(s.id) ? { ...s, visible: false } : s
-                        ),
-                      }}
-                      documentType={layoutDocType}
-                      customFields={customFields}
-                      template={layoutDocType === 'invoice' ? invoiceTemplate : quoteTemplate}
-                      logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
-                      workshop={workshop}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ReadOnlyWrapper>
-          <SaveButton>
-            <div className="flex justify-end">
-              <Button onClick={handleSaveLayout} disabled={saving}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('invoice.saveLayout')}
-              </Button>
-            </div>
-          </SaveButton>
-        </>
       ) : (
         <CustomFieldsManager
           initialFields={customFields}
-          layoutConfig={layoutDocType === 'invoice' ? invoiceLayout : quoteLayout}
+          // Which sections a field is placed in is a property of the invoice
+          // layout; the designer owns editing it, this only reads it.
+          layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
         />
       )}
     </div>

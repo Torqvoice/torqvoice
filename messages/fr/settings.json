@@ -765,7 +765,10 @@
     "layoutSaved": "Mise en page enregistrée",
     "layoutDocInvoice": "Facture",
     "layoutDocQuote": "Devis",
-    "goToLayout": "Disposition et sections"
+    "goToLayout": "Disposition et sections",
+    "openDesigner": "Ouvrir le concepteur",
+    "designerIntro": "Choisissez un point de départ, puis ouvrez le concepteur pour tout modifier.",
+    "designerHint": "Les couleurs, les polices, les espacements et toutes les sections sont dans le concepteur."
   },
   "payment": {
     "readMore": "En savoir plus",
