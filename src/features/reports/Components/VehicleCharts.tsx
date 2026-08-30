@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   BarChart,
@@ -12,38 +12,43 @@ import {
   Pie,
   Cell,
   Legend,
-} from "recharts";
-import type { VehicleMonthlyCost, VehicleServiceTypeBreakdown } from "../Schema/reportTypes";
+} from 'recharts'
+import type { VehicleMonthlyCost, VehicleServiceTypeBreakdown } from '../Schema/reportTypes'
 
 const CHART_COLORS = [
-  "#3b82f6",
-  "#10b981",
-  "#f59e0b",
-  "#8b5cf6",
-  "#f43f5e",
-  "#06b6d4",
-  "#ec4899",
-  "#84cc16",
-];
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#f43f5e',
+  '#06b6d4',
+  '#ec4899',
+  '#84cc16',
+]
 
 interface VehicleCostBarChartProps {
-  data: VehicleMonthlyCost[];
-  formatCurrency: (value: number) => string;
-  labels?: { partsCost: string; laborCost: string };
+  data: VehicleMonthlyCost[]
+  formatCurrency: (value: number) => string
+  labels?: { partsCost: string; laborCost: string }
 }
 
 export function VehicleCostBarChart({ data, formatCurrency, labels }: VehicleCostBarChartProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) return null
 
   const compactCurrency = (value: number) => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
-    return value.toString();
-  };
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
+    if (value >= 1000) return `${(value / 1000).toFixed(0)}k`
+    return value.toString()
+  }
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }} barGap={1} barCategoryGap="20%">
+      <BarChart
+        data={data}
+        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+        barGap={1}
+        barCategoryGap="20%"
+      >
         <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
         <XAxis
           dataKey="month"
@@ -62,35 +67,45 @@ export function VehicleCostBarChart({ data, formatCurrency, labels }: VehicleCos
         />
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
-          wrapperStyle={{ outline: "none" }}
+          wrapperStyle={{ outline: 'none' }}
           contentStyle={{
-            backgroundColor: "var(--popover)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--popover-foreground)",
-            fontSize: "13px",
+            backgroundColor: 'var(--popover)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--popover-foreground)',
+            fontSize: '13px',
           }}
-          cursor={{ fill: "var(--muted)", opacity: 0.5 }}
+          cursor={{ fill: 'var(--muted)', opacity: 0.5 }}
         />
         <Legend
-          formatter={(value) => (
-            <span className="text-xs text-muted-foreground">{value}</span>
-          )}
+          formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
         />
-        <Bar dataKey="partsCost" name={labels?.partsCost ?? "Parts Cost"} fill="#3b82f6" stackId="cost" radius={[0, 0, 0, 0]} />
-        <Bar dataKey="laborCost" name={labels?.laborCost ?? "Labor Cost"} fill="#10b981" stackId="cost" radius={[4, 4, 0, 0]} />
+        <Bar
+          dataKey="partsCost"
+          name={labels?.partsCost ?? 'Parts Cost'}
+          fill="#3b82f6"
+          stackId="cost"
+          radius={[0, 0, 0, 0]}
+        />
+        <Bar
+          dataKey="laborCost"
+          name={labels?.laborCost ?? 'Labor Cost'}
+          fill="#10b981"
+          stackId="cost"
+          radius={[4, 4, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
-  );
+  )
 }
 
 interface VehicleServiceTypeDonutProps {
-  data: VehicleServiceTypeBreakdown[];
-  formatCurrency: (value: number) => string;
+  data: VehicleServiceTypeBreakdown[]
+  formatCurrency: (value: number) => string
 }
 
 export function VehicleServiceTypeDonut({ data, formatCurrency }: VehicleServiceTypeDonutProps) {
-  if (data.length === 0) return null;
+  if (data.length === 0) return null
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -111,20 +126,18 @@ export function VehicleServiceTypeDonut({ data, formatCurrency }: VehicleService
         </Pie>
         <Tooltip
           formatter={(value) => formatCurrency(Number(value))}
-          wrapperStyle={{ outline: "none" }}
+          wrapperStyle={{ outline: 'none' }}
           contentStyle={{
-            backgroundColor: "var(--popover)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px",
-            color: "var(--popover-foreground)",
+            backgroundColor: 'var(--popover)',
+            border: '1px solid var(--border)',
+            borderRadius: '8px',
+            color: 'var(--popover-foreground)',
           }}
         />
         <Legend
-          formatter={(value) => (
-            <span className="text-xs text-muted-foreground">{value}</span>
-          )}
+          formatter={(value) => <span className="text-xs text-muted-foreground">{value}</span>}
         />
       </PieChart>
     </ResponsiveContainer>
-  );
+  )
 }

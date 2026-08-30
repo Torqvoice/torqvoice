@@ -1,101 +1,238 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
-import { formatDateHeader, getEventLink } from "./calendar-utils";
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Badge } from '@/components/ui/badge'
+import { formatDateHeader, getEventLink } from './calendar-utils'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import type { CalendarEvent } from "../Actions/calendarActions";
+import type { CalendarEvent } from '../Actions/calendarActions'
 
 function getStatusColor(event: CalendarEvent) {
-  if (event.type === "service") {
+  if (event.type === 'service') {
     switch (event.status) {
-      case "completed": return "bg-emerald-500";
-      case "in_progress": case "in-progress": return "bg-blue-500";
-      case "waiting-parts": return "bg-orange-500";
-      default: return "bg-amber-500";
+      case 'completed':
+        return 'bg-emerald-500'
+      case 'in_progress':
+      case 'in-progress':
+        return 'bg-blue-500'
+      case 'waiting-parts':
+        return 'bg-orange-500'
+      default:
+        return 'bg-amber-500'
     }
   }
-  if (event.type === "quote") {
-    return event.status === "sent" ? "bg-violet-500" : "bg-violet-300";
+  if (event.type === 'quote') {
+    return event.status === 'sent' ? 'bg-violet-500' : 'bg-violet-300'
   }
-  if (event.type === "message") {
+  if (event.type === 'message') {
     switch (event.status) {
-      case "sent": return "bg-teal-500";
-      case "failed": return "bg-red-500";
-      default: return "bg-sky-500";
+      case 'sent':
+        return 'bg-teal-500'
+      case 'failed':
+        return 'bg-red-500'
+      default:
+        return 'bg-sky-500'
     }
   }
   switch (event.status) {
-    case "completed": return "bg-emerald-500";
-    case "overdue": return "bg-red-500";
-    default: return "bg-slate-400";
+    case 'completed':
+      return 'bg-emerald-500'
+    case 'overdue':
+      return 'bg-red-500'
+    default:
+      return 'bg-slate-400'
   }
 }
 
 function getStatusBadge(event: CalendarEvent, t: (key: string) => string) {
-  if (event.type === "service") {
+  if (event.type === 'service') {
     switch (event.status) {
-      case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">{t('events.status.completed')}</Badge>;
-      case "in_progress": case "in-progress": return <Badge variant="outline" className="text-blue-600 border-blue-300 text-[10px] px-1.5 py-0">{t('events.status.inProgress')}</Badge>;
-      case "waiting-parts": return <Badge variant="outline" className="text-orange-600 border-orange-300 text-[10px] px-1.5 py-0">{t('events.status.waitingParts')}</Badge>;
-      default: return <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] px-1.5 py-0">{t('events.status.pending')}</Badge>;
+      case 'completed':
+        return (
+          <Badge
+            variant="outline"
+            className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.completed')}
+          </Badge>
+        )
+      case 'in_progress':
+      case 'in-progress':
+        return (
+          <Badge
+            variant="outline"
+            className="text-blue-600 border-blue-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.inProgress')}
+          </Badge>
+        )
+      case 'waiting-parts':
+        return (
+          <Badge
+            variant="outline"
+            className="text-orange-600 border-orange-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.waitingParts')}
+          </Badge>
+        )
+      default:
+        return (
+          <Badge
+            variant="outline"
+            className="text-amber-600 border-amber-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.pending')}
+          </Badge>
+        )
     }
   }
-  if (event.type === "message") {
+  if (event.type === 'message') {
     switch (event.status) {
-      case "sent": return <Badge variant="outline" className="text-teal-600 border-teal-300 text-[10px] px-1.5 py-0">{t('events.status.sent')}</Badge>;
-      case "failed": return <Badge variant="destructive" className="text-[10px] px-1.5 py-0">{t('events.status.failed')}</Badge>;
-      default: return <Badge variant="outline" className="text-sky-600 border-sky-300 text-[10px] px-1.5 py-0">{t('events.status.queued')}</Badge>;
+      case 'sent':
+        return (
+          <Badge
+            variant="outline"
+            className="text-teal-600 border-teal-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.sent')}
+          </Badge>
+        )
+      case 'failed':
+        return (
+          <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+            {t('events.status.failed')}
+          </Badge>
+        )
+      default:
+        return (
+          <Badge variant="outline" className="text-sky-600 border-sky-300 text-[10px] px-1.5 py-0">
+            {t('events.status.queued')}
+          </Badge>
+        )
     }
   }
-  if (event.type === "quote") {
+  if (event.type === 'quote') {
     switch (event.status) {
-      case "sent": return <Badge variant="outline" className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0">{t('events.status.sent')}</Badge>;
-      case "approved": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">{t('events.status.approved')}</Badge>;
-      default: return <Badge variant="outline" className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0">{t('events.status.draft')}</Badge>;
+      case 'sent':
+        return (
+          <Badge
+            variant="outline"
+            className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.sent')}
+          </Badge>
+        )
+      case 'approved':
+        return (
+          <Badge
+            variant="outline"
+            className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.approved')}
+          </Badge>
+        )
+      default:
+        return (
+          <Badge
+            variant="outline"
+            className="text-violet-600 border-violet-300 text-[10px] px-1.5 py-0"
+          >
+            {t('events.status.draft')}
+          </Badge>
+        )
     }
   }
   switch (event.status) {
-    case "completed": return <Badge variant="outline" className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0">{t('events.status.done')}</Badge>;
-    case "overdue": return <Badge variant="destructive" className="text-[10px] px-1.5 py-0">{t('events.status.overdue')}</Badge>;
-    default: return <Badge variant="outline" className="text-[10px] px-1.5 py-0">{t('events.status.upcoming')}</Badge>;
+    case 'completed':
+      return (
+        <Badge
+          variant="outline"
+          className="text-emerald-600 border-emerald-300 text-[10px] px-1.5 py-0"
+        >
+          {t('events.status.done')}
+        </Badge>
+      )
+    case 'overdue':
+      return (
+        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+          {t('events.status.overdue')}
+        </Badge>
+      )
+    default:
+      return (
+        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+          {t('events.status.upcoming')}
+        </Badge>
+      )
   }
 }
 
-function getTypeBadge(type: CalendarEvent["type"], t: (key: string) => string) {
+function getTypeBadge(type: CalendarEvent['type'], t: (key: string) => string) {
   switch (type) {
-    case "service": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-blue-500/10 text-blue-700 dark:text-blue-400">{t('events.type.service')}</Badge>;
-    case "reminder": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-amber-500/10 text-amber-700 dark:text-amber-400">{t('events.type.reminder')}</Badge>;
-    case "quote": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-violet-500/10 text-violet-700 dark:text-violet-400">{t('events.type.quote')}</Badge>;
-    case "message": return <Badge variant="secondary" className="shrink-0 text-[10px] px-1.5 py-0 bg-sky-500/10 text-sky-700 dark:text-sky-400">{t('events.type.message')}</Badge>;
+    case 'service':
+      return (
+        <Badge
+          variant="secondary"
+          className="shrink-0 text-[10px] px-1.5 py-0 bg-blue-500/10 text-blue-700 dark:text-blue-400"
+        >
+          {t('events.type.service')}
+        </Badge>
+      )
+    case 'reminder':
+      return (
+        <Badge
+          variant="secondary"
+          className="shrink-0 text-[10px] px-1.5 py-0 bg-amber-500/10 text-amber-700 dark:text-amber-400"
+        >
+          {t('events.type.reminder')}
+        </Badge>
+      )
+    case 'quote':
+      return (
+        <Badge
+          variant="secondary"
+          className="shrink-0 text-[10px] px-1.5 py-0 bg-violet-500/10 text-violet-700 dark:text-violet-400"
+        >
+          {t('events.type.quote')}
+        </Badge>
+      )
+    case 'message':
+      return (
+        <Badge
+          variant="secondary"
+          className="shrink-0 text-[10px] px-1.5 py-0 bg-sky-500/10 text-sky-700 dark:text-sky-400"
+        >
+          {t('events.type.message')}
+        </Badge>
+      )
   }
 }
 
 interface CalendarEventListProps {
-  events: CalendarEvent[];
-  dateStr: string; // YYYY-MM-DD
-  selectedDate: Date;
-  currencyCode: string;
+  events: CalendarEvent[]
+  dateStr: string // YYYY-MM-DD
+  selectedDate: Date
+  currencyCode: string
 }
 
-export function CalendarEventList({ events, dateStr, selectedDate, currencyCode }: CalendarEventListProps) {
+export function CalendarEventList({
+  events,
+  dateStr,
+  selectedDate,
+  currencyCode,
+}: CalendarEventListProps) {
   const formatCurrency = useFormatCurrency()
-  const t = useTranslations('calendar');
-  const dayEvents = events.filter((e) => e.date === dateStr);
+  const t = useTranslations('calendar')
+  const dayEvents = events.filter((e) => e.date === dateStr)
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-semibold">
-        {formatDateHeader(selectedDate)}
-      </p>
+      <p className="text-sm font-semibold">{formatDateHeader(selectedDate)}</p>
 
       {dayEvents.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground mb-1">{t('events.noEvents')}</p>
-          <p className="text-xs text-muted-foreground">
-            {t('events.selectDay')}
-          </p>
+          <p className="text-xs text-muted-foreground">{t('events.selectDay')}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -123,7 +260,9 @@ export function CalendarEventList({ events, dateStr, selectedDate, currencyCode 
                 <div className="flex items-center gap-2 mt-1">
                   {getTypeBadge(event.type, t)}
                   {event.invoiceNumber && (
-                    <span className="text-[10px] text-muted-foreground">#{event.invoiceNumber}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      #{event.invoiceNumber}
+                    </span>
                   )}
                   {event.amount != null && (
                     <span className="text-[10px] font-medium ml-auto">
@@ -137,5 +276,5 @@ export function CalendarEventList({ events, dateStr, selectedDate, currencyCode 
         </div>
       )}
     </div>
-  );
+  )
 }

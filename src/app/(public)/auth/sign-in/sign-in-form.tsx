@@ -15,7 +15,13 @@ import { AuthLogo } from '@/components/auth-logo'
 const DEMO_EMAIL = 'demo@torqvoice.com'
 const DEMO_PASSWORD = 'demo'
 
-function SignInFormInner({ registrationDisabled, demoMode = false }: { registrationDisabled: boolean; demoMode?: boolean }) {
+function SignInFormInner({
+  registrationDisabled,
+  demoMode = false,
+}: {
+  registrationDisabled: boolean
+  demoMode?: boolean
+}) {
   const t = useTranslations('auth.signIn')
   const tc = useTranslations('common')
   const [email, setEmail] = useState('')
@@ -138,11 +144,16 @@ function SignInFormInner({ registrationDisabled, demoMode = false }: { registrat
             disabled={loading}
             onClick={handleDemoSignIn}
           >
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <PlayCircle className="mr-2 h-4 w-4" />
+            )}
             Try the demo
           </Button>
           <p className="mt-2 text-center text-xs text-muted-foreground">
-            Or sign in manually with <code className="rounded bg-muted px-1">{DEMO_EMAIL}</code> / <code className="rounded bg-muted px-1">{DEMO_PASSWORD}</code>
+            Or sign in manually with <code className="rounded bg-muted px-1">{DEMO_EMAIL}</code> /{' '}
+            <code className="rounded bg-muted px-1">{DEMO_PASSWORD}</code>
           </p>
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
@@ -241,7 +252,13 @@ function SignInFormInner({ registrationDisabled, demoMode = false }: { registrat
   )
 }
 
-export function SignInForm({ registrationDisabled, demoMode = false }: { registrationDisabled: boolean; demoMode?: boolean }) {
+export function SignInForm({
+  registrationDisabled,
+  demoMode = false,
+}: {
+  registrationDisabled: boolean
+  demoMode?: boolean
+}) {
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden">

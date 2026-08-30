@@ -1,381 +1,409 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { revalidatePath } from "next/cache";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { revalidatePath } from 'next/cache'
 import {
   createRecurringInvoiceSchema,
   updateRecurringInvoiceSchema,
   type CreateRecurringInvoiceInput,
   type UpdateRecurringInvoiceInput,
-} from "../Schema/recurringInvoiceSchema";
-import { resolveInvoicePrefix, toSafeDate } from "@/lib/invoice-utils";
-import { calculateTotals } from "@/lib/tax";
-import { lineTotal } from "@/features/inventory/Lib/partPricing";
+} from '../Schema/recurringInvoiceSchema'
+import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { calculateTotals } from '@/lib/tax'
+import { lineTotal } from '@/features/inventory/Lib/partPricing'
 
 export async function getRecurringInvoices() {
-  return withAuth(async ({ organizationId }) => {
-    const invoices = await db.recurringInvoice.findMany({
-      where: { vehicle: { organizationId } },
-      include: {
-        vehicle: {
-          select: {
-            id: true,
-            make: true,
-            model: true,
-            year: true,
-            customer: { select: { id: true, name: true } },
+  return withAuth(
+    async ({ organizationId }) => {
+      const invoices = await db.recurringInvoice.findMany({
+        where: { vehicle: { organizationId } },
+        include: {
+          vehicle: {
+            select: {
+              id: true,
+              make: true,
+              model: true,
+              year: true,
+              customer: { select: { id: true, name: true } },
+            },
           },
+          templateParts: true,
+          templateLabor: true,
         },
-        templateParts: true,
-        templateLabor: true,
-      },
-      orderBy: { nextRunDate: "asc" },
-    });
+        orderBy: { nextRunDate: 'asc' },
+      })
 
-    return invoices;
-  }, { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.BILLING }] });
+      return invoices
+    },
+    { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.BILLING }] }
+  )
 }
 
 export async function createRecurringInvoice(input: CreateRecurringInvoiceInput) {
-  return withAuth(async ({ organizationId }) => {
-    const parsed = createRecurringInvoiceSchema.parse(input);
+  return withAuth(
+    async ({ organizationId }) => {
+      const parsed = createRecurringInvoiceSchema.parse(input)
 
-    // Verify vehicle belongs to org
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: parsed.vehicleId, organizationId },
-    });
-    if (!vehicle) throw new Error("Vehicle not found");
+      // Verify vehicle belongs to org
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: parsed.vehicleId, organizationId },
+      })
+      if (!vehicle) throw new Error('Vehicle not found')
 
-    // If the caller didn't explicitly set taxInclusive, inherit the org's
-    // current default so new templates match the org's tax mode setting.
-    let taxInclusive = parsed.taxInclusive;
-    if (input && typeof input === "object" && !("taxInclusive" in input)) {
-      const setting = await db.appSetting.findUnique({
-        where: { organizationId_key: { organizationId, key: "workshop.taxInclusive" } },
-        select: { value: true },
-      });
-      taxInclusive = setting?.value === "true";
+      // If the caller didn't explicitly set taxInclusive, inherit the org's
+      // current default so new templates match the org's tax mode setting.
+      let taxInclusive = parsed.taxInclusive
+      if (input && typeof input === 'object' && !('taxInclusive' in input)) {
+        const setting = await db.appSetting.findUnique({
+          where: { organizationId_key: { organizationId, key: 'workshop.taxInclusive' } },
+          select: { value: true },
+        })
+        taxInclusive = setting?.value === 'true'
+      }
+
+      const invoice = await db.recurringInvoice.create({
+        data: {
+          title: parsed.title,
+          description: parsed.description,
+          frequency: parsed.frequency,
+          nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date(),
+          endDate: toSafeDate(parsed.endDate) ?? null,
+          vehicleId: parsed.vehicleId,
+          type: parsed.type,
+          cost: parsed.cost,
+          taxRate: parsed.taxRate,
+          taxInclusive,
+          invoiceNotes: parsed.invoiceNotes,
+          templateParts: {
+            create: parsed.templateParts.map((p) => ({
+              name: p.name,
+              partNumber: p.partNumber,
+              quantity: p.quantity,
+              unitPrice: p.unitPrice,
+            })),
+          },
+          templateLabor: {
+            create: parsed.templateLabor.map((l) => ({
+              description: l.description,
+              hours: l.hours,
+              rate: l.rate,
+            })),
+          },
+        },
+      })
+
+      revalidatePath('/billing/recurring')
+      return invoice
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.CREATE, subject: PermissionSubject.BILLING },
+      ],
+      audit: ({ result }) => ({
+        action: 'recurringInvoice.create',
+        entity: 'RecurringInvoice',
+        entityId: result.id,
+        details: { key: 'recurringInvoice_create', params: { title: result.title } },
+        metadata: { recurringInvoiceId: result.id },
+      }),
     }
-
-    const invoice = await db.recurringInvoice.create({
-      data: {
-        title: parsed.title,
-        description: parsed.description,
-        frequency: parsed.frequency,
-        nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date(),
-        endDate: toSafeDate(parsed.endDate) ?? null,
-        vehicleId: parsed.vehicleId,
-        type: parsed.type,
-        cost: parsed.cost,
-        taxRate: parsed.taxRate,
-        taxInclusive,
-        invoiceNotes: parsed.invoiceNotes,
-        templateParts: {
-          create: parsed.templateParts.map((p) => ({
-            name: p.name,
-            partNumber: p.partNumber,
-            quantity: p.quantity,
-            unitPrice: p.unitPrice,
-          })),
-        },
-        templateLabor: {
-          create: parsed.templateLabor.map((l) => ({
-            description: l.description,
-            hours: l.hours,
-            rate: l.rate,
-          })),
-        },
-      },
-    });
-
-    revalidatePath("/billing/recurring");
-    return invoice;
-  }, {
-    requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }],
-    audit: ({ result }) => ({
-      action: "recurringInvoice.create",
-      entity: "RecurringInvoice",
-      entityId: result.id,
-      details: { key: "recurringInvoice_create", params: { title: result.title } },
-      metadata: { recurringInvoiceId: result.id },
-    }),
-  });
+  )
 }
 
 export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput) {
-  return withAuth(async ({ organizationId }) => {
-    const parsed = updateRecurringInvoiceSchema.parse(input);
+  return withAuth(
+    async ({ organizationId }) => {
+      const parsed = updateRecurringInvoiceSchema.parse(input)
 
-    const existing = await db.recurringInvoice.findFirst({
-      where: { id: parsed.id, vehicle: { organizationId } },
-    });
-    if (!existing) throw new Error("Recurring invoice not found");
+      const existing = await db.recurringInvoice.findFirst({
+        where: { id: parsed.id, vehicle: { organizationId } },
+      })
+      if (!existing) throw new Error('Recurring invoice not found')
 
-    if (parsed.vehicleId) {
-      const vehicle = await db.vehicle.findFirst({
-        where: { id: parsed.vehicleId, organizationId },
-      });
-      if (!vehicle) throw new Error("Vehicle not found");
+      if (parsed.vehicleId) {
+        const vehicle = await db.vehicle.findFirst({
+          where: { id: parsed.vehicleId, organizationId },
+        })
+        if (!vehicle) throw new Error('Vehicle not found')
+      }
+
+      // Update main record
+      const updated = await db.$transaction(async (tx) => {
+        // Delete existing template items if new ones provided
+        if (parsed.templateParts) {
+          await tx.recurringPart.deleteMany({ where: { recurringInvoiceId: parsed.id } })
+        }
+        if (parsed.templateLabor) {
+          await tx.recurringLabor.deleteMany({ where: { recurringInvoiceId: parsed.id } })
+        }
+
+        return tx.recurringInvoice.update({
+          where: { id: parsed.id },
+          data: {
+            ...(parsed.title !== undefined && { title: parsed.title }),
+            ...(parsed.description !== undefined && { description: parsed.description }),
+            ...(parsed.frequency !== undefined && { frequency: parsed.frequency }),
+            ...(parsed.nextRunDate !== undefined && {
+              nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date(),
+            }),
+            ...(parsed.endDate !== undefined && { endDate: toSafeDate(parsed.endDate) ?? null }),
+            ...(parsed.vehicleId !== undefined && { vehicleId: parsed.vehicleId }),
+            ...(parsed.type !== undefined && { type: parsed.type }),
+            ...(parsed.cost !== undefined && { cost: parsed.cost }),
+            ...(parsed.taxRate !== undefined && { taxRate: parsed.taxRate }),
+            ...(parsed.taxInclusive !== undefined && { taxInclusive: parsed.taxInclusive }),
+            ...(parsed.invoiceNotes !== undefined && { invoiceNotes: parsed.invoiceNotes }),
+            ...(parsed.templateParts && {
+              templateParts: {
+                create: parsed.templateParts.map((p) => ({
+                  name: p.name,
+                  partNumber: p.partNumber,
+                  quantity: p.quantity,
+                  unitPrice: p.unitPrice,
+                })),
+              },
+            }),
+            ...(parsed.templateLabor && {
+              templateLabor: {
+                create: parsed.templateLabor.map((l) => ({
+                  description: l.description,
+                  hours: l.hours,
+                  rate: l.rate,
+                })),
+              },
+            }),
+          },
+        })
+      })
+
+      revalidatePath('/billing/recurring')
+      return updated
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.BILLING },
+      ],
+      audit: ({ result }) => ({
+        action: 'recurringInvoice.update',
+        entity: 'RecurringInvoice',
+        entityId: result.id,
+        details: { key: 'recurringInvoice_update', params: { title: result.title } },
+        metadata: { recurringInvoiceId: result.id },
+      }),
     }
-
-    // Update main record
-    const updated = await db.$transaction(async (tx) => {
-      // Delete existing template items if new ones provided
-      if (parsed.templateParts) {
-        await tx.recurringPart.deleteMany({ where: { recurringInvoiceId: parsed.id } });
-      }
-      if (parsed.templateLabor) {
-        await tx.recurringLabor.deleteMany({ where: { recurringInvoiceId: parsed.id } });
-      }
-
-      return tx.recurringInvoice.update({
-        where: { id: parsed.id },
-        data: {
-          ...(parsed.title !== undefined && { title: parsed.title }),
-          ...(parsed.description !== undefined && { description: parsed.description }),
-          ...(parsed.frequency !== undefined && { frequency: parsed.frequency }),
-          ...(parsed.nextRunDate !== undefined && { nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date() }),
-          ...(parsed.endDate !== undefined && { endDate: toSafeDate(parsed.endDate) ?? null }),
-          ...(parsed.vehicleId !== undefined && { vehicleId: parsed.vehicleId }),
-          ...(parsed.type !== undefined && { type: parsed.type }),
-          ...(parsed.cost !== undefined && { cost: parsed.cost }),
-          ...(parsed.taxRate !== undefined && { taxRate: parsed.taxRate }),
-          ...(parsed.taxInclusive !== undefined && { taxInclusive: parsed.taxInclusive }),
-          ...(parsed.invoiceNotes !== undefined && { invoiceNotes: parsed.invoiceNotes }),
-          ...(parsed.templateParts && {
-            templateParts: {
-              create: parsed.templateParts.map((p) => ({
-                name: p.name,
-                partNumber: p.partNumber,
-                quantity: p.quantity,
-                unitPrice: p.unitPrice,
-              })),
-            },
-          }),
-          ...(parsed.templateLabor && {
-            templateLabor: {
-              create: parsed.templateLabor.map((l) => ({
-                description: l.description,
-                hours: l.hours,
-                rate: l.rate,
-              })),
-            },
-          }),
-        },
-      });
-    });
-
-    revalidatePath("/billing/recurring");
-    return updated;
-  }, {
-    requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.BILLING }],
-    audit: ({ result }) => ({
-      action: "recurringInvoice.update",
-      entity: "RecurringInvoice",
-      entityId: result.id,
-      details: { key: "recurringInvoice_update", params: { title: result.title } },
-      metadata: { recurringInvoiceId: result.id },
-    }),
-  });
+  )
 }
 
 export async function deleteRecurringInvoice(id: string) {
-  return withAuth(async ({ organizationId }) => {
-    const existing = await db.recurringInvoice.findFirst({
-      where: { id, vehicle: { organizationId } },
-    });
-    if (!existing) throw new Error("Recurring invoice not found");
+  return withAuth(
+    async ({ organizationId }) => {
+      const existing = await db.recurringInvoice.findFirst({
+        where: { id, vehicle: { organizationId } },
+      })
+      if (!existing) throw new Error('Recurring invoice not found')
 
-    await db.recurringInvoice.delete({ where: { id } });
+      await db.recurringInvoice.delete({ where: { id } })
 
-    revalidatePath("/billing/recurring");
-    return { deleted: true, recurringInvoiceId: id };
-  }, {
-    requiredPermissions: [{ action: PermissionAction.DELETE, subject: PermissionSubject.BILLING }],
-    audit: ({ result }) => ({
-      action: "recurringInvoice.delete",
-      entity: "RecurringInvoice",
-      entityId: result.recurringInvoiceId,
-      details: { key: "recurringInvoice_delete", params: { id: result.recurringInvoiceId } },
-      metadata: { recurringInvoiceId: result.recurringInvoiceId },
-    }),
-  });
+      revalidatePath('/billing/recurring')
+      return { deleted: true, recurringInvoiceId: id }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.DELETE, subject: PermissionSubject.BILLING },
+      ],
+      audit: ({ result }) => ({
+        action: 'recurringInvoice.delete',
+        entity: 'RecurringInvoice',
+        entityId: result.recurringInvoiceId,
+        details: { key: 'recurringInvoice_delete', params: { id: result.recurringInvoiceId } },
+        metadata: { recurringInvoiceId: result.recurringInvoiceId },
+      }),
+    }
+  )
 }
 
 export async function toggleRecurringInvoice(id: string) {
-  return withAuth(async ({ organizationId }) => {
-    const existing = await db.recurringInvoice.findFirst({
-      where: { id, vehicle: { organizationId } },
-    });
-    if (!existing) throw new Error("Recurring invoice not found");
+  return withAuth(
+    async ({ organizationId }) => {
+      const existing = await db.recurringInvoice.findFirst({
+        where: { id, vehicle: { organizationId } },
+      })
+      if (!existing) throw new Error('Recurring invoice not found')
 
-    const updated = await db.recurringInvoice.update({
-      where: { id },
-      data: { isActive: !existing.isActive },
-    });
+      const updated = await db.recurringInvoice.update({
+        where: { id },
+        data: { isActive: !existing.isActive },
+      })
 
-    revalidatePath("/billing/recurring");
-    return updated;
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.BILLING }] });
+      revalidatePath('/billing/recurring')
+      return updated
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.BILLING },
+      ],
+    }
+  )
 }
 
 function calculateNextRunDate(current: Date, frequency: string): Date {
-  const next = new Date(current);
+  const next = new Date(current)
   switch (frequency) {
-    case "weekly":
-      next.setDate(next.getDate() + 7);
-      break;
-    case "biweekly":
-      next.setDate(next.getDate() + 14);
-      break;
-    case "monthly":
-      next.setMonth(next.getMonth() + 1);
-      break;
-    case "quarterly":
-      next.setMonth(next.getMonth() + 3);
-      break;
-    case "yearly":
-      next.setFullYear(next.getFullYear() + 1);
-      break;
+    case 'weekly':
+      next.setDate(next.getDate() + 7)
+      break
+    case 'biweekly':
+      next.setDate(next.getDate() + 14)
+      break
+    case 'monthly':
+      next.setMonth(next.getMonth() + 1)
+      break
+    case 'quarterly':
+      next.setMonth(next.getMonth() + 3)
+      break
+    case 'yearly':
+      next.setFullYear(next.getFullYear() + 1)
+      break
   }
-  return next;
+  return next
 }
 
 async function generateInvoiceNumber(organizationId: string): Promise<string> {
   const settings = await db.appSetting.findMany({
     where: {
       organizationId,
-      key: { in: ["workshop.invoicePrefix", "workshop.invoiceStartNumber"] },
+      key: { in: ['workshop.invoicePrefix', 'workshop.invoiceStartNumber'] },
     },
-  });
+  })
 
-  const settingsMap: Record<string, string> = {};
-  for (const s of settings) settingsMap[s.key] = s.value;
+  const settingsMap: Record<string, string> = {}
+  for (const s of settings) settingsMap[s.key] = s.value
 
-  const prefix = resolveInvoicePrefix(settingsMap["workshop.invoicePrefix"] ?? "{year}-");
-  const startNumber = parseInt(settingsMap["workshop.invoiceStartNumber"] || "0", 10);
+  const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
+  const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
 
   const lastRecord = await db.serviceRecord.findFirst({
     where: { organizationId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
     select: { invoiceNumber: true },
-  });
+  })
 
-  let nextNum = startNumber || 1001;
+  let nextNum = startNumber || 1001
   if (lastRecord?.invoiceNumber) {
-    const match = lastRecord.invoiceNumber.match(/(\d+)$/);
+    const match = lastRecord.invoiceNumber.match(/(\d+)$/)
     if (match) {
-      const lastNum = parseInt(match[1], 10) + 1;
-      nextNum = Math.max(nextNum, lastNum);
+      const lastNum = parseInt(match[1], 10) + 1
+      nextNum = Math.max(nextNum, lastNum)
     }
   }
 
-  return `${prefix}${nextNum}`;
+  return `${prefix}${nextNum}`
 }
 
 export async function processRecurringInvoices() {
-  return withAuth(async ({ organizationId }) => {
-    const now = new Date();
+  return withAuth(
+    async ({ organizationId }) => {
+      const now = new Date()
 
-    const dueInvoices = await db.recurringInvoice.findMany({
-      where: {
-        isActive: true,
-        nextRunDate: { lte: now },
-        vehicle: { organizationId },
-      },
-      include: {
-        templateParts: true,
-        templateLabor: true,
-        vehicle: { select: { organizationId: true } },
-      },
-    });
+      const dueInvoices = await db.recurringInvoice.findMany({
+        where: {
+          isActive: true,
+          nextRunDate: { lte: now },
+          vehicle: { organizationId },
+        },
+        include: {
+          templateParts: true,
+          templateLabor: true,
+          vehicle: { select: { organizationId: true } },
+        },
+      })
 
-    const results: { id: string; serviceRecordId: string }[] = [];
+      const results: { id: string; serviceRecordId: string }[] = []
 
-    for (const ri of dueInvoices) {
-      const invoiceNumber = await generateInvoiceNumber(organizationId);
+      for (const ri of dueInvoices) {
+        const invoiceNumber = await generateInvoiceNumber(organizationId)
 
-      // Calculate totals
-      const partsSubtotal = ri.templateParts.reduce(
-        (s, p) => s + p.quantity * p.unitPrice,
-        0,
-      );
-      const laborSubtotal = ri.templateLabor.reduce(
-        (s, l) => s + l.hours * l.rate,
-        0,
-      );
-      const subtotal = ri.cost + partsSubtotal + laborSubtotal;
-      const { taxAmount, totalAmount } = calculateTotals({
-        subtotal,
-        discountAmount: 0,
-        taxRate: ri.taxRate,
-        taxInclusive: ri.taxInclusive,
-      });
+        // Calculate totals
+        const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
+        const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
+        const subtotal = ri.cost + partsSubtotal + laborSubtotal
+        const { taxAmount, totalAmount } = calculateTotals({
+          subtotal,
+          discountAmount: 0,
+          taxRate: ri.taxRate,
+          taxInclusive: ri.taxInclusive,
+        })
 
-      const serviceRecord = await db.$transaction(async (tx) => {
-        const sr = await tx.serviceRecord.create({
-          data: {
-            organizationId,
-            title: ri.title,
-            description: ri.description,
-            type: ri.type,
-            status: "completed",
-            cost: ri.cost,
-            serviceDate: now,
-            startDateTime: now,
-            invoiceNotes: ri.invoiceNotes,
-            subtotal,
-            taxRate: ri.taxRate,
-            taxInclusive: ri.taxInclusive,
-            taxAmount,
-            totalAmount,
-            invoiceNumber,
-            vehicleId: ri.vehicleId,
-            partItems: {
-              create: ri.templateParts.map((p) => ({
-                name: p.name,
-                partNumber: p.partNumber,
-                quantity: p.quantity,
-                unitPrice: p.unitPrice,
-                total: lineTotal(p.quantity, p.unitPrice),
-              })),
+        const serviceRecord = await db.$transaction(async (tx) => {
+          const sr = await tx.serviceRecord.create({
+            data: {
+              organizationId,
+              title: ri.title,
+              description: ri.description,
+              type: ri.type,
+              status: 'completed',
+              cost: ri.cost,
+              serviceDate: now,
+              startDateTime: now,
+              invoiceNotes: ri.invoiceNotes,
+              subtotal,
+              taxRate: ri.taxRate,
+              taxInclusive: ri.taxInclusive,
+              taxAmount,
+              totalAmount,
+              invoiceNumber,
+              vehicleId: ri.vehicleId,
+              partItems: {
+                create: ri.templateParts.map((p) => ({
+                  name: p.name,
+                  partNumber: p.partNumber,
+                  quantity: p.quantity,
+                  unitPrice: p.unitPrice,
+                  total: lineTotal(p.quantity, p.unitPrice),
+                })),
+              },
+              laborItems: {
+                create: ri.templateLabor.map((l) => ({
+                  description: l.description,
+                  hours: l.hours,
+                  rate: l.rate,
+                  total: l.hours * l.rate,
+                })),
+              },
             },
-            laborItems: {
-              create: ri.templateLabor.map((l) => ({
-                description: l.description,
-                hours: l.hours,
-                rate: l.rate,
-                total: l.hours * l.rate,
-              })),
+          })
+
+          // Update recurring invoice
+          const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency)
+          const shouldDeactivate = ri.endDate && nextRunDate > ri.endDate
+
+          await tx.recurringInvoice.update({
+            where: { id: ri.id },
+            data: {
+              lastRunAt: now,
+              runCount: { increment: 1 },
+              nextRunDate,
+              ...(shouldDeactivate && { isActive: false }),
             },
-          },
-        });
+          })
 
-        // Update recurring invoice
-        const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency);
-        const shouldDeactivate = ri.endDate && nextRunDate > ri.endDate;
+          return sr
+        })
 
-        await tx.recurringInvoice.update({
-          where: { id: ri.id },
-          data: {
-            lastRunAt: now,
-            runCount: { increment: 1 },
-            nextRunDate,
-            ...(shouldDeactivate && { isActive: false }),
-          },
-        });
+        results.push({ id: ri.id, serviceRecordId: serviceRecord.id })
+      }
 
-        return sr;
-      });
+      revalidatePath('/billing')
+      revalidatePath('/billing/recurring')
 
-      results.push({ id: ri.id, serviceRecordId: serviceRecord.id });
+      return { processed: results.length, results }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.CREATE, subject: PermissionSubject.BILLING },
+      ],
     }
-
-    revalidatePath("/billing");
-    revalidatePath("/billing/recurring");
-
-    return { processed: results.length, results };
-  }, { requiredPermissions: [{ action: PermissionAction.CREATE, subject: PermissionSubject.BILLING }] });
+  )
 }

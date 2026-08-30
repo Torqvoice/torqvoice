@@ -112,7 +112,10 @@ export async function addTireSetAttachments(input: unknown) {
         action: 'tire_set.attach',
         entity: 'TireSet',
         entityId: result.tireSetId,
-        details: { key: 'tire_set_attach', params: { count: result.added, ref: result.reference ?? result.tireSetId } },
+        details: {
+          key: 'tire_set_attach',
+          params: { count: result.added, ref: result.reference ?? result.tireSetId },
+        },
       }),
     }
   )

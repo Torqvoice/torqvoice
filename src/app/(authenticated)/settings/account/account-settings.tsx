@@ -18,7 +18,18 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
-import { BadgeCheck, Check, Copy, KeyRound, Loader2, Mail, Save, Shield, ShieldOff, User } from 'lucide-react'
+import {
+  BadgeCheck,
+  Check,
+  Copy,
+  KeyRound,
+  Loader2,
+  Mail,
+  Save,
+  Shield,
+  ShieldOff,
+  User,
+} from 'lucide-react'
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
 import { QRCodeSVG } from 'qrcode.react'
 import { updateEmail, requestEmailChange } from '@/features/settings/Actions/accountActions'
@@ -264,86 +275,80 @@ export function AccountSettings({
       </Card> */}
 
       {/* Update Name */}
-      <AppCard
-        icon={User}
-        title={t('account.profileTitle')}
-        contentClassName="space-y-4"
-      >
-          <p className="text-sm text-muted-foreground">
-            {t('account.profileDescription')}
-          </p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="display-name">{t('account.name')}</Label>
-              <Input
-                id="display-name"
-                value={name}
-                onChange={(e) => {
-                  // Ignore browser autofill that overwrites name with email
-                  if (e.target.value === session?.user?.email) return
-                  setName(e.target.value)
-                }}
-                placeholder={t('account.namePlaceholder')}
-                autoComplete="off"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="profile-email">{t('account.emailLabel')}</Label>
-              <Input
-                id="profile-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('account.emailPlaceholder')}
-                autoComplete="off"
-              />
-              {emailVerificationRequired && (
-                <div className="flex items-center gap-2">
-                  {emailVerified ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                      <BadgeCheck className="h-3 w-3" />
-                      {t('account.emailVerified')}
+      <AppCard icon={User} title={t('account.profileTitle')} contentClassName="space-y-4">
+        <p className="text-sm text-muted-foreground">{t('account.profileDescription')}</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="display-name">{t('account.name')}</Label>
+            <Input
+              id="display-name"
+              value={name}
+              onChange={(e) => {
+                // Ignore browser autofill that overwrites name with email
+                if (e.target.value === session?.user?.email) return
+                setName(e.target.value)
+              }}
+              placeholder={t('account.namePlaceholder')}
+              autoComplete="off"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="profile-email">{t('account.emailLabel')}</Label>
+            <Input
+              id="profile-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t('account.emailPlaceholder')}
+              autoComplete="off"
+            />
+            {emailVerificationRequired && (
+              <div className="flex items-center gap-2">
+                {emailVerified ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                    <BadgeCheck className="h-3 w-3" />
+                    {t('account.emailVerified')}
+                  </span>
+                ) : (
+                  <>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-400">
+                      {t('account.emailNotVerified')}
                     </span>
-                  ) : (
-                    <>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-400">
-                        {t('account.emailNotVerified')}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 px-2 text-xs"
-                        onClick={handleSendVerificationEmail}
-                        disabled={sendingVerification || verificationCooldown > 0}
-                      >
-                        {sendingVerification ? (
-                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                        ) : (
-                          <Mail className="mr-1 h-3 w-3" />
-                        )}
-                        {verificationCooldown > 0
-                          ? t('account.resendCooldown', { seconds: verificationCooldown })
-                          : t('account.sendVerificationEmail')}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-xs"
+                      onClick={handleSendVerificationEmail}
+                      disabled={sendingVerification || verificationCooldown > 0}
+                    >
+                      {sendingVerification ? (
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      ) : (
+                        <Mail className="mr-1 h-3 w-3" />
+                      )}
+                      {verificationCooldown > 0
+                        ? t('account.resendCooldown', { seconds: verificationCooldown })
+                        : t('account.sendVerificationEmail')}
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-          <Separator />
-          <div className="flex items-center gap-3">
-            <Button onClick={handleUpdateProfile} disabled={savingProfile}>
-              {savingProfile ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {t('account.saveProfile')}
-            </Button>
-          </div>
-        </AppCard>
+        </div>
+        <Separator />
+        <div className="flex items-center gap-3">
+          <Button onClick={handleUpdateProfile} disabled={savingProfile}>
+            {savingProfile ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            {t('account.saveProfile')}
+          </Button>
+        </div>
+      </AppCard>
 
       {/* Change Password */}
       <AppCard
@@ -351,122 +356,109 @@ export function AccountSettings({
         title={t('account.changePasswordTitle')}
         contentClassName="space-y-4"
       >
-          <p className="text-sm text-muted-foreground">
-            {t('account.changePasswordDescription')}
-          </p>
-          <div className="grid gap-4 sm:grid-cols-1 max-w-sm">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">{t('account.currentPassword')}</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">{t('account.newPassword')}</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">{t('account.confirmNewPassword')}</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+        <p className="text-sm text-muted-foreground">{t('account.changePasswordDescription')}</p>
+        <div className="grid gap-4 sm:grid-cols-1 max-w-sm">
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">{t('account.currentPassword')}</Label>
+            <Input
+              id="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
           </div>
-          <Separator />
-          <div className="flex items-center gap-3">
-            <Button onClick={handleChangePassword} disabled={savingPassword}>
-              {savingPassword ? (
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">{t('account.newPassword')}</Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">{t('account.confirmNewPassword')}</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+        </div>
+        <Separator />
+        <div className="flex items-center gap-3">
+          <Button onClick={handleChangePassword} disabled={savingPassword}>
+            {savingPassword ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <KeyRound className="mr-2 h-4 w-4" />
+            )}
+            {t('account.changePassword')}
+          </Button>
+        </div>
+      </AppCard>
+      {/* Two-Factor Authentication */}
+      <AppCard icon={Shield} title={t('account.twoFactorTitle')} contentClassName="space-y-4">
+        {twoFactorEnabled ? (
+          <>
+            <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-3">
+              <Shield className="h-5 w-5 text-emerald-500" />
+              <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                {t('account.twoFactorEnabled')}
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground">{t('account.twoFactorDisablePrompt')}</p>
+            <div className="max-w-sm space-y-2">
+              <Label htmlFor="2fa-disable-password">{t('account.password')}</Label>
+              <Input
+                id="2fa-disable-password"
+                type="password"
+                value={twoFactorPassword}
+                onChange={(e) => setTwoFactorPassword(e.target.value)}
+                placeholder={t('account.enterPassword')}
+              />
+            </div>
+            <Separator />
+            <Button variant="destructive" onClick={handleDisable2FA} disabled={disabling2FA}>
+              {disabling2FA ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <KeyRound className="mr-2 h-4 w-4" />
+                <ShieldOff className="mr-2 h-4 w-4" />
               )}
-              {t('account.changePassword')}
+              {t('account.disable2FA')}
             </Button>
-          </div>
-        </AppCard>
-      {/* Two-Factor Authentication */}
-      <AppCard
-        icon={Shield}
-        title={t('account.twoFactorTitle')}
-        contentClassName="space-y-4"
-      >
-          {twoFactorEnabled ? (
-            <>
-              <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-3">
-                <Shield className="h-5 w-5 text-emerald-500" />
-                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                  {t('account.twoFactorEnabled')}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {t('account.twoFactorDisablePrompt')}
-              </p>
-              <div className="max-w-sm space-y-2">
-                <Label htmlFor="2fa-disable-password">{t('account.password')}</Label>
-                <Input
-                  id="2fa-disable-password"
-                  type="password"
-                  value={twoFactorPassword}
-                  onChange={(e) => setTwoFactorPassword(e.target.value)}
-                  placeholder={t('account.enterPassword')}
-                />
-              </div>
-              <Separator />
-              <Button
-                variant="destructive"
-                onClick={handleDisable2FA}
-                disabled={disabling2FA}
-              >
-                {disabling2FA ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <ShieldOff className="mr-2 h-4 w-4" />
-                )}
-                {t('account.disable2FA')}
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-muted-foreground">
-                {t('account.twoFactorEnablePrompt')}
-              </p>
-              <Separator />
-              <Button onClick={handleOpenSetupDialog}>
-                <Shield className="mr-2 h-4 w-4" />
-                {t('account.enable2FA')}
-              </Button>
-            </>
-          )}
-        </AppCard>
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground">{t('account.twoFactorEnablePrompt')}</p>
+            <Separator />
+            <Button onClick={handleOpenSetupDialog}>
+              <Shield className="mr-2 h-4 w-4" />
+              {t('account.enable2FA')}
+            </Button>
+          </>
+        )}
+      </AppCard>
 
       {/* 2FA Setup Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={(open) => {
-        if (!open && setupStep !== 'backup' && setupStep !== 'verify') {
-          setDialogOpen(false)
-          setSetupStep('password')
-          setTwoFactorPassword('')
-          setVerifyCode('')
-        }
-      }}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          if (!open && setupStep !== 'backup' && setupStep !== 'verify') {
+            setDialogOpen(false)
+            setSetupStep('password')
+            setTwoFactorPassword('')
+            setVerifyCode('')
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           {setupStep === 'password' && (
             <>
               <DialogHeader>
                 <DialogTitle>{t('account.setupDialogTitle')}</DialogTitle>
-                <DialogDescription>
-                  {t('account.setupDialogDescription')}
-                </DialogDescription>
+                <DialogDescription>{t('account.setupDialogDescription')}</DialogDescription>
               </DialogHeader>
               <div className="space-y-2 py-2">
                 <Label htmlFor="2fa-enable-password">{t('account.password')}</Label>
@@ -497,9 +489,7 @@ export function AccountSettings({
             <>
               <DialogHeader>
                 <DialogTitle>{t('account.scanQRTitle')}</DialogTitle>
-                <DialogDescription>
-                  {t('account.scanQRDescription')}
-                </DialogDescription>
+                <DialogDescription>{t('account.scanQRDescription')}</DialogDescription>
               </DialogHeader>
               <div className="flex justify-center rounded-lg bg-white p-6">
                 <QRCodeSVG value={totpURI} size={200} />
@@ -516,9 +506,7 @@ export function AccountSettings({
             <>
               <DialogHeader>
                 <DialogTitle>{t('account.verifyCodeTitle')}</DialogTitle>
-                <DialogDescription>
-                  {t('account.verifyCodeDescription')}
-                </DialogDescription>
+                <DialogDescription>{t('account.verifyCodeDescription')}</DialogDescription>
               </DialogHeader>
               <div className="space-y-2 py-2">
                 <Label htmlFor="2fa-verify-code">{t('account.authCode')}</Label>
@@ -595,7 +583,6 @@ export function AccountSettings({
           {t('account.deleteAccountMovedLink')}
         </Link>
       </p>
-
     </div>
   )
 }

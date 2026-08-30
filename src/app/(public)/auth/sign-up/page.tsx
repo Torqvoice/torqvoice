@@ -43,5 +43,11 @@ export default async function SignUpPage({
   })
   const emailVerificationRequired = verificationSetting?.value === 'true'
 
-  return <SignUpForm inviteToken={inviteToken} emailVerificationRequired={emailVerificationRequired} redirectTo={redirectTo} />
+  return (
+    <SignUpForm
+      inviteToken={inviteToken}
+      emailVerificationRequired={emailVerificationRequired}
+      redirectTo={redirectTo}
+    />
+  )
 }

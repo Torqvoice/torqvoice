@@ -1,78 +1,111 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { AppCard } from "@/components/app-card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
-import { setSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { Banknote, CreditCard, Loader2, Save, Copy, Check } from "lucide-react";
-import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from "../read-only-guard";
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { AppCard } from '@/components/app-card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
+import { toast } from 'sonner'
+import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { Banknote, CreditCard, Loader2, Save, Copy, Check } from 'lucide-react'
+import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 
-export function PaymentSettings({ settings, orgId }: { settings: Record<string, string>; orgId: string }) {
-  const router = useRouter();
-  const t = useTranslations('settings');
-  const [saving, setSaving] = useState(false);
+export function PaymentSettings({
+  settings,
+  orgId,
+}: {
+  settings: Record<string, string>
+  orgId: string
+}) {
+  const router = useRouter()
+  const t = useTranslations('settings')
+  const [saving, setSaving] = useState(false)
 
   // Existing fields
-  const [bankAccount, setBankAccount] = useState(settings[SETTING_KEYS.INVOICE_BANK_ACCOUNT] || "");
-  const [paymentTerms, setPaymentTerms] = useState(settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || "");
-  const [termsOfSale, setTermsOfSale] = useState(settings[SETTING_KEYS.PAYMENT_TERMS_OF_SALE] || "");
-  const [termsOfSaleUrl, setTermsOfSaleUrl] = useState(settings[SETTING_KEYS.PAYMENT_TERMS_OF_SALE_URL] || "");
+  const [bankAccount, setBankAccount] = useState(settings[SETTING_KEYS.INVOICE_BANK_ACCOUNT] || '')
+  const [paymentTerms, setPaymentTerms] = useState(
+    settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || ''
+  )
+  const [termsOfSale, setTermsOfSale] = useState(settings[SETTING_KEYS.PAYMENT_TERMS_OF_SALE] || '')
+  const [termsOfSaleUrl, setTermsOfSaleUrl] = useState(
+    settings[SETTING_KEYS.PAYMENT_TERMS_OF_SALE_URL] || ''
+  )
 
   // Online payment providers
-  const enabledRaw = settings[SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED] || "";
-  const enabledList = enabledRaw.split(",").map((s) => s.trim()).filter(Boolean);
+  const enabledRaw = settings[SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED] || ''
+  const enabledList = enabledRaw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
 
-  const [stripeEnabled, setStripeEnabled] = useState(enabledList.includes("stripe"));
-  const [vippsEnabled, setVippsEnabled] = useState(enabledList.includes("vipps"));
-  const [paypalEnabled, setPaypalEnabled] = useState(enabledList.includes("paypal"));
+  const [stripeEnabled, setStripeEnabled] = useState(enabledList.includes('stripe'))
+  const [vippsEnabled, setVippsEnabled] = useState(enabledList.includes('vipps'))
+  const [paypalEnabled, setPaypalEnabled] = useState(enabledList.includes('paypal'))
 
   // Stripe fields
-  const [stripeSecretKey, setStripeSecretKey] = useState(settings[SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY] || "");
-  const [stripePublishableKey, setStripePublishableKey] = useState(settings[SETTING_KEYS.PAYMENT_STRIPE_PUBLISHABLE_KEY] || "");
-  const [stripeWebhookSecret, setStripeWebhookSecret] = useState(settings[SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET] || "");
+  const [stripeSecretKey, setStripeSecretKey] = useState(
+    settings[SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY] || ''
+  )
+  const [stripePublishableKey, setStripePublishableKey] = useState(
+    settings[SETTING_KEYS.PAYMENT_STRIPE_PUBLISHABLE_KEY] || ''
+  )
+  const [stripeWebhookSecret, setStripeWebhookSecret] = useState(
+    settings[SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET] || ''
+  )
 
   // Vipps fields
-  const [vippsClientId, setVippsClientId] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_ID] || "");
-  const [vippsClientSecret, setVippsClientSecret] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_SECRET] || "");
-  const [vippsSubscriptionKey, setVippsSubscriptionKey] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_SUBSCRIPTION_KEY] || "");
-  const [vippsMsn, setVippsMsn] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_MSN] || "");
-  const [vippsTestMode, setVippsTestMode] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_USE_TEST] === "true");
+  const [vippsClientId, setVippsClientId] = useState(
+    settings[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_ID] || ''
+  )
+  const [vippsClientSecret, setVippsClientSecret] = useState(
+    settings[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_SECRET] || ''
+  )
+  const [vippsSubscriptionKey, setVippsSubscriptionKey] = useState(
+    settings[SETTING_KEYS.PAYMENT_VIPPS_SUBSCRIPTION_KEY] || ''
+  )
+  const [vippsMsn, setVippsMsn] = useState(settings[SETTING_KEYS.PAYMENT_VIPPS_MSN] || '')
+  const [vippsTestMode, setVippsTestMode] = useState(
+    settings[SETTING_KEYS.PAYMENT_VIPPS_USE_TEST] === 'true'
+  )
 
   // PayPal fields
-  const [paypalClientId, setPaypalClientId] = useState(settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID] || "");
-  const [paypalClientSecret, setPaypalClientSecret] = useState(settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET] || "");
-  const [paypalSandbox, setPaypalSandbox] = useState(settings[SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX] === "true");
+  const [paypalClientId, setPaypalClientId] = useState(
+    settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID] || ''
+  )
+  const [paypalClientSecret, setPaypalClientSecret] = useState(
+    settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET] || ''
+  )
+  const [paypalSandbox, setPaypalSandbox] = useState(
+    settings[SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX] === 'true'
+  )
 
-  const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
-  const [appUrl, setAppUrl] = useState("");
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
+  const [appUrl, setAppUrl] = useState('')
 
   useEffect(() => {
-    setAppUrl(window.location.origin);
-  }, []);
+    setAppUrl(window.location.origin)
+  }, [])
 
   const handleSave = async () => {
-    setSaving(true);
+    setSaving(true)
 
-    const providers: string[] = [];
-    if (stripeEnabled) providers.push("stripe");
-    if (vippsEnabled) providers.push("vipps");
-    if (paypalEnabled) providers.push("paypal");
+    const providers: string[] = []
+    if (stripeEnabled) providers.push('stripe')
+    if (vippsEnabled) providers.push('vipps')
+    if (paypalEnabled) providers.push('paypal')
 
     await setSettings({
       [SETTING_KEYS.INVOICE_BANK_ACCOUNT]: bankAccount,
       [SETTING_KEYS.INVOICE_PAYMENT_TERMS]: paymentTerms,
       [SETTING_KEYS.PAYMENT_TERMS_OF_SALE]: termsOfSale,
       [SETTING_KEYS.PAYMENT_TERMS_OF_SALE_URL]: termsOfSaleUrl,
-      [SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED]: providers.join(","),
+      [SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED]: providers.join(','),
       [SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY]: stripeSecretKey,
       [SETTING_KEYS.PAYMENT_STRIPE_PUBLISHABLE_KEY]: stripePublishableKey,
       [SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET]: stripeWebhookSecret,
@@ -80,45 +113,43 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
       [SETTING_KEYS.PAYMENT_VIPPS_CLIENT_SECRET]: vippsClientSecret,
       [SETTING_KEYS.PAYMENT_VIPPS_SUBSCRIPTION_KEY]: vippsSubscriptionKey,
       [SETTING_KEYS.PAYMENT_VIPPS_MSN]: vippsMsn,
-      [SETTING_KEYS.PAYMENT_VIPPS_USE_TEST]: vippsTestMode ? "true" : "false",
+      [SETTING_KEYS.PAYMENT_VIPPS_USE_TEST]: vippsTestMode ? 'true' : 'false',
       [SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID]: paypalClientId,
       [SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET]: paypalClientSecret,
-      [SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX]: paypalSandbox ? "true" : "false",
-    });
+      [SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX]: paypalSandbox ? 'true' : 'false',
+    })
 
-    setSaving(false);
-    router.refresh();
-    toast.success(t('payment.saved'));
-  };
+    setSaving(false)
+    router.refresh()
+    toast.success(t('payment.saved'))
+  }
 
   const copyWebhookUrl = (url: string) => {
-    navigator.clipboard.writeText(url);
-    setCopiedUrl(url);
-    setTimeout(() => setCopiedUrl(null), 2000);
-  };
+    navigator.clipboard.writeText(url)
+    setCopiedUrl(url)
+    setTimeout(() => setCopiedUrl(null), 2000)
+  }
 
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-      <AppCard
-        icon={Banknote}
-        title={t('payment.detailsTitle')}
-        action={
-          <a
-            href="https://torqvoice.com/docs/configuration/payment-providers"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {t('payment.readMore')} →
-          </a>
-        }
-        contentClassName="space-y-6"
-      >
-          <p className="text-sm text-muted-foreground">
-            {t('payment.detailsDescription')}
-          </p>
+        <AppCard
+          icon={Banknote}
+          title={t('payment.detailsTitle')}
+          action={
+            <a
+              href="https://torqvoice.com/docs/configuration/payment-providers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t('payment.readMore')} →
+            </a>
+          }
+          contentClassName="space-y-6"
+        >
+          <p className="text-sm text-muted-foreground">{t('payment.detailsDescription')}</p>
 
           <div className="space-y-2">
             <Label htmlFor="bankAccount">{t('payment.bankAccount')}</Label>
@@ -129,9 +160,7 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
               value={bankAccount}
               onChange={(e) => setBankAccount(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
-              {t('payment.bankAccountHint')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('payment.bankAccountHint')}</p>
           </div>
 
           <div className="space-y-2">
@@ -142,20 +171,12 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">
-              {t('payment.paymentTermsHint')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('payment.paymentTermsHint')}</p>
           </div>
-      </AppCard>
+        </AppCard>
 
-      <AppCard
-        icon={CreditCard}
-        title={t('payment.onlinePayments')}
-        contentClassName="space-y-6"
-      >
-          <p className="text-sm text-muted-foreground">
-            {t('payment.onlinePaymentsDescription')}
-          </p>
+        <AppCard icon={CreditCard} title={t('payment.onlinePayments')} contentClassName="space-y-6">
+          <p className="text-sm text-muted-foreground">{t('payment.onlinePaymentsDescription')}</p>
 
           {/* Stripe */}
           <div className="space-y-4 rounded-lg border p-4">
@@ -218,7 +239,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {t.rich('payment.stripeWebhookHint', { code: (chunks) => <code className="text-xs">{chunks}</code> })}
+                    {t.rich('payment.stripeWebhookHint', {
+                      code: (chunks) => <code className="text-xs">{chunks}</code>,
+                    })}
                   </p>
                 </div>
               </div>
@@ -281,7 +304,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
                   <Label>{t('payment.testMode')}</Label>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">{t('payment.callbackUrl')}</Label>
+                  <Label className="text-xs text-muted-foreground">
+                    {t('payment.callbackUrl')}
+                  </Label>
                   <div className="flex items-center gap-2">
                     <code className="flex-1 rounded bg-muted px-3 py-2 text-xs break-all">
                       {appUrl}/api/webhooks/vipps
@@ -310,7 +335,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
                   <Textarea
                     id="termsOfSale"
                     rows={10}
-                    placeholder={"1. Parties\n2. Payment\n3. Delivery\n4. Right of withdrawal\n5. Returns\n6. Complaints\n7. Disputes"}
+                    placeholder={
+                      '1. Parties\n2. Payment\n3. Delivery\n4. Right of withdrawal\n5. Returns\n6. Complaints\n7. Disputes'
+                    }
                     value={termsOfSale}
                     onChange={(e) => setTermsOfSale(e.target.value)}
                   />
@@ -332,7 +359,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
 
                 {!termsOfSaleUrl && termsOfSale && (
                   <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">{t('payment.publicTermsUrl')}</Label>
+                    <Label className="text-xs text-muted-foreground">
+                      {t('payment.publicTermsUrl')}
+                    </Label>
                     <div className="flex items-center gap-2">
                       <code className="flex-1 rounded bg-muted px-3 py-2 text-xs break-all">
                         {appUrl}/share/terms/{orgId}
@@ -413,7 +442,9 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {t.rich('payment.paypalWebhookHint', { code: (chunks) => <code className="text-xs">{chunks}</code> })}
+                    {t.rich('payment.paypalWebhookHint', {
+                      code: (chunks) => <code className="text-xs">{chunks}</code>,
+                    })}
                   </p>
                 </div>
               </div>
@@ -436,5 +467,5 @@ export function PaymentSettings({ settings, orgId }: { settings: Record<string, 
         </AppCard>
       </ReadOnlyWrapper>
     </div>
-  );
+  )
 }

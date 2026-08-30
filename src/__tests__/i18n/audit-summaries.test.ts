@@ -58,7 +58,13 @@ describe('audit summaries', () => {
 
   it('has English wording for every key the app uses', () => {
     const en = summary('en')
-    const orphans = [...new Set(keysInUse().filter((k) => !en[k.key]).map((k) => k.key))]
+    const orphans = [
+      ...new Set(
+        keysInUse()
+          .filter((k) => !en[k.key])
+          .map((k) => k.key)
+      ),
+    ]
     expect(orphans, `no English for:\n${orphans.join('\n')}`).toEqual([])
   })
 
@@ -87,13 +93,37 @@ describe('audit summaries', () => {
     // in that language only, which is exactly the sort of thing that reaches
     // production because nobody tests in Lithuanian.
     const sample: Record<string, string | number> = {
-      name: 'X', id: 'X', ref: 'X', code: 'X', from: 'A', to: 'B', jobRef: 'J',
-      title: 'T', description: 'D', fileName: 'f.jpg', recipient: 'a@b.c',
-      email: 'a@b.c', phone: '+1', amount: '10', rate: 8, items: 'a, b',
-      channels: 'email', vehicleId: 'V', serviceRecordId: 'S', sendAt: 'now',
-      fields: 'colour', year: 2024, make: 'M', model: 'M',
-      status: 'draft', role: 'admin', channel: 'email', type: 'wash_tires',
-      count: 2, records: 2, quotes: 2,
+      name: 'X',
+      id: 'X',
+      ref: 'X',
+      code: 'X',
+      from: 'A',
+      to: 'B',
+      jobRef: 'J',
+      title: 'T',
+      description: 'D',
+      fileName: 'f.jpg',
+      recipient: 'a@b.c',
+      email: 'a@b.c',
+      phone: '+1',
+      amount: '10',
+      rate: 8,
+      items: 'a, b',
+      channels: 'email',
+      vehicleId: 'V',
+      serviceRecordId: 'S',
+      sendAt: 'now',
+      fields: 'colour',
+      year: 2024,
+      make: 'M',
+      model: 'M',
+      status: 'draft',
+      role: 'admin',
+      channel: 'email',
+      type: 'wash_tires',
+      count: 2,
+      records: 2,
+      quotes: 2,
     }
     for (const locale of LOCALES) {
       const messages = summary(locale)

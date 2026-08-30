@@ -1,36 +1,43 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { z } from "zod";
-import crypto from "crypto";
-import { demoGuard } from "@/lib/demo";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { z } from 'zod'
+import crypto from 'crypto'
+import { demoGuard } from '@/lib/demo'
 
 const updateEmailSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
+  email: z.string().email('Invalid email address'),
+})
 
 export async function updateEmail(data: { email: string }) {
-  return withAuth(async ({ userId }) => {
-    demoGuard();
-    const parsed = updateEmailSchema.parse(data);
+  return withAuth(
+    async ({ userId }) => {
+      demoGuard()
+      const parsed = updateEmailSchema.parse(data)
 
-    const existing = await db.user.findFirst({
-      where: { email: parsed.email, NOT: { id: userId } },
-    });
+      const existing = await db.user.findFirst({
+        where: { email: parsed.email, NOT: { id: userId } },
+      })
 
-    if (existing) {
-      throw new Error("Email is already in use");
+      if (existing) {
+        throw new Error('Email is already in use')
+      }
+
+      await db.user.update({
+        where: { id: userId },
+        data: { email: parsed.email, emailVerified: false },
+      })
+
+      return { email: parsed.email }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
     }
-
-    await db.user.update({
-      where: { id: userId },
-      data: { email: parsed.email, emailVerified: false },
-    });
-
-    return { email: parsed.email };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+  )
 }
 
 /**
@@ -46,61 +53,62 @@ export async function updateEmail(data: { email: string }) {
  * - Upsert by userId ensures only one pending change per user
  */
 export async function requestEmailChange(data: { email: string }) {
-  return withAuth(async ({ userId }) => {
-    demoGuard();
-    const parsed = updateEmailSchema.parse(data);
+  return withAuth(
+    async ({ userId }) => {
+      demoGuard()
+      const parsed = updateEmailSchema.parse(data)
 
-    const existing = await db.user.findFirst({
-      where: { email: parsed.email, NOT: { id: userId } },
-    });
+      const existing = await db.user.findFirst({
+        where: { email: parsed.email, NOT: { id: userId } },
+      })
 
-    if (existing) {
-      throw new Error("Email is already in use");
-    }
+      if (existing) {
+        throw new Error('Email is already in use')
+      }
 
-    const user = await db.user.findUnique({
-      where: { id: userId },
-      select: { name: true, email: true },
-    });
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        select: { name: true, email: true },
+      })
 
-    if (!user) throw new Error("User not found");
+      if (!user) throw new Error('User not found')
 
-    // Generate a cryptographically random token
-    const token = crypto.randomBytes(32).toString("hex");
+      // Generate a cryptographically random token
+      const token = crypto.randomBytes(32).toString('hex')
 
-    // Store hash of token (so DB leak doesn't expose valid tokens)
-    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+      // Store hash of token (so DB leak doesn't expose valid tokens)
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-    // Store: identifier for upsert (one pending change per user), value contains hash + email
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    await db.verification.upsert({
-      where: { identifier: `email-change:${userId}` },
-      create: {
-        identifier: `email-change:${userId}`,
-        value: JSON.stringify({ tokenHash, email: parsed.email }),
-        expiresAt,
-      },
-      update: {
-        value: JSON.stringify({ tokenHash, email: parsed.email }),
-        expiresAt,
-      },
-    });
+      // Store: identifier for upsert (one pending change per user), value contains hash + email
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+      await db.verification.upsert({
+        where: { identifier: `email-change:${userId}` },
+        create: {
+          identifier: `email-change:${userId}`,
+          value: JSON.stringify({ tokenHash, email: parsed.email }),
+          expiresAt,
+        },
+        update: {
+          value: JSON.stringify({ tokenHash, email: parsed.email }),
+          expiresAt,
+        },
+      })
 
-    // URL contains only the opaque token and userId (no email leaked)
-    const baseURL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const confirmUrl = `${baseURL}/api/public/confirm-email-change?token=${token}&uid=${userId}`;
+      // URL contains only the opaque token and userId (no email leaked)
+      const baseURL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      const confirmUrl = `${baseURL}/api/public/confirm-email-change?token=${token}&uid=${userId}`
 
-    const { sendMail, getFromAddress } = await import("@/lib/email");
-    const from = await getFromAddress();
+      const { sendMail, getFromAddress } = await import('@/lib/email')
+      const from = await getFromAddress()
 
-    await sendMail({
-      from,
-      to: parsed.email,
-      subject: "Confirm your new Torqvoice email",
-      html: `
+      await sendMail({
+        from,
+        to: parsed.email,
+        subject: 'Confirm your new Torqvoice email',
+        html: `
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
           <h2>Email Change Confirmation</h2>
-          <p>Hi${user.name ? ` ${user.name}` : ""},</p>
+          <p>Hi${user.name ? ` ${user.name}` : ''},</p>
           <p>You requested to change your Torqvoice email to this address. Click the button below to confirm:</p>
           <div style="margin: 24px 0;">
             <a href="${confirmUrl}" style="display: inline-block; padding: 12px 24px; background-color: #171717; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 500;">
@@ -115,8 +123,14 @@ export async function requestEmailChange(data: { email: string }) {
           </p>
         </div>
       `,
-    });
+      })
 
-    return { sent: true };
-  }, { requiredPermissions: [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }] });
+      return { sent: true }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+    }
+  )
 }

@@ -303,7 +303,11 @@ export function CustomFieldsManager({
             <DialogTitle>
               {editing ? t('customFields.editField') : t('customFields.newField')}
             </DialogTitle>
-            <DocsLink href="/docs/configuration/custom-fields" variant="hint" className="self-start" />
+            <DocsLink
+              href="/docs/configuration/custom-fields"
+              variant="hint"
+              className="self-start"
+            />
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">

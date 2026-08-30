@@ -1,46 +1,43 @@
-import { NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import "@/features/vehicles/Components/invoice-pdf/fonts";
-import { cookies } from "next/headers";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { db } from "@/lib/db";
-import { InvoicePDF } from "@/features/vehicles/Components/InvoicePDF";
-import React from "react";
-import { readFile } from "fs/promises";
-import { PDFDocument } from "pdf-lib";
-import { resolveUploadPath } from "@/lib/resolve-upload-path";
-import { getFeatures } from "@/lib/features";
-import { getTorqvoiceLogoDataUri } from "@/lib/torqvoice-branding";
-import { formatDateForPdf } from "@/lib/format";
-import { mergeWithDefaults } from "@/features/settings/Schema/invoiceLayoutSchema";
-import { markInvoiceIssued } from "@/features/onboarding/Lib/markInvoiceIssued";
+import { NextResponse } from 'next/server'
+import { renderToBuffer } from '@react-pdf/renderer'
+import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { cookies } from 'next/headers'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { db } from '@/lib/db'
+import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
+import React from 'react'
+import { readFile } from 'fs/promises'
+import { PDFDocument } from 'pdf-lib'
+import { resolveUploadPath } from '@/lib/resolve-upload-path'
+import { getFeatures } from '@/lib/features'
+import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { formatDateForPdf } from '@/lib/format'
+import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const ctx = await getAuthContext();
+    const ctx = await getAuthContext()
 
     if (!ctx) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Load locale-based PDF translations
-    const cookieStore = await cookies();
-    const locale = cookieStore.get("locale")?.value || "en";
-    let pdfMessages: Record<string, Record<string, string>>;
+    const cookieStore = await cookies()
+    const locale = cookieStore.get('locale')?.value || 'en'
+    let pdfMessages: Record<string, Record<string, string>>
     try {
-      pdfMessages = (await import(`../../../../../../../messages/${locale}/pdf.json`)).default;
+      pdfMessages = (await import(`../../../../../../../messages/${locale}/pdf.json`)).default
     } catch {
-      pdfMessages = (await import(`../../../../../../../messages/en/pdf.json`)).default;
+      pdfMessages = (await import(`../../../../../../../messages/en/pdf.json`)).default
     }
     const labels = {
       ...pdfMessages.invoice,
       ...pdfMessages.common,
-    };
+    }
 
-    const { id } = await params;
+    const { id } = await params
 
     const [record, settings, org] = await Promise.all([
       db.serviceRecord.findFirst({
@@ -49,7 +46,7 @@ export async function GET(
           partItems: true,
           laborItems: true,
           attachments: true,
-          payments: { orderBy: { date: "desc" } },
+          payments: { orderBy: { date: 'desc' } },
           // Pull the linked technician's current name as the source of truth.
           // The denormalized `techName` field can drift out of sync; the FK
           // relation is always correct. The PDF prefers technician.name and
@@ -63,6 +60,7 @@ export async function GET(
               address: true,
               company: true,
               taxId: true,
+              customerNumber: true,
             },
           },
           vehicle: {
@@ -81,6 +79,7 @@ export async function GET(
                   address: true,
                   company: true,
                   taxId: true,
+                  customerNumber: true,
                 },
               },
             },
@@ -94,200 +93,240 @@ export async function GET(
         where: { id: ctx.organizationId },
         select: { name: true, portalSlug: true },
       }),
-    ]);
+    ])
 
     if (!record) {
-      return NextResponse.json({ error: "Record not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Record not found' }, { status: 404 })
     }
 
     // Getting-started checklist: a downloaded invoice leaves no other trace
     // in the data, so record it here. Best-effort, never blocks the PDF.
-    void markInvoiceIssued(ctx.organizationId, ctx.userId, record.id);
+    void markInvoiceIssued(ctx.organizationId, ctx.userId, record.id)
 
     // Fetch findings for this service record (open ones to show on invoice)
     const findings = await db.vehicleFinding.findMany({
-      where: { serviceRecordId: record.id, status: { not: "resolved" } },
+      where: { serviceRecordId: record.id, status: { not: 'resolved' } },
       select: { description: true, severity: true, notes: true },
-      orderBy: { createdAt: "desc" },
-    });
+      orderBy: { createdAt: 'desc' },
+    })
 
     // Fetch custom field values for this service record
     const customFieldValues = await db.customFieldValue.findMany({
-      where: { entityId: record.id, entityType: "service_record" },
-      include: { field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } } },
-      orderBy: { field: { sortOrder: "asc" } },
-    });
+      where: { entityId: record.id, entityType: 'service_record' },
+      include: {
+        field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
+      },
+      orderBy: { field: { sortOrder: 'asc' } },
+    })
 
     const customFields = customFieldValues
-      .filter(v => v.field.isActive && v.value)
-      .map(v => ({ fieldId: v.fieldId, label: v.field.label, value: v.value, fieldType: v.field.fieldType }));
+      .filter((v) => v.field.isActive && v.value)
+      .map((v) => ({
+        fieldId: v.fieldId,
+        label: v.field.label,
+        value: v.value,
+        fieldType: v.field.fieldType,
+      }))
 
     // Build settings map
-    const settingsMap: Record<string, string> = {};
-    for (const s of settings) settingsMap[s.key] = s.value;
+    const settingsMap: Record<string, string> = {}
+    for (const s of settings) settingsMap[s.key] = s.value
 
     // Override labels for marine service type
-    const serviceType = settingsMap["workshop.serviceType"] || "automotive";
-    if (serviceType === "marine") {
-      if (pdfMessages.invoice.mileageMarine) labels.mileage = pdfMessages.invoice.mileageMarine;
-      if (pdfMessages.invoice.vinMarine) labels.vin = pdfMessages.invoice.vinMarine;
-      if (pdfMessages.invoice.plateMarine) labels.plate = pdfMessages.invoice.plateMarine;
-      if (pdfMessages.invoice.vehicleMarine) labels.vehicle = pdfMessages.invoice.vehicleMarine;
+    const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
+    if (serviceType === 'marine') {
+      if (pdfMessages.invoice.mileageMarine) labels.mileage = pdfMessages.invoice.mileageMarine
+      if (pdfMessages.invoice.vinMarine) labels.vin = pdfMessages.invoice.vinMarine
+      if (pdfMessages.invoice.plateMarine) labels.plate = pdfMessages.invoice.plateMarine
+      if (pdfMessages.invoice.vehicleMarine) labels.vehicle = pdfMessages.invoice.vehicleMarine
       // Override unit labels for engine hours
-      labels.km = "hrs";
-      labels.mi = "hrs";
+      labels.km = 'hrs'
+      labels.mi = 'hrs'
     }
 
     // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
-    const customTaxLabel = settingsMap["workshop.taxLabel"]?.trim();
+    const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()
     if (customTaxLabel) {
-      labels.tax = `${customTaxLabel} ({rate}%)`;
+      labels.tax = `${customTaxLabel} ({rate}%)`
     }
 
     // Load image attachments as base64 data URIs for PDF embedding
-    const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = [];
-    const otherAttachments: { fileName: string; fileType: string }[] = [];
-    const pdfAttachments: { fileName: string; buffer: Buffer }[] = [];
+    const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = []
+    const otherAttachments: { fileName: string; fileType: string }[] = []
+    const pdfAttachments: { fileName: string; buffer: Buffer }[] = []
 
     // Only include attachments marked for invoice, then deduplicate by fileName
-    const seenNames = new Set<string>();
+    const seenNames = new Set<string>()
     const uniqueAttachments = record.attachments
       .filter((att) => att.includeInInvoice !== false)
       .filter((att) => {
-        if (seenNames.has(att.fileName)) return false;
-        seenNames.add(att.fileName);
-        return true;
-      });
+        if (seenNames.has(att.fileName)) return false
+        seenNames.add(att.fileName)
+        return true
+      })
 
     for (const att of uniqueAttachments) {
-      if (att.fileType.startsWith("image/")) {
+      if (att.fileType.startsWith('image/')) {
         try {
-          const filePath = resolveUploadPath(att.fileUrl);
-          const buffer = await readFile(filePath);
-          const base64 = buffer.toString("base64");
-          const mimeType = att.fileType;
+          const filePath = resolveUploadPath(att.fileUrl)
+          const buffer = await readFile(filePath)
+          const base64 = buffer.toString('base64')
+          const mimeType = att.fileType
           imageAttachments.push({
             fileName: att.fileName,
             dataUri: `data:${mimeType};base64,${base64}`,
             description: att.description || undefined,
-          });
+          })
         } catch {
-          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
         }
-      } else if (att.fileType === "application/pdf") {
+      } else if (att.fileType === 'application/pdf') {
         try {
-          const filePath = resolveUploadPath(att.fileUrl);
-          const buffer = await readFile(filePath);
-          pdfAttachments.push({ fileName: att.fileName, buffer });
+          const filePath = resolveUploadPath(att.fileUrl)
+          const buffer = await readFile(filePath)
+          pdfAttachments.push({ fileName: att.fileName, buffer })
         } catch {
-          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+          otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
         }
       } else {
-        otherAttachments.push({ fileName: att.fileName, fileType: att.fileType });
+        otherAttachments.push({ fileName: att.fileName, fileType: att.fileType })
       }
     }
 
     // Load company logo as base64 data URI
-    let logoDataUri: string | undefined;
-    const logoPath = settingsMap["workshop.logo"];
+    let logoDataUri: string | undefined
+    const logoPath = settingsMap['workshop.logo']
     if (logoPath) {
       try {
-        const fullPath = resolveUploadPath(logoPath);
-        const logoBuffer = await readFile(fullPath);
-        const ext = logoPath.split(".").pop()?.toLowerCase() || "png";
-        const mimeMap: Record<string, string> = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", svg: "image/svg+xml" };
-        const mime = mimeMap[ext] || "image/png";
-        logoDataUri = `data:${mime};base64,${logoBuffer.toString("base64")}`;
+        const fullPath = resolveUploadPath(logoPath)
+        const logoBuffer = await readFile(fullPath)
+        const ext = logoPath.split('.').pop()?.toLowerCase() || 'png'
+        const mimeMap: Record<string, string> = {
+          png: 'image/png',
+          jpg: 'image/jpeg',
+          jpeg: 'image/jpeg',
+          webp: 'image/webp',
+          svg: 'image/svg+xml',
+        }
+        const mime = mimeMap[ext] || 'image/png'
+        logoDataUri = `data:${mime};base64,${logoBuffer.toString('base64')}`
       } catch {
         // Logo file not found, skip
       }
     }
 
     const invoiceSettings = {
-      bankAccount: settingsMap["invoice.bankAccount"] || "",
-      orgNumber: settingsMap["invoice.orgNumber"] || "",
-      paymentTerms: settingsMap["invoice.paymentTerms"] || "",
-      footerNote: settingsMap["invoice.footerNote"] || "",
-      showBankAccount: settingsMap["invoice.showBankAccount"] === "true",
-      showOrgNumber: settingsMap["invoice.showOrgNumber"] === "true",
-      dueDays: Number(settingsMap["invoice.dueDays"]) || 0,
-      currencyCode: settingsMap["workshop.currencyCode"] || "USD",
-      currencyFormat: (settingsMap["workshop.currencyFormat"] === "code" ? "code" : "symbol") as "symbol" | "code",
-      unitSystem: settingsMap["workshop.unitSystem"] || "imperial",
-      dateFormat: settingsMap["workshop.dateFormat"] || undefined,
-      timezone: settingsMap["workshop.timezone"] || undefined,
-    };
+      bankAccount: settingsMap['invoice.bankAccount'] || '',
+      orgNumber: settingsMap['invoice.orgNumber'] || '',
+      paymentTerms: settingsMap['invoice.paymentTerms'] || '',
+      footerNote: settingsMap['invoice.footerNote'] || '',
+      showBankAccount: settingsMap['invoice.showBankAccount'] === 'true',
+      showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
+      dueDays: Number(settingsMap['invoice.dueDays']) || 0,
+      currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
+      currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
+        | 'symbol'
+        | 'code',
+      unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
+      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
+      timezone: settingsMap['workshop.timezone'] || undefined,
+    }
 
     // Build payment summary
-    const pdfDateFormat = settingsMap["workshop.dateFormat"] || undefined;
-    const pdfTimezone = settingsMap["workshop.timezone"] || undefined;
+    const pdfDateFormat = settingsMap['workshop.dateFormat'] || undefined
+    const pdfTimezone = settingsMap['workshop.timezone'] || undefined
 
-    const paidFromPayments = record.payments?.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0) ?? 0;
-    const effectiveTotal = record.totalAmount > 0 ? record.totalAmount : record.cost;
-    const totalPaidForPdf = record.manuallyPaid ? effectiveTotal : paidFromPayments;
+    const paidFromPayments =
+      record.payments?.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0) ?? 0
+    const effectiveTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
+    const totalPaidForPdf = record.manuallyPaid ? effectiveTotal : paidFromPayments
 
-    const paymentSummary = (record.payments && record.payments.length > 0) || record.manuallyPaid
-      ? {
-          totalPaid: totalPaidForPdf,
-          payments: (record.payments || []).map((p: { amount: number; date: Date; method: string }) => ({
-            amount: p.amount,
-            date: formatDateForPdf(p.date, pdfDateFormat, pdfTimezone),
-            method: p.method,
-          })),
-        }
-      : undefined;
+    const paymentSummary =
+      (record.payments && record.payments.length > 0) || record.manuallyPaid
+        ? {
+            totalPaid: totalPaidForPdf,
+            payments: (record.payments || []).map(
+              (p: { amount: number; date: Date; method: string }) => ({
+                amount: p.amount,
+                date: formatDateForPdf(p.date, pdfDateFormat, pdfTimezone),
+                method: p.method,
+              })
+            ),
+          }
+        : undefined
 
     // Fetch layout config
     const layoutConfigSetting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId: ctx.organizationId, key: "invoice.layoutConfig" } },
-    });
+      where: {
+        organizationId_key: { organizationId: ctx.organizationId, key: 'invoice.layoutConfig' },
+      },
+    })
     const layoutConfig = mergeWithDefaults(
       layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
-    );
+    )
 
     const template = {
-      primaryColor: settingsMap["invoice.primaryColor"] || settingsMap["invoice.template.primaryColor"] || "#d97706",
-      fontFamily: settingsMap["invoice.fontFamily"] || settingsMap["invoice.template.fontFamily"] || "Helvetica",
-      showLogo: (settingsMap["invoice.showLogo"] ?? settingsMap["invoice.template.showLogo"]) !== "false",
-      showCompanyName: settingsMap["invoice.showCompanyName"] !== "false",
-      headerStyle: settingsMap["invoice.headerStyle"] || settingsMap["invoice.template.headerStyle"] || "standard",
-      logoSize: Number(settingsMap["invoice.logoSize"]) || 100,
+      primaryColor:
+        settingsMap['invoice.primaryColor'] ||
+        settingsMap['invoice.template.primaryColor'] ||
+        '#d97706',
+      backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
+      textColor: settingsMap['invoice.textColor'] || undefined,
+      companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
+      frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
+      frameShadow: settingsMap['invoice.frameShadow'],
+      frameRadius: Number(settingsMap['invoice.frameRadius']) || 0,
+      frameSide: (settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+        | 'left'
+        | 'right',
+      fontFamily:
+        settingsMap['invoice.fontFamily'] ||
+        settingsMap['invoice.template.fontFamily'] ||
+        'Helvetica',
+      showLogo:
+        (settingsMap['invoice.showLogo'] ?? settingsMap['invoice.template.showLogo']) !== 'false',
+      showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
+      headerStyle:
+        settingsMap['invoice.headerStyle'] ||
+        settingsMap['invoice.template.headerStyle'] ||
+        'standard',
+      logoSize: Number(settingsMap['invoice.logoSize']) || 100,
       layoutConfig,
-    };
-
-    // Check if Torqvoice branding should be shown
-    const features = await getFeatures(ctx.organizationId);
-    let torqvoiceLogoDataUri: string | undefined;
-    if (!features.brandingRemoved) {
-      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri();
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL
-      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-    const portalSlug = org?.portalSlug;
-    const portalEnabled = settingsMap["portal.enabled"] === "true";
+    // Check if Torqvoice branding should be shown
+    const features = await getFeatures(ctx.organizationId)
+    let torqvoiceLogoDataUri: string | undefined
+    if (!features.brandingRemoved) {
+      torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
+    }
+
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const portalSlug = org?.portalSlug
+    const portalEnabled = settingsMap['portal.enabled'] === 'true'
     const portalUrl = portalEnabled
       ? `${appUrl}/portal/${portalSlug || ctx.organizationId}`
-      : undefined;
+      : undefined
 
     // Generate Telegram QR if the telegram_qr section is visible in layout
-    let telegramQrDataUri: string | undefined;
-    const telegramBotUsername = settingsMap["telegram.botUsername"];
-    const telegramQrVisible = layoutConfig.sections.some(
-      (s) => s.id === "telegram_qr" && s.visible
-    );
+    let telegramQrDataUri: string | undefined
+    const telegramBotUsername = settingsMap['telegram.botUsername']
+    const telegramQrVisible = layoutConfig.sections.some((s) => s.id === 'telegram_qr' && s.visible)
     if (telegramBotUsername && telegramQrVisible) {
-      const { generateQrDataUri } = await import("@/lib/qr");
-      telegramQrDataUri = await generateQrDataUri(`https://t.me/${telegramBotUsername}`, 200);
+      const { generateQrDataUri } = await import('@/lib/qr')
+      telegramQrDataUri = await generateQrDataUri(`https://t.me/${telegramBotUsername}`, 200)
     }
 
     const element = React.createElement(InvoicePDF, {
       data: { ...record, customFields, findings },
       workshop: {
-        name: org?.name || "",
-        address: settingsMap["workshop.address"] || "",
-        phone: settingsMap["workshop.phone"] || "",
-        email: settingsMap["workshop.email"] || "",
+        name: org?.name || '',
+        address: settingsMap['workshop.address'] || '',
+        phone: settingsMap['workshop.phone'] || '',
+        email: settingsMap['workshop.email'] || '',
+        slogan: settingsMap['workshop.slogan'] || undefined,
       },
       invoiceSettings,
       paymentSummary,
@@ -299,46 +338,49 @@ export async function GET(
       torqvoiceLogoDataUri,
       portalUrl,
       telegramQrDataUri,
-      telegramLabel: labels?.telegramConnect || "Chat with us on Telegram",
+      telegramLabel: labels?.telegramConnect || 'Chat with us on Telegram',
       labels,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any;
-    const invoiceBuffer = await renderToBuffer(element);
+    }) as any
+    const invoiceBuffer = await renderToBuffer(element)
 
-    const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`;
+    const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
     // Merge attached PDF diagnostic reports into the invoice
-    let finalBuffer: ArrayBuffer;
+    let finalBuffer: ArrayBuffer
     if (pdfAttachments.length > 0) {
-      const mergedPdf = await PDFDocument.load(invoiceBuffer);
+      const mergedPdf = await PDFDocument.load(invoiceBuffer)
       for (const att of pdfAttachments) {
         try {
-          const attachedPdf = await PDFDocument.load(att.buffer);
-          const pages = await mergedPdf.copyPages(attachedPdf, attachedPdf.getPageIndices());
+          const attachedPdf = await PDFDocument.load(att.buffer)
+          const pages = await mergedPdf.copyPages(attachedPdf, attachedPdf.getPageIndices())
           for (const page of pages) {
-            mergedPdf.addPage(page);
+            mergedPdf.addPage(page)
           }
         } catch {
           // Skip corrupted/unreadable PDFs silently
         }
       }
-      const saved = await mergedPdf.save();
-      finalBuffer = saved.buffer.slice(saved.byteOffset, saved.byteOffset + saved.byteLength) as ArrayBuffer;
+      const saved = await mergedPdf.save()
+      finalBuffer = saved.buffer.slice(
+        saved.byteOffset,
+        saved.byteOffset + saved.byteLength
+      ) as ArrayBuffer
     } else {
-      finalBuffer = invoiceBuffer.buffer.slice(invoiceBuffer.byteOffset, invoiceBuffer.byteOffset + invoiceBuffer.byteLength) as ArrayBuffer;
+      finalBuffer = invoiceBuffer.buffer.slice(
+        invoiceBuffer.byteOffset,
+        invoiceBuffer.byteOffset + invoiceBuffer.byteLength
+      ) as ArrayBuffer
     }
 
     return new NextResponse(finalBuffer, {
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${invoiceNum}.pdf"`,
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${invoiceNum}.pdf"`,
       },
-    });
+    })
   } catch (error) {
-    console.error("[PDF Generation] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate PDF" },
-      { status: 500 }
-    );
+    console.error('[PDF Generation] Error:', error)
+    return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })
   }
 }

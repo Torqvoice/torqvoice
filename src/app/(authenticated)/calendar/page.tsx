@@ -1,27 +1,27 @@
-import { getCalendarEvents } from "@/features/calendar/Actions/calendarActions";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { getCustomersList } from "@/features/customers/Actions/customerActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { PageHeader } from "@/components/page-header";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { getAvailableChannels } from "@/features/scheduled-messages/Lib/availableChannels";
-import CalendarClient from "@/features/calendar/Components/CalendarClient";
+import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
+import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { getCustomersList } from '@/features/customers/Actions/customerActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { PageHeader } from '@/components/page-header'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availableChannels'
+import CalendarClient from '@/features/calendar/Components/CalendarClient'
 
 function toLocalDateStr(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 export default async function CalendarPage() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), 1)
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-  const ctx = await getAuthContext();
-  const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : [];
+  const ctx = await getAuthContext()
+  const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : []
 
   const [eventsResult, settingsResult, vehiclesResult, customersResult] = await Promise.all([
     getCalendarEvents({
@@ -31,24 +31,23 @@ export default async function CalendarPage() {
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
     getCustomersList(),
-  ]);
+  ])
 
-  const events = eventsResult.success && eventsResult.data ? eventsResult.data : [];
-  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const vehicles = vehiclesResult.success && vehiclesResult.data
-    ? vehiclesResult.data.map((v) => ({
-        id: v.id,
-        make: v.make,
-        model: v.model,
-        year: v.year,
-        licensePlate: v.licensePlate,
-        customer: v.customer,
-      }))
-    : [];
-  const customers = customersResult.success && customersResult.data
-    ? customersResult.data
-    : [];
+  const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const vehicles =
+    vehiclesResult.success && vehiclesResult.data
+      ? vehiclesResult.data.map((v) => ({
+          id: v.id,
+          make: v.make,
+          model: v.model,
+          year: v.year,
+          licensePlate: v.licensePlate,
+          customer: v.customer,
+        }))
+      : []
+  const customers = customersResult.success && customersResult.data ? customersResult.data : []
 
   return (
     <>
@@ -67,5 +66,5 @@ export default async function CalendarPage() {
         />
       </div>
     </>
-  );
+  )
 }

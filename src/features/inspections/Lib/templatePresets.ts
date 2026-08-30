@@ -100,7 +100,8 @@ const EU_BRAKING: PresetSection = {
     {
       name: 'Service brake efficiency',
       code: '1.2.2',
-      description: 'Braking rate as a percentage of the maximum authorised mass. Set the figure your national test uses.',
+      description:
+        'Braking rate as a percentage of the maximum authorised mass. Set the figure your national test uses.',
       inputType: 'measurement',
       unit: '%',
       minValue: 50,
@@ -158,7 +159,11 @@ const EU_VISIBILITY: PresetSection = {
   description: 'Annex I, item 3.',
   items: [
     { name: 'Field of vision', code: '3.1' },
-    { name: 'Condition of the glass', code: '3.2', description: 'Chips and cracks in the swept area of the windscreen.' },
+    {
+      name: 'Condition of the glass',
+      code: '3.2',
+      description: 'Chips and cracks in the swept area of the windscreen.',
+    },
     { name: 'Rear-view mirrors or devices', code: '3.3' },
     { name: 'Windscreen wipers', code: '3.4' },
     { name: 'Windscreen washers', code: '3.5' },
@@ -323,7 +328,11 @@ const EU_NUISANCE: PresetSection = {
       maxValue: 1.5,
       defaultSeverity: 'fail',
     },
-    { name: 'Exhaust after-treatment system', code: '8.2.2.1', description: 'DPF, EGR and SCR present and unmodified.' },
+    {
+      name: 'Exhaust after-treatment system',
+      code: '8.2.2.1',
+      description: 'DPF, EGR and SCR present and unmodified.',
+    },
     { name: 'Fluid leaks', code: '8.5', defaultSeverity: 'attention' },
   ],
 }
@@ -392,10 +401,22 @@ const STANDARD_MULTIPOINT: PresetSection[] = [
     name: 'Under hood',
     items: [
       { name: 'Engine oil level and condition' },
-      { name: 'Coolant', inputType: 'measurement', unit: '°C', maxValue: -20, defaultSeverity: 'attention' },
+      {
+        name: 'Coolant',
+        inputType: 'measurement',
+        unit: '°C',
+        maxValue: -20,
+        defaultSeverity: 'attention',
+      },
       { name: 'Brake fluid' },
       { name: 'Power steering fluid' },
-      { name: 'Battery voltage', inputType: 'measurement', unit: 'V', minValue: 12.4, defaultSeverity: 'attention' },
+      {
+        name: 'Battery voltage',
+        inputType: 'measurement',
+        unit: 'V',
+        minValue: 12.4,
+        defaultSeverity: 'attention',
+      },
       { name: 'Drive belts' },
       { name: 'Hoses' },
       { name: 'Air filter' },
@@ -415,8 +436,20 @@ const STANDARD_MULTIPOINT: PresetSection[] = [
   {
     name: 'Brakes',
     items: [
-      { name: 'Front pads', inputType: 'measurement', unit: 'mm', minValue: 3, defaultSeverity: 'fail' },
-      { name: 'Rear pads', inputType: 'measurement', unit: 'mm', minValue: 3, defaultSeverity: 'fail' },
+      {
+        name: 'Front pads',
+        inputType: 'measurement',
+        unit: 'mm',
+        minValue: 3,
+        defaultSeverity: 'fail',
+      },
+      {
+        name: 'Rear pads',
+        inputType: 'measurement',
+        unit: 'mm',
+        minValue: 3,
+        defaultSeverity: 'fail',
+      },
       { name: 'Discs' },
       { name: 'Parking brake' },
     ],
@@ -424,11 +457,42 @@ const STANDARD_MULTIPOINT: PresetSection[] = [
   {
     name: 'Tyres',
     items: [
-      { name: 'Tread depth — front left', inputType: 'measurement', unit: 'mm', minValue: 1.6, defaultSeverity: 'fail' },
-      { name: 'Tread depth — front right', inputType: 'measurement', unit: 'mm', minValue: 1.6, defaultSeverity: 'fail' },
-      { name: 'Tread depth — rear left', inputType: 'measurement', unit: 'mm', minValue: 1.6, defaultSeverity: 'fail' },
-      { name: 'Tread depth — rear right', inputType: 'measurement', unit: 'mm', minValue: 1.6, defaultSeverity: 'fail' },
-      { name: 'Tyre pressure', inputType: 'measurement', unit: 'bar', minValue: 1.8, maxValue: 3.5, defaultSeverity: 'attention' },
+      {
+        name: 'Tread depth — front left',
+        inputType: 'measurement',
+        unit: 'mm',
+        minValue: 1.6,
+        defaultSeverity: 'fail',
+      },
+      {
+        name: 'Tread depth — front right',
+        inputType: 'measurement',
+        unit: 'mm',
+        minValue: 1.6,
+        defaultSeverity: 'fail',
+      },
+      {
+        name: 'Tread depth — rear left',
+        inputType: 'measurement',
+        unit: 'mm',
+        minValue: 1.6,
+        defaultSeverity: 'fail',
+      },
+      {
+        name: 'Tread depth — rear right',
+        inputType: 'measurement',
+        unit: 'mm',
+        minValue: 1.6,
+        defaultSeverity: 'fail',
+      },
+      {
+        name: 'Tyre pressure',
+        inputType: 'measurement',
+        unit: 'bar',
+        minValue: 1.8,
+        maxValue: 3.5,
+        defaultSeverity: 'attention',
+      },
       { name: 'Spare tyre or repair kit' },
     ],
   },
@@ -459,7 +523,14 @@ const PRE_PURCHASE: PresetSection[] = [
     name: 'Body and paint',
     items: [
       { name: 'Panel gaps' },
-      { name: 'Paint thickness — worst panel', inputType: 'measurement', unit: 'µm', minValue: 80, maxValue: 200, defaultSeverity: 'attention' },
+      {
+        name: 'Paint thickness — worst panel',
+        inputType: 'measurement',
+        unit: 'µm',
+        minValue: 80,
+        maxValue: 200,
+        defaultSeverity: 'attention',
+      },
       { name: 'Corrosion', photoRequired: true },
       { name: 'Glass and lights' },
     ],
@@ -469,7 +540,13 @@ const PRE_PURCHASE: PresetSection[] = [
     items: [
       { name: 'Cold start' },
       { name: 'Engine noise' },
-      { name: 'Compression — lowest cylinder', inputType: 'measurement', unit: 'bar', minValue: 10, defaultSeverity: 'fail' },
+      {
+        name: 'Compression — lowest cylinder',
+        inputType: 'measurement',
+        unit: 'bar',
+        minValue: 10,
+        defaultSeverity: 'fail',
+      },
       { name: 'Gearbox and clutch' },
       { name: 'Fault codes on the diagnostic port', inputType: 'text' },
       { name: 'Road test' },
@@ -494,15 +571,33 @@ const EV_HYBRID: PresetSection[] = [
       { name: 'Service disconnect and isolation procedure followed', required: true },
       { name: 'Orange high-voltage cabling — chafing or damage', photoRequired: true },
       { name: 'High-voltage connector locks and interlocks' },
-      { name: 'Insulation resistance', inputType: 'measurement', unit: 'MΩ', minValue: 1, defaultSeverity: 'dangerous' },
+      {
+        name: 'Insulation resistance',
+        inputType: 'measurement',
+        unit: 'MΩ',
+        minValue: 1,
+        defaultSeverity: 'dangerous',
+      },
       { name: 'Warning labels present and legible' },
     ],
   },
   {
     name: 'Traction battery',
     items: [
-      { name: 'State of health', inputType: 'measurement', unit: '%', minValue: 70, defaultSeverity: 'attention' },
-      { name: 'Cell voltage spread', inputType: 'measurement', unit: 'mV', maxValue: 100, defaultSeverity: 'attention' },
+      {
+        name: 'State of health',
+        inputType: 'measurement',
+        unit: '%',
+        minValue: 70,
+        defaultSeverity: 'attention',
+      },
+      {
+        name: 'Cell voltage spread',
+        inputType: 'measurement',
+        unit: 'mV',
+        maxValue: 100,
+        defaultSeverity: 'attention',
+      },
       { name: 'Battery enclosure and underbody protection', photoRequired: true },
       { name: 'Coolant level and condition' },
       { name: 'Stored battery fault codes', inputType: 'text' },
@@ -524,9 +619,21 @@ const EV_HYBRID: PresetSection[] = [
       { name: 'Drive motor noise' },
       { name: 'Reduction gear oil' },
       { name: 'Regenerative braking operation' },
-      { name: 'Friction brakes — corrosion from low use', description: 'Regenerative braking leaves discs lightly used; check for scoring and rust.' },
-      { name: '12 V auxiliary battery', inputType: 'measurement', unit: 'V', minValue: 12.4, defaultSeverity: 'attention' },
-      { name: 'Acoustic vehicle alerting system (AVAS)', description: 'Mandatory on EU-approved electric vehicles.' },
+      {
+        name: 'Friction brakes — corrosion from low use',
+        description: 'Regenerative braking leaves discs lightly used; check for scoring and rust.',
+      },
+      {
+        name: '12 V auxiliary battery',
+        inputType: 'measurement',
+        unit: 'V',
+        minValue: 12.4,
+        defaultSeverity: 'attention',
+      },
+      {
+        name: 'Acoustic vehicle alerting system (AVAS)',
+        description: 'Mandatory on EU-approved electric vehicles.',
+      },
     ],
   },
 ]
@@ -538,7 +645,13 @@ const MARINE: PresetSection[] = [
       { name: 'Hull below the waterline', photoRequired: true },
       { name: 'Keel and skeg' },
       { name: 'Through-hull fittings and seacocks' },
-      { name: 'Anodes', inputType: 'measurement', unit: '%', minValue: 50, defaultSeverity: 'attention' },
+      {
+        name: 'Anodes',
+        inputType: 'measurement',
+        unit: '%',
+        minValue: 50,
+        defaultSeverity: 'attention',
+      },
       { name: 'Rudder and bearings' },
       { name: 'Deck and fittings' },
     ],
@@ -559,7 +672,13 @@ const MARINE: PresetSection[] = [
   {
     name: 'Electrical',
     items: [
-      { name: 'Starter battery', inputType: 'measurement', unit: 'V', minValue: 12.4, defaultSeverity: 'attention' },
+      {
+        name: 'Starter battery',
+        inputType: 'measurement',
+        unit: 'V',
+        minValue: 12.4,
+        defaultSeverity: 'attention',
+      },
       { name: 'Service battery bank' },
       { name: 'Shore power and galvanic isolator' },
       { name: 'Navigation lights' },
@@ -570,7 +689,12 @@ const MARINE: PresetSection[] = [
     name: 'Safety equipment',
     description: 'Required equipment varies by flag state and by area of operation.',
     items: [
-      { name: 'Life jackets — quantity and service date', inputType: 'measurement', unit: 'pcs', required: true },
+      {
+        name: 'Life jackets — quantity and service date',
+        inputType: 'measurement',
+        unit: 'pcs',
+        required: true,
+      },
       { name: 'Life raft service date', inputType: 'text' },
       { name: 'Fire extinguishers — service date', required: true },
       { name: 'Flares in date' },
@@ -707,23 +831,24 @@ export const TEMPLATE_PRESETS: TemplatePreset[] = [
   },
 ]
 
-export const PRESET_GROUPS: { key: TemplatePreset['group']; label: string; description: string }[] = [
-  {
-    key: 'regulatory',
-    label: 'Regulatory',
-    description: 'Periodic technical inspection checklists built on Directive 2014/45/EU.',
-  },
-  {
-    key: 'workshop',
-    label: 'Workshop',
-    description: 'General service and sales checklists that are not tied to a regulation.',
-  },
-  {
-    key: 'specialist',
-    label: 'Specialist',
-    description: 'Checklists for drivetrains and vessels that need their own procedure.',
-  },
-]
+export const PRESET_GROUPS: { key: TemplatePreset['group']; label: string; description: string }[] =
+  [
+    {
+      key: 'regulatory',
+      label: 'Regulatory',
+      description: 'Periodic technical inspection checklists built on Directive 2014/45/EU.',
+    },
+    {
+      key: 'workshop',
+      label: 'Workshop',
+      description: 'General service and sales checklists that are not tied to a regulation.',
+    },
+    {
+      key: 'specialist',
+      label: 'Specialist',
+      description: 'Checklists for drivetrains and vessels that need their own procedure.',
+    },
+  ]
 
 export function getPreset(id: string): TemplatePreset | undefined {
   return TEMPLATE_PRESETS.find((p) => p.id === id)

@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from '@/lib/db'
 
 /**
  * Canonical form for a stored barcode.
@@ -11,16 +11,14 @@ import { db } from "@/lib/db";
  * Returns null for blank input, which the unique index treats as "no barcode"
  * (Postgres considers NULLs distinct, so any number of parts may have none).
  */
-export function normalizeBarcode(
-  barcode: string | null | undefined,
-): string | null {
-  if (barcode == null) return null;
-  const trimmed = barcode.trim().toUpperCase();
-  return trimmed.length > 0 ? trimmed : null;
+export function normalizeBarcode(barcode: string | null | undefined): string | null {
+  if (barcode == null) return null
+  const trimmed = barcode.trim().toUpperCase()
+  return trimmed.length > 0 ? trimmed : null
 }
 
 /** Prisma's unique-constraint violation code. */
-const UNIQUE_VIOLATION = "P2002";
+const UNIQUE_VIOLATION = 'P2002'
 
 /**
  * Collect every place Prisma might name the violated columns.
@@ -36,38 +34,38 @@ const UNIQUE_VIOLATION = "P2002";
  * which is exactly what happened when only `target` was checked.
  */
 export function uniqueViolationFields(error: unknown): string {
-  if (typeof error !== "object" || error === null) return "";
+  if (typeof error !== 'object' || error === null) return ''
   const e = error as {
-    code?: string;
+    code?: string
     meta?: {
-      target?: unknown;
+      target?: unknown
       driverAdapterError?: {
         cause?: {
-          originalMessage?: string;
-          constraint?: { fields?: unknown; index?: unknown };
-        };
-      };
-    };
-  };
-  if (e.code !== UNIQUE_VIOLATION) return "";
+          originalMessage?: string
+          constraint?: { fields?: unknown; index?: unknown }
+        }
+      }
+    }
+  }
+  if (e.code !== UNIQUE_VIOLATION) return ''
 
-  const parts: string[] = [];
+  const parts: string[] = []
 
-  const target = e.meta?.target;
-  if (Array.isArray(target)) parts.push(target.join(","));
-  else if (target != null) parts.push(String(target));
+  const target = e.meta?.target
+  if (Array.isArray(target)) parts.push(target.join(','))
+  else if (target != null) parts.push(String(target))
 
-  const cause = e.meta?.driverAdapterError?.cause;
-  const fields = cause?.constraint?.fields;
-  if (Array.isArray(fields)) parts.push(fields.join(","));
-  if (cause?.constraint?.index != null) parts.push(String(cause.constraint.index));
-  if (cause?.originalMessage) parts.push(cause.originalMessage);
+  const cause = e.meta?.driverAdapterError?.cause
+  const fields = cause?.constraint?.fields
+  if (Array.isArray(fields)) parts.push(fields.join(','))
+  if (cause?.constraint?.index != null) parts.push(String(cause.constraint.index))
+  if (cause?.originalMessage) parts.push(cause.originalMessage)
 
-  return parts.join("|");
+  return parts.join('|')
 }
 
 function isBarcodeUniqueViolation(error: unknown): boolean {
-  return uniqueViolationFields(error).includes("barcode");
+  return uniqueViolationFields(error).includes('barcode')
 }
 
 /**
@@ -80,28 +78,28 @@ function isBarcodeUniqueViolation(error: unknown): boolean {
 export async function withBarcodeConflictMessage<T>(
   organizationId: string,
   barcode: string | null,
-  operation: () => Promise<T>,
+  operation: () => Promise<T>
 ): Promise<T> {
   try {
-    return await operation();
+    return await operation()
   } catch (error) {
-    if (!isBarcodeUniqueViolation(error)) throw error;
+    if (!isBarcodeUniqueViolation(error)) throw error
 
     const existing = barcode
       ? await db.inventoryPart.findFirst({
           where: { organizationId, barcode },
           select: { name: true, partNumber: true },
         })
-      : null;
+      : null
 
     const label = existing
-      ? `${existing.name}${existing.partNumber ? ` (${existing.partNumber})` : ""}`
-      : null;
+      ? `${existing.name}${existing.partNumber ? ` (${existing.partNumber})` : ''}`
+      : null
 
     throw new Error(
       label
         ? `Barcode ${barcode} is already used by ${label}.`
-        : `Barcode ${barcode} is already used by another part.`,
-    );
+        : `Barcode ${barcode} is already used by another part.`
+    )
   }
 }

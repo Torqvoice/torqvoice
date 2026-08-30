@@ -22,6 +22,9 @@
     "items": "Voci",
     "pos": "N.",
     "unitOfMeasure": "Unità",
+    "invoiceNumberLabel": "N. fattura",
+    "customerNumberLabel": "N. cliente",
+    "dateLabel": "Data",
     "total": "Totale",
     "labor": "Manodopera",
     "hours": "Ore",
@@ -67,7 +70,9 @@
     "professionalWorkshop": "Gestione Officina Professionale",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Informazioni aggiuntive",
+    "telegramConnect": "Scrivici su Telegram"
   },
   "quote": {
     "title": "PREVENTIVO",
@@ -103,7 +108,10 @@
     "validityFooter30": "Questo preventivo è valido per 30 giorni",
     "viewPortal": "Visualizza il tuo portale: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Informazioni aggiuntive",
+    "quoteNumberLabel": "N. preventivo",
+    "validUntilLabel": "Valido fino al"
   },
   "inspection": {
     "title": "ISPEZIONE VEICOLO",

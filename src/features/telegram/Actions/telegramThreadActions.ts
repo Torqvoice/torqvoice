@@ -1,13 +1,10 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
-export async function getRecentTelegramThreads(
-  offset: number = 0,
-  limit: number = 50,
-) {
+export async function getRecentTelegramThreads(offset: number = 0, limit: number = 50) {
   return withAuth(
     async ({ organizationId }) => {
       const customers = await db.customer.findMany({
@@ -20,7 +17,7 @@ export async function getRecentTelegramThreads(
           name: true,
           telegramChatId: true,
           telegramMessages: {
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
             take: 1,
             select: {
               id: true,
@@ -32,17 +29,15 @@ export async function getRecentTelegramThreads(
           },
         },
         orderBy: {
-          telegramMessages: { _count: "desc" },
+          telegramMessages: { _count: 'desc' },
         },
         skip: offset,
         take: limit + 1,
-      });
+      })
 
-      const filtered = customers.filter(
-        (c) => c.telegramMessages.length > 0,
-      );
-      const hasMore = filtered.length > limit;
-      const items = hasMore ? filtered.slice(0, limit) : filtered;
+      const filtered = customers.filter((c) => c.telegramMessages.length > 0)
+      const hasMore = filtered.length > limit
+      const items = hasMore ? filtered.slice(0, limit) : filtered
 
       const threads = items
         .map((c) => ({
@@ -54,10 +49,10 @@ export async function getRecentTelegramThreads(
         .sort(
           (a, b) =>
             new Date(b.lastMessage.createdAt).getTime() -
-            new Date(a.lastMessage.createdAt).getTime(),
-        );
+            new Date(a.lastMessage.createdAt).getTime()
+        )
 
-      return { threads, hasMore };
+      return { threads, hasMore }
     },
     {
       requiredPermissions: [
@@ -66,6 +61,6 @@ export async function getRecentTelegramThreads(
           subject: PermissionSubject.CUSTOMERS,
         },
       ],
-    },
-  );
+    }
+  )
 }

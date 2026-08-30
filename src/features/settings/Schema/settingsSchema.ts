@@ -3,6 +3,9 @@ import { z } from 'zod'
 export const SETTING_KEYS = {
   COMPANY_LOGO: 'workshop.logo',
   WORKSHOP_ADDRESS: 'workshop.address',
+  /// One line under the shop's name on its documents, e.g. what it specialises
+  /// in and where. Empty means the letterhead carries the name alone.
+  WORKSHOP_SLOGAN: 'workshop.slogan',
   WORKSHOP_PHONE: 'workshop.phone',
   WORKSHOP_EMAIL: 'workshop.email',
   DEFAULT_TAX_RATE: 'workshop.defaultTaxRate',
@@ -31,6 +34,21 @@ export const SETTING_KEYS = {
   EMAIL_ENABLED: 'email.enabled',
   INVOICE_TEMPLATE: 'invoice.template',
   INVOICE_PRIMARY_COLOR: 'invoice.primaryColor',
+  /// Sheet color behind the document. Empty means the paper stays white.
+  INVOICE_BACKGROUND_COLOR: 'invoice.backgroundColor',
+  /// Body and heading color. Empty means the near-black default.
+  INVOICE_TEXT_COLOR: 'invoice.textColor',
+  /// The company name on the letterhead. Empty leaves each header style its own
+  /// default: white on a colored band, the primary color on white.
+  INVOICE_COMPANY_TEXT_COLOR: 'invoice.companyTextColor',
+  /// Line where the sheet meets a framed letterhead. Empty means no line.
+  INVOICE_FRAME_BORDER_COLOR: 'invoice.frameBorderColor',
+  /// "false" prints the frame flat against the sheet, with no shadow.
+  INVOICE_FRAME_SHADOW: 'invoice.frameShadow',
+  /// Which edge the framed rail runs down: "left" or "right".
+  INVOICE_FRAME_SIDE: 'invoice.frameSide',
+  /// Rounding, in points, where the framed rail meets the header band.
+  INVOICE_FRAME_RADIUS: 'invoice.frameRadius',
   INVOICE_FONT_FAMILY: 'invoice.fontFamily',
   INVOICE_SHOW_LOGO: 'invoice.showLogo',
   INVOICE_SHOW_COMPANY_NAME: 'invoice.showCompanyName',
@@ -60,6 +78,19 @@ export const SETTING_KEYS = {
   TIME_FORMAT: 'workshop.timeFormat',
   TIMEZONE: 'workshop.timezone',
   QUOTE_PRIMARY_COLOR: 'quote.primaryColor',
+  QUOTE_BACKGROUND_COLOR: 'quote.backgroundColor',
+  QUOTE_TEXT_COLOR: 'quote.textColor',
+  QUOTE_COMPANY_TEXT_COLOR: 'quote.companyTextColor',
+  QUOTE_FRAME_BORDER_COLOR: 'quote.frameBorderColor',
+  QUOTE_FRAME_SHADOW: 'quote.frameShadow',
+  QUOTE_FRAME_SIDE: 'quote.frameSide',
+  QUOTE_FRAME_RADIUS: 'quote.frameRadius',
+  /// The workshop's own saved designs: a JSON list of named layout+template
+  /// snapshots the designer can bring back after trying something else.
+  DESIGNER_SAVED_DESIGNS: 'designer.savedDesigns',
+  /// What the current design is based on: "preset:<id>" or "design:<id>".
+  INVOICE_ACTIVE_DESIGN: 'invoice.activeDesign',
+  QUOTE_ACTIVE_DESIGN: 'quote.activeDesign',
   QUOTE_FONT_FAMILY: 'quote.fontFamily',
   QUOTE_HEADER_STYLE: 'quote.headerStyle',
   PREDICTED_MAINTENANCE_ENABLED: 'maintenance.enabled',
@@ -170,6 +201,7 @@ export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]
 
 export const workshopSettingsSchema = z.object({
   [SETTING_KEYS.WORKSHOP_ADDRESS]: z.string().optional(),
+  [SETTING_KEYS.WORKSHOP_SLOGAN]: z.string().max(160).optional(),
   [SETTING_KEYS.WORKSHOP_PHONE]: z.string().optional(),
   [SETTING_KEYS.WORKSHOP_EMAIL]: z.string().email('Invalid email').optional().or(z.literal('')),
   [SETTING_KEYS.DEFAULT_TAX_RATE]: z.string().optional(),

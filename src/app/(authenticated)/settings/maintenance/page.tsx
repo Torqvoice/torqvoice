@@ -1,6 +1,6 @@
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { MaintenanceSettings } from "./maintenance-settings";
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { MaintenanceSettings } from './maintenance-settings'
 
 export default async function MaintenanceSettingsPage() {
   const result = await getSettings([
@@ -8,8 +8,8 @@ export default async function MaintenanceSettingsPage() {
     SETTING_KEYS.MAINTENANCE_SERVICE_INTERVAL,
     SETTING_KEYS.MAINTENANCE_APPROACHING_THRESHOLD,
     SETTING_KEYS.UNIT_SYSTEM,
-  ]);
-  const settings = result.success && result.data ? result.data : {};
+  ])
+  const settings = result.success && result.data ? result.data : {}
 
-  return <MaintenanceSettings settings={settings} />;
+  return <MaintenanceSettings settings={settings} />
 }

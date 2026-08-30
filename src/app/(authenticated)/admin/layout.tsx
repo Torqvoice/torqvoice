@@ -1,27 +1,23 @@
-import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { getCachedSession } from "@/lib/cached-session";
-import { db } from "@/lib/db";
-import { PageHeader } from "@/components/page-header";
-import { AdminNav } from "./admin-nav";
+import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import { getCachedSession } from '@/lib/cached-session'
+import { db } from '@/lib/db'
+import { PageHeader } from '@/components/page-header'
+import { AdminNav } from './admin-nav'
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const session = await getCachedSession();
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await getCachedSession()
 
-  if (!session?.user?.id) redirect("/auth/sign-in");
+  if (!session?.user?.id) redirect('/auth/sign-in')
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
     select: { isSuperAdmin: true },
-  });
+  })
 
-  if (!user?.isSuperAdmin) redirect("/");
+  if (!user?.isSuperAdmin) redirect('/')
 
-  const t = await getTranslations("admin");
+  const t = await getTranslations('admin')
 
   return (
     <div className="flex h-svh flex-col">
@@ -29,9 +25,7 @@ export default async function AdminLayout({
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <div className="shrink-0">
           <h1 className="text-3xl font-bold tracking-tight">{t('layout.title')}</h1>
-          <p className="mt-1 text-muted-foreground">
-            {t('layout.description')}
-          </p>
+          <p className="mt-1 text-muted-foreground">{t('layout.description')}</p>
         </div>
         <div className="flex min-h-0 flex-1 flex-col gap-6 md:flex-row">
           <aside className="w-full shrink-0 overflow-y-auto md:w-56 lg:w-64">
@@ -41,5 +35,5 @@ export default async function AdminLayout({
         </div>
       </div>
     </div>
-  );
+  )
 }

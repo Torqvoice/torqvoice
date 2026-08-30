@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
-import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from "@/lib/format";
-import { Button } from "@/components/ui/button";
+import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { formatDate as fmtDate, DEFAULT_DATE_FORMAT } from '@/lib/format'
+import { Button } from '@/components/ui/button'
 import {
   Check,
   CheckCircle2,
@@ -15,12 +15,9 @@ import {
   ShieldCheck,
   TriangleAlert,
   XCircle,
-} from "lucide-react";
-import { QuoteRequestDialog } from "@/features/inspections/Components/QuoteRequestDialog";
-import {
-  MediaLightbox,
-  type LightboxImage,
-} from "@/features/inspections/Components/MediaLightbox";
+} from 'lucide-react'
+import { QuoteRequestDialog } from '@/features/inspections/Components/QuoteRequestDialog'
+import { MediaLightbox, type LightboxImage } from '@/features/inspections/Components/MediaLightbox'
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
@@ -31,53 +28,53 @@ import {
   isDefect,
   type Condition,
   type SeverityScale,
-} from "@/features/inspections/Lib/conditions";
-import { toast } from "sonner";
+} from '@/features/inspections/Lib/conditions'
+import { toast } from 'sonner'
 
 interface InspectionItem {
-  id: string;
-  name: string;
-  section: string;
-  sortOrder: number;
-  condition: string;
-  notes: string | null;
-  imageUrls: string[];
-  description?: string | null;
-  code?: string | null;
-  sectionCode?: string | null;
-  inputType?: string | null;
-  unit?: string | null;
-  minValue?: number | null;
-  maxValue?: number | null;
-  measuredValue?: number | null;
-  textValue?: string | null;
+  id: string
+  name: string
+  section: string
+  sortOrder: number
+  condition: string
+  notes: string | null
+  imageUrls: string[]
+  description?: string | null
+  code?: string | null
+  sectionCode?: string | null
+  inputType?: string | null
+  unit?: string | null
+  minValue?: number | null
+  maxValue?: number | null
+  measuredValue?: number | null
+  textValue?: string | null
 }
 
 interface InspectionRecord {
-  id: string;
-  status: string;
-  mileage: number | null;
-  notes: string | null;
-  completedAt: Date | null;
-  createdAt: Date;
-  severityScale?: string | null;
-  country?: string | null;
-  vehicleCategory?: string | null;
-  nextTestDue?: Date | null;
-  certificateNumber?: string | null;
-  inspectorName?: string | null;
-  testLocation?: string | null;
+  id: string
+  status: string
+  mileage: number | null
+  notes: string | null
+  completedAt: Date | null
+  createdAt: Date
+  severityScale?: string | null
+  country?: string | null
+  vehicleCategory?: string | null
+  nextTestDue?: Date | null
+  certificateNumber?: string | null
+  inspectorName?: string | null
+  testLocation?: string | null
   vehicle: {
-    make: string;
-    model: string;
-    year: number;
-    vin: string | null;
-    licensePlate: string | null;
-    mileage: number;
-    customer: { name: string } | null;
-  };
-  template: { name: string; severityScale?: string | null; country?: string | null };
-  items: InspectionItem[];
+    make: string
+    model: string
+    year: number
+    vin: string | null
+    licensePlate: string | null
+    mileage: number
+    customer: { name: string } | null
+  }
+  template: { name: string; severityScale?: string | null; country?: string | null }
+  items: InspectionItem[]
 }
 
 const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: string }>> = {
@@ -86,9 +83,9 @@ const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: strin
   fail: XCircle,
   dangerous: OctagonAlert,
   not_inspected: Minus,
-};
+}
 
-const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
+const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url)
 
 export function InspectionView({
   inspection,
@@ -103,151 +100,160 @@ export function InspectionView({
   hasExistingQuoteRequest,
   quoteShareUrl,
   portalUrl,
-  serviceType = "automotive",
+  serviceType = 'automotive',
 }: {
-  inspection: InspectionRecord;
-  workshop: { name: string; address: string; phone: string; email: string };
-  logoUrl: string;
-  primaryColor: string;
-  showTorqvoiceBranding: boolean;
-  dateFormat?: string;
-  timezone?: string;
-  publicToken: string;
-  orgId: string;
-  hasExistingQuoteRequest: boolean;
-  quoteShareUrl?: string;
-  portalUrl?: string;
-  serviceType?: "automotive" | "marine";
+  inspection: InspectionRecord
+  workshop: { name: string; address: string; phone: string; email: string }
+  logoUrl: string
+  primaryColor: string
+  showTorqvoiceBranding: boolean
+  dateFormat?: string
+  timezone?: string
+  publicToken: string
+  orgId: string
+  hasExistingQuoteRequest: boolean
+  quoteShareUrl?: string
+  portalUrl?: string
+  serviceType?: 'automotive' | 'marine'
 }) {
-  const t = useTranslations("share.inspection");
-  const tc = useTranslations("share.common");
+  const t = useTranslations('share.inspection')
+  const tc = useTranslations('share.common')
 
-  const fmt = dateFormat || DEFAULT_DATE_FORMAT;
-  const tz = timezone || "America/New_York";
-  const formatDate = (d: Date | string) => fmtDate(new Date(d), fmt, tz);
+  const fmt = dateFormat || DEFAULT_DATE_FORMAT
+  const tz = timezone || 'America/New_York'
+  const formatDate = (d: Date | string) => fmtDate(new Date(d), fmt, tz)
 
-  const storedScale = inspection.severityScale ?? inspection.template.severityScale;
-  const scale: SeverityScale = storedScale === "basic" ? "basic" : "eu";
+  const storedScale = inspection.severityScale ?? inspection.template.severityScale
+  const scale: SeverityScale = storedScale === 'basic' ? 'basic' : 'eu'
   const conditionText = (condition: Condition) =>
-    scale === "basic" ? t(`basic.${condition}`) : t(`eu.${condition}`);
+    scale === 'basic' ? t(`basic.${condition}`) : t(`eu.${condition}`)
   // Several member states record defects by grade number rather than by name,
   // so the number leads and the wording follows.
-  const country = inspection.country ?? inspection.template.country ?? null;
+  const country = inspection.country ?? inspection.template.country ?? null
   const gradedText = (condition: Condition) =>
-    gradedConditionLabel(condition, scale, country, conditionText(condition));
+    gradedConditionLabel(condition, scale, country, conditionText(condition))
 
-  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
-  const [quoteRequested, setQuoteRequested] = useState(hasExistingQuoteRequest);
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false)
+  const [quoteRequested, setQuoteRequested] = useState(hasExistingQuoteRequest)
+  const [isCancelling, setIsCancelling] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   // A check the technician never graded is not a result; showing it would imply
   // it was looked at and found acceptable.
   const gradedItems = useMemo(
     () =>
       inspection.items
-        .filter((i) => i.condition !== "not_inspected")
+        .filter((i) => i.condition !== 'not_inspected')
         .sort((a, b) => a.sortOrder - b.sortOrder),
     [inspection.items]
-  );
+  )
 
   const sections = useMemo(() => {
-    const order: string[] = [];
-    const grouped: Record<string, InspectionItem[]> = {};
+    const order: string[] = []
+    const grouped: Record<string, InspectionItem[]> = {}
     for (const item of gradedItems) {
       if (!grouped[item.section]) {
-        grouped[item.section] = [];
-        order.push(item.section);
+        grouped[item.section] = []
+        order.push(item.section)
       }
-      grouped[item.section].push(item);
+      grouped[item.section].push(item)
     }
     return order.map((name) => ({
       name,
       code: grouped[name][0]?.sectionCode ?? null,
       items: grouped[name],
-    }));
-  }, [gradedItems]);
+    }))
+  }, [gradedItems])
 
   const images = useMemo<LightboxImage[]>(() => {
-    const list: LightboxImage[] = [];
+    const list: LightboxImage[] = []
     for (const item of gradedItems) {
       for (const url of item.imageUrls) {
-        if (!isVideo(url)) list.push({ url, caption: item.name });
+        if (!isVideo(url)) list.push({ url, caption: item.name })
       }
     }
-    return list;
-  }, [gradedItems]);
+    return list
+  }, [gradedItems])
 
-  const counts = countConditions(gradedItems);
-  const result = deriveTestResult(gradedItems);
-  const resultToken = TEST_RESULT_TOKENS[result];
-  const defects = gradedItems.filter((i) => isDefect(i.condition));
-  const hasDefects = defects.length > 0;
+  const counts = countConditions(gradedItems)
+  const result = deriveTestResult(gradedItems)
+  const resultToken = TEST_RESULT_TOKENS[result]
+  const defects = gradedItems.filter((i) => isDefect(i.condition))
+  const hasDefects = defects.length > 0
 
   const handleCancelQuoteRequest = async () => {
-    setIsCancelling(true);
+    setIsCancelling(true)
     try {
-      const res = await fetch("/api/public/forms/inspection-quote-request", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/public/forms/inspection-quote-request', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ inspectionId: inspection.id, publicToken }),
-      });
-      const data = await res.json();
+      })
+      const data = await res.json()
       if (data.success) {
-        toast.success(t("quoteCancelled"));
-        setQuoteRequested(false);
+        toast.success(t('quoteCancelled'))
+        setQuoteRequested(false)
       } else {
-        toast.error(data.error || t("cancelFailed"));
+        toast.error(data.error || t('cancelFailed'))
       }
     } catch {
-      toast.error(t("cancelFailed"));
+      toast.error(t('cancelFailed'))
     } finally {
-      setIsCancelling(false);
+      setIsCancelling(false)
     }
-  };
+  }
 
   const openImage = (url: string) => {
-    const index = images.findIndex((img) => img.url === url);
-    setLightboxIndex(index >= 0 ? index : null);
-  };
+    const index = images.findIndex((img) => img.url === url)
+    setLightboxIndex(index >= 0 ? index : null)
+  }
 
   const detailRows: { label: string; value: string }[] = [
-    { label: t("testDate"), value: formatDate(inspection.completedAt ?? inspection.createdAt) },
+    { label: t('testDate'), value: formatDate(inspection.completedAt ?? inspection.createdAt) },
     ...(inspection.certificateNumber
-      ? [{ label: t("certificateNumber"), value: inspection.certificateNumber }]
+      ? [{ label: t('certificateNumber'), value: inspection.certificateNumber }]
       : []),
     ...(inspection.vehicleCategory
-      ? [{ label: t("vehicleCategory"), value: inspection.vehicleCategory }]
+      ? [{ label: t('vehicleCategory'), value: inspection.vehicleCategory }]
       : []),
     ...(inspection.inspectorName
-      ? [{ label: t("inspector"), value: inspection.inspectorName }]
+      ? [{ label: t('inspector'), value: inspection.inspectorName }]
       : []),
     ...(inspection.testLocation || workshop.address
-      ? [{ label: t("testLocation"), value: inspection.testLocation || workshop.address }]
+      ? [{ label: t('testLocation'), value: inspection.testLocation || workshop.address }]
       : []),
     ...(inspection.nextTestDue
-      ? [{ label: t("nextTestDue"), value: formatDate(inspection.nextTestDue) }]
+      ? [{ label: t('nextTestDue'), value: formatDate(inspection.nextTestDue) }]
       : []),
-  ];
+  ]
 
   const renderValue = (item: InspectionItem) => {
-    if (item.inputType === "measurement" && item.measuredValue !== null && item.measuredValue !== undefined) {
-      const range = formatRange(item);
+    if (
+      item.inputType === 'measurement' &&
+      item.measuredValue !== null &&
+      item.measuredValue !== undefined
+    ) {
+      const range = formatRange(item)
       return (
         <p className="mt-1 text-sm">
           <span className="font-medium">
             {item.measuredValue}
-            {item.unit ? ` ${item.unit}` : ""}
+            {item.unit ? ` ${item.unit}` : ''}
           </span>
-          {range && <span className="text-gray-500"> &middot; {t("limit")}: {range}</span>}
+          {range && (
+            <span className="text-gray-500">
+              {' '}
+              &middot; {t('limit')}: {range}
+            </span>
+          )}
         </p>
-      );
+      )
     }
     if (item.textValue) {
-      return <p className="mt-1 text-sm">{item.textValue}</p>;
+      return <p className="mt-1 text-sm">{item.textValue}</p>
     }
-    return null;
-  };
+    return null
+  }
 
   const renderMedia = (item: InspectionItem) =>
     item.imageUrls.length > 0 && (
@@ -261,7 +267,7 @@ export function InspectionView({
               <button
                 type="button"
                 onClick={() => openImage(url)}
-                aria-label={`${t("viewPhoto")}: ${item.name} ${index + 1}`}
+                aria-label={`${t('viewPhoto')}: ${item.name} ${index + 1}`}
                 className="block overflow-hidden rounded-lg border focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -275,14 +281,14 @@ export function InspectionView({
           </li>
         ))}
       </ul>
-    );
+    )
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-8">
       {/* Workshop header */}
       <header
         className="mb-6 rounded-xl border p-6"
-        style={{ borderTopColor: primaryColor, borderTopWidth: "4px" }}
+        style={{ borderTopColor: primaryColor, borderTopWidth: '4px' }}
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -302,7 +308,7 @@ export function InspectionView({
               aria-hidden="true"
             />
             <div>
-              <h1 className="text-lg font-bold">{t("title")}</h1>
+              <h1 className="text-lg font-bold">{t('title')}</h1>
               <p className="text-sm text-gray-500">{inspection.template.name}</p>
             </div>
           </div>
@@ -323,13 +329,13 @@ export function InspectionView({
       {/* Test details */}
       <section aria-labelledby="details-heading" className="mb-6 rounded-lg border p-4">
         <h2 id="details-heading" className="mb-3 text-xs font-semibold uppercase text-gray-500">
-          {t("testDetails")}
+          {t('testDetails')}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <dl className="space-y-1.5">
             <div>
               <dt className="text-xs text-gray-500">
-                {serviceType === "marine" ? t("vesselLabel") : t("vehicle")}
+                {serviceType === 'marine' ? t('vesselLabel') : t('vehicle')}
               </dt>
               <dd className="font-semibold">
                 {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
@@ -338,28 +344,28 @@ export function InspectionView({
             {inspection.vehicle.vin && (
               <div>
                 <dt className="text-xs text-gray-500">
-                  {serviceType === "marine" ? "HIN" : "VIN"}
+                  {serviceType === 'marine' ? 'HIN' : 'VIN'}
                 </dt>
                 <dd className="font-mono text-sm break-all">{inspection.vehicle.vin}</dd>
               </div>
             )}
             {inspection.vehicle.licensePlate && (
               <div>
-                <dt className="text-xs text-gray-500">{t("plateLabel")}</dt>
+                <dt className="text-xs text-gray-500">{t('plateLabel')}</dt>
                 <dd className="font-mono text-sm">{inspection.vehicle.licensePlate}</dd>
               </div>
             )}
             {inspection.mileage !== null && (
               <div>
                 <dt className="text-xs text-gray-500">
-                  {serviceType === "marine" ? t("engineHoursLabel") : t("odometerLabel")}
+                  {serviceType === 'marine' ? t('engineHoursLabel') : t('odometerLabel')}
                 </dt>
                 <dd className="text-sm">{inspection.mileage.toLocaleString()}</dd>
               </div>
             )}
             {inspection.vehicle.customer && (
               <div>
-                <dt className="text-xs text-gray-500">{t("customer")}</dt>
+                <dt className="text-xs text-gray-500">{t('customer')}</dt>
                 <dd className="text-sm">{inspection.vehicle.customer.name}</dd>
               </div>
             )}
@@ -378,15 +384,17 @@ export function InspectionView({
       {/* Summary */}
       <section aria-labelledby="summary-heading" className="mb-6 rounded-lg border p-4">
         <h2 id="summary-heading" className="sr-only">
-          {t("summary")}
+          {t('summary')}
         </h2>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <p className="text-sm text-gray-500">
-            <span className="font-semibold text-gray-900 dark:text-gray-100">{counts.inspected}</span>{" "}
-            {t("inspected")}
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
+              {counts.inspected}
+            </span>{' '}
+            {t('inspected')}
           </p>
-          {(["pass", "attention", "fail", "dangerous"] as const)
-            .filter((c) => scale === "eu" || c !== "dangerous")
+          {(['pass', 'attention', 'fail', 'dangerous'] as const)
+            .filter((c) => scale === 'eu' || c !== 'dangerous')
             .map((c) => (
               <p key={c} className="flex items-center gap-1.5 text-sm">
                 <span
@@ -401,9 +409,9 @@ export function InspectionView({
         <div
           className="mt-3 flex h-3 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700"
           role="img"
-          aria-label={t("progressLabel", { graded: counts.inspected })}
+          aria-label={t('progressLabel', { graded: counts.inspected })}
         >
-          {(["pass", "attention", "fail", "dangerous"] as const).map((c) =>
+          {(['pass', 'attention', 'fail', 'dangerous'] as const).map((c) =>
             counts[c] > 0 ? (
               <div
                 key={c}
@@ -424,10 +432,10 @@ export function InspectionView({
           />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
-              {t("quoteAvailable")}
+              {t('quoteAvailable')}
             </p>
             <p className="mt-0.5 text-xs text-emerald-800/80 dark:text-emerald-200/80">
-              {t("quoteAvailableDescription")}
+              {t('quoteAvailableDescription')}
             </p>
           </div>
           <a
@@ -436,7 +444,7 @@ export function InspectionView({
             style={{ backgroundColor: primaryColor }}
           >
             <FileText className="h-4 w-4" aria-hidden="true" />
-            {t("viewQuote")}
+            {t('viewQuote')}
           </a>
         </div>
       )}
@@ -456,8 +464,8 @@ export function InspectionView({
               ) : (
                 <CheckCircle2 className="h-4 w-4 text-emerald-600" aria-hidden="true" />
               )}
-              {t("quoteRequested")}
-              <span className="text-muted-foreground">{t("quoteRequestedCancel")}</span>
+              {t('quoteRequested')}
+              <span className="text-muted-foreground">{t('quoteRequestedCancel')}</span>
             </Button>
           ) : (
             <Button
@@ -466,18 +474,18 @@ export function InspectionView({
               className="h-11 gap-2 text-white hover:opacity-90"
             >
               <FileText className="h-4 w-4" aria-hidden="true" />
-              {t("requestQuote")}
+              {t('requestQuote')}
             </Button>
           ))}
         <Button
           variant="outline"
           className="h-11 gap-2"
           onClick={() =>
-            window.open(`/api/public/share/inspection/${orgId}/${publicToken}/pdf`, "_blank")
+            window.open(`/api/public/share/inspection/${orgId}/${publicToken}/pdf`, '_blank')
           }
         >
           <Download className="h-4 w-4" aria-hidden="true" />
-          {t("downloadPdf")}
+          {t('downloadPdf')}
         </Button>
       </div>
 
@@ -485,12 +493,12 @@ export function InspectionView({
       {hasDefects && (
         <section aria-labelledby="defects-heading" className="mb-6">
           <h2 id="defects-heading" className="mb-3 text-base font-bold">
-            {t("deficienciesFound", { count: defects.length })}
+            {t('deficienciesFound', { count: defects.length })}
           </h2>
           <ul className="space-y-2">
             {defects.map((item) => {
-              const token = CONDITION_TOKENS[item.condition as Condition];
-              const Icon = CONDITION_ICONS[item.condition as Condition];
+              const token = CONDITION_TOKENS[item.condition as Condition]
+              const Icon = CONDITION_ICONS[item.condition as Condition]
               return (
                 <li key={item.id} className={`rounded-lg border p-3 ${token.soft}`}>
                   <div className="flex items-start justify-between gap-3">
@@ -507,7 +515,7 @@ export function InspectionView({
                   {renderValue(item)}
                   {renderMedia(item)}
                 </li>
-              );
+              )
             })}
           </ul>
         </section>
@@ -516,7 +524,7 @@ export function InspectionView({
       {/* Full results */}
       <section aria-labelledby="all-results-heading" className="space-y-4">
         <h2 id="all-results-heading" className="text-base font-bold">
-          {t("allResults")}
+          {t('allResults')}
         </h2>
         {sections.map((section) => (
           <div key={section.name} className="overflow-hidden rounded-lg border">
@@ -531,9 +539,9 @@ export function InspectionView({
             </h3>
             <ul className="divide-y">
               {section.items.map((item) => {
-                const condition = item.condition as Condition;
-                const token = CONDITION_TOKENS[condition];
-                const Icon = CONDITION_ICONS[condition];
+                const condition = item.condition as Condition
+                const token = CONDITION_TOKENS[condition]
+                const Icon = CONDITION_ICONS[condition]
                 return (
                   <li key={item.id} className="px-4 py-3">
                     <div className="flex items-start justify-between gap-3">
@@ -554,7 +562,7 @@ export function InspectionView({
                     {renderValue(item)}
                     {renderMedia(item)}
                   </li>
-                );
+                )
               })}
             </ul>
           </div>
@@ -564,7 +572,7 @@ export function InspectionView({
       {inspection.notes && (
         <section aria-labelledby="notes-heading" className="mt-6 rounded-lg border p-4">
           <h2 id="notes-heading" className="mb-2 text-xs font-semibold uppercase text-gray-500">
-            {t("notes")}
+            {t('notes')}
           </h2>
           <p className="text-sm whitespace-pre-wrap text-gray-600 dark:text-gray-300">
             {inspection.notes}
@@ -573,20 +581,20 @@ export function InspectionView({
       )}
 
       <footer className="mt-8 space-y-3 border-t pt-4">
-        <p className="text-center text-xs text-gray-500">{t("privacyNotice")}</p>
+        <p className="text-center text-xs text-gray-500">{t('privacyNotice')}</p>
 
         {portalUrl && (
           <p className="text-center text-xs text-gray-500">
-            {tc("portalMessage")}{" "}
+            {tc('portalMessage')}{' '}
             <a href={portalUrl} className="text-primary font-medium hover:underline">
-              {tc("customerPortal")}
+              {tc('customerPortal')}
             </a>
           </p>
         )}
 
         {showTorqvoiceBranding && (
           <p className="flex items-center justify-center gap-1.5">
-            <span className="text-xs text-gray-400">{tc("poweredBy")}</span>
+            <span className="text-xs text-gray-400">{tc('poweredBy')}</span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/torqvoice_app_logo.png" alt="" className="h-4 w-4" />
             <a
@@ -619,5 +627,5 @@ export function InspectionView({
         />
       )}
     </div>
-  );
+  )
 }

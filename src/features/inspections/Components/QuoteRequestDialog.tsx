@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useTranslations } from 'next-intl';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -12,16 +12,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { AlertTriangle, Loader2, X } from "lucide-react";
-import { toast } from "sonner";
+} from '@/components/ui/dialog'
+import { AlertTriangle, Loader2, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface InspectionItem {
-  id: string;
-  name: string;
-  section: string;
-  condition: string;
-  notes: string | null;
+  id: string
+  name: string
+  section: string
+  condition: string
+  notes: string | null
 }
 
 export function QuoteRequestDialog({
@@ -32,74 +32,74 @@ export function QuoteRequestDialog({
   publicToken,
   onSuccess,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  items: InspectionItem[];
-  inspectionId: string;
-  publicToken: string;
-  onSuccess: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  items: InspectionItem[]
+  inspectionId: string
+  publicToken: string
+  onSuccess: () => void
 }) {
-  const t = useTranslations('share.quoteRequest');
-  const issueItems = items.filter((i) => i.condition === "fail" || i.condition === "attention");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(issueItems.map((i) => i.id)));
-  const [message, setMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations('share.quoteRequest')
+  const issueItems = items.filter((i) => i.condition === 'fail' || i.condition === 'attention')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(issueItems.map((i) => i.id)))
+  const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const toggleItem = (id: string) => {
     setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const toggleAll = () => {
     if (selectedIds.size === issueItems.length) {
-      setSelectedIds(new Set());
+      setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(issueItems.map((i) => i.id)));
+      setSelectedIds(new Set(issueItems.map((i) => i.id)))
     }
-  };
+  }
 
   const handleSubmit = async () => {
     if (selectedIds.size === 0) {
-      toast.error(t('selectAtLeastOne'));
-      return;
+      toast.error(t('selectAtLeastOne'))
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      const res = await fetch("/api/public/forms/inspection-quote-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/public/forms/inspection-quote-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           inspectionId,
           publicToken,
           selectedItemIds: Array.from(selectedIds),
           message: message.trim() || undefined,
         }),
-      });
-      const data = await res.json();
+      })
+      const data = await res.json()
       if (data.success) {
-        toast.success(t('submitSuccess'));
-        onOpenChange(false);
-        onSuccess();
+        toast.success(t('submitSuccess'))
+        onOpenChange(false)
+        onSuccess()
       } else {
-        toast.error(data.error || t('submitError'));
+        toast.error(data.error || t('submitError'))
       }
     } catch {
-      toast.error(t('submitError'));
+      toast.error(t('submitError'))
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   // Group by section
-  const sections: Record<string, InspectionItem[]> = {};
+  const sections: Record<string, InspectionItem[]> = {}
   for (const item of issueItems) {
-    if (!sections[item.section]) sections[item.section] = [];
-    sections[item.section].push(item);
+    if (!sections[item.section]) sections[item.section] = []
+    sections[item.section].push(item)
   }
 
   return (
@@ -107,9 +107,7 @@ export function QuoteRequestDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>
-            {t('description')}
-          </DialogDescription>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 max-h-[400px] overflow-y-auto">
@@ -145,7 +143,7 @@ export function QuoteRequestDialog({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">{item.name}</span>
-                        {item.condition === "fail" ? (
+                        {item.condition === 'fail' ? (
                           <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-red-600 bg-red-100 rounded-full px-1.5 py-0.5">
                             <X className="h-2.5 w-2.5" /> {t('fail')}
                           </span>
@@ -167,7 +165,8 @@ export function QuoteRequestDialog({
 
           <div className="space-y-2">
             <label className="text-sm font-medium">
-              {t('message')} <span className="text-muted-foreground font-normal">{t('messageOptional')}</span>
+              {t('message')}{' '}
+              <span className="text-muted-foreground font-normal">{t('messageOptional')}</span>
             </label>
             <Textarea
               value={message}
@@ -189,5 +188,5 @@ export function QuoteRequestDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

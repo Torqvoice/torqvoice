@@ -14,7 +14,9 @@ export function extractCustomerOrgParam(pathname: string | null | undefined): st
   if (portalMatch) return portalMatch[1]
 
   // /share/{invoice,quote,inspection,status-report,terms}/[orgId]/...
-  const shareMatch = pathname.match(/^\/share\/(?:invoice|quote|inspection|status-report|terms)\/([^/]+)/)
+  const shareMatch = pathname.match(
+    /^\/share\/(?:invoice|quote|inspection|status-report|terms)\/([^/]+)/
+  )
   if (shareMatch) return shareMatch[1]
 
   return null
@@ -60,7 +62,7 @@ export function getBestLocaleFromHeader(acceptLanguage: string | null): Locale |
  */
 export async function resolveCustomerLocale(
   organizationId: string,
-  acceptLanguageHeader: string | null,
+  acceptLanguageHeader: string | null
 ): Promise<Locale> {
   const settings = await db.appSetting.findMany({
     where: {
@@ -70,7 +72,8 @@ export async function resolveCustomerLocale(
     select: { key: true, value: true },
   })
 
-  const forced = settings.find((s) => s.key === SETTING_KEYS.FORCE_CUSTOMER_LOCALE)?.value === 'true'
+  const forced =
+    settings.find((s) => s.key === SETTING_KEYS.FORCE_CUSTOMER_LOCALE)?.value === 'true'
   if (forced) {
     const workshopLocale = settings.find((s) => s.key === SETTING_KEYS.WORKSHOP_LOCALE)?.value
     if (workshopLocale && locales.includes(workshopLocale as Locale)) {

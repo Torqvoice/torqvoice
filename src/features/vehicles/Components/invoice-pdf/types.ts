@@ -2,6 +2,30 @@ import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayo
 
 export interface TemplateConfig {
   primaryColor?: string
+  /** Sheet color behind the document. Unset leaves the paper white. */
+  backgroundColor?: string
+  /** Body and heading color. Unset leaves the near-black default. */
+  textColor?: string
+  /**
+   * The company name on the letterhead. Unset leaves each header style its own
+   * default, which is white on the styles that set the name into a colored band
+   * and the primary color on the styles that set it on white.
+   */
+  companyTextColor?: string
+  /**
+   * The line where the sheet meets the frame, on header styles that have one.
+   * Empty means no line.
+   */
+  frameBorderColor?: string
+  /**
+   * The frame's drop shadow onto the sheet: the stored setting value.
+   * 'false' or false prints a flat edge; 'thin' and 'wide' size it.
+   */
+  frameShadow?: boolean | string
+  /** Which edge the rail runs down. Defaults to the left. */
+  frameSide?: 'left' | 'right'
+  /** Rounding, in points, where the rail meets the header band. */
+  frameRadius?: number
   fontFamily?: string
   showLogo?: boolean
   showCompanyName?: boolean
@@ -63,6 +87,7 @@ export interface InvoiceData {
     address: string | null
     company: string | null
     taxId?: string | null
+    customerNumber?: string | null
   } | null
   vehicle: {
     make: string
@@ -78,6 +103,7 @@ export interface InvoiceData {
       address: string | null
       company: string | null
       taxId?: string | null
+      customerNumber?: string | null
     } | null
   } | null
 }
@@ -87,6 +113,8 @@ export interface WorkshopInfo {
   address: string
   phone: string
   email: string
+  /** One line under the name, set in Company details. */
+  slogan?: string
 }
 
 export interface InvoiceSettingsProps {

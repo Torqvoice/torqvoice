@@ -9,24 +9,122 @@ export const invoiceFieldConfigSchema = z.object({
   visible: z.boolean(),
 })
 
+/**
+ * How one section looks. Five keys that mean the same thing wherever they are
+ * applied, so one control in the editor styles a detail panel, a table or the
+ * totals without knowing which it is.
+ *
+ * This is where new appearance options belong. A setting per option meant a
+ * code change, plumbing through every PDF builder and twelve translations for
+ * each one; here a workshop sets it and nothing has to be written at all.
+ */
+export const invoiceSectionStyleSchema = z.object({
+  /** Body text: values, table cells, notes. */
+  textColor: z.string().optional(),
+  /** The section's own heading, and a table's column headings. */
+  labelColor: z.string().optional(),
+  /** Panel fill, or the bar behind a table's column headings. */
+  backgroundColor: z.string().optional(),
+  /** Panel border, and the rule between table rows. */
+  borderColor: z.string().optional(),
+  /** Thickness of the panel border and of table row rules, in points. */
+  borderWidth: z.number().min(0).max(4).optional(),
+  /** Draw a border around the whole table, not only rules between rows. */
+  outerBorder: z.boolean().optional(),
+  /** Banding behind alternate rows for this table. Unset follows the sheet. */
+  stripes: z.boolean().optional(),
+  /** Body text size in points. Headings scale with it. */
+  fontSize: z.number().min(5).max(24).optional(),
+  /** Typeface for this section, from the families the app embeds. */
+  fontFamily: z.string().optional(),
+  /** Extra room around the section in the flow, in points per edge. */
+  marginTop: z.number().min(0).max(120).optional(),
+  marginBottom: z.number().min(0).max(120).optional(),
+  marginLeft: z.number().min(0).max(200).optional(),
+  marginRight: z.number().min(0).max(200).optional(),
+})
+
 export const invoiceSectionSchema = z.object({
   id: z.string(),
   visible: z.boolean(),
   order: z.number().int(),
   /** When set, the section renders in a 2-column row alongside other column sections. */
   column: z.enum(['left', 'right']).optional(),
+  /**
+   * Whether the section prints inside a panel. Unset means boxed, which is what
+   * every layout did before the choice existed.
+   */
+  boxed: z.boolean().optional(),
+  /**
+   * A named preset look for sections that offer several, the way the payment
+   * panel can print as an accent card, a plain panel, an outline or bare
+   * lines. Unset means the section's default.
+   */
+  variant: z.string().optional(),
+  /**
+   * Whether the section prints its own small heading, like BILL TO over the
+   * customer card. Unset means shown, which every layout has always done.
+   */
+  heading: z.boolean().optional(),
+  /** Appearance overrides for this section. Unset uses the document's own. */
+  style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
   fields: z.array(invoiceFieldConfigSchema).optional(),
 })
 
+/**
+ * Appearance that belongs to the whole sheet rather than to one section.
+ *
+ * Lives in the layout alongside the sections for the same reason their styles
+ * do: a workshop sets it, and no setting key, no plumbing through every PDF
+ * builder and no translations have to be written for each new option.
+ */
+export const invoiceDocumentStyleSchema = z.object({
+  /** Base text size in points. Everything else scales from it. */
+  fontSize: z.number().min(6).max(14).optional(),
+  /** Vertical padding in a table row, in points. Lower is denser. */
+  rowPadding: z.number().min(0).max(12).optional(),
+  /** Page margin in points. The framed sheet keeps its own top and left. */
+  margin: z.number().min(12).max(72).optional(),
+  /** Banding behind alternate table rows. False prints them all the same. */
+  stripes: z.boolean().optional(),
+  /** The band's color when stripes are on. */
+  stripeColor: z.string().optional(),
+  /** Section headings and the rule above the total. Defaults to the primary. */
+  accentColor: z.string().optional(),
+  /** Typeface for the whole sheet, from the families the app embeds. */
+  fontFamily: z.string().optional(),
+})
+
+/**
+ * Where something sits once it has been dragged out of the flow.
+ *
+ * Keyed by node id, which is a section id for a whole block and an element id
+ * for one piece of it, so a logo and a customer panel are positioned by exactly
+ * the same mechanism. Coordinates are points from the top-left of the sheet.
+ */
+export const anchorSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  width: z.number().optional(),
+  page: z.number().int().min(1).optional(),
+})
+
 export const invoiceLayoutConfigSchema = z.object({
   sections: z.array(invoiceSectionSchema),
+  /** Whole-sheet appearance. Unset leaves every default in place. */
+  document: invoiceDocumentStyleSchema.optional(),
+  /** Anything positioned by hand, keyed by node id. */
+  anchors: z.record(z.string(), anchorSchema).optional(),
 })
 
 // ---------------------------------------------------------------------------
 // TypeScript types (derived from Zod)
 // ---------------------------------------------------------------------------
 
+export type InvoiceSectionStyle = z.infer<typeof invoiceSectionStyleSchema>
+export type InvoiceDocumentStyle = z.infer<typeof invoiceDocumentStyleSchema>
+export type InvoiceAnchor = z.infer<typeof anchorSchema>
 export type InvoiceFieldConfig = z.infer<typeof invoiceFieldConfigSchema>
 export type InvoiceSection = z.infer<typeof invoiceSectionSchema>
 export type InvoiceLayoutConfig = z.infer<typeof invoiceLayoutConfigSchema>
@@ -55,9 +153,13 @@ export function fromCustomFieldId(cfId: string): string {
 
 export const BUILTIN_SECTIONS = [
   { id: 'header', name: 'Header' },
+  // Its own section, not a line inside the header, so it can be placed,
+  // paired and styled like anything else on the sheet.
+  { id: 'slogan', name: 'Slogan' },
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
+  { id: 'document_title', name: 'Document Title' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
   { id: 'labor_table', name: 'Labor Table' },
@@ -109,6 +211,22 @@ export const BUILTIN_HEADER_FIELDS = [
   { id: 'company_org_number', name: 'Organization Number' },
 ] as const
 
+/**
+ * Company details a workshop can move down to the footer, the way printed
+ * stationery carries them: the shop up top, the ways to reach it along the
+ * bottom. All off by default, so a footer stays the one line it has always
+ * been until somebody asks for more.
+ */
+export const BUILTIN_FOOTER_FIELDS = [
+  { id: 'footer_note', name: 'Footer Note' },
+  { id: 'company_name', name: 'Company Name' },
+  { id: 'company_address', name: 'Address' },
+  { id: 'company_phone', name: 'Phone' },
+  { id: 'company_email', name: 'Email' },
+  { id: 'bank_account', name: 'Bank Account' },
+  { id: 'company_org_number', name: 'Organization Number' },
+] as const
+
 export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'bank_account', name: 'Bank Account' },
   { id: 'org_number', name: 'Organization Number' },
@@ -121,10 +239,12 @@ export type BuiltinVehicleFieldId = (typeof BUILTIN_VEHICLE_FIELDS)[number]['id'
 export type BuiltinServiceFieldId = (typeof BUILTIN_SERVICE_FIELDS)[number]['id']
 export type BuiltinHeaderFieldId = (typeof BUILTIN_HEADER_FIELDS)[number]['id']
 export type BuiltinBankAccountFieldId = (typeof BUILTIN_BANK_ACCOUNT_FIELDS)[number]['id']
+export type BuiltinFooterFieldId = (typeof BUILTIN_FOOTER_FIELDS)[number]['id']
 
 /** Sections that have configurable fields */
 export const SECTIONS_WITH_FIELDS = new Set<string>([
   'header',
+  'footer',
   'customer',
   'vehicle',
   'service',
@@ -132,8 +252,21 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'general',
 ])
 
+/** Sections that print inside a panel and can have it taken away. */
+export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
+  'customer',
+  'vehicle',
+  'service',
+  'general',
+  'notes',
+  'warranty',
+  'telegram_qr',
+])
+
 /** Sections that can be placed in left/right columns */
 export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
+  'slogan',
+  'totals',
   'customer',
   'vehicle',
   'service',
@@ -145,10 +278,10 @@ export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
 /** Sections that MUST be full-width (cannot be in columns) */
 export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'header',
+  'document_title',
   'items_table',
   'parts_table',
   'labor_table',
-  'totals',
   'footer',
   'telegram_qr',
 ])
@@ -176,6 +309,9 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
       return BUILTIN_HEADER_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'footer':
+      // Only the note, which is the footer every existing invoice already has.
+      return BUILTIN_FOOTER_FIELDS.map((f) => ({ id: f.id, visible: f.id === 'footer_note' }))
     case 'general':
       return [] // no built-in fields, only custom fields
     default:
@@ -184,11 +320,18 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
 }
 
 /**
- * Sections a workshop has to switch on before they appear. `items_table` is one
- * of them because it is an alternative to the separate parts and labor tables,
- * not an addition to them: showing it by default would print every line twice.
+ * Sections a workshop has to switch on before they appear.
+ *
+ * `items_table` is one because it replaces the separate parts and labor tables
+ * rather than joining them, and `document_title` because the standard headers
+ * already print the title themselves.
  */
-const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>(['general', 'telegram_qr', 'items_table'])
+const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
+  'general',
+  'telegram_qr',
+  'items_table',
+  'document_title',
+])
 
 export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
   return {
@@ -201,6 +344,60 @@ export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
         order: index,
         ...(column ? { column } : {}),
         ...(fields ? { fields } : {}),
+      }
+    }),
+  }
+}
+
+/** A section's appearance overrides, or nothing if it has none. */
+export function getSectionStyle(
+  config: InvoiceLayoutConfig | undefined | null,
+  sectionId: string
+): InvoiceSectionStyle | undefined {
+  const style = config?.sections.find((s) => s.id === sectionId)?.style
+  // An empty object is the same as none, and saves the renderer a clone.
+  return style && Object.values(style).some((v) => v !== undefined && v !== '') ? style : undefined
+}
+
+// ---------------------------------------------------------------------------
+// Letterhead mark
+// ---------------------------------------------------------------------------
+
+export type LetterheadMark = 'logo' | 'company_name'
+
+/**
+ * Which of the two the header band carries. Layouts that show neither, or that
+ * have no header fields at all, read as the logo, which is what every header
+ * has always preferred.
+ */
+export function getLetterheadMark(config: InvoiceLayoutConfig | undefined | null): LetterheadMark {
+  const fields = config?.sections.find((s) => s.id === 'header')?.fields
+  if (!fields) return 'logo'
+  return fields.find((f) => f.id === 'logo')?.visible === false ? 'company_name' : 'logo'
+}
+
+/**
+ * Flip the band from one mark to the other. It sets both fields, because the
+ * band shows one and leaving the other visible would only mislead whoever opens
+ * the layout editor next.
+ */
+export function withLetterheadMark(
+  config: InvoiceLayoutConfig,
+  mark: LetterheadMark
+): InvoiceLayoutConfig {
+  return {
+    sections: config.sections.map((section) => {
+      if (section.id !== 'header') return section
+      const fields = section.fields ?? getDefaultFieldsForSection('header') ?? []
+      return {
+        ...section,
+        fields: fields.map((field) =>
+          field.id === 'logo'
+            ? { ...field, visible: mark === 'logo' }
+            : field.id === 'company_name'
+              ? { ...field, visible: mark === 'company_name' }
+              : field
+        ),
       }
     }),
   }
@@ -225,6 +422,8 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_HEADER_FIELDS
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS
+    case 'footer':
+      return BUILTIN_FOOTER_FIELDS
     default:
       return []
   }
@@ -238,8 +437,34 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_SERVICE_FIELDS,
     ...BUILTIN_HEADER_FIELDS,
     ...BUILTIN_BANK_ACCOUNT_FIELDS,
+    ...BUILTIN_FOOTER_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
+}
+
+/**
+ * Make a hidden-but-drawn section real at the position it is drawn in.
+ *
+ * The one such section is the title strip the generator borrows under the
+ * header when Document Title is switched off: on screen it sits right after
+ * the header, while the hidden section's stored order points somewhere else
+ * entirely. A designer gesture that references it resolves against this, so
+ * the drop lands where the canvas showed it. A visible section passes
+ * through untouched.
+ */
+export function materializeHiddenSection(
+  config: InvoiceLayoutConfig,
+  refId: string | null
+): InvoiceLayoutConfig {
+  if (!refId) return config
+  const ref = config.sections.find((s) => s.id === refId)
+  if (!ref || ref.visible) return config
+  const ordered = [...config.sections]
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => s.id !== refId)
+  const headerAt = ordered.findIndex((s) => s.id === 'header')
+  ordered.splice(headerAt + 1, 0, { ...ref, visible: true })
+  return { ...config, sections: ordered.map((s, i) => ({ ...s, order: i })) }
 }
 
 // ---------------------------------------------------------------------------
@@ -315,7 +540,11 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     }
   }
 
-  return { sections: merged }
+  return {
+    sections: merged,
+    ...(saved.document ? { document: saved.document } : {}),
+    ...(saved.anchors ? { anchors: saved.anchors } : {}),
+  }
 }
 
 // ---------------------------------------------------------------------------

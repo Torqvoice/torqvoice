@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import { interactiveRow } from '@/lib/interactive-row';
-import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
-import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { interactiveRow } from '@/lib/interactive-row'
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { useState, useCallback, useTransition, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useCallback, useTransition, useEffect } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -16,29 +16,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { TableContextMenuHint } from "@/components/table-context-menu-hint";
-import { useGlassModal } from "@/components/glass-modal";
-import { useConfirm } from "@/components/confirm-dialog";
-import { CustomerForm } from "@/features/customers/Components/CustomerForm";
-import { ImportCustomersDialog } from "@/features/customers/Components/ImportCustomersDialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { deleteCustomer, deleteCustomers } from "@/features/customers/Actions/customerActions";
-import { toast } from "sonner";
+} from '@/components/ui/context-menu'
+import { DataTablePagination } from '@/components/data-table-pagination'
+import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { useGlassModal } from '@/components/glass-modal'
+import { useConfirm } from '@/components/confirm-dialog'
+import { CustomerForm } from '@/features/customers/Components/CustomerForm'
+import { ImportCustomersDialog } from '@/features/customers/Components/ImportCustomersDialog'
+import { Checkbox } from '@/components/ui/checkbox'
+import { deleteCustomer, deleteCustomers } from '@/features/customers/Actions/customerActions'
+import { toast } from 'sonner'
 import {
   ArrowDown,
   ArrowUp,
@@ -53,28 +53,28 @@ import {
   Trash2,
   Upload,
   Users,
-} from "lucide-react";
+} from 'lucide-react'
 
 interface Customer {
-  customerNumber: string | null;
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  address: string | null;
-  company: string | null;
-  taxId: string | null;
-  taxExempt: boolean;
-  notes: string | null;
-  _count: { vehicles: number };
+  customerNumber: string | null
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  address: string | null
+  company: string | null
+  taxId: string | null
+  taxExempt: boolean
+  notes: string | null
+  _count: { vehicles: number }
 }
 
 interface PaginatedData {
-  customers: Customer[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  customers: Customer[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
 export function CustomersClient({
@@ -83,71 +83,73 @@ export function CustomersClient({
   sortBy,
   sortOrder,
 }: {
-  data: PaginatedData;
-  search: string;
-  sortBy: string;
-  sortOrder: "asc" | "desc";
+  data: PaginatedData
+  search: string
+  sortBy: string
+  sortOrder: 'asc' | 'desc'
 }) {
-  const t = useTranslations("customers.list");
-  const tc = useTranslations("common");
-  const tcm = useTranslations("common.contextMenu");
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const tableNav = useTableKeyboardNav();
-  const [showForm, setShowForm] = useState(false);
-  const [showImport, setShowImport] = useState(false);
-  const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [isDeleting, setIsDeleting] = useState(false);
-  const modal = useGlassModal();
-  const confirm = useConfirm();
+  const t = useTranslations('customers.list')
+  const tc = useTranslations('common')
+  const tcm = useTranslations('common.contextMenu')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav()
+  const [showForm, setShowForm] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [editCustomer, setEditCustomer] = useState<Customer | null>(null)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [isDeleting, setIsDeleting] = useState(false)
+  const modal = useGlassModal()
+  const confirm = useConfirm()
 
   useEffect(() => {
-    if (searchParams.get("create") === "true") {
-      setShowForm(true);
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("create");
-      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
-      window.history.replaceState(null, "", cleanUrl);
+    if (searchParams.get('create') === 'true') {
+      setShowForm(true)
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('create')
+      const cleanUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname
+      window.history.replaceState(null, '', cleanUrl)
     }
-  }, [searchParams, pathname]);
+  }, [searchParams, pathname])
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === "") {
-          newParams.delete(key);
+        if (value === undefined || value === '') {
+          newParams.delete(key)
         } else {
-          newParams.set(key, String(value));
+          newParams.set(key, String(value))
         }
       }
-      if (!("page" in params) && ("search" in params || "sortBy" in params)) {
-        newParams.delete("page");
+      if (!('page' in params) && ('search' in params || 'sortBy' in params)) {
+        newParams.delete('page')
       }
       startTransition(() => {
-        router.push(`${pathname}?${newParams.toString()}`);
-      });
+        router.push(`${pathname}?${newParams.toString()}`)
+      })
     },
     [router, pathname, searchParams]
-  );
+  )
 
   const handleSort = useCallback(
     (column: string) => {
-      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
-      navigate({ sortBy: column, sortOrder: newOrder });
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      navigate({ sortBy: column, sortOrder: newOrder })
     },
     [navigate, sortBy, sortOrder]
-  );
+  )
 
   const SortIcon = ({ column }: { column: string }) => {
-    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
-    return sortOrder === "asc"
-      ? <ArrowUp className="ml-1 h-3 w-3" />
-      : <ArrowDown className="ml-1 h-3 w-3" />;
-  };
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
+  }
 
   // Live search: filters as you type, no Enter required. Submitting the
   // form (Enter) commits immediately, bypassing the debounce.
@@ -155,61 +157,61 @@ export function CustomersClient({
     value: searchInput,
     setValue: setSearchInput,
     commitNow: handleSearch,
-  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const toggleSelectAll = () => {
     if (selected.size === data.customers.length) {
-      setSelected(new Set());
+      setSelected(new Set())
     } else {
-      setSelected(new Set(data.customers.map((c) => c.id)));
+      setSelected(new Set(data.customers.map((c) => c.id)))
     }
-  };
+  }
 
   const handleDelete = async (id: string, name: string) => {
     const ok = await confirm({
-      title: t("deleteTitle"),
-      description: t("deleteDescription", { name }),
-      confirmLabel: tc("buttons.delete"),
+      title: t('deleteTitle'),
+      description: t('deleteDescription', { name }),
+      confirmLabel: tc('buttons.delete'),
       destructive: true,
-    });
-    if (!ok) return;
-    const result = await deleteCustomer(id);
+    })
+    if (!ok) return
+    const result = await deleteCustomer(id)
     if (result.success) {
-      router.refresh();
+      router.refresh()
     } else {
-      modal.open("error", tc("errors.error"), result.error || t("deleteError"));
+      modal.open('error', tc('errors.error'), result.error || t('deleteError'))
     }
-  };
+  }
 
   const handleBatchDelete = async () => {
-    if (selected.size === 0) return;
+    if (selected.size === 0) return
     const ok = await confirm({
-      title: t("batchDeleteTitle"),
-      description: t("batchDeleteDescription", { count: selected.size }),
-      confirmLabel: tc("buttons.delete"),
+      title: t('batchDeleteTitle'),
+      description: t('batchDeleteDescription', { count: selected.size }),
+      confirmLabel: tc('buttons.delete'),
       destructive: true,
-    });
-    if (!ok) return;
-    setIsDeleting(true);
-    const result = await deleteCustomers(Array.from(selected));
+    })
+    if (!ok) return
+    setIsDeleting(true)
+    const result = await deleteCustomers(Array.from(selected))
     if (result.success) {
-      toast.success(t("batchDeleteSuccess", { count: result.data?.deleted ?? selected.size }));
-      setSelected(new Set());
-      router.refresh();
+      toast.success(t('batchDeleteSuccess', { count: result.data?.deleted ?? selected.size }))
+      setSelected(new Set())
+      router.refresh()
     } else {
-      modal.open("error", tc("errors.error"), result.error || t("deleteError"));
+      modal.open('error', tc('errors.error'), result.error || t('deleteError'))
     }
-    setIsDeleting(false);
-  };
+    setIsDeleting(false)
+  }
 
   return (
     <div className="space-y-4">
@@ -218,9 +220,9 @@ export function CustomersClient({
         {selected.size > 0 ? (
           <>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{t("selectedCount", { count: selected.size })}</span>
+              <span>{t('selectedCount', { count: selected.size })}</span>
               <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>
-                {t("clearSelection")}
+                {t('clearSelection')}
               </Button>
             </div>
             <Button
@@ -231,7 +233,7 @@ export function CustomersClient({
             >
               {isDeleting && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
               <Trash2 className="mr-1 h-3.5 w-3.5" />
-              {t("batchDelete", { count: selected.size })}
+              {t('batchDelete', { count: selected.size })}
             </Button>
           </>
         ) : (
@@ -240,7 +242,7 @@ export function CustomersClient({
               <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder={t("searchPlaceholder")}
+                  placeholder={t('searchPlaceholder')}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="h-9 pl-9"
@@ -254,22 +256,22 @@ export function CustomersClient({
                 size="sm"
                 variant="outline"
                 onClick={() => setShowImport(true)}
-                aria-label={t("importCustomers")}
-                title={t("importCustomers")}
+                aria-label={t('importCustomers')}
+                title={t('importCustomers')}
                 className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
               >
                 <Upload className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-                <span className="hidden md:inline">{t("importCustomers")}</span>
+                <span className="hidden md:inline">{t('importCustomers')}</span>
               </Button>
               <Button
                 size="sm"
                 onClick={() => setShowForm(true)}
-                aria-label={t("addCustomer")}
-                title={t("addCustomer")}
+                aria-label={t('addCustomer')}
+                title={t('addCustomer')}
                 className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
               >
                 <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-                <span className="hidden md:inline">{t("addCustomer")}</span>
+                <span className="hidden md:inline">{t('addCustomer')}</span>
               </Button>
             </div>
           </>
@@ -280,14 +282,14 @@ export function CustomersClient({
       <div className="space-y-2 md:hidden">
         {data.customers.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {search ? t("emptySearch") : t("empty")}
+            {search ? t('emptySearch') : t('empty')}
           </div>
         ) : (
           data.customers.map((c) => (
             <div
               key={c.id}
               className={`flex items-start gap-3 rounded-lg border bg-card p-3 ${
-                selected.has(c.id) ? "bg-muted/50" : ""
+                selected.has(c.id) ? 'bg-muted/50' : ''
               }`}
             >
               <Checkbox
@@ -307,9 +309,7 @@ export function CustomersClient({
                     {c._count.vehicles}
                   </span>
                 </div>
-                {c.company && (
-                  <p className="truncate text-xs text-muted-foreground">{c.company}</p>
-                )}
+                {c.company && <p className="truncate text-xs text-muted-foreground">{c.company}</p>}
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   {c.customerNumber && <span className="font-mono">{c.customerNumber}</span>}
                   {c.phone && <span>{c.phone}</span>}
@@ -322,7 +322,7 @@ export function CustomersClient({
                     variant="ghost"
                     size="icon"
                     className="-mr-1 h-9 w-9 shrink-0"
-                    aria-label={t("openMenu")}
+                    aria-label={t('openMenu')}
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
@@ -330,19 +330,19 @@ export function CustomersClient({
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     onClick={() => {
-                      setEditCustomer(c);
-                      setShowForm(true);
+                      setEditCustomer(c)
+                      setShowForm(true)
                     }}
                   >
                     <Pencil className="mr-2 h-4 w-4" />
-                    {tc("buttons.edit")}
+                    {tc('buttons.edit')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"
                     onClick={() => handleDelete(c.id, c.name)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    {tc("buttons.delete")}
+                    {tc('buttons.delete')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -355,181 +355,213 @@ export function CustomersClient({
       <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
         <TableContextMenuHint />
         <div className="overflow-auto max-h-[calc(100vh-220px)]">
-        <Table className="table-fixed">
-          <TableHeader className="sticky top-0 z-10 bg-background">
-            <TableRow>
-              <TableHead className="w-[40px]">
-                <Checkbox
-                  checked={
-                    data.customers.length > 0 && selected.size === data.customers.length
-                      ? true
-                      : selected.size > 0
-                        ? "indeterminate"
-                        : false
-                  }
-                  onCheckedChange={toggleSelectAll}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </TableHead>
-              <TableHead className="w-[80px]">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("number")}>
-                  {t("table.number")}<SortIcon column="number" />
-                </button>
-              </TableHead>
-              <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("name")}>
-                  {t("table.name")}<SortIcon column="name" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[20%] sm:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("company")}>
-                  {t("table.company")}<SortIcon column="company" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[16%] md:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("phone")}>
-                  {t("table.phone")}<SortIcon column="phone" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[22%] lg:table-cell">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("email")}>
-                  {t("table.email")}<SortIcon column="email" />
-                </button>
-              </TableHead>
-              <TableHead className="w-[80px]">
-                <button type="button" className="mx-auto flex items-center hover:text-foreground" onClick={() => handleSort("vehicles")}>
-                  {t("table.vehicles")}<SortIcon column="vehicles" />
-                </button>
-              </TableHead>
-              <TableHead className="w-[50px]" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.customers.length === 0 ? (
+          <Table className="table-fixed">
+            <TableHeader className="sticky top-0 z-10 bg-background">
               <TableRow>
-                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
-                  {search ? t("emptySearch") : t("empty")}
-                </TableCell>
+                <TableHead className="w-[40px]">
+                  <Checkbox
+                    checked={
+                      data.customers.length > 0 && selected.size === data.customers.length
+                        ? true
+                        : selected.size > 0
+                          ? 'indeterminate'
+                          : false
+                    }
+                    onCheckedChange={toggleSelectAll}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </TableHead>
+                <TableHead className="w-[80px]">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('number')}
+                  >
+                    {t('table.number')}
+                    <SortIcon column="number" />
+                  </button>
+                </TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('name')}
+                  >
+                    {t('table.name')}
+                    <SortIcon column="name" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden w-[20%] sm:table-cell">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('company')}
+                  >
+                    {t('table.company')}
+                    <SortIcon column="company" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden w-[16%] md:table-cell">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('phone')}
+                  >
+                    {t('table.phone')}
+                    <SortIcon column="phone" />
+                  </button>
+                </TableHead>
+                <TableHead className="hidden w-[22%] lg:table-cell">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('email')}
+                  >
+                    {t('table.email')}
+                    <SortIcon column="email" />
+                  </button>
+                </TableHead>
+                <TableHead className="w-[80px]">
+                  <button
+                    type="button"
+                    className="mx-auto flex items-center hover:text-foreground"
+                    onClick={() => handleSort('vehicles')}
+                  >
+                    {t('table.vehicles')}
+                    <SortIcon column="vehicles" />
+                  </button>
+                </TableHead>
+                <TableHead className="w-[50px]" />
               </TableRow>
-            ) : (
-              data.customers.map((c) => (
-                <ContextMenu key={c.id} modal={false}>
-                <ContextMenuTrigger asChild>
-                <TableRow
-                  className={`cursor-pointer ${selected.has(c.id) ? "bg-muted/50" : ""}`}
-                  {...interactiveRow(() => router.push(`/customers/${c.id}`))}
-                >
-                  <TableCell className="w-[40px]">
-                    <Checkbox
-                      checked={selected.has(c.id)}
-                      onCheckedChange={() => toggleSelect(c.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </TableCell>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {c.customerNumber || "-"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="truncate font-medium">{c.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
-                    {c.company || "-"}
-                  </TableCell>
-                  <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                    {c.phone || "-"}
-                  </TableCell>
-                  <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
-                    {c.email || "-"}
-                  </TableCell>
-                  <TableCell className="text-center">{c._count.vehicles}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("openMenu")}>
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditCustomer(c);
-                            setShowForm(true);
-                          }}
-                        >
-                          <Pencil className="mr-2 h-4 w-4" />
-                          {tc("buttons.edit")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(c.id, c.name);
-                          }}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {tc("buttons.delete")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+            </TableHeader>
+            <TableBody>
+              {data.customers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
+                    {search ? t('emptySearch') : t('empty')}
                   </TableCell>
                 </TableRow>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="min-w-52">
-                  <ContextMenuItem onClick={() => router.push(`/customers/${c.id}`)}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {tcm("open")}
-                  </ContextMenuItem>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem
-                    onClick={() => {
-                      setEditCustomer(c);
-                      setShowForm(true);
-                    }}
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    {tc("buttons.edit")}
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    variant="destructive"
-                    onClick={() => handleDelete(c.id, c.name)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {tc("buttons.delete")}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-                </ContextMenu>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                data.customers.map((c) => (
+                  <ContextMenu key={c.id} modal={false}>
+                    <ContextMenuTrigger asChild>
+                      <TableRow
+                        className={`cursor-pointer ${selected.has(c.id) ? 'bg-muted/50' : ''}`}
+                        {...interactiveRow(() => router.push(`/customers/${c.id}`))}
+                      >
+                        <TableCell className="w-[40px]">
+                          <Checkbox
+                            checked={selected.has(c.id)}
+                            onCheckedChange={() => toggleSelect(c.id)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {c.customerNumber || '-'}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                            <span className="truncate font-medium">{c.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
+                          {c.company || '-'}
+                        </TableCell>
+                        <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                          {c.phone || '-'}
+                        </TableCell>
+                        <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
+                          {c.email || '-'}
+                        </TableCell>
+                        <TableCell className="text-center">{c._count.vehicles}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                aria-label={t('openMenu')}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setEditCustomer(c)
+                                  setShowForm(true)
+                                }}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                {tc('buttons.edit')}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDelete(c.id, c.name)
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {tc('buttons.delete')}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="min-w-52">
+                      <ContextMenuItem onClick={() => router.push(`/customers/${c.id}`)}>
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        {tcm('open')}
+                      </ContextMenuItem>
+                      <ContextMenuSeparator />
+                      <ContextMenuItem
+                        onClick={() => {
+                          setEditCustomer(c)
+                          setShowForm(true)
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        {tc('buttons.edit')}
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        variant="destructive"
+                        onClick={() => handleDelete(c.id, c.name)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {tc('buttons.delete')}
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
 
       <DataTablePagination
-          total={data.total}
-          page={data.page}
-          pageSize={data.pageSize}
-          totalPages={data.totalPages}
-          onNavigate={navigate}
+        total={data.total}
+        page={data.page}
+        pageSize={data.pageSize}
+        totalPages={data.totalPages}
+        onNavigate={navigate}
       />
 
       <CustomerForm
         open={showForm}
         onOpenChange={(open) => {
-          setShowForm(open);
-          if (!open) setEditCustomer(null);
+          setShowForm(open)
+          if (!open) setEditCustomer(null)
         }}
         customer={editCustomer ?? undefined}
       />
 
-      <ImportCustomersDialog
-        open={showImport}
-        onOpenChange={setShowImport}
-      />
+      <ImportCustomersDialog open={showImport} onOpenChange={setShowImport} />
     </div>
-  );
+  )
 }

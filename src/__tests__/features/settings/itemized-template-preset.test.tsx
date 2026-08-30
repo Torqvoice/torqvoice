@@ -11,10 +11,11 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
-import { templatePresets } from '@/features/settings/Schema/templatePresets'
+import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
 import { getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
 
-const itemized = templatePresets.find((p) => p.id === 'itemized')
+const itemized = layoutPresets.find((p) => p.id === 'itemized')!
+const itemizedLayout = buildLayoutFromPreset(itemized)
 
 function visibility(config: { sections: { id: string; visible: boolean }[] }) {
   return Object.fromEntries(config.sections.map((s) => [s.id, s.visible]))
@@ -91,32 +92,31 @@ describe('itemized template preset', () => {
   })
 
   it('swaps the two tables for the combined one', () => {
-    expect(itemized?.layoutConfig).toBeDefined()
-    const seen = visibility(itemized!.layoutConfig!)
+    const seen = visibility(itemizedLayout)
     expect(seen.items_table).toBe(true)
     expect(seen.parts_table).toBe(false)
     expect(seen.labor_table).toBe(false)
   })
 
   it('stands the vehicle opposite the customer', () => {
-    const sections = itemized!.layoutConfig!.sections
+    const sections = itemizedLayout.sections
     expect(sections.find((s) => s.id === 'customer')?.column).toBe('left')
     expect(sections.find((s) => s.id === 'vehicle')?.column).toBe('right')
   })
 
   it('renders an invoice and a quote through the combined table', async () => {
     const template = {
-      primaryColor: itemized!.primaryColor,
-      fontFamily: itemized!.fontFamily,
-      headerStyle: itemized!.headerStyle,
-      layoutConfig: itemized!.layoutConfig,
+      primaryColor: itemized.template.primaryColor,
+      fontFamily: itemized.template.fontFamily,
+      headerStyle: itemized.template.headerStyle,
+      layoutConfig: itemizedLayout,
     }
 
     const invoice = await renderToBuffer(<InvoicePDF data={INVOICE_DATA} template={template} />)
     expect(invoice.byteLength).toBeGreaterThan(1000)
 
     const quote = await renderToBuffer(
-      <QuotePDF data={QUOTE_DATA} template={template} layoutConfig={itemized!.layoutConfig} />
+      <QuotePDF data={QUOTE_DATA} template={template} layoutConfig={itemizedLayout} />
     )
     expect(quote.byteLength).toBeGreaterThan(1000)
   })

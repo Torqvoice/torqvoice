@@ -1,5 +1,5 @@
-import { revalidateInventory } from "./revalidateInventory";
-import { processOrgLowStock } from "@/lib/cron/low-stock-alerts";
+import { revalidateInventory } from './revalidateInventory'
+import { processOrgLowStock } from '@/lib/cron/low-stock-alerts'
 
 /**
  * Call after anything changes stock: a job consuming parts, a quote being
@@ -20,11 +20,11 @@ import { processOrgLowStock } from "@/lib/cron/low-stock-alerts";
  * logged and swallowed — the hourly sweep remains the backstop.
  */
 export async function onInventoryChanged(organizationId: string) {
-  revalidateInventory();
+  revalidateInventory()
 
   try {
-    await processOrgLowStock(organizationId);
+    await processOrgLowStock(organizationId)
   } catch (error) {
-    console.error("[low-stock] immediate check failed:", error);
+    console.error('[low-stock] immediate check failed:', error)
   }
 }

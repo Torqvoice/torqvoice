@@ -14,10 +14,7 @@ import {
 } from '../Lib/conditions'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce(
-    (str, [key, val]) => str.replace(`{${key}}`, val),
-    template
-  )
+  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
 interface InspectionItem {
@@ -223,7 +220,11 @@ export function InspectionPDF({
 
   /** "2.4 mm · Limit: min 3 mm" — the recorded value next to its allowed range. */
   const valueText = (item: InspectionItem): string | null => {
-    if (item.inputType === 'measurement' && item.measuredValue !== null && item.measuredValue !== undefined) {
+    if (
+      item.inputType === 'measurement' &&
+      item.measuredValue !== null &&
+      item.measuredValue !== undefined
+    ) {
       const range = formatRange(item)
       const reading = `${item.measuredValue}${item.unit ? ` ${item.unit}` : ''}`
       return range ? `${reading} · ${label('limit')}: ${range}` : reading
@@ -279,7 +280,9 @@ export function InspectionPDF({
         <View style={{ flexDirection: 'row', gap: 12 }}>
           {workshop?.phone && (
             <Text style={{ fontSize: 8, color: gray }}>
-              {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
+              {labels.tel
+                ? fillTemplate(labels.tel, { phone: workshop.phone })
+                : `Tel: ${workshop.phone}`}
             </Text>
           )}
           {workshop?.email && <Text style={{ fontSize: 8, color: gray }}>{workshop.email}</Text>}
@@ -297,7 +300,12 @@ export function InspectionPDF({
   const renderModernHeader = () => (
     <View style={{ marginBottom: 24 }}>
       <View
-        style={{ backgroundColor: primaryColor, padding: 20, borderRadius: 4, marginHorizontal: -10 }}
+        style={{
+          backgroundColor: primaryColor,
+          padding: 20,
+          borderRadius: 4,
+          marginHorizontal: -10,
+        }}
       >
         <View
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12 }}
@@ -320,11 +328,15 @@ export function InspectionPDF({
             <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
               {workshop?.phone && (
                 <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
-                  {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
+                  {labels.tel
+                    ? fillTemplate(labels.tel, { phone: workshop.phone })
+                    : `Tel: ${workshop.phone}`}
                 </Text>
               )}
               {workshop?.email && (
-                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>{workshop.email}</Text>
+                <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)' }}>
+                  {workshop.email}
+                </Text>
               )}
             </View>
           </View>
@@ -367,13 +379,18 @@ export function InspectionPDF({
     <View style={styles.header}>
       <View>
         {showLogo && logoDataUri && (
-          <Image src={logoDataUri} style={{ width: 60, height: 60, marginBottom: 6, borderRadius: 4 }} />
+          <Image
+            src={logoDataUri}
+            style={{ width: 60, height: 60, marginBottom: 6, borderRadius: 4 }}
+          />
         )}
         {showCompanyName && <Text style={styles.brandName}>{shopName}</Text>}
         {workshop?.address && <Text style={styles.brandSub}>{workshop.address}</Text>}
         {workshop?.phone && (
           <Text style={styles.brandContact}>
-            {labels.tel ? fillTemplate(labels.tel, { phone: workshop.phone }) : `Tel: ${workshop.phone}`}
+            {labels.tel
+              ? fillTemplate(labels.tel, { phone: workshop.phone })
+              : `Tel: ${workshop.phone}`}
           </Text>
         )}
         {workshop?.email && <Text style={styles.brandContact}>{workshop.email}</Text>}
@@ -458,7 +475,9 @@ export function InspectionPDF({
             </Text>
             {data.vehicle.vin && (
               <Text style={styles.infoTextSmall}>
-                {labels.vin ? fillTemplate(labels.vin, { vin: data.vehicle.vin }) : `VIN: ${data.vehicle.vin}`}
+                {labels.vin
+                  ? fillTemplate(labels.vin, { vin: data.vehicle.vin })
+                  : `VIN: ${data.vehicle.vin}`}
               </Text>
             )}
             {data.vehicle.licensePlate && (
@@ -496,10 +515,31 @@ export function InspectionPDF({
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 16, marginTop: 4 }}>
           {(
             [
-              { key: 'inspected' as const, value: counts.inspected, bg: '#f3f4f6', color: '#374151', text: labels.inspected || 'Inspected' },
-              { key: 'pass' as const, value: counts.pass, ...CONDITION_TOKENS.pass.pdf, text: conditionText('pass') },
-              { key: 'attention' as const, value: counts.attention, ...CONDITION_TOKENS.attention.pdf, text: conditionText('attention') },
-              { key: 'fail' as const, value: counts.fail, ...CONDITION_TOKENS.fail.pdf, text: conditionText('fail') },
+              {
+                key: 'inspected' as const,
+                value: counts.inspected,
+                bg: '#f3f4f6',
+                color: '#374151',
+                text: labels.inspected || 'Inspected',
+              },
+              {
+                key: 'pass' as const,
+                value: counts.pass,
+                ...CONDITION_TOKENS.pass.pdf,
+                text: conditionText('pass'),
+              },
+              {
+                key: 'attention' as const,
+                value: counts.attention,
+                ...CONDITION_TOKENS.attention.pdf,
+                text: conditionText('attention'),
+              },
+              {
+                key: 'fail' as const,
+                value: counts.fail,
+                ...CONDITION_TOKENS.fail.pdf,
+                text: conditionText('fail'),
+              },
               ...(isBasic
                 ? []
                 : [
@@ -584,12 +624,8 @@ export function InspectionPDF({
                       </Text>
                     </View>
                   </View>
-                  {item.notes && (
-                    <Text style={{ fontSize: 9, marginTop: 3 }}>{item.notes}</Text>
-                  )}
-                  {value && (
-                    <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{value}</Text>
-                  )}
+                  {item.notes && <Text style={{ fontSize: 9, marginTop: 3 }}>{item.notes}</Text>}
+                  {value && <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{value}</Text>}
                   {renderPhotos(item)}
                 </View>
               )
@@ -608,7 +644,9 @@ export function InspectionPDF({
             <View style={styles.table}>
               <View style={styles.tableHeader}>
                 <Text style={{ ...styles.tableHeaderCell, width: '10%' }}>#</Text>
-                <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>{labels.item || 'Item'}</Text>
+                <Text style={{ ...styles.tableHeaderCell, width: '35%' }}>
+                  {labels.item || 'Item'}
+                </Text>
                 <Text style={{ ...styles.tableHeaderCell, width: '20%' }}>
                   {labels.statusColumn || 'Status'}
                 </Text>

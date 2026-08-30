@@ -1,48 +1,46 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { revalidatePath } from "next/cache";
-import { ALL_ORG_EMAIL_KEYS } from "../Schema/emailSettingsSchema";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { sendOrgMail, getOrgFromAddress } from "@/lib/email";
-import { demoGuard } from "@/lib/demo";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { revalidatePath } from 'next/cache'
+import { ALL_ORG_EMAIL_KEYS } from '../Schema/emailSettingsSchema'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
+import { demoGuard } from '@/lib/demo'
 
 export async function getEmailSettings() {
   return withAuth(
     async ({ organizationId }) => {
       const settings = await db.appSetting.findMany({
         where: { organizationId, key: { in: ALL_ORG_EMAIL_KEYS } },
-      });
-      const map: Record<string, string> = {};
+      })
+      const map: Record<string, string> = {}
       for (const s of settings) {
-        map[s.key] = s.value;
+        map[s.key] = s.value
       }
-      return map;
+      return map
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 export async function setEmailSettings(entries: Record<string, string>) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      demoGuard();
+      demoGuard()
       await db.$transaction(
         Object.entries(entries).map(([key, value]) =>
           db.appSetting.upsert({
             where: { organizationId_key: { organizationId, key } },
             update: { value },
             create: { userId, organizationId, key, value },
-          }),
-        ),
-      );
-      revalidatePath("/settings/email");
-      return true;
+          })
+        )
+      )
+      revalidatePath('/settings/email')
+      return true
     },
     {
       requiredPermissions: [
@@ -51,29 +49,29 @@ export async function setEmailSettings(entries: Record<string, string>) {
           subject: PermissionSubject.SETTINGS,
         },
       ],
-    },
-  );
+    }
+  )
 }
 
 export async function testOrgEmailConnection() {
   return withAuth(
     async ({ userId, organizationId }) => {
-      demoGuard();
+      demoGuard()
       const user = await db.user.findUnique({
         where: { id: userId },
         select: { email: true },
-      });
+      })
 
       if (!user?.email) {
-        throw new Error("Could not find your email address");
+        throw new Error('Could not find your email address')
       }
 
-      const from = await getOrgFromAddress(organizationId);
+      const from = await getOrgFromAddress(organizationId)
 
       await sendOrgMail(organizationId, {
         from,
         to: user.email,
-        subject: "Email Test - Torqvoice",
+        subject: 'Email Test - Torqvoice',
         html: `
           <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
             <h2>Email Configuration Test</h2>
@@ -86,9 +84,9 @@ export async function testOrgEmailConnection() {
             </p>
           </div>
         `,
-      });
+      })
 
-      return { sentTo: user.email };
+      return { sentTo: user.email }
     },
     {
       requiredPermissions: [
@@ -97,6 +95,6 @@ export async function testOrgEmailConnection() {
           subject: PermissionSubject.SETTINGS,
         },
       ],
-    },
-  );
+    }
+  )
 }

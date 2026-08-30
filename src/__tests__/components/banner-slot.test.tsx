@@ -11,15 +11,7 @@ import { describe, it, expect } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import { BannerSlotProvider, useBannerSlot, BANNER_PRIORITY } from '@/components/banner-slot'
 
-function Strip({
-  id,
-  priority,
-  wants = true,
-}: {
-  id: string
-  priority: number
-  wants?: boolean
-}) {
+function Strip({ id, priority, wants = true }: { id: string; priority: number; wants?: boolean }) {
   const mine = useBannerSlot(id, priority, wants)
   return mine ? <div data-testid={`strip-${id}`}>{id}</div> : null
 }

@@ -1,12 +1,8 @@
-import { Text, View } from '@react-pdf/renderer'
-import type { Style } from '@react-pdf/types'
-
-interface CustomFieldsProps {
-  fields: Array<{ fieldId?: string; label: string; value: string; fieldType: string }>
-  styles: Record<string, Style>
-  labels?: Record<string, string>
-}
-
+/**
+ * How a custom field's stored value reads on paper. The panels themselves are
+ * drawn by the document model; this stays because the mappers still need to
+ * turn a checkbox into a word and a date into a date.
+ */
 export function formatFieldValue(value: string, fieldType: string): string {
   if (fieldType === 'checkbox') {
     return value === 'true' || value === '1' ? 'Yes' : 'No'
@@ -24,25 +20,4 @@ export function formatFieldValue(value: string, fieldType: string): string {
   }
 
   return value
-}
-
-export function CustomFields({ fields, styles, labels }: CustomFieldsProps) {
-  const visibleFields = fields.filter((f) => f.value !== '' && f.value != null)
-
-  if (visibleFields.length === 0) {
-    return null
-  }
-
-  const title = labels?.customFieldsTitle || 'Additional Information'
-
-  return (
-    <View style={styles.infoBox}>
-      <Text style={styles.infoLabel}>{title}</Text>
-      {visibleFields.map((field, index) => (
-        <Text key={index} style={styles.infoTextSmall}>
-          {field.label}: {formatFieldValue(field.value, field.fieldType)}
-        </Text>
-      ))}
-    </View>
-  )
 }

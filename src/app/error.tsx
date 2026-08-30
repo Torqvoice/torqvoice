@@ -1,23 +1,23 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { Wrench } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
+import { Wrench } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js error boundary convention
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
-  const t = useTranslations("common");
+  const t = useTranslations('common')
 
   useEffect(() => {
-    console.error(error);
-  }, [error]);
+    console.error(error)
+  }, [error])
 
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center p-4">
@@ -32,18 +32,16 @@ export default function Error({
         </div>
 
         <p className="mb-2 font-mono text-6xl font-bold tracking-tighter text-destructive">500</p>
-        <h1 className="text-xl font-semibold tracking-tight">{t("errorPage.title")}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("errorPage.description")}
-        </p>
+        <h1 className="text-xl font-semibold tracking-tight">{t('errorPage.title')}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t('errorPage.description')}</p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button onClick={reset}>{t("errorPage.tryAgain")}</Button>
+          <Button onClick={reset}>{t('errorPage.tryAgain')}</Button>
           <Button variant="outline" asChild>
-            <a href="/">{t("errorPage.backToDashboard")}</a>
+            <a href="/">{t('errorPage.backToDashboard')}</a>
           </Button>
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -59,9 +59,7 @@ function ResetPasswordInner() {
   if (!token) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm text-muted-foreground">
-          {t('invalidToken')}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('invalidToken')}</p>
         <Link href="/auth/forgot-password">
           <Button variant="outline" className="h-11 w-full">
             {t('requestNewLink')}
@@ -74,9 +72,7 @@ function ResetPasswordInner() {
   if (success) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm text-muted-foreground">
-          {t('successMessage')}
-        </p>
+        <p className="text-sm text-muted-foreground">{t('successMessage')}</p>
         <Link href="/auth/sign-in">
           <Button className="h-11 w-full">{tc('buttons.signIn')}</Button>
         </Link>

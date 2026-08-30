@@ -86,6 +86,7 @@ export async function buildInvoicePdfBuffer(
           address: true,
           company: true,
           taxId: true,
+          customerNumber: true,
         },
       },
       vehicle: {
@@ -106,6 +107,7 @@ export async function buildInvoicePdfBuffer(
               address: true,
               company: true,
               taxId: true,
+              customerNumber: true,
             },
           },
         },
@@ -195,7 +197,9 @@ export async function buildInvoicePdfBuffer(
     showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as 'symbol' | 'code',
+    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
+      | 'symbol'
+      | 'code',
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
@@ -233,6 +237,15 @@ export async function buildInvoicePdfBuffer(
 
   const template = {
     primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
+    backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
+    textColor: settingsMap['invoice.textColor'] || undefined,
+    companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
+    frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
+    frameShadow: settingsMap['invoice.frameShadow'],
+    frameRadius: Number(settingsMap['invoice.frameRadius']) || 0,
+    frameSide: (settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+      | 'left'
+      | 'right',
     fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
     showLogo: settingsMap['invoice.showLogo'] !== 'false',
     showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
@@ -273,6 +286,7 @@ export async function buildInvoicePdfBuffer(
       address: settingsMap['workshop.address'] || '',
       phone: settingsMap['workshop.phone'] || '',
       email: settingsMap['workshop.email'] || '',
+      slogan: settingsMap['workshop.slogan'] || undefined,
     },
     invoiceSettings,
     paymentSummary,

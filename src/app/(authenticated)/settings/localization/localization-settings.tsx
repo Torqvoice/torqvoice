@@ -267,326 +267,302 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       <ReadOnlyBanner />
 
       {/* Language */}
-      <AppCard
-        icon={Globe}
-        title={t('localization.languageTitle')}
-        contentClassName="space-y-4"
-      >
-          <p className="text-sm text-muted-foreground">{t('localization.languageDescription')}</p>
+      <AppCard icon={Globe} title={t('localization.languageTitle')} contentClassName="space-y-4">
+        <p className="text-sm text-muted-foreground">{t('localization.languageDescription')}</p>
+        <div className="space-y-2">
+          <Label>{t('localization.language')}</Label>
+          <Select value={currentLocale} onValueChange={handleLanguageChange}>
+            <SelectTrigger className="w-64">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {locales.map((loc) => (
+                <SelectItem key={loc} value={loc}>
+                  {localeNames[loc]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Separator />
+
+        <div className="flex items-center justify-between">
+          <div className="pr-4">
+            <Label>{t('localization.forceCustomerLocale')}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t('localization.forceCustomerLocaleHint')}
+            </p>
+          </div>
+          <Switch checked={forceCustomerLocale} onCheckedChange={handleForceCustomerLocaleChange} />
+        </div>
+
+        <Separator />
+
+        <ReadOnlyWrapper>
           <div className="space-y-2">
-            <Label>{t('localization.language')}</Label>
-            <Select value={currentLocale} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-64">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {locales.map((loc) => (
-                  <SelectItem key={loc} value={loc}>
-                    {localeNames[loc]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="pr-4">
-              <Label>{t('localization.forceCustomerLocale')}</Label>
-              <p className="text-xs text-muted-foreground">
-                {t('localization.forceCustomerLocaleHint')}
-              </p>
-            </div>
-            <Switch
-              checked={forceCustomerLocale}
-              onCheckedChange={handleForceCustomerLocaleChange}
-            />
-          </div>
-
-          <Separator />
-
-          <ReadOnlyWrapper>
-            <div className="space-y-2">
-              <Label htmlFor="default-country-code">{t('localization.defaultCountryCode')}</Label>
-              <Input
-                id="default-country-code"
-                value={defaultCountryCode}
-                onChange={(e) => setDefaultCountryCode(e.target.value)}
-                onBlur={handleCountryCodeBlur}
-                placeholder="+47"
-                inputMode="tel"
-                aria-invalid={countryCodeInvalid || undefined}
-                className={cn(
-                  'w-32 font-mono',
-                  countryCodeInvalid && 'border-destructive focus-visible:ring-destructive'
-                )}
-              />
-              {countryCodeInvalid ? (
-                <p className="text-xs text-destructive">
-                  {t('localization.defaultCountryCodeInvalid')}
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  {t('localization.defaultCountryCodeHint')}
-                </p>
+            <Label htmlFor="default-country-code">{t('localization.defaultCountryCode')}</Label>
+            <Input
+              id="default-country-code"
+              value={defaultCountryCode}
+              onChange={(e) => setDefaultCountryCode(e.target.value)}
+              onBlur={handleCountryCodeBlur}
+              placeholder="+47"
+              inputMode="tel"
+              aria-invalid={countryCodeInvalid || undefined}
+              className={cn(
+                'w-32 font-mono',
+                countryCodeInvalid && 'border-destructive focus-visible:ring-destructive'
               )}
-            </div>
-          </ReadOnlyWrapper>
-        </AppCard>
+            />
+            {countryCodeInvalid ? (
+              <p className="text-xs text-destructive">
+                {t('localization.defaultCountryCodeInvalid')}
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                {t('localization.defaultCountryCodeHint')}
+              </p>
+            )}
+          </div>
+        </ReadOnlyWrapper>
+      </AppCard>
 
       {/* Currency */}
-      <AppCard
-        icon={Coins}
-        title={t('currency.title')}
-        contentClassName="space-y-6"
-      >
-          <p className="text-sm text-muted-foreground">{t('currency.description')}</p>
+      <AppCard icon={Coins} title={t('currency.title')} contentClassName="space-y-6">
+        <p className="text-sm text-muted-foreground">{t('currency.description')}</p>
 
-          <ReadOnlyWrapper>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label>{t('currency.currencyLabel')}</Label>
-                <Popover open={currencyOpen} onOpenChange={setCurrencyOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={currencyOpen}
-                      className="w-64 justify-between font-normal"
-                    >
-                      {currencyCode} &mdash; {t('currency.currencies.' + currencyCode)}
-                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-64 p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder={t('currency.searchCurrency')} />
-                      <CommandList>
-                        <CommandEmpty>{t('currency.noCurrencyFound')}</CommandEmpty>
-                        <CommandGroup>
-                          {CURRENCIES.map((c) => (
-                            <CommandItem
-                              key={c.code}
-                              value={`${c.code} ${t('currency.currencies.' + c.code)}`}
-                              onSelect={() => {
-                                setCurrencyCode(c.code)
-                                setCurrencyOpen(false)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  currencyCode === c.code ? 'opacity-100' : 'opacity-0'
-                                )}
-                              />
-                              {c.code} &mdash; {t('currency.currencies.' + c.code)}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t('currency.formatTitle')}</Label>
-                <Select
-                  value={currencyFormat}
-                  onValueChange={(v) => setCurrencyFormat(v === 'code' ? 'code' : 'symbol')}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="symbol" suppressHydrationWarning>
-                      {mounted
-                        ? t('currency.formatSymbolLabel', {
-                            value: formatCurrency(1000, currencyCode, 'symbol'),
-                          })
-                        : t('currency.formatSymbolName')}
-                    </SelectItem>
-                    <SelectItem value="code" suppressHydrationWarning>
-                      {mounted
-                        ? t('currency.formatCodeLabel', {
-                            value: formatCurrency(1000, currencyCode, 'code'),
-                          })
-                        : t('currency.formatCodeName')}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                  {mounted
-                    ? t('currency.previewLabel', {
-                        value: formatCurrency(1234.56, currencyCode, currencyFormat),
-                      })
-                    : ' '}
-                </p>
-              </div>
+        <ReadOnlyWrapper>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>{t('currency.currencyLabel')}</Label>
+              <Popover open={currencyOpen} onOpenChange={setCurrencyOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={currencyOpen}
+                    className="w-64 justify-between font-normal"
+                  >
+                    {currencyCode} &mdash; {t('currency.currencies.' + currencyCode)}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder={t('currency.searchCurrency')} />
+                    <CommandList>
+                      <CommandEmpty>{t('currency.noCurrencyFound')}</CommandEmpty>
+                      <CommandGroup>
+                        {CURRENCIES.map((c) => (
+                          <CommandItem
+                            key={c.code}
+                            value={`${c.code} ${t('currency.currencies.' + c.code)}`}
+                            onSelect={() => {
+                              setCurrencyCode(c.code)
+                              setCurrencyOpen(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                currencyCode === c.code ? 'opacity-100' : 'opacity-0'
+                              )}
+                            />
+                            {c.code} &mdash; {t('currency.currencies.' + c.code)}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
-          </ReadOnlyWrapper>
-        </AppCard>
+
+            <div className="space-y-2">
+              <Label>{t('currency.formatTitle')}</Label>
+              <Select
+                value={currencyFormat}
+                onValueChange={(v) => setCurrencyFormat(v === 'code' ? 'code' : 'symbol')}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="symbol" suppressHydrationWarning>
+                    {mounted
+                      ? t('currency.formatSymbolLabel', {
+                          value: formatCurrency(1000, currencyCode, 'symbol'),
+                        })
+                      : t('currency.formatSymbolName')}
+                  </SelectItem>
+                  <SelectItem value="code" suppressHydrationWarning>
+                    {mounted
+                      ? t('currency.formatCodeLabel', {
+                          value: formatCurrency(1000, currencyCode, 'code'),
+                        })
+                      : t('currency.formatCodeName')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                {mounted
+                  ? t('currency.previewLabel', {
+                      value: formatCurrency(1234.56, currencyCode, currencyFormat),
+                    })
+                  : ' '}
+              </p>
+            </div>
+          </div>
+        </ReadOnlyWrapper>
+      </AppCard>
 
       {/* Date & Time */}
-      <AppCard
-        icon={Calendar}
-        title={t('appearance.dateTimeTitle')}
-        contentClassName="space-y-6"
-      >
-          <p className="text-sm text-muted-foreground">{t('appearance.dateTimeDescription')}</p>
+      <AppCard icon={Calendar} title={t('appearance.dateTimeTitle')} contentClassName="space-y-6">
+        <p className="text-sm text-muted-foreground">{t('appearance.dateTimeDescription')}</p>
 
-          <ReadOnlyWrapper>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label>{t('appearance.dateFormat')}</Label>
-                <Select value={dateFormat} onValueChange={setDateFormat}>
-                  <SelectTrigger className="w-64">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DATE_FORMAT_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label} ({opt.example})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        <ReadOnlyWrapper>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label>{t('appearance.dateFormat')}</Label>
+              <Select value={dateFormat} onValueChange={setDateFormat}>
+                <SelectTrigger className="w-64">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DATE_FORMAT_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label} ({opt.example})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="space-y-2">
-                <Label>{t('appearance.timeFormat')}</Label>
-                <Select value={timeFormat} onValueChange={setTimeFormat}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="12h">{t('appearance.time12h')}</SelectItem>
-                    <SelectItem value="24h">{t('appearance.time24h')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>{t('appearance.timeFormat')}</Label>
+              <Select value={timeFormat} onValueChange={setTimeFormat}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="12h">{t('appearance.time12h')}</SelectItem>
+                  <SelectItem value="24h">{t('appearance.time24h')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="space-y-2">
-                <Label>{t('workshop.weekStartDay')}</Label>
-                <Select value={weekStartDay} onValueChange={setWeekStartDay}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[0, 1, 2, 3, 4, 5, 6].map((d) => (
-                      <SelectItem key={d} value={String(d)}>
-                        {t(`workshop.weekDays.${d}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>{t('workshop.weekStartDay')}</Label>
+              <Select value={weekStartDay} onValueChange={setWeekStartDay}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[0, 1, 2, 3, 4, 5, 6].map((d) => (
+                    <SelectItem key={d} value={String(d)}>
+                      {t(`workshop.weekDays.${d}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="space-y-2">
-                <Label>{t('appearance.timezone')}</Label>
-                <Popover open={timezoneOpen} onOpenChange={setTimezoneOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={timezoneOpen}
-                      className="w-72 justify-between font-normal"
-                    >
-                      {timezone ? timezone.replace(/_/g, ' ') : t('appearance.timezoneAuto')}
-                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-72 p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder={t('appearance.searchTimezone')} />
-                      <CommandList>
-                        <CommandEmpty>{t('appearance.noTimezoneFound')}</CommandEmpty>
-                        <CommandGroup>
+            <div className="space-y-2">
+              <Label>{t('appearance.timezone')}</Label>
+              <Popover open={timezoneOpen} onOpenChange={setTimezoneOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={timezoneOpen}
+                    className="w-72 justify-between font-normal"
+                  >
+                    {timezone ? timezone.replace(/_/g, ' ') : t('appearance.timezoneAuto')}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72 p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder={t('appearance.searchTimezone')} />
+                    <CommandList>
+                      <CommandEmpty>{t('appearance.noTimezoneFound')}</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value={t('appearance.timezoneAuto')}
+                          onSelect={() => {
+                            setTimezone('')
+                            setTimezoneOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn('mr-2 h-4 w-4', !timezone ? 'opacity-100' : 'opacity-0')}
+                          />
+                          {t('appearance.timezoneAuto')}
+                        </CommandItem>
+                        {TIMEZONE_OPTIONS.map((tz) => (
                           <CommandItem
-                            value={t('appearance.timezoneAuto')}
+                            key={tz}
+                            value={tz.replace(/_/g, ' ')}
                             onSelect={() => {
-                              setTimezone('')
+                              setTimezone(tz)
                               setTimezoneOpen(false)
                             }}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                !timezone ? 'opacity-100' : 'opacity-0'
+                                timezone === tz ? 'opacity-100' : 'opacity-0'
                               )}
                             />
-                            {t('appearance.timezoneAuto')}
+                            {tz.replace(/_/g, ' ')}
                           </CommandItem>
-                          {TIMEZONE_OPTIONS.map((tz) => (
-                            <CommandItem
-                              key={tz}
-                              value={tz.replace(/_/g, ' ')}
-                              onSelect={() => {
-                                setTimezone(tz)
-                                setTimezoneOpen(false)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  timezone === tz ? 'opacity-100' : 'opacity-0'
-                                )}
-                              />
-                              {tz.replace(/_/g, ' ')}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <p className="text-xs text-muted-foreground">{t('appearance.timezoneHint')}</p>
-              </div>
-
-              <div className="rounded-lg border p-3 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2 mb-1">
-                  <Clock className="h-3.5 w-3.5" />
-                  <span className="font-medium text-foreground">
-                    {t('appearance.previewLabel')}
-                  </span>
-                </div>
-                <p>
-                  {t('appearance.dateLabel')}:{' '}
-                  <span className="font-medium text-foreground">
-                    {mounted ? formatDate(new Date(), dateFormat, timezone || undefined) : ''}
-                  </span>
-                </p>
-                <p>
-                  {t('appearance.dateTimeLabel')}:{' '}
-                  <span className="font-medium text-foreground">
-                    {mounted
-                      ? formatDateTime(
-                          new Date(),
-                          dateFormat,
-                          timeFormat as '12h' | '24h',
-                          timezone || undefined
-                        )
-                      : ''}
-                  </span>
-                </p>
-              </div>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <p className="text-xs text-muted-foreground">{t('appearance.timezoneHint')}</p>
             </div>
-          </ReadOnlyWrapper>
-        </AppCard>
+
+            <div className="rounded-lg border p-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 mb-1">
+                <Clock className="h-3.5 w-3.5" />
+                <span className="font-medium text-foreground">{t('appearance.previewLabel')}</span>
+              </div>
+              <p>
+                {t('appearance.dateLabel')}:{' '}
+                <span className="font-medium text-foreground">
+                  {mounted ? formatDate(new Date(), dateFormat, timezone || undefined) : ''}
+                </span>
+              </p>
+              <p>
+                {t('appearance.dateTimeLabel')}:{' '}
+                <span className="font-medium text-foreground">
+                  {mounted
+                    ? formatDateTime(
+                        new Date(),
+                        dateFormat,
+                        timeFormat as '12h' | '24h',
+                        timezone || undefined
+                      )
+                    : ''}
+                </span>
+              </p>
+            </div>
+          </div>
+        </ReadOnlyWrapper>
+      </AppCard>
 
       {/* Theme */}
-      <AppCard
-        icon={Palette}
-        title={t('appearance.title')}
-        contentClassName="space-y-4"
-      >
-          <div>
-            <Label className="text-sm font-medium">{t('appearance.themeLabel')}</Label>
-            <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
-          </div>
-          <ThemePicker />
-        </AppCard>
+      <AppCard icon={Palette} title={t('appearance.title')} contentClassName="space-y-4">
+        <div>
+          <Label className="text-sm font-medium">{t('appearance.themeLabel')}</Label>
+          <p className="text-xs text-muted-foreground">{t('appearance.themeHint')}</p>
+        </div>
+        <ThemePicker />
+      </AppCard>
 
       {/* Save */}
       <SaveButton>

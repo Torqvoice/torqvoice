@@ -22,6 +22,9 @@
     "items": "Kalemler",
     "pos": "No",
     "unitOfMeasure": "Birim",
+    "invoiceNumberLabel": "Fatura No",
+    "customerNumberLabel": "Müşteri No",
+    "dateLabel": "Tarih",
     "total": "Toplam",
     "labor": "İşçilik",
     "hours": "Saat",
@@ -67,7 +70,9 @@
     "professionalWorkshop": "Profesyonel Atölye Yönetimi",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Ek bilgiler",
+    "telegramConnect": "Telegram'dan bize yazın"
   },
   "quote": {
     "title": "TEKLİF",
@@ -103,7 +108,10 @@
     "validityFooter30": "Bu teklif 30 gün süreyle geçerlidir",
     "viewPortal": "Portalınızı görüntüleyin: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Ek bilgiler",
+    "quoteNumberLabel": "Teklif No.",
+    "validUntilLabel": "Geçerlilik tarihi"
   },
   "inspection": {
     "title": "ARAÇ MUAYENESİ",

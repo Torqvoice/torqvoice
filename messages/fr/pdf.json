@@ -22,6 +22,9 @@
     "items": "Articles",
     "pos": "N°",
     "unitOfMeasure": "Unité",
+    "invoiceNumberLabel": "N° de facture",
+    "customerNumberLabel": "N° de client",
+    "dateLabel": "Date",
     "total": "Total",
     "labor": "Main-d'œuvre",
     "hours": "Heures",
@@ -67,7 +70,9 @@
     "professionalWorkshop": "Gestion professionnelle d'atelier",
     "tel": "Tél. : {phone}",
     "org": "Org. : {org}",
-    "qtyOrHours": "Unité / Heures"
+    "qtyOrHours": "Unité / Heures",
+    "customFieldsTitle": "Informations complémentaires",
+    "telegramConnect": "Discutez avec nous sur Telegram"
   },
   "quote": {
     "title": "DEVIS",
@@ -103,7 +108,10 @@
     "validityFooter30": "Ce devis est valable 30 jours",
     "viewPortal": "Consultez votre portail : {url}",
     "tel": "Tél. : {phone}",
-    "qtyOrHours": "Unité / Heures"
+    "qtyOrHours": "Unité / Heures",
+    "customFieldsTitle": "Informations complémentaires",
+    "quoteNumberLabel": "N° de devis",
+    "validUntilLabel": "Valable jusqu'au"
   },
   "inspection": {
     "title": "INSPECTION DU VÉHICULE",

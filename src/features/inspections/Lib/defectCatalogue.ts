@@ -42,7 +42,10 @@ const BY_CODE: Record<string, CatalogueEntry[]> = {
   ],
   '0.2': [
     ['VIN missing or not to be found', 'fail'],
-    ['VIN incomplete, illegible, obviously falsified or does not match the vehicle documents', 'fail'],
+    [
+      'VIN incomplete, illegible, obviously falsified or does not match the vehicle documents',
+      'fail',
+    ],
     ['Vehicle documents illegible or contain a factual inaccuracy', 'attention'],
   ],
 
@@ -54,7 +57,10 @@ const BY_CODE: Record<string, CatalogueEntry[]> = {
   ],
   '1.1.3': [
     ['Pressure build-up time insufficient for effective braking', 'fail'],
-    ['Insufficient pressure to assist braking at least twice after the warning has operated', 'dangerous'],
+    [
+      'Insufficient pressure to assist braking at least twice after the warning has operated',
+      'dangerous',
+    ],
     ['Air or antifreeze leak', 'fail'],
     ['External damage likely to affect the function of the braking system', 'dangerous'],
   ],
@@ -196,7 +202,10 @@ const BY_CODE: Record<string, CatalogueEntry[]> = {
 
   // 3. Visibility
   '3.1': [
-    ['Obstruction within the driver field of vision that materially affects the forward or side view', 'fail'],
+    [
+      'Obstruction within the driver field of vision that materially affects the forward or side view',
+      'fail',
+    ],
     ['Obstruction that seriously affects the view through the windscreen', 'dangerous'],
   ],
   '3.2': [

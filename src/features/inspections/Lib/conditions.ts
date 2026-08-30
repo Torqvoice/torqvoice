@@ -17,13 +17,7 @@
  * major one. Only `dangerous` is new. Templates that predate the EU scale keep
  * grading on the `basic` scale and never offer the dangerous step.
  */
-export const CONDITIONS = [
-  'pass',
-  'attention',
-  'fail',
-  'dangerous',
-  'not_inspected',
-] as const
+export const CONDITIONS = ['pass', 'attention', 'fail', 'dangerous', 'not_inspected'] as const
 
 export type Condition = (typeof CONDITIONS)[number]
 
@@ -56,7 +50,9 @@ export function isFailingDefect(condition: string): boolean {
 export function worstCondition(conditions: string[]): Condition {
   let worst: Condition = 'not_inspected'
   for (const c of conditions) {
-    const candidate = (CONDITIONS as readonly string[]).includes(c) ? (c as Condition) : 'not_inspected'
+    const candidate = (CONDITIONS as readonly string[]).includes(c)
+      ? (c as Condition)
+      : 'not_inspected'
     if (SEVERITY_RANK[candidate] > SEVERITY_RANK[worst]) worst = candidate
   }
   return worst
@@ -101,7 +97,8 @@ export const CONDITION_TOKENS: Record<Condition, ConditionToken> = {
     short: 'OK',
     hint: 'Meets requirements. Nothing to report.',
     soft: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-900',
-    solid: 'bg-emerald-700 text-white border-emerald-700 dark:bg-emerald-600 dark:border-emerald-600',
+    solid:
+      'bg-emerald-700 text-white border-emerald-700 dark:bg-emerald-600 dark:border-emerald-600',
     fg: 'text-emerald-800 dark:text-emerald-300',
     pdf: { bg: '#dcfce7', text: '#14532d' },
     bar: 'bg-emerald-600',
@@ -261,7 +258,8 @@ export const TEST_RESULT_TOKENS: Record<TestResult, TestResultToken> = {
   fail_dangerous: {
     key: 'fail_dangerous',
     label: 'Fail — dangerous defects',
-    detail: 'The vehicle must not be used on the public road until the dangerous deficiencies are repaired.',
+    detail:
+      'The vehicle must not be used on the public road until the dangerous deficiencies are repaired.',
     soft: 'bg-red-100 text-red-950 border-red-500 dark:bg-red-900 dark:text-red-50 dark:border-red-600',
     fg: 'text-red-900 dark:text-red-200',
     pdf: { bg: '#fecaca', text: '#450a0a' },
@@ -347,14 +345,40 @@ export function deriveTestResult(
 export type InputType = 'condition' | 'measurement' | 'text' | 'choice'
 
 export const INPUT_TYPES: { value: InputType; label: string; hint: string }[] = [
-  { value: 'condition', label: 'Defect grading', hint: 'Technician grades the check against the defect scale.' },
-  { value: 'measurement', label: 'Measurement', hint: 'Records a number in a unit, graded automatically against a range.' },
-  { value: 'text', label: 'Free text', hint: 'Records a written observation, e.g. a tyre brand or a fault code.' },
+  {
+    value: 'condition',
+    label: 'Defect grading',
+    hint: 'Technician grades the check against the defect scale.',
+  },
+  {
+    value: 'measurement',
+    label: 'Measurement',
+    hint: 'Records a number in a unit, graded automatically against a range.',
+  },
+  {
+    value: 'text',
+    label: 'Free text',
+    hint: 'Records a written observation, e.g. a tyre brand or a fault code.',
+  },
   { value: 'choice', label: 'Choice', hint: 'Technician picks one of a fixed list of answers.' },
 ]
 
 /** Units offered in the builder. Free text is still allowed. */
-export const COMMON_UNITS = ['mm', 'cm', 'bar', 'psi', '%', 'V', 'A', 'Nm', '°C', 'kg', 'l', 'dB', 'm⁻¹']
+export const COMMON_UNITS = [
+  'mm',
+  'cm',
+  'bar',
+  'psi',
+  '%',
+  'V',
+  'A',
+  'Nm',
+  '°C',
+  'kg',
+  'l',
+  'dB',
+  'm⁻¹',
+]
 
 /**
  * Grades a measurement against the check's allowed range. Out-of-range readings
@@ -375,7 +399,9 @@ export function gradeMeasurement(
   if (!belowMin && !aboveMax) return 'pass'
 
   const severity = check.defaultSeverity
-  return severity === 'dangerous' || severity === 'fail' || severity === 'attention' ? severity : 'fail'
+  return severity === 'dangerous' || severity === 'fail' || severity === 'attention'
+    ? severity
+    : 'fail'
 }
 
 /** "1.6–8 mm", "min 1.6 mm", "max 4 bar" — the range shown next to the input. */

@@ -69,7 +69,10 @@ export function PresenterKanbanView({
         {STATUS_COLUMNS.map((col) => {
           const count = dayAssignments.filter((a) => a.status === col.key).length
           return (
-            <div key={col.key} className="flex items-center justify-center gap-2 border-b border-l p-2">
+            <div
+              key={col.key}
+              className="flex items-center justify-center gap-2 border-b border-l p-2"
+            >
               <div className={`h-2.5 w-2.5 rounded-full ${col.color}`} />
               <span className="text-sm font-semibold">{t(`statusLabels.${col.i18nKey}`)}</span>
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">{count}</span>
@@ -89,7 +92,9 @@ export function PresenterKanbanView({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{tech.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {techJobs.length === 1 ? t('job', { count: techJobs.length }) : t('jobs', { count: techJobs.length })}
+                    {techJobs.length === 1
+                      ? t('job', { count: techJobs.length })
+                      : t('jobs', { count: techJobs.length })}
                   </p>
                 </div>
               </div>
@@ -99,7 +104,10 @@ export function PresenterKanbanView({
                   .filter((a) => a.status === col.key)
                   .sort((a, b) => a.sortOrder - b.sortOrder)
                 return (
-                  <div key={`${tech.id}-${col.key}`} className="space-y-1.5 overflow-y-auto border-b border-l p-1.5">
+                  <div
+                    key={`${tech.id}-${col.key}`}
+                    className="space-y-1.5 overflow-y-auto border-b border-l p-1.5"
+                  >
                     {cellJobs.map((job) => (
                       <KanbanCard key={job.id} job={job} />
                     ))}

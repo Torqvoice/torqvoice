@@ -6,6 +6,7 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { FeatureLockedMessage } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
 import {
   getInvoiceLayoutConfig,
@@ -29,18 +30,32 @@ export default async function TemplatePage() {
     )
   }
 
-  const [result, inspectionTemplatesResult, invoiceLayoutResult, quoteLayoutResult] =
+  const [result, inspectionTemplatesResult, invoiceLayoutResult, quoteLayoutResult, organization] =
     await Promise.all([
       getSettings([
         SETTING_KEYS.INVOICE_PRIMARY_COLOR,
+        SETTING_KEYS.INVOICE_BACKGROUND_COLOR,
+        SETTING_KEYS.INVOICE_TEXT_COLOR,
+        SETTING_KEYS.INVOICE_COMPANY_TEXT_COLOR,
+        SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR,
+        SETTING_KEYS.INVOICE_FRAME_SHADOW,
         SETTING_KEYS.INVOICE_FONT_FAMILY,
         SETTING_KEYS.INVOICE_HEADER_STYLE,
         SETTING_KEYS.INVOICE_LOGO_SIZE,
         SETTING_KEYS.QUOTE_PRIMARY_COLOR,
+        SETTING_KEYS.QUOTE_BACKGROUND_COLOR,
+        SETTING_KEYS.QUOTE_TEXT_COLOR,
+        SETTING_KEYS.QUOTE_COMPANY_TEXT_COLOR,
+        SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR,
+        SETTING_KEYS.QUOTE_FRAME_SHADOW,
         SETTING_KEYS.QUOTE_FONT_FAMILY,
         SETTING_KEYS.QUOTE_HEADER_STYLE,
         SETTING_KEYS.QUOTE_LOGO_SIZE,
         SETTING_KEYS.COMPANY_LOGO,
+        SETTING_KEYS.WORKSHOP_ADDRESS,
+        SETTING_KEYS.WORKSHOP_SLOGAN,
+        SETTING_KEYS.WORKSHOP_PHONE,
+        SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
         SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
         SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
@@ -53,6 +68,13 @@ export default async function TemplatePage() {
       getTemplates(),
       getInvoiceLayoutConfig(),
       getQuoteLayoutConfig(),
+      // Read straight off the organization, the way the real PDF does. Going
+      // through the membership list would miss anyone viewing a workshop they
+      // are not a member of.
+      db.organization.findUnique({
+        where: { id: data.organizationId },
+        select: { name: true },
+      }),
     ])
 
   const settings = result.success && result.data ? result.data : {}
@@ -62,6 +84,16 @@ export default async function TemplatePage() {
       : []
 
   const t = await getTranslations('settings')
+
+  // The preview is meant to look like this workshop's own paper, so it gets the
+  // real company details rather than the sample shop's.
+  const workshop = {
+    name: organization?.name,
+    address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
+    phone: settings[SETTING_KEYS.WORKSHOP_PHONE],
+    email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
+    slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN],
+  }
 
   const smsDefaultMap: Record<string, string> = {
     [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]: t.raw('templates.smsDefaults.invoiceReady'),
@@ -85,12 +117,22 @@ export default async function TemplatePage() {
     <TemplateSettings
       initialInvoiceValues={{
         primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
+        backgroundColor: settings[SETTING_KEYS.INVOICE_BACKGROUND_COLOR] || '',
+        textColor: settings[SETTING_KEYS.INVOICE_TEXT_COLOR] || '',
+        companyTextColor: settings[SETTING_KEYS.INVOICE_COMPANY_TEXT_COLOR] || '',
+        frameBorderColor: settings[SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR] || '',
+        frameShadow: settings[SETTING_KEYS.INVOICE_FRAME_SHADOW] || 'true',
         fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
         headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
         logoSize: Number(settings[SETTING_KEYS.INVOICE_LOGO_SIZE]) || 100,
       }}
       initialQuoteValues={{
         primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || '#d97706',
+        backgroundColor: settings[SETTING_KEYS.QUOTE_BACKGROUND_COLOR] || '',
+        textColor: settings[SETTING_KEYS.QUOTE_TEXT_COLOR] || '',
+        companyTextColor: settings[SETTING_KEYS.QUOTE_COMPANY_TEXT_COLOR] || '',
+        frameBorderColor: settings[SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR] || '',
+        frameShadow: settings[SETTING_KEYS.QUOTE_FRAME_SHADOW] || 'true',
         fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || 'Helvetica',
         headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || 'standard',
         logoSize: Number(settings[SETTING_KEYS.QUOTE_LOGO_SIZE]) || 100,
@@ -99,6 +141,7 @@ export default async function TemplatePage() {
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
+      workshop={workshop}
       invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
     />

@@ -18,36 +18,30 @@ export default async function AboutSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <AppCard
-        icon={Info}
-        title={t('about.title')}
-        contentClassName="space-y-4"
-      >
-          <p className="text-sm text-muted-foreground">
-            {t('about.description')}
-          </p>
-          <Separator />
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{t('about.version')}</span>
-              <span className="text-sm font-medium">{version}</span>
-            </div>
-            {links.map((link) => (
-              <div key={link.href} className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{link.label}</span>
-                <Link
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                >
-                  {link.label}
-                  <ExternalLink className="h-3 w-3" />
-                </Link>
-              </div>
-            ))}
+      <AppCard icon={Info} title={t('about.title')} contentClassName="space-y-4">
+        <p className="text-sm text-muted-foreground">{t('about.description')}</p>
+        <Separator />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{t('about.version')}</span>
+            <span className="text-sm font-medium">{version}</span>
           </div>
-        </AppCard>
+          {links.map((link) => (
+            <div key={link.href} className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">{link.label}</span>
+              <Link
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              >
+                {link.label}
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </AppCard>
     </div>
   )
 }

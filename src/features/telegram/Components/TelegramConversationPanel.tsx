@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ArrowLeft, MoreVertical, Send, Trash2, User } from "lucide-react";
-import { TelegramConversation } from "./TelegramConversation";
-import type { TelegramThread, TelegramMessage } from "./TelegramMessagesClient";
+} from '@/components/ui/dropdown-menu'
+import { ArrowLeft, MoreVertical, Send, Trash2, User } from 'lucide-react'
+import { TelegramConversation } from './TelegramConversation'
+import type { TelegramThread, TelegramMessage } from './TelegramMessagesClient'
 
 export function TelegramConversationPanel({
   selectedCustomerId,
@@ -21,26 +21,23 @@ export function TelegramConversationPanel({
   onDeleteThread,
   t,
 }: {
-  selectedCustomerId: string | null;
+  selectedCustomerId: string | null
   conversation: {
-    messages: TelegramMessage[];
-    nextCursor: string | null;
-    customerName: string;
-    telegramChatId: string | null;
-  } | null;
-  loadingConversation: boolean;
-  threads: TelegramThread[];
-  onBack: () => void;
-  onDeleteThread: (thread: TelegramThread) => void;
+    messages: TelegramMessage[]
+    nextCursor: string | null
+    customerName: string
+    telegramChatId: string | null
+  } | null
+  loadingConversation: boolean
+  threads: TelegramThread[]
+  onBack: () => void
+  onDeleteThread: (thread: TelegramThread) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any;
+  t: any
 }) {
   return (
     <div
-      className={cn(
-        "flex min-w-0 flex-1 flex-col",
-        selectedCustomerId ? "flex" : "hidden sm:flex",
-      )}
+      className={cn('flex min-w-0 flex-1 flex-col', selectedCustomerId ? 'flex' : 'hidden sm:flex')}
     >
       {selectedCustomerId && conversation && !loadingConversation ? (
         <>
@@ -58,9 +55,7 @@ export function TelegramConversationPanel({
               <User className="h-4 w-4" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">
-                {conversation.customerName}
-              </p>
+              <p className="truncate text-sm font-semibold">{conversation.customerName}</p>
               {conversation.telegramChatId && (
                 <p className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Send className="h-3 w-3" />
@@ -83,14 +78,12 @@ export function TelegramConversationPanel({
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => {
-                    const thread = threads.find(
-                      (th) => th.customerId === selectedCustomerId,
-                    );
-                    if (thread) onDeleteThread(thread);
+                    const thread = threads.find((th) => th.customerId === selectedCustomerId)
+                    if (thread) onDeleteThread(thread)
                   }}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  {t("deleteConversation")}
+                  {t('deleteConversation')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -112,9 +105,9 @@ export function TelegramConversationPanel({
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground">
           <Send className="mb-3 h-10 w-10 text-muted-foreground/40" />
-          <p className="text-sm">{t("selectConversation")}</p>
+          <p className="text-sm">{t('selectConversation')}</p>
         </div>
       )}
     </div>
-  );
+  )
 }

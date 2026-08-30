@@ -24,7 +24,7 @@ const DEFAULT_DELAY_MS = 350
 export function useDebouncedSearch(
   initial: string,
   onCommit: (term: string | undefined) => void,
-  delayMs: number = DEFAULT_DELAY_MS,
+  delayMs: number = DEFAULT_DELAY_MS
 ) {
   const [value, setValue] = useState(initial)
 
@@ -92,7 +92,7 @@ export function useDebouncedSearch(
       committedRef.current = next
       onCommitRef.current(next || undefined)
     },
-    [value],
+    [value]
   )
 
   return { value, setValue, commitNow }

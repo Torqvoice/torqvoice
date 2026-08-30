@@ -3,21 +3,38 @@ import path from 'node:path'
 import { Font } from '@react-pdf/renderer'
 
 const fontsDir = path.join(process.cwd(), 'src/assets/fonts')
-const regularDataUri = `data:font/truetype;base64,${readFileSync(path.join(fontsDir, 'Roboto-Regular.ttf')).toString('base64')}`
-const boldDataUri = `data:font/truetype;base64,${readFileSync(path.join(fontsDir, 'Roboto-Bold.ttf')).toString('base64')}`
 
-Font.register({
-  family: 'Roboto',
-  fonts: [
-    { src: regularDataUri, fontWeight: 400 },
-    { src: boldDataUri, fontWeight: 700 },
-  ],
-})
+const dataUri = (file: string) =>
+  `data:font/truetype;base64,${readFileSync(path.join(fontsDir, file)).toString('base64')}`
 
-Font.register({
-  family: 'Roboto-Bold',
-  src: boldDataUri,
-})
+/**
+ * Every family a document can use, embedded rather than named: react-pdf writes
+ * the font file into the PDF, and the built-in PDF fonts are Latin-1 only,
+ * which would drop Cyrillic on the floor.
+ */
+const FAMILIES = [
+  { family: 'Roboto', regular: 'Roboto-Regular.ttf', bold: 'Roboto-Bold.ttf' },
+  { family: 'Noto Serif', regular: 'NotoSerif-Regular.ttf', bold: 'NotoSerif-Bold.ttf' },
+  { family: 'Noto Sans Mono', regular: 'NotoSansMono-Regular.ttf', bold: 'NotoSansMono-Bold.ttf' },
+  { family: 'Open Sans', regular: 'OpenSans-Regular.ttf', bold: 'OpenSans-Bold.ttf' },
+  { family: 'Lato', regular: 'Lato-Regular.ttf', bold: 'Lato-Bold.ttf' },
+  { family: 'Montserrat', regular: 'Montserrat-Regular.ttf', bold: 'Montserrat-Bold.ttf' },
+  { family: 'PT Sans', regular: 'PTSans-Regular.ttf', bold: 'PTSans-Bold.ttf' },
+]
+
+for (const { family, regular, bold } of FAMILIES) {
+  const regularUri = dataUri(regular)
+  const boldUri = dataUri(bold)
+  Font.register({
+    family,
+    fonts: [
+      { src: regularUri, fontWeight: 400 },
+      { src: boldUri, fontWeight: 700 },
+    ],
+  })
+  // A separate bold family, because the styles pick weight by family name.
+  Font.register({ family: `${family}-Bold`, src: boldUri })
+}
 
 // Disable word hyphenation so Cyrillic text is not broken mid-word
 Font.registerHyphenationCallback((word) => [word])

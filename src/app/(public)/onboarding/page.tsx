@@ -1,8 +1,8 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { OnboardingForm } from "@/features/onboarding/Components/OnboardingForm";
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { OnboardingForm } from '@/features/onboarding/Components/OnboardingForm'
 
 export default async function OnboardingPage({
   searchParams,
@@ -11,20 +11,20 @@ export default async function OnboardingPage({
 }) {
   const params = await searchParams
   const redirectTo = params.redirect
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth.api.getSession({ headers: await headers() })
 
   if (!session?.user?.id) {
-    redirect("/auth/sign-in");
+    redirect('/auth/sign-in')
   }
 
   // If user already has an org, skip onboarding
   const membership = await db.organizationMember.findFirst({
     where: { userId: session.user.id },
     select: { organizationId: true },
-  });
+  })
 
   if (membership) {
-    redirect("/");
+    redirect('/')
   }
 
   return (
@@ -35,5 +35,5 @@ export default async function OnboardingPage({
       </div>
       <OnboardingForm redirectTo={redirectTo} />
     </div>
-  );
+  )
 }

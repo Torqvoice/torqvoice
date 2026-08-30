@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import { useState, useCallback, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useState, useCallback, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   DndContext,
   closestCenter,
@@ -11,15 +11,15 @@ import {
   useSensors,
   type DragEndEvent,
   type UniqueIdentifier,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core'
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable,
   arrayMove,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import {
   GripVertical,
   Eye,
@@ -31,18 +31,18 @@ import {
   Plus,
   Columns2,
   Square,
-} from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+  SquareDashed,
+} from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
+import { buildLayoutFromPreset, layoutPresets } from '../Schema/layoutPresets'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
 import {
   BUILTIN_SECTIONS,
   SECTIONS_WITH_FIELDS,
+  BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
   getBuiltinFieldsForSection,
   getBuiltinFieldName,
@@ -52,30 +52,32 @@ import {
   type InvoiceLayoutConfig,
   type InvoiceSection,
   type InvoiceFieldConfig,
-} from "../Schema/invoiceLayoutSchema";
+  type InvoiceSectionStyle,
+  type InvoiceDocumentStyle,
+} from '../Schema/invoiceLayoutSchema'
 
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
 
 interface FieldDef {
-  id: string;
-  name: string;
-  label: string;
-  fieldType: string;
-  entityType: string;
-  options: string | null;
-  required: boolean;
-  sortOrder: number;
-  isActive: boolean;
+  id: string
+  name: string
+  label: string
+  fieldType: string
+  entityType: string
+  options: string | null
+  required: boolean
+  sortOrder: number
+  isActive: boolean
 }
 
 interface InvoiceLayoutEditorProps {
-  config: InvoiceLayoutConfig;
-  onChange: (config: InvoiceLayoutConfig) => void;
-  documentType: "invoice" | "quote";
-  customFields?: FieldDef[];
-  hiddenSections?: Set<string>;
+  config: InvoiceLayoutConfig
+  onChange: (config: InvoiceLayoutConfig) => void
+  documentType: 'invoice' | 'quote'
+  customFields?: FieldDef[]
+  hiddenSections?: Set<string>
 }
 
 // ---------------------------------------------------------------------------
@@ -83,42 +85,43 @@ interface InvoiceLayoutEditorProps {
 // ---------------------------------------------------------------------------
 
 function getSectionName(id: string, t: ReturnType<typeof useTranslations>): string {
-  const key = `layoutEditor.sections.${id}` as Parameters<typeof t>[0];
-  const translated = t(key);
-  // If the key is not found, next-intl returns the key itself
-  if (translated !== key) return translated;
-  const builtin = BUILTIN_SECTIONS.find((s) => s.id === id);
-  return builtin?.name ?? id;
+  // Ask before reading. next-intl raises on a key it cannot resolve rather than
+  // handing back the key, so calling t() first would take the editor down with
+  // it instead of falling through to the built-in name.
+  const key = `layoutEditor.sections.${id}` as Parameters<typeof t>[0]
+  if (t.has(key)) return t(key)
+  const builtin = BUILTIN_SECTIONS.find((s) => s.id === id)
+  return builtin?.name ?? id
 }
 
 function getFieldDisplayName(
   fieldId: string,
   t: ReturnType<typeof useTranslations>,
-  customFields?: FieldDef[],
+  customFields?: FieldDef[]
 ): string {
   if (isCustomFieldId(fieldId)) {
-    const defId = fromCustomFieldId(fieldId);
-    const def = customFields?.find((cf) => cf.id === defId);
-    return def?.label ?? def?.name ?? fieldId;
+    const defId = fromCustomFieldId(fieldId)
+    const def = customFields?.find((cf) => cf.id === defId)
+    return def?.label ?? def?.name ?? fieldId
   }
-  const key = `layoutEditor.fields.${fieldId}` as Parameters<typeof t>[0];
-  const translated = t(key);
-  if (translated !== key) return translated;
-  return getBuiltinFieldName(fieldId) ?? fieldId;
+  // See getSectionName: a missing key raises, so it has to be checked first.
+  const key = `layoutEditor.fields.${fieldId}` as Parameters<typeof t>[0]
+  if (t.has(key)) return t(key)
+  return getBuiltinFieldName(fieldId) ?? fieldId
 }
 
 function getAssignedCustomFieldIds(config: InvoiceLayoutConfig): Set<string> {
-  const assigned = new Set<string>();
+  const assigned = new Set<string>()
   for (const section of config.sections) {
     if (section.fields) {
       for (const field of section.fields) {
         if (isCustomFieldId(field.id)) {
-          assigned.add(fromCustomFieldId(field.id));
+          assigned.add(fromCustomFieldId(field.id))
         }
       }
     }
   }
-  return assigned;
+  return assigned
 }
 
 // ---------------------------------------------------------------------------
@@ -134,27 +137,22 @@ function SortableField({
   onRemove,
   t,
 }: {
-  field: InvoiceFieldConfig;
-  sectionId: string;
-  isBuiltin: boolean;
-  customFields?: FieldDef[];
-  onToggleVisibility: (sectionId: string, fieldId: string) => void;
-  onRemove: (sectionId: string, fieldId: string) => void;
-  t: ReturnType<typeof useTranslations>;
+  field: InvoiceFieldConfig
+  sectionId: string
+  isBuiltin: boolean
+  customFields?: FieldDef[]
+  onToggleVisibility: (sectionId: string, fieldId: string) => void
+  onRemove: (sectionId: string, fieldId: string) => void
+  t: ReturnType<typeof useTranslations>
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: `field::${sectionId}::${field.id}` });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `field::${sectionId}::${field.id}`,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }
 
   return (
     <div
@@ -162,10 +160,10 @@ function SortableField({
       style={style}
       {...attributes}
       className={cn(
-        "flex items-center gap-3 rounded-md border border-dashed px-3 py-2 transition-colors",
-        isBuiltin ? "bg-muted/30" : "bg-accent/20 border-accent/40",
-        !field.visible && "opacity-60",
-        isDragging && "z-10 shadow-md",
+        'flex items-center gap-3 rounded-md border border-dashed px-3 py-2 transition-colors',
+        isBuiltin ? 'bg-muted/30' : 'bg-accent/20 border-accent/40',
+        !field.visible && 'opacity-60',
+        isDragging && 'z-10 shadow-md'
       )}
     >
       <button
@@ -209,7 +207,7 @@ function SortableField({
         )}
       </div>
     </div>
-  );
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -222,14 +220,14 @@ function AddCustomFieldButton({
   onAdd,
   t,
 }: {
-  sectionId: string;
-  availableFields: FieldDef[];
-  onAdd: (sectionId: string, definitionId: string) => void;
-  t: ReturnType<typeof useTranslations>;
+  sectionId: string
+  availableFields: FieldDef[]
+  onAdd: (sectionId: string, definitionId: string) => void
+  t: ReturnType<typeof useTranslations>
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  if (availableFields.length === 0) return null;
+  if (availableFields.length === 0) return null
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -252,8 +250,8 @@ function AddCustomFieldButton({
               type="button"
               className="flex w-full items-center rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
               onClick={() => {
-                onAdd(sectionId, cf.id);
-                setOpen(false);
+                onAdd(sectionId, cf.id)
+                setOpen(false)
               }}
             >
               {cf.label || cf.name}
@@ -262,7 +260,7 @@ function AddCustomFieldButton({
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -279,42 +277,40 @@ function FieldsPanel({
   onReorderFields,
   t,
 }: {
-  section: InvoiceSection;
-  customFields?: FieldDef[];
-  availableCustomFields: FieldDef[];
-  onToggleFieldVisibility: (sectionId: string, fieldId: string) => void;
-  onRemoveField: (sectionId: string, fieldId: string) => void;
-  onAddCustomField: (sectionId: string, definitionId: string) => void;
-  onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void;
-  t: ReturnType<typeof useTranslations>;
+  section: InvoiceSection
+  customFields?: FieldDef[]
+  availableCustomFields: FieldDef[]
+  onToggleFieldVisibility: (sectionId: string, fieldId: string) => void
+  onRemoveField: (sectionId: string, fieldId: string) => void
+  onAddCustomField: (sectionId: string, definitionId: string) => void
+  onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void
+  t: ReturnType<typeof useTranslations>
 }) {
-  const builtinFields = getBuiltinFieldsForSection(section.id);
-  const builtinFieldIds = new Set(builtinFields.map((f) => f.id));
-  const fields = section.fields ?? [];
+  const builtinFields = getBuiltinFieldsForSection(section.id)
+  const builtinFieldIds = new Set(builtinFields.map((f) => f.id))
+  const fields = section.fields ?? []
 
-  const fieldSortableIds: UniqueIdentifier[] = fields.map(
-    (f) => `field::${section.id}::${f.id}`,
-  );
+  const fieldSortableIds: UniqueIdentifier[] = fields.map((f) => `field::${section.id}::${f.id}`)
 
   const fieldSensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+    })
+  )
 
   const handleFieldDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const prefix = `field::${section.id}::`;
-    const activeFieldId = String(active.id).replace(prefix, "");
-    const overFieldId = String(over.id).replace(prefix, "");
-    const oldIndex = fields.findIndex((f) => f.id === activeFieldId);
-    const newIndex = fields.findIndex((f) => f.id === overFieldId);
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const prefix = `field::${section.id}::`
+    const activeFieldId = String(active.id).replace(prefix, '')
+    const overFieldId = String(over.id).replace(prefix, '')
+    const oldIndex = fields.findIndex((f) => f.id === activeFieldId)
+    const newIndex = fields.findIndex((f) => f.id === overFieldId)
     if (oldIndex !== -1 && newIndex !== -1) {
-      onReorderFields(section.id, oldIndex, newIndex);
+      onReorderFields(section.id, oldIndex, newIndex)
     }
-  };
+  }
 
   return (
     <div className="mt-1 space-y-1">
@@ -324,10 +320,7 @@ function FieldsPanel({
         collisionDetection={closestCenter}
         onDragEnd={handleFieldDragEnd}
       >
-        <SortableContext
-          items={fieldSortableIds}
-          strategy={verticalListSortingStrategy}
-        >
+        <SortableContext items={fieldSortableIds} strategy={verticalListSortingStrategy}>
           {fields.map((field) => (
             <SortableField
               key={field.id}
@@ -349,7 +342,7 @@ function FieldsPanel({
         t={t}
       />
     </div>
-  );
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -361,37 +354,41 @@ function WidthToggle({
   onChange,
   t,
 }: {
-  column: "left" | "right" | undefined;
-  onChange: (column: "left" | "right" | undefined) => void;
-  t: ReturnType<typeof useTranslations>;
+  column: 'left' | 'right' | undefined
+  onChange: (column: 'left' | 'right' | undefined) => void
+  t: ReturnType<typeof useTranslations>
 }) {
   // Cycle: undefined (full) → left → right → undefined
-  const isHalf = column === "left" || column === "right";
+  const isHalf = column === 'left' || column === 'right'
 
   return (
     <button
       type="button"
       title={
         isHalf
-          ? t('layoutEditor.halfWidthHint', { column: column === "left" ? t('layoutEditor.left') : t('layoutEditor.right') })
+          ? t('layoutEditor.halfWidthHint', {
+              column: column === 'left' ? t('layoutEditor.left') : t('layoutEditor.right'),
+            })
           : t('layoutEditor.fullWidthHint')
       }
       onClick={() => {
-        if (!column) onChange("left");
-        else if (column === "left") onChange("right");
-        else onChange(undefined);
+        if (!column) onChange('left')
+        else if (column === 'left') onChange('right')
+        else onChange(undefined)
       }}
       className={cn(
-        "flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium transition-colors",
+        'flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium transition-colors',
         isHalf
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
+          ? 'border-primary/30 bg-primary/10 text-primary'
+          : 'border-transparent bg-muted text-muted-foreground hover:bg-muted/80'
       )}
     >
       {isHalf ? (
         <>
           <Columns2 className="h-3 w-3" />
-          <span className="uppercase">{column === "left" ? t('layoutEditor.L') : t('layoutEditor.R')}</span>
+          <span className="uppercase">
+            {column === 'left' ? t('layoutEditor.L') : t('layoutEditor.R')}
+          </span>
         </>
       ) : (
         <>
@@ -400,7 +397,319 @@ function WidthToggle({
         </>
       )}
     </button>
-  );
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Style controls
+// ---------------------------------------------------------------------------
+
+/** One color on one line, at the density the rest of these settings use. */
+function StyleColor({
+  label,
+  value,
+  fallback,
+  onChange,
+}: {
+  label: string
+  value?: string
+  fallback: string
+  onChange: (value: string | undefined) => void
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">{label}</span>
+      <input
+        type="color"
+        value={value || fallback}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-6 w-8 shrink-0 cursor-pointer rounded border p-0.5"
+      />
+      <button
+        type="button"
+        onClick={() => onChange(undefined)}
+        disabled={!value}
+        className="text-[11px] text-muted-foreground hover:text-foreground disabled:opacity-30"
+      >
+        ×
+      </button>
+    </div>
+  )
+}
+
+function StyleFont({
+  label,
+  value,
+  onChange,
+  t,
+}: {
+  label: string
+  value?: string
+  onChange: (value: string | undefined) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">{label}</span>
+      <select
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value || undefined)}
+        className="h-6 rounded border bg-background px-1 text-[11px]"
+      >
+        <option value="">{t('layoutEditor.style.fontInherit')}</option>
+        <option value="Helvetica">{t('templates.helveticaDefault')}</option>
+        <option value="Times-Roman">{t('templates.timesRoman')}</option>
+        <option value="Courier">{t('templates.courier')}</option>
+      </select>
+    </div>
+  )
+}
+
+function StyleNumber({
+  label,
+  value,
+  placeholder,
+  min,
+  max,
+  onChange,
+}: {
+  label: string
+  value?: number
+  placeholder: string
+  min: number
+  max: number
+  onChange: (value: number | undefined) => void
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">{label}</span>
+      <input
+        type="number"
+        min={min}
+        max={max}
+        value={value ?? ''}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
+        className="h-6 w-16 rounded border bg-background px-1.5 text-[11px]"
+      />
+    </div>
+  )
+}
+
+/** The five keys a section can override. */
+function SectionStylePanel({
+  style,
+  onChange,
+  t,
+}: {
+  style?: InvoiceSectionStyle
+  onChange: (style: InvoiceSectionStyle | undefined) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  const set = (patch: InvoiceSectionStyle) => {
+    const next = { ...style, ...patch }
+    // An empty bag is the same as none, and keeps the saved layout clean.
+    onChange(Object.values(next).some((v) => v !== undefined && v !== '') ? next : undefined)
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t pt-2">
+      <StyleColor
+        label={t('layoutEditor.style.textColor')}
+        value={style?.textColor}
+        fallback="#111827"
+        onChange={(textColor) => set({ textColor })}
+      />
+      <StyleColor
+        label={t('layoutEditor.style.labelColor')}
+        value={style?.labelColor}
+        fallback="#d97706"
+        onChange={(labelColor) => set({ labelColor })}
+      />
+      <StyleColor
+        label={t('layoutEditor.style.backgroundColor')}
+        value={style?.backgroundColor}
+        fallback="#f3f4f6"
+        onChange={(backgroundColor) => set({ backgroundColor })}
+      />
+      <StyleColor
+        label={t('layoutEditor.style.borderColor')}
+        value={style?.borderColor}
+        fallback="#111827"
+        onChange={(borderColor) => set({ borderColor })}
+      />
+      <StyleNumber
+        label={t('layoutEditor.style.fontSize')}
+        value={style?.fontSize}
+        placeholder={String(BASE_FONT_SIZE)}
+        min={5}
+        max={24}
+        onChange={(fontSize) => set({ fontSize })}
+      />
+      <StyleFont
+        label={t('layoutEditor.style.fontFamily')}
+        value={style?.fontFamily}
+        onChange={(fontFamily) => set({ fontFamily })}
+        t={t}
+      />
+    </div>
+  )
+}
+
+/** Appearance that belongs to the whole sheet rather than to one section. */
+function DocumentStylePanel({
+  document,
+  onChange,
+  t,
+}: {
+  document?: InvoiceDocumentStyle
+  onChange: (document: InvoiceDocumentStyle | undefined) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  const [open, setOpen] = useState(false)
+  const set = (patch: InvoiceDocumentStyle) => {
+    const next = { ...document, ...patch }
+    onChange(Object.values(next).some((v) => v !== undefined && v !== '') ? next : undefined)
+  }
+
+  return (
+    <div className="mb-3 rounded-lg border bg-card px-3 py-2">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center gap-2 text-sm font-medium"
+      >
+        {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        {t('layoutEditor.style.documentTitle')}
+        <span className="ml-auto text-[11px] font-normal text-muted-foreground">
+          {t('layoutEditor.style.documentHint')}
+        </span>
+      </button>
+
+      {open && (
+        <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t pt-2 sm:grid-cols-3">
+          <StyleNumber
+            label={t('layoutEditor.style.fontSize')}
+            value={document?.fontSize}
+            placeholder={String(BASE_FONT_SIZE)}
+            min={6}
+            max={14}
+            onChange={(fontSize) => set({ fontSize })}
+          />
+          <StyleFont
+            label={t('layoutEditor.style.fontFamily')}
+            value={document?.fontFamily}
+            onChange={(fontFamily) => set({ fontFamily })}
+            t={t}
+          />
+          <StyleNumber
+            label={t('layoutEditor.style.rowPadding')}
+            value={document?.rowPadding}
+            placeholder="5"
+            min={0}
+            max={12}
+            onChange={(rowPadding) => set({ rowPadding })}
+          />
+          <StyleNumber
+            label={t('layoutEditor.style.margin')}
+            value={document?.margin}
+            placeholder="40"
+            min={12}
+            max={72}
+            onChange={(margin) => set({ margin })}
+          />
+          <StyleColor
+            label={t('layoutEditor.style.accentColor')}
+            value={document?.accentColor}
+            fallback="#d97706"
+            onChange={(accentColor) => set({ accentColor })}
+          />
+          <StyleColor
+            label={t('layoutEditor.style.stripeColor')}
+            value={document?.stripeColor}
+            fallback="#f3f4f6"
+            onChange={(stripeColor) => set({ stripeColor })}
+          />
+          <div className="flex items-center gap-1.5">
+            <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">
+              {t('layoutEditor.style.stripes')}
+            </span>
+            <Switch
+              size="sm"
+              checked={document?.stripes !== false}
+              onCheckedChange={(stripes) => set({ stripes })}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Preset row – starting arrangements
+// ---------------------------------------------------------------------------
+
+function PresetRow({
+  onPick,
+  t,
+}: {
+  onPick: (config: InvoiceLayoutConfig) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  return (
+    <div className="mb-3 space-y-1.5">
+      <p className="text-xs font-medium">{t('layoutEditor.presetsTitle')}</p>
+      <div className="flex flex-wrap gap-2">
+        {layoutPresets.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            title={t(`layoutEditor.presets.${preset.id}.description` as Parameters<typeof t>[0])}
+            onClick={() => onPick(buildLayoutFromPreset(preset))}
+            className="rounded-md border px-2.5 py-1.5 text-xs transition-colors hover:bg-muted"
+          >
+            {t(`layoutEditor.presets.${preset.id}.name` as Parameters<typeof t>[0])}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">{t('layoutEditor.presetsHint')}</p>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Box toggle – whether the section prints inside a panel
+// ---------------------------------------------------------------------------
+
+function BoxToggle({
+  boxed,
+  onChange,
+  t,
+}: {
+  boxed: boolean | undefined
+  onChange: (boxed: boolean) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  // Unset reads as boxed: that is what every layout did before the choice.
+  const isBoxed = boxed !== false
+
+  return (
+    <button
+      type="button"
+      title={isBoxed ? t('layoutEditor.boxedHint') : t('layoutEditor.plainHint')}
+      onClick={() => onChange(!isBoxed)}
+      className={cn(
+        'flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium transition-colors',
+        isBoxed
+          ? 'border-primary/30 bg-primary/10 text-primary'
+          : 'border-transparent bg-muted text-muted-foreground hover:bg-muted/80'
+      )}
+    >
+      <SquareDashed className="h-3 w-3" />
+      <span>{isBoxed ? t('layoutEditor.boxed') : t('layoutEditor.plain')}</span>
+    </button>
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -416,52 +725,54 @@ function SectionCard({
   onAddCustomField,
   onReorderFields,
   onSetColumn,
+  onSetBoxed,
+  onSetStyle,
   isExpanded,
   onToggleExpand,
   availableCustomFields,
   t,
 }: {
-  section: InvoiceSection;
-  customFields?: FieldDef[];
-  onToggleVisibility: (sectionId: string) => void;
-  onToggleFieldVisibility: (sectionId: string, fieldId: string) => void;
-  onRemoveField: (sectionId: string, fieldId: string) => void;
-  onAddCustomField: (sectionId: string, definitionId: string) => void;
-  onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void;
-  onSetColumn: (sectionId: string, column: "left" | "right" | undefined) => void;
-  isExpanded: boolean;
-  onToggleExpand: (sectionId: string) => void;
-  availableCustomFields: FieldDef[];
-  t: ReturnType<typeof useTranslations>;
+  section: InvoiceSection
+  customFields?: FieldDef[]
+  onToggleVisibility: (sectionId: string) => void
+  onToggleFieldVisibility: (sectionId: string, fieldId: string) => void
+  onRemoveField: (sectionId: string, fieldId: string) => void
+  onAddCustomField: (sectionId: string, definitionId: string) => void
+  onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void
+  onSetColumn: (sectionId: string, column: 'left' | 'right' | undefined) => void
+  onSetBoxed: (sectionId: string, boxed: boolean) => void
+  onSetStyle: (sectionId: string, style: InvoiceSectionStyle | undefined) => void
+  isExpanded: boolean
+  onToggleExpand: (sectionId: string) => void
+  availableCustomFields: FieldDef[]
+  t: ReturnType<typeof useTranslations>
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: section.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: section.id,
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }
 
-  const hasFields = SECTIONS_WITH_FIELDS.has(section.id);
-  const isColumnEligible = COLUMN_ELIGIBLE_SECTIONS.has(section.id);
+  const hasFields = SECTIONS_WITH_FIELDS.has(section.id)
+  // Every section can be styled, so every section can be opened.
+  const canExpand = true
+  const isColumnEligible = COLUMN_ELIGIBLE_SECTIONS.has(section.id)
+  const isBoxEligible = BOXED_ELIGIBLE_SECTIONS.has(section.id)
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className={cn(isDragging && "z-10 opacity-50")}
+      className={cn(isDragging && 'z-10 opacity-50')}
     >
       <div
         className={cn(
-          "flex items-center gap-2 rounded-lg border bg-card px-3 py-2 transition-colors",
-          !section.visible && "opacity-50",
+          'flex items-center gap-2 rounded-lg border bg-card px-3 py-2 transition-colors',
+          !section.visible && 'opacity-50'
         )}
       >
         {/* Drag handle */}
@@ -473,8 +784,9 @@ function SectionCard({
           <GripVertical className="h-4 w-4" />
         </button>
 
-        {/* Expand toggle for sections with fields */}
-        {hasFields && (
+        {/* Every section opens: those with fields to pick them, all of them
+            to style. */}
+        {canExpand && (
           <button
             type="button"
             onClick={() => onToggleExpand(section.id)}
@@ -489,9 +801,16 @@ function SectionCard({
         )}
 
         {/* Section name */}
-        <span className="flex-1 text-sm font-medium">
-          {getSectionName(section.id, t)}
-        </span>
+        <span className="flex-1 text-sm font-medium">{getSectionName(section.id, t)}</span>
+
+        {/* Box toggle (only for sections that print in a panel) */}
+        {isBoxEligible && (
+          <BoxToggle
+            boxed={section.boxed}
+            onChange={(boxed) => onSetBoxed(section.id, boxed)}
+            t={t}
+          />
+        )}
 
         {/* Width toggle (only for column-eligible sections) */}
         {isColumnEligible && (
@@ -517,23 +836,29 @@ function SectionCard({
         </div>
       </div>
 
-      {/* Expandable fields panel */}
-      {hasFields && isExpanded && (
-        <div className="ml-6">
-          <FieldsPanel
-            section={section}
-            customFields={customFields}
-            availableCustomFields={availableCustomFields}
-            onToggleFieldVisibility={onToggleFieldVisibility}
-            onRemoveField={onRemoveField}
-            onAddCustomField={onAddCustomField}
-            onReorderFields={onReorderFields}
+      {isExpanded && (
+        <div className="ml-6 space-y-2 rounded-lg border bg-muted/30 p-2">
+          {hasFields && (
+            <FieldsPanel
+              section={section}
+              customFields={customFields}
+              availableCustomFields={availableCustomFields}
+              onToggleFieldVisibility={onToggleFieldVisibility}
+              onRemoveField={onRemoveField}
+              onAddCustomField={onAddCustomField}
+              onReorderFields={onReorderFields}
+              t={t}
+            />
+          )}
+          <SectionStylePanel
+            style={section.style}
+            onChange={(style) => onSetStyle(section.id, style)}
             t={t}
           />
         </div>
       )}
     </div>
-  );
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -547,141 +872,157 @@ export function InvoiceLayoutEditor({
   customFields,
   hiddenSections,
 }: InvoiceLayoutEditorProps) {
-  const t = useTranslations('settings');
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(),
-  );
+  const t = useTranslations('settings')
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+    })
+  )
 
   const sortedSections = useMemo(
-    () => [...config.sections]
-      .filter((s) => !hiddenSections?.has(s.id))
-      .sort((a, b) => a.order - b.order),
-    [config.sections, hiddenSections],
-  );
+    () =>
+      [...config.sections]
+        .filter((s) => !hiddenSections?.has(s.id))
+        .sort((a, b) => a.order - b.order),
+    [config.sections, hiddenSections]
+  )
 
   const availableCustomFields = useMemo(() => {
-    if (!customFields) return [];
-    const assigned = getAssignedCustomFieldIds(config);
-    return customFields.filter(
-      (cf) => cf.isActive && !assigned.has(cf.id),
-    );
-  }, [customFields, config]);
+    if (!customFields) return []
+    const assigned = getAssignedCustomFieldIds(config)
+    return customFields.filter((cf) => cf.isActive && !assigned.has(cf.id))
+  }, [customFields, config])
 
   const toggleExpand = useCallback((sectionId: string) => {
     setExpandedSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(sectionId)) next.delete(sectionId);
-      else next.add(sectionId);
-      return next;
-    });
-  }, []);
+      const next = new Set(prev)
+      if (next.has(sectionId)) next.delete(sectionId)
+      else next.add(sectionId)
+      return next
+    })
+  }, [])
 
   // --- Handlers ---
 
   const handleToggleVisibility = useCallback(
     (sectionId: string) => {
       const updatedSections = config.sections.map((s) =>
-        s.id === sectionId ? { ...s, visible: !s.visible } : s,
-      );
-      onChange({ sections: updatedSections });
+        s.id === sectionId ? { ...s, visible: !s.visible } : s
+      )
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange],
-  );
+    [config, onChange]
+  )
 
   const handleToggleFieldVisibility = useCallback(
     (sectionId: string, fieldId: string) => {
       const updatedSections = config.sections.map((s) => {
-        if (s.id !== sectionId || !s.fields) return s;
+        if (s.id !== sectionId || !s.fields) return s
         return {
           ...s,
-          fields: s.fields.map((f) =>
-            f.id === fieldId ? { ...f, visible: !f.visible } : f,
-          ),
-        };
-      });
-      onChange({ sections: updatedSections });
+          fields: s.fields.map((f) => (f.id === fieldId ? { ...f, visible: !f.visible } : f)),
+        }
+      })
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange],
-  );
+    [config, onChange]
+  )
 
   const handleRemoveField = useCallback(
     (sectionId: string, fieldId: string) => {
       const updatedSections = config.sections.map((s) => {
-        if (s.id !== sectionId || !s.fields) return s;
-        return { ...s, fields: s.fields.filter((f) => f.id !== fieldId) };
-      });
-      onChange({ sections: updatedSections });
+        if (s.id !== sectionId || !s.fields) return s
+        return { ...s, fields: s.fields.filter((f) => f.id !== fieldId) }
+      })
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange],
-  );
+    [config, onChange]
+  )
 
   const handleAddCustomField = useCallback(
     (sectionId: string, definitionId: string) => {
-      const cfId = toCustomFieldId(definitionId);
+      const cfId = toCustomFieldId(definitionId)
       const updatedSections = config.sections.map((s) => {
-        if (s.id !== sectionId) return s;
-        const currentFields = s.fields ?? [];
-        return { ...s, fields: [...currentFields, { id: cfId, visible: true }] };
-      });
-      onChange({ sections: updatedSections });
+        if (s.id !== sectionId) return s
+        const currentFields = s.fields ?? []
+        return { ...s, fields: [...currentFields, { id: cfId, visible: true }] }
+      })
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange],
-  );
+    [config, onChange]
+  )
 
   const handleReorderFields = useCallback(
     (sectionId: string, oldIndex: number, newIndex: number) => {
       const updatedSections = config.sections.map((s) => {
-        if (s.id !== sectionId || !s.fields) return s;
-        return { ...s, fields: arrayMove(s.fields, oldIndex, newIndex) };
-      });
-      onChange({ sections: updatedSections });
+        if (s.id !== sectionId || !s.fields) return s
+        return { ...s, fields: arrayMove(s.fields, oldIndex, newIndex) }
+      })
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange],
-  );
+    [config, onChange]
+  )
+
+  const handleSetStyle = useCallback(
+    (sectionId: string, style: InvoiceSectionStyle | undefined) => {
+      const updatedSections = config.sections.map((s) => (s.id === sectionId ? { ...s, style } : s))
+      onChange({ ...config, sections: updatedSections })
+    },
+    [config, onChange]
+  )
+
+  const handleSetDocumentStyle = useCallback(
+    (document: InvoiceDocumentStyle | undefined) => onChange({ ...config, document }),
+    [config, onChange]
+  )
+
+  const handleSetBoxed = useCallback(
+    (sectionId: string, boxed: boolean) => {
+      const updatedSections = config.sections.map((s) => (s.id === sectionId ? { ...s, boxed } : s))
+      onChange({ ...config, sections: updatedSections })
+    },
+    [config, onChange]
+  )
 
   const handleSetColumn = useCallback(
-    (sectionId: string, column: "left" | "right" | undefined) => {
+    (sectionId: string, column: 'left' | 'right' | undefined) => {
       const updatedSections = config.sections.map((s) =>
-        s.id === sectionId ? { ...s, column } : s,
-      );
-      onChange({ sections: updatedSections });
+        s.id === sectionId ? { ...s, column } : s
+      )
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange],
-  );
+    [config, onChange]
+  )
 
   // --- Drag reorder (single flat list) ---
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      const { active, over } = event;
-      if (!over || active.id === over.id) return;
+      const { active, over } = event
+      if (!over || active.id === over.id) return
 
-      const oldIndex = sortedSections.findIndex((s) => s.id === active.id);
-      const newIndex = sortedSections.findIndex((s) => s.id === over.id);
-      if (oldIndex === -1 || newIndex === -1) return;
+      const oldIndex = sortedSections.findIndex((s) => s.id === active.id)
+      const newIndex = sortedSections.findIndex((s) => s.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return
 
-      const reordered = arrayMove(sortedSections, oldIndex, newIndex);
+      const reordered = arrayMove(sortedSections, oldIndex, newIndex)
       const updatedSections = config.sections.map((s) => {
-        const idx = reordered.findIndex((r) => r.id === s.id);
-        return { ...s, order: idx };
-      });
-      onChange({ sections: updatedSections });
+        const idx = reordered.findIndex((r) => r.id === s.id)
+        return { ...s, order: idx }
+      })
+      onChange({ ...config, sections: updatedSections })
     },
-    [config, onChange, sortedSections],
-  );
+    [config, onChange, sortedSections]
+  )
 
   return (
     <div className="space-y-1">
-      <p className="text-xs text-muted-foreground mb-2">
-        {t('layoutEditor.helpText')}
-      </p>
+      <PresetRow onPick={onChange} t={t} />
+      <DocumentStylePanel document={config.document} onChange={handleSetDocumentStyle} t={t} />
+      <p className="text-xs text-muted-foreground mb-2">{t('layoutEditor.helpText')}</p>
 
       <DndContext
         id="layout-sections"
@@ -704,6 +1045,8 @@ export function InvoiceLayoutEditor({
               onAddCustomField={handleAddCustomField}
               onReorderFields={handleReorderFields}
               onSetColumn={handleSetColumn}
+              onSetBoxed={handleSetBoxed}
+              onSetStyle={handleSetStyle}
               isExpanded={expandedSections.has(section.id)}
               onToggleExpand={toggleExpand}
               availableCustomFields={availableCustomFields}
@@ -713,5 +1056,5 @@ export function InvoiceLayoutEditor({
         </SortableContext>
       </DndContext>
     </div>
-  );
+  )
 }

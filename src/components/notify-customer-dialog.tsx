@@ -1,38 +1,38 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Loader2, Mail, MessageSquare, Send } from "lucide-react";
-import { toast } from "sonner";
-import { sendSmsToCustomer } from "@/features/sms/Actions/smsActions";
-import { sendNotificationEmail } from "@/features/email/Actions/emailActions";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { Loader2, Mail, MessageSquare, Send } from 'lucide-react'
+import { toast } from 'sonner'
+import { sendSmsToCustomer } from '@/features/sms/Actions/smsActions'
+import { sendNotificationEmail } from '@/features/email/Actions/emailActions'
+import { useTranslations } from 'next-intl'
 
 interface NotifyCustomerDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
   customer: {
-    id: string;
-    name: string;
-    email: string | null;
-    phone: string | null;
-  };
-  defaultMessage: string;
-  emailSubject: string;
-  smsEnabled: boolean;
-  emailEnabled: boolean;
-  relatedEntityType?: string;
-  relatedEntityId?: string;
+    id: string
+    name: string
+    email: string | null
+    phone: string | null
+  }
+  defaultMessage: string
+  emailSubject: string
+  smsEnabled: boolean
+  emailEnabled: boolean
+  relatedEntityType?: string
+  relatedEntityId?: string
 }
 
 export function NotifyCustomerDialog({
@@ -46,35 +46,35 @@ export function NotifyCustomerDialog({
   relatedEntityType,
   relatedEntityId,
 }: NotifyCustomerDialogProps) {
-  const [message, setMessage] = useState(defaultMessage);
-  const [sendSms, setSendSms] = useState(false);
-  const [sendEmail, setSendEmail] = useState(false);
-  const [sending, setSending] = useState(false);
-  const t = useTranslations("workOrders.notify");
+  const [message, setMessage] = useState(defaultMessage)
+  const [sendSms, setSendSms] = useState(false)
+  const [sendEmail, setSendEmail] = useState(false)
+  const [sending, setSending] = useState(false)
+  const t = useTranslations('workOrders.notify')
 
-  const hasPhone = !!customer.phone;
-  const hasEmail = !!customer.email;
+  const hasPhone = !!customer.phone
+  const hasEmail = !!customer.email
 
   // Sync message when defaultMessage prop changes (e.g. async template load)
   useEffect(() => {
-    if (defaultMessage) setMessage(defaultMessage);
-  }, [defaultMessage]);
+    if (defaultMessage) setMessage(defaultMessage)
+  }, [defaultMessage])
 
   // Reset state when dialog opens with new message
   const handleOpenChange = (next: boolean) => {
     if (next) {
-      setMessage(defaultMessage);
-      setSendSms(false);
-      setSendEmail(false);
+      setMessage(defaultMessage)
+      setSendSms(false)
+      setSendEmail(false)
     }
-    onOpenChange(next);
-  };
+    onOpenChange(next)
+  }
 
   const handleSend = async () => {
-    if (!sendSms && !sendEmail) return;
-    setSending(true);
+    if (!sendSms && !sendEmail) return
+    setSending(true)
 
-    const results: string[] = [];
+    const results: string[] = []
 
     if (sendSms && hasPhone) {
       const res = await sendSmsToCustomer({
@@ -82,9 +82,9 @@ export function NotifyCustomerDialog({
         body: message,
         relatedEntityType,
         relatedEntityId,
-      });
-      if (res.success) results.push(t("smsSent"));
-      else toast.error(res.error || t("failedSms"));
+      })
+      if (res.success) results.push(t('smsSent'))
+      else toast.error(res.error || t('failedSms'))
     }
 
     if (sendEmail && hasEmail) {
@@ -92,29 +92,27 @@ export function NotifyCustomerDialog({
         recipientEmail: customer.email!,
         subject: emailSubject,
         body: message,
-      });
-      if (res.success) results.push(t("emailSent"));
-      else toast.error(res.error || t("failedEmail"));
+      })
+      if (res.success) results.push(t('emailSent'))
+      else toast.error(res.error || t('failedEmail'))
     }
 
     if (results.length > 0) {
-      toast.success(results.join(" & "));
+      toast.success(results.join(' & '))
     }
 
-    setSending(false);
-    onOpenChange(false);
-  };
+    setSending(false)
+    onOpenChange(false)
+  }
 
-  const canSend = (sendSms || sendEmail) && message.trim();
+  const canSend = (sendSms || sendEmail) && message.trim()
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("title", { name: customer.name })}</DialogTitle>
-          <DialogDescription>
-            {t("description")}
-          </DialogDescription>
+          <DialogTitle>{t('title', { name: customer.name })}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -135,12 +133,12 @@ export function NotifyCustomerDialog({
               />
               <Label
                 htmlFor="notify-sms"
-                className={`flex items-center gap-1.5 text-sm ${!smsEnabled || !hasPhone ? "text-muted-foreground/50" : ""}`}
+                className={`flex items-center gap-1.5 text-sm ${!smsEnabled || !hasPhone ? 'text-muted-foreground/50' : ''}`}
               >
                 <MessageSquare className="h-3.5 w-3.5" />
-                {t("sms")}
-                {!hasPhone && <span className="text-xs">{t("noPhone")}</span>}
-                {hasPhone && !smsEnabled && <span className="text-xs">{t("notAvailable")}</span>}
+                {t('sms')}
+                {!hasPhone && <span className="text-xs">{t('noPhone')}</span>}
+                {hasPhone && !smsEnabled && <span className="text-xs">{t('notAvailable')}</span>}
               </Label>
             </div>
             <div className="flex items-center gap-2">
@@ -152,19 +150,19 @@ export function NotifyCustomerDialog({
               />
               <Label
                 htmlFor="notify-email"
-                className={`flex items-center gap-1.5 text-sm ${!emailEnabled || !hasEmail ? "text-muted-foreground/50" : ""}`}
+                className={`flex items-center gap-1.5 text-sm ${!emailEnabled || !hasEmail ? 'text-muted-foreground/50' : ''}`}
               >
                 <Mail className="h-3.5 w-3.5" />
-                {t("email")}
-                {!hasEmail && <span className="text-xs">{t("noEmail")}</span>}
-                {hasEmail && !emailEnabled && <span className="text-xs">{t("notAvailable")}</span>}
+                {t('email')}
+                {!hasEmail && <span className="text-xs">{t('noEmail')}</span>}
+                {hasEmail && !emailEnabled && <span className="text-xs">{t('notAvailable')}</span>}
               </Label>
             </div>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              {t("skip")}
+              {t('skip')}
             </Button>
             <Button onClick={handleSend} disabled={!canSend || sending}>
               {sending ? (
@@ -172,11 +170,11 @@ export function NotifyCustomerDialog({
               ) : (
                 <Send className="mr-2 h-4 w-4" />
               )}
-              {t("send")}
+              {t('send')}
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

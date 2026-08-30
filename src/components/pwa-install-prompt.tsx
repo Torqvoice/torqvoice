@@ -153,20 +153,20 @@ export function InstallBanner() {
             className="shrink-0 rounded-lg"
           />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium">{t("installTorqvoice")}</p>
+            <p className="text-sm font-medium">{t('installTorqvoice')}</p>
             <p className="truncate text-xs text-muted-foreground">
-              {isIOS ? t("iosInstallHint") : t("installDescription")}
+              {isIOS ? t('iosInstallHint') : t('installDescription')}
             </p>
           </div>
           {!isIOS && (
             <Button size="sm" onClick={install}>
-              {t("install")}
+              {t('install')}
             </Button>
           )}
           <button
             onClick={dismiss}
             className="shrink-0 rounded-full p-1 text-muted-foreground hover:text-foreground"
-            aria-label={t("dismiss")}
+            aria-label={t('dismiss')}
           >
             <X className="size-4" />
           </button>
@@ -188,10 +188,10 @@ export function SidebarInstallButton() {
         <SidebarMenuItem>
           <SidebarMenuButton
             onClick={isIOS ? dismiss : install}
-            tooltip={isIOS ? t("iosInstallHint") : t("installApp")}
+            tooltip={isIOS ? t('iosInstallHint') : t('installApp')}
           >
             <Download className="size-4" />
-            <span className="font-medium">{t("installApp")}</span>
+            <span className="font-medium">{t('installApp')}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

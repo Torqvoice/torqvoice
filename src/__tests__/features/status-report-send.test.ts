@@ -46,9 +46,7 @@ vi.mock('@/features/telegram/Actions/telegramActions', () => ({
   sendTelegramToCustomer: (i: unknown) => sendTelegramToCustomer(i),
 }))
 
-const { sendStatusReport } = await import(
-  '@/features/status-reports/Actions/sendStatusReport'
-)
+const { sendStatusReport } = await import('@/features/status-reports/Actions/sendStatusReport')
 
 const CUSTOMER = {
   id: 'cust',

@@ -130,7 +130,7 @@ export function lineTotal(quantity: unknown, unitPrice: unknown): number {
  */
 export function readPartsPricingSettings(
   settings: Record<string, string | undefined>,
-  keys: { defaultMarkupPercent: string; markupAppliesToInventory: string },
+  keys: { defaultMarkupPercent: string; markupAppliesToInventory: string }
 ): Required<PricingSettings> {
   return {
     defaultMarkupPercent: parseNumber(settings[keys.defaultMarkupPercent]),
@@ -140,7 +140,7 @@ export function readPartsPricingSettings(
 
 export function resolvePartPrice(
   part: PricedPart,
-  { defaultMarkupPercent = 0, markupAppliesToInventory = false }: PricingSettings = {},
+  { defaultMarkupPercent = 0, markupAppliesToInventory = false }: PricingSettings = {}
 ): ResolvedPrice {
   const cost = parseNumber(part.unitCost)
   const sell = parseNumber(part.sellPrice)
