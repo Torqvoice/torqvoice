@@ -495,7 +495,8 @@
     "cannotUseApp": "Son rôle ne permet pas de travailler sur les travaux. Donnez-lui d’abord Technicien, ou un rôle ayant les mêmes permissions.",
     "revokeTechnicianDone": "{name} a été déconnecté de l’application",
     "noAccessTitle": "Pas encore d’accès",
-    "noAccessBody": "Votre compte fait partie de {workshop}, mais aucun rôle ne lui a été attribué, donc il n’y a rien à ouvrir ici. Demandez un rôle à un propriétaire ou un administrateur de votre atelier."
+    "noAccessBody": "Votre compte fait partie de {workshop}, mais aucun rôle ne lui a été attribué, donc il n’y a rien à ouvrir ici. Demandez un rôle à un propriétaire ou un administrateur de votre atelier.",
+    "setupPageInstall": "Télécharger sur Google Play"
   },
   "invoice": {
     "title": "Mise en page de facture",
@@ -569,6 +570,7 @@
       "customer": "Client",
       "vehicle": "Véhicule",
       "service": "Service",
+      "items_table": "Tableau des articles",
       "parts_table": "Pièces",
       "labor_table": "Main-d'œuvre",
       "totals": "Totaux",

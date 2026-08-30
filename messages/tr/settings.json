@@ -495,7 +495,8 @@
     "cannotUseApp": "Rolü işler üzerinde çalışmaya izin vermiyor. Önce Teknisyen ya da aynı izinlere sahip bir rol verin.",
     "revokeTechnicianDone": "{name} uygulamadan çıkarıldı",
     "noAccessTitle": "Henüz erişim yok",
-    "noAccessBody": "Hesabınız {workshop} atölyesine ait, ancak henüz bir rol verilmemiş; bu yüzden burada açabileceğiniz bir şey yok. Atölyenizdeki bir sahip ya da yöneticiden rol isteyin."
+    "noAccessBody": "Hesabınız {workshop} atölyesine ait, ancak henüz bir rol verilmemiş; bu yüzden burada açabileceğiniz bir şey yok. Atölyenizdeki bir sahip ya da yöneticiden rol isteyin.",
+    "setupPageInstall": "Google Play’den indirin"
   },
   "invoice": {
     "title": "Fatura Düzeni",
@@ -569,6 +570,7 @@
       "customer": "Müşteri",
       "vehicle": "Araç",
       "service": "Servis",
+      "items_table": "Kalem tablosu",
       "parts_table": "Parçalar",
       "labor_table": "İşçilik",
       "totals": "Toplamlar",

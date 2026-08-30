@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { QRCodeSVG } from 'qrcode.react'
+import { PLAY_STORE_URL } from '@/lib/app-links'
 import { Check, Copy, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -80,7 +81,25 @@ export function SetupCodeHandoff({
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted font-medium text-xs">
                 {i + 1}
               </span>
-              <span>{step}</span>
+              <span>
+                {step}
+                {/* The desk is often the one who finds the app for them, so
+                    the first step carries the link rather than leaving
+                    somebody to search the store on a stranger's phone. */}
+                {i === 0 && (
+                  <>
+                    {' '}
+                    <a
+                      href={PLAY_STORE_URL}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      {t('team.setupPageInstall')}
+                    </a>
+                  </>
+                )}
+              </span>
             </li>
           )
         )}
