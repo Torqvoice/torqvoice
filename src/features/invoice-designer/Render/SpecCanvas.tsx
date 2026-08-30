@@ -86,7 +86,15 @@ export function SpecCanvas({
   const measureRef = useRef<HTMLDivElement>(null)
   const pagesRef = useRef<HTMLDivElement>(null)
   const [heights, setHeights] = useState<number[]>([])
-  const [rects, setRects] = useState<Map<string, DOMRect>>(new Map())
+  /**
+   * Measured geometry, held in a ref rather than in state.
+   *
+   * Nothing renders from it — it is read when a drag starts and while it moves
+   * — and measuring produces a fresh Map every time, so putting it in state
+   * meant every render scheduled another one. That is a loop with no way out,
+   * and React stopped it for us.
+   */
+  const rectsRef = useRef<Map<string, DOMRect>>(new Map())
   const [drag, setDrag] = useState<Drag | null>(null)
   const [guides, setGuides] = useState<Guide[]>([])
 
@@ -105,12 +113,13 @@ export function SpecCanvas({
     )
   })
 
-  // Page-space rectangles for everything drawn, which is what selection,
-  // dragging and snapping all read from.
+  // Page-space rectangles for everything drawn, which is what dragging and
+  // snapping read from.
   useLayoutEffect(() => {
     const root = pagesRef.current
     if (!root) return
-    const next = new Map<string, DOMRect>()
+    const next = rectsRef.current
+    next.clear()
     for (const sheet of Array.from(root.querySelectorAll('[data-sheet]'))) {
       const base = sheet.getBoundingClientRect()
       for (const element of Array.from(sheet.querySelectorAll('[data-node-id]'))) {
@@ -128,7 +137,6 @@ export function SpecCanvas({
         )
       }
     }
-    setRects(next)
   })
 
   const contentWidth = spec.page.width - spec.page.margin.left - spec.page.margin.right
@@ -158,7 +166,7 @@ export function SpecCanvas({
 
   const startDrag = useCallback(
     (event: React.PointerEvent, id: string, page: number) => {
-      const rect = rects.get(id)
+      const rect = rectsRef.current.get(id)
       if (!rect) return
       const sheet = (event.currentTarget as HTMLElement).closest('[data-sheet]')
       if (!sheet) return
@@ -175,7 +183,7 @@ export function SpecCanvas({
         height: rect.height,
       })
     },
-    [rects, zoom, onSelect]
+    [zoom, onSelect]
   )
 
   const onPointerMove = useCallback(
@@ -187,7 +195,7 @@ export function SpecCanvas({
       let x = (event.clientX - base.x) / zoom - drag.grabX
       let y = (event.clientY - base.y) / zoom - drag.grabY
 
-      const { xs, ys } = guidesFor(rects, spec.page, drag.id)
+      const { xs, ys } = guidesFor(rectsRef.current, spec.page, drag.id)
       const shown: Guide[] = []
       const snapX = snapTo(x, drag.width, xs)
       if (snapX) {
@@ -208,7 +216,7 @@ export function SpecCanvas({
         page: drag.page,
       })
     },
-    [drag, rects, spec.page, zoom, onAnchor]
+    [drag, spec.page, zoom, onAnchor]
   )
 
   const endDrag = useCallback(() => {

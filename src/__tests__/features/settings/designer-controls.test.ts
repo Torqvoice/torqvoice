@@ -102,6 +102,24 @@ describe('the inspector can reach every property', () => {
   })
 })
 
+describe('measuring cannot loop', () => {
+  it('keeps measured geometry out of state', () => {
+    // Measuring produces a fresh Map every pass. In state that scheduled
+    // another render, which measured again: a loop with no way out, which
+    // React stopped for us with "Maximum update depth exceeded".
+    expect(CANVAS).toContain('rectsRef')
+    expect(CANVAS).not.toContain('setRects')
+  })
+
+  it('only stores a measurement that changed', () => {
+    // The one measurement that does drive rendering — how tall each block is,
+    // which decides where the page breaks — has to bail when nothing moved.
+    const call = CANVAS.indexOf('setHeights((prev)')
+    expect(call).toBeGreaterThan(-1)
+    expect(CANVAS.slice(call, call + 220)).toContain('prev.every')
+  })
+})
+
 describe('the sheet is a sheet', () => {
   it('is A4 and stays A4', () => {
     // Base size and margins change how much fits on the page, never its size.
