@@ -1,124 +1,58 @@
 /**
- * Every control in the designer has to reach the sheet.
+ * The designer's structure, guarded.
  *
- * The failure this guards has happened repeatedly: a control is added, saved
- * and read back correctly, and the thing it is supposed to change never looks
- * at it. Text colour stopped at the first line of a panel, the header section
- * was excluded from styling altogether, and the canvas ignored the logo, the
- * frame line and its shadow.
- *
- * Source-level rather than behavioural, deliberately: it is cheap, and it fails
- * the moment a control is wired to state but not to a renderer.
+ * The bug this file exists for happened repeatedly: a property is added, saved
+ * and read back correctly, and the thing that draws it never looks at it. The
+ * document model is the answer — one description, walked by renderers that know
+ * nothing about invoices — and these are the properties that keep it that way.
  */
 import { readFileSync } from 'node:fs'
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-const CANVAS = readFileSync('src/features/invoice-designer/Components/DesignerCanvas.tsx', 'utf8')
-const INVOICE_PDF = readFileSync(
-  'src/features/vehicles/Components/invoice-pdf/InvoicePDF.tsx',
-  'utf8'
-)
-const STYLES = readFileSync('src/features/vehicles/Components/invoice-pdf/styles.ts', 'utf8')
-
-/** What the canvas must read for each control the inspector offers. */
-const CANVAS_READS = {
-  'section visibility': 'visible',
-  'section column': 'group.left',
-  'section box': 'boxed',
-  'section text color': 'look.text',
-  'section label color': 'look.label',
-  'section fill': 'look.fill',
-  'section border': 'look.border',
-  'section size': 'look.size',
-  'section font': 'look.font',
-  'document accent': 'theme.accent',
-  'document banding': 'theme.stripes',
-  'document band color': 'theme.stripeColor',
-  'document margin': 'theme.margin',
-  'document row height': 'theme.rowPadding',
-  'document size': 'theme.baseSize',
-  'document font': 'theme.fontFamily',
-  'logo size': 'logoSize',
-  'frame line': 'frameBorderColor',
-  'frame shadow': 'frameShadow',
-  'company name color': 'companyText',
-  'header style': 'headerStyle',
-  'primary color': 'theme.primary',
-  'background color': 'theme.background',
-  'text color': 'theme.text',
-}
-
-describe('designer controls reach the canvas', () => {
-  it.each(Object.entries(CANVAS_READS))('%s', (_name, token) => {
-    expect(CANVAS).toContain(token)
-  })
-
-  it('resolves a section look rather than reading the theme directly in bodies', () => {
-    // A body that reaches past its own look is how "text colour changes only
-    // some of the text" happens.
-    const bodies = CANVAS.slice(
-      CANVAS.indexOf('function SectionBody'),
-      CANVAS.indexOf('export function DesignerCanvas')
-    )
-    expect(bodies).not.toContain('theme.muted')
-    expect(bodies).not.toContain('theme.text')
-  })
-})
-
+const SCHEMA = readFileSync('src/features/settings/Schema/invoiceLayoutSchema.ts', 'utf8')
+const SPEC = readFileSync('src/features/invoice-designer/Spec/buildSpec.ts', 'utf8')
+const RENDER = readFileSync('src/features/invoice-designer/Render/renderHtml.tsx', 'utf8')
+const CANVAS = readFileSync('src/features/invoice-designer/Render/SpecCanvas.tsx', 'utf8')
 const INSPECTOR = readFileSync(
   'src/features/invoice-designer/Components/DesignerInspector.tsx',
   'utf8'
 )
+const SAMPLE = readFileSync('src/features/invoice-designer/Components/sample.ts', 'utf8')
 
-describe('the designer can reach everything the layout can express', () => {
-  const SCHEMA = readFileSync('src/features/settings/Schema/invoiceLayoutSchema.ts', 'utf8')
+const keysOf = (from: string, to: string) =>
+  [...SCHEMA.slice(SCHEMA.indexOf(from), SCHEMA.indexOf(to)).matchAll(/^ {2}(\w+): z\./gm)].map(
+    (m) => m[1]
+  )
 
-  const keysOf = (from: string, to: string) =>
-    [...SCHEMA.slice(SCHEMA.indexOf(from), SCHEMA.indexOf(to)).matchAll(/^ {2}(\w+): z\./gm)].map(
-      (m) => m[1]
-    )
+describe('the renderer knows nothing about invoices', () => {
+  // This is the whole point of the model. A renderer that mentions a section by
+  // name has started to be a second implementation of the document, which is
+  // what drifted from the PDF and broke every time either was touched.
+  const SECTION_NAMES = [
+    'customer',
+    'vehicle',
+    'service',
+    'items_table',
+    'document_title',
+    'totals',
+    'findings',
+    'warranty',
+    'bank_account',
+  ]
 
-  it('offers every property a section carries', () => {
-    // `fields` was the one this caught: no way to turn the logo off, and so no
-    // way to print the company name instead.
-    const missing = keysOf(
-      'export const invoiceSectionSchema',
-      'export const invoiceDocumentStyleSchema'
-    )
-      .filter((key) => !['id', 'order'].includes(key))
-      .filter((key) => !INSPECTOR.includes(key))
-    expect(missing).toEqual([])
+  it.each(SECTION_NAMES)('renderHtml does not mention %s', (name) => {
+    expect(RENDER).not.toContain(name)
   })
 
-  it('offers every appearance key a section carries', () => {
-    const missing = keysOf(
-      'export const invoiceSectionStyleSchema',
-      'export const invoiceSectionSchema'
-    ).filter((key) => !INSPECTOR.includes(key))
-    expect(missing).toEqual([])
-  })
-
-  it('offers every appearance key the sheet carries', () => {
-    const missing = keysOf(
-      'export const invoiceDocumentStyleSchema',
-      'export const invoiceLayoutConfigSchema'
-    ).filter((key) => !INSPECTOR.includes(key))
-    expect(missing).toEqual([])
+  it('draws only the shapes the model defines', () => {
+    for (const kind of ['stack', 'row', 'text', 'image', 'table', 'spacer']) {
+      expect(RENDER).toContain(`case '${kind}'`)
+    }
   })
 })
 
-describe('the canvas renders from the layout, not from prose', () => {
-  const SAMPLE = readFileSync('src/features/invoice-designer/Components/sample.ts', 'utf8')
-
-  it('reads which fields a section shows', () => {
-    // Turning a field on used to change nothing, because the canvas held a
-    // paragraph per section rather than a value per field.
-    expect(CANVAS).toContain('visibleFields')
-    expect(CANVAS).toContain('getBuiltinFieldsForSection')
-  })
-
-  it('has a value for every field a layout can show', () => {
-    const schema = readFileSync('src/features/settings/Schema/invoiceLayoutSchema.ts', 'utf8')
+describe('the generator covers what a layout can express', () => {
+  it('has a value for every field a section can show', () => {
     const ids = new Set<string>()
     for (const list of [
       'BUILTIN_CUSTOMER_FIELDS',
@@ -128,43 +62,62 @@ describe('the canvas renders from the layout, not from prose', () => {
       'BUILTIN_FOOTER_FIELDS',
       'BUILTIN_BANK_ACCOUNT_FIELDS',
     ]) {
-      const block = schema.slice(
-        schema.indexOf(`${list} = [`),
-        schema.indexOf('] as const', schema.indexOf(`${list} = [`))
-      )
+      const start = SCHEMA.indexOf(`${list} = [`)
+      const block = SCHEMA.slice(start, SCHEMA.indexOf('] as const', start))
       for (const m of block.matchAll(/id: '([a-z_]+)'/g)) ids.add(m[1])
     }
-    // `logo` is drawn from the workshop's upload rather than a sample string.
+    // `logo` comes from the workshop's upload rather than a sample string.
     const missing = [...ids].filter((id) => id !== 'logo' && !SAMPLE.includes(`${id}:`))
     expect(missing).toEqual([])
   })
 
-  it('draws the frame as page chrome, on either edge', () => {
-    // The band and the rail are one shape. Drawn separately they came apart,
-    // and left a seam of paper between them.
-    expect(CANVAS).toContain('frameChrome')
-    expect(CANVAS).toContain('railEdge')
+  it('asks each section which fields it shows', () => {
+    expect(SPEC).toContain('sectionFields')
+    expect(SPEC).toContain('getBuiltinFieldsForSection')
+  })
+
+  it('reads every appearance key a section carries', () => {
+    const missing = keysOf(
+      'export const invoiceSectionStyleSchema',
+      'export const invoiceSectionSchema'
+    ).filter((key) => !SPEC.includes(key))
+    expect(missing).toEqual([])
+  })
+
+  it('reads every appearance key the sheet carries', () => {
+    const missing = keysOf(
+      'export const invoiceDocumentStyleSchema',
+      'export const invoiceLayoutConfigSchema'
+    ).filter((key) => !SPEC.includes(key) && !INSPECTOR.includes(key))
+    expect(missing).toEqual([])
   })
 })
 
-describe('every section is styleable in the PDF', () => {
-  it('hands each one its own derived stylesheet', () => {
-    const map = INVOICE_PDF.slice(
-      INVOICE_PDF.indexOf('const sectionMap'),
-      INVOICE_PDF.indexOf('// Use column-based grouping')
-    )
-    // Nothing inside the section map may take the document stylesheet raw, or
-    // that section silently ignores whatever the layout sets on it.
-    expect(map).not.toContain('styles={styles}')
+describe('the inspector can reach every property', () => {
+  it('offers everything a section carries', () => {
+    const missing = keysOf('export const invoiceSectionSchema', 'export const anchorSchema')
+      .filter((key) => !['id', 'order'].includes(key))
+      .filter((key) => !INSPECTOR.includes(key))
+    expect(missing).toEqual([])
+  })
+})
+
+describe('the sheet is a sheet', () => {
+  it('is A4 and stays A4', () => {
+    // Base size and margins change how much fits on the page, never its size.
+    expect(SPEC).toContain('width: 595')
+    expect(SPEC).toContain('height: 842')
+    expect(CANVAS).toContain('spec.page.height')
   })
 
-  it('includes the letterhead and the title block', () => {
-    expect(INVOICE_PDF).toContain("stylesFor('header')")
-    expect(INVOICE_PDF).toContain("stylesFor('document_title')")
+  it('holds a printed footer against the foot of the sheet', () => {
+    expect(SPEC).toContain("mode: 'pinned'")
+    expect(CANVAS).toContain('pinned')
   })
 
-  it('maps a section label onto the letterhead name, not only panel headings', () => {
-    expect(STYLES).toContain('brandName')
-    expect(STYLES).toContain('brandSub')
+  it('positions anything that has been dragged, and snaps it to what is there', () => {
+    expect(CANVAS).toContain('guidesFor')
+    expect(CANVAS).toContain('snapTo')
+    expect(SPEC).toContain("mode: 'anchored'")
   })
 })

@@ -16,7 +16,10 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
-import { DesignerCanvas } from './DesignerCanvas'
+import { SpecCanvas } from '../Render/SpecCanvas'
+import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
+import { SAMPLE_TABLES, fieldValues } from './sample'
+import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
 import type { DesignerTemplate, DesignerWorkshop, DocumentType, ResolvedTheme } from './types'
 
@@ -110,6 +113,95 @@ export function InvoiceDesigner({
       stripeColor: doc.stripeColor || '#f3f4f6',
     }
   }, [layout, template])
+
+  /** What a workshop's own sheet says, with the sample standing in for a job. */
+  const data: DocumentData = useMemo(
+    () => ({
+      fields: fieldValues(workshop),
+      logoUrl: workshop.logoUrl || undefined,
+      items: SAMPLE_TABLES.items.map((item) => ({
+        n: String(item.n),
+        qty: item.qty,
+        unit: item.unit,
+        desc: item.desc,
+        sub: item.sku,
+        price: item.price,
+        total: item.total,
+      })),
+      findings: SAMPLE_TABLES.findings,
+      meta: {
+        title: docType === 'quote' ? 'QUOTE' : 'INVOICE',
+        number: SAMPLE_TABLES.number,
+        customerNumber: SAMPLE_TABLES.customerNumber,
+        date: SAMPLE_TABLES.date,
+        due: SAMPLE_TABLES.due,
+      },
+      totals: {
+        subtotal: SAMPLE_TABLES.subtotal,
+        taxLabel: 'Tax',
+        tax: SAMPLE_TABLES.tax,
+        total: SAMPLE_TABLES.total,
+      },
+      notes: SAMPLE_TABLES.notes,
+      warranty: SAMPLE_TABLES.warranty,
+      columnLabels: {
+        pos: '#',
+        qty: 'Qty',
+        unit: 'Unit',
+        description: 'Description',
+        unitPrice: 'Unit price',
+        total: 'Total',
+      },
+      sectionLabels: {
+        customer: 'Bill to',
+        vehicle: 'Vehicle',
+        service: 'Service',
+        bank_account: 'Payment information',
+        general: 'Additional information',
+        findings: 'Observations',
+      },
+    }),
+    [workshop, docType]
+  )
+
+  const spec = useMemo(
+    () =>
+      buildDocumentSpec(
+        layout,
+        {
+          primary: template.primaryColor,
+          background: theme.background,
+          text: theme.text,
+          muted: theme.muted,
+          accent: theme.accent,
+          companyText: theme.companyText,
+          fontFamily: theme.fontFamily,
+          fontSize: theme.baseSize,
+          margin: theme.margin,
+          rowPadding: theme.rowPadding,
+          stripes: theme.stripes,
+          stripeColor: theme.stripeColor,
+          headerStyle: template.headerStyle,
+          frameSide: template.frameSide === 'right' ? 'right' : 'left',
+          frameBorderColor: template.frameBorderColor || undefined,
+          frameShadow: template.frameShadow !== 'false',
+          logoSize: template.logoSize,
+        },
+        data
+      ),
+    [layout, template, theme, data]
+  )
+
+  /** Where a dragged block came to rest, or nothing to put it back in the flow. */
+  const setAnchor = useCallback(
+    (id: string, anchor: InvoiceAnchor | undefined) => {
+      const anchors = { ...(layout.anchors ?? {}) }
+      if (anchor) anchors[id] = anchor
+      else delete anchors[id]
+      setLayout({ ...layout, anchors: Object.keys(anchors).length ? anchors : undefined })
+    },
+    [layout, setLayout]
+  )
 
   const patchSection = useCallback(
     (id: string, patch: Partial<InvoiceSection>) => {
@@ -333,7 +425,7 @@ export function InvoiceDesigner({
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1">
+      <div className="relative flex min-h-0 flex-1">
         <div className="flex w-[252px] flex-none flex-col border-r border-[#e3e5e9] bg-white">
           <div className="px-3.5 pb-2.5 pt-3.5 text-[11.5px] font-semibold uppercase tracking-[0.07em] text-[#8a8f97]">
             Sections
@@ -387,21 +479,22 @@ export function InvoiceDesigner({
           </div>
         </div>
 
-        <DesignerCanvas
-          layout={layout}
-          theme={theme}
-          workshop={workshop}
-          headerStyle={template.headerStyle}
-          frameSide={template.frameSide === 'right' ? 'right' : 'left'}
-          companyText={theme.companyText}
-          logoSize={template.logoSize}
-          frameBorderColor={template.frameBorderColor || undefined}
-          frameShadow={template.frameShadow !== 'false'}
+        {selected && layout.anchors?.[selected] && (
+          <button
+            type="button"
+            onClick={() => setAnchor(selected, undefined)}
+            className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-md bg-[#1a1d21] px-3 py-1.5 text-xs font-medium text-white shadow-lg"
+          >
+            Return {selected.replace(/_/g, ' ')} to the flow
+          </button>
+        )}
+        <SpecCanvas
+          spec={spec}
           selected={selected}
           onSelect={setSelected}
-          onMove={moveSection}
-          rulers={rulers}
+          onAnchor={setAnchor}
           zoom={zoom}
+          rulers={rulers}
         />
 
         <DesignerInspector

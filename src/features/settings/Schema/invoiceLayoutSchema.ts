@@ -74,10 +74,26 @@ export const invoiceDocumentStyleSchema = z.object({
   fontFamily: z.string().optional(),
 })
 
+/**
+ * Where something sits once it has been dragged out of the flow.
+ *
+ * Keyed by node id, which is a section id for a whole block and an element id
+ * for one piece of it, so a logo and a customer panel are positioned by exactly
+ * the same mechanism. Coordinates are points from the top-left of the sheet.
+ */
+export const anchorSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+  width: z.number().optional(),
+  page: z.number().int().min(1).optional(),
+})
+
 export const invoiceLayoutConfigSchema = z.object({
   sections: z.array(invoiceSectionSchema),
   /** Whole-sheet appearance. Unset leaves every default in place. */
   document: invoiceDocumentStyleSchema.optional(),
+  /** Anything positioned by hand, keyed by node id. */
+  anchors: z.record(z.string(), anchorSchema).optional(),
 })
 
 // ---------------------------------------------------------------------------
@@ -86,6 +102,7 @@ export const invoiceLayoutConfigSchema = z.object({
 
 export type InvoiceSectionStyle = z.infer<typeof invoiceSectionStyleSchema>
 export type InvoiceDocumentStyle = z.infer<typeof invoiceDocumentStyleSchema>
+export type InvoiceAnchor = z.infer<typeof anchorSchema>
 export type InvoiceFieldConfig = z.infer<typeof invoiceFieldConfigSchema>
 export type InvoiceSection = z.infer<typeof invoiceSectionSchema>
 export type InvoiceLayoutConfig = z.infer<typeof invoiceLayoutConfigSchema>
@@ -470,7 +487,11 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     }
   }
 
-  return { sections: merged, ...(saved.document ? { document: saved.document } : {}) }
+  return {
+    sections: merged,
+    ...(saved.document ? { document: saved.document } : {}),
+    ...(saved.anchors ? { anchors: saved.anchors } : {}),
+  }
 }
 
 // ---------------------------------------------------------------------------

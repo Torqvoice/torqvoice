@@ -1,0 +1,160 @@
+/**
+ * What a printed document is, as data.
+ *
+ * One description, built once, rendered twice: to react-pdf for the paper and
+ * to HTML for the designer. Neither renderer knows what a customer block looks
+ * like — that lives in the generators — so a property cannot reach one and miss
+ * the other, which is the class of bug this replaces.
+ *
+ * Everything here is in points at 72dpi, the unit react-pdf lays out in, so a
+ * number means the same thing on screen and on paper.
+ */
+
+export interface Rect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export interface TextStyle {
+  color?: string
+  fontFamily?: string
+  fontSize?: number
+  bold?: boolean
+  italic?: boolean
+  align?: 'left' | 'center' | 'right'
+  uppercase?: boolean
+  letterSpacing?: number
+  lineHeight?: number
+}
+
+export interface BoxStyle {
+  background?: string
+  borderColor?: string
+  borderWidth?: number
+  radius?: number
+  padding?: number | { top: number; right: number; bottom: number; left: number }
+}
+
+/**
+ * A node's position when it has been taken out of the flow.
+ *
+ * Coordinates are from the top-left of the sheet, so an anchor means the same
+ * thing wherever the node came from. This is what "put it where I want" is:
+ * the element keeps its identity and gains a position.
+ */
+export interface Anchor {
+  x: number
+  y: number
+  width?: number
+  /** 1-based. Anchored nodes belong to one sheet. */
+  page?: number
+}
+
+export type Node =
+  | {
+      kind: 'stack'
+      id?: string
+      gap?: number
+      style?: BoxStyle
+      anchor?: Anchor
+      children: Node[]
+    }
+  | {
+      kind: 'row'
+      id?: string
+      gap?: number
+      align?: 'start' | 'center' | 'end'
+      justify?: 'start' | 'center' | 'end' | 'between'
+      style?: BoxStyle
+      anchor?: Anchor
+      children: { node: Node; width?: number | 'flex' }[]
+    }
+  | { kind: 'text'; id?: string; text: string; style?: TextStyle; anchor?: Anchor }
+  | {
+      kind: 'image'
+      id?: string
+      src: string
+      maxWidth: number
+      maxHeight: number
+      align?: 'left' | 'center' | 'right'
+      anchor?: Anchor
+    }
+  | {
+      kind: 'table'
+      id?: string
+      columns: { key: string; label: string; width: number | 'flex'; align?: 'left' | 'right' }[]
+      rows: Record<string, string>[]
+      /** A second line under a cell, for a part number under its description. */
+      subKey?: string
+      style?: BoxStyle
+      headerStyle?: TextStyle & BoxStyle
+      rowPadding?: number
+      stripe?: string
+      anchor?: Anchor
+    }
+  | { kind: 'spacer'; id?: string; height: number }
+
+/** How a block finds its place on the sheet. */
+export type Placement =
+  | { mode: 'flow'; order: number; column?: 'left' | 'right' }
+  /** Out of the flow, at a fixed spot. */
+  | { mode: 'anchored'; anchor: Anchor }
+  /** Held against an edge of every sheet, the way a printed footer is. */
+  | { mode: 'pinned'; edge: 'top' | 'bottom' }
+
+export interface Block {
+  /** The section this came from, and what the designer selects. */
+  id: string
+  label: string
+  placement: Placement
+  style?: BoxStyle
+  content: Node
+}
+
+export interface PageSpec {
+  width: number
+  height: number
+  margin: { top: number; right: number; bottom: number; left: number }
+  background?: string
+  text: string
+  muted: string
+  accent: string
+  fontFamily: string
+  fontSize: number
+}
+
+/** The band and rail of a framed sheet: chrome the page owns, not a section. */
+export interface FrameSpec {
+  side: 'left' | 'right'
+  railWidth: number
+  bandHeight: number
+  color: string
+  borderColor?: string
+  shadow: boolean
+}
+
+export interface DocumentSpec {
+  page: PageSpec
+  frame?: FrameSpec
+  blocks: Block[]
+}
+
+/** Walk every node in a block, so callers need no knowledge of the shapes. */
+export function walk(node: Node, visit: (node: Node) => void): void {
+  visit(node)
+  if (node.kind === 'stack') for (const child of node.children) walk(child, visit)
+  if (node.kind === 'row') for (const child of node.children) walk(child.node, visit)
+}
+
+/** Every node in a document that carries an id, keyed by it. */
+export function indexNodes(spec: DocumentSpec): Map<string, Node> {
+  const index = new Map<string, Node>()
+  for (const block of spec.blocks) {
+    walk(block.content, (node) => {
+      if (node.id) index.set(node.id, node)
+    })
+  }
+  return index
+}
