@@ -1,4 +1,5 @@
 import { StyleSheet } from '@react-pdf/renderer'
+import type { Style } from '@react-pdf/types'
 
 export const gray = '#6b7280'
 export const grayLight = '#f3f4f6'
@@ -81,6 +82,167 @@ export const SHADOW = ['rgba(0, 0, 0, 0.13)', 'rgba(0, 0, 0, 0.07)', 'rgba(0, 0,
 
 /** Width of one shadow hairline, in points. */
 export const SHADOW_STEP = 1.1
+
+/** The five appearance keys a layout can set on any one section. */
+export interface SectionStyle {
+  textColor?: string
+  labelColor?: string
+  backgroundColor?: string
+  borderColor?: string
+  fontSize?: number
+}
+
+/**
+ * The document's stylesheet with one section's overrides folded in.
+ *
+ * Sections already take their stylesheet as a prop, so handing them a derived
+ * one styles them without any of them knowing this exists. The five keys are
+ * mapped onto whichever entries carry that meaning for the section at hand: a
+ * background is a panel fill on a detail block and the bar behind the column
+ * headings on a table.
+ */
+export function withSectionStyle(
+  base: Record<string, Style>,
+  style?: SectionStyle
+): Record<string, Style> {
+  if (!style) return base
+  const out: Record<string, Style> = { ...base }
+  const set = (key: string, patch: Style) => {
+    if (out[key]) out[key] = { ...out[key], ...patch }
+  }
+
+  if (style.textColor) {
+    for (const key of [
+      'infoText',
+      'infoTextBold',
+      'infoTextSmall',
+      'tableCell',
+      'tableCellBold',
+      'notesText',
+      'totalLabel',
+      'totalValue',
+    ]) {
+      set(key, { color: style.textColor })
+    }
+  }
+
+  if (style.labelColor) {
+    for (const key of ['infoLabel', 'sectionTitle', 'tableHeaderCell', 'notesLabel']) {
+      set(key, { color: style.labelColor })
+    }
+  }
+
+  if (style.backgroundColor) {
+    for (const key of ['infoBox', 'tableHeader', 'notesSection', 'totalsBox']) {
+      set(key, { backgroundColor: style.backgroundColor })
+    }
+  }
+
+  if (style.borderColor) {
+    // A border color implies a border: a workshop that picks one on a panel
+    // that had none means it wants to see it.
+    const width = (key: string, fallback: number) =>
+      (out[key] as { borderWidth?: number })?.borderWidth || fallback
+    set('infoBox', { borderColor: style.borderColor, borderWidth: width('infoBox', 0.5) })
+    set('notesSection', { borderColor: style.borderColor, borderWidth: width('notesSection', 0.5) })
+    set('totalsBox', { borderColor: style.borderColor, borderWidth: width('totalsBox', 1) })
+    set('tableRow', { borderBottomColor: style.borderColor })
+  }
+
+  if (style.fontSize) {
+    const size = style.fontSize
+    const step = (delta: number) => Math.max(5, size + delta)
+    set('infoText', { fontSize: size })
+    set('infoTextBold', { fontSize: size })
+    set('infoTextSmall', { fontSize: step(-1) })
+    set('tableCell', { fontSize: step(-1) })
+    set('tableCellBold', { fontSize: step(-1) })
+    set('tableHeaderCell', { fontSize: step(-2) })
+    set('notesText', { fontSize: step(-1) })
+    set('totalLabel', { fontSize: size })
+    set('totalValue', { fontSize: size })
+    set('sectionTitle', { fontSize: step(2) })
+  }
+
+  return out
+}
+
+/** Whole-sheet appearance, applied once over the document's stylesheet. */
+export interface DocumentStyle {
+  fontSize?: number
+  rowPadding?: number
+  margin?: number
+  stripes?: boolean
+  stripeColor?: string
+  accentColor?: string
+}
+
+/**
+ * The stylesheet with the whole sheet's overrides folded in.
+ *
+ * The framed sheet keeps its own top and left padding: those are not margins,
+ * they are the room the band and the rail occupy, and shrinking them would put
+ * the text under the frame.
+ */
+export function withDocumentStyle(
+  base: Record<string, Style>,
+  doc?: DocumentStyle,
+  framed = false
+): Record<string, Style> {
+  if (!doc) return base
+  const out: Record<string, Style> = { ...base }
+  const set = (key: string, patch: Style) => {
+    if (out[key]) out[key] = { ...out[key], ...patch }
+  }
+
+  if (doc.margin) {
+    set(
+      'page',
+      framed
+        ? { paddingRight: doc.margin, paddingBottom: doc.margin + 20 }
+        : { padding: doc.margin }
+    )
+    set('footer', framed ? { right: doc.margin } : { left: doc.margin, right: doc.margin })
+  }
+
+  if (doc.fontSize) {
+    const size = doc.fontSize
+    const step = (delta: number) => Math.max(5, size + delta)
+    set('page', { fontSize: size })
+    set('infoText', { fontSize: size })
+    set('infoTextBold', { fontSize: size })
+    set('infoTextSmall', { fontSize: step(-1) })
+    set('tableCell', { fontSize: step(-1) })
+    set('tableCellBold', { fontSize: step(-1) })
+    set('tableHeaderCell', { fontSize: step(-2) })
+    set('notesText', { fontSize: step(-1) })
+    set('totalLabel', { fontSize: size })
+    set('totalValue', { fontSize: size })
+    set('sectionTitle', { fontSize: step(2) })
+    set('grandTotalLabel', { fontSize: step(4) })
+    set('grandTotalValue', { fontSize: step(4) })
+  }
+
+  if (doc.rowPadding !== undefined) {
+    set('tableRow', { paddingVertical: doc.rowPadding })
+    set('tableHeader', { paddingVertical: Math.max(2, doc.rowPadding + 1) })
+  }
+
+  if (doc.stripes === false) {
+    out.tableRowAlt = {}
+  } else if (doc.stripeColor) {
+    out.tableRowAlt = { backgroundColor: doc.stripeColor }
+  }
+
+  if (doc.accentColor) {
+    set('infoLabel', { color: doc.accentColor })
+    set('notesLabel', { color: doc.accentColor })
+    set('totalDivider', { borderTopColor: doc.accentColor })
+    set('grandTotalValue', { color: doc.accentColor })
+  }
+
+  return out
+}
 
 export function createStyles(
   primary: string,
@@ -182,6 +344,8 @@ export function createStyles(
       borderBottomWidth: 0.5,
       borderBottomColor: '#e5e7eb',
     },
+    /** Banding behind alternate rows. An empty background turns it off. */
+    tableRowAlt: { backgroundColor: grayLight },
     tableCell: { fontSize: 9 },
     tableCellBold: { fontSize: 9, fontFamily: resolvedBold },
     tableHeaderCell: {

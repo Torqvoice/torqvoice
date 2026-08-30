@@ -9,6 +9,28 @@ export const invoiceFieldConfigSchema = z.object({
   visible: z.boolean(),
 })
 
+/**
+ * How one section looks. Five keys that mean the same thing wherever they are
+ * applied, so one control in the editor styles a detail panel, a table or the
+ * totals without knowing which it is.
+ *
+ * This is where new appearance options belong. A setting per option meant a
+ * code change, plumbing through every PDF builder and twelve translations for
+ * each one; here a workshop sets it and nothing has to be written at all.
+ */
+export const invoiceSectionStyleSchema = z.object({
+  /** Body text: values, table cells, notes. */
+  textColor: z.string().optional(),
+  /** The section's own heading, and a table's column headings. */
+  labelColor: z.string().optional(),
+  /** Panel fill, or the bar behind a table's column headings. */
+  backgroundColor: z.string().optional(),
+  /** Panel border, and the rule between table rows. */
+  borderColor: z.string().optional(),
+  /** Body text size in points. Headings scale with it. */
+  fontSize: z.number().min(5).max(24).optional(),
+})
+
 export const invoiceSectionSchema = z.object({
   id: z.string(),
   visible: z.boolean(),
@@ -20,18 +42,46 @@ export const invoiceSectionSchema = z.object({
    * every layout did before the choice existed.
    */
   boxed: z.boolean().optional(),
+  /** Appearance overrides for this section. Unset uses the document's own. */
+  style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
   fields: z.array(invoiceFieldConfigSchema).optional(),
 })
 
+/**
+ * Appearance that belongs to the whole sheet rather than to one section.
+ *
+ * Lives in the layout alongside the sections for the same reason their styles
+ * do: a workshop sets it, and no setting key, no plumbing through every PDF
+ * builder and no translations have to be written for each new option.
+ */
+export const invoiceDocumentStyleSchema = z.object({
+  /** Base text size in points. Everything else scales from it. */
+  fontSize: z.number().min(6).max(14).optional(),
+  /** Vertical padding in a table row, in points. Lower is denser. */
+  rowPadding: z.number().min(0).max(12).optional(),
+  /** Page margin in points. The framed sheet keeps its own top and left. */
+  margin: z.number().min(12).max(72).optional(),
+  /** Banding behind alternate table rows. False prints them all the same. */
+  stripes: z.boolean().optional(),
+  /** The band's color when stripes are on. */
+  stripeColor: z.string().optional(),
+  /** Section headings and the rule above the total. Defaults to the primary. */
+  accentColor: z.string().optional(),
+})
+
 export const invoiceLayoutConfigSchema = z.object({
   sections: z.array(invoiceSectionSchema),
+  /** Whole-sheet appearance. Unset leaves every default in place. */
+  document: invoiceDocumentStyleSchema.optional(),
 })
 
 // ---------------------------------------------------------------------------
 // TypeScript types (derived from Zod)
 // ---------------------------------------------------------------------------
 
+export type InvoiceSectionStyle = z.infer<typeof invoiceSectionStyleSchema>
+export type InvoiceDocumentStyle = z.infer<typeof invoiceDocumentStyleSchema>
 export type InvoiceFieldConfig = z.infer<typeof invoiceFieldConfigSchema>
 export type InvoiceSection = z.infer<typeof invoiceSectionSchema>
 export type InvoiceLayoutConfig = z.infer<typeof invoiceLayoutConfigSchema>
@@ -250,6 +300,16 @@ export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
   }
 }
 
+/** A section's appearance overrides, or nothing if it has none. */
+export function getSectionStyle(
+  config: InvoiceLayoutConfig | undefined | null,
+  sectionId: string
+): InvoiceSectionStyle | undefined {
+  const style = config?.sections.find((s) => s.id === sectionId)?.style
+  // An empty object is the same as none, and saves the renderer a clone.
+  return style && Object.values(style).some((v) => v !== undefined && v !== '') ? style : undefined
+}
+
 // ---------------------------------------------------------------------------
 // Letterhead mark
 // ---------------------------------------------------------------------------
@@ -406,7 +466,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     }
   }
 
-  return { sections: merged }
+  return { sections: merged, ...(saved.document ? { document: saved.document } : {}) }
 }
 
 // ---------------------------------------------------------------------------

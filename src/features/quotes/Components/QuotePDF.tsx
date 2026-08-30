@@ -7,6 +7,8 @@ import {
   gray,
   getFontBold,
   inkColors,
+  withDocumentStyle,
+  withSectionStyle,
 } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { FramedLetterhead } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
 import { DocumentTitle } from '@/features/vehicles/Components/invoice-pdf/DocumentTitle'
@@ -165,14 +167,18 @@ export function QuotePDF({
   const showCompanyNameField = headerFields
     ? headerFieldOrder.includes('company_name')
     : showCompanyName
-  const styles = createStyles(
-    primaryColor,
-    fontFamily,
-    headerStyle,
-    template?.backgroundColor,
-    template?.textColor
-  )
   const isFramed = headerStyle === 'framed'
+  const styles = withDocumentStyle(
+    createStyles(
+      primaryColor,
+      fontFamily,
+      headerStyle,
+      template?.backgroundColor,
+      template?.textColor
+    ),
+    layoutConfig?.document,
+    isFramed
+  )
   const companyTextColor = template?.companyTextColor || undefined
   const { muted } = inkColors(styles)
   const fontBold = getFontBold(fontFamily)

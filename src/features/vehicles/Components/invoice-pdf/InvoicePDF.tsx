@@ -2,7 +2,16 @@ import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { calculateTotals } from '@/lib/tax'
-import { createStyles, gray, getFontBold, SHADOW, SHADOW_STEP, A4_HEIGHT } from './styles'
+import {
+  createStyles,
+  gray,
+  getFontBold,
+  withSectionStyle,
+  withDocumentStyle,
+  SHADOW,
+  SHADOW_STEP,
+  A4_HEIGHT,
+} from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
@@ -15,6 +24,7 @@ import { CustomFields } from './CustomFields'
 import { Footer, AttachmentsFooter } from './Footer'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 import {
+  getSectionStyle,
   isCustomFieldId,
   fromCustomFieldId,
   groupSectionsForRendering,
@@ -87,14 +97,18 @@ export function InvoicePDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const headerStyle = template?.headerStyle || 'standard'
-  const styles = createStyles(
-    primaryColor,
-    fontFamily,
-    headerStyle,
-    template?.backgroundColor,
-    template?.textColor
-  )
   const isFramed = headerStyle === 'framed'
+  const styles = withDocumentStyle(
+    createStyles(
+      primaryColor,
+      fontFamily,
+      headerStyle,
+      template?.backgroundColor,
+      template?.textColor
+    ),
+    template?.layoutConfig?.document,
+    isFramed
+  )
   const companyTextColor = template?.companyTextColor || undefined
   const frameBorderColor = template?.frameBorderColor || undefined
   const frameShadow = template?.frameShadow !== false
@@ -206,6 +220,12 @@ export function InvoicePDF({
 
   // Map each section ID to its JSX. Sections that have no data naturally
   // return null and will be skipped by React.
+  // Each section is drawn with the document's stylesheet plus whatever the
+  // layout overrides for that section. Sections already take their stylesheet
+  // as a prop, so this styles them without any of them knowing.
+  const stylesFor = (sectionId: string) =>
+    withSectionStyle(styles, getSectionStyle(layoutConfig, sectionId))
+
   const sectionMap: Record<string, React.ReactNode> = {
     header: (
       <>
@@ -243,7 +263,7 @@ export function InvoicePDF({
     customer: (
       <CustomerSection
         data={data}
-        styles={styles}
+        styles={stylesFor('customer')}
         labels={labels}
         visibleFields={visibleCustomerFields}
         customFields={customerCf}
@@ -256,7 +276,7 @@ export function InvoicePDF({
         data={data}
         vehicleName={vehicleName}
         invoiceSettings={invoiceSettings}
-        styles={styles}
+        styles={stylesFor('vehicle')}
         labels={labels}
         visibleFields={visibleVehicleFields}
         customFields={vehicleCf}
@@ -267,7 +287,7 @@ export function InvoicePDF({
     service: (
       <ServiceSection
         data={data}
-        styles={styles}
+        styles={stylesFor('service')}
         labels={labels}
         visibleFields={visibleServiceFields}
         customFields={serviceCf}
@@ -283,7 +303,7 @@ export function InvoicePDF({
         taxRate={data.taxRate}
         taxInclusive={data.taxInclusive ?? false}
         showTitle={!isFramed}
-        styles={styles}
+        styles={stylesFor('items_table')}
         labels={labels}
       />
     ),
@@ -293,7 +313,7 @@ export function InvoicePDF({
         data={data}
         currencyCode={cc}
         currencyFormat={cf}
-        styles={styles}
+        styles={stylesFor('parts_table')}
         labels={labels}
       />
     ),
@@ -303,7 +323,7 @@ export function InvoicePDF({
         data={data}
         currencyCode={cc}
         currencyFormat={cf}
-        styles={styles}
+        styles={stylesFor('labor_table')}
         labels={labels}
       />
     ),
@@ -323,7 +343,7 @@ export function InvoicePDF({
           isPaidInFull={isPaidInFull}
           paymentSummary={paymentSummary}
           showCategorySubtotals={!itemsTableVisible}
-          styles={styles}
+          styles={stylesFor('totals')}
           labels={labels}
         />
         {torqvoiceLogoDataUri && (
@@ -348,7 +368,7 @@ export function InvoicePDF({
       generalFallbackCf.length > 0 ? (
         <CustomFields
           fields={generalFallbackCf}
-          styles={styles}
+          styles={stylesFor('totals')}
           labels={labels}
           boxed={isBoxed('general')}
         />
@@ -360,7 +380,7 @@ export function InvoicePDF({
         otherAttachments={otherAttachments}
         pdfAttachmentNames={pdfAttachmentNames}
         fontFamily={fontFamily}
-        styles={styles}
+        styles={stylesFor('notes')}
         labels={labels}
       />
     ),
@@ -372,7 +392,7 @@ export function InvoicePDF({
         warrantyExpiresAt={data.warrantyExpiresAt}
         warrantyNotes={data.warrantyNotes}
         fontFamily={fontFamily}
-        styles={styles}
+        styles={stylesFor('warranty')}
         labels={labels}
         dateFormat={invoiceSettings?.dateFormat}
         timezone={invoiceSettings?.timezone}
@@ -383,7 +403,7 @@ export function InvoicePDF({
       <FindingsPdfSection
         findings={data.findings || []}
         fontFamily={fontFamily}
-        styles={styles}
+        styles={stylesFor('findings')}
         labels={labels}
       />
     ),
@@ -392,7 +412,7 @@ export function InvoicePDF({
       <BankAccountSection
         invoiceSettings={invoiceSettings}
         fontFamily={fontFamily}
-        styles={styles}
+        styles={stylesFor('bank_account')}
         labels={labels}
         visibleFields={visibleBankAccountFields}
         primaryColor={primaryColor}
@@ -433,7 +453,7 @@ export function InvoicePDF({
         portalUrl={portalUrl}
         workshop={workshop}
         visibleFields={getVisibleFieldsForSection(layoutConfig, 'footer')}
-        styles={styles}
+        styles={stylesFor('footer')}
         labels={labels}
       />
     ),

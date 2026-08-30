@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer'
 import { formatCurrency } from '@/lib/format'
 import { netLineTotal } from '@/lib/tax'
-import { grayLight, inkColors } from './styles'
+import { inkColors } from './styles'
 import type { Style } from '@react-pdf/types'
 
 /**
@@ -96,7 +96,8 @@ export function ItemsTable({
               key={i}
               style={{
                 ...styles.tableRow,
-                ...(i % 2 === 1 ? { backgroundColor: grayLight } : {}),
+                // An empty alt style is how the layout turns banding off.
+                ...(i % 2 === 1 ? styles.tableRowAlt || {} : {}),
                 ...(item.excluded ? { opacity: 0.5 } : {}),
               }}
             >
