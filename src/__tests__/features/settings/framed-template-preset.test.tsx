@@ -13,6 +13,7 @@ import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { createStyles, FRAMED } from '@/features/vehicles/Components/invoice-pdf/styles'
+import { letterheadMark } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
 import { templatePresets } from '@/features/settings/Schema/templatePresets'
 import { getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -123,6 +124,27 @@ describe('framed template preset', () => {
     for (const style of ['standard', 'compact', 'modern']) {
       expect(createStyles('#ee7623', 'Helvetica', style).page.borderLeftWidth).toBeUndefined()
     }
+  })
+
+  it('carries one mark on the band, the logo when there is one', () => {
+    expect(letterheadMark({ showLogo: true, logoDataUri: 'data:…', showCompanyName: true })).toBe(
+      'logo'
+    )
+    expect(letterheadMark({ showLogo: true, showCompanyName: true })).toBe('name')
+    expect(letterheadMark({ showLogo: false, logoDataUri: 'data:…', showCompanyName: true })).toBe(
+      'name'
+    )
+    expect(letterheadMark({ showLogo: true, logoDataUri: 'data:…', showCompanyName: false })).toBe(
+      'logo'
+    )
+    expect(letterheadMark({ showLogo: false, showCompanyName: false })).toBe('none')
+  })
+
+  it('lines the footer up with the content, not the rail', () => {
+    const styles = createStyles('#ee7623', 'Helvetica', 'framed')
+    // Absolute offsets are measured from inside the page border, so the rail's
+    // width is already accounted for.
+    expect(styles.footer.left).toBe(FRAMED.padLeft)
   })
 
   it('renders an invoice and a quote through the framed sheet', async () => {

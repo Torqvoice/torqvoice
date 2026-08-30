@@ -1,9 +1,23 @@
 import { Text, View, Image } from '@react-pdf/renderer'
-import { gray, getFontBold, FRAMED } from './styles'
+import { gray, getFontBold, FRAMED, SHADOW, SHADOW_STEP } from './styles'
 import type { WorkshopInfo } from './types'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
+}
+
+/**
+ * What the band carries. A letterhead shows one mark: when a workshop has
+ * uploaded a logo that logo is already its name set in its own type, and
+ * printing the name beside it reads as a mistake.
+ */
+export function letterheadMark(opts: {
+  showLogo: boolean
+  logoDataUri?: string
+  showCompanyName: boolean
+}): 'logo' | 'name' | 'none' {
+  if (opts.showLogo && opts.logoDataUri) return 'logo'
+  return opts.showCompanyName ? 'name' : 'none'
 }
 
 /**
@@ -41,6 +55,7 @@ export function FramedLetterhead({
   labels: Record<string, string>
 }) {
   const fontBold = getFontBold(fontFamily)
+  const mark = letterheadMark({ showLogo, logoDataUri, showCompanyName })
 
   const strapline = ['company_address', 'company_phone', 'company_email', 'company_org_number']
     .filter((id) => fieldOrder.includes(id))
@@ -73,7 +88,10 @@ export function FramedLetterhead({
     <View
       style={{
         marginTop: -FRAMED.padTop,
-        marginLeft: -FRAMED.padLeft,
+        // Out past the rail, not just past the padding: the band has to paint
+        // over the page's left border or a hairline of white shows through
+        // where the two rectangles meet.
+        marginLeft: -(FRAMED.padLeft + FRAMED.railWidth),
         marginRight: -FRAMED.padRight,
         marginBottom: 20,
       }}
@@ -85,10 +103,10 @@ export function FramedLetterhead({
           justifyContent: 'center',
           alignItems: 'flex-end',
           paddingRight: 26,
-          paddingLeft: FRAMED.railWidth + 12,
+          paddingLeft: FRAMED.railWidth + 26,
         }}
       >
-        {showLogo && logoDataUri ? (
+        {mark === 'logo' ? (
           <Image
             src={logoDataUri}
             style={{
@@ -98,18 +116,26 @@ export function FramedLetterhead({
             }}
           />
         ) : null}
-        {showCompanyName ? (
+        {mark === 'name' ? (
           <Text style={{ fontSize: 24, fontFamily: fontBold, color: '#ffffff' }}>
             {shopDisplayName}
           </Text>
         ) : null}
       </View>
 
+      {/* The band sits above the sheet, so it drops a shadow onto it. */}
+      <View style={{ marginLeft: FRAMED.railWidth }}>
+        {SHADOW.map((color, i) => (
+          <View key={i} style={{ height: SHADOW_STEP, backgroundColor: color }} />
+        ))}
+      </View>
+
       {strapline ? (
         <View
           style={{
+            marginLeft: FRAMED.railWidth,
             paddingRight: 26,
-            paddingLeft: FRAMED.railWidth + 12,
+            paddingLeft: 26,
             paddingTop: 8,
             paddingBottom: 8,
             alignItems: 'flex-end',

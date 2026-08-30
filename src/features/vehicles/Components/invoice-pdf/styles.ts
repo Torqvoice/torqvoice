@@ -54,6 +54,17 @@ export const FRAMED = {
   padBottom: 54,
 } as const
 
+/**
+ * Stacked hairlines standing in for a drop shadow, darkest first. react-pdf has
+ * no box-shadow, so the falloff is drawn by hand.
+ */
+export const A4_HEIGHT = 841.89
+
+export const SHADOW = ['rgba(0, 0, 0, 0.13)', 'rgba(0, 0, 0, 0.07)', 'rgba(0, 0, 0, 0.03)'] as const
+
+/** Width of one shadow hairline, in points. */
+export const SHADOW_STEP = 1.1
+
 export function createStyles(primary: string, font: string, headerStyle = 'standard') {
   const framed = headerStyle === 'framed'
   const primaryLight = lightenColor(primary)
@@ -171,7 +182,7 @@ export function createStyles(primary: string, font: string, headerStyle = 'stand
     footer: {
       position: 'absolute' as const,
       bottom: framed ? 22 : 30,
-      left: framed ? FRAMED.railWidth + FRAMED.padLeft : 40,
+      left: framed ? FRAMED.padLeft : 40,
       right: framed ? FRAMED.padRight : 40,
       textAlign: 'center' as const,
       fontSize: 8,

@@ -2,7 +2,7 @@ import React from 'react'
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
 import { calculateTotals } from '@/lib/tax'
-import { createStyles, gray, getFontBold } from './styles'
+import { createStyles, gray, getFontBold, SHADOW, SHADOW_STEP, A4_HEIGHT } from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
@@ -444,6 +444,29 @@ export function InvoicePDF({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* The rail sits above the sheet like the band does, so it drops the
+            same shadow down the left edge. Drawn before the sections so the
+            band paints over it on the first page, and `fixed` so it reaches
+            the full height of every page after it. */}
+        {isFramed && (
+          <View
+            fixed
+            style={{
+              position: 'absolute',
+              top: 0,
+              // Absolute offsets are measured from inside the page border, so
+              // zero lands exactly against the rail.
+              left: 0,
+              height: A4_HEIGHT,
+              width: SHADOW.length * SHADOW_STEP,
+              flexDirection: 'row',
+            }}
+          >
+            {SHADOW.map((color, i) => (
+              <View key={i} style={{ width: SHADOW_STEP, backgroundColor: color }} />
+            ))}
+          </View>
+        )}
         {renderedSections}
       </Page>
 
