@@ -569,6 +569,7 @@
       "customer": "Cliente",
       "vehicle": "Veículo",
       "service": "Serviço",
+      "items_table": "Tabela de itens",
       "parts_table": "Peças",
       "labor_table": "Mão de obra",
       "totals": "Totais",

@@ -569,6 +569,7 @@
       "customer": "Klant",
       "vehicle": "Voertuig",
       "service": "Service",
+      "items_table": "Artikeltabel",
       "parts_table": "Onderdelen",
       "labor_table": "Arbeid",
       "totals": "Totalen",

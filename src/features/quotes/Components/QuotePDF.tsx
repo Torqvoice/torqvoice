@@ -5,6 +5,10 @@ import { formatQuantity } from '@/lib/format-quantity'
 import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import { CustomFields } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
+import {
+  ItemsTable,
+  type CombinedItem,
+} from '@/features/vehicles/Components/invoice-pdf/ItemsTable'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type {
   InvoiceLayoutConfig,
@@ -151,6 +155,7 @@ export function QuotePDF({
   // Layout config helpers
   const sections = layoutConfig?.sections ?? []
   const sectionMap = new Map<string, InvoiceSection>(sections.map((s) => [s.id, s]))
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
 
   const getVisibleFieldsForSection = (sectionId: string): Set<string> | null => {
     const section = sectionMap.get(sectionId)
@@ -671,6 +676,45 @@ export function QuotePDF({
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
 
+  // Splitting the sum back into parts and labor would be a breakdown of a list
+  // the reader never saw split, so the combined table suppresses it.
+  const itemsTableVisible = effectiveSections.some((s) => s.id === 'items_table' && s.visible)
+
+  const renderItemsTable = () => {
+    // Labor first, then parts: a job reads as the work that was done followed
+    // by what it took, and that is the order the numbered positions run in.
+    const items: CombinedItem[] = [
+      ...data.laborItems.map((l) => ({
+        quantity: l.hours,
+        unit: l.pricingType === 'service' ? labels.unit || 'unit' : labels.hrs || 'hrs',
+        description: l.description,
+        unitPrice: l.rate,
+        total: l.total,
+        excluded: l.excluded,
+      })),
+      ...data.partItems.map((p) => ({
+        quantity: p.quantity,
+        unit: p.unit,
+        description: p.name,
+        reference: p.partNumber,
+        unitPrice: p.unitPrice,
+        total: p.total,
+        excluded: p.excluded,
+      })),
+    ]
+    return (
+      <ItemsTable
+        items={items}
+        currencyCode={currencyCode}
+        currencyFormat={currencyFormat}
+        taxRate={taxRate}
+        taxInclusive={taxInclusive}
+        styles={styles}
+        labels={labels}
+      />
+    )
+  }
+
   const renderPartsTable = () => {
     if (data.partItems.length === 0) return null
     return (
@@ -871,7 +915,7 @@ export function QuotePDF({
 
     return (
       <View style={styles.totalsBox}>
-        {data.laborItems.length > 0 && (
+        {!itemsTableVisible && data.laborItems.length > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.labor || 'Labor'}</Text>
             <Text style={styles.totalValue}>
@@ -879,7 +923,7 @@ export function QuotePDF({
             </Text>
           </View>
         )}
-        {data.partItems.length > 0 && (
+        {!itemsTableVisible && data.partItems.length > 0 && (
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{labels.parts || 'Parts'}</Text>
             <Text style={styles.totalValue}>
@@ -1033,6 +1077,8 @@ export function QuotePDF({
         return renderVehicleSection()
       case 'service':
         return renderServiceSection()
+      case 'items_table':
+        return renderItemsTable()
       case 'parts_table':
         return renderPartsTable()
       case 'labor_table':
@@ -1069,8 +1115,6 @@ export function QuotePDF({
     }
   }
 
-  // Use column-based grouping from layout config
-  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
   const renderGroups = groupSectionsForRendering(effectiveSections)
   const renderedSections: React.ReactNode[] = []
 

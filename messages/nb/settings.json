@@ -569,6 +569,7 @@
       "customer": "Kunde",
       "vehicle": "Kjøretøy",
       "service": "Tjeneste",
+      "items_table": "Posttabell",
       "parts_table": "Deler",
       "labor_table": "Arbeid",
       "totals": "Totaler",

@@ -6,6 +6,7 @@ import { createStyles, gray, getFontBold } from './styles'
 import { Header } from './Header'
 import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
 import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
+import { ItemsTable, type CombinedItem } from './ItemsTable'
 import { Totals } from './Totals'
 import { NotesOnly, BankAccountSection } from './Notes'
 import { WarrantySection } from './Warranty'
@@ -132,6 +133,26 @@ export function InvoicePDF({
   const isPaidInFull = paymentSummary ? paymentSummary.totalPaid >= displayTotal : false
 
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
+
+  // Labor first, then parts: a job reads as the work that was done followed by
+  // what it took, and that is the order the numbered positions run in.
+  const combinedItems: CombinedItem[] = [
+    ...data.laborItems.map((l) => ({
+      quantity: l.hours,
+      unit: l.pricingType === 'service' ? labels.unit || 'unit' : labels.hrs || 'hrs',
+      description: l.description,
+      unitPrice: l.rate,
+      total: l.total,
+    })),
+    ...data.partItems.map((p) => ({
+      quantity: p.quantity,
+      unit: p.unit,
+      description: p.name,
+      reference: p.partNumber,
+      unitPrice: p.unitPrice,
+      total: p.total,
+    })),
+  ]
   const hasAttachments = imageAttachments.length > 0 || otherAttachments.length > 0
 
   // ---------------------------------------------------------------------------
@@ -143,6 +164,9 @@ export function InvoicePDF({
   const visibleServiceFields = getVisibleFieldsForSection(layoutConfig, 'service')
   const visibleHeaderFields = getVisibleFieldsForSection(layoutConfig, 'header')
   const visibleBankAccountFields = getVisibleFieldsForSection(layoutConfig, 'bank_account')
+
+  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
+  const itemsTableVisible = effectiveSections.some((s) => s.id === 'items_table' && s.visible)
 
   const allCf = data.customFields || []
   const customerCf = getCustomFieldsForSection(layoutConfig, 'customer', allCf)
@@ -209,6 +233,18 @@ export function InvoicePDF({
       />
     ),
 
+    items_table: (
+      <ItemsTable
+        items={combinedItems}
+        currencyCode={cc}
+        currencyFormat={cf}
+        taxRate={data.taxRate}
+        taxInclusive={data.taxInclusive ?? false}
+        styles={styles}
+        labels={labels}
+      />
+    ),
+
     parts_table: (
       <PartsTable
         data={data}
@@ -243,6 +279,7 @@ export function InvoicePDF({
           balanceDue={balanceDue}
           isPaidInFull={isPaidInFull}
           paymentSummary={paymentSummary}
+          showCategorySubtotals={!itemsTableVisible}
           styles={styles}
           labels={labels}
         />
@@ -352,7 +389,6 @@ export function InvoicePDF({
   }
 
   // Use column-based grouping from layout config.
-  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
   const renderGroups = groupSectionsForRendering(effectiveSections)
   const renderedSections: React.ReactNode[] = []
 

@@ -569,6 +569,7 @@
       "customer": "Klientas",
       "vehicle": "Transporto priemonė",
       "service": "Paslauga",
+      "items_table": "Pozicijų lentelė",
       "parts_table": "Dalių lentelė",
       "labor_table": "Darbų lentelė",
       "totals": "Sumos",

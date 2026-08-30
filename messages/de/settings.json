@@ -569,6 +569,7 @@
       "customer": "Kunde",
       "vehicle": "Fahrzeug",
       "service": "Service",
+      "items_table": "Positionstabelle",
       "parts_table": "Teile",
       "labor_table": "Arbeit",
       "totals": "Summen",

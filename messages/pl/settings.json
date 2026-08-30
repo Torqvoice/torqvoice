@@ -569,6 +569,7 @@
       "customer": "Klient",
       "vehicle": "Pojazd",
       "service": "Usługa",
+      "items_table": "Tabela pozycji",
       "parts_table": "Części",
       "labor_table": "Robocizna",
       "totals": "Podsumowanie",

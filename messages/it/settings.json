@@ -569,6 +569,7 @@
       "customer": "Cliente",
       "vehicle": "Veicolo",
       "service": "Servizio",
+      "items_table": "Tabella voci",
       "parts_table": "Ricambi",
       "labor_table": "Manodopera",
       "totals": "Totali",

@@ -569,6 +569,7 @@
       "customer": "Customer",
       "vehicle": "Vehicle",
       "service": "Service",
+      "items_table": "Items Table",
       "parts_table": "Parts Table",
       "labor_table": "Labor Table",
       "totals": "Totals",
