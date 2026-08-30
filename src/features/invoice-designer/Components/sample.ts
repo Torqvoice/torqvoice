@@ -83,8 +83,8 @@ export const SAMPLE_TABLES: SampleTables = {
   date: '14.08.2026',
   due: '28.08.2026',
   customerNumber: 'C-0117',
-  notes: 'Please re-torque the wheel nuts after 100 km.',
-  warranty: '12 months / 20,000 km on parts and labour.',
+  notes: 'Thank you for choosing our workshop. Contact us if you have any questions.',
+  warranty: '12 months warranty on parts and labour.',
   title: 'INVOICE',
 }
 

@@ -195,12 +195,15 @@ describe('framed template preset', () => {
     expect(shown('footer')).not.toContain('footer_note')
   })
 
-  it('offers to take the panel off the three detail blocks', () => {
+  it('offers to take the panel off every card that draws one', () => {
     expect([...BOXED_ELIGIBLE_SECTIONS].sort()).toEqual([
       'customer',
       'general',
+      'notes',
       'service',
+      'telegram_qr',
       'vehicle',
+      'warranty',
     ])
   })
 

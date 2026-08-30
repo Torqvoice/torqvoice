@@ -443,6 +443,7 @@ function itemsTable(
     id: section.id,
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
+    rowBackground: theme.background || '#ffffff',
     stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
     style: {
       // The hairline default is nearly invisible ink; a custom width without
@@ -521,6 +522,7 @@ function partsTable(
     kind: 'table',
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
+    rowBackground: theme.background || '#ffffff',
     stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
     style: {
       // The hairline default is nearly invisible ink; a custom width without
@@ -566,6 +568,7 @@ function laborTable(
     kind: 'table',
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
+    rowBackground: theme.background || '#ffffff',
     stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
     style: {
       // The hairline default is nearly invisible ink; a custom width without
@@ -618,6 +621,7 @@ function findingsBlock(
       kind: 'table',
       rowPadding: theme.rowPadding,
       ruleWidth: look.ruleWidth,
+      rowBackground: theme.background || '#ffffff',
       stripe: look.stripes === true ? theme.stripeColor : undefined,
       style: {
         borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
@@ -788,16 +792,17 @@ function notesBlock(
     }
   }
 
+  const boxed = section.boxed !== false
   return {
     kind: 'stack',
     id: section.id,
     gap: 3,
     style: {
-      background: look.fill || '#f3f4f6',
+      background: look.fill || (boxed ? '#f3f4f6' : undefined),
       borderColor: look.border,
-      borderWidth: look.border ? 0.75 : 0,
-      radius: 3,
-      padding: 10,
+      borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
+      radius: boxed ? 3 : 0,
+      padding: boxed || look.fill ? 10 : 0,
     },
     children,
   }
@@ -843,16 +848,17 @@ function warrantyBlock(
     })
   }
 
+  const boxed = section.boxed !== false
   return {
     kind: 'stack',
     id: section.id,
     gap: 3,
     style: {
-      background: look.fill || '#f3f4f6',
+      background: look.fill || (boxed ? '#f3f4f6' : undefined),
       borderColor: look.border,
-      borderWidth: look.border ? 0.75 : 0,
-      radius: 3,
-      padding: 10,
+      borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
+      radius: boxed ? 3 : 0,
+      padding: boxed || look.fill ? 10 : 0,
     },
     children,
   }
@@ -997,7 +1003,10 @@ function telegramBlock(
     kind: 'stack',
     id: section.id,
     gap: 4,
-    style: { background: look.fill || '#fafafa', radius: 6, padding: 10 },
+    style:
+      section.boxed !== false
+        ? { background: look.fill || '#fafafa', radius: 6, padding: 10 }
+        : { background: look.fill },
     children: [
       { kind: 'image', src: data.telegramQr.dataUri, maxWidth: 56, maxHeight: 56, align: 'center' },
       {

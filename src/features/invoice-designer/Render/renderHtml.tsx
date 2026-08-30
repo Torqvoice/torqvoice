@@ -181,9 +181,11 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
                 <div
                   key={`rule-${i}`}
                   style={{
-                    height: (node.ruleWidth ?? 0.75) + 0.7,
+                    // Below the last row nothing paints the overlap back, so
+                    // the trailing rule keeps only its upper extension.
+                    height: (node.ruleWidth ?? 0.75) + (i === node.rows.length - 1 ? 0.35 : 0.7),
                     marginTop: -0.35,
-                    marginBottom: -0.35,
+                    marginBottom: i === node.rows.length - 1 ? 0 : -0.35,
                     background: node.style?.borderColor ?? '#eceef1',
                   }}
                 />
@@ -195,7 +197,7 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
                   display: 'flex',
                   alignItems: 'flex-start',
                   padding: `${node.rowPadding ?? 5}px 8px`,
-                  background: node.stripe && i % 2 === 1 ? node.stripe : undefined,
+                  background: node.stripe && i % 2 === 1 ? node.stripe : node.rowBackground,
                   opacity: struck ? 0.5 : undefined,
                   textDecoration: struck ? 'line-through' : undefined,
                 }}

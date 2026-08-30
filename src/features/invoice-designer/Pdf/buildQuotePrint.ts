@@ -354,7 +354,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     margin: doc.margin ?? 40,
     rowPadding: doc.rowPadding ?? 5,
     stripes: doc.stripes !== false,
-    stripeColor: doc.stripeColor || '#f3f4f6',
+    stripeColor: doc.stripeColor || mixColors(background, text, 0.045),
     headerStyle,
     frameSide: template?.frameSide === 'right' ? 'right' : 'left',
     frameBorderColor: template?.frameBorderColor || undefined,

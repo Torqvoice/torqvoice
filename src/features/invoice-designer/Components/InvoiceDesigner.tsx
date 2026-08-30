@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -38,13 +38,7 @@ import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/
 import { SAMPLE_TABLES, fieldValues } from './sample'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
-import type {
-  DesignerTemplate,
-  DesignerWorkshop,
-  DocumentType,
-  ResolvedTheme,
-  SavedDesign,
-} from './types'
+import type { DesignerTemplate, DesignerWorkshop, DocumentType, SavedDesign } from './types'
 
 /** Blend two hex colors, used to derive the secondary tone the PDF derives. */
 function mix(from: string, to: string, amount: number) {
@@ -56,6 +50,18 @@ function mix(from: string, to: string, amount: number) {
   const b = parse(to)
   const at = (i: number) => Math.round(a[i] + (b[i] - a[i]) * amount)
   return `rgb(${at(0)}, ${at(1)}, ${at(2)})`
+}
+
+/** The template fields a preset carries, over whatever is already set. */
+function presetTemplatePatch(preset: (typeof layoutPresets)[number]) {
+  return {
+    primaryColor: preset.template.primaryColor,
+    headerStyle: preset.template.headerStyle,
+    fontFamily: preset.template.fontFamily,
+    frameSide: preset.template.frameSide ?? 'left',
+    backgroundColor: preset.template.backgroundColor ?? '',
+    textColor: preset.template.textColor ?? '',
+  }
 }
 
 /**
@@ -88,7 +94,7 @@ function themeOf(template: DesignerTemplate, layout: InvoiceLayoutConfig) {
     margin: doc.margin ?? 40,
     rowPadding: doc.rowPadding ?? 5,
     stripes: doc.stripes !== false,
-    stripeColor: doc.stripeColor || '#f3f4f6',
+    stripeColor: doc.stripeColor || mix(background, text, 0.045),
     headerStyle: template.headerStyle,
     frameSide: template.frameSide === 'right' ? ('right' as const) : ('left' as const),
     frameBorderColor: template.frameBorderColor || undefined,
@@ -106,6 +112,8 @@ export function InvoiceDesigner({
   invoiceTemplate,
   quoteTemplate,
   initialSavedDesigns = [],
+  initialPresetId,
+  initialActiveDesigns,
   workshop,
   customFields,
 }: {
@@ -116,25 +124,64 @@ export function InvoiceDesigner({
   invoiceTemplate: DesignerTemplate
   quoteTemplate: DesignerTemplate
   initialSavedDesigns?: SavedDesign[]
+  /** A preset to arrive with already applied, from settings' starting points. */
+  initialPresetId?: string
+  /** What each document's design is based on: "preset:<id>" or "design:<id>". */
+  initialActiveDesigns?: Record<DocumentType, string>
   workshop: DesignerWorkshop
   customFields: DesignerFieldDef[]
 }) {
   const router = useRouter()
-  const [view, setView] = useState<'gallery' | 'designer'>(initialView)
+  // Arriving with ?preset= means a starting point was picked in settings:
+  // land in the designer with it applied, as unsaved work.
+  const initialPreset = initialPresetId
+    ? layoutPresets.find((p) => p.id === initialPresetId)
+    : undefined
+  const [view, setView] = useState<'gallery' | 'designer'>(initialPreset ? 'designer' : initialView)
   const [docType, setDocType] = useState<DocumentType>(initialDocumentType)
-  const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>({
-    invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
-    quote: quoteLayout ?? getDefaultInvoiceLayout(),
+  const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>(() => {
+    const base = {
+      invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
+      quote: quoteLayout ?? getDefaultInvoiceLayout(),
+    }
+    if (initialPreset) base[initialDocumentType] = buildLayoutFromPreset(initialPreset)
+    return base
   })
-  const [templates, setTemplates] = useState<Record<DocumentType, DesignerTemplate>>({
-    invoice: invoiceTemplate,
-    quote: quoteTemplate,
+  const [templates, setTemplates] = useState<Record<DocumentType, DesignerTemplate>>(() => {
+    const base = { invoice: invoiceTemplate, quote: quoteTemplate }
+    if (initialPreset) {
+      base[initialDocumentType] = {
+        ...base[initialDocumentType],
+        ...presetTemplatePatch(initialPreset),
+      }
+    }
+    return base
   })
   const [selected, setSelected] = useState<string | null>(null)
   const [zoom, setZoom] = useState(1)
   const [rulers, setRulers] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [dirty, setDirty] = useState(false)
+  const [dirty, setDirty] = useState(!!initialPreset)
+  // The preset in the URL is a one-shot instruction, consumed above. Left in
+  // the address bar it would re-apply itself on every refresh, overriding
+  // whatever the user picked since, so it is stripped once acted on.
+  useEffect(() => {
+    if (!initialPresetId) return
+    const url = new URL(window.location.href)
+    url.searchParams.delete('preset')
+    url.searchParams.set('view', 'designer')
+    window.history.replaceState(null, '', url.toString())
+  }, [initialPresetId])
+
+  /** What the sheet being edited is based on, per document, for the gallery. */
+  const [activeDesigns, setActiveDesigns] = useState<Record<DocumentType, string>>(() => {
+    const base = {
+      invoice: initialActiveDesigns?.invoice ?? '',
+      quote: initialActiveDesigns?.quote ?? '',
+    }
+    if (initialPreset) base[initialDocumentType] = `preset:${initialPreset.id}`
+    return base
+  })
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(initialSavedDesigns)
   /** Open state and draft name for the save-design dialog. */
   const [namingDesign, setNamingDesign] = useState(false)
@@ -159,30 +206,6 @@ export function InvoiceDesigner({
     },
     [docType]
   )
-
-  const theme: ResolvedTheme = useMemo(() => {
-    const doc = layout.document ?? {}
-    const text = template.textColor || '#111827'
-    const background = template.backgroundColor || '#ffffff'
-    return {
-      primary: template.primaryColor,
-      background,
-      text,
-      muted: template.textColor ? mix(text, background, 0.42) : '#6b7280',
-      accent: doc.accentColor || template.primaryColor,
-      companyText:
-        template.companyTextColor ||
-        (template.headerStyle === 'framed' || template.headerStyle === 'modern'
-          ? '#ffffff'
-          : template.primaryColor),
-      fontFamily: doc.fontFamily || template.fontFamily,
-      baseSize: doc.fontSize ?? BASE_FONT_SIZE,
-      margin: doc.margin ?? 40,
-      rowPadding: doc.rowPadding ?? 5,
-      stripes: doc.stripes !== false,
-      stripeColor: doc.stripeColor || '#f3f4f6',
-    }
-  }, [layout, template])
 
   /** What a workshop's own sheet says, with the sample standing in for a job. */
   const data: DocumentData = useMemo(
@@ -263,49 +286,19 @@ export function InvoiceDesigner({
   )
 
   const spec = useMemo(
-    () =>
-      buildDocumentSpec(
-        layout,
-        {
-          primary: template.primaryColor,
-          background: theme.background,
-          text: theme.text,
-          muted: theme.muted,
-          accent: theme.accent,
-          companyText: theme.companyText,
-          fontFamily: theme.fontFamily,
-          fontSize: theme.baseSize,
-          margin: theme.margin,
-          rowPadding: theme.rowPadding,
-          stripes: theme.stripes,
-          stripeColor: theme.stripeColor,
-          headerStyle: template.headerStyle,
-          frameSide: template.frameSide === 'right' ? 'right' : 'left',
-          frameBorderColor: template.frameBorderColor || undefined,
-          frameShadow: frameShadowWidth(template.frameShadow),
-          frameRadius: template.frameRadius,
-          logoSize: template.logoSize,
-        },
-        data
-      ),
-    [layout, template, theme, data]
+    () => buildDocumentSpec(layout, themeOf(template, layout), data),
+    [layout, template, data]
   )
 
   /** A template is the whole look, not only which sections are on. */
   const applyPreset = useCallback(
     (preset: (typeof layoutPresets)[number]) => {
       setLayout(buildLayoutFromPreset(preset))
-      setTemplate({
-        primaryColor: preset.template.primaryColor,
-        headerStyle: preset.template.headerStyle,
-        fontFamily: preset.template.fontFamily,
-        frameSide: preset.template.frameSide ?? 'left',
-        backgroundColor: preset.template.backgroundColor ?? '',
-        textColor: preset.template.textColor ?? '',
-      })
+      setTemplate(presetTemplatePatch(preset))
+      setActiveDesigns((prev) => ({ ...prev, [docType]: `preset:${preset.id}` }))
       setView('designer')
     },
-    [setLayout, setTemplate]
+    [docType, setLayout, setTemplate]
   )
 
   /** Keep the named designs, in state and in settings, in one move. */
@@ -320,23 +313,36 @@ export function InvoiceDesigner({
   const saveDesignAs = useCallback(() => {
     const name = designName.trim()
     if (!name) return
-    const design: SavedDesign = {
-      id: designId(),
+    const snapshot = {
       name,
       savedAt: new Date().toISOString(),
       layout: JSON.parse(JSON.stringify(layout)) as InvoiceLayoutConfig,
       template: { ...template },
     }
-    persistDesigns([design, ...savedDesigns].slice(0, 24))
+    // The same name means the same design: saving again updates it in place
+    // rather than filling the gallery with near-copies.
+    const existing = savedDesigns.find((d) => d.name.trim().toLowerCase() === name.toLowerCase())
+    if (existing) {
+      persistDesigns(savedDesigns.map((d) => (d.id === existing.id ? { ...d, ...snapshot } : d)))
+      setActiveDesigns((prev) => ({ ...prev, [docType]: `design:${existing.id}` }))
+      toast.success(`Updated "${name}"`)
+    } else {
+      const id = designId()
+      persistDesigns([{ id, ...snapshot }, ...savedDesigns].slice(0, 24))
+      setActiveDesigns((prev) => ({ ...prev, [docType]: `design:${id}` }))
+      toast.success(`Saved as "${name}"`)
+    }
     setNamingDesign(false)
-    toast.success(`Saved as "${name}"`)
-  }, [designName, layout, template, savedDesigns, persistDesigns])
+  }, [designName, docType, layout, template, savedDesigns, persistDesigns])
 
   /** Bring a saved design back, onto whichever document is being edited. */
   const applyDesign = useCallback(
     (design: SavedDesign) => {
       setLayout(JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig)
       setTemplates((prev) => ({ ...prev, [docType]: { ...design.template } }))
+      // Its name becomes the working name, so the next save updates it.
+      setDesignName(design.name)
+      setActiveDesigns((prev) => ({ ...prev, [docType]: `design:${design.id}` }))
       setSelected(null)
       setDirty(true)
       setView('designer')
@@ -544,6 +550,7 @@ export function InvoiceDesigner({
           [`${prefix}.frameBorderColor`]: template.frameBorderColor,
           [`${prefix}.frameShadow`]: template.frameShadow,
           [`${prefix}.frameRadius`]: String(template.frameRadius),
+          [`${prefix}.activeDesign`]: activeDesigns[docType] ?? '',
           [`${prefix}.frameSide`]: template.frameSide,
           [`${prefix}.fontFamily`]: template.fontFamily,
           [`${prefix}.headerStyle`]: template.headerStyle,
@@ -574,66 +581,84 @@ export function InvoiceDesigner({
             <>
               <h2 className="mb-3 text-[15px] font-semibold">Your designs</h2>
               <div className="mb-8 grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
-                {savedDesigns.map((design) => (
-                  <div
-                    key={design.id}
-                    className="group relative rounded-[10px] border border-[#e3e5e9] bg-white p-3.5 text-left transition-shadow hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(26,29,33,0.12)]"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => applyDesign(design)}
-                      className="block w-full text-left"
+                {savedDesigns.map((design) => {
+                  const active = activeDesigns[docType] === `design:${design.id}`
+                  return (
+                    <div
+                      key={design.id}
+                      className="group relative rounded-[10px] border bg-white p-3.5 text-left transition-shadow hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(26,29,33,0.12)]"
+                      style={{ borderColor: active ? '#2563eb' : '#e3e5e9' }}
                     >
-                      <SpecThumbnail spec={specForDesign(design)} />
-                      <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
-                      <div className="text-xs leading-snug text-[#71767e]">
-                        Saved {new Date(design.savedAt).toLocaleDateString()}
-                      </div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const ok = await confirm({
-                          title: 'Delete design',
-                          description: `Delete the design "${design.name}"? The invoice and quote keep whatever is applied; only the saved copy goes.`,
-                          confirmLabel: 'Delete',
-                          destructive: true,
-                        })
-                        if (ok) persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
-                      }}
-                      title="Delete this design"
-                      className="absolute right-2 top-2 hidden h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] shadow group-hover:flex hover:text-[#dc2626]"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+                      {active && (
+                        <span className="absolute left-2 top-2 z-10 rounded-full bg-[#2563eb] px-2 py-0.5 text-[10.5px] font-semibold text-white shadow">
+                          In use
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => applyDesign(design)}
+                        className="block w-full text-left"
+                      >
+                        <SpecThumbnail spec={specForDesign(design)} />
+                        <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
+                        <div className="text-xs leading-snug text-[#71767e]">
+                          Saved {new Date(design.savedAt).toLocaleDateString()}
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const ok = await confirm({
+                            title: 'Delete design',
+                            description: `Delete the design "${design.name}"? The invoice and quote keep whatever is applied; only the saved copy goes.`,
+                            confirmLabel: 'Delete',
+                            destructive: true,
+                          })
+                          if (ok) persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
+                        }}
+                        title="Delete this design"
+                        className="absolute right-2 top-2 z-10 hidden h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] shadow group-hover:flex hover:text-[#dc2626]"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
               <h2 className="mb-3 text-[15px] font-semibold">Templates</h2>
             </>
           )}
 
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
-            {layoutPresets.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => applyPreset(preset)}
-                className="rounded-[10px] border border-[#e3e5e9] bg-white p-3.5 text-left transition-shadow hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(26,29,33,0.12)]"
-              >
-                <SpecThumbnail spec={specFor(preset)} />
-                <div className="mt-2.5 text-sm font-semibold capitalize">{preset.id}</div>
-                <div className="text-xs leading-snug text-[#71767e]">
-                  {preset.template.headerStyle === 'framed'
-                    ? 'Banded letterhead with a rail'
-                    : preset.template.headerStyle === 'modern'
-                      ? 'Full-width colored banner'
-                      : preset.template.headerStyle === 'compact'
-                        ? 'Tight header, dense rows'
-                        : 'Name and rule on white'}
-                </div>
-              </button>
-            ))}
+            {layoutPresets.map((preset) => {
+              const active = activeDesigns[docType] === `preset:${preset.id}`
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => applyPreset(preset)}
+                  className="relative rounded-[10px] border bg-white p-3.5 text-left transition-shadow hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(26,29,33,0.12)]"
+                  style={{ borderColor: active ? '#2563eb' : '#e3e5e9' }}
+                >
+                  {active && (
+                    <span className="absolute left-2 top-2 z-10 rounded-full bg-[#2563eb] px-2 py-0.5 text-[10.5px] font-semibold text-white shadow">
+                      In use
+                    </span>
+                  )}
+                  <SpecThumbnail spec={specFor(preset)} />
+                  <div className="mt-2.5 text-sm font-semibold capitalize">{preset.id}</div>
+                  <div className="text-xs leading-snug text-[#71767e]">
+                    {preset.template.headerStyle === 'framed'
+                      ? 'Banded letterhead with a rail'
+                      : preset.template.headerStyle === 'modern'
+                        ? 'Full-width colored banner'
+                        : preset.template.headerStyle === 'compact'
+                          ? 'Tight header, dense rows'
+                          : 'Name and rule on white'}
+                  </div>
+                </button>
+              )
+            })}
           </div>
 
           <div className="mt-7 flex justify-center gap-6">
@@ -748,7 +773,7 @@ export function InvoiceDesigner({
         <button
           type="button"
           onClick={() => {
-            setDesignName(`My ${docType} design`)
+            setDesignName((prev) => prev.trim() || `My ${docType} design`)
             setNamingDesign(true)
           }}
           title="Keep a named copy of this design, to come back to from the template gallery"
@@ -917,12 +942,23 @@ export function InvoiceDesigner({
               maxLength={60}
               autoFocus
             />
+            {savedDesigns.some(
+              (d) => d.name.trim().toLowerCase() === designName.trim().toLowerCase()
+            ) && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                A design with this name exists; saving updates it.
+              </p>
+            )}
             <DialogFooter className="mt-4">
               <Button type="button" variant="outline" onClick={() => setNamingDesign(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={!designName.trim()}>
-                Save design
+                {savedDesigns.some(
+                  (d) => d.name.trim().toLowerCase() === designName.trim().toLowerCase()
+                )
+                  ? 'Update design'
+                  : 'Save design'}
               </Button>
             </DialogFooter>
           </form>

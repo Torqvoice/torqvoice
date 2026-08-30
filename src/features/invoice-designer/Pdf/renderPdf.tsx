@@ -155,7 +155,16 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
         >
           <Image
             src={node.src}
-            style={{ maxWidth: node.maxWidth, maxHeight: node.maxHeight, objectFit: 'contain' }}
+            style={{
+              maxWidth: node.maxWidth,
+              maxHeight: node.maxHeight,
+              objectFit: 'contain',
+              // react-pdf reserves the image's layout box at maxWidth and
+              // floats the scaled picture inside it; without this the picture
+              // centers in that box and drifts off its alignment edge.
+              objectPosition:
+                node.align === 'center' ? 'center' : node.align === 'left' ? 'left' : 'right',
+            }}
           />
         </View>
       )
@@ -199,9 +208,11 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                 <View
                   key={`rule-${i}`}
                   style={{
-                    height: (node.ruleWidth ?? 0.75) + 0.7,
+                    // Below the last row nothing paints the overlap back, so
+                    // the trailing rule keeps only its upper extension.
+                    height: (node.ruleWidth ?? 0.75) + (i === node.rows.length - 1 ? 0.35 : 0.7),
                     marginTop: -0.35,
-                    marginBottom: -0.35,
+                    marginBottom: i === node.rows.length - 1 ? 0 : -0.35,
                     backgroundColor: borderColor,
                   }}
                 />
@@ -214,7 +225,11 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                   alignItems: 'flex-start',
                   paddingVertical: node.rowPadding ?? 5,
                   paddingHorizontal: 8,
-                  ...(node.stripe && i % 2 === 1 ? { backgroundColor: node.stripe } : {}),
+                  ...(node.stripe && i % 2 === 1
+                    ? { backgroundColor: node.stripe }
+                    : node.rowBackground
+                      ? { backgroundColor: node.rowBackground }
+                      : {}),
                   ...(struck ? { opacity: 0.5 } : {}),
                 }}
               >

@@ -258,6 +258,9 @@ export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
   'vehicle',
   'service',
   'general',
+  'notes',
+  'warranty',
+  'telegram_qr',
 ])
 
 /** Sections that can be placed in left/right columns */

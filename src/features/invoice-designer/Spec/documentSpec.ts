@@ -94,6 +94,12 @@ export type Node =
       strikeKey?: string
       /** Thickness of the rule under each row, in points. */
       ruleWidth?: number
+      /**
+       * What an unbanded row paints behind itself, normally the sheet color.
+       * Every row being opaque lets rules overlap beneath both neighbours,
+       * which is what keeps their visible thickness exact and seam-free.
+       */
+      rowBackground?: string
       style?: BoxStyle
       headerStyle?: TextStyle & BoxStyle
       rowPadding?: number

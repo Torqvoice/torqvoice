@@ -11,20 +11,13 @@ import { AppCard } from '@/components/app-card'
 import { toast } from 'sonner'
 import { setSetting } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
+import { layoutPresets } from '@/features/settings/Schema/layoutPresets'
 import { Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  type InvoiceLayoutConfig,
-  getDefaultInvoiceLayout,
-} from '@/features/settings/Schema/invoiceLayoutSchema'
-import {
-  saveInvoiceLayoutConfig,
-  saveQuoteLayoutConfig,
-} from '@/features/settings/Actions/invoiceLayoutActions'
+import { type InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 interface TemplateValues {
   primaryColor: string
@@ -137,15 +130,7 @@ function ColorRow({
  * with the sheet in front of you, rather than split across a colour form here
  * and an arrangement editor two clicks away.
  */
-function TemplateTab({
-  documentType,
-  layoutConfig,
-  setLayoutConfig,
-}: {
-  documentType: 'invoice' | 'quote'
-  layoutConfig: InvoiceLayoutConfig
-  setLayoutConfig: (c: InvoiceLayoutConfig) => void
-}) {
+function TemplateTab({ documentType }: { documentType: 'invoice' | 'quote' }) {
   const t = useTranslations('settings')
 
   return (
@@ -154,10 +139,9 @@ function TemplateTab({
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {layoutPresets.map((preset) => (
-          <button
+          <Link
             key={preset.id}
-            type="button"
-            onClick={() => setLayoutConfig(buildLayoutFromPreset(preset))}
+            href={`/invoice-designer?doc=${documentType}&preset=${preset.id}`}
             className="rounded-lg border p-3 text-left transition-colors hover:bg-muted"
           >
             <div className="overflow-hidden rounded border bg-background">
@@ -174,15 +158,15 @@ function TemplateTab({
             <p className="text-[11px] leading-tight text-muted-foreground">
               {t(`layoutEditor.presets.${preset.id}.description` as Parameters<typeof t>[0])}
             </p>
-          </button>
+          </Link>
         ))}
       </div>
 
       <div className="flex items-center justify-between gap-4 border-t pt-4">
         <p className="text-xs text-muted-foreground">{t('templates.designerHint')}</p>
-        <Button asChild>
-          <Link href={`/invoice-designer?doc=${documentType}&view=designer`}>
-            {t('templates.openDesigner')}
+        <Button asChild variant="outline">
+          <Link href={`/invoice-designer?doc=${documentType}`}>
+            {t('templates.openDesigner')} →
           </Link>
         </Button>
       </div>
@@ -408,24 +392,6 @@ export function TemplateSettings({
   const [invoiceValues, setInvoiceValues] = useState(initialInvoiceValues)
   const [quoteValues, setQuoteValues] = useState(initialQuoteValues)
   const [smsValues, setSmsValues] = useState<Record<string, string>>(initialSmsTemplates)
-  const [invoiceLayout, setInvoiceLayout] = useState(
-    invoiceLayoutConfig ?? getDefaultInvoiceLayout()
-  )
-  const [quoteLayout, setQuoteLayout] = useState(quoteLayoutConfig ?? getDefaultInvoiceLayout())
-  // A layout is only written back once a preset has rearranged it. Saving a
-  // color change must not overwrite an arrangement built in the layout editor.
-  const [invoiceLayoutDirty, setInvoiceLayoutDirty] = useState(false)
-  const [quoteLayoutDirty, setQuoteLayoutDirty] = useState(false)
-
-  const applyInvoiceLayout = (config: InvoiceLayoutConfig) => {
-    setInvoiceLayout(config)
-    setInvoiceLayoutDirty(true)
-  }
-
-  const applyQuoteLayout = (config: InvoiceLayoutConfig) => {
-    setQuoteLayout(config)
-    setQuoteLayoutDirty(true)
-  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -441,9 +407,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.INVOICE_FONT_FAMILY, invoiceValues.fontFamily),
           setSetting(SETTING_KEYS.INVOICE_HEADER_STYLE, invoiceValues.headerStyle),
           setSetting(SETTING_KEYS.INVOICE_LOGO_SIZE, String(invoiceValues.logoSize)),
-          ...(invoiceLayoutDirty ? [saveInvoiceLayoutConfig(invoiceLayout)] : []),
         ])
-        setInvoiceLayoutDirty(false)
         toast.success(t('templates.invoiceTemplateSaved'))
       } else if (tab === 'quotation') {
         await Promise.all([
@@ -456,9 +420,7 @@ export function TemplateSettings({
           setSetting(SETTING_KEYS.QUOTE_FONT_FAMILY, quoteValues.fontFamily),
           setSetting(SETTING_KEYS.QUOTE_HEADER_STYLE, quoteValues.headerStyle),
           setSetting(SETTING_KEYS.QUOTE_LOGO_SIZE, String(quoteValues.logoSize)),
-          ...(quoteLayoutDirty ? [saveQuoteLayoutConfig(quoteLayout)] : []),
         ])
-        setQuoteLayoutDirty(false)
         toast.success(t('templates.quotationTemplateSaved'))
       } else if (tab === 'sms') {
         await Promise.all(
@@ -574,17 +536,9 @@ export function TemplateSettings({
         <>
           <ReadOnlyWrapper>
             {tab === 'invoice' ? (
-              <TemplateTab
-                documentType="invoice"
-                layoutConfig={invoiceLayout}
-                setLayoutConfig={applyInvoiceLayout}
-              />
+              <TemplateTab documentType="invoice" />
             ) : (
-              <TemplateTab
-                documentType="quote"
-                layoutConfig={quoteLayout}
-                setLayoutConfig={applyQuoteLayout}
-              />
+              <TemplateTab documentType="quote" />
             )}
           </ReadOnlyWrapper>
 
