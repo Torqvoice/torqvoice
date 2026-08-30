@@ -267,20 +267,22 @@ export function QuotePDF({
         }}
       >
         <View>{headerFieldOrder.map(renderCompactField)}</View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>
-            {labels.title || 'QUOTE'}
-          </Text>
-          <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{quoteNum}</Text>
-          <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
-          {validDate && (
-            <Text style={{ fontSize: 9, color: gray }}>
-              {labels.validUntil
-                ? fillTemplate(labels.validUntil, { date: validDate })
-                : `Valid until: ${validDate}`}
+        {documentTitleVisible ? null : (
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text style={{ fontSize: 14, fontFamily: fontBold, color: primaryColor }}>
+              {labels.title || 'QUOTE'}
             </Text>
-          )}
-        </View>
+            <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{quoteNum}</Text>
+            <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
+            {validDate && (
+              <Text style={{ fontSize: 9, color: gray }}>
+                {labels.validUntil
+                  ? fillTemplate(labels.validUntil, { date: validDate })
+                  : `Valid until: ${validDate}`}
+              </Text>
+            )}
+          </View>
+        )}
       </View>
       {torqvoiceLogoDataUri && (
         <View
@@ -395,20 +397,24 @@ export function QuotePDF({
           paddingBottom: 8,
         }}
       >
-        <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>
-          {labels.title || 'QUOTE'}
-        </Text>
-        <View style={{ flexDirection: 'row', gap: 16 }}>
-          <Text style={{ fontSize: 9, color: gray }}>{quoteNum}</Text>
-          <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
-          {validDate && (
-            <Text style={{ fontSize: 9, color: gray }}>
-              {labels.validUntil
-                ? fillTemplate(labels.validUntil, { date: validDate })
-                : `Valid until: ${validDate}`}
+        {documentTitleVisible ? null : (
+          <>
+            <Text style={{ fontSize: 18, fontFamily: fontBold, color: primaryColor }}>
+              {labels.title || 'QUOTE'}
             </Text>
-          )}
-        </View>
+            <View style={{ flexDirection: 'row', gap: 16 }}>
+              <Text style={{ fontSize: 9, color: gray }}>{quoteNum}</Text>
+              <Text style={{ fontSize: 9, color: gray }}>{createdDate}</Text>
+              {validDate && (
+                <Text style={{ fontSize: 9, color: gray }}>
+                  {labels.validUntil
+                    ? fillTemplate(labels.validUntil, { date: validDate })
+                    : `Valid until: ${validDate}`}
+                </Text>
+              )}
+            </View>
+          </>
+        )}
       </View>
     </View>
   )
@@ -481,17 +487,21 @@ export function QuotePDF({
             <Text style={{ fontSize: 9, fontFamily: fontBold, color: gray }}>Torqvoice</Text>
           </View>
         )}
-        <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>
-          {labels.title || 'QUOTE'}
-        </Text>
-        <Text style={styles.invoiceNumber}>{quoteNum}</Text>
-        <Text style={styles.invoiceNumber}>{createdDate}</Text>
-        {validDate && (
-          <Text style={styles.invoiceNumber}>
-            {labels.validUntil
-              ? fillTemplate(labels.validUntil, { date: validDate })
-              : `Valid until: ${validDate}`}
-          </Text>
+        {documentTitleVisible ? null : (
+          <>
+            <Text style={{ ...styles.invoiceTitle, color: primaryColor }}>
+              {labels.title || 'QUOTE'}
+            </Text>
+            <Text style={styles.invoiceNumber}>{quoteNum}</Text>
+            <Text style={styles.invoiceNumber}>{createdDate}</Text>
+            {validDate && (
+              <Text style={styles.invoiceNumber}>
+                {labels.validUntil
+                  ? fillTemplate(labels.validUntil, { date: validDate })
+                  : `Valid until: ${validDate}`}
+              </Text>
+            )}
+          </>
         )}
       </View>
     </View>

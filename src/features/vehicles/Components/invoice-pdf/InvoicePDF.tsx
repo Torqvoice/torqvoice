@@ -216,6 +216,7 @@ export function InvoicePDF({
           serviceDate={serviceDate}
           dueDate={dueDate}
           logoSize={template?.logoSize}
+          showTitle={!documentTitleVisible}
           styles={styles}
           labels={labels}
         />

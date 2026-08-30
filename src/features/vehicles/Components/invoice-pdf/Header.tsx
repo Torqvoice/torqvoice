@@ -36,6 +36,12 @@ interface HeaderProps {
   serviceDate: string
   dueDate: string | null
   logoSize?: number
+  /**
+   * False when the layout has a Document Title section of its own. The header
+   * then prints no title, number or date, so the block appears exactly once and
+   * always where the layout puts it.
+   */
+  showTitle?: boolean
   styles: Record<string, Style>
   labels: Record<string, string>
 }
@@ -56,6 +62,7 @@ export function Header({
   serviceDate,
   dueDate,
   logoSize,
+  showTitle = true,
   styles,
   labels,
 }: HeaderProps) {
@@ -174,14 +181,20 @@ export function Header({
         >
           <View>{fieldOrder.map(renderCompactField)}</View>
           <View style={{ alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 14, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
-            <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{invoiceNum}</Text>
-            <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
-            {dueDate && (
-              <Text style={{ fontSize: 9, color: gray }}>
-                {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
-              </Text>
-            )}
+            {showTitle ? (
+              <>
+                <Text style={{ fontSize: 14, fontFamily: fontBold }}>
+                  {labels.title || 'INVOICE'}
+                </Text>
+                <Text style={{ fontSize: 9, color: gray, marginTop: 2 }}>{invoiceNum}</Text>
+                <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
+                {dueDate && (
+                  <Text style={{ fontSize: 9, color: gray }}>
+                    {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
+                  </Text>
+                )}
+              </>
+            ) : null}
           </View>
         </View>
         {torqvoiceLogoDataUri && (
@@ -308,26 +321,28 @@ export function Header({
             </View>
           )}
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: 12,
-            paddingBottom: 8,
-          }}
-        >
-          <Text style={{ fontSize: 18, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
-          <View style={{ flexDirection: 'row', gap: 16 }}>
-            <Text style={{ fontSize: 9, color: gray }}>{invoiceNum}</Text>
-            <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
-            {dueDate && (
-              <Text style={{ fontSize: 9, color: gray }}>
-                {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
-              </Text>
-            )}
+        {showTitle ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 12,
+              paddingBottom: 8,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontFamily: fontBold }}>{labels.title || 'INVOICE'}</Text>
+            <View style={{ flexDirection: 'row', gap: 16 }}>
+              <Text style={{ fontSize: 9, color: gray }}>{invoiceNum}</Text>
+              <Text style={{ fontSize: 9, color: gray }}>{serviceDate}</Text>
+              {dueDate && (
+                <Text style={{ fontSize: 9, color: gray }}>
+                  {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
+        ) : null}
       </View>
     )
   }
@@ -418,16 +433,18 @@ export function Header({
           </View>
         )}
       </View>
-      <View>
-        <Text style={styles.invoiceTitle}>{labels.title || 'INVOICE'}</Text>
-        <Text style={styles.invoiceNumber}>{invoiceNum}</Text>
-        <Text style={styles.invoiceNumber}>{serviceDate}</Text>
-        {dueDate && (
-          <Text style={styles.invoiceNumber}>
-            {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
-          </Text>
-        )}
-      </View>
+      {showTitle ? (
+        <View>
+          <Text style={styles.invoiceTitle}>{labels.title || 'INVOICE'}</Text>
+          <Text style={styles.invoiceNumber}>{invoiceNum}</Text>
+          <Text style={styles.invoiceNumber}>{serviceDate}</Text>
+          {dueDate && (
+            <Text style={styles.invoiceNumber}>
+              {labels.due ? fillTemplate(labels.due, { date: dueDate }) : `Due: ${dueDate}`}
+            </Text>
+          )}
+        </View>
+      ) : null}
     </View>
   )
 }
