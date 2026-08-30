@@ -493,7 +493,9 @@
     "noRolesYet": "Diese Werkstatt hat noch keine Rollen, außer Admin gibt es also nichts zu vergeben. Legen Sie die Standardrollen an und schränken Sie die Rechte später ein.",
     "noRoleDescription": "Überhaupt keine Rechte. Sie können sich anmelden, aber jeder Bildschirm weist sie ab, bis Sie ihnen unten eine Rolle geben.",
     "cannotUseApp": "Diese Rolle kann keine Aufträge bearbeiten. Geben Sie ihr zuerst Techniker oder eine Rolle mit denselben Rechten.",
-    "revokeTechnicianDone": "{name} wurde aus der App abgemeldet"
+    "revokeTechnicianDone": "{name} wurde aus der App abgemeldet",
+    "noAccessTitle": "Noch kein Zugriff",
+    "noAccessBody": "Ihr Konto gehört zu {workshop}, hat aber noch keine Rolle, deshalb gibt es hier nichts zu öffnen. Bitten Sie einen Inhaber oder Administrator Ihrer Werkstatt um eine Rolle."
   },
   "invoice": {
     "title": "Rechnungslayout",

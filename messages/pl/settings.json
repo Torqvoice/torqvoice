@@ -493,7 +493,9 @@
     "noRolesYet": "Ten warsztat nie ma jeszcze żadnych ról, więc poza Adminem nie ma czego przydzielić. Utwórz standardowe i dopracuj uprawnienia później.",
     "noRoleDescription": "Brak jakichkolwiek uprawnień. Może się zalogować, ale każdy ekran go odrzuci, dopóki nie nadasz mu roli poniżej.",
     "cannotUseApp": "Ta rola nie może pracować przy zleceniach. Nadaj najpierw rolę Technik lub inną z tymi samymi uprawnieniami.",
-    "revokeTechnicianDone": "{name} został wylogowany z aplikacji"
+    "revokeTechnicianDone": "{name} został wylogowany z aplikacji",
+    "noAccessTitle": "Brak dostępu",
+    "noAccessBody": "Twoje konto należy do {workshop}, ale nie ma jeszcze przypisanej roli, więc nie ma tu nic, co możesz otworzyć. Poproś właściciela lub administratora warsztatu o rolę."
   },
   "invoice": {
     "title": "Układ faktury",

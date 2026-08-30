@@ -493,7 +493,9 @@
     "noRolesYet": "Esta oficina ainda não tem funções, então não há o que dar além de Admin. Crie as padrão e ajuste as permissões depois.",
     "noRoleDescription": "Nenhuma permissão. A pessoa consegue entrar, mas todas as telas a recusam até você dar uma função abaixo.",
     "cannotUseApp": "A função dela não permite trabalhar em serviços. Dê primeiro Técnico, ou uma função com as mesmas permissões.",
-    "revokeTechnicianDone": "{name} foi desconectado do aplicativo"
+    "revokeTechnicianDone": "{name} foi desconectado do aplicativo",
+    "noAccessTitle": "Ainda sem acesso",
+    "noAccessBody": "Sua conta faz parte da {workshop}, mas ainda não recebeu uma função, então não há nada aqui que você possa abrir. Peça uma função ao proprietário ou a um administrador da sua oficina."
   },
   "invoice": {
     "title": "Layout da fatura",

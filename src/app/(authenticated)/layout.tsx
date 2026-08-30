@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { NoAccess } from './no-access'
 import { AppSidebar } from '@/components/app-sidebar'
 import { FeatureHintProvider } from '@/components/feature-hint'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
@@ -79,6 +80,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const allSubjects = Object.values(PermissionSubject)
   let visibleSubjects: string[] = allSubjects
 
+  /**
+   * Whether this account can reach anything at all.
+   *
+   * Kept separate from what the sidebar shows, because the two answer
+   * different questions and conflating them is what made a roleless account
+   * look like a broken product: the nav offered every screen and every screen
+   * refused, one at a time.
+   */
+  let hasAnyAccess = true
+
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
     // Members without a custom role have full access
@@ -90,7 +101,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
           subject: subject as PermissionSubject,
         })
       )
+      // A role that grants nothing readable. Every page behind the nav would
+      // answer "Your role does not allow this", so say it once instead.
+      hasAnyAccess = visibleSubjects.length > 0
     }
+  }
+
+  if (!hasAnyAccess) {
+    const org = data.organizations.find((o) => o.id === data.organizationId)
+    return <NoAccess organizationName={org?.name ?? ''} />
   }
 
   // Check license expiry (only for admin/owner with white-label)

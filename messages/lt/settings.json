@@ -493,7 +493,9 @@
     "noRolesYet": "Šios dirbtuvės dar neturi rolių, todėl, be administratoriaus, nėra ko suteikti. Sukurkite standartines ir teises patikslinkite vėliau.",
     "noRoleDescription": "Jokių teisių. Gali prisijungti, bet kiekvienas ekranas jį atmes, kol nesuteiksite rolės žemiau.",
     "cannotUseApp": "Jo rolė neleidžia dirbti su užsakymais. Pirma suteikite meistro rolę arba rolę su tomis pačiomis teisėmis.",
-    "revokeTechnicianDone": "{name} atjungtas nuo programėlės"
+    "revokeTechnicianDone": "{name} atjungtas nuo programėlės",
+    "noAccessTitle": "Prieigos kol kas nėra",
+    "noAccessBody": "Jūsų paskyra priklauso {workshop}, bet jai dar nesuteikta rolė, todėl čia nėra ką atidaryti. Paprašykite dirbtuvių savininko arba administratoriaus suteikti jums rolę."
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
