@@ -614,6 +614,26 @@
       "bank_account": "Banka hesabı",
       "footer_note": "Alt bilgi notu",
       "org_number": "Kuruluş numarası"
+    },
+    "presetsTitle": "Bir düzenle başlayın",
+    "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
+    "presets": {
+      "classic": {
+        "name": "Klasik",
+        "description": "Parça ve işçilik ayrı tablolarda, bilgiler solda alt alta"
+      },
+      "letterhead": {
+        "name": "Antet",
+        "description": "İletişim bilgileri altta, başlık adreslerin altında, tek numaralı liste"
+      },
+      "compact": {
+        "name": "Kompakt",
+        "description": "Çerçevesiz, tek numaralı liste, yalnızca gerekli olanlar"
+      },
+      "detailed": {
+        "name": "Ayrıntılı",
+        "description": "Başlık üstte, araç tek başına, iki tablo ve tüm isteğe bağlı bloklar"
+      }
     }
   },
   "templates": {

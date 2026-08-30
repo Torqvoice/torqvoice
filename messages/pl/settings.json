@@ -614,6 +614,26 @@
       "bank_account": "Konto bankowe",
       "footer_note": "Notatka w stopce",
       "org_number": "Numer organizacji"
+    },
+    "presetsTitle": "Zacznij od układu",
+    "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
+    "presets": {
+      "classic": {
+        "name": "Klasyczny",
+        "description": "Części i robocizna w osobnych tabelach, dane jedno pod drugim po lewej"
+      },
+      "letterhead": {
+        "name": "Papier firmowy",
+        "description": "Kontakt na dole, tytuł pod adresami, jedna numerowana lista"
+      },
+      "compact": {
+        "name": "Kompaktowy",
+        "description": "Bez ramek, jedna numerowana lista, tylko to, co konieczne"
+      },
+      "detailed": {
+        "name": "Szczegółowy",
+        "description": "Tytuł na górze, pojazd osobno, obie tabele i wszystkie bloki opcjonalne"
+      }
     }
   },
   "templates": {

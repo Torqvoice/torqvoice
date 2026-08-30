@@ -614,6 +614,26 @@
       "bank_account": "Conta bancária",
       "footer_note": "Nota de rodapé",
       "org_number": "Número da organização"
+    },
+    "presetsTitle": "Começar por uma disposição",
+    "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",
+    "presets": {
+      "classic": {
+        "name": "Clássica",
+        "description": "Peças e mão de obra em tabelas separadas, dados empilhados à esquerda"
+      },
+      "letterhead": {
+        "name": "Timbre",
+        "description": "Contatos no rodapé, título abaixo dos endereços, uma lista numerada"
+      },
+      "compact": {
+        "name": "Compacta",
+        "description": "Sem painéis, uma lista numerada, só o essencial"
+      },
+      "detailed": {
+        "name": "Detalhada",
+        "description": "Título no topo, veículo sozinho, as duas tabelas e todos os blocos opcionais"
+      }
     }
   },
   "templates": {

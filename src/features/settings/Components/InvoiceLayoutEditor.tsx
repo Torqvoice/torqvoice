@@ -34,6 +34,7 @@ import {
   SquareDashed,
 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
+import { buildLayoutFromPreset, layoutPresets } from '../Schema/layoutPresets'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -397,6 +398,38 @@ function WidthToggle({
 }
 
 // ---------------------------------------------------------------------------
+// Preset row – starting arrangements
+// ---------------------------------------------------------------------------
+
+function PresetRow({
+  onPick,
+  t,
+}: {
+  onPick: (config: InvoiceLayoutConfig) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  return (
+    <div className="mb-3 space-y-1.5">
+      <p className="text-xs font-medium">{t('layoutEditor.presetsTitle')}</p>
+      <div className="flex flex-wrap gap-2">
+        {layoutPresets.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            title={t(`layoutEditor.presets.${preset.id}.description` as Parameters<typeof t>[0])}
+            onClick={() => onPick(buildLayoutFromPreset(preset))}
+            className="rounded-md border px-2.5 py-1.5 text-xs transition-colors hover:bg-muted"
+          >
+            {t(`layoutEditor.presets.${preset.id}.name` as Parameters<typeof t>[0])}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">{t('layoutEditor.presetsHint')}</p>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Box toggle – whether the section prints inside a panel
 // ---------------------------------------------------------------------------
 
@@ -714,6 +747,7 @@ export function InvoiceLayoutEditor({
 
   return (
     <div className="space-y-1">
+      <PresetRow onPick={onChange} t={t} />
       <p className="text-xs text-muted-foreground mb-2">{t('layoutEditor.helpText')}</p>
 
       <DndContext

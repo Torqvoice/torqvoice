@@ -614,6 +614,26 @@
       "bank_account": "Conto bancario",
       "footer_note": "Nota a piè di pagina",
       "org_number": "Numero organizzazione"
+    },
+    "presetsTitle": "Partire da una disposizione",
+    "presetsHint": "Sostituisce la disposizione qui sotto. Nulla viene salvato finché non salvi.",
+    "presets": {
+      "classic": {
+        "name": "Classica",
+        "description": "Ricambi e manodopera in tabelle separate, dati incolonnati a sinistra"
+      },
+      "letterhead": {
+        "name": "Carta intestata",
+        "description": "Contatti in fondo, titolo sotto gli indirizzi, un elenco numerato"
+      },
+      "compact": {
+        "name": "Compatta",
+        "description": "Senza riquadri, un elenco numerato, solo l’essenziale"
+      },
+      "detailed": {
+        "name": "Dettagliata",
+        "description": "Titolo in alto, veicolo da solo, entrambe le tabelle e ogni blocco opzionale"
+      }
     }
   },
   "templates": {

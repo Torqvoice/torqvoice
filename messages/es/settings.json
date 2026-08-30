@@ -614,6 +614,26 @@
       "bank_account": "Cuenta bancaria",
       "footer_note": "Nota de pie",
       "org_number": "Número de organización"
+    },
+    "presetsTitle": "Empezar con una disposición",
+    "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",
+    "presets": {
+      "classic": {
+        "name": "Clásica",
+        "description": "Piezas y mano de obra en tablas separadas, datos apilados a la izquierda"
+      },
+      "letterhead": {
+        "name": "Membrete",
+        "description": "Datos de contacto abajo, título bajo las direcciones, una lista numerada"
+      },
+      "compact": {
+        "name": "Compacta",
+        "description": "Sin paneles, una lista numerada, solo lo esencial"
+      },
+      "detailed": {
+        "name": "Detallada",
+        "description": "Título arriba, vehículo aparte, ambas tablas y todos los bloques opcionales"
+      }
     }
   },
   "templates": {

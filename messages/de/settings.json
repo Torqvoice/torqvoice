@@ -614,6 +614,26 @@
       "bank_account": "Bankkonto",
       "footer_note": "Fußzeilen-Hinweis",
       "org_number": "Organisationsnummer"
+    },
+    "presetsTitle": "Mit einer Anordnung beginnen",
+    "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",
+    "presets": {
+      "classic": {
+        "name": "Klassisch",
+        "description": "Teile und Arbeit in getrennten Tabellen, Angaben links untereinander"
+      },
+      "letterhead": {
+        "name": "Briefkopf",
+        "description": "Kontaktdaten unten, Titel unter den Adressen, eine nummerierte Liste"
+      },
+      "compact": {
+        "name": "Kompakt",
+        "description": "Ohne Kästen, eine nummerierte Liste, nur das Nötigste"
+      },
+      "detailed": {
+        "name": "Ausführlich",
+        "description": "Titel oben, Fahrzeug für sich, beide Tabellen und alle optionalen Blöcke"
+      }
     }
   },
   "templates": {

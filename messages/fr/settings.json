@@ -614,6 +614,26 @@
       "bank_account": "Compte bancaire",
       "footer_note": "Note de bas de page",
       "org_number": "Numéro d'organisation"
+    },
+    "presetsTitle": "Partir d’une disposition",
+    "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",
+    "presets": {
+      "classic": {
+        "name": "Classique",
+        "description": "Pièces et main-d’œuvre en tableaux séparés, informations empilées à gauche"
+      },
+      "letterhead": {
+        "name": "En-tête",
+        "description": "Coordonnées en bas, titre sous les adresses, une liste numérotée"
+      },
+      "compact": {
+        "name": "Compacte",
+        "description": "Sans cadres, une liste numérotée, l’essentiel seulement"
+      },
+      "detailed": {
+        "name": "Détaillée",
+        "description": "Titre en haut, véhicule seul, les deux tableaux et tous les blocs optionnels"
+      }
     }
   },
   "templates": {

@@ -220,6 +220,34 @@ function TemplateTab({
               </button>
             ))}
           </div>
+
+          <div className="space-y-2 border-t pt-4">
+            <Label>{t('templates.backgroundColor')}</Label>
+            <div className="flex items-center gap-3">
+              <Input
+                type="color"
+                value={values.backgroundColor || '#ffffff'}
+                onChange={(e) => setValues({ ...values, backgroundColor: e.target.value })}
+                className="h-10 w-14 cursor-pointer p-1"
+              />
+              <Input
+                value={values.backgroundColor}
+                onChange={(e) => setValues({ ...values, backgroundColor: e.target.value })}
+                className="flex-1 font-mono"
+                placeholder="#ffffff"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setValues({ ...values, backgroundColor: '' })}
+                disabled={!values.backgroundColor}
+              >
+                {t('templates.backgroundColorClear')}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">{t('templates.backgroundColorHint')}</p>
+          </div>
         </AppCard>
 
         {/* Font & Layout Settings */}

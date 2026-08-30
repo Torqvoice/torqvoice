@@ -614,6 +614,26 @@
       "bank_account": "Bankkonto",
       "footer_note": "Bunntekstnotat",
       "org_number": "Organisasjonsnummer"
+    },
+    "presetsTitle": "Start fra et oppsett",
+    "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",
+    "presets": {
+      "classic": {
+        "name": "Klassisk",
+        "description": "Deler og arbeid i hver sin tabell, opplysninger stablet til venstre"
+      },
+      "letterhead": {
+        "name": "Brevhode",
+        "description": "Kontaktinfo nederst, tittel under adressene, én nummerert liste"
+      },
+      "compact": {
+        "name": "Kompakt",
+        "description": "Uten rammer, én nummerert liste, bare det nødvendige"
+      },
+      "detailed": {
+        "name": "Detaljert",
+        "description": "Tittel øverst, kjøretøyet for seg, begge tabeller og alle valgfrie blokker"
+      }
     }
   },
   "templates": {

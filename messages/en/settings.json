@@ -614,6 +614,26 @@
       "bank_account": "Bank Account",
       "footer_note": "Footer Note",
       "org_number": "Organization Number"
+    },
+    "presetsTitle": "Start from an arrangement",
+    "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
+    "presets": {
+      "classic": {
+        "name": "Classic",
+        "description": "Parts and labor in separate tables, details stacked on the left"
+      },
+      "letterhead": {
+        "name": "Letterhead",
+        "description": "Contact details along the bottom, title below the addresses, one numbered list"
+      },
+      "compact": {
+        "name": "Compact",
+        "description": "No panels, one numbered list, only the essentials"
+      },
+      "detailed": {
+        "name": "Detailed",
+        "description": "Title up top, vehicle on its own, both tables and every optional block"
+      }
     }
   },
   "templates": {

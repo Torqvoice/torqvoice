@@ -614,6 +614,26 @@
       "bank_account": "Banko sąskaita",
       "footer_note": "Poraštės pastaba",
       "org_number": "Įmonės kodas"
+    },
+    "presetsTitle": "Pradėti nuo išdėstymo",
+    "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
+    "presets": {
+      "classic": {
+        "name": "Klasikinis",
+        "description": "Dalys ir darbas atskirose lentelėse, duomenys kairėje"
+      },
+      "letterhead": {
+        "name": "Firminis blankas",
+        "description": "Kontaktai apačioje, antraštė po adresais, vienas numeruotas sąrašas"
+      },
+      "compact": {
+        "name": "Kompaktiškas",
+        "description": "Be rėmelių, vienas numeruotas sąrašas, tik būtiniausia"
+      },
+      "detailed": {
+        "name": "Išsamus",
+        "description": "Antraštė viršuje, transporto priemonė atskirai, abi lentelės ir visi blokai"
+      }
     }
   },
   "templates": {

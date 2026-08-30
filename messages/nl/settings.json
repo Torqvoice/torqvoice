@@ -614,6 +614,26 @@
       "bank_account": "Bankrekening",
       "footer_note": "Voettekstnotitie",
       "org_number": "Organisatienummer"
+    },
+    "presetsTitle": "Begin met een indeling",
+    "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
+    "presets": {
+      "classic": {
+        "name": "Klassiek",
+        "description": "Onderdelen en arbeid in aparte tabellen, gegevens links onder elkaar"
+      },
+      "letterhead": {
+        "name": "Briefhoofd",
+        "description": "Contactgegevens onderaan, titel onder de adressen, één genummerde lijst"
+      },
+      "compact": {
+        "name": "Compact",
+        "description": "Zonder kaders, één genummerde lijst, alleen het nodige"
+      },
+      "detailed": {
+        "name": "Uitgebreid",
+        "description": "Titel bovenaan, voertuig apart, beide tabellen en alle optionele blokken"
+      }
     }
   },
   "templates": {
