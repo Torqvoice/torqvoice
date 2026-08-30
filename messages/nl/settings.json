@@ -575,6 +575,7 @@
     "fullWidthHint": "Volledige breedte — klik voor halve breedte (links)",
     "sections": {
       "header": "Koptekst",
+      "slogan": "Slogan",
       "customer": "Klant",
       "vehicle": "Voertuig",
       "service": "Service",

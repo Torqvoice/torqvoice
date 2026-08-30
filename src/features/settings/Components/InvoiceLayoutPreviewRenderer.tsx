@@ -269,7 +269,7 @@ export function InvoiceLayoutPreviewRenderer({
       textColor: template.textColor || undefined,
       companyTextColor: template.companyTextColor || undefined,
       frameBorderColor: template.frameBorderColor || undefined,
-      frameShadow: template.frameShadow !== 'false',
+      frameShadow: template.frameShadow,
       frameSide: template.frameSide === 'right' ? ('right' as const) : ('left' as const),
       fontFamily: template.fontFamily,
       headerStyle: template.headerStyle,

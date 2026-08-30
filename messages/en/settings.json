@@ -575,6 +575,7 @@
     "fullWidthHint": "Full width — click to make half width (left)",
     "sections": {
       "header": "Header",
+      "slogan": "Slogan",
       "customer": "Customer",
       "vehicle": "Vehicle",
       "service": "Service",

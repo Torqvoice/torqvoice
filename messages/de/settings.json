@@ -575,6 +575,7 @@
     "fullWidthHint": "Volle Breite — Klicken für Halbbreite (links)",
     "sections": {
       "header": "Kopfzeile",
+      "slogan": "Slogan",
       "customer": "Kunde",
       "vehicle": "Fahrzeug",
       "service": "Service",

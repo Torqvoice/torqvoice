@@ -56,8 +56,27 @@ export const FONT_STACKS: Record<string, string> = {
   Helvetica: "'Roboto', 'Helvetica Neue', Arial, sans-serif",
   'Times-Roman': "'Noto Serif', Georgia, 'Times New Roman', serif",
   Courier: "'Noto Sans Mono', 'Courier New', monospace",
+  'Open Sans': "'Open Sans', 'Helvetica Neue', Arial, sans-serif",
+  Lato: "'Lato', 'Helvetica Neue', Arial, sans-serif",
+  Montserrat: "'Montserrat', 'Helvetica Neue', Arial, sans-serif",
+  'PT Sans': "'PT Sans', 'Helvetica Neue', Arial, sans-serif",
 }
 
 export function fontStack(name?: string): string {
   return FONT_STACKS[name || 'Helvetica'] || FONT_STACKS.Helvetica
 }
+
+/**
+ * What the typeface pickers offer, in one place so the section and document
+ * selects cannot drift apart. Values are the names settings store; the first
+ * three are the legacy names kept so nothing has to migrate.
+ */
+export const FONT_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Helvetica', label: 'Roboto' },
+  { value: 'Open Sans', label: 'Open Sans' },
+  { value: 'Lato', label: 'Lato' },
+  { value: 'Montserrat', label: 'Montserrat' },
+  { value: 'PT Sans', label: 'PT Sans' },
+  { value: 'Times-Roman', label: 'Noto Serif' },
+  { value: 'Courier', label: 'Noto Sans Mono' },
+]

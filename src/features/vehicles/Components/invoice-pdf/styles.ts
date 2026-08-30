@@ -58,10 +58,22 @@ const FONT_FAMILIES: Record<string, string> = {
   'Noto Serif': 'Noto Serif',
   Courier: 'Noto Sans Mono',
   'Noto Sans Mono': 'Noto Sans Mono',
+  'Open Sans': 'Open Sans',
+  'Lato': 'Lato',
+  'Montserrat': 'Montserrat',
+  'PT Sans': 'PT Sans',
 }
 
 /** The families a document can be set in. */
-export const AVAILABLE_FONTS = ['Helvetica', 'Times-Roman', 'Courier'] as const
+export const AVAILABLE_FONTS = [
+  'Helvetica',
+  'Times-Roman',
+  'Courier',
+  'Open Sans',
+  'Lato',
+  'Montserrat',
+  'PT Sans',
+] as const
 
 function resolveFont(font: string): string {
   return FONT_FAMILIES[font] || 'Roboto'

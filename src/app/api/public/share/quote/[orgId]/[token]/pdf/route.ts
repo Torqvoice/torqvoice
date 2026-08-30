@@ -198,8 +198,7 @@ export async function GET(
         settingsMap['quote.frameBorderColor'] ||
         settingsMap['invoice.frameBorderColor'] ||
         undefined,
-      frameShadow:
-        (settingsMap['quote.frameShadow'] ?? settingsMap['invoice.frameShadow']) !== 'false',
+      frameShadow: settingsMap['quote.frameShadow'] ?? settingsMap['invoice.frameShadow'],
       frameSide: ((settingsMap['quote.frameSide'] ?? settingsMap['invoice.frameSide']) === 'right'
         ? 'right'
         : 'left') as 'left' | 'right',

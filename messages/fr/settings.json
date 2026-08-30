@@ -575,6 +575,7 @@
     "fullWidthHint": "Pleine largeur — cliquer pour demi-largeur (gauche)",
     "sections": {
       "header": "En-tête",
+      "slogan": "Slogan",
       "customer": "Client",
       "vehicle": "Véhicule",
       "service": "Service",

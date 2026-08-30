@@ -4,6 +4,11 @@ import { QuoteView } from './quote-view'
 import { getFeatures } from '@/lib/features'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuotePrint'
+import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 
 export const revalidate = 60
@@ -77,15 +82,30 @@ export default async function PublicQuotePage({
             'workshop.address',
             'workshop.phone',
             'workshop.email',
+            'workshop.slogan',
             'workshop.logo',
             'workshop.currencyCode',
             'workshop.currencyFormat',
             'workshop.dateFormat',
             'workshop.timezone',
             'quote.primaryColor',
+            'quote.backgroundColor',
+            'quote.textColor',
+            'quote.companyTextColor',
+            'quote.frameBorderColor',
+            'quote.frameShadow',
+            'quote.frameSide',
+            'quote.fontFamily',
             'quote.headerStyle',
             'quote.logoSize',
             'invoice.primaryColor',
+            'invoice.backgroundColor',
+            'invoice.textColor',
+            'invoice.companyTextColor',
+            'invoice.frameBorderColor',
+            'invoice.frameShadow',
+            'invoice.frameSide',
+            'invoice.fontFamily',
             'invoice.headerStyle',
             'portal.enabled',
             'quote.layoutConfig',
@@ -130,7 +150,7 @@ export default async function PublicQuotePage({
     address: settingsMap['workshop.address'] || '',
     phone: settingsMap['workshop.phone'] || '',
     email: settingsMap['workshop.email'] || '',
-        slogan: settingsMap['workshop.slogan'] || undefined,
+    slogan: settingsMap['workshop.slogan'] || undefined,
   }
 
   const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
@@ -176,6 +196,47 @@ export default async function PublicQuotePage({
   const headerStyle =
     settingsMap['quote.headerStyle'] || settingsMap['invoice.headerStyle'] || 'standard'
 
+  // The document the workshop designed, built here from the real quote so
+  // the page a customer opens is the sheet the designer shows and the PDF
+  // prints. Quote styling falls back to the invoice's where it is unset.
+  const pick = (key: string) => settingsMap[`quote.${key}`] || settingsMap[`invoice.${key}`]
+  const acceptLanguage = (await headers()).get('accept-language')
+  const locale = await resolveCustomerLocale(orgId, acceptLanguage)
+  const labels = await loadPrintLabels(locale, settingsMap)
+
+  const torqvoiceLogoDataUri = features.brandingRemoved
+    ? undefined
+    : await getTorqvoiceLogoDataUri()
+
+  const spec = buildQuotePrintSpec({
+    data: quote,
+    workshop,
+    currencyCode,
+    currencyFormat,
+    logoDataUri: logoUrl || undefined,
+    torqvoiceLogoDataUri,
+    dateFormat: settingsMap['workshop.dateFormat'] || undefined,
+    timezone: settingsMap['workshop.timezone'] || undefined,
+    template: {
+      primaryColor,
+      backgroundColor: pick('backgroundColor') || undefined,
+      textColor: pick('textColor') || undefined,
+      companyTextColor: pick('companyTextColor') || undefined,
+      frameBorderColor: pick('frameBorderColor') || undefined,
+      frameShadow: pick('frameShadow'),
+      frameSide: pick('frameSide') === 'right' ? 'right' : 'left',
+      fontFamily: pick('fontFamily') || 'Helvetica',
+      headerStyle,
+      logoSize: Number(settingsMap['quote.logoSize']) || 100,
+    },
+    customFields,
+    labels: {
+      ...labels,
+      title: labels.quoteTitle || 'QUOTE',
+    },
+    layoutConfig,
+  })
+
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
@@ -185,6 +246,7 @@ export default async function PublicQuotePage({
 
   return (
     <QuoteView
+      spec={spec}
       quote={quote}
       workshop={workshop}
       currencyCode={currencyCode}

@@ -4,12 +4,55 @@
  */
 import { describe, expect, it } from 'vitest'
 import { groupFlowBlocks, type Block } from '@/features/invoice-designer/Spec/documentSpec'
+import { materializeHiddenSection } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const block = (id: string, order: number, column?: 'left' | 'right'): Block => ({
   id,
   label: id,
   placement: { mode: 'flow', order, column },
   content: { kind: 'text', text: id },
+})
+
+describe('a drop around the borrowed title', () => {
+  /**
+   * When Document Title is hidden, the generator draws a title strip glued
+   * under the header anyway, so the number always prints. A drop that
+   * references that strip must first make the section real at its drawn
+   * position, or the drop lands wherever the hidden section's stored order
+   * happens to point.
+   */
+  const section = (id: string, order: number, visible = true) => ({ id, visible, order })
+
+  it('turns the hidden title visible right after the header', () => {
+    const layout = {
+      sections: [
+        section('header', 0),
+        section('slogan', 1),
+        section('document_title', 4, false),
+        section('parts_table', 5),
+      ],
+    }
+    const next = materializeHiddenSection(layout, 'document_title')
+    const ids = [...next.sections].sort((a, b) => a.order - b.order).map((s) => s.id)
+    expect(ids).toEqual(['header', 'document_title', 'slogan', 'parts_table'])
+    expect(next.sections.find((s) => s.id === 'document_title')?.visible).toBe(true)
+  })
+
+  it('leaves a visible title exactly where it is', () => {
+    const layout = { sections: [section('header', 0), section('document_title', 3)] }
+    expect(materializeHiddenSection(layout, 'document_title')).toBe(layout)
+  })
+
+  it('marks the borrowed title block as synthetic in the spec', () => {
+    const synthetic: Block = {
+      id: 'document_title',
+      label: 'document title',
+      synthetic: true,
+      placement: { mode: 'flow', order: 0.5 },
+      content: { kind: 'text', text: 'INVOICE' },
+    }
+    expect(synthetic.synthetic).toBe(true)
+  })
 })
 
 describe('flow rows', () => {

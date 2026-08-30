@@ -13,7 +13,7 @@ import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
 import { createStyles, FRAMED } from '@/features/vehicles/Components/invoice-pdf/styles'
-import { letterheadMark } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { templatePresets } from '@/features/settings/Schema/templatePresets'
 import {
   BOXED_ELIGIBLE_SECTIONS,
@@ -78,11 +78,11 @@ const INVOICE_DATA = {
     customerNumber: 'C-1044',
   },
   vehicle: {
-    make: 'BMW',
-    model: 'M340d',
+    make: 'Volvo',
+    model: 'V60',
     year: 2021,
-    vin: 'WBA51DZ050FL79472',
-    licensePlate: 'WST-X340',
+    vin: 'YV1AA0000L0000000',
+    licensePlate: 'AB 12345',
     mileage: 105866,
     customer: null,
   },
@@ -141,17 +141,18 @@ describe('framed template preset', () => {
   })
 
   it('carries one mark on the band, the logo when there is one', () => {
-    expect(letterheadMark({ showLogo: true, logoDataUri: 'data:…', showCompanyName: true })).toBe(
-      'logo'
-    )
-    expect(letterheadMark({ showLogo: true, showCompanyName: true })).toBe('name')
-    expect(letterheadMark({ showLogo: false, logoDataUri: 'data:…', showCompanyName: true })).toBe(
-      'name'
-    )
-    expect(letterheadMark({ showLogo: true, logoDataUri: 'data:…', showCompanyName: false })).toBe(
-      'logo'
-    )
-    expect(letterheadMark({ showLogo: false, showCompanyName: false })).toBe('none')
+    const markOf = (logoDataUri: string | undefined, showLogo: boolean) => {
+      const header = buildInvoicePrintSpec({
+        data: INVOICE_DATA,
+        logoDataUri,
+        template: { headerStyle: 'framed', showLogo },
+      }).blocks.find((b) => b.id === 'header')
+      const json = JSON.stringify(header)
+      return json.includes('header.logo') ? 'logo' : 'name'
+    }
+    expect(markOf('data:image/png;base64,x', true)).toBe('logo')
+    expect(markOf(undefined, true)).toBe('name')
+    expect(markOf('data:image/png;base64,x', false)).toBe('name')
   })
 
   it('lets a workshop put its name on the band instead of its logo', () => {
@@ -185,8 +186,9 @@ describe('framed template preset', () => {
         .map((f) => f.id) ?? []
 
     // The letterhead keeps who the shop is; the ways to reach it print along
-    // the bottom, the way printed stationery sets them.
-    expect(shown('header')).toEqual(['logo', 'company_name', 'company_slogan'])
+    // the bottom, the way printed stationery sets them. The slogan is its own
+    // section now, not a header field.
+    expect(shown('header')).toEqual(['logo', 'company_name'])
     expect(shown('footer')).toContain('company_address')
     expect(shown('footer')).toContain('company_phone')
     expect(shown('footer')).toContain('company_email')

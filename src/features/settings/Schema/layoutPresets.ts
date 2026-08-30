@@ -61,6 +61,7 @@ export const layoutPresets: LayoutPreset[] = [
     template: { primaryColor: '#d97706', headerStyle: 'standard', fontFamily: 'Helvetica' },
     order: [
       'header',
+      'slogan',
       'customer',
       'vehicle',
       'service',
@@ -89,6 +90,7 @@ export const layoutPresets: LayoutPreset[] = [
     },
     order: [
       'header',
+      'slogan',
       'customer',
       'vehicle',
       'service',
@@ -102,7 +104,7 @@ export const layoutPresets: LayoutPreset[] = [
       'footer',
     ],
     columns: { customer: 'left', vehicle: 'right', service: 'right' },
-    headerFields: ['logo', 'company_name', 'company_slogan'],
+    headerFields: ['logo', 'company_name'],
     footerFields: [
       'company_name',
       'company_address',
@@ -117,7 +119,17 @@ export const layoutPresets: LayoutPreset[] = [
     id: 'compact',
     template: { primaryColor: '#475569', headerStyle: 'compact', fontFamily: 'Helvetica' },
     document: { fontSize: 9, rowPadding: 2, margin: 30, stripes: false },
-    order: ['header', 'customer', 'vehicle', 'service', 'items_table', 'totals', 'notes', 'footer'],
+    order: [
+      'header',
+      'slogan',
+      'customer',
+      'vehicle',
+      'service',
+      'items_table',
+      'totals',
+      'notes',
+      'footer',
+    ],
     columns: { customer: 'left', vehicle: 'right', service: 'right' },
     plain: ['customer', 'vehicle', 'service'],
     headerFields: ALL_HEADER_FIELDS,
@@ -135,6 +147,7 @@ export const layoutPresets: LayoutPreset[] = [
     document: { accentColor: '#1e3a8a' },
     order: [
       'header',
+      'slogan',
       'document_title',
       'customer',
       'service',

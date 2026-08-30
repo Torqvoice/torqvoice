@@ -72,6 +72,8 @@ export type Node =
       children: { node: Node; width?: number | 'flex' }[]
     }
   | { kind: 'text'; id?: string; text: string; style?: TextStyle; anchor?: Anchor }
+  /** A fragment from the rich-text editor: notes are written in it. */
+  | { kind: 'richtext'; id?: string; html: string; style?: TextStyle; anchor?: Anchor }
   | {
       kind: 'image'
       id?: string
@@ -88,6 +90,10 @@ export type Node =
       rows: Record<string, string>[]
       /** A second line under a cell, for a part number under its description. */
       subKey?: string
+      /** Rows whose value here is truthy print struck through and dimmed. */
+      strikeKey?: string
+      /** Thickness of the rule under each row, in points. */
+      ruleWidth?: number
       style?: BoxStyle
       headerStyle?: TextStyle & BoxStyle
       rowPadding?: number
@@ -108,8 +114,28 @@ export interface Block {
   /** The section this came from, and what the designer selects. */
   id: string
   label: string
+  /**
+   * True for a block the generator conjured rather than the layout listing
+   * it, like the title strip borrowed under the header when the layout hides
+   * the Document Title section. A synthetic block is glued to its neighbour:
+   * nothing can be dropped between them, because there is no place in the
+   * saved layout such a drop could mean.
+   */
+  synthetic?: boolean
   placement: Placement
+  /**
+   * Room the block keeps around itself in the flow, in points per edge.
+   * Ignored when the block is anchored: a hand-placed block IS its position.
+   */
+  margin?: { top: number; right: number; bottom: number; left: number }
   style?: BoxStyle
+  /**
+   * Typeface, size and ink for everything in the block, set once so it is
+   * inherited rather than repeated on each node. A section overriding the
+   * document's font used to reach the lines it happened to be written onto and
+   * miss the rest.
+   */
+  text?: TextStyle
   content: Node
 }
 
@@ -132,7 +158,8 @@ export interface FrameSpec {
   bandHeight: number
   color: string
   borderColor?: string
-  shadow: boolean
+  /** The width of the drop shadow the frame casts, in points. 0 draws none. */
+  shadow: number
 }
 
 export interface DocumentSpec {

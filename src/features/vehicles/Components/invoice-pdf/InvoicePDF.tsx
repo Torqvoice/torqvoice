@@ -1,66 +1,26 @@
-import React from 'react'
-import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
-import { formatDateForPdf, DEFAULT_DATE_FORMAT } from '@/lib/format'
-import { calculateTotals } from '@/lib/tax'
-import {
-  createStyles,
-  gray,
-  getFontBold,
-  withSectionStyle,
-  withDocumentStyle,
-  SHADOW,
-  SHADOW_STEP,
-  A4_HEIGHT,
-} from './styles'
-import { Header } from './Header'
-import { CustomerSection, VehicleSection, ServiceSection } from './InfoSection'
-import { PartsTable, LaborTable, FindingsPdfSection } from './Tables'
-import { ItemsTable, type CombinedItem } from './ItemsTable'
-import { DocumentTitle } from './DocumentTitle'
-import { Totals } from './Totals'
-import { NotesOnly, BankAccountSection } from './Notes'
-import { WarrantySection } from './Warranty'
-import { CustomFields } from './CustomFields'
-import { Footer, AttachmentsFooter } from './Footer'
-import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
-import {
-  getSectionStyle,
-  isCustomFieldId,
-  fromCustomFieldId,
-  groupSectionsForRendering,
-  getDefaultInvoiceLayout,
-  getVisibleFieldsForSection,
-} from '@/features/settings/Schema/invoiceLayoutSchema'
+import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
+import { pdfFamily } from '@/features/invoice-designer/Pdf/renderPdf'
+import { SpecPdfPage } from '@/features/invoice-designer/Pdf/SpecPdf'
 import type {
-  TemplateConfig,
-  InvoiceData,
-  WorkshopInfo,
-  InvoiceSettingsProps,
-  PaymentSummary,
   ImageAttachment,
+  InvoiceData,
+  InvoiceSettingsProps,
   OtherAttachment,
+  PaymentSummary,
+  TemplateConfig,
+  WorkshopInfo,
 } from './types'
 
-// ---------------------------------------------------------------------------
-// Layout config helpers
-// ---------------------------------------------------------------------------
-
-function getCustomFieldsForSection(
-  layoutConfig: InvoiceLayoutConfig | undefined,
-  sectionId: string,
-  allCustomFields: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
-): Array<{ fieldId: string; label: string; value: string; fieldType: string }> {
-  if (!layoutConfig || !allCustomFields?.length) return []
-  const section = layoutConfig.sections.find((s) => s.id === sectionId)
-  if (!section?.fields) return []
-  const cfIds = new Set(
-    section.fields
-      .filter((f) => f.visible && isCustomFieldId(f.id))
-      .map((f) => fromCustomFieldId(f.id))
-  )
-  return allCustomFields.filter((cf) => cfIds.has(cf.fieldId))
-}
-
+/**
+ * The printed invoice.
+ *
+ * The sheet itself is the document the designer edits: the same generator
+ * builds the same blocks, laid out by the same engine, so an invoice prints
+ * the way the workshop arranged it — hand-placed sections, narrowed widths,
+ * spacing and all. This file only maps the job onto that document and
+ * appends the attachment pages.
+ */
 export function InvoicePDF({
   data,
   workshop,
@@ -92,446 +52,35 @@ export function InvoicePDF({
   telegramLabel?: string
   labels?: Record<string, string>
 }) {
-  const primaryColor = template?.primaryColor || '#d97706'
-  const fontFamily = template?.fontFamily || 'Helvetica'
-  const showLogo = template?.showLogo !== false
-  const showCompanyName = template?.showCompanyName !== false
-  const headerStyle = template?.headerStyle || 'standard'
-  const isFramed = headerStyle === 'framed'
-  const frameSide = template?.frameSide === 'right' ? 'right' : 'left'
-  const styles = withDocumentStyle(
-    createStyles(
-      primaryColor,
-      fontFamily,
-      headerStyle,
-      template?.backgroundColor,
-      template?.textColor,
-      frameSide
-    ),
-    template?.layoutConfig?.document,
-    isFramed,
-    frameSide
-  )
-  const companyTextColor = template?.companyTextColor || undefined
-  const frameBorderColor = template?.frameBorderColor || undefined
-  const frameShadow = template?.frameShadow !== false
-  const fontBold = getFontBold(fontFamily)
-
-  const cc = invoiceSettings?.currencyCode || 'USD'
-  const cf: 'symbol' | 'code' = invoiceSettings?.currencyFormat === 'code' ? 'code' : 'symbol'
-  const vehicleName = data.vehicle
-    ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
-    : ''
-  const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
-  const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
-  const computedSubtotal = partsSubtotal + laborSubtotal
-  const computedDiscount =
-    data.discountType === 'percentage'
-      ? computedSubtotal * ((data.discountValue || 0) / 100)
-      : data.discountType === 'fixed'
-        ? Math.min(data.discountValue || 0, computedSubtotal)
-        : 0
-  const { totalAmount: computedTotal } = calculateTotals({
-    subtotal: computedSubtotal,
-    discountAmount: computedDiscount,
-    taxRate: data.taxRate,
-    taxInclusive: data.taxInclusive ?? false,
+  const spec = buildInvoicePrintSpec({
+    data,
+    workshop,
+    invoiceSettings,
+    paymentSummary,
+    pdfAttachmentNames,
+    otherAttachmentNames: otherAttachments.map((att) => att.fileName),
+    logoDataUri,
+    template,
+    torqvoiceLogoDataUri,
+    portalUrl,
+    telegramQrDataUri,
+    telegramLabel,
+    labels,
   })
-  const displayTotal =
-    data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
-  const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
-  const df = invoiceSettings?.dateFormat || DEFAULT_DATE_FORMAT
-  const tz = invoiceSettings?.timezone || undefined
-  const effectiveInvoiceDate = data.invoiceDate ?? data.startDateTime ?? data.serviceDate
-  const serviceDate = formatDateForPdf(effectiveInvoiceDate, df, tz)
-
-  const dueDate = data.invoiceDueDate
-    ? formatDateForPdf(data.invoiceDueDate, df, tz)
-    : (invoiceSettings?.dueDays || 0) > 0
-      ? formatDateForPdf(
-          new Date(
-            new Date(effectiveInvoiceDate).getTime() + (invoiceSettings?.dueDays || 0) * 86400000
-          ),
-          df,
-          tz
-        )
-      : null
-
-  const balanceDue = paymentSummary ? displayTotal - paymentSummary.totalPaid : displayTotal
-  const isPaidInFull = paymentSummary ? paymentSummary.totalPaid >= displayTotal : false
 
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
-  const customerNumber = (data.customer ?? data.vehicle?.customer)?.customerNumber ?? null
-
-  // Labor first, then parts: a job reads as the work that was done followed by
-  // what it took, and that is the order the numbered positions run in.
-  const combinedItems: CombinedItem[] = [
-    ...data.laborItems.map((l) => ({
-      quantity: l.hours,
-      unit: l.pricingType === 'service' ? labels.unit || 'unit' : labels.hrs || 'hrs',
-      description: l.description,
-      unitPrice: l.rate,
-      total: l.total,
-    })),
-    ...data.partItems.map((p) => ({
-      quantity: p.quantity,
-      unit: p.unit,
-      description: p.name,
-      reference: p.partNumber,
-      unitPrice: p.unitPrice,
-      total: p.total,
-    })),
-  ]
-  const hasAttachments = imageAttachments.length > 0 || otherAttachments.length > 0
-
-  // ---------------------------------------------------------------------------
-  // Layout-driven section rendering
-  // ---------------------------------------------------------------------------
-  const layoutConfig = template?.layoutConfig
-  const visibleCustomerFields = getVisibleFieldsForSection(layoutConfig, 'customer')
-  const visibleVehicleFields = getVisibleFieldsForSection(layoutConfig, 'vehicle')
-  const visibleServiceFields = getVisibleFieldsForSection(layoutConfig, 'service')
-  const visibleHeaderFields = getVisibleFieldsForSection(layoutConfig, 'header')
-  const visibleBankAccountFields = getVisibleFieldsForSection(layoutConfig, 'bank_account')
-
-  const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
-  const isVisible = (id: string) => effectiveSections.some((s) => s.id === id && s.visible)
-  const itemsTableVisible = isVisible('items_table')
-  /** Unset reads as boxed, which is what every layout did before the choice. */
-  const isBoxed = (id: string) => effectiveSections.find((s) => s.id === id)?.boxed !== false
-  const documentTitleVisible = isVisible('document_title')
-
-  // Each section is drawn with the document's stylesheet plus whatever the
-  // layout overrides for that section. Sections already take their stylesheet
-  // as a prop, so this styles them without any of them knowing.
-  const stylesFor = (sectionId: string) =>
-    withSectionStyle(styles, getSectionStyle(layoutConfig, sectionId))
-
-  const headerSectionStyle = getSectionStyle(layoutConfig, 'header')
-
-  const documentTitle = (
-    <DocumentTitle
-      title={labels.title || 'INVOICE'}
-      invoiceNum={invoiceNum}
-      customerNumber={customerNumber}
-      invoiceDate={serviceDate}
-      dueDate={dueDate}
-      fontFamily={getSectionStyle(layoutConfig, 'document_title')?.fontFamily || fontFamily}
-      styles={stylesFor('document_title')}
-      labels={labels}
-    />
-  )
-
-  const allCf = data.customFields || []
-  const customerCf = getCustomFieldsForSection(layoutConfig, 'customer', allCf)
-  const vehicleCf = getCustomFieldsForSection(layoutConfig, 'vehicle', allCf)
-  const serviceCf = getCustomFieldsForSection(layoutConfig, 'service', allCf)
-  const generalCf = getCustomFieldsForSection(layoutConfig, 'general', allCf)
-  // If no layout config, all custom fields go to the general section
-  const generalFallbackCf = !layoutConfig ? allCf : generalCf
-
-  // Map each section ID to its JSX. Sections that have no data naturally
-  // return null and will be skipped by React.
-
-  const sectionMap: Record<string, React.ReactNode> = {
-    header: (
-      <>
-        <Header
-          headerStyle={headerStyle}
-          primaryColor={primaryColor}
-          fontFamily={headerSectionStyle?.fontFamily || fontFamily}
-          showLogo={showLogo}
-          showCompanyName={showCompanyName}
-          visibleFields={visibleHeaderFields}
-          logoDataUri={logoDataUri}
-          torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-          workshop={workshop}
-          invoiceSettings={invoiceSettings}
-          shopDisplayName={shopDisplayName}
-          invoiceNum={invoiceNum}
-          serviceDate={serviceDate}
-          dueDate={dueDate}
-          logoSize={template?.logoSize}
-          styles={stylesFor('header')}
-          companyTextColor={headerSectionStyle?.labelColor || companyTextColor}
-          mutedColor={headerSectionStyle?.textColor}
-          frameBorderColor={frameBorderColor}
-          frameShadow={frameShadow}
-          frameSide={frameSide}
-          showTitle={!documentTitleVisible}
-          labels={labels}
-        />
-        {/* The framed letterhead prints no title of its own, so it borrows the
-            title block whenever the layout has not placed one further down. */}
-        {isFramed && !documentTitleVisible ? documentTitle : null}
-      </>
-    ),
-
-    document_title: documentTitle,
-
-    customer: (
-      <CustomerSection
-        data={data}
-        styles={stylesFor('customer')}
-        labels={labels}
-        visibleFields={visibleCustomerFields}
-        customFields={customerCf}
-        boxed={isBoxed('customer')}
-      />
-    ),
-
-    vehicle: (
-      <VehicleSection
-        data={data}
-        vehicleName={vehicleName}
-        invoiceSettings={invoiceSettings}
-        styles={stylesFor('vehicle')}
-        labels={labels}
-        visibleFields={visibleVehicleFields}
-        customFields={vehicleCf}
-        boxed={isBoxed('vehicle')}
-      />
-    ),
-
-    service: (
-      <ServiceSection
-        data={data}
-        styles={stylesFor('service')}
-        labels={labels}
-        visibleFields={visibleServiceFields}
-        customFields={serviceCf}
-        boxed={isBoxed('service')}
-      />
-    ),
-
-    items_table: (
-      <ItemsTable
-        items={combinedItems}
-        currencyCode={cc}
-        currencyFormat={cf}
-        taxRate={data.taxRate}
-        taxInclusive={data.taxInclusive ?? false}
-        showTitle={!isFramed}
-        styles={stylesFor('items_table')}
-        labels={labels}
-      />
-    ),
-
-    parts_table: (
-      <PartsTable
-        data={data}
-        currencyCode={cc}
-        currencyFormat={cf}
-        styles={stylesFor('parts_table')}
-        labels={labels}
-      />
-    ),
-
-    labor_table: (
-      <LaborTable
-        data={data}
-        currencyCode={cc}
-        currencyFormat={cf}
-        styles={stylesFor('labor_table')}
-        labels={labels}
-      />
-    ),
-
-    totals: (
-      <>
-        <Totals
-          data={data}
-          currencyCode={cc}
-          currencyFormat={cf}
-          primaryColor={primaryColor}
-          fontFamily={fontFamily}
-          displayTotal={displayTotal}
-          partsSubtotal={partsSubtotal}
-          laborSubtotal={laborSubtotal}
-          balanceDue={balanceDue}
-          isPaidInFull={isPaidInFull}
-          paymentSummary={paymentSummary}
-          showCategorySubtotals={!itemsTableVisible}
-          styles={stylesFor('totals')}
-          labels={labels}
-        />
-        {torqvoiceLogoDataUri && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              gap: 3,
-              marginTop: 6,
-            }}
-          >
-            <Text style={{ fontSize: 7, color: gray }}>{labels.poweredBy || 'Powered by'}</Text>
-            <Image src={torqvoiceLogoDataUri} style={{ width: 12, height: 12 }} />
-            <Text style={{ fontSize: 7, color: gray, fontFamily: fontBold }}>Torqvoice</Text>
-          </View>
-        )}
-      </>
-    ),
-
-    general:
-      generalFallbackCf.length > 0 ? (
-        <CustomFields
-          fields={generalFallbackCf}
-          styles={stylesFor('totals')}
-          labels={labels}
-          boxed={isBoxed('general')}
-        />
-      ) : null,
-
-    notes: (
-      <NotesOnly
-        invoiceNotes={data.invoiceNotes}
-        otherAttachments={otherAttachments}
-        pdfAttachmentNames={pdfAttachmentNames}
-        fontFamily={fontFamily}
-        styles={stylesFor('notes')}
-        labels={labels}
-      />
-    ),
-
-    warranty: (
-      <WarrantySection
-        warrantyMonths={data.warrantyMonths}
-        warrantyMileage={data.warrantyMileage}
-        warrantyExpiresAt={data.warrantyExpiresAt}
-        warrantyNotes={data.warrantyNotes}
-        fontFamily={fontFamily}
-        styles={stylesFor('warranty')}
-        labels={labels}
-        dateFormat={invoiceSettings?.dateFormat}
-        timezone={invoiceSettings?.timezone}
-      />
-    ),
-
-    findings: (
-      <FindingsPdfSection
-        findings={data.findings || []}
-        fontFamily={fontFamily}
-        styles={stylesFor('findings')}
-        labels={labels}
-      />
-    ),
-
-    bank_account: (
-      <BankAccountSection
-        invoiceSettings={invoiceSettings}
-        fontFamily={fontFamily}
-        styles={stylesFor('bank_account')}
-        labels={labels}
-        visibleFields={visibleBankAccountFields}
-        primaryColor={primaryColor}
-        dueDate={dueDate}
-        invoiceDate={serviceDate}
-        framed={isFramed}
-      />
-    ),
-
-    telegram_qr: telegramQrDataUri ? (
-      <View style={{ alignItems: 'center', marginTop: 14, paddingTop: 10 }}>
-        <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#fafafa',
-            borderRadius: 6,
-            padding: 10,
-            paddingBottom: 6,
-          }}
-        >
-          <Image src={telegramQrDataUri} style={{ width: 56, height: 56 }} />
-          <Text style={{ fontSize: 6.5, color: gray[500], marginTop: 4, fontFamily }}>
-            {telegramLabel || 'Chat with us on Telegram'}
-          </Text>
-        </View>
-      </View>
-    ) : null,
-
-    footer: (
-      <Footer
-        shopDisplayName={shopDisplayName}
-        serviceDate={serviceDate}
-        invoiceSettings={invoiceSettings}
-        invoiceNum={invoiceNum}
-        primaryColor={primaryColor}
-        fontFamily={fontFamily}
-        torqvoiceLogoDataUri={torqvoiceLogoDataUri}
-        portalUrl={portalUrl}
-        workshop={workshop}
-        visibleFields={getVisibleFieldsForSection(layoutConfig, 'footer')}
-        styles={stylesFor('footer')}
-        labels={labels}
-      />
-    ),
-  }
-
-  // Use column-based grouping from layout config.
-  const renderGroups = groupSectionsForRendering(effectiveSections)
-  const renderedSections: React.ReactNode[] = []
-
-  for (const group of renderGroups) {
-    if (group.type === 'full-width') {
-      renderedSections.push(
-        <React.Fragment key={group.sectionId}>{sectionMap[group.sectionId]}</React.Fragment>
-      )
-    } else {
-      const leftNodes = group.left
-        .map((id) => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>)
-        .filter(Boolean)
-      const rightNodes = group.right
-        .map((id) => <React.Fragment key={id}>{sectionMap[id]}</React.Fragment>)
-        .filter(Boolean)
-      if (leftNodes.length > 0 || rightNodes.length > 0) {
-        renderedSections.push(
-          <View key={`col-${group.left[0] || group.right[0]}`} style={styles.infoRow}>
-            <View style={{ flex: 1, gap: 4 }}>{leftNodes}</View>
-            <View style={{ flex: 1, gap: 4 }}>{rightNodes}</View>
-          </View>
-        )
-      }
-    }
-  }
+  const invoiceNum = data.invoiceNumber || `INV-${data.id.slice(-8).toUpperCase()}`
+  const fontFamily = pdfFamily(spec.page.fontFamily)
 
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        {/* The rail sits above the sheet like the band does, so it drops the
-            same shadow down the left edge. Drawn before the sections so the
-            band paints over it on the first page, and `fixed` so it reaches
-            the full height of every page after it. */}
-        {isFramed && (frameShadow || frameBorderColor) && (
-          <View
-            fixed
-            style={{
-              position: 'absolute',
-              top: 0,
-              // Absolute offsets are measured from inside the page border, so
-              // zero lands exactly against the rail, whichever edge it is on.
-              [frameSide === 'right' ? 'right' : 'left']: 0,
-              height: A4_HEIGHT,
-              width: (frameBorderColor ? 0.6 : 0) + (frameShadow ? SHADOW.length * SHADOW_STEP : 0),
-              flexDirection: frameSide === 'right' ? 'row-reverse' : 'row',
-            }}
-          >
-            {frameBorderColor ? (
-              <View style={{ width: 0.6, backgroundColor: frameBorderColor }} />
-            ) : null}
-            {frameShadow
-              ? SHADOW.map((color, i) => (
-                  <View key={i} style={{ width: SHADOW_STEP, backgroundColor: color }} />
-                ))
-              : null}
-          </View>
-        )}
-        {renderedSections}
-      </Page>
+      <SpecPdfPage spec={spec} />
 
-      {hasAttachments && imageAttachments.length > 0 && (
-        <Page size="A4" style={styles.page}>
-          <Text style={styles.sectionTitle}>{labels.serviceImages || 'Service Images'}</Text>
+      {imageAttachments.length > 0 && (
+        <Page size="A4" style={{ padding: 40, fontFamily, fontSize: 9, color: '#111827' }}>
+          <Text style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>
+            {labels.serviceImages || 'Service Images'}
+          </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             {imageAttachments.map((img, i) => (
               <View key={i} style={{ width: '48%', marginBottom: 8 }}>
@@ -544,19 +93,26 @@ export function InvoicePDF({
                     objectPosition: 'left',
                   }}
                 />
-                {img.description ? (
-                  <Text style={{ fontSize: 8, color: gray, marginTop: 2 }}>{img.description}</Text>
-                ) : (
-                  <Text style={styles.attachmentFileName}>{img.fileName}</Text>
-                )}
+                <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 2 }}>
+                  {img.description || img.fileName}
+                </Text>
               </View>
             ))}
           </View>
-          <AttachmentsFooter
-            shopDisplayName={shopDisplayName}
-            invoiceNum={invoiceNum}
-            styles={styles}
-          />
+          <Text
+            fixed
+            style={{
+              position: 'absolute',
+              bottom: 16,
+              left: 40,
+              right: 40,
+              fontSize: 8,
+              color: '#6b7280',
+              textAlign: 'center',
+            }}
+          >
+            {shopDisplayName} · {invoiceNum}
+          </Text>
         </Page>
       )}
     </Document>

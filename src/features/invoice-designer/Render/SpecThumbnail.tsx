@@ -2,7 +2,7 @@
 
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { groupFlowBlocks } from '../Spec/documentSpec'
-import { RenderNode } from './renderHtml'
+import { RenderNode, textCss } from './renderHtml'
 import { fontStack } from '../Components/types'
 
 /**
@@ -16,6 +16,7 @@ import { fontStack } from '../Components/types'
 export function SpecThumbnail({ spec, height = 150 }: { spec: DocumentSpec; height?: number }) {
   const scale = height / spec.page.height
   const rows = groupFlowBlocks(spec.blocks)
+  const anchored = spec.blocks.filter((b) => b.placement.mode === 'anchored')
   const contentWidth = spec.page.width - spec.page.margin.left - spec.page.margin.right
 
   return (
@@ -79,7 +80,9 @@ export function SpecThumbnail({ spec, height = 150 }: { spec: DocumentSpec; heig
         >
           {rows.map((row, i) =>
             row.type === 'single' ? (
-              <RenderNode key={row.block.id} node={row.block.content} />
+              <div key={row.block.id} style={textCss(row.block.text)}>
+                <RenderNode node={row.block.content} />
+              </div>
             ) : (
               <div key={`row-${i}`} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                 <div
@@ -92,7 +95,9 @@ export function SpecThumbnail({ spec, height = 150 }: { spec: DocumentSpec; heig
                   }}
                 >
                   {row.left.map((b) => (
-                    <RenderNode key={b.id} node={b.content} />
+                    <div key={b.id} style={textCss(b.text)}>
+                      <RenderNode node={b.content} />
+                    </div>
                   ))}
                 </div>
                 <div
@@ -105,13 +110,37 @@ export function SpecThumbnail({ spec, height = 150 }: { spec: DocumentSpec; heig
                   }}
                 >
                   {row.right.map((b) => (
-                    <RenderNode key={b.id} node={b.content} />
+                    <div key={b.id} style={textCss(b.text)}>
+                      <RenderNode node={b.content} />
+                    </div>
                   ))}
                 </div>
               </div>
             )
           )}
         </div>
+
+        {/* Anything placed by hand, the framed letterhead included, sits at
+            its own spot on the card too. */}
+        {anchored.map((b) => {
+          if (b.placement.mode !== 'anchored') return null
+          const anchor = b.placement.anchor
+          if ((anchor.page ?? 1) !== 1) return null
+          return (
+            <div
+              key={b.id}
+              style={{
+                position: 'absolute',
+                left: anchor.x,
+                top: anchor.y,
+                width: anchor.width,
+                ...textCss(b.text),
+              }}
+            >
+              <RenderNode node={b.content} />
+            </div>
+          )
+        })}
       </div>
     </div>
   )

@@ -14,6 +14,10 @@ import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import {
+  mergeWithDefaults,
+  type InvoiceLayoutConfig,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import { requireFeature } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 
@@ -27,16 +31,38 @@ async function getWorkshopSettings(organizationId: string) {
             'workshop.address',
             'workshop.phone',
             'workshop.email',
+            'workshop.slogan',
             'workshop.logo',
             'workshop.currencyCode',
             'workshop.currencyFormat',
             'workshop.emailFromName',
             'workshop.emailEnabled',
             'invoice.primaryColor',
+            'invoice.backgroundColor',
+            'invoice.textColor',
+            'invoice.companyTextColor',
+            'invoice.frameBorderColor',
+            'invoice.frameShadow',
+            'invoice.frameSide',
             'invoice.fontFamily',
             'invoice.showLogo',
             'invoice.showCompanyName',
             'invoice.headerStyle',
+            'invoice.logoSize',
+            // The saved arrangements, so an emailed sheet is the sheet the
+            // workshop designed rather than the default one.
+            'invoice.layoutConfig',
+            'quote.layoutConfig',
+            'quote.primaryColor',
+            'quote.backgroundColor',
+            'quote.textColor',
+            'quote.companyTextColor',
+            'quote.frameBorderColor',
+            'quote.frameShadow',
+            'quote.frameSide',
+            'quote.fontFamily',
+            'quote.headerStyle',
+            'quote.logoSize',
           ],
         },
       },
@@ -110,20 +136,28 @@ export async function sendQuoteEmail(input: {
         settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
       const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
 
+      const pick = (key: string) => settings[`quote.${key}`] || settings[`invoice.${key}`]
       const template = {
-        primaryColor: settings['invoice.primaryColor'] || '#d97706',
-        backgroundColor: settings['invoice.backgroundColor'] || undefined,
-        textColor: settings['invoice.textColor'] || undefined,
-        companyTextColor: settings['invoice.companyTextColor'] || undefined,
-        frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
-        frameShadow: settings['invoice.frameShadow'] !== 'false',
-        frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
-          | 'left'
-          | 'right',
-        fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
+        primaryColor: pick('primaryColor') || '#d97706',
+        backgroundColor: pick('backgroundColor') || undefined,
+        textColor: pick('textColor') || undefined,
+        companyTextColor: pick('companyTextColor') || undefined,
+        frameBorderColor: pick('frameBorderColor') || undefined,
+        frameShadow: pick('frameShadow'),
+        frameSide: (pick('frameSide') === 'right' ? 'right' : 'left') as 'left' | 'right',
+        fontFamily: pick('fontFamily') || 'Helvetica',
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
-        headerStyle: settings['invoice.headerStyle'] || 'standard',
+        headerStyle: pick('headerStyle') || 'standard',
+        logoSize: Number(pick('logoSize')) || undefined,
+      }
+      let quoteLayoutConfig: InvoiceLayoutConfig | undefined
+      try {
+        quoteLayoutConfig = settings['quote.layoutConfig']
+          ? mergeWithDefaults(JSON.parse(settings['quote.layoutConfig']))
+          : undefined
+      } catch {
+        quoteLayoutConfig = undefined
       }
 
       // Generate PDF
@@ -134,11 +168,13 @@ export async function sendQuoteEmail(input: {
           address: settings['workshop.address'] || '',
           phone: settings['workshop.phone'] || '',
           email: settings['workshop.email'] || '',
+          slogan: settings['workshop.slogan'] || undefined,
         },
         currencyCode,
         currencyFormat,
         logoDataUri,
         template,
+        layoutConfig: quoteLayoutConfig,
       }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
       const pdfBuffer = await renderToBuffer(element)
       const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
@@ -289,7 +325,7 @@ export async function sendInvoiceEmail(input: {
         textColor: settings['invoice.textColor'] || undefined,
         companyTextColor: settings['invoice.companyTextColor'] || undefined,
         frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
-        frameShadow: settings['invoice.frameShadow'] !== 'false',
+        frameShadow: settings['invoice.frameShadow'],
         frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
           | 'left'
           | 'right',
@@ -297,6 +333,16 @@ export async function sendInvoiceEmail(input: {
         showLogo: settings['invoice.showLogo'] !== 'false',
         showCompanyName: settings['invoice.showCompanyName'] !== 'false',
         headerStyle: settings['invoice.headerStyle'] || 'standard',
+        logoSize: Number(settings['invoice.logoSize']) || undefined,
+        layoutConfig: (() => {
+          try {
+            return settings['invoice.layoutConfig']
+              ? mergeWithDefaults(JSON.parse(settings['invoice.layoutConfig']))
+              : undefined
+          } catch {
+            return undefined
+          }
+        })(),
       }
 
       // Generate PDF
@@ -307,6 +353,7 @@ export async function sendInvoiceEmail(input: {
           address: settings['workshop.address'] || '',
           phone: settings['workshop.phone'] || '',
           email: settings['workshop.email'] || '',
+          slogan: settings['workshop.slogan'] || undefined,
         },
         invoiceSettings: { currencyCode, currencyFormat },
         logoDataUri,
@@ -424,7 +471,7 @@ export async function sendInspectionEmail(input: {
         textColor: settings['invoice.textColor'] || undefined,
         companyTextColor: settings['invoice.companyTextColor'] || undefined,
         frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
-        frameShadow: settings['invoice.frameShadow'] !== 'false',
+        frameShadow: settings['invoice.frameShadow'],
         frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
           | 'left'
           | 'right',

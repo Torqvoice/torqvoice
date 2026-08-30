@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { ServiceTypeProvider } from '@/components/service-type-context'
+// The faces the PDFs embed, so the canvas measures what the paper prints.
+import '@/features/invoice-designer/Render/documentFonts.css'
 
 /**
  * The designer runs full-bleed: no sidebar, no banners, nothing but the tool.

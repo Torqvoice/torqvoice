@@ -17,8 +17,11 @@ export interface TemplateConfig {
    * Empty means no line.
    */
   frameBorderColor?: string
-  /** The frame's drop shadow onto the sheet. Off prints a flat edge. */
-  frameShadow?: boolean
+  /**
+   * The frame's drop shadow onto the sheet: the stored setting value.
+   * 'false' or false prints a flat edge; 'thin' and 'wide' size it.
+   */
+  frameShadow?: boolean | string
   /** Which edge the rail runs down. Defaults to the left. */
   frameSide?: 'left' | 'right'
   fontFamily?: string

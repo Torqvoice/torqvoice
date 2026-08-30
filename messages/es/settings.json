@@ -575,6 +575,7 @@
     "fullWidthHint": "Ancho completo — clic para medio ancho (izquierda)",
     "sections": {
       "header": "Encabezado",
+      "slogan": "Eslogan",
       "customer": "Cliente",
       "vehicle": "Vehículo",
       "service": "Servicio",

@@ -575,6 +575,7 @@
     "fullWidthHint": "Full bredde — klikk for halvbredde (venstre)",
     "sections": {
       "header": "Topptekst",
+      "slogan": "Slagord",
       "customer": "Kunde",
       "vehicle": "Kjøretøy",
       "service": "Tjeneste",

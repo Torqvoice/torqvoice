@@ -18,7 +18,11 @@ import {
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
+import { FONT_OPTIONS, fontStack } from './types'
 import type { DesignerTemplate } from './types'
+
+/** Sections whose body is a table, and so offer line controls. */
+const TABLE_SECTIONS = new Set(['items_table', 'parts_table', 'labor_table', 'findings'])
 
 const SWATCHES = [
   '#d97706',
@@ -226,6 +230,18 @@ export function DesignerInspector({
       )
     )
     const unassignedCustomFields = customFields.filter((f) => f.isActive && !assigned.has(f.id))
+    /**
+     * The fields this section shows, resolved the way the generator resolves
+     * them: no list of its own means every built-in field, visible.
+     */
+    const builtinIds = new Set(getBuiltinFieldsForSection(section.id).map((f) => f.id))
+    const resolvedFields = (
+      section.fields ??
+      getBuiltinFieldsForSection(section.id).map((f) => ({ id: f.id, visible: true }))
+    ) // A stored id no builtin list carries any more is a leftover, not a field.
+      .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
+    const setFields = (fields: { id: string; visible: boolean }[]) =>
+      onSection(section.id, { fields })
     const setStyle = (patch: InvoiceSectionStyle) => {
       const next = { ...style, ...patch }
       const kept = Object.fromEntries(
@@ -236,6 +252,13 @@ export function DesignerInspector({
 
     return (
       <div className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4">
+        <button
+          type="button"
+          onClick={() => onSelect(null)}
+          className="mb-2 text-[12.5px] font-medium text-[#2563eb] hover:underline"
+        >
+          ◂ Document styling
+        </button>
         <div className="mb-0.5 flex items-center justify-between">
           <div className="text-[15px] font-bold capitalize">{section.id.replace(/_/g, ' ')}</div>
           <button
@@ -249,6 +272,27 @@ export function DesignerInspector({
         <div className="mb-4 text-xs text-[#8a8f97]">Section settings</div>
 
         <div className="space-y-3">
+          {section.id === 'bank_account' && (
+            <Group title="Panel style">
+              <Choice
+                value={
+                  section.variant ?? (template.headerStyle === 'framed' ? 'outline' : 'accent')
+                }
+                options={[
+                  { value: 'accent', label: 'Accent' },
+                  { value: 'panel', label: 'Panel' },
+                  { value: 'outline', label: 'Outline' },
+                  { value: 'lines', label: 'Lines' },
+                ]}
+                onChange={(variant) => onSection(section.id, { variant })}
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                Accent tints the card with the primary color. Panel matches the other detail cards.
+                Outline draws only a border, and Lines prints without a box.
+              </p>
+            </Group>
+          )}
+
           <Group title="Placement">
             <Row label="Visible">
               <Toggle
@@ -281,6 +325,46 @@ export function DesignerInspector({
             )}
           </Group>
 
+          <Group title="Spacing">
+            {(layout.anchors?.[section.id] ||
+              (section.id === 'header' && template.headerStyle === 'framed')) && (
+              <p className="rounded-md bg-[#fef3c7] px-2.5 py-2 text-[11.5px] leading-snug text-[#92400e]">
+                This section is placed by hand, so flow spacing does not move it.
+                {section.id === 'header' && template.headerStyle === 'framed'
+                  ? ' The framed letterhead sits on the band; drag it to move it.'
+                  : ' Drag it, or return it to the flow, to use spacing.'}
+              </p>
+            )}
+            <div className="grid grid-cols-2 gap-2">
+              {(
+                [
+                  ['marginTop', 'Top'],
+                  ['marginBottom', 'Bottom'],
+                  ['marginLeft', 'Left'],
+                  ['marginRight', 'Right'],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key} className="flex items-center justify-between gap-1.5">
+                  <span className="text-[12.5px] font-medium">{label}</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={key === 'marginLeft' || key === 'marginRight' ? 200 : 120}
+                    value={style[key] ?? ''}
+                    placeholder="0"
+                    onChange={(e) =>
+                      setStyle({ [key]: e.target.value ? Number(e.target.value) : undefined })
+                    }
+                    className="h-7 w-16 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+              Points of empty room the section keeps around itself in the flow.
+            </p>
+          </Group>
+
           {section.id === 'header' && (
             <Group title="Logo">
               {/* The logo is printed by the header, so its size is set where
@@ -299,15 +383,69 @@ export function DesignerInspector({
             </Group>
           )}
 
+          {SECTIONS_WITH_FIELDS.has(section.id) && (
+            <Group title="Fields">
+              {resolvedFields.map((field) => (
+                <div key={field.id} className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                    {fieldName(field.id)}
+                  </span>
+                  {isCustomFieldId(field.id) && (
+                    <button
+                      type="button"
+                      onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
+                      className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
+                      title="Remove from this section"
+                    >
+                      ×
+                    </button>
+                  )}
+                  <Toggle
+                    on={field.visible}
+                    onChange={(visible) =>
+                      setFields(
+                        resolvedFields.map((f) => (f.id === field.id ? { ...f, visible } : f))
+                      )
+                    }
+                  />
+                </div>
+              ))}
+              {unassignedCustomFields.length > 0 && (
+                <div className="pt-1">
+                  <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">Your custom fields</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unassignedCustomFields.map((field) => (
+                      <button
+                        key={field.id}
+                        type="button"
+                        onClick={() =>
+                          setFields([
+                            ...resolvedFields,
+                            { id: toCustomFieldId(field.id), visible: true },
+                          ])
+                        }
+                        className="rounded-md border border-dashed border-[#c9ccd1] px-2 py-1 text-[12px] text-[#5b6068] hover:border-[#2563eb] hover:text-[#2563eb]"
+                      >
+                        + {field.label || field.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Group>
+          )}
+
           <Group title="Appearance">
+            {/* The header has no body text and no panel heading, so the same
+                two inks get names that say what they actually color there. */}
             <Color
-              label="Text"
+              label={section.id === 'header' ? 'Details' : 'Text'}
               value={style.textColor ?? ''}
               fallback="#111827"
               onChange={(textColor) => setStyle({ textColor })}
             />
             <Color
-              label="Heading"
+              label={section.id === 'header' ? 'Company name' : 'Heading'}
               value={style.labelColor ?? ''}
               fallback={template.primaryColor}
               onChange={(labelColor) => setStyle({ labelColor })}
@@ -324,6 +462,28 @@ export function DesignerInspector({
               fallback="#111827"
               onChange={(borderColor) => setStyle({ borderColor })}
             />
+            <Row label={TABLE_SECTIONS.has(section.id) ? 'Line width' : 'Border width'}>
+              <input
+                type="number"
+                min={0}
+                max={4}
+                step={0.25}
+                value={style.borderWidth ?? ''}
+                placeholder="auto"
+                onChange={(e) =>
+                  setStyle({ borderWidth: e.target.value ? Number(e.target.value) : undefined })
+                }
+                className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+              />
+            </Row>
+            {TABLE_SECTIONS.has(section.id) && (
+              <Row label="Outer border">
+                <Toggle
+                  on={style.outerBorder === true}
+                  onChange={(on) => setStyle({ outerBorder: on ? true : undefined })}
+                />
+              </Row>
+            )}
             <Row label="Size">
               <input
                 type="number"
@@ -344,16 +504,19 @@ export function DesignerInspector({
                 className="h-7 rounded-md border border-[#e3e5e9] bg-white px-1.5 text-[12px]"
               >
                 <option value="">Inherit</option>
-                <option value="Helvetica">Sans</option>
-                <option value="Times-Roman">Serif</option>
-                <option value="Courier">Mono</option>
+                {FONT_OPTIONS.map((font) => (
+                  <option key={font.value} value={font.value}>
+                    {font.label}
+                  </option>
+                ))}
               </select>
             </Row>
           </Group>
         </div>
 
         <div className="mt-4 rounded-md bg-[#f8f9fa] px-3 py-2.5 text-xs leading-relaxed text-[#8a8f97]">
-          Drag this section in the list, or on the page, to move it.
+          Drag this section in the list, or on the page, to move it. Once placed by hand, the arrow
+          keys nudge it a point at a time, ten with Shift, and Escape cancels a drag.
         </div>
       </div>
     )
@@ -458,12 +621,25 @@ export function DesignerInspector({
               fallback="#111827"
               onChange={(frameBorderColor) => onTemplate({ frameBorderColor })}
             />
-            <Row label="Shadow">
-              <Toggle
-                on={template.frameShadow !== 'false'}
-                onChange={(on) => onTemplate({ frameShadow: on ? 'true' : 'false' })}
+            <div>
+              <div className="mb-1.5 text-[13px] font-medium">Shadow</div>
+              <Choice
+                value={
+                  template.frameShadow === 'false' ||
+                  template.frameShadow === 'thin' ||
+                  template.frameShadow === 'wide'
+                    ? template.frameShadow
+                    : 'true'
+                }
+                options={[
+                  { value: 'false', label: 'Off' },
+                  { value: 'thin', label: 'Thin' },
+                  { value: 'true', label: 'Normal' },
+                  { value: 'wide', label: 'Wide' },
+                ]}
+                onChange={(frameShadow) => onTemplate({ frameShadow })}
               />
-            </Row>
+            </div>
           </Group>
         )}
 
@@ -472,10 +648,17 @@ export function DesignerInspector({
             value={template.fontFamily}
             onChange={(e) => onTemplate({ fontFamily: e.target.value })}
             className="w-full rounded-md border border-[#e3e5e9] bg-white px-2.5 py-2 text-[13px]"
+            style={{ fontFamily: fontStack(template.fontFamily) }}
           >
-            <option value="Helvetica">Sans (Roboto)</option>
-            <option value="Times-Roman">Serif (Noto Serif)</option>
-            <option value="Courier">Mono (Noto Sans Mono)</option>
+            {FONT_OPTIONS.map((font) => (
+              <option
+                key={font.value}
+                value={font.value}
+                style={{ fontFamily: fontStack(font.value) }}
+              >
+                {font.label}
+              </option>
+            ))}
           </select>
           <Slider
             label="Base size"

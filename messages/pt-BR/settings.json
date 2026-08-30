@@ -575,6 +575,7 @@
     "fullWidthHint": "Largura inteira — clique para meia largura (esquerda)",
     "sections": {
       "header": "Cabeçalho",
+      "slogan": "Slogan",
       "customer": "Cliente",
       "vehicle": "Veículo",
       "service": "Serviço",

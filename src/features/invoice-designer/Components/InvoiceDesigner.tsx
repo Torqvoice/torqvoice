@@ -1,11 +1,15 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { buildLayoutFromPreset, layoutPresets } from '@/features/settings/Schema/layoutPresets'
 import {
+  COLUMN_ELIGIBLE_SECTIONS,
   getDefaultInvoiceLayout,
+  materializeHiddenSection,
+  toCustomFieldId,
   type InvoiceDocumentStyle,
   type InvoiceLayoutConfig,
   type InvoiceSection,
@@ -19,7 +23,7 @@ import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
-import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
+import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/buildSpec'
 import { SAMPLE_TABLES, fieldValues } from './sample'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
@@ -119,8 +123,25 @@ export function InvoiceDesigner({
   /** What a workshop's own sheet says, with the sample standing in for a job. */
   const data: DocumentData = useMemo(
     () => ({
-      fields: fieldValues(workshop),
+      fields: {
+        ...fieldValues(workshop),
+        // A custom field prints whatever the job carries; here it shows its
+        // own name so the workshop can see where it will sit.
+        ...Object.fromEntries(
+          customFields
+            .filter((f) => f.isActive)
+            .map((f) => [toCustomFieldId(f.id), `${f.label || f.name}: Sample`])
+        ),
+      },
       logoUrl: workshop.logoUrl || undefined,
+      labels: {},
+      meta: {
+        title: docType === 'quote' ? 'QUOTE' : 'INVOICE',
+        number: SAMPLE_TABLES.number,
+        customerNumber: SAMPLE_TABLES.customerNumber,
+        date: SAMPLE_TABLES.date,
+        due: SAMPLE_TABLES.due,
+      },
       items: SAMPLE_TABLES.items.map((item) => ({
         n: String(item.n),
         qty: item.qty,
@@ -130,30 +151,41 @@ export function InvoiceDesigner({
         price: item.price,
         total: item.total,
       })),
+      parts: SAMPLE_TABLES.items
+        .filter((item) => item.sku)
+        .map((item) => ({
+          ref: item.sku as string,
+          desc: item.desc,
+          qty: item.qty,
+          price: item.price,
+          total: item.total,
+        })),
+      labor: SAMPLE_TABLES.items
+        .filter((item) => !item.sku)
+        .map((item) => ({
+          desc: item.desc,
+          qty: `${item.qty} ${item.unit}`,
+          rate: item.price,
+          total: item.total,
+        })),
       findings: SAMPLE_TABLES.findings,
-      meta: {
-        title: docType === 'quote' ? 'QUOTE' : 'INVOICE',
-        number: SAMPLE_TABLES.number,
-        customerNumber: SAMPLE_TABLES.customerNumber,
-        date: SAMPLE_TABLES.date,
-        due: SAMPLE_TABLES.due,
-      },
-      totals: {
-        subtotal: SAMPLE_TABLES.subtotal,
-        taxLabel: 'Tax',
-        tax: SAMPLE_TABLES.tax,
-        total: SAMPLE_TABLES.total,
-      },
-      notes: SAMPLE_TABLES.notes,
-      warranty: SAMPLE_TABLES.warranty,
-      columnLabels: {
-        pos: '#',
-        qty: 'Qty',
-        unit: 'Unit',
-        description: 'Description',
-        unitPrice: 'Unit price',
-        total: 'Total',
-      },
+      totals: [
+        { label: 'Subtotal', value: SAMPLE_TABLES.subtotal, kind: 'line' as const },
+        { label: 'Tax', value: SAMPLE_TABLES.tax, kind: 'line' as const },
+        { label: 'Total', value: SAMPLE_TABLES.total, kind: 'total' as const },
+      ],
+      notes: { html: SAMPLE_TABLES.notes },
+      warranty: { duration: SAMPLE_TABLES.warranty },
+      payment: [
+        { id: 'bank_account', label: 'Bank Account', value: fieldValues(workshop).bank_account },
+        {
+          id: 'org_number',
+          label: 'Org. Number',
+          value: workshop.orgNumber || 'Org: 123 456 789',
+        },
+        { label: 'Payment Terms', value: 'Net 10 Days' },
+        { label: 'Due Date', value: SAMPLE_TABLES.due },
+      ],
       sectionLabels: {
         customer: 'Bill to',
         vehicle: 'Vehicle',
@@ -163,7 +195,7 @@ export function InvoiceDesigner({
         findings: 'Observations',
       },
     }),
-    [workshop, docType]
+    [workshop, docType, customFields]
   )
 
   const spec = useMemo(
@@ -186,7 +218,7 @@ export function InvoiceDesigner({
           headerStyle: template.headerStyle,
           frameSide: template.frameSide === 'right' ? 'right' : 'left',
           frameBorderColor: template.frameBorderColor || undefined,
-          frameShadow: template.frameShadow !== 'false',
+          frameShadow: frameShadowWidth(template.frameShadow),
           logoSize: template.logoSize,
         },
         data
@@ -234,7 +266,7 @@ export function InvoiceDesigner({
           stripeColor: preset.document?.stripeColor || '#f3f4f6',
           headerStyle: preset.template.headerStyle,
           frameSide: preset.template.frameSide ?? 'left',
-          frameShadow: true,
+          frameShadow: frameShadowWidth(undefined),
           logoSize: 100,
         },
         data
@@ -242,32 +274,73 @@ export function InvoiceDesigner({
     [data]
   )
 
+  // A drop that references a section drawn while hidden (the borrowed
+  // title) makes it real first, at the position it is drawn in.
+  const materialize = materializeHiddenSection
+
   /**
-   * Dropped back into the flow, before the row at this index: it takes its
-   * place among the others and everything below it moves down, which is what
-   * putting something back is supposed to do.
+   * Dropped back into the flow, before the named section (or last, on null):
+   * it takes its place among the others and everything below it moves down,
+   * which is what putting something back is supposed to do. It arrives full
+   * width; joining a column is its own gesture.
    */
-  const reorder = useCallback(
-    (id: string, index: number) => {
-      const anchors = { ...(layout.anchors ?? {}) }
+  const insertBefore = useCallback(
+    (id: string, beforeId: string | null) => {
+      const base = materialize(layout, beforeId)
+      const anchors = { ...(base.anchors ?? {}) }
       delete anchors[id]
 
-      const ordered = [...layout.sections].sort((a, b) => a.order - b.order)
-      const flowIds = ordered
-        .filter((s) => s.visible && s.id !== id && !anchors[s.id] && s.id !== 'footer')
-        .map((s) => s.id)
-      const before = flowIds[index]
-
-      const without = ordered.filter((s) => s.id !== id)
+      const ordered = [...base.sections].sort((a, b) => a.order - b.order)
       const moved = ordered.find((s) => s.id === id)
       if (!moved) return
-      const at = before ? without.findIndex((s) => s.id === before) : without.length
-      without.splice(at === -1 ? without.length : at, 0, moved)
+      const without = ordered.filter((s) => s.id !== id)
+      const at = beforeId ? without.findIndex((s) => s.id === beforeId) : without.length
+      // Dropping a section into the flow is asking to see it there, so a
+      // hidden one (the borrowed title) becomes visible where it lands.
+      without.splice(at === -1 ? without.length : at, 0, {
+        ...moved,
+        column: undefined,
+        visible: true,
+      })
 
       setLayout({
-        ...layout,
+        ...base,
         anchors: Object.keys(anchors).length ? anchors : undefined,
         sections: without.map((s, i) => ({ ...s, order: i })),
+      })
+    },
+    [layout, setLayout]
+  )
+
+  /**
+   * Dropped into a column: the dragged section takes the given side and lands
+   * before the named lane neighbour, or after the whole row when none. A
+   * section it joins that had not chosen a side takes the other one, so a
+   * full-width block turns into the other half of the pair.
+   */
+  const pairWith = useCallback(
+    (id: string, side: 'left' | 'right', beforeId: string | null, afterId: string) => {
+      if (id === afterId || id === beforeId) return
+      const reference = beforeId ?? afterId
+      const base = materialize(layout, reference)
+      const anchors = { ...(base.anchors ?? {}) }
+      delete anchors[id]
+
+      const ordered = [...base.sections].sort((a, b) => a.order - b.order)
+      const moved = ordered.find((s) => s.id === id)
+      if (!moved || !ordered.some((s) => s.id === reference)) return
+      const without = ordered.filter((s) => s.id !== id)
+      const at = without.findIndex((s) => s.id === reference)
+      without.splice(beforeId ? at : at + 1, 0, { ...moved, column: side, visible: true })
+
+      setLayout({
+        ...base,
+        anchors: Object.keys(anchors).length ? anchors : undefined,
+        sections: without.map((s, i) => ({
+          ...s,
+          order: i,
+          column: s.id === reference && !s.column ? (side === 'left' ? 'right' : 'left') : s.column,
+        })),
       })
     },
     [layout, setLayout]
@@ -279,7 +352,17 @@ export function InvoiceDesigner({
       const anchors = { ...(layout.anchors ?? {}) }
       if (anchor) anchors[id] = anchor
       else delete anchors[id]
-      setLayout({ ...layout, anchors: Object.keys(anchors).length ? anchors : undefined })
+      // Placing a section by hand is asking to see it: the borrowed title is
+      // drawn while its section is hidden, and anchoring it must not leave it
+      // a ghost the generator glues back under the header.
+      const hidden = anchor && layout.sections.some((s) => s.id === id && !s.visible)
+      setLayout({
+        ...layout,
+        sections: hidden
+          ? layout.sections.map((s) => (s.id === id ? { ...s, visible: true } : s))
+          : layout.sections,
+        anchors: Object.keys(anchors).length ? anchors : undefined,
+      })
     },
     [layout, setLayout]
   )
@@ -422,6 +505,8 @@ export function InvoiceDesigner({
   }
 
   const rail = [...layout.sections].sort((a, b) => a.order - b.order)
+  /** Sections that actually drew something with the sample data. */
+  const renderedIds = new Set(spec.blocks.map((b) => b.id))
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -454,6 +539,27 @@ export function InvoiceDesigner({
             </button>
           ))}
         </div>
+
+        {docType === 'quote' && (
+          <button
+            type="button"
+            onClick={() => {
+              // The quote takes the invoice's whole design: arrangement,
+              // placements and look, so nobody designs the same sheet twice.
+              setLayouts((prev) => ({
+                ...prev,
+                quote: JSON.parse(JSON.stringify(prev.invoice)) as InvoiceLayoutConfig,
+              }))
+              setTemplates((prev) => ({ ...prev, quote: { ...prev.invoice } }))
+              setSelected(null)
+              setDirty(true)
+              toast.success('Invoice design copied to the quote')
+            }}
+            className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
+          >
+            ⧉ Use invoice design
+          </button>
+        )}
 
         <div className="flex-1" />
 
@@ -509,7 +615,20 @@ export function InvoiceDesigner({
 
       <div className="relative flex min-h-0 flex-1">
         <div className="flex w-[252px] flex-none flex-col border-r border-[#e3e5e9] bg-white">
-          <div className="px-3.5 pb-2.5 pt-3.5 text-[11.5px] font-semibold uppercase tracking-[0.07em] text-[#8a8f97]">
+          <div className="px-2 pt-2.5">
+            {/* Colors, typeface and page setup used to hide behind clicking
+                empty paper; this puts them one click away, always. */}
+            <button
+              type="button"
+              onClick={() => setSelected(null)}
+              className="flex w-full items-center gap-2 rounded-[7px] py-2 pl-2 pr-2 text-left hover:bg-[#f4f5f7]"
+              style={{ background: selected === null ? '#eef2ff' : undefined }}
+            >
+              <span className="text-[13px]">🎨</span>
+              <span className="flex-1 text-[13.5px] font-medium">Document styling</span>
+            </button>
+          </div>
+          <div className="px-3.5 pb-2.5 pt-3 text-[11.5px] font-semibold uppercase tracking-[0.07em] text-[#8a8f97]">
             Sections
           </div>
           <div className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-2 pb-3.5">
@@ -540,24 +659,39 @@ export function InvoiceDesigner({
                     {section.column[0]}
                   </span>
                 )}
+                {/* A visible section can still have nothing to print, like a
+                    slogan the company details have not filled in: name the
+                    state instead of leaving an eye that seems to do nothing. */}
+                {section.visible && !renderedIds.has(section.id) && (
+                  <span
+                    className="rounded bg-[#f4f5f7] px-1.5 py-0.5 text-[10px] text-[#8a8f97]"
+                    title="Shown, but there is nothing to print in it with the current data."
+                  >
+                    empty
+                  </span>
+                )}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation()
                     patchSection(section.id, { visible: !section.visible })
                   }}
-                  className="px-0.5 text-[13px]"
+                  className="px-0.5"
                   style={{ color: section.visible ? '#5b6068' : '#c9ccd1' }}
+                  title={
+                    section.visible
+                      ? 'Shown on the sheet. Click to hide it.'
+                      : 'Hidden from the sheet. Click to show it.'
+                  }
                 >
-                  {section.visible ? '👁' : '⃠'}
+                  {section.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
               </div>
             ))}
           </div>
           <div className="border-t border-[#eceef1] px-3.5 py-2.5 text-[11.5px] leading-relaxed text-[#8a8f97]">
-            Drag to reorder, click to edit.
-            <br />
-            Half-width sections pair up side by side.
+            Drag a section on the page: drop it between blocks to reorder, onto a card to sit beside
+            it, or anywhere else to place it freely. The page makes room around it.
           </div>
         </div>
 
@@ -575,7 +709,9 @@ export function InvoiceDesigner({
           selected={selected}
           onSelect={setSelected}
           onAnchor={setAnchor}
-          onReorder={reorder}
+          onInsert={insertBefore}
+          onPair={pairWith}
+          pairable={COLUMN_ELIGIBLE_SECTIONS}
           zoom={zoom}
           rulers={rulers}
         />

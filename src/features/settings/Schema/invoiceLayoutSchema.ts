@@ -27,10 +27,19 @@ export const invoiceSectionStyleSchema = z.object({
   backgroundColor: z.string().optional(),
   /** Panel border, and the rule between table rows. */
   borderColor: z.string().optional(),
+  /** Thickness of the panel border and of table row rules, in points. */
+  borderWidth: z.number().min(0).max(4).optional(),
+  /** Draw a border around the whole table, not only rules between rows. */
+  outerBorder: z.boolean().optional(),
   /** Body text size in points. Headings scale with it. */
   fontSize: z.number().min(5).max(24).optional(),
   /** Typeface for this section, from the families the app embeds. */
   fontFamily: z.string().optional(),
+  /** Extra room around the section in the flow, in points per edge. */
+  marginTop: z.number().min(0).max(120).optional(),
+  marginBottom: z.number().min(0).max(120).optional(),
+  marginLeft: z.number().min(0).max(200).optional(),
+  marginRight: z.number().min(0).max(200).optional(),
 })
 
 export const invoiceSectionSchema = z.object({
@@ -44,6 +53,12 @@ export const invoiceSectionSchema = z.object({
    * every layout did before the choice existed.
    */
   boxed: z.boolean().optional(),
+  /**
+   * A named preset look for sections that offer several, the way the payment
+   * panel can print as an accent card, a plain panel, an outline or bare
+   * lines. Unset means the section's default.
+   */
+  variant: z.string().optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
@@ -131,6 +146,9 @@ export function fromCustomFieldId(cfId: string): string {
 
 export const BUILTIN_SECTIONS = [
   { id: 'header', name: 'Header' },
+  // Its own section, not a line inside the header, so it can be placed,
+  // paired and styled like anything else on the sheet.
+  { id: 'slogan', name: 'Slogan' },
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
@@ -180,7 +198,6 @@ export const BUILTIN_INFO_FIELDS = [
 export const BUILTIN_HEADER_FIELDS = [
   { id: 'logo', name: 'Logo' },
   { id: 'company_name', name: 'Company Name' },
-  { id: 'company_slogan', name: 'Slogan' },
   { id: 'company_address', name: 'Address' },
   { id: 'company_phone', name: 'Phone' },
   { id: 'company_email', name: 'Email' },
@@ -238,6 +255,8 @@ export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
 
 /** Sections that can be placed in left/right columns */
 export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
+  'slogan',
+  'totals',
   'customer',
   'vehicle',
   'service',
@@ -253,7 +272,6 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'items_table',
   'parts_table',
   'labor_table',
-  'totals',
   'footer',
   'telegram_qr',
 ])
@@ -412,6 +430,31 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_FOOTER_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
+}
+
+/**
+ * Make a hidden-but-drawn section real at the position it is drawn in.
+ *
+ * The one such section is the title strip the generator borrows under the
+ * header when Document Title is switched off: on screen it sits right after
+ * the header, while the hidden section's stored order points somewhere else
+ * entirely. A designer gesture that references it resolves against this, so
+ * the drop lands where the canvas showed it. A visible section passes
+ * through untouched.
+ */
+export function materializeHiddenSection(
+  config: InvoiceLayoutConfig,
+  refId: string | null
+): InvoiceLayoutConfig {
+  if (!refId) return config
+  const ref = config.sections.find((s) => s.id === refId)
+  if (!ref || ref.visible) return config
+  const ordered = [...config.sections]
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => s.id !== refId)
+  const headerAt = ordered.findIndex((s) => s.id === 'header')
+  ordered.splice(headerAt + 1, 0, { ...ref, visible: true })
+  return { ...config, sections: ordered.map((s, i) => ({ ...s, order: i })) }
 }
 
 // ---------------------------------------------------------------------------

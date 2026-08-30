@@ -575,6 +575,7 @@
     "fullWidthHint": "Larghezza intera — clicca per mezza larghezza (sinistra)",
     "sections": {
       "header": "Intestazione",
+      "slogan": "Slogan",
       "customer": "Cliente",
       "vehicle": "Veicolo",
       "service": "Servizio",

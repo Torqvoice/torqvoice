@@ -1,6 +1,7 @@
 'use client'
 
 import type { CSSProperties, ReactNode } from 'react'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 import type { BoxStyle, Node, TextStyle } from '../Spec/documentSpec'
 import { fontStack } from '../Components/types'
 
@@ -116,6 +117,17 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
         </div>
       )
 
+    case 'richtext':
+      return (
+        <div
+          {...id}
+          style={{ lineHeight: 1.5, ...textCss(node.style) }}
+          // The workshop's own rich-text notes, sanitized the same way the
+          // PDF sanitizes them before parsing.
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(node.html) }}
+        />
+      )
+
     case 'image':
       return (
         <div
@@ -143,7 +155,7 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
       const cell = (width: number | 'flex'): CSSProperties =>
         width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }
       return (
-        <div {...id}>
+        <div {...id} style={boxCss(node.style)}>
           <div
             style={{
               display: 'flex',
@@ -158,29 +170,34 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
               </span>
             ))}
           </div>
-          {node.rows.map((row, i) => (
-            <div
-              key={`${row[node.columns[0].key]}-${i}`}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                padding: `${node.rowPadding ?? 5}px 8px`,
-                background: node.stripe && i % 2 === 1 ? node.stripe : undefined,
-                borderBottom: `0.75px solid ${node.style?.borderColor ?? '#eceef1'}`,
-              }}
-            >
-              {node.columns.map((column) => (
-                <span key={column.key} style={{ ...cell(column.width), textAlign: column.align }}>
-                  {row[column.key]}
-                  {node.subKey && column.width === 'flex' && row[node.subKey] ? (
-                    <span style={{ display: 'block', opacity: 0.6, fontSize: '0.85em' }}>
-                      {row[node.subKey]}
-                    </span>
-                  ) : null}
-                </span>
-              ))}
-            </div>
-          ))}
+          {node.rows.map((row, i) => {
+            const struck = node.strikeKey ? !!row[node.strikeKey] : false
+            return (
+              <div
+                key={`${row[node.columns[0].key]}-${i}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  padding: `${node.rowPadding ?? 5}px 8px`,
+                  background: node.stripe && i % 2 === 1 ? node.stripe : undefined,
+                  borderBottom: `${node.ruleWidth ?? 0.75}px solid ${node.style?.borderColor ?? '#eceef1'}`,
+                  opacity: struck ? 0.5 : undefined,
+                  textDecoration: struck ? 'line-through' : undefined,
+                }}
+              >
+                {node.columns.map((column) => (
+                  <span key={column.key} style={{ ...cell(column.width), textAlign: column.align }}>
+                    {row[column.key]}
+                    {node.subKey && column.width === 'flex' && row[node.subKey] ? (
+                      <span style={{ display: 'block', opacity: 0.6, fontSize: '0.85em' }}>
+                        {row[node.subKey]}
+                      </span>
+                    ) : null}
+                  </span>
+                ))}
+              </div>
+            )
+          })}
         </div>
       )
     }
