@@ -5,6 +5,15 @@ import type { Style } from '@react-pdf/types'
 import { isCustomFieldId, getOrderedFieldIds } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { formatFieldValue } from './CustomFields'
 
+/**
+ * The panel a section prints in, or nothing but its own spacing when the layout
+ * has taken the box away. Unset reads as boxed, which is what every layout did
+ * before the choice existed.
+ */
+function boxStyle(styles: Record<string, Style>, boxed: boolean | undefined): Style {
+  return boxed === false ? { marginBottom: 4 } : styles.infoBox
+}
+
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
@@ -221,12 +230,15 @@ export function CustomerSection({
   labels,
   visibleFields,
   customFields,
+  boxed,
 }: {
   data: InvoiceData
   styles: Record<string, Style>
   labels: Record<string, string>
   visibleFields?: Set<string> | null
   customFields?: CustomFieldEntry[]
+  /** False prints the section without its panel. */
+  boxed?: boolean
 }) {
   const show = (id: string) => !visibleFields || visibleFields.has(id)
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_CUSTOMER_FIELDS)
@@ -247,7 +259,7 @@ export function CustomerSection({
   const ctx: CustomerRenderCtx = { data, styles, labels }
 
   return (
-    <View style={styles.infoBox}>
+    <View style={boxStyle(styles, boxed)}>
       <Text style={styles.infoLabel}>{labels.billTo || 'Bill To'}</Text>
       {invoiceCustomer && (
         <>{fieldOrder.filter((id) => show(id)).map((id) => renderCustomerField(id, ctx))}</>
@@ -268,6 +280,7 @@ export function VehicleSection({
   labels,
   visibleFields,
   customFields,
+  boxed,
 }: {
   data: InvoiceData
   vehicleName?: string
@@ -276,6 +289,8 @@ export function VehicleSection({
   labels: Record<string, string>
   visibleFields?: Set<string> | null
   customFields?: CustomFieldEntry[]
+  /** False prints the section without its panel. */
+  boxed?: boolean
 }) {
   const show = (id: string) => !visibleFields || visibleFields.has(id)
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_VEHICLE_FIELDS)
@@ -295,7 +310,7 @@ export function VehicleSection({
   const ctx: VehicleRenderCtx = { data, vehicleName, invoiceSettings, styles, labels }
 
   return (
-    <View style={styles.infoBox}>
+    <View style={boxStyle(styles, boxed)}>
       <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
       {fieldOrder.filter((id) => show(id)).map((id) => renderVehicleField(id, ctx))}
       {renderCustomFields(customFields, visibleFields, styles)}
@@ -309,6 +324,7 @@ export function ServiceSection({
   labels,
   visibleFields,
   customFields,
+  boxed,
 }: {
   data: InvoiceData
   vehicleName?: string
@@ -317,6 +333,8 @@ export function ServiceSection({
   labels: Record<string, string>
   visibleFields?: Set<string> | null
   customFields?: CustomFieldEntry[]
+  /** False prints the section without its panel. */
+  boxed?: boolean
 }) {
   const show = (fieldId: string) => !visibleFields || visibleFields.has(fieldId)
   const fieldOrder = getOrderedFieldIds(visibleFields, DEFAULT_SERVICE_FIELDS)
@@ -332,7 +350,7 @@ export function ServiceSection({
   const ctx: ServiceRenderCtx = { data, styles, labels }
 
   return (
-    <View style={styles.infoBox}>
+    <View style={boxStyle(styles, boxed)}>
       <Text style={styles.infoLabel}>{labels.service || 'Service'}</Text>
       {fieldOrder.filter((id) => show(id)).map((id) => renderServiceField(id, ctx))}
       {renderCustomFields(customFields, visibleFields, styles)}

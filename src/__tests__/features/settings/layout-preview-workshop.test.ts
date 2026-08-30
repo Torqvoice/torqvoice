@@ -34,4 +34,13 @@ describe('layout preview workshop', () => {
   it('shows the sample shop when nothing has been set up at all', () => {
     expect(resolveWorkshop(undefined).name).toBe('Your Workshop')
   })
+
+  it('never invents a slogan', () => {
+    // A workshop always has a name and an address, so a placeholder there reads
+    // as "yours goes here". An invented slogan reads as one it never wrote.
+    expect(resolveWorkshop(undefined).slogan).toBeUndefined()
+    expect(resolveWorkshop({ name: 'Die Autofabrik' }).slogan).toBeUndefined()
+    expect(resolveWorkshop({ slogan: '   ' }).slogan).toBeUndefined()
+    expect(resolveWorkshop({ slogan: 'All makes, one roof' }).slogan).toBe('All makes, one roof')
+  })
 })

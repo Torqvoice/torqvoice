@@ -16,8 +16,10 @@ import { createStyles, FRAMED } from '@/features/vehicles/Components/invoice-pdf
 import { letterheadMark } from '@/features/vehicles/Components/invoice-pdf/FramedLetterhead'
 import { templatePresets } from '@/features/settings/Schema/templatePresets'
 import {
+  BOXED_ELIGIBLE_SECTIONS,
   getDefaultInvoiceLayout,
   getLetterheadMark,
+  invoiceLayoutConfigSchema,
   withLetterheadMark,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -189,6 +191,28 @@ describe('framed template preset', () => {
     expect(shown('footer')).toContain('company_phone')
     expect(shown('footer')).toContain('company_email')
     expect(shown('footer')).not.toContain('footer_note')
+  })
+
+  it('offers to take the panel off the three detail blocks', () => {
+    expect([...BOXED_ELIGIBLE_SECTIONS].sort()).toEqual([
+      'customer',
+      'general',
+      'service',
+      'vehicle',
+    ])
+  })
+
+  it('leaves every section boxed until a layout says otherwise', () => {
+    // Unset, not true: that is what every saved layout already holds, and it
+    // has to keep reading as boxed.
+    for (const section of getDefaultInvoiceLayout().sections) {
+      expect(section.boxed).toBeUndefined()
+    }
+
+    const parsed = invoiceLayoutConfigSchema.parse({
+      sections: [{ id: 'customer', visible: true, order: 0, boxed: false }],
+    })
+    expect(parsed.sections[0].boxed).toBe(false)
   })
 
   it('lines the footer up with the content, not the rail', () => {

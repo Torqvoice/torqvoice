@@ -171,6 +171,8 @@ export function InvoicePDF({
   const effectiveSections = layoutConfig?.sections ?? getDefaultInvoiceLayout().sections
   const isVisible = (id: string) => effectiveSections.some((s) => s.id === id && s.visible)
   const itemsTableVisible = isVisible('items_table')
+  /** Unset reads as boxed, which is what every layout did before the choice. */
+  const isBoxed = (id: string) => effectiveSections.find((s) => s.id === id)?.boxed !== false
   const documentTitleVisible = isVisible('document_title')
 
   const documentTitle = (
@@ -232,6 +234,7 @@ export function InvoicePDF({
         labels={labels}
         visibleFields={visibleCustomerFields}
         customFields={customerCf}
+        boxed={isBoxed('customer')}
       />
     ),
 
@@ -244,6 +247,7 @@ export function InvoicePDF({
         labels={labels}
         visibleFields={visibleVehicleFields}
         customFields={vehicleCf}
+        boxed={isBoxed('vehicle')}
       />
     ),
 
@@ -254,6 +258,7 @@ export function InvoicePDF({
         labels={labels}
         visibleFields={visibleServiceFields}
         customFields={serviceCf}
+        boxed={isBoxed('service')}
       />
     ),
 
@@ -328,7 +333,12 @@ export function InvoicePDF({
 
     general:
       generalFallbackCf.length > 0 ? (
-        <CustomFields fields={generalFallbackCf} styles={styles} labels={labels} />
+        <CustomFields
+          fields={generalFallbackCf}
+          styles={styles}
+          labels={labels}
+          boxed={isBoxed('general')}
+        />
       ) : null,
 
     notes: (

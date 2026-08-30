@@ -31,6 +31,7 @@ import {
   Plus,
   Columns2,
   Square,
+  SquareDashed,
 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
@@ -39,6 +40,7 @@ import { cn } from '@/lib/utils'
 import {
   BUILTIN_SECTIONS,
   SECTIONS_WITH_FIELDS,
+  BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
   getBuiltinFieldsForSection,
   getBuiltinFieldName,
@@ -395,6 +397,40 @@ function WidthToggle({
 }
 
 // ---------------------------------------------------------------------------
+// Box toggle – whether the section prints inside a panel
+// ---------------------------------------------------------------------------
+
+function BoxToggle({
+  boxed,
+  onChange,
+  t,
+}: {
+  boxed: boolean | undefined
+  onChange: (boxed: boolean) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  // Unset reads as boxed: that is what every layout did before the choice.
+  const isBoxed = boxed !== false
+
+  return (
+    <button
+      type="button"
+      title={isBoxed ? t('layoutEditor.boxedHint') : t('layoutEditor.plainHint')}
+      onClick={() => onChange(!isBoxed)}
+      className={cn(
+        'flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium transition-colors',
+        isBoxed
+          ? 'border-primary/30 bg-primary/10 text-primary'
+          : 'border-transparent bg-muted text-muted-foreground hover:bg-muted/80'
+      )}
+    >
+      <SquareDashed className="h-3 w-3" />
+      <span>{isBoxed ? t('layoutEditor.boxed') : t('layoutEditor.plain')}</span>
+    </button>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // SectionCard – single section row in the list
 // ---------------------------------------------------------------------------
 
@@ -407,6 +443,7 @@ function SectionCard({
   onAddCustomField,
   onReorderFields,
   onSetColumn,
+  onSetBoxed,
   isExpanded,
   onToggleExpand,
   availableCustomFields,
@@ -420,6 +457,7 @@ function SectionCard({
   onAddCustomField: (sectionId: string, definitionId: string) => void
   onReorderFields: (sectionId: string, oldIndex: number, newIndex: number) => void
   onSetColumn: (sectionId: string, column: 'left' | 'right' | undefined) => void
+  onSetBoxed: (sectionId: string, boxed: boolean) => void
   isExpanded: boolean
   onToggleExpand: (sectionId: string) => void
   availableCustomFields: FieldDef[]
@@ -436,6 +474,7 @@ function SectionCard({
 
   const hasFields = SECTIONS_WITH_FIELDS.has(section.id)
   const isColumnEligible = COLUMN_ELIGIBLE_SECTIONS.has(section.id)
+  const isBoxEligible = BOXED_ELIGIBLE_SECTIONS.has(section.id)
 
   return (
     <div
@@ -476,6 +515,15 @@ function SectionCard({
 
         {/* Section name */}
         <span className="flex-1 text-sm font-medium">{getSectionName(section.id, t)}</span>
+
+        {/* Box toggle (only for sections that print in a panel) */}
+        {isBoxEligible && (
+          <BoxToggle
+            boxed={section.boxed}
+            onChange={(boxed) => onSetBoxed(section.id, boxed)}
+            t={t}
+          />
+        )}
 
         {/* Width toggle (only for column-eligible sections) */}
         {isColumnEligible && (
@@ -625,6 +673,14 @@ export function InvoiceLayoutEditor({
     [config, onChange]
   )
 
+  const handleSetBoxed = useCallback(
+    (sectionId: string, boxed: boolean) => {
+      const updatedSections = config.sections.map((s) => (s.id === sectionId ? { ...s, boxed } : s))
+      onChange({ sections: updatedSections })
+    },
+    [config, onChange]
+  )
+
   const handleSetColumn = useCallback(
     (sectionId: string, column: 'left' | 'right' | undefined) => {
       const updatedSections = config.sections.map((s) =>
@@ -681,6 +737,7 @@ export function InvoiceLayoutEditor({
               onAddCustomField={handleAddCustomField}
               onReorderFields={handleReorderFields}
               onSetColumn={handleSetColumn}
+              onSetBoxed={handleSetBoxed}
               isExpanded={expandedSections.has(section.id)}
               onToggleExpand={toggleExpand}
               availableCustomFields={availableCustomFields}

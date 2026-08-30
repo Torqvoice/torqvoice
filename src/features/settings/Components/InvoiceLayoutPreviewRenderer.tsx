@@ -183,7 +183,6 @@ const SAMPLE_WORKSHOP = {
   address: '123 Main Street, Springfield',
   phone: '(555) 123-4567',
   email: 'shop@example.com',
-  slogan: 'Independent service and repair, every make',
 }
 
 const DUMMY_INVOICE_SETTINGS = {
@@ -210,7 +209,10 @@ export function resolveWorkshop(workshop: InvoiceLayoutPreviewProps['workshop'])
     address: workshop?.address?.trim() || SAMPLE_WORKSHOP.address,
     phone: workshop?.phone?.trim() || SAMPLE_WORKSHOP.phone,
     email: workshop?.email?.trim() || SAMPLE_WORKSHOP.email,
-    slogan: workshop?.slogan?.trim() || SAMPLE_WORKSHOP.slogan,
+    // No stand-in for the slogan. A workshop always has a name and an address,
+    // so a placeholder there reads as "yours goes here"; an invented slogan
+    // reads as one the workshop never wrote.
+    slogan: workshop?.slogan?.trim() || undefined,
   }
 }
 

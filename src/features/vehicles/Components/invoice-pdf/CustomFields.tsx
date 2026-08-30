@@ -5,6 +5,8 @@ interface CustomFieldsProps {
   fields: Array<{ fieldId?: string; label: string; value: string; fieldType: string }>
   styles: Record<string, Style>
   labels?: Record<string, string>
+  /** False prints the section without its panel. */
+  boxed?: boolean
 }
 
 export function formatFieldValue(value: string, fieldType: string): string {
@@ -26,7 +28,7 @@ export function formatFieldValue(value: string, fieldType: string): string {
   return value
 }
 
-export function CustomFields({ fields, styles, labels }: CustomFieldsProps) {
+export function CustomFields({ fields, styles, labels, boxed }: CustomFieldsProps) {
   const visibleFields = fields.filter((f) => f.value !== '' && f.value != null)
 
   if (visibleFields.length === 0) {
@@ -36,7 +38,7 @@ export function CustomFields({ fields, styles, labels }: CustomFieldsProps) {
   const title = labels?.customFieldsTitle || 'Additional Information'
 
   return (
-    <View style={styles.infoBox}>
+    <View style={boxed === false ? { marginBottom: 4 } : styles.infoBox}>
       <Text style={styles.infoLabel}>{title}</Text>
       {visibleFields.map((field, index) => (
         <Text key={index} style={styles.infoTextSmall}>

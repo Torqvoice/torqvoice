@@ -15,6 +15,11 @@ export const invoiceSectionSchema = z.object({
   order: z.number().int(),
   /** When set, the section renders in a 2-column row alongside other column sections. */
   column: z.enum(['left', 'right']).optional(),
+  /**
+   * Whether the section prints inside a panel. Unset means boxed, which is what
+   * every layout did before the choice existed.
+   */
+  boxed: z.boolean().optional(),
   /** Controls which fields are shown within this section. */
   fields: z.array(invoiceFieldConfigSchema).optional(),
 })
@@ -149,6 +154,14 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'vehicle',
   'service',
   'bank_account',
+  'general',
+])
+
+/** Sections that print inside a panel and can have it taken away. */
+export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
+  'customer',
+  'vehicle',
+  'service',
   'general',
 ])
 
