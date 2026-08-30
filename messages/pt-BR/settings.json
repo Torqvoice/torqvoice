@@ -649,7 +649,9 @@
       "margin": "Margem",
       "accentColor": "Acento",
       "stripeColor": "Faixa",
-      "stripes": "Faixas"
+      "stripes": "Faixas",
+      "fontFamily": "Fonte",
+      "fontInherit": "Herdar"
     }
   },
   "templates": {

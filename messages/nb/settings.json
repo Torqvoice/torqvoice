@@ -649,7 +649,9 @@
       "margin": "Marg",
       "accentColor": "Aksent",
       "stripeColor": "Stripe",
-      "stripes": "Striper"
+      "stripes": "Striper",
+      "fontFamily": "Skrift",
+      "fontInherit": "Arv"
     }
   },
   "templates": {

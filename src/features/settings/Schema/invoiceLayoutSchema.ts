@@ -29,6 +29,8 @@ export const invoiceSectionStyleSchema = z.object({
   borderColor: z.string().optional(),
   /** Body text size in points. Headings scale with it. */
   fontSize: z.number().min(5).max(24).optional(),
+  /** Typeface for this section, from the families the app embeds. */
+  fontFamily: z.string().optional(),
 })
 
 export const invoiceSectionSchema = z.object({
@@ -68,6 +70,8 @@ export const invoiceDocumentStyleSchema = z.object({
   stripeColor: z.string().optional(),
   /** Section headings and the rule above the total. Defaults to the primary. */
   accentColor: z.string().optional(),
+  /** Typeface for the whole sheet, from the families the app embeds. */
+  fontFamily: z.string().optional(),
 })
 
 export const invoiceLayoutConfigSchema = z.object({

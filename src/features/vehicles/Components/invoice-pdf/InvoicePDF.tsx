@@ -232,7 +232,7 @@ export function InvoicePDF({
         <Header
           headerStyle={headerStyle}
           primaryColor={primaryColor}
-          fontFamily={fontFamily}
+          fontFamily={getSectionStyle(layoutConfig, 'header')?.fontFamily || fontFamily}
           showLogo={showLogo}
           showCompanyName={showCompanyName}
           visibleFields={visibleHeaderFields}

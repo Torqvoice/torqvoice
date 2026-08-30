@@ -124,3 +124,29 @@ describe('layout config carries its styling', () => {
     expect(getSectionStyle(config, 'customer')).toBeUndefined()
   })
 })
+
+describe('typefaces', () => {
+  it('gives each name its own family, rather than one font wearing three labels', async () => {
+    const { getFontRegular, getFontBold } = await import(
+      '@/features/vehicles/Components/invoice-pdf/styles'
+    )
+    const families = ['Helvetica', 'Times-Roman', 'Courier'].map(getFontRegular)
+    expect(new Set(families).size).toBe(3)
+    expect(getFontBold('Times-Roman')).toBe(`${getFontRegular('Times-Roman')}-Bold`)
+    // An unknown name still has to render, so it falls back rather than throwing.
+    expect(getFontRegular('Something Else')).toBe('Roboto')
+  })
+
+  it('sets a section in its own typeface without touching the sheet', () => {
+    const styled = withSectionStyle(base(), { fontFamily: 'Times-Roman' })
+    expect(read(styled, 'infoText', 'fontFamily')).toBe('Noto Serif')
+    expect(read(styled, 'sectionTitle', 'fontFamily')).toBe('Noto Serif-Bold')
+    expect(read(styled, 'page', 'fontFamily')).toBe(read(base(), 'page', 'fontFamily'))
+  })
+
+  it('sets the whole sheet, page included', () => {
+    const styled = withDocumentStyle(base(), { fontFamily: 'Courier' })
+    expect(read(styled, 'page', 'fontFamily')).toBe('Noto Sans Mono')
+    expect(read(styled, 'tableCell', 'fontFamily')).toBe('Noto Sans Mono')
+  })
+})

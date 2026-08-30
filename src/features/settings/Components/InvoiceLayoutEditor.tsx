@@ -436,6 +436,34 @@ function StyleColor({
   )
 }
 
+function StyleFont({
+  label,
+  value,
+  onChange,
+  t,
+}: {
+  label: string
+  value?: string
+  onChange: (value: string | undefined) => void
+  t: ReturnType<typeof useTranslations>
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="w-20 shrink-0 truncate text-[11px] text-muted-foreground">{label}</span>
+      <select
+        value={value ?? ''}
+        onChange={(e) => onChange(e.target.value || undefined)}
+        className="h-6 rounded border bg-background px-1 text-[11px]"
+      >
+        <option value="">{t('layoutEditor.style.fontInherit')}</option>
+        <option value="Helvetica">{t('templates.helveticaDefault')}</option>
+        <option value="Times-Roman">{t('templates.timesRoman')}</option>
+        <option value="Courier">{t('templates.courier')}</option>
+      </select>
+    </div>
+  )
+}
+
 function StyleNumber({
   label,
   value,
@@ -517,6 +545,12 @@ function SectionStylePanel({
         max={24}
         onChange={(fontSize) => set({ fontSize })}
       />
+      <StyleFont
+        label={t('layoutEditor.style.fontFamily')}
+        value={style?.fontFamily}
+        onChange={(fontFamily) => set({ fontFamily })}
+        t={t}
+      />
     </div>
   )
 }
@@ -560,6 +594,12 @@ function DocumentStylePanel({
             min={6}
             max={14}
             onChange={(fontSize) => set({ fontSize })}
+          />
+          <StyleFont
+            label={t('layoutEditor.style.fontFamily')}
+            value={document?.fontFamily}
+            onChange={(fontFamily) => set({ fontFamily })}
+            t={t}
           />
           <StyleNumber
             label={t('layoutEditor.style.rowPadding')}

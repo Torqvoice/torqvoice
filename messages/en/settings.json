@@ -649,7 +649,9 @@
       "margin": "Margin",
       "accentColor": "Accent",
       "stripeColor": "Band",
-      "stripes": "Banding"
+      "stripes": "Banding",
+      "fontFamily": "Font",
+      "fontInherit": "Inherit"
     }
   },
   "templates": {

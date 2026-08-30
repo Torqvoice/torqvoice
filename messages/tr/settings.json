@@ -649,7 +649,9 @@
       "margin": "Kenar boşluğu",
       "accentColor": "Vurgu",
       "stripeColor": "Şerit",
-      "stripes": "Şeritler"
+      "stripes": "Şeritler",
+      "fontFamily": "Yazı tipi",
+      "fontInherit": "Devral"
     }
   },
   "templates": {

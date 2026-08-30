@@ -649,7 +649,9 @@
       "margin": "Rand",
       "accentColor": "Akzent",
       "stripeColor": "Streifen",
-      "stripes": "Streifen an"
+      "stripes": "Streifen an",
+      "fontFamily": "Schrift",
+      "fontInherit": "Erben"
     }
   },
   "templates": {

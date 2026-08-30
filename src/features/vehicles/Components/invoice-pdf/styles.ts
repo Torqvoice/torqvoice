@@ -39,20 +39,41 @@ export function darkenColor(hex: string, factor: number = 0.3) {
   return `rgb(${Math.round(r * (1 - factor))}, ${Math.round(g * (1 - factor))}, ${Math.round(b * (1 - factor))})`
 }
 
-// Map any built-in PDF font to the registered Roboto font so that
-// Cyrillic (and other non-Latin scripts) render correctly.
-// Users still see "Helvetica" / "Times-Roman" etc. in settings,
-// but the PDF always uses the Unicode-capable Roboto under the hood.
+/**
+ * The stored font name mapped onto a family that is actually embedded.
+ *
+ * The names on the left are what settings has always saved, kept so nothing has
+ * to migrate. Every family on the right covers Latin, Greek and Cyrillic; the
+ * built-in PDF fonts those names refer to are Latin-1 only and would drop
+ * Cyrillic entirely, which is why they are not used directly.
+ */
+const FONT_FAMILIES: Record<string, string> = {
+  Helvetica: 'Roboto',
+  Roboto: 'Roboto',
+  'Times-Roman': 'Noto Serif',
+  'Noto Serif': 'Noto Serif',
+  Courier: 'Noto Sans Mono',
+  'Noto Sans Mono': 'Noto Sans Mono',
+}
+
+/** The families a document can be set in. */
+export const AVAILABLE_FONTS = ['Helvetica', 'Times-Roman', 'Courier'] as const
+
 function resolveFont(font: string): string {
-  return 'Roboto'
+  return FONT_FAMILIES[font] || 'Roboto'
 }
 
 function resolveFontBold(font: string): string {
-  return 'Roboto-Bold'
+  return `${resolveFont(font)}-Bold`
 }
 
-export function getFontBold(_font: string) {
-  return resolveFontBold(_font)
+export function getFontBold(font: string) {
+  return resolveFontBold(font)
+}
+
+/** The regular face of a font name, for components that style text inline. */
+export function getFontRegular(font: string) {
+  return resolveFont(font)
 }
 
 /**
@@ -90,7 +111,28 @@ export interface SectionStyle {
   backgroundColor?: string
   borderColor?: string
   fontSize?: number
+  fontFamily?: string
 }
+
+/** Text entries that carry the regular face, and those that carry the bold. */
+const REGULAR_ENTRIES = [
+  'infoText',
+  'infoTextSmall',
+  'tableCell',
+  'notesText',
+  'totalLabel',
+  'totalValue',
+]
+const BOLD_ENTRIES = [
+  'infoTextBold',
+  'infoLabel',
+  'sectionTitle',
+  'tableCellBold',
+  'tableHeaderCell',
+  'notesLabel',
+  'grandTotalLabel',
+  'grandTotalValue',
+]
 
 /**
  * The document's stylesheet with one section's overrides folded in.
@@ -149,6 +191,11 @@ export function withSectionStyle(
     set('tableRow', { borderBottomColor: style.borderColor })
   }
 
+  if (style.fontFamily) {
+    for (const key of REGULAR_ENTRIES) set(key, { fontFamily: resolveFont(style.fontFamily) })
+    for (const key of BOLD_ENTRIES) set(key, { fontFamily: resolveFontBold(style.fontFamily) })
+  }
+
   if (style.fontSize) {
     const size = style.fontSize
     const step = (delta: number) => Math.max(5, size + delta)
@@ -175,6 +222,7 @@ export interface DocumentStyle {
   stripes?: boolean
   stripeColor?: string
   accentColor?: string
+  fontFamily?: string
 }
 
 /**
@@ -203,6 +251,12 @@ export function withDocumentStyle(
         : { padding: doc.margin }
     )
     set('footer', framed ? { right: doc.margin } : { left: doc.margin, right: doc.margin })
+  }
+
+  if (doc.fontFamily) {
+    set('page', { fontFamily: resolveFont(doc.fontFamily) })
+    for (const key of REGULAR_ENTRIES) set(key, { fontFamily: resolveFont(doc.fontFamily) })
+    for (const key of BOLD_ENTRIES) set(key, { fontFamily: resolveFontBold(doc.fontFamily) })
   }
 
   if (doc.fontSize) {

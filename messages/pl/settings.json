@@ -649,7 +649,9 @@
       "margin": "Margines",
       "accentColor": "Akcent",
       "stripeColor": "Pas",
-      "stripes": "Pasy"
+      "stripes": "Pasy",
+      "fontFamily": "Czcionka",
+      "fontInherit": "Dziedzicz"
     }
   },
   "templates": {

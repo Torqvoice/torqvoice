@@ -649,7 +649,9 @@
       "margin": "Paraštė",
       "accentColor": "Akcentas",
       "stripeColor": "Juosta",
-      "stripes": "Juostos"
+      "stripes": "Juostos",
+      "fontFamily": "Šriftas",
+      "fontInherit": "Paveldėti"
     }
   },
   "templates": {

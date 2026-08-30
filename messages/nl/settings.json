@@ -649,7 +649,9 @@
       "margin": "Marge",
       "accentColor": "Accent",
       "stripeColor": "Baan",
-      "stripes": "Banen"
+      "stripes": "Banen",
+      "fontFamily": "Lettertype",
+      "fontInherit": "Overnemen"
     }
   },
   "templates": {

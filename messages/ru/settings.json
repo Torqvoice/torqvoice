@@ -649,7 +649,9 @@
       "margin": "Поля",
       "accentColor": "Акцент",
       "stripeColor": "Полоса",
-      "stripes": "Полосы"
+      "stripes": "Полосы",
+      "fontFamily": "Шрифт",
+      "fontInherit": "Наследовать"
     }
   },
   "templates": {
