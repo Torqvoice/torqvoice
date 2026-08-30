@@ -213,6 +213,20 @@ export function InvoiceDesigner({
     [layout, setLayout]
   )
 
+  /** Back into the flow, in the column asked for. */
+  const placeInFlow = useCallback(
+    (id: string, column: 'left' | 'right' | undefined) => {
+      const anchors = { ...(layout.anchors ?? {}) }
+      delete anchors[id]
+      setLayout({
+        ...layout,
+        anchors: Object.keys(anchors).length ? anchors : undefined,
+        sections: layout.sections.map((s) => (s.id === id ? { ...s, column } : s)),
+      })
+    },
+    [layout, setLayout]
+  )
+
   const patchSectionStyle = useCallback(
     (id: string, style: InvoiceSectionStyle | undefined) => patchSection(id, { style }),
     [patchSection]
@@ -504,6 +518,7 @@ export function InvoiceDesigner({
           selected={selected}
           onSelect={setSelected}
           onSection={patchSection}
+          onPlaceInFlow={placeInFlow}
           onSectionStyle={patchSectionStyle}
           onDocument={patchDocument}
           onTemplate={setTemplate}

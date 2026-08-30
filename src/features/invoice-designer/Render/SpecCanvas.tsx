@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
-import type { Anchor, Block, DocumentSpec } from '../Spec/documentSpec'
+import { groupFlowBlocks, type Anchor, type Block, type DocumentSpec } from '../Spec/documentSpec'
 import { RenderNode } from './renderHtml'
 import { fontStack } from '../Components/types'
 
@@ -28,9 +28,13 @@ export interface Guide {
 interface Drag {
   id: string
   page: number
+  /** Moving the block, or pulling one of its edges. */
+  mode: 'move' | 'resize-left' | 'resize-right'
   /** Where in the block the pointer took hold, so it does not jump. */
   grabX: number
   grabY: number
+  x: number
+  y: number
   width: number
   height: number
 }
@@ -98,7 +102,9 @@ export function SpecCanvas({
   const [drag, setDrag] = useState<Drag | null>(null)
   const [guides, setGuides] = useState<Guide[]>([])
 
-  const flow = spec.blocks.filter((b) => b.placement.mode === 'flow')
+  // Rows, not blocks: two half-width sections share one row, and a row is the
+  // unit a page break can fall between.
+  const rows = groupFlowBlocks(spec.blocks)
   const anchored = spec.blocks.filter((b) => b.placement.mode === 'anchored')
   const pinned = spec.blocks.filter((b) => b.placement.mode === 'pinned')
 
@@ -146,7 +152,7 @@ export function SpecCanvas({
     let page: number[] = []
     let used = 0
     let budget = spec.page.height - spec.page.margin.top - spec.page.margin.bottom
-    flow.forEach((_, i) => {
+    rows.forEach((_, i) => {
       const height = (heights[i] ?? 0) + (page.length ? BLOCK_GAP : 0)
       if (page.length && used + height > budget) {
         pages.push(page)
@@ -165,7 +171,7 @@ export function SpecCanvas({
   const pageCount = Math.max(pages.length, ...anchoredPages, 1)
 
   const startDrag = useCallback(
-    (event: React.PointerEvent, id: string, page: number) => {
+    (event: React.PointerEvent, id: string, page: number, mode: Drag['mode'] = 'move') => {
       const rect = rectsRef.current.get(id)
       if (!rect) return
       const sheet = (event.currentTarget as HTMLElement).closest('[data-sheet]')
@@ -177,8 +183,11 @@ export function SpecCanvas({
       setDrag({
         id,
         page,
+        mode,
         grabX: (event.clientX - base.x) / zoom - rect.x,
         grabY: (event.clientY - base.y) / zoom - rect.y,
+        x: rect.x,
+        y: rect.y,
         width: rect.width,
         height: rect.height,
       })
@@ -192,29 +201,67 @@ export function SpecCanvas({
       const sheet = document.querySelector(`[data-sheet="${drag.page}"]`)
       if (!sheet) return
       const base = sheet.getBoundingClientRect()
-      let x = (event.clientX - base.x) / zoom - drag.grabX
-      let y = (event.clientY - base.y) / zoom - drag.grabY
-
+      const pointerX = (event.clientX - base.x) / zoom
+      const pointerY = (event.clientY - base.y) / zoom
       const { xs, ys } = guidesFor(rectsRef.current, spec.page, drag.id)
       const shown: Guide[] = []
-      const snapX = snapTo(x, drag.width, xs)
-      if (snapX) {
-        x += snapX.delta
-        shown.push({ axis: 'x', at: snapX.at, page: drag.page })
-      }
-      const snapY = snapTo(y, drag.height, ys)
-      if (snapY) {
-        y += snapY.delta
-        shown.push({ axis: 'y', at: snapY.at, page: drag.page })
+
+      if (drag.mode === 'move') {
+        let x = pointerX - drag.grabX
+        let y = pointerY - drag.grabY
+        const snapX = snapTo(x, drag.width, xs)
+        if (snapX) {
+          x += snapX.delta
+          shown.push({ axis: 'x', at: snapX.at, page: drag.page })
+        }
+        const snapY = snapTo(y, drag.height, ys)
+        if (snapY) {
+          y += snapY.delta
+          shown.push({ axis: 'y', at: snapY.at, page: drag.page })
+        }
+        setGuides(shown)
+        onAnchor(drag.id, {
+          x: Math.round(x),
+          y: Math.round(y),
+          width: Math.round(drag.width),
+          page: drag.page,
+        })
+        return
       }
 
+      // Pulling an edge: the opposite edge stays put, and the edge under the
+      // pointer takes the nearest guide, so two boxes line up exactly.
+      const right = drag.x + drag.width
+      let edge = pointerX
+      const nearest = xs.reduce<{ at: number; delta: number } | null>((best, candidate) => {
+        const delta = candidate - edge
+        return Math.abs(delta) <= SNAP && (!best || Math.abs(delta) < Math.abs(best.delta))
+          ? { at: candidate, delta }
+          : best
+      }, null)
+      if (nearest) {
+        edge += nearest.delta
+        shown.push({ axis: 'x', at: nearest.at, page: drag.page })
+      }
       setGuides(shown)
-      onAnchor(drag.id, {
-        x: Math.round(x),
-        y: Math.round(y),
-        width: Math.round(drag.width),
-        page: drag.page,
-      })
+
+      const MIN = 40
+      if (drag.mode === 'resize-right') {
+        onAnchor(drag.id, {
+          x: Math.round(drag.x),
+          y: Math.round(drag.y),
+          width: Math.round(Math.max(MIN, edge - drag.x)),
+          page: drag.page,
+        })
+      } else {
+        const x = Math.min(edge, right - MIN)
+        onAnchor(drag.id, {
+          x: Math.round(x),
+          y: Math.round(drag.y),
+          width: Math.round(right - x),
+          page: drag.page,
+        })
+      }
     },
     [drag, spec.page, zoom, onAnchor]
   )
@@ -325,7 +372,12 @@ export function SpecCanvas({
     )
   }
 
-  const blockShell = (block: Block, page: number, style: React.CSSProperties) => (
+  const blockShell = (
+    block: Block,
+    page: number,
+    style: React.CSSProperties,
+    resizable = false
+  ) => (
     <div
       key={block.id}
       data-node-id={block.id}
@@ -363,6 +415,31 @@ export function SpecCanvas({
         </div>
       )}
       <RenderNode node={block.content} />
+
+      {/* Handles on the edges of anything that has been placed by hand. Width
+          is the only dimension worth pulling: a block is as tall as what is in
+          it, here and on paper. */}
+      {resizable &&
+        selected === block.id &&
+        (['resize-left', 'resize-right'] as const).map((mode) => (
+          <div
+            key={mode}
+            onPointerDown={(e) => startDrag(e, block.id, page, mode)}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              [mode === 'resize-left' ? 'left' : 'right']: -4,
+              marginTop: -5,
+              width: 9,
+              height: 11,
+              borderRadius: 2,
+              background: '#fff',
+              border: '1.5px solid #2563eb',
+              cursor: 'ew-resize',
+              zIndex: 7,
+            }}
+          />
+        ))}
     </div>
   )
 
@@ -412,7 +489,39 @@ export function SpecCanvas({
               gap: BLOCK_GAP,
             }}
           >
-            {indices.map((i) => blockShell(flow[i], pageNumber, {}))}
+            {indices.map((i) => {
+              const row = rows[i]
+              if (row.type === 'single') return blockShell(row.block, pageNumber, {})
+              return (
+                <div
+                  key={`row-${row.left[0]?.id ?? row.right[0]?.id}`}
+                  style={{ display: 'flex', gap: BLOCK_GAP, alignItems: 'flex-start' }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: BLOCK_GAP,
+                    }}
+                  >
+                    {row.left.map((block) => blockShell(block, pageNumber, {}))}
+                  </div>
+                  <div
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: BLOCK_GAP,
+                    }}
+                  >
+                    {row.right.map((block) => blockShell(block, pageNumber, {}))}
+                  </div>
+                </div>
+              )
+            })}
           </div>
 
           {anchored
@@ -423,12 +532,17 @@ export function SpecCanvas({
             )
             .map((b) => {
               const anchor = (b.placement as { anchor: Anchor }).anchor
-              return blockShell(b, pageNumber, {
-                position: 'absolute',
-                left: anchor.x,
-                top: anchor.y,
-                width: anchor.width,
-              })
+              return blockShell(
+                b,
+                pageNumber,
+                {
+                  position: 'absolute',
+                  left: anchor.x,
+                  top: anchor.y,
+                  width: anchor.width,
+                },
+                true
+              )
             })}
 
           {pinned.map((b) =>
@@ -487,11 +601,45 @@ export function SpecCanvas({
           gap: BLOCK_GAP,
         }}
       >
-        {flow.map((block) => (
-          <div key={block.id}>
-            <RenderNode node={block.content} />
-          </div>
-        ))}
+        {rows.map((row) =>
+          row.type === 'single' ? (
+            <div key={row.block.id}>
+              <RenderNode node={row.block.content} />
+            </div>
+          ) : (
+            <div
+              key={`row-${row.left[0]?.id ?? row.right[0]?.id}`}
+              style={{ display: 'flex', gap: BLOCK_GAP, alignItems: 'flex-start' }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: BLOCK_GAP,
+                }}
+              >
+                {row.left.map((block) => (
+                  <RenderNode key={block.id} node={block.content} />
+                ))}
+              </div>
+              <div
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: BLOCK_GAP,
+                }}
+              >
+                {row.right.map((block) => (
+                  <RenderNode key={block.id} node={block.content} />
+                ))}
+              </div>
+            </div>
+          )
+        )}
       </div>
 
       <div style={{ width: spec.page.width * zoom }}>

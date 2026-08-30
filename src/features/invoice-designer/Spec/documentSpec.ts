@@ -141,6 +141,51 @@ export interface DocumentSpec {
   blocks: Block[]
 }
 
+/**
+ * A row of the flow: one block across the width, or the pair that share it.
+ *
+ * The pairing rule lives here so both renderers group identically. It is also
+ * the unit a page break can fall between, because a two-column row is laid out
+ * as one thing.
+ */
+export type FlowRow =
+  | { type: 'single'; block: Block }
+  | { type: 'pair'; left: Block[]; right: Block[] }
+
+export function groupFlowBlocks(blocks: Block[]): FlowRow[] {
+  const flow = blocks
+    .filter((b) => b.placement.mode === 'flow')
+    .sort((a, b) =>
+      a.placement.mode === 'flow' && b.placement.mode === 'flow'
+        ? a.placement.order - b.placement.order
+        : 0
+    )
+
+  const rows: FlowRow[] = []
+  let left: Block[] = []
+  let right: Block[] = []
+
+  const flush = () => {
+    if (left.length || right.length) {
+      rows.push({ type: 'pair', left, right })
+      left = []
+      right = []
+    }
+  }
+
+  for (const block of flow) {
+    const column = block.placement.mode === 'flow' ? block.placement.column : undefined
+    if (column === 'left') left.push(block)
+    else if (column === 'right') right.push(block)
+    else {
+      flush()
+      rows.push({ type: 'single', block })
+    }
+  }
+  flush()
+  return rows
+}
+
 /** Walk every node in a block, so callers need no knowledge of the shapes. */
 export function walk(node: Node, visit: (node: Node) => void): void {
   visit(node)

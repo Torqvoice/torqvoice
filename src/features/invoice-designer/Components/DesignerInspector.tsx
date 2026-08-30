@@ -191,6 +191,7 @@ export function DesignerInspector({
   selected,
   onSelect,
   onSection,
+  onPlaceInFlow,
   onSectionStyle,
   onDocument,
   onTemplate,
@@ -201,6 +202,8 @@ export function DesignerInspector({
   selected: string | null
   onSelect: (id: string | null) => void
   onSection: (id: string, patch: Partial<InvoiceSection>) => void
+  /** Puts a block in the flow, in a column, discarding any hand placement. */
+  onPlaceInFlow: (id: string, column: 'left' | 'right' | undefined) => void
   onSectionStyle: (id: string, style: InvoiceSectionStyle | undefined) => void
   onDocument: (patch: InvoiceDocumentStyle) => void
   onTemplate: (patch: Partial<DesignerTemplate>) => void
@@ -261,9 +264,9 @@ export function DesignerInspector({
                   { value: 'right', label: 'Right' },
                 ]}
                 onChange={(v) =>
-                  onSection(section.id, {
-                    column: v === 'full' ? undefined : (v as 'left' | 'right'),
-                  })
+                  // Choosing a column is choosing to be in the flow, so a block
+                  // that had been dragged somewhere comes back to take it.
+                  onPlaceInFlow(section.id, v === 'full' ? undefined : (v as 'left' | 'right'))
                 }
               />
             )}
