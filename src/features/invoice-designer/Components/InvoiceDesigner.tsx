@@ -34,10 +34,9 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
-import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
-import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/buildSpec'
+import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
