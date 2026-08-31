@@ -1772,7 +1772,7 @@
       "totalsHint": "Klassiek drukt kale regels af met een lijn boven het totaal. Kader zet er een kader omheen. Paneel en Accent zetten ze op een kaart."
     },
     "totalsWidth": "Breedte",
-    "totalsWidthHint": "Breedte in punten wanneer het blok rechts staat. In een kolom neemt het de breedte van de kolom.",
+    "totalsWidthHint": "Leeg vult de hele rij. Met een waarde in punten hangt het blok rechts; in een kolom neemt het de breedte van de kolom.",
     "placement": "Plaatsing",
     "visible": "Zichtbaar",
     "columnFull": "Vol",

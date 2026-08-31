@@ -430,7 +430,7 @@ export function DesignerInspector({
           {section.id === 'totals' && (
             <Group title={t('panelStyle')}>
               <Choice
-                value={section.variant ?? 'box'}
+                value={section.variant ?? 'classic'}
                 options={[
                   { value: 'classic', label: t('variant.classic') },
                   { value: 'box', label: t('variant.box') },
@@ -446,7 +446,7 @@ export function DesignerInspector({
                   min={140}
                   max={515}
                   value={style.width ?? ''}
-                  placeholder="250"
+                  placeholder={t('auto')}
                   onChange={(e) =>
                     setStyle({ width: e.target.value ? Number(e.target.value) : undefined })
                   }

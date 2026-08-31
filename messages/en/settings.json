@@ -1772,7 +1772,7 @@
       "totalsHint": "Classic prints bare lines with a rule above the total. Boxed frames them. Panel and Accent set them on a card."
     },
     "totalsWidth": "Width",
-    "totalsWidthHint": "Points across, when the block keeps to the right. In a column it takes the column's width.",
+    "totalsWidthHint": "Empty spans the row. Set points to hang the box on the right; in a column it takes the column's width.",
     "placement": "Placement",
     "visible": "Visible",
     "columnFull": "Full",

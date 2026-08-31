@@ -971,10 +971,9 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   if (!data.totals.length) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
-  // The looks the block can be set to. Unset keeps what each sheet has always
-  // printed: the bare lines the retired renderer drew on a classic sheet, the
-  // box everywhere else.
-  const variant = section.variant || (theme.classic ? 'classic' : 'box')
+  // The looks the block can be set to. Unset means the classic bare lines,
+  // which is what every sheet printed before the box existed.
+  const variant = section.variant || 'classic'
   const bare = variant === 'classic'
 
   // The settled state as a stamp rather than a line with nothing in its value
@@ -1102,15 +1101,18 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     style: boxStyle,
     children: rows,
   }
-  // Full width, the box keeps to the right the way a sum column reads; in a
-  // half-width lane it takes the lane.
+  // Placed Full, the block spans the row the way every other section does; a
+  // set width hangs the box on the right the way a sum column reads. In a
+  // half-width lane it takes the lane. Classic sheets keep the hung box their
+  // organizations have always mailed out.
+  const width = section.style?.width ?? (theme.classic ? 250 : undefined)
   const children: Node[] = [
-    section.column
+    section.column || !width
       ? box
       : {
           kind: 'row',
           justify: 'end',
-          children: [{ width: section.style?.width ?? 250, node: box }],
+          children: [{ width, node: box }],
         },
   ]
 

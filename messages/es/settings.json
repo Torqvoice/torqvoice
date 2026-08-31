@@ -1772,7 +1772,7 @@
       "totalsHint": "Clásico imprime líneas sueltas con una regla sobre el total. Recuadro las enmarca. Panel y Acento las colocan en una tarjeta."
     },
     "totalsWidth": "Ancho",
-    "totalsWidthHint": "Puntos de ancho cuando el bloque se alinea a la derecha. En una columna toma el ancho de la columna.",
+    "totalsWidthHint": "Vacío ocupa toda la fila. Con un valor en puntos, el bloque cuelga a la derecha; en una columna toma el ancho de la columna.",
     "placement": "Colocación",
     "visible": "Visible",
     "columnFull": "Completa",

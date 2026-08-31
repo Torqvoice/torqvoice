@@ -1772,7 +1772,7 @@
       "totalsHint": "Klassisch druckt reine Zeilen mit einer Linie über der Summe. Kasten rahmt sie ein. Panel und Akzent setzen sie auf eine Karte."
     },
     "totalsWidth": "Breite",
-    "totalsWidthHint": "Breite in Punkt, wenn der Block rechts steht. In einer Spalte nimmt er deren Breite.",
+    "totalsWidthHint": "Leer füllt die Zeile. Ein Wert in Punkt hängt den Kasten rechts an; in einer Spalte nimmt er deren Breite.",
     "placement": "Platzierung",
     "visible": "Sichtbar",
     "columnFull": "Voll",

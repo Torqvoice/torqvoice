@@ -1772,7 +1772,7 @@
       "totalsHint": "Clássico imprime linhas simples com um traço acima do total. Moldura as emoldura. Painel e Destaque as colocam em um cartão."
     },
     "totalsWidth": "Largura",
-    "totalsWidthHint": "Largura em pontos quando o bloco fica à direita. Em uma coluna, ele usa a largura da coluna.",
+    "totalsWidthHint": "Vazio ocupa a linha inteira. Um valor em pontos pendura o bloco à direita; em uma coluna, ele usa a largura da coluna.",
     "placement": "Posicionamento",
     "visible": "Visível",
     "columnFull": "Inteira",

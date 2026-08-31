@@ -1772,7 +1772,7 @@
       "totalsHint": "Klasyczny drukuje same wiersze z linią nad sumą. Ramka je obramowuje. Panel i Akcent umieszczają je na karcie."
     },
     "totalsWidth": "Szerokość",
-    "totalsWidthHint": "Szerokość w punktach, gdy blok trzyma się prawej strony. W kolumnie przyjmuje szerokość kolumny.",
+    "totalsWidthHint": "Puste wypełnia cały wiersz. Wartość w punktach zawiesza blok po prawej; w kolumnie przyjmuje szerokość kolumny.",
     "placement": "Rozmieszczenie",
     "visible": "Widoczna",
     "columnFull": "Pełna",

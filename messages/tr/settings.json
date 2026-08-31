@@ -1772,7 +1772,7 @@
       "totalsHint": "Klasik, toplamın üzerinde bir çizgiyle sade satırlar yazdırır. Kutulu onları çerçeveler. Panel ve Vurgu onları bir karta yerleştirir."
     },
     "totalsWidth": "Genişlik",
-    "totalsWidthHint": "Blok sağda durduğunda punto cinsinden genişlik. Bir sütunda sütunun genişliğini alır.",
+    "totalsWidthHint": "Boş bırakılırsa satırın tamamını kaplar. Punto değeri girilirse blok sağa asılır; bir sütunda sütunun genişliğini alır.",
     "placement": "Yerleşim",
     "visible": "Görünür",
     "columnFull": "Tam",

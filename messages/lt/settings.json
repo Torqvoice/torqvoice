@@ -1772,7 +1772,7 @@
       "totalsHint": "Klasikinis spausdina paprastas eilutes su linija virš sumos. Rėmelis jas įrėmina. Skydelis ir Akcentas deda jas ant kortelės."
     },
     "totalsWidth": "Plotis",
-    "totalsWidthHint": "Plotis taškais, kai blokas laikosi dešinėje. Stulpelyje jis užima stulpelio plotį.",
+    "totalsWidthHint": "Tuščias užima visą eilutę. Nurodžius taškus, blokas kabinamas dešinėje; stulpelyje jis užima stulpelio plotį.",
     "placement": "Išdėstymas",
     "visible": "Matoma",
     "columnFull": "Visas plotis",

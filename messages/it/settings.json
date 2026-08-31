@@ -1772,7 +1772,7 @@
       "totalsHint": "Classico stampa righe semplici con un filetto sopra il totale. Riquadro le incornicia. Pannello e Accento le mettono su una scheda."
     },
     "totalsWidth": "Larghezza",
-    "totalsWidthHint": "Larghezza in punti quando il blocco resta a destra. In una colonna prende la larghezza della colonna.",
+    "totalsWidthHint": "Vuoto occupa tutta la riga. Un valore in punti appende il blocco a destra; in una colonna prende la larghezza della colonna.",
     "placement": "Posizione",
     "visible": "Visibile",
     "columnFull": "Intera",
