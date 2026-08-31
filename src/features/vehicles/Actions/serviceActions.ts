@@ -1106,12 +1106,16 @@ export async function deleteServiceAttachment(attachmentId: string) {
       })
       if (!attachment) throw new Error('Attachment not found')
 
-      // Delete file from disk
-      const filePath = resolveUploadPath(attachment.fileUrl)
-      try {
-        await unlink(filePath)
-      } catch (err) {
-        console.warn(`[deleteServiceAttachment] Failed to delete file "${filePath}":`, err)
+      // Delete file from disk. Not for tire hotel copies: those rows point at
+      // the tire set's own uploads, so only the reference goes and the set
+      // keeps its file.
+      if (attachment.category !== 'tire_hotel') {
+        const filePath = resolveUploadPath(attachment.fileUrl)
+        try {
+          await unlink(filePath)
+        } catch (err) {
+          console.warn(`[deleteServiceAttachment] Failed to delete file "${filePath}":`, err)
+        }
       }
 
       await db.serviceAttachment.delete({ where: { id: attachmentId } })

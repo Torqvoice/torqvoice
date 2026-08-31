@@ -96,6 +96,9 @@ export async function addTireSetAttachments(input: unknown) {
           fileType: file.fileType,
           fileSize: file.fileSize,
           description: file.description || null,
+          // Photos are taken to be shown and default onto the invoice;
+          // documents are the set's own paperwork and never travel to a job.
+          includeInInvoice: file.fileType.startsWith('image/'),
           sortOrder: start + index,
           tireSetId: set.id,
           organizationId,

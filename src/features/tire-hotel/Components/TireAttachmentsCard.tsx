@@ -224,14 +224,22 @@ export function TireAttachmentsCard({
                     disabled={busyId === file.id}
                   />
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
-                      <Checkbox
-                        checked={file.includeInInvoice}
-                        onCheckedChange={(value) => toggleInvoice(file.id, value === true)}
-                        disabled={busyId === file.id}
-                      />
-                      {t('files.onInvoice')}
-                    </label>
+                    {isImage ? (
+                      <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
+                        <Checkbox
+                          checked={file.includeInInvoice}
+                          onCheckedChange={(value) => toggleInvoice(file.id, value === true)}
+                          disabled={busyId === file.id}
+                        />
+                        {t('files.onInvoice')}
+                      </label>
+                    ) : (
+                      // Only photos travel onto a job when the set is billed,
+                      // so a document must not offer a choice it cannot keep.
+                      <span className="text-xs text-muted-foreground">
+                        {t('files.documentStays')}
+                      </span>
+                    )}
                     <span className="text-xs text-muted-foreground">
                       {formatDate(new Date(file.createdAt))}
                       {file.uploadedBy ? ` · ${file.uploadedBy.name}` : ''}

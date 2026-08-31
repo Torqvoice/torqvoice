@@ -224,14 +224,26 @@ export async function ServiceRecordPage({
     (record.attachments as ((typeof record.attachments)[number] & {
       includeInInvoice: boolean
     })[]) || []
+  // Files copied over from a linked tire set (category tire_hotel) are shown
+  // in the same tabs by file type. They end up on the invoice like any other
+  // attachment, and an attachment that changes the invoice must never be
+  // invisible on the page.
   const imageAttachmentsForManager = allAttachments
-    .filter((a) => a.category === 'image')
+    .filter(
+      (a) =>
+        a.category === 'image' || (a.category === 'tire_hotel' && a.fileType.startsWith('image/'))
+    )
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
   const videoAttachments = allAttachments
     .filter((a) => a.category === 'video')
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
   const documentAttachments = allAttachments
-    .filter((a) => a.category === 'document' || a.category === 'diagnostic')
+    .filter(
+      (a) =>
+        a.category === 'document' ||
+        a.category === 'diagnostic' ||
+        (a.category === 'tire_hotel' && !a.fileType.startsWith('image/'))
+    )
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
 
   // Fetch notification history for this service record
