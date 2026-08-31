@@ -12,6 +12,7 @@ import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
+import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 export default async function TemplatePage() {
   const data = await getLayoutData()
 
@@ -52,6 +53,9 @@ export default async function TemplatePage() {
         SETTING_KEYS.QUOTE_HEADER_STYLE,
         SETTING_KEYS.QUOTE_LOGO_SIZE,
         SETTING_KEYS.COMPANY_LOGO,
+        SETTING_KEYS.DESIGNER_SAVED_DESIGNS,
+        SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
+        SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
         SETTING_KEYS.WORKSHOP_ADDRESS,
         SETTING_KEYS.WORKSHOP_SLOGAN,
         SETTING_KEYS.WORKSHOP_PHONE,
@@ -84,6 +88,17 @@ export default async function TemplatePage() {
       : []
 
   const t = await getTranslations('settings')
+
+  // The workshop's own saved designs, for cards beside the built-in templates.
+  let savedDesigns: SavedDesign[] = []
+  try {
+    const parsed = settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS]
+      ? JSON.parse(settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS])
+      : []
+    if (Array.isArray(parsed)) savedDesigns = parsed
+  } catch {
+    savedDesigns = []
+  }
 
   // The preview is meant to look like this workshop's own paper, so it gets the
   // real company details rather than the sample shop's.
@@ -142,6 +157,11 @@ export default async function TemplatePage() {
       initialSmsTemplates={smsTemplates}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
       workshop={workshop}
+      savedDesigns={savedDesigns}
+      activeDesigns={{
+        invoice: settings[SETTING_KEYS.INVOICE_ACTIVE_DESIGN] || '',
+        quote: settings[SETTING_KEYS.QUOTE_ACTIVE_DESIGN] || '',
+      }}
       invoiceLayoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
     />

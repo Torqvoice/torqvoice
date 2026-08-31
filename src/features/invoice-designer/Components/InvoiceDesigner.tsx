@@ -40,21 +40,10 @@ import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
 import { specForPreset } from './presetSpec'
+import { themeOf } from './designTheme'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
 import type { DesignerTemplate, DesignerWorkshop, DocumentType, SavedDesign } from './types'
-
-/** Blend two hex colors, used to derive the secondary tone the PDF derives. */
-function mix(from: string, to: string, amount: number) {
-  const parse = (hex: string) => {
-    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return m ? [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] : [17, 24, 39]
-  }
-  const a = parse(from)
-  const b = parse(to)
-  const at = (i: number) => Math.round(a[i] + (b[i] - a[i]) * amount)
-  return `rgb(${at(0)}, ${at(1)}, ${at(2)})`
-}
 
 /** The template fields a preset carries, over whatever is already set. */
 function presetTemplatePatch(preset: (typeof layoutPresets)[number]) {
@@ -80,34 +69,6 @@ function designId(): string {
   return `design-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 
-/** The theme a designer template and layout resolve to, for the generator. */
-function themeOf(template: DesignerTemplate, layout: InvoiceLayoutConfig) {
-  const doc = layout.document ?? {}
-  const text = template.textColor || '#111827'
-  const background = template.backgroundColor || '#ffffff'
-  const banded = template.headerStyle === 'framed' || template.headerStyle === 'modern'
-  return {
-    primary: template.primaryColor,
-    background,
-    text,
-    muted: template.textColor ? mix(text, background, 0.42) : '#6b7280',
-    accent: doc.accentColor || template.primaryColor,
-    companyText: template.companyTextColor || (banded ? '#ffffff' : template.primaryColor),
-    fontFamily: doc.fontFamily || template.fontFamily,
-    fontSize: doc.fontSize ?? BASE_FONT_SIZE,
-    margin: doc.margin ?? 40,
-    rowPadding: doc.rowPadding ?? 5,
-    stripes: doc.stripes !== false,
-    stripeColor: doc.stripeColor || mix(background, text, 0.045),
-    headerStyle: template.headerStyle,
-    frameSide: template.frameSide === 'right' ? ('right' as const) : ('left' as const),
-    frameBorderColor: template.frameBorderColor || undefined,
-    frameShadow: frameShadowWidth(template.frameShadow),
-    frameRadius: template.frameRadius,
-    logoSize: template.logoSize,
-  }
-}
-
 export function InvoiceDesigner({
   initialDocumentType,
   initialView,
@@ -117,6 +78,7 @@ export function InvoiceDesigner({
   quoteTemplate,
   initialSavedDesigns = [],
   initialPresetId,
+  initialDesignId,
   initialActiveDesigns,
   workshop: companyWorkshop,
   customFields,
@@ -130,6 +92,8 @@ export function InvoiceDesigner({
   initialSavedDesigns?: SavedDesign[]
   /** A preset to arrive with already applied, from settings' starting points. */
   initialPresetId?: string
+  /** A saved design to arrive with already applied, from settings' cards. */
+  initialDesignId?: string
   /** What each document's design is based on: "preset:<id>" or "design:<id>". */
   initialActiveDesigns?: Record<DocumentType, string>
   workshop: DesignerWorkshop
@@ -142,24 +106,33 @@ export function InvoiceDesigner({
   const messages = useMessages() as {
     pdf?: Record<string, Record<string, string>>
   }
-  // Arriving with ?preset= means a starting point was picked in settings:
-  // land in the designer with it applied, as unsaved work.
-  const initialPreset = initialPresetId
-    ? layoutPresets.find((p) => p.id === initialPresetId)
+  // Arriving with ?preset= or ?design= means a starting point was picked in
+  // settings: land in the designer with it applied, as unsaved work. A named
+  // design wins over a preset when a link somehow carries both.
+  const initialDesign = initialDesignId
+    ? initialSavedDesigns.find((d) => d.id === initialDesignId)
     : undefined
-  const [view, setView] = useState<'gallery' | 'designer'>(initialPreset ? 'designer' : initialView)
+  const initialPreset =
+    !initialDesign && initialPresetId
+      ? layoutPresets.find((p) => p.id === initialPresetId)
+      : undefined
+  const arrivedWith = initialDesign ?? initialPreset
+  const [view, setView] = useState<'gallery' | 'designer'>(arrivedWith ? 'designer' : initialView)
   const [docType, setDocType] = useState<DocumentType>(initialDocumentType)
   const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>(() => {
     const base = {
       invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
       quote: quoteLayout ?? getDefaultInvoiceLayout(),
     }
-    if (initialPreset) base[initialDocumentType] = buildLayoutFromPreset(initialPreset)
+    if (initialDesign) base[initialDocumentType] = mergeWithDefaults(initialDesign.layout)
+    else if (initialPreset) base[initialDocumentType] = buildLayoutFromPreset(initialPreset)
     return base
   })
   const [templates, setTemplates] = useState<Record<DocumentType, DesignerTemplate>>(() => {
     const base = { invoice: invoiceTemplate, quote: quoteTemplate }
-    if (initialPreset) {
+    if (initialDesign) {
+      base[initialDocumentType] = { ...initialDesign.template }
+    } else if (initialPreset) {
       base[initialDocumentType] = {
         ...base[initialDocumentType],
         ...presetTemplatePatch(initialPreset),
@@ -174,19 +147,21 @@ export function InvoiceDesigner({
   // Per document, because Save only writes the sheet being looked at: one
   // shared flag let saving the quote clear the invoice's unsaved edits.
   const [dirty, setDirty] = useState<Record<DocumentType, boolean>>({
-    invoice: !!initialPreset && initialDocumentType === 'invoice',
-    quote: !!initialPreset && initialDocumentType === 'quote',
+    invoice: !!arrivedWith && initialDocumentType === 'invoice',
+    quote: !!arrivedWith && initialDocumentType === 'quote',
   })
-  // The preset in the URL is a one-shot instruction, consumed above. Left in
-  // the address bar it would re-apply itself on every refresh, overriding
-  // whatever the user picked since, so it is stripped once acted on.
+  // The preset or design in the URL is a one-shot instruction, consumed
+  // above. Left in the address bar it would re-apply itself on every refresh,
+  // overriding whatever the user picked since, so it is stripped once acted
+  // on.
   useEffect(() => {
-    if (!initialPresetId) return
+    if (!initialPresetId && !initialDesignId) return
     const url = new URL(window.location.href)
     url.searchParams.delete('preset')
+    url.searchParams.delete('design')
     url.searchParams.set('view', 'designer')
     window.history.replaceState(null, '', url.toString())
-  }, [initialPresetId])
+  }, [initialPresetId, initialDesignId])
 
   // A reload or a closed tab throws away everything since the last Save —
   // including a template just carried in from settings — and then shows the
@@ -209,13 +184,14 @@ export function InvoiceDesigner({
       invoice: initialActiveDesigns?.invoice ?? '',
       quote: initialActiveDesigns?.quote ?? '',
     }
-    if (initialPreset) base[initialDocumentType] = `preset:${initialPreset.id}`
+    if (initialDesign) base[initialDocumentType] = `design:${initialDesign.id}`
+    else if (initialPreset) base[initialDocumentType] = `preset:${initialPreset.id}`
     return base
   })
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(initialSavedDesigns)
   /** Open state and draft name for the save-design dialog. */
   const [namingDesign, setNamingDesign] = useState(false)
-  const [designName, setDesignName] = useState('')
+  const [designName, setDesignName] = useState(initialDesign?.name ?? '')
   const confirm = useConfirm()
 
   const layout = layouts[docType]
@@ -543,6 +519,38 @@ export function InvoiceDesigner({
     setSaving(true)
     try {
       const prefix = docType === 'invoice' ? 'invoice' : 'quote'
+
+      // What is saved always lands in the gallery as the workshop's own
+      // design. A sheet based on a template becomes a new named design, so
+      // the templates themselves always stay what they came as; one already
+      // based on a design updates that design in place, so its card keeps
+      // showing what is actually in use.
+      const snapshot = {
+        savedAt: new Date().toISOString(),
+        layout: JSON.parse(JSON.stringify(layout)) as InvoiceLayoutConfig,
+        template: { ...template },
+      }
+      let active = activeDesigns[docType] ?? ''
+      const activeId = active.startsWith('design:') ? active.slice('design:'.length) : null
+      const existing = activeId ? savedDesigns.find((d) => d.id === activeId) : undefined
+      if (existing) {
+        persistDesigns(savedDesigns.map((d) => (d.id === existing.id ? { ...d, ...snapshot } : d)))
+      } else {
+        const name = designName.trim() || t('defaultDesignName', { doc: t(docType) })
+        const sameName = savedDesigns.find(
+          (d) => d.name.trim().toLowerCase() === name.toLowerCase()
+        )
+        const id = sameName?.id ?? designId()
+        persistDesigns(
+          sameName
+            ? savedDesigns.map((d) => (d.id === id ? { ...d, name, ...snapshot } : d))
+            : [{ id, name, ...snapshot }, ...savedDesigns].slice(0, 24)
+        )
+        setDesignName(name)
+        active = `design:${id}`
+        setActiveDesigns((prev) => ({ ...prev, [docType]: active }))
+      }
+
       // The stamp that graduates this organization from the classic
       // pre-designer rendering to whatever this designer shows.
       const stamped = { ...layout, version: DESIGNER_LAYOUT_VERSION }
@@ -556,7 +564,7 @@ export function InvoiceDesigner({
           [`${prefix}.frameBorderColor`]: template.frameBorderColor,
           [`${prefix}.frameShadow`]: template.frameShadow,
           [`${prefix}.frameRadius`]: String(template.frameRadius),
-          [`${prefix}.activeDesign`]: activeDesigns[docType] ?? '',
+          [`${prefix}.activeDesign`]: active,
           [`${prefix}.frameSide`]: template.frameSide,
           [`${prefix}.fontFamily`]: template.fontFamily,
           [`${prefix}.headerStyle`]: template.headerStyle,

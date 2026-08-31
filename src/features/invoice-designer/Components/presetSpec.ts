@@ -1,7 +1,10 @@
 import { buildLayoutFromPreset, type LayoutPreset } from '@/features/settings/Schema/layoutPresets'
+import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { buildDocumentSpec, frameShadowWidth, type DocumentData } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
+import { themeOf } from './designTheme'
+import type { SavedDesign } from './types'
 
 /**
  * What a gallery template would print, as a document spec.
@@ -37,4 +40,14 @@ export function specForPreset(preset: LayoutPreset, data: DocumentData): Documen
     },
     data
   )
+}
+
+/**
+ * What one of the workshop's own saved designs would print. The stored layout
+ * is merged with today's defaults first, so a design saved before a section
+ * existed still previews the way it will print.
+ */
+export function specForDesign(design: SavedDesign, data: DocumentData): DocumentSpec {
+  const layout = mergeWithDefaults(design.layout)
+  return buildDocumentSpec(layout, themeOf(design.template, layout), data)
 }
