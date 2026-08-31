@@ -5,6 +5,7 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import type { Block, DocumentSpec, Node, Placement, TextStyle } from './documentSpec'
+import { DEFAULT_LINE_HEIGHT } from '../Pdf/measure'
 
 /**
  * The single description of a document.
@@ -245,6 +246,48 @@ function panel(
   }
 }
 
+/** Where the framed letterhead sits on the band, and the air left under it. */
+const FRAMED_HEADER_TOP = 14
+const FRAMED_HEADER_PAD = 14
+/** The gap the framed sheet keeps between the band and the first flow row. */
+const FRAMED_BAND_GAP = FRAMED.padTop - FRAMED.bandHeight
+
+/**
+ * How tall the band must be to actually hold its letterhead.
+ *
+ * The band is painted by the page chrome at a fixed height while the
+ * letterhead anchored onto it grows with the logo, the strapline and the
+ * Torqvoice mark. When the content outgrew the band, the overflow kept the
+ * band's white ink and printed white on the white sheet: invisible, and only
+ * on the plan that shows the mark at all. Sized here rather than in the four
+ * renderers, so every one of them inherits the same answer.
+ */
+function framedBandHeight(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): number {
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+  const fields = sectionFields(section)
+  const line = (fontSize: number) => fontSize * DEFAULT_LINE_HEIGHT
+
+  let height = 0
+  if (fields.includes('logo') && data.logoUrl) {
+    height += 46 * (theme.logoSize / 100)
+  } else if (fields.includes('company_name') && data.fields.company_name) {
+    height += line(scale(size, 2.2))
+  }
+
+  const hasStrapline = ['company_address', 'company_phone', 'company_email', 'company_org_number']
+    .filter((id) => fields.includes(id))
+    .some((id) => data.fields[id])
+  if (hasStrapline) height += 6 + line(scale(size, 0.9))
+  if (data.branding) height += 6 + Math.max(14, line(scale(size, 0.9)))
+
+  return Math.max(FRAMED.bandHeight, Math.ceil(FRAMED_HEADER_TOP + height + FRAMED_HEADER_PAD))
+}
+
 /**
  * The letterhead as the retired PDF components drew it, for organizations
  * that have never saved a layout in the designer. The title, the number and
@@ -336,7 +379,7 @@ function classicLetterhead(
   // banner centred inside it. Sizes differed with them.
   const brandingRow = (
     justify: 'start' | 'center' | 'end',
-    { soft, fontSize = 7, icon = 12 }: { soft?: string; fontSize?: number; icon?: number } = {}
+    { soft, fontSize = 9, icon = 14 }: { soft?: string; fontSize?: number; icon?: number } = {}
   ): Node[] =>
     data.branding
       ? [
@@ -460,7 +503,7 @@ function classicLetterhead(
                 ...companyLines('left'),
                 // Standard sets the mark under the company block; compact
                 // carries it below the rule instead, so it waits.
-                ...(compact ? [] : brandingRow('start', { fontSize: 9, icon: 16 })),
+                ...(compact ? [] : brandingRow('start', { fontSize: 10, icon: 16 })),
               ],
             },
           },
@@ -576,15 +619,15 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
           node: {
             kind: 'text',
             text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: mutedOnBand, fontSize: scale(size, 0.72) },
+            style: { color: mutedOnBand, fontSize: scale(size, 0.8) },
           },
         },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 12, maxHeight: 12 } },
+        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 14, maxHeight: 14 } },
         {
           node: {
             kind: 'text',
             text: 'Torqvoice',
-            style: { color: mutedOnBand, fontSize: scale(size, 0.72), bold: true },
+            style: { color: mutedOnBand, fontSize: scale(size, 1.0), bold: true },
           },
         },
       ],
@@ -1421,6 +1464,15 @@ export function buildDocumentSpec(
   const blocks: Block[] = []
   const ordered = [...layout.sections].sort((a, b) => a.order - b.order)
 
+  // Only the default placement rides the band; a letterhead somebody dragged
+  // elsewhere leaves the band at its usual height.
+  const headerSection = ordered.find((s) => s.id === 'header' && s.visible)
+  const bandHeight =
+    framed && headerSection && !anchors.header
+      ? framedBandHeight(headerSection, theme, data)
+      : FRAMED.bandHeight
+  const framedTop = bandHeight + FRAMED_BAND_GAP
+
   const push = (section: InvoiceSection, placementOverride?: Placement, synthetic?: boolean) => {
     const content = blockFor(section, theme, data)
     if (!content) return
@@ -1503,7 +1555,7 @@ export function buildDocumentSpec(
       height: 842,
       margin: framed
         ? {
-            top: FRAMED.padTop,
+            top: framedTop,
             bottom: theme.margin,
             left: theme.frameSide === 'left' ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
             right: theme.frameSide === 'right' ? FRAMED.padLeft + FRAMED.railWidth : theme.margin,
@@ -1525,7 +1577,7 @@ export function buildDocumentSpec(
       ? {
           side: theme.frameSide,
           railWidth: FRAMED.railWidth,
-          bandHeight: FRAMED.bandHeight,
+          bandHeight,
           color: theme.primary,
           borderColor: theme.frameBorderColor,
           shadow: theme.frameShadow,

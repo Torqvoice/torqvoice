@@ -253,6 +253,32 @@ describe('the printed invoice follows the designed layout', () => {
     expect(markAlign('modern')).toBe('center')
   })
 
+  it('grows the framed band to cover everything standing on it', () => {
+    // The band carries the letterhead in white ink. When the content outgrew
+    // the fixed band, the overflow kept that ink and printed white on the
+    // white sheet: invisible, and only on the plan that shows the mark.
+    const framed = (extra: Record<string, unknown>) =>
+      buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { headerStyle: 'framed' },
+        ...extra,
+      })
+
+    const bare = framed({})
+    const loaded = framed({
+      logoDataUri: 'data:image/png;base64,AAAA',
+      torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
+    })
+
+    // A logo and a Torqvoice mark need more band than a bare letterhead.
+    expect(loaded.frame?.bandHeight).toBeGreaterThan(bare.frame?.bandHeight ?? 0)
+    // And the flow still starts below whatever the band grew to, or the first
+    // row would print on top of the letterhead.
+    expect(loaded.page.margin.top).toBeGreaterThan(loaded.frame?.bandHeight ?? 0)
+  })
+
   it('borrows the title block once a designer layout is saved', () => {
     // The default designer layout hides the title section; the sheet borrows
     // it and sets it under the header.
