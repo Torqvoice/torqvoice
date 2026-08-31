@@ -1133,7 +1133,9 @@ export async function generatePublicLink(serviceRecordId: string) {
           // Handing over a link is a way of sending the invoice, so it counts
           // for "lock when sent". Unlike sharedAt this is never cleared:
           // revoking the link does not unsend what the customer already saw.
-          sentAt: record.sentAt ?? new Date(),
+          // It tracks the latest share, so re-sharing after an unlock locks
+          // the document again.
+          sentAt: new Date(),
         },
       })
 

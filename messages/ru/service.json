@@ -185,7 +185,10 @@
     "paidBadge": "ОПЛАЧЕНО",
     "entityLabel": "Счёт",
     "emailSubject": "Подтверждение оплаты",
-    "statusEmailSubject": "Обновление статуса обслуживания"
+    "statusEmailSubject": "Обновление статуса обслуживания",
+    "markCompletedTitle": "Отметить этот счёт как завершённый?",
+    "markCompletedDescription": "Он уже отправлен клиенту, но всё ещё помечен как незавершённый, поэтому останется на доске работ.",
+    "markCompletedConfirm": "Отметить завершённым"
   },
   "payments": {
     "title": "Платежи",

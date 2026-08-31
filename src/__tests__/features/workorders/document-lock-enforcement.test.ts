@@ -349,9 +349,9 @@ describe('recording when an invoice was sent', () => {
     expect(data.sentAt).toBeInstanceOf(Date)
   })
 
-  it('keeps the original sentAt when the link is created again', async () => {
-    // Re-sharing is not re-issuing. Moving the date would restart the clock on
-    // when the document was put in front of the customer.
+  it('moves sentAt forward when the link is created again', async () => {
+    // Sharing again re-issues the document, and the lock compares this against
+    // any unlock to decide whether the corrected copy locks itself.
     const firstSent = new Date('2026-01-01')
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
       ...UNPAID_INVOICE,
@@ -363,6 +363,6 @@ describe('recording when an invoice was sent', () => {
     await generatePublicLink('rec-1')
 
     const data = vi.mocked(db.serviceRecord.update).mock.calls[0]?.[0]?.data as any
-    expect(data.sentAt).toEqual(firstSent)
+    expect(data.sentAt.getTime()).toBeGreaterThan(firstSent.getTime())
   })
 })

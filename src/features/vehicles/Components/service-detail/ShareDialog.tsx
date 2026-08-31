@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,8 @@ interface ShareDialogProps {
   recordId: string
   organizationId: string
   initialToken: string | null
+  /** Called once the invoice has actually gone to the customer. */
+  onSent?: () => void
   customer?: {
     id: string
     name: string
@@ -37,11 +40,13 @@ export function ShareDialog({
   recordId,
   organizationId,
   initialToken,
+  onSent,
   customer,
   smsEnabled = false,
   emailEnabled = false,
 }: ShareDialogProps) {
   const t = useTranslations('service.share')
+  const router = useRouter()
   const [publicToken, setPublicToken] = useState<string | null>(initialToken)
   const [generatingLink, setGeneratingLink] = useState(false)
   const [revoking, setRevoking] = useState(false)
@@ -61,7 +66,11 @@ export function ShareDialog({
   const handleGenerate = async () => {
     setGeneratingLink(true)
     const result = await generatePublicLink(recordId)
-    if (result.success && result.data) setPublicToken(result.data.token)
+    if (result.success && result.data) {
+      setPublicToken(result.data.token)
+      // Handing over a link is a way of sending the invoice.
+      onSent?.()
+    }
     setGeneratingLink(false)
   }
 

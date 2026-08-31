@@ -185,7 +185,10 @@
     "paidBadge": "PAID",
     "entityLabel": "Invoice",
     "emailSubject": "Payment Confirmation",
-    "statusEmailSubject": "Service Status Update"
+    "statusEmailSubject": "Service Status Update",
+    "markCompletedTitle": "Mark this invoice as completed?",
+    "markCompletedDescription": "It has gone to the customer but is still marked as not finished, so it will keep showing on the work board.",
+    "markCompletedConfirm": "Mark completed"
   },
   "payments": {
     "title": "Payments",

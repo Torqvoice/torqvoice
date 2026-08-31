@@ -5,6 +5,8 @@ import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLock
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
+import { updateServiceStatus } from '@/features/vehicles/Actions/serviceActions'
+import { useConfirm } from '@/components/confirm-dialog'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { useTranslations } from 'next-intl'
 
@@ -293,6 +295,37 @@ export function ServicePageClient({
     formState,
   })
 
+  const confirmComplete = useConfirm()
+
+  /**
+   * Run after the invoice has gone to the customer, by email or by link.
+   *
+   * Sending is what the "lock when sent" rule keys off, so the page is
+   * re-rendered to pick up the lock rather than leaving the banner to appear
+   * on the next reload. It is also the moment a job is in practice finished,
+   * and an invoice that locks while still marked pending leaves the work board
+   * showing work nobody is doing. The status is not changed silently, since
+   * plenty of shops invoice up front.
+   */
+  const handleInvoiceSent = useCallback(async () => {
+    router.refresh()
+    if (formState.status === 'completed') return
+
+    const ok = await confirmComplete({
+      title: t('invoice.markCompletedTitle'),
+      description: t('invoice.markCompletedDescription'),
+      confirmLabel: t('invoice.markCompletedConfirm'),
+    })
+    if (!ok) return
+
+    const result = await updateServiceStatus(record.id, 'completed')
+    if (result.success) {
+      formState.dirtySetStatus('completed')
+      router.refresh()
+    }
+  }, [router, confirmComplete, formState, record.id, t])
+
+
   useSaveShortcut(() => {
     if (formState.hasUnsavedChanges) return actions.saveNow()
   })
@@ -514,9 +547,15 @@ export function ServicePageClient({
         onOpenChange={actions.setShowEmailDialog}
         defaultEmail={customer?.email || ''}
         entityLabel={t('invoice.entityLabel')}
-        onSend={async (email, message) =>
-          sendInvoiceEmail({ serviceRecordId: record.id, recipientEmail: email, message })
-        }
+        onSend={async (email, message) => {
+          const result = await sendInvoiceEmail({
+            serviceRecordId: record.id,
+            recipientEmail: email,
+            message,
+          })
+          if (result.success) await handleInvoiceSent()
+          return result
+        }}
       />
 
       <ShareDialog
@@ -525,6 +564,7 @@ export function ServicePageClient({
         recordId={record.id}
         organizationId={organizationId}
         initialToken={record.publicToken}
+        onSent={handleInvoiceSent}
         customer={customer}
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}

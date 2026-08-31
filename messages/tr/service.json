@@ -185,7 +185,10 @@
     "paidBadge": "ÖDENDİ",
     "entityLabel": "Fatura",
     "emailSubject": "Ödeme Onayı",
-    "statusEmailSubject": "Servis durumu güncellemesi"
+    "statusEmailSubject": "Servis durumu güncellemesi",
+    "markCompletedTitle": "Bu fatura tamamlandı olarak işaretlensin mi?",
+    "markCompletedDescription": "Müşteriye gitti ama hâlâ bitmedi olarak işaretli, bu yüzden iş panosunda görünmeye devam edecek.",
+    "markCompletedConfirm": "Tamamlandı olarak işaretle"
   },
   "payments": {
     "title": "Ödemeler",

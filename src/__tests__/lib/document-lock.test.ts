@@ -215,21 +215,56 @@ describe('invoiceLockState, locking when paid', () => {
 })
 
 describe('invoiceLockState, after an owner or admin unlocks it', () => {
-  const settings = settingsFor({ invoiceLockEnabled: true, invoiceLockTrigger: 'paid' })
+  const paidSettings = settingsFor({ invoiceLockEnabled: true, invoiceLockTrigger: 'paid' })
+  const sentSettings = settingsFor({ invoiceLockEnabled: true, invoiceLockTrigger: 'sent' })
   const unlockedAt = new Date('2026-02-01')
 
   it('reopens the document and says when', () => {
     const state = invoiceLockState(
       invoice({ manuallyPaid: true, editUnlockedAt: unlockedAt }),
-      settings
+      paidSettings
     )
     expect(state).toEqual({ locked: false, reason: null, unlockedAt })
   })
 
-  it('outranks either trigger', () => {
-    const sentSettings = settingsFor({ invoiceLockEnabled: true, invoiceLockTrigger: 'sent' })
+  it('reopens a sent invoice that has not been sent again since', () => {
     const record = invoice({ sentAt: new Date('2026-01-01'), editUnlockedAt: unlockedAt })
-    expect(invoiceLockState(record, sentSettings).locked).toBe(false)
+    expect(invoiceLockState(record, sentSettings)).toEqual({
+      locked: false,
+      reason: null,
+      unlockedAt,
+    })
+  })
+
+  describe('and it is then sent again', () => {
+    it('locks the corrected copy the customer now holds', () => {
+      // The unlock was permission to correct that version. Issuing it again
+      // spends it, or an invoice unlocked once would stay open for good.
+      const record = invoice({ sentAt: new Date('2026-02-02'), editUnlockedAt: unlockedAt })
+      expect(invoiceLockState(record, sentSettings)).toEqual({
+        locked: true,
+        reason: 'sent',
+        unlockedAt: null,
+      })
+    })
+
+    it('treats a send at the same instant as not superseding the unlock', () => {
+      // Strictly later, so the ordering of two events in the same millisecond
+      // cannot decide whether someone gets to finish their edit.
+      const record = invoice({ sentAt: unlockedAt, editUnlockedAt: unlockedAt })
+      expect(invoiceLockState(record, sentSettings).locked).toBe(false)
+    })
+
+    it('leaves the unlock standing under the "paid" trigger', () => {
+      // Sending does not lock under this rule, and the invoice was already
+      // paid when it was reopened, so nothing new has happened to it.
+      const record = invoice({
+        manuallyPaid: true,
+        sentAt: new Date('2026-02-02'),
+        editUnlockedAt: unlockedAt,
+      })
+      expect(invoiceLockState(record, paidSettings).locked).toBe(false)
+    })
   })
 })
 

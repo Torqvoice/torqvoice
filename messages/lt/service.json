@@ -185,7 +185,10 @@
     "paidBadge": "APMOKĖTA",
     "entityLabel": "Sąskaita",
     "emailSubject": "Mokėjimo patvirtinimas",
-    "statusEmailSubject": "Paslaugos būsenos atnaujinimas"
+    "statusEmailSubject": "Paslaugos būsenos atnaujinimas",
+    "markCompletedTitle": "Pažymėti šią sąskaitą kaip užbaigtą?",
+    "markCompletedDescription": "Ji jau išsiųsta klientui, bet vis dar pažymėta kaip nebaigta, todėl liks matoma darbų lentoje.",
+    "markCompletedConfirm": "Žymėti užbaigta"
   },
   "payments": {
     "title": "Mokėjimai",

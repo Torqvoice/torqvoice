@@ -185,7 +185,10 @@
     "paidBadge": "BETAALD",
     "entityLabel": "Factuur",
     "emailSubject": "Betalingsbevestiging",
-    "statusEmailSubject": "Update servicestatus"
+    "statusEmailSubject": "Update servicestatus",
+    "markCompletedTitle": "Deze factuur als afgerond markeren?",
+    "markCompletedDescription": "Hij is naar de klant gegaan maar staat nog als niet afgerond, dus hij blijft op het bord staan.",
+    "markCompletedConfirm": "Als afgerond markeren"
   },
   "payments": {
     "title": "Betalingen",

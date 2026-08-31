@@ -185,7 +185,10 @@
     "paidBadge": "PAGADO",
     "entityLabel": "Factura",
     "emailSubject": "Confirmación de Pago",
-    "statusEmailSubject": "Actualización del estado del servicio"
+    "statusEmailSubject": "Actualización del estado del servicio",
+    "markCompletedTitle": "¿Marcar esta factura como completada?",
+    "markCompletedDescription": "Ya se ha enviado al cliente, pero sigue marcada como no terminada, así que continuará apareciendo en el tablero.",
+    "markCompletedConfirm": "Marcar como completada"
   },
   "payments": {
     "title": "Pagos",

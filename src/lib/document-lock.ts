@@ -99,8 +99,10 @@ export function readDocumentLockSettings(
   }
 }
 
+export type PaymentStatus = 'paid' | 'partial' | 'unpaid'
+
 export interface LockableInvoice {
-  /** First time the invoice reached the customer, by email or share link. */
+  /** Most recent time the invoice reached the customer, by email or link. */
   sentAt: Date | null
   /** Marked paid by hand, regardless of what has been recorded against it. */
   manuallyPaid: boolean
@@ -128,7 +130,7 @@ export function invoicePaymentStatus(invoice: {
   totalAmount: number
   cost: number
   payments?: { amount: number }[]
-}): 'paid' | 'partial' | 'unpaid' {
+}): PaymentStatus {
   const total = invoice.totalAmount > 0 ? invoice.totalAmount : invoice.cost
   if (invoice.manuallyPaid) return 'paid'
   const paid = (invoice.payments ?? []).reduce((sum, p) => sum + p.amount, 0)
@@ -136,18 +138,41 @@ export function invoicePaymentStatus(invoice: {
   return paid >= total ? 'paid' : 'partial'
 }
 
+/**
+ * An unlock is permission to correct *this* version of the document, so
+ * issuing it again spends it: the customer now holds the corrected copy, and
+ * that copy deserves the same protection the first one had. Without this an
+ * invoice unlocked once would stay editable for good, which is the quiet way a
+ * guardrail stops being one.
+ *
+ * Only sending supersedes an unlock, because only sending is a new issue of
+ * the document. Under the "paid" trigger the invoice was already paid when it
+ * was reopened, so nothing new happens to it and the unlock stands until
+ * someone locks it again by hand.
+ */
+function unlockSupersededBy(unlockedAt: Date | null | undefined, event: Date | null): boolean {
+  if (!unlockedAt || !event) return false
+  return event.getTime() > unlockedAt.getTime()
+}
+
 export function invoiceLockState(
   invoice: LockableInvoice,
   settings: DocumentLockSettings
 ): LockState {
   if (!settings.invoiceLockEnabled) return EDITABLE
-  // A deliberate unlock outranks the rule; re-locking is a separate action.
-  if (invoice.editUnlockedAt) {
-    return { locked: false, reason: null, unlockedAt: invoice.editUnlockedAt }
-  }
 
   if (settings.invoiceLockTrigger === 'sent') {
-    return invoice.sentAt ? { locked: true, reason: 'sent', unlockedAt: null } : EDITABLE
+    if (!invoice.sentAt) return EDITABLE
+    if (unlockSupersededBy(invoice.editUnlockedAt, invoice.sentAt)) {
+      return { locked: true, reason: 'sent', unlockedAt: null }
+    }
+    return invoice.editUnlockedAt
+      ? { locked: false, reason: null, unlockedAt: invoice.editUnlockedAt }
+      : { locked: true, reason: 'sent', unlockedAt: null }
+  }
+
+  if (invoice.editUnlockedAt) {
+    return { locked: false, reason: null, unlockedAt: invoice.editUnlockedAt }
   }
 
   // Partly paid still edits: the balance is often exactly what is being
