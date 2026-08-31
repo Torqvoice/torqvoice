@@ -360,7 +360,8 @@ export function ServicePageClient({
           actions.handleDownloadPDF()
         }}
         onPreviewPDF={async () => {
-          if (!(await checkDates())) return
+          // No expired-dates prompt here: previewing is just looking, and the
+          // check still runs on download, email, and share.
           if (formState.hasUnsavedChanges) await actions.saveNow()
           setShowPdfPreview(true)
         }}
