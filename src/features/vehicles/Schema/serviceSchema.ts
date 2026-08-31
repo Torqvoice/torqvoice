@@ -9,7 +9,13 @@ export const servicePartSchema = z.object({
   unitPrice: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
   unitCost: z.coerce.number().min(0).default(0),
-  markupPercent: z.coerce.number().min(0).default(0),
+  /**
+   * Selling below cost is a real decision (a goodwill line, matching a price),
+   * and the markup has to be able to say so. Floored at -100, which is giving
+   * the part away: anything lower would imply a negative price, which
+   * unitPrice already refuses.
+   */
+  markupPercent: z.coerce.number().min(-100).default(0),
   inventoryPartId: z.string().optional(),
 })
 
@@ -88,7 +94,16 @@ export const updateServiceSchema = createServiceSchema.partial().extend({
 
 export type ServiceAttachmentInput = z.infer<typeof serviceAttachmentSchema>
 export type ServiceConcernInput = z.infer<typeof serviceConcernSchema>
-export type ServicePartInput = z.infer<typeof servicePartSchema>
+/**
+ * The editor also tracks whether the price was typed over the cost-and-markup
+ * formula, so a later edit to the cost restates the margin instead of
+ * overwriting what was entered. It describes how the row was edited rather
+ * than anything about the part, so it is client-only: the schema above has no
+ * such field and strips it on save.
+ */
+export type ServicePartInput = z.infer<typeof servicePartSchema> & {
+  priceOverridden?: boolean
+}
 export type ServiceLaborInput = z.infer<typeof serviceLaborSchema>
 export type CreateServiceInput = z.infer<typeof createServiceSchema>
 export type UpdateServiceInput = z.infer<typeof updateServiceSchema>

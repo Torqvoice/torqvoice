@@ -39,7 +39,8 @@ const QuotePartRow = memo(function QuotePartRow({
   onUpdate: (
     index: number,
     field: keyof QuotePartInput,
-    value: string | number | boolean | null
+    value: string | number | boolean | null,
+    options?: { commit?: boolean }
   ) => void
   onDelete: (index: number) => void
   inventoryParts: PartSuggestion[]
@@ -107,6 +108,9 @@ const QuotePartRow = memo(function QuotePartRow({
         step="0.01"
         value={part.unitCost}
         onChange={(e) => onUpdate(index, 'unitCost', e.target.value)}
+        // The margin is restated here rather than on each keystroke: a cost
+        // still being typed is not a cost anyone meant.
+        onBlur={(e) => onUpdate(index, 'unitCost', e.target.value, { commit: true })}
       />
       <Input
         type="number"
@@ -156,7 +160,8 @@ interface QuotePartsEditorProps {
   onUpdate: (
     index: number,
     field: keyof QuotePartInput,
-    value: string | number | boolean | null
+    value: string | number | boolean | null,
+    options?: { commit?: boolean }
   ) => void
   onDelete: (index: number) => void
   onAdd: () => void

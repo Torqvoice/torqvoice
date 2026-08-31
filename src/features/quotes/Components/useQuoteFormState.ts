@@ -12,11 +12,8 @@ import {
 } from '@/features/quotes/Actions/quoteActions'
 import { acknowledgeQuoteResponse } from '@/features/quotes/Actions/quoteResponseActions'
 import { calculateTotals } from '@/lib/tax'
-import {
-  lineTotal,
-  priceFromCostAndMarkup,
-  markupFromCostAndPrice,
-} from '@/features/inventory/Lib/partPricing'
+import { useDeferredCommit } from '@/hooks/use-deferred-commit'
+import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
 import { emptyPart, makeEmptyLabor, makeEmptyService } from './quote-page-types'
 
@@ -77,8 +74,16 @@ export function useQuoteFormState({
       total: p.total,
       excluded: p.excluded ?? false,
       inventoryPartId: p.inventoryPartId ?? null,
+      // Evaluated once, on settled values from the database; see
+      // isPriceOverridden for why it must not be recomputed while typing.
+      priceOverridden: isPriceOverridden({
+        unitCost: p.unitCost ?? 0,
+        markupPercent: p.markupPercent ?? 0,
+        unitPrice: p.unitPrice,
+      }),
     }))
   )
+  const { schedule: scheduleCommit, cancel: cancelCommit } = useDeferredCommit()
   const [laborItems, setLaborItems] = useState<QuoteLaborInput[]>(
     quote.laborItems.map((l) => ({
       description: l.description,
@@ -185,18 +190,25 @@ export function useQuoteFormState({
     taxInclusive,
   })
 
-  // Same linked pricing model as work order parts:
-  //   unitPrice = unitCost × (1 + markupPercent / 100)
-  // Editing any one of the three keeps the others consistent.
+  // Cost, markup and price stay consistent with each other; repricePartRow
+  // owns which of them moves, and work order parts use the same rules.
   const updatePart = useCallback(
-    (index: number, field: keyof QuotePartInput, value: string | number | boolean | null) => {
+    (
+      index: number,
+      field: keyof QuotePartInput,
+      value: string | number | boolean | null,
+      options: { commit?: boolean } = {}
+    ) => {
+      // Any edit ends the wait on the previous one.
+      cancelCommit()
       setPartItems((prev) => {
         const updated = [...prev]
         const part = { ...updated[index], [field]: value }
-        if (field === 'unitCost' || field === 'markupPercent') {
-          part.unitPrice = priceFromCostAndMarkup(part.unitCost, part.markupPercent)
-        } else if (field === 'unitPrice') {
-          part.markupPercent = markupFromCostAndPrice(part.unitCost, part.unitPrice)
+        if (field === 'unitCost' || field === 'markupPercent' || field === 'unitPrice') {
+          const priced = repricePartRow(part, field, options)
+          part.unitPrice = priced.unitPrice
+          part.markupPercent = priced.markupPercent
+          part.priceOverridden = priced.priceOverridden
         }
         if (
           field === 'quantity' ||
@@ -209,9 +221,24 @@ export function useQuoteFormState({
         updated[index] = part
         return updated
       })
+
+      // A cost typed under a hand-set price restates the margin once typing
+      // stops, so it lands on its own without needing the field to be left.
+      if (field === 'unitCost' && !options.commit) {
+        scheduleCommit(() =>
+          setPartItems((prev) => {
+            const row = prev[index]
+            if (!row?.priceOverridden) return prev
+            const updated = [...prev]
+            updated[index] = { ...row, ...repricePartRow(row, 'unitCost', { commit: true }) }
+            return updated
+          })
+        )
+      }
+
       markDirty()
     },
-    [markDirty]
+    [markDirty, cancelCommit, scheduleCommit]
   )
 
   const updateLabor = useCallback(
