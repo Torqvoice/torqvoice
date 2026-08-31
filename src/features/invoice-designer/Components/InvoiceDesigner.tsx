@@ -188,6 +188,21 @@ export function InvoiceDesigner({
     window.history.replaceState(null, '', url.toString())
   }, [initialPresetId])
 
+  // A reload or a closed tab throws away everything since the last Save —
+  // including a template just carried in from settings — and then shows the
+  // saved layout, which reads as the design changing by itself. The browser
+  // asks first, so losing the work is a choice rather than a surprise.
+  useEffect(() => {
+    if (!dirty.invoice && !dirty.quote) return
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      // Chrome still wants the legacy channel to show the dialog.
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [dirty])
+
   /** What the sheet being edited is based on, per document, for the gallery. */
   const [activeDesigns, setActiveDesigns] = useState<Record<DocumentType, string>>(() => {
     const base = {
