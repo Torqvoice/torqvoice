@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference'
 import { getInspectionsPaginated } from '@/features/inspections/Actions/inspectionActions'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { InspectionsClient } from './inspections-client'
@@ -16,14 +17,18 @@ export default async function InspectionsPage({
   }>
 }) {
   const params = await searchParams
+  const sort = await resolveListSort('inspections', params, {
+    sortBy: undefined,
+    sortOrder: 'desc',
+  })
   const [result, templatesResult] = await Promise.all([
     getInspectionsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       status: params.status || 'all',
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
     }),
     getTemplates(),
   ])
@@ -50,8 +55,8 @@ export default async function InspectionsPage({
           templates={templates}
           search={params.search || ''}
           statusFilter={params.status || 'all'}
-          sortBy={params.sortBy || ''}
-          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
         />
       </div>
     </>

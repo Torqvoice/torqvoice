@@ -1,5 +1,6 @@
 'use client'
 
+import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -163,6 +164,7 @@ export function WorkOrdersClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
+  useRememberedSort('workOrders')
   const t = useTranslations('workOrders.list')
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)

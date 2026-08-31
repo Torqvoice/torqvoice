@@ -1,5 +1,6 @@
 'use client'
 
+import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -96,6 +97,7 @@ export function CustomersClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
+  useRememberedSort('customers')
   const [showForm, setShowForm] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null)

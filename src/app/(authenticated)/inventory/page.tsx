@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference'
 import {
   getInventoryPartsPaginated,
   getInventoryCategories,
@@ -22,14 +23,18 @@ export default async function InventoryPage({
   }>
 }) {
   const params = await searchParams
+  const sort = await resolveListSort('inventory', params, {
+    sortBy: 'updatedAt',
+    sortOrder: 'desc',
+  })
   const [result, categoriesResult, settingsResult, reorderResult] = await Promise.all([
     getInventoryPartsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       category: params.category,
-      sortBy: params.sortBy,
-      sortOrder: (params.sortOrder as 'asc' | 'desc') || undefined,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
       lowStock: params.lowStock === '1',
     }),
     getInventoryCategories(),
@@ -72,8 +77,8 @@ export default async function InventoryPage({
           markupMultiplier={markupMultiplier}
           defaultUnit={settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''}
           unitSystem={settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial'}
-          sortBy={params.sortBy || 'updatedAt'}
-          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
           lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}
           lowStockOnly={params.lowStock === '1'}
           hasAnyReorderPoint={reorderResult.data ?? false}

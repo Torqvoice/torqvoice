@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference'
 import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -17,14 +18,18 @@ export default async function QuotesPage({
   }>
 }) {
   const params = await searchParams
+  const sort = await resolveListSort('quotes', params, {
+    sortBy: undefined,
+    sortOrder: 'desc',
+  })
   const [result, settingsResult] = await Promise.all([
     getQuotesPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       status: params.status || 'all',
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
   ])
@@ -52,8 +57,8 @@ export default async function QuotesPage({
           currencyCode={currencyCode}
           search={params.search || ''}
           statusFilter={params.status || 'all'}
-          sortBy={params.sortBy || ''}
-          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
         />
       </div>
     </>

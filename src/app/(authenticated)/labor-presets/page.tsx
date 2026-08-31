@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getLaborPresetsPaginated } from '@/features/labor-presets/Actions/laborPresetActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
@@ -17,13 +18,17 @@ export default async function LaborPresetsPage({
   }>
 }) {
   const params = await searchParams
+  const sort = await resolveListSort('laborPresets', params, {
+    sortBy: 'updatedAt',
+    sortOrder: 'desc',
+  })
   const [result, settingsResult, inventoryResult] = await Promise.all([
     getLaborPresetsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.DEFAULT_LABOR_RATE]),
     // For the "import from inventory" picker in the preset form. A user
@@ -65,8 +70,8 @@ export default async function LaborPresetsPage({
         <LaborPresetsClient
           data={result.data}
           search={params.search || ''}
-          sortBy={params.sortBy || 'updatedAt'}
-          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
           currencyCode={currencyCode}
           defaultLaborRate={defaultLaborRate}
           inventoryParts={inventoryParts}

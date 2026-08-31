@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference'
 import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
 import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions'
@@ -18,6 +19,10 @@ export default async function VehiclesPage({
   }>
 }) {
   const params = await searchParams
+  const sort = await resolveListSort('vehicles', params, {
+    sortBy: undefined,
+    sortOrder: 'desc',
+  })
   const isArchived = params.archived === 'true'
   const cookieStore = await cookies()
   const viewCookie = cookieStore.get('torqvoice-vehicles-view')?.value
@@ -28,8 +33,8 @@ export default async function VehiclesPage({
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       archived: isArchived,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
     }),
     getCustomersList(),
   ])
@@ -55,8 +60,8 @@ export default async function VehiclesPage({
           data={result.data}
           customers={customersResult.data ?? []}
           search={params.search || ''}
-          sortBy={params.sortBy || ''}
-          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
           initialView={initialView}
           isArchived={isArchived}
           archivedCount={result.data.archivedCount}
