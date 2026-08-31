@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram staat aan",
     "body": "Klantgesprekken komen hier binnen. Beantwoord ze zonder de app te verlaten."
+  },
+  "invoice-designer": {
+    "title": "Facturen zijn vernieuwd",
+    "body": "Bepaal de indeling, kleuren en lettertypen van je facturen en offertes in de nieuwe ontwerper, onder Sjablonen.",
+    "cta": "Sjablonen openen"
   }
 }

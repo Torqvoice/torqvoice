@@ -82,6 +82,7 @@ import {
 import { SidebarInstallButton } from '@/components/pwa-install-prompt'
 import { FullscreenToggle } from '@/components/fullscreen-toggle'
 import { FeatureHint } from '@/components/feature-hint'
+import { ANNOUNCEMENTS } from '@/features/settings/Lib/featureHints'
 import { cn } from '@/lib/utils'
 
 type OrgInfo = { id: string; name: string; role: string }
@@ -95,6 +96,7 @@ export function AppSidebar({
   tireHotelEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
+  announcement = null,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -105,6 +107,8 @@ export function AppSidebar({
   tireHotelEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
+  /** The one product announcement to show, worked out on the server. */
+  announcement?: string | null
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -222,6 +226,50 @@ export function AppSidebar({
 
   const closeMobileSidebar = () => {
     if (isMobile) setOpenMobile(false)
+  }
+
+  /**
+   * The Settings link, optionally carrying whichever product announcement the
+   * server decided this account should see. Written as one row either way so
+   * the announcement cannot drift from the link it points at.
+   */
+  const settingsRow = () => {
+    const row = (highlighted: boolean) => (
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          asChild
+          isActive={pathname.startsWith('/settings')}
+          className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
+        >
+          <Link href="/settings" className="font-medium" onClick={closeMobileSidebar}>
+            <Settings className="size-4" />
+            {t('sidebar.settings')}
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    )
+
+    const entry = ANNOUNCEMENTS.find((item) => item.id === announcement)
+    if (!entry) return row(false)
+
+    const prefix = entry.id.split('.')[0]
+    return (
+      <FeatureHint
+        id={entry.id}
+        eligible
+        title={tHint(`${prefix}.title`)}
+        body={tHint(`${prefix}.body`)}
+        cta={tHint(`${prefix}.cta`)}
+        href={entry.href}
+        // Painted in the accent colour and waiting for a button: the workshop
+        // is told once, between all of them, so a stray click elsewhere on the
+        // screen must not spend that on everybody's behalf.
+        variant="announcement"
+        side={isMobile ? 'bottom' : 'right'}
+      >
+        {(open) => row(open)}
+      </FeatureHint>
+    )
   }
 
   const renderNavGroup = (
@@ -410,14 +458,12 @@ export function AppSidebar({
         {canAccess('settings') && (
           <SidebarGroup>
             <SidebarMenu className="gap-2">
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/settings')}>
-                  <Link href="/settings" className="font-medium" onClick={closeMobileSidebar}>
-                    <Settings className="size-4" />
-                    {t('sidebar.settings')}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {/* Product announcements hang off Settings: everything they
+                  point at so far lives behind it, and it is the one link on
+                  the screen that is never scrolled away or filtered out by a
+                  role. Which one is worth showing was decided on the server,
+                  so this only says where the card goes. */}
+              {settingsRow()}
             </SidebarMenu>
           </SidebarGroup>
         )}

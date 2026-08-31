@@ -9,7 +9,7 @@ import { NotificationInitializer } from '@/features/notifications/Components/Not
 import { ConfirmProvider } from '@/components/confirm-dialog'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { parseHintIds } from '@/features/settings/Lib/featureHints'
+import { announcementsToShow, parseHintIds } from '@/features/settings/Lib/featureHints'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { WhiteLabelCtaProvider } from '@/components/white-label-cta-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
@@ -112,6 +112,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
     return <NoAccess organizationName={org?.name ?? ''} />
   }
 
+  // Product announcements join the same queue as the hints a setting flip
+  // raises, so only ever one card shows. They are worked out per request
+  // rather than stored, because who may be told depends on the account
+  // reading the page, not on anything written when the feature shipped.
+  const announcements = announcementsToShow({
+    organizationCreatedAt: data.organizationCreatedAt,
+    visibleSubjects: isOwnerOrAdmin ? undefined : visibleSubjects,
+    features,
+    seen: seenHints,
+  })
+
   // Check license expiry (only for admin/owner with white-label)
   let daysUntilExpiry: number | null = null
   let licenseExpiryDismissed = false
@@ -178,7 +189,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 currencyFormat={data.currencyFormat}
               >
                 <ConfirmProvider>
-                  <FeatureHintProvider initialSeen={seenHints} pending={pendingHints}>
+                  <FeatureHintProvider
+                    initialSeen={seenHints}
+                    pending={[...pendingHints, ...announcements]}
+                  >
                     <AppSidebar
                       companyLogo={data.companyLogo}
                       organizations={data.organizations}
@@ -187,6 +201,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       features={features}
                       tireHotelEnabled={tireHotelEnabled}
                       visibleSubjects={visibleSubjects}
+                      announcement={announcements[0] ?? null}
                       isAdminOrOwner={isOwnerOrAdmin}
                     />
                     <SidebarInset>
