@@ -231,6 +231,54 @@ describe('the printed invoice follows the designed layout', () => {
     }
   })
 
+  it("keeps each classic letterhead's own place for the Torqvoice mark", () => {
+    // The retired sheets did not agree on this: standard set the mark under
+    // the company block, compact right-aligned it below the rule, and the
+    // banner centred it. Flattening them moved it on a free workshop's
+    // invoice without anything failing.
+    const markAlign = (headerStyle: string) => {
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { headerStyle },
+        torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
+      })
+      const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+      const row = header.slice(header.indexOf('"header.branding"'))
+      return row.slice(0, row.indexOf('children')).match(/"justify":"(\w+)"/)?.[1]
+    }
+    expect(markAlign('standard')).toBe('start')
+    expect(markAlign('compact')).toBe('end')
+    expect(markAlign('modern')).toBe('center')
+  })
+
+  it('grows the framed band to cover everything standing on it', () => {
+    // The band carries the letterhead in white ink. When the content outgrew
+    // the fixed band, the overflow kept that ink and printed white on the
+    // white sheet: invisible, and only on the plan that shows the mark.
+    const framed = (extra: Record<string, unknown>) =>
+      buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { headerStyle: 'framed' },
+        ...extra,
+      })
+
+    const bare = framed({})
+    const loaded = framed({
+      logoDataUri: 'data:image/png;base64,AAAA',
+      torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
+    })
+
+    // A logo and a Torqvoice mark need more band than a bare letterhead.
+    expect(loaded.frame?.bandHeight).toBeGreaterThan(bare.frame?.bandHeight ?? 0)
+    // And the flow still starts below whatever the band grew to, or the first
+    // row would print on top of the letterhead.
+    expect(loaded.page.margin.top).toBeGreaterThan(loaded.frame?.bandHeight ?? 0)
+  })
+
   it('borrows the title block once a designer layout is saved', () => {
     // The default designer layout hides the title section; the sheet borrows
     // it and sets it under the header.
