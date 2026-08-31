@@ -1868,7 +1868,15 @@
       "slogan": "Kvalitetsservice du kan stole på",
       "footerNote": "Takk for handelen",
       "value": "Eksempel"
-    }
+    },
+    "logoUpload": "Last opp logo",
+    "logoReplace": "Bytt logo",
+    "logoRemove": "Fjern",
+    "logoUploading": "Laster opp…",
+    "logoFailed": "Kunne ikke laste opp bildet",
+    "logoSaved": "Logoen er oppdatert",
+    "logoCleared": "Logoen er fjernet",
+    "footerLogoHint": "Slå på logoen under Felter for å skrive den ut nederst på siden også."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

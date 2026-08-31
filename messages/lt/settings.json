@@ -1868,7 +1868,15 @@
       "slogan": "Kokybiškas aptarnavimas, kuriuo galite pasitikėti",
       "footerNote": "Ačiū, kad renkatės mus",
       "value": "Pavyzdys"
-    }
+    },
+    "logoUpload": "Įkelti logotipą",
+    "logoReplace": "Pakeisti logotipą",
+    "logoRemove": "Pašalinti",
+    "logoUploading": "Įkeliama…",
+    "logoFailed": "Nepavyko įkelti vaizdo",
+    "logoSaved": "Logotipas atnaujintas",
+    "logoCleared": "Logotipas pašalintas",
+    "footerLogoHint": "Įjunkite logotipą skiltyje Laukai, kad jis būtų spausdinamas ir puslapio apačioje."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

@@ -1,7 +1,8 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import type {
   InvoiceDocumentStyle,
   InvoiceLayoutConfig,
@@ -125,6 +126,88 @@ function Color({
   )
 }
 
+/**
+ * Swap the workshop's logo without leaving the designer.
+ *
+ * The same upload and the same setting as the company settings page, put
+ * where the logo is being looked at: somebody adjusting the letterhead has
+ * the wrong file in front of them precisely when they can see it is wrong,
+ * and sending them to another screen to fix it loses the layout they were
+ * part way through.
+ */
+function LogoUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const t = useTranslations('settings.designer')
+  const input = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+
+  const upload = async (file: File) => {
+    setBusy(true)
+    try {
+      const body = new FormData()
+      body.append('file', file)
+      const res = await fetch('/api/protected/upload/logo', { method: 'POST', body })
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}))
+        toast.error(error.error || t('logoFailed'))
+        return
+      }
+      const { url } = await res.json()
+      onChange(url)
+    } catch {
+      toast.error(t('logoFailed'))
+    } finally {
+      setBusy(false)
+      // Cleared so choosing the same file again still fires a change.
+      if (input.current) input.current.value = ''
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[6px] border border-[#e3e5e9] bg-white">
+          {value ? (
+            // Not next/image: an uploaded URL the loader cannot size.
+            <img src={value} alt="" className="max-h-full max-w-full object-contain" />
+          ) : (
+            <span className="text-[15px] text-[#c3c7cd]">◫</span>
+          )}
+        </div>
+        <div className="flex min-w-0 flex-1 gap-1.5">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => input.current?.click()}
+            className="flex-1 rounded-[6px] border border-[#d7dade] bg-white px-2 py-1.5 text-[12.5px] font-medium hover:bg-[#f6f7f8] disabled:opacity-60"
+          >
+            {busy ? t('logoUploading') : value ? t('logoReplace') : t('logoUpload')}
+          </button>
+          {value && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => onChange('')}
+              className="rounded-[6px] border border-[#d7dade] bg-white px-2 py-1.5 text-[12.5px] text-[#8a8f97] hover:text-[#dc2626] disabled:opacity-60"
+            >
+              {t('logoRemove')}
+            </button>
+          )}
+        </div>
+      </div>
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          if (file) void upload(file)
+        }}
+      />
+    </div>
+  )
+}
+
 function Slider({
   label,
   value,
@@ -211,6 +294,8 @@ export function DesignerInspector({
   onSectionStyle,
   onDocument,
   onTemplate,
+  logoUrl,
+  onLogo,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -223,6 +308,9 @@ export function DesignerInspector({
   onSectionStyle: (id: string, style: InvoiceSectionStyle | undefined) => void
   onDocument: (patch: InvoiceDocumentStyle) => void
   onTemplate: (patch: Partial<DesignerTemplate>) => void
+  /** The workshop's logo, editable from the header and the footer. */
+  logoUrl: string
+  onLogo: (url: string) => void
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -388,6 +476,7 @@ export function DesignerInspector({
 
           {section.id === 'header' && (
             <Group title={t('logo')}>
+              <LogoUpload value={logoUrl} onChange={onLogo} />
               {/* The logo is printed by the header, so its size is set where
                   the header is rather than in a list of sheet properties. */}
               <Slider
@@ -399,6 +488,16 @@ export function DesignerInspector({
                 onChange={(logoSize) => onTemplate({ logoSize })}
               />
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('logoHint')}</p>
+            </Group>
+          )}
+
+          {/* The footer prints the same logo when it is switched on below, so
+              it offers the same swap rather than sending somebody to the
+              header to change a picture they are looking at down here. */}
+          {section.id === 'footer' && (
+            <Group title={t('logo')}>
+              <LogoUpload value={logoUrl} onChange={onLogo} />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('footerLogoHint')}</p>
             </Group>
           )}
 

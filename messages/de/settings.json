@@ -1868,7 +1868,15 @@
       "slogan": "Qualität, auf die Sie sich verlassen können",
       "footerNote": "Vielen Dank für Ihren Auftrag",
       "value": "Beispiel"
-    }
+    },
+    "logoUpload": "Logo hochladen",
+    "logoReplace": "Logo ersetzen",
+    "logoRemove": "Entfernen",
+    "logoUploading": "Wird hochgeladen…",
+    "logoFailed": "Das Bild konnte nicht hochgeladen werden",
+    "logoSaved": "Logo aktualisiert",
+    "logoCleared": "Logo entfernt",
+    "footerLogoHint": "Schalten Sie das Logo unter Felder ein, um es auch am Seitenfuß zu drucken."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

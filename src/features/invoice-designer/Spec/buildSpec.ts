@@ -1353,6 +1353,19 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     .filter((column) => column.length > 0)
 
   const children: Node[] = []
+  // A shop that wants its mark along the bottom as well as the top, the way
+  // printed stationery often carries it. Sized against the footer's own text
+  // rather than the header's slider, which belongs to the letterhead.
+  if (fields.includes('logo') && data.logoUrl) {
+    children.push({
+      kind: 'image',
+      id: 'footer.logo',
+      src: data.logoUrl,
+      maxWidth: 120,
+      maxHeight: scale(size, 3.2),
+      align: 'center',
+    })
+  }
   if (data.portalUrl) {
     children.push({
       kind: 'text',

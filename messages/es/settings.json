@@ -608,7 +608,7 @@
       "service_title": "Título del servicio",
       "service_type": "Tipo de servicio",
       "tech_name": "Técnico",
-      "logo": "Logo",
+      "logo": "Logotipo",
       "company_name": "Nombre de empresa",
       "company_slogan": "Eslogan",
       "company_address": "Dirección",
@@ -1868,7 +1868,15 @@
       "slogan": "Calidad de servicio en la que puedes confiar",
       "footerNote": "Gracias por confiar en nosotros",
       "value": "Ejemplo"
-    }
+    },
+    "logoUpload": "Subir logotipo",
+    "logoReplace": "Cambiar logotipo",
+    "logoRemove": "Quitar",
+    "logoUploading": "Subiendo…",
+    "logoFailed": "No se pudo subir la imagen",
+    "logoSaved": "Logotipo actualizado",
+    "logoCleared": "Logotipo eliminado",
+    "footerLogoHint": "Activa el logotipo en Campos para imprimirlo también al pie de la página."
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

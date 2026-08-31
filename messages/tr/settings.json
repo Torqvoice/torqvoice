@@ -1868,7 +1868,15 @@
       "slogan": "Güvenebileceğiniz kaliteli hizmet",
       "footerNote": "İş birliğiniz için teşekkürler",
       "value": "Örnek"
-    }
+    },
+    "logoUpload": "Logo yükle",
+    "logoReplace": "Logoyu değiştir",
+    "logoRemove": "Kaldır",
+    "logoUploading": "Yükleniyor…",
+    "logoFailed": "Görsel yüklenemedi",
+    "logoSaved": "Logo güncellendi",
+    "logoCleared": "Logo kaldırıldı",
+    "footerLogoHint": "Sayfanın altında da yazdırmak için Alanlar bölümünden logoyu açın."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

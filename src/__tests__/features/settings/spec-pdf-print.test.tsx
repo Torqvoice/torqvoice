@@ -279,6 +279,33 @@ describe('the printed invoice follows the designed layout', () => {
     expect(loaded.page.margin.top).toBeGreaterThan(loaded.frame?.bandHeight ?? 0)
   })
 
+  it('prints the logo at the foot only when the footer asks for it', () => {
+    // Off by default, like the rest of the footer's details: a sheet that has
+    // always shown one line must not grow a second logo on deploy.
+    const withFooterLogo = (visible: boolean) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === 'footer'
+          ? {
+              ...section,
+              fields: (section.fields ?? []).map((f) => (f.id === 'logo' ? { ...f, visible } : f)),
+            }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        logoDataUri: 'data:image/png;base64,AAAA',
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    expect(withFooterLogo(false)).not.toContain('footer.logo')
+    expect(withFooterLogo(true)).toContain('footer.logo')
+  })
+
   it('borrows the title block once a designer layout is saved', () => {
     // The default designer layout hides the title section; the sheet borrows
     // it and sets it under the header.
