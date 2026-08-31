@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import {
   getInventoryPartsPaginated,
   getInventoryCategories,

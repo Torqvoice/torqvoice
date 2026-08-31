@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getLaborPresetsPaginated } from '@/features/labor-presets/Actions/laborPresetActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'

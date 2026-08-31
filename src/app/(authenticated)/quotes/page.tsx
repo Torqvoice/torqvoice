@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'

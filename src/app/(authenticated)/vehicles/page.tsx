@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
 import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions'

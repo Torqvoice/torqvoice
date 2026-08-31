@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getTranslations } from 'next-intl/server'
 import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'

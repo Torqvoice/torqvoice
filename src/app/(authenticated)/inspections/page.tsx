@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getInspectionsPaginated } from '@/features/inspections/Actions/inspectionActions'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { InspectionsClient } from './inspections-client'

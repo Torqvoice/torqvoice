@@ -1,4 +1,4 @@
-import { resolveListSort } from '@/lib/list-sort-preference'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getTranslations } from 'next-intl/server'
 import { getCustomersPaginated } from '@/features/customers/Actions/customerActions'
 import { CustomersClient } from './customers-client'
