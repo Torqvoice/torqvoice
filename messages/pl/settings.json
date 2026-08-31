@@ -635,6 +635,10 @@
         "name": "Kompaktowy",
         "description": "Bez ramek, jedna numerowana lista, tylko to, co konieczne"
       },
+      "minimal": {
+        "name": "Minimalny",
+        "description": "Sama typografia na bieli: bez ramek i pasów, tylko linie i światło"
+      },
       "itemized": {
         "name": "Pozycjami",
         "description": "Jedna numerowana lista pozycji z kolumną jednostki"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Wyrównanie",
     "alignCenter": "Środek",
+    "innerPadding": "Odstęp wewnętrzny",
     "totalsWidth": "Szerokość",
     "totalsWidthHint": "Puste wypełnia cały wiersz. Wartość w punktach zawiesza blok po prawej; w kolumnie przyjmuje szerokość kolumny.",
     "placement": "Rozmieszczenie",

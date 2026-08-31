@@ -635,6 +635,10 @@
         "name": "Compacte",
         "description": "Sans cadres, une liste numérotée, l’essentiel seulement"
       },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Typographie nue sur blanc : sans encadrés ni bandeaux, seulement des filets et de l'espace"
+      },
       "itemized": {
         "name": "Détaillé",
         "description": "Une liste de postes numérotée avec une colonne d'unité"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Alignement",
     "alignCenter": "Centre",
+    "innerPadding": "Marge intérieure",
     "totalsWidth": "Largeur",
     "totalsWidthHint": "Vide, le bloc occupe toute la ligne. Une valeur en points l'accroche à droite ; dans une colonne, il prend la largeur de la colonne.",
     "placement": "Placement",

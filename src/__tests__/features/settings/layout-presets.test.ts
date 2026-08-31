@@ -14,11 +14,12 @@ import {
 const LOCALES = readdirSync('messages')
 
 describe('layout presets', () => {
-  it('offers five arrangements', () => {
+  it('offers six arrangements', () => {
     expect(layoutPresets.map((p) => p.id)).toEqual([
       'classic',
       'letterhead',
       'compact',
+      'minimal',
       'itemized',
       'detailed',
     ])

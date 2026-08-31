@@ -43,6 +43,9 @@ export const invoiceSectionStyleSchema = z.object({
   /** Where the section sets its mark and lines. Unset follows the header
    *  style: compact leans left, standard right, modern centers. */
   align: z.enum(['left', 'center', 'right']).optional(),
+  /** Room inside the section's panel, in points. Unset keeps each panel's
+   *  own default, box or no box. */
+  padding: z.number().min(0).max(40).optional(),
   /** Extra room around the section in the flow, in points per edge. */
   marginTop: z.number().min(0).max(120).optional(),
   marginBottom: z.number().min(0).max(120).optional(),

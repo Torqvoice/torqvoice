@@ -635,6 +635,10 @@
         "name": "Kompakt",
         "description": "Uten rammer, én nummerert liste, bare det nødvendige"
       },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Ren typografi på hvitt: ingen bokser, ingen bånd, bare streker og luft"
+      },
       "itemized": {
         "name": "Spesifisert",
         "description": "Én nummerert liste med egen kolonne for enhet"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Justering",
     "alignCenter": "Midt",
+    "innerPadding": "Innvendig avstand",
     "totalsWidth": "Bredde",
     "totalsWidthHint": "Tom fyller hele raden. En verdi i punkter henger boksen til høyre; i en kolonne tar den kolonnens bredde.",
     "placement": "Plassering",

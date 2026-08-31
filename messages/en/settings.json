@@ -635,6 +635,10 @@
         "name": "Compact",
         "description": "No panels, one numbered list, only the essentials"
       },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Bare type on white: no boxes, no bands, just rules and whitespace"
+      },
       "itemized": {
         "name": "Itemized",
         "description": "One numbered item list with a unit column"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Alignment",
     "alignCenter": "Center",
+    "innerPadding": "Inner spacing",
     "totalsWidth": "Width",
     "totalsWidthHint": "Empty spans the row. Set points to hang the box on the right; in a column it takes the column's width.",
     "placement": "Placement",

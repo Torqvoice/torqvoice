@@ -534,6 +534,21 @@ export function DesignerInspector({
               ))}
             </div>
             <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('spacingHint')}</p>
+            {(BOXED_ELIGIBLE_SECTIONS.has(section.id) ||
+              section.id === 'bank_account' ||
+              section.id === 'totals') && (
+              <Slider
+                label={t('innerPadding')}
+                value={
+                  style.padding ??
+                  (section.id === 'totals' ? 0 : section.id === 'bank_account' ? 12 : 10)
+                }
+                min={0}
+                max={40}
+                suffix="pt"
+                onChange={(padding) => setStyle({ padding })}
+              />
+            )}
           </Group>
 
           {/* The slogan is the workshop's own words, kept in company settings

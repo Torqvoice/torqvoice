@@ -635,6 +635,10 @@
         "name": "Kompaktiškas",
         "description": "Be rėmelių, vienas numeruotas sąrašas, tik būtiniausia"
       },
+      "minimal": {
+        "name": "Minimalus",
+        "description": "Tik tekstas baltame fone: be rėmelių ir juostų, tik linijos ir erdvė"
+      },
       "itemized": {
         "name": "Detalizuotas",
         "description": "Vienas numeruotas eilučių sąrašas su mato vieneto stulpeliu"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Lygiavimas",
     "alignCenter": "Centre",
+    "innerPadding": "Vidinis tarpas",
     "totalsWidth": "Plotis",
     "totalsWidthHint": "Tuščias užima visą eilutę. Nurodžius taškus, blokas kabinamas dešinėje; stulpelyje jis užima stulpelio plotį.",
     "placement": "Išdėstymas",

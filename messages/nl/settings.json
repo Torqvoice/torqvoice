@@ -635,6 +635,10 @@
         "name": "Compact",
         "description": "Zonder kaders, één genummerde lijst, alleen het nodige"
       },
+      "minimal": {
+        "name": "Minimaal",
+        "description": "Kale typografie op wit: geen kaders of banden, alleen lijnen en witruimte"
+      },
       "itemized": {
         "name": "Gespecificeerd",
         "description": "Eén genummerde regellijst met een eigen eenheidskolom"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Uitlijning",
     "alignCenter": "Midden",
+    "innerPadding": "Binnenruimte",
     "totalsWidth": "Breedte",
     "totalsWidthHint": "Leeg vult de hele rij. Met een waarde in punten hangt het blok rechts; in een kolom neemt het de breedte van de kolom.",
     "placement": "Plaatsing",

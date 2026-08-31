@@ -635,6 +635,10 @@
         "name": "Kompakt",
         "description": "Ohne Kästen, eine nummerierte Liste, nur das Nötigste"
       },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Reine Typografie auf Weiß: keine Kästen, keine Bänder, nur Linien und Weißraum"
+      },
       "itemized": {
         "name": "Positionsliste",
         "description": "Eine nummerierte Positionsliste mit eigener Einheitenspalte"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Ausrichtung",
     "alignCenter": "Mitte",
+    "innerPadding": "Innenabstand",
     "totalsWidth": "Breite",
     "totalsWidthHint": "Leer füllt die Zeile. Ein Wert in Punkt hängt den Kasten rechts an; in einer Spalte nimmt er deren Breite.",
     "placement": "Platzierung",

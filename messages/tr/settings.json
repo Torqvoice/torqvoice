@@ -635,6 +635,10 @@
         "name": "Kompakt",
         "description": "Çerçevesiz, tek numaralı liste, yalnızca gerekli olanlar"
       },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Beyaz üzerine yalın tipografi: kutu ve bant yok, yalnızca çizgiler ve boşluk"
+      },
       "itemized": {
         "name": "Kalem kalem",
         "description": "Birim sütunlu tek numaralı kalem listesi"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Hizalama",
     "alignCenter": "Orta",
+    "innerPadding": "İç boşluk",
     "totalsWidth": "Genişlik",
     "totalsWidthHint": "Boş bırakılırsa satırın tamamını kaplar. Punto değeri girilirse blok sağa asılır; bir sütunda sütunun genişliğini alır.",
     "placement": "Yerleşim",

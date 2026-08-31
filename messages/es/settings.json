@@ -635,6 +635,10 @@
         "name": "Compacta",
         "description": "Sin paneles, una lista numerada, solo lo esencial"
       },
+      "minimal": {
+        "name": "Minimalista",
+        "description": "Solo tipografía sobre blanco: sin recuadros ni bandas, solo líneas y espacio"
+      },
       "itemized": {
         "name": "Detallado",
         "description": "Una lista de posiciones numerada con columna de unidad"
@@ -1774,6 +1778,7 @@
     },
     "alignment": "Alineación",
     "alignCenter": "Centro",
+    "innerPadding": "Espaciado interno",
     "totalsWidth": "Ancho",
     "totalsWidthHint": "Vacío ocupa toda la fila. Con un valor en puntos, el bloque cuelga a la derecha; en una columna toma el ancho de la columna.",
     "placement": "Colocación",

@@ -146,6 +146,8 @@ function lookOf(section: InvoiceSection, theme: DocumentTheme) {
     ruleWidth: s?.borderWidth,
     /** A border around the whole table, not only rules between rows. */
     outerBorder: s?.outerBorder === true,
+    /** Room inside the section's panel; unset keeps each panel's default. */
+    padding: s?.padding,
     /** Banding behind alternate rows; unset follows the sheet's setting. */
     stripes: s?.stripes,
     fontSize: s?.fontSize,
@@ -231,7 +233,9 @@ function panel(
         look.border || (look.ruleWidth !== undefined ? look.muted : boxed ? '#e3e5e9' : undefined),
       borderWidth: boxed || look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children: [
       ...(section.heading === false
@@ -1081,7 +1085,7 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
           borderColor: look.border || theme.accent,
           borderWidth: look.ruleWidth ?? 1,
           radius: 4,
-          padding: 4,
+          padding: look.padding ?? 4,
         }
       : variant === 'panel'
         ? {
@@ -1089,16 +1093,17 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
             borderColor: look.border || '#e3e5e9',
             borderWidth: look.ruleWidth ?? 0,
             radius: 4,
-            padding: 4,
+            padding: look.padding ?? 4,
           }
         : variant === 'box'
           ? {
               borderColor: look.border || look.text,
               borderWidth: look.ruleWidth ?? 1,
               background: look.fill,
+              padding: look.padding,
             }
           : // 'classic': nothing but the lines.
-            { background: look.fill }
+            { background: look.fill, padding: look.padding }
 
   const box: Node = {
     kind: 'stack',
@@ -1190,7 +1195,9 @@ function notesBlock(
       borderColor: look.border,
       borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children,
   }
@@ -1233,7 +1240,9 @@ function attachedDocumentsBlock(
       borderColor: look.border,
       borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children,
   }
@@ -1289,7 +1298,9 @@ function warrantyBlock(
       borderColor: look.border,
       borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children,
   }
@@ -1374,7 +1385,7 @@ function paymentBlock(
           borderColor: look.border || theme.primary,
           borderWidth: 1,
           radius: 4,
-          padding: 12,
+          padding: look.padding ?? 12,
         }
       : variant === 'panel'
         ? {
@@ -1382,17 +1393,17 @@ function paymentBlock(
             borderColor: look.border || '#e3e5e9',
             borderWidth: 0.75,
             radius: 3,
-            padding: 10,
+            padding: look.padding ?? 10,
           }
         : variant === 'outline'
           ? {
               background: look.fill,
               borderColor: look.border || look.text,
               borderWidth: 0.5,
-              padding: 10,
+              padding: look.padding ?? 10,
             }
           : // 'lines': nothing but the type.
-            { background: look.fill }
+            { background: look.fill, padding: look.padding }
 
   return {
     kind: 'stack',
@@ -1436,8 +1447,8 @@ function telegramBlock(
     gap: 4,
     style:
       section.boxed !== false
-        ? { background: look.fill || '#fafafa', radius: 6, padding: 10 }
-        : { background: look.fill },
+        ? { background: look.fill || '#fafafa', radius: 6, padding: look.padding ?? 10 }
+        : { background: look.fill, padding: look.padding ?? 10 },
     children: [
       { kind: 'image', src: data.telegramQr.dataUri, maxWidth: 56, maxHeight: 56, align: 'center' },
       {
