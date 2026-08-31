@@ -101,6 +101,7 @@ export const emptyPart = (): QuotePartInput => ({
   unitPrice: 0,
   total: 0,
   excluded: false,
+  priceOverridden: false,
   // Free-text line by default; set when picked from stock.
   inventoryPartId: null,
 })
