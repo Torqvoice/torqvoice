@@ -53,6 +53,39 @@ export function createClient(config: AiConfig): OpenAI {
   return new OpenAI({ apiKey: config.apiKey })
 }
 
+/**
+ * OpenAI's reasoning models (the o-series and the GPT-5 family) reject the
+ * classic `max_tokens` parameter with a 400 and only accept
+ * `max_completion_tokens`; they likewise refuse any temperature other than the
+ * default. Every current OpenAI chat model accepts `max_completion_tokens`, so
+ * it is used across the board there. The Anthropic compatibility endpoint
+ * keeps the classic parameter.
+ *
+ * Reasoning models spend billed-but-hidden thinking tokens inside the same
+ * cap before producing a visible answer, so they get headroom on top of the
+ * requested answer budget; without it the reply comes back truncated or empty.
+ */
+const REASONING_HEADROOM = 4000
+
+function isReasoningModel(model: string): boolean {
+  return /^(o\d|gpt-5)/i.test(model)
+}
+
+export function completionTuning(
+  config: AiConfig,
+  maxTokens: number,
+  temperature?: number
+): { max_tokens?: number; max_completion_tokens?: number; temperature?: number } {
+  if (config.provider !== 'openai') {
+    return { max_tokens: maxTokens, ...(temperature !== undefined && { temperature }) }
+  }
+  const reasoning = isReasoningModel(config.model)
+  return {
+    max_completion_tokens: reasoning ? maxTokens + REASONING_HEADROOM : maxTokens,
+    ...(temperature !== undefined && !reasoning && { temperature }),
+  }
+}
+
 function languageInstruction(locale: Locale): string {
   if (locale === 'en') return ''
   const name = localeNames[locale] || locale
@@ -74,8 +107,7 @@ async function chatCompletion(
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      temperature: 0.7,
-      max_tokens: 2000,
+      ...completionTuning(config, 2000, 0.7),
     })
 
     return response.choices[0]?.message?.content ?? ''
@@ -109,8 +141,7 @@ export async function visionCompletion(
         { role: 'system', content: systemPrompt },
         { role: 'user', content },
       ],
-      temperature: 0.3,
-      max_tokens: 1000,
+      ...completionTuning(config, 1000, 0.3),
     })
 
     return response.choices[0]?.message?.content ?? ''
@@ -235,7 +266,7 @@ export async function testAiConnection(organizationId: string): Promise<boolean>
   const response = await client.chat.completions.create({
     model: config.model,
     messages: [{ role: 'user', content: 'Say OK' }],
-    max_tokens: 5,
+    ...completionTuning(config, 5),
   })
 
   return !!response.choices[0]?.message?.content
