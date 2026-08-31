@@ -1,3 +1,4 @@
+import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getTranslations } from 'next-intl/server'
 import { getCustomersPaginated } from '@/features/customers/Actions/customerActions'
 import { CustomersClient } from './customers-client'
@@ -15,12 +16,16 @@ export default async function CustomersPage({
   }>
 }) {
   const params = await searchParams
+  const sort = await resolveListSort('customers', params, {
+    sortBy: undefined,
+    sortOrder: 'desc',
+  })
   const result = await getCustomersPaginated({
     page: params.page ? parseInt(params.page) : 1,
     pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
     search: params.search,
-    sortBy: params.sortBy,
-    sortOrder: params.sortOrder as 'asc' | 'desc' | undefined,
+    sortBy: sort.sortBy,
+    sortOrder: sort.sortOrder,
   })
 
   if (!result.success || !result.data) {
@@ -42,8 +47,8 @@ export default async function CustomersPage({
         <CustomersClient
           data={result.data}
           search={params.search || ''}
-          sortBy={params.sortBy || ''}
-          sortOrder={(params.sortOrder as 'asc' | 'desc') || 'desc'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
         />
       </div>
     </>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useState, useCallback, useTransition, useRef, useEffect } from 'react'
@@ -133,6 +134,7 @@ export function VehiclesClient({
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
   const [archiveTarget, setArchiveTarget] = useState<{ id: string; name: string } | null>(null)
   const tableNav = useTableKeyboardNav()
+  useRememberedSort('vehicles')
   const modal = useGlassModal()
   const confirm = useConfirm()
 

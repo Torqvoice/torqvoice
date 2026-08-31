@@ -1,5 +1,6 @@
 'use client'
 
+import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { formatQuantity } from '@/lib/format-quantity'
 import { interactiveRow } from '@/lib/interactive-row'
@@ -164,6 +165,7 @@ export function InventoryClient({
   const t = useTranslations('inventory')
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
+  useRememberedSort('inventory')
   const [showForm, setShowForm] = useState(false)
   const [editPart, setEditPart] = useState<InventoryPart | null>(null)
   const [showMarkup, setShowMarkup] = useState(false)
