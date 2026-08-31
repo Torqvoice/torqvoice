@@ -127,15 +127,27 @@ function Color({
 }
 
 /**
- * Swap the workshop's logo without leaving the designer.
+ * Give this document a mark of its own, without leaving the designer.
  *
- * The same upload and the same setting as the company settings page, put
- * where the logo is being looked at: somebody adjusting the letterhead has
- * the wrong file in front of them precisely when they can see it is wrong,
- * and sending them to another screen to fix it loses the layout they were
- * part way through.
+ * A workshop's paperwork does not always want the badge the app wears: a
+ * wider version for a letterhead, or one with the address set into it. So
+ * what is uploaded here belongs to this document, and the company logo is
+ * what prints until something is. Changing it here never touches the picture
+ * in the sidebar, which is the surprise this exists to avoid.
+ *
+ * Put where the logo is being looked at, because somebody adjusting the
+ * letterhead can see the file is wrong precisely because it is in front of
+ * them, and sending them to another screen loses the layout in progress.
  */
-function LogoUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+function LogoUpload({
+  value,
+  own,
+  onChange,
+}: {
+  value: string
+  own: boolean
+  onChange: (url: string) => void
+}) {
   const t = useTranslations('settings.designer')
   const input = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
@@ -182,18 +194,24 @@ function LogoUpload({ value, onChange }: { value: string; onChange: (url: string
           >
             {busy ? t('logoUploading') : value ? t('logoReplace') : t('logoUpload')}
           </button>
-          {value && (
+          {/* Clearing this document's own mark returns it to the company
+              logo; it never deletes the company logo itself, which belongs
+              to the app rather than to any sheet. */}
+          {own && (
             <button
               type="button"
               disabled={busy}
               onClick={() => onChange('')}
               className="rounded-[6px] border border-[#d7dade] bg-white px-2 py-1.5 text-[12.5px] text-[#8a8f97] hover:text-[#dc2626] disabled:opacity-60"
             >
-              {t('logoRemove')}
+              {t('logoReset')}
             </button>
           )}
         </div>
       </div>
+      <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+        {own ? t('logoOwn') : t('logoInherited')}
+      </p>
       <input
         ref={input}
         type="file"
@@ -295,6 +313,7 @@ export function DesignerInspector({
   onDocument,
   onTemplate,
   logoUrl,
+  ownLogo,
   onLogo,
 }: {
   layout: InvoiceLayoutConfig
@@ -308,8 +327,10 @@ export function DesignerInspector({
   onSectionStyle: (id: string, style: InvoiceSectionStyle | undefined) => void
   onDocument: (patch: InvoiceDocumentStyle) => void
   onTemplate: (patch: Partial<DesignerTemplate>) => void
-  /** The workshop's logo, editable from the header and the footer. */
+  /** The picture this document will print, whichever it comes from. */
   logoUrl: string
+  /** Whether that picture is this document's own rather than the company's. */
+  ownLogo: boolean
   onLogo: (url: string) => void
 }) {
   const t = useTranslations('settings.designer')
@@ -483,7 +504,7 @@ export function DesignerInspector({
 
           {section.id === 'header' && (
             <Group title={t('logo')}>
-              <LogoUpload value={logoUrl} onChange={onLogo} />
+              <LogoUpload value={logoUrl} own={ownLogo} onChange={onLogo} />
               {/* The logo is printed by the header, so its size is set where
                   the header is rather than in a list of sheet properties. */}
               <Slider
@@ -503,7 +524,7 @@ export function DesignerInspector({
               header to change a picture they are looking at down here. */}
           {section.id === 'footer' && (
             <Group title={t('logo')}>
-              <LogoUpload value={logoUrl} onChange={onLogo} />
+              <LogoUpload value={logoUrl} own={ownLogo} onChange={onLogo} />
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('footerLogoHint')}</p>
             </Group>
           )}

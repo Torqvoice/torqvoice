@@ -1871,12 +1871,12 @@
     },
     "logoUpload": "Importer un logo",
     "logoReplace": "Remplacer le logo",
-    "logoRemove": "Retirer",
     "logoUploading": "Import en cours…",
     "logoFailed": "Impossible d'importer cette image",
-    "logoSaved": "Logo mis à jour",
-    "logoCleared": "Logo retiré",
-    "footerLogoHint": "Activez le logo dans Champs pour l'imprimer aussi en bas de page."
+    "footerLogoHint": "Activez le logo dans Champs pour l'imprimer aussi en bas de page.",
+    "logoReset": "Utiliser le logo de l'entreprise",
+    "logoOwn": "Imprimé sur ce document uniquement. Le logo de l'entreprise reste inchangé.",
+    "logoInherited": "Le logo de l'entreprise est utilisé. Importez-en un ici pour en utiliser un autre sur ce document seulement."
   },
   "preview": {
     "title": "Révision des freins et vidange",

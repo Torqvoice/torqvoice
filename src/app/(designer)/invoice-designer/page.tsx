@@ -82,6 +82,7 @@ export default async function InvoiceDesignerPage({
     fontFamily: settings[`${prefix}.fontFamily`] || 'Helvetica',
     headerStyle: settings[`${prefix}.headerStyle`] || 'standard',
     logoSize: Number(settings[`${prefix}.logoSize`]) || 100,
+    logoUrl: settings[`${prefix}.logo`] || '',
   })
 
   return (

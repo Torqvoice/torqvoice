@@ -1871,12 +1871,12 @@
     },
     "logoUpload": "Prześlij logo",
     "logoReplace": "Zmień logo",
-    "logoRemove": "Usuń",
     "logoUploading": "Przesyłanie…",
     "logoFailed": "Nie udało się przesłać obrazu",
-    "logoSaved": "Logo zaktualizowane",
-    "logoCleared": "Logo usunięte",
-    "footerLogoHint": "Włącz logo w sekcji Pola, aby drukować je także na dole strony."
+    "footerLogoHint": "Włącz logo w sekcji Pola, aby drukować je także na dole strony.",
+    "logoReset": "Użyj logo firmy",
+    "logoOwn": "Drukowane tylko na tym dokumencie. Logo firmy pozostaje bez zmian.",
+    "logoInherited": "Używane jest logo firmy. Prześlij tutaj inne, aby użyć go tylko na tym dokumencie."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

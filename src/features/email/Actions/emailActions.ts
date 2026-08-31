@@ -1,4 +1,5 @@
-'use server'
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
+;('use server')
 
 import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
@@ -33,6 +34,8 @@ async function getWorkshopSettings(organizationId: string) {
             'workshop.email',
             'workshop.slogan',
             'workshop.logo',
+            'invoice.logo',
+            'quote.logo',
             'workshop.currencyCode',
             'workshop.currencyFormat',
             'workshop.emailFromName',
@@ -132,7 +135,7 @@ export async function sendQuoteEmail(input: {
         throw new Error('Email sending is disabled. Enable it in Settings.')
       }
 
-      const logoDataUri = await loadLogoDataUri(settings['workshop.logo'])
+      const logoDataUri = await loadLogoDataUri(documentLogoPath(settings, 'quote'))
       const currencyCode = settings['workshop.currencyCode'] || 'USD'
       const currencyFormat: 'symbol' | 'code' =
         settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
@@ -316,7 +319,7 @@ export async function sendInvoiceEmail(input: {
         throw new Error('Email sending is disabled. Enable it in Settings.')
       }
 
-      const logoDataUri = await loadLogoDataUri(settings['workshop.logo'])
+      const logoDataUri = await loadLogoDataUri(documentLogoPath(settings, 'invoice'))
       const currencyCode = settings['workshop.currencyCode'] || 'USD'
       const currencyFormat: 'symbol' | 'code' =
         settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'

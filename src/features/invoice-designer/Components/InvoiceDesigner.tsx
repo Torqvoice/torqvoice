@@ -34,7 +34,6 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
@@ -118,7 +117,7 @@ export function InvoiceDesigner({
   initialSavedDesigns = [],
   initialPresetId,
   initialActiveDesigns,
-  workshop: initialWorkshop,
+  workshop: companyWorkshop,
   customFields,
 }: {
   initialDocumentType: DocumentType
@@ -136,10 +135,6 @@ export function InvoiceDesigner({
   customFields: DesignerFieldDef[]
 }) {
   const router = useRouter()
-  // The logo is editable from here now, so it is state rather than a fixed
-  // prop: an upload has to show on the sheet immediately, not after a reload.
-  const [logoUrl, setLogoUrl] = useState(initialWorkshop.logoUrl ?? '')
-  const workshop = useMemo(() => ({ ...initialWorkshop, logoUrl }), [initialWorkshop, logoUrl])
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
@@ -204,6 +199,13 @@ export function InvoiceDesigner({
 
   const layout = layouts[docType]
   const template = templates[docType]
+  // What this document actually prints: its own mark when it has one, the
+  // company logo otherwise. The same fallback the print routes apply, so the
+  // canvas cannot promise a picture the paper will not carry.
+  const workshop = useMemo(
+    () => ({ ...companyWorkshop, logoUrl: template.logoUrl || companyWorkshop.logoUrl || '' }),
+    [companyWorkshop, template.logoUrl]
+  )
 
   /**
    * The labels the printed sheet uses, resolved from the same `pdf.json` the
@@ -586,22 +588,6 @@ export function InvoiceDesigner({
     [layout, setLayout]
   )
 
-  /**
-   * The logo belongs to the workshop, not to this layout, so it is written
-   * straight away rather than waiting on Save. Somebody who swaps a logo here
-   * and closes the tab has still swapped their logo, which is what the
-   * company settings page does with the same picture.
-   */
-  const applyLogo = useCallback(
-    (url: string) => {
-      setLogoUrl(url)
-      setSettings({ [SETTING_KEYS.COMPANY_LOGO]: url })
-        .then(() => toast.success(url ? t('logoSaved') : t('logoCleared')))
-        .catch(() => toast.error(t('couldNotSave')))
-    },
-    [t]
-  )
-
   const save = async () => {
     setSaving(true)
     try {
@@ -624,6 +610,7 @@ export function InvoiceDesigner({
           [`${prefix}.fontFamily`]: template.fontFamily,
           [`${prefix}.headerStyle`]: template.headerStyle,
           [`${prefix}.logoSize`]: String(template.logoSize),
+          [`${prefix}.logo`]: template.logoUrl,
         }),
       ])
       setDirty(false)
@@ -973,8 +960,9 @@ export function InvoiceDesigner({
           onSectionStyle={patchSectionStyle}
           onDocument={patchDocument}
           onTemplate={setTemplate}
-          logoUrl={logoUrl}
-          onLogo={applyLogo}
+          logoUrl={workshop.logoUrl}
+          ownLogo={!!template.logoUrl}
+          onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>
 

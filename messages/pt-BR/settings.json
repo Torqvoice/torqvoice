@@ -1871,12 +1871,12 @@
     },
     "logoUpload": "Enviar logotipo",
     "logoReplace": "Substituir logotipo",
-    "logoRemove": "Remover",
     "logoUploading": "Enviando…",
     "logoFailed": "Não foi possível enviar a imagem",
-    "logoSaved": "Logotipo atualizado",
-    "logoCleared": "Logotipo removido",
-    "footerLogoHint": "Ative o logotipo em Campos para imprimi-lo também no rodapé."
+    "footerLogoHint": "Ative o logotipo em Campos para imprimi-lo também no rodapé.",
+    "logoReset": "Usar o logotipo da empresa",
+    "logoOwn": "Impresso somente neste documento. O logotipo da empresa não muda.",
+    "logoInherited": "Usando o logotipo da empresa. Envie um aqui para usar outro somente neste documento."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

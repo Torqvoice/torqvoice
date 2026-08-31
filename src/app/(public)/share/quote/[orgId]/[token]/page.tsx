@@ -1,3 +1,4 @@
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { QuoteView } from './quote-view'
@@ -84,6 +85,7 @@ export default async function PublicQuotePage({
             'workshop.email',
             'workshop.slogan',
             'workshop.logo',
+            'quote.logo',
             'workshop.currencyCode',
             'workshop.currencyFormat',
             'workshop.dateFormat',
@@ -160,7 +162,7 @@ export default async function PublicQuotePage({
     settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
 
   // Rewrite logo URL for public access
-  const rawLogoUrl = settingsMap['workshop.logo'] || ''
+  const rawLogoUrl = documentLogoPath(settingsMap, 'quote')
   let logoUrl = ''
   if (rawLogoUrl) {
     const match = rawLogoUrl.match(/^\/api\/files\/[^/]+\/(.+)$/)

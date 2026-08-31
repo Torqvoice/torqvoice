@@ -1,3 +1,4 @@
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
@@ -107,6 +108,7 @@ export default async function PublicInvoicePage({
             'workshop.email',
             'workshop.slogan',
             'workshop.logo',
+            'invoice.logo',
             'workshop.unitSystem',
             'workshop.currencyCode',
             'workshop.currencyFormat',
@@ -207,7 +209,7 @@ export default async function PublicInvoicePage({
 
   const showLogo = settingsMap['invoice.showLogo'] !== 'false'
   const showCompanyName = settingsMap['invoice.showCompanyName'] !== 'false'
-  const rawLogoUrl = settingsMap['workshop.logo'] || ''
+  const rawLogoUrl = documentLogoPath(settingsMap, 'invoice')
   const logoUrl = rawLogoUrl ? toPublicFileUrl(rawLogoUrl, token) : ''
 
   // Determine which online payment providers are enabled for this org

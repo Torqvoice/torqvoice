@@ -1871,12 +1871,12 @@
     },
     "logoUpload": "Subir logotipo",
     "logoReplace": "Cambiar logotipo",
-    "logoRemove": "Quitar",
     "logoUploading": "Subiendo…",
     "logoFailed": "No se pudo subir la imagen",
-    "logoSaved": "Logotipo actualizado",
-    "logoCleared": "Logotipo eliminado",
-    "footerLogoHint": "Activa el logotipo en Campos para imprimirlo también al pie de la página."
+    "footerLogoHint": "Activa el logotipo en Campos para imprimirlo también al pie de la página.",
+    "logoReset": "Usar el logotipo de la empresa",
+    "logoOwn": "Se imprime solo en este documento. El logotipo de la empresa no cambia.",
+    "logoInherited": "Se usa el logotipo de la empresa. Sube uno aquí para usar otro solo en este documento."
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

@@ -1871,12 +1871,12 @@
     },
     "logoUpload": "Logo yükle",
     "logoReplace": "Logoyu değiştir",
-    "logoRemove": "Kaldır",
     "logoUploading": "Yükleniyor…",
     "logoFailed": "Görsel yüklenemedi",
-    "logoSaved": "Logo güncellendi",
-    "logoCleared": "Logo kaldırıldı",
-    "footerLogoHint": "Sayfanın altında da yazdırmak için Alanlar bölümünden logoyu açın."
+    "footerLogoHint": "Sayfanın altında da yazdırmak için Alanlar bölümünden logoyu açın.",
+    "logoReset": "Şirket logosunu kullan",
+    "logoOwn": "Yalnızca bu belgede yazdırılır. Şirket logosu değişmez.",
+    "logoInherited": "Şirket logosu kullanılıyor. Yalnızca bu belgede farklı bir logo kullanmak için buraya yükleyin."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

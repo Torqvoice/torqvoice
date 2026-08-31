@@ -1871,12 +1871,12 @@
     },
     "logoUpload": "Įkelti logotipą",
     "logoReplace": "Pakeisti logotipą",
-    "logoRemove": "Pašalinti",
     "logoUploading": "Įkeliama…",
     "logoFailed": "Nepavyko įkelti vaizdo",
-    "logoSaved": "Logotipas atnaujintas",
-    "logoCleared": "Logotipas pašalintas",
-    "footerLogoHint": "Įjunkite logotipą skiltyje Laukai, kad jis būtų spausdinamas ir puslapio apačioje."
+    "footerLogoHint": "Įjunkite logotipą skiltyje Laukai, kad jis būtų spausdinamas ir puslapio apačioje.",
+    "logoReset": "Naudoti įmonės logotipą",
+    "logoOwn": "Spausdinamas tik šiame dokumente. Įmonės logotipas nekeičiamas.",
+    "logoInherited": "Naudojamas įmonės logotipas. Įkelkite kitą čia, kad jis būtų naudojamas tik šiame dokumente."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",
