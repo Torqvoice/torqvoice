@@ -154,6 +154,10 @@ export const SETTING_KEYS = {
   WORKBOARD_WORK_DAY_END: 'workboard.workDayEnd',
   INVOICE_LAYOUT_CONFIG: 'invoice.layoutConfig',
   QUOTE_LAYOUT_CONFIG: 'quote.layoutConfig',
+  // A mark for the paperwork alone. Unset means the documents print the
+  // company logo, which is what every sheet did before this existed.
+  INVOICE_LOGO: 'invoice.logo',
+  QUOTE_LOGO: 'quote.logo',
   AI_PROVIDER: 'ai.provider',
   AI_API_KEY: 'ai.apiKey',
   AI_MODEL: 'ai.model',

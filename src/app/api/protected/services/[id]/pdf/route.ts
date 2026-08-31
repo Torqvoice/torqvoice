@@ -11,6 +11,7 @@ import { PDFDocument } from 'pdf-lib'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { formatDateForPdf } from '@/lib/format'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
@@ -193,9 +194,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       }
     }
 
-    // Load company logo as base64 data URI
+    // The document's own mark when it has one, the company logo otherwise.
     let logoDataUri: string | undefined
-    const logoPath = settingsMap['workshop.logo']
+    const logoPath = documentLogoPath(settingsMap, 'invoice')
     if (logoPath) {
       try {
         const fullPath = resolveUploadPath(logoPath)

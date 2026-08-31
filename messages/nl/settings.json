@@ -1868,7 +1868,15 @@
       "slogan": "Kwaliteit waar u op kunt bouwen",
       "footerNote": "Bedankt voor uw opdracht",
       "value": "Voorbeeld"
-    }
+    },
+    "logoUpload": "Logo uploaden",
+    "logoReplace": "Logo vervangen",
+    "logoUploading": "Uploaden…",
+    "logoFailed": "Kon die afbeelding niet uploaden",
+    "footerLogoHint": "Zet het logo aan bij Velden om het ook onderaan de pagina af te drukken.",
+    "logoReset": "Bedrijfslogo gebruiken",
+    "logoOwn": "Wordt alleen op dit document afgedrukt. Het bedrijfslogo blijft ongewijzigd.",
+    "logoInherited": "Het bedrijfslogo wordt gebruikt. Upload er hier een om alleen op dit document een ander te gebruiken."
   },
   "preview": {
     "title": "Remservice en oliewissel",

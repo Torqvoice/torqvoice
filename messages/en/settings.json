@@ -1868,7 +1868,15 @@
       "slogan": "Quality service you can trust",
       "footerNote": "Thank you for your business",
       "value": "Sample"
-    }
+    },
+    "logoUpload": "Upload logo",
+    "logoReplace": "Replace logo",
+    "logoUploading": "Uploading…",
+    "logoFailed": "Could not upload that image",
+    "footerLogoHint": "Switch the logo on under Fields to print it at the foot of the page too.",
+    "logoReset": "Use the company logo",
+    "logoOwn": "Printed on this document only. The company logo is unchanged.",
+    "logoInherited": "Using the company logo. Upload one here to use a different mark on this document only."
   },
   "preview": {
     "title": "Brake Service & Oil Change",

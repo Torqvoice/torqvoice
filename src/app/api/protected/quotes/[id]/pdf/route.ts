@@ -1,3 +1,4 @@
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
@@ -91,7 +92,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     let logoDataUri: string | undefined
-    const logoPath = settingsMap['workshop.logo']
+    const logoPath = documentLogoPath(settingsMap, 'quote')
     if (logoPath) {
       try {
         const fullPath = resolveUploadPath(logoPath)

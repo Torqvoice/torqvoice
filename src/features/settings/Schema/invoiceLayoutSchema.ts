@@ -237,6 +237,9 @@ export const BUILTIN_HEADER_FIELDS = [
  */
 export const BUILTIN_FOOTER_FIELDS = [
   { id: 'footer_note', name: 'Footer Note' },
+  // Off unless asked for, the way the rest of the footer details are: a shop
+  // that wants its mark at the foot of the page as well as the top can say so.
+  { id: 'logo', name: 'Logo' },
   { id: 'company_name', name: 'Company Name' },
   { id: 'company_address', name: 'Address' },
   { id: 'company_phone', name: 'Phone' },

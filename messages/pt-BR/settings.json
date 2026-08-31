@@ -608,7 +608,7 @@
       "service_title": "Título do serviço",
       "service_type": "Tipo de serviço",
       "tech_name": "Técnico",
-      "logo": "Logo",
+      "logo": "Logotipo",
       "company_name": "Nome da empresa",
       "company_slogan": "Slogan",
       "company_address": "Endereço",
@@ -1868,7 +1868,15 @@
       "slogan": "Serviço de qualidade em que você pode confiar",
       "footerNote": "Obrigado pela preferência",
       "value": "Exemplo"
-    }
+    },
+    "logoUpload": "Enviar logotipo",
+    "logoReplace": "Substituir logotipo",
+    "logoUploading": "Enviando…",
+    "logoFailed": "Não foi possível enviar a imagem",
+    "footerLogoHint": "Ative o logotipo em Campos para imprimi-lo também no rodapé.",
+    "logoReset": "Usar o logotipo da empresa",
+    "logoOwn": "Impresso somente neste documento. O logotipo da empresa não muda.",
+    "logoInherited": "Usando o logotipo da empresa. Envie um aqui para usar outro somente neste documento."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

@@ -17,6 +17,12 @@ export interface DesignerTemplate {
   fontFamily: string
   headerStyle: string
   logoSize: number
+  /**
+   * A mark for this document alone. Empty means the sheet prints the company
+   * logo, so a workshop that wants one picture everywhere sets it once in
+   * company settings and never thinks about this.
+   */
+  logoUrl: string
 }
 
 /**

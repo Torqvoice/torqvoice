@@ -22,6 +22,7 @@ import {
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
   materializeHiddenSection,
+  mergeWithDefaults,
   toCustomFieldId,
   type InvoiceDocumentStyle,
   type InvoiceLayoutConfig,
@@ -116,7 +117,7 @@ export function InvoiceDesigner({
   initialSavedDesigns = [],
   initialPresetId,
   initialActiveDesigns,
-  workshop,
+  workshop: companyWorkshop,
   customFields,
 }: {
   initialDocumentType: DocumentType
@@ -198,6 +199,13 @@ export function InvoiceDesigner({
 
   const layout = layouts[docType]
   const template = templates[docType]
+  // What this document actually prints: its own mark when it has one, the
+  // company logo otherwise. The same fallback the print routes apply, so the
+  // canvas cannot promise a picture the paper will not carry.
+  const workshop = useMemo(
+    () => ({ ...companyWorkshop, logoUrl: template.logoUrl || companyWorkshop.logoUrl || '' }),
+    [companyWorkshop, template.logoUrl]
+  )
 
   /**
    * The labels the printed sheet uses, resolved from the same `pdf.json` the
@@ -379,7 +387,10 @@ export function InvoiceDesigner({
   /** Bring a saved design back, onto whichever document is being edited. */
   const applyDesign = useCallback(
     (design: SavedDesign) => {
-      setLayout(JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig)
+      // Merged, not taken as written: a design saved a year ago predates every
+      // section and field added since, and loading it verbatim would hide them
+      // with no way to switch them back on.
+      setLayout(mergeWithDefaults(JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig))
       setTemplates((prev) => ({ ...prev, [docType]: { ...design.template } }))
       // Its name becomes the working name, so the next save updates it.
       setDesignName(design.name)
@@ -599,6 +610,7 @@ export function InvoiceDesigner({
           [`${prefix}.fontFamily`]: template.fontFamily,
           [`${prefix}.headerStyle`]: template.headerStyle,
           [`${prefix}.logoSize`]: String(template.logoSize),
+          [`${prefix}.logo`]: template.logoUrl,
         }),
       ])
       setDirty(false)
@@ -948,6 +960,9 @@ export function InvoiceDesigner({
           onSectionStyle={patchSectionStyle}
           onDocument={patchDocument}
           onTemplate={setTemplate}
+          logoUrl={workshop.logoUrl}
+          ownLogo={!!template.logoUrl}
+          onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>
 

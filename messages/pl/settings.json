@@ -1868,7 +1868,15 @@
       "slogan": "Jakość, której możesz zaufać",
       "footerNote": "Dziękujemy za współpracę",
       "value": "Przykład"
-    }
+    },
+    "logoUpload": "Prześlij logo",
+    "logoReplace": "Zmień logo",
+    "logoUploading": "Przesyłanie…",
+    "logoFailed": "Nie udało się przesłać obrazu",
+    "footerLogoHint": "Włącz logo w sekcji Pola, aby drukować je także na dole strony.",
+    "logoReset": "Użyj logo firmy",
+    "logoOwn": "Drukowane tylko na tym dokumencie. Logo firmy pozostaje bez zmian.",
+    "logoInherited": "Używane jest logo firmy. Prześlij tutaj inne, aby użyć go tylko na tym dokumencie."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

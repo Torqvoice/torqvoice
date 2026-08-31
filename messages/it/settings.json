@@ -1868,7 +1868,15 @@
       "slogan": "Un servizio di qualità di cui fidarsi",
       "footerNote": "Grazie per averci scelto",
       "value": "Esempio"
-    }
+    },
+    "logoUpload": "Carica logo",
+    "logoReplace": "Sostituisci logo",
+    "logoUploading": "Caricamento…",
+    "logoFailed": "Impossibile caricare l'immagine",
+    "footerLogoHint": "Attiva il logo in Campi per stamparlo anche a piè di pagina.",
+    "logoReset": "Usa il logo aziendale",
+    "logoOwn": "Stampato solo su questo documento. Il logo aziendale resta invariato.",
+    "logoInherited": "Viene usato il logo aziendale. Caricane uno qui per usarne un altro solo su questo documento."
   },
   "preview": {
     "title": "Servizio freni e cambio olio",
