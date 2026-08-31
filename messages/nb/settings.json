@@ -1778,6 +1778,7 @@
     },
     "alignment": "Justering",
     "alignCenter": "Midt",
+    "tablesExclusiveHint": "Arket skriver ut én ordning: én nummerert liste, eller separate tabeller for deler og arbeid. Slår du på den ene, slås den andre av.",
     "innerPadding": "Innvendig avstand",
     "totalsWidth": "Bredde",
     "totalsWidthHint": "Tom fyller hele raden. En verdi i punkter henger boksen til høyre; i en kolonne tar den kolonnens bredde.",

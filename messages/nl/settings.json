@@ -1778,6 +1778,7 @@
     },
     "alignment": "Uitlijning",
     "alignCenter": "Midden",
+    "tablesExclusiveHint": "Het blad drukt één opstelling af: één genummerde lijst, of aparte tabellen voor onderdelen en arbeid. De ene inschakelen schakelt de andere uit.",
     "innerPadding": "Binnenruimte",
     "totalsWidth": "Breedte",
     "totalsWidthHint": "Leeg vult de hele rij. Met een waarde in punten hangt het blok rechts; in een kolom neemt het de breedte van de kolom.",

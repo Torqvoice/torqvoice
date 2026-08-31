@@ -1778,6 +1778,7 @@
     },
     "alignment": "Lygiavimas",
     "alignCenter": "Centre",
+    "tablesExclusiveHint": "Lape spausdinamas vienas išdėstymas: vienas numeruotas sąrašas arba atskiros dalių ir darbų lentelės. Įjungus vieną, kitas išsijungia.",
     "innerPadding": "Vidinis tarpas",
     "totalsWidth": "Plotis",
     "totalsWidthHint": "Tuščias užima visą eilutę. Nurodžius taškus, blokas kabinamas dešinėje; stulpelyje jis užima stulpelio plotį.",

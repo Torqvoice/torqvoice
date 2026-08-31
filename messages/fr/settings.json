@@ -1778,6 +1778,7 @@
     },
     "alignment": "Alignement",
     "alignCenter": "Centre",
+    "tablesExclusiveHint": "La feuille imprime une disposition : une liste numérotée unique, ou des tableaux séparés pour pièces et main-d'œuvre. Activer l'une désactive l'autre.",
     "innerPadding": "Marge intérieure",
     "totalsWidth": "Largeur",
     "totalsWidthHint": "Vide, le bloc occupe toute la ligne. Une valeur en points l'accroche à droite ; dans une colonne, il prend la largeur de la colonne.",

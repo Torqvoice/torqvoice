@@ -465,6 +465,13 @@ export function DesignerInspector({
                 onChange={(visible) => onSection(section.id, { visible })}
               />
             </Row>
+            {(section.id === 'items_table' ||
+              section.id === 'parts_table' ||
+              section.id === 'labor_table') && (
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {t('tablesExclusiveHint')}
+              </p>
+            )}
             {COLUMN_ELIGIBLE_SECTIONS.has(section.id) && (
               <Choice
                 value={section.column ?? 'full'}

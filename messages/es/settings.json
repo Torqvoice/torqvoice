@@ -1778,6 +1778,7 @@
     },
     "alignment": "Alineación",
     "alignCenter": "Centro",
+    "tablesExclusiveHint": "La hoja imprime una disposición: una lista numerada única o tablas separadas de piezas y mano de obra. Activar una desactiva la otra.",
     "innerPadding": "Espaciado interno",
     "totalsWidth": "Ancho",
     "totalsWidthHint": "Vacío ocupa toda la fila. Con un valor en puntos, el bloque cuelga a la derecha; en una columna toma el ancho de la columna.",

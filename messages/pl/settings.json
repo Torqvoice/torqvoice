@@ -1778,6 +1778,7 @@
     },
     "alignment": "Wyrównanie",
     "alignCenter": "Środek",
+    "tablesExclusiveHint": "Arkusz drukuje jeden układ: jedną numerowaną listę albo osobne tabele części i robocizny. Włączenie jednego wyłącza drugi.",
     "innerPadding": "Odstęp wewnętrzny",
     "totalsWidth": "Szerokość",
     "totalsWidthHint": "Puste wypełnia cały wiersz. Wartość w punktach zawiesza blok po prawej; w kolumnie przyjmuje szerokość kolumny.",

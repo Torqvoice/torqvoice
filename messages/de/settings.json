@@ -1778,6 +1778,7 @@
     },
     "alignment": "Ausrichtung",
     "alignCenter": "Mitte",
+    "tablesExclusiveHint": "Das Blatt druckt eine Anordnung: eine nummerierte Liste oder getrennte Teile- und Arbeitstabellen. Wird die eine eingeschaltet, geht die andere aus.",
     "innerPadding": "Innenabstand",
     "totalsWidth": "Breite",
     "totalsWidthHint": "Leer füllt die Zeile. Ein Wert in Punkt hängt den Kasten rechts an; in einer Spalte nimmt er deren Breite.",

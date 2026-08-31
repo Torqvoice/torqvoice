@@ -1778,6 +1778,7 @@
     },
     "alignment": "Alinhamento",
     "alignCenter": "Centro",
+    "tablesExclusiveHint": "A folha imprime uma disposição: uma única lista numerada ou tabelas separadas de peças e mão de obra. Ativar uma desativa a outra.",
     "innerPadding": "Espaçamento interno",
     "totalsWidth": "Largura",
     "totalsWidthHint": "Vazio ocupa a linha inteira. Um valor em pontos pendura o bloco à direita; em uma coluna, ele usa a largura da coluna.",

@@ -1778,6 +1778,7 @@
     },
     "alignment": "Allineamento",
     "alignCenter": "Centro",
+    "tablesExclusiveHint": "Il foglio stampa una disposizione: un unico elenco numerato oppure tabelle separate per ricambi e manodopera. Attivarne una disattiva l'altra.",
     "innerPadding": "Spaziatura interna",
     "totalsWidth": "Larghezza",
     "totalsWidthHint": "Vuoto occupa tutta la riga. Un valore in punti appende il blocco a destra; in una colonna prende la larghezza della colonna.",

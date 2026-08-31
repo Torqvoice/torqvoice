@@ -457,10 +457,21 @@ export function InvoiceDesigner({
 
   const patchSection = useCallback(
     (id: string, patch: Partial<InvoiceSection>) => {
-      setLayout({
-        ...layout,
-        sections: layout.sections.map((s) => (s.id === id ? { ...s, ...patch } : s)),
-      })
+      let sections = layout.sections.map((s) => (s.id === id ? { ...s, ...patch } : s))
+      // The numbered items list REPLACES the separate parts and labor tables;
+      // it never joins them. Toggling either arrangement on turns the other
+      // off, and turning the list off brings the pair back, so the sheet
+      // always says what the job cost and never says it twice.
+      if (patch.visible !== undefined) {
+        if (id === 'items_table') {
+          sections = sections.map((s) =>
+            s.id === 'parts_table' || s.id === 'labor_table' ? { ...s, visible: !patch.visible } : s
+          )
+        } else if ((id === 'parts_table' || id === 'labor_table') && patch.visible) {
+          sections = sections.map((s) => (s.id === 'items_table' ? { ...s, visible: false } : s))
+        }
+      }
+      setLayout({ ...layout, sections })
     },
     [layout, setLayout]
   )

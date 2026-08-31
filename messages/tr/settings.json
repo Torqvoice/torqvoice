@@ -1778,6 +1778,7 @@
     },
     "alignment": "Hizalama",
     "alignCenter": "Orta",
+    "tablesExclusiveHint": "Sayfa tek bir düzen yazdırır: tek numaralı liste ya da ayrı parça ve işçilik tabloları. Birini açmak diğerini kapatır.",
     "innerPadding": "İç boşluk",
     "totalsWidth": "Genişlik",
     "totalsWidthHint": "Boş bırakılırsa satırın tamamını kaplar. Punto değeri girilirse blok sağa asılır; bir sütunda sütunun genişliğini alır.",
