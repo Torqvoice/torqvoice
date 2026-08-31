@@ -114,6 +114,8 @@ export interface LockableInvoice {
 
 export interface LockableQuote {
   status: string
+  /** Most recent time the quote reached the customer, by email or link. */
+  sentAt?: Date | null
   editUnlockedAt?: Date | null
 }
 
@@ -135,7 +137,11 @@ export function invoicePaymentStatus(invoice: {
   if (invoice.manuallyPaid) return 'paid'
   const paid = (invoice.payments ?? []).reduce((sum, p) => sum + p.amount, 0)
   if (paid <= 0) return 'unpaid'
-  return paid >= total ? 'paid' : 'partial'
+  // A payment against a zero-total document is a deposit on work not yet
+  // priced, not a settled bill: without the total > 0 guard a prepayment on an
+  // un-itemised draft would lock it before any lines exist. This also matches
+  // how the billing list decides "paid", so the badge and the lock agree.
+  return total > 0 && paid >= total ? 'paid' : 'partial'
 }
 
 /**
@@ -194,19 +200,26 @@ const ISSUED_QUOTE_STATUSES = ['sent', ...AGREED_QUOTE_STATUSES]
 
 export function quoteLockState(quote: LockableQuote, settings: DocumentLockSettings): LockState {
   if (!settings.quoteLockEnabled) return EDITABLE
-  if (quote.editUnlockedAt) {
+
+  const lockedByStatus =
+    settings.quoteLockTrigger === 'sent'
+      ? ISSUED_QUOTE_STATUSES.includes(quote.status)
+      : AGREED_QUOTE_STATUSES.includes(quote.status)
+  if (!lockedByStatus) return EDITABLE
+
+  // An unlock is spent by sending the quote again, under either trigger:
+  // unlike an invoice, a quote's status survives a re-send (an accepted quote
+  // stays accepted), so without this the unlock would never expire and the
+  // corrected copy the customer re-accepts would stay editable for good.
+  if (quote.editUnlockedAt && !unlockSupersededBy(quote.editUnlockedAt, quote.sentAt ?? null)) {
     return { locked: false, reason: null, unlockedAt: quote.editUnlockedAt }
   }
 
-  if (settings.quoteLockTrigger === 'sent') {
-    return ISSUED_QUOTE_STATUSES.includes(quote.status)
-      ? { locked: true, reason: 'sent', unlockedAt: null }
-      : EDITABLE
+  return {
+    locked: true,
+    reason: settings.quoteLockTrigger === 'sent' ? 'sent' : 'accepted',
+    unlockedAt: null,
   }
-
-  return AGREED_QUOTE_STATUSES.includes(quote.status)
-    ? { locked: true, reason: 'accepted', unlockedAt: null }
-    : EDITABLE
 }
 
 /**

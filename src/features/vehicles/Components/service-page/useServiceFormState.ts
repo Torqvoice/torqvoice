@@ -81,6 +81,20 @@ export function useServiceFormState({
     }, 5000)
   }, [])
 
+  // When the lock engages mid-session — the invoice was just sent, or an
+  // admin re-locked it — any save already queued can only be refused, and
+  // "Unsaved changes" would offer a save that can never complete (and keep
+  // the beforeunload warning armed). Drop both: the lock has closed every
+  // route those edits could take.
+  useEffect(() => {
+    if (!locked) return
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current)
+      autosaveTimer.current = null
+    }
+    setHasUnsavedChanges(false)
+  }, [locked])
+
   useEffect(() => {
     if (!hasUnsavedChanges) return
     const handler = (e: BeforeUnloadEvent) => {

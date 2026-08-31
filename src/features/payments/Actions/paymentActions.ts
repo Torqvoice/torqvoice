@@ -6,6 +6,8 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createPaymentSchema } from '../Schema/paymentSchema'
 import { revalidatePath } from 'next/cache'
+import { getDocumentLockSettings } from '@/lib/document-lock.server'
+import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 
 export async function createPayment(input: unknown) {
   return withAuth(
@@ -69,9 +71,39 @@ export async function deletePayment(paymentId: string) {
     async ({ organizationId }) => {
       const payment = await db.payment.findFirst({
         where: { id: paymentId, serviceRecord: { organizationId } },
-        include: { serviceRecord: { select: { vehicleId: true, id: true } } },
+        include: {
+          serviceRecord: {
+            select: {
+              vehicleId: true,
+              id: true,
+              sentAt: true,
+              manuallyPaid: true,
+              totalAmount: true,
+              cost: true,
+              editUnlockedAt: true,
+              payments: { select: { id: true, amount: true } },
+            },
+          },
+        },
       })
       if (!payment) throw new Error('Payment not found')
+
+      // Recording payments is always allowed, but removing the payment that
+      // settled a locked invoice would release the lock — the admin-only
+      // unlock in disguise. Deleting a partial payment stays open to everyone,
+      // since it never changes the lock.
+      const settings = await getDocumentLockSettings(organizationId)
+      const before = invoiceLockState(payment.serviceRecord, settings)
+      const after = invoiceLockState(
+        {
+          ...payment.serviceRecord,
+          payments: payment.serviceRecord.payments.filter((p) => p.id !== paymentId),
+        },
+        settings
+      )
+      if (before.locked && !after.locked && before.reason) {
+        throw new DocumentLockedError(before.reason)
+      }
 
       await db.payment.delete({ where: { id: paymentId } })
 

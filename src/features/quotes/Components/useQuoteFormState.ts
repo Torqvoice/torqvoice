@@ -39,6 +39,7 @@ export function useQuoteFormState({
   defaultTaxRate,
   taxEnabled,
   defaultLaborRate,
+  locked = false,
   t,
 }: {
   quote: QuoteRecord
@@ -46,6 +47,8 @@ export function useQuoteFormState({
   defaultTaxRate: number
   taxEnabled: boolean
   defaultLaborRate: number
+  /** A locked quote refuses saves, so it must not queue one. */
+  locked?: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }) {
@@ -143,6 +146,9 @@ export function useQuoteFormState({
   const isSavingRef = useRef(false)
 
   const markDirty = useCallback(() => {
+    // A locked quote cannot be saved, so nothing may queue an autosave that
+    // the server will only refuse five seconds later.
+    if (locked) return
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
@@ -150,7 +156,18 @@ export function useQuoteFormState({
         formRef.current.requestSubmit()
       }
     }, 5000)
-  }, [])
+  }, [locked])
+
+  // When the lock engages mid-session, a save already queued can only be
+  // refused, and "Unsaved changes" would offer one that can never complete.
+  useEffect(() => {
+    if (!locked) return
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current)
+      autosaveTimer.current = null
+    }
+    setHasUnsavedChanges(false)
+  }, [locked])
 
   useEffect(() => {
     return () => {

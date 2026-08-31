@@ -154,6 +154,20 @@ describe('invoicePaymentStatus', () => {
   it('reads a missing payments list as nothing paid', () => {
     expect(invoicePaymentStatus({ manuallyPaid: false, totalAmount: 500, cost: 0 })).toBe('unpaid')
   })
+
+  it('treats a deposit on a zero-total draft as partial, not settled', () => {
+    // A prepayment on work not yet priced must not lock the draft before any
+    // lines exist; and the billing list, which requires a positive total to
+    // call anything paid, must agree with the lock about the same record.
+    expect(
+      invoicePaymentStatus({
+        manuallyPaid: false,
+        totalAmount: 0,
+        cost: 0,
+        payments: [{ amount: 200 }],
+      })
+    ).toBe('partial')
+  })
 })
 
 describe('invoiceLockState, with locking switched off', () => {
@@ -324,6 +338,45 @@ describe('quoteLockState', () => {
       locked: false,
       reason: null,
       unlockedAt,
+    })
+  })
+
+  describe('an unlock is spent when the quote is issued again', () => {
+    // A quote's status survives a re-send — an accepted quote stays accepted —
+    // so unlike an invoice the status cannot show that a corrected copy went
+    // out. sentAt carries that instead, under both triggers.
+    const unlockedAt = new Date('2026-02-01')
+
+    it('locks the corrected copy once it is re-sent', () => {
+      const record = {
+        status: 'accepted',
+        sentAt: new Date('2026-02-02'),
+        editUnlockedAt: unlockedAt,
+      }
+      expect(quoteLockState(record, accepted)).toEqual({
+        locked: true,
+        reason: 'accepted',
+        unlockedAt: null,
+      })
+      expect(quoteLockState(record, sent).locked).toBe(true)
+    })
+
+    it('leaves the unlock standing while nothing has been re-sent', () => {
+      const record = {
+        status: 'accepted',
+        sentAt: new Date('2026-01-01'),
+        editUnlockedAt: unlockedAt,
+      }
+      expect(quoteLockState(record, accepted)).toEqual({
+        locked: false,
+        reason: null,
+        unlockedAt,
+      })
+    })
+
+    it('treats a send at the same instant as not superseding the unlock', () => {
+      const record = { status: 'accepted', sentAt: unlockedAt, editUnlockedAt: unlockedAt }
+      expect(quoteLockState(record, accepted).locked).toBe(false)
     })
   })
 

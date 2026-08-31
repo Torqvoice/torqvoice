@@ -15,5 +15,10 @@ ALTER TABLE "service_records" ADD COLUMN "sentAt" TIMESTAMP(3);
 ALTER TABLE "service_records" ADD COLUMN "editUnlockedAt" TIMESTAMP(3);
 ALTER TABLE "service_records" ADD COLUMN "editUnlockedById" TEXT;
 
+-- Quotes get the same sentAt so an admin unlock is spent when the quote is
+-- issued again, exactly as it is for invoices. Without it an unlocked quote
+-- would stay editable forever, because its status does not change when a
+-- corrected copy is re-sent and re-accepted.
+ALTER TABLE "quotes" ADD COLUMN "sentAt" TIMESTAMP(3);
 ALTER TABLE "quotes" ADD COLUMN "editUnlockedAt" TIMESTAMP(3);
 ALTER TABLE "quotes" ADD COLUMN "editUnlockedById" TEXT;

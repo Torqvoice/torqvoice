@@ -37,10 +37,15 @@ export interface ServicePageClientProps {
   record: ServiceDetail
   vehicleId: string | null
   organizationId: string
-  /** Whether the invoice may still be edited; see src/lib/document-lock.ts. */
-  lockState?: LockState
+  /**
+   * Whether the invoice may still be edited; see src/lib/document-lock.ts.
+   * Required rather than defaulted: a call site that forgot to wire it would
+   * render a locked invoice as editable, which is the trap this exists to
+   * close.
+   */
+  lockState: LockState
   /** Owners and admins can reopen a locked invoice. */
-  canUnlock?: boolean
+  canUnlock: boolean
   currencyCode: string
   unitSystem: 'metric' | 'imperial'
   defaultTaxRate: number

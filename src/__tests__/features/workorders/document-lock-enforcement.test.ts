@@ -37,9 +37,9 @@ vi.mock('@/lib/db', () => ({
       delete: vi.fn(),
       deleteMany: vi.fn(),
     },
-    quote: { findFirst: vi.fn(), update: vi.fn(), deleteMany: vi.fn() },
+    quote: { findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn(), deleteMany: vi.fn() },
     servicePart: { findMany: vi.fn(), create: vi.fn() },
-    payment: { create: vi.fn() },
+    payment: { create: vi.fn(), findFirst: vi.fn(), delete: vi.fn() },
     $transaction: vi.fn(),
   },
 }))
@@ -53,7 +53,9 @@ import {
   toggleManuallyPaid,
   generatePublicLink,
 } from '@/features/vehicles/Actions/serviceActions'
-import { updateQuote, deleteQuote } from '@/features/quotes/Actions/quoteActions'
+import { updateQuote, deleteQuote, updateQuoteStatus } from '@/features/quotes/Actions/quoteActions'
+import { generateQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
+import { deletePayment } from '@/features/payments/Actions/paymentActions'
 import { addPart } from '@/features/vehicles/Lib/addPart'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
@@ -329,6 +331,168 @@ describe('what a locked invoice must still be able to do', () => {
 
     expectNotBlockedByLock(result)
     expect(result.success).toBe(true)
+  })
+})
+
+describe('transitions that would release the lock', () => {
+  // The lock derives from paid status and quote status, so the toggles that
+  // move those fields are the admin-only unlock in disguise whenever the move
+  // would release the lock. Moves that keep it locked (or lock it further)
+  // stay open to everyone.
+
+  it('refuses unmarking paid when the manual mark alone holds the lock', async () => {
+    lockSettings(LOCK_INVOICES_WHEN_PAID)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
+      ...PAID_INVOICE,
+      id: 'rec-1',
+      vehicleId: null,
+      payments: [],
+    } as any)
+
+    const result = await toggleManuallyPaid('rec-1')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/locked/i)
+    expect(db.serviceRecord.update).not.toHaveBeenCalled()
+  })
+
+  it('still allows unmarking paid while recorded payments keep it settled', async () => {
+    // The flip changes nothing the lock cares about, so it is workflow.
+    lockSettings(LOCK_INVOICES_WHEN_PAID)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
+      ...PAID_INVOICE,
+      id: 'rec-1',
+      vehicleId: null,
+    } as any)
+
+    const result = await toggleManuallyPaid('rec-1')
+
+    expectNotBlockedByLock(result)
+    expect(db.serviceRecord.update).toHaveBeenCalled()
+  })
+
+  it('still allows marking an unpaid invoice as paid', async () => {
+    lockSettings(LOCK_INVOICES_WHEN_PAID)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
+      ...UNPAID_INVOICE,
+      id: 'rec-1',
+      vehicleId: null,
+    } as any)
+
+    const result = await toggleManuallyPaid('rec-1')
+
+    expectNotBlockedByLock(result)
+    expect(db.serviceRecord.update).toHaveBeenCalled()
+  })
+
+  it('refuses deleting the payment that settled a locked invoice', async () => {
+    lockSettings(LOCK_INVOICES_WHEN_PAID)
+    vi.mocked(db.payment.findFirst).mockResolvedValue({
+      id: 'pay-1',
+      serviceRecord: {
+        id: 'rec-1',
+        vehicleId: null,
+        sentAt: null,
+        manuallyPaid: false,
+        totalAmount: 500,
+        cost: 0,
+        editUnlockedAt: null,
+        payments: [{ id: 'pay-1', amount: 500 }],
+      },
+    } as any)
+
+    const result = await deletePayment('pay-1')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/locked/i)
+    expect(db.payment.delete).not.toHaveBeenCalled()
+  })
+
+  it('still allows deleting a payment under the "sent" trigger', async () => {
+    // Sending is what holds the lock there; the money record is workflow.
+    lockSettings({
+      [SETTING_KEYS.INVOICE_LOCK_ENABLED]: 'true',
+      [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: 'sent',
+    })
+    vi.mocked(db.payment.findFirst).mockResolvedValue({
+      id: 'pay-1',
+      serviceRecord: {
+        id: 'rec-1',
+        vehicleId: null,
+        sentAt: new Date('2026-01-01'),
+        manuallyPaid: false,
+        totalAmount: 500,
+        cost: 0,
+        editUnlockedAt: null,
+        payments: [{ id: 'pay-1', amount: 500 }],
+      },
+    } as any)
+
+    const result = await deletePayment('pay-1')
+
+    expectNotBlockedByLock(result)
+    expect(db.payment.delete).toHaveBeenCalled()
+  })
+
+  it('refuses moving an accepted quote back to draft', async () => {
+    lockSettings(LOCK_QUOTES_WHEN_ACCEPTED)
+    vi.mocked(db.quote.findFirst).mockResolvedValue({
+      status: 'accepted',
+      sentAt: null,
+      editUnlockedAt: null,
+    } as any)
+
+    const result = await updateQuoteStatus('quote-1', 'draft')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/locked/i)
+    expect(db.quote.updateMany).not.toHaveBeenCalled()
+  })
+
+  it('still allows converting an accepted quote, which stays locked', async () => {
+    lockSettings(LOCK_QUOTES_WHEN_ACCEPTED)
+    vi.mocked(db.quote.findFirst).mockResolvedValue({
+      status: 'accepted',
+      sentAt: null,
+      editUnlockedAt: null,
+    } as any)
+
+    const result = await updateQuoteStatus('quote-1', 'converted')
+
+    expectNotBlockedByLock(result)
+    expect(db.quote.updateMany).toHaveBeenCalled()
+  })
+
+  it('refuses a status the app does not know, locked or not', async () => {
+    // The old accept-any-string behaviour was itself a way out: a made-up
+    // status is not in any locked list, so it would have released the lock.
+    lockSettings(LOCK_QUOTES_WHEN_ACCEPTED)
+    vi.mocked(db.quote.findFirst).mockResolvedValue({
+      status: 'accepted',
+      sentAt: null,
+      editUnlockedAt: null,
+    } as any)
+
+    const result = await updateQuoteStatus('quote-1', 'Accepted')
+
+    expect(result.success).toBe(false)
+    expect(db.quote.updateMany).not.toHaveBeenCalled()
+  })
+})
+
+describe('sharing a quote link counts as sending it', () => {
+  it('stamps sentAt and moves a draft to sent', async () => {
+    lockSettings({})
+    vi.mocked(db.quote.findFirst).mockResolvedValue({ id: 'quote-1' } as any)
+
+    const result = await generateQuotePublicLink('quote-1')
+
+    expect(result.success).toBe(true)
+    const stampCalls = vi.mocked(db.quote.updateMany).mock.calls.map((c) => c[0] as any)
+    expect(stampCalls.some((c) => c.data.sentAt instanceof Date)).toBe(true)
+    // The status write leaves accepted and converted quotes alone.
+    const statusCall = stampCalls.find((c) => c.data.status === 'sent')
+    expect(statusCall?.where.status).toEqual({ notIn: ['accepted', 'converted'] })
   })
 })
 

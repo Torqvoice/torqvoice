@@ -64,8 +64,8 @@ function useIsLargeScreen() {
 export function QuotePageClient({
   quote,
   organizationId,
-  lockState = { locked: false, reason: null, unlockedAt: null },
-  canUnlock = false,
+  lockState,
+  canUnlock,
   currencyCode = 'USD',
   defaultTaxRate = 0,
   taxEnabled = true,
@@ -81,8 +81,12 @@ export function QuotePageClient({
 }: {
   quote: QuoteRecord
   organizationId: string
-  lockState?: LockState
-  canUnlock?: boolean
+  /**
+   * Required rather than defaulted: a call site that forgot to wire it would
+   * render a locked quote as editable, which is the trap this exists to close.
+   */
+  lockState: LockState
+  canUnlock: boolean
   currencyCode?: string
   defaultTaxRate?: number
   taxEnabled?: boolean
@@ -107,8 +111,14 @@ export function QuotePageClient({
     defaultTaxRate,
     taxEnabled,
     defaultLaborRate,
+    locked: lockState.locked,
     t,
   })
+
+  // Sending is what can lock the quote — by email or by link — so the page is
+  // re-rendered to pick up the lock rather than leaving the fieldset open and
+  // the next autosave to be refused.
+  const handleQuoteSent = useCallback(() => router.refresh(), [router])
 
   useSaveShortcut(() => {
     if (state.hasUnsavedChanges) return state.saveNow()
@@ -448,9 +458,11 @@ export function QuotePageClient({
         onOpenChange={state.setShowEmailDialog}
         defaultEmail={quote.customer?.email || ''}
         entityLabel={t('page.entityLabel')}
-        onSend={async (email, message) =>
-          sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })
-        }
+        onSend={async (email, message) => {
+          const result = await sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })
+          if (result.success) handleQuoteSent()
+          return result
+        }}
       />
 
       <QuoteShareDialog
@@ -459,6 +471,7 @@ export function QuotePageClient({
         quoteId={quote.id}
         organizationId={organizationId}
         initialToken={quote.publicToken}
+        onSent={handleQuoteSent}
         customer={quote.customer}
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}

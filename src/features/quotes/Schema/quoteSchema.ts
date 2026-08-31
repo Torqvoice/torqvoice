@@ -43,12 +43,20 @@ export const quoteAttachmentSchema = z.object({
   includeInInvoice: z.boolean().default(true),
 })
 
+export const quoteStatusSchema = z.enum([
+  'draft',
+  'sent',
+  'accepted',
+  'rejected',
+  'expired',
+  'converted',
+  'changes_requested',
+])
+
 export const createQuoteSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  status: z
-    .enum(['draft', 'sent', 'accepted', 'rejected', 'expired', 'converted', 'changes_requested'])
-    .default('draft'),
+  status: quoteStatusSchema.default('draft'),
   validUntil: z.string().optional(),
   customerId: z.string().optional(),
   vehicleId: z.string().optional(),

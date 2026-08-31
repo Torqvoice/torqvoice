@@ -750,6 +750,12 @@ model Quote {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  /// Most recent time this quote reached the customer, by email or share
+  /// link. Exists so an unlock is spent when the quote is issued again; the
+  /// status alone cannot show that, because re-sending an accepted quote does
+  /// not change it.
+  sentAt DateTime?
+
   /// See ServiceRecord.editUnlockedAt.
   editUnlockedAt   DateTime?
   editUnlockedById String?

@@ -33,15 +33,17 @@ const initialData = {
 const record = { id: 'rec-1', payments: [], manuallyPaid: false, attachments: [] } as any
 
 function renderForm(locked: boolean) {
-  return renderHook(() =>
-    useServiceFormState({
-      vehicleId: null,
-      initialData,
-      defaultTaxRate: 0,
-      currentUserName: 'Tester',
-      record,
-      locked,
-    })
+  return renderHook(
+    (props: { locked: boolean }) =>
+      useServiceFormState({
+        vehicleId: null,
+        initialData,
+        defaultTaxRate: 0,
+        currentUserName: 'Tester',
+        record,
+        locked: props.locked,
+      }),
+    { initialProps: { locked } }
   )
 }
 
@@ -74,6 +76,26 @@ describe('a locked invoice', () => {
     act(() => result.current.markDirty())
     act(() => void vi.advanceTimersByTime(AUTOSAVE_DELAY * 2))
 
+    expect(result.current.autosaveTimer.current).toBeNull()
+  })
+})
+
+describe('the lock engaging mid-session', () => {
+  it('cancels the queued autosave and clears "Unsaved changes"', () => {
+    // Edit first, then send the invoice: the edit queued a save the lock has
+    // now closed every route for. Left alone, the timer would fire into a
+    // refusal and the header would offer a save that can only fail.
+    const { result, rerender } = renderForm(false)
+
+    act(() => result.current.markDirty())
+    expect(result.current.hasUnsavedChanges).toBe(true)
+
+    rerender({ locked: true })
+
+    expect(result.current.hasUnsavedChanges).toBe(false)
+    expect(result.current.autosaveTimer.current).toBeNull()
+
+    act(() => void vi.advanceTimersByTime(AUTOSAVE_DELAY * 2))
     expect(result.current.autosaveTimer.current).toBeNull()
   })
 })

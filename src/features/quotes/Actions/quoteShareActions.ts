@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { markQuoteSent } from '@/lib/document-lock.server'
 
 export async function generateQuotePublicLink(quoteId: string) {
   return withAuth(
@@ -19,6 +20,10 @@ export async function generateQuotePublicLink(quoteId: string) {
         where: { id: quoteId },
         data: { publicToken: token, sharedAt: new Date() },
       })
+      // Handing over a link is a way of sending the quote, exactly as it is
+      // for invoices: it stamps sentAt (which "lock when sent" keys off, and
+      // which spends any admin unlock) and moves a draft to "sent".
+      await markQuoteSent(quoteId, organizationId)
 
       revalidatePath(`/quotes/${quoteId}`)
       return { token, organizationId }

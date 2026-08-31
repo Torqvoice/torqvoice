@@ -18,6 +18,7 @@ import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Li
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { invoiceLineWords, jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const QUOTE = [
@@ -699,6 +700,9 @@ export async function addTireSetToWorkOrder(input: unknown) {
     async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
       const data = fromSetSchema.extend({ serviceRecordId: z.string().min(1) }).parse(input)
+      // Adds part and labor lines and retotals the job, so it is an edit to
+      // what the invoice says it is owed and a locked one refuses it.
+      await assertInvoiceEditable(data.serviceRecordId, organizationId)
       const set = await loadSet(organizationId, data.tireSetId)
       const seasons = await seasonNames()
 

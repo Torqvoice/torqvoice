@@ -13,7 +13,8 @@ import { serviceDateOrderBy } from '@/lib/date-sort'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
-import { assertInvoiceEditable } from '@/lib/document-lock.server'
+import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
+import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(
@@ -884,8 +885,21 @@ export async function toggleManuallyPaid(recordId: string) {
     async ({ organizationId }) => {
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
+        include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+
+      // Marking paid is always allowed — it only ever locks the document
+      // further. But a flip that would *release* the lock is the admin-only
+      // unlock in disguise: without this check, anyone with edit permission
+      // could unmark a locked invoice, rewrite it, and mark it paid again,
+      // leaving no unlock in the audit trail.
+      const settings = await getDocumentLockSettings(organizationId)
+      const before = invoiceLockState(record, settings)
+      const after = invoiceLockState({ ...record, manuallyPaid: !record.manuallyPaid }, settings)
+      if (before.locked && !after.locked && before.reason) {
+        throw new DocumentLockedError(before.reason)
+      }
 
       await db.serviceRecord.update({
         where: { id: recordId },
@@ -1134,7 +1148,9 @@ export async function generatePublicLink(serviceRecordId: string) {
           // for "lock when sent". Unlike sharedAt this is never cleared:
           // revoking the link does not unsend what the customer already saw.
           // It tracks the latest share, so re-sharing after an unlock locks
-          // the document again.
+          // the document again. Kept inline (rather than markInvoiceSent,
+          // which owns every other channel) so the token and the stamp land
+          // in one write.
           sentAt: new Date(),
         },
       })

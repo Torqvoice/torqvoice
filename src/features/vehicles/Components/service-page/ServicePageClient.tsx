@@ -59,8 +59,8 @@ export function ServicePageClient({
   record,
   vehicleId,
   organizationId,
-  lockState = { locked: false, reason: null, unlockedAt: null },
-  canUnlock = false,
+  lockState,
+  canUnlock,
   currencyCode,
   unitSystem,
   tireHotelEnabled = false,
@@ -565,7 +565,10 @@ export function ServicePageClient({
             recipientEmail: email,
             message,
           })
-          if (result.success) await handleInvoiceSent()
+          // Deliberately not awaited: the email dialog should show "sent" the
+          // moment it is, not sit spinning behind the "mark completed"
+          // confirmation that handleInvoiceSent may raise.
+          if (result.success) void handleInvoiceSent()
           return result
         }}
       />

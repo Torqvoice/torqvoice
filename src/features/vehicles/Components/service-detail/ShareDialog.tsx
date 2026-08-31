@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -46,7 +45,6 @@ export function ShareDialog({
   emailEnabled = false,
 }: ShareDialogProps) {
   const t = useTranslations('service.share')
-  const router = useRouter()
   const [publicToken, setPublicToken] = useState<string | null>(initialToken)
   const [generatingLink, setGeneratingLink] = useState(false)
   const [revoking, setRevoking] = useState(false)
@@ -134,6 +132,10 @@ export function ShareDialog({
       toast.success(results.join(' & '))
       setNotifyEmail(false)
       setNotifySms(false)
+      // Both channels count as sending the invoice — email stamps sentAt on
+      // the server, and the SMS carries the link — so the lock may have just
+      // engaged and the page needs to hear about it.
+      onSent?.()
     }
     setSending(false)
   }
