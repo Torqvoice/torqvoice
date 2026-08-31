@@ -586,6 +586,7 @@
       "labor_table": "Manodopera",
       "totals": "Totali",
       "notes": "Note",
+      "attached_documents": "Documenti allegati",
       "diagnostic_notes": "Note diagnostiche",
       "findings": "Osservazioni",
       "warranty": "Garanzia",
@@ -1771,6 +1772,8 @@
       "box": "Riquadro",
       "totalsHint": "Classico stampa righe semplici con un filetto sopra il totale. Riquadro le incornicia. Pannello e Accento le mettono su una scheda."
     },
+    "alignment": "Allineamento",
+    "alignCenter": "Centro",
     "totalsWidth": "Larghezza",
     "totalsWidthHint": "Vuoto occupa tutta la riga. Un valore in punti appende il blocco a destra; in una colonna prende la larghezza della colonna.",
     "placement": "Posizione",

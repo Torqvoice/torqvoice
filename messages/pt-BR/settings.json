@@ -586,6 +586,7 @@
       "labor_table": "Mão de obra",
       "totals": "Totais",
       "notes": "Notas",
+      "attached_documents": "Documentos anexados",
       "diagnostic_notes": "Notas de diagnóstico",
       "findings": "Observações",
       "warranty": "Garantia",
@@ -1771,6 +1772,8 @@
       "box": "Moldura",
       "totalsHint": "Clássico imprime linhas simples com um traço acima do total. Moldura as emoldura. Painel e Destaque as colocam em um cartão."
     },
+    "alignment": "Alinhamento",
+    "alignCenter": "Centro",
     "totalsWidth": "Largura",
     "totalsWidthHint": "Vazio ocupa a linha inteira. Um valor em pontos pendura o bloco à direita; em uma coluna, ele usa a largura da coluna.",
     "placement": "Posicionamento",

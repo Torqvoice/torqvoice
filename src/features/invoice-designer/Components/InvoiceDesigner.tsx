@@ -335,6 +335,14 @@ export function InvoiceDesigner({
           : []),
       ],
       notes: { html: sample.notes },
+      // Stand-ins for files a job carries, so the block can be found, placed
+      // and styled. Filenames need no translating.
+      attachedDocuments: [
+        fillTemplate(L('seeAppendedPages', '{name} (see appended pages)'), {
+          name: 'inspection-report.pdf',
+        }),
+        'tire-photos.jpg',
+      ],
       warranty: { duration: sample.warranty },
       payment: [
         { id: 'bank_account', label: L('bankAccount', 'Bank Account'), value: values.bank_account },

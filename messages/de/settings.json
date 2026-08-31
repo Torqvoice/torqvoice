@@ -586,6 +586,7 @@
       "labor_table": "Arbeit",
       "totals": "Summen",
       "notes": "Notizen",
+      "attached_documents": "Beigefügte Dokumente",
       "diagnostic_notes": "Diagnosenotizen",
       "findings": "Beobachtungen",
       "warranty": "Garantie",
@@ -1771,6 +1772,8 @@
       "box": "Kasten",
       "totalsHint": "Klassisch druckt reine Zeilen mit einer Linie über der Summe. Kasten rahmt sie ein. Panel und Akzent setzen sie auf eine Karte."
     },
+    "alignment": "Ausrichtung",
+    "alignCenter": "Mitte",
     "totalsWidth": "Breite",
     "totalsWidthHint": "Leer füllt die Zeile. Ein Wert in Punkt hängt den Kasten rechts an; in einer Spalte nimmt er deren Breite.",
     "placement": "Platzierung",

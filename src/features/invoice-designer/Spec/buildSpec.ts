@@ -67,7 +67,9 @@ export interface DocumentData {
   labor: { desc: string; qty: string; rate: string; total: string; excluded?: boolean }[]
   findings: { severity: string; color: string; description: string; notes: string }[]
   totals: TotalLine[]
-  notes: { html?: string; attachedDocuments?: string[] }
+  notes: { html?: string }
+  /** Names of the files riding along with the document, already worded. */
+  attachedDocuments?: string[]
   warranty: { duration?: string; expires?: string; terms?: string }
   payment: PaymentPair[]
   telegramQr?: { dataUri: string; label: string }
@@ -554,8 +556,11 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
   const compact = theme.headerStyle === 'compact'
   const banded = framed || modern
   // Compact reads like a form's letterhead: small mark on the left with a
-  // rule beneath. Standard sets the mark large on the right.
-  const align = modern ? ('center' as const) : compact ? ('left' as const) : ('right' as const)
+  // rule beneath. Standard sets the mark large on the right. A side the
+  // layout chooses itself wins over all of that.
+  const align =
+    section.style?.align ??
+    (modern ? ('center' as const) : compact ? ('left' as const) : ('right' as const))
 
   const showLogo = fields.includes('logo') && !!data.logoUrl
   // The company name follows the section's own ink when the layout sets one,
@@ -632,7 +637,7 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
       kind: 'row',
       id: 'header.branding',
       gap: 3,
-      justify: modern ? 'center' : 'end',
+      justify: align === 'center' ? 'center' : align === 'left' ? 'start' : 'end',
       align: 'center',
       children: [
         {
@@ -1159,37 +1164,63 @@ function notesBlock(
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const hasNotes = !!data.notes.html && data.notes.html.replace(/<[^>]*>/g, '').trim().length > 0
-  const attached = data.notes.attachedDocuments ?? []
-  if (!hasNotes && !attached.length) return null
+  if (!hasNotes) return null
 
   const children: Node[] = []
-  if (hasNotes) {
-    if (section.heading !== false) {
-      children.push({
-        kind: 'text',
-        text: label(data, 'notes', 'Notes'),
-        style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
-      })
-    }
+  if (section.heading !== false) {
     children.push({
-      kind: 'richtext',
-      html: data.notes.html as string,
-      style: { color: look.muted, fontSize: scale(size, 0.9) },
+      kind: 'text',
+      text: label(data, 'notes', 'Notes'),
+      style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
     })
   }
-  if (attached.length) {
+  children.push({
+    kind: 'richtext',
+    html: data.notes.html as string,
+    style: { color: look.muted, fontSize: scale(size, 0.9) },
+  })
+
+  const boxed = section.boxed !== false
+  return {
+    kind: 'stack',
+    id: section.id,
+    gap: 3,
+    style: {
+      background: look.fill || (boxed ? '#f3f4f6' : undefined),
+      borderColor: look.border,
+      borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
+      radius: boxed ? 3 : 0,
+      padding: boxed || look.fill ? 10 : 0,
+    },
+    children,
+  }
+}
+
+/** The files riding along with the document, in the notes' panel dress. */
+function attachedDocumentsBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  const attached = data.attachedDocuments ?? []
+  if (!attached.length) return null
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+
+  const children: Node[] = []
+  if (section.heading !== false) {
     children.push({
       kind: 'text',
       text: label(data, 'attachedDocuments', 'Attached Documents'),
       style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
     })
-    for (const name of attached) {
-      children.push({
-        kind: 'text',
-        text: name,
-        style: { color: look.muted, fontSize: scale(size, 0.9) },
-      })
-    }
+  }
+  for (const name of attached) {
+    children.push({
+      kind: 'text',
+      text: name,
+      style: { color: look.muted, fontSize: scale(size, 0.9) },
+    })
   }
 
   const boxed = section.boxed !== false
@@ -1558,6 +1589,8 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return totals(section, theme, data)
     case 'notes':
       return notesBlock(section, theme, data)
+    case 'attached_documents':
+      return attachedDocumentsBlock(section, theme, data)
     case 'warranty':
       return warrantyBlock(section, theme, data)
     case 'bank_account':

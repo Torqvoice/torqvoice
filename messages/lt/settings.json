@@ -586,6 +586,7 @@
       "labor_table": "Darbų lentelė",
       "totals": "Sumos",
       "notes": "Pastabos",
+      "attached_documents": "Pridėti dokumentai",
       "diagnostic_notes": "Diagnostikos pastabos",
       "findings": "Pastebėjimai",
       "warranty": "Garantija",
@@ -1771,6 +1772,8 @@
       "box": "Rėmelis",
       "totalsHint": "Klasikinis spausdina paprastas eilutes su linija virš sumos. Rėmelis jas įrėmina. Skydelis ir Akcentas deda jas ant kortelės."
     },
+    "alignment": "Lygiavimas",
+    "alignCenter": "Centre",
     "totalsWidth": "Plotis",
     "totalsWidthHint": "Tuščias užima visą eilutę. Nurodžius taškus, blokas kabinamas dešinėje; stulpelyje jis užima stulpelio plotį.",
     "placement": "Išdėstymas",

@@ -586,6 +586,7 @@
       "labor_table": "Arbeid",
       "totals": "Totalen",
       "notes": "Notities",
+      "attached_documents": "Bijgevoegde documenten",
       "diagnostic_notes": "Diagnostische notities",
       "findings": "Observaties",
       "warranty": "Garantie",
@@ -1771,6 +1772,8 @@
       "box": "Kader",
       "totalsHint": "Klassiek drukt kale regels af met een lijn boven het totaal. Kader zet er een kader omheen. Paneel en Accent zetten ze op een kaart."
     },
+    "alignment": "Uitlijning",
+    "alignCenter": "Midden",
     "totalsWidth": "Breedte",
     "totalsWidthHint": "Leeg vult de hele rij. Met een waarde in punten hangt het blok rechts; in een kolom neemt het de breedte van de kolom.",
     "placement": "Plaatsing",

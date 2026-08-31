@@ -586,6 +586,7 @@
       "labor_table": "Mano de obra",
       "totals": "Totales",
       "notes": "Notas",
+      "attached_documents": "Documentos adjuntos",
       "diagnostic_notes": "Notas de diagnóstico",
       "findings": "Observaciones",
       "warranty": "Garantía",
@@ -1771,6 +1772,8 @@
       "box": "Recuadro",
       "totalsHint": "Clásico imprime líneas sueltas con una regla sobre el total. Recuadro las enmarca. Panel y Acento las colocan en una tarjeta."
     },
+    "alignment": "Alineación",
+    "alignCenter": "Centro",
     "totalsWidth": "Ancho",
     "totalsWidthHint": "Vacío ocupa toda la fila. Con un valor en puntos, el bloque cuelga a la derecha; en una columna toma el ancho de la columna.",
     "placement": "Colocación",

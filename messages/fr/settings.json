@@ -586,6 +586,7 @@
       "labor_table": "Main-d'œuvre",
       "totals": "Totaux",
       "notes": "Notes",
+      "attached_documents": "Documents joints",
       "diagnostic_notes": "Notes de diagnostic",
       "findings": "Observations",
       "warranty": "Garantie",
@@ -1771,6 +1772,8 @@
       "box": "Encadré",
       "totalsHint": "Classique imprime des lignes nues avec un filet au-dessus du total. Encadré les entoure d'un cadre. Panneau et Accent les posent sur une carte."
     },
+    "alignment": "Alignement",
+    "alignCenter": "Centre",
     "totalsWidth": "Largeur",
     "totalsWidthHint": "Vide, le bloc occupe toute la ligne. Une valeur en points l'accroche à droite ; dans une colonne, il prend la largeur de la colonne.",
     "placement": "Placement",

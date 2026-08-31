@@ -586,6 +586,7 @@
       "labor_table": "Labor Table",
       "totals": "Totals",
       "notes": "Notes",
+      "attached_documents": "Attached Documents",
       "diagnostic_notes": "Diagnostic Notes",
       "findings": "Observations",
       "warranty": "Warranty",
@@ -1771,6 +1772,8 @@
       "box": "Boxed",
       "totalsHint": "Classic prints bare lines with a rule above the total. Boxed frames them. Panel and Accent set them on a card."
     },
+    "alignment": "Alignment",
+    "alignCenter": "Center",
     "totalsWidth": "Width",
     "totalsWidthHint": "Empty spans the row. Set points to hang the box on the right; in a column it takes the column's width.",
     "placement": "Placement",

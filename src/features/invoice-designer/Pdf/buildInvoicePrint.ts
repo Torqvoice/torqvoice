@@ -413,10 +413,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     labor,
     findings,
     totals,
-    notes: {
-      html: data.invoiceNotes ?? undefined,
-      attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    },
+    notes: { html: data.invoiceNotes ?? undefined },
+    attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
     warranty: {
       duration: warrantyParts.length ? warrantyParts.join(' / ') : undefined,
       expires: data.warrantyExpiresAt

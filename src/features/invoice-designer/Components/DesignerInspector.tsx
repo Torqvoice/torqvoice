@@ -33,6 +33,7 @@ const HEADED_SECTIONS = new Set([
   'service',
   'general',
   'notes',
+  'attached_documents',
   'warranty',
   'bank_account',
   'parts_table',
@@ -570,6 +571,25 @@ export function DesignerInspector({
                 suffix="%"
                 onChange={(logoSize) => onTemplate({ logoSize })}
               />
+              <div>
+                <div className="mb-1.5 text-[13px] font-medium">{t('alignment')}</div>
+                <Choice
+                  value={
+                    style.align ??
+                    (template.headerStyle === 'modern'
+                      ? 'center'
+                      : template.headerStyle === 'compact'
+                        ? 'left'
+                        : 'right')
+                  }
+                  options={[
+                    { value: 'left', label: t('columnLeft') },
+                    { value: 'center', label: t('alignCenter') },
+                    { value: 'right', label: t('columnRight') },
+                  ]}
+                  onChange={(align) => setStyle({ align: align as 'left' | 'center' | 'right' })}
+                />
+              </div>
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('logoHint')}</p>
             </Group>
           )}

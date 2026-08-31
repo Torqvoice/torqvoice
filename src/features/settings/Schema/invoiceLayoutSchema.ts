@@ -40,6 +40,9 @@ export const invoiceSectionStyleSchema = z.object({
   /** Preferred width in points for a block that hangs to one side of the
    *  sheet, like the totals box. Ignored in a column, which sets the width. */
   width: z.number().min(140).max(515).optional(),
+  /** Where the section sets its mark and lines. Unset follows the header
+   *  style: compact leans left, standard right, modern centers. */
+  align: z.enum(['left', 'center', 'right']).optional(),
   /** Extra room around the section in the flow, in points per edge. */
   marginTop: z.number().min(0).max(120).optional(),
   marginBottom: z.number().min(0).max(120).optional(),
@@ -187,6 +190,9 @@ export const BUILTIN_SECTIONS = [
   { id: 'findings', name: 'Findings' },
   { id: 'totals', name: 'Totals' },
   { id: 'notes', name: 'Notes' },
+  // Its own section rather than a tail on the notes, so the list of what
+  // rides along with the document can be placed and styled like anything else.
+  { id: 'attached_documents', name: 'Attached Documents' },
   { id: 'warranty', name: 'Warranty' },
   { id: 'bank_account', name: 'Bank Account' },
   { id: 'footer', name: 'Footer' },
@@ -283,6 +289,7 @@ export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
   'service',
   'general',
   'notes',
+  'attached_documents',
   'warranty',
   'telegram_qr',
 ])
@@ -296,6 +303,7 @@ export const COLUMN_ELIGIBLE_SECTIONS = new Set<string>([
   'service',
   'general',
   'notes',
+  'attached_documents',
   'bank_account',
 ])
 

@@ -586,6 +586,7 @@
       "labor_table": "Arbeid",
       "totals": "Totaler",
       "notes": "Notater",
+      "attached_documents": "Vedlagte dokumenter",
       "diagnostic_notes": "Diagnostiske notater",
       "findings": "Observasjoner",
       "warranty": "Garanti",
@@ -1771,6 +1772,8 @@
       "box": "Ramme",
       "totalsHint": "Klassisk skriver ut rene linjer med en strek over totalen. Ramme setter en ramme rundt dem. Panel og Aksent setter dem på et kort."
     },
+    "alignment": "Justering",
+    "alignCenter": "Midt",
     "totalsWidth": "Bredde",
     "totalsWidthHint": "Tom fyller hele raden. En verdi i punkter henger boksen til høyre; i en kolonne tar den kolonnens bredde.",
     "placement": "Plassering",
