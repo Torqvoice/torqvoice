@@ -12,7 +12,7 @@
  *   - loading findings and custom fields
  *   - loading workshop settings, organization info and the layout config
  *   - resolving the customer locale and PDF translations
- *   - reading the workshop logo from disk and converting it to a data URI
+ *   - reading the document logo from disk and converting it to a data URI
  *   - optionally generating a Telegram QR code
  *   - resolving Torqvoice branding visibility
  *   - constructing the InvoicePDF React element and rendering it to a buffer
@@ -32,6 +32,7 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { formatDateForPdf } from '@/lib/format'
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 
@@ -186,7 +187,7 @@ export async function buildInvoicePdfBuffer(
     labels.tax = `${customTaxLabel} ({rate}%)`
   }
 
-  const logoDataUri = await loadLogoDataUri(settingsMap['workshop.logo'])
+  const logoDataUri = await loadLogoDataUri(documentLogoPath(settingsMap, 'invoice'))
 
   const invoiceSettings = {
     bankAccount: settingsMap['invoice.bankAccount'] || '',

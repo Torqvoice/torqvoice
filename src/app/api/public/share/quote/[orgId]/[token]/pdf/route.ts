@@ -11,6 +11,7 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 
@@ -95,7 +96,7 @@ export async function GET(
     }
 
     let logoDataUri: string | undefined
-    const logoPath = settingsMap['workshop.logo']
+    const logoPath = documentLogoPath(settingsMap, 'quote')
     if (logoPath) {
       try {
         const fullPath = resolveUploadPath(logoPath)
