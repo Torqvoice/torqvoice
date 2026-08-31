@@ -239,6 +239,7 @@ export function AppSidebar({
         <SidebarMenuButton
           asChild
           isActive={pathname.startsWith('/settings')}
+          tooltip={t('sidebar.settings')}
           className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
         >
           <Link href="/settings" className="font-medium" onClick={closeMobileSidebar}>
@@ -288,6 +289,7 @@ export function AppSidebar({
           <SidebarMenuButton
             asChild
             isActive={isActive}
+            tooltip={t(item.titleKey)}
             // Marked while the card is up, so it is obvious which of a dozen
             // links the card is talking about.
             className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
@@ -354,32 +356,32 @@ export function AppSidebar({
   const dashboardActive = pathname === '/'
 
   return (
-    <Sidebar variant="floating" {...props}>
+    <Sidebar variant="floating" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-1">
+          <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <div className="flex aspect-square size-12 items-center justify-center overflow-hidden rounded-lg">
+                  <div className="flex aspect-square size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg group-data-[collapsible=icon]:size-8">
                     <Image
                       src={companyLogo || '/torqvoice_app_logo.png'}
                       alt={activeOrg?.name ?? 'Company'}
                       width={38}
                       height={38}
                       unoptimized
-                      className="h-auto w-auto object-contain"
+                      className="h-auto max-h-full w-auto max-w-full object-contain"
                     />
                   </div>
-                  <div className="flex flex-col gap-0.5 leading-none">
+                  <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                     <span className="font-semibold">
                       {activeOrg?.name ?? t('sidebar.noOrganization')}
                     </span>
                   </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
+                  <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -419,7 +421,11 @@ export function AppSidebar({
           <SidebarGroup>
             <SidebarMenu className="gap-2">
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={dashboardActive}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={dashboardActive}
+                  tooltip={t('sidebar.dashboard')}
+                >
                   <Link href="/" className="font-medium" onClick={closeMobileSidebar}>
                     <LayoutDashboard className="size-4" />
                     {t('sidebar.dashboard')}
@@ -473,7 +479,11 @@ export function AppSidebar({
             <SidebarGroupLabel>{t('sidebar.superAdmin')}</SidebarGroupLabel>
             <SidebarMenu className="gap-2">
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith('/admin')}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/admin')}
+                  tooltip={t('sidebar.adminPanel')}
+                >
                   <Link href="/admin" className="font-medium" onClick={closeMobileSidebar}>
                     <ShieldCheck className="size-4" />
                     {t('sidebar.adminPanel')}
