@@ -16,6 +16,7 @@ import { Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
+import { PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
 import { Textarea } from '@/components/ui/textarea'
 import { type InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -130,14 +131,22 @@ function ColorRow({
  * with the sheet in front of you, rather than split across a colour form here
  * and an arrangement editor two clicks away.
  */
-function TemplateTab({ documentType }: { documentType: 'invoice' | 'quote' }) {
+function TemplateTab({
+  documentType,
+  workshop,
+  logoUrl,
+}: {
+  documentType: 'invoice' | 'quote'
+  workshop?: WorkshopPreviewInfo
+  logoUrl?: string
+}) {
   const t = useTranslations('settings')
 
   return (
     <AppCard icon={Palette} title={t('templates.presets')} contentClassName="space-y-4">
       <p className="text-sm text-muted-foreground">{t('templates.designerIntro')}</p>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {layoutPresets.map((preset) => (
           <Link
             key={preset.id}
@@ -146,13 +155,15 @@ function TemplateTab({ documentType }: { documentType: 'invoice' | 'quote' }) {
             rel="noopener"
             className="rounded-lg border p-3 text-left transition-colors hover:bg-muted"
           >
-            <div className="overflow-hidden rounded border bg-background">
-              <div className="h-4 bg-primary/80" />
-              <div className="space-y-1 p-2">
-                <div className="h-1 w-3/5 rounded-sm bg-muted-foreground/30" />
-                <div className="h-1 w-4/5 rounded-sm bg-muted-foreground/20" />
-                <div className="h-2 w-full rounded-sm bg-primary/20" />
-              </div>
+            {/* The sheet this template actually produces, on this workshop's
+                own details — the same picture the designer's gallery draws. */}
+            <div className="flex justify-center">
+              <PresetPreview
+                preset={preset}
+                docType={documentType}
+                workshop={workshop}
+                logoUrl={logoUrl}
+              />
             </div>
             <p className="mt-2 text-xs font-medium">
               {t(`layoutEditor.presets.${preset.id}.name` as Parameters<typeof t>[0])}
@@ -538,9 +549,9 @@ export function TemplateSettings({
         <>
           <ReadOnlyWrapper>
             {tab === 'invoice' ? (
-              <TemplateTab documentType="invoice" />
+              <TemplateTab documentType="invoice" workshop={workshop} logoUrl={logoUrl} />
             ) : (
-              <TemplateTab documentType="quote" />
+              <TemplateTab documentType="quote" workshop={workshop} logoUrl={logoUrl} />
             )}
           </ReadOnlyWrapper>
 
