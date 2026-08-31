@@ -315,6 +315,7 @@ export function DesignerInspector({
   logoUrl,
   ownLogo,
   onLogo,
+  sloganSet,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -332,6 +333,8 @@ export function DesignerInspector({
   /** Whether that picture is this document's own rather than the company's. */
   ownLogo: boolean
   onLogo: (url: string) => void
+  /** Whether the workshop has a slogan, or the canvas is showing a stand-in. */
+  sloganSet: boolean
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -501,6 +504,28 @@ export function DesignerInspector({
             </div>
             <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('spacingHint')}</p>
           </Group>
+
+          {/* The slogan is the workshop's own words, kept in company settings
+              rather than here, because it is the same line wherever it is
+              printed. When there is none the canvas shows a stand-in so the
+              block can be found and placed, and that has to say so: it looks
+              exactly like a real slogan otherwise, and it prints as nothing.
+              Opened in a new tab so a layout in progress is not lost. */}
+          {section.id === 'slogan' && (
+            <Group title={t('slogan')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {sloganSet ? t('sloganSetHint') : t('sloganPlaceholderHint')}{' '}
+                <a
+                  href="/settings/company"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('sloganLink')}
+                </a>
+              </p>
+            </Group>
+          )}
 
           {section.id === 'header' && (
             <Group title={t('logo')}>

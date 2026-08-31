@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Włącz logo w sekcji Pola, aby drukować je także na dole strony.",
     "logoReset": "Użyj logo firmy",
     "logoOwn": "Drukowane tylko na tym dokumencie. Logo firmy pozostaje bez zmian.",
-    "logoInherited": "Używane jest logo firmy. Prześlij tutaj inne, aby użyć go tylko na tym dokumencie."
+    "logoInherited": "Używane jest logo firmy. Prześlij tutaj inne, aby użyć go tylko na tym dokumencie.",
+    "slogan": "Slogan",
+    "sloganPlaceholderHint": "Nie ustawiono sloganu, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
+    "sloganSetHint": "Twój slogan pochodzi z danych firmy.",
+    "sloganLink": "Ustawienia firmy",
+    "placeholder": "Symbol zastępczy"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

@@ -241,6 +241,7 @@ export function SpecCanvas({
   onInsert,
   onPair,
   pairable,
+  placeholderIds,
   zoom,
   rulers,
 }: {
@@ -255,10 +256,17 @@ export function SpecCanvas({
   onPair: (id: string, side: 'left' | 'right', beforeId: string | null, afterId: string) => void
   /** Blocks that may share a row in columns. */
   pairable: ReadonlySet<string>
+  /**
+   * Blocks standing in for something the workshop has not filled in. Marked
+   * on the canvas because they read as real content otherwise, and print as
+   * nothing at all.
+   */
+  placeholderIds?: ReadonlySet<string>
   zoom: number
   rulers: boolean
 }) {
   const t = useTranslations('settings.designer')
+  const placeholderLabel = t('placeholder')
   const measureRef = useRef<HTMLDivElement>(null)
   const pagesRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -842,12 +850,42 @@ export function SpecCanvas({
       style={{
         position: 'relative',
         cursor: 'grab',
-        outline: selected === block.id ? '2px solid #2563eb' : undefined,
+        outline:
+          selected === block.id
+            ? '2px solid #2563eb'
+            : // A stand-in for something the workshop has not filled in. It
+              // has to look unlike real content, because it reads as a real
+              // line otherwise and prints as nothing at all.
+              placeholderIds?.has(block.id)
+              ? '1px dashed #c9a227'
+              : undefined,
         outlineOffset: 2,
         ...textCss(block.text),
         ...style,
       }}
     >
+      {placeholderIds?.has(block.id) && selected !== block.id && !dragActive && (
+        <div
+          style={{
+            position: 'absolute',
+            top: -8,
+            right: -2,
+            background: '#fdf6e3',
+            border: '1px solid #e6d8a8',
+            color: '#8a6d1f',
+            fontFamily: "'IBM Plex Sans', sans-serif",
+            fontSize: 9,
+            fontWeight: 600,
+            padding: '1px 5px',
+            borderRadius: 3,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 6,
+          }}
+        >
+          {placeholderLabel}
+        </div>
+      )}
       {selected === block.id && !dragActive && (
         <div
           style={{

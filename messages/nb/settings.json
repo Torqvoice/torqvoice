@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Slå på logoen under Felter for å skrive den ut nederst på siden også.",
     "logoReset": "Bruk firmalogoen",
     "logoOwn": "Skrives bare ut på dette dokumentet. Firmalogoen er uendret.",
-    "logoInherited": "Bruker firmalogoen. Last opp en her for å bruke en annen logo bare på dette dokumentet."
+    "logoInherited": "Bruker firmalogoen. Last opp en her for å bruke en annen logo bare på dette dokumentet.",
+    "slogan": "Slagord",
+    "sloganPlaceholderHint": "Det er ikke satt noe slagord, så arket viser en plassholder som ikke skrives ut.",
+    "sloganSetHint": "Slagordet hentes fra firmaopplysningene dine.",
+    "sloganLink": "Firmainnstillinger",
+    "placeholder": "Plassholder"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

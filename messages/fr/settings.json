@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Activez le logo dans Champs pour l'imprimer aussi en bas de page.",
     "logoReset": "Utiliser le logo de l'entreprise",
     "logoOwn": "Imprimé sur ce document uniquement. Le logo de l'entreprise reste inchangé.",
-    "logoInherited": "Le logo de l'entreprise est utilisé. Importez-en un ici pour en utiliser un autre sur ce document seulement."
+    "logoInherited": "Le logo de l'entreprise est utilisé. Importez-en un ici pour en utiliser un autre sur ce document seulement.",
+    "slogan": "Slogan",
+    "sloganPlaceholderHint": "Aucun slogan n'est défini, la feuille affiche donc un texte d'exemple qui ne sera pas imprimé.",
+    "sloganSetHint": "Votre slogan provient des informations de votre entreprise.",
+    "sloganLink": "Paramètres de l'entreprise",
+    "placeholder": "Exemple"
   },
   "preview": {
     "title": "Révision des freins et vidange",
