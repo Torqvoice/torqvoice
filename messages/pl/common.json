@@ -95,5 +95,10 @@
     "placeholder": "np. Mamy problemy z infrastrukturą serwerową i pracujemy nad nimi.",
     "posted": "Komunikat opublikowany",
     "cleared": "Komunikat usunięty"
+  },
+  "pdfPreview": {
+    "title": "Podgląd PDF",
+    "preview": "Podgląd",
+    "failed": "Nie udało się wygenerować podglądu PDF."
   }
 }

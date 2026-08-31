@@ -16,12 +16,14 @@ import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
 import { QuoteShareDialog } from '@/features/quotes/Components/QuoteShareDialog'
+import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { QuoteImagesManager } from '@/features/quotes/Components/QuoteImagesManager'
 import { QuoteDocumentsManager } from '@/features/quotes/Components/QuoteDocumentsManager'
 import {
   ArrowLeft,
   Camera,
   Download,
+  Eye,
   FileText,
   Globe,
   Loader2,
@@ -104,6 +106,7 @@ export function QuotePageClient({
   const router = useRouter()
   const isLarge = useIsLargeScreen()
   const t = useTranslations('quotes')
+  const tPreview = useTranslations('common.pdfPreview')
 
   const state = useQuoteFormState({
     quote,
@@ -125,6 +128,7 @@ export function QuotePageClient({
   })
 
   const [showPresetPicker, setShowPresetPicker] = useState(false)
+  const [showPdfPreview, setShowPdfPreview] = useState(false)
 
   const handleSelectPreset = useCallback(
     (preset: LaborPresetOption) => {
@@ -286,6 +290,19 @@ export function QuotePageClient({
               {t('page.save')}
             </Button>
             <ButtonGroup>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={state.saving}
+                onClick={async () => {
+                  if (state.saving) return
+                  if (state.hasUnsavedChanges) await state.saveNow()
+                  setShowPdfPreview(true)
+                }}
+              >
+                <Eye className="mr-1 h-3.5 w-3.5" />
+                {tPreview('preview')}
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -453,6 +470,12 @@ export function QuotePageClient({
       />
 
       {/* Dialogs */}
+      <PdfPreviewDialog
+        open={showPdfPreview}
+        onOpenChange={setShowPdfPreview}
+        url={`/api/protected/quotes/${quote.id}/pdf`}
+      />
+
       <SendEmailDialog
         open={state.showEmailDialog}
         onOpenChange={state.setShowEmailDialog}

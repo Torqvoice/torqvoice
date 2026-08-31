@@ -95,5 +95,10 @@
     "placeholder": "z. B. Wir haben Probleme mit unserer Serverinfrastruktur und arbeiten daran.",
     "posted": "Hinweis veröffentlicht",
     "cleared": "Hinweis entfernt"
+  },
+  "pdfPreview": {
+    "title": "PDF-Vorschau",
+    "preview": "Vorschau",
+    "failed": "Die PDF-Vorschau konnte nicht erstellt werden."
   }
 }

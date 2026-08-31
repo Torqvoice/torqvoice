@@ -95,5 +95,10 @@
     "placeholder": "ex. Estamos com problemas na nossa infraestrutura de servidores e já estamos trabalhando nisso.",
     "posted": "Aviso publicado",
     "cleared": "Aviso removido"
+  },
+  "pdfPreview": {
+    "title": "Pré-visualização do PDF",
+    "preview": "Pré-visualização",
+    "failed": "Não foi possível gerar a pré-visualização do PDF."
   }
 }

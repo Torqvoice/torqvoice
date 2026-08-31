@@ -14,6 +14,7 @@ import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
+import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { InventoryPickerDialog } from '../service-edit/InventoryPickerDialog'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
@@ -213,6 +214,7 @@ export function ServicePageClient({
     'waiting-parts': SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
     completed: SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
   }
+  const [showPdfPreview, setShowPdfPreview] = useState(false)
   const [showNotifyDialog, setShowNotifyDialog] = useState(false)
   const [notifyMessage, setNotifyMessage] = useState('')
 
@@ -356,6 +358,11 @@ export function ServicePageClient({
           if (!(await checkDates())) return
           if (formState.hasUnsavedChanges) await actions.saveNow()
           actions.handleDownloadPDF()
+        }}
+        onPreviewPDF={async () => {
+          if (!(await checkDates())) return
+          if (formState.hasUnsavedChanges) await actions.saveNow()
+          setShowPdfPreview(true)
         }}
         onDelete={actions.handleDelete}
         onShowEmail={async () => {
@@ -552,6 +559,12 @@ export function ServicePageClient({
         currentIndex={actions.carouselIndex}
         onClose={() => actions.setCarouselIndex(null)}
         onChangeIndex={actions.setCarouselIndex}
+      />
+
+      <PdfPreviewDialog
+        open={showPdfPreview}
+        onOpenChange={setShowPdfPreview}
+        url={`/api/protected/services/${record.id}/pdf`}
       />
 
       <SendEmailDialog
