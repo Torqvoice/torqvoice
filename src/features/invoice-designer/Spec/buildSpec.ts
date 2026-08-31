@@ -246,6 +246,16 @@ function panel(
   }
 }
 
+/**
+ * How the Torqvoice mark is set.
+ *
+ * Only free plans carry it, and it is the one thing on the sheet meant to be
+ * noticed rather than blend in, so the wordmark runs a step above the body
+ * text instead of sitting in fine print. Kept here because the framed band
+ * measures itself against these numbers.
+ */
+const MARK = { icon: 16, word: 1.25, label: 0.85 }
+
 /** Where the framed letterhead sits on the band, and the air left under it. */
 const FRAMED_HEADER_TOP = 14
 const FRAMED_HEADER_PAD = 14
@@ -283,7 +293,7 @@ function framedBandHeight(
     .filter((id) => fields.includes(id))
     .some((id) => data.fields[id])
   if (hasStrapline) height += 6 + line(scale(size, 0.9))
-  if (data.branding) height += 6 + Math.max(14, line(scale(size, 0.9)))
+  if (data.branding) height += 6 + Math.max(MARK.icon, line(scale(size, MARK.word)))
 
   return Math.max(FRAMED.bandHeight, Math.ceil(FRAMED_HEADER_TOP + height + FRAMED_HEADER_PAD))
 }
@@ -379,7 +389,7 @@ function classicLetterhead(
   // banner centred inside it. Sizes differed with them.
   const brandingRow = (
     justify: 'start' | 'center' | 'end',
-    { soft, fontSize = 9, icon = 14 }: { soft?: string; fontSize?: number; icon?: number } = {}
+    { soft, fontSize = 11, icon = 16 }: { soft?: string; fontSize?: number; icon?: number } = {}
   ): Node[] =>
     data.branding
       ? [
@@ -503,7 +513,7 @@ function classicLetterhead(
                 ...companyLines('left'),
                 // Standard sets the mark under the company block; compact
                 // carries it below the rule instead, so it waits.
-                ...(compact ? [] : brandingRow('start', { fontSize: 10, icon: 16 })),
+                ...(compact ? [] : brandingRow('start', { fontSize: 12, icon: 18 })),
               ],
             },
           },
@@ -619,15 +629,22 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
           node: {
             kind: 'text',
             text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: mutedOnBand, fontSize: scale(size, 0.8) },
+            style: { color: mutedOnBand, fontSize: scale(size, MARK.label) },
           },
         },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 14, maxHeight: 14 } },
+        {
+          node: {
+            kind: 'image',
+            src: data.branding.logoDataUri,
+            maxWidth: MARK.icon,
+            maxHeight: MARK.icon,
+          },
+        },
         {
           node: {
             kind: 'text',
             text: 'Torqvoice',
-            style: { color: mutedOnBand, fontSize: scale(size, 1.0), bold: true },
+            style: { color: mutedOnBand, fontSize: scale(size, MARK.word), bold: true },
           },
         },
       ],
@@ -1026,15 +1043,22 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
           node: {
             kind: 'text',
             text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: look.muted, fontSize: scale(size, 0.72) },
+            style: { color: look.muted, fontSize: scale(size, MARK.label) },
           },
         },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 12, maxHeight: 12 } },
+        {
+          node: {
+            kind: 'image',
+            src: data.branding.logoDataUri,
+            maxWidth: MARK.icon,
+            maxHeight: MARK.icon,
+          },
+        },
         {
           node: {
             kind: 'text',
             text: 'Torqvoice',
-            style: { color: look.muted, fontSize: scale(size, 0.72), bold: true },
+            style: { color: theme.primary, fontSize: scale(size, MARK.word), bold: true },
           },
         },
       ],
@@ -1382,15 +1406,15 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
           node: {
             kind: 'text',
             text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: look.muted, fontSize: scale(size, 0.82) },
+            style: { color: look.muted, fontSize: scale(size, 0.9) },
           },
         },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 18, maxHeight: 18 } },
+        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 22, maxHeight: 22 } },
         {
           node: {
             kind: 'text',
             text: 'Torqvoice',
-            style: { color: theme.primary, fontSize: scale(size, 1.05), bold: true },
+            style: { color: theme.primary, fontSize: scale(size, 1.35), bold: true },
           },
         },
       ],
