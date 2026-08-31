@@ -636,6 +636,30 @@ export function InvoiceDesigner({
     return (
       <div className="flex h-full flex-col items-center overflow-y-auto px-8 py-14">
         <div className="w-full max-w-[1060px]">
+          {/* The way out and the way on, both above the cards. Leaving should
+              never need a scroll, and carrying on with the layout somebody
+              already has is the commonest reason to open this page: below a
+              screen of templates it was the hardest thing here to reach,
+              while replacing that layout filled the view. */}
+          <div className="mb-7 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => router.push('/settings/templates')}
+              className="text-sm text-[#71767e] hover:text-[#1a1d21]"
+            >
+              ◂ {t('backToSettings')}
+            </button>
+            {/* Outlined rather than filled: it must be easy to find without
+                shouting over the templates somebody may have come to browse. */}
+            <button
+              type="button"
+              onClick={() => setView('designer')}
+              className="rounded-[7px] border border-[#c9ccd1] bg-white px-3 py-1.5 text-sm font-medium text-[#2563eb] hover:border-[#2563eb]"
+            >
+              {t('continueCurrent')} →
+            </button>
+          </div>
+
           <div className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#2563eb]">
             {t('eyebrow')}
           </div>
@@ -720,23 +744,6 @@ export function InvoiceDesigner({
                 </button>
               )
             })}
-          </div>
-
-          <div className="mt-7 flex justify-center gap-6">
-            <button
-              type="button"
-              onClick={() => setView('designer')}
-              className="text-sm font-medium text-[#2563eb]"
-            >
-              {t('continueCurrent')} →
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push('/settings/templates')}
-              className="text-sm text-[#71767e]"
-            >
-              {t('backToSettings')}
-            </button>
           </div>
         </div>
       </div>
