@@ -1,0 +1,27 @@
+{
+  "lockedTitle": {
+    "invoice": {
+      "sent": "Denne fakturaen er låst fordi den er sendt",
+      "paid": "Denne fakturaen er låst fordi den er betalt"
+    },
+    "quote": {
+      "sent": "Dette tilbudet er låst fordi det er sendt",
+      "accepted": "Dette tilbudet er låst fordi det er akseptert"
+    }
+  },
+  "lockedBody": "Deler, arbeid, priser, rabatt, avgift, nummer og dato kan ikke lenger endres. Betalinger, statusendringer, sending og vedlegg virker fortsatt.",
+  "lockedAdminHint": "Som eier eller administrator kan du låse opp dokumentet hvis noe virkelig må rettes. Opplåsingen loggføres.",
+  "lockedMemberHint": "Be en eier eller administrator låse opp dokumentet hvis noe må rettes.",
+  "unlock": "Lås opp for redigering",
+  "relock": "Lås igjen",
+  "unlockConfirmTitle": "Låse opp dette dokumentet?",
+  "unlockConfirmDescription": {
+    "invoice": "Dokumentet kan redigeres igjen, og endringen loggføres med navnet ditt. Bruk heller kreditnota der regelverket krever det.",
+    "quote": "Dokumentet kan redigeres igjen, og endringen loggføres med navnet ditt."
+  },
+  "unlocked": "Låst opp for redigering",
+  "relocked": "Låst igjen",
+  "reopenedTitle": "Dette dokumentet er låst opp for redigering",
+  "reopenedBody": "Det kan redigeres til det låses igjen.",
+  "failed": "Kunne ikke endre låsen"
+}

@@ -20,6 +20,7 @@ vi.mock('@/lib/db', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db: any = {
     user: { findUnique: vi.fn() },
+    appSetting: { findMany: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), update: vi.fn() },
     servicePart: { create: vi.fn(), aggregate: vi.fn() },
     serviceLabor: { aggregate: vi.fn() },
@@ -55,6 +56,9 @@ function setupAuth() {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // Locking is read before a part is added; no settings rows means locking
+  // is off, which is how these tests expect to run.
+  vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
   // resetAllMocks clears implementations, so restore the transaction runner
   // (invoke the callback with the mock db as the transaction client).
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

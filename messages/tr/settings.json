@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Müşteri numaraları atansın mı?",
     "assignCustomerNumbersConfirmDescription": "Numarası olmayan {count} müşteriye, oluşturulma sırasına göre ve mevcut en yüksek numaradan devam eden sıralı numaralar verilecek. Numarası olan müşteriler değişmez. Numaralar sonradan düzenlenebilir.",
     "layoutColorsHint": "Renkler, yazı tipleri ve antet stili Şablonlar’da bulunur.",
-    "goToTemplates": "Şablonları aç"
+    "goToTemplates": "Şablonları aç",
+    "lockTitle": "Tamamlanan belgeleri kilitleme",
+    "lockDescription": "Kapanmış bir faturanın veya teklifin değiştirilmesini engeller.",
+    "lockWhatItDoes": "Kilitlenenler: parçalar, işçilik, miktarlar, fiyatlar, indirim, vergi, belge numarası ve tarihi. Belgeyi silmek de engellenir.",
+    "lockWhatItAllows": "Çalışmaya devam edenler: ödeme kaydetme, çevrim içi kartla ödeme, durum değişiklikleri, gönderme ve yeniden gönderme, ekler ve dahili notlar. Kilitli bir fatura her zaman ödenebilir.",
+    "lockUnlockNote": "Sahipler ve yöneticiler, gerçekten düzeltilmesi gereken bir şey olduğunda belgenin kendi sayfasından tek bir belgenin kilidini açabilir. Her kilit açma denetim günlüğüne yazılır.",
+    "lockInvoicesLabel": "Faturaları kilitle",
+    "lockTriggerSent": "Fatura gönderildiğinde",
+    "lockTriggerPaid": "Fatura tamamen ödendiğinde",
+    "lockTriggerSentHint": "Fatura e-postayla gönderilir gönderilmez veya paylaşım bağlantısı oluşturulduğunda kilitlenir. Bunu açmadan önce gönderilen faturalar etkilenmez.",
+    "lockTriggerPaidHint": "Tutarın tamamı kapandığında veya fatura elle ödendi olarak işaretlendiğinde kilitlenir. Kısmen ödenmiş fatura düzenlenebilir kalır.",
+    "lockQuotesLabel": "Teklifleri kilitle",
+    "quoteLockTriggerSent": "Teklif gönderildiğinde",
+    "quoteLockTriggerAccepted": "Teklif kabul edildiğinde",
+    "quoteLockTriggerSentHint": "Teklif müşteriye ulaşır ulaşmaz kilitlenir. Yalnızca pazarlık sırasında teklifi hiç revize etmiyorsanız seçin.",
+    "quoteLockTriggerAcceptedHint": "Müşteri teklifi kabul ettiğinde veya teklif bir işe dönüştürüldüğünde kilitlenir. Gönderilmiş teklifler düzenlenebilir kalır."
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",

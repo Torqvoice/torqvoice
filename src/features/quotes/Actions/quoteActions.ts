@@ -1,5 +1,6 @@
 'use server'
 
+import { assertQuoteEditable } from '@/lib/document-lock.server'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { createQuoteSchema, updateQuoteSchema } from '../Schema/quoteSchema'
@@ -291,6 +292,7 @@ export async function updateQuote(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = updateQuoteSchema.parse(input)
+      await assertQuoteEditable(data.id, organizationId)
       const existing = await db.quote.findFirst({
         where: { id: data.id, organizationId },
       })
@@ -379,6 +381,7 @@ export async function updateQuoteStatus(quoteId: string, status: string) {
 export async function deleteQuote(quoteId: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      await assertQuoteEditable(quoteId, organizationId)
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
       })

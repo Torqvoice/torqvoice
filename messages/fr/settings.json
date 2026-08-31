@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Attribuer des numéros clients ?",
     "assignCustomerNumbersConfirmDescription": "Les {count} clients sans numéro recevront des numéros séquentiels dans leur ordre de création, à la suite du numéro existant le plus élevé. Les clients ayant déjà un numéro ne sont pas modifiés. Les numéros restent modifiables ensuite.",
     "layoutColorsHint": "Les couleurs, les polices et le style d’en-tête sont dans Modèles.",
-    "goToTemplates": "Ouvrir Modèles"
+    "goToTemplates": "Ouvrir Modèles",
+    "lockTitle": "Verrouillage des documents finalisés",
+    "lockDescription": "Empêche la modification d'une facture ou d'un devis une fois qu'il est réglé.",
+    "lockWhatItDoes": "Ce qui est verrouillé : pièces, main-d’œuvre, quantités, prix, remise, taxe, numéro et date du document. La suppression est également bloquée.",
+    "lockWhatItAllows": "Ce qui fonctionne encore : enregistrer des paiements, le paiement en ligne, les changements de statut, l’envoi et le renvoi, les pièces jointes et les notes internes. Une facture verrouillée reste toujours payable.",
+    "lockUnlockNote": "Les propriétaires et administrateurs peuvent déverrouiller un document depuis sa propre page lorsqu’une correction est réellement nécessaire. Chaque déverrouillage est consigné dans le journal d’audit.",
+    "lockInvoicesLabel": "Verrouiller les factures",
+    "lockTriggerSent": "Une fois la facture envoyée",
+    "lockTriggerPaid": "Une fois la facture intégralement payée",
+    "lockTriggerSentHint": "Verrouille dès que la facture est envoyée par e-mail ou qu'un lien de partage est créé. Les factures envoyées avant l'activation ne sont pas concernées.",
+    "lockTriggerPaidHint": "Verrouille une fois le montant total réglé ou la facture marquée payée à la main. Une facture partiellement payée reste modifiable.",
+    "lockQuotesLabel": "Verrouiller les devis",
+    "quoteLockTriggerSent": "Une fois le devis envoyé",
+    "quoteLockTriggerAccepted": "Une fois le devis accepté",
+    "quoteLockTriggerSentHint": "Verrouille dès que le devis part chez le client. À choisir uniquement si vous ne révisez jamais un devis en cours de négociation.",
+    "quoteLockTriggerAcceptedHint": "Verrouille une fois le devis accepté par le client ou converti en intervention. Les devis envoyés restent modifiables."
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",

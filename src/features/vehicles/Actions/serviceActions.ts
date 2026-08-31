@@ -13,6 +13,7 @@ import { serviceDateOrderBy } from '@/lib/date-sort'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(
@@ -527,6 +528,9 @@ export async function updateServiceRecord(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = updateServiceSchema.parse(input)
+      // Refused before anything is read or written: this is the main way the
+      // money on an invoice changes.
+      await assertInvoiceEditable(data.id, organizationId)
       const existing = await db.serviceRecord.findFirst({
         where: { id: data.id, organizationId },
         include: {
@@ -1020,6 +1024,8 @@ export async function getWorkOrders(params: {
 export async function deleteServiceRecord(recordId: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      // A locked invoice cannot be edited into nothing either.
+      await assertInvoiceEditable(recordId, organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
         include: { attachments: true },
@@ -1121,7 +1127,14 @@ export async function generatePublicLink(serviceRecordId: string) {
       const token = randomUUID()
       await db.serviceRecord.update({
         where: { id: serviceRecordId },
-        data: { publicToken: token, sharedAt: new Date() },
+        data: {
+          publicToken: token,
+          sharedAt: new Date(),
+          // Handing over a link is a way of sending the invoice, so it counts
+          // for "lock when sent". Unlike sharedAt this is never cleared:
+          // revoking the link does not unsend what the customer already saw.
+          sentAt: record.sentAt ?? new Date(),
+        },
       })
 
       revalidatePath(

@@ -400,6 +400,14 @@ export async function sendInvoiceEmail(input: {
         ],
       })
 
+      // Records the first time this invoice reached the customer, which is
+      // what "lock when sent" keys off. Only the first send counts: later
+      // copies of the same document do not re-issue it.
+      await db.serviceRecord.updateMany({
+        where: { id: serviceRecordId, organizationId, sentAt: null },
+        data: { sentAt: new Date() },
+      })
+
       return { sent: true, serviceRecordId, recipientEmail }
     },
     {

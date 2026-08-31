@@ -24,6 +24,11 @@ export const SETTING_KEYS = {
   INVOICE_SHOW_BANK_ACCOUNT: 'invoice.showBankAccount',
   INVOICE_SHOW_ORG_NUMBER: 'invoice.showOrgNumber',
   INVOICE_DUE_DAYS: 'invoice.dueDays',
+  /** See src/lib/document-lock.ts for what these freeze and when. */
+  INVOICE_LOCK_ENABLED: 'invoice.lockEnabled',
+  INVOICE_LOCK_TRIGGER: 'invoice.lockTrigger',
+  QUOTE_LOCK_ENABLED: 'quote.lockEnabled',
+  QUOTE_LOCK_TRIGGER: 'quote.lockTrigger',
   UNIT_SYSTEM: 'workshop.unitSystem',
   DEFAULT_TECHNICIAN: 'workshop.defaultTechnician',
   DEFAULT_TECHNICIAN_ID: 'workshop.defaultTechnicianId',
@@ -221,6 +226,10 @@ export const invoiceSettingsSchema = z.object({
   [SETTING_KEYS.INVOICE_SHOW_BANK_ACCOUNT]: z.string().optional(),
   [SETTING_KEYS.INVOICE_SHOW_ORG_NUMBER]: z.string().optional(),
   [SETTING_KEYS.INVOICE_DUE_DAYS]: z.string().optional(),
+  [SETTING_KEYS.INVOICE_LOCK_ENABLED]: z.string().optional(),
+  [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: z.string().optional(),
+  [SETTING_KEYS.QUOTE_LOCK_ENABLED]: z.string().optional(),
+  [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: z.string().optional(),
 })
 
 export type WorkshopSettings = z.infer<typeof workshopSettingsSchema>

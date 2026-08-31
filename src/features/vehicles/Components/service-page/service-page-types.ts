@@ -1,3 +1,4 @@
+import type { LockState } from '@/lib/document-lock'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
 import type { InitialData, InventoryPartOption } from '../service-edit/form-types'
@@ -36,6 +37,10 @@ export interface ServicePageClientProps {
   record: ServiceDetail
   vehicleId: string | null
   organizationId: string
+  /** Whether the invoice may still be edited; see src/lib/document-lock.ts. */
+  lockState?: LockState
+  /** Owners and admins can reopen a locked invoice. */
+  canUnlock?: boolean
   currencyCode: string
   unitSystem: 'metric' | 'imperial'
   defaultTaxRate: number

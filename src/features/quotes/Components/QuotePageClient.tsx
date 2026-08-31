@@ -1,5 +1,8 @@
 'use client'
 
+import { DocumentLockBanner } from '@/components/document-lock-banner'
+import { setQuoteEditUnlocked } from '@/features/settings/Actions/documentLockActions'
+import type { LockState } from '@/lib/document-lock'
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -61,6 +64,8 @@ function useIsLargeScreen() {
 export function QuotePageClient({
   quote,
   organizationId,
+  lockState = { locked: false, reason: null, unlockedAt: null },
+  canUnlock = false,
   currencyCode = 'USD',
   defaultTaxRate = 0,
   taxEnabled = true,
@@ -76,6 +81,8 @@ export function QuotePageClient({
 }: {
   quote: QuoteRecord
   organizationId: string
+  lockState?: LockState
+  canUnlock?: boolean
   currencyCode?: string
   defaultTaxRate?: number
   taxEnabled?: boolean
@@ -354,6 +361,17 @@ export function QuotePageClient({
           ))}
         </div>
       </div>
+
+      {(lockState.locked || lockState.unlockedAt) && (
+        <div className="shrink-0 px-4 pt-3">
+          <DocumentLockBanner
+            state={lockState}
+            kind="quote"
+            canUnlock={canUnlock}
+            onSetUnlocked={(unlocked) => setQuoteEditUnlocked(quote.id, unlocked)}
+          />
+        </div>
+      )}
 
       {/* Tab Content */}
       {state.activeTab === 'details' && (

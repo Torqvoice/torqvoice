@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Klantnummers toewijzen?",
     "assignCustomerNumbersConfirmDescription": "De {count} klanten zonder nummer krijgen opeenvolgende nummers in volgorde van aanmaak, doorlopend na het hoogste bestaande nummer. Klanten met een nummer worden niet gewijzigd. Nummers zijn achteraf te bewerken.",
     "layoutColorsHint": "Kleuren, lettertypen en de briefhoofdstijl staan bij Sjablonen.",
-    "goToTemplates": "Sjablonen openen"
+    "goToTemplates": "Sjablonen openen",
+    "lockTitle": "Afgeronde documenten vergrendelen",
+    "lockDescription": "Voorkomt dat een factuur of offerte nog wijzigt zodra die is afgerond.",
+    "lockWhatItDoes": "Wat wordt vergrendeld: onderdelen, arbeid, aantallen, prijzen, korting, btw, documentnummer en datum. Verwijderen wordt ook geblokkeerd.",
+    "lockWhatItAllows": "Wat blijft werken: betalingen vastleggen, online kaartbetaling, statuswijzigingen, versturen en opnieuw versturen, bijlagen en interne notities. Een vergrendelde factuur blijft altijd betaalbaar.",
+    "lockUnlockNote": "Eigenaren en beheerders kunnen één document ontgrendelen vanaf de pagina van dat document wanneer er echt iets gecorrigeerd moet worden. Elke ontgrendeling komt in het auditlogboek.",
+    "lockInvoicesLabel": "Facturen vergrendelen",
+    "lockTriggerSent": "Zodra de factuur is verstuurd",
+    "lockTriggerPaid": "Zodra de factuur volledig is betaald",
+    "lockTriggerSentHint": "Vergrendelt zodra de factuur is gemaild of er een deellink is aangemaakt. Facturen die eerder zijn verstuurd blijven ongemoeid.",
+    "lockTriggerPaidHint": "Vergrendelt zodra het volledige bedrag is voldaan of de factuur handmatig op betaald is gezet. Een deels betaalde factuur blijft bewerkbaar.",
+    "lockQuotesLabel": "Offertes vergrendelen",
+    "quoteLockTriggerSent": "Zodra de offerte is verstuurd",
+    "quoteLockTriggerAccepted": "Zodra de offerte is geaccepteerd",
+    "quoteLockTriggerSentHint": "Vergrendelt zodra de offerte naar de klant gaat. Kies dit alleen als je een offerte nooit aanpast tijdens de onderhandeling.",
+    "quoteLockTriggerAcceptedHint": "Vergrendelt zodra de klant de offerte heeft geaccepteerd of die is omgezet naar een opdracht. Verstuurde offertes blijven bewerkbaar."
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",

@@ -1,5 +1,7 @@
 'use client'
 
+import { DocumentLockBanner } from '@/components/document-lock-banner'
+import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
@@ -55,6 +57,8 @@ export function ServicePageClient({
   record,
   vehicleId,
   organizationId,
+  lockState = { locked: false, reason: null, unlockedAt: null },
+  canUnlock = false,
   currencyCode,
   unitSystem,
   tireHotelEnabled = false,
@@ -332,6 +336,17 @@ export function ServicePageClient({
         onNotifyCustomer={handleNotifyCustomer}
         hasCustomer={!!customer}
       />
+
+      {(lockState.locked || lockState.unlockedAt) && (
+        <div className="shrink-0 px-4 pt-3">
+          <DocumentLockBanner
+            state={lockState}
+            kind="invoice"
+            canUnlock={canUnlock}
+            onSetUnlocked={(unlocked) => setInvoiceEditUnlocked(record.id, unlocked)}
+          />
+        </div>
+      )}
 
       {activeTab === 'details' && (
         <>

@@ -8,6 +8,7 @@ import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPrese
 
 import { getTechnicians, getOrgMembers } from '@/features/workboard/Actions/technicianActions'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { getInvoiceLockState } from '@/lib/document-lock.server'
 import { getFeatures } from '@/lib/features'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
@@ -109,6 +110,9 @@ export async function ServiceRecordPage({
     (b) => ({ id: b.id, name: b.name })
   )
   const organizationId = authContext?.organizationId || ''
+  const lockState = organizationId
+    ? await getInvoiceLockState(serviceId, organizationId)
+    : { locked: false, reason: null, unlockedAt: null }
 
   // Fetch team members and features
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
@@ -259,6 +263,8 @@ export async function ServiceRecordPage({
         record={result.data}
         vehicleId={vehicleId}
         organizationId={organizationId}
+        lockState={lockState}
+        canUnlock={authContext?.isAdmin ?? false}
         initialTab={initialTab}
         currencyCode={currencyCode}
         unitSystem={unitSystem}

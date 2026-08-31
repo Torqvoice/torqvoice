@@ -24,6 +24,7 @@ vi.mock('@/lib/resolve-upload-path', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
+    appSetting: { findMany: vi.fn() },
     vehicle: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
@@ -94,6 +95,9 @@ const ORG_A_VEHICLE = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // Locking is read before any edit to an invoice or quote; no settings
+  // rows means locking is off, which is how these tests expect to run.
+  vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
   // deleteServiceRecord restocks inventory inside a transaction; run the
   // callback against the mock db and default to a record with no parts.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

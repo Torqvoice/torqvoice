@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Kundennummern vergeben?",
     "assignCustomerNumbersConfirmDescription": "Die {count} Kunden ohne Nummer erhalten fortlaufende Nummern in der Reihenfolge ihrer Erstellung, beginnend nach der höchsten vorhandenen Nummer. Kunden mit Nummer bleiben unverändert. Nummern können danach bearbeitet werden.",
     "layoutColorsHint": "Farben, Schriften und der Briefkopf-Stil liegen unter Vorlagen.",
-    "goToTemplates": "Vorlagen öffnen"
+    "goToTemplates": "Vorlagen öffnen",
+    "lockTitle": "Abgeschlossene Dokumente sperren",
+    "lockDescription": "Verhindert Änderungen an einer Rechnung oder einem Angebot, sobald es abgeschlossen ist.",
+    "lockWhatItDoes": "Gesperrt werden: Teile, Arbeit, Mengen, Preise, Rabatt, Steuer, Belegnummer und Datum. Auch das Löschen des Dokuments wird verhindert.",
+    "lockWhatItAllows": "Weiterhin möglich: Zahlungen erfassen, Online-Kartenzahlung, Statusänderungen, Versand und erneuter Versand, Anhänge und interne Notizen. Eine gesperrte Rechnung kann immer bezahlt werden.",
+    "lockUnlockNote": "Inhaber und Administratoren können ein einzelnes Dokument auf dessen eigener Seite entsperren, wenn wirklich etwas korrigiert werden muss. Jede Entsperrung wird im Audit-Log festgehalten.",
+    "lockInvoicesLabel": "Rechnungen sperren",
+    "lockTriggerSent": "Sobald die Rechnung versendet ist",
+    "lockTriggerPaid": "Sobald die Rechnung vollständig bezahlt ist",
+    "lockTriggerSentHint": "Sperrt, sobald die Rechnung per E-Mail versendet oder ein Freigabelink erstellt wird. Zuvor versendete Rechnungen sind nicht betroffen.",
+    "lockTriggerPaidHint": "Sperrt, sobald der volle Betrag beglichen oder die Rechnung manuell als bezahlt markiert ist. Teilweise bezahlte Rechnungen bleiben bearbeitbar.",
+    "lockQuotesLabel": "Angebote sperren",
+    "quoteLockTriggerSent": "Sobald das Angebot versendet ist",
+    "quoteLockTriggerAccepted": "Sobald das Angebot angenommen ist",
+    "quoteLockTriggerSentHint": "Sperrt, sobald das Angebot zum Kunden geht. Nur wählen, wenn Sie Angebote nie nachverhandeln.",
+    "quoteLockTriggerAcceptedHint": "Sperrt, sobald der Kunde das Angebot angenommen hat oder es in einen Auftrag umgewandelt wurde. Versendete Angebote bleiben bearbeitbar."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
