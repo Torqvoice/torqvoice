@@ -31,7 +31,19 @@ export async function GET(
 
   const [category, filename] = segments
 
-  const allowedCategories = ['vehicles', 'inventory', 'services', 'logos', 'quotes']
+  // Every folder a shared document's images and attachments can live in. A
+  // tire-hotel job's photos sat under its own folder, which this list did not
+  // know, so its share link showed every image but those.
+  const allowedCategories = [
+    'vehicles',
+    'inventory',
+    'services',
+    'logos',
+    'quotes',
+    'tire-hotel',
+    'inspections',
+    'documents',
+  ]
   if (!allowedCategories.includes(category)) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
   }
