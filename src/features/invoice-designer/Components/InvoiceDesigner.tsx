@@ -22,6 +22,7 @@ import {
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
   materializeHiddenSection,
+  mergeWithDefaults,
   toCustomFieldId,
   type InvoiceDocumentStyle,
   type InvoiceLayoutConfig,
@@ -384,7 +385,10 @@ export function InvoiceDesigner({
   /** Bring a saved design back, onto whichever document is being edited. */
   const applyDesign = useCallback(
     (design: SavedDesign) => {
-      setLayout(JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig)
+      // Merged, not taken as written: a design saved a year ago predates every
+      // section and field added since, and loading it verbatim would hide them
+      // with no way to switch them back on.
+      setLayout(mergeWithDefaults(JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig))
       setTemplates((prev) => ({ ...prev, [docType]: { ...design.template } }))
       // Its name becomes the working name, so the next save updates it.
       setDesignName(design.name)

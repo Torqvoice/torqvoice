@@ -340,12 +340,19 @@ export function DesignerInspector({
      * The fields this section shows, resolved the way the generator resolves
      * them: no list of its own means every built-in field, visible.
      */
-    const builtinIds = new Set(getBuiltinFieldsForSection(section.id).map((f) => f.id))
-    const resolvedFields = (
-      section.fields ??
-      getBuiltinFieldsForSection(section.id).map((f) => ({ id: f.id, visible: true }))
-    ) // A stored id no builtin list carries any more is a leftover, not a field.
+    const builtins = getBuiltinFieldsForSection(section.id)
+    const builtinIds = new Set(builtins.map((f) => f.id))
+    const stored = (section.fields ?? builtins.map((f) => ({ id: f.id, visible: true }))) // A stored id no builtin list carries any more is a leftover, not a field.
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
+    // A field added after this layout was written still needs its switch.
+    // Without this a saved design, which is loaded as it was stored, can never
+    // reach anything built since, and the option looks simply missing.
+    const resolvedFields = [
+      ...stored,
+      ...builtins
+        .filter((f) => !stored.some((existing) => existing.id === f.id))
+        .map((f) => ({ id: f.id, visible: false })),
+    ]
     const setFields = (fields: { id: string; visible: boolean }[]) =>
       onSection(section.id, { fields })
     const setStyle = (patch: InvoiceSectionStyle) => {

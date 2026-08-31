@@ -4,7 +4,11 @@
  */
 import { describe, expect, it } from 'vitest'
 import { groupFlowBlocks, type Block } from '@/features/invoice-designer/Spec/documentSpec'
-import { materializeHiddenSection } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  getBuiltinFieldsForSection,
+  materializeHiddenSection,
+  mergeWithDefaults,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const block = (id: string, order: number, column?: 'left' | 'right'): Block => ({
   id,
@@ -106,5 +110,43 @@ describe('flow rows', () => {
     expect(
       (rows[0] as Extract<(typeof rows)[number], { type: 'pair' }>).left.map((b) => b.id)
     ).toEqual(['customer'])
+  })
+})
+
+/**
+ * A layout written before a field existed.
+ *
+ * Both ways a layout reaches the editor have to account for it: stored layouts
+ * are merged on load, but a saved design is applied exactly as it was written,
+ * so a field added since would have no switch and would read as missing.
+ */
+describe('fields added after a layout was written', () => {
+  it('offers every builtin field a switch, whatever the layout carries', () => {
+    const builtins = getBuiltinFieldsForSection('footer').map((f) => f.id)
+    // A footer as it was stored before the logo field was added.
+    const stored = [
+      { id: 'footer_note', visible: true },
+      { id: 'company_name', visible: false },
+    ]
+    const builtinIds = new Set(builtins)
+    const kept = stored.filter((f) => builtinIds.has(f.id))
+    const resolved = [
+      ...kept,
+      ...builtins
+        .filter((id) => !kept.some((f) => f.id === id))
+        .map((id) => ({ id, visible: false })),
+    ]
+    expect(resolved.map((f) => f.id)).toEqual(expect.arrayContaining(builtins))
+    expect(resolved.find((f) => f.id === 'logo')?.visible).toBe(false)
+  })
+
+  it('merges an old saved design so it gains what shipped since', () => {
+    const design = {
+      sections: [
+        { id: 'footer', visible: true, order: 12, fields: [{ id: 'footer_note', visible: true }] },
+      ],
+    }
+    const footer = mergeWithDefaults(design as never).sections.find((s) => s.id === 'footer')
+    expect(footer?.fields?.some((f) => f.id === 'logo')).toBe(true)
   })
 })
