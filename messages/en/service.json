@@ -350,7 +350,17 @@
     "makeTechnician": "Makes them a technician",
     "addSomeoneNew": "Add someone new",
     "notOnBoard": "Not on the board yet",
-    "putOnBoard": "Put on board"
+    "putOnBoard": "Put on board",
+    "slotTaken": "{count, plural, one {This slot is already booked} other {This slot has # clashes}}",
+    "anotherJob": "another job",
+    "clashTechnician": "the technician is busy",
+    "clashBay": "the bay is in use",
+    "clashBoth": "both are taken",
+    "bookedAnyway": "Saved anyway. Change the time, or pick the next free slot.",
+    "pickNextAvailable": "Pick next available slot",
+    "findingSlot": "Finding a slot…",
+    "slotPicked": "Booked into the next free slot",
+    "noSlotFound": "No free slot found in the next few weeks"
   },
   "notifications": {
     "title": "Customer Notifications",

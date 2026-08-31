@@ -22,11 +22,22 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Check, ChevronsUpDown, Clock, Plus, Settings, UserPlus } from 'lucide-react'
+import {
+  AlertTriangle,
+  Check,
+  ChevronsUpDown,
+  Clock,
+  Plus,
+  Settings,
+  UserPlus,
+  Wand2,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import {
   assignTechnician,
+  checkSlotAvailability,
+  findNextSlot,
   scheduleJob,
   updateServiceTimes,
 } from '@/features/workboard/Actions/boardActions'
@@ -93,6 +104,28 @@ export function ScheduleTimesSection({
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Opening a job that is already double-booked should say so, not wait for
+  // somebody to change something first.
+  useEffect(() => {
+    if (!initialStartDateTime || !initialEndDateTime) return
+    if (!initialTechnicianId && !initialWorkBayId) return
+    void checkSlotAvailability({
+      start: new Date(initialStartDateTime).toISOString(),
+      end: new Date(initialEndDateTime).toISOString(),
+      technicianId: initialTechnicianId || null,
+      workBayId: initialWorkBayId || null,
+      excludeId: serviceRecordId,
+    }).then((res) => {
+      if (res.success && res.data) setConflicts(res.data.conflicts)
+    })
+  }, [
+    initialStartDateTime,
+    initialEndDateTime,
+    initialTechnicianId,
+    initialWorkBayId,
+    serviceRecordId,
+  ])
   const [newTechName, setNewTechName] = useState('')
 
   const [startDateTime, setStartDateTime] = useState<Date | undefined>(
@@ -102,7 +135,75 @@ export function ScheduleTimesSection({
     initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000)
   )
 
-  const saveTimes = async (start: Date, end: Date) => {
+  /** What the current selection would double-book, if anything. */
+  const [conflicts, setConflicts] = useState<
+    {
+      id: string
+      label: string
+      start: string
+      end: string
+      onTechnician: boolean
+      onBay: boolean
+    }[]
+  >([])
+  const [checking, setChecking] = useState(false)
+  const [finding, setFinding] = useState(false)
+
+  const bayId = selectedBayId === NO_BAY ? null : selectedBayId
+
+  /**
+   * Ask whether a slot is free, for the resources currently chosen.
+   *
+   * Advisory rather than blocking: a shop sometimes double-books a person on
+   * purpose, and refusing the booking outright would make the board lie about
+   * what the day actually looks like. Saying so plainly is the useful part.
+   */
+  const checkSlot = async (start: Date, end: Date, techId: string, bay: string | null) => {
+    if ((!techId && !bay) || end <= start) {
+      setConflicts([])
+      return
+    }
+    setChecking(true)
+    const res = await checkSlotAvailability({
+      start: start.toISOString(),
+      end: end.toISOString(),
+      technicianId: techId || null,
+      workBayId: bay,
+      excludeId: serviceRecordId,
+    })
+    setChecking(false)
+    setConflicts(res.success && res.data ? res.data.conflicts : [])
+  }
+
+  /** Move the booking to the first slot that fits, inside working hours. */
+  const pickNextAvailable = async () => {
+    const minutes =
+      startDateTime && endDateTime
+        ? Math.max(15, Math.round((endDateTime.getTime() - startDateTime.getTime()) / 60000))
+        : 60
+    setFinding(true)
+    const res = await findNextSlot({
+      durationMinutes: minutes,
+      technicianId: selectedTechId || null,
+      workBayId: bayId,
+      excludeId: serviceRecordId,
+      from: new Date().toISOString(),
+    })
+    setFinding(false)
+    if (!res.success || !res.data?.start || !res.data?.end) {
+      toast.error(t('noSlotFound'))
+      return
+    }
+    const start = new Date(res.data.start)
+    const end = new Date(res.data.end)
+    setStartDateTime(start)
+    setEndDateTime(end)
+    setConflicts([])
+    await saveTimes(start, end, { skipCheck: true })
+    toast.success(t('slotPicked'))
+  }
+
+  const saveTimes = async (start: Date, end: Date, opts?: { skipCheck?: boolean }) => {
     if (end <= start) {
       toast.error(t('endBeforeStart'))
       return
@@ -114,6 +215,9 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      // Checked after the write rather than before it: the times save as they
+      // always did, and the clash is reported against what is now booked.
+      if (!opts?.skipCheck) void checkSlot(start, end, selectedTechId, bayId)
     } else {
       toast.error(res.error || t('failedUpdate'))
     }
@@ -136,6 +240,7 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, techId, bayId)
     } else {
       toast.error(t('failedAssign'))
       setSelectedTechId(initialTechnicianId || '')
@@ -188,6 +293,9 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      const nextBay = bayId === NO_BAY ? null : bayId
+      if (startDateTime && endDateTime)
+        void checkSlot(startDateTime, endDateTime, selectedTechId, nextBay)
     } else {
       toast.error(res.error || t('failedUpdate'))
       setSelectedBayId(previous)
@@ -413,6 +521,61 @@ export function ScheduleTimesSection({
           <div className="h-9 rounded-md border" />
         )}
       </div>
+
+      {conflicts.length > 0 && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 dark:border-amber-900/60 dark:bg-amber-950/40">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="mt-px h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
+                {t('slotTaken', { count: conflicts.length })}
+              </p>
+              <ul className="space-y-0.5">
+                {conflicts.slice(0, 3).map((c) => (
+                  <li
+                    key={c.id}
+                    className="text-[11px] leading-snug text-amber-800 dark:text-amber-300"
+                  >
+                    {c.label || t('anotherJob')} ·{' '}
+                    {new Date(c.start).toLocaleString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                    {' – '}
+                    {new Date(c.end).toLocaleTimeString(undefined, {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                    {' · '}
+                    {c.onTechnician && c.onBay
+                      ? t('clashBoth')
+                      : c.onTechnician
+                        ? t('clashTechnician')
+                        : t('clashBay')}
+                  </li>
+                ))}
+              </ul>
+              {/* Advisory, not a block: a shop that means to double-book still
+                  can, and the board keeps telling the truth about the day. */}
+              <p className="text-[11px] text-amber-700 dark:text-amber-400">{t('bookedAnyway')}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Button
+        type="button"
+        variant={conflicts.length > 0 ? 'default' : 'outline'}
+        size="sm"
+        className="w-full"
+        disabled={finding || checking}
+        onClick={pickNextAvailable}
+      >
+        <Wand2 className="mr-1.5 h-3.5 w-3.5" />
+        {finding ? t('findingSlot') : t('pickNextAvailable')}
+      </Button>
 
       <div className="space-y-1">
         <span className="text-xs font-medium text-muted-foreground">Duration presets</span>

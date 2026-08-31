@@ -350,7 +350,17 @@
     "makeTechnician": "Lo convierte en técnico",
     "addSomeoneNew": "Añadir a alguien nuevo",
     "notOnBoard": "Aún no está en el tablero",
-    "putOnBoard": "Poner en el tablero"
+    "putOnBoard": "Poner en el tablero",
+    "slotTaken": "{count, plural, one {Esta franja ya está reservada} other {Esta franja tiene # conflictos}}",
+    "anotherJob": "otro trabajo",
+    "clashTechnician": "el técnico está ocupado",
+    "clashBay": "la bahía está ocupada",
+    "clashBoth": "ambos están ocupados",
+    "bookedAnyway": "Guardado igualmente. Cambia la hora o elige la siguiente franja libre.",
+    "pickNextAvailable": "Elegir la siguiente franja libre",
+    "findingSlot": "Buscando una franja…",
+    "slotPicked": "Reservado en la siguiente franja libre",
+    "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas"
   },
   "notifications": {
     "title": "Notificaciones al cliente",

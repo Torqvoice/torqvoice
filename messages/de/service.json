@@ -350,7 +350,17 @@
     "makeTechnician": "Macht sie zum Techniker",
     "addSomeoneNew": "Jemanden hinzufügen",
     "notOnBoard": "Noch nicht auf der Tafel",
-    "putOnBoard": "Auf die Tafel"
+    "putOnBoard": "Auf die Tafel",
+    "slotTaken": "{count, plural, one {Dieser Termin ist bereits belegt} other {Dieser Termin hat # Überschneidungen}}",
+    "anotherJob": "ein anderer Auftrag",
+    "clashTechnician": "der Techniker ist belegt",
+    "clashBay": "die Box ist belegt",
+    "clashBoth": "beide sind belegt",
+    "bookedAnyway": "Trotzdem gespeichert. Ändern Sie die Zeit oder wählen Sie den nächsten freien Termin.",
+    "pickNextAvailable": "Nächsten freien Termin wählen",
+    "findingSlot": "Termin wird gesucht…",
+    "slotPicked": "Auf den nächsten freien Termin gelegt",
+    "noSlotFound": "In den nächsten Wochen kein freier Termin gefunden"
   },
   "notifications": {
     "title": "Kundenbenachrichtigungen",

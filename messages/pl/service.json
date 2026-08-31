@@ -350,7 +350,17 @@
     "makeTechnician": "Uczyni tę osobę technikiem",
     "addSomeoneNew": "Dodaj nową osobę",
     "notOnBoard": "Jeszcze nie na tablicy",
-    "putOnBoard": "Dodaj do tablicy"
+    "putOnBoard": "Dodaj do tablicy",
+    "slotTaken": "{count, plural, one {Ten termin jest już zajęty} other {Ten termin ma # kolizji}}",
+    "anotherJob": "inne zlecenie",
+    "clashTechnician": "technik jest zajęty",
+    "clashBay": "stanowisko jest zajęte",
+    "clashBoth": "oba są zajęte",
+    "bookedAnyway": "Zapisano mimo to. Zmień godzinę lub wybierz najbliższy wolny termin.",
+    "pickNextAvailable": "Wybierz najbliższy wolny termin",
+    "findingSlot": "Szukanie terminu…",
+    "slotPicked": "Zaplanowano na najbliższy wolny termin",
+    "noSlotFound": "Nie znaleziono wolnego terminu w najbliższych tygodniach"
   },
   "notifications": {
     "title": "Powiadomienia klienta",

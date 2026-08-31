@@ -39,7 +39,10 @@ vi.mock('@/lib/db', () => ({
     vehicle: { findFirst: vi.fn(), update: vi.fn() },
     appSetting: { findMany: vi.fn(), updateMany: vi.fn() },
     organization: { findUnique: vi.fn() },
-    serviceRecord: { findFirst: vi.fn(), create: vi.fn() },
+    // findMany: a draft with no stated time is placed in the first free slot,
+    // which means reading what is already booked.
+    serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn() },
+    inspection: { findMany: vi.fn() },
     technician: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
@@ -81,6 +84,10 @@ function setupCommonMocks() {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // An empty shop unless a test says otherwise, so slot-finding has something
+  // to read and every other test keeps asserting what it always did.
+  vi.mocked(db.serviceRecord.findMany).mockResolvedValue([])
+  vi.mocked(db.inspection.findMany).mockResolvedValue([])
 })
 
 // ---------------------------------------------------------------------------
@@ -651,7 +658,16 @@ describe('createDraftServiceRecord — scheduling', () => {
     )
   })
 
-  it('uses workDayStart setting when no startDateTime provided', async () => {
+  /**
+   * A draft with no stated time used to land on today at opening time, which
+   * is usually an hour that has already gone, and every job created that day
+   * got the same one. It now takes the first slot the shop can actually take
+   * it, which is opening time only when opening time is still ahead.
+   */
+  it("books a new job into the shop's opening hour when the day has not started", async () => {
+    vi.useFakeTimers()
+    // A Tuesday, before the shop opens at 08:30.
+    vi.setSystemTime(new Date(2026, 8, 1, 6, 0, 0))
     setupAuth()
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
     vi.mocked(db.appSetting.findMany).mockResolvedValue([
@@ -659,7 +675,6 @@ describe('createDraftServiceRecord — scheduling', () => {
     ])
     vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
-
     vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-daystart' } as any)
 
     await createDraftServiceRecord(VEHICLE_ID)
@@ -668,6 +683,60 @@ describe('createDraftServiceRecord — scheduling', () => {
     const startDT: Date = createCall.data.startDateTime
     expect(startDT.getHours()).toBe(8)
     expect(startDT.getMinutes()).toBe(30)
+    vi.useRealTimers()
+  })
+
+  it('does not offer an hour that has already passed', async () => {
+    vi.useFakeTimers()
+    // Same Tuesday, but the shop has been open for hours.
+    vi.setSystemTime(new Date(2026, 8, 1, 11, 0, 0))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workboard.workDayStart', value: '08:30' } as any,
+    ])
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-now' } as any)
+
+    await createDraftServiceRecord(VEHICLE_ID)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    const startDT: Date = createCall.data.startDateTime
+    expect(startDT.getHours()).toBe(11)
+    vi.useRealTimers()
+  })
+
+  it('steps past a booking the technician already has', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 8, 1, 6, 0, 0))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workboard.workDayStart', value: '08:30' } as any,
+    ])
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
+      {
+        id: 'busy',
+        title: 'Existing',
+        startDateTime: new Date(2026, 8, 1, 8, 30),
+        endDateTime: new Date(2026, 8, 1, 10, 0),
+        technicianId: TECH_ID,
+        workBayId: null,
+        vehicle: null,
+      } as any,
+    ])
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-after' } as any)
+
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, TECH_ID)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    const startDT: Date = createCall.data.startDateTime
+    expect(startDT.getHours()).toBe(10)
+    expect(startDT.getMinutes()).toBe(0)
+    vi.useRealTimers()
   })
 })
 

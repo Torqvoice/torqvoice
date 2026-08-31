@@ -350,7 +350,17 @@
     "makeTechnician": "Lo rende un tecnico",
     "addSomeoneNew": "Aggiungi qualcuno",
     "notOnBoard": "Non ancora sulla lavagna",
-    "putOnBoard": "Metti sulla lavagna"
+    "putOnBoard": "Metti sulla lavagna",
+    "slotTaken": "{count, plural, one {Questa fascia è già occupata} other {Questa fascia ha # conflitti}}",
+    "anotherJob": "un altro lavoro",
+    "clashTechnician": "il tecnico è occupato",
+    "clashBay": "la postazione è occupata",
+    "clashBoth": "entrambi sono occupati",
+    "bookedAnyway": "Salvato comunque. Cambia l'orario o scegli la prossima fascia libera.",
+    "pickNextAvailable": "Scegli la prossima fascia libera",
+    "findingSlot": "Ricerca di una fascia…",
+    "slotPicked": "Spostato sulla prossima fascia libera",
+    "noSlotFound": "Nessuna fascia libera trovata nelle prossime settimane"
   },
   "notifications": {
     "title": "Notifiche al cliente",
