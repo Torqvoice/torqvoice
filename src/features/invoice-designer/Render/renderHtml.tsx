@@ -221,7 +221,7 @@ export function RenderNode({ node }: { node: Node }): ReactNode {
     }
 
     case 'spacer':
-      return <div {...id} style={{ height: node.height }} />
+      return <div {...id} style={{ height: node.height, background: node.color }} />
 
     default:
       return null

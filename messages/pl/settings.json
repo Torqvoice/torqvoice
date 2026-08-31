@@ -1766,8 +1766,13 @@
       "panel": "Panel",
       "outline": "Obrys",
       "lines": "Linie",
-      "hint": "Akcent barwi kartę kolorem głównym. Panel dopasowuje ją do pozostałych kart ze szczegółami. Obrys rysuje samą ramkę, a Linie drukują bez ramki."
+      "hint": "Akcent barwi kartę kolorem głównym. Panel dopasowuje ją do pozostałych kart ze szczegółami. Obrys rysuje samą ramkę, a Linie drukują bez ramki.",
+      "classic": "Klasyczny",
+      "box": "Ramka",
+      "totalsHint": "Klasyczny drukuje same wiersze z linią nad sumą. Ramka je obramowuje. Panel i Akcent umieszczają je na karcie."
     },
+    "totalsWidth": "Szerokość",
+    "totalsWidthHint": "Szerokość w punktach, gdy blok trzyma się prawej strony. W kolumnie przyjmuje szerokość kolumny.",
     "placement": "Rozmieszczenie",
     "visible": "Widoczna",
     "columnFull": "Pełna",

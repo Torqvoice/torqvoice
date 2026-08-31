@@ -1766,8 +1766,13 @@
       "panel": "Panel",
       "outline": "Kontur",
       "lines": "Linjer",
-      "hint": "Aksent toner kortet med primærfargen. Panel matcher de andre detaljkortene. Kontur tegner bare en ramme, og Linjer skriver ut uten boks."
+      "hint": "Aksent toner kortet med primærfargen. Panel matcher de andre detaljkortene. Kontur tegner bare en ramme, og Linjer skriver ut uten boks.",
+      "classic": "Klassisk",
+      "box": "Ramme",
+      "totalsHint": "Klassisk skriver ut rene linjer med en strek over totalen. Ramme setter en ramme rundt dem. Panel og Aksent setter dem på et kort."
     },
+    "totalsWidth": "Bredde",
+    "totalsWidthHint": "Bredde i punkter når blokken holder seg til høyre. I en kolonne tar den kolonnens bredde.",
     "placement": "Plassering",
     "visible": "Synlig",
     "columnFull": "Full",

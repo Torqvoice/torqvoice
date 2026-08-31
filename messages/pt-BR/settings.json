@@ -1766,8 +1766,13 @@
       "panel": "Painel",
       "outline": "Contorno",
       "lines": "Linhas",
-      "hint": "Destaque tinge o cartão com a cor principal. Painel combina com os outros cartões de detalhe. Contorno desenha apenas uma borda, e Linhas imprime sem caixa."
+      "hint": "Destaque tinge o cartão com a cor principal. Painel combina com os outros cartões de detalhe. Contorno desenha apenas uma borda, e Linhas imprime sem caixa.",
+      "classic": "Clássico",
+      "box": "Moldura",
+      "totalsHint": "Clássico imprime linhas simples com um traço acima do total. Moldura as emoldura. Painel e Destaque as colocam em um cartão."
     },
+    "totalsWidth": "Largura",
+    "totalsWidthHint": "Largura em pontos quando o bloco fica à direita. Em uma coluna, ele usa a largura da coluna.",
     "placement": "Posicionamento",
     "visible": "Visível",
     "columnFull": "Inteira",

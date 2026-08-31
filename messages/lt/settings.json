@@ -1766,8 +1766,13 @@
       "panel": "Skydelis",
       "outline": "Kontūras",
       "lines": "Linijos",
-      "hint": "Akcentas nuspalvina kortelę pagrindine spalva. Skydelis suvienodina ją su kitomis detalių kortelėmis. Kontūras piešia tik rėmelį, o Linijos spausdina be rėmelio."
+      "hint": "Akcentas nuspalvina kortelę pagrindine spalva. Skydelis suvienodina ją su kitomis detalių kortelėmis. Kontūras piešia tik rėmelį, o Linijos spausdina be rėmelio.",
+      "classic": "Klasikinis",
+      "box": "Rėmelis",
+      "totalsHint": "Klasikinis spausdina paprastas eilutes su linija virš sumos. Rėmelis jas įrėmina. Skydelis ir Akcentas deda jas ant kortelės."
     },
+    "totalsWidth": "Plotis",
+    "totalsWidthHint": "Plotis taškais, kai blokas laikosi dešinėje. Stulpelyje jis užima stulpelio plotį.",
     "placement": "Išdėstymas",
     "visible": "Matoma",
     "columnFull": "Visas plotis",

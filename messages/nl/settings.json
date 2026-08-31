@@ -1766,8 +1766,13 @@
       "panel": "Paneel",
       "outline": "Omlijning",
       "lines": "Lijnen",
-      "hint": "Accent kleurt de kaart met de primaire kleur. Paneel sluit aan bij de andere detailkaarten. Omlijning tekent alleen een rand, en Lijnen drukt af zonder kader."
+      "hint": "Accent kleurt de kaart met de primaire kleur. Paneel sluit aan bij de andere detailkaarten. Omlijning tekent alleen een rand, en Lijnen drukt af zonder kader.",
+      "classic": "Klassiek",
+      "box": "Kader",
+      "totalsHint": "Klassiek drukt kale regels af met een lijn boven het totaal. Kader zet er een kader omheen. Paneel en Accent zetten ze op een kaart."
     },
+    "totalsWidth": "Breedte",
+    "totalsWidthHint": "Breedte in punten wanneer het blok rechts staat. In een kolom neemt het de breedte van de kolom.",
     "placement": "Plaatsing",
     "visible": "Zichtbaar",
     "columnFull": "Vol",

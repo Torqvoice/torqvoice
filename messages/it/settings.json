@@ -1766,8 +1766,13 @@
       "panel": "Pannello",
       "outline": "Contorno",
       "lines": "Linee",
-      "hint": "Accento colora la scheda con il colore principale. Pannello la allinea alle altre schede di dettaglio. Contorno disegna solo un bordo, e Linee stampa senza riquadro."
+      "hint": "Accento colora la scheda con il colore principale. Pannello la allinea alle altre schede di dettaglio. Contorno disegna solo un bordo, e Linee stampa senza riquadro.",
+      "classic": "Classico",
+      "box": "Riquadro",
+      "totalsHint": "Classico stampa righe semplici con un filetto sopra il totale. Riquadro le incornicia. Pannello e Accento le mettono su una scheda."
     },
+    "totalsWidth": "Larghezza",
+    "totalsWidthHint": "Larghezza in punti quando il blocco resta a destra. In una colonna prende la larghezza della colonna.",
     "placement": "Posizione",
     "visible": "Visibile",
     "columnFull": "Intera",

@@ -1766,8 +1766,13 @@
       "panel": "Panel",
       "outline": "Contorno",
       "lines": "Líneas",
-      "hint": "Acento tiñe la tarjeta con el color principal. Panel iguala a las demás tarjetas de detalle. Contorno dibuja solo un borde, y Líneas imprime sin recuadro."
+      "hint": "Acento tiñe la tarjeta con el color principal. Panel iguala a las demás tarjetas de detalle. Contorno dibuja solo un borde, y Líneas imprime sin recuadro.",
+      "classic": "Clásico",
+      "box": "Recuadro",
+      "totalsHint": "Clásico imprime líneas sueltas con una regla sobre el total. Recuadro las enmarca. Panel y Acento las colocan en una tarjeta."
     },
+    "totalsWidth": "Ancho",
+    "totalsWidthHint": "Puntos de ancho cuando el bloque se alinea a la derecha. En una columna toma el ancho de la columna.",
     "placement": "Colocación",
     "visible": "Visible",
     "columnFull": "Completa",

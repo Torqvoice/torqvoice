@@ -1766,8 +1766,13 @@
       "panel": "Panel",
       "outline": "Kontur",
       "lines": "Linien",
-      "hint": "Akzent tönt die Karte in der Primärfarbe. Panel entspricht den anderen Detailkarten. Kontur zeichnet nur einen Rahmen, und Linien druckt ohne Kasten."
+      "hint": "Akzent tönt die Karte in der Primärfarbe. Panel entspricht den anderen Detailkarten. Kontur zeichnet nur einen Rahmen, und Linien druckt ohne Kasten.",
+      "classic": "Klassisch",
+      "box": "Kasten",
+      "totalsHint": "Klassisch druckt reine Zeilen mit einer Linie über der Summe. Kasten rahmt sie ein. Panel und Akzent setzen sie auf eine Karte."
     },
+    "totalsWidth": "Breite",
+    "totalsWidthHint": "Breite in Punkt, wenn der Block rechts steht. In einer Spalte nimmt er deren Breite.",
     "placement": "Platzierung",
     "visible": "Sichtbar",
     "columnFull": "Voll",

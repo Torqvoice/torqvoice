@@ -1766,8 +1766,13 @@
       "panel": "Panel",
       "outline": "Outline",
       "lines": "Lines",
-      "hint": "Accent tints the card with the primary color. Panel matches the other detail cards. Outline draws only a border, and Lines prints without a box."
+      "hint": "Accent tints the card with the primary color. Panel matches the other detail cards. Outline draws only a border, and Lines prints without a box.",
+      "classic": "Classic",
+      "box": "Boxed",
+      "totalsHint": "Classic prints bare lines with a rule above the total. Boxed frames them. Panel and Accent set them on a card."
     },
+    "totalsWidth": "Width",
+    "totalsWidthHint": "Points across, when the block keeps to the right. In a column it takes the column's width.",
     "placement": "Placement",
     "visible": "Visible",
     "columnFull": "Full",

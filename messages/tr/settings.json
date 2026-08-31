@@ -1766,8 +1766,13 @@
       "panel": "Panel",
       "outline": "Çerçeve",
       "lines": "Çizgiler",
-      "hint": "Vurgu, kartı ana renkle tonlar. Panel, diğer ayrıntı kartlarıyla aynı görünür. Çerçeve yalnızca bir kenarlık çizer, Çizgiler ise kutusuz yazdırır."
+      "hint": "Vurgu, kartı ana renkle tonlar. Panel, diğer ayrıntı kartlarıyla aynı görünür. Çerçeve yalnızca bir kenarlık çizer, Çizgiler ise kutusuz yazdırır.",
+      "classic": "Klasik",
+      "box": "Kutulu",
+      "totalsHint": "Klasik, toplamın üzerinde bir çizgiyle sade satırlar yazdırır. Kutulu onları çerçeveler. Panel ve Vurgu onları bir karta yerleştirir."
     },
+    "totalsWidth": "Genişlik",
+    "totalsWidthHint": "Blok sağda durduğunda punto cinsinden genişlik. Bir sütunda sütunun genişliğini alır.",
     "placement": "Yerleşim",
     "visible": "Görünür",
     "columnFull": "Tam",

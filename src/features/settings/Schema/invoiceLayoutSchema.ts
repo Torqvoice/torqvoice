@@ -37,6 +37,9 @@ export const invoiceSectionStyleSchema = z.object({
   fontSize: z.number().min(5).max(24).optional(),
   /** Typeface for this section, from the families the app embeds. */
   fontFamily: z.string().optional(),
+  /** Preferred width in points for a block that hangs to one side of the
+   *  sheet, like the totals box. Ignored in a column, which sets the width. */
+  width: z.number().min(140).max(515).optional(),
   /** Extra room around the section in the flow, in points per edge. */
   marginTop: z.number().min(0).max(120).optional(),
   marginBottom: z.number().min(0).max(120).optional(),

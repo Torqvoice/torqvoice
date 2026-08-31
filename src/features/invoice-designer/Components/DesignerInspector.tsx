@@ -427,6 +427,36 @@ export function DesignerInspector({
             </Group>
           )}
 
+          {section.id === 'totals' && (
+            <Group title={t('panelStyle')}>
+              <Choice
+                value={section.variant ?? 'box'}
+                options={[
+                  { value: 'classic', label: t('variant.classic') },
+                  { value: 'box', label: t('variant.box') },
+                  { value: 'panel', label: t('variant.panel') },
+                  { value: 'accent', label: t('variant.accent') },
+                ]}
+                onChange={(variant) => onSection(section.id, { variant })}
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('variant.totalsHint')}</p>
+              <Row label={t('totalsWidth')}>
+                <input
+                  type="number"
+                  min={140}
+                  max={515}
+                  value={style.width ?? ''}
+                  placeholder="250"
+                  onChange={(e) =>
+                    setStyle({ width: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                  className="h-7 w-20 rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+                />
+              </Row>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('totalsWidthHint')}</p>
+            </Group>
+          )}
+
           <Group title={t('placement')}>
             <Row label={t('visible')}>
               <Toggle

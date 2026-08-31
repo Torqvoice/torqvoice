@@ -266,7 +266,11 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
     }
 
     case 'spacer':
-      return <View style={{ height: node.height }} />
+      return (
+        <View
+          style={{ height: node.height, ...(node.color ? { backgroundColor: node.color } : {}) }}
+        />
+      )
 
     default:
       return null

@@ -320,6 +320,19 @@ export function InvoiceDesigner({
           kind: 'line' as const,
         },
         { label: L('total', 'Total'), value: sample.total, kind: 'total' as const },
+        // A settled invoice, so the payment line and the paid stamp can be
+        // seen and styled. Quotes never carry payments, so theirs ends at the
+        // total.
+        ...(docType === 'invoice'
+          ? [
+              {
+                label: `${sample.date} (Visa)`,
+                value: `-${sample.total}`,
+                kind: 'payment' as const,
+              },
+              { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' as const },
+            ]
+          : []),
       ],
       notes: { html: sample.notes },
       warranty: { duration: sample.warranty },
@@ -345,7 +358,7 @@ export function InvoiceDesigner({
         findings: L('findings', 'Observations'),
       },
     }
-  }, [workshop, customFields, t, printLabels, L])
+  }, [workshop, customFields, t, printLabels, L, docType])
 
   const spec = useMemo(
     () => buildDocumentSpec(layout, themeOf(template, layout), data),

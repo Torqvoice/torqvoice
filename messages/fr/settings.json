@@ -1766,8 +1766,13 @@
       "panel": "Panneau",
       "outline": "Contour",
       "lines": "Lignes",
-      "hint": "Accent teinte la carte avec la couleur principale. Panneau s'aligne sur les autres cartes de détail. Contour ne trace qu'une bordure, et Lignes imprime sans encadré."
+      "hint": "Accent teinte la carte avec la couleur principale. Panneau s'aligne sur les autres cartes de détail. Contour ne trace qu'une bordure, et Lignes imprime sans encadré.",
+      "classic": "Classique",
+      "box": "Encadré",
+      "totalsHint": "Classique imprime des lignes nues avec un filet au-dessus du total. Encadré les entoure d'un cadre. Panneau et Accent les posent sur une carte."
     },
+    "totalsWidth": "Largeur",
+    "totalsWidthHint": "Largeur en points quand le bloc se tient à droite. Dans une colonne, il prend la largeur de la colonne.",
     "placement": "Placement",
     "visible": "Visible",
     "columnFull": "Pleine",

@@ -971,28 +971,58 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   if (!data.totals.length) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
+  // The looks the block can be set to. Unset keeps what each sheet has always
+  // printed: the bare lines the retired renderer drew on a classic sheet, the
+  // box everywhere else.
+  const variant = section.variant || (theme.classic ? 'classic' : 'box')
+  const bare = variant === 'classic'
+
+  // The settled state as a stamp rather than a line with nothing in its value
+  // column: one centered green bar that reads at arm's length.
+  const paidBadge = (entry: TotalLine): Node => ({
+    kind: 'row',
+    justify: 'center',
+    style: {
+      background: mixColors(theme.background, '#059669', 0.1),
+      radius: variant === 'box' ? 0 : 3,
+      padding: 6,
+    },
+    children: [
+      {
+        node: {
+          kind: 'text',
+          text: entry.label,
+          style: {
+            color: mixColors('#059669', look.text, 0.25),
+            bold: true,
+            uppercase: true,
+            letterSpacing: 0.8,
+            fontSize: scale(size, 0.95),
+          },
+        },
+      },
+    ],
+  })
 
   const line = (entry: TotalLine): Node => {
-    const emphasized = entry.kind === 'total' || entry.kind === 'due' || entry.kind === 'paid'
+    if (entry.kind === 'paid') return paidBadge(entry)
+    const emphasized = entry.kind === 'total' || entry.kind === 'due'
     const valueColor =
       entry.kind === 'discount'
         ? '#dc2626'
         : entry.kind === 'payment'
           ? '#059669'
-          : entry.kind === 'paid'
-            ? '#059669'
-            : emphasized
-              ? theme.accent
-              : look.text
+          : emphasized
+            ? theme.accent
+            : look.text
     return {
       kind: 'row',
       justify: 'between',
+      align: 'center',
       style: {
-        padding: 6,
+        padding: bare ? { top: 4, right: 0, bottom: 4, left: 0 } : 6,
         background:
-          entry.kind === 'due' || entry.kind === 'paid'
-            ? mixColors(theme.background, entry.kind === 'paid' ? '#059669' : theme.accent, 0.08)
-            : undefined,
+          entry.kind === 'due' ? mixColors(theme.background, theme.accent, 0.08) : undefined,
       },
       children: [
         {
@@ -1002,7 +1032,12 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
             style: {
               color: emphasized ? look.text : look.muted,
               bold: emphasized,
-              fontSize: entry.kind === 'payment' ? scale(size, 0.85) : size,
+              fontSize:
+                entry.kind === 'payment'
+                  ? scale(size, 0.85)
+                  : bare && emphasized
+                    ? scale(size, 1.15)
+                    : size,
             },
           },
         },
@@ -1012,7 +1047,7 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
             text: entry.value,
             style: {
               bold: true,
-              fontSize: emphasized ? scale(size, 1.15) : size,
+              fontSize: emphasized ? scale(size, bare ? 1.25 : 1.15) : size,
               color: valueColor,
             },
           },
@@ -1021,15 +1056,51 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     }
   }
 
+  // The bare look announces the total with a rule above it, the way the old
+  // sheets did, instead of a frame around everything.
+  const rows: Node[] = []
+  for (const entry of data.totals) {
+    if (bare && entry.kind === 'total') {
+      rows.push({
+        kind: 'spacer',
+        height: look.ruleWidth ?? 1.6,
+        color: look.border || theme.accent,
+      })
+    }
+    rows.push(line(entry))
+  }
+
+  const boxStyle =
+    variant === 'accent'
+      ? {
+          background: look.fill || mixColors(theme.background, theme.primary, 0.08),
+          borderColor: look.border || theme.accent,
+          borderWidth: look.ruleWidth ?? 1,
+          radius: 4,
+          padding: 4,
+        }
+      : variant === 'panel'
+        ? {
+            background: look.fill || mixColors(theme.background, look.text, 0.045),
+            borderColor: look.border || '#e3e5e9',
+            borderWidth: look.ruleWidth ?? 0,
+            radius: 4,
+            padding: 4,
+          }
+        : variant === 'box'
+          ? {
+              borderColor: look.border || look.text,
+              borderWidth: look.ruleWidth ?? 1,
+              background: look.fill,
+            }
+          : // 'classic': nothing but the lines.
+            { background: look.fill }
+
   const box: Node = {
     kind: 'stack',
     gap: 0,
-    style: {
-      borderColor: look.border || look.text,
-      borderWidth: look.ruleWidth ?? 1,
-      background: look.fill,
-    },
-    children: data.totals.map(line),
+    style: boxStyle,
+    children: rows,
   }
   // Full width, the box keeps to the right the way a sum column reads; in a
   // half-width lane it takes the lane.
@@ -1039,7 +1110,7 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
       : {
           kind: 'row',
           justify: 'end',
-          children: [{ width: 250, node: box }],
+          children: [{ width: section.style?.width ?? 250, node: box }],
         },
   ]
 
