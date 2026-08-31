@@ -35,6 +35,8 @@
     "taxExemptBadge": "Belastingvrijgesteld",
     "tabs": {
       "vehicles": "Voertuigen ({count})",
+      "invoices": "Facturen ({count})",
+      "quotes": "Offertes ({count})",
       "messages": "Berichten",
       "requests": "Aanvragen ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Motoruren",
       "services": "Services"
     },
-    "noVehicles": "Geen voertuigen gekoppeld aan deze klant"
+    "documentTable": {
+      "invoiceNumber": "Factuurnr.",
+      "quoteNumber": "Offertenr.",
+      "title": "Titel",
+      "vehicle": "Voertuig",
+      "status": "Status",
+      "date": "Datum",
+      "total": "Totaal",
+      "noVehicle": "Alleen onderdelen",
+      "searchPlaceholder": "Zoeken...",
+      "noMatches": "Geen resultaten voor je zoekopdracht",
+      "sort": {
+        "asc": "oplopend",
+        "desc": "aflopend"
+      }
+    },
+    "noVehicles": "Geen voertuigen gekoppeld aan deze klant",
+    "noInvoices": "Geen facturen voor deze klant",
+    "noQuotes": "Geen offertes voor deze klant"
   },
   "form": {
     "addTitle": "Nieuwe klant toevoegen",

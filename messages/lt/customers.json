@@ -35,6 +35,8 @@
     "taxExemptBadge": "Atleistas nuo mokesčio",
     "tabs": {
       "vehicles": "Transporto priemonės ({count})",
+      "invoices": "Sąskaitos ({count})",
+      "quotes": "Pasiūlymai ({count})",
       "messages": "Žinutės",
       "requests": "Užklausos ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Variklio valandos",
       "services": "Paslaugos"
     },
-    "noVehicles": "Šiam klientui nėra priskirtų transporto priemonių"
+    "documentTable": {
+      "invoiceNumber": "Sąskaitos nr.",
+      "quoteNumber": "Pasiūlymo nr.",
+      "title": "Pavadinimas",
+      "vehicle": "Transporto priemonė",
+      "status": "Būsena",
+      "date": "Data",
+      "total": "Iš viso",
+      "noVehicle": "Tik dalys",
+      "searchPlaceholder": "Ieškoti...",
+      "noMatches": "Pagal paiešką nieko nerasta",
+      "sort": {
+        "asc": "didėjančiai",
+        "desc": "mažėjančiai"
+      }
+    },
+    "noVehicles": "Šiam klientui nėra priskirtų transporto priemonių",
+    "noInvoices": "Šis klientas neturi sąskaitų",
+    "noQuotes": "Šis klientas neturi pasiūlymų"
   },
   "form": {
     "addTitle": "Pridėti naują klientą",

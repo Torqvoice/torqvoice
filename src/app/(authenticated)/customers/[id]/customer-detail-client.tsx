@@ -2,12 +2,25 @@
 
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
-import { useState, useTransition } from 'react'
+import { useCallback, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
+import { useFormatDate } from '@/lib/use-format-date'
+import { useFormatCurrency } from '@/components/currency-settings-context'
+import { statusColors } from '@/lib/table-utils'
+import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { cn } from '@/lib/utils'
 import {
   Table,
@@ -18,12 +31,16 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import {
+  ArrowDown,
   ArrowLeft,
+  ArrowUp,
+  ArrowUpDown,
   Building2,
   Car,
   CheckCircle2,
   Clock,
   ExternalLink,
+  FileText,
   Loader2,
   Mail,
   MapPin,
@@ -32,6 +49,8 @@ import {
   Pencil,
   Phone,
   Plus,
+  Receipt,
+  Search,
   Send,
   Users,
   Wrench,
@@ -61,6 +80,30 @@ interface ServiceRequestItem {
   adminNotes: string | null
   createdAt: Date
   vehicle: { id: string; make: string; model: string; year: number }
+}
+
+interface InvoiceRow {
+  id: string
+  title: string
+  status: string
+  cost: number
+  totalAmount: number
+  invoiceNumber: string | null
+  invoiceDate: Date | null
+  startDateTime: Date | null
+  serviceDate: Date
+  vehicleId: string | null
+  vehicle: { make: string; model: string; year: number; licensePlate: string | null } | null
+}
+
+interface QuoteRow {
+  id: string
+  title: string
+  status: string
+  quoteNumber: string | null
+  totalAmount: number
+  createdAt: Date
+  vehicle: { make: string; model: string; year: number; licensePlate: string | null } | null
 }
 
 interface CustomerDetail {
@@ -109,6 +152,10 @@ export function CustomerDetailClient({
   telegramMessages = [],
   telegramNextCursor = null,
   telegramChatId = null,
+  invoices = [],
+  quotes = [],
+  canReadInvoices = false,
+  canReadQuotes = false,
 }: {
   customer: CustomerDetail
   customers?: { id: string; name: string; company: string | null }[]
@@ -129,6 +176,10 @@ export function CustomerDetailClient({
   }[]
   telegramNextCursor?: string | null
   telegramChatId?: string | null
+  invoices?: InvoiceRow[]
+  quotes?: QuoteRow[]
+  canReadInvoices?: boolean
+  canReadQuotes?: boolean
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
@@ -151,18 +202,81 @@ export function CustomerDetailClient({
             ? 'sms'
             : tabParam === 'requests'
               ? 'requests'
-              : 'vehicles'
+              : tabParam === 'invoices' && canReadInvoices
+                ? 'invoices'
+                : tabParam === 'quotes' && canReadQuotes
+                  ? 'quotes'
+                  : 'vehicles'
 
-  const setActiveTab = (tab: 'vehicles' | 'sms' | 'whatsapp' | 'telegram' | 'requests') => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (tab === 'vehicles') {
-      params.delete('tab')
-    } else {
-      params.set('tab', tab)
-    }
-    const qs = params.toString()
-    router.replace(`/customers/${customer.id}${qs ? `?${qs}` : ''}`, { scroll: false })
+  const replaceParams = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === undefined || value === '') {
+          params.delete(key)
+        } else {
+          params.set(key, value)
+        }
+      }
+      const qs = params.toString()
+      router.replace(`/customers/${customer.id}${qs ? `?${qs}` : ''}`, { scroll: false })
+    },
+    [router, searchParams, customer.id]
+  )
+
+  const setActiveTab = (
+    tab: 'vehicles' | 'invoices' | 'quotes' | 'sms' | 'whatsapp' | 'telegram' | 'requests'
+  ) => {
+    // The sort carries over between invoices and quotes — the columns are the
+    // same — but a search term typed against one list would silently hide rows
+    // in the other, so it is dropped.
+    replaceParams({ tab: tab === 'vehicles' ? undefined : tab, search: undefined })
   }
+
+  const search = searchParams.get('search') ?? ''
+  const sortParam = searchParams.get('sortBy')
+  const sortBy: DocumentSortKey = DOCUMENT_SORT_KEYS.includes(sortParam as DocumentSortKey)
+    ? (sortParam as DocumentSortKey)
+    : 'date'
+  const sortOrder: 'asc' | 'desc' = searchParams.get('sortOrder') === 'asc' ? 'asc' : 'desc'
+
+  const invoiceRows: DocumentRow[] = useMemo(
+    () =>
+      invoices.map((inv) => ({
+        id: inv.id,
+        // Parts-only sales have no vehicle to hang off, so they live under
+        // /sales instead of the vehicle's service route.
+        href: inv.vehicleId ? `/vehicles/${inv.vehicleId}/service/${inv.id}` : `/sales/${inv.id}`,
+        number: inv.invoiceNumber,
+        title: inv.title,
+        vehicle: inv.vehicle,
+        status: inv.status,
+        date: effectiveInvoiceDate(inv),
+        total: inv.totalAmount > 0 ? inv.totalAmount : inv.cost,
+      })),
+    [invoices]
+  )
+
+  const quoteRows: DocumentRow[] = useMemo(
+    () =>
+      quotes.map((q) => ({
+        id: q.id,
+        href: `/quotes/${q.id}`,
+        number: q.quoteNumber,
+        title: q.title,
+        vehicle: q.vehicle,
+        status: q.status,
+        date: new Date(q.createdAt),
+        total: q.totalAmount,
+      })),
+    [quotes]
+  )
+
+  const handleQueryChange = useCallback(
+    (next: { search?: string; sortBy?: DocumentSortKey; sortOrder?: 'asc' | 'desc' }) =>
+      replaceParams(next as Record<string, string | undefined>),
+    [replaceParams]
+  )
 
   const hasContactInfo =
     customer.email ||
@@ -297,6 +411,36 @@ export function CustomerDetailClient({
             <Car className="h-4 w-4" />
             {t('tabs.vehicles', { count: customer.vehicles.length })}
           </button>
+          {canReadInvoices && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('invoices')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors',
+                activeTab === 'invoices'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Receipt className="h-4 w-4" />
+              {t('tabs.invoices', { count: invoices.length })}
+            </button>
+          )}
+          {canReadQuotes && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('quotes')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors',
+                activeTab === 'quotes'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <FileText className="h-4 w-4" />
+              {t('tabs.quotes', { count: quotes.length })}
+            </button>
+          )}
           {smsEnabled && (
             <button
               type="button"
@@ -469,6 +613,32 @@ export function CustomerDetailClient({
           </>
         )}
 
+        {activeTab === 'invoices' && canReadInvoices && (
+          <DocumentList
+            rows={invoiceRows}
+            statusStyles={statusColors}
+            numberLabel={t('documentTable.invoiceNumber')}
+            emptyLabel={t('noInvoices')}
+            search={search}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onQueryChange={handleQueryChange}
+          />
+        )}
+
+        {activeTab === 'quotes' && canReadQuotes && (
+          <DocumentList
+            rows={quoteRows}
+            statusStyles={quoteStatusColors}
+            numberLabel={t('documentTable.quoteNumber')}
+            emptyLabel={t('noQuotes')}
+            search={search}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onQueryChange={handleQueryChange}
+          />
+        )}
+
         {activeTab === 'sms' && smsEnabled && (
           <Card>
             <CardContent className="p-0">
@@ -528,6 +698,301 @@ export function CustomerDetailClient({
         )}
       </div>
       <CustomerForm open={showEditForm} onOpenChange={setShowEditForm} customer={customer} />
+    </div>
+  )
+}
+
+// Quotes use their own status vocabulary, so they cannot share the work-order
+// palette in table-utils.
+const quoteStatusColors: Record<string, string> = {
+  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+}
+
+interface DocumentRow {
+  id: string
+  href: string
+  number: string | null
+  title: string
+  vehicle: { make: string; model: string; year: number; licensePlate: string | null } | null
+  status: string
+  date: Date
+  total: number
+}
+
+type DocumentSortKey = 'number' | 'title' | 'vehicle' | 'status' | 'date' | 'total'
+
+const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
+  'number',
+  'title',
+  'vehicle',
+  'status',
+  'date',
+  'total',
+]
+
+/// Shared list for the customer's invoices and quotes: the two differ only in
+/// which number and date they carry, so the rows are normalised before they
+/// get here. Both lists are loaded whole (one customer's documents, not the
+/// whole org), so search and sort run in memory rather than round-tripping.
+function DocumentList({
+  rows,
+  statusStyles,
+  numberLabel,
+  emptyLabel,
+  search,
+  sortBy,
+  sortOrder,
+  onQueryChange,
+}: {
+  rows: DocumentRow[]
+  statusStyles: Record<string, string>
+  numberLabel: string
+  emptyLabel: string
+  search: string
+  sortBy: DocumentSortKey
+  sortOrder: 'asc' | 'desc'
+  onQueryChange: (params: {
+    search?: string
+    sortBy?: DocumentSortKey
+    sortOrder?: 'asc' | 'desc'
+  }) => void
+}) {
+  const t = useTranslations('customers.detail')
+  const router = useRouter()
+  const { formatDate } = useFormatDate()
+  const formatCurrency = useFormatCurrency()
+  const tableNav = useTableKeyboardNav()
+
+  const vehicleLabel = useCallback(
+    (v: DocumentRow['vehicle']) => (v ? `${v.year} ${v.make} ${v.model}` : ''),
+    []
+  )
+
+  const {
+    value: searchInput,
+    setValue: setSearchInput,
+    commitNow: handleSearchSubmit,
+  } = useDebouncedSearch(search, (term) => onQueryChange({ search: term }))
+
+  const visibleRows = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    const filtered = term
+      ? rows.filter((row) =>
+          [row.number, row.title, vehicleLabel(row.vehicle), row.vehicle?.licensePlate, row.status]
+            .filter(Boolean)
+            .some((field) => field!.toLowerCase().includes(term))
+        )
+      : rows
+
+    const dir = sortOrder === 'asc' ? 1 : -1
+    // Sorting a copy: `rows` is derived from props on every render, but
+    // mutating it would still reorder the array the caller just built.
+    return [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'number':
+          // Unnumbered drafts sort to the end either way rather than
+          // bunching at the top under an empty string.
+          if (!a.number || !b.number) return a.number ? -1 : b.number ? 1 : 0
+          return a.number.localeCompare(b.number, undefined, { numeric: true }) * dir
+        case 'title':
+          return a.title.localeCompare(b.title) * dir
+        case 'vehicle': {
+          // Parts-only rows have no vehicle; keep them at the end either way
+          // rather than letting an empty label head the ascending sort.
+          const av = vehicleLabel(a.vehicle)
+          const bv = vehicleLabel(b.vehicle)
+          if (!av || !bv) return av ? -1 : bv ? 1 : 0
+          return av.localeCompare(bv) * dir
+        }
+        case 'status':
+          return a.status.localeCompare(b.status) * dir
+        case 'total':
+          return (a.total - b.total) * dir
+        default:
+          return (a.date.getTime() - b.date.getTime()) * dir
+      }
+    })
+  }, [rows, search, sortBy, sortOrder, vehicleLabel])
+
+  const handleSort = (column: DocumentSortKey) => {
+    // First click on a new column sorts descending for dates and amounts and
+    // ascending for text, which is what people expect from each.
+    const defaultOrder = column === 'date' || column === 'total' ? 'desc' : 'asc'
+    const nextOrder =
+      sortBy === column ? (sortOrder === 'asc' ? 'desc' : 'asc') : (defaultOrder as 'asc' | 'desc')
+    onQueryChange({ sortBy: column, sortOrder: nextOrder })
+  }
+
+  const SortIcon = ({ column }: { column: DocumentSortKey }) => {
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
+  }
+
+  const SortableHead = ({ column, label }: { column: DocumentSortKey; label: string }) => (
+    <button
+      type="button"
+      className="flex items-center hover:text-foreground"
+      onClick={() => handleSort(column)}
+    >
+      {label}
+      <SortIcon column={column} />
+    </button>
+  )
+
+  const displayVehicle = (v: DocumentRow['vehicle']) =>
+    vehicleLabel(v) || t('documentTable.noVehicle')
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form onSubmit={handleSearchSubmit} className="relative w-full sm:max-w-sm">
+          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={t('documentTable.searchPlaceholder')}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="h-9 pl-9"
+            {...tableNav.searchInputProps}
+          />
+        </form>
+        {/* Phones have no column headers to click, so the sort lives here.
+            Above sm the headers take over and this would be a duplicate. */}
+        <Select
+          value={`${sortBy}:${sortOrder}`}
+          onValueChange={(v) => {
+            const [column, order] = v.split(':')
+            onQueryChange({
+              sortBy: column as DocumentSortKey,
+              sortOrder: order as 'asc' | 'desc',
+            })
+          }}
+        >
+          <SelectTrigger className="h-9 w-full sm:hidden">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DOCUMENT_SORT_KEYS.flatMap((key) =>
+              (['asc', 'desc'] as const).map((order) => (
+                <SelectItem key={`${key}:${order}`} value={`${key}:${order}`}>
+                  {`${key === 'number' ? numberLabel : t(`documentTable.${key}`)} ${t(
+                    `documentTable.sort.${order}`
+                  )}`}
+                </SelectItem>
+              ))
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {visibleRows.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center py-12">
+            <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
+            <p className="text-sm text-muted-foreground">
+              {search ? t('documentTable.noMatches') : emptyLabel}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* Card list (phones + small tablets) */}
+          <div className="space-y-2 md:hidden">
+            {visibleRows.map((row) => (
+              <button
+                key={row.id}
+                type="button"
+                onClick={() => router.push(row.href)}
+                className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{row.title}</p>
+                    {row.number && (
+                      <p className="font-mono text-xs text-muted-foreground">{row.number}</p>
+                    )}
+                  </div>
+                  <span className="shrink-0 font-semibold">{formatCurrency(row.total)}</span>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <Badge variant="outline" className={`text-xs ${statusStyles[row.status] || ''}`}>
+                    {row.status}
+                  </Badge>
+                  <span className="font-mono">{formatDate(row.date)}</span>
+                  <span className="truncate">{displayVehicle(row.vehicle)}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Table (md and up) */}
+          <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[110px]">
+                    <SortableHead column="number" label={numberLabel} />
+                  </TableHead>
+                  <TableHead>
+                    <SortableHead column="title" label={t('documentTable.title')} />
+                  </TableHead>
+                  <TableHead className="hidden lg:table-cell">
+                    <SortableHead column="vehicle" label={t('documentTable.vehicle')} />
+                  </TableHead>
+                  <TableHead className="w-[110px]">
+                    <SortableHead column="status" label={t('documentTable.status')} />
+                  </TableHead>
+                  <TableHead className="w-[100px]">
+                    <SortableHead column="date" label={t('documentTable.date')} />
+                  </TableHead>
+                  <TableHead className="w-[110px]">
+                    <div className="flex justify-end">
+                      <SortableHead column="total" label={t('documentTable.total')} />
+                    </div>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visibleRows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer"
+                    {...interactiveRow(() => router.push(row.href))}
+                  >
+                    <TableCell className="font-mono text-xs">{row.number || '-'}</TableCell>
+                    <TableCell className="max-w-0">
+                      <div className="truncate font-medium">{row.title}</div>
+                    </TableCell>
+                    <TableCell className="hidden text-sm lg:table-cell">
+                      {displayVehicle(row.vehicle)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${statusStyles[row.status] || ''}`}
+                      >
+                        {row.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">{formatDate(row.date)}</TableCell>
+                    <TableCell className="text-right font-semibold">
+                      {formatCurrency(row.total)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
+      )}
     </div>
   )
 }
