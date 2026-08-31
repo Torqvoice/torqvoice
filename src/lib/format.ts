@@ -49,6 +49,9 @@ const CURRENCY_LOCALES: Record<string, string> = {
   NGN: 'en-NG',
   KES: 'en-KE',
   MAD: 'en-MA',
+  // French-Algerian formatting gives the idiomatic Latin "DA" symbol; the
+  // Arabic locale's د.ج would fall outside the PDF font's encoding.
+  DZD: 'fr-DZ',
   GHS: 'en-GH',
   QAR: 'en',
   KWD: 'en',

@@ -94,6 +94,7 @@ const CURRENCIES = [
   { code: 'NGN', key: 'NGN' },
   { code: 'KES', key: 'KES' },
   { code: 'MAD', key: 'MAD' },
+  { code: 'DZD', key: 'DZD' },
   { code: 'GHS', key: 'GHS' },
   { code: 'AED', key: 'AED' },
   { code: 'SAR', key: 'SAR' },
