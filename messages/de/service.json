@@ -188,7 +188,8 @@
     "statusEmailSubject": "Aktualisierung des Servicestatus",
     "markCompletedTitle": "Diese Rechnung als abgeschlossen markieren?",
     "markCompletedDescription": "Sie ist beim Kunden, gilt aber weiterhin als nicht fertig und bleibt daher auf der Auftragstafel stehen.",
-    "markCompletedConfirm": "Als abgeschlossen markieren"
+    "markCompletedConfirm": "Als abgeschlossen markieren",
+    "lockedFieldsetLabel": "Gesperrte Rechnung, Bearbeitung deaktiviert"
   },
   "payments": {
     "title": "Zahlungen",

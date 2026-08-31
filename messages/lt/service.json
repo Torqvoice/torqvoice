@@ -188,7 +188,8 @@
     "statusEmailSubject": "Paslaugos būsenos atnaujinimas",
     "markCompletedTitle": "Pažymėti šią sąskaitą kaip užbaigtą?",
     "markCompletedDescription": "Ji jau išsiųsta klientui, bet vis dar pažymėta kaip nebaigta, todėl liks matoma darbų lentoje.",
-    "markCompletedConfirm": "Žymėti užbaigta"
+    "markCompletedConfirm": "Žymėti užbaigta",
+    "lockedFieldsetLabel": "Užrakinta sąskaita, redagavimas išjungtas"
   },
   "payments": {
     "title": "Mokėjimai",

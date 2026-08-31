@@ -188,7 +188,8 @@
     "statusEmailSubject": "Service Status Update",
     "markCompletedTitle": "Mark this invoice as completed?",
     "markCompletedDescription": "It has gone to the customer but is still marked as not finished, so it will keep showing on the work board.",
-    "markCompletedConfirm": "Mark completed"
+    "markCompletedConfirm": "Mark completed",
+    "lockedFieldsetLabel": "Locked invoice, editing disabled"
   },
   "payments": {
     "title": "Payments",

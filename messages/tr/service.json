@@ -188,7 +188,8 @@
     "statusEmailSubject": "Servis durumu güncellemesi",
     "markCompletedTitle": "Bu fatura tamamlandı olarak işaretlensin mi?",
     "markCompletedDescription": "Müşteriye gitti ama hâlâ bitmedi olarak işaretli, bu yüzden iş panosunda görünmeye devam edecek.",
-    "markCompletedConfirm": "Tamamlandı olarak işaretle"
+    "markCompletedConfirm": "Tamamlandı olarak işaretle",
+    "lockedFieldsetLabel": "Fatura kilitli, düzenleme kapalı"
   },
   "payments": {
     "title": "Ödemeler",

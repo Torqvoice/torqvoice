@@ -188,7 +188,8 @@
     "statusEmailSubject": "Обновление статуса обслуживания",
     "markCompletedTitle": "Отметить этот счёт как завершённый?",
     "markCompletedDescription": "Он уже отправлен клиенту, но всё ещё помечен как незавершённый, поэтому останется на доске работ.",
-    "markCompletedConfirm": "Отметить завершённым"
+    "markCompletedConfirm": "Отметить завершённым",
+    "lockedFieldsetLabel": "Счёт заблокирован, редактирование отключено"
   },
   "payments": {
     "title": "Платежи",

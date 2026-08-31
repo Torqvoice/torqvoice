@@ -188,7 +188,8 @@
     "statusEmailSubject": "Aktualizacja statusu serwisu",
     "markCompletedTitle": "Oznaczyć tę fakturę jako zakończoną?",
     "markCompletedDescription": "Trafiła już do klienta, ale nadal jest oznaczona jako niezakończona, więc pozostanie na tablicy.",
-    "markCompletedConfirm": "Oznacz jako zakończoną"
+    "markCompletedConfirm": "Oznacz jako zakończoną",
+    "lockedFieldsetLabel": "Faktura zablokowana, edycja wyłączona"
   },
   "payments": {
     "title": "Płatności",

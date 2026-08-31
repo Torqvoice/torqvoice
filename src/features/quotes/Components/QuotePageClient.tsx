@@ -381,28 +381,33 @@ export function QuotePageClient({
           onSubmit={state.handleSubmit}
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
         >
-          {isLarge ? (
-            <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
-              <ResizablePanel defaultSize={75} minSize={40}>
-                <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
-                  <div className="space-y-3 pb-40">{leftColumn}</div>
+          {/* A locked quote offers no editing, rather than letting someone
+              retype a line and meet the refusal on save. display:contents
+              keeps the layout exactly as it was. */}
+          <fieldset disabled={lockState.locked} className="contents">
+            {isLarge ? (
+              <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
+                <ResizablePanel defaultSize={75} minSize={40}>
+                  <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
+                    <div className="space-y-3 pb-40">{leftColumn}</div>
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={25} minSize={15}>
+                  <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
+                    <div className="space-y-3 pb-40">{rightColumn}</div>
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            ) : (
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+                <div className="space-y-3 pb-40">
+                  {leftColumn}
+                  {rightColumn}
                 </div>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={25} minSize={15}>
-                <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
-                  <div className="space-y-3 pb-40">{rightColumn}</div>
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          ) : (
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-              <div className="space-y-3 pb-40">
-                {leftColumn}
-                {rightColumn}
               </div>
-            </div>
-          )}
+            )}
+          </fieldset>
         </form>
       )}
 

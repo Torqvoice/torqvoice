@@ -188,7 +188,8 @@
     "statusEmailSubject": "Mise à jour du statut du service",
     "markCompletedTitle": "Marquer cette facture comme terminée ?",
     "markCompletedDescription": "Elle est partie chez le client mais reste marquée comme non terminée, elle continuera donc d'apparaître sur le tableau.",
-    "markCompletedConfirm": "Marquer comme terminée"
+    "markCompletedConfirm": "Marquer comme terminée",
+    "lockedFieldsetLabel": "Facture verrouillée, modification désactivée"
   },
   "payments": {
     "title": "Paiements",

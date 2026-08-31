@@ -148,6 +148,7 @@ export function ServicePageClient({
     defaultTaxRate,
     currentUserName,
     record,
+    locked: lockState.locked,
   })
 
   const checkDates = useCallback(async () => {
@@ -320,11 +321,12 @@ export function ServicePageClient({
 
     const result = await updateServiceStatus(record.id, 'completed')
     if (result.success) {
-      formState.dirtySetStatus('completed')
+      // Already persisted by updateServiceStatus, so this must not dirty the
+      // form: the invoice may have locked on the same send.
+      formState.setStatus('completed')
       router.refresh()
     }
   }, [router, confirmComplete, formState, record.id, t])
-
 
   useSaveShortcut(() => {
     if (formState.hasUnsavedChanges) return actions.saveNow()
@@ -390,52 +392,62 @@ export function ServicePageClient({
             onInput={formState.markDirty}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <ServiceDetailContent
-              leftColumn={
-                <DetailsLeftColumn
-                  formState={formState}
-                  actions={actions}
-                  record={record}
-                  tireSet={record.tireSet ?? null}
-                  tireHotelEnabled={tireHotelEnabled}
-                  tireThresholds={tireThresholds}
-                  unitSystem={unitSystem}
-                  currencyCode={currencyCode}
-                  defaultLaborRate={defaultLaborRate}
-                  inventoryParts={inventoryParts}
-                  defaultMarkupPercent={defaultMarkupPercent}
-                  markupAppliesToInventory={markupAppliesToInventory}
-                  hasPresets={laborPresets.length > 0}
-                  onOpenPresets={() => formState.setShowPresetPicker(true)}
-                  onScanBarcode={() => formState.setShowBarcodeScanner(true)}
-                  aiEnabled={aiEnabled}
-                  vehicleId={vehicleId}
-                  findings={findings}
-                  onAddFinding={() => obsControlsRef.current?.onAddFinding()}
-                  onEditFinding={(f) => obsControlsRef.current?.onEditFinding(f)}
-                  openObservationsCount={otherObsCount}
-                  onShowExistingObservations={() =>
-                    obsControlsRef.current?.onShowExistingObservations()
-                  }
-                />
-              }
-              rightColumn={
-                <DetailsRightColumn
-                  formState={formState}
-                  actions={actions}
-                  record={record}
-                  vehicleId={vehicleId}
-                  organizationId={organizationId}
-                  currencyCode={currencyCode}
-                  taxEnabled={taxEnabled}
-                  initialVehicle={initialVehicle}
-                  boardTechnicians={boardTechnicians}
-                  workBays={workBays}
-                  orgMembers={orgMembers}
-                  notificationHistory={notificationHistory}
-                />
-              }
-            />
+            {/* A locked invoice offers no editing at all, rather than letting
+                someone retype a line and meet the refusal on save. The
+                fieldset disables every control inside it natively;
+                display:contents keeps the layout exactly as it was. */}
+            <fieldset
+              disabled={lockState.locked}
+              className="contents"
+              aria-label={lockState.locked ? t('invoice.lockedFieldsetLabel') : undefined}
+            >
+              <ServiceDetailContent
+                leftColumn={
+                  <DetailsLeftColumn
+                    formState={formState}
+                    actions={actions}
+                    record={record}
+                    tireSet={record.tireSet ?? null}
+                    tireHotelEnabled={tireHotelEnabled}
+                    tireThresholds={tireThresholds}
+                    unitSystem={unitSystem}
+                    currencyCode={currencyCode}
+                    defaultLaborRate={defaultLaborRate}
+                    inventoryParts={inventoryParts}
+                    defaultMarkupPercent={defaultMarkupPercent}
+                    markupAppliesToInventory={markupAppliesToInventory}
+                    hasPresets={laborPresets.length > 0}
+                    onOpenPresets={() => formState.setShowPresetPicker(true)}
+                    onScanBarcode={() => formState.setShowBarcodeScanner(true)}
+                    aiEnabled={aiEnabled}
+                    vehicleId={vehicleId}
+                    findings={findings}
+                    onAddFinding={() => obsControlsRef.current?.onAddFinding()}
+                    onEditFinding={(f) => obsControlsRef.current?.onEditFinding(f)}
+                    openObservationsCount={otherObsCount}
+                    onShowExistingObservations={() =>
+                      obsControlsRef.current?.onShowExistingObservations()
+                    }
+                  />
+                }
+                rightColumn={
+                  <DetailsRightColumn
+                    formState={formState}
+                    actions={actions}
+                    record={record}
+                    vehicleId={vehicleId}
+                    organizationId={organizationId}
+                    currencyCode={currencyCode}
+                    taxEnabled={taxEnabled}
+                    initialVehicle={initialVehicle}
+                    boardTechnicians={boardTechnicians}
+                    workBays={workBays}
+                    orgMembers={orgMembers}
+                    notificationHistory={notificationHistory}
+                  />
+                }
+              />
+            </fieldset>
           </form>
           {vehicleId && (
             <ObservationsManager
