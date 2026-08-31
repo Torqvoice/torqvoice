@@ -322,7 +322,7 @@ export function InvoiceDesigner({
         confirmLabel: t('delete'),
         destructive: true,
       })
-      if (!ok) return
+      if (!ok) return false
       persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
       setActiveDesigns((prev) => ({
         invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
@@ -331,6 +331,7 @@ export function InvoiceDesigner({
       if (designName.trim().toLowerCase() === design.name.trim().toLowerCase()) {
         setDesignName('')
       }
+      return true
     },
     [confirm, t, persistDesigns, savedDesigns, designName]
   )
@@ -830,7 +831,15 @@ export function InvoiceDesigner({
         {currentDesign && (
           <button
             type="button"
-            onClick={() => void deleteDesign(currentDesign)}
+            onClick={async () => {
+              // The sheet on the canvas was that design; with it gone, the
+              // gallery is the natural place to land and pick the next one.
+              if (await deleteDesign(currentDesign)) {
+                setSelected(null)
+                setDirty((prev) => ({ ...prev, [docType]: false }))
+                setView('gallery')
+              }
+            }}
             title={t('deleteDesign')}
             className="flex items-center gap-1.5 rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium text-[#dc2626] hover:border-[#fca5a5] hover:bg-[#fef2f2]"
           >
