@@ -95,5 +95,10 @@
     "placeholder": "f.eks. Vi har problemer med serverinfrastrukturen vår og jobber med saken.",
     "posted": "Meldingen er publisert",
     "cleared": "Meldingen er fjernet"
+  },
+  "pdfPreview": {
+    "title": "PDF-forhåndsvisning",
+    "preview": "Forhåndsvisning",
+    "failed": "Kunne ikke generere PDF-forhåndsvisningen."
   }
 }

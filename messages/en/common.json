@@ -95,5 +95,10 @@
     "placeholder": "e.g. We are having trouble with our server infrastructure and are working on it.",
     "posted": "Notice posted",
     "cleared": "Notice cleared"
+  },
+  "pdfPreview": {
+    "title": "PDF preview",
+    "preview": "Preview",
+    "failed": "Could not generate the PDF preview."
   }
 }

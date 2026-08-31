@@ -95,5 +95,10 @@
     "placeholder": "es. Stiamo riscontrando problemi con la nostra infrastruttura server e ci stiamo lavorando.",
     "posted": "Avviso pubblicato",
     "cleared": "Avviso rimosso"
+  },
+  "pdfPreview": {
+    "title": "Anteprima PDF",
+    "preview": "Anteprima",
+    "failed": "Impossibile generare l'anteprima del PDF."
   }
 }

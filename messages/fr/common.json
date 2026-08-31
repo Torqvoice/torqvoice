@@ -95,5 +95,10 @@
     "placeholder": "ex. Nous rencontrons des difficultés avec notre infrastructure serveur et y travaillons.",
     "posted": "Message publié",
     "cleared": "Message retiré"
+  },
+  "pdfPreview": {
+    "title": "Aperçu du PDF",
+    "preview": "Aperçu",
+    "failed": "Impossible de générer l'aperçu du PDF."
   }
 }

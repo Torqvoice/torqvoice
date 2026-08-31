@@ -95,5 +95,10 @@
     "placeholder": "bijv. We hebben problemen met onze serverinfrastructuur en werken eraan.",
     "posted": "Bericht geplaatst",
     "cleared": "Bericht verwijderd"
+  },
+  "pdfPreview": {
+    "title": "PDF-voorbeeld",
+    "preview": "Voorbeeld",
+    "failed": "Kon het PDF-voorbeeld niet genereren."
   }
 }
