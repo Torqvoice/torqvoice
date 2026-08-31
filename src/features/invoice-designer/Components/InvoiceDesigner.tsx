@@ -171,7 +171,12 @@ export function InvoiceDesigner({
   const [zoom, setZoom] = useState(1)
   const [rulers, setRulers] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [dirty, setDirty] = useState(!!initialPreset)
+  // Per document, because Save only writes the sheet being looked at: one
+  // shared flag let saving the quote clear the invoice's unsaved edits.
+  const [dirty, setDirty] = useState<Record<DocumentType, boolean>>({
+    invoice: !!initialPreset && initialDocumentType === 'invoice',
+    quote: !!initialPreset && initialDocumentType === 'quote',
+  })
   // The preset in the URL is a one-shot instruction, consumed above. Left in
   // the address bar it would re-apply itself on every refresh, overriding
   // whatever the user picked since, so it is stripped once acted on.
@@ -242,7 +247,7 @@ export function InvoiceDesigner({
   const setLayout = useCallback(
     (next: InvoiceLayoutConfig) => {
       setLayouts((prev) => ({ ...prev, [docType]: next }))
-      setDirty(true)
+      setDirty((prev) => ({ ...prev, [docType]: true }))
     },
     [docType]
   )
@@ -250,7 +255,7 @@ export function InvoiceDesigner({
   const setTemplate = useCallback(
     (patch: Partial<DesignerTemplate>) => {
       setTemplates((prev) => ({ ...prev, [docType]: { ...prev[docType], ...patch } }))
-      setDirty(true)
+      setDirty((prev) => ({ ...prev, [docType]: true }))
     },
     [docType]
   )
@@ -404,7 +409,7 @@ export function InvoiceDesigner({
       setDesignName(design.name)
       setActiveDesigns((prev) => ({ ...prev, [docType]: `design:${design.id}` }))
       setSelected(null)
-      setDirty(true)
+      setDirty((prev) => ({ ...prev, [docType]: true }))
       setView('designer')
     },
     [docType, setLayout]
@@ -604,7 +609,7 @@ export function InvoiceDesigner({
    * throw away an afternoon with nothing to undo it.
    */
   const leaveForSettings = async () => {
-    if (dirty) {
+    if (dirty.invoice || dirty.quote) {
       const go = await confirm({
         title: t('leaveTitle'),
         description: t('leaveBody'),
@@ -640,7 +645,7 @@ export function InvoiceDesigner({
           [`${prefix}.logo`]: template.logoUrl,
         }),
       ])
-      setDirty(false)
+      setDirty((prev) => ({ ...prev, [docType]: false }))
       toast.success(t('saved'))
     } catch {
       toast.error(t('couldNotSave'))
@@ -818,7 +823,7 @@ export function InvoiceDesigner({
               }))
               setTemplates((prev) => ({ ...prev, quote: { ...prev.invoice } }))
               setSelected(null)
-              setDirty(true)
+              setDirty((prev) => ({ ...prev, quote: true }))
               toast.success(t('copiedToQuote'))
             }}
             className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
@@ -899,10 +904,10 @@ export function InvoiceDesigner({
         <button
           type="button"
           onClick={save}
-          disabled={saving || !dirty}
+          disabled={saving || !dirty[docType]}
           className="rounded-[7px] bg-[#2563eb] px-4 py-[7px] text-[13px] font-semibold text-white hover:bg-[#1d4ed8] disabled:opacity-50"
         >
-          {saving ? t('saving') : dirty ? t('save') : t('saved')}
+          {saving ? t('saving') : dirty[docType] ? t('save') : t('saved')}
         </button>
       </div>
 
