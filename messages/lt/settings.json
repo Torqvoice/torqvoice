@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Priskirti klientų numerius?",
     "assignCustomerNumbersConfirmDescription": "{count} klientams be numerio bus priskirti eilės numeriai sukūrimo tvarka, tęsiant nuo didžiausio esamo numerio. Klientai, jau turintys numerį, nekeičiami. Numerius galima redaguoti vėliau.",
     "layoutColorsHint": "Spalvos, šriftai ir antraštės stilius yra skiltyje Šablonai.",
-    "goToTemplates": "Atverti šablonus"
+    "goToTemplates": "Atverti šablonus",
+    "lockTitle": "Užbaigtų dokumentų užrakinimas",
+    "lockDescription": "Neleidžia keisti sąskaitos ar pasiūlymo, kai jis jau užbaigtas.",
+    "lockWhatItDoes": "Užrakinama: dalys, darbas, kiekiai, kainos, nuolaida, mokestis, dokumento numeris ir data. Dokumento ištrynimas taip pat blokuojamas.",
+    "lockWhatItAllows": "Toliau veikia: mokėjimų registravimas, mokėjimas kortele internetu, būsenos keitimas, siuntimas ir pakartotinis siuntimas, priedai ir vidinės pastabos. Užrakintą sąskaitą visada galima apmokėti.",
+    "lockUnlockNote": "Savininkai ir administratoriai gali atrakinti atskirą dokumentą jo paties puslapyje, kai kažką tikrai reikia pataisyti. Kiekvienas atrakinimas įrašomas į audito žurnalą.",
+    "lockInvoicesLabel": "Užrakinti sąskaitas",
+    "lockTriggerSent": "Kai sąskaita išsiųsta",
+    "lockTriggerPaid": "Kai sąskaita visiškai apmokėta",
+    "lockTriggerSentHint": "Užrakina, kai tik sąskaita išsiunčiama el. paštu arba sukuriama bendrinimo nuoroda. Anksčiau išsiųstoms sąskaitoms tai negalioja.",
+    "lockTriggerPaidHint": "Užrakina, kai padengiama visa suma arba sąskaita rankiniu būdu pažymima apmokėta. Iš dalies apmokėtą sąskaitą galima redaguoti.",
+    "lockQuotesLabel": "Užrakinti pasiūlymus",
+    "quoteLockTriggerSent": "Kai pasiūlymas išsiųstas",
+    "quoteLockTriggerAccepted": "Kai pasiūlymas priimtas",
+    "quoteLockTriggerSentHint": "Užrakina, kai tik pasiūlymas išsiunčiamas klientui. Rinkitės tik jei niekada nekeičiate pasiūlymo derybų metu.",
+    "quoteLockTriggerAcceptedHint": "Užrakina, kai klientas priima pasiūlymą arba jis paverčiamas darbu. Išsiųstus pasiūlymus galima redaguoti."
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",

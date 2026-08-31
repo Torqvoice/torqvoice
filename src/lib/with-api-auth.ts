@@ -4,6 +4,7 @@ import { auth } from './auth'
 import { db } from './db'
 import { hasAllPermissions, type PermissionInput } from './permissions'
 import { rateLimit } from './rate-limit'
+import { DocumentLockedError } from './document-lock'
 
 /**
  * Request wrapper for the token-authenticated API the technician app talks to.
@@ -59,6 +60,7 @@ export type ApiErrorCode =
   | 'not_found'
   | 'invalid_request'
   | 'conflict'
+  | 'document_locked'
   | 'server_error'
 
 export function apiError(status: number, code: ApiErrorCode, message: string, extra?: unknown) {
@@ -186,6 +188,13 @@ export async function withApiAuth(
   } catch (err) {
     // Zod messages describe the caller's own payload, so they are safe and
     // genuinely useful to return. Everything else is ours and stays here.
+    // A locked document is a refusal, not a fault: the technician needs to be
+    // told the job is locked (and to see the office about it), not to retry a
+    // request that can never succeed. The message names the rule that applied
+    // and is written for the caller, so it is safe to return.
+    if (err instanceof DocumentLockedError) {
+      return apiError(409, 'document_locked', err.message)
+    }
     if (err instanceof ZodError) {
       return apiError(
         400,

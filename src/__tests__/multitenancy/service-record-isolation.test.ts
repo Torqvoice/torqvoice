@@ -20,6 +20,7 @@ vi.mock('@/lib/notification-bus', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
+    appSetting: { findMany: vi.fn() },
     vehicle: { findFirst: vi.fn(), update: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn(), delete: vi.fn() },
     $transaction: vi.fn(),
@@ -90,6 +91,9 @@ const orgWhereClause = expect.objectContaining({
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // Locking is read before any edit to an invoice or quote; no settings
+  // rows means locking is off, which is how these tests expect to run.
+  vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
 })
 
 describe('getServiceRecord — cross-org isolation', () => {

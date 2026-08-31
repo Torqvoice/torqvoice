@@ -5,6 +5,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { roundMoney } from '@/features/inventory/Lib/partPricing'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
 
 /**
  * Adds a line of work to the job.
@@ -33,6 +34,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     async (ctx) => {
       const { id } = await params
       const { description, hours } = bodySchema.parse(await request.json())
+
+      // Labour is money on the invoice, so a locked job refuses it here too.
+      await assertInvoiceEditable(id, ctx.organizationId)
 
       const job = await db.serviceRecord.findFirst({
         where: {

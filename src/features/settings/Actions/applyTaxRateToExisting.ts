@@ -6,6 +6,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { SETTING_KEYS } from '../Schema/settingsSchema'
 import { calculateTotals } from '@/lib/tax'
+import { getDocumentLockSettings } from '@/lib/document-lock.server'
+import { invoiceLockState, quoteLockState } from '@/lib/document-lock'
 
 /**
  * Apply the current default tax rate from settings to existing ServiceRecords
@@ -37,7 +39,7 @@ export async function applyTaxRateToExisting() {
       }
 
       // --- Service records (work orders / invoices) ---
-      const serviceRecords = await db.serviceRecord.findMany({
+      const allServiceRecords = await db.serviceRecord.findMany({
         where: {
           organizationId,
           taxRate: 0,
@@ -47,11 +49,17 @@ export async function applyTaxRateToExisting() {
           subtotal: true,
           discountAmount: true,
           taxInclusive: true,
+          sentAt: true,
+          manuallyPaid: true,
+          totalAmount: true,
+          cost: true,
+          editUnlockedAt: true,
+          payments: { select: { amount: true } },
         },
       })
 
       // --- Quotes ---
-      const quotes = await db.quote.findMany({
+      const allQuotes = await db.quote.findMany({
         where: {
           organizationId,
           taxRate: 0,
@@ -61,8 +69,22 @@ export async function applyTaxRateToExisting() {
           subtotal: true,
           discountAmount: true,
           taxInclusive: true,
+          status: true,
+          sentAt: true,
+          editUnlockedAt: true,
         },
       })
+
+      // A locked document is exactly the one whose total must not change
+      // under it, so the sweep steps around it. Anything skipped stays
+      // eligible: unlock it (or turn locking off) and run the backfill again.
+      const lockSettings = await getDocumentLockSettings(organizationId)
+      const serviceRecords = allServiceRecords.filter(
+        (r) => !invoiceLockState(r, lockSettings).locked
+      )
+      const quotes = allQuotes.filter((q) => !quoteLockState(q, lockSettings).locked)
+      const serviceRecordsSkipped = allServiceRecords.length - serviceRecords.length
+      const quotesSkipped = allQuotes.length - quotes.length
 
       let serviceRecordsUpdated = 0
       let quotesUpdated = 0
@@ -112,6 +134,8 @@ export async function applyTaxRateToExisting() {
       return {
         serviceRecordsUpdated,
         quotesUpdated,
+        serviceRecordsSkipped,
+        quotesSkipped,
         taxRate: defaultTaxRate,
       }
     },
@@ -134,6 +158,8 @@ export async function applyTaxRateToExisting() {
           taxRate: result.taxRate,
           serviceRecordsUpdated: result.serviceRecordsUpdated,
           quotesUpdated: result.quotesUpdated,
+          serviceRecordsSkippedLocked: result.serviceRecordsSkipped,
+          quotesSkippedLocked: result.quotesSkipped,
         },
       }),
     }

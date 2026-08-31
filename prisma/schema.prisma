@@ -247,6 +247,17 @@ model ServiceRecord {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  /// First time this invoice reached the customer, by email or share link.
+  /// Distinct from sharedAt, which tracks only the link and is cleared when
+  /// the link is revoked; sending is not undone by withdrawing the link.
+  sentAt DateTime?
+
+  /// Set when an owner or admin deliberately reopens a locked document.
+  /// Nullable rather than a boolean so the audit trail can show when, and the
+  /// screen can say the document was reopened rather than never locked.
+  editUnlockedAt   DateTime?
+  editUnlockedById String?
+
   /// The stored set this job is about, when it came out of the tire hotel.
   /// Without it a tire-change work order says nothing about which tires, and
   /// the technician has to go and ask.
@@ -738,6 +749,16 @@ model Quote {
   convertedToId   String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  /// Most recent time this quote reached the customer, by email or share
+  /// link. Exists so an unlock is spent when the quote is issued again; the
+  /// status alone cannot show that, because re-sending an accepted quote does
+  /// not change it.
+  sentAt DateTime?
+
+  /// See ServiceRecord.editUnlockedAt.
+  editUnlockedAt   DateTime?
+  editUnlockedById String?
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

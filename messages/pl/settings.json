@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Przydzielić numery klientów?",
     "assignCustomerNumbersConfirmDescription": "{count} klientów bez numeru otrzyma kolejne numery w kolejności utworzenia, kontynuując od najwyższego istniejącego numeru. Klienci z numerem nie zostaną zmienieni. Numery można później edytować.",
     "layoutColorsHint": "Kolory, czcionki i styl nagłówka są w Szablonach.",
-    "goToTemplates": "Otwórz Szablony"
+    "goToTemplates": "Otwórz Szablony",
+    "lockTitle": "Blokowanie zakończonych dokumentów",
+    "lockDescription": "Zapobiega zmianom faktury lub oferty po jej zamknięciu.",
+    "lockWhatItDoes": "Blokowane są: części, robocizna, ilości, ceny, rabat, podatek, numer i data dokumentu. Usunięcie dokumentu również jest zablokowane.",
+    "lockWhatItAllows": "Nadal działa: rejestrowanie płatności, płatność kartą online, zmiany statusu, wysyłka i ponowna wysyłka, załączniki i notatki wewnętrzne. Zablokowaną fakturę zawsze można opłacić.",
+    "lockUnlockNote": "Właściciele i administratorzy mogą odblokować pojedynczy dokument z jego własnej strony, gdy naprawdę wymaga poprawki. Każde odblokowanie trafia do dziennika audytu.",
+    "lockInvoicesLabel": "Blokuj faktury",
+    "lockTriggerSent": "Po wysłaniu faktury",
+    "lockTriggerPaid": "Po opłaceniu faktury w całości",
+    "lockTriggerSentHint": "Blokuje, gdy faktura zostanie wysłana e-mailem lub powstanie link do udostępnienia. Faktury wysłane wcześniej nie są objęte.",
+    "lockTriggerPaidHint": "Blokuje po uregulowaniu pełnej kwoty lub ręcznym oznaczeniu faktury jako opłaconej. Faktura opłacona częściowo pozostaje edytowalna.",
+    "lockQuotesLabel": "Blokuj oferty",
+    "quoteLockTriggerSent": "Po wysłaniu oferty",
+    "quoteLockTriggerAccepted": "Po zaakceptowaniu oferty",
+    "quoteLockTriggerSentHint": "Blokuje, gdy oferta trafi do klienta. Wybierz tylko wtedy, gdy nigdy nie zmieniasz oferty w trakcie negocjacji.",
+    "quoteLockTriggerAcceptedHint": "Blokuje po zaakceptowaniu oferty przez klienta lub przekształceniu jej w zlecenie. Wysłane oferty pozostają edytowalne."
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",

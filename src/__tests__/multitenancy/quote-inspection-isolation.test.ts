@@ -111,6 +111,9 @@ const ORG_A_INSPECTION = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // Locking is read before any edit to an invoice or quote; no settings
+  // rows means locking is off, which is how these tests expect to run.
+  vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
 })
 
 // ---------------------------------------------------------------------------

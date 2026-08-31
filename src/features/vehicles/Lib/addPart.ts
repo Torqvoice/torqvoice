@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { calculateTotals } from '@/lib/tax'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
 
 /**
  * Adds a part line to a job, recalculates the job's money, and moves the stock.
@@ -41,6 +42,11 @@ export async function addPart(args: {
   input: AddPartInput
 }) {
   const { organizationId, userId, input } = args
+
+  // Guarded here rather than at each caller: the server action and the
+  // technician API both come through this function, and a lock enforced in
+  // only one of them is not a lock.
+  await assertInvoiceEditable(input.serviceRecordId, organizationId)
 
   const record = await db.serviceRecord.findFirst({
     where: { id: input.serviceRecordId, organizationId },

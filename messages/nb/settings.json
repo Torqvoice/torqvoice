@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Tildele kundenumre?",
     "assignCustomerNumbersConfirmDescription": "De {count} kundene uten nummer får fortløpende numre i opprettelsesrekkefølge, fortsettende etter det høyeste eksisterende nummeret. Kunder som allerede har nummer endres ikke. Numrene kan redigeres etterpå.",
     "layoutColorsHint": "Farger, skrifter og brevhodestilen ligger under Maler.",
-    "goToTemplates": "Åpne Maler"
+    "goToTemplates": "Åpne Maler",
+    "lockTitle": "Låsing av ferdige dokumenter",
+    "lockDescription": "Hindre at en faktura eller et tilbud endres etter at det er gjort opp.",
+    "lockWhatItDoes": "Dette låses: deler, arbeid, antall, priser, rabatt, avgift, dokumentnummer og dato. Sletting av dokumentet blokkeres også.",
+    "lockWhatItAllows": "Dette virker fortsatt: registrere betalinger, kortbetaling på nett, statusendringer, sending og ny sending, vedlegg og interne notater. En låst faktura kan alltid betales.",
+    "lockUnlockNote": "Eiere og administratorer kan låse opp ett enkelt dokument fra dokumentets egen side når noe virkelig må rettes. Hver opplåsing loggføres.",
+    "lockInvoicesLabel": "Lås fakturaer",
+    "lockTriggerSent": "Når fakturaen er sendt",
+    "lockTriggerPaid": "Når fakturaen er betalt i sin helhet",
+    "lockTriggerSentHint": "Låses så snart fakturaen sendes på e-post eller det opprettes en delingslenke. Fakturaer sendt før du slo dette på berøres ikke.",
+    "lockTriggerPaidHint": "Låses når hele beløpet er gjort opp, eller fakturaen merkes betalt manuelt. Delvis betalte fakturaer kan fortsatt endres.",
+    "lockQuotesLabel": "Lås tilbud",
+    "quoteLockTriggerSent": "Når tilbudet er sendt",
+    "quoteLockTriggerAccepted": "Når tilbudet er akseptert",
+    "quoteLockTriggerSentHint": "Låses så snart tilbudet går til kunden. Velg dette bare hvis du aldri endrer et tilbud underveis i forhandlingen.",
+    "quoteLockTriggerAcceptedHint": "Låses når kunden har akseptert tilbudet, eller det er gjort om til en jobb. Sendte tilbud kan fortsatt endres."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",

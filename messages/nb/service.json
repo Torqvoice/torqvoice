@@ -185,7 +185,11 @@
     "paidBadge": "BETALT",
     "entityLabel": "Faktura",
     "emailSubject": "Betalingsbekreftelse",
-    "statusEmailSubject": "Oppdatering av servicestatus"
+    "statusEmailSubject": "Oppdatering av servicestatus",
+    "markCompletedTitle": "Merke denne fakturaen som fullført?",
+    "markCompletedDescription": "Den er sendt til kunden, men står fortsatt som ikke ferdig, så den blir liggende på tavla.",
+    "markCompletedConfirm": "Merk som fullført",
+    "lockedFieldsetLabel": "Låst faktura, redigering er deaktivert"
   },
   "payments": {
     "title": "Betalinger",

@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Assign customer numbers?",
     "assignCustomerNumbersConfirmDescription": "This will give sequential numbers to the {count} customers that have no number yet, in the order they were created, continuing after your highest existing number. Customers that already have a number are not changed. Numbers can be edited afterwards.",
     "layoutColorsHint": "Colors, fonts and the header style live in Templates.",
-    "goToTemplates": "Open Templates"
+    "goToTemplates": "Open Templates",
+    "lockTitle": "Locking finished documents",
+    "lockDescription": "Stop an invoice or quote being changed once it is settled.",
+    "lockWhatItDoes": "What it freezes: parts, labour, quantities, prices, discount, tax, the document number and its date. Deleting the document is blocked too.",
+    "lockWhatItAllows": "What still works: recording payments, online card payments, status changes, sending and re-sending, attachments and internal notes. A locked invoice can always still be paid.",
+    "lockUnlockNote": "Owners and admins can unlock a single document from its own page when something genuinely needs correcting. Every unlock is recorded in the audit log.",
+    "lockInvoicesLabel": "Lock invoices",
+    "lockTriggerSent": "Once the invoice is sent",
+    "lockTriggerPaid": "Once the invoice is paid in full",
+    "lockTriggerSentHint": "Locks as soon as the invoice is emailed or a share link is created. Invoices sent before you turned this on are not affected.",
+    "lockTriggerPaidHint": "Locks once the full amount is settled, or the invoice is marked paid by hand. A part-paid invoice stays editable.",
+    "lockQuotesLabel": "Lock quotes",
+    "quoteLockTriggerSent": "Once the quote is sent",
+    "quoteLockTriggerAccepted": "Once the quote is accepted",
+    "quoteLockTriggerSentHint": "Locks as soon as the quote goes to the customer. Choose this only if you never revise a quote during negotiation.",
+    "quoteLockTriggerAcceptedHint": "Locks once the customer has accepted the quote, or it has been converted to a job. Sent quotes stay editable."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

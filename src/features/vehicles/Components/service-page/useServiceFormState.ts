@@ -12,12 +12,15 @@ export function useServiceFormState({
   defaultTaxRate,
   currentUserName,
   record,
+  locked = false,
 }: {
   vehicleId: string | null
   initialData: InitialData
   defaultTaxRate: number
   currentUserName: string
   record: ServiceDetail
+  /** A locked invoice refuses saves, so it must not queue one. */
+  locked?: boolean
 }) {
   // Form state
   const [loading, setLoading] = useState(false)
@@ -52,6 +55,10 @@ export function useServiceFormState({
   const [showSaved, setShowSaved] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Read through a ref so markDirty stays stable; it is a dependency of most
+  // of the setters below and rebuilding them all on a lock change is churn.
+  const lockedRef = useRef(locked)
+  lockedRef.current = locked
   const isSavingRef = useRef(false)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -62,6 +69,9 @@ export function useServiceFormState({
   }, [])
 
   const markDirty = useCallback(() => {
+    // A locked invoice cannot be saved, so nothing may queue an autosave that
+    // the server will only refuse five seconds later.
+    if (lockedRef.current) return
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
@@ -70,6 +80,20 @@ export function useServiceFormState({
       }
     }, 5000)
   }, [])
+
+  // When the lock engages mid-session — the invoice was just sent, or an
+  // admin re-locked it — any save already queued can only be refused, and
+  // "Unsaved changes" would offer a save that can never complete (and keep
+  // the beforeunload warning armed). Drop both: the lock has closed every
+  // route those edits could take.
+  useEffect(() => {
+    if (!locked) return
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current)
+      autosaveTimer.current = null
+    }
+    setHasUnsavedChanges(false)
+  }, [locked])
 
   useEffect(() => {
     if (!hasUnsavedChanges) return
@@ -372,6 +396,13 @@ export function useServiceFormState({
     dirtySetTaxRate,
     dirtySetType,
     dirtySetStatus,
+    /**
+     * Sets the status without marking the form dirty. For a status that has
+     * already been persisted by updateServiceStatus: dirtying it there would
+     * show "Unsaved changes" for a change that is already saved, and the save
+     * it invites is refused if the invoice has since locked.
+     */
+    setStatus,
     dirtySetSelectedVehicleId,
     // Warranty
     warrantyMonths,

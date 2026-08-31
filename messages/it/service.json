@@ -185,7 +185,11 @@
     "paidBadge": "PAGATO",
     "entityLabel": "Fattura",
     "emailSubject": "Conferma Pagamento",
-    "statusEmailSubject": "Aggiornamento dello stato del servizio"
+    "statusEmailSubject": "Aggiornamento dello stato del servizio",
+    "markCompletedTitle": "Contrassegnare questa fattura come completata?",
+    "markCompletedDescription": "È stata inviata al cliente ma risulta ancora non conclusa, quindi resterà visibile sulla lavagna.",
+    "markCompletedConfirm": "Segna come completata",
+    "lockedFieldsetLabel": "Fattura bloccata, modifica disattivata"
   },
   "payments": {
     "title": "Pagamenti",

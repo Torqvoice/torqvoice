@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "Atribuir números de cliente?",
     "assignCustomerNumbersConfirmDescription": "Os {count} clientes sem número receberão números sequenciais na ordem de criação, continuando após o maior número existente. Clientes que já têm número não são alterados. Os números podem ser editados depois.",
     "layoutColorsHint": "Cores, fontes e o estilo do timbre ficam em Modelos.",
-    "goToTemplates": "Abrir Modelos"
+    "goToTemplates": "Abrir Modelos",
+    "lockTitle": "Bloqueio de documentos concluídos",
+    "lockDescription": "Impede que uma fatura ou orçamento seja alterado depois de encerrado.",
+    "lockWhatItDoes": "O que é bloqueado: peças, mão de obra, quantidades, preços, desconto, imposto, número do documento e data. Excluir o documento também é bloqueado.",
+    "lockWhatItAllows": "O que continua funcionando: registrar pagamentos, pagamento online com cartão, mudanças de status, envio e reenvio, anexos e notas internas. Uma fatura bloqueada sempre pode ser paga.",
+    "lockUnlockNote": "Proprietários e administradores podem desbloquear um documento específico na página dele quando algo realmente precisa ser corrigido. Todo desbloqueio fica no log de auditoria.",
+    "lockInvoicesLabel": "Bloquear faturas",
+    "lockTriggerSent": "Assim que a fatura for enviada",
+    "lockTriggerPaid": "Assim que a fatura for paga integralmente",
+    "lockTriggerSentHint": "Bloqueia assim que a fatura é enviada por e-mail ou um link de compartilhamento é criado. Faturas enviadas antes de ativar isso não são afetadas.",
+    "lockTriggerPaidHint": "Bloqueia quando o valor total é quitado ou a fatura é marcada como paga manualmente. Uma fatura paga em parte continua editável.",
+    "lockQuotesLabel": "Bloquear orçamentos",
+    "quoteLockTriggerSent": "Assim que o orçamento for enviado",
+    "quoteLockTriggerAccepted": "Assim que o orçamento for aceito",
+    "quoteLockTriggerSentHint": "Bloqueia assim que o orçamento chega ao cliente. Escolha apenas se você nunca revisa um orçamento durante a negociação.",
+    "quoteLockTriggerAcceptedHint": "Bloqueia quando o cliente aceita o orçamento ou ele é convertido em serviço. Orçamentos enviados continuam editáveis."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",

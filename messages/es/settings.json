@@ -557,7 +557,22 @@
     "assignCustomerNumbersConfirmTitle": "¿Asignar números de cliente?",
     "assignCustomerNumbersConfirmDescription": "Los {count} clientes sin número recibirán números secuenciales en el orden en que se crearon, continuando después del número existente más alto. Los clientes que ya tienen número no cambian. Los números se pueden editar después.",
     "layoutColorsHint": "Los colores, las fuentes y el estilo de encabezado están en Plantillas.",
-    "goToTemplates": "Abrir Plantillas"
+    "goToTemplates": "Abrir Plantillas",
+    "lockTitle": "Bloqueo de documentos finalizados",
+    "lockDescription": "Evita que una factura o un presupuesto se modifique una vez cerrado.",
+    "lockWhatItDoes": "Se bloquea: piezas, mano de obra, cantidades, precios, descuento, impuestos, número de documento y fecha. También se impide eliminarlo.",
+    "lockWhatItAllows": "Sigue funcionando: registrar pagos, pago con tarjeta en línea, cambios de estado, envío y reenvío, adjuntos y notas internas. Una factura bloqueada siempre se puede pagar.",
+    "lockUnlockNote": "Los propietarios y administradores pueden desbloquear un documento concreto desde su propia página cuando algo deba corregirse. Cada desbloqueo queda en el registro de auditoría.",
+    "lockInvoicesLabel": "Bloquear facturas",
+    "lockTriggerSent": "Cuando se envía la factura",
+    "lockTriggerPaid": "Cuando la factura está pagada por completo",
+    "lockTriggerSentHint": "Se bloquea en cuanto la factura se envía por correo o se crea un enlace para compartir. Las facturas enviadas antes de activarlo no se ven afectadas.",
+    "lockTriggerPaidHint": "Se bloquea cuando se salda el importe total o la factura se marca como pagada a mano. Una factura pagada en parte sigue siendo editable.",
+    "lockQuotesLabel": "Bloquear presupuestos",
+    "quoteLockTriggerSent": "Cuando se envía el presupuesto",
+    "quoteLockTriggerAccepted": "Cuando se acepta el presupuesto",
+    "quoteLockTriggerSentHint": "Se bloquea en cuanto el presupuesto llega al cliente. Elija esta opción solo si nunca revisa un presupuesto durante la negociación.",
+    "quoteLockTriggerAcceptedHint": "Se bloquea cuando el cliente acepta el presupuesto o este se convierte en un trabajo. Los presupuestos enviados siguen siendo editables."
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",

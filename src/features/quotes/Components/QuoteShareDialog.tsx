@@ -24,6 +24,8 @@ interface QuoteShareDialogProps {
   quoteId: string
   organizationId: string
   initialToken: string | null
+  /** Called once the quote has actually gone to the customer. */
+  onSent?: () => void
   customer?: {
     id: string
     name: string
@@ -40,6 +42,7 @@ export function QuoteShareDialog({
   quoteId,
   organizationId,
   initialToken,
+  onSent,
   customer,
   smsEnabled = false,
   emailEnabled = false,
@@ -63,7 +66,11 @@ export function QuoteShareDialog({
   const handleGenerate = async () => {
     setGeneratingLink(true)
     const result = await generateQuotePublicLink(quoteId)
-    if (result.success && result.data) setPublicToken(result.data.token)
+    if (result.success && result.data) {
+      setPublicToken(result.data.token)
+      // Handing over a link is a way of sending the quote.
+      onSent?.()
+    }
     setGeneratingLink(false)
   }
 
@@ -121,6 +128,8 @@ export function QuoteShareDialog({
       toast.success(results.join(' & '))
       setNotifyEmail(false)
       setNotifySms(false)
+      // Either channel re-issues the quote, and the lock may have engaged.
+      onSent?.()
     }
     setSending(false)
   }

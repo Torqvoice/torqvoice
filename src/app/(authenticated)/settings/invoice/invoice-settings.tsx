@@ -9,12 +9,19 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { backfillCustomerNumbers } from '@/features/customers/Actions/customerActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { FileText, Loader2, Save } from 'lucide-react'
+import { FileText, Loader2, Lock, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -99,6 +106,18 @@ export function InvoiceSettings({
   const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
     settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
+  const [invoiceLockEnabled, setInvoiceLockEnabled] = useState(
+    settings[SETTING_KEYS.INVOICE_LOCK_ENABLED] === 'true'
+  )
+  const [invoiceLockTrigger, setInvoiceLockTrigger] = useState(
+    settings[SETTING_KEYS.INVOICE_LOCK_TRIGGER] || 'paid'
+  )
+  const [quoteLockEnabled, setQuoteLockEnabled] = useState(
+    settings[SETTING_KEYS.QUOTE_LOCK_ENABLED] === 'true'
+  )
+  const [quoteLockTrigger, setQuoteLockTrigger] = useState(
+    settings[SETTING_KEYS.QUOTE_LOCK_TRIGGER] || 'accepted'
+  )
 
   const handleSaveGeneral = async () => {
     setSaving(true)
@@ -111,6 +130,10 @@ export function InvoiceSettings({
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
       [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
       [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
+      [SETTING_KEYS.INVOICE_LOCK_ENABLED]: invoiceLockEnabled ? 'true' : 'false',
+      [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: invoiceLockTrigger,
+      [SETTING_KEYS.QUOTE_LOCK_ENABLED]: quoteLockEnabled ? 'true' : 'false',
+      [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: quoteLockTrigger,
     })
     setSaving(false)
     router.refresh()
@@ -308,6 +331,96 @@ export function InvoiceSettings({
                   {assigning && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
                   {t('invoice.assignCustomerNumbers')}
                 </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <div>
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Lock className="h-3.5 w-3.5" />
+                  {t('invoice.lockTitle')}
+                </h3>
+                <p className="text-xs text-muted-foreground">{t('invoice.lockDescription')}</p>
+              </div>
+
+              <div className="rounded-md border border-dashed p-3">
+                <p className="text-xs text-muted-foreground">{t('invoice.lockWhatItDoes')}</p>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t('invoice.lockWhatItAllows')}
+                </p>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t('invoice.lockUnlockNote')}
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="invoiceLockEnabled"
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span>{t('invoice.lockInvoicesLabel')}</span>
+                    <Switch
+                      id="invoiceLockEnabled"
+                      checked={invoiceLockEnabled}
+                      onCheckedChange={setInvoiceLockEnabled}
+                    />
+                  </Label>
+                  <Select
+                    value={invoiceLockTrigger}
+                    onValueChange={setInvoiceLockTrigger}
+                    disabled={!invoiceLockEnabled}
+                  >
+                    <SelectTrigger id="invoiceLockTrigger" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sent">{t('invoice.lockTriggerSent')}</SelectItem>
+                      <SelectItem value="paid">{t('invoice.lockTriggerPaid')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {invoiceLockTrigger === 'sent'
+                      ? t('invoice.lockTriggerSentHint')
+                      : t('invoice.lockTriggerPaidHint')}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="quoteLockEnabled"
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span>{t('invoice.lockQuotesLabel')}</span>
+                    <Switch
+                      id="quoteLockEnabled"
+                      checked={quoteLockEnabled}
+                      onCheckedChange={setQuoteLockEnabled}
+                    />
+                  </Label>
+                  <Select
+                    value={quoteLockTrigger}
+                    onValueChange={setQuoteLockTrigger}
+                    disabled={!quoteLockEnabled}
+                  >
+                    <SelectTrigger id="quoteLockTrigger" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sent">{t('invoice.quoteLockTriggerSent')}</SelectItem>
+                      <SelectItem value="accepted">
+                        {t('invoice.quoteLockTriggerAccepted')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {quoteLockTrigger === 'sent'
+                      ? t('invoice.quoteLockTriggerSentHint')
+                      : t('invoice.quoteLockTriggerAcceptedHint')}
+                  </p>
+                </div>
               </div>
             </div>
 

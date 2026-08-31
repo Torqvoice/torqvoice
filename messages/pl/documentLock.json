@@ -1,0 +1,27 @@
+{
+  "lockedTitle": {
+    "invoice": {
+      "sent": "This invoice is locked because it has been sent",
+      "paid": "This invoice is locked because it has been paid"
+    },
+    "quote": {
+      "sent": "This quote is locked because it has been sent",
+      "accepted": "This quote is locked because it has been accepted"
+    }
+  },
+  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
+  "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
+  "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
+  "unlock": "Unlock for editing",
+  "relock": "Lock again",
+  "unlockConfirmTitle": "Unlock this document?",
+  "unlockConfirmDescription": {
+    "invoice": "It will become editable again, and the change will be recorded in the audit log with your name. Prefer a credit note where your local rules require one.",
+    "quote": "It will become editable again, and the change will be recorded in the audit log with your name."
+  },
+  "unlocked": "Unlocked for editing",
+  "relocked": "Locked again",
+  "reopenedTitle": "This document has been unlocked for editing",
+  "reopenedBody": "It stays editable until it is locked again.",
+  "failed": "Could not change the lock"
+}

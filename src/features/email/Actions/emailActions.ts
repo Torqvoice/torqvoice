@@ -15,6 +15,7 @@ import { InspectionPDF } from '@/features/inspections/Components/InspectionPDF'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import {
   mergeWithDefaults,
   type InvoiceLayoutConfig,
@@ -210,13 +211,9 @@ export async function sendQuoteEmail(input: {
         ],
       })
 
-      // Update quote status to "sent" (skip if already accepted or converted)
-      if (quote.status !== 'accepted' && quote.status !== 'converted') {
-        await db.quote.update({
-          where: { id: quoteId },
-          data: { status: 'sent' },
-        })
-      }
+      // Stamps sentAt and moves a draft to "sent" (accepted and converted
+      // quotes keep their status).
+      await markQuoteSent(quoteId, organizationId)
 
       return { sent: true, quoteId, recipientEmail }
     },
@@ -399,6 +396,8 @@ export async function sendInvoiceEmail(input: {
           },
         ],
       })
+
+      await markInvoiceSent(serviceRecordId, organizationId)
 
       return { sent: true, serviceRecordId, recipientEmail }
     },
