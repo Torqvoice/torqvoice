@@ -629,11 +629,11 @@
       },
       "letterhead": {
         "name": "Membrete",
-        "description": "Datos de contacto abajo, título bajo las direcciones, una lista numerada"
+        "description": "Datos de contacto abajo, título bajo las direcciones"
       },
       "compact": {
         "name": "Compacta",
-        "description": "Sin paneles, una lista numerada, solo lo esencial"
+        "description": "Sin paneles, solo lo esencial"
       },
       "minimal": {
         "name": "Minimalista",
@@ -1778,6 +1778,7 @@
     },
     "alignment": "Alineación",
     "alignCenter": "Centro",
+    "itemsTableHint": "Una lista numerada de todas las líneas del trabajo, primero mano de obra y luego piezas, en lugar de las tablas separadas.",
     "tablesExclusiveHint": "La hoja imprime una disposición: una lista numerada única o tablas separadas de piezas y mano de obra. Activar una desactiva la otra.",
     "innerPadding": "Espaciado interno",
     "totalsWidth": "Ancho",

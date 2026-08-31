@@ -629,11 +629,11 @@
       },
       "letterhead": {
         "name": "Firminis blankas",
-        "description": "Kontaktai apačioje, antraštė po adresais, vienas numeruotas sąrašas"
+        "description": "Kontaktai apačioje, antraštė po adresais"
       },
       "compact": {
         "name": "Kompaktiškas",
-        "description": "Be rėmelių, vienas numeruotas sąrašas, tik būtiniausia"
+        "description": "Be rėmelių, tik būtiniausia"
       },
       "minimal": {
         "name": "Minimalus",
@@ -1778,6 +1778,7 @@
     },
     "alignment": "Lygiavimas",
     "alignCenter": "Centre",
+    "itemsTableHint": "Vienas numeruotas visų darbo eilučių sąrašas, pirmiausia darbai, paskui dalys, vietoj atskirų lentelių.",
     "tablesExclusiveHint": "Lape spausdinamas vienas išdėstymas: vienas numeruotas sąrašas arba atskiros dalių ir darbų lentelės. Įjungus vieną, kitas išsijungia.",
     "innerPadding": "Vidinis tarpas",
     "totalsWidth": "Plotis",

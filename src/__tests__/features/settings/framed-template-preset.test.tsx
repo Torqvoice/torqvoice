@@ -113,12 +113,14 @@ describe('framed template preset', () => {
     expect(seen.labor_table).toBe(true)
   })
 
-  it('swaps the two tables for the combined one and moves the title down', () => {
+  it('keeps the two tables apart and moves the title down', () => {
+    // The combined list is the itemized template's own arrangement; every
+    // other template shows the parts and labor tables the user expects.
     const seen = visibility(framedLayout)
-    expect(seen.items_table).toBe(true)
+    expect(seen.items_table).toBe(false)
     expect(seen.document_title).toBe(true)
-    expect(seen.parts_table).toBe(false)
-    expect(seen.labor_table).toBe(false)
+    expect(seen.parts_table).toBe(true)
+    expect(seen.labor_table).toBe(true)
   })
 
   it('stands the vehicle opposite the customer', () => {

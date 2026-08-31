@@ -629,11 +629,11 @@
       },
       "letterhead": {
         "name": "Carta intestata",
-        "description": "Contatti in fondo, titolo sotto gli indirizzi, un elenco numerato"
+        "description": "Contatti in fondo, titolo sotto gli indirizzi"
       },
       "compact": {
         "name": "Compatta",
-        "description": "Senza riquadri, un elenco numerato, solo l’essenziale"
+        "description": "Senza riquadri, solo l’essenziale"
       },
       "minimal": {
         "name": "Minimale",
@@ -1778,6 +1778,7 @@
     },
     "alignment": "Allineamento",
     "alignCenter": "Centro",
+    "itemsTableHint": "Un elenco numerato di tutte le righe del lavoro, prima la manodopera e poi i ricambi, al posto delle tabelle separate.",
     "tablesExclusiveHint": "Il foglio stampa una disposizione: un unico elenco numerato oppure tabelle separate per ricambi e manodopera. Attivarne una disattiva l'altra.",
     "innerPadding": "Spaziatura interna",
     "totalsWidth": "Larghezza",

@@ -629,11 +629,11 @@
       },
       "letterhead": {
         "name": "Briefkopf",
-        "description": "Kontaktdaten unten, Titel unter den Adressen, eine nummerierte Liste"
+        "description": "Kontaktdaten unten, Titel unter den Adressen"
       },
       "compact": {
         "name": "Kompakt",
-        "description": "Ohne Kästen, eine nummerierte Liste, nur das Nötigste"
+        "description": "Ohne Kästen, nur das Nötigste"
       },
       "minimal": {
         "name": "Minimal",
@@ -1778,6 +1778,7 @@
     },
     "alignment": "Ausrichtung",
     "alignCenter": "Mitte",
+    "itemsTableHint": "Eine nummerierte Liste aller Positionen des Auftrags, erst Arbeit, dann Teile, anstelle der getrennten Teile- und Arbeitstabellen.",
     "tablesExclusiveHint": "Das Blatt druckt eine Anordnung: eine nummerierte Liste oder getrennte Teile- und Arbeitstabellen. Wird die eine eingeschaltet, geht die andere aus.",
     "innerPadding": "Innenabstand",
     "totalsWidth": "Breite",

@@ -629,11 +629,11 @@
       },
       "letterhead": {
         "name": "Timbre",
-        "description": "Contatos no rodapé, título abaixo dos endereços, uma lista numerada"
+        "description": "Contatos no rodapé, título abaixo dos endereços"
       },
       "compact": {
         "name": "Compacta",
-        "description": "Sem painéis, uma lista numerada, só o essencial"
+        "description": "Sem painéis, só o essencial"
       },
       "minimal": {
         "name": "Minimalista",
@@ -1778,6 +1778,7 @@
     },
     "alignment": "Alinhamento",
     "alignCenter": "Centro",
+    "itemsTableHint": "Uma lista numerada de todas as linhas do serviço, primeiro mão de obra e depois peças, no lugar das tabelas separadas.",
     "tablesExclusiveHint": "A folha imprime uma disposição: uma única lista numerada ou tabelas separadas de peças e mão de obra. Ativar uma desativa a outra.",
     "innerPadding": "Espaçamento interno",
     "totalsWidth": "Largura",

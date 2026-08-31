@@ -629,11 +629,11 @@
       },
       "letterhead": {
         "name": "Antet",
-        "description": "İletişim bilgileri altta, başlık adreslerin altında, tek numaralı liste"
+        "description": "İletişim bilgileri altta, başlık adreslerin altında"
       },
       "compact": {
         "name": "Kompakt",
-        "description": "Çerçevesiz, tek numaralı liste, yalnızca gerekli olanlar"
+        "description": "Çerçevesiz, yalnızca gerekli olanlar"
       },
       "minimal": {
         "name": "Minimal",
@@ -1778,6 +1778,7 @@
     },
     "alignment": "Hizalama",
     "alignCenter": "Orta",
+    "itemsTableHint": "İşin tüm satırlarının tek numaralı listesi, önce işçilik sonra parçalar, ayrı tabloların yerine.",
     "tablesExclusiveHint": "Sayfa tek bir düzen yazdırır: tek numaralı liste ya da ayrı parça ve işçilik tabloları. Birini açmak diğerini kapatır.",
     "innerPadding": "İç boşluk",
     "totalsWidth": "Genişlik",

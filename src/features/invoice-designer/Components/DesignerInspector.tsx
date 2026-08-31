@@ -469,7 +469,7 @@ export function DesignerInspector({
               section.id === 'parts_table' ||
               section.id === 'labor_table') && (
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">
-                {t('tablesExclusiveHint')}
+                {section.id === 'items_table' ? t('itemsTableHint') : t('tablesExclusiveHint')}
               </p>
             )}
             {COLUMN_ELIGIBLE_SECTIONS.has(section.id) && (
