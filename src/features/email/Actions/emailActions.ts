@@ -1,6 +1,6 @@
-import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
-;('use server')
+'use server'
 
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { withAuth } from '@/lib/with-auth'
