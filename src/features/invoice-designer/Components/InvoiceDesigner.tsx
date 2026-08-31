@@ -809,7 +809,20 @@ export function InvoiceDesigner({
         <button
           type="button"
           onClick={() => {
-            setLayout(getDefaultInvoiceLayout())
+            // Back to what this sheet is based on: the template as it came,
+            // the design as it was last saved. Only a sheet based on nothing
+            // falls back to the default arrangement — resetting "Detailed" to
+            // the generic default just moved things nobody had touched.
+            const active = activeDesigns[docType] ?? ''
+            const basisPreset = active.startsWith('preset:')
+              ? layoutPresets.find((p) => p.id === active.slice('preset:'.length))
+              : undefined
+            const basisDesign = active.startsWith('design:')
+              ? savedDesigns.find((d) => d.id === active.slice('design:'.length))
+              : undefined
+            if (basisDesign) applyDesign(basisDesign)
+            else if (basisPreset) applyPreset(basisPreset)
+            else setLayout(getDefaultInvoiceLayout())
             setSelected(null)
           }}
           className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
