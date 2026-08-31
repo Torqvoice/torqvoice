@@ -13,11 +13,15 @@ import { renderToBuffer, type DocumentProps } from '@react-pdf/renderer'
 import { describe, expect, it } from 'vitest'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
+import { mixColors } from '@/features/invoice-designer/Spec/buildSpec'
 import { estimateBlockHeights } from '@/features/invoice-designer/Pdf/estimateHeights'
 import { lineCount } from '@/features/invoice-designer/Pdf/measure'
 import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf/InvoicePDF'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
-import { getDefaultInvoiceLayout } from '@/features/settings/Schema/invoiceLayoutSchema'
+import {
+  DESIGNER_LAYOUT_VERSION,
+  getDefaultInvoiceLayout,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { InvoiceData } from '@/features/vehicles/Components/invoice-pdf/types'
 
 const invoice: InvoiceData = {
@@ -185,8 +189,59 @@ describe('the printed invoice follows the designed layout', () => {
   })
 
   it('always prints the number and the date, even with the title section off', () => {
-    // The default layout hides the document title; the sheet borrows it.
+    // An organization with no saved layout keeps the classic letterhead,
+    // which carries the number itself, so no title block joins the sheet.
     const spec = buildInvoicePrintSpec({ data: invoice, workshop, invoiceSettings: settings })
+    expect(spec.blocks.find((b) => b.id === 'document_title')).toBeUndefined()
+    expect(JSON.stringify(spec.blocks.find((b) => b.id === 'header'))).toContain('INV-2026-0042')
+  })
+
+  it('keeps the classic look for an organization without a designer layout', async () => {
+    // A layout saved before the designer existed (no version stamp) counts
+    // the same as no layout at all: the deploy must not restyle the sheet.
+    for (const layoutConfig of [undefined, getDefaultInvoiceLayout()]) {
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { primaryColor: '#d97706', layoutConfig },
+      })
+      // The tinted column heads and darkened head ink of the old sheets.
+      const parts = JSON.stringify(spec.blocks.find((b) => b.id === 'parts_table'))
+      expect(parts).toContain(mixColors('#ffffff', '#d97706', 0.1))
+      expect(parts).toContain(mixColors('#d97706', '#000000', 0.3))
+      // The title and the dates live inside the letterhead.
+      const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+      expect(header).toContain('INVOICE')
+      expect(header).toContain('INV-2026-0042')
+    }
+    // And every legacy header style still prints a valid document.
+    for (const headerStyle of ['standard', 'compact', 'modern']) {
+      const buffer = await renderToBuffer(
+        (
+          <InvoicePDF
+            data={invoice}
+            workshop={workshop}
+            invoiceSettings={settings}
+            template={{ primaryColor: '#d97706', headerStyle }}
+          />
+        ) as React.ReactElement<DocumentProps>
+      )
+      expect(buffer.subarray(0, 5).toString()).toBe('%PDF-')
+    }
+  })
+
+  it('borrows the title block once a designer layout is saved', () => {
+    // The default designer layout hides the title section; the sheet borrows
+    // it and sets it under the header.
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: {
+        layoutConfig: { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION },
+      },
+    })
     const title = spec.blocks.find((b) => b.id === 'document_title')
     expect(title).toBeDefined()
     expect(JSON.stringify(title)).toContain('INV-2026-0042')

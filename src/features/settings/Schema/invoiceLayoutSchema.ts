@@ -116,7 +116,25 @@ export const invoiceLayoutConfigSchema = z.object({
   document: invoiceDocumentStyleSchema.optional(),
   /** Anything positioned by hand, keyed by node id. */
   anchors: z.record(z.string(), anchorSchema).optional(),
+  /**
+   * Which era saved this layout. Absent means the layout predates the
+   * full-screen designer (or was never saved at all), and the print keeps the
+   * classic look those organizations have always mailed out.
+   */
+  version: z.number().int().optional(),
 })
+
+/** Stamped on every layout the designer saves. */
+export const DESIGNER_LAYOUT_VERSION = 2
+
+/**
+ * Whether this layout was saved from the full-screen designer. Anything else,
+ * including no saved layout at all, keeps the classic pre-designer rendering
+ * so a deploy never restyles an organization's documents behind its back.
+ */
+export function isDesignerLayout(config?: Partial<InvoiceLayoutConfig> | null): boolean {
+  return (config?.version ?? 1) >= DESIGNER_LAYOUT_VERSION
+}
 
 // ---------------------------------------------------------------------------
 // TypeScript types (derived from Zod)
@@ -475,7 +493,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
   const defaults = getDefaultInvoiceLayout()
 
   if (!saved.sections || saved.sections.length === 0) {
-    return defaults
+    return saved.version !== undefined ? { ...defaults, version: saved.version } : defaults
   }
 
   // Migrate old format: split "info" into customer/vehicle/service
@@ -544,6 +562,7 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     sections: merged,
     ...(saved.document ? { document: saved.document } : {}),
     ...(saved.anchors ? { anchors: saved.anchors } : {}),
+    ...(saved.version !== undefined ? { version: saved.version } : {}),
   }
 }
 

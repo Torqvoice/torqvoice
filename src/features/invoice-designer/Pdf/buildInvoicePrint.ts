@@ -4,6 +4,7 @@ import { calculateTotals, netLineTotal } from '@/lib/tax'
 import {
   getDefaultInvoiceLayout,
   isCustomFieldId,
+  isDesignerLayout,
   mergeWithDefaults,
   toCustomFieldId,
   type InvoiceLayoutConfig,
@@ -467,6 +468,10 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     frameShadow: frameShadowWidth(template?.frameShadow),
     frameRadius: template?.frameRadius ?? 0,
     logoSize: template?.logoSize ?? 100,
+    // Until this organization saves a layout in the designer, the sheet keeps
+    // the classic look the retired renderer printed. Framed never existed
+    // before the designer, so choosing it opts into the new rendering.
+    classic: !isDesignerLayout(input.template?.layoutConfig) && headerStyle !== 'framed',
   }
 
   return buildDocumentSpec(layout, theme, documentData)

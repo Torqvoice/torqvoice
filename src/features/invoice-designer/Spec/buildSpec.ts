@@ -97,6 +97,13 @@ export interface DocumentTheme {
   /** Rounding where the rail meets the band, in points. */
   frameRadius: number
   logoSize: number
+  /**
+   * Draw with the pre-designer defaults: the combined letterhead, tinted
+   * column heads and dark headings the retired renderer printed. Set for
+   * organizations that have never saved a layout in the designer, so a deploy
+   * does not restyle their documents behind their back.
+   */
+  classic?: boolean
 }
 
 /**
@@ -158,6 +165,28 @@ const scale = (base: number, factor: number) => Math.max(5, Math.round(base * fa
 /** A translated string, or the English the sheet has always printed. */
 const label = (data: DocumentData, key: string, fallback: string) => data.labels[key] || fallback
 
+/**
+ * The column heads every table wears. The default is the sheet's ink reversed
+ * out; classic keeps the tinted primary band with darkened primary text the
+ * old sheets printed. A fill the section sets itself wins in both.
+ */
+function tableHead(look: ReturnType<typeof lookOf>, theme: DocumentTheme, size: number) {
+  if (theme.classic && !look.fill) {
+    return {
+      background: mixColors(theme.background || '#ffffff', theme.primary, 0.1),
+      color: mixColors(theme.primary, '#000000', 0.3),
+      fontSize: scale(size, 0.78),
+      bold: true,
+    }
+  }
+  return {
+    background: look.fill || look.text,
+    color: look.fill ? look.label : theme.background || '#ffffff',
+    fontSize: scale(size, 0.78),
+    bold: true,
+  }
+}
+
 /** A labelled panel: the customer, the vehicle, the service, the extras. */
 function panel(
   section: InvoiceSection,
@@ -216,7 +245,229 @@ function panel(
   }
 }
 
+/**
+ * The letterhead as the retired PDF components drew it, for organizations
+ * that have never saved a layout in the designer. The title, the number and
+ * the dates live inside this header, exactly where they always printed, so
+ * classic sheets never carry a separate document title block.
+ */
+function classicLetterhead(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node {
+  const look = lookOf(section, theme)
+  const fields = sectionFields(section)
+  const ls = theme.logoSize / 100
+  const compact = theme.headerStyle === 'compact'
+  const modern = theme.headerStyle === 'modern'
+
+  const dueLine = data.meta.due
+    ? data.labels.due
+      ? data.labels.due.replace('{date}', data.meta.due)
+      : `Due: ${data.meta.due}`
+    : ''
+
+  // The company column, field by field in the section's order, each line the
+  // size and ink the old sheets gave it.
+  const bandInk = (soft: string) => (modern ? soft : look.muted)
+  const companyLines = (align: 'left' | 'center'): Node[] =>
+    fields
+      .map((id): Node | null => {
+        const value = data.fields[id]
+        switch (id) {
+          case 'logo':
+            return data.logoUrl
+              ? {
+                  kind: 'image',
+                  id: 'header.logo',
+                  src: data.logoUrl,
+                  maxWidth: (compact ? 40 : modern ? 50 : 150) * ls,
+                  maxHeight: (compact ? 40 : modern ? 50 : 60) * ls,
+                  align,
+                }
+              : null
+          case 'company_name':
+            return value
+              ? {
+                  kind: 'text',
+                  id: 'header.company_name',
+                  text: value,
+                  style: {
+                    color: theme.companyText,
+                    fontSize: compact ? 16 : 22,
+                    bold: true,
+                    align,
+                  },
+                }
+              : null
+          case 'company_address':
+            return value
+              ? {
+                  kind: 'text',
+                  id: 'header.company_address',
+                  text: value,
+                  style: {
+                    color: bandInk('rgba(255,255,255,0.8)'),
+                    fontSize: compact ? 8 : 9,
+                    align,
+                  },
+                }
+              : null
+          case 'company_phone':
+          case 'company_email':
+          case 'company_org_number':
+            return value
+              ? {
+                  kind: 'text',
+                  id: `header.${id}`,
+                  text: value,
+                  style: { color: bandInk('rgba(255,255,255,0.7)'), fontSize: 8, align },
+                }
+              : null
+          default:
+            return null
+        }
+      })
+      .filter(Boolean) as Node[]
+
+  const brandingRow = (justify: 'start' | 'center' | 'end', soft?: string): Node[] =>
+    data.branding
+      ? [
+          {
+            kind: 'row',
+            id: 'header.branding',
+            gap: 3,
+            justify,
+            align: 'center',
+            children: [
+              {
+                node: {
+                  kind: 'image',
+                  src: data.branding.logoDataUri,
+                  maxWidth: 12,
+                  maxHeight: 12,
+                },
+              },
+              {
+                node: {
+                  kind: 'text',
+                  text: 'Torqvoice',
+                  style: { color: soft ?? look.muted, fontSize: 7, bold: true },
+                },
+              },
+            ],
+          },
+        ]
+      : []
+
+  // The right column: the document's own identity, right where a customer's
+  // eye has always found it.
+  const metaColumn = (titleSize: number): Node => ({
+    kind: 'stack',
+    id: 'header.meta',
+    gap: 3,
+    children: [
+      {
+        kind: 'text',
+        id: 'header.title',
+        text: data.meta.title,
+        style: { fontSize: titleSize, bold: true, color: look.text, align: 'right' },
+      },
+      ...[data.meta.number, data.meta.date, dueLine].filter(Boolean).map<Node>((line, i) => ({
+        kind: 'text',
+        id: `header.meta_${i}`,
+        text: line,
+        style: { fontSize: 9, color: look.muted, align: 'right' },
+      })),
+    ],
+  })
+
+  if (modern) {
+    return {
+      kind: 'stack',
+      id: section.id,
+      gap: 12,
+      children: [
+        {
+          kind: 'stack',
+          id: 'header.banner',
+          gap: 3,
+          style: { background: look.fill || theme.primary, padding: 20, radius: 4 },
+          children: [...companyLines('center'), ...brandingRow('center', 'rgba(255,255,255,0.7)')],
+        },
+        {
+          kind: 'row',
+          id: 'header.title_row',
+          justify: 'between',
+          align: 'center',
+          children: [
+            {
+              node: {
+                kind: 'text',
+                id: 'header.title',
+                text: data.meta.title,
+                style: { fontSize: 18, bold: true, color: look.text },
+              },
+            },
+            {
+              node: {
+                kind: 'row',
+                id: 'header.meta',
+                gap: 16,
+                children: [data.meta.number, data.meta.date, dueLine]
+                  .filter(Boolean)
+                  .map((line) => ({
+                    node: {
+                      kind: 'text',
+                      text: line,
+                      style: { fontSize: 9, color: look.muted },
+                    } as Node,
+                  })),
+              },
+            },
+          ],
+        },
+      ],
+    }
+  }
+
+  return {
+    kind: 'stack',
+    id: section.id,
+    gap: 0,
+    children: [
+      {
+        kind: 'row',
+        id: 'header.columns',
+        justify: 'between',
+        children: [
+          {
+            node: {
+              kind: 'stack',
+              id: 'header.company',
+              gap: 2,
+              children: [...companyLines('left'), ...brandingRow('start')],
+            },
+          },
+          { node: metaColumn(compact ? 14 : 18) },
+        ],
+      },
+      { kind: 'spacer', height: compact ? 10 : 15 },
+      // The rule the old sheets closed the letterhead with: a hairline for
+      // compact, a heavy primary stroke for standard.
+      {
+        kind: 'stack',
+        id: 'header.rule',
+        style: { background: compact ? look.border || '#e5e7eb' : theme.primary },
+        children: [{ kind: 'spacer', height: compact ? 1 : 3 }],
+      },
+    ],
+  }
+}
+
 function letterhead(section: InvoiceSection, theme: DocumentTheme, data: DocumentData): Node {
+  if (theme.classic) return classicLetterhead(section, theme, data)
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const fields = sectionFields(section)
@@ -452,12 +703,7 @@ function itemsTable(
       borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
       borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
     },
-    headerStyle: {
-      background: look.fill || look.text,
-      color: look.fill ? look.label : theme.background || '#ffffff',
-      fontSize: scale(size, 0.78),
-      bold: true,
-    },
+    headerStyle: tableHead(look, theme, size),
     columns: [
       { key: 'n', label: label(data, 'pos', '#'), width: 22 },
       { key: 'qty', label: label(data, 'qty', 'Qty'), width: 48, align: 'right' },
@@ -496,7 +742,11 @@ function titledTable(
     children.push({
       kind: 'text',
       text: title,
-      style: { color: look.label, bold: true, fontSize: scale(size, 1.05) },
+      // Classic headings print in the sheet's own dark ink, at the size the
+      // old sheets set them.
+      style: theme.classic
+        ? { color: look.text, bold: true, fontSize: scale(size, 1.2) }
+        : { color: look.label, bold: true, fontSize: scale(size, 1.05) },
     })
   }
   if (intro) {
@@ -531,12 +781,7 @@ function partsTable(
       borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
       borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
     },
-    headerStyle: {
-      background: look.fill || look.text,
-      color: look.fill ? look.label : theme.background || '#ffffff',
-      fontSize: scale(size, 0.78),
-      bold: true,
-    },
+    headerStyle: tableHead(look, theme, size),
     columns: [
       { key: 'ref', label: label(data, 'partNumber', 'Part #'), width: 76 },
       { key: 'desc', label: label(data, 'description', 'Description'), width: 'flex' },
@@ -577,12 +822,7 @@ function laborTable(
       borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
       borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
     },
-    headerStyle: {
-      background: look.fill || look.text,
-      color: look.fill ? look.label : theme.background || '#ffffff',
-      fontSize: scale(size, 0.78),
-      bold: true,
-    },
+    headerStyle: tableHead(look, theme, size),
     columns: [
       { key: 'desc', label: label(data, 'description', 'Description'), width: 'flex' },
       { key: 'qty', label: label(data, 'qtyOrHours', 'Qty / Hours'), width: 70, align: 'right' },
@@ -627,12 +867,7 @@ function findingsBlock(
         borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
         borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
       },
-      headerStyle: {
-        background: look.fill || look.text,
-        color: look.fill ? look.label : theme.background || '#ffffff',
-        fontSize: scale(size, 0.78),
-        bold: true,
-      },
+      headerStyle: tableHead(look, theme, size),
       columns: [
         { key: 'severity', label: label(data, 'findingSeverityLabel', 'Severity'), width: 80 },
         { key: 'description', label: label(data, 'description', 'Description'), width: 'flex' },
@@ -1216,6 +1451,9 @@ export function buildDocumentSpec(
 
   for (const section of ordered) {
     if (!section.visible) continue
+    // A classic letterhead already prints the number and the dates, so the
+    // title block would say them twice.
+    if (section.id === 'document_title' && theme.classic) continue
     // The framed letterhead lives on the band the chrome paints, so unless a
     // hand placement says otherwise it is anchored there rather than flowed.
     if (section.id === 'header' && framed && !anchors.header) {
@@ -1238,7 +1476,7 @@ export function buildDocumentSpec(
   // is borrowed and set directly under the header, which is where every
   // header used to print it.
   const titleSection = ordered.find((s) => s.id === 'document_title')
-  if (titleSection && !titleSection.visible) {
+  if (titleSection && !titleSection.visible && !theme.classic) {
     const headerOrder = ordered.find((s) => s.id === 'header')?.order ?? 0
     push({ ...titleSection, visible: true }, { mode: 'flow', order: headerOrder + 0.5 }, true)
   }
