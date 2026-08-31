@@ -231,6 +231,28 @@ describe('the printed invoice follows the designed layout', () => {
     }
   })
 
+  it("keeps each classic letterhead's own place for the Torqvoice mark", () => {
+    // The retired sheets did not agree on this: standard set the mark under
+    // the company block, compact right-aligned it below the rule, and the
+    // banner centred it. Flattening them moved it on a free workshop's
+    // invoice without anything failing.
+    const markAlign = (headerStyle: string) => {
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { headerStyle },
+        torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
+      })
+      const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+      const row = header.slice(header.indexOf('"header.branding"'))
+      return row.slice(0, row.indexOf('children')).match(/"justify":"(\w+)"/)?.[1]
+    }
+    expect(markAlign('standard')).toBe('start')
+    expect(markAlign('compact')).toBe('end')
+    expect(markAlign('modern')).toBe('center')
+  })
+
   it('borrows the title block once a designer layout is saved', () => {
     // The default designer layout hides the title section; the sheet borrows
     // it and sets it under the header.

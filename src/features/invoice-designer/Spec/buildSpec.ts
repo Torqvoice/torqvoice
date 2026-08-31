@@ -331,7 +331,13 @@ function classicLetterhead(
       })
       .filter(Boolean) as Node[]
 
-  const brandingRow = (justify: 'start' | 'center' | 'end', soft?: string): Node[] =>
+  // Each letterhead put the mark somewhere different: standard under the
+  // company block on the left, compact right-aligned below the rule, the
+  // banner centred inside it. Sizes differed with them.
+  const brandingRow = (
+    justify: 'start' | 'center' | 'end',
+    { soft, fontSize = 7, icon = 12 }: { soft?: string; fontSize?: number; icon?: number } = {}
+  ): Node[] =>
     data.branding
       ? [
           {
@@ -345,15 +351,15 @@ function classicLetterhead(
                 node: {
                   kind: 'image',
                   src: data.branding.logoDataUri,
-                  maxWidth: 12,
-                  maxHeight: 12,
+                  maxWidth: icon,
+                  maxHeight: icon,
                 },
               },
               {
                 node: {
                   kind: 'text',
                   text: 'Torqvoice',
-                  style: { color: soft ?? look.muted, fontSize: 7, bold: true },
+                  style: { color: soft ?? look.muted, fontSize, bold: true },
                 },
               },
             ],
@@ -394,7 +400,10 @@ function classicLetterhead(
           id: 'header.banner',
           gap: 3,
           style: { background: look.fill || theme.primary, padding: 20, radius: 4 },
-          children: [...companyLines('center'), ...brandingRow('center', 'rgba(255,255,255,0.7)')],
+          children: [
+            ...companyLines('center'),
+            ...brandingRow('center', { soft: 'rgba(255,255,255,0.7)' }),
+          ],
         },
         {
           kind: 'row',
@@ -447,7 +456,12 @@ function classicLetterhead(
               kind: 'stack',
               id: 'header.company',
               gap: 2,
-              children: [...companyLines('left'), ...brandingRow('start')],
+              children: [
+                ...companyLines('left'),
+                // Standard sets the mark under the company block; compact
+                // carries it below the rule instead, so it waits.
+                ...(compact ? [] : brandingRow('start', { fontSize: 9, icon: 16 })),
+              ],
             },
           },
           { node: metaColumn(compact ? 14 : 18) },
@@ -462,6 +476,7 @@ function classicLetterhead(
         style: { background: compact ? look.border || '#e5e7eb' : theme.primary },
         children: [{ kind: 'spacer', height: compact ? 1 : 3 }],
       },
+      ...(compact ? [{ kind: 'spacer', height: 6 } as Node, ...brandingRow('end')] : []),
     ],
   }
 }
@@ -1302,36 +1317,37 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   }
   const note = fields.includes('footer_note') ? data.fields.footer_note : ''
   if (data.branding) {
+    // The workshop's own closing line stays on its own row, so the mark below
+    // it reads as a signature on the sheet rather than a tail on their
+    // sentence. This is the one place the branding is meant to be seen: the
+    // header and totals carry it quietly, and three loud mentions on a
+    // customer's invoice would read as an advert rather than a credit.
+    if (note) {
+      children.push({
+        kind: 'text',
+        text: note,
+        style: { color: look.muted, fontSize: scale(size, 0.78), align: 'center' },
+      })
+    }
     children.push({
       kind: 'row',
-      gap: 3,
+      gap: 4,
       justify: 'center',
       align: 'center',
       children: [
-        ...(note
-          ? [
-              {
-                node: {
-                  kind: 'text',
-                  text: `${note} · `,
-                  style: { color: look.muted, fontSize: scale(size, 0.78) },
-                } as Node,
-              },
-            ]
-          : []),
         {
           node: {
             kind: 'text',
             text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: look.muted, fontSize: scale(size, 0.7) },
+            style: { color: look.muted, fontSize: scale(size, 0.82) },
           },
         },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 14, maxHeight: 14 } },
+        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 18, maxHeight: 18 } },
         {
           node: {
             kind: 'text',
             text: 'Torqvoice',
-            style: { color: look.muted, fontSize: scale(size, 0.7), bold: true },
+            style: { color: theme.primary, fontSize: scale(size, 1.05), bold: true },
           },
         },
       ],
