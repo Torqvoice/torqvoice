@@ -9,6 +9,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getFeatures, FeatureGatedError } from '@/lib/features'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
+import { serviceDateOrderBy } from '@/lib/date-sort'
 
 export async function getCustomers() {
   return withAuth(
@@ -676,6 +677,71 @@ export async function searchCustomers(search?: string, limit = 20, offset = 0) {
       requiredPermissions: [
         { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
       ],
+    }
+  )
+}
+
+/// Every invoice belonging to a customer: the ones raised directly against
+/// them (parts-only counter sales, which carry no vehicle) plus every invoice
+/// on a vehicle they own. Without the OR, parts-only sales are invisible from
+/// the customer page — the vehicle tab is the only way in and they have no
+/// vehicle to sit under.
+export async function getCustomerInvoices(customerId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      return db.serviceRecord.findMany({
+        where: {
+          organizationId,
+          OR: [{ customerId }, { vehicle: { customerId } }],
+        },
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          cost: true,
+          totalAmount: true,
+          invoiceNumber: true,
+          invoiceDate: true,
+          startDateTime: true,
+          serviceDate: true,
+          vehicleId: true,
+          vehicle: { select: { make: true, model: true, year: true, licensePlate: true } },
+        },
+        orderBy: serviceDateOrderBy('desc'),
+      })
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.WORK_ORDERS },
+      ],
+    }
+  )
+}
+
+/// Same reasoning as getCustomerInvoices: a quote is reachable either through
+/// its own customer link or through the vehicle it was written for.
+export async function getCustomerQuotes(customerId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      return db.quote.findMany({
+        where: {
+          organizationId,
+          OR: [{ customerId }, { vehicle: { customerId } }],
+        },
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          quoteNumber: true,
+          totalAmount: true,
+          createdAt: true,
+          vehicle: { select: { make: true, model: true, year: true, licensePlate: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }],
     }
   )
 }

@@ -1,5 +1,10 @@
 import { getTranslations } from 'next-intl/server'
-import { getCustomer, getCustomersList } from '@/features/customers/Actions/customerActions'
+import {
+  getCustomer,
+  getCustomerInvoices,
+  getCustomerQuotes,
+  getCustomersList,
+} from '@/features/customers/Actions/customerActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getConversation } from '@/features/sms/Actions/smsActions'
@@ -13,12 +18,15 @@ import { PageHeader } from '@/components/page-header'
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [result, settingsResult, layoutData, customersResult] = await Promise.all([
-    getCustomer(id),
-    getSettings([SETTING_KEYS.UNIT_SYSTEM]),
-    getLayoutData(),
-    getCustomersList(),
-  ])
+  const [result, settingsResult, layoutData, customersResult, invoicesResult, quotesResult] =
+    await Promise.all([
+      getCustomer(id),
+      getSettings([SETTING_KEYS.UNIT_SYSTEM]),
+      getLayoutData(),
+      getCustomersList(),
+      getCustomerInvoices(id),
+      getCustomerQuotes(id),
+    ])
 
   if (!result.success || !result.data) {
     const t = await getTranslations('customers.detail')
@@ -127,6 +135,10 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           telegramMessages={telegramMessages}
           telegramNextCursor={telegramNextCursor}
           telegramChatId={result.data.telegramChatId ?? null}
+          invoices={invoicesResult.success && invoicesResult.data ? invoicesResult.data : []}
+          quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
+          canReadInvoices={invoicesResult.success}
+          canReadQuotes={quotesResult.success}
         />
       </div>
     </>

@@ -35,6 +35,8 @@
     "taxExemptBadge": "Exento de impuestos",
     "tabs": {
       "vehicles": "Vehículos ({count})",
+      "invoices": "Facturas ({count})",
+      "quotes": "Presupuestos ({count})",
       "messages": "Mensajes",
       "requests": "Solicitudes ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Horas de Motor",
       "services": "Servicios"
     },
-    "noVehicles": "No hay vehículos asignados a este cliente"
+    "documentTable": {
+      "invoiceNumber": "N.º de factura",
+      "quoteNumber": "N.º de presupuesto",
+      "title": "Título",
+      "vehicle": "Vehículo",
+      "status": "Estado",
+      "date": "Fecha",
+      "total": "Total",
+      "noVehicle": "Solo piezas",
+      "searchPlaceholder": "Buscar...",
+      "noMatches": "No hay resultados para tu búsqueda",
+      "sort": {
+        "asc": "ascendente",
+        "desc": "descendente"
+      }
+    },
+    "noVehicles": "No hay vehículos asignados a este cliente",
+    "noInvoices": "No hay facturas para este cliente",
+    "noQuotes": "No hay presupuestos para este cliente"
   },
   "form": {
     "addTitle": "Agregar Nuevo Cliente",

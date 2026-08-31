@@ -35,6 +35,8 @@
     "taxExemptBadge": "Avgiftsfritatt",
     "tabs": {
       "vehicles": "Kjøretøy ({count})",
+      "invoices": "Fakturaer ({count})",
+      "quotes": "Tilbud ({count})",
       "messages": "Meldinger",
       "requests": "Forespørsler ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Motortimer",
       "services": "Tjenester"
     },
-    "noVehicles": "Ingen kjøretøy tilknyttet denne kunden"
+    "documentTable": {
+      "invoiceNumber": "Fakturanr.",
+      "quoteNumber": "Tilbudsnr.",
+      "title": "Tittel",
+      "vehicle": "Kjøretøy",
+      "status": "Status",
+      "date": "Dato",
+      "total": "Totalt",
+      "noVehicle": "Kun deler",
+      "searchPlaceholder": "Søk...",
+      "noMatches": "Ingen treff på søket ditt",
+      "sort": {
+        "asc": "stigende",
+        "desc": "synkende"
+      }
+    },
+    "noVehicles": "Ingen kjøretøy tilknyttet denne kunden",
+    "noInvoices": "Ingen fakturaer for denne kunden",
+    "noQuotes": "Ingen tilbud for denne kunden"
   },
   "form": {
     "addTitle": "Legg til ny kunde",

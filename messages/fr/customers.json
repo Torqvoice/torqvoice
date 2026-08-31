@@ -35,6 +35,8 @@
     "taxExemptBadge": "Exonéré de taxe",
     "tabs": {
       "vehicles": "Véhicules ({count})",
+      "invoices": "Factures ({count})",
+      "quotes": "Devis ({count})",
       "messages": "Messages",
       "requests": "Demandes ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Heures Moteur",
       "services": "Services"
     },
-    "noVehicles": "Aucun véhicule associé à ce client"
+    "documentTable": {
+      "invoiceNumber": "N° de facture",
+      "quoteNumber": "N° de devis",
+      "title": "Titre",
+      "vehicle": "Véhicule",
+      "status": "Statut",
+      "date": "Date",
+      "total": "Total",
+      "noVehicle": "Pièces uniquement",
+      "searchPlaceholder": "Rechercher...",
+      "noMatches": "Aucun résultat pour votre recherche",
+      "sort": {
+        "asc": "croissant",
+        "desc": "décroissant"
+      }
+    },
+    "noVehicles": "Aucun véhicule associé à ce client",
+    "noInvoices": "Aucune facture pour ce client",
+    "noQuotes": "Aucun devis pour ce client"
   },
   "form": {
     "addTitle": "Ajouter un nouveau client",

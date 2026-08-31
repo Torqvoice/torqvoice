@@ -35,6 +35,8 @@
     "taxExemptBadge": "Zwolniony z podatku",
     "tabs": {
       "vehicles": "Pojazdy ({count})",
+      "invoices": "Faktury ({count})",
+      "quotes": "Oferty ({count})",
       "messages": "Wiadomości",
       "requests": "Zlecenia ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Godziny Pracy",
       "services": "Usługi"
     },
-    "noVehicles": "Brak pojazdów przypisanych do tego klienta"
+    "documentTable": {
+      "invoiceNumber": "Nr faktury",
+      "quoteNumber": "Nr oferty",
+      "title": "Tytuł",
+      "vehicle": "Pojazd",
+      "status": "Status",
+      "date": "Data",
+      "total": "Razem",
+      "noVehicle": "Tylko części",
+      "searchPlaceholder": "Szukaj...",
+      "noMatches": "Brak wyników wyszukiwania",
+      "sort": {
+        "asc": "rosnąco",
+        "desc": "malejąco"
+      }
+    },
+    "noVehicles": "Brak pojazdów przypisanych do tego klienta",
+    "noInvoices": "Brak faktur dla tego klienta",
+    "noQuotes": "Brak ofert dla tego klienta"
   },
   "form": {
     "addTitle": "Dodaj nowego klienta",
