@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -308,6 +308,40 @@ export function InvoiceDesigner({
       buildDocumentSpec(design.layout, themeOf(design.template, design.layout), data),
     [data]
   )
+
+  /**
+   * Take one saved design out of the gallery, after asking. The sheet on the
+   * canvas keeps whatever it shows; only the saved copy goes, and nothing can
+   * claim to be "in use" or quietly save over the dead name afterwards.
+   */
+  const deleteDesign = useCallback(
+    async (design: SavedDesign) => {
+      const ok = await confirm({
+        title: t('deleteDesignTitle'),
+        description: t('deleteDesignBody', { name: design.name }),
+        confirmLabel: t('delete'),
+        destructive: true,
+      })
+      if (!ok) return
+      persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
+      setActiveDesigns((prev) => ({
+        invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
+        quote: prev.quote === `design:${design.id}` ? '' : prev.quote,
+      }))
+      if (designName.trim().toLowerCase() === design.name.trim().toLowerCase()) {
+        setDesignName('')
+      }
+    },
+    [confirm, t, persistDesigns, savedDesigns, designName]
+  )
+
+  /** The saved design this document is based on, when it is based on one. */
+  const currentDesign = useMemo(() => {
+    const active = activeDesigns[docType] ?? ''
+    return active.startsWith('design:')
+      ? savedDesigns.find((d) => d.id === active.slice('design:'.length))
+      : undefined
+  }, [activeDesigns, docType, savedDesigns])
 
   /** What a template would produce, for its card in the gallery. */
   const specFor = useCallback(
@@ -642,26 +676,11 @@ export function InvoiceDesigner({
                       </button>
                       <button
                         type="button"
-                        onClick={async () => {
-                          const ok = await confirm({
-                            title: t('deleteDesignTitle'),
-                            description: t('deleteDesignBody', { name: design.name }),
-                            confirmLabel: t('delete'),
-                            destructive: true,
-                          })
-                          if (!ok) return
-                          persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
-                          // A deleted design cannot stay "in use"; the sheet
-                          // keeps its arrangement, it just loses the label.
-                          setActiveDesigns((prev) => ({
-                            invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
-                            quote: prev.quote === `design:${design.id}` ? '' : prev.quote,
-                          }))
-                        }}
+                        onClick={() => void deleteDesign(design)}
                         title={t('deleteDesign')}
-                        className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] opacity-70 shadow hover:text-[#dc2626] hover:opacity-100"
+                        className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-[#fca5a5] bg-white text-[#dc2626] shadow hover:bg-[#dc2626] hover:text-white"
                       >
-                        ✕
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   )
@@ -805,6 +824,19 @@ export function InvoiceDesigner({
         {/* The tool is large enough that the manual is worth one click from
             inside it, rather than being something to go and look for. */}
         <DocsLink href="/docs/configuration/invoice-designer" variant="header" />
+
+        {/* Only a design of the workshop's own can be deleted; the built-in
+            templates are fixed starting points and always stay. */}
+        {currentDesign && (
+          <button
+            type="button"
+            onClick={() => void deleteDesign(currentDesign)}
+            title={t('deleteDesign')}
+            className="flex items-center gap-1.5 rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium text-[#dc2626] hover:border-[#fca5a5] hover:bg-[#fef2f2]"
+          >
+            <Trash2 size={13} /> {t('delete')}
+          </button>
+        )}
 
         <button
           type="button"
