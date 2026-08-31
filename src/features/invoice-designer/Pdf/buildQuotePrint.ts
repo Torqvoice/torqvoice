@@ -319,10 +319,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     labor,
     findings: [],
     totals,
-    notes: {
-      html: data.description ?? undefined,
-      attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    },
+    notes: { html: data.description ?? undefined },
+    attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
     warranty: {},
     payment: [],
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,

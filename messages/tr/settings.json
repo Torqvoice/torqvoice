@@ -586,6 +586,7 @@
       "labor_table": "İşçilik",
       "totals": "Toplamlar",
       "notes": "Notlar",
+      "attached_documents": "Ekli Belgeler",
       "diagnostic_notes": "Teşhis notları",
       "findings": "Gözlemler",
       "warranty": "Garanti",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Antet",
-        "description": "İletişim bilgileri altta, başlık adreslerin altında, tek numaralı liste"
+        "description": "İletişim bilgileri altta, başlık adreslerin altında"
       },
       "compact": {
         "name": "Kompakt",
-        "description": "Çerçevesiz, tek numaralı liste, yalnızca gerekli olanlar"
+        "description": "Çerçevesiz, yalnızca gerekli olanlar"
+      },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Beyaz üzerine yalın tipografi: kutu ve bant yok, yalnızca çizgiler ve boşluk"
       },
       "itemized": {
         "name": "Kalem kalem",
@@ -1766,8 +1771,19 @@
       "panel": "Panel",
       "outline": "Çerçeve",
       "lines": "Çizgiler",
-      "hint": "Vurgu, kartı ana renkle tonlar. Panel, diğer ayrıntı kartlarıyla aynı görünür. Çerçeve yalnızca bir kenarlık çizer, Çizgiler ise kutusuz yazdırır."
+      "hint": "Vurgu, kartı ana renkle tonlar. Panel, diğer ayrıntı kartlarıyla aynı görünür. Çerçeve yalnızca bir kenarlık çizer, Çizgiler ise kutusuz yazdırır.",
+      "classic": "Klasik",
+      "box": "Kutulu",
+      "totalsHint": "Klasik, toplamın üzerinde bir çizgiyle sade satırlar yazdırır. Kutulu onları çerçeveler. Panel ve Vurgu onları bir karta yerleştirir."
     },
+    "alignment": "Hizalama",
+    "alignCenter": "Orta",
+    "itemsTableHint": "İşin tüm satırlarının tek numaralı listesi, önce işçilik sonra parçalar, ayrı tabloların yerine.",
+    "discardChanges": "Değişiklikleri yoksay",
+    "tablesExclusiveHint": "Sayfa tek bir düzen yazdırır: tek numaralı liste ya da ayrı parça ve işçilik tabloları. Birini açmak diğerini kapatır.",
+    "innerPadding": "İç boşluk",
+    "totalsWidth": "Genişlik",
+    "totalsWidthHint": "Boş bırakılırsa satırın tamamını kaplar. Punto değeri girilirse blok sağa asılır; bir sütunda sütunun genişliğini alır.",
     "placement": "Yerleşim",
     "visible": "Görünür",
     "columnFull": "Tam",

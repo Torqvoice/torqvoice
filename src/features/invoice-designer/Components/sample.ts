@@ -1,4 +1,6 @@
-import type { DesignerWorkshop } from './types'
+import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { DocumentData } from '../Spec/buildSpec'
+import type { DesignerWorkshop, DocumentType } from './types'
 
 /**
  * What the canvas prints for each field the layout can show.
@@ -166,5 +168,124 @@ export function fieldValues(
     org_number: workshop.orgNumber
       ? fillTemplate(L('org', 'Org: {org}'), { org: workshop.orgNumber })
       : '',
+  }
+}
+
+/**
+ * The whole sample document: what a workshop's own sheet says, with the
+ * sample standing in for a job. One builder, so the designer's canvas and the
+ * template cards in settings preview exactly the same paper.
+ */
+export function buildSampleData(
+  workshop: DesignerWorkshop,
+  customFields: { id: string; label?: string | null; name: string; isActive: boolean }[],
+  t: SampleT,
+  labels: PrintLabels,
+  docType: DocumentType
+): DocumentData {
+  const L = (key: string, fallback: string) => labels[key] || fallback
+  const sample = sampleTables(t, labels)
+  const values = fieldValues(workshop, t, labels)
+  return {
+    fields: {
+      ...values,
+      // A custom field prints whatever the job carries; here it shows its
+      // own name so the workshop can see where it will sit.
+      ...Object.fromEntries(
+        customFields
+          .filter((f) => f.isActive)
+          .map((f) => [toCustomFieldId(f.id), `${f.label || f.name}: ${t('sample.value')}`])
+      ),
+    },
+    logoUrl: workshop.logoUrl || undefined,
+    labels,
+    meta: {
+      title: sample.title,
+      number: sample.number,
+      customerNumber: sample.customerNumber,
+      date: sample.date,
+      due: sample.due,
+    },
+    items: sample.items.map((item) => ({
+      n: String(item.n),
+      qty: item.qty,
+      unit: item.unit,
+      desc: item.desc,
+      sub: item.sku,
+      price: item.price,
+      total: item.total,
+    })),
+    parts: sample.items
+      .filter((item) => item.sku)
+      .map((item) => ({
+        ref: item.sku as string,
+        desc: item.desc,
+        qty: item.qty,
+        price: item.price,
+        total: item.total,
+      })),
+    labor: sample.items
+      .filter((item) => !item.sku)
+      .map((item) => ({
+        desc: item.desc,
+        qty: `${item.qty} ${item.unit}`,
+        rate: item.price,
+        total: item.total,
+      })),
+    findings: sample.findings,
+    totals: [
+      { label: L('subtotal', 'Subtotal'), value: sample.subtotal, kind: 'line' as const },
+      {
+        // The tax label carries the rate, the way the printed sheet does.
+        label: fillTemplate(L('tax', 'Tax ({rate}%)'), { rate: '25' }),
+        value: sample.tax,
+        kind: 'line' as const,
+      },
+      { label: L('total', 'Total'), value: sample.total, kind: 'total' as const },
+      // A settled invoice, so the payment line and the paid stamp can be
+      // seen and styled. Quotes never carry payments, so theirs ends at the
+      // total.
+      ...(docType === 'invoice'
+        ? [
+            {
+              label: `${sample.date} (Visa)`,
+              value: `-${sample.total}`,
+              kind: 'payment' as const,
+            },
+            { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' as const },
+          ]
+        : []),
+    ],
+    notes: { html: sample.notes },
+    // Stand-ins for files a job carries, so the block can be found, placed
+    // and styled. Filenames need no translating.
+    attachedDocuments: [
+      fillTemplate(L('seeAppendedPages', '{name} (see appended pages)'), {
+        name: 'inspection-report.pdf',
+      }),
+      'tire-photos.jpg',
+    ],
+    warranty: { duration: sample.warranty },
+    payment: [
+      { id: 'bank_account', label: L('bankAccount', 'Bank Account'), value: values.bank_account },
+      {
+        id: 'org_number',
+        label: L('orgNumberLabel', 'Org. Number'),
+        value: values.org_number || `${L('org', 'Org: {org}').replace('{org}', '123 456 789')}`,
+      },
+      {
+        label: L('paymentTermsLabel', 'Payment Terms'),
+        value: fillTemplate(L('netDays', '{days} Days'), { days: '10' }),
+      },
+      { label: L('dueDateLabel', 'Due Date'), value: sample.due },
+    ],
+    sectionLabels: {
+      customer: L('billTo', 'Bill To'),
+      vehicle: L('vehicle', 'Vehicle'),
+      service: L('service', 'Service'),
+      bank_account: L('paymentInformation', 'Payment Information'),
+      general: L('customFieldsTitle', 'Additional Information'),
+      findings: L('findings', 'Observations'),
+    },
   }
 }

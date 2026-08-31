@@ -586,6 +586,7 @@
       "labor_table": "Main-d'œuvre",
       "totals": "Totaux",
       "notes": "Notes",
+      "attached_documents": "Documents joints",
       "diagnostic_notes": "Notes de diagnostic",
       "findings": "Observations",
       "warranty": "Garantie",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "En-tête",
-        "description": "Coordonnées en bas, titre sous les adresses, une liste numérotée"
+        "description": "Coordonnées en bas, titre sous les adresses"
       },
       "compact": {
         "name": "Compacte",
-        "description": "Sans cadres, une liste numérotée, l’essentiel seulement"
+        "description": "Sans cadres, l’essentiel seulement"
+      },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Typographie nue sur blanc : sans encadrés ni bandeaux, seulement des filets et de l'espace"
       },
       "itemized": {
         "name": "Détaillé",
@@ -1766,8 +1771,19 @@
       "panel": "Panneau",
       "outline": "Contour",
       "lines": "Lignes",
-      "hint": "Accent teinte la carte avec la couleur principale. Panneau s'aligne sur les autres cartes de détail. Contour ne trace qu'une bordure, et Lignes imprime sans encadré."
+      "hint": "Accent teinte la carte avec la couleur principale. Panneau s'aligne sur les autres cartes de détail. Contour ne trace qu'une bordure, et Lignes imprime sans encadré.",
+      "classic": "Classique",
+      "box": "Encadré",
+      "totalsHint": "Classique imprime des lignes nues avec un filet au-dessus du total. Encadré les entoure d'un cadre. Panneau et Accent les posent sur une carte."
     },
+    "alignment": "Alignement",
+    "alignCenter": "Centre",
+    "itemsTableHint": "Une liste numérotée de toutes les lignes du travail, main-d'œuvre d'abord puis pièces, à la place des tableaux séparés.",
+    "discardChanges": "Annuler les modifications",
+    "tablesExclusiveHint": "La feuille imprime une disposition : une liste numérotée unique, ou des tableaux séparés pour pièces et main-d'œuvre. Activer l'une désactive l'autre.",
+    "innerPadding": "Marge intérieure",
+    "totalsWidth": "Largeur",
+    "totalsWidthHint": "Vide, le bloc occupe toute la ligne. Une valeur en points l'accroche à droite ; dans une colonne, il prend la largeur de la colonne.",
     "placement": "Placement",
     "visible": "Visible",
     "columnFull": "Pleine",

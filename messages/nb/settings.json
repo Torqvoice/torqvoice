@@ -586,6 +586,7 @@
       "labor_table": "Arbeid",
       "totals": "Totaler",
       "notes": "Notater",
+      "attached_documents": "Vedlagte dokumenter",
       "diagnostic_notes": "Diagnostiske notater",
       "findings": "Observasjoner",
       "warranty": "Garanti",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Brevhode",
-        "description": "Kontaktinfo nederst, tittel under adressene, én nummerert liste"
+        "description": "Kontaktinfo nederst, tittel under adressene"
       },
       "compact": {
         "name": "Kompakt",
-        "description": "Uten rammer, én nummerert liste, bare det nødvendige"
+        "description": "Uten rammer, bare det nødvendige"
+      },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Ren typografi på hvitt: ingen bokser, ingen bånd, bare streker og luft"
       },
       "itemized": {
         "name": "Spesifisert",
@@ -1766,8 +1771,19 @@
       "panel": "Panel",
       "outline": "Kontur",
       "lines": "Linjer",
-      "hint": "Aksent toner kortet med primærfargen. Panel matcher de andre detaljkortene. Kontur tegner bare en ramme, og Linjer skriver ut uten boks."
+      "hint": "Aksent toner kortet med primærfargen. Panel matcher de andre detaljkortene. Kontur tegner bare en ramme, og Linjer skriver ut uten boks.",
+      "classic": "Klassisk",
+      "box": "Ramme",
+      "totalsHint": "Klassisk skriver ut rene linjer med en strek over totalen. Ramme setter en ramme rundt dem. Panel og Aksent setter dem på et kort."
     },
+    "alignment": "Justering",
+    "alignCenter": "Midt",
+    "itemsTableHint": "Én nummerert liste over alle linjene i jobben, arbeid først og deler etterpå, i stedet for de separate tabellene.",
+    "discardChanges": "Forkast endringer",
+    "tablesExclusiveHint": "Arket skriver ut én ordning: én nummerert liste, eller separate tabeller for deler og arbeid. Slår du på den ene, slås den andre av.",
+    "innerPadding": "Innvendig avstand",
+    "totalsWidth": "Bredde",
+    "totalsWidthHint": "Tom fyller hele raden. En verdi i punkter henger boksen til høyre; i en kolonne tar den kolonnens bredde.",
     "placement": "Plassering",
     "visible": "Synlig",
     "columnFull": "Full",

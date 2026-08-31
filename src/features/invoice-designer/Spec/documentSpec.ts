@@ -106,7 +106,8 @@ export type Node =
       stripe?: string
       anchor?: Anchor
     }
-  | { kind: 'spacer'; id?: string; height: number }
+  /** Empty room, or a filled rule when it carries a color. */
+  | { kind: 'spacer'; id?: string; height: number; color?: string }
 
 /** How a block finds its place on the sheet. */
 export type Placement =

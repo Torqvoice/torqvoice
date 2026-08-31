@@ -586,6 +586,7 @@
       "labor_table": "Mão de obra",
       "totals": "Totais",
       "notes": "Notas",
+      "attached_documents": "Documentos anexados",
       "diagnostic_notes": "Notas de diagnóstico",
       "findings": "Observações",
       "warranty": "Garantia",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Timbre",
-        "description": "Contatos no rodapé, título abaixo dos endereços, uma lista numerada"
+        "description": "Contatos no rodapé, título abaixo dos endereços"
       },
       "compact": {
         "name": "Compacta",
-        "description": "Sem painéis, uma lista numerada, só o essencial"
+        "description": "Sem painéis, só o essencial"
+      },
+      "minimal": {
+        "name": "Minimalista",
+        "description": "Tipografia pura sobre branco: sem caixas nem faixas, só linhas e espaço"
       },
       "itemized": {
         "name": "Discriminado",
@@ -1766,8 +1771,19 @@
       "panel": "Painel",
       "outline": "Contorno",
       "lines": "Linhas",
-      "hint": "Destaque tinge o cartão com a cor principal. Painel combina com os outros cartões de detalhe. Contorno desenha apenas uma borda, e Linhas imprime sem caixa."
+      "hint": "Destaque tinge o cartão com a cor principal. Painel combina com os outros cartões de detalhe. Contorno desenha apenas uma borda, e Linhas imprime sem caixa.",
+      "classic": "Clássico",
+      "box": "Moldura",
+      "totalsHint": "Clássico imprime linhas simples com um traço acima do total. Moldura as emoldura. Painel e Destaque as colocam em um cartão."
     },
+    "alignment": "Alinhamento",
+    "alignCenter": "Centro",
+    "itemsTableHint": "Uma lista numerada de todas as linhas do serviço, primeiro mão de obra e depois peças, no lugar das tabelas separadas.",
+    "discardChanges": "Descartar alterações",
+    "tablesExclusiveHint": "A folha imprime uma disposição: uma única lista numerada ou tabelas separadas de peças e mão de obra. Ativar uma desativa a outra.",
+    "innerPadding": "Espaçamento interno",
+    "totalsWidth": "Largura",
+    "totalsWidthHint": "Vazio ocupa a linha inteira. Um valor em pontos pendura o bloco à direita; em uma coluna, ele usa a largura da coluna.",
     "placement": "Posicionamento",
     "visible": "Visível",
     "columnFull": "Inteira",

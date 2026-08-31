@@ -67,7 +67,9 @@ export interface DocumentData {
   labor: { desc: string; qty: string; rate: string; total: string; excluded?: boolean }[]
   findings: { severity: string; color: string; description: string; notes: string }[]
   totals: TotalLine[]
-  notes: { html?: string; attachedDocuments?: string[] }
+  notes: { html?: string }
+  /** Names of the files riding along with the document, already worded. */
+  attachedDocuments?: string[]
   warranty: { duration?: string; expires?: string; terms?: string }
   payment: PaymentPair[]
   telegramQr?: { dataUri: string; label: string }
@@ -144,6 +146,8 @@ function lookOf(section: InvoiceSection, theme: DocumentTheme) {
     ruleWidth: s?.borderWidth,
     /** A border around the whole table, not only rules between rows. */
     outerBorder: s?.outerBorder === true,
+    /** Room inside the section's panel; unset keeps each panel's default. */
+    padding: s?.padding,
     /** Banding behind alternate rows; unset follows the sheet's setting. */
     stripes: s?.stripes,
     fontSize: s?.fontSize,
@@ -229,7 +233,9 @@ function panel(
         look.border || (look.ruleWidth !== undefined ? look.muted : boxed ? '#e3e5e9' : undefined),
       borderWidth: boxed || look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children: [
       ...(section.heading === false
@@ -554,8 +560,11 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
   const compact = theme.headerStyle === 'compact'
   const banded = framed || modern
   // Compact reads like a form's letterhead: small mark on the left with a
-  // rule beneath. Standard sets the mark large on the right.
-  const align = modern ? ('center' as const) : compact ? ('left' as const) : ('right' as const)
+  // rule beneath. Standard sets the mark large on the right. A side the
+  // layout chooses itself wins over all of that.
+  const align =
+    section.style?.align ??
+    (modern ? ('center' as const) : compact ? ('left' as const) : ('right' as const))
 
   const showLogo = fields.includes('logo') && !!data.logoUrl
   // The company name follows the section's own ink when the layout sets one,
@@ -632,7 +641,7 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
       kind: 'row',
       id: 'header.branding',
       gap: 3,
-      justify: modern ? 'center' : 'end',
+      justify: align === 'center' ? 'center' : align === 'left' ? 'start' : 'end',
       align: 'center',
       children: [
         {
@@ -971,28 +980,57 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   if (!data.totals.length) return null
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
+  // The looks the block can be set to. Unset means the classic bare lines,
+  // which is what every sheet printed before the box existed.
+  const variant = section.variant || 'classic'
+  const bare = variant === 'classic'
+
+  // The settled state as a stamp rather than a line with nothing in its value
+  // column: one centered green bar that reads at arm's length.
+  const paidBadge = (entry: TotalLine): Node => ({
+    kind: 'row',
+    justify: 'center',
+    style: {
+      background: mixColors(theme.background, '#059669', 0.1),
+      radius: variant === 'box' ? 0 : 3,
+      padding: 6,
+    },
+    children: [
+      {
+        node: {
+          kind: 'text',
+          text: entry.label,
+          style: {
+            color: mixColors('#059669', look.text, 0.25),
+            bold: true,
+            uppercase: true,
+            letterSpacing: 0.8,
+            fontSize: scale(size, 0.95),
+          },
+        },
+      },
+    ],
+  })
 
   const line = (entry: TotalLine): Node => {
-    const emphasized = entry.kind === 'total' || entry.kind === 'due' || entry.kind === 'paid'
+    if (entry.kind === 'paid') return paidBadge(entry)
+    const emphasized = entry.kind === 'total' || entry.kind === 'due'
     const valueColor =
       entry.kind === 'discount'
         ? '#dc2626'
         : entry.kind === 'payment'
           ? '#059669'
-          : entry.kind === 'paid'
-            ? '#059669'
-            : emphasized
-              ? theme.accent
-              : look.text
+          : emphasized
+            ? theme.accent
+            : look.text
     return {
       kind: 'row',
       justify: 'between',
+      align: 'center',
       style: {
-        padding: 6,
+        padding: bare ? { top: 4, right: 0, bottom: 4, left: 0 } : 6,
         background:
-          entry.kind === 'due' || entry.kind === 'paid'
-            ? mixColors(theme.background, entry.kind === 'paid' ? '#059669' : theme.accent, 0.08)
-            : undefined,
+          entry.kind === 'due' ? mixColors(theme.background, theme.accent, 0.08) : undefined,
       },
       children: [
         {
@@ -1002,7 +1040,12 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
             style: {
               color: emphasized ? look.text : look.muted,
               bold: emphasized,
-              fontSize: entry.kind === 'payment' ? scale(size, 0.85) : size,
+              fontSize:
+                entry.kind === 'payment'
+                  ? scale(size, 0.85)
+                  : bare && emphasized
+                    ? scale(size, 1.15)
+                    : size,
             },
           },
         },
@@ -1012,7 +1055,7 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
             text: entry.value,
             style: {
               bold: true,
-              fontSize: emphasized ? scale(size, 1.15) : size,
+              fontSize: emphasized ? scale(size, bare ? 1.25 : 1.15) : size,
               color: valueColor,
             },
           },
@@ -1021,25 +1064,65 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     }
   }
 
+  // The bare look announces the total with a rule above it, the way the old
+  // sheets did, instead of a frame around everything.
+  const rows: Node[] = []
+  for (const entry of data.totals) {
+    if (bare && entry.kind === 'total') {
+      rows.push({
+        kind: 'spacer',
+        height: look.ruleWidth ?? 1.6,
+        color: look.border || theme.accent,
+      })
+    }
+    rows.push(line(entry))
+  }
+
+  const boxStyle =
+    variant === 'accent'
+      ? {
+          background: look.fill || mixColors(theme.background, theme.primary, 0.08),
+          borderColor: look.border || theme.accent,
+          borderWidth: look.ruleWidth ?? 1,
+          radius: 4,
+          padding: look.padding ?? 4,
+        }
+      : variant === 'panel'
+        ? {
+            background: look.fill || mixColors(theme.background, look.text, 0.045),
+            borderColor: look.border || '#e3e5e9',
+            borderWidth: look.ruleWidth ?? 0,
+            radius: 4,
+            padding: look.padding ?? 4,
+          }
+        : variant === 'box'
+          ? {
+              borderColor: look.border || look.text,
+              borderWidth: look.ruleWidth ?? 1,
+              background: look.fill,
+              padding: look.padding,
+            }
+          : // 'classic': nothing but the lines.
+            { background: look.fill, padding: look.padding }
+
   const box: Node = {
     kind: 'stack',
     gap: 0,
-    style: {
-      borderColor: look.border || look.text,
-      borderWidth: look.ruleWidth ?? 1,
-      background: look.fill,
-    },
-    children: data.totals.map(line),
+    style: boxStyle,
+    children: rows,
   }
-  // Full width, the box keeps to the right the way a sum column reads; in a
-  // half-width lane it takes the lane.
+  // Placed Full, the block spans the row the way every other section does; a
+  // set width hangs the box on the right the way a sum column reads. In a
+  // half-width lane it takes the lane. Classic sheets keep the hung box their
+  // organizations have always mailed out.
+  const width = section.style?.width ?? (theme.classic ? 250 : undefined)
   const children: Node[] = [
-    section.column
+    section.column || !width
       ? box
       : {
           kind: 'row',
           justify: 'end',
-          children: [{ width: 250, node: box }],
+          children: [{ width, node: box }],
         },
   ]
 
@@ -1086,37 +1169,65 @@ function notesBlock(
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const hasNotes = !!data.notes.html && data.notes.html.replace(/<[^>]*>/g, '').trim().length > 0
-  const attached = data.notes.attachedDocuments ?? []
-  if (!hasNotes && !attached.length) return null
+  if (!hasNotes) return null
 
   const children: Node[] = []
-  if (hasNotes) {
-    if (section.heading !== false) {
-      children.push({
-        kind: 'text',
-        text: label(data, 'notes', 'Notes'),
-        style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
-      })
-    }
+  if (section.heading !== false) {
     children.push({
-      kind: 'richtext',
-      html: data.notes.html as string,
-      style: { color: look.muted, fontSize: scale(size, 0.9) },
+      kind: 'text',
+      text: label(data, 'notes', 'Notes'),
+      style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
     })
   }
-  if (attached.length) {
+  children.push({
+    kind: 'richtext',
+    html: data.notes.html as string,
+    style: { color: look.muted, fontSize: scale(size, 0.9) },
+  })
+
+  const boxed = section.boxed !== false
+  return {
+    kind: 'stack',
+    id: section.id,
+    gap: 3,
+    style: {
+      background: look.fill || (boxed ? '#f3f4f6' : undefined),
+      borderColor: look.border,
+      borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
+      radius: boxed ? 3 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
+    },
+    children,
+  }
+}
+
+/** The files riding along with the document, in the notes' panel dress. */
+function attachedDocumentsBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  const attached = data.attachedDocuments ?? []
+  if (!attached.length) return null
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+
+  const children: Node[] = []
+  if (section.heading !== false) {
     children.push({
       kind: 'text',
       text: label(data, 'attachedDocuments', 'Attached Documents'),
       style: { color: look.label, fontSize: scale(size, 0.72), bold: true, uppercase: true },
     })
-    for (const name of attached) {
-      children.push({
-        kind: 'text',
-        text: name,
-        style: { color: look.muted, fontSize: scale(size, 0.9) },
-      })
-    }
+  }
+  for (const name of attached) {
+    children.push({
+      kind: 'text',
+      text: name,
+      style: { color: look.muted, fontSize: scale(size, 0.9) },
+    })
   }
 
   const boxed = section.boxed !== false
@@ -1129,7 +1240,9 @@ function notesBlock(
       borderColor: look.border,
       borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children,
   }
@@ -1185,7 +1298,9 @@ function warrantyBlock(
       borderColor: look.border,
       borderWidth: look.border ? (look.ruleWidth ?? 0.75) : 0,
       radius: boxed ? 3 : 0,
-      padding: boxed || look.fill ? 10 : 0,
+      // The room stays when the box goes: taking the panel off should strip
+      // its chrome, not cram its lines against the neighbours.
+      padding: look.padding ?? 10,
     },
     children,
   }
@@ -1270,7 +1385,7 @@ function paymentBlock(
           borderColor: look.border || theme.primary,
           borderWidth: 1,
           radius: 4,
-          padding: 12,
+          padding: look.padding ?? 12,
         }
       : variant === 'panel'
         ? {
@@ -1278,17 +1393,17 @@ function paymentBlock(
             borderColor: look.border || '#e3e5e9',
             borderWidth: 0.75,
             radius: 3,
-            padding: 10,
+            padding: look.padding ?? 10,
           }
         : variant === 'outline'
           ? {
               background: look.fill,
               borderColor: look.border || look.text,
               borderWidth: 0.5,
-              padding: 10,
+              padding: look.padding ?? 10,
             }
           : // 'lines': nothing but the type.
-            { background: look.fill }
+            { background: look.fill, padding: look.padding }
 
   return {
     kind: 'stack',
@@ -1332,8 +1447,8 @@ function telegramBlock(
     gap: 4,
     style:
       section.boxed !== false
-        ? { background: look.fill || '#fafafa', radius: 6, padding: 10 }
-        : { background: look.fill },
+        ? { background: look.fill || '#fafafa', radius: 6, padding: look.padding ?? 10 }
+        : { background: look.fill, padding: look.padding ?? 10 },
     children: [
       { kind: 'image', src: data.telegramQr.dataUri, maxWidth: 56, maxHeight: 56, align: 'center' },
       {
@@ -1485,6 +1600,8 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return totals(section, theme, data)
     case 'notes':
       return notesBlock(section, theme, data)
+    case 'attached_documents':
+      return attachedDocumentsBlock(section, theme, data)
     case 'warranty':
       return warrantyBlock(section, theme, data)
     case 'bank_account':

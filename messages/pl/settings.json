@@ -586,6 +586,7 @@
       "labor_table": "Robocizna",
       "totals": "Podsumowanie",
       "notes": "Notatki",
+      "attached_documents": "Załączone dokumenty",
       "diagnostic_notes": "Notatki diagnostyczne",
       "findings": "Obserwacje",
       "warranty": "Gwarancja",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Papier firmowy",
-        "description": "Kontakt na dole, tytuł pod adresami, jedna numerowana lista"
+        "description": "Kontakt na dole, tytuł pod adresami"
       },
       "compact": {
         "name": "Kompaktowy",
-        "description": "Bez ramek, jedna numerowana lista, tylko to, co konieczne"
+        "description": "Bez ramek, tylko to, co konieczne"
+      },
+      "minimal": {
+        "name": "Minimalny",
+        "description": "Sama typografia na bieli: bez ramek i pasów, tylko linie i światło"
       },
       "itemized": {
         "name": "Pozycjami",
@@ -1766,8 +1771,19 @@
       "panel": "Panel",
       "outline": "Obrys",
       "lines": "Linie",
-      "hint": "Akcent barwi kartę kolorem głównym. Panel dopasowuje ją do pozostałych kart ze szczegółami. Obrys rysuje samą ramkę, a Linie drukują bez ramki."
+      "hint": "Akcent barwi kartę kolorem głównym. Panel dopasowuje ją do pozostałych kart ze szczegółami. Obrys rysuje samą ramkę, a Linie drukują bez ramki.",
+      "classic": "Klasyczny",
+      "box": "Ramka",
+      "totalsHint": "Klasyczny drukuje same wiersze z linią nad sumą. Ramka je obramowuje. Panel i Akcent umieszczają je na karcie."
     },
+    "alignment": "Wyrównanie",
+    "alignCenter": "Środek",
+    "itemsTableHint": "Jedna numerowana lista wszystkich pozycji zlecenia, najpierw robocizna, potem części, zamiast osobnych tabel.",
+    "discardChanges": "Odrzuć zmiany",
+    "tablesExclusiveHint": "Arkusz drukuje jeden układ: jedną numerowaną listę albo osobne tabele części i robocizny. Włączenie jednego wyłącza drugi.",
+    "innerPadding": "Odstęp wewnętrzny",
+    "totalsWidth": "Szerokość",
+    "totalsWidthHint": "Puste wypełnia cały wiersz. Wartość w punktach zawiesza blok po prawej; w kolumnie przyjmuje szerokość kolumny.",
     "placement": "Rozmieszczenie",
     "visible": "Widoczna",
     "columnFull": "Pełna",

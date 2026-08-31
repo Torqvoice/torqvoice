@@ -16,6 +16,8 @@ import { Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
+import { DesignPreview, PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
+import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 import { Textarea } from '@/components/ui/textarea'
 import { type InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -130,38 +132,104 @@ function ColorRow({
  * with the sheet in front of you, rather than split across a colour form here
  * and an arrangement editor two clicks away.
  */
-function TemplateTab({ documentType }: { documentType: 'invoice' | 'quote' }) {
+function TemplateTab({
+  documentType,
+  workshop,
+  logoUrl,
+  savedDesigns = [],
+  activeDesign = '',
+}: {
+  documentType: 'invoice' | 'quote'
+  workshop?: WorkshopPreviewInfo
+  logoUrl?: string
+  savedDesigns?: SavedDesign[]
+  activeDesign?: string
+}) {
   const t = useTranslations('settings')
+  const tDesigner = useTranslations('settings.designer')
 
   return (
     <AppCard icon={Palette} title={t('templates.presets')} contentClassName="space-y-4">
       <p className="text-sm text-muted-foreground">{t('templates.designerIntro')}</p>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {layoutPresets.map((preset) => (
-          <Link
-            key={preset.id}
-            href={`/invoice-designer?doc=${documentType}&preset=${preset.id}`}
-            target="_blank"
-            rel="noopener"
-            className="rounded-lg border p-3 text-left transition-colors hover:bg-muted"
-          >
-            <div className="overflow-hidden rounded border bg-background">
-              <div className="h-4 bg-primary/80" />
-              <div className="space-y-1 p-2">
-                <div className="h-1 w-3/5 rounded-sm bg-muted-foreground/30" />
-                <div className="h-1 w-4/5 rounded-sm bg-muted-foreground/20" />
-                <div className="h-2 w-full rounded-sm bg-primary/20" />
+      {/* The workshop's own saved designs, above the built-in starting
+          points: the sheets they actually mail out come first. */}
+      {savedDesigns.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-medium">{tDesigner('yourDesigns')}</h3>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {savedDesigns.map((design) => {
+              const active = activeDesign === `design:${design.id}`
+              return (
+                <Link
+                  key={design.id}
+                  href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
+                  target="_blank"
+                  rel="noopener"
+                  className={cn(
+                    'relative rounded-lg border p-3 text-left transition-colors hover:bg-muted',
+                    active && 'border-primary'
+                  )}
+                >
+                  {active && (
+                    <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                      {tDesigner('inUse')}
+                    </span>
+                  )}
+                  <div className="flex justify-center">
+                    <DesignPreview
+                      design={design}
+                      docType={documentType}
+                      workshop={workshop}
+                      logoUrl={logoUrl}
+                    />
+                  </div>
+                  <p className="mt-2 truncate text-xs font-medium">{design.name}</p>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {layoutPresets.map((preset) => {
+          const active = activeDesign === `preset:${preset.id}`
+          return (
+            <Link
+              key={preset.id}
+              href={`/invoice-designer?doc=${documentType}&preset=${preset.id}`}
+              target="_blank"
+              rel="noopener"
+              className={cn(
+                'relative rounded-lg border p-3 text-left transition-colors hover:bg-muted',
+                active && 'border-primary'
+              )}
+            >
+              {active && (
+                <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                  {tDesigner('inUse')}
+                </span>
+              )}
+              {/* The sheet this template actually produces, on this workshop's
+                  own details — the same picture the designer's gallery draws. */}
+              <div className="flex justify-center">
+                <PresetPreview
+                  preset={preset}
+                  docType={documentType}
+                  workshop={workshop}
+                  logoUrl={logoUrl}
+                />
               </div>
-            </div>
-            <p className="mt-2 text-xs font-medium">
-              {t(`layoutEditor.presets.${preset.id}.name` as Parameters<typeof t>[0])}
-            </p>
-            <p className="text-[11px] leading-tight text-muted-foreground">
-              {t(`layoutEditor.presets.${preset.id}.description` as Parameters<typeof t>[0])}
-            </p>
-          </Link>
-        ))}
+              <p className="mt-2 text-xs font-medium">
+                {t(`layoutEditor.presets.${preset.id}.name` as Parameters<typeof t>[0])}
+              </p>
+              <p className="text-[11px] leading-tight text-muted-foreground">
+                {t(`layoutEditor.presets.${preset.id}.description` as Parameters<typeof t>[0])}
+              </p>
+            </Link>
+          )
+        })}
       </div>
 
       <div className="flex items-center justify-between gap-4 border-t pt-4">
@@ -361,6 +429,8 @@ export function TemplateSettings({
   workshop,
   invoiceLayoutConfig,
   quoteLayoutConfig,
+  savedDesigns = [],
+  activeDesigns = { invoice: '', quote: '' },
 }: {
   initialInvoiceValues: TemplateValues
   initialQuoteValues: TemplateValues
@@ -371,6 +441,8 @@ export function TemplateSettings({
   workshop?: WorkshopPreviewInfo
   invoiceLayoutConfig?: InvoiceLayoutConfig
   quoteLayoutConfig?: InvoiceLayoutConfig
+  savedDesigns?: SavedDesign[]
+  activeDesigns?: { invoice: string; quote: string }
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -538,9 +610,21 @@ export function TemplateSettings({
         <>
           <ReadOnlyWrapper>
             {tab === 'invoice' ? (
-              <TemplateTab documentType="invoice" />
+              <TemplateTab
+                documentType="invoice"
+                workshop={workshop}
+                logoUrl={logoUrl}
+                savedDesigns={savedDesigns}
+                activeDesign={activeDesigns.invoice}
+              />
             ) : (
-              <TemplateTab documentType="quote" />
+              <TemplateTab
+                documentType="quote"
+                workshop={workshop}
+                logoUrl={logoUrl}
+                savedDesigns={savedDesigns}
+                activeDesign={activeDesigns.quote}
+              />
             )}
           </ReadOnlyWrapper>
 

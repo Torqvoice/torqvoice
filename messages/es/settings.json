@@ -586,6 +586,7 @@
       "labor_table": "Mano de obra",
       "totals": "Totales",
       "notes": "Notas",
+      "attached_documents": "Documentos adjuntos",
       "diagnostic_notes": "Notas de diagnóstico",
       "findings": "Observaciones",
       "warranty": "Garantía",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Membrete",
-        "description": "Datos de contacto abajo, título bajo las direcciones, una lista numerada"
+        "description": "Datos de contacto abajo, título bajo las direcciones"
       },
       "compact": {
         "name": "Compacta",
-        "description": "Sin paneles, una lista numerada, solo lo esencial"
+        "description": "Sin paneles, solo lo esencial"
+      },
+      "minimal": {
+        "name": "Minimalista",
+        "description": "Solo tipografía sobre blanco: sin recuadros ni bandas, solo líneas y espacio"
       },
       "itemized": {
         "name": "Detallado",
@@ -1766,8 +1771,19 @@
       "panel": "Panel",
       "outline": "Contorno",
       "lines": "Líneas",
-      "hint": "Acento tiñe la tarjeta con el color principal. Panel iguala a las demás tarjetas de detalle. Contorno dibuja solo un borde, y Líneas imprime sin recuadro."
+      "hint": "Acento tiñe la tarjeta con el color principal. Panel iguala a las demás tarjetas de detalle. Contorno dibuja solo un borde, y Líneas imprime sin recuadro.",
+      "classic": "Clásico",
+      "box": "Recuadro",
+      "totalsHint": "Clásico imprime líneas sueltas con una regla sobre el total. Recuadro las enmarca. Panel y Acento las colocan en una tarjeta."
     },
+    "alignment": "Alineación",
+    "alignCenter": "Centro",
+    "itemsTableHint": "Una lista numerada de todas las líneas del trabajo, primero mano de obra y luego piezas, en lugar de las tablas separadas.",
+    "discardChanges": "Descartar cambios",
+    "tablesExclusiveHint": "La hoja imprime una disposición: una lista numerada única o tablas separadas de piezas y mano de obra. Activar una desactiva la otra.",
+    "innerPadding": "Espaciado interno",
+    "totalsWidth": "Ancho",
+    "totalsWidthHint": "Vacío ocupa toda la fila. Con un valor en puntos, el bloque cuelga a la derecha; en una columna toma el ancho de la columna.",
     "placement": "Colocación",
     "visible": "Visible",
     "columnFull": "Completa",

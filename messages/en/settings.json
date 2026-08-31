@@ -586,6 +586,7 @@
       "labor_table": "Labor Table",
       "totals": "Totals",
       "notes": "Notes",
+      "attached_documents": "Attached Documents",
       "diagnostic_notes": "Diagnostic Notes",
       "findings": "Observations",
       "warranty": "Warranty",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Letterhead",
-        "description": "Contact details along the bottom, title below the addresses, one numbered list"
+        "description": "Contact details along the bottom, title below the addresses"
       },
       "compact": {
         "name": "Compact",
-        "description": "No panels, one numbered list, only the essentials"
+        "description": "No panels, only the essentials"
+      },
+      "minimal": {
+        "name": "Minimal",
+        "description": "Bare type on white: no boxes, no bands, just rules and whitespace"
       },
       "itemized": {
         "name": "Itemized",
@@ -1766,8 +1771,19 @@
       "panel": "Panel",
       "outline": "Outline",
       "lines": "Lines",
-      "hint": "Accent tints the card with the primary color. Panel matches the other detail cards. Outline draws only a border, and Lines prints without a box."
+      "hint": "Accent tints the card with the primary color. Panel matches the other detail cards. Outline draws only a border, and Lines prints without a box.",
+      "classic": "Classic",
+      "box": "Boxed",
+      "totalsHint": "Classic prints bare lines with a rule above the total. Boxed frames them. Panel and Accent set them on a card."
     },
+    "alignment": "Alignment",
+    "alignCenter": "Center",
+    "itemsTableHint": "One numbered list of every line on the job, labor first and parts after, in place of the separate parts and labor tables.",
+    "discardChanges": "Discard changes",
+    "tablesExclusiveHint": "The sheet prints one arrangement: a single numbered list, or separate parts and labor tables. Switching one on switches the other off.",
+    "innerPadding": "Inner spacing",
+    "totalsWidth": "Width",
+    "totalsWidthHint": "Empty spans the row. Set points to hang the box on the right; in a column it takes the column's width.",
     "placement": "Placement",
     "visible": "Visible",
     "columnFull": "Full",

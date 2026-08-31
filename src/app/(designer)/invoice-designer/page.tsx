@@ -17,7 +17,7 @@ import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 export default async function InvoiceDesignerPage({
   searchParams,
 }: {
-  searchParams: Promise<{ doc?: string; view?: string; preset?: string }>
+  searchParams: Promise<{ doc?: string; view?: string; preset?: string; design?: string }>
 }) {
   const data = await getLayoutData()
   if (data.status === 'unauthenticated') redirect('/auth/sign-in')
@@ -65,7 +65,7 @@ export default async function InvoiceDesignerPage({
   } catch {
     savedDesigns = []
   }
-  const { doc, view, preset } = await searchParams
+  const { doc, view, preset, design } = await searchParams
 
   const templateFor = (prefix: 'invoice' | 'quote') => ({
     primaryColor:
@@ -92,6 +92,7 @@ export default async function InvoiceDesignerPage({
         initialDocumentType={doc === 'quote' ? 'quote' : 'invoice'}
         initialView={view === 'designer' ? 'designer' : 'gallery'}
         initialPresetId={preset}
+        initialDesignId={design}
         initialActiveDesigns={{
           invoice: settings['invoice.activeDesign'] || '',
           quote: settings['quote.activeDesign'] || '',

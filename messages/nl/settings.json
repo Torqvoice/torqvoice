@@ -586,6 +586,7 @@
       "labor_table": "Arbeid",
       "totals": "Totalen",
       "notes": "Notities",
+      "attached_documents": "Bijgevoegde documenten",
       "diagnostic_notes": "Diagnostische notities",
       "findings": "Observaties",
       "warranty": "Garantie",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Briefhoofd",
-        "description": "Contactgegevens onderaan, titel onder de adressen, één genummerde lijst"
+        "description": "Contactgegevens onderaan, titel onder de adressen"
       },
       "compact": {
         "name": "Compact",
-        "description": "Zonder kaders, één genummerde lijst, alleen het nodige"
+        "description": "Zonder kaders, alleen het nodige"
+      },
+      "minimal": {
+        "name": "Minimaal",
+        "description": "Kale typografie op wit: geen kaders of banden, alleen lijnen en witruimte"
       },
       "itemized": {
         "name": "Gespecificeerd",
@@ -1766,8 +1771,19 @@
       "panel": "Paneel",
       "outline": "Omlijning",
       "lines": "Lijnen",
-      "hint": "Accent kleurt de kaart met de primaire kleur. Paneel sluit aan bij de andere detailkaarten. Omlijning tekent alleen een rand, en Lijnen drukt af zonder kader."
+      "hint": "Accent kleurt de kaart met de primaire kleur. Paneel sluit aan bij de andere detailkaarten. Omlijning tekent alleen een rand, en Lijnen drukt af zonder kader.",
+      "classic": "Klassiek",
+      "box": "Kader",
+      "totalsHint": "Klassiek drukt kale regels af met een lijn boven het totaal. Kader zet er een kader omheen. Paneel en Accent zetten ze op een kaart."
     },
+    "alignment": "Uitlijning",
+    "alignCenter": "Midden",
+    "itemsTableHint": "Eén genummerde lijst van alle regels van de klus, eerst arbeid en dan onderdelen, in plaats van de aparte tabellen.",
+    "discardChanges": "Wijzigingen verwerpen",
+    "tablesExclusiveHint": "Het blad drukt één opstelling af: één genummerde lijst, of aparte tabellen voor onderdelen en arbeid. De ene inschakelen schakelt de andere uit.",
+    "innerPadding": "Binnenruimte",
+    "totalsWidth": "Breedte",
+    "totalsWidthHint": "Leeg vult de hele rij. Met een waarde in punten hangt het blok rechts; in een kolom neemt het de breedte van de kolom.",
     "placement": "Plaatsing",
     "visible": "Zichtbaar",
     "columnFull": "Vol",

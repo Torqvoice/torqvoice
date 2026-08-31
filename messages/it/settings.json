@@ -586,6 +586,7 @@
       "labor_table": "Manodopera",
       "totals": "Totali",
       "notes": "Note",
+      "attached_documents": "Documenti allegati",
       "diagnostic_notes": "Note diagnostiche",
       "findings": "Osservazioni",
       "warranty": "Garanzia",
@@ -628,11 +629,15 @@
       },
       "letterhead": {
         "name": "Carta intestata",
-        "description": "Contatti in fondo, titolo sotto gli indirizzi, un elenco numerato"
+        "description": "Contatti in fondo, titolo sotto gli indirizzi"
       },
       "compact": {
         "name": "Compatta",
-        "description": "Senza riquadri, un elenco numerato, solo l’essenziale"
+        "description": "Senza riquadri, solo l’essenziale"
+      },
+      "minimal": {
+        "name": "Minimale",
+        "description": "Solo tipografia su bianco: niente riquadri né fasce, solo filetti e spazio"
       },
       "itemized": {
         "name": "Dettagliato",
@@ -1766,8 +1771,19 @@
       "panel": "Pannello",
       "outline": "Contorno",
       "lines": "Linee",
-      "hint": "Accento colora la scheda con il colore principale. Pannello la allinea alle altre schede di dettaglio. Contorno disegna solo un bordo, e Linee stampa senza riquadro."
+      "hint": "Accento colora la scheda con il colore principale. Pannello la allinea alle altre schede di dettaglio. Contorno disegna solo un bordo, e Linee stampa senza riquadro.",
+      "classic": "Classico",
+      "box": "Riquadro",
+      "totalsHint": "Classico stampa righe semplici con un filetto sopra il totale. Riquadro le incornicia. Pannello e Accento le mettono su una scheda."
     },
+    "alignment": "Allineamento",
+    "alignCenter": "Centro",
+    "itemsTableHint": "Un elenco numerato di tutte le righe del lavoro, prima la manodopera e poi i ricambi, al posto delle tabelle separate.",
+    "discardChanges": "Scarta le modifiche",
+    "tablesExclusiveHint": "Il foglio stampa una disposizione: un unico elenco numerato oppure tabelle separate per ricambi e manodopera. Attivarne una disattiva l'altra.",
+    "innerPadding": "Spaziatura interna",
+    "totalsWidth": "Larghezza",
+    "totalsWidthHint": "Vuoto occupa tutta la riga. Un valore in punti appende il blocco a destra; in una colonna prende la larghezza della colonna.",
     "placement": "Posizione",
     "visible": "Visibile",
     "columnFull": "Intera",
