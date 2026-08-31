@@ -147,7 +147,17 @@ function lookOf(section: InvoiceSection, theme: DocumentTheme) {
     /** Banding behind alternate rows; unset follows the sheet's setting. */
     stripes: s?.stripes,
     fontSize: s?.fontSize,
-    fontFamily: s?.fontFamily,
+    /**
+     * Resolved against the sheet, not left blank when the section sets none.
+     *
+     * A node that carries the key at all overrides what it inherits, because
+     * the PDF walker merges the two and an explicit `undefined` wins. Handing
+     * back a bare `s?.fontFamily` therefore reset every line that mentioned a
+     * font back to the default face, which is why a panel's values kept the
+     * old typeface while its heading, which never mentions one, followed the
+     * document.
+     */
+    fontFamily: s?.fontFamily ?? theme.fontFamily,
   }
 }
 

@@ -67,6 +67,43 @@ function renderView(props: any) {
   return render(<QuoteView spec={spec} {...props} />)
 }
 
+/**
+ * A quote is drawn by the same generator as an invoice, so it inherits the
+ * same trap: a line that mentions a font at all overrides what it inherits,
+ * and a blank one reset the panels to the default face.
+ */
+describe('the typeface a customer sees', () => {
+  it('carries the chosen font into the panels of a shared quote', () => {
+    const spec = buildQuotePrintSpec({
+      data: DEFAULT_PROPS.quote,
+      workshop: WORKSHOP,
+      currencyCode: 'EUR',
+      template: { fontFamily: 'Lato' },
+    })
+    expect(spec.page.fontFamily).toBe('Lato')
+    for (const id of ['customer', 'vehicle']) {
+      const block = spec.blocks.find((b) => b.id === id)
+      if (!block) continue
+      expect(block.text?.fontFamily, `${id} lost the sheet's font`).toBe('Lato')
+      const fonts = JSON.stringify(block.content).match(/"fontFamily":"[^"]*"/g) ?? []
+      expect(new Set(fonts), `${id} has a line in another face`).toEqual(
+        new Set(fonts.length ? ['"fontFamily":"Lato"'] : [])
+      )
+    }
+  })
+
+  it('renders that font onto the page the customer opens', () => {
+    const spec = buildQuotePrintSpec({
+      data: DEFAULT_PROPS.quote,
+      workshop: WORKSHOP,
+      currencyCode: 'EUR',
+      template: { fontFamily: 'Lato' },
+    })
+    const { container } = render(<QuoteView spec={spec} {...DEFAULT_PROPS} />)
+    expect(container.innerHTML).toContain('Lato')
+  })
+})
+
 let mockFetch: ReturnType<typeof vi.fn>
 
 beforeAll(() => {

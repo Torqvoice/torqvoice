@@ -6,6 +6,7 @@ import { useMessages, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
+import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -837,6 +838,10 @@ export function InvoiceDesigner({
             +
           </button>
         </div>
+
+        {/* The tool is large enough that the manual is worth one click from
+            inside it, rather than being something to go and look for. */}
+        <DocsLink href="/docs/configuration/invoice-designer" variant="header" />
 
         <button
           type="button"

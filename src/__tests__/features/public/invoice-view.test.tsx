@@ -119,6 +119,46 @@ function renderView(props: any) {
   return render(<InvoiceView spec={spec} {...props} />)
 }
 
+/**
+ * The sheet the customer opens has to wear the same typeface as the designer
+ * promised. It is built by the same generator, so the trap is the same one:
+ * a line that mentions a font at all overrides what it inherits, and a blank
+ * one silently reset the panels to the default face.
+ */
+describe('the typeface a customer sees', () => {
+  it('carries the chosen font into the panels, not just the headings', () => {
+    const spec = buildInvoicePrintSpec({
+      data: DEFAULT_PROPS.record,
+      workshop: WORKSHOP,
+      invoiceSettings: { currencyCode: 'EUR' },
+      template: { fontFamily: 'Montserrat' },
+    })
+    expect(spec.page.fontFamily).toBe('Montserrat')
+    for (const id of ['customer', 'vehicle']) {
+      const block = spec.blocks.find((b) => b.id === id)
+      if (!block) continue
+      expect(block.text?.fontFamily, `${id} lost the sheet's font`).toBe('Montserrat')
+      const fonts = JSON.stringify(block.content).match(/"fontFamily":"[^"]*"/g) ?? []
+      expect(new Set(fonts), `${id} has a line in another face`).toEqual(
+        new Set(fonts.length ? ['"fontFamily":"Montserrat"'] : [])
+      )
+    }
+  })
+
+  it('renders that font onto the page the customer opens', () => {
+    const spec = buildInvoicePrintSpec({
+      data: DEFAULT_PROPS.record,
+      workshop: WORKSHOP,
+      invoiceSettings: { currencyCode: 'EUR' },
+      template: { fontFamily: 'Montserrat' },
+    })
+    const { container } = render(<InvoiceView spec={spec} {...DEFAULT_PROPS} />)
+    // The sheet sets the family as a real CSS stack, so a customer without
+    // the face installed still falls back sensibly rather than to nothing.
+    expect(container.innerHTML).toContain('Montserrat')
+  })
+})
+
 let mockFetch: ReturnType<typeof vi.fn>
 
 beforeAll(() => {
