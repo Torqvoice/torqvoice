@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram er på",
     "body": "Kundesamtaler havner her. Svar uten å forlate appen."
+  },
+  "invoice-designer": {
+    "title": "Fakturaene er bygget om",
+    "body": "Bestem oppsett, farger og skrifter på fakturaer og tilbud i den nye designeren, under Maler.",
+    "cta": "Åpne Maler"
   }
 }

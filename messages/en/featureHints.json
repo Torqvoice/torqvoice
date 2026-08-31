@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram is on",
     "body": "Customer conversations land here. Reply without leaving the app."
+  },
+  "invoice-designer": {
+    "title": "Invoices have been overhauled",
+    "body": "Set the layout, colours and fonts for your invoices and quotes in the new designer, under Templates.",
+    "cta": "Open Templates"
   }
 }

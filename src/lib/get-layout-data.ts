@@ -9,6 +9,8 @@ type AuthResult =
       status: 'ok'
       userId: string
       organizationId: string
+      /** When the active workshop signed up, for age-gated announcements. */
+      organizationCreatedAt: Date | null
       role: string
       isSuperAdmin: boolean
       emailVerified: boolean
@@ -68,7 +70,7 @@ export async function getLayoutData(): Promise<AuthResult> {
       where: { userId: session.user.id },
       select: {
         role: true,
-        organization: { select: { id: true, name: true } },
+        organization: { select: { id: true, name: true, createdAt: true } },
       },
     }),
   ])
@@ -79,6 +81,9 @@ export async function getLayoutData(): Promise<AuthResult> {
     status: 'ok',
     userId: session.user.id,
     organizationId: membership?.organizationId ?? '',
+    organizationCreatedAt:
+      memberships.find((m) => m.organization.id === membership?.organizationId)?.organization
+        .createdAt ?? null,
     role: isSuperAdmin ? 'super_admin' : (membership?.role ?? 'member'),
     isSuperAdmin,
     emailVerified: user?.emailVerified ?? false,

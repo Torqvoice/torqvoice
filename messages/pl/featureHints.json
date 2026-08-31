@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram jest włączony",
     "body": "Rozmowy z klientami trafiają tutaj. Odpowiadaj bez wychodzenia z aplikacji."
+  },
+  "invoice-designer": {
+    "title": "Faktury zostały przebudowane",
+    "body": "Ustaw układ, kolory i czcionki faktur oraz ofert w nowym kreatorze, w sekcji Szablony.",
+    "cta": "Otwórz Szablony"
   }
 }

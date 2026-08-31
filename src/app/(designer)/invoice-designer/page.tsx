@@ -10,6 +10,8 @@ import {
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
 import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceDesigner'
+import { DismissOnArrival } from '@/components/feature-hint'
+import { INVOICE_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 
 export default async function InvoiceDesignerPage({
@@ -26,7 +28,7 @@ export default async function InvoiceDesignerPage({
   // gate the settings page used applies here.
   if (!features.customTemplates) redirect('/settings/templates')
 
-  const [settingsResult, invoiceLayout, quoteLayout, organization, customFieldsResult] =
+  const [settingsResult, invoiceLayout, quoteLayout, organization, customFieldsResult, seenRow] =
     await Promise.all([
       getSettings(),
       getInvoiceLayoutConfig(),
@@ -36,7 +38,21 @@ export default async function InvoiceDesignerPage({
         select: { name: true },
       }),
       features.customFields ? getFieldDefinitions() : Promise.resolve({ success: true, data: [] }),
+      db.appSetting.findUnique({
+        where: {
+          organizationId_key: {
+            organizationId: data.organizationId,
+            key: SETTING_KEYS.FEATURE_HINTS_SEEN,
+          },
+        },
+        select: { value: true },
+      }),
     ])
+
+  // Somebody is looking at the designer, so the workshop knows it exists. Only
+  // written when the card is still outstanding, to keep a settled announcement
+  // from costing a write on every visit.
+  const announcementLive = !parseHintIds(seenRow?.value).includes(INVOICE_DESIGNER_ANNOUNCEMENT)
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
 
@@ -69,35 +85,38 @@ export default async function InvoiceDesignerPage({
   })
 
   return (
-    <InvoiceDesigner
-      initialDocumentType={doc === 'quote' ? 'quote' : 'invoice'}
-      initialView={view === 'designer' ? 'designer' : 'gallery'}
-      initialPresetId={preset}
-      initialActiveDesigns={{
-        invoice: settings['invoice.activeDesign'] || '',
-        quote: settings['quote.activeDesign'] || '',
-      }}
-      invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
-      quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
-      invoiceTemplate={templateFor('invoice')}
-      quoteTemplate={templateFor('quote')}
-      initialSavedDesigns={savedDesigns as SavedDesign[]}
-      customFields={
-        customFieldsResult.success && customFieldsResult.data
-          ? customFieldsResult.data
-              .filter((f) => f.entityType === 'service_record')
-              .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
-          : []
-      }
-      workshop={{
-        name: organization?.name ?? '',
-        address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] ?? '',
-        phone: settings[SETTING_KEYS.WORKSHOP_PHONE] ?? '',
-        email: settings[SETTING_KEYS.WORKSHOP_EMAIL] ?? '',
-        slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] ?? '',
-        orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] ?? '',
-        logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] ?? '',
-      }}
-    />
+    <>
+      {announcementLive && <DismissOnArrival id={INVOICE_DESIGNER_ANNOUNCEMENT} />}
+      <InvoiceDesigner
+        initialDocumentType={doc === 'quote' ? 'quote' : 'invoice'}
+        initialView={view === 'designer' ? 'designer' : 'gallery'}
+        initialPresetId={preset}
+        initialActiveDesigns={{
+          invoice: settings['invoice.activeDesign'] || '',
+          quote: settings['quote.activeDesign'] || '',
+        }}
+        invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
+        quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
+        invoiceTemplate={templateFor('invoice')}
+        quoteTemplate={templateFor('quote')}
+        initialSavedDesigns={savedDesigns as SavedDesign[]}
+        customFields={
+          customFieldsResult.success && customFieldsResult.data
+            ? customFieldsResult.data
+                .filter((f) => f.entityType === 'service_record')
+                .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
+            : []
+        }
+        workshop={{
+          name: organization?.name ?? '',
+          address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] ?? '',
+          phone: settings[SETTING_KEYS.WORKSHOP_PHONE] ?? '',
+          email: settings[SETTING_KEYS.WORKSHOP_EMAIL] ?? '',
+          slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] ?? '',
+          orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] ?? '',
+          logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] ?? '',
+        }}
+      />
+    </>
   )
 }

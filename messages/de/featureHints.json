@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram ist aktiv",
     "body": "Kundengespräche landen hier. Antworten Sie, ohne die App zu verlassen."
+  },
+  "invoice-designer": {
+    "title": "Rechnungen wurden überarbeitet",
+    "body": "Legen Sie Layout, Farben und Schriften für Rechnungen und Angebote im neuen Designer fest, unter Vorlagen.",
+    "cta": "Vorlagen öffnen"
   }
 }
