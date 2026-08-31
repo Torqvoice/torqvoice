@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Det er ikke satt noe slagord, så arket viser en plassholder som ikke skrives ut.",
     "sloganSetHint": "Slagordet hentes fra firmaopplysningene dine.",
     "sloganLink": "Firmainnstillinger",
-    "placeholder": "Plassholder"
+    "placeholder": "Plassholder",
+    "leaveTitle": "Forlate uten å lagre?",
+    "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
+    "leaveConfirm": "Forlat"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

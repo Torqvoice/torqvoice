@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "No slogan is set, so the sheet shows a stand-in that will not print.",
     "sloganSetHint": "Your slogan comes from your company details.",
     "sloganLink": "Company settings",
-    "placeholder": "Placeholder"
+    "placeholder": "Placeholder",
+    "leaveTitle": "Leave without saving?",
+    "leaveBody": "Your changes to this design have not been saved. They will be lost.",
+    "leaveConfirm": "Leave"
   },
   "preview": {
     "title": "Brake Service & Oil Change",

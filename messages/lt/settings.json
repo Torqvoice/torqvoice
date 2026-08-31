@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Šūkis nenustatytas, todėl lape rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
     "sloganSetHint": "Jūsų šūkis imamas iš įmonės duomenų.",
     "sloganLink": "Įmonės nustatymai",
-    "placeholder": "Vietaženklis"
+    "placeholder": "Vietaženklis",
+    "leaveTitle": "Išeiti neišsaugojus?",
+    "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
+    "leaveConfirm": "Išeiti"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

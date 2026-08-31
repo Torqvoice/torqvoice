@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Nessuno slogan impostato, quindi il foglio mostra un segnaposto che non verrà stampato.",
     "sloganSetHint": "Lo slogan proviene dai dati della tua azienda.",
     "sloganLink": "Impostazioni azienda",
-    "placeholder": "Segnaposto"
+    "placeholder": "Segnaposto",
+    "leaveTitle": "Uscire senza salvare?",
+    "leaveBody": "Le modifiche a questo design non sono state salvate e andranno perse.",
+    "leaveConfirm": "Esci"
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

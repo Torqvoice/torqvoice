@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "No hay ningún eslogan definido, así que la hoja muestra un texto de ejemplo que no se imprimirá.",
     "sloganSetHint": "Tu eslogan proviene de los datos de tu empresa.",
     "sloganLink": "Ajustes de empresa",
-    "placeholder": "Marcador"
+    "placeholder": "Marcador",
+    "leaveTitle": "¿Salir sin guardar?",
+    "leaveBody": "Los cambios de este diseño no se han guardado y se perderán.",
+    "leaveConfirm": "Salir"
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Er is geen slogan ingesteld, dus het blad toont een voorbeeldtekst die niet wordt afgedrukt.",
     "sloganSetHint": "Je slogan komt uit je bedrijfsgegevens.",
     "sloganLink": "Bedrijfsinstellingen",
-    "placeholder": "Voorbeeld"
+    "placeholder": "Voorbeeld",
+    "leaveTitle": "Weggaan zonder opslaan?",
+    "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
+    "leaveConfirm": "Weggaan"
   },
   "preview": {
     "title": "Remservice en oliewissel",
