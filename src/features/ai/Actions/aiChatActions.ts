@@ -2,7 +2,7 @@
 
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { getAiConfig, createClient } from '@/lib/ai'
+import { getAiConfig, createClient, completionTuning } from '@/lib/ai'
 import { getLocale } from 'next-intl/server'
 import { localeNames, type Locale } from '@/i18n/config'
 import { workshopTools, executeTool, DB_SCHEMA } from '../tools/workshop-tools'
@@ -144,8 +144,7 @@ export async function aiChat(chatId: string | null, messages: ChatMessage[]) {
           model: config.model,
           messages: apiMessages,
           tools: workshopTools,
-          temperature: 0.3,
-          max_tokens: 3000,
+          ...completionTuning(config, 3000, 0.3),
         })
 
         const choice = response.choices[0]
@@ -224,8 +223,7 @@ export async function aiChat(chatId: string | null, messages: ChatMessage[]) {
       const finalResponse = await client.chat.completions.create({
         model: config.model,
         messages: apiMessages,
-        temperature: 0.3,
-        max_tokens: 3000,
+        ...completionTuning(config, 3000, 0.3),
       })
 
       const assistantContent = finalResponse.choices[0]?.message?.content || ''
