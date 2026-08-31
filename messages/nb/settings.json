@@ -1779,6 +1779,7 @@
     "alignment": "Justering",
     "alignCenter": "Midt",
     "itemsTableHint": "Én nummerert liste over alle linjene i jobben, arbeid først og deler etterpå, i stedet for de separate tabellene.",
+    "discardChanges": "Forkast endringer",
     "tablesExclusiveHint": "Arket skriver ut én ordning: én nummerert liste, eller separate tabeller for deler og arbeid. Slår du på den ene, slås den andre av.",
     "innerPadding": "Innvendig avstand",
     "totalsWidth": "Bredde",

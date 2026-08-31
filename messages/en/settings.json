@@ -1779,6 +1779,7 @@
     "alignment": "Alignment",
     "alignCenter": "Center",
     "itemsTableHint": "One numbered list of every line on the job, labor first and parts after, in place of the separate parts and labor tables.",
+    "discardChanges": "Discard changes",
     "tablesExclusiveHint": "The sheet prints one arrangement: a single numbered list, or separate parts and labor tables. Switching one on switches the other off.",
     "innerPadding": "Inner spacing",
     "totalsWidth": "Width",

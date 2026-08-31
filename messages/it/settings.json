@@ -1779,6 +1779,7 @@
     "alignment": "Allineamento",
     "alignCenter": "Centro",
     "itemsTableHint": "Un elenco numerato di tutte le righe del lavoro, prima la manodopera e poi i ricambi, al posto delle tabelle separate.",
+    "discardChanges": "Scarta le modifiche",
     "tablesExclusiveHint": "Il foglio stampa una disposizione: un unico elenco numerato oppure tabelle separate per ricambi e manodopera. Attivarne una disattiva l'altra.",
     "innerPadding": "Spaziatura interna",
     "totalsWidth": "Larghezza",

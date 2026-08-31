@@ -1779,6 +1779,7 @@
     "alignment": "Ausrichtung",
     "alignCenter": "Mitte",
     "itemsTableHint": "Eine nummerierte Liste aller Positionen des Auftrags, erst Arbeit, dann Teile, anstelle der getrennten Teile- und Arbeitstabellen.",
+    "discardChanges": "Änderungen verwerfen",
     "tablesExclusiveHint": "Das Blatt druckt eine Anordnung: eine nummerierte Liste oder getrennte Teile- und Arbeitstabellen. Wird die eine eingeschaltet, geht die andere aus.",
     "innerPadding": "Innenabstand",
     "totalsWidth": "Breite",

@@ -1779,6 +1779,7 @@
     "alignment": "Alignement",
     "alignCenter": "Centre",
     "itemsTableHint": "Une liste numérotée de toutes les lignes du travail, main-d'œuvre d'abord puis pièces, à la place des tableaux séparés.",
+    "discardChanges": "Annuler les modifications",
     "tablesExclusiveHint": "La feuille imprime une disposition : une liste numérotée unique, ou des tableaux séparés pour pièces et main-d'œuvre. Activer l'une désactive l'autre.",
     "innerPadding": "Marge intérieure",
     "totalsWidth": "Largeur",

@@ -1779,6 +1779,7 @@
     "alignment": "Lygiavimas",
     "alignCenter": "Centre",
     "itemsTableHint": "Vienas numeruotas visų darbo eilučių sąrašas, pirmiausia darbai, paskui dalys, vietoj atskirų lentelių.",
+    "discardChanges": "Atmesti pakeitimus",
     "tablesExclusiveHint": "Lape spausdinamas vienas išdėstymas: vienas numeruotas sąrašas arba atskiros dalių ir darbų lentelės. Įjungus vieną, kitas išsijungia.",
     "innerPadding": "Vidinis tarpas",
     "totalsWidth": "Plotis",

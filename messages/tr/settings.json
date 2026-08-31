@@ -1779,6 +1779,7 @@
     "alignment": "Hizalama",
     "alignCenter": "Orta",
     "itemsTableHint": "İşin tüm satırlarının tek numaralı listesi, önce işçilik sonra parçalar, ayrı tabloların yerine.",
+    "discardChanges": "Değişiklikleri yoksay",
     "tablesExclusiveHint": "Sayfa tek bir düzen yazdırır: tek numaralı liste ya da ayrı parça ve işçilik tabloları. Birini açmak diğerini kapatır.",
     "innerPadding": "İç boşluk",
     "totalsWidth": "Genişlik",

@@ -1779,6 +1779,7 @@
     "alignment": "Uitlijning",
     "alignCenter": "Midden",
     "itemsTableHint": "Eén genummerde lijst van alle regels van de klus, eerst arbeid en dan onderdelen, in plaats van de aparte tabellen.",
+    "discardChanges": "Wijzigingen verwerpen",
     "tablesExclusiveHint": "Het blad drukt één opstelling af: één genummerde lijst, of aparte tabellen voor onderdelen en arbeid. De ene inschakelen schakelt de andere uit.",
     "innerPadding": "Binnenruimte",
     "totalsWidth": "Breedte",

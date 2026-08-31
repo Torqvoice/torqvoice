@@ -659,7 +659,7 @@ export function InvoiceDesigner({
                           }))
                         }}
                         title={t('deleteDesign')}
-                        className="absolute right-2 top-2 z-10 hidden h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] shadow group-hover:flex hover:text-[#dc2626]"
+                        className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-[13px] text-[#8a8f97] opacity-70 shadow hover:text-[#dc2626] hover:opacity-100"
                       >
                         ✕
                       </button>
@@ -825,9 +825,10 @@ export function InvoiceDesigner({
             else setLayout(getDefaultInvoiceLayout())
             setSelected(null)
           }}
-          className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7]"
+          disabled={!dirty[docType]}
+          className="rounded-[7px] border border-[#e3e5e9] px-3 py-1.5 text-[13px] font-medium hover:bg-[#f4f5f7] disabled:opacity-50"
         >
-          {t('reset')}
+          {t('discardChanges')}
         </button>
 
         <button

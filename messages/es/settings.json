@@ -1779,6 +1779,7 @@
     "alignment": "Alineación",
     "alignCenter": "Centro",
     "itemsTableHint": "Una lista numerada de todas las líneas del trabajo, primero mano de obra y luego piezas, en lugar de las tablas separadas.",
+    "discardChanges": "Descartar cambios",
     "tablesExclusiveHint": "La hoja imprime una disposición: una lista numerada única o tablas separadas de piezas y mano de obra. Activar una desactiva la otra.",
     "innerPadding": "Espaciado interno",
     "totalsWidth": "Ancho",

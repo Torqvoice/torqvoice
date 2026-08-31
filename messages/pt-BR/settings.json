@@ -1779,6 +1779,7 @@
     "alignment": "Alinhamento",
     "alignCenter": "Centro",
     "itemsTableHint": "Uma lista numerada de todas as linhas do serviço, primeiro mão de obra e depois peças, no lugar das tabelas separadas.",
+    "discardChanges": "Descartar alterações",
     "tablesExclusiveHint": "A folha imprime uma disposição: uma única lista numerada ou tabelas separadas de peças e mão de obra. Ativar uma desativa a outra.",
     "innerPadding": "Espaçamento interno",
     "totalsWidth": "Largura",
