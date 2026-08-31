@@ -350,7 +350,17 @@
     "makeTechnician": "En fait un technicien",
     "addSomeoneNew": "Ajouter quelqu’un",
     "notOnBoard": "Pas encore sur le planning",
-    "putOnBoard": "Mettre au planning"
+    "putOnBoard": "Mettre au planning",
+    "slotTaken": "{count, plural, one {Ce créneau est déjà réservé} other {Ce créneau a # conflits}}",
+    "anotherJob": "un autre travail",
+    "clashTechnician": "le technicien est occupé",
+    "clashBay": "la baie est occupée",
+    "clashBoth": "les deux sont occupés",
+    "bookedAnyway": "Enregistré quand même. Changez l'heure ou choisissez le prochain créneau libre.",
+    "pickNextAvailable": "Choisir le prochain créneau libre",
+    "findingSlot": "Recherche d'un créneau…",
+    "slotPicked": "Placé sur le prochain créneau libre",
+    "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines"
   },
   "notifications": {
     "title": "Notifications client",

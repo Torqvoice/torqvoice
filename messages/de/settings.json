@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Es ist kein Slogan hinterlegt, daher zeigt das Blatt einen Platzhalter, der nicht gedruckt wird.",
     "sloganSetHint": "Ihr Slogan stammt aus Ihren Firmendaten.",
     "sloganLink": "Firmeneinstellungen",
-    "placeholder": "Platzhalter"
+    "placeholder": "Platzhalter",
+    "leaveTitle": "Ohne Speichern verlassen?",
+    "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
+    "leaveConfirm": "Verlassen"
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

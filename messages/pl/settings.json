@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Nie ustawiono sloganu, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
     "sloganSetHint": "Twój slogan pochodzi z danych firmy.",
     "sloganLink": "Ustawienia firmy",
-    "placeholder": "Symbol zastępczy"
+    "placeholder": "Symbol zastępczy",
+    "leaveTitle": "Wyjść bez zapisywania?",
+    "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
+    "leaveConfirm": "Wyjdź"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

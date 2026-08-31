@@ -350,7 +350,17 @@
     "makeTechnician": "Onu teknisyen yapar",
     "addSomeoneNew": "Yeni birini ekle",
     "notOnBoard": "Henüz panoda değil",
-    "putOnBoard": "Panoya ekle"
+    "putOnBoard": "Panoya ekle",
+    "slotTaken": "{count, plural, one {Bu saat zaten dolu} other {Bu saatte # çakışma var}}",
+    "anotherJob": "başka bir iş",
+    "clashTechnician": "teknisyen meşgul",
+    "clashBay": "servis alanı dolu",
+    "clashBoth": "ikisi de dolu",
+    "bookedAnyway": "Yine de kaydedildi. Saati değiştirin veya sıradaki boş saati seçin.",
+    "pickNextAvailable": "Sıradaki boş saati seç",
+    "findingSlot": "Saat aranıyor…",
+    "slotPicked": "Sıradaki boş saate alındı",
+    "noSlotFound": "Önümüzdeki haftalarda boş saat bulunamadı"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",

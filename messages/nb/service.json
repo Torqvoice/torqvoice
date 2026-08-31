@@ -350,7 +350,17 @@
     "makeTechnician": "Gjør dem til tekniker",
     "addSomeoneNew": "Legg til noen ny",
     "notOnBoard": "Ikke på tavlen ennå",
-    "putOnBoard": "Sett på tavlen"
+    "putOnBoard": "Sett på tavlen",
+    "slotTaken": "{count, plural, one {Denne tiden er allerede booket} other {Denne tiden har # kollisjoner}}",
+    "anotherJob": "en annen jobb",
+    "clashTechnician": "teknikeren er opptatt",
+    "clashBay": "plassen er i bruk",
+    "clashBoth": "begge er opptatt",
+    "bookedAnyway": "Lagret likevel. Endre tiden, eller velg neste ledige tid.",
+    "pickNextAvailable": "Velg neste ledige tid",
+    "findingSlot": "Finner en tid…",
+    "slotPicked": "Booket inn på neste ledige tid",
+    "noSlotFound": "Fant ingen ledig tid de neste ukene"
   },
   "notifications": {
     "title": "Kundevarsler",

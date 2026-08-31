@@ -142,6 +142,8 @@ function TemplateTab({ documentType }: { documentType: 'invoice' | 'quote' }) {
           <Link
             key={preset.id}
             href={`/invoice-designer?doc=${documentType}&preset=${preset.id}`}
+            target="_blank"
+            rel="noopener"
             className="rounded-lg border p-3 text-left transition-colors hover:bg-muted"
           >
             <div className="overflow-hidden rounded border bg-background">
@@ -165,7 +167,7 @@ function TemplateTab({ documentType }: { documentType: 'invoice' | 'quote' }) {
       <div className="flex items-center justify-between gap-4 border-t pt-4">
         <p className="text-xs text-muted-foreground">{t('templates.designerHint')}</p>
         <Button asChild variant="outline">
-          <Link href={`/invoice-designer?doc=${documentType}`}>
+          <Link href={`/invoice-designer?doc=${documentType}`} target="_blank" rel="noopener">
             {t('templates.openDesigner')} →
           </Link>
         </Button>

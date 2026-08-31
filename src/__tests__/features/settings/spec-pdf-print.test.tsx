@@ -306,6 +306,42 @@ describe('the printed invoice follows the designed layout', () => {
     expect(withFooterLogo(true)).toContain('footer.logo')
   })
 
+  it("carries the sheet's typeface into every line of a panel", () => {
+    // A node that mentions a font at all overrides what it inherits, because
+    // the PDF merges the two and an explicit undefined wins. That reset a
+    // panel's values to the default face while its heading, which never
+    // mentions one, followed the document: the boxes kept the old typeface.
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { fontFamily: 'Montserrat' },
+    })
+    const customer = spec.blocks.find((b) => b.id === 'customer')
+    expect(customer?.text?.fontFamily).toBe('Montserrat')
+    const fonts = JSON.stringify(customer?.content).match(/"fontFamily":"[^"]*"/g) ?? []
+    expect(fonts.length).toBeGreaterThan(0)
+    expect(new Set(fonts)).toEqual(new Set(['"fontFamily":"Montserrat"']))
+  })
+
+  it('still lets one section keep a typeface of its own', () => {
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'customer' ? { ...s, style: { fontFamily: 'Courier' } } : s
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: {
+        fontFamily: 'Montserrat',
+        layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION },
+      },
+    })
+    expect(spec.blocks.find((b) => b.id === 'customer')?.text?.fontFamily).toBe('Courier')
+    expect(spec.blocks.find((b) => b.id === 'vehicle')?.text?.fontFamily).toBe('Montserrat')
+  })
+
   it('borrows the title block once a designer layout is saved', () => {
     // The default designer layout hides the title section; the sheet borrows
     // it and sets it under the header.

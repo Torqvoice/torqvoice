@@ -350,7 +350,17 @@
     "makeTechnician": "Maakt hen monteur",
     "addSomeoneNew": "Iemand nieuw toevoegen",
     "notOnBoard": "Nog niet op het bord",
-    "putOnBoard": "Op het bord zetten"
+    "putOnBoard": "Op het bord zetten",
+    "slotTaken": "{count, plural, one {Dit tijdslot is al bezet} other {Dit tijdslot heeft # conflicten}}",
+    "anotherJob": "een andere klus",
+    "clashTechnician": "de monteur is bezet",
+    "clashBay": "de brug is bezet",
+    "clashBoth": "beide zijn bezet",
+    "bookedAnyway": "Toch opgeslagen. Wijzig de tijd of kies het eerstvolgende vrije slot.",
+    "pickNextAvailable": "Kies eerstvolgende vrije slot",
+    "findingSlot": "Slot zoeken…",
+    "slotPicked": "Ingepland op het eerstvolgende vrije slot",
+    "noSlotFound": "Geen vrij slot gevonden in de komende weken"
   },
   "notifications": {
     "title": "Klantmeldingen",

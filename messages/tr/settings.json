@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Slogan tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
     "sloganSetHint": "Sloganınız şirket bilgilerinizden gelir.",
     "sloganLink": "Şirket ayarları",
-    "placeholder": "Örnek"
+    "placeholder": "Örnek",
+    "leaveTitle": "Kaydetmeden çıkılsın mı?",
+    "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
+    "leaveConfirm": "Çık"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

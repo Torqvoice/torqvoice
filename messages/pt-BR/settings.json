@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Nenhum slogan definido, então a folha mostra um texto de exemplo que não será impresso.",
     "sloganSetHint": "Seu slogan vem dos dados da sua empresa.",
     "sloganLink": "Configurações da empresa",
-    "placeholder": "Exemplo"
+    "placeholder": "Exemplo",
+    "leaveTitle": "Sair sem salvar?",
+    "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",
+    "leaveConfirm": "Sair"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

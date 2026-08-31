@@ -1881,7 +1881,10 @@
     "sloganPlaceholderHint": "Aucun slogan n'est défini, la feuille affiche donc un texte d'exemple qui ne sera pas imprimé.",
     "sloganSetHint": "Votre slogan provient des informations de votre entreprise.",
     "sloganLink": "Paramètres de l'entreprise",
-    "placeholder": "Exemple"
+    "placeholder": "Exemple",
+    "leaveTitle": "Quitter sans enregistrer ?",
+    "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",
+    "leaveConfirm": "Quitter"
   },
   "preview": {
     "title": "Révision des freins et vidange",
