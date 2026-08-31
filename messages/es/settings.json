@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Activa el logotipo en Campos para imprimirlo también al pie de la página.",
     "logoReset": "Usar el logotipo de la empresa",
     "logoOwn": "Se imprime solo en este documento. El logotipo de la empresa no cambia.",
-    "logoInherited": "Se usa el logotipo de la empresa. Sube uno aquí para usar otro solo en este documento."
+    "logoInherited": "Se usa el logotipo de la empresa. Sube uno aquí para usar otro solo en este documento.",
+    "slogan": "Eslogan",
+    "sloganPlaceholderHint": "No hay ningún eslogan definido, así que la hoja muestra un texto de ejemplo que no se imprimirá.",
+    "sloganSetHint": "Tu eslogan proviene de los datos de tu empresa.",
+    "sloganLink": "Ajustes de empresa",
+    "placeholder": "Marcador"
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

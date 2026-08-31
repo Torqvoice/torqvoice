@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Sayfanın altında da yazdırmak için Alanlar bölümünden logoyu açın.",
     "logoReset": "Şirket logosunu kullan",
     "logoOwn": "Yalnızca bu belgede yazdırılır. Şirket logosu değişmez.",
-    "logoInherited": "Şirket logosu kullanılıyor. Yalnızca bu belgede farklı bir logo kullanmak için buraya yükleyin."
+    "logoInherited": "Şirket logosu kullanılıyor. Yalnızca bu belgede farklı bir logo kullanmak için buraya yükleyin.",
+    "slogan": "Slogan",
+    "sloganPlaceholderHint": "Slogan tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
+    "sloganSetHint": "Sloganınız şirket bilgilerinizden gelir.",
+    "sloganLink": "Şirket ayarları",
+    "placeholder": "Örnek"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

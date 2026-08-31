@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Attiva il logo in Campi per stamparlo anche a piè di pagina.",
     "logoReset": "Usa il logo aziendale",
     "logoOwn": "Stampato solo su questo documento. Il logo aziendale resta invariato.",
-    "logoInherited": "Viene usato il logo aziendale. Caricane uno qui per usarne un altro solo su questo documento."
+    "logoInherited": "Viene usato il logo aziendale. Caricane uno qui per usarne un altro solo su questo documento.",
+    "slogan": "Slogan",
+    "sloganPlaceholderHint": "Nessuno slogan impostato, quindi il foglio mostra un segnaposto che non verrà stampato.",
+    "sloganSetHint": "Lo slogan proviene dai dati della tua azienda.",
+    "sloganLink": "Impostazioni azienda",
+    "placeholder": "Segnaposto"
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

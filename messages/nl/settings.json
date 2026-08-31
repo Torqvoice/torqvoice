@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Zet het logo aan bij Velden om het ook onderaan de pagina af te drukken.",
     "logoReset": "Bedrijfslogo gebruiken",
     "logoOwn": "Wordt alleen op dit document afgedrukt. Het bedrijfslogo blijft ongewijzigd.",
-    "logoInherited": "Het bedrijfslogo wordt gebruikt. Upload er hier een om alleen op dit document een ander te gebruiken."
+    "logoInherited": "Het bedrijfslogo wordt gebruikt. Upload er hier een om alleen op dit document een ander te gebruiken.",
+    "slogan": "Slogan",
+    "sloganPlaceholderHint": "Er is geen slogan ingesteld, dus het blad toont een voorbeeldtekst die niet wordt afgedrukt.",
+    "sloganSetHint": "Je slogan komt uit je bedrijfsgegevens.",
+    "sloganLink": "Bedrijfsinstellingen",
+    "placeholder": "Voorbeeld"
   },
   "preview": {
     "title": "Remservice en oliewissel",

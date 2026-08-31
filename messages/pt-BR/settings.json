@@ -1876,7 +1876,12 @@
     "footerLogoHint": "Ative o logotipo em Campos para imprimi-lo também no rodapé.",
     "logoReset": "Usar o logotipo da empresa",
     "logoOwn": "Impresso somente neste documento. O logotipo da empresa não muda.",
-    "logoInherited": "Usando o logotipo da empresa. Envie um aqui para usar outro somente neste documento."
+    "logoInherited": "Usando o logotipo da empresa. Envie um aqui para usar outro somente neste documento.",
+    "slogan": "Slogan",
+    "sloganPlaceholderHint": "Nenhum slogan definido, então a folha mostra um texto de exemplo que não será impresso.",
+    "sloganSetHint": "Seu slogan vem dos dados da sua empresa.",
+    "sloganLink": "Configurações da empresa",
+    "placeholder": "Exemplo"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

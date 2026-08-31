@@ -199,6 +199,13 @@ export function InvoiceDesigner({
 
   const layout = layouts[docType]
   const template = templates[docType]
+  // Blocks the canvas is filling in for the workshop. The slogan is the only
+  // one today: the rest of the sample stands in for a job, which a real sheet
+  // will have, while a slogan nobody has written simply never prints.
+  const placeholderIds = useMemo(
+    () => new Set(companyWorkshop.slogan?.trim() ? [] : ['slogan']),
+    [companyWorkshop.slogan]
+  )
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
@@ -622,9 +629,37 @@ export function InvoiceDesigner({
   }
 
   if (view === 'gallery') {
+    // A bounded height, not a minimum: the tool sits in a fixed, non-scrolling
+    // frame, so a gallery that grows past the viewport has to scroll inside
+    // itself. With min-h-screen it simply grew and the frame clipped it,
+    // putting the last row of designs and the way back out of reach.
     return (
-      <div className="flex min-h-screen flex-col items-center overflow-y-auto px-8 py-14">
+      <div className="flex h-full flex-col items-center overflow-y-auto px-8 py-14">
         <div className="w-full max-w-[1060px]">
+          {/* The way out and the way on, both above the cards. Leaving should
+              never need a scroll, and carrying on with the layout somebody
+              already has is the commonest reason to open this page: below a
+              screen of templates it was the hardest thing here to reach,
+              while replacing that layout filled the view. */}
+          <div className="mb-7 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => router.push('/settings/templates')}
+              className="text-sm text-[#71767e] hover:text-[#1a1d21]"
+            >
+              ◂ {t('backToSettings')}
+            </button>
+            {/* Outlined rather than filled: it must be easy to find without
+                shouting over the templates somebody may have come to browse. */}
+            <button
+              type="button"
+              onClick={() => setView('designer')}
+              className="rounded-[7px] border border-[#c9ccd1] bg-white px-3 py-1.5 text-sm font-medium text-[#2563eb] hover:border-[#2563eb]"
+            >
+              {t('continueCurrent')} →
+            </button>
+          </div>
+
           <div className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#2563eb]">
             {t('eyebrow')}
           </div>
@@ -709,23 +744,6 @@ export function InvoiceDesigner({
                 </button>
               )
             })}
-          </div>
-
-          <div className="mt-7 flex justify-center gap-6">
-            <button
-              type="button"
-              onClick={() => setView('designer')}
-              className="text-sm font-medium text-[#2563eb]"
-            >
-              {t('continueCurrent')} →
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push('/settings/templates')}
-              className="text-sm text-[#71767e]"
-            >
-              {t('backToSettings')}
-            </button>
           </div>
         </div>
       </div>
@@ -945,6 +963,7 @@ export function InvoiceDesigner({
           onInsert={insertBefore}
           onPair={pairWith}
           pairable={COLUMN_ELIGIBLE_SECTIONS}
+          placeholderIds={placeholderIds}
           zoom={zoom}
           rulers={rulers}
         />
@@ -962,6 +981,7 @@ export function InvoiceDesigner({
           onTemplate={setTemplate}
           logoUrl={workshop.logoUrl}
           ownLogo={!!template.logoUrl}
+          sloganSet={!!companyWorkshop.slogan?.trim()}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>
