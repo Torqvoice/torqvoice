@@ -1006,7 +1006,16 @@
     "failedSave": "Impossible d'enregistrer le champ",
     "failedDelete": "Impossible de supprimer",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Non assigné",
+    "defaultValue": "Valeur par défaut",
+    "defaultValueHint": "Préremplie sur les nouvelles fiches et imprimée tant qu'aucune valeur n'a été saisie.",
+    "defaultValueNone": "Aucune",
+    "defaultValueCheckedHint": "Cochée par défaut",
+    "placement": "Emplacement sur le document",
+    "placementHidden": "Non imprimé",
+    "placementHint": "Dans quelle section de la facture ou du devis ce champ est imprimé.",
+    "failedSavePlacement": "Impossible d'enregistrer l'emplacement du champ"
   },
   "workshop": {
     "title": "Valeurs par défaut de l'atelier",
@@ -1916,7 +1925,8 @@
     "placeholder": "Exemple",
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",
-    "leaveConfirm": "Quitter"
+    "leaveConfirm": "Quitter",
+    "moveFieldToSection": "Déplacer vers une section"
   },
   "preview": {
     "title": "Révision des freins et vidange",

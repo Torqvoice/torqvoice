@@ -48,7 +48,9 @@
       "details": "Details",
       "images": "Bilder",
       "documents": "Dokumente"
-    }
+    },
+    "customFieldsInvalid": "Bitte alle erforderlichen benutzerdefinierten Felder ausfüllen",
+    "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"
   },
   "form": {
     "newQuote": "Neues Angebot",

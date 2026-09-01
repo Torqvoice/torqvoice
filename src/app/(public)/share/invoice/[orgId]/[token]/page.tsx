@@ -11,6 +11,7 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -163,24 +164,7 @@ export default async function PublicInvoicePage({
   })
 
   // Fetch custom field values for this service record
-  const customFieldValues = await db.customFieldValue.findMany({
-    where: { entityId: record.id, entityType: 'service_record' },
-    include: {
-      field: {
-        select: { id: true, label: true, fieldType: true, isActive: true, sortOrder: true },
-      },
-    },
-    orderBy: { field: { sortOrder: 'asc' } },
-  })
-
-  const customFields = customFieldValues
-    .filter((v) => v.field.isActive && v.value)
-    .map((v) => ({
-      label: v.field.label,
-      value: v.value,
-      fieldType: v.field.fieldType,
-      fieldId: v.field.id,
-    }))
+  const customFields = await getCustomFieldsForPrint(orgId, record.id, 'service_record')
 
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value

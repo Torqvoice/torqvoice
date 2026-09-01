@@ -26,6 +26,7 @@ import {
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { netLineTotal } from '@/lib/tax'
+import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
@@ -256,6 +257,14 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
           </Link>
         )}
       </div>
+
+      {/* Custom Fields */}
+      <CustomFieldsForm
+        entityId={quote.id}
+        entityType="quote"
+        onValuesReady={state.onCustomFieldsReady}
+        onChange={state.markDirty}
+      />
 
       {/* Customer Response */}
       {quote.customerMessage &&

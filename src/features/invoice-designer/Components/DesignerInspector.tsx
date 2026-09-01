@@ -309,6 +309,7 @@ export function DesignerInspector({
   selected,
   onSelect,
   onSection,
+  onMoveCustomField,
   onPlaceInFlow,
   onSectionStyle,
   onDocument,
@@ -324,6 +325,8 @@ export function DesignerInspector({
   selected: string | null
   onSelect: (id: string | null) => void
   onSection: (id: string, patch: Partial<InvoiceSection>) => void
+  /** Moves a workshop-defined field into another section's field list. */
+  onMoveCustomField: (cfId: string, toSectionId: string) => void
   /** Puts a block in the flow, in a column, discarding any hand placement. */
   onPlaceInFlow: (id: string, column: 'left' | 'right' | undefined) => void
   onSectionStyle: (id: string, style: InvoiceSectionStyle | undefined) => void
@@ -657,6 +660,20 @@ export function DesignerInspector({
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
+                  {isCustomFieldId(field.id) && (
+                    <select
+                      value={section.id}
+                      onChange={(e) => onMoveCustomField(field.id, e.target.value)}
+                      className="max-w-[104px] truncate rounded-md border border-[#e3e5e9] bg-white px-1 py-0.5 text-[11.5px] text-[#5b6068]"
+                      title={t('moveFieldToSection')}
+                    >
+                      {[...SECTIONS_WITH_FIELDS].map((id) => (
+                        <option key={id} value={id}>
+                          {sectionName(id)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   {isCustomFieldId(field.id) && (
                     <button
                       type="button"

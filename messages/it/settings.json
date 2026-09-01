@@ -1006,7 +1006,16 @@
     "failedSave": "Impossibile salvare il campo",
     "failedDelete": "Impossibile eliminare",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Non assegnato",
+    "defaultValue": "Valore predefinito",
+    "defaultValueHint": "Precompilato nei nuovi record e stampato finché non viene inserito un valore.",
+    "defaultValueNone": "Nessuno",
+    "defaultValueCheckedHint": "Selezionata per impostazione predefinita",
+    "placement": "Posizione sul documento",
+    "placementHidden": "Non stampato",
+    "placementHint": "In quale sezione della fattura o del preventivo viene stampato questo campo.",
+    "failedSavePlacement": "Impossibile salvare la posizione del campo"
   },
   "workshop": {
     "title": "Predefiniti officina",
@@ -1916,7 +1925,8 @@
     "placeholder": "Segnaposto",
     "leaveTitle": "Uscire senza salvare?",
     "leaveBody": "Le modifiche a questo design non sono state salvate e andranno perse.",
-    "leaveConfirm": "Esci"
+    "leaveConfirm": "Esci",
+    "moveFieldToSection": "Sposta nella sezione"
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

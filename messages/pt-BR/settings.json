@@ -1006,7 +1006,16 @@
     "failedSave": "Falha ao salvar campo",
     "failedDelete": "Falha ao excluir",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Não atribuído",
+    "defaultValue": "Valor padrão",
+    "defaultValueHint": "Preenchido automaticamente em novos registros e impresso enquanto nenhum valor for informado.",
+    "defaultValueNone": "Nenhum",
+    "defaultValueCheckedHint": "Marcado por padrão",
+    "placement": "Posição no documento",
+    "placementHidden": "Não é impresso",
+    "placementHint": "Em qual seção da fatura ou do orçamento este campo é impresso.",
+    "failedSavePlacement": "Não foi possível salvar a posição do campo"
   },
   "workshop": {
     "title": "Padroes da oficina",
@@ -1916,7 +1925,8 @@
     "placeholder": "Exemplo",
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",
-    "leaveConfirm": "Sair"
+    "leaveConfirm": "Sair",
+    "moveFieldToSection": "Mover para a seção"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

@@ -1006,7 +1006,16 @@
     "failedSave": "Kan veld niet opslaan",
     "failedDelete": "Kan niet verwijderen",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Niet toegewezen",
+    "defaultValue": "Standaardwaarde",
+    "defaultValueHint": "Wordt vooraf ingevuld bij nieuwe records en afgedrukt zolang er geen waarde is ingevoerd.",
+    "defaultValueNone": "Geen",
+    "defaultValueCheckedHint": "Standaard aangevinkt",
+    "placement": "Plaats op het document",
+    "placementHidden": "Wordt niet afgedrukt",
+    "placementHint": "In welke sectie van de factuur of offerte dit veld wordt afgedrukt.",
+    "failedSavePlacement": "Kan de veldplaatsing niet opslaan"
   },
   "workshop": {
     "title": "Werkplaatsstandaarden",
@@ -1916,7 +1925,8 @@
     "placeholder": "Voorbeeld",
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
-    "leaveConfirm": "Weggaan"
+    "leaveConfirm": "Weggaan",
+    "moveFieldToSection": "Verplaats naar sectie"
   },
   "preview": {
     "title": "Remservice en oliewissel",

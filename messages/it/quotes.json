@@ -48,7 +48,9 @@
       "details": "Dettagli",
       "images": "Immagini",
       "documents": "Documenti"
-    }
+    },
+    "customFieldsInvalid": "Compila tutti i campi personalizzati obbligatori",
+    "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati"
   },
   "form": {
     "newQuote": "Nuovo preventivo",

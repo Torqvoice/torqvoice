@@ -15,6 +15,7 @@ import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { formatDateForPdf } from '@/lib/format'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -111,23 +112,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       orderBy: { createdAt: 'desc' },
     })
 
-    // Fetch custom field values for this service record
-    const customFieldValues = await db.customFieldValue.findMany({
-      where: { entityId: record.id, entityType: 'service_record' },
-      include: {
-        field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
-      },
-      orderBy: { field: { sortOrder: 'asc' } },
-    })
-
-    const customFields = customFieldValues
-      .filter((v) => v.field.isActive && v.value)
-      .map((v) => ({
-        fieldId: v.fieldId,
-        label: v.field.label,
-        value: v.value,
-        fieldType: v.field.fieldType,
-      }))
+    // Custom fields for this service record (definition defaults included)
+    const customFields = await getCustomFieldsForPrint(
+      ctx.organizationId,
+      record.id,
+      'service_record'
+    )
 
     // Build settings map
     const settingsMap: Record<string, string> = {}

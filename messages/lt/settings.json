@@ -1006,7 +1006,16 @@
     "failedSave": "Nepavyko išsaugoti lauko",
     "failedDelete": "Nepavyko ištrinti",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Nepriskirta",
+    "defaultValue": "Numatytoji reikšmė",
+    "defaultValueHint": "Automatiškai užpildoma naujuose įrašuose ir spausdinama, kol neįvesta reikšmė.",
+    "defaultValueNone": "Nėra",
+    "defaultValueCheckedHint": "Pažymėta pagal numatytuosius nustatymus",
+    "placement": "Vieta dokumente",
+    "placementHidden": "Nespausdinama",
+    "placementHint": "Kurioje sąskaitos arba pasiūlymo dalyje spausdinamas šis laukas.",
+    "failedSavePlacement": "Nepavyko išsaugoti lauko vietos"
   },
   "workshop": {
     "title": "Dirbtuvių numatytosios reikšmės",
@@ -1916,7 +1925,8 @@
     "placeholder": "Vietaženklis",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
-    "leaveConfirm": "Išeiti"
+    "leaveConfirm": "Išeiti",
+    "moveFieldToSection": "Perkelti į skiltį"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

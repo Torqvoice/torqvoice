@@ -1006,7 +1006,16 @@
     "failedSave": "Feld konnte nicht gespeichert werden",
     "failedDelete": "Konnte nicht gelöscht werden",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Nicht zugewiesen",
+    "defaultValue": "Standardwert",
+    "defaultValueHint": "Wird bei neuen Einträgen vorausgefüllt und gedruckt, solange kein Wert eingegeben wurde.",
+    "defaultValueNone": "Kein",
+    "defaultValueCheckedHint": "Standardmäßig aktiviert",
+    "placement": "Position auf dem Dokument",
+    "placementHidden": "Wird nicht gedruckt",
+    "placementHint": "In welchem Abschnitt der Rechnung oder des Angebots dieses Feld gedruckt wird.",
+    "failedSavePlacement": "Feldposition konnte nicht gespeichert werden"
   },
   "workshop": {
     "title": "Werkstatt-Standards",
@@ -1916,7 +1925,8 @@
     "placeholder": "Platzhalter",
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
-    "leaveConfirm": "Verlassen"
+    "leaveConfirm": "Verlassen",
+    "moveFieldToSection": "In Abschnitt verschieben"
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

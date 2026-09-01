@@ -150,7 +150,8 @@
     "settings_whatsappDisconnected": "WhatsApp bağlantısı kesildi",
     "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
     "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi",
-    "team_createDefaultRoles": "Standart roller oluşturuldu"
+    "team_createDefaultRoles": "Standart roller oluşturuldu",
+    "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -273,6 +274,7 @@
     "whatsapp_send": "{name} kişisine WhatsApp mesajı gönderildi",
     "work_bay_create": "\"{name}\" çalışma alanı oluşturuldu",
     "work_bay_update": "\"{name}\" çalışma alanı güncellendi",
-    "work_bay_delete": "{id} çalışma alanı silindi"
+    "work_bay_delete": "{id} çalışma alanı silindi",
+    "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi"
   }
 }

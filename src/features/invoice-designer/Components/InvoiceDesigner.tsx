@@ -80,7 +80,8 @@ export function InvoiceDesigner({
   initialDesignId,
   initialActiveDesigns,
   workshop: companyWorkshop,
-  customFields,
+  customFields: serviceCustomFields,
+  quoteCustomFields = [],
 }: {
   initialDocumentType: DocumentType
   initialView: 'gallery' | 'designer'
@@ -97,6 +98,7 @@ export function InvoiceDesigner({
   initialActiveDesigns?: Record<DocumentType, string>
   workshop: DesignerWorkshop
   customFields: DesignerFieldDef[]
+  quoteCustomFields?: DesignerFieldDef[]
 }) {
   const router = useRouter()
   const t = useTranslations('settings.designer')
@@ -118,6 +120,8 @@ export function InvoiceDesigner({
   const arrivedWith = initialDesign ?? initialPreset
   const [view, setView] = useState<'gallery' | 'designer'>(arrivedWith ? 'designer' : initialView)
   const [docType, setDocType] = useState<DocumentType>(initialDocumentType)
+  // Each document places its own entity's fields: quotes carry quote fields.
+  const customFields = docType === 'quote' ? quoteCustomFields : serviceCustomFields
   const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>(() => {
     const base = {
       invoice: invoiceLayout ?? getDefaultInvoiceLayout(),
@@ -503,6 +507,23 @@ export function InvoiceDesigner({
       const [moved] = ordered.splice(from, 1)
       ordered.splice(to, 0, moved)
       setLayout({ ...layout, sections: ordered.map((s, i) => ({ ...s, order: i })) })
+    },
+    [layout, setLayout]
+  )
+
+  /** Move a workshop-defined field into another section's field list. */
+  const moveCustomField = useCallback(
+    (cfId: string, toSectionId: string) => {
+      const sections = layout.sections.map((s) => {
+        const fields = (s.fields ?? []).filter((f) => f.id !== cfId)
+        if (s.id !== toSectionId) {
+          return s.fields ? { ...s, fields } : s
+        }
+        fields.push({ id: cfId, visible: true })
+        // "general" starts hidden; a field moved there is meant to print.
+        return { ...s, fields, visible: s.id === 'general' ? true : s.visible }
+      })
+      setLayout({ ...layout, sections })
     },
     [layout, setLayout]
   )
@@ -985,6 +1006,7 @@ export function InvoiceDesigner({
           selected={selected}
           onSelect={setSelected}
           onSection={patchSection}
+          onMoveCustomField={moveCustomField}
           onPlaceInFlow={placeInFlow}
           onSectionStyle={patchSectionStyle}
           onDocument={patchDocument}

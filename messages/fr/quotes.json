@@ -48,7 +48,9 @@
       "details": "Détails",
       "images": "Images",
       "documents": "Documents"
-    }
+    },
+    "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
+    "customFieldsSaveFailed": "Impossible d'enregistrer les champs personnalisés"
   },
   "form": {
     "newQuote": "Nouveau devis",

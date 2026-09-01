@@ -1006,7 +1006,16 @@
     "failedSave": "Не удалось сохранить поле",
     "failedDelete": "Не удалось удалить",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Не назначено",
+    "defaultValue": "Значение по умолчанию",
+    "defaultValueHint": "Автоматически подставляется в новые записи и печатается, пока значение не введено.",
+    "defaultValueNone": "Нет",
+    "defaultValueCheckedHint": "Отмечено по умолчанию",
+    "placement": "Расположение в документе",
+    "placementHidden": "Не печатается",
+    "placementHint": "В каком разделе счёта или сметы печатается это поле.",
+    "failedSavePlacement": "Не удалось сохранить расположение поля"
   },
   "workshop": {
     "title": "Настройки мастерской",
@@ -1916,7 +1925,8 @@
     "placeholder": "Образец",
     "leaveTitle": "Выйти без сохранения?",
     "leaveBody": "Изменения в этом оформлении не сохранены и будут потеряны.",
-    "leaveConfirm": "Выйти"
+    "leaveConfirm": "Выйти",
+    "moveFieldToSection": "Переместить в раздел"
   },
   "preview": {
     "title": "Обслуживание тормозов и замена масла",

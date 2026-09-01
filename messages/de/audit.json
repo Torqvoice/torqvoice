@@ -150,7 +150,8 @@
     "settings_whatsappDisconnected": "WhatsApp getrennt",
     "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert",
     "team_giveTechnicianTheApp": "Board-Techniker ein Konto gegeben",
-    "team_createDefaultRoles": "Standardrollen angelegt"
+    "team_createDefaultRoles": "Standardrollen angelegt",
+    "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -273,6 +274,7 @@
     "whatsapp_send": "WhatsApp-Nachricht an {name} gesendet",
     "work_bay_create": "Arbeitsplatz „{name}“ angelegt",
     "work_bay_update": "Arbeitsplatz „{name}“ aktualisiert",
-    "work_bay_delete": "Arbeitsplatz {id} gelöscht"
+    "work_bay_delete": "Arbeitsplatz {id} gelöscht",
+    "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird"
   }
 }

@@ -48,7 +48,9 @@
       "details": "Detaljer",
       "images": "Bilder",
       "documents": "Dokumenter"
-    }
+    },
+    "customFieldsInvalid": "Fyll ut alle obligatoriske egendefinerte felt",
+    "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"
   },
   "form": {
     "newQuote": "Nytt tilbud",

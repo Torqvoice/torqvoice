@@ -48,7 +48,9 @@
       "details": "Detalhes",
       "images": "Imagens",
       "documents": "Documentos"
-    }
+    },
+    "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
+    "customFieldsSaveFailed": "Não foi possível salvar os campos personalizados"
   },
   "form": {
     "newQuote": "Novo orçamento",

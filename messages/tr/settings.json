@@ -1006,7 +1006,16 @@
     "failedSave": "Alan kaydedilemedi",
     "failedDelete": "Silinemedi",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Atanmadı",
+    "defaultValue": "Varsayılan değer",
+    "defaultValueHint": "Yeni kayıtlarda otomatik doldurulur ve bir değer girilene kadar yazdırılır.",
+    "defaultValueNone": "Yok",
+    "defaultValueCheckedHint": "Varsayılan olarak işaretli",
+    "placement": "Belgedeki konum",
+    "placementHidden": "Yazdırılmaz",
+    "placementHint": "Bu alanın faturanın veya teklifin hangi bölümünde yazdırılacağı.",
+    "failedSavePlacement": "Alan konumu kaydedilemedi"
   },
   "workshop": {
     "title": "Atölye Varsayılanları",
@@ -1916,7 +1925,8 @@
     "placeholder": "Örnek",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
-    "leaveConfirm": "Çık"
+    "leaveConfirm": "Çık",
+    "moveFieldToSection": "Bölüme taşı"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",
