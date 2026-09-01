@@ -144,17 +144,31 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting for demo container to be ready..."
-          for i in $(seq 1 12); do
+          # Docker reports "running" as soon as the entrypoint starts, which is
+          # before init-db.sh has applied migrations. The seed step below writes
+          # to tables those migrations touch, so waiting on status alone let it
+          # race ahead and fail on a column that did not exist yet. The health
+          # route only answers once node server.js is up, i.e. after migrating.
+          echo "Waiting for demo app to serve..."
+          for i in $(seq 1 60); do
             STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-demo 2>/dev/null || echo "not found")
-            if [ "$STATUS" = "running" ]; then
-              echo "Container is running!"
+            case "$STATUS" in
+              running|created|restarting) ;;
+              *)
+                echo "::error::Container is not running (status: $STATUS)"
+                docker logs torqvoice-app-demo --tail 50
+                exit 1
+                ;;
+            esac
+            if docker exec torqvoice-app-demo \
+              wget -q -O /dev/null http://127.0.0.1:3000/api/v1/health 2>/dev/null; then
+              echo "Demo app is healthy!"
               exit 0
             fi
-            echo "Status: $STATUS, retrying in 5s..."
+            echo "Not serving yet, retrying in 5s..."
             sleep 5
           done
-          echo "::error::Container failed to start"
+          echo "::error::Demo app did not become healthy in time"
           docker logs torqvoice-app-demo --tail 50
           exit 1
 
