@@ -148,9 +148,10 @@ export async function getCustomFieldValues(entityId: string, entityType: string)
         valuesMap[v.fieldId] = v.value
       }
 
+      // No stored row -> definition default; a stored '' means the user cleared it.
       return definitions.map((def) => ({
         ...def,
-        value: valuesMap[def.id] || '',
+        value: valuesMap[def.id] !== undefined ? valuesMap[def.id] : (def.defaultValue ?? ''),
       }))
     },
     {

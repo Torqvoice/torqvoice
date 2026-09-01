@@ -633,7 +633,8 @@
       "company_org_number": "Número de organización",
       "bank_account": "Cuenta bancaria",
       "footer_note": "Nota de pie",
-      "org_number": "Número de organización"
+      "org_number": "Número de organización",
+      "portal_link": "Enlace al portal"
     },
     "presetsTitle": "Empezar con una disposición",
     "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",
@@ -1006,7 +1007,16 @@
     "failedSave": "No se pudo guardar el campo",
     "failedDelete": "No se pudo eliminar",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Sin asignar",
+    "defaultValue": "Valor predeterminado",
+    "defaultValueHint": "Se rellena automáticamente en registros nuevos y se imprime mientras no se haya introducido un valor.",
+    "defaultValueNone": "Ninguno",
+    "defaultValueCheckedHint": "Marcado por defecto",
+    "placement": "Ubicación en el documento",
+    "placementHidden": "No se imprime",
+    "placementHint": "En qué sección de la factura o del presupuesto se imprime este campo. En el diseñador también puedes activarlo en más secciones.",
+    "failedSavePlacement": "No se pudo guardar la ubicación del campo"
   },
   "workshop": {
     "title": "Valores predeterminados del taller",
@@ -1916,7 +1926,8 @@
     "placeholder": "Marcador",
     "leaveTitle": "¿Salir sin guardar?",
     "leaveBody": "Los cambios de este diseño no se han guardado y se perderán.",
-    "leaveConfirm": "Salir"
+    "leaveConfirm": "Salir",
+    "boldField": "Negrita"
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

@@ -633,7 +633,8 @@
       "company_org_number": "Organisasjonsnummer",
       "bank_account": "Bankkonto",
       "footer_note": "Bunntekstnotat",
-      "org_number": "Organisasjonsnummer"
+      "org_number": "Organisasjonsnummer",
+      "portal_link": "Portallenke"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Kunne ikke lagre felt",
     "failedDelete": "Kunne ikke slette",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Ikke plassert",
+    "defaultValue": "Standardverdi",
+    "defaultValueHint": "Fylles ut automatisk på nye oppføringer og skrives ut så lenge ingen verdi er angitt.",
+    "defaultValueNone": "Ingen",
+    "defaultValueCheckedHint": "Avkrysset som standard",
+    "placement": "Plassering på dokumentet",
+    "placementHidden": "Skrives ikke ut",
+    "placementHint": "Hvilken del av fakturaen eller tilbudet dette feltet skrives ut i. I designeren kan du også slå det på i flere seksjoner.",
+    "failedSavePlacement": "Kunne ikke lagre feltplasseringen"
   },
   "workshop": {
     "title": "Verkstedstandarder",
@@ -1916,7 +1926,8 @@
     "placeholder": "Plassholder",
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
-    "leaveConfirm": "Forlat"
+    "leaveConfirm": "Forlat",
+    "boldField": "Fet"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

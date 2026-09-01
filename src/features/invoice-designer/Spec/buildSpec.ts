@@ -1,5 +1,8 @@
 import {
+  FOOTER_SPECIAL_FIELD_IDS,
+  footerColumnsOf,
   getBuiltinFieldsForSection,
+  isCustomFieldId,
   type InvoiceLayoutConfig,
   type InvoiceSection,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -175,6 +178,37 @@ export function sectionFields(section: InvoiceSection): string[] {
   return section.fields.filter((f) => f.visible).map((f) => f.id)
 }
 
+/**
+ * The workshop-defined lines a section carries, already worded ("Label:
+ * value") and non-empty. The bespoke builders (letterhead, footer, payment)
+ * draw from fixed field ids, so without this a custom field assigned to them
+ * would be silently invisible; the panels resolve every id and need no help.
+ */
+function customFieldEntries(
+  section: InvoiceSection,
+  data: DocumentData
+): { id: string; value: string }[] {
+  return sectionFields(section)
+    .filter((id) => isCustomFieldId(id))
+    .map((id) => ({ id, value: data.fields[id] }))
+    .filter((entry) => Boolean(entry.value))
+}
+
+/** The section's explicit weight for a field, or nothing when never chosen. */
+function explicitBold(section: InvoiceSection, id: string): boolean | undefined {
+  return section.fields?.find((f) => f.id === id)?.bold
+}
+
+/**
+ * Whether the section still emphasizes its own leads. The automatic bold
+ * (a panel's first line, a footer column's head) stands until the workshop
+ * chooses weights itself; one explicit choice anywhere in the section hands
+ * the whole section over to the choices.
+ */
+function autoEmphasis(section: InvoiceSection): boolean {
+  return !section.fields?.some((f) => f.bold !== undefined)
+}
+
 const scale = (base: number, factor: number) => Math.max(5, Math.round(base * factor * 10) / 10)
 
 /** A translated string, or the English the sheet has always printed. */
@@ -247,17 +281,27 @@ function panel(
               style: heading,
             } as Node,
           ]),
-      ...lines.map<Node>((line, i) => ({
-        kind: 'text',
-        id: `${section.id}.${line.id}`,
-        text: line.value,
-        style: {
-          color: i === 0 ? look.text : look.muted,
-          bold: i === 0,
-          fontSize: i === 0 ? size : scale(size, 0.92),
-          fontFamily: look.fontFamily,
-        },
-      })),
+      ...lines.map<Node>((line, i) => {
+        // The first line leads the panel, set bold and a step larger, the way
+        // the customer's name has always headed its card. A workshop-defined
+        // field is a detail, not a heading, so it prints as a plain line even
+        // when it happens to stand first. A weight the layout chooses for the
+        // line wins over all of that.
+        const lead =
+          explicitBold(section, line.id) ??
+          (autoEmphasis(section) && i === 0 && !isCustomFieldId(line.id))
+        return {
+          kind: 'text',
+          id: `${section.id}.${line.id}`,
+          text: line.value,
+          style: {
+            color: lead ? look.text : look.muted,
+            bold: lead,
+            fontSize: lead ? size : scale(size, 0.92),
+            fontFamily: look.fontFamily,
+          },
+        }
+      }),
     ],
   }
 }
@@ -309,6 +353,8 @@ function framedBandHeight(
     .filter((id) => fields.includes(id))
     .some((id) => data.fields[id])
   if (hasStrapline) height += 6 + line(scale(size, 0.9))
+  const customCount = customFieldEntries(section, data).length
+  if (customCount) height += 6 + customCount * line(scale(size, 0.9))
   if (data.branding) height += 6 + Math.max(MARK.icon, line(scale(size, MARK.word)))
 
   return Math.max(FRAMED.bandHeight, Math.ceil(FRAMED_HEADER_TOP + height + FRAMED_HEADER_PAD))
@@ -395,7 +441,19 @@ function classicLetterhead(
                 }
               : null
           default:
-            return null
+            // Workshop-defined fields print like the contact lines above.
+            return isCustomFieldId(id) && value
+              ? {
+                  kind: 'text',
+                  text: value,
+                  style: {
+                    color: bandInk('rgba(255,255,255,0.7)'),
+                    fontSize: 8,
+                    align,
+                    bold: explicitBold(section, id) === true,
+                  },
+                }
+              : null
         }
       })
       .filter(Boolean) as Node[]
@@ -625,6 +683,20 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
       id: 'header.strapline',
       text: strapline,
       style: { color: mutedOnBand, fontSize: scale(size, compact ? 0.8 : 0.9), align },
+    })
+  }
+  // Workshop-defined fields assigned to the header, each on its own line so a
+  // long value does not crowd the strapline.
+  for (const entry of customFieldEntries(section, data)) {
+    below.push({
+      kind: 'text',
+      text: entry.value,
+      style: {
+        color: mutedOnBand,
+        fontSize: scale(size, compact ? 0.8 : 0.9),
+        align,
+        bold: explicitBold(section, entry.id) === true,
+      },
     })
   }
   if (compact) {
@@ -1314,6 +1386,16 @@ function paymentBlock(
 ): Node | null {
   const fields = new Set(sectionFields(section))
   const pairs = data.payment.filter((pair) => (pair.id ? fields.has(pair.id) : true))
+  // Workshop-defined fields assigned here join as label-over-value pairs.
+  // Their lines arrive worded as "Label: value", so split at the first colon.
+  for (const entry of customFieldEntries(section, data)) {
+    const at = entry.value.indexOf(': ')
+    pairs.push(
+      at === -1
+        ? { label: '', value: entry.value }
+        : { label: entry.value.slice(0, at), value: entry.value.slice(at + 2) }
+    )
+  }
   if (!pairs.length) return null
 
   const look = lookOf(section, theme)
@@ -1468,18 +1550,16 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   // left against the margin while the note and the portal link stay centered
   // where a printed footer has always put them.
   const logoAlign = section.style?.logoAlign ?? ('center' as const)
-  const columns = [
-    ['company_name', 'company_address'],
-    ['company_phone', 'company_email'],
-    ['bank_account', 'company_org_number'],
-  ]
-    .map((column) =>
-      column
-        .filter((id) => fields.includes(id))
-        .map((id) => data.fields[id])
-        .filter(Boolean)
-    )
-    .filter((column) => column.length > 0)
+  // The detail lines flow into columns in the stored field order, so dragging
+  // the list in the designer rearranges the printed footer. The default order
+  // reproduces the columns the footer has always printed: name over address,
+  // phone over email, bank over org number.
+  const columns = footerColumnsOf(
+    fields
+      .filter((id) => !FOOTER_SPECIAL_FIELD_IDS.has(id))
+      .map((id) => ({ id, value: data.fields[id] }))
+      .filter((entry) => Boolean(entry.value))
+  )
 
   const children: Node[] = []
   // A shop that wants its mark along the bottom as well as the top, the way
@@ -1495,7 +1575,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
       align: logoAlign,
     })
   }
-  if (data.portalUrl) {
+  if (fields.includes('portal_link') && data.portalUrl) {
     children.push({
       kind: 'text',
       id: 'footer.portal',
@@ -1515,10 +1595,18 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
         node: {
           kind: 'stack',
           gap: 1,
-          children: column.map<Node>((value, i) => ({
+          children: column.map<Node>((entry, i) => ({
             kind: 'text',
-            text: value,
-            style: { color: look.muted, fontSize: scale(size, 0.72), bold: i === 0 },
+            text: entry.value,
+            style: {
+              color: look.muted,
+              fontSize: scale(size, 0.72),
+              // A column's head prints bold until the section chooses weights
+              // itself; a workshop-defined line is a detail, never a head.
+              bold:
+                explicitBold(section, entry.id) ??
+                (autoEmphasis(section) && i === 0 && !isCustomFieldId(entry.id)),
+            },
           })),
         },
       })),

@@ -279,6 +279,9 @@ export function buildSampleData(
       },
       { label: L('dueDateLabel', 'Due Date'), value: sample.due },
     ],
+    // A stand-in link, so the canvas shows the portal line the printed sheet
+    // carries and the footer's switch for it has something to switch.
+    portalUrl: 'https://example.com/portal/a1b2c3',
     sectionLabels: {
       customer: L('billTo', 'Bill To'),
       vehicle: L('vehicle', 'Vehicle'),

@@ -633,7 +633,8 @@
       "company_org_number": "Numer organizacji",
       "bank_account": "Konto bankowe",
       "footer_note": "Notatka w stopce",
-      "org_number": "Numer organizacji"
+      "org_number": "Numer organizacji",
+      "portal_link": "Link do portalu"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Nie udało się zapisać pola",
     "failedDelete": "Nie udało się usunąć",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Nieprzypisane",
+    "defaultValue": "Wartość domyślna",
+    "defaultValueHint": "Wypełniana automatycznie w nowych wpisach i drukowana, dopóki nie wprowadzono wartości.",
+    "defaultValueNone": "Brak",
+    "defaultValueCheckedHint": "Domyślnie zaznaczone",
+    "placement": "Miejsce na dokumencie",
+    "placementHidden": "Nie jest drukowane",
+    "placementHint": "W której sekcji faktury lub wyceny drukowane jest to pole. W projektancie można je włączyć także w innych sekcjach.",
+    "failedSavePlacement": "Nie udało się zapisać miejsca pola"
   },
   "workshop": {
     "title": "Domyślne warsztatu",
@@ -1916,7 +1926,8 @@
     "placeholder": "Symbol zastępczy",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
-    "leaveConfirm": "Wyjdź"
+    "leaveConfirm": "Wyjdź",
+    "boldField": "Pogrubienie"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

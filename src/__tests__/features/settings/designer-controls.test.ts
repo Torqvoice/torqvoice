@@ -66,8 +66,11 @@ describe('the generator covers what a layout can express', () => {
       const block = SCHEMA.slice(start, SCHEMA.indexOf('] as const', start))
       for (const m of block.matchAll(/id: '([a-z_]+)'/g)) ids.add(m[1])
     }
-    // `logo` comes from the workshop's upload rather than a sample string.
-    const missing = [...ids].filter((id) => id !== 'logo' && !SAMPLE.includes(`${id}:`))
+    // `logo` comes from the workshop's upload and `portal_link` from the
+    // sample portal URL, rather than from a sample field string.
+    const missing = [...ids].filter(
+      (id) => id !== 'logo' && id !== 'portal_link' && !SAMPLE.includes(`${id}:`)
+    )
     expect(missing).toEqual([])
   })
 

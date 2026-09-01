@@ -633,7 +633,8 @@
       "company_org_number": "Įmonės kodas",
       "bank_account": "Banko sąskaita",
       "footer_note": "Poraštės pastaba",
-      "org_number": "Įmonės kodas"
+      "org_number": "Įmonės kodas",
+      "portal_link": "Portalo nuoroda"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Nepavyko išsaugoti lauko",
     "failedDelete": "Nepavyko ištrinti",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Nepriskirta",
+    "defaultValue": "Numatytoji reikšmė",
+    "defaultValueHint": "Automatiškai užpildoma naujuose įrašuose ir spausdinama, kol neįvesta reikšmė.",
+    "defaultValueNone": "Nėra",
+    "defaultValueCheckedHint": "Pažymėta pagal numatytuosius nustatymus",
+    "placement": "Vieta dokumente",
+    "placementHidden": "Nespausdinama",
+    "placementHint": "Kurioje sąskaitos arba pasiūlymo dalyje spausdinamas šis laukas. Dizaineryje jį galima įjungti ir kitose dalyse.",
+    "failedSavePlacement": "Nepavyko išsaugoti lauko vietos"
   },
   "workshop": {
     "title": "Dirbtuvių numatytosios reikšmės",
@@ -1916,7 +1926,8 @@
     "placeholder": "Vietaženklis",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
-    "leaveConfirm": "Išeiti"
+    "leaveConfirm": "Išeiti",
+    "boldField": "Paryškinta"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

@@ -851,17 +851,18 @@ model QuoteLabor {
 }
 
 model CustomFieldDefinition {
-  id         String   @id @default(cuid())
-  name       String
-  label      String
-  fieldType  String   @default("text")
-  options    String?
-  required   Boolean  @default(false)
-  entityType String
-  sortOrder  Int      @default(0)
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  label        String
+  fieldType    String   @default("text")
+  options      String?
+  defaultValue String?
+  required     Boolean  @default(false)
+  entityType   String
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

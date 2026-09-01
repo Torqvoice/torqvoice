@@ -1,4 +1,8 @@
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
+import {
+  getInvoiceLayoutConfig,
+  getQuoteLayoutConfig,
+} from '@/features/settings/Actions/invoiceLayoutActions'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
@@ -23,8 +27,18 @@ export default async function CustomFieldsPage() {
     )
   }
 
-  const result = await getFieldDefinitions()
+  const [result, invoiceLayoutResult, quoteLayoutResult] = await Promise.all([
+    getFieldDefinitions(),
+    getInvoiceLayoutConfig(),
+    getQuoteLayoutConfig(),
+  ])
   const fields = result.success && result.data ? result.data : []
 
-  return <CustomFieldsManager initialFields={fields} />
+  return (
+    <CustomFieldsManager
+      initialFields={fields}
+      layoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
+      quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
+    />
+  )
 }

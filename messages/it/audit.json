@@ -150,7 +150,8 @@
     "settings_whatsappDisconnected": "WhatsApp disconnesso",
     "settings_whatsappNumberRegistered": "Numero WhatsApp registrato",
     "team_giveTechnicianTheApp": "Account dato a un tecnico solo da lavagna",
-    "team_createDefaultRoles": "Ruoli standard creati"
+    "team_createDefaultRoles": "Ruoli standard creati",
+    "settings_setCustomFieldPlacement": "Posizione del campo personalizzato aggiornata"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -273,6 +274,7 @@
     "whatsapp_send": "Inviato un messaggio WhatsApp a {name}",
     "work_bay_create": "Postazione «{name}» creata",
     "work_bay_update": "Postazione «{name}» aggiornata",
-    "work_bay_delete": "Postazione {id} eliminata"
+    "work_bay_delete": "Postazione {id} eliminata",
+    "settings_setCustomFieldPlacement": "Ha modificato dove viene stampato un campo personalizzato"
   }
 }

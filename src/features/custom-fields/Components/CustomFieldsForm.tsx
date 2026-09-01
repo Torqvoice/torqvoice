@@ -63,7 +63,11 @@ export function CustomFieldsForm({
       } else {
         const result = await getFieldDefinitions(entityType)
         if (result.success && result.data) {
-          setFields(result.data.filter((d) => d.isActive).map((d) => ({ ...d, value: '' })))
+          setFields(
+            result.data
+              .filter((d) => d.isActive)
+              .map((d) => ({ ...d, value: d.defaultValue ?? '' }))
+          )
         }
       }
       setLoading(false)

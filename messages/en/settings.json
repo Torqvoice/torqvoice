@@ -633,7 +633,8 @@
       "company_org_number": "Organization Number",
       "bank_account": "Bank Account",
       "footer_note": "Footer Note",
-      "org_number": "Organization Number"
+      "org_number": "Organization Number",
+      "portal_link": "Portal Link"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Failed to save field",
     "failedDelete": "Failed to delete",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Unassigned",
+    "defaultValue": "Default value",
+    "defaultValueHint": "Pre-filled on new records and printed when no value has been entered.",
+    "defaultValueNone": "None",
+    "defaultValueCheckedHint": "Checked by default",
+    "placement": "Placement on document",
+    "placementHidden": "Not printed",
+    "placementHint": "Which section of the invoice or quote this field prints in. In the designer you can also switch it on in more sections.",
+    "failedSavePlacement": "Failed to save field placement"
   },
   "workshop": {
     "title": "Workshop Defaults",
@@ -1916,7 +1926,8 @@
     "placeholder": "Placeholder",
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this design have not been saved. They will be lost.",
-    "leaveConfirm": "Leave"
+    "leaveConfirm": "Leave",
+    "boldField": "Bold"
   },
   "preview": {
     "title": "Brake Service & Oil Change",

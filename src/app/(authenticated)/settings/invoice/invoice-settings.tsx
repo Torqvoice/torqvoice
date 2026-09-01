@@ -40,6 +40,7 @@ interface FieldDef {
   fieldType: string
   entityType: string
   options: string | null
+  defaultValue: string | null
   required: boolean
   sortOrder: number
   isActive: boolean
@@ -487,9 +488,8 @@ export function InvoiceSettings({
       ) : (
         <CustomFieldsManager
           initialFields={customFields}
-          // Which sections a field is placed in is a property of the invoice
-          // layout; the designer owns editing it, this only reads it.
           layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
+          quoteLayoutConfig={initialQuoteLayout ?? getDefaultInvoiceLayout()}
         />
       )}
     </div>

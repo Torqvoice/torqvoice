@@ -13,6 +13,7 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -154,22 +155,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     // Fetch custom field values for the quote
-    const customFieldValues = await db.customFieldValue.findMany({
-      where: { entityId: quote.id, entityType: 'quote' },
-      include: {
-        field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
-      },
-      orderBy: { field: { sortOrder: 'asc' } },
-    })
-
-    const customFields = customFieldValues
-      .filter((v) => v.field.isActive && v.value)
-      .map((v) => ({
-        fieldId: v.fieldId,
-        label: v.field.label,
-        value: v.value,
-        fieldType: v.field.fieldType,
-      }))
+    const customFields = await getCustomFieldsForPrint(ctx.organizationId, quote.id, 'quote')
 
     // Check if Torqvoice branding should be shown
     const features = await getFeatures(ctx.organizationId)

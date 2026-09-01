@@ -109,6 +109,13 @@ export default async function InvoiceDesignerPage({
                 .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
             : []
         }
+        quoteCustomFields={
+          customFieldsResult.success && customFieldsResult.data
+            ? customFieldsResult.data
+                .filter((f) => f.entityType === 'quote')
+                .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
+            : []
+        }
         workshop={{
           name: organization?.name ?? '',
           address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] ?? '',

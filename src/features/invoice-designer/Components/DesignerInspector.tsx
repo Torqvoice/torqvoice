@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import type {
   InvoiceDocumentStyle,
+  InvoiceFieldConfig,
   InvoiceLayoutConfig,
   InvoiceSection,
   InvoiceSectionStyle,
@@ -12,7 +13,9 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
+  footerColumnsOf,
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
@@ -350,17 +353,13 @@ export function DesignerInspector({
   }
   /** A section's name, or its id spaced out when nothing has named it. */
   const sectionName = (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' '))
+  /** The field row being dragged to a new spot in the list, if any. */
+  const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
   const doc = layout.document ?? {}
 
   if (section) {
     const style = section.style ?? {}
-    const assigned = new Set(
-      layout.sections.flatMap((s) =>
-        (s.fields ?? []).filter((f) => isCustomFieldId(f.id)).map((f) => fromCustomFieldId(f.id))
-      )
-    )
-    const unassignedCustomFields = customFields.filter((f) => f.isActive && !assigned.has(f.id))
     /**
      * The fields this section shows, resolved the way the generator resolves
      * them: no list of its own means every built-in field, visible.
@@ -372,17 +371,61 @@ export function DesignerInspector({
     // A field added after this layout was written still needs its switch.
     // Without this a saved design, which is loaded as it was stored, can never
     // reach anything built since, and the option looks simply missing.
-    const resolvedFields = [
+    const resolvedFields: InvoiceFieldConfig[] = [
       ...stored,
       ...builtins
         .filter((f) => !stored.some((existing) => existing.id === f.id))
         .map((f) => ({ id: f.id, visible: false })),
     ]
+    // Workshop-defined fields wait as chips below the list until they are
+    // added, so the list only carries what this section actually uses. The
+    // same field can still be added to several sections.
+    const availableCustomFields = customFields.filter(
+      (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
+    )
     // The footer prints its mark only when the field is switched on, and the
     // controls that dress that mark follow it.
     const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)
-    const setFields = (fields: { id: string; visible: boolean }[]) =>
-      onSection(section.id, { fields })
+    const setFields = (fields: InvoiceFieldConfig[]) => onSection(section.id, { fields })
+    // Which rows can take an explicit weight: the payment block sets all its
+    // values bold by design, and the letterhead's built-in lines are display
+    // typography of their own.
+    const boldable = (id: string) =>
+      section.id !== 'bank_account' && (section.id !== 'header' || isCustomFieldId(id))
+    // Until the workshop chooses weights, the automatic leads show as bold:
+    // a panel's first line, a footer column's head. One choice anywhere in
+    // the section hands the whole section over to the choices.
+    const autoBold = !resolvedFields.some((f) => f.bold !== undefined)
+    const defaultBoldIds: Set<string> = (() => {
+      if (!autoBold) return new Set<string>()
+      if (section.id === 'footer') {
+        // The same column flow the sheet prints, so the B marks the same
+        // lines the footer sets bold.
+        const detailIds = resolvedFields
+          .filter((f) => f.visible && !FOOTER_SPECIAL_FIELD_IDS.has(f.id))
+          .map((f) => f.id)
+        const leads = footerColumnsOf(detailIds)
+          .map((column) => column[0])
+          .filter((id): id is string => Boolean(id) && !isCustomFieldId(id))
+        return new Set(leads)
+      }
+      if (['customer', 'vehicle', 'service', 'general'].includes(section.id)) {
+        const first = resolvedFields.find((f) => f.visible)
+        if (first && !isCustomFieldId(first.id)) return new Set([first.id])
+      }
+      return new Set<string>()
+    })()
+    /** Slides the dragged row to the spot the pointer is over, live. */
+    const dragFieldOver = (overId: string) => {
+      if (!dragFieldId || dragFieldId === overId) return
+      const from = resolvedFields.findIndex((f) => f.id === dragFieldId)
+      const to = resolvedFields.findIndex((f) => f.id === overId)
+      if (from === -1 || to === -1) return
+      const next = [...resolvedFields]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      setFields(next)
+    }
     const setStyle = (patch: InvoiceSectionStyle) => {
       const next = { ...style, ...patch }
       const kept = Object.fromEntries(
@@ -653,10 +696,54 @@ export function DesignerInspector({
           {SECTIONS_WITH_FIELDS.has(section.id) && (
             <Group title={t('fields')}>
               {resolvedFields.map((field) => (
-                <div key={field.id} className="flex items-center justify-between gap-2">
+                <div
+                  key={field.id}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = 'move'
+                    setDragFieldId(field.id)
+                  }}
+                  onDragEnd={() => setDragFieldId(null)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDragEnter={() => dragFieldOver(field.id)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setDragFieldId(null)
+                  }}
+                  className={`flex items-center justify-between gap-2 ${
+                    dragFieldId === field.id ? 'opacity-50' : ''
+                  }`}
+                >
+                  <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
+                    ⠿
+                  </span>
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
+                  {boldable(field.id) &&
+                    (() => {
+                      const boldOn = field.bold ?? defaultBoldIds.has(field.id)
+                      return (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFields(
+                              resolvedFields.map((f) =>
+                                f.id === field.id ? { ...f, bold: !boldOn } : f
+                              )
+                            )
+                          }
+                          className={`h-5 w-5 shrink-0 rounded text-[12px] font-bold leading-none transition-colors ${
+                            boldOn
+                              ? 'bg-[#e8edf9] text-[#2563eb]'
+                              : 'text-[#c3c7cd] hover:text-[#5b6068]'
+                          }`}
+                          title={t('boldField')}
+                        >
+                          B
+                        </button>
+                      )
+                    })()}
                   {isCustomFieldId(field.id) && (
                     <button
                       type="button"
@@ -677,11 +764,11 @@ export function DesignerInspector({
                   />
                 </div>
               ))}
-              {unassignedCustomFields.length > 0 && (
+              {availableCustomFields.length > 0 && (
                 <div className="pt-1">
                   <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>
                   <div className="flex flex-wrap gap-1.5">
-                    {unassignedCustomFields.map((field) => (
+                    {availableCustomFields.map((field) => (
                       <button
                         key={field.id}
                         type="button"

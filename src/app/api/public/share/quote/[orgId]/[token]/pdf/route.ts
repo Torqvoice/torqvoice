@@ -14,6 +14,7 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 export async function GET(
   _request: Request,
@@ -158,22 +159,7 @@ export async function GET(
     }
 
     // Fetch custom field values for the quote
-    const customFieldValues = await db.customFieldValue.findMany({
-      where: { entityId: quote.id, entityType: 'quote' },
-      include: {
-        field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
-      },
-      orderBy: { field: { sortOrder: 'asc' } },
-    })
-
-    const customFields = customFieldValues
-      .filter((v) => v.field.isActive && v.value)
-      .map((v) => ({
-        fieldId: v.fieldId,
-        label: v.field.label,
-        value: v.value,
-        fieldType: v.field.fieldType,
-      }))
+    const customFields = await getCustomFieldsForPrint(orgId, quote.id, 'quote')
 
     const features = await getFeatures(orgId)
     let torqvoiceLogoDataUri: string | undefined

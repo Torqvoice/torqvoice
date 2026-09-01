@@ -80,7 +80,8 @@ export function InvoiceDesigner({
   initialDesignId,
   initialActiveDesigns,
   workshop: companyWorkshop,
-  customFields,
+  customFields: serviceCustomFields,
+  quoteCustomFields = [],
 }: {
   initialDocumentType: DocumentType
   initialView: 'gallery' | 'designer'
@@ -97,6 +98,7 @@ export function InvoiceDesigner({
   initialActiveDesigns?: Record<DocumentType, string>
   workshop: DesignerWorkshop
   customFields: DesignerFieldDef[]
+  quoteCustomFields?: DesignerFieldDef[]
 }) {
   const router = useRouter()
   const t = useTranslations('settings.designer')
@@ -118,6 +120,8 @@ export function InvoiceDesigner({
   const arrivedWith = initialDesign ?? initialPreset
   const [view, setView] = useState<'gallery' | 'designer'>(arrivedWith ? 'designer' : initialView)
   const [docType, setDocType] = useState<DocumentType>(initialDocumentType)
+  // Each document places its own entity's fields: quotes carry quote fields.
+  const customFields = docType === 'quote' ? quoteCustomFields : serviceCustomFields
   const [layouts, setLayouts] = useState<Record<DocumentType, InvoiceLayoutConfig>>(() => {
     const base = {
       invoice: invoiceLayout ?? getDefaultInvoiceLayout(),

@@ -18,6 +18,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { DateInput } from '@/components/ui/date-input'
 import { DocsLink } from '@/components/docs-link'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -26,11 +29,13 @@ import {
   updateFieldDefinition,
   deleteFieldDefinition,
 } from '@/features/custom-fields/Actions/customFieldActions'
+import { setCustomFieldPlacement } from '@/features/settings/Actions/invoiceLayoutActions'
 import type { FieldType, EntityType } from '@/features/custom-fields/Schema/customFieldSchema'
 import {
   type InvoiceLayoutConfig,
   BUILTIN_SECTIONS,
   CUSTOM_FIELD_PREFIX,
+  SECTIONS_WITH_FIELDS,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
 
@@ -40,43 +45,55 @@ interface FieldDef {
   label: string
   fieldType: string
   options: string | null
+  defaultValue: string | null
   required: boolean
   entityType: string
   sortOrder: number
   isActive: boolean
 }
 
+/** Section ids a custom field can be placed into, in document order. */
+const PLACEMENT_SECTIONS = BUILTIN_SECTIONS.map((s) => s.id).filter((id) =>
+  SECTIONS_WITH_FIELDS.has(id)
+)
+
 /**
- * Find the layout section a custom field definition is assigned to.
- * Returns the human-readable section name, or null if not assigned.
+ * Find where a custom field definition is placed in a layout config. A field
+ * can be switched on in several sections from the designer; the first visible
+ * one (in document order) stands for it here. Returns that section id,
+ * 'hidden' when it is stored but switched on nowhere, or null if unassigned.
  */
-function getSectionForField(
+function getPlacementForField(
   definitionId: string,
   layoutConfig?: InvoiceLayoutConfig
 ): string | null {
   if (!layoutConfig) return null
   const cfId = `${CUSTOM_FIELD_PREFIX}${definitionId}`
+  let stored = false
   for (const section of layoutConfig.sections) {
-    if (section.fields?.some((f) => f.id === cfId)) {
-      const builtin = BUILTIN_SECTIONS.find((s) => s.id === section.id)
-      return builtin?.name ?? section.id
+    const entry = section.fields?.find((f) => f.id === cfId)
+    if (entry) {
+      if (entry.visible) return section.id
+      stored = true
     }
   }
-  return null
+  return stored ? 'hidden' : null
 }
 
 export function CustomFieldsManager({
   initialFields = [],
   layoutConfig,
+  quoteLayoutConfig,
 }: {
   initialFields?: FieldDef[]
   layoutConfig?: InvoiceLayoutConfig
+  quoteLayoutConfig?: InvoiceLayoutConfig
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
   const modal = useGlassModal()
   const confirm = useConfirm()
-  const [fields] = useState(initialFields)
+  const fields = initialFields
   const [showDialog, setShowDialog] = useState(false)
   const [editing, setEditing] = useState<FieldDef | null>(null)
   const [loading, setLoading] = useState(false)
@@ -87,11 +104,18 @@ export function CustomFieldsManager({
     label: '',
     fieldType: 'text' as FieldType,
     options: '',
+    defaultValue: '',
     required: false,
     entityType: 'service_record' as EntityType,
     sortOrder: 0,
     isActive: true,
   })
+  // Where the field prints on the document; null = derived placement unknown.
+  const [placement, setPlacement] = useState<string>('general')
+  const [initialPlacement, setInitialPlacement] = useState<string | null>(null)
+
+  const configForEntity = (entityType: string) =>
+    entityType === 'quote' ? quoteLayoutConfig : layoutConfig
 
   const fieldTypeLabels: Record<string, string> = {
     text: t('customFields.fieldTypes.text'),
@@ -113,11 +137,14 @@ export function CustomFieldsManager({
       label: '',
       fieldType: 'text',
       options: '',
+      defaultValue: '',
       required: false,
       entityType: 'service_record',
       sortOrder: 0,
       isActive: true,
     })
+    setPlacement('general')
+    setInitialPlacement(null)
     setEditing(null)
   }
 
@@ -133,11 +160,15 @@ export function CustomFieldsManager({
       label: field.label,
       fieldType: field.fieldType as FieldType,
       options: field.options || '',
+      defaultValue: field.defaultValue || '',
       required: field.required,
       entityType: field.entityType as EntityType,
       sortOrder: field.sortOrder,
       isActive: field.isActive,
     })
+    const current = getPlacementForField(field.id, configForEntity(field.entityType)) ?? 'general'
+    setPlacement(current)
+    setInitialPlacement(current)
     setShowDialog(true)
   }
 
@@ -146,6 +177,7 @@ export function CustomFieldsManager({
     const payload = {
       ...formData,
       options: formData.fieldType === 'select' ? formData.options : undefined,
+      defaultValue: formData.defaultValue || undefined,
     }
 
     const result = editing
@@ -153,6 +185,21 @@ export function CustomFieldsManager({
       : await createFieldDefinition(payload)
 
     if (result.success) {
+      const definitionId = editing ? editing.id : result.data?.id
+      if (definitionId && (!editing || placement !== initialPlacement)) {
+        const placementResult = await setCustomFieldPlacement({
+          definitionId,
+          entityType: formData.entityType,
+          placement,
+        })
+        if (!placementResult.success) {
+          modal.open(
+            'error',
+            'Error',
+            placementResult.error || t('customFields.failedSavePlacement')
+          )
+        }
+      }
       toast.success(editing ? t('customFields.fieldUpdated') : t('customFields.fieldCreated'))
       setShowDialog(false)
       resetForm()
@@ -218,7 +265,8 @@ export function CustomFieldsManager({
       ) : (
         <div className="rounded-lg border divide-y">
           {filtered.map((field) => {
-            const sectionName = layoutConfig ? getSectionForField(field.id, layoutConfig) : null
+            const fieldConfig = configForEntity(field.entityType)
+            const fieldPlacement = fieldConfig ? getPlacementForField(field.id, fieldConfig) : null
             return (
               <div
                 key={field.id}
@@ -247,14 +295,20 @@ export function CustomFieldsManager({
                     <span className="text-[11px] text-muted-foreground">
                       {entityTypeLabels[field.entityType]}
                     </span>
-                    {layoutConfig && (
+                    {fieldConfig && (
                       <>
                         <span className="text-[11px] text-muted-foreground">·</span>
-                        {sectionName ? (
-                          <span className="text-[11px] text-blue-600">{sectionName}</span>
+                        {fieldPlacement === 'hidden' ? (
+                          <span className="text-[11px] text-muted-foreground">
+                            {t('customFields.placementHidden')}
+                          </span>
+                        ) : fieldPlacement ? (
+                          <span className="text-[11px] text-blue-600">
+                            {t(`layoutEditor.sections.${fieldPlacement}`)}
+                          </span>
                         ) : (
                           <span className="text-[11px] text-muted-foreground italic">
-                            unassigned
+                            {t('customFields.unassigned')}
                           </span>
                         )}
                       </>
@@ -298,7 +352,7 @@ export function CustomFieldsManager({
           if (!open) resetForm()
         }}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editing ? t('customFields.editField') : t('customFields.newField')}
@@ -347,7 +401,9 @@ export function CustomFieldsManager({
                 <Label>{t('customFields.fieldType')}</Label>
                 <Select
                   value={formData.fieldType}
-                  onValueChange={(v) => setFormData({ ...formData, fieldType: v as FieldType })}
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, fieldType: v as FieldType, defaultValue: '' })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -393,10 +449,109 @@ export function CustomFieldsManager({
                 <Input
                   placeholder={t('customFields.optionsPlaceholder')}
                   value={formData.options}
-                  onChange={(e) => setFormData({ ...formData, options: e.target.value })}
+                  onChange={(e) => {
+                    const options = e.target.value
+                    const opts = options
+                      .split(',')
+                      .map((o) => o.trim())
+                      .filter(Boolean)
+                    setFormData({
+                      ...formData,
+                      options,
+                      defaultValue: opts.includes(formData.defaultValue)
+                        ? formData.defaultValue
+                        : '',
+                    })
+                  }}
                 />
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label>{t('customFields.defaultValue')}</Label>
+              {formData.fieldType === 'text' && (
+                <Input
+                  value={formData.defaultValue}
+                  onChange={(e) => setFormData({ ...formData, defaultValue: e.target.value })}
+                />
+              )}
+              {formData.fieldType === 'number' && (
+                <Input
+                  type="number"
+                  value={formData.defaultValue}
+                  onChange={(e) => setFormData({ ...formData, defaultValue: e.target.value })}
+                />
+              )}
+              {formData.fieldType === 'date' && (
+                <DateInput
+                  value={formData.defaultValue}
+                  onChange={(v) => setFormData({ ...formData, defaultValue: v })}
+                />
+              )}
+              {formData.fieldType === 'textarea' && (
+                <Textarea
+                  value={formData.defaultValue}
+                  onChange={(e) => setFormData({ ...formData, defaultValue: e.target.value })}
+                  rows={2}
+                />
+              )}
+              {formData.fieldType === 'checkbox' && (
+                <div className="flex items-center gap-2 pt-1">
+                  <Checkbox
+                    checked={formData.defaultValue === 'true'}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, defaultValue: String(checked === true) })
+                    }
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {t('customFields.defaultValueCheckedHint')}
+                  </span>
+                </div>
+              )}
+              {formData.fieldType === 'select' && (
+                <Select
+                  value={formData.defaultValue || 'none'}
+                  onValueChange={(v) =>
+                    setFormData({ ...formData, defaultValue: v === 'none' ? '' : v })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t('customFields.defaultValueNone')}</SelectItem>
+                    {formData.options
+                      .split(',')
+                      .map((o) => o.trim())
+                      .filter(Boolean)
+                      .map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <p className="text-xs text-muted-foreground">{t('customFields.defaultValueHint')}</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('customFields.placement')}</Label>
+              <Select value={placement} onValueChange={setPlacement}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PLACEMENT_SECTIONS.map((id) => (
+                    <SelectItem key={id} value={id}>
+                      {t(`layoutEditor.sections.${id}`)}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="hidden">{t('customFields.placementHidden')}</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">{t('customFields.placementHint')}</p>
+            </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

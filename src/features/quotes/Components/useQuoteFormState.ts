@@ -145,6 +145,13 @@ export function useQuoteFormState({
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isSavingRef = useRef(false)
 
+  // Custom fields save callback ref
+  const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
+
+  const onCustomFieldsReady = useCallback((save: () => Promise<{ valid: boolean }>) => {
+    customFieldsSaveRef.current = save
+  }, [])
+
   const markDirty = useCallback(() => {
     // A locked quote cannot be saved, so nothing may queue an autosave that
     // the server will only refuse five seconds later.
@@ -324,6 +331,22 @@ export function useQuoteFormState({
     e.preventDefault()
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+
+    // Validate and save custom fields before saving; a locked quote saves nothing.
+    if (!locked && customFieldsSaveRef.current) {
+      try {
+        const { valid } = await customFieldsSaveRef.current()
+        if (!valid) {
+          toast.error(t('page.customFieldsInvalid'))
+          return
+        }
+      } catch (err) {
+        console.error('Custom fields save error:', err)
+        toast.error(t('page.customFieldsSaveFailed'))
+        return
+      }
+    }
+
     isSavingRef.current = true
     setSaving(true)
     const formData = new FormData(e.currentTarget)
@@ -495,6 +518,7 @@ export function useQuoteFormState({
     setSelectedCustomer,
     // Callbacks
     markDirty,
+    onCustomFieldsReady,
     updatePart,
     updateLabor,
     addPart,

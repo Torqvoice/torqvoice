@@ -633,7 +633,8 @@
       "company_org_number": "Kuruluş numarası",
       "bank_account": "Banka hesabı",
       "footer_note": "Alt bilgi notu",
-      "org_number": "Kuruluş numarası"
+      "org_number": "Kuruluş numarası",
+      "portal_link": "Portal bağlantısı"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Alan kaydedilemedi",
     "failedDelete": "Silinemedi",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Atanmadı",
+    "defaultValue": "Varsayılan değer",
+    "defaultValueHint": "Yeni kayıtlarda otomatik doldurulur ve bir değer girilene kadar yazdırılır.",
+    "defaultValueNone": "Yok",
+    "defaultValueCheckedHint": "Varsayılan olarak işaretli",
+    "placement": "Belgedeki konum",
+    "placementHidden": "Yazdırılmaz",
+    "placementHint": "Bu alanın faturanın veya teklifin hangi bölümünde yazdırılacağı. Tasarımcıda başka bölümlerde de açabilirsiniz.",
+    "failedSavePlacement": "Alan konumu kaydedilemedi"
   },
   "workshop": {
     "title": "Atölye Varsayılanları",
@@ -1916,7 +1926,8 @@
     "placeholder": "Örnek",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
-    "leaveConfirm": "Çık"
+    "leaveConfirm": "Çık",
+    "boldField": "Kalın"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

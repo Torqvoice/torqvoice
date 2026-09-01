@@ -150,7 +150,8 @@
     "settings_whatsappDisconnected": "Koblet fra WhatsApp",
     "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer",
     "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto",
-    "team_createDefaultRoles": "Opprettet standardrollene"
+    "team_createDefaultRoles": "Opprettet standardrollene",
+    "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -273,6 +274,7 @@
     "whatsapp_send": "Sendte en WhatsApp-melding til {name}",
     "work_bay_create": "Opprettet arbeidsplass «{name}»",
     "work_bay_update": "Oppdaterte arbeidsplass «{name}»",
-    "work_bay_delete": "Slettet arbeidsplass {id}"
+    "work_bay_delete": "Slettet arbeidsplass {id}",
+    "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut"
   }
 }

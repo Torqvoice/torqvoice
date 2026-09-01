@@ -633,7 +633,8 @@
       "company_org_number": "Organisatienummer",
       "bank_account": "Bankrekening",
       "footer_note": "Voettekstnotitie",
-      "org_number": "Organisatienummer"
+      "org_number": "Organisatienummer",
+      "portal_link": "Portaallink"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Kan veld niet opslaan",
     "failedDelete": "Kan niet verwijderen",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Niet toegewezen",
+    "defaultValue": "Standaardwaarde",
+    "defaultValueHint": "Wordt vooraf ingevuld bij nieuwe records en afgedrukt zolang er geen waarde is ingevoerd.",
+    "defaultValueNone": "Geen",
+    "defaultValueCheckedHint": "Standaard aangevinkt",
+    "placement": "Plaats op het document",
+    "placementHidden": "Wordt niet afgedrukt",
+    "placementHint": "In welke sectie van de factuur of offerte dit veld wordt afgedrukt. In de designer kun je het ook in meer secties inschakelen.",
+    "failedSavePlacement": "Kan de veldplaatsing niet opslaan"
   },
   "workshop": {
     "title": "Werkplaatsstandaarden",
@@ -1916,7 +1926,8 @@
     "placeholder": "Voorbeeld",
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
-    "leaveConfirm": "Weggaan"
+    "leaveConfirm": "Weggaan",
+    "boldField": "Vet"
   },
   "preview": {
     "title": "Remservice en oliewissel",

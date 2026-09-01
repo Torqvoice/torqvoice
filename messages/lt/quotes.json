@@ -48,7 +48,9 @@
       "details": "Informacija",
       "images": "Vaizdai",
       "documents": "Dokumentai"
-    }
+    },
+    "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
+    "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų"
   },
   "form": {
     "newQuote": "Naujas pasiūlymas",

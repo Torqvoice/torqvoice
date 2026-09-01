@@ -35,6 +35,7 @@ import { formatDateForPdf } from '@/lib/format'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 type PdfMessages = Record<string, Record<string, string>>
 
@@ -136,23 +137,8 @@ export async function buildInvoicePdfBuffer(
     orderBy: { createdAt: 'desc' },
   })
 
-  // Fetch custom field values for this service record
-  const customFieldValues = await db.customFieldValue.findMany({
-    where: { entityId: record.id, entityType: 'service_record' },
-    include: {
-      field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
-    },
-    orderBy: { field: { sortOrder: 'asc' } },
-  })
-
-  const customFields = customFieldValues
-    .filter((v) => v.field.isActive && v.value)
-    .map((v) => ({
-      fieldId: v.fieldId,
-      label: v.field.label,
-      value: v.value,
-      fieldType: v.field.fieldType,
-    }))
+  // Custom fields for this service record (definition defaults included)
+  const customFields = await getCustomFieldsForPrint(orgId, record.id, 'service_record')
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({

@@ -7,6 +7,12 @@ import { z } from 'zod'
 export const invoiceFieldConfigSchema = z.object({
   id: z.string(),
   visible: z.boolean(),
+  /**
+   * An explicit weight for this line. Unset keeps the section's automatic
+   * emphasis (the first line of a panel, a footer column's lead); the moment
+   * any field in a section carries a choice, only the choices apply.
+   */
+  bold: z.boolean().optional(),
 })
 
 /**
@@ -253,6 +259,9 @@ export const BUILTIN_HEADER_FIELDS = [
  */
 export const BUILTIN_FOOTER_FIELDS = [
   { id: 'footer_note', name: 'Footer Note' },
+  // The customer's link to their portal. On by default because the sheet has
+  // always printed it when a portal link exists; now the footer can decline.
+  { id: 'portal_link', name: 'Portal Link' },
   // Off unless asked for, the way the rest of the footer details are: a shop
   // that wants its mark at the foot of the page as well as the top can say so.
   { id: 'logo', name: 'Logo' },
@@ -268,6 +277,24 @@ export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'bank_account', name: 'Bank Account' },
   { id: 'org_number', name: 'Organization Number' },
 ] as const
+
+/** The footer's rows that are not detail lines: the mark, the portal link and the closing note. */
+export const FOOTER_SPECIAL_FIELD_IDS: Set<string> = new Set(['logo', 'portal_link', 'footer_note'])
+
+/**
+ * The footer's detail lines flowed top-to-bottom into up to three columns, in
+ * the order given, so the stored field order is the order the sheet shows.
+ * The generator and the designer's field list both read this, so the drag
+ * order and the print agree on which line heads which column.
+ */
+export function footerColumnsOf<T>(entries: T[]): T[][] {
+  const colCount = Math.min(3, entries.length)
+  if (!colCount) return []
+  const rows = Math.ceil(entries.length / colCount)
+  return Array.from({ length: colCount }, (_, c) => entries.slice(c * rows, (c + 1) * rows)).filter(
+    (column) => column.length > 0
+  )
+}
 
 export type BuiltinSectionId = (typeof BUILTIN_SECTIONS)[number]['id']
 export type BuiltinInfoFieldId = (typeof BUILTIN_INFO_FIELDS)[number]['id']
@@ -349,8 +376,12 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'footer':
-      // Only the note, which is the footer every existing invoice already has.
-      return BUILTIN_FOOTER_FIELDS.map((f) => ({ id: f.id, visible: f.id === 'footer_note' }))
+      // Only the note and the portal link, which is the footer every existing
+      // invoice already has.
+      return BUILTIN_FOOTER_FIELDS.map((f) => ({
+        id: f.id,
+        visible: f.id === 'footer_note' || f.id === 'portal_link',
+      }))
     case 'general':
       return [] // no built-in fields, only custom fields
     default:

@@ -48,7 +48,9 @@
       "details": "Szczegóły",
       "images": "Zdjęcia",
       "documents": "Dokumenty"
-    }
+    },
+    "customFieldsInvalid": "Wypełnij wszystkie wymagane pola niestandardowe",
+    "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"
   },
   "form": {
     "newQuote": "Nowa wycena",

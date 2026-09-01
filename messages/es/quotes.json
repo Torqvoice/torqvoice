@@ -48,7 +48,9 @@
       "details": "Detalles",
       "images": "Imágenes",
       "documents": "Documentos"
-    }
+    },
+    "customFieldsInvalid": "Completa todos los campos personalizados obligatorios",
+    "customFieldsSaveFailed": "No se pudieron guardar los campos personalizados"
   },
   "form": {
     "newQuote": "Nuevo presupuesto",

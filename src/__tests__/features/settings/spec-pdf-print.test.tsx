@@ -306,6 +306,170 @@ describe('the printed invoice follows the designed layout', () => {
     expect(withFooterLogo(true)).toContain('footer.logo')
   })
 
+  it('prints a custom field in whichever bespoke section switches it on', () => {
+    // The letterhead, footer and payment blocks draw from fixed field ids, so
+    // each must fold the workshop's own fields in; the panels already do.
+    const blockWithField = (sectionId: string, visible: boolean) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === sectionId
+          ? { ...section, fields: [...(section.fields ?? []), { id: 'cf_cfdef1', visible }] }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === sectionId))
+    }
+
+    for (const sectionId of ['footer', 'header', 'bank_account']) {
+      expect(blockWithField(sectionId, true)).toContain('INS-991')
+      expect(blockWithField(sectionId, false)).not.toContain('INS-991')
+    }
+  })
+
+  it('prints a custom field as a plain line, never as a bold lead', () => {
+    // A workshop's field is a detail, not a heading: first in a panel or
+    // alone in its footer column, it must not take the lead line's weight.
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'footer' || section.id === 'general'
+        ? {
+            ...section,
+            visible: true,
+            fields: [...(section.fields ?? []), { id: 'cf_cfdef1', visible: true }],
+          }
+        : section
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textNodes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (node.text !== undefined) textNodes.push(node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const child of node.children ?? []) walk((child as any).node ?? child)
+    }
+    for (const block of spec.blocks) walk(block.content)
+
+    const customLines = textNodes.filter((n) => String(n.text).includes('INS-991'))
+    expect(customLines.length).toBeGreaterThanOrEqual(2)
+    for (const line of customLines) expect(line.style?.bold).toBeFalsy()
+  })
+
+  it('flows the footer details in the order the layout stores', () => {
+    const footerWith = (order: string[]) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === 'footer'
+          ? {
+              ...section,
+              fields: [
+                { id: 'footer_note', visible: false },
+                ...order.map((id) => ({ id, visible: true })),
+              ],
+            }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    const bankFirst = footerWith(['bank_account', 'company_name'])
+    expect(bankFirst).toContain('XX00 1234 5678')
+    expect(bankFirst).toContain('Testshop')
+    expect(bankFirst.indexOf('XX00 1234 5678')).toBeLessThan(bankFirst.indexOf('Testshop'))
+
+    const nameFirst = footerWith(['company_name', 'bank_account'])
+    expect(nameFirst.indexOf('Testshop')).toBeLessThan(nameFirst.indexOf('XX00 1234 5678'))
+  })
+
+  it('prints the portal link only while the footer field asks for it', () => {
+    const footerWithPortal = (
+      mutate?: (fields: { id: string; visible: boolean }[]) => { id: string; visible: boolean }[]
+    ) => {
+      const layout = getDefaultInvoiceLayout()
+      if (mutate) {
+        layout.sections = layout.sections.map((section) =>
+          section.id === 'footer' ? { ...section, fields: mutate(section.fields ?? []) } : section
+        )
+      }
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        portalUrl: 'https://portal.example/abc',
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    expect(footerWithPortal()).toContain('portal.example')
+    expect(
+      footerWithPortal((fields) =>
+        fields.map((f) => (f.id === 'portal_link' ? { ...f, visible: false } : f))
+      )
+    ).not.toContain('portal.example')
+    // A layout saved before the switch existed keeps its portal line: the
+    // merge fills the missing field in as visible.
+    expect(footerWithPortal((fields) => fields.filter((f) => f.id !== 'portal_link'))).toContain(
+      'portal.example'
+    )
+  })
+
+  it('hands the emphasis to the layout once it chooses weights itself', () => {
+    // The customer's name leads its panel bold by default; an explicit choice
+    // anywhere in the section replaces the automatic lead with the choices.
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'customer'
+        ? {
+            ...section,
+            fields: (section.fields ?? []).map((f) =>
+              f.id === 'customer_email' ? { ...f, bold: true } : f
+            ),
+          }
+        : section
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textNodes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (node.text !== undefined) textNodes.push(node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const child of node.children ?? []) walk((child as any).node ?? child)
+    }
+    walk(spec.blocks.find((b) => b.id === 'customer')?.content)
+
+    const name = textNodes.find((n) => String(n.text).includes('Alex Carter'))
+    const email = textNodes.find((n) => String(n.text).includes('alex@example.com'))
+    expect(email?.style?.bold).toBe(true)
+    expect(name?.style?.bold).toBeFalsy()
+  })
+
   it("carries the sheet's typeface into every line of a panel", () => {
     // A node that mentions a font at all overrides what it inherits, because
     // the PDF merges the two and an explicit undefined wins. That reset a

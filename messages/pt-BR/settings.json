@@ -633,7 +633,8 @@
       "company_org_number": "Número da organização",
       "bank_account": "Conta bancária",
       "footer_note": "Nota de rodapé",
-      "org_number": "Número da organização"
+      "org_number": "Número da organização",
+      "portal_link": "Link do portal"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",
@@ -1006,7 +1007,16 @@
     "failedSave": "Falha ao salvar campo",
     "failedDelete": "Falha ao excluir",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "unassigned": "Não atribuído",
+    "defaultValue": "Valor padrão",
+    "defaultValueHint": "Preenchido automaticamente em novos registros e impresso enquanto nenhum valor for informado.",
+    "defaultValueNone": "Nenhum",
+    "defaultValueCheckedHint": "Marcado por padrão",
+    "placement": "Posição no documento",
+    "placementHidden": "Não é impresso",
+    "placementHint": "Em qual seção da fatura ou do orçamento este campo é impresso. No designer você também pode ativá-lo em mais seções.",
+    "failedSavePlacement": "Não foi possível salvar a posição do campo"
   },
   "workshop": {
     "title": "Padroes da oficina",
@@ -1916,7 +1926,8 @@
     "placeholder": "Exemplo",
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",
-    "leaveConfirm": "Sair"
+    "leaveConfirm": "Sair",
+    "boldField": "Negrito"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",
