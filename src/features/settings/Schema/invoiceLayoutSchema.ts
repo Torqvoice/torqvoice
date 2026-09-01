@@ -43,6 +43,10 @@ export const invoiceSectionStyleSchema = z.object({
   /** Where the section sets its mark and lines. Unset follows the header
    *  style: compact leans left, standard right, modern centers. */
   align: z.enum(['left', 'center', 'right']).optional(),
+  /** Where a logo sits when the section prints one, on its own rather than
+   *  with the section's text: a footer mark can sit hard left under a margin
+   *  while the closing line stays centered. Unset centers it. */
+  logoAlign: z.enum(['left', 'center', 'right']).optional(),
   /** Room inside the section's panel, in points. Unset keeps each panel's
    *  own default, box or no box. */
   padding: z.number().min(0).max(40).optional(),

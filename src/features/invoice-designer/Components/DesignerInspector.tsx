@@ -378,6 +378,9 @@ export function DesignerInspector({
         .filter((f) => !stored.some((existing) => existing.id === f.id))
         .map((f) => ({ id: f.id, visible: false })),
     ]
+    // The footer prints its mark only when the field is switched on, and the
+    // controls that dress that mark follow it.
+    const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)
     const setFields = (fields: { id: string; visible: boolean }[]) =>
       onSection(section.id, { fields })
     const setStyle = (patch: InvoiceSectionStyle) => {
@@ -622,7 +625,28 @@ export function DesignerInspector({
           {section.id === 'footer' && (
             <Group title={t('logo')}>
               <LogoUpload value={logoUrl} own={ownLogo} onChange={onLogo} />
-              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('footerLogoHint')}</p>
+              {/* There is nothing to align until the mark is switched on, so
+                  the control appears with it and the hint below tells a shop
+                  where the switch is until then. */}
+              {footerLogoOn && (
+                <div>
+                  <div className="mb-1.5 text-[13px] font-medium">{t('alignment')}</div>
+                  <Choice
+                    value={style.logoAlign ?? 'center'}
+                    options={[
+                      { value: 'left', label: t('columnLeft') },
+                      { value: 'center', label: t('alignCenter') },
+                      { value: 'right', label: t('columnRight') },
+                    ]}
+                    onChange={(logoAlign) =>
+                      setStyle({ logoAlign: logoAlign as 'left' | 'center' | 'right' })
+                    }
+                  />
+                </div>
+              )}
+              {!footerLogoOn && (
+                <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('footerLogoHint')}</p>
+              )}
             </Group>
           )}
 

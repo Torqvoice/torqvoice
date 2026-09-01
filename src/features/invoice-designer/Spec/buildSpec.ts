@@ -1464,6 +1464,10 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const fields = sectionFields(section)
+  // The mark alone, not the closing line under it: a footer logo can sit hard
+  // left against the margin while the note and the portal link stay centered
+  // where a printed footer has always put them.
+  const logoAlign = section.style?.logoAlign ?? ('center' as const)
   const columns = [
     ['company_name', 'company_address'],
     ['company_phone', 'company_email'],
@@ -1488,7 +1492,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
       src: data.logoUrl,
       maxWidth: 120,
       maxHeight: scale(size, 3.2),
-      align: 'center',
+      align: logoAlign,
     })
   }
   if (data.portalUrl) {
