@@ -1925,7 +1925,8 @@
     "placeholder": "Voorbeeld",
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
-    "leaveConfirm": "Weggaan"
+    "leaveConfirm": "Weggaan",
+    "boldField": "Vet"
   },
   "preview": {
     "title": "Remservice en oliewissel",

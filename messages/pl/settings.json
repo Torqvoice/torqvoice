@@ -1925,7 +1925,8 @@
     "placeholder": "Symbol zastępczy",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
-    "leaveConfirm": "Wyjdź"
+    "leaveConfirm": "Wyjdź",
+    "boldField": "Pogrubienie"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

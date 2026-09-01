@@ -367,6 +367,44 @@ describe('the printed invoice follows the designed layout', () => {
     for (const line of customLines) expect(line.style?.bold).toBeFalsy()
   })
 
+  it('hands the emphasis to the layout once it chooses weights itself', () => {
+    // The customer's name leads its panel bold by default; an explicit choice
+    // anywhere in the section replaces the automatic lead with the choices.
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'customer'
+        ? {
+            ...section,
+            fields: (section.fields ?? []).map((f) =>
+              f.id === 'customer_email' ? { ...f, bold: true } : f
+            ),
+          }
+        : section
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textNodes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (node.text !== undefined) textNodes.push(node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const child of node.children ?? []) walk((child as any).node ?? child)
+    }
+    walk(spec.blocks.find((b) => b.id === 'customer')?.content)
+
+    const name = textNodes.find((n) => String(n.text).includes('Alex Carter'))
+    const email = textNodes.find((n) => String(n.text).includes('alex@example.com'))
+    expect(email?.style?.bold).toBe(true)
+    expect(name?.style?.bold).toBeFalsy()
+  })
+
   it("carries the sheet's typeface into every line of a panel", () => {
     // A node that mentions a font at all overrides what it inherits, because
     // the PDF merges the two and an explicit undefined wins. That reset a

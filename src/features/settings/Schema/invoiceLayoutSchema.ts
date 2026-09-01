@@ -7,6 +7,12 @@ import { z } from 'zod'
 export const invoiceFieldConfigSchema = z.object({
   id: z.string(),
   visible: z.boolean(),
+  /**
+   * An explicit weight for this line. Unset keeps the section's automatic
+   * emphasis (the first line of a panel, a footer column's lead); the moment
+   * any field in a section carries a choice, only the choices apply.
+   */
+  bold: z.boolean().optional(),
 })
 
 /**

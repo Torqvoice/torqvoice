@@ -182,11 +182,29 @@ export function sectionFields(section: InvoiceSection): string[] {
  * draw from fixed field ids, so without this a custom field assigned to them
  * would be silently invisible; the panels resolve every id and need no help.
  */
-function customFieldLines(section: InvoiceSection, data: DocumentData): string[] {
+function customFieldEntries(
+  section: InvoiceSection,
+  data: DocumentData
+): { id: string; value: string }[] {
   return sectionFields(section)
     .filter((id) => isCustomFieldId(id))
-    .map((id) => data.fields[id])
-    .filter(Boolean)
+    .map((id) => ({ id, value: data.fields[id] }))
+    .filter((entry) => Boolean(entry.value))
+}
+
+/** The section's explicit weight for a field, or nothing when never chosen. */
+function explicitBold(section: InvoiceSection, id: string): boolean | undefined {
+  return section.fields?.find((f) => f.id === id)?.bold
+}
+
+/**
+ * Whether the section still emphasizes its own leads. The automatic bold
+ * (a panel's first line, a footer column's head) stands until the workshop
+ * chooses weights itself; one explicit choice anywhere in the section hands
+ * the whole section over to the choices.
+ */
+function autoEmphasis(section: InvoiceSection): boolean {
+  return !section.fields?.some((f) => f.bold !== undefined)
 }
 
 const scale = (base: number, factor: number) => Math.max(5, Math.round(base * factor * 10) / 10)
@@ -265,8 +283,11 @@ function panel(
         // The first line leads the panel, set bold and a step larger, the way
         // the customer's name has always headed its card. A workshop-defined
         // field is a detail, not a heading, so it prints as a plain line even
-        // when it happens to stand first.
-        const lead = i === 0 && !isCustomFieldId(line.id)
+        // when it happens to stand first. A weight the layout chooses for the
+        // line wins over all of that.
+        const lead =
+          explicitBold(section, line.id) ??
+          (autoEmphasis(section) && i === 0 && !isCustomFieldId(line.id))
         return {
           kind: 'text',
           id: `${section.id}.${line.id}`,
@@ -330,7 +351,7 @@ function framedBandHeight(
     .filter((id) => fields.includes(id))
     .some((id) => data.fields[id])
   if (hasStrapline) height += 6 + line(scale(size, 0.9))
-  const customCount = customFieldLines(section, data).length
+  const customCount = customFieldEntries(section, data).length
   if (customCount) height += 6 + customCount * line(scale(size, 0.9))
   if (data.branding) height += 6 + Math.max(MARK.icon, line(scale(size, MARK.word)))
 
@@ -423,7 +444,12 @@ function classicLetterhead(
               ? {
                   kind: 'text',
                   text: value,
-                  style: { color: bandInk('rgba(255,255,255,0.7)'), fontSize: 8, align },
+                  style: {
+                    color: bandInk('rgba(255,255,255,0.7)'),
+                    fontSize: 8,
+                    align,
+                    bold: explicitBold(section, id) === true,
+                  },
                 }
               : null
         }
@@ -659,11 +685,16 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
   }
   // Workshop-defined fields assigned to the header, each on its own line so a
   // long value does not crowd the strapline.
-  for (const line of customFieldLines(section, data)) {
+  for (const entry of customFieldEntries(section, data)) {
     below.push({
       kind: 'text',
-      text: line,
-      style: { color: mutedOnBand, fontSize: scale(size, compact ? 0.8 : 0.9), align },
+      text: entry.value,
+      style: {
+        color: mutedOnBand,
+        fontSize: scale(size, compact ? 0.8 : 0.9),
+        align,
+        bold: explicitBold(section, entry.id) === true,
+      },
     })
   }
   if (compact) {
@@ -1355,12 +1386,12 @@ function paymentBlock(
   const pairs = data.payment.filter((pair) => (pair.id ? fields.has(pair.id) : true))
   // Workshop-defined fields assigned here join as label-over-value pairs.
   // Their lines arrive worded as "Label: value", so split at the first colon.
-  for (const line of customFieldLines(section, data)) {
-    const at = line.indexOf(': ')
+  for (const entry of customFieldEntries(section, data)) {
+    const at = entry.value.indexOf(': ')
     pairs.push(
       at === -1
-        ? { label: '', value: line }
-        : { label: line.slice(0, at), value: line.slice(at + 2) }
+        ? { label: '', value: entry.value }
+        : { label: entry.value.slice(0, at), value: entry.value.slice(at + 2) }
     )
   }
   if (!pairs.length) return null
@@ -1525,14 +1556,14 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     .map((column) =>
       column
         .filter((id) => fields.includes(id))
-        .map((id) => data.fields[id])
-        .filter(Boolean)
+        .map((id) => ({ id, value: data.fields[id] }))
+        .filter((entry) => Boolean(entry.value))
     )
     .filter((column) => column.length > 0)
   // Workshop-defined fields assigned to the footer stand as a column of their
   // own beside the built-in ones. Unlike those, their first line is no lead:
   // "Label: value" details all carry the same weight.
-  const custom = customFieldLines(section, data)
+  const custom = customFieldEntries(section, data)
   const customIndex = custom.length ? columns.length : -1
   if (custom.length) columns.push(custom)
 
@@ -1570,13 +1601,15 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
         node: {
           kind: 'stack',
           gap: 1,
-          children: column.map<Node>((value, i) => ({
+          children: column.map<Node>((entry, i) => ({
             kind: 'text',
-            text: value,
+            text: entry.value,
             style: {
               color: look.muted,
               fontSize: scale(size, 0.72),
-              bold: i === 0 && columnIndex !== customIndex,
+              bold:
+                explicitBold(section, entry.id) ??
+                (autoEmphasis(section) && i === 0 && columnIndex !== customIndex),
             },
           })),
         },

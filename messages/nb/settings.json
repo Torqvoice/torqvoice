@@ -1925,7 +1925,8 @@
     "placeholder": "Plassholder",
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
-    "leaveConfirm": "Forlat"
+    "leaveConfirm": "Forlat",
+    "boldField": "Fet"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",
