@@ -1,4 +1,6 @@
 import {
+  FOOTER_SPECIAL_FIELD_IDS,
+  footerColumnsOf,
   getBuiltinFieldsForSection,
   isCustomFieldId,
   type InvoiceLayoutConfig,
@@ -1548,24 +1550,16 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   // left against the margin while the note and the portal link stay centered
   // where a printed footer has always put them.
   const logoAlign = section.style?.logoAlign ?? ('center' as const)
-  const columns = [
-    ['company_name', 'company_address'],
-    ['company_phone', 'company_email'],
-    ['bank_account', 'company_org_number'],
-  ]
-    .map((column) =>
-      column
-        .filter((id) => fields.includes(id))
-        .map((id) => ({ id, value: data.fields[id] }))
-        .filter((entry) => Boolean(entry.value))
-    )
-    .filter((column) => column.length > 0)
-  // Workshop-defined fields assigned to the footer stand as a column of their
-  // own beside the built-in ones. Unlike those, their first line is no lead:
-  // "Label: value" details all carry the same weight.
-  const custom = customFieldEntries(section, data)
-  const customIndex = custom.length ? columns.length : -1
-  if (custom.length) columns.push(custom)
+  // The detail lines flow into columns in the stored field order, so dragging
+  // the list in the designer rearranges the printed footer. The default order
+  // reproduces the columns the footer has always printed: name over address,
+  // phone over email, bank over org number.
+  const columns = footerColumnsOf(
+    fields
+      .filter((id) => !FOOTER_SPECIAL_FIELD_IDS.has(id))
+      .map((id) => ({ id, value: data.fields[id] }))
+      .filter((entry) => Boolean(entry.value))
+  )
 
   const children: Node[] = []
   // A shop that wants its mark along the bottom as well as the top, the way
@@ -1596,7 +1590,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     children.push({
       kind: 'row',
       gap: 16,
-      children: columns.map((column, columnIndex) => ({
+      children: columns.map((column) => ({
         width: 'flex',
         node: {
           kind: 'stack',
@@ -1607,9 +1601,11 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
             style: {
               color: look.muted,
               fontSize: scale(size, 0.72),
+              // A column's head prints bold until the section chooses weights
+              // itself; a workshop-defined line is a detail, never a head.
               bold:
                 explicitBold(section, entry.id) ??
-                (autoEmphasis(section) && i === 0 && columnIndex !== customIndex),
+                (autoEmphasis(section) && i === 0 && !isCustomFieldId(entry.id)),
             },
           })),
         },

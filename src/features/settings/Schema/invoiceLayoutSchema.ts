@@ -275,6 +275,24 @@ export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'org_number', name: 'Organization Number' },
 ] as const
 
+/** The footer's rows that are not detail lines: the mark and the closing note. */
+export const FOOTER_SPECIAL_FIELD_IDS: Set<string> = new Set(['logo', 'footer_note'])
+
+/**
+ * The footer's detail lines flowed top-to-bottom into up to three columns, in
+ * the order given, so the stored field order is the order the sheet shows.
+ * The generator and the designer's field list both read this, so the drag
+ * order and the print agree on which line heads which column.
+ */
+export function footerColumnsOf<T>(entries: T[]): T[][] {
+  const colCount = Math.min(3, entries.length)
+  if (!colCount) return []
+  const rows = Math.ceil(entries.length / colCount)
+  return Array.from({ length: colCount }, (_, c) => entries.slice(c * rows, (c + 1) * rows)).filter(
+    (column) => column.length > 0
+  )
+}
+
 export type BuiltinSectionId = (typeof BUILTIN_SECTIONS)[number]['id']
 export type BuiltinInfoFieldId = (typeof BUILTIN_INFO_FIELDS)[number]['id']
 export type BuiltinCustomerFieldId = (typeof BUILTIN_CUSTOMER_FIELDS)[number]['id']

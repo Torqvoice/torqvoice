@@ -13,7 +13,9 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
+  footerColumnsOf,
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
@@ -397,15 +399,14 @@ export function DesignerInspector({
     const defaultBoldIds: Set<string> = (() => {
       if (!autoBold) return new Set<string>()
       if (section.id === 'footer') {
-        const leads = [
-          ['company_name', 'company_address'],
-          ['company_phone', 'company_email'],
-          ['bank_account', 'company_org_number'],
-        ]
-          .map((column) =>
-            column.find((id) => resolvedFields.some((f) => f.id === id && f.visible))
-          )
-          .filter((id): id is string => Boolean(id))
+        // The same column flow the sheet prints, so the B marks the same
+        // lines the footer sets bold.
+        const detailIds = resolvedFields
+          .filter((f) => f.visible && !FOOTER_SPECIAL_FIELD_IDS.has(f.id))
+          .map((f) => f.id)
+        const leads = footerColumnsOf(detailIds)
+          .map((column) => column[0])
+          .filter((id): id is string => Boolean(id) && !isCustomFieldId(id))
         return new Set(leads)
       }
       if (['customer', 'vehicle', 'service', 'general'].includes(section.id)) {

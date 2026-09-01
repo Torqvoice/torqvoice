@@ -367,6 +367,38 @@ describe('the printed invoice follows the designed layout', () => {
     for (const line of customLines) expect(line.style?.bold).toBeFalsy()
   })
 
+  it('flows the footer details in the order the layout stores', () => {
+    const footerWith = (order: string[]) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === 'footer'
+          ? {
+              ...section,
+              fields: [
+                { id: 'footer_note', visible: false },
+                ...order.map((id) => ({ id, visible: true })),
+              ],
+            }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    const bankFirst = footerWith(['bank_account', 'company_name'])
+    expect(bankFirst).toContain('XX00 1234 5678')
+    expect(bankFirst).toContain('Testshop')
+    expect(bankFirst.indexOf('XX00 1234 5678')).toBeLessThan(bankFirst.indexOf('Testshop'))
+
+    const nameFirst = footerWith(['company_name', 'bank_account'])
+    expect(nameFirst.indexOf('Testshop')).toBeLessThan(nameFirst.indexOf('XX00 1234 5678'))
+  })
+
   it('hands the emphasis to the layout once it chooses weights itself', () => {
     // The customer's name leads its panel bold by default; an explicit choice
     // anywhere in the section replaces the automatic lead with the choices.
