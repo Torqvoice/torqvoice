@@ -261,17 +261,24 @@ function panel(
               style: heading,
             } as Node,
           ]),
-      ...lines.map<Node>((line, i) => ({
-        kind: 'text',
-        id: `${section.id}.${line.id}`,
-        text: line.value,
-        style: {
-          color: i === 0 ? look.text : look.muted,
-          bold: i === 0,
-          fontSize: i === 0 ? size : scale(size, 0.92),
-          fontFamily: look.fontFamily,
-        },
-      })),
+      ...lines.map<Node>((line, i) => {
+        // The first line leads the panel, set bold and a step larger, the way
+        // the customer's name has always headed its card. A workshop-defined
+        // field is a detail, not a heading, so it prints as a plain line even
+        // when it happens to stand first.
+        const lead = i === 0 && !isCustomFieldId(line.id)
+        return {
+          kind: 'text',
+          id: `${section.id}.${line.id}`,
+          text: line.value,
+          style: {
+            color: lead ? look.text : look.muted,
+            bold: lead,
+            fontSize: lead ? size : scale(size, 0.92),
+            fontFamily: look.fontFamily,
+          },
+        }
+      }),
     ],
   }
 }
@@ -1523,8 +1530,10 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     )
     .filter((column) => column.length > 0)
   // Workshop-defined fields assigned to the footer stand as a column of their
-  // own beside the built-in ones.
+  // own beside the built-in ones. Unlike those, their first line is no lead:
+  // "Label: value" details all carry the same weight.
   const custom = customFieldLines(section, data)
+  const customIndex = custom.length ? columns.length : -1
   if (custom.length) columns.push(custom)
 
   const children: Node[] = []
@@ -1556,7 +1565,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     children.push({
       kind: 'row',
       gap: 16,
-      children: columns.map((column) => ({
+      children: columns.map((column, columnIndex) => ({
         width: 'flex',
         node: {
           kind: 'stack',
@@ -1564,7 +1573,11 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
           children: column.map<Node>((value, i) => ({
             kind: 'text',
             text: value,
-            style: { color: look.muted, fontSize: scale(size, 0.72), bold: i === 0 },
+            style: {
+              color: look.muted,
+              fontSize: scale(size, 0.72),
+              bold: i === 0 && columnIndex !== customIndex,
+            },
           })),
         },
       })),

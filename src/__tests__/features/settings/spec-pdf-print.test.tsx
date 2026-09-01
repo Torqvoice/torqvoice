@@ -331,6 +331,42 @@ describe('the printed invoice follows the designed layout', () => {
     }
   })
 
+  it('prints a custom field as a plain line, never as a bold lead', () => {
+    // A workshop's field is a detail, not a heading: first in a panel or
+    // alone in its footer column, it must not take the lead line's weight.
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'footer' || section.id === 'general'
+        ? {
+            ...section,
+            visible: true,
+            fields: [...(section.fields ?? []), { id: 'cf_cfdef1', visible: true }],
+          }
+        : section
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textNodes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (node.text !== undefined) textNodes.push(node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const child of node.children ?? []) walk((child as any).node ?? child)
+    }
+    for (const block of spec.blocks) walk(block.content)
+
+    const customLines = textNodes.filter((n) => String(n.text).includes('INS-991'))
+    expect(customLines.length).toBeGreaterThanOrEqual(2)
+    for (const line of customLines) expect(line.style?.bold).toBeFalsy()
+  })
+
   it("carries the sheet's typeface into every line of a panel", () => {
     // A node that mentions a font at all overrides what it inherits, because
     // the PDF merges the two and an explicit undefined wins. That reset a
