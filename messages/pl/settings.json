@@ -633,7 +633,8 @@
       "company_org_number": "Numer organizacji",
       "bank_account": "Konto bankowe",
       "footer_note": "Notatka w stopce",
-      "org_number": "Numer organizacji"
+      "org_number": "Numer organizacji",
+      "portal_link": "Link do portalu"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",

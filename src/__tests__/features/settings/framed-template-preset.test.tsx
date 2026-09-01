@@ -176,10 +176,10 @@ describe('framed template preset', () => {
     expect(getLetterheadMark(withLetterheadMark(named, 'logo'))).toBe('logo')
   })
 
-  it('leaves the footer the one note line it has always been by default', () => {
+  it('leaves the footer the note and portal line it has always been by default', () => {
     const footer = getDefaultInvoiceLayout().sections.find((s) => s.id === 'footer')
     const visible = footer?.fields?.filter((f) => f.visible).map((f) => f.id)
-    expect(visible).toEqual(['footer_note'])
+    expect(visible).toEqual(['footer_note', 'portal_link'])
   })
 
   it('moves the company details down to the footer', () => {

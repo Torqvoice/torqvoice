@@ -259,6 +259,9 @@ export const BUILTIN_HEADER_FIELDS = [
  */
 export const BUILTIN_FOOTER_FIELDS = [
   { id: 'footer_note', name: 'Footer Note' },
+  // The customer's link to their portal. On by default because the sheet has
+  // always printed it when a portal link exists; now the footer can decline.
+  { id: 'portal_link', name: 'Portal Link' },
   // Off unless asked for, the way the rest of the footer details are: a shop
   // that wants its mark at the foot of the page as well as the top can say so.
   { id: 'logo', name: 'Logo' },
@@ -275,8 +278,8 @@ export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'org_number', name: 'Organization Number' },
 ] as const
 
-/** The footer's rows that are not detail lines: the mark and the closing note. */
-export const FOOTER_SPECIAL_FIELD_IDS: Set<string> = new Set(['logo', 'footer_note'])
+/** The footer's rows that are not detail lines: the mark, the portal link and the closing note. */
+export const FOOTER_SPECIAL_FIELD_IDS: Set<string> = new Set(['logo', 'portal_link', 'footer_note'])
 
 /**
  * The footer's detail lines flowed top-to-bottom into up to three columns, in
@@ -373,8 +376,12 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'footer':
-      // Only the note, which is the footer every existing invoice already has.
-      return BUILTIN_FOOTER_FIELDS.map((f) => ({ id: f.id, visible: f.id === 'footer_note' }))
+      // Only the note and the portal link, which is the footer every existing
+      // invoice already has.
+      return BUILTIN_FOOTER_FIELDS.map((f) => ({
+        id: f.id,
+        visible: f.id === 'footer_note' || f.id === 'portal_link',
+      }))
     case 'general':
       return [] // no built-in fields, only custom fields
     default:

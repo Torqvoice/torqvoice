@@ -633,7 +633,8 @@
       "company_org_number": "Organisasjonsnummer",
       "bank_account": "Bankkonto",
       "footer_note": "Bunntekstnotat",
-      "org_number": "Organisasjonsnummer"
+      "org_number": "Organisasjonsnummer",
+      "portal_link": "Portallenke"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",

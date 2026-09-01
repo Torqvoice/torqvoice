@@ -633,7 +633,8 @@
       "company_org_number": "Organisatienummer",
       "bank_account": "Bankrekening",
       "footer_note": "Voettekstnotitie",
-      "org_number": "Organisatienummer"
+      "org_number": "Organisatienummer",
+      "portal_link": "Portaallink"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",

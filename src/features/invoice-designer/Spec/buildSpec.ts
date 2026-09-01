@@ -1575,7 +1575,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
       align: logoAlign,
     })
   }
-  if (data.portalUrl) {
+  if (fields.includes('portal_link') && data.portalUrl) {
     children.push({
       kind: 'text',
       id: 'footer.portal',

@@ -633,7 +633,8 @@
       "company_org_number": "Organization Number",
       "bank_account": "Bank Account",
       "footer_note": "Footer Note",
-      "org_number": "Organization Number"
+      "org_number": "Organization Number",
+      "portal_link": "Portal Link"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",

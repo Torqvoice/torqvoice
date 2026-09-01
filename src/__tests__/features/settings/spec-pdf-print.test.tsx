@@ -399,6 +399,39 @@ describe('the printed invoice follows the designed layout', () => {
     expect(nameFirst.indexOf('Testshop')).toBeLessThan(nameFirst.indexOf('XX00 1234 5678'))
   })
 
+  it('prints the portal link only while the footer field asks for it', () => {
+    const footerWithPortal = (
+      mutate?: (fields: { id: string; visible: boolean }[]) => { id: string; visible: boolean }[]
+    ) => {
+      const layout = getDefaultInvoiceLayout()
+      if (mutate) {
+        layout.sections = layout.sections.map((section) =>
+          section.id === 'footer' ? { ...section, fields: mutate(section.fields ?? []) } : section
+        )
+      }
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        portalUrl: 'https://portal.example/abc',
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    expect(footerWithPortal()).toContain('portal.example')
+    expect(
+      footerWithPortal((fields) =>
+        fields.map((f) => (f.id === 'portal_link' ? { ...f, visible: false } : f))
+      )
+    ).not.toContain('portal.example')
+    // A layout saved before the switch existed keeps its portal line: the
+    // merge fills the missing field in as visible.
+    expect(footerWithPortal((fields) => fields.filter((f) => f.id !== 'portal_link'))).toContain(
+      'portal.example'
+    )
+  })
+
   it('hands the emphasis to the layout once it chooses weights itself', () => {
     // The customer's name leads its panel bold by default; an explicit choice
     // anywhere in the section replaces the automatic lead with the choices.

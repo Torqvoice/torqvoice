@@ -633,7 +633,8 @@
       "company_org_number": "Numéro d'organisation",
       "bank_account": "Compte bancaire",
       "footer_note": "Note de bas de page",
-      "org_number": "Numéro d'organisation"
+      "org_number": "Numéro d'organisation",
+      "portal_link": "Lien du portail"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",

@@ -633,7 +633,8 @@
       "company_org_number": "Número da organização",
       "bank_account": "Conta bancária",
       "footer_note": "Nota de rodapé",
-      "org_number": "Número da organização"
+      "org_number": "Número da organização",
+      "portal_link": "Link do portal"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",

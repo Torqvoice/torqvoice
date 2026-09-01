@@ -633,7 +633,8 @@
       "company_org_number": "Įmonės kodas",
       "bank_account": "Banko sąskaita",
       "footer_note": "Poraštės pastaba",
-      "org_number": "Įmonės kodas"
+      "org_number": "Įmonės kodas",
+      "portal_link": "Portalo nuoroda"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",

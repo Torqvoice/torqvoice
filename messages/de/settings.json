@@ -633,7 +633,8 @@
       "company_org_number": "Organisationsnummer",
       "bank_account": "Bankkonto",
       "footer_note": "Fußzeilen-Hinweis",
-      "org_number": "Organisationsnummer"
+      "org_number": "Organisationsnummer",
+      "portal_link": "Portal-Link"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",
     "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",

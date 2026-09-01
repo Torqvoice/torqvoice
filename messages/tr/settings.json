@@ -633,7 +633,8 @@
       "company_org_number": "Kuruluş numarası",
       "bank_account": "Banka hesabı",
       "footer_note": "Alt bilgi notu",
-      "org_number": "Kuruluş numarası"
+      "org_number": "Kuruluş numarası",
+      "portal_link": "Portal bağlantısı"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
