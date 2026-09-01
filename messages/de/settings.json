@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Standardmäßig aktiviert",
     "placement": "Position auf dem Dokument",
     "placementHidden": "Wird nicht gedruckt",
-    "placementHint": "In welchem Abschnitt der Rechnung oder des Angebots dieses Feld gedruckt wird.",
+    "placementHint": "In welchem Abschnitt der Rechnung oder des Angebots dieses Feld gedruckt wird. Im Designer kann es zusätzlich in weiteren Abschnitten aktiviert werden.",
     "failedSavePlacement": "Feldposition konnte nicht gespeichert werden"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Platzhalter",
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
-    "leaveConfirm": "Verlassen",
-    "moveFieldToSection": "In Abschnitt verschieben"
+    "leaveConfirm": "Verlassen"
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

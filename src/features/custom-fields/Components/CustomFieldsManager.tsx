@@ -58,8 +58,10 @@ const PLACEMENT_SECTIONS = BUILTIN_SECTIONS.map((s) => s.id).filter((id) =>
 )
 
 /**
- * Find where a custom field definition is placed in a layout config.
- * Returns the section id, 'hidden' for an invisible entry, or null if unassigned.
+ * Find where a custom field definition is placed in a layout config. A field
+ * can be switched on in several sections from the designer; the first visible
+ * one (in document order) stands for it here. Returns that section id,
+ * 'hidden' when it is stored but switched on nowhere, or null if unassigned.
  */
 function getPlacementForField(
   definitionId: string,
@@ -67,14 +69,15 @@ function getPlacementForField(
 ): string | null {
   if (!layoutConfig) return null
   const cfId = `${CUSTOM_FIELD_PREFIX}${definitionId}`
+  let stored = false
   for (const section of layoutConfig.sections) {
     const entry = section.fields?.find((f) => f.id === cfId)
     if (entry) {
-      if (section.id === 'general' && !entry.visible) return 'hidden'
-      return section.id
+      if (entry.visible) return section.id
+      stored = true
     }
   }
-  return null
+  return stored ? 'hidden' : null
 }
 
 export function CustomFieldsManager({

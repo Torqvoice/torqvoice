@@ -1,5 +1,6 @@
 import {
   getBuiltinFieldsForSection,
+  isCustomFieldId,
   type InvoiceLayoutConfig,
   type InvoiceSection,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -175,6 +176,19 @@ export function sectionFields(section: InvoiceSection): string[] {
   return section.fields.filter((f) => f.visible).map((f) => f.id)
 }
 
+/**
+ * The workshop-defined lines a section carries, already worded ("Label:
+ * value") and non-empty. The bespoke builders (letterhead, footer, payment)
+ * draw from fixed field ids, so without this a custom field assigned to them
+ * would be silently invisible; the panels resolve every id and need no help.
+ */
+function customFieldLines(section: InvoiceSection, data: DocumentData): string[] {
+  return sectionFields(section)
+    .filter((id) => isCustomFieldId(id))
+    .map((id) => data.fields[id])
+    .filter(Boolean)
+}
+
 const scale = (base: number, factor: number) => Math.max(5, Math.round(base * factor * 10) / 10)
 
 /** A translated string, or the English the sheet has always printed. */
@@ -309,6 +323,8 @@ function framedBandHeight(
     .filter((id) => fields.includes(id))
     .some((id) => data.fields[id])
   if (hasStrapline) height += 6 + line(scale(size, 0.9))
+  const customCount = customFieldLines(section, data).length
+  if (customCount) height += 6 + customCount * line(scale(size, 0.9))
   if (data.branding) height += 6 + Math.max(MARK.icon, line(scale(size, MARK.word)))
 
   return Math.max(FRAMED.bandHeight, Math.ceil(FRAMED_HEADER_TOP + height + FRAMED_HEADER_PAD))
@@ -395,7 +411,14 @@ function classicLetterhead(
                 }
               : null
           default:
-            return null
+            // Workshop-defined fields print like the contact lines above.
+            return isCustomFieldId(id) && value
+              ? {
+                  kind: 'text',
+                  text: value,
+                  style: { color: bandInk('rgba(255,255,255,0.7)'), fontSize: 8, align },
+                }
+              : null
         }
       })
       .filter(Boolean) as Node[]
@@ -624,6 +647,15 @@ function letterhead(section: InvoiceSection, theme: DocumentTheme, data: Documen
       kind: 'text',
       id: 'header.strapline',
       text: strapline,
+      style: { color: mutedOnBand, fontSize: scale(size, compact ? 0.8 : 0.9), align },
+    })
+  }
+  // Workshop-defined fields assigned to the header, each on its own line so a
+  // long value does not crowd the strapline.
+  for (const line of customFieldLines(section, data)) {
+    below.push({
+      kind: 'text',
+      text: line,
       style: { color: mutedOnBand, fontSize: scale(size, compact ? 0.8 : 0.9), align },
     })
   }
@@ -1314,6 +1346,16 @@ function paymentBlock(
 ): Node | null {
   const fields = new Set(sectionFields(section))
   const pairs = data.payment.filter((pair) => (pair.id ? fields.has(pair.id) : true))
+  // Workshop-defined fields assigned here join as label-over-value pairs.
+  // Their lines arrive worded as "Label: value", so split at the first colon.
+  for (const line of customFieldLines(section, data)) {
+    const at = line.indexOf(': ')
+    pairs.push(
+      at === -1
+        ? { label: '', value: line }
+        : { label: line.slice(0, at), value: line.slice(at + 2) }
+    )
+  }
   if (!pairs.length) return null
 
   const look = lookOf(section, theme)
@@ -1480,6 +1522,10 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
         .filter(Boolean)
     )
     .filter((column) => column.length > 0)
+  // Workshop-defined fields assigned to the footer stand as a column of their
+  // own beside the built-in ones.
+  const custom = customFieldLines(section, data)
+  if (custom.length) columns.push(custom)
 
   const children: Node[] = []
   // A shop that wants its mark along the bottom as well as the top, the way

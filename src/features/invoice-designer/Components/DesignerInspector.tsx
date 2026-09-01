@@ -309,7 +309,6 @@ export function DesignerInspector({
   selected,
   onSelect,
   onSection,
-  onMoveCustomField,
   onPlaceInFlow,
   onSectionStyle,
   onDocument,
@@ -325,8 +324,6 @@ export function DesignerInspector({
   selected: string | null
   onSelect: (id: string | null) => void
   onSection: (id: string, patch: Partial<InvoiceSection>) => void
-  /** Moves a workshop-defined field into another section's field list. */
-  onMoveCustomField: (cfId: string, toSectionId: string) => void
   /** Puts a block in the flow, in a column, discarding any hand placement. */
   onPlaceInFlow: (id: string, column: 'left' | 'right' | undefined) => void
   onSectionStyle: (id: string, style: InvoiceSectionStyle | undefined) => void
@@ -358,12 +355,6 @@ export function DesignerInspector({
 
   if (section) {
     const style = section.style ?? {}
-    const assigned = new Set(
-      layout.sections.flatMap((s) =>
-        (s.fields ?? []).filter((f) => isCustomFieldId(f.id)).map((f) => fromCustomFieldId(f.id))
-      )
-    )
-    const unassignedCustomFields = customFields.filter((f) => f.isActive && !assigned.has(f.id))
     /**
      * The fields this section shows, resolved the way the generator resolves
      * them: no list of its own means every built-in field, visible.
@@ -380,12 +371,28 @@ export function DesignerInspector({
       ...builtins
         .filter((f) => !stored.some((existing) => existing.id === f.id))
         .map((f) => ({ id: f.id, visible: false })),
+      // Every workshop-defined field is offered in every section that lists
+      // fields, off until switched on, so the same field can print in more
+      // than one place.
+      ...customFields
+        .filter(
+          (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
+        )
+        .map((f) => ({ id: toCustomFieldId(f.id), visible: false })),
     ]
     // The footer prints its mark only when the field is switched on, and the
     // controls that dress that mark follow it.
     const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)
+    // A custom field switched off is only stored when it was stored before:
+    // writing every offered field into the section would mark them "assigned"
+    // and rob the general panel of its unplaced-fields fallback.
     const setFields = (fields: { id: string; visible: boolean }[]) =>
-      onSection(section.id, { fields })
+      onSection(section.id, {
+        fields: fields.filter(
+          (f) =>
+            !isCustomFieldId(f.id) || f.visible || (section.fields ?? []).some((s) => s.id === f.id)
+        ),
+      })
     const setStyle = (patch: InvoiceSectionStyle) => {
       const next = { ...style, ...patch }
       const kept = Object.fromEntries(
@@ -660,30 +667,6 @@ export function DesignerInspector({
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
-                  {isCustomFieldId(field.id) && (
-                    <select
-                      value={section.id}
-                      onChange={(e) => onMoveCustomField(field.id, e.target.value)}
-                      className="max-w-[104px] truncate rounded-md border border-[#e3e5e9] bg-white px-1 py-0.5 text-[11.5px] text-[#5b6068]"
-                      title={t('moveFieldToSection')}
-                    >
-                      {[...SECTIONS_WITH_FIELDS].map((id) => (
-                        <option key={id} value={id}>
-                          {sectionName(id)}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                  {isCustomFieldId(field.id) && (
-                    <button
-                      type="button"
-                      onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
-                      className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
-                      title={t('removeField')}
-                    >
-                      ×
-                    </button>
-                  )}
                   <Toggle
                     on={field.visible}
                     onChange={(visible) =>
@@ -694,28 +677,6 @@ export function DesignerInspector({
                   />
                 </div>
               ))}
-              {unassignedCustomFields.length > 0 && (
-                <div className="pt-1">
-                  <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {unassignedCustomFields.map((field) => (
-                      <button
-                        key={field.id}
-                        type="button"
-                        onClick={() =>
-                          setFields([
-                            ...resolvedFields,
-                            { id: toCustomFieldId(field.id), visible: true },
-                          ])
-                        }
-                        className="rounded-md border border-dashed border-[#c9ccd1] px-2 py-1 text-[12px] text-[#5b6068] hover:border-[#2563eb] hover:text-[#2563eb]"
-                      >
-                        + {field.label || field.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </Group>
           )}
 

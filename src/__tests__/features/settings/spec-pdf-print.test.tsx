@@ -306,6 +306,31 @@ describe('the printed invoice follows the designed layout', () => {
     expect(withFooterLogo(true)).toContain('footer.logo')
   })
 
+  it('prints a custom field in whichever bespoke section switches it on', () => {
+    // The letterhead, footer and payment blocks draw from fixed field ids, so
+    // each must fold the workshop's own fields in; the panels already do.
+    const blockWithField = (sectionId: string, visible: boolean) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === sectionId
+          ? { ...section, fields: [...(section.fields ?? []), { id: 'cf_cfdef1', visible }] }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === sectionId))
+    }
+
+    for (const sectionId of ['footer', 'header', 'bank_account']) {
+      expect(blockWithField(sectionId, true)).toContain('INS-991')
+      expect(blockWithField(sectionId, false)).not.toContain('INS-991')
+    }
+  })
+
   it("carries the sheet's typeface into every line of a panel", () => {
     // A node that mentions a font at all overrides what it inherits, because
     // the PDF merges the two and an explicit undefined wins. That reset a

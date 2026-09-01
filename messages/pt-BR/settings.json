@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Marcado por padrão",
     "placement": "Posição no documento",
     "placementHidden": "Não é impresso",
-    "placementHint": "Em qual seção da fatura ou do orçamento este campo é impresso.",
+    "placementHint": "Em qual seção da fatura ou do orçamento este campo é impresso. No designer você também pode ativá-lo em mais seções.",
     "failedSavePlacement": "Não foi possível salvar a posição do campo"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Exemplo",
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",
-    "leaveConfirm": "Sair",
-    "moveFieldToSection": "Mover para a seção"
+    "leaveConfirm": "Sair"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

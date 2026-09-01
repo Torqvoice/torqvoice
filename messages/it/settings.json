@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Selezionata per impostazione predefinita",
     "placement": "Posizione sul documento",
     "placementHidden": "Non stampato",
-    "placementHint": "In quale sezione della fattura o del preventivo viene stampato questo campo.",
+    "placementHint": "In quale sezione della fattura o del preventivo viene stampato questo campo. Nel designer puoi attivarlo anche in altre sezioni.",
     "failedSavePlacement": "Impossibile salvare la posizione del campo"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Segnaposto",
     "leaveTitle": "Uscire senza salvare?",
     "leaveBody": "Le modifiche a questo design non sono state salvate e andranno perse.",
-    "leaveConfirm": "Esci",
-    "moveFieldToSection": "Sposta nella sezione"
+    "leaveConfirm": "Esci"
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

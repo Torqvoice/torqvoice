@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Pažymėta pagal numatytuosius nustatymus",
     "placement": "Vieta dokumente",
     "placementHidden": "Nespausdinama",
-    "placementHint": "Kurioje sąskaitos arba pasiūlymo dalyje spausdinamas šis laukas.",
+    "placementHint": "Kurioje sąskaitos arba pasiūlymo dalyje spausdinamas šis laukas. Dizaineryje jį galima įjungti ir kitose dalyse.",
     "failedSavePlacement": "Nepavyko išsaugoti lauko vietos"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Vietaženklis",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
-    "leaveConfirm": "Išeiti",
-    "moveFieldToSection": "Perkelti į skiltį"
+    "leaveConfirm": "Išeiti"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

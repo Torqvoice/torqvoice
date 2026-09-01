@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Checked by default",
     "placement": "Placement on document",
     "placementHidden": "Not printed",
-    "placementHint": "Which section of the invoice or quote this field prints in.",
+    "placementHint": "Which section of the invoice or quote this field prints in. In the designer you can also switch it on in more sections.",
     "failedSavePlacement": "Failed to save field placement"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Placeholder",
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this design have not been saved. They will be lost.",
-    "leaveConfirm": "Leave",
-    "moveFieldToSection": "Move to section"
+    "leaveConfirm": "Leave"
   },
   "preview": {
     "title": "Brake Service & Oil Change",

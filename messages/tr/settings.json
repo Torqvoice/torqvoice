@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Varsayılan olarak işaretli",
     "placement": "Belgedeki konum",
     "placementHidden": "Yazdırılmaz",
-    "placementHint": "Bu alanın faturanın veya teklifin hangi bölümünde yazdırılacağı.",
+    "placementHint": "Bu alanın faturanın veya teklifin hangi bölümünde yazdırılacağı. Tasarımcıda başka bölümlerde de açabilirsiniz.",
     "failedSavePlacement": "Alan konumu kaydedilemedi"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Örnek",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
-    "leaveConfirm": "Çık",
-    "moveFieldToSection": "Bölüme taşı"
+    "leaveConfirm": "Çık"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Cochée par défaut",
     "placement": "Emplacement sur le document",
     "placementHidden": "Non imprimé",
-    "placementHint": "Dans quelle section de la facture ou du devis ce champ est imprimé.",
+    "placementHint": "Dans quelle section de la facture ou du devis ce champ est imprimé. Dans le designer, vous pouvez aussi l'activer dans d'autres sections.",
     "failedSavePlacement": "Impossible d'enregistrer l'emplacement du champ"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Exemple",
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",
-    "leaveConfirm": "Quitter",
-    "moveFieldToSection": "Déplacer vers une section"
+    "leaveConfirm": "Quitter"
   },
   "preview": {
     "title": "Révision des freins et vidange",

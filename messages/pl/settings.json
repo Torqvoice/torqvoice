@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Domyślnie zaznaczone",
     "placement": "Miejsce na dokumencie",
     "placementHidden": "Nie jest drukowane",
-    "placementHint": "W której sekcji faktury lub wyceny drukowane jest to pole.",
+    "placementHint": "W której sekcji faktury lub wyceny drukowane jest to pole. W projektancie można je włączyć także w innych sekcjach.",
     "failedSavePlacement": "Nie udało się zapisać miejsca pola"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Symbol zastępczy",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
-    "leaveConfirm": "Wyjdź",
-    "moveFieldToSection": "Przenieś do sekcji"
+    "leaveConfirm": "Wyjdź"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

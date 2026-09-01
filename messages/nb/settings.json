@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Avkrysset som standard",
     "placement": "Plassering på dokumentet",
     "placementHidden": "Skrives ikke ut",
-    "placementHint": "Hvilken del av fakturaen eller tilbudet dette feltet skrives ut i.",
+    "placementHint": "Hvilken del av fakturaen eller tilbudet dette feltet skrives ut i. I designeren kan du også slå det på i flere seksjoner.",
     "failedSavePlacement": "Kunne ikke lagre feltplasseringen"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Plassholder",
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
-    "leaveConfirm": "Forlat",
-    "moveFieldToSection": "Flytt til seksjon"
+    "leaveConfirm": "Forlat"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

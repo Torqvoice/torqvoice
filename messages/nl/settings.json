@@ -1014,7 +1014,7 @@
     "defaultValueCheckedHint": "Standaard aangevinkt",
     "placement": "Plaats op het document",
     "placementHidden": "Wordt niet afgedrukt",
-    "placementHint": "In welke sectie van de factuur of offerte dit veld wordt afgedrukt.",
+    "placementHint": "In welke sectie van de factuur of offerte dit veld wordt afgedrukt. In de designer kun je het ook in meer secties inschakelen.",
     "failedSavePlacement": "Kan de veldplaatsing niet opslaan"
   },
   "workshop": {
@@ -1925,8 +1925,7 @@
     "placeholder": "Voorbeeld",
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
-    "leaveConfirm": "Weggaan",
-    "moveFieldToSection": "Verplaats naar sectie"
+    "leaveConfirm": "Weggaan"
   },
   "preview": {
     "title": "Remservice en oliewissel",

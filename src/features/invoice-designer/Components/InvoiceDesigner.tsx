@@ -511,23 +511,6 @@ export function InvoiceDesigner({
     [layout, setLayout]
   )
 
-  /** Move a workshop-defined field into another section's field list. */
-  const moveCustomField = useCallback(
-    (cfId: string, toSectionId: string) => {
-      const sections = layout.sections.map((s) => {
-        const fields = (s.fields ?? []).filter((f) => f.id !== cfId)
-        if (s.id !== toSectionId) {
-          return s.fields ? { ...s, fields } : s
-        }
-        fields.push({ id: cfId, visible: true })
-        // "general" starts hidden; a field moved there is meant to print.
-        return { ...s, fields, visible: s.id === 'general' ? true : s.visible }
-      })
-      setLayout({ ...layout, sections })
-    },
-    [layout, setLayout]
-  )
-
   /**
    * Leave for the settings page, asking first when there is unsaved work.
    *
@@ -1006,7 +989,6 @@ export function InvoiceDesigner({
           selected={selected}
           onSelect={setSelected}
           onSection={patchSection}
-          onMoveCustomField={moveCustomField}
           onPlaceInFlow={placeInFlow}
           onSectionStyle={patchSectionStyle}
           onDocument={patchDocument}
