@@ -350,6 +350,8 @@ export function DesignerInspector({
   }
   /** A section's name, or its id spaced out when nothing has named it. */
   const sectionName = (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' '))
+  /** The field row being dragged to a new spot in the list, if any. */
+  const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
   const doc = layout.document ?? {}
 
@@ -371,28 +373,29 @@ export function DesignerInspector({
       ...builtins
         .filter((f) => !stored.some((existing) => existing.id === f.id))
         .map((f) => ({ id: f.id, visible: false })),
-      // Every workshop-defined field is offered in every section that lists
-      // fields, off until switched on, so the same field can print in more
-      // than one place.
-      ...customFields
-        .filter(
-          (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
-        )
-        .map((f) => ({ id: toCustomFieldId(f.id), visible: false })),
     ]
+    // Workshop-defined fields wait as chips below the list until they are
+    // added, so the list only carries what this section actually uses. The
+    // same field can still be added to several sections.
+    const availableCustomFields = customFields.filter(
+      (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
+    )
     // The footer prints its mark only when the field is switched on, and the
     // controls that dress that mark follow it.
     const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)
-    // A custom field switched off is only stored when it was stored before:
-    // writing every offered field into the section would mark them "assigned"
-    // and rob the general panel of its unplaced-fields fallback.
     const setFields = (fields: { id: string; visible: boolean }[]) =>
-      onSection(section.id, {
-        fields: fields.filter(
-          (f) =>
-            !isCustomFieldId(f.id) || f.visible || (section.fields ?? []).some((s) => s.id === f.id)
-        ),
-      })
+      onSection(section.id, { fields })
+    /** Slides the dragged row to the spot the pointer is over, live. */
+    const dragFieldOver = (overId: string) => {
+      if (!dragFieldId || dragFieldId === overId) return
+      const from = resolvedFields.findIndex((f) => f.id === dragFieldId)
+      const to = resolvedFields.findIndex((f) => f.id === overId)
+      if (from === -1 || to === -1) return
+      const next = [...resolvedFields]
+      const [moved] = next.splice(from, 1)
+      next.splice(to, 0, moved)
+      setFields(next)
+    }
     const setStyle = (patch: InvoiceSectionStyle) => {
       const next = { ...style, ...patch }
       const kept = Object.fromEntries(
@@ -663,10 +666,40 @@ export function DesignerInspector({
           {SECTIONS_WITH_FIELDS.has(section.id) && (
             <Group title={t('fields')}>
               {resolvedFields.map((field) => (
-                <div key={field.id} className="flex items-center justify-between gap-2">
+                <div
+                  key={field.id}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = 'move'
+                    setDragFieldId(field.id)
+                  }}
+                  onDragEnd={() => setDragFieldId(null)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDragEnter={() => dragFieldOver(field.id)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setDragFieldId(null)
+                  }}
+                  className={`flex items-center justify-between gap-2 ${
+                    dragFieldId === field.id ? 'opacity-50' : ''
+                  }`}
+                >
+                  <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
+                    ⠿
+                  </span>
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
+                  {isCustomFieldId(field.id) && (
+                    <button
+                      type="button"
+                      onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
+                      className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
+                      title={t('removeField')}
+                    >
+                      ×
+                    </button>
+                  )}
                   <Toggle
                     on={field.visible}
                     onChange={(visible) =>
@@ -677,6 +710,28 @@ export function DesignerInspector({
                   />
                 </div>
               ))}
+              {availableCustomFields.length > 0 && (
+                <div className="pt-1">
+                  <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {availableCustomFields.map((field) => (
+                      <button
+                        key={field.id}
+                        type="button"
+                        onClick={() =>
+                          setFields([
+                            ...resolvedFields,
+                            { id: toCustomFieldId(field.id), visible: true },
+                          ])
+                        }
+                        className="rounded-md border border-dashed border-[#c9ccd1] px-2 py-1 text-[12px] text-[#5b6068] hover:border-[#2563eb] hover:text-[#2563eb]"
+                      >
+                        + {field.label || field.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </Group>
           )}
 
