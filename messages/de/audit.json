@@ -140,9 +140,18 @@
     "work_bay_create": "Arbeitsplatz erstellt",
     "work_bay_update": "Arbeitsplatz aktualisiert",
     "work_bay_delete": "Arbeitsplatz gelöscht",
+    "auth_appSetupRedeemed": "Mit Einrichtungscode angemeldet",
+    "auth_technicianCodeSignIn": "Mit Einmalcode angemeldet",
+    "team_createAppSetupCode": "App-Einrichtungscode ausgestellt",
+    "team_createTechnicianAccount": "Technikerkonto angelegt",
+    "team_removeTechnicianAccess": "Techniker entfernt und Zugriff entzogen",
+    "team_setMemberTechnician": "Techniker-Status eines Mitglieds geändert",
     "settings_whatsappUpdated": "WhatsApp-Einstellungen aktualisiert",
+    "settings_whatsappDisconnected": "WhatsApp getrennt",
     "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert",
-    "settings_whatsappDisconnected": "WhatsApp getrennt"
+    "team_giveTechnicianTheApp": "Board-Techniker ein Konto gegeben",
+    "team_createDefaultRoles": "Standardrollen angelegt",
+    "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -265,6 +274,7 @@
     "whatsapp_send": "WhatsApp-Nachricht an {name} gesendet",
     "work_bay_create": "Arbeitsplatz „{name}“ angelegt",
     "work_bay_update": "Arbeitsplatz „{name}“ aktualisiert",
-    "work_bay_delete": "Arbeitsplatz {id} gelöscht"
+    "work_bay_delete": "Arbeitsplatz {id} gelöscht",
+    "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird"
   }
 }

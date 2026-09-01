@@ -25,9 +25,7 @@ const CUSTOMER_FACING = ['/portal', '/share', '/terms']
 
 export function isCustomerFacingPath(pathname: string | null | undefined): boolean {
   if (!pathname) return false
-  return CUSTOMER_FACING.some(
-    (root) => pathname === root || pathname.startsWith(`${root}/`)
-  )
+  return CUSTOMER_FACING.some((root) => pathname === root || pathname.startsWith(`${root}/`))
 }
 
 export type Broadcast = {

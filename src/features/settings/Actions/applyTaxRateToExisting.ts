@@ -1,11 +1,13 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
-import { revalidatePath } from "next/cache";
-import { SETTING_KEYS } from "../Schema/settingsSchema";
-import { calculateTotals } from "@/lib/tax";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { revalidatePath } from 'next/cache'
+import { SETTING_KEYS } from '../Schema/settingsSchema'
+import { calculateTotals } from '@/lib/tax'
+import { getDocumentLockSettings } from '@/lib/document-lock.server'
+import { invoiceLockState, quoteLockState } from '@/lib/document-lock'
 
 /**
  * Apply the current default tax rate from settings to existing ServiceRecords
@@ -25,21 +27,19 @@ export async function applyTaxRateToExisting() {
           organizationId,
           key: { in: [SETTING_KEYS.TAX_ENABLED, SETTING_KEYS.DEFAULT_TAX_RATE] },
         },
-      });
-      const settingsMap: Record<string, string> = {};
-      for (const s of settings) settingsMap[s.key] = s.value;
+      })
+      const settingsMap: Record<string, string> = {}
+      for (const s of settings) settingsMap[s.key] = s.value
 
-      const taxEnabled = settingsMap[SETTING_KEYS.TAX_ENABLED] !== "false";
-      const defaultTaxRate = Number(settingsMap[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0;
+      const taxEnabled = settingsMap[SETTING_KEYS.TAX_ENABLED] !== 'false'
+      const defaultTaxRate = Number(settingsMap[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0
 
       if (!taxEnabled || defaultTaxRate <= 0) {
-        throw new Error(
-          "Tax must be enabled and the default tax rate must be greater than 0.",
-        );
+        throw new Error('Tax must be enabled and the default tax rate must be greater than 0.')
       }
 
       // --- Service records (work orders / invoices) ---
-      const serviceRecords = await db.serviceRecord.findMany({
+      const allServiceRecords = await db.serviceRecord.findMany({
         where: {
           organizationId,
           taxRate: 0,
@@ -49,11 +49,17 @@ export async function applyTaxRateToExisting() {
           subtotal: true,
           discountAmount: true,
           taxInclusive: true,
+          sentAt: true,
+          manuallyPaid: true,
+          totalAmount: true,
+          cost: true,
+          editUnlockedAt: true,
+          payments: { select: { amount: true } },
         },
-      });
+      })
 
       // --- Quotes ---
-      const quotes = await db.quote.findMany({
+      const allQuotes = await db.quote.findMany({
         where: {
           organizationId,
           taxRate: 0,
@@ -63,11 +69,25 @@ export async function applyTaxRateToExisting() {
           subtotal: true,
           discountAmount: true,
           taxInclusive: true,
+          status: true,
+          sentAt: true,
+          editUnlockedAt: true,
         },
-      });
+      })
 
-      let serviceRecordsUpdated = 0;
-      let quotesUpdated = 0;
+      // A locked document is exactly the one whose total must not change
+      // under it, so the sweep steps around it. Anything skipped stays
+      // eligible: unlock it (or turn locking off) and run the backfill again.
+      const lockSettings = await getDocumentLockSettings(organizationId)
+      const serviceRecords = allServiceRecords.filter(
+        (r) => !invoiceLockState(r, lockSettings).locked
+      )
+      const quotes = allQuotes.filter((q) => !quoteLockState(q, lockSettings).locked)
+      const serviceRecordsSkipped = allServiceRecords.length - serviceRecords.length
+      const quotesSkipped = allQuotes.length - quotes.length
+
+      let serviceRecordsUpdated = 0
+      let quotesUpdated = 0
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
@@ -76,7 +96,7 @@ export async function applyTaxRateToExisting() {
             discountAmount: r.discountAmount,
             taxRate: defaultTaxRate,
             taxInclusive: r.taxInclusive,
-          });
+          })
           await tx.serviceRecord.update({
             where: { id: r.id },
             data: {
@@ -84,8 +104,8 @@ export async function applyTaxRateToExisting() {
               taxAmount,
               totalAmount,
             },
-          });
-          serviceRecordsUpdated++;
+          })
+          serviceRecordsUpdated++
         }
 
         for (const q of quotes) {
@@ -94,7 +114,7 @@ export async function applyTaxRateToExisting() {
             discountAmount: q.discountAmount,
             taxRate: defaultTaxRate,
             taxInclusive: q.taxInclusive,
-          });
+          })
           await tx.quote.update({
             where: { id: q.id },
             data: {
@@ -102,37 +122,48 @@ export async function applyTaxRateToExisting() {
               taxAmount,
               totalAmount,
             },
-          });
-          quotesUpdated++;
+          })
+          quotesUpdated++
         }
-      });
+      })
 
-      revalidatePath("/work-orders");
-      revalidatePath("/quotes");
-      revalidatePath("/vehicles");
+      revalidatePath('/work-orders')
+      revalidatePath('/quotes')
+      revalidatePath('/vehicles')
 
       return {
         serviceRecordsUpdated,
         quotesUpdated,
+        serviceRecordsSkipped,
+        quotesSkipped,
         taxRate: defaultTaxRate,
-      };
+      }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "settings.applyTaxRate",
-        entity: "Organization",
-        details: { key: "settings_applyTaxRate", params: { rate: result.taxRate, records: result.serviceRecordsUpdated, quotes: result.quotesUpdated } },
+        action: 'settings.applyTaxRate',
+        entity: 'Organization',
+        details: {
+          key: 'settings_applyTaxRate',
+          params: {
+            rate: result.taxRate,
+            records: result.serviceRecordsUpdated,
+            quotes: result.quotesUpdated,
+          },
+        },
         metadata: {
           taxRate: result.taxRate,
           serviceRecordsUpdated: result.serviceRecordsUpdated,
           quotesUpdated: result.quotesUpdated,
+          serviceRecordsSkippedLocked: result.serviceRecordsSkipped,
+          quotesSkippedLocked: result.quotesSkipped,
         },
       }),
-    },
-  );
+    }
+  )
 }
 
 /**
@@ -149,15 +180,13 @@ export async function getTaxBackfillCounts() {
         db.quote.count({
           where: { organizationId, taxRate: 0 },
         }),
-      ]);
-      return { serviceRecords, quotes };
+      ])
+      return { serviceRecords, quotes }
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 /**
@@ -173,15 +202,13 @@ export async function getInclusiveBackfillCounts() {
         db.quote.count({
           where: { organizationId, taxInclusive: false },
         }),
-      ]);
-      return { serviceRecords, quotes };
+      ])
+      return { serviceRecords, quotes }
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 /**
@@ -197,15 +224,13 @@ export async function getExclusiveBackfillCounts() {
         db.quote.count({
           where: { organizationId, taxInclusive: true },
         }),
-      ]);
-      return { serviceRecords, quotes };
+      ])
+      return { serviceRecords, quotes }
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
-      ],
-    },
-  );
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
+    }
+  )
 }
 
 /**
@@ -246,7 +271,7 @@ export async function convertRecordsToInclusive() {
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
-      });
+      })
 
       // --- Quotes ---
       const quotes = await db.quote.findMany({
@@ -264,39 +289,39 @@ export async function convertRecordsToInclusive() {
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
-      });
+      })
 
-      let serviceRecordsUpdated = 0;
-      let quotesUpdated = 0;
+      let serviceRecordsUpdated = 0
+      let quotesUpdated = 0
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
-          const factor = 1 + r.taxRate / 100;
-          const newSubtotal = r.subtotal * factor;
-          const newDiscountAmount = r.discountAmount * factor;
+          const factor = 1 + r.taxRate / 100
+          const newSubtotal = r.subtotal * factor
+          const newDiscountAmount = r.discountAmount * factor
           // Fixed discount: scale discountValue too. Percentage: leave it alone.
           const newDiscountValue =
-            r.discountType === "fixed" ? r.discountValue * factor : r.discountValue;
+            r.discountType === 'fixed' ? r.discountValue * factor : r.discountValue
 
           const { taxAmount, totalAmount } = calculateTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: r.taxRate,
             taxInclusive: true,
-          });
+          })
 
           if (r.taxRate > 0) {
             for (const p of r.partItems) {
               await tx.servicePart.update({
                 where: { id: p.id },
                 data: { unitPrice: p.unitPrice * factor, total: p.total * factor },
-              });
+              })
             }
             for (const l of r.laborItems) {
               await tx.serviceLabor.update({
                 where: { id: l.id },
                 data: { rate: l.rate * factor, total: l.total * factor },
-              });
+              })
             }
           }
 
@@ -310,36 +335,36 @@ export async function convertRecordsToInclusive() {
               taxAmount,
               totalAmount,
             },
-          });
-          serviceRecordsUpdated++;
+          })
+          serviceRecordsUpdated++
         }
 
         for (const q of quotes) {
-          const factor = 1 + q.taxRate / 100;
-          const newSubtotal = q.subtotal * factor;
-          const newDiscountAmount = q.discountAmount * factor;
+          const factor = 1 + q.taxRate / 100
+          const newSubtotal = q.subtotal * factor
+          const newDiscountAmount = q.discountAmount * factor
           const newDiscountValue =
-            q.discountType === "fixed" ? q.discountValue * factor : q.discountValue;
+            q.discountType === 'fixed' ? q.discountValue * factor : q.discountValue
 
           const { taxAmount, totalAmount } = calculateTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: q.taxRate,
             taxInclusive: true,
-          });
+          })
 
           if (q.taxRate > 0) {
             for (const p of q.partItems) {
               await tx.quotePart.update({
                 where: { id: p.id },
                 data: { unitPrice: p.unitPrice * factor, total: p.total * factor },
-              });
+              })
             }
             for (const l of q.laborItems) {
               await tx.quoteLabor.update({
                 where: { id: l.id },
                 data: { rate: l.rate * factor, total: l.total * factor },
-              });
+              })
             }
           }
 
@@ -353,29 +378,32 @@ export async function convertRecordsToInclusive() {
               taxAmount,
               totalAmount,
             },
-          });
-          quotesUpdated++;
+          })
+          quotesUpdated++
         }
-      });
+      })
 
-      revalidatePath("/work-orders");
-      revalidatePath("/quotes");
-      revalidatePath("/vehicles");
+      revalidatePath('/work-orders')
+      revalidatePath('/quotes')
+      revalidatePath('/vehicles')
 
-      return { serviceRecordsUpdated, quotesUpdated };
+      return { serviceRecordsUpdated, quotesUpdated }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "settings.convertToInclusive",
-        entity: "Organization",
-        details: { key: "settings_convertToInclusive", params: { records: result.serviceRecordsUpdated, quotes: result.quotesUpdated } },
+        action: 'settings.convertToInclusive',
+        entity: 'Organization',
+        details: {
+          key: 'settings_convertToInclusive',
+          params: { records: result.serviceRecordsUpdated, quotes: result.quotesUpdated },
+        },
         metadata: result,
       }),
-    },
-  );
+    }
+  )
 }
 
 /**
@@ -415,7 +443,7 @@ export async function convertRecordsToExclusive() {
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
-      });
+      })
 
       const quotes = await db.quote.findMany({
         where: {
@@ -432,38 +460,38 @@ export async function convertRecordsToExclusive() {
           partItems: { select: { id: true, unitPrice: true, total: true } },
           laborItems: { select: { id: true, rate: true, total: true } },
         },
-      });
+      })
 
-      let serviceRecordsUpdated = 0;
-      let quotesUpdated = 0;
+      let serviceRecordsUpdated = 0
+      let quotesUpdated = 0
 
       await db.$transaction(async (tx) => {
         for (const r of serviceRecords) {
-          const factor = 1 + r.taxRate / 100;
-          const newSubtotal = r.subtotal / factor;
-          const newDiscountAmount = r.discountAmount / factor;
+          const factor = 1 + r.taxRate / 100
+          const newSubtotal = r.subtotal / factor
+          const newDiscountAmount = r.discountAmount / factor
           const newDiscountValue =
-            r.discountType === "fixed" ? r.discountValue / factor : r.discountValue;
+            r.discountType === 'fixed' ? r.discountValue / factor : r.discountValue
 
           const { taxAmount, totalAmount } = calculateTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: r.taxRate,
             taxInclusive: false,
-          });
+          })
 
           if (r.taxRate > 0) {
             for (const p of r.partItems) {
               await tx.servicePart.update({
                 where: { id: p.id },
                 data: { unitPrice: p.unitPrice / factor, total: p.total / factor },
-              });
+              })
             }
             for (const l of r.laborItems) {
               await tx.serviceLabor.update({
                 where: { id: l.id },
                 data: { rate: l.rate / factor, total: l.total / factor },
-              });
+              })
             }
           }
 
@@ -477,36 +505,36 @@ export async function convertRecordsToExclusive() {
               taxAmount,
               totalAmount,
             },
-          });
-          serviceRecordsUpdated++;
+          })
+          serviceRecordsUpdated++
         }
 
         for (const q of quotes) {
-          const factor = 1 + q.taxRate / 100;
-          const newSubtotal = q.subtotal / factor;
-          const newDiscountAmount = q.discountAmount / factor;
+          const factor = 1 + q.taxRate / 100
+          const newSubtotal = q.subtotal / factor
+          const newDiscountAmount = q.discountAmount / factor
           const newDiscountValue =
-            q.discountType === "fixed" ? q.discountValue / factor : q.discountValue;
+            q.discountType === 'fixed' ? q.discountValue / factor : q.discountValue
 
           const { taxAmount, totalAmount } = calculateTotals({
             subtotal: newSubtotal,
             discountAmount: newDiscountAmount,
             taxRate: q.taxRate,
             taxInclusive: false,
-          });
+          })
 
           if (q.taxRate > 0) {
             for (const p of q.partItems) {
               await tx.quotePart.update({
                 where: { id: p.id },
                 data: { unitPrice: p.unitPrice / factor, total: p.total / factor },
-              });
+              })
             }
             for (const l of q.laborItems) {
               await tx.quoteLabor.update({
                 where: { id: l.id },
                 data: { rate: l.rate / factor, total: l.total / factor },
-              });
+              })
             }
           }
 
@@ -520,27 +548,30 @@ export async function convertRecordsToExclusive() {
               taxAmount,
               totalAmount,
             },
-          });
-          quotesUpdated++;
+          })
+          quotesUpdated++
         }
-      });
+      })
 
-      revalidatePath("/work-orders");
-      revalidatePath("/quotes");
-      revalidatePath("/vehicles");
+      revalidatePath('/work-orders')
+      revalidatePath('/quotes')
+      revalidatePath('/vehicles')
 
-      return { serviceRecordsUpdated, quotesUpdated };
+      return { serviceRecordsUpdated, quotesUpdated }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
       ],
       audit: ({ result }) => ({
-        action: "settings.convertToExclusive",
-        entity: "Organization",
-        details: { key: "settings_convertToExclusive", params: { records: result.serviceRecordsUpdated, quotes: result.quotesUpdated } },
+        action: 'settings.convertToExclusive',
+        entity: 'Organization',
+        details: {
+          key: 'settings_convertToExclusive',
+          params: { records: result.serviceRecordsUpdated, quotes: result.quotesUpdated },
+        },
         metadata: result,
       }),
-    },
-  );
+    }
+  )
 }

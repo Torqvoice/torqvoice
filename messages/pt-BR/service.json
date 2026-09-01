@@ -185,7 +185,11 @@
     "paidBadge": "PAGO",
     "entityLabel": "Fatura",
     "emailSubject": "Confirmação de Pagamento",
-    "statusEmailSubject": "Atualização do status do serviço"
+    "statusEmailSubject": "Atualização do status do serviço",
+    "markCompletedTitle": "Marcar esta fatura como concluída?",
+    "markCompletedDescription": "Ela já foi enviada ao cliente, mas continua marcada como não finalizada, então seguirá aparecendo no quadro.",
+    "markCompletedConfirm": "Marcar como concluída",
+    "lockedFieldsetLabel": "Fatura bloqueada, edição desativada"
   },
   "payments": {
     "title": "Pagamentos",
@@ -344,7 +348,23 @@
     "setDefaults": "Valores padrão",
     "workBay": "Baia",
     "selectWorkBay": "Selecionar baia…",
-    "noWorkBay": "Sem baia"
+    "noWorkBay": "Sem baia",
+    "technicians": "Técnicos",
+    "otherTeamMembers": "Outros membros da equipe",
+    "makeTechnician": "Torna essa pessoa técnica",
+    "addSomeoneNew": "Adicionar alguém novo",
+    "notOnBoard": "Ainda não está no quadro",
+    "putOnBoard": "Colocar no quadro",
+    "slotTaken": "{count, plural, one {Este horário já está reservado} other {Este horário tem # conflitos}}",
+    "anotherJob": "outro serviço",
+    "clashTechnician": "o técnico está ocupado",
+    "clashBay": "o box está ocupado",
+    "clashBoth": "ambos estão ocupados",
+    "bookedAnyway": "Salvo mesmo assim. Altere o horário ou escolha o próximo horário livre.",
+    "pickNextAvailable": "Escolher o próximo horário livre",
+    "findingSlot": "Procurando um horário…",
+    "slotPicked": "Agendado no próximo horário livre",
+    "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas"
   },
   "notifications": {
     "title": "Notificações ao cliente",
@@ -381,5 +401,14 @@
       "title": "Configurações padrão de garantia",
       "description": "Definir termos de garantia padrão para novos registros de serviço"
     }
+  },
+  "concerns": {
+    "title": "Relatos do cliente",
+    "addFirst": "Adicionar um relato do cliente",
+    "add": "Adicionar outro",
+    "placeholder": "Faz um barulho atrás quando eu freio",
+    "remove": "Remover este item",
+    "notAnswered": "Nada encontrado sobre isso ainda",
+    "answered": "{count} constatação(ões) sobre isso"
   }
 }

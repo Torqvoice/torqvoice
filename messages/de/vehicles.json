@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "Beantwortet welches Anliegen?",
+    "concernNone": "Nichts, wonach der Kunde gefragt hat"
   },
   "observationsPage": {
     "searchPlaceholder": "Beschreibung, Notizen oder Fahrzeug suchen...",

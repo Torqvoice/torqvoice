@@ -2,6 +2,7 @@ import { passkey } from '@better-auth/passkey'
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
+import { bearer } from 'better-auth/plugins/bearer'
 import { twoFactor } from 'better-auth/plugins/two-factor'
 import { db } from './db'
 import { logAudit } from './audit'
@@ -10,10 +11,51 @@ import { isDemoMode } from './demo'
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
 const isProduction = baseURL?.startsWith('https://')
 
+/**
+ * Origins allowed to sign in.
+ *
+ * Production trusts only the app's own URL. The technician app is native and
+ * sends no Origin header, so it needs nothing added here.
+ *
+ * Development also trusts the Expo dev server, which serves the technician app
+ * in a browser. Without this, signing in from Expo web is refused with
+ * "Invalid origin" and the app looks like it rejected the password, when what
+ * actually happened is a CSRF check doing its job.
+ *
+ * Wildcarded on the port rather than pinned, because Expo walks up from 8081
+ * whenever a port is busy and a pinned list goes stale the first time two dev
+ * servers overlap. Better Auth matches these as glob patterns.
+ */
+const EXPO_DEV_ORIGINS = [
+  'http://localhost:*',
+  'http://127.0.0.1:*',
+  // Expo also serves on the machine's LAN address, which is the same host the
+  // workshop is reached on during development. Derived rather than hardcoded
+  // so this keeps working on a different network.
+  ...devLanOrigin(),
+  ...(process.env.EXPO_DEV_ORIGIN ? [process.env.EXPO_DEV_ORIGIN] : []),
+]
+
+function devLanOrigin(): string[] {
+  if (!baseURL) return []
+  try {
+    const { hostname } = new URL(baseURL)
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return []
+    return [`http://${hostname}:*`]
+  } catch {
+    return []
+  }
+}
+
+const trustedOrigins = [
+  ...(baseURL ? [baseURL] : []),
+  ...(process.env.NODE_ENV === 'production' ? [] : EXPO_DEV_ORIGINS),
+]
+
 export const auth = betterAuth({
   baseURL,
   basePath: '/api/public/auth',
-  trustedOrigins: baseURL ? [baseURL] : [],
+  trustedOrigins,
   database: prismaAdapter(db, {
     provider: 'postgresql',
   }),
@@ -129,11 +171,16 @@ export const auth = betterAuth({
   advanced: {
     useSecureCookies: isProduction,
     ipAddress: {
-      // Client IP for per-user rate limiting. Cloud traffic arrives through
-      // Cloudflare (cf-connecting-ip); staging and self-hosted installs hit
-      // nginx directly, which sets x-real-ip. Without this, Better Auth falls
-      // back to one shared rate-limit bucket for the entire userbase.
-      ipAddressHeaders: ["cf-connecting-ip", "x-real-ip"],
+      // Only headers a proxy we control has overwritten. The proxy sets
+      // x-real-ip from the real connection; cf-connecting-ip is whatever the
+      // caller typed unless Cloudflare genuinely fronts every request, which
+      // it does not while production runs grey-clouded. Trusting it let a
+      // caller change one digit and become a different person to every
+      // per-address limit in the product. See lib/rate-limit.ts.
+      ipAddressHeaders:
+        process.env.TRUST_CF_CONNECTING_IP === 'true'
+          ? ['cf-connecting-ip', 'x-real-ip']
+          : ['x-real-ip'],
     },
   },
   databaseHooks: {
@@ -155,10 +202,12 @@ export const auth = betterAuth({
             {
               action: 'auth.login',
               message: 'User logged in',
-              ip: (session as Record<string, unknown>).ipAddress as string ?? null,
-              userAgent: (session as Record<string, unknown>).userAgent as string ?? null,
-            },
-          ).catch(() => { /* best-effort */ })
+              ip: ((session as Record<string, unknown>).ipAddress as string) ?? null,
+              userAgent: ((session as Record<string, unknown>).userAgent as string) ?? null,
+            }
+          ).catch(() => {
+            /* best-effort */
+          })
         },
       },
     },
@@ -200,12 +249,16 @@ export const auth = betterAuth({
               data: { termsAcceptedAt: new Date() },
             })
           }
-
         },
       },
     },
   },
   plugins: [
+    // Lets the technician app authenticate with `Authorization: Bearer <token>`
+    // instead of a cookie. Session lookup, expiry and revocation stay inside
+    // Better Auth rather than being reimplemented against the session table,
+    // so signing out on the web really does kill the phone's session too.
+    bearer(),
     twoFactor({ issuer: 'Torqvoice' }),
     passkey({
       rpID: baseURL ? new URL(baseURL).hostname : 'localhost',

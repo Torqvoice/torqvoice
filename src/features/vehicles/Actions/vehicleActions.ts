@@ -8,7 +8,7 @@ import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchem
 import { revalidatePath } from 'next/cache'
 import { unlink } from 'fs/promises'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { auditDetails } from "@/lib/audit";
+import { auditDetails } from '@/lib/audit'
 
 export async function getVehicles() {
   return withAuth(
@@ -195,7 +195,10 @@ export async function createVehicle(input: unknown) {
         action: 'vehicle.create',
         entity: 'Vehicle',
         entityId: result.id,
-        details: { key: 'vehicle_create', params: { year: result.year, make: result.make, model: result.model } },
+        details: {
+          key: 'vehicle_create',
+          params: { year: result.year, make: result.make, model: result.model },
+        },
         metadata: { vehicleId: result.id },
       }),
     }
@@ -263,11 +266,11 @@ export async function updateVehicle(input: unknown) {
         entity: 'Vehicle',
         entityId: result.id,
         details: result.fields.length
-        ? auditDetails("vehicle_update", {
-            name: result.vehicleDisplay,
-            fields: result.fields.join(", "),
-          })
-        : auditDetails("vehicle_updateNoChanges", { name: result.vehicleDisplay }),
+          ? auditDetails('vehicle_update', {
+              name: result.vehicleDisplay,
+              fields: result.fields.join(', '),
+            })
+          : auditDetails('vehicle_updateNoChanges', { name: result.vehicleDisplay }),
         metadata: {
           vehicleId: result.id,
           vehicleDisplay: result.vehicleDisplay,

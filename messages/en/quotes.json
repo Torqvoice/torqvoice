@@ -48,7 +48,9 @@
       "details": "Details",
       "images": "Images",
       "documents": "Documents"
-    }
+    },
+    "customFieldsInvalid": "Please fill in all required custom fields",
+    "customFieldsSaveFailed": "Failed to save custom fields"
   },
   "form": {
     "newQuote": "New Quote",

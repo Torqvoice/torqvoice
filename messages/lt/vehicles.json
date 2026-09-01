@@ -259,7 +259,9 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "concernLabel": "Kurį punktą atsako?",
+    "concernNone": "Klientas apie tai neklausė"
   },
   "observationsPage": {
     "searchPlaceholder": "Ieškoti pagal aprašymą, pastabas arba transporto priemonę...",

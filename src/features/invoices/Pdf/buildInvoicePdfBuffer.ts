@@ -12,7 +12,7 @@
  *   - loading findings and custom fields
  *   - loading workshop settings, organization info and the layout config
  *   - resolving the customer locale and PDF translations
- *   - reading the workshop logo from disk and converting it to a data URI
+ *   - reading the document logo from disk and converting it to a data URI
  *   - optionally generating a Telegram QR code
  *   - resolving Torqvoice branding visibility
  *   - constructing the InvoicePDF React element and rendering it to a buffer
@@ -32,8 +32,10 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { formatDateForPdf } from '@/lib/format'
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 type PdfMessages = Record<string, Record<string, string>>
 
@@ -86,6 +88,7 @@ export async function buildInvoicePdfBuffer(
           address: true,
           company: true,
           taxId: true,
+          customerNumber: true,
         },
       },
       vehicle: {
@@ -106,6 +109,7 @@ export async function buildInvoicePdfBuffer(
               address: true,
               company: true,
               taxId: true,
+              customerNumber: true,
             },
           },
         },
@@ -133,23 +137,8 @@ export async function buildInvoicePdfBuffer(
     orderBy: { createdAt: 'desc' },
   })
 
-  // Fetch custom field values for this service record
-  const customFieldValues = await db.customFieldValue.findMany({
-    where: { entityId: record.id, entityType: 'service_record' },
-    include: {
-      field: { select: { label: true, fieldType: true, isActive: true, sortOrder: true } },
-    },
-    orderBy: { field: { sortOrder: 'asc' } },
-  })
-
-  const customFields = customFieldValues
-    .filter((v) => v.field.isActive && v.value)
-    .map((v) => ({
-      fieldId: v.fieldId,
-      label: v.field.label,
-      value: v.value,
-      fieldType: v.field.fieldType,
-    }))
+  // Custom fields for this service record (definition defaults included)
+  const customFields = await getCustomFieldsForPrint(orgId, record.id, 'service_record')
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({
@@ -184,7 +173,7 @@ export async function buildInvoicePdfBuffer(
     labels.tax = `${customTaxLabel} ({rate}%)`
   }
 
-  const logoDataUri = await loadLogoDataUri(settingsMap['workshop.logo'])
+  const logoDataUri = await loadLogoDataUri(documentLogoPath(settingsMap, 'invoice'))
 
   const invoiceSettings = {
     bankAccount: settingsMap['invoice.bankAccount'] || '',
@@ -195,7 +184,9 @@ export async function buildInvoicePdfBuffer(
     showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
     dueDays: Number(settingsMap['invoice.dueDays']) || 0,
     currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as 'symbol' | 'code',
+    currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
+      | 'symbol'
+      | 'code',
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
     dateFormat: settingsMap['workshop.dateFormat'] || undefined,
     timezone: settingsMap['workshop.timezone'] || undefined,
@@ -233,6 +224,15 @@ export async function buildInvoicePdfBuffer(
 
   const template = {
     primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
+    backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
+    textColor: settingsMap['invoice.textColor'] || undefined,
+    companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
+    frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
+    frameShadow: settingsMap['invoice.frameShadow'],
+    frameRadius: Number(settingsMap['invoice.frameRadius']) || 0,
+    frameSide: (settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left') as
+      | 'left'
+      | 'right',
     fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
     showLogo: settingsMap['invoice.showLogo'] !== 'false',
     showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
@@ -273,6 +273,7 @@ export async function buildInvoicePdfBuffer(
       address: settingsMap['workshop.address'] || '',
       phone: settingsMap['workshop.phone'] || '',
       email: settingsMap['workshop.email'] || '',
+      slogan: settingsMap['workshop.slogan'] || undefined,
     },
     invoiceSettings,
     paymentSummary,

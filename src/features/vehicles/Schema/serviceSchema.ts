@@ -9,7 +9,13 @@ export const servicePartSchema = z.object({
   unitPrice: z.coerce.number().min(0).default(0),
   total: z.coerce.number().min(0).default(0),
   unitCost: z.coerce.number().min(0).default(0),
-  markupPercent: z.coerce.number().min(0).default(0),
+  /**
+   * Selling below cost is a real decision (a goodwill line, matching a price),
+   * and the markup has to be able to say so. Floored at -100, which is giving
+   * the part away: anything lower would imply a negative price, which
+   * unitPrice already refuses.
+   */
+  markupPercent: z.coerce.number().min(-100).default(0),
   inventoryPartId: z.string().optional(),
 })
 
@@ -31,6 +37,20 @@ export const serviceAttachmentSchema = z.object({
   includeInInvoice: z.boolean().default(true),
 })
 
+/**
+ * One thing the customer asked about.
+ *
+ * The id is what separates this from the parts and labour arrays beside it.
+ * Those are replaced wholesale on every save, which is fine because nothing
+ * points at them. Findings point at concerns, so a concern that survives an
+ * edit has to keep its id or the link from its diagnosis is quietly cut.
+ */
+export const serviceConcernSchema = z.object({
+  id: z.string().optional(),
+  description: z.string().min(1, 'Concern is required'),
+  sortOrder: z.coerce.number().int().min(0).default(0),
+})
+
 export const createServiceSchema = z.object({
   // null = parts-only / counter sale (no vehicle); customerId is required then
   vehicleId: z.string().nullable(),
@@ -48,6 +68,7 @@ export const createServiceSchema = z.object({
   laborHours: z.coerce.number().optional(),
   diagnosticNotes: z.string().optional(),
   invoiceNotes: z.string().optional(),
+  concerns: z.array(serviceConcernSchema).optional(),
   partItems: z.array(servicePartSchema).optional(),
   laborItems: z.array(serviceLaborSchema).optional(),
   attachments: z.array(serviceAttachmentSchema).optional(),
@@ -72,7 +93,17 @@ export const updateServiceSchema = createServiceSchema.partial().extend({
 })
 
 export type ServiceAttachmentInput = z.infer<typeof serviceAttachmentSchema>
-export type ServicePartInput = z.infer<typeof servicePartSchema>
+export type ServiceConcernInput = z.infer<typeof serviceConcernSchema>
+/**
+ * The editor also tracks whether the price was typed over the cost-and-markup
+ * formula, so a later edit to the cost restates the margin instead of
+ * overwriting what was entered. It describes how the row was edited rather
+ * than anything about the part, so it is client-only: the schema above has no
+ * such field and strips it on save.
+ */
+export type ServicePartInput = z.infer<typeof servicePartSchema> & {
+  priceOverridden?: boolean
+}
 export type ServiceLaborInput = z.infer<typeof serviceLaborSchema>
 export type CreateServiceInput = z.infer<typeof createServiceSchema>
 export type UpdateServiceInput = z.infer<typeof updateServiceSchema>

@@ -62,9 +62,7 @@ export default function VerifyTwoFactorPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {useBackupCode
-              ? t('descriptionBackup')
-              : t('descriptionTotp')}
+            {useBackupCode ? t('descriptionBackup') : t('descriptionTotp')}
           </p>
         </div>
 

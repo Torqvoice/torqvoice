@@ -48,7 +48,9 @@
       "details": "Details",
       "images": "Afbeeldingen",
       "documents": "Documenten"
-    }
+    },
+    "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
+    "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"
   },
   "form": {
     "newQuote": "Nieuwe offerte",

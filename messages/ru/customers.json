@@ -35,6 +35,8 @@
     "taxExemptBadge": "Освобожден от налога",
     "tabs": {
       "vehicles": "Транспортные средства ({count})",
+      "invoices": "Счета ({count})",
+      "quotes": "Предложения ({count})",
       "messages": "Сообщения",
       "requests": "Заявки ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Моточасы",
       "services": "Обслуживания"
     },
-    "noVehicles": "У этого клиента нет транспортных средств"
+    "documentTable": {
+      "invoiceNumber": "№ счёта",
+      "quoteNumber": "№ предложения",
+      "title": "Название",
+      "vehicle": "Транспортное средство",
+      "status": "Статус",
+      "date": "Дата",
+      "total": "Итого",
+      "noVehicle": "Только запчасти",
+      "searchPlaceholder": "Поиск...",
+      "noMatches": "По вашему запросу ничего не найдено",
+      "sort": {
+        "asc": "по возрастанию",
+        "desc": "по убыванию"
+      }
+    },
+    "noVehicles": "У этого клиента нет транспортных средств",
+    "noInvoices": "У этого клиента нет счетов",
+    "noQuotes": "У этого клиента нет предложений"
   },
   "form": {
     "addTitle": "Добавить нового клиента",

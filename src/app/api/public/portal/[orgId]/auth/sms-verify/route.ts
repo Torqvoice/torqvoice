@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
 import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
+import { PORTAL_CODE_MAX_ATTEMPTS, portalCodeMatches } from '@/lib/portal-code'
 import { rateLimit } from '@/lib/rate-limit'
 import { CUSTOMER_SESSION_COOKIE, CUSTOMER_SESSION_DURATION } from '@/lib/customer-session'
 import { resolvePortalOrg } from '@/lib/portal-slug'
@@ -9,7 +10,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
-  const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000 })
+  const rateLimitResponse = rateLimit(request, { limit: 5, windowMs: 60_000, anonymous: true })
   if (rateLimitResponse) return rateLimitResponse
 
   const { orgId: orgParam } = await params
@@ -55,10 +56,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
       )
     }
 
+    /**
+     * The live code for this number, found before the digits are looked at.
+     *
+     * Matching on the code as part of the query meant a wrong guess belonged
+     * to nobody, so nothing could count it, and the only thing standing
+     * between a guesser and a six digit space was a limit keyed on their
+     * address. Finding the row first lets the attempt land on it.
+     */
     const codeRow = await db.customerSmsCode.findFirst({
       where: {
         phone: e164,
-        code,
         organizationId: orgId,
         usedAt: null,
         expiresAt: { gt: new Date() },
@@ -67,6 +75,32 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     })
 
     if (!codeRow) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired code' },
+        { status: 400 }
+      )
+    }
+
+    if (codeRow.attempts >= PORTAL_CODE_MAX_ATTEMPTS) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired code' },
+        { status: 400 }
+      )
+    }
+
+    if (!portalCodeMatches(codeRow.code, code)) {
+      const { attempts } = await db.customerSmsCode.update({
+        where: { id: codeRow.id },
+        data: { attempts: { increment: 1 } },
+        select: { attempts: true },
+      })
+      // Spent rather than left to expire, so waiting out the rate limiter
+      // does not buy another five guesses at the same code.
+      if (attempts >= PORTAL_CODE_MAX_ATTEMPTS) {
+        await db.customerSmsCode
+          .update({ where: { id: codeRow.id }, data: { usedAt: new Date() } })
+          .catch(() => undefined)
+      }
       return NextResponse.json(
         { success: false, error: 'Invalid or expired code' },
         { status: 400 }

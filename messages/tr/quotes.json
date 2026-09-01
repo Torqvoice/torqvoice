@@ -48,7 +48,9 @@
       "details": "Detaylar",
       "images": "Görseller",
       "documents": "Belgeler"
-    }
+    },
+    "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
+    "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"
   },
   "form": {
     "newQuote": "Yeni Teklif",

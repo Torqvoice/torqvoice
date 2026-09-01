@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import Link from 'next/link'
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 /**
  * Link to a related record from inside a table cell. Rows are themselves
@@ -21,24 +21,24 @@ export function TableCellLink({
   className,
   children,
 }: {
-  href: string;
-  block?: boolean;
-  className?: string;
-  children: ReactNode;
+  href: string
+  block?: boolean
+  className?: string
+  children: ReactNode
 }) {
   return (
     <Link
       href={href}
       onClick={(e) => e.stopPropagation()}
       className={cn(
-        "hover:underline underline-offset-2 focus-visible:underline focus-visible:outline-none",
+        'hover:underline underline-offset-2 focus-visible:underline focus-visible:outline-none',
         // max-w-full keeps the shrink-to-fit box inside the cell, which is what
         // lets a `truncate` child still find a width to truncate against.
-        block ? "inline-block w-fit max-w-full min-w-0 align-top" : "inline",
+        block ? 'inline-block w-fit max-w-full min-w-0 align-top' : 'inline',
         className
       )}
     >
       {children}
     </Link>
-  );
+  )
 }

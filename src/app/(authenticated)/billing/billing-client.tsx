@@ -1,18 +1,17 @@
-"use client";
+'use client'
 
-
-import { useTableKeyboardNav } from "@/hooks/use-table-keyboard-nav";
-import { interactiveRow } from '@/lib/interactive-row';
-import { useDebouncedSearch } from '@/hooks/use-debounced-search';
-import { useCallback, useTransition } from "react";
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useFormatDate } from "@/lib/use-format-date";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { interactiveRow } from '@/lib/interactive-row'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
+import { useCallback, useTransition } from 'react'
+import Link from 'next/link'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -20,9 +19,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { TableCellLink } from "@/components/table-cell-link";
+} from '@/components/ui/table'
+import { DataTablePagination } from '@/components/data-table-pagination'
+import { TableCellLink } from '@/components/table-cell-link'
 import {
   Loader2,
   Search,
@@ -32,125 +31,127 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 
 interface BillingRecord {
-  id: string;
-  title: string;
-  invoiceNumber: string | null;
-  serviceDate: Date;
-  startDateTime: Date | null;
-  totalAmount: number;
-  totalPaid: number;
-  status: string;
+  id: string
+  title: string
+  invoiceNumber: string | null
+  serviceDate: Date
+  startDateTime: Date | null
+  totalAmount: number
+  totalPaid: number
+  status: string
   vehicle: {
-    id: string;
-    make: string;
-    model: string;
-    year: number;
-    licensePlate: string | null;
-  } | null;
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string | null
+  } | null
   customer: {
-    id: string;
-    name: string;
-  } | null;
+    id: string
+    name: string
+  } | null
 }
 
 interface PaginatedBillingData {
-  records: BillingRecord[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  records: BillingRecord[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
   summary: {
-    totalRevenue: number;
-    totalPaid: number;
-    outstanding: number;
-    paidCount: number;
-    unpaidCount: number;
-    partialCount: number;
-  };
+    totalRevenue: number
+    totalPaid: number
+    outstanding: number
+    paidCount: number
+    unpaidCount: number
+    partialCount: number
+  }
 }
 
 interface BillingClientProps {
-  data: PaginatedBillingData;
-  currencyCode?: string;
-  search: string;
-  statusFilter: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  data: PaginatedBillingData
+  currencyCode?: string
+  search: string
+  statusFilter: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
 }
 
 const STATUS_TABS = [
-  { titleKey: "history.statusAll", value: "all" },
-  { titleKey: "history.statusPaid", value: "paid" },
-  { titleKey: "history.statusPartial", value: "partial" },
-  { titleKey: "history.statusUnpaid", value: "unpaid" },
-] as const;
+  { titleKey: 'history.statusAll', value: 'all' },
+  { titleKey: 'history.statusPaid', value: 'paid' },
+  { titleKey: 'history.statusPartial', value: 'partial' },
+  { titleKey: 'history.statusUnpaid', value: 'unpaid' },
+] as const
 
 export default function BillingClient({
   data,
-  currencyCode = "USD",
+  currencyCode = 'USD',
   search,
   statusFilter,
-  sortBy = "",
-  sortOrder = "desc",
+  sortBy = '',
+  sortOrder = 'desc',
 }: BillingClientProps) {
-  const formatCurrency = useFormatCurrency();
-  const router = useRouter();
-  const t = useTranslations("billing");
-  const { formatDate } = useFormatDate();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const tableNav = useTableKeyboardNav();
+  const formatCurrency = useFormatCurrency()
+  const router = useRouter()
+  const t = useTranslations('billing')
+  const { formatDate } = useFormatDate()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
+  const tableNav = useTableKeyboardNav()
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams.toString())
       for (const [key, value] of Object.entries(params)) {
         if (value) {
-          newParams.set(key, value);
+          newParams.set(key, value)
         } else {
-          newParams.delete(key);
+          newParams.delete(key)
         }
       }
-      return newParams.toString();
+      return newParams.toString()
     },
     [searchParams]
-  );
+  )
 
   const handleSort = useCallback(
     (column: string) => {
-      const newOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
       startTransition(() => {
         router.push(
-          `${pathname}?${createQueryString({ sortBy: column, sortOrder: newOrder, page: "1" })}`
-        );
-      });
+          `${pathname}?${createQueryString({ sortBy: column, sortOrder: newOrder, page: '1' })}`
+        )
+      })
     },
     [createQueryString, pathname, router, sortBy, sortOrder]
-  );
+  )
 
   const SortIcon = ({ column }: { column: string }) => {
-    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
-    return sortOrder === "asc"
-      ? <ArrowUp className="ml-1 h-3 w-3" />
-      : <ArrowDown className="ml-1 h-3 w-3" />;
-  };
+    if (sortBy !== column) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />
+    return sortOrder === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3" />
+    )
+  }
 
   const handleStatusChange = (status: string) => {
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          status: status === "all" ? "" : status,
-          page: "1",
+          status: status === 'all' ? '' : status,
+          page: '1',
         })}`
-      );
-    });
-  };
+      )
+    })
+  }
 
   // Live search: filters as you type, no Enter required. Submitting the
   // form (Enter) commits immediately, bypassing the debounce.
@@ -162,68 +163,82 @@ export default function BillingClient({
     startTransition(() => {
       router.push(
         `${pathname}?${createQueryString({
-          search: term ?? "",
-          page: "1",
+          search: term ?? '',
+          page: '1',
         })}`
-      );
-    });
-  });
+      )
+    })
+  })
 
   const handleNavigate = (params: Record<string, string | number | undefined>) => {
-    const merged: Record<string, string> = {};
+    const merged: Record<string, string> = {}
     for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== "") {
-        merged[key] = String(value);
+      if (value !== undefined && value !== '') {
+        merged[key] = String(value)
       }
     }
     startTransition(() => {
-      router.push(`${pathname}?${createQueryString(merged)}`);
-    });
-  };
+      router.push(`${pathname}?${createQueryString(merged)}`)
+    })
+  }
 
   const handleRowClick = (record: BillingRecord) => {
     router.push(
-      record.vehicle
-        ? `/vehicles/${record.vehicle.id}/service/${record.id}`
-        : `/sales/${record.id}`
-    );
-  };
+      record.vehicle ? `/vehicles/${record.vehicle.id}/service/${record.id}` : `/sales/${record.id}`
+    )
+  }
 
-  const fmt = (amount: number) => formatCurrency(amount, currencyCode);
+  const fmt = (amount: number) => formatCurrency(amount, currencyCode)
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-      case "paid":
-        return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{t("history.statusPaid")}</Badge>;
-      case "partial":
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{t("history.statusPartial")}</Badge>;
-      case "unpaid":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{t("history.statusUnpaid")}</Badge>;
+      case 'paid':
+        return (
+          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+            {t('history.statusPaid')}
+          </Badge>
+        )
+      case 'partial':
+        return (
+          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+            {t('history.statusPartial')}
+          </Badge>
+        )
+      case 'unpaid':
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+            {t('history.statusUnpaid')}
+          </Badge>
+        )
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge variant="secondary">{status}</Badge>
     }
-  };
+  }
 
   const getBalanceColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "paid":
-        return "text-emerald-600";
-      case "partial":
-        return "text-amber-600";
-      case "unpaid":
-        return "text-red-600";
+      case 'paid':
+        return 'text-emerald-600'
+      case 'partial':
+        return 'text-amber-600'
+      case 'unpaid':
+        return 'text-red-600'
       default:
-        return "";
+        return ''
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
       {/* Navigation */}
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" disabled>{t("history.title")}</Button>
+        <Button variant="outline" size="sm" disabled>
+          {t('history.title')}
+        </Button>
         <Link href="/billing/recurring">
-          <Button variant="outline" size="sm">{t("history.recurring")}</Button>
+          <Button variant="outline" size="sm">
+            {t('history.recurring')}
+          </Button>
         </Link>
       </div>
 
@@ -236,10 +251,8 @@ export default function BillingClient({
               <DollarSign className="h-4 w-4 text-blue-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">{t("history.totalRevenue")}</p>
-              <p className="text-lg font-bold leading-tight">
-                {fmt(data.summary.totalRevenue)}
-              </p>
+              <p className="text-xs text-muted-foreground">{t('history.totalRevenue')}</p>
+              <p className="text-lg font-bold leading-tight">{fmt(data.summary.totalRevenue)}</p>
             </div>
           </CardContent>
         </Card>
@@ -250,10 +263,8 @@ export default function BillingClient({
               <TrendingUp className="h-4 w-4 text-emerald-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">{t("history.collected")}</p>
-              <p className="text-lg font-bold leading-tight">
-                {fmt(data.summary.totalPaid)}
-              </p>
+              <p className="text-xs text-muted-foreground">{t('history.collected')}</p>
+              <p className="text-lg font-bold leading-tight">{fmt(data.summary.totalPaid)}</p>
             </div>
           </CardContent>
         </Card>
@@ -264,10 +275,8 @@ export default function BillingClient({
               <AlertCircle className="h-4 w-4 text-red-600" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">{t("history.outstanding")}</p>
-              <p className="text-lg font-bold leading-tight">
-                {fmt(data.summary.outstanding)}
-              </p>
+              <p className="text-xs text-muted-foreground">{t('history.outstanding')}</p>
+              <p className="text-lg font-bold leading-tight">{fmt(data.summary.outstanding)}</p>
             </div>
           </CardContent>
         </Card>
@@ -281,10 +290,9 @@ export default function BillingClient({
             <Button
               key={tab.value}
               variant={
-                statusFilter === tab.value ||
-                (tab.value === "all" && !statusFilter)
-                  ? "default"
-                  : "outline"
+                statusFilter === tab.value || (tab.value === 'all' && !statusFilter)
+                  ? 'default'
+                  : 'outline'
               }
               size="sm"
               className="h-9 shrink-0 sm:h-8"
@@ -292,13 +300,13 @@ export default function BillingClient({
               disabled={isPending}
             >
               {t(tab.titleKey)}
-              {tab.value === "paid" && (
+              {tab.value === 'paid' && (
                 <span className="ml-1 text-xs">({data.summary.paidCount})</span>
               )}
-              {tab.value === "partial" && (
+              {tab.value === 'partial' && (
                 <span className="ml-1 text-xs">({data.summary.partialCount})</span>
               )}
-              {tab.value === "unpaid" && (
+              {tab.value === 'unpaid' && (
                 <span className="ml-1 text-xs">({data.summary.unpaidCount})</span>
               )}
             </Button>
@@ -309,7 +317,7 @@ export default function BillingClient({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder={t("history.searchPlaceholder")}
+              placeholder={t('history.searchPlaceholder')}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="h-9 w-full pl-9 sm:w-[250px]"
@@ -320,8 +328,8 @@ export default function BillingClient({
             type="submit"
             size="sm"
             disabled={isPending}
-            aria-label={t("history.search")}
-            title={t("history.search")}
+            aria-label={t('history.search')}
+            title={t('history.search')}
             className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
           >
             {isPending ? (
@@ -329,7 +337,7 @@ export default function BillingClient({
             ) : (
               <>
                 <Search className="h-4 w-4 md:hidden" />
-                <span className="hidden md:inline">{t("history.search")}</span>
+                <span className="hidden md:inline">{t('history.search')}</span>
               </>
             )}
           </Button>
@@ -340,11 +348,11 @@ export default function BillingClient({
       <div className="space-y-2 md:hidden">
         {data.records.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-            {t("history.noRecords")}
+            {t('history.noRecords')}
           </div>
         ) : (
           data.records.map((record) => {
-            const balance = record.totalAmount - record.totalPaid;
+            const balance = record.totalAmount - record.totalPaid
             return (
               <button
                 key={record.id}
@@ -367,20 +375,18 @@ export default function BillingClient({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
                   {getStatusBadge(record.status)}
-                  <span className={cn("font-medium", getBalanceColor(record.status))}>
-                    {t("history.columnBalance")}: {fmt(balance)}
+                  <span className={cn('font-medium', getBalanceColor(record.status))}>
+                    {t('history.columnBalance')}: {fmt(balance)}
                   </span>
                   <span className="font-mono text-muted-foreground">
                     {formatDate(new Date(record.serviceDate))}
                   </span>
                   {record.invoiceNumber && (
-                    <span className="font-mono text-muted-foreground">
-                      {record.invoiceNumber}
-                    </span>
+                    <span className="font-mono text-muted-foreground">{record.invoiceNumber}</span>
                   )}
                 </div>
               </button>
-            );
+            )
           })
         )}
       </div>
@@ -391,49 +397,79 @@ export default function BillingClient({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[110px]">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("invoiceNumber")}>
-                  {t("history.columnInvoice")}<SortIcon column="invoiceNumber" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('invoiceNumber')}
+                >
+                  {t('history.columnInvoice')}
+                  <SortIcon column="invoiceNumber" />
                 </button>
               </TableHead>
               <TableHead>
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("title")}>
-                  {t("history.columnTitle")}<SortIcon column="title" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('title')}
+                >
+                  {t('history.columnTitle')}
+                  <SortIcon column="title" />
                 </button>
               </TableHead>
               <TableHead className="w-[16%]">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("vehicle")}>
-                  {t("history.columnVehicle")}<SortIcon column="vehicle" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('vehicle')}
+                >
+                  {t('history.columnVehicle')}
+                  <SortIcon column="vehicle" />
                 </button>
               </TableHead>
               <TableHead className="w-[14%]">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("customer")}>
-                  {t("history.columnCustomer")}<SortIcon column="customer" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('customer')}
+                >
+                  {t('history.columnCustomer')}
+                  <SortIcon column="customer" />
                 </button>
               </TableHead>
               <TableHead className="w-[110px]">
-                <button type="button" className="flex items-center hover:text-foreground" onClick={() => handleSort("date")}>
-                  {t("history.columnDate")}<SortIcon column="date" />
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('date')}
+                >
+                  {t('history.columnDate')}
+                  <SortIcon column="date" />
                 </button>
               </TableHead>
               <TableHead className="w-[100px]">
-                <button type="button" className="ml-auto flex items-center hover:text-foreground" onClick={() => handleSort("total")}>
-                  {t("history.columnTotal")}<SortIcon column="total" />
+                <button
+                  type="button"
+                  className="ml-auto flex items-center hover:text-foreground"
+                  onClick={() => handleSort('total')}
+                >
+                  {t('history.columnTotal')}
+                  <SortIcon column="total" />
                 </button>
               </TableHead>
-              <TableHead className="w-[100px] text-right">{t("history.columnPaid")}</TableHead>
-              <TableHead className="w-[180px] text-right">{t("history.columnBalance")}</TableHead>
+              <TableHead className="w-[100px] text-right">{t('history.columnPaid')}</TableHead>
+              <TableHead className="w-[180px] text-right">{t('history.columnBalance')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">
-                  {t("history.noRecords")}
+                  {t('history.noRecords')}
                 </TableCell>
               </TableRow>
             ) : (
               data.records.map((record) => {
-                const balance = record.totalAmount - record.totalPaid;
+                const balance = record.totalAmount - record.totalPaid
                 return (
                   <TableRow
                     key={record.id}
@@ -441,7 +477,7 @@ export default function BillingClient({
                     {...interactiveRow(() => handleRowClick(record))}
                   >
                     <TableCell className="truncate font-medium">
-                      {record.invoiceNumber || "\u2014"}
+                      {record.invoiceNumber || '\u2014'}
                     </TableCell>
                     <TableCell className="truncate">{record.title}</TableCell>
                     <TableCell className="truncate">
@@ -450,7 +486,7 @@ export default function BillingClient({
                           {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
                         </TableCellLink>
                       ) : (
-                        "\u2014"
+                        '\u2014'
                       )}
                     </TableCell>
                     <TableCell className="truncate">
@@ -459,31 +495,23 @@ export default function BillingClient({
                           {record.customer.name}
                         </TableCellLink>
                       ) : (
-                        "\u2014"
+                        '\u2014'
                       )}
                     </TableCell>
-                    <TableCell>
-                      {formatDate(new Date(record.serviceDate))}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {fmt(record.totalAmount)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {fmt(record.totalPaid)}
-                    </TableCell>
+                    <TableCell>{formatDate(new Date(record.serviceDate))}</TableCell>
+                    <TableCell className="text-right">{fmt(record.totalAmount)}</TableCell>
+                    <TableCell className="text-right">{fmt(record.totalPaid)}</TableCell>
                     <TableCell
                       className={cn(
-                        "whitespace-nowrap text-right font-medium",
+                        'whitespace-nowrap text-right font-medium',
                         getBalanceColor(record.status)
                       )}
                     >
                       {fmt(balance)}
-                      <span className="ml-2 inline-block">
-                        {getStatusBadge(record.status)}
-                      </span>
+                      <span className="ml-2 inline-block">{getStatusBadge(record.status)}</span>
                     </TableCell>
                   </TableRow>
-                );
+                )
               })
             )}
           </TableBody>
@@ -508,5 +536,5 @@ export default function BillingClient({
         </div>
       )}
     </div>
-  );
+  )
 }

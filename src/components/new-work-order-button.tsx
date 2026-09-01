@@ -1,42 +1,42 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Plus, Loader2 } from "lucide-react";
-import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { getCustomersList } from "@/features/customers/Actions/customerActions";
+import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
+import { Plus, Loader2 } from 'lucide-react'
+import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
+import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { getCustomersList } from '@/features/customers/Actions/customerActions'
 
 interface VehicleOption {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  customer: { id: string; name: string; company: string | null } | null;
+  id: string
+  make: string
+  model: string
+  year: number
+  licensePlate: string | null
+  customer: { id: string; name: string; company: string | null } | null
 }
 
 interface CustomerOption {
-  id: string;
-  name: string;
-  company: string | null;
+  id: string
+  name: string
+  company: string | null
 }
 
 export function NewWorkOrderButton() {
-  const t = useTranslations("navigation");
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
-  const [customers, setCustomers] = useState<CustomerOption[]>([]);
+  const t = useTranslations('navigation')
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [vehicles, setVehicles] = useState<VehicleOption[]>([])
+  const [customers, setCustomers] = useState<CustomerOption[]>([])
 
   const handleClick = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const [vehiclesResult, customersResult] = await Promise.all([
         getVehicles(),
         getCustomersList(),
-      ]);
+      ])
       setVehicles(
         vehiclesResult.success && vehiclesResult.data
           ? vehiclesResult.data.map((v) => ({
@@ -48,17 +48,13 @@ export function NewWorkOrderButton() {
               customer: v.customer,
             }))
           : []
-      );
-      setCustomers(
-        customersResult.success && customersResult.data
-          ? customersResult.data
-          : []
-      );
-      setOpen(true);
+      )
+      setCustomers(customersResult.success && customersResult.data ? customersResult.data : [])
+      setOpen(true)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
@@ -68,7 +64,7 @@ export function NewWorkOrderButton() {
         ) : (
           <Plus className="mr-1 h-3.5 w-3.5" />
         )}
-        {t("newWorkOrder")}
+        {t('newWorkOrder')}
       </Button>
       <VehiclePickerDialog
         open={open}
@@ -77,5 +73,5 @@ export function NewWorkOrderButton() {
         customers={customers}
       />
     </>
-  );
+  )
 }

@@ -39,7 +39,10 @@ import { Badge } from '@/components/ui/badge'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
-import { adjustInventoryStock, getInventoryPart } from '@/features/inventory/Actions/inventoryActions'
+import {
+  adjustInventoryStock,
+  getInventoryPart,
+} from '@/features/inventory/Actions/inventoryActions'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -69,7 +72,13 @@ const businessItems = [
   { href: '/audit-log', icon: History, labelKey: 'auditLog' },
 ] as const
 
-const allDrawerItems = [...workshopItems, tireHotelItem, ...businessItems, { href: '/settings', icon: Settings, labelKey: 'settings' }, { href: '/admin', icon: ShieldCheck, labelKey: 'adminPanel' }] as const
+const allDrawerItems = [
+  ...workshopItems,
+  tireHotelItem,
+  ...businessItems,
+  { href: '/settings', icon: Settings, labelKey: 'settings' },
+  { href: '/admin', icon: ShieldCheck, labelKey: 'adminPanel' },
+] as const
 
 export function MobileBottomNav({
   isSuperAdmin,
@@ -98,7 +107,8 @@ export function MobileBottomNav({
   const [scannedBarcode, setScannedBarcode] = useState('')
   const [showScanActions, setShowScanActions] = useState(false)
   const [showPartForm, setShowPartForm] = useState(false)
-  const [editPartData, setEditPartData] = useState<Parameters<typeof InventoryPartForm>[0]['part']>(undefined)
+  const [editPartData, setEditPartData] =
+    useState<Parameters<typeof InventoryPartForm>[0]['part']>(undefined)
   const [addQty, setAddQty] = useState(1)
   const [addingStock, setAddingStock] = useState(false)
 
@@ -140,7 +150,10 @@ export function MobileBottomNav({
           })}
           <button
             type="button"
-            onClick={(e) => { e.currentTarget.blur(); setDrawerOpen(true) }}
+            onClick={(e) => {
+              e.currentTarget.blur()
+              setDrawerOpen(true)
+            }}
             className={cn(
               'flex flex-col items-center gap-0.5 py-2 text-[10px]',
               isMoreActive ? 'text-primary' : 'text-muted-foreground'
@@ -173,7 +186,9 @@ export function MobileBottomNav({
 
             {/* Workshop */}
             <div>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">{t('workshop')}</p>
+              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">
+                {t('workshop')}
+              </p>
               <nav className="grid grid-cols-4 gap-2">
                 {visibleWorkshopItems.map(({ href, icon: Icon, labelKey }) => {
                   const isActive = pathname === href || pathname.startsWith(`${href}/`)
@@ -199,7 +214,9 @@ export function MobileBottomNav({
 
             {/* Business */}
             <div>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">{t('business')}</p>
+              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2 px-1">
+                {t('business')}
+              </p>
               <nav className="grid grid-cols-4 gap-2">
                 {businessItems.map(({ href, icon: Icon, labelKey }) => {
                   const isActive = pathname === href || pathname.startsWith(`${href}/`)
@@ -266,10 +283,13 @@ export function MobileBottomNav({
         onScan={handleBarcodeScan}
       />
 
-      <Drawer open={showScanActions} onOpenChange={(open) => {
-        setShowScanActions(open)
-        if (!open) router.refresh()
-      }}>
+      <Drawer
+        open={showScanActions}
+        onOpenChange={(open) => {
+          setShowScanActions(open)
+          if (!open) router.refresh()
+        }}
+      >
         <DrawerContent aria-describedby={undefined}>
           <DrawerHeader>
             <DrawerTitle>{tScan('title')}</DrawerTitle>
@@ -283,8 +303,14 @@ export function MobileBottomNav({
                 <div className="min-w-0 flex-1">
                   <p className="font-medium truncate">{scannedPart.name}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    {scannedPart.partNumber && <span className="font-mono text-xs">{scannedPart.partNumber}</span>}
-                    {scannedPart.category && <Badge variant="secondary" className="text-[10px]">{scannedPart.category}</Badge>}
+                    {scannedPart.partNumber && (
+                      <span className="font-mono text-xs">{scannedPart.partNumber}</span>
+                    )}
+                    {scannedPart.category && (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {scannedPart.category}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
@@ -302,7 +328,9 @@ export function MobileBottomNav({
                 >
                   -
                 </Button>
-                <span className="w-16 text-center text-3xl font-semibold tabular-nums">{addQty}</span>
+                <span className="w-16 text-center text-3xl font-semibold tabular-nums">
+                  {addQty}
+                </span>
                 <Button
                   variant="outline"
                   size="icon"
@@ -332,7 +360,10 @@ export function MobileBottomNav({
                   className="flex-1"
                   onClick={async () => {
                     setAddingStock(true)
-                    const result = await adjustInventoryStock({ id: scannedPart.id, adjustment: addQty })
+                    const result = await adjustInventoryStock({
+                      id: scannedPart.id,
+                      adjustment: addQty,
+                    })
                     setAddingStock(false)
                     if (result.success) {
                       toast.success(tScan('addedStock', { amount: addQty }))
@@ -342,7 +373,11 @@ export function MobileBottomNav({
                   }}
                   disabled={addingStock}
                 >
-                  {addingStock ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                  {addingStock ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Plus className="mr-2 h-4 w-4" />
+                  )}
                   {tScan('addStock')} (+{addQty})
                 </Button>
                 <Button

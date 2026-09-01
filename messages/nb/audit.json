@@ -140,9 +140,18 @@
     "work_bay_create": "Opprettet arbeidsplass",
     "work_bay_update": "Oppdaterte arbeidsplass",
     "work_bay_delete": "Slettet arbeidsplass",
-    "settings_whatsappUpdated": "WhatsApp-innstillinger oppdatert",
-    "settings_whatsappNumberRegistered": "WhatsApp-nummer registrert",
-    "settings_whatsappDisconnected": "WhatsApp koblet fra"
+    "auth_appSetupRedeemed": "Logget inn med oppsettskode",
+    "auth_technicianCodeSignIn": "Logget inn med engangskode",
+    "team_createAppSetupCode": "Utstedte en oppsettskode for appen",
+    "team_createTechnicianAccount": "Opprettet en teknikerkonto",
+    "team_removeTechnicianAccess": "Fjernet en tekniker og trakk tilbake tilgangen",
+    "team_setMemberTechnician": "Endret om et medlem er tekniker",
+    "settings_whatsappUpdated": "Oppdaterte WhatsApp-innstillinger",
+    "settings_whatsappDisconnected": "Koblet fra WhatsApp",
+    "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer",
+    "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto",
+    "team_createDefaultRoles": "Opprettet standardrollene",
+    "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -265,6 +274,7 @@
     "whatsapp_send": "Sendte en WhatsApp-melding til {name}",
     "work_bay_create": "Opprettet arbeidsplass «{name}»",
     "work_bay_update": "Oppdaterte arbeidsplass «{name}»",
-    "work_bay_delete": "Slettet arbeidsplass {id}"
+    "work_bay_delete": "Slettet arbeidsplass {id}",
+    "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut"
   }
 }

@@ -140,9 +140,18 @@
     "work_bay_create": "Puesto de trabajo creado",
     "work_bay_update": "Puesto de trabajo actualizado",
     "work_bay_delete": "Puesto de trabajo eliminado",
+    "auth_appSetupRedeemed": "Sesión iniciada con código de configuración",
+    "auth_technicianCodeSignIn": "Sesión iniciada con código de un solo uso",
+    "team_createAppSetupCode": "Código de configuración de la aplicación emitido",
+    "team_createTechnicianAccount": "Cuenta de técnico creada",
+    "team_removeTechnicianAccess": "Técnico eliminado y acceso revocado",
+    "team_setMemberTechnician": "Cambiado si un miembro es técnico",
     "settings_whatsappUpdated": "Ajustes de WhatsApp actualizados",
+    "settings_whatsappDisconnected": "WhatsApp desconectado",
     "settings_whatsappNumberRegistered": "Número de WhatsApp registrado",
-    "settings_whatsappDisconnected": "WhatsApp desconectado"
+    "team_giveTechnicianTheApp": "Cuenta dada a un técnico solo de tablero",
+    "team_createDefaultRoles": "Roles estándar creados",
+    "settings_setCustomFieldPlacement": "Ubicación de campo personalizado actualizada"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -265,6 +274,7 @@
     "whatsapp_send": "Envió un mensaje de WhatsApp a {name}",
     "work_bay_create": "Puesto de trabajo «{name}» creado",
     "work_bay_update": "Puesto de trabajo «{name}» actualizado",
-    "work_bay_delete": "Puesto de trabajo {id} eliminado"
+    "work_bay_delete": "Puesto de trabajo {id} eliminado",
+    "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado"
   }
 }

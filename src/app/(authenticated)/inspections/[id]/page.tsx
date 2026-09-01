@@ -2,29 +2,29 @@ import {
   getCommonDefectNotes,
   getInspection,
   getInspectionTechnicians,
-} from "@/features/inspections/Actions/inspectionActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { InspectionPageClient, type InspectionData } from "@/features/inspections/Components/InspectionPageClient";
-import { PageHeader } from "@/components/page-header";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { getFeatures } from "@/lib/features";
-import { redirect } from "next/navigation";
+} from '@/features/inspections/Actions/inspectionActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import {
+  InspectionPageClient,
+  type InspectionData,
+} from '@/features/inspections/Components/InspectionPageClient'
+import { PageHeader } from '@/components/page-header'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { getFeatures } from '@/lib/features'
+import { redirect } from 'next/navigation'
 
 export default async function InspectionDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }) {
-  const { id } = await params;
+  const { id } = await params
 
-  const [result, authContext] = await Promise.all([
-    getInspection(id),
-    getAuthContext(),
-  ]);
+  const [result, authContext] = await Promise.all([getInspection(id), getAuthContext()])
 
   if (!result.success || !result.data) {
-    redirect("/inspections");
+    redirect('/inspections')
   }
 
   const [features, defectHistory, technicians, settings] = await Promise.all([
@@ -32,7 +32,7 @@ export default async function InspectionDetailPage({
     getCommonDefectNotes(id),
     getInspectionTechnicians(),
     getSettings([SETTING_KEYS.WORKSHOP_ADDRESS]),
-  ]);
+  ])
 
   return (
     <>
@@ -45,10 +45,10 @@ export default async function InspectionDetailPage({
           defectHistory={defectHistory.success ? defectHistory.data : {}}
           technicians={technicians.success ? technicians.data : []}
           workshopAddress={
-            (settings.success && settings.data?.[SETTING_KEYS.WORKSHOP_ADDRESS]) || ""
+            (settings.success && settings.data?.[SETTING_KEYS.WORKSHOP_ADDRESS]) || ''
           }
         />
       </div>
     </>
-  );
+  )
 }

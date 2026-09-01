@@ -35,6 +35,8 @@
     "taxExemptBadge": "Steuerbefreit",
     "tabs": {
       "vehicles": "Fahrzeuge ({count})",
+      "invoices": "Rechnungen ({count})",
+      "quotes": "Angebote ({count})",
       "messages": "Nachrichten",
       "requests": "Anfragen ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Betriebsstunden",
       "services": "Wartungen"
     },
-    "noVehicles": "Diesem Kunden sind keine Fahrzeuge zugewiesen"
+    "documentTable": {
+      "invoiceNumber": "Rechnungsnr.",
+      "quoteNumber": "Angebotsnr.",
+      "title": "Titel",
+      "vehicle": "Fahrzeug",
+      "status": "Status",
+      "date": "Datum",
+      "total": "Gesamt",
+      "noVehicle": "Nur Teile",
+      "searchPlaceholder": "Suchen...",
+      "noMatches": "Keine Treffer für deine Suche",
+      "sort": {
+        "asc": "aufsteigend",
+        "desc": "absteigend"
+      }
+    },
+    "noVehicles": "Diesem Kunden sind keine Fahrzeuge zugewiesen",
+    "noInvoices": "Keine Rechnungen für diesen Kunden",
+    "noQuotes": "Keine Angebote für diesen Kunden"
   },
   "form": {
     "addTitle": "Neuen Kunden anlegen",

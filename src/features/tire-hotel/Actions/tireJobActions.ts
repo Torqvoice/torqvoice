@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import type { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { calculateTotals } from '@/lib/tax'
@@ -12,12 +11,14 @@ import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceReco
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { addTireLineToRecord } from '../Lib/addTireLine'
+import { copySetFilesToJob } from '../Lib/copySetFilesToJob'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { matchStock, parseTireSize, formatTireSize, sizesMatch } from '../Lib/tireMatching'
 import { TREATMENT_TYPES, billableTreatments, parseTreatmentPrices } from '../Lib/treatments'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { invoiceLineWords, jobNoteWords, seasonNames, treatmentNames } from '../Lib/serverMessages'
 import { isTireHotelEnabled, requireTireHotel } from '../Lib/tireHotelSettings'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
 
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.TIRE_HOTEL }]
 const QUOTE = [
@@ -44,8 +45,8 @@ const fromSetSchema = z.object({
   /// a schedule of its own. The period is not a rule, it is what prints on
   /// the line so the customer can see what they paid for.
   includeStorage: z.boolean().default(false),
-  /// Copies the set's photos and documents onto the job, so they reach the
-  /// invoice PDF the way any other attachment does.
+  /// Copies the set's photos onto the job, so they reach the invoice PDF the
+  /// way any other attachment does. Documents stay with the set.
   includeAttachments: z.boolean().default(true),
   /// Bills the customer directly instead of raising a job on a vehicle, for
   /// the customer who only ever stores tires and never brings the car in.
@@ -79,9 +80,10 @@ async function loadSet(organizationId: string, tireSetId: string) {
       customer: { select: { id: true, taxExempt: true } },
       treatments: { select: { type: true, status: true } },
       // Copied onto the job when the set is billed, so the invoice carries the
-      // photos the technician took.
+      // photos the technician took. Photos only: a PDF held against the set
+      // would be appended to the invoice page for page.
       attachments: {
-        where: { includeInInvoice: true },
+        where: { includeInInvoice: true, fileType: { startsWith: 'image/' } },
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
         select: {
           fileName: true,
@@ -221,41 +223,6 @@ async function storageLine(
     total: amount,
     pricingType: 'service' as const,
   }
-}
-
-/**
- * Copies the set's files onto a job, so the invoice shows what the technician
- * saw.
- *
- * Pointing at the same files rather than duplicating the bytes: a photo of a
- * kerbed rim is one photo, and copying it would double the disk for every
- * season a set is billed. Removing it from the set later leaves the invoice
- * intact, which is the right way round for a document a customer may hold.
- */
-async function copyAttachments(
-  tx: Prisma.TransactionClient,
-  serviceRecordId: string,
-  files: {
-    fileName: string
-    fileUrl: string
-    fileType: string
-    fileSize: number
-    description: string | null
-  }[]
-) {
-  if (files.length === 0) return
-  await tx.serviceAttachment.createMany({
-    data: files.map((file) => ({
-      serviceRecordId,
-      fileName: file.fileName,
-      fileUrl: file.fileUrl,
-      fileType: file.fileType,
-      fileSize: file.fileSize,
-      description: file.description,
-      category: 'tire_hotel',
-      includeInInvoice: true,
-    })),
-  })
 }
 
 async function billablePrep(
@@ -583,7 +550,7 @@ export async function createWorkOrderFromTireSet(input: unknown) {
         // Independent of the lines: a job can carry the photos without
         // carrying a charge, which is what an inspection amounts to.
         if (data.includeAttachments) {
-          await copyAttachments(tx, record.id, set.attachments)
+          await copySetFilesToJob(tx, record.id, set.attachments)
         }
 
         if (labor.length > 0) {
@@ -699,6 +666,9 @@ export async function addTireSetToWorkOrder(input: unknown) {
     async ({ organizationId, userId }) => {
       await requireTireHotel(organizationId)
       const data = fromSetSchema.extend({ serviceRecordId: z.string().min(1) }).parse(input)
+      // Adds part and labor lines and retotals the job, so it is an edit to
+      // what the invoice says it is owed and a locked one refuses it.
+      await assertInvoiceEditable(data.serviceRecordId, organizationId)
       const set = await loadSet(organizationId, data.tireSetId)
       const seasons = await seasonNames()
 
@@ -747,7 +717,7 @@ export async function addTireSetToWorkOrder(input: unknown) {
         // Independent of the lines: a job can carry the photos without
         // carrying a charge, which is what an inspection amounts to.
         if (data.includeAttachments) {
-          await copyAttachments(tx, record.id, set.attachments)
+          await copySetFilesToJob(tx, record.id, set.attachments)
         }
 
         if (labor.length > 0) {
@@ -802,10 +772,16 @@ export async function addTireSetToWorkOrder(input: unknown) {
 /**
  * Takes the tire set off a job.
  *
- * Only the link goes. The parts and labour lines stay, because they are what
- * is being charged and someone may have edited them since; deciding on the
- * operator's behalf that a billed line should vanish would be a worse
- * surprise than leaving it visible for them to remove.
+ * The link goes, and so do the files that were copied over from the set: they
+ * only ever pointed at the set's own uploads, so removing the rows loses
+ * nothing, and leaving them would keep the set's photos on an invoice that is
+ * no longer about those tires. Only the rows are deleted, never the bytes on
+ * disk, which the set still owns.
+ *
+ * The parts and labour lines stay, because they are what is being charged and
+ * someone may have edited them since; deciding on the operator's behalf that
+ * a billed line should vanish would be a worse surprise than leaving it
+ * visible for them to remove.
  *
  * The shelf written into the job notes also stays. It is free text by now and
  * may have been added to, so rewriting it is not this action's business.
@@ -825,10 +801,15 @@ export async function unlinkTireSetFromWorkOrder(serviceRecordId: string) {
       if (!record) throw new Error('Work order not found')
       if (!record.tireSet) throw new Error('This job is not linked to a tire set')
 
-      await db.serviceRecord.update({
-        where: { id: record.id },
-        data: { tireSetId: null },
-      })
+      await db.$transaction([
+        db.serviceRecord.update({
+          where: { id: record.id },
+          data: { tireSetId: null },
+        }),
+        db.serviceAttachment.deleteMany({
+          where: { serviceRecordId: record.id, category: 'tire_hotel' },
+        }),
+      ])
 
       revalidatePath(`/tire-hotel/${record.tireSet.id}`)
       if (record.vehicleId) {

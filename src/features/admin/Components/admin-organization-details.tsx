@@ -110,45 +110,45 @@ export function AdminOrganizationDetails({ org }: { org: OrgDetails }) {
         title={org.name}
         contentClassName="grid gap-3 text-sm sm:grid-cols-2"
       >
-          <div>
-            <p className="text-muted-foreground">{t('users.created')}</p>
-            <p className="font-medium">{formatDate(org.createdAt)}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">{t('orgDetails.owner')}</p>
-            {org.owner ? (
-              <Link href={`/admin/users/${org.owner.id}`} className="font-medium hover:underline">
-                {org.owner.name} <span className="text-muted-foreground">({org.owner.email})</span>
-              </Link>
-            ) : (
-              <p className="text-muted-foreground">{t('orgDetails.noOwner')}</p>
-            )}
-          </div>
-          <div className="sm:col-span-2">
-            <p className="mb-1 text-muted-foreground">{t('orgDetails.subscription')}</p>
-            {org.subscription ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={subscriptionVariant(org.subscription.status)}>
-                  {org.subscription.status}
-                </Badge>
-                <span className="text-sm font-medium">{org.subscription.planName}</span>
-                {org.subscription.currentPeriodEnd && (
-                  <span className="text-xs text-muted-foreground">
-                    {org.subscription.cancelAtPeriodEnd
-                      ? t('orgDetails.cancelsAt')
-                      : t('orgDetails.renews')}
-                    : {formatDate(org.subscription.currentPeriodEnd)}
-                  </span>
-                )}
-              </div>
-            ) : (
-              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <CreditCard className="h-3.5 w-3.5" />
-                {t('orgDetails.noSubscription')}
-              </p>
-            )}
-          </div>
-        </AppCard>
+        <div>
+          <p className="text-muted-foreground">{t('users.created')}</p>
+          <p className="font-medium">{formatDate(org.createdAt)}</p>
+        </div>
+        <div>
+          <p className="text-muted-foreground">{t('orgDetails.owner')}</p>
+          {org.owner ? (
+            <Link href={`/admin/users/${org.owner.id}`} className="font-medium hover:underline">
+              {org.owner.name} <span className="text-muted-foreground">({org.owner.email})</span>
+            </Link>
+          ) : (
+            <p className="text-muted-foreground">{t('orgDetails.noOwner')}</p>
+          )}
+        </div>
+        <div className="sm:col-span-2">
+          <p className="mb-1 text-muted-foreground">{t('orgDetails.subscription')}</p>
+          {org.subscription ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant={subscriptionVariant(org.subscription.status)}>
+                {org.subscription.status}
+              </Badge>
+              <span className="text-sm font-medium">{org.subscription.planName}</span>
+              {org.subscription.currentPeriodEnd && (
+                <span className="text-xs text-muted-foreground">
+                  {org.subscription.cancelAtPeriodEnd
+                    ? t('orgDetails.cancelsAt')
+                    : t('orgDetails.renews')}
+                  : {formatDate(org.subscription.currentPeriodEnd)}
+                </span>
+              )}
+            </div>
+          ) : (
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <CreditCard className="h-3.5 w-3.5" />
+              {t('orgDetails.noSubscription')}
+            </p>
+          )}
+        </div>
+      </AppCard>
 
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
         {statCards.map((s) => (

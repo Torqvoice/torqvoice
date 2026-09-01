@@ -1,10 +1,15 @@
 import { db } from '@/lib/db'
+import { nextAvailableSlot } from '@/features/workboard/Lib/availability'
+import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 
 /**
  * Shared draft-record creation for both work orders (with a vehicle) and
  * counter sales (no vehicle, direct customer link). Resolves invoice number,
  * default technician, tax settings and schedule times identically.
  */
+/** How long a job is assumed to take until somebody says otherwise. */
+const DEFAULT_JOB_MINUTES = 60
+
 export async function createDraftRecord(
   { organizationId, userId }: { organizationId: string; userId: string },
   opts: {
@@ -124,14 +129,45 @@ export async function createDraftRecord(
     taxEnabled && !opts.customerExempt ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0
   const taxInclusive = settingsMap['workshop.taxInclusive'] === 'true'
 
-  // Default to today's date at work day start time (from settings, fallback 07:00)
+  /**
+   * When a job with no stated time gets booked in.
+   *
+   * The first slot the shop can actually take it, rather than this morning at
+   * opening time: that hour is usually already gone by the time anybody books
+   * anything, and it was handed out again to every job created that day, so
+   * a busy Tuesday quietly stacked its whole intake on one moment. Respects
+   * whoever or whatever the job is assigned to, so booking against a
+   * technician does not land on top of their morning.
+   */
   let defaultStart: Date
-  if (!opts.startDateTime) {
-    const workDayStart = settingsMap['workboard.workDayStart'] || '07:00'
-    const [h, m] = workDayStart.split(':').map(Number)
-    defaultStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
+  let defaultEnd = opts.endDateTime
+  // A parts sale over the counter holds no bay and no technician, so there is
+  // no slot to find and nothing to search past. Only work on a vehicle is
+  // scheduled around what the shop already has booked.
+  const isShopWork = !!opts.vehicleId
+  if (opts.startDateTime || !isShopWork) {
+    const [h, m] = (settingsMap['workboard.workDayStart'] || '07:00').split(':').map(Number)
+    defaultStart =
+      opts.startDateTime ?? new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
   } else {
-    defaultStart = opts.startDateTime
+    const { bookings, hours } = await loadBookingContext(organizationId, now)
+    const slot = nextAvailableSlot({
+      from: now,
+      durationMinutes: DEFAULT_JOB_MINUTES,
+      bookings,
+      hours,
+      technicianId: opts.technicianId,
+      workBayId: opts.workBayId,
+    })
+    if (slot) {
+      defaultStart = slot.start
+      if (!defaultEnd) defaultEnd = slot.end
+    } else {
+      // Booked solid for weeks. Falling back to opening time keeps the job on
+      // the board rather than refusing to create it over a scheduling detail.
+      const [h, m] = (hours.start || '07:00').split(':').map(Number)
+      defaultStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
+    }
   }
   // serviceDate should be date-only (start of day)
   const serviceDate = new Date(
@@ -158,7 +194,7 @@ export async function createDraftRecord(
       serviceDate,
       invoiceDate: serviceDate,
       startDateTime: defaultStart,
-      endDateTime: opts.endDateTime ?? new Date(defaultStart.getTime() + 3600000),
+      endDateTime: defaultEnd ?? new Date(defaultStart.getTime() + 3600000),
     },
   })
 }

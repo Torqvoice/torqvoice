@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { useRef, type KeyboardEvent, type RefObject } from "react";
+import { useRef, type KeyboardEvent, type RefObject } from 'react'
 
 /**
  * Keyboard navigation for a list of interactive rows (rows made focusable by
@@ -23,67 +23,65 @@ import { useRef, type KeyboardEvent, type RefObject } from "react";
  * a row (kebab menus, checkboxes) are left alone.
  */
 export function useTableKeyboardNav<T extends HTMLElement = HTMLDivElement>() {
-  const containerRef = useRef<T | null>(null);
+  const containerRef = useRef<T | null>(null)
 
   const rows = () =>
-    Array.from(
-      containerRef.current?.querySelectorAll<HTMLElement>("[data-row-interactive]") ?? [],
-    );
+    Array.from(containerRef.current?.querySelectorAll<HTMLElement>('[data-row-interactive]') ?? [])
 
   const onKeyDown = (e: KeyboardEvent<T>) => {
-    const list = rows();
-    const current = list.indexOf(document.activeElement as HTMLElement);
-    if (current === -1) return; // focus is on an inner control, not a row
+    const list = rows()
+    const current = list.indexOf(document.activeElement as HTMLElement)
+    if (current === -1) return // focus is on an inner control, not a row
 
     const go = (target: HTMLElement | undefined) => {
-      if (!target) return;
-      e.preventDefault();
-      target.focus();
-    };
+      if (!target) return
+      e.preventDefault()
+      target.focus()
+    }
 
     switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        list[current + 1]?.focus();
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        list[current - 1]?.focus();
-        break;
-      case "Tab":
+      case 'ArrowDown':
+        e.preventDefault()
+        list[current + 1]?.focus()
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        list[current - 1]?.focus()
+        break
+      case 'Tab':
         // Roving Tab inside the list; at either end it falls through, so the
         // rest of the page stays reachable.
         if (e.shiftKey) {
-          if (current > 0) go(list[current - 1]);
+          if (current > 0) go(list[current - 1])
         } else if (current < list.length - 1) {
-          go(list[current + 1]);
+          go(list[current + 1])
         }
-        break;
-      case "Home":
-        go(list[0]);
-        break;
-      case "End":
-        go(list[list.length - 1]);
-        break;
+        break
+      case 'Home':
+        go(list[0])
+        break
+      case 'End':
+        go(list[list.length - 1])
+        break
     }
-  };
+  }
 
   const searchInputProps = {
     onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Tab" && !e.shiftKey) {
-        const first = rows()[0];
+      if (e.key === 'Tab' && !e.shiftKey) {
+        const first = rows()[0]
         if (first) {
-          e.preventDefault();
-          first.focus();
+          e.preventDefault()
+          first.focus()
         }
       }
     },
-  };
+  }
 
   return {
     containerRef: containerRef as RefObject<T | null>,
     containerProps: { ref: containerRef, onKeyDown },
     /** Spread on the search input so Tab jumps straight to the first row. */
     searchInputProps,
-  };
+  }
 }

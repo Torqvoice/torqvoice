@@ -39,6 +39,7 @@ export default getRequestConfig(async () => {
   const dashboard = (await import(`../../messages/${locale}/dashboard.json`)).default
   const navigation = (await import(`../../messages/${locale}/navigation.json`)).default
   const customers = (await import(`../../messages/${locale}/customers.json`)).default
+  const documentLock = (await import(`../../messages/${locale}/documentLock.json`)).default
   const messages = (await import(`../../messages/${locale}/messages.json`)).default
   const vehicles = (await import(`../../messages/${locale}/vehicles.json`)).default
   const workOrders = (await import(`../../messages/${locale}/workOrders.json`)).default
@@ -82,6 +83,7 @@ export default getRequestConfig(async () => {
       dashboard,
       navigation,
       customers,
+      documentLock,
       messages,
       vehicles,
       workOrders,

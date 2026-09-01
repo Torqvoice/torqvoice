@@ -185,7 +185,11 @@
     "paidBadge": "BEZAHLT",
     "entityLabel": "Rechnung",
     "emailSubject": "Zahlungsbestätigung",
-    "statusEmailSubject": "Aktualisierung des Servicestatus"
+    "statusEmailSubject": "Aktualisierung des Servicestatus",
+    "markCompletedTitle": "Diese Rechnung als abgeschlossen markieren?",
+    "markCompletedDescription": "Sie ist beim Kunden, gilt aber weiterhin als nicht fertig und bleibt daher auf der Auftragstafel stehen.",
+    "markCompletedConfirm": "Als abgeschlossen markieren",
+    "lockedFieldsetLabel": "Gesperrte Rechnung, Bearbeitung deaktiviert"
   },
   "payments": {
     "title": "Zahlungen",
@@ -344,7 +348,23 @@
     "setDefaults": "Standardwerte",
     "workBay": "Arbeitsplatz",
     "selectWorkBay": "Arbeitsplatz wählen …",
-    "noWorkBay": "Kein Arbeitsplatz"
+    "noWorkBay": "Kein Arbeitsplatz",
+    "technicians": "Techniker",
+    "otherTeamMembers": "Weitere Teammitglieder",
+    "makeTechnician": "Macht sie zum Techniker",
+    "addSomeoneNew": "Jemanden hinzufügen",
+    "notOnBoard": "Noch nicht auf der Tafel",
+    "putOnBoard": "Auf die Tafel",
+    "slotTaken": "{count, plural, one {Dieser Termin ist bereits belegt} other {Dieser Termin hat # Überschneidungen}}",
+    "anotherJob": "ein anderer Auftrag",
+    "clashTechnician": "der Techniker ist belegt",
+    "clashBay": "die Box ist belegt",
+    "clashBoth": "beide sind belegt",
+    "bookedAnyway": "Trotzdem gespeichert. Ändern Sie die Zeit oder wählen Sie den nächsten freien Termin.",
+    "pickNextAvailable": "Nächsten freien Termin wählen",
+    "findingSlot": "Termin wird gesucht…",
+    "slotPicked": "Auf den nächsten freien Termin gelegt",
+    "noSlotFound": "In den nächsten Wochen kein freier Termin gefunden"
   },
   "notifications": {
     "title": "Kundenbenachrichtigungen",
@@ -381,5 +401,14 @@
       "title": "Standard-Garantieeinstellungen",
       "description": "Standardgarantiebedingungen für neue Serviceeinträge festlegen"
     }
+  },
+  "concerns": {
+    "title": "Kundenanliegen",
+    "addFirst": "Kundenanliegen hinzufügen",
+    "add": "Weiteres hinzufügen",
+    "placeholder": "Beim Bremsen kommt hinten ein Geräusch",
+    "remove": "Dieses Anliegen entfernen",
+    "notAnswered": "Dazu wurde noch nichts festgestellt",
+    "answered": "{count} Feststellung(en) dazu"
   }
 }

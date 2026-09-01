@@ -185,7 +185,11 @@
     "paidBadge": "PAID",
     "entityLabel": "Invoice",
     "emailSubject": "Payment Confirmation",
-    "statusEmailSubject": "Service Status Update"
+    "statusEmailSubject": "Service Status Update",
+    "markCompletedTitle": "Mark this invoice as completed?",
+    "markCompletedDescription": "It has gone to the customer but is still marked as not finished, so it will keep showing on the work board.",
+    "markCompletedConfirm": "Mark completed",
+    "lockedFieldsetLabel": "Locked invoice, editing disabled"
   },
   "payments": {
     "title": "Payments",
@@ -344,7 +348,23 @@
     "setDefaults": "Set Defaults",
     "workBay": "Work bay",
     "selectWorkBay": "Select work bay...",
-    "noWorkBay": "No work bay"
+    "noWorkBay": "No work bay",
+    "technicians": "Technicians",
+    "otherTeamMembers": "Other team members",
+    "makeTechnician": "Makes them a technician",
+    "addSomeoneNew": "Add someone new",
+    "notOnBoard": "Not on the board yet",
+    "putOnBoard": "Put on board",
+    "slotTaken": "{count, plural, one {This slot is already booked} other {This slot has # clashes}}",
+    "anotherJob": "another job",
+    "clashTechnician": "the technician is busy",
+    "clashBay": "the bay is in use",
+    "clashBoth": "both are taken",
+    "bookedAnyway": "Saved anyway. Change the time, or pick the next free slot.",
+    "pickNextAvailable": "Pick next available slot",
+    "findingSlot": "Finding a slot…",
+    "slotPicked": "Booked into the next free slot",
+    "noSlotFound": "No free slot found in the next few weeks"
   },
   "notifications": {
     "title": "Customer Notifications",
@@ -381,5 +401,14 @@
       "title": "Default Warranty Settings",
       "description": "Set default warranty terms for new service records"
     }
+  },
+  "concerns": {
+    "title": "Customer concerns",
+    "addFirst": "Add a customer concern",
+    "add": "Add another",
+    "placeholder": "There is a noise from the back when I brake",
+    "remove": "Remove this concern",
+    "notAnswered": "Nothing found against this yet",
+    "answered": "{count} finding(s) against this"
   }
 }

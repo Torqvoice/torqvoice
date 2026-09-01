@@ -72,7 +72,9 @@
     "vehicle": "Transporto priemonė",
     "quote": "Pasiūlymas",
     "part": "Dalis",
-    "inspection": "Apžiūra"
+    "inspection": "Apžiūra",
+    "shopActions": "Servisas",
+    "person": "Pridėti žmogų"
   },
   "purchaseWhiteLabel": "Įsigyti \"White-Label\"",
   "licenseExpired": "Jūsų licencija pasibaigė. Funkcijos gali būti ribotos.",

@@ -44,6 +44,12 @@ const EGRESS_PATHS: Array<{ file: string; stoppedBy: RegExp }> = [
   // Fetches whatever URL it is handed, which on a public demo is an open
   // outbound proxy rather than a part lookup.
   { file: 'src/app/api/protected/fetch-metadata/route.ts', stoppedBy: /if \(isDemoMode\)/ },
+  // Push reaches a real phone that signed into the demo org from the
+  // technician app. Fire-and-forget, so it returns like the webhooks do.
+  {
+    file: 'src/features/notifications/Lib/pushToTechnician.ts',
+    stoppedBy: /if \(isDemoMode\) return/,
+  },
 ]
 
 describe('demo mode', () => {

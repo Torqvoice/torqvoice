@@ -185,7 +185,11 @@
     "paidBadge": "ÖDENDİ",
     "entityLabel": "Fatura",
     "emailSubject": "Ödeme Onayı",
-    "statusEmailSubject": "Servis durumu güncellemesi"
+    "statusEmailSubject": "Servis durumu güncellemesi",
+    "markCompletedTitle": "Bu fatura tamamlandı olarak işaretlensin mi?",
+    "markCompletedDescription": "Müşteriye gitti ama hâlâ bitmedi olarak işaretli, bu yüzden iş panosunda görünmeye devam edecek.",
+    "markCompletedConfirm": "Tamamlandı olarak işaretle",
+    "lockedFieldsetLabel": "Fatura kilitli, düzenleme kapalı"
   },
   "payments": {
     "title": "Ödemeler",
@@ -344,7 +348,23 @@
     "setDefaults": "Varsayılanlar",
     "workBay": "Çalışma alanı",
     "selectWorkBay": "Çalışma alanı seçin…",
-    "noWorkBay": "Çalışma alanı yok"
+    "noWorkBay": "Çalışma alanı yok",
+    "technicians": "Teknisyenler",
+    "otherTeamMembers": "Diğer ekip üyeleri",
+    "makeTechnician": "Onu teknisyen yapar",
+    "addSomeoneNew": "Yeni birini ekle",
+    "notOnBoard": "Henüz panoda değil",
+    "putOnBoard": "Panoya ekle",
+    "slotTaken": "{count, plural, one {Bu saat zaten dolu} other {Bu saatte # çakışma var}}",
+    "anotherJob": "başka bir iş",
+    "clashTechnician": "teknisyen meşgul",
+    "clashBay": "servis alanı dolu",
+    "clashBoth": "ikisi de dolu",
+    "bookedAnyway": "Yine de kaydedildi. Saati değiştirin veya sıradaki boş saati seçin.",
+    "pickNextAvailable": "Sıradaki boş saati seç",
+    "findingSlot": "Saat aranıyor…",
+    "slotPicked": "Sıradaki boş saate alındı",
+    "noSlotFound": "Önümüzdeki haftalarda boş saat bulunamadı"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",
@@ -381,5 +401,14 @@
       "title": "Varsayılan garanti ayarları",
       "description": "Yeni servis kayıtları için varsayılan garanti koşullarını ayarlayın"
     }
+  },
+  "concerns": {
+    "title": "Müşteri bildirimleri",
+    "addFirst": "Müşteri bildirimi ekle",
+    "add": "Bir tane daha ekle",
+    "placeholder": "Fren yapınca arkadan ses geliyor",
+    "remove": "Bu maddeyi kaldır",
+    "notAnswered": "Bu konuda henüz bir şey bulunmadı",
+    "answered": "Bu konuda {count} tespit"
   }
 }

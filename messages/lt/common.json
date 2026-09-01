@@ -95,5 +95,10 @@
     "placeholder": "pvz. Turime serverių infrastruktūros problemų ir jas sprendžiame.",
     "posted": "Pranešimas paskelbtas",
     "cleared": "Pranešimas pašalintas"
+  },
+  "pdfPreview": {
+    "title": "PDF peržiūra",
+    "preview": "Peržiūra",
+    "failed": "Nepavyko sugeneruoti PDF peržiūros."
   }
 }

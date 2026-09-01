@@ -1,8 +1,8 @@
 'use client'
 
-import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav';
-import { interactiveRow } from '@/lib/interactive-row';
-import { useDebouncedSearch } from '@/hooks/use-debounced-search';
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { interactiveRow } from '@/lib/interactive-row'
+import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
 import { useCallback, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
@@ -92,7 +92,7 @@ export function AdminUsers({
   const confirm = useConfirm()
   const { formatDate, formatDateTime } = useFormatDate()
   const [isPending, startTransition] = useTransition()
-  const tableNav = useTableKeyboardNav();
+  const tableNav = useTableKeyboardNav()
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -120,7 +120,7 @@ export function AdminUsers({
     value: searchInput,
     setValue: setSearchInput,
     commitNow: handleSearch,
-  } = useDebouncedSearch(search, (term) => navigate({ search: term }));
+  } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const handleSort = useCallback(
     (column: string) => {

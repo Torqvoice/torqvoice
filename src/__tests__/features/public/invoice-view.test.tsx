@@ -16,6 +16,7 @@ vi.mock('lucide-react', () => ({
 }))
 
 import { InvoiceView } from '@/app/(public)/share/invoice/[orgId]/[token]/invoice-view'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 
 const WORKSHOP = {
   name: 'Speed Shop',
@@ -85,6 +86,79 @@ const DEFAULT_PROPS = {
   enabledProviders: [],
 }
 
+/**
+ * The sheet is built server-side in production; the tests build it the same
+ * way from the record, so what they assert on is what a customer sees.
+ */
+function renderView(props: any) {
+  const record = props.record
+  const paid = (record.payments ?? []).reduce(
+    (sum: number, p: { amount: number }) => sum + p.amount,
+    0
+  )
+  const total = record.totalAmount > 0 ? record.totalAmount : record.cost
+  const paymentSummary =
+    (record.payments ?? []).length > 0 || record.manuallyPaid
+      ? {
+          totalPaid: record.manuallyPaid ? total : paid,
+          payments: (record.payments ?? []).map(
+            (p: { amount: number; date: Date; method: string }) => ({
+              amount: p.amount,
+              date: String(p.date),
+              method: p.method,
+            })
+          ),
+        }
+      : undefined
+  const spec = buildInvoicePrintSpec({
+    data: record,
+    workshop: WORKSHOP,
+    invoiceSettings: { currencyCode: props.currencyCode },
+    paymentSummary,
+  })
+  return render(<InvoiceView spec={spec} {...props} />)
+}
+
+/**
+ * The sheet the customer opens has to wear the same typeface as the designer
+ * promised. It is built by the same generator, so the trap is the same one:
+ * a line that mentions a font at all overrides what it inherits, and a blank
+ * one silently reset the panels to the default face.
+ */
+describe('the typeface a customer sees', () => {
+  it('carries the chosen font into the panels, not just the headings', () => {
+    const spec = buildInvoicePrintSpec({
+      data: DEFAULT_PROPS.record,
+      workshop: WORKSHOP,
+      invoiceSettings: { currencyCode: 'EUR' },
+      template: { fontFamily: 'Montserrat' },
+    })
+    expect(spec.page.fontFamily).toBe('Montserrat')
+    for (const id of ['customer', 'vehicle']) {
+      const block = spec.blocks.find((b) => b.id === id)
+      if (!block) continue
+      expect(block.text?.fontFamily, `${id} lost the sheet's font`).toBe('Montserrat')
+      const fonts = JSON.stringify(block.content).match(/"fontFamily":"[^"]*"/g) ?? []
+      expect(new Set(fonts), `${id} has a line in another face`).toEqual(
+        new Set(fonts.length ? ['"fontFamily":"Montserrat"'] : [])
+      )
+    }
+  })
+
+  it('renders that font onto the page the customer opens', () => {
+    const spec = buildInvoicePrintSpec({
+      data: DEFAULT_PROPS.record,
+      workshop: WORKSHOP,
+      invoiceSettings: { currencyCode: 'EUR' },
+      template: { fontFamily: 'Montserrat' },
+    })
+    const { container } = render(<InvoiceView spec={spec} {...DEFAULT_PROPS} />)
+    // The sheet sets the family as a real CSS stack, so a customer without
+    // the face installed still falls back sensibly rather than to nothing.
+    expect(container.innerHTML).toContain('Montserrat')
+  })
+})
+
 let mockFetch: ReturnType<typeof vi.fn>
 
 beforeAll(() => {
@@ -112,31 +186,31 @@ beforeEach(() => {
 describe('InvoiceView', () => {
   describe('rendering', () => {
     it('renders invoice number and title', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} />)
-      expect(screen.getByText('INV-0001')).toBeInTheDocument()
-      expect(screen.getByText('Full Service')).toBeInTheDocument()
+      renderView(DEFAULT_PROPS)
+      expect(screen.getAllByText('INV-0001').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Full Service').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders Download PDF button', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       expect(screen.getByRole('button', { name: /download pdf/i })).toBeInTheDocument()
     })
 
     it('renders customer info in Bill To section', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} />)
-      expect(screen.getByText('Bill To')).toBeInTheDocument()
-      expect(screen.getByText('Bob Builder')).toBeInTheDocument()
-      expect(screen.getByText('bob@example.com')).toBeInTheDocument()
+      renderView(DEFAULT_PROPS)
+      expect(screen.getAllByText('Bill To').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Bob Builder').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('bob@example.com').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders vehicle info', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} />)
-      expect(screen.getByText('2019 Honda Civic')).toBeInTheDocument()
+      renderView(DEFAULT_PROPS)
+      expect(screen.getAllByText('2019 Honda Civic').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders technician name', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} />)
-      expect(screen.getByText('Tech: Alice')).toBeInTheDocument()
+      renderView(DEFAULT_PROPS)
+      expect(screen.getAllByText('Tech: Alice').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders parts table when parts are present', () => {
@@ -149,9 +223,9 @@ describe('InvoiceView', () => {
           ],
         },
       }
-      render(<InvoiceView {...props} />)
-      expect(screen.getByText('Parts')).toBeInTheDocument()
-      expect(screen.getByText('Brake Pads')).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText('Parts').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Brake Pads').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders labor table when labor items are present', () => {
@@ -162,19 +236,19 @@ describe('InvoiceView', () => {
           laborItems: [{ description: 'Brake Replacement', hours: 1.5, rate: 90, total: 135 }],
         },
       }
-      render(<InvoiceView {...props} />)
-      expect(screen.getByText('Labor & Services')).toBeInTheDocument()
-      expect(screen.getByText('Brake Replacement')).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText('Labor').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Brake Replacement').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders terms of sale link when termsOfSaleUrl is provided', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} termsOfSaleUrl="https://example.com/terms" />)
+      renderView({ ...DEFAULT_PROPS, termsOfSaleUrl: 'https://example.com/terms' })
       const link = screen.getByRole('link', { name: /terms of sale/i })
       expect(link).toHaveAttribute('href', 'https://example.com/terms')
     })
 
     it('does not render terms of sale link when not provided', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       expect(screen.queryByRole('link', { name: /terms of sale/i })).not.toBeInTheDocument()
     })
   })
@@ -185,7 +259,7 @@ describe('InvoiceView', () => {
         ...DEFAULT_PROPS,
         enabledProviders: ['stripe'],
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       expect(screen.getByText('Balance Due')).toBeInTheDocument()
     })
 
@@ -195,7 +269,7 @@ describe('InvoiceView', () => {
         enabledProviders: ['stripe'],
         record: { ...BASE_RECORD, manuallyPaid: true },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       // Payment provider buttons should not render when balance is zero
       expect(screen.queryByRole('button', { name: /pay.*card/i })).not.toBeInTheDocument()
     })
@@ -209,39 +283,39 @@ describe('InvoiceView', () => {
           payments: [{ amount: 200, date: new Date(), method: 'card' }],
         },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       expect(screen.queryByRole('button', { name: /pay.*card/i })).not.toBeInTheDocument()
     })
 
     it('shows Stripe pay button when stripe provider is enabled', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       expect(screen.getByRole('button', { name: /pay.*card/i })).toBeInTheDocument()
     })
 
     it('shows Vipps pay button when vipps provider is enabled', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['vipps']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['vipps'] })
       expect(screen.getByRole('button', { name: /pay.*vipps/i })).toBeInTheDocument()
     })
 
     it('shows PayPal pay button when paypal provider is enabled', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['paypal']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['paypal'] })
       expect(screen.getByRole('button', { name: /pay.*paypal/i })).toBeInTheDocument()
     })
 
     it('shows Full amount and Partial payment toggle buttons', () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       expect(screen.getByRole('button', { name: /full amount/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /partial payment/i })).toBeInTheDocument()
     })
 
     it('shows amount input when Partial payment is selected', async () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       await userEvent.click(screen.getByRole('button', { name: /partial payment/i }))
       expect(screen.getByLabelText(/enter amount/i)).toBeInTheDocument()
     })
 
     it('hides amount input when Full amount is re-selected', async () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       await userEvent.click(screen.getByRole('button', { name: /partial payment/i }))
       expect(screen.getByLabelText(/enter amount/i)).toBeInTheDocument()
       await userEvent.click(screen.getByRole('button', { name: /full amount/i }))
@@ -249,7 +323,7 @@ describe('InvoiceView', () => {
     })
 
     it('shows validation error when amount is invalid', async () => {
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       await userEvent.click(screen.getByRole('button', { name: /partial payment/i }))
       const input = screen.getByLabelText(/enter amount/i)
       // Use fireEvent for number inputs to avoid userEvent quirks with controlled inputs
@@ -271,7 +345,7 @@ describe('InvoiceView', () => {
         href: 'http://localhost/share/invoice/org-1/tok-xyz',
         assign: vi.fn(),
       })
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       await userEvent.click(screen.getByRole('button', { name: /pay.*card/i }))
 
       await waitFor(() => {
@@ -293,7 +367,7 @@ describe('InvoiceView', () => {
         ok: false,
         json: () => Promise.resolve({ error: 'Provider unavailable' }),
       })
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       await userEvent.click(screen.getByRole('button', { name: /pay.*card/i }))
 
       await waitFor(() => {
@@ -312,7 +386,7 @@ describe('InvoiceView', () => {
         ok: true,
         json: () => Promise.resolve({ verified: true, amount: 200 }),
       })
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['stripe']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
 
       await waitFor(() => {
         expect(screen.getByText(/payment received/i)).toBeInTheDocument()
@@ -337,7 +411,7 @@ describe('InvoiceView', () => {
         ok: true,
         json: () => Promise.resolve({ verified: true, amount: 200 }),
       })
-      render(<InvoiceView {...DEFAULT_PROPS} enabledProviders={['vipps']} />)
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['vipps'] })
 
       await waitFor(() => {
         const call = mockFetch.mock.calls.find(
@@ -358,8 +432,8 @@ describe('InvoiceView', () => {
           payments: [{ amount: 200, date: new Date(), method: 'card' }],
         },
       }
-      render(<InvoiceView {...props} />)
-      expect(screen.getByText('PAID IN FULL')).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText('PAID IN FULL').length).toBeGreaterThanOrEqual(1)
     })
   })
 
@@ -379,7 +453,7 @@ describe('InvoiceView', () => {
         ...DEFAULT_PROPS,
         record: { ...BASE_RECORD, attachments: [IMAGE_ATTACHMENT] },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       expect(screen.getByText(/service images/i)).toBeInTheDocument()
       expect(screen.getByAltText('Before photo')).toBeInTheDocument()
     })
@@ -389,7 +463,7 @@ describe('InvoiceView', () => {
         ...DEFAULT_PROPS,
         record: { ...BASE_RECORD, attachments: [IMAGE_ATTACHMENT] },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       const thumbnail = screen.getByAltText('Before photo')
       await userEvent.click(thumbnail.closest('button')!)
       // Carousel is shown (image is in a fullscreen modal)
@@ -401,7 +475,7 @@ describe('InvoiceView', () => {
         ...DEFAULT_PROPS,
         record: { ...BASE_RECORD, attachments: [IMAGE_ATTACHMENT] },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       await userEvent.click(screen.getByAltText('Before photo').closest('button')!)
       const closeBtn = screen.getByTestId('icon-x').closest('button')!
       await userEvent.click(closeBtn)
@@ -415,7 +489,7 @@ describe('InvoiceView', () => {
         ...DEFAULT_PROPS,
         record: { ...BASE_RECORD, attachments: [IMAGE_ATTACHMENT, duplicate] },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       // Should show "1" in the title, not "2"
       expect(screen.getByText(/service images \(1\)/i)).toBeInTheDocument()
     })
@@ -436,7 +510,7 @@ describe('InvoiceView', () => {
         ...DEFAULT_PROPS,
         record: { ...BASE_RECORD, attachments: [pdfAttachment] },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       expect(screen.getByText(/diagnostic reports/i)).toBeInTheDocument()
       const link = screen.getByRole('link', { name: /diagnostic.pdf/i })
       expect(link).toHaveAttribute('download', 'diagnostic.pdf')
@@ -447,7 +521,7 @@ describe('InvoiceView', () => {
     it('fetches the PDF from the correct API URL', async () => {
       const mockBlob = new Blob(['pdf'], { type: 'application/pdf' })
       mockFetch.mockResolvedValue({ ok: true, blob: () => Promise.resolve(mockBlob) })
-      render(<InvoiceView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /download pdf/i }))
 
       await waitFor(() => {
@@ -477,7 +551,7 @@ describe('InvoiceView', () => {
           cost: 125,
         },
       }
-      const { unmount } = render(<InvoiceView {...exclusiveProps} />)
+      const { unmount } = renderView(exclusiveProps)
       // Exclusive shows the net unit price (100) and the tax amount (25)
       expect(screen.getAllByText(/100\.00/).length).toBeGreaterThanOrEqual(1)
       expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1)
@@ -501,7 +575,7 @@ describe('InvoiceView', () => {
           cost: 125,
         },
       }
-      render(<InvoiceView {...inclusiveProps} />)
+      renderView(inclusiveProps)
       // The display back-calculates the line item to net 100, and shows the same tax 25 + total 125
       expect(screen.getAllByText(/100\.00/).length).toBeGreaterThanOrEqual(1)
       expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1)
@@ -522,7 +596,7 @@ describe('InvoiceView', () => {
           cost: 100,
         },
       }
-      render(<InvoiceView {...props} />)
+      renderView(props)
       expect(screen.queryByText(/Tax \(\d/)).toBeNull()
     })
   })

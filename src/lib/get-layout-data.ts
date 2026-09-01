@@ -1,32 +1,34 @@
-import { getCachedSession, getCachedMembership } from "./cached-session";
-import { db } from "./db";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
+import { getCachedSession, getCachedMembership } from './cached-session'
+import { db } from './db'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
 type AuthResult =
-  | { status: "unauthenticated" }
-  | { status: "no-organization" }
+  | { status: 'unauthenticated' }
+  | { status: 'no-organization' }
   | {
-      status: "ok";
-      userId: string;
-      organizationId: string;
-      role: string;
-      isSuperAdmin: boolean;
-      emailVerified: boolean;
-      lastSeenVersion: string | null;
-      companyLogo: string | undefined;
-      dateFormat: string | undefined;
-      timeFormat: string | undefined;
-      timezone: string | undefined;
-      weekStartDay: number;
-      serviceType: string | undefined;
-      currencyCode: string | undefined;
-      currencyFormat: string | undefined;
-      organizations: { id: string; name: string; role: string }[];
-    };
+      status: 'ok'
+      userId: string
+      organizationId: string
+      /** When the active workshop signed up, for age-gated announcements. */
+      organizationCreatedAt: Date | null
+      role: string
+      isSuperAdmin: boolean
+      emailVerified: boolean
+      lastSeenVersion: string | null
+      companyLogo: string | undefined
+      dateFormat: string | undefined
+      timeFormat: string | undefined
+      timezone: string | undefined
+      weekStartDay: number
+      serviceType: string | undefined
+      currencyCode: string | undefined
+      currencyFormat: string | undefined
+      organizations: { id: string; name: string; role: string }[]
+    }
 
 export async function getLayoutData(): Promise<AuthResult> {
-  const session = await getCachedSession();
-  if (!session?.user?.id) return { status: "unauthenticated" };
+  const session = await getCachedSession()
+  if (!session?.user?.id) return { status: 'unauthenticated' }
 
   const [membership, user] = await Promise.all([
     getCachedMembership(session.user.id),
@@ -34,14 +36,14 @@ export async function getLayoutData(): Promise<AuthResult> {
       where: { id: session.user.id },
       select: { isSuperAdmin: true, emailVerified: true, lastSeenVersion: true },
     }),
-  ]);
+  ])
 
   // User record deleted (e.g. admin removed the account) but session cookie still cached
-  if (!user) return { status: "unauthenticated" };
+  if (!user) return { status: 'unauthenticated' }
 
-  const isSuperAdmin = user.isSuperAdmin;
+  const isSuperAdmin = user.isSuperAdmin
 
-  if (!membership && !isSuperAdmin) return { status: "no-organization" };
+  if (!membership && !isSuperAdmin) return { status: 'no-organization' }
 
   const [orgSettings, memberships] = await Promise.all([
     membership
@@ -68,18 +70,21 @@ export async function getLayoutData(): Promise<AuthResult> {
       where: { userId: session.user.id },
       select: {
         role: true,
-        organization: { select: { id: true, name: true } },
+        organization: { select: { id: true, name: true, createdAt: true } },
       },
     }),
-  ]);
+  ])
 
-  const orgMap = new Map(orgSettings?.map((s) => [s.key, s.value]) ?? []);
+  const orgMap = new Map(orgSettings?.map((s) => [s.key, s.value]) ?? [])
 
   return {
-    status: "ok",
+    status: 'ok',
     userId: session.user.id,
-    organizationId: membership?.organizationId ?? "",
-    role: isSuperAdmin ? "super_admin" : (membership?.role ?? "member"),
+    organizationId: membership?.organizationId ?? '',
+    organizationCreatedAt:
+      memberships.find((m) => m.organization.id === membership?.organizationId)?.organization
+        .createdAt ?? null,
+    role: isSuperAdmin ? 'super_admin' : (membership?.role ?? 'member'),
     isSuperAdmin,
     emailVerified: user?.emailVerified ?? false,
     lastSeenVersion: user?.lastSeenVersion ?? null,
@@ -87,7 +92,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     dateFormat: orgMap.get(SETTING_KEYS.DATE_FORMAT) || undefined,
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,
     timezone: orgMap.get(SETTING_KEYS.TIMEZONE) || undefined,
-    weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || "1", 10),
+    weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || '1', 10),
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,
@@ -96,5 +101,5 @@ export async function getLayoutData(): Promise<AuthResult> {
       name: m.organization.name,
       role: m.role,
     })),
-  };
+  }
 }

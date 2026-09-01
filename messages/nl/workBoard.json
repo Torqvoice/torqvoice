@@ -75,7 +75,10 @@
     "standalone": "Onafhankelijke technicus",
     "deleteTitle": "Technicus verwijderen",
     "deleteDescription": "\"{name}\" van het werkbord verwijderen? Hun bestaande toewijzingen worden ook verwijderd.",
-    "addTechnician": "Technicus toevoegen"
+    "addTechnician": "Technicus toevoegen",
+    "standaloneOnly": "Een naam op het bord voor iemand die niet inlogt, zoals een leerling of een externe. Een monteur die de app gebruikt voegt u toe op de Team-pagina.",
+    "linkedTo": "Logt in als {name}",
+    "linkedManagedOnTeam": "Wordt beheerd op de Team-pagina, samen met de app-toegang."
   },
   "jobDetail": {
     "viewDetails": "Details weergeven",

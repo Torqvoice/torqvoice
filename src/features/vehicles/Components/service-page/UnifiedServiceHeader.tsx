@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { IconActionButton } from '@/components/icon-action-button'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, Download, Globe, Mail, MessageSquare, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, Download, Eye, Globe, Mail, MessageSquare, Save, Trash2 } from 'lucide-react'
 import { statusColors, paymentStatusColors, paymentStatusLabels } from '../service-detail/types'
 
 export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'
@@ -32,6 +32,7 @@ interface UnifiedServiceHeaderProps {
   hasUnsavedChanges?: boolean
   showSaved?: boolean
   onDownloadPDF: () => void
+  onPreviewPDF: () => void
   onDelete: () => void
   onShowEmail: () => void
   onShowShare: () => void
@@ -53,6 +54,7 @@ export function UnifiedServiceHeader({
   hasUnsavedChanges = false,
   showSaved = false,
   onDownloadPDF,
+  onPreviewPDF,
   onDelete,
   onShowEmail,
   onShowShare,
@@ -60,6 +62,7 @@ export function UnifiedServiceHeader({
   hasCustomer = false,
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
+  const tPreview = useTranslations('common.pdfPreview')
   const tabs: { label: string; value: ServiceTab }[] = [
     { label: t('tabs.details'), value: 'details' },
     { label: t('tabs.images'), value: 'images' },
@@ -117,6 +120,7 @@ export function UnifiedServiceHeader({
             </>
           )}
           <ButtonGroup>
+            <IconActionButton label={tPreview('preview')} icon={Eye} onClick={onPreviewPDF} />
             <IconActionButton
               label={t('pdf')}
               icon={Download}

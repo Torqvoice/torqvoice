@@ -1,8 +1,10 @@
 'use server'
 
+import { assertQuoteEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
+import { DocumentLockedError, quoteLockState } from '@/lib/document-lock'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { createQuoteSchema, updateQuoteSchema } from '../Schema/quoteSchema'
+import { createQuoteSchema, quoteStatusSchema, updateQuoteSchema } from '../Schema/quoteSchema'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
@@ -291,6 +293,7 @@ export async function updateQuote(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = updateQuoteSchema.parse(input)
+      await assertQuoteEditable(data.id, organizationId)
       const existing = await db.quote.findFirst({
         where: { id: data.id, organizationId },
       })
@@ -349,14 +352,25 @@ export async function updateQuote(input: unknown) {
 export async function updateQuoteStatus(quoteId: string, status: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      const parsedStatus = quoteStatusSchema.parse(status)
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
       })
       if (!quote) throw new Error('Quote not found')
 
+      // Status changes are workflow and stay open, except the ones that would
+      // release the lock: the lock derives from the status, so moving an
+      // accepted quote back to draft is the admin-only unlock in disguise.
+      const settings = await getDocumentLockSettings(organizationId)
+      const before = quoteLockState(quote, settings)
+      const after = quoteLockState({ ...quote, status: parsedStatus }, settings)
+      if (before.locked && !after.locked && before.reason) {
+        throw new DocumentLockedError(before.reason)
+      }
+
       await db.quote.updateMany({
         where: { id: quoteId, organizationId },
-        data: { status },
+        data: { status: parsedStatus },
       })
 
       revalidatePath('/quotes')
@@ -379,6 +393,7 @@ export async function updateQuoteStatus(quoteId: string, status: string) {
 export async function deleteQuote(quoteId: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      await assertQuoteEditable(quoteId, organizationId)
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
       })

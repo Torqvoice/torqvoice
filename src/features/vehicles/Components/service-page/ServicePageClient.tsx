@@ -1,8 +1,12 @@
 'use client'
 
+import { DocumentLockBanner } from '@/components/document-lock-banner'
+import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
+import { updateServiceStatus } from '@/features/vehicles/Actions/serviceActions'
+import { useConfirm } from '@/components/confirm-dialog'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { useTranslations } from 'next-intl'
 
@@ -10,6 +14,7 @@ import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
+import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { InventoryPickerDialog } from '../service-edit/InventoryPickerDialog'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
@@ -55,6 +60,8 @@ export function ServicePageClient({
   record,
   vehicleId,
   organizationId,
+  lockState,
+  canUnlock,
   currencyCode,
   unitSystem,
   tireHotelEnabled = false,
@@ -142,6 +149,7 @@ export function ServicePageClient({
     defaultTaxRate,
     currentUserName,
     record,
+    locked: lockState.locked,
   })
 
   const checkDates = useCallback(async () => {
@@ -206,6 +214,7 @@ export function ServicePageClient({
     'waiting-parts': SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
     completed: SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
   }
+  const [showPdfPreview, setShowPdfPreview] = useState(false)
   const [showNotifyDialog, setShowNotifyDialog] = useState(false)
   const [notifyMessage, setNotifyMessage] = useState('')
 
@@ -289,6 +298,38 @@ export function ServicePageClient({
     formState,
   })
 
+  const confirmComplete = useConfirm()
+
+  /**
+   * Run after the invoice has gone to the customer, by email or by link.
+   *
+   * Sending is what the "lock when sent" rule keys off, so the page is
+   * re-rendered to pick up the lock rather than leaving the banner to appear
+   * on the next reload. It is also the moment a job is in practice finished,
+   * and an invoice that locks while still marked pending leaves the work board
+   * showing work nobody is doing. The status is not changed silently, since
+   * plenty of shops invoice up front.
+   */
+  const handleInvoiceSent = useCallback(async () => {
+    router.refresh()
+    if (formState.status === 'completed') return
+
+    const ok = await confirmComplete({
+      title: t('invoice.markCompletedTitle'),
+      description: t('invoice.markCompletedDescription'),
+      confirmLabel: t('invoice.markCompletedConfirm'),
+    })
+    if (!ok) return
+
+    const result = await updateServiceStatus(record.id, 'completed')
+    if (result.success) {
+      // Already persisted by updateServiceStatus, so this must not dirty the
+      // form: the invoice may have locked on the same send.
+      formState.setStatus('completed')
+      router.refresh()
+    }
+  }, [router, confirmComplete, formState, record.id, t])
+
   useSaveShortcut(() => {
     if (formState.hasUnsavedChanges) return actions.saveNow()
   })
@@ -318,6 +359,12 @@ export function ServicePageClient({
           if (formState.hasUnsavedChanges) await actions.saveNow()
           actions.handleDownloadPDF()
         }}
+        onPreviewPDF={async () => {
+          // No expired-dates prompt here: previewing is just looking, and the
+          // check still runs on download, email, and share.
+          if (formState.hasUnsavedChanges) await actions.saveNow()
+          setShowPdfPreview(true)
+        }}
         onDelete={actions.handleDelete}
         onShowEmail={async () => {
           if (!(await checkDates())) return
@@ -333,6 +380,17 @@ export function ServicePageClient({
         hasCustomer={!!customer}
       />
 
+      {(lockState.locked || lockState.unlockedAt) && (
+        <div className="shrink-0 px-4 pt-3">
+          <DocumentLockBanner
+            state={lockState}
+            kind="invoice"
+            canUnlock={canUnlock}
+            onSetUnlocked={(unlocked) => setInvoiceEditUnlocked(record.id, unlocked)}
+          />
+        </div>
+      )}
+
       {activeTab === 'details' && (
         <>
           <form
@@ -342,52 +400,62 @@ export function ServicePageClient({
             onInput={formState.markDirty}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <ServiceDetailContent
-              leftColumn={
-                <DetailsLeftColumn
-                  formState={formState}
-                  actions={actions}
-                  record={record}
-                  tireSet={record.tireSet ?? null}
-                  tireHotelEnabled={tireHotelEnabled}
-                  tireThresholds={tireThresholds}
-                  unitSystem={unitSystem}
-                  currencyCode={currencyCode}
-                  defaultLaborRate={defaultLaborRate}
-                  inventoryParts={inventoryParts}
-                  defaultMarkupPercent={defaultMarkupPercent}
-                  markupAppliesToInventory={markupAppliesToInventory}
-                  hasPresets={laborPresets.length > 0}
-                  onOpenPresets={() => formState.setShowPresetPicker(true)}
-                  onScanBarcode={() => formState.setShowBarcodeScanner(true)}
-                  aiEnabled={aiEnabled}
-                  vehicleId={vehicleId}
-                  findings={findings}
-                  onAddFinding={() => obsControlsRef.current?.onAddFinding()}
-                  onEditFinding={(f) => obsControlsRef.current?.onEditFinding(f)}
-                  openObservationsCount={otherObsCount}
-                  onShowExistingObservations={() =>
-                    obsControlsRef.current?.onShowExistingObservations()
-                  }
-                />
-              }
-              rightColumn={
-                <DetailsRightColumn
-                  formState={formState}
-                  actions={actions}
-                  record={record}
-                  vehicleId={vehicleId}
-                  organizationId={organizationId}
-                  currencyCode={currencyCode}
-                  taxEnabled={taxEnabled}
-                  initialVehicle={initialVehicle}
-                  boardTechnicians={boardTechnicians}
-                  workBays={workBays}
-                  orgMembers={orgMembers}
-                  notificationHistory={notificationHistory}
-                />
-              }
-            />
+            {/* A locked invoice offers no editing at all, rather than letting
+                someone retype a line and meet the refusal on save. The
+                fieldset disables every control inside it natively;
+                display:contents keeps the layout exactly as it was. */}
+            <fieldset
+              disabled={lockState.locked}
+              className="contents"
+              aria-label={lockState.locked ? t('invoice.lockedFieldsetLabel') : undefined}
+            >
+              <ServiceDetailContent
+                leftColumn={
+                  <DetailsLeftColumn
+                    formState={formState}
+                    actions={actions}
+                    record={record}
+                    tireSet={record.tireSet ?? null}
+                    tireHotelEnabled={tireHotelEnabled}
+                    tireThresholds={tireThresholds}
+                    unitSystem={unitSystem}
+                    currencyCode={currencyCode}
+                    defaultLaborRate={defaultLaborRate}
+                    inventoryParts={inventoryParts}
+                    defaultMarkupPercent={defaultMarkupPercent}
+                    markupAppliesToInventory={markupAppliesToInventory}
+                    hasPresets={laborPresets.length > 0}
+                    onOpenPresets={() => formState.setShowPresetPicker(true)}
+                    onScanBarcode={() => formState.setShowBarcodeScanner(true)}
+                    aiEnabled={aiEnabled}
+                    vehicleId={vehicleId}
+                    findings={findings}
+                    onAddFinding={() => obsControlsRef.current?.onAddFinding()}
+                    onEditFinding={(f) => obsControlsRef.current?.onEditFinding(f)}
+                    openObservationsCount={otherObsCount}
+                    onShowExistingObservations={() =>
+                      obsControlsRef.current?.onShowExistingObservations()
+                    }
+                  />
+                }
+                rightColumn={
+                  <DetailsRightColumn
+                    formState={formState}
+                    actions={actions}
+                    record={record}
+                    vehicleId={vehicleId}
+                    organizationId={organizationId}
+                    currencyCode={currencyCode}
+                    taxEnabled={taxEnabled}
+                    initialVehicle={initialVehicle}
+                    boardTechnicians={boardTechnicians}
+                    workBays={workBays}
+                    orgMembers={orgMembers}
+                    notificationHistory={notificationHistory}
+                  />
+                }
+              />
+            </fieldset>
           </form>
           {vehicleId && (
             <ObservationsManager
@@ -396,6 +464,12 @@ export function ServicePageClient({
               openObservations={openObservations}
               onAddObservations={handleAddObservationsToWorkOrder}
               addingObservations={addingObservations}
+              // Saved concerns only: a row still being typed has no id yet, so
+              // there is nothing a finding could point at.
+              concerns={formState.concerns.filter(
+                (c): c is { id: string; description: string; sortOrder: number } =>
+                  Boolean(c.id) && Boolean(c.description.trim())
+              )}
               onControlsReady={(c) => {
                 obsControlsRef.current = c
               }}
@@ -488,14 +562,29 @@ export function ServicePageClient({
         onChangeIndex={actions.setCarouselIndex}
       />
 
+      <PdfPreviewDialog
+        open={showPdfPreview}
+        onOpenChange={setShowPdfPreview}
+        url={`/api/protected/services/${record.id}/pdf`}
+      />
+
       <SendEmailDialog
         open={actions.showEmailDialog}
         onOpenChange={actions.setShowEmailDialog}
         defaultEmail={customer?.email || ''}
         entityLabel={t('invoice.entityLabel')}
-        onSend={async (email, message) =>
-          sendInvoiceEmail({ serviceRecordId: record.id, recipientEmail: email, message })
-        }
+        onSend={async (email, message) => {
+          const result = await sendInvoiceEmail({
+            serviceRecordId: record.id,
+            recipientEmail: email,
+            message,
+          })
+          // Deliberately not awaited: the email dialog should show "sent" the
+          // moment it is, not sit spinning behind the "mark completed"
+          // confirmation that handleInvoiceSent may raise.
+          if (result.success) void handleInvoiceSent()
+          return result
+        }}
       />
 
       <ShareDialog
@@ -504,6 +593,7 @@ export function ServicePageClient({
         recordId={record.id}
         organizationId={organizationId}
         initialToken={record.publicToken}
+        onSent={handleInvoiceSent}
         customer={customer}
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}

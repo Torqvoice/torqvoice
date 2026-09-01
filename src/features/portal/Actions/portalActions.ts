@@ -1,6 +1,6 @@
 'use server'
 
-import { toSafeDate } from "@/lib/invoice-utils";
+import { toSafeDate } from '@/lib/invoice-utils'
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
@@ -120,7 +120,11 @@ export async function getPortalDashboard() {
     // Open invoices: completed records that the customer still owes money on.
     // Pre-completion records are not counted — they're not yet invoices.
     const completedInvoices = await db.serviceRecord.findMany({
-      where: { organizationId, OR: [{ vehicle: { customerId } }, { customerId }], status: 'completed' },
+      where: {
+        organizationId,
+        OR: [{ vehicle: { customerId } }, { customerId }],
+        status: 'completed',
+      },
       select: {
         totalAmount: true,
         manuallyPaid: true,

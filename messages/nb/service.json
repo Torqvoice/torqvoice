@@ -185,7 +185,11 @@
     "paidBadge": "BETALT",
     "entityLabel": "Faktura",
     "emailSubject": "Betalingsbekreftelse",
-    "statusEmailSubject": "Oppdatering av servicestatus"
+    "statusEmailSubject": "Oppdatering av servicestatus",
+    "markCompletedTitle": "Merke denne fakturaen som fullført?",
+    "markCompletedDescription": "Den er sendt til kunden, men står fortsatt som ikke ferdig, så den blir liggende på tavla.",
+    "markCompletedConfirm": "Merk som fullført",
+    "lockedFieldsetLabel": "Låst faktura, redigering er deaktivert"
   },
   "payments": {
     "title": "Betalinger",
@@ -344,7 +348,23 @@
     "setDefaults": "Standardinnstillinger",
     "workBay": "Arbeidsplass",
     "selectWorkBay": "Velg arbeidsplass …",
-    "noWorkBay": "Ingen arbeidsplass"
+    "noWorkBay": "Ingen arbeidsplass",
+    "technicians": "Teknikere",
+    "otherTeamMembers": "Andre i teamet",
+    "makeTechnician": "Gjør dem til tekniker",
+    "addSomeoneNew": "Legg til noen ny",
+    "notOnBoard": "Ikke på tavlen ennå",
+    "putOnBoard": "Sett på tavlen",
+    "slotTaken": "{count, plural, one {Denne tiden er allerede booket} other {Denne tiden har # kollisjoner}}",
+    "anotherJob": "en annen jobb",
+    "clashTechnician": "teknikeren er opptatt",
+    "clashBay": "plassen er i bruk",
+    "clashBoth": "begge er opptatt",
+    "bookedAnyway": "Lagret likevel. Endre tiden, eller velg neste ledige tid.",
+    "pickNextAvailable": "Velg neste ledige tid",
+    "findingSlot": "Finner en tid…",
+    "slotPicked": "Booket inn på neste ledige tid",
+    "noSlotFound": "Fant ingen ledig tid de neste ukene"
   },
   "notifications": {
     "title": "Kundevarsler",
@@ -381,5 +401,14 @@
       "title": "Standard garantiinnstillinger",
       "description": "Angi standard garantivilkår for nye serviceoppføringer"
     }
+  },
+  "concerns": {
+    "title": "Kundens beskrivelse",
+    "addFirst": "Legg til kundens beskrivelse",
+    "add": "Legg til en til",
+    "placeholder": "Det kommer en lyd bakfra når jeg bremser",
+    "remove": "Fjern dette punktet",
+    "notAnswered": "Ingenting funnet på dette ennå",
+    "answered": "{count} funn på dette"
   }
 }

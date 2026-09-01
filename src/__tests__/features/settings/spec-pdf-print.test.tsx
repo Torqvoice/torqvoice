@@ -1,0 +1,589 @@
+// @vitest-environment node
+/**
+ * The printed sheet is the designed sheet.
+ *
+ * These render real PDFs through the same generator and layout engine the
+ * designer draws with, and hold the print to what the designer promises: a
+ * hand-placed block keeps its spot and width, a narrowed slogan wraps instead
+ * of running back out to full width, margins reserve their room, and every
+ * header style still produces a valid document.
+ */
+import React from 'react'
+import { renderToBuffer, type DocumentProps } from '@react-pdf/renderer'
+import { describe, expect, it } from 'vitest'
+import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
+import { mixColors } from '@/features/invoice-designer/Spec/buildSpec'
+import { estimateBlockHeights } from '@/features/invoice-designer/Pdf/estimateHeights'
+import { lineCount } from '@/features/invoice-designer/Pdf/measure'
+import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf/InvoicePDF'
+import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
+import {
+  DESIGNER_LAYOUT_VERSION,
+  getDefaultInvoiceLayout,
+} from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { InvoiceData } from '@/features/vehicles/Components/invoice-pdf/types'
+
+const invoice: InvoiceData = {
+  id: 'svc_12345678',
+  title: 'Brakes and coolant',
+  description: null,
+  type: 'repair',
+  serviceDate: new Date('2026-08-14'),
+  invoiceDate: new Date('2026-08-14'),
+  invoiceDueDate: new Date('2026-08-24'),
+  shopName: 'Testshop',
+  techName: 'Jamie Lee',
+  mileage: 105866,
+  diagnosticNotes: null,
+  invoiceNotes:
+    '<p>Thank you for choosing our workshop. <strong>Contact us</strong> if you have any questions.</p>',
+  subtotal: 1053.63,
+  taxRate: 19,
+  taxAmount: 200.19,
+  totalAmount: 1253.82,
+  cost: 1253.82,
+  invoiceNumber: 'INV-2026-0042',
+  discountType: 'percentage',
+  discountValue: 5,
+  discountAmount: 52.68,
+  partItems: [
+    {
+      partNumber: 'BD-1042',
+      name: 'Brake disc, front left',
+      quantity: 1,
+      unitPrice: 256.12,
+      total: 256.12,
+    },
+  ],
+  laborItems: [{ description: 'Front brakes replaced', hours: 4.8, rate: 56.5, total: 271.2 }],
+  customFields: [
+    { fieldId: 'cfdef1', label: 'Insurance no.', value: 'INS-991', fieldType: 'text' },
+  ],
+  findings: [{ description: 'Rear pads at 15%', severity: 'needs_work', notes: 'Replace soon' }],
+  warrantyMonths: 12,
+  warrantyMileage: 20000,
+  warrantyExpiresAt: null,
+  warrantyNotes: 'Parts and labour.',
+  customer: {
+    name: 'Alex Carter',
+    email: 'alex@example.com',
+    phone: '+1 555 0134',
+    address: '12 Harbour Road, Springfield',
+    company: 'Carter Logistics Ltd',
+    customerNumber: 'C-0117',
+  },
+  vehicle: {
+    make: 'Volvo',
+    model: 'V60',
+    year: 2021,
+    vin: 'YV1AA0000L0000000',
+    licensePlate: 'AB 12345',
+    mileage: 105866,
+    customer: null,
+  },
+}
+
+const workshop = {
+  name: 'Testshop',
+  address: 'Somewhere 1',
+  phone: '+47 123 45 678',
+  email: 'post@testshop.example',
+  slogan: 'Quality service you can trust since nineteen ninety eight',
+}
+
+const settings = { currencyCode: 'EUR', bankAccount: 'XX00 1234 5678', orgNumber: '123 456 789' }
+
+describe('the printed invoice follows the designed layout', () => {
+  it('renders a valid PDF for every header style', async () => {
+    for (const headerStyle of ['standard', 'compact', 'modern', 'framed']) {
+      const buffer = await renderToBuffer(
+        (
+          <InvoicePDF
+            data={invoice}
+            workshop={workshop}
+            invoiceSettings={settings}
+            template={{ primaryColor: '#d97706', headerStyle }}
+          />
+        ) as React.ReactElement<DocumentProps>
+      )
+      expect(buffer.subarray(0, 5).toString()).toBe('%PDF-')
+    }
+  })
+
+  it('prints the slogan as its own block, apart from the header', () => {
+    const spec = buildInvoicePrintSpec({ data: invoice, workshop, invoiceSettings: settings })
+    const slogan = spec.blocks.find((b) => b.id === 'slogan')
+    expect(slogan).toBeDefined()
+    expect(JSON.stringify(spec.blocks.find((b) => b.id === 'header'))).not.toContain(
+      workshop.slogan
+    )
+  })
+
+  it('keeps a hand-placed slogan at its spot and width', async () => {
+    const layout = {
+      ...getDefaultInvoiceLayout(),
+      anchors: { slogan: { x: 320, y: 180, width: 120, page: 1 } },
+    }
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: layout },
+    })
+    const slogan = spec.blocks.find((b) => b.id === 'slogan')
+    expect(slogan?.placement).toEqual({
+      mode: 'anchored',
+      anchor: { x: 320, y: 180, width: 120, page: 1 },
+    })
+
+    const buffer = await renderToBuffer(
+      (
+        <InvoicePDF
+          data={invoice}
+          workshop={workshop}
+          invoiceSettings={settings}
+          template={{ layoutConfig: layout }}
+        />
+      ) as React.ReactElement<DocumentProps>
+    )
+    expect(buffer.subarray(0, 5).toString()).toBe('%PDF-')
+  })
+
+  it('wraps a narrowed slogan onto more lines, as the designer shows', () => {
+    const wide = lineCount(workshop.slogan, 400, { fontSize: 9 }, 9)
+    const narrow = lineCount(workshop.slogan, 120, { fontSize: 9 }, 9)
+    expect(wide).toBe(1)
+    expect(narrow).toBeGreaterThan(1)
+
+    const anchored = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: {
+        layoutConfig: {
+          ...getDefaultInvoiceLayout(),
+          anchors: { slogan: { x: 320, y: 180, width: 120, page: 1 } },
+        },
+      },
+    })
+    const flowing = buildInvoicePrintSpec({ data: invoice, workshop, invoiceSettings: settings })
+    const narrowHeight = estimateBlockHeights(anchored).get('slogan') ?? 0
+    const wideHeight = estimateBlockHeights(flowing).get('slogan') ?? 0
+    expect(narrowHeight).toBeGreaterThan(wideHeight)
+  })
+
+  it('reserves the margin a section asks for', () => {
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'parts_table' ? { ...s, style: { marginTop: 30, marginLeft: 40 } } : s
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: layout },
+    })
+    const table = spec.blocks.find((b) => b.id === 'parts_table')
+    expect(table?.margin).toEqual({ top: 30, right: 0, bottom: 0, left: 40 })
+  })
+
+  it('always prints the number and the date, even with the title section off', () => {
+    // An organization with no saved layout keeps the classic letterhead,
+    // which carries the number itself, so no title block joins the sheet.
+    const spec = buildInvoicePrintSpec({ data: invoice, workshop, invoiceSettings: settings })
+    expect(spec.blocks.find((b) => b.id === 'document_title')).toBeUndefined()
+    expect(JSON.stringify(spec.blocks.find((b) => b.id === 'header'))).toContain('INV-2026-0042')
+  })
+
+  it('keeps the classic look for an organization without a designer layout', async () => {
+    // A layout saved before the designer existed (no version stamp) counts
+    // the same as no layout at all: the deploy must not restyle the sheet.
+    for (const layoutConfig of [undefined, getDefaultInvoiceLayout()]) {
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { primaryColor: '#d97706', layoutConfig },
+      })
+      // The tinted column heads and darkened head ink of the old sheets.
+      const parts = JSON.stringify(spec.blocks.find((b) => b.id === 'parts_table'))
+      expect(parts).toContain(mixColors('#ffffff', '#d97706', 0.1))
+      expect(parts).toContain(mixColors('#d97706', '#000000', 0.3))
+      // The title and the dates live inside the letterhead.
+      const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+      expect(header).toContain('INVOICE')
+      expect(header).toContain('INV-2026-0042')
+    }
+    // And every legacy header style still prints a valid document.
+    for (const headerStyle of ['standard', 'compact', 'modern']) {
+      const buffer = await renderToBuffer(
+        (
+          <InvoicePDF
+            data={invoice}
+            workshop={workshop}
+            invoiceSettings={settings}
+            template={{ primaryColor: '#d97706', headerStyle }}
+          />
+        ) as React.ReactElement<DocumentProps>
+      )
+      expect(buffer.subarray(0, 5).toString()).toBe('%PDF-')
+    }
+  })
+
+  it("keeps each classic letterhead's own place for the Torqvoice mark", () => {
+    // The retired sheets did not agree on this: standard set the mark under
+    // the company block, compact right-aligned it below the rule, and the
+    // banner centred it. Flattening them moved it on a free workshop's
+    // invoice without anything failing.
+    const markAlign = (headerStyle: string) => {
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { headerStyle },
+        torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
+      })
+      const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+      const row = header.slice(header.indexOf('"header.branding"'))
+      return row.slice(0, row.indexOf('children')).match(/"justify":"(\w+)"/)?.[1]
+    }
+    expect(markAlign('standard')).toBe('start')
+    expect(markAlign('compact')).toBe('end')
+    expect(markAlign('modern')).toBe('center')
+  })
+
+  it('grows the framed band to cover everything standing on it', () => {
+    // The band carries the letterhead in white ink. When the content outgrew
+    // the fixed band, the overflow kept that ink and printed white on the
+    // white sheet: invisible, and only on the plan that shows the mark.
+    const framed = (extra: Record<string, unknown>) =>
+      buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { headerStyle: 'framed' },
+        ...extra,
+      })
+
+    const bare = framed({})
+    const loaded = framed({
+      logoDataUri: 'data:image/png;base64,AAAA',
+      torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
+    })
+
+    // A logo and a Torqvoice mark need more band than a bare letterhead.
+    expect(loaded.frame?.bandHeight).toBeGreaterThan(bare.frame?.bandHeight ?? 0)
+    // And the flow still starts below whatever the band grew to, or the first
+    // row would print on top of the letterhead.
+    expect(loaded.page.margin.top).toBeGreaterThan(loaded.frame?.bandHeight ?? 0)
+  })
+
+  it('prints the logo at the foot only when the footer asks for it', () => {
+    // Off by default, like the rest of the footer's details: a sheet that has
+    // always shown one line must not grow a second logo on deploy.
+    const withFooterLogo = (visible: boolean) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === 'footer'
+          ? {
+              ...section,
+              fields: (section.fields ?? []).map((f) => (f.id === 'logo' ? { ...f, visible } : f)),
+            }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        logoDataUri: 'data:image/png;base64,AAAA',
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    expect(withFooterLogo(false)).not.toContain('footer.logo')
+    expect(withFooterLogo(true)).toContain('footer.logo')
+  })
+
+  it('prints a custom field in whichever bespoke section switches it on', () => {
+    // The letterhead, footer and payment blocks draw from fixed field ids, so
+    // each must fold the workshop's own fields in; the panels already do.
+    const blockWithField = (sectionId: string, visible: boolean) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === sectionId
+          ? { ...section, fields: [...(section.fields ?? []), { id: 'cf_cfdef1', visible }] }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === sectionId))
+    }
+
+    for (const sectionId of ['footer', 'header', 'bank_account']) {
+      expect(blockWithField(sectionId, true)).toContain('INS-991')
+      expect(blockWithField(sectionId, false)).not.toContain('INS-991')
+    }
+  })
+
+  it('prints a custom field as a plain line, never as a bold lead', () => {
+    // A workshop's field is a detail, not a heading: first in a panel or
+    // alone in its footer column, it must not take the lead line's weight.
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'footer' || section.id === 'general'
+        ? {
+            ...section,
+            visible: true,
+            fields: [...(section.fields ?? []), { id: 'cf_cfdef1', visible: true }],
+          }
+        : section
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textNodes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (node.text !== undefined) textNodes.push(node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const child of node.children ?? []) walk((child as any).node ?? child)
+    }
+    for (const block of spec.blocks) walk(block.content)
+
+    const customLines = textNodes.filter((n) => String(n.text).includes('INS-991'))
+    expect(customLines.length).toBeGreaterThanOrEqual(2)
+    for (const line of customLines) expect(line.style?.bold).toBeFalsy()
+  })
+
+  it('flows the footer details in the order the layout stores', () => {
+    const footerWith = (order: string[]) => {
+      const layout = getDefaultInvoiceLayout()
+      layout.sections = layout.sections.map((section) =>
+        section.id === 'footer'
+          ? {
+              ...section,
+              fields: [
+                { id: 'footer_note', visible: false },
+                ...order.map((id) => ({ id, visible: true })),
+              ],
+            }
+          : section
+      )
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    const bankFirst = footerWith(['bank_account', 'company_name'])
+    expect(bankFirst).toContain('XX00 1234 5678')
+    expect(bankFirst).toContain('Testshop')
+    expect(bankFirst.indexOf('XX00 1234 5678')).toBeLessThan(bankFirst.indexOf('Testshop'))
+
+    const nameFirst = footerWith(['company_name', 'bank_account'])
+    expect(nameFirst.indexOf('Testshop')).toBeLessThan(nameFirst.indexOf('XX00 1234 5678'))
+  })
+
+  it('prints the portal link only while the footer field asks for it', () => {
+    const footerWithPortal = (
+      mutate?: (fields: { id: string; visible: boolean }[]) => { id: string; visible: boolean }[]
+    ) => {
+      const layout = getDefaultInvoiceLayout()
+      if (mutate) {
+        layout.sections = layout.sections.map((section) =>
+          section.id === 'footer' ? { ...section, fields: mutate(section.fields ?? []) } : section
+        )
+      }
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        portalUrl: 'https://portal.example/abc',
+        template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+      })
+      return JSON.stringify(spec.blocks.find((b) => b.id === 'footer'))
+    }
+
+    expect(footerWithPortal()).toContain('portal.example')
+    expect(
+      footerWithPortal((fields) =>
+        fields.map((f) => (f.id === 'portal_link' ? { ...f, visible: false } : f))
+      )
+    ).not.toContain('portal.example')
+    // A layout saved before the switch existed keeps its portal line: the
+    // merge fills the missing field in as visible.
+    expect(footerWithPortal((fields) => fields.filter((f) => f.id !== 'portal_link'))).toContain(
+      'portal.example'
+    )
+  })
+
+  it('hands the emphasis to the layout once it chooses weights itself', () => {
+    // The customer's name leads its panel bold by default; an explicit choice
+    // anywhere in the section replaces the automatic lead with the choices.
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((section) =>
+      section.id === 'customer'
+        ? {
+            ...section,
+            fields: (section.fields ?? []).map((f) =>
+              f.id === 'customer_email' ? { ...f, bold: true } : f
+            ),
+          }
+        : section
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } },
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const textNodes: any[] = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object') return
+      if (node.text !== undefined) textNodes.push(node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const child of node.children ?? []) walk((child as any).node ?? child)
+    }
+    walk(spec.blocks.find((b) => b.id === 'customer')?.content)
+
+    const name = textNodes.find((n) => String(n.text).includes('Alex Carter'))
+    const email = textNodes.find((n) => String(n.text).includes('alex@example.com'))
+    expect(email?.style?.bold).toBe(true)
+    expect(name?.style?.bold).toBeFalsy()
+  })
+
+  it("carries the sheet's typeface into every line of a panel", () => {
+    // A node that mentions a font at all overrides what it inherits, because
+    // the PDF merges the two and an explicit undefined wins. That reset a
+    // panel's values to the default face while its heading, which never
+    // mentions one, followed the document: the boxes kept the old typeface.
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: { fontFamily: 'Montserrat' },
+    })
+    const customer = spec.blocks.find((b) => b.id === 'customer')
+    expect(customer?.text?.fontFamily).toBe('Montserrat')
+    const fonts = JSON.stringify(customer?.content).match(/"fontFamily":"[^"]*"/g) ?? []
+    expect(fonts.length).toBeGreaterThan(0)
+    expect(new Set(fonts)).toEqual(new Set(['"fontFamily":"Montserrat"']))
+  })
+
+  it('still lets one section keep a typeface of its own', () => {
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'customer' ? { ...s, style: { fontFamily: 'Courier' } } : s
+    )
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: {
+        fontFamily: 'Montserrat',
+        layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION },
+      },
+    })
+    expect(spec.blocks.find((b) => b.id === 'customer')?.text?.fontFamily).toBe('Courier')
+    expect(spec.blocks.find((b) => b.id === 'vehicle')?.text?.fontFamily).toBe('Montserrat')
+  })
+
+  it('borrows the title block once a designer layout is saved', () => {
+    // The default designer layout hides the title section; the sheet borrows
+    // it and sets it under the header.
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      template: {
+        layoutConfig: { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION },
+      },
+    })
+    const title = spec.blocks.find((b) => b.id === 'document_title')
+    expect(title).toBeDefined()
+    expect(JSON.stringify(title)).toContain('INV-2026-0042')
+  })
+
+  it('carries discounts, payments and the balance into the totals', () => {
+    const spec = buildInvoicePrintSpec({
+      data: invoice,
+      workshop,
+      invoiceSettings: settings,
+      paymentSummary: {
+        totalPaid: 500,
+        payments: [{ amount: 500, date: '15.08.2026', method: 'card' }],
+      },
+    })
+    const totals = JSON.stringify(spec.blocks.find((b) => b.id === 'totals'))
+    expect(totals).toContain('Discount (5%)')
+    expect(totals).toContain('15.08.2026')
+    expect(totals).toContain('Amount Due')
+  })
+})
+
+describe('the printed quote follows the designed layout', () => {
+  it('renders a valid PDF and strikes lines the customer opted out of', async () => {
+    const buffer = await renderToBuffer(
+      (
+        <QuotePDF
+          data={{
+            quoteNumber: 'QT-100',
+            title: 'Brake job',
+            description: '<p>As discussed.</p>',
+            validUntil: new Date('2026-09-30'),
+            createdAt: new Date('2026-08-30'),
+            subtotal: 500,
+            taxRate: 25,
+            taxAmount: 125,
+            discountType: null,
+            discountValue: 0,
+            discountAmount: 0,
+            totalAmount: 625,
+            notes: null,
+            partItems: [
+              {
+                partNumber: 'P-1',
+                name: 'Pads',
+                quantity: 1,
+                unitPrice: 200,
+                total: 200,
+                excluded: true,
+              },
+            ],
+            laborItems: [{ description: 'Fit pads', hours: 2, rate: 150, total: 300 }],
+            customer: {
+              name: 'Alex',
+              email: null,
+              phone: null,
+              address: null,
+              company: null,
+            },
+            vehicle: { make: 'Volvo', model: 'V60', year: 2021, vin: null, licensePlate: null },
+          }}
+          workshop={workshop}
+          currencyCode="EUR"
+          template={{ primaryColor: '#2563eb', headerStyle: 'framed' }}
+        />
+      ) as React.ReactElement<DocumentProps>
+    )
+    expect(buffer.subarray(0, 5).toString()).toBe('%PDF-')
+  })
+})

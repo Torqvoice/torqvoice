@@ -6,5 +6,10 @@
   "telegram": {
     "title": "O Telegram está ativo",
     "body": "As conversas com clientes chegam aqui. Responda sem sair do aplicativo."
+  },
+  "invoice-designer": {
+    "title": "As faturas foram reformuladas",
+    "body": "Defina o layout, as cores e as fontes das suas faturas e orçamentos no novo editor, em Modelos.",
+    "cta": "Abrir Modelos"
   }
 }

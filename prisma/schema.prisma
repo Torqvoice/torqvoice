@@ -12,6 +12,15 @@ model User {
   name          String
   email         String   @unique
   emailVerified Boolean  @default(false)
+  /// The mobile a technician signs in with, and the number a workshop holds
+  /// for whoever this is.
+  ///
+  /// Deliberately not unique. When a desk creates an account for a mechanic
+  /// standing at the counter, a second workshop may create another for the
+  /// same human, and neither should be able to block the other. Every lookup
+  /// reaches it through a technician row and so is already scoped to one
+  /// workshop; the number alone is never the question being asked.
+  phone         String?
   image         String?
   isSuperAdmin  Boolean  @default(false)
   createdAt     DateTime @default(now())
@@ -30,6 +39,8 @@ model User {
 
   sessions               Session[]
   accounts               Account[]
+  pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
   vehicles               Vehicle[]
   customers              Customer[]
   settings               AppSetting[]
@@ -236,6 +247,17 @@ model ServiceRecord {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
+  /// First time this invoice reached the customer, by email or share link.
+  /// Distinct from sharedAt, which tracks only the link and is cleared when
+  /// the link is revoked; sending is not undone by withdrawing the link.
+  sentAt DateTime?
+
+  /// Set when an owner or admin deliberately reopens a locked document.
+  /// Nullable rather than a boolean so the audit trail can show when, and the
+  /// screen can say the document was reopened rather than never locked.
+  editUnlockedAt   DateTime?
+  editUnlockedById String?
+
   /// The stored set this job is about, when it came out of the tire hotel.
   /// Without it a tire-change work order says nothing about which tires, and
   /// the technician has to go and ask.
@@ -280,7 +302,9 @@ model ServiceRecord {
   payments       Payment[]
   statusReports  StatusReport[]
   stockMovements StockMovement[]
+  timeEntries    TimeEntry[]
 
+  concerns           ServiceConcern[]
   discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
   resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
 
@@ -360,6 +384,38 @@ model Reminder {
   @@map("reminders")
 }
 
+/// One thing the customer asked about, in their words.
+///
+/// A job is a list of these rather than a single note, because that is how the
+/// work actually divides: "it pulls right when braking" and "the aircon smells"
+/// are two conversations, two diagnoses and two lines on the bill. Storing them
+/// as one blob means the shop can answer one and quietly drop the other, which
+/// is the single most common reason a car comes back.
+///
+/// This is the first of the trade's three Cs. The cause is a VehicleFinding
+/// pointing back here, carrying its own notes and photographs; the correction
+/// is the labour and parts on the job. Together they let the invoice explain
+/// itself: you said this, we found that, we did this about it.
+model ServiceConcern {
+  id          String   @id @default(cuid())
+  /// The customer's own words, kept as they said them.
+  description String
+  /// The order the customer raised them in, which is the order they care about.
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  /// What the shop found when it went looking. Empty means nobody has answered
+  /// this one yet, which is worth being able to ask about before closing a job.
+  findings VehicleFinding[]
+
+  @@index([serviceRecordId])
+  @@map("service_concerns")
+}
+
 model VehicleFinding {
   id          String   @id @default(cuid())
   description String
@@ -379,8 +435,19 @@ model VehicleFinding {
   resolvedServiceRecordId String?
   resolvedServiceRecord   ServiceRecord? @relation("FindingResolvedIn", fields: [resolvedServiceRecordId], references: [id], onDelete: SetNull)
 
+  /// The customer concern this finding answers, if it answers one.
+  ///
+  /// Nullable because plenty of findings are things nobody asked about: the
+  /// perished bush somebody noticed while the car was on the lift. Those are
+  /// worth just as much, they just are not part of the story the customer
+  /// started. SetNull rather than Cascade because a finding is a fact about
+  /// the vehicle and outlives the concern that prompted the look.
+  concernId String?
+  concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
+
   @@index([vehicleId])
   @@index([serviceRecordId])
+  @@index([concernId])
   @@map("vehicle_findings")
 }
 
@@ -683,6 +750,16 @@ model Quote {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  /// Most recent time this quote reached the customer, by email or share
+  /// link. Exists so an unlock is spent when the quote is issued again; the
+  /// status alone cannot show that, because re-sending an accepted quote does
+  /// not change it.
+  sentAt DateTime?
+
+  /// See ServiceRecord.editUnlockedAt.
+  editUnlockedAt   DateTime?
+  editUnlockedById String?
+
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -774,17 +851,18 @@ model QuoteLabor {
 }
 
 model CustomFieldDefinition {
-  id         String   @id @default(cuid())
-  name       String
-  label      String
-  fieldType  String   @default("text")
-  options    String?
-  required   Boolean  @default(false)
-  entityType String
-  sortOrder  Int      @default(0)
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  label        String
+  fieldType    String   @default("text")
+  options      String?
+  defaultValue String?
+  required     Boolean  @default(false)
+  entityType   String
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -856,6 +934,10 @@ model Organization {
   whatsappMessages       WhatsappMessage[]
   technicians            Technician[]
   workBays               WorkBay[]
+  timeEntries            TimeEntry[]
+  pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
+  technicianLoginCodes   TechnicianLoginCode[]
   auditLogs              AuditLog[]
   statusReports          StatusReport[]
   reportSchedules        ReportSchedule[]
@@ -1368,15 +1450,191 @@ model Technician {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  loginCodes     TechnicianLoginCode[]
   serviceRecords ServiceRecord[]
   inspections    Inspection[]
   statusReports  StatusReport[]
+  timeEntries    TimeEntry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@map("technicians")
+}
+
+/// One stretch of a technician actually working on a job, as clocked from the
+/// technician app.
+///
+/// Deliberately separate from `ServiceRecord.startDateTime` / `endDateTime`:
+/// those are the work board's planned slot, one pair per job, owned by whoever
+/// schedules the day. This is what happened, many rows per job, one per person
+/// per stretch. A job worked on Monday, parked for parts and finished Thursday
+/// by someone else is two entries, and neither of them is the booking.
+///
+/// `endedAt` null means the clock is still running. At most one open entry per
+/// technician is enforced in the API rather than the schema, because "open"
+/// is not a value a partial unique index can express portably.
+model TimeEntry {
+  id String @id @default(cuid())
+
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  /// Cached on stop so reports do not recompute across millions of rows, and
+  /// so a correction to the timestamps stays visible against what was billed.
+  durationMinutes Int?
+
+  /// What the technician typed when stopping, if anything.
+  note String?
+
+  /// "app" | "web" | "manual". A manually corrected entry is not the same
+  /// evidence as one clocked live, and Arbeitszeiterfassung cares about that.
+  source String @default("app")
+
+  /// Set when someone edited the times after the fact, so the audit trail can
+  /// show the entry is no longer purely as-clocked.
+  editedAt       DateTime?
+  editedByUserId String?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([technicianId, startedAt])
+  @@index([serviceRecordId])
+  @@index([organizationId, startedAt])
+  /// Finding the technician's open entry is the hottest query in the app: it
+  /// runs on every launch and every job screen.
+  @@index([technicianId, endedAt])
+  @@map("time_entries")
+}
+
+/// A phone that has asked to be told about its technician's work.
+///
+/// Keyed on the Expo push token rather than on the user, because the unit that
+/// receives a notification is a device: one technician may carry a personal
+/// phone and a shared bench tablet, and a shared tablet may be signed into by
+/// several people over a week. Both cases have to work.
+///
+/// The token is a routing address, not a secret, but it is still deleted on
+/// sign-out: a device that has signed out must stop receiving a workshop's job
+/// details, and expiry alone would leave a window where it still did.
+/// A one-time code that puts a technician's phone onto a workshop.
+///
+/// Typing a URL and a password is the worst moment in the app, and it lands on
+/// the person least equipped for it: a technician with dirty hands, on a
+/// phone, being watched. The desk shows a QR instead and the phone reads it.
+///
+/// It is a bearer credential in a picture, so it is deliberately short-lived,
+/// single-use, and bound to one person in one workshop. It exchanges for a
+/// normal session and is then dead; it is never itself a way to authenticate.
+/// A one-time code that signs a technician back in.
+///
+/// Modelled on CustomerSmsCode, which does the same job for the customer
+/// portal: org-scoped, single use, short-lived. The organisation is not
+/// optional and is never inferred from the phone number. A technician's phone
+/// is only ever looked up inside the workshop their app already belongs to,
+/// so nothing here can reach across workshops even if a person works at two.
+model TechnicianLoginCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits. The code exists in a text message and in the
+  /// technician's head, and nowhere that can be read back out of a database.
+  codeHash String
+
+  /// How it was sent, so the app can say "check your messages" or "check your
+  /// email" rather than guessing on the technician's behalf.
+  channel String
+
+  /// Wrong guesses so far. Six digits is a million, which a rate limiter alone
+  /// does not protect: this burns the code after a handful of attempts.
+  attempts Int @default(0)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, technicianId])
+  @@index([expiresAt])
+  @@map("technician_login_codes")
+}
+
+model TechnicianSetupCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the code. The code itself is shown once, on the screen that
+  /// asked for it, and is never written down anywhere it could be read back.
+  codeHash String @unique
+
+  expiresAt DateTime
+  /// Set on redemption. Kept rather than deleted so a second scan can say the
+  /// code was already used, which is a different problem from a wrong code.
+  usedAt    DateTime?
+
+  /// Who the code signs in.
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Who issued it, for the audit trail. Not a relation: the issuer may be
+  /// removed from the workshop later and that must not delete the record.
+  issuedByUserId String
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, expiresAt])
+  @@index([userId])
+  @@map("technician_setup_codes")
+}
+
+model PushDevice {
+  id String @id @default(cuid())
+
+  /// Expo push token, unique across the estate. A reinstall issues a new one
+  /// and the old becomes invalid, which is why sends prune on rejection.
+  token String @unique
+
+  /// "ios" | "android". Only used to explain failures in logs.
+  platform String
+
+  /// Set false when Expo reports the token as dead, rather than deleting, so
+  /// a flapping device does not churn rows.
+  isActive Boolean @default(true)
+
+  /// Last time the app confirmed this token still belongs to this user, so a
+  /// device that stops checking in can be aged out.
+  lastSeenAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isActive])
+  @@index([organizationId])
+  @@map("push_devices")
 }
 
 /// A physical place work happens: a lift, a wash bay, an alignment rack. Shops
@@ -1460,8 +1718,21 @@ model CustomerMagicLink {
 }
 
 model CustomerSmsCode {
-  id             String    @id @default(cuid())
-  code           String
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits, not the digits.
+  ///
+  /// The code reaches the customer in a text message and lives in their head
+  /// for a minute. It has no business also sitting in a table where reading a
+  /// row hands over somebody's portal session.
+  code String
+
+  /// Wrong guesses so far. Six digits is a million, which sounds like plenty
+  /// and is not: limiting by address does nothing about a hundred machines
+  /// sharing the work. Five attempts against one code makes the space
+  /// irrelevant, because the code is gone long before the guessing arrives.
+  attempts Int @default(0)
+
   phone          String
   organizationId String
   expiresAt      DateTime

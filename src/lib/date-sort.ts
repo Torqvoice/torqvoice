@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from '@/generated/prisma/client'
 
 /**
  * SQL ORDER BY expression for the date a work order/invoice is presented
@@ -7,8 +7,8 @@ import { Prisma } from "@/generated/prisma/client";
  * `alias` must be a code-supplied table alias, never user input.
  */
 export function effectiveDateSql(alias: string): Prisma.Sql {
-  const a = Prisma.raw(`"${alias}"`);
-  return Prisma.sql`COALESCE(${a}."invoiceDate", ${a}."startDateTime", ${a}."serviceDate")`;
+  const a = Prisma.raw(`"${alias}"`)
+  return Prisma.sql`COALESCE(${a}."invoiceDate", ${a}."startDateTime", ${a}."serviceDate")`
 }
 
 /**
@@ -17,14 +17,14 @@ export function effectiveDateSql(alias: string): Prisma.Sql {
  * scheduled start (imported/legacy data) sort by serviceDate and group at
  * the old end: nulls first ascending, nulls last descending.
  */
-export function serviceDateOrderBy(dir: "asc" | "desc") {
+export function serviceDateOrderBy(dir: 'asc' | 'desc') {
   return [
     {
       startDateTime: {
         sort: dir,
-        nulls: dir === "asc" ? ("first" as const) : ("last" as const),
+        nulls: dir === 'asc' ? ('first' as const) : ('last' as const),
       },
     },
     { serviceDate: dir },
-  ];
+  ]
 }

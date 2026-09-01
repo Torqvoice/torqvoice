@@ -1,58 +1,58 @@
-import type { IncomingMessage } from "node:http";
-import type WebSocket from "ws";
-import { cookies } from "next/headers";
-import { db } from "@/lib/db";
-import { notificationBus } from "@/lib/notification-bus";
+import type { IncomingMessage } from 'node:http'
+import type WebSocket from 'ws'
+import { cookies } from 'next/headers'
+import { db } from '@/lib/db'
+import { notificationBus } from '@/lib/notification-bus'
 
 // Required so Next.js route validator recognizes this as a valid route module
 export function GET() {
-  return new Response("WebSocket endpoint", { status: 426 });
+  return new Response('WebSocket endpoint', { status: 426 })
 }
 
 export interface TaggedWebSocket extends WebSocket {
-  userId: string;
-  organizationId: string;
-  role: string;
-  isAlive: boolean;
+  userId: string
+  organizationId: string
+  role: string
+  isAlive: boolean
 }
 
 // Track all authenticated clients in a Set so the bus listener can broadcast
-const clients = new Set<TaggedWebSocket>();
+const clients = new Set<TaggedWebSocket>()
 
 // Single listener on the global bus — broadcasts to matching org clients
-notificationBus.on("notification", (notification: { organizationId: string }) => {
-  const payload = JSON.stringify({ type: "notification", data: notification });
+notificationBus.on('notification', (notification: { organizationId: string }) => {
+  const payload = JSON.stringify({ type: 'notification', data: notification })
   for (const client of clients) {
     if (
       client.organizationId === notification.organizationId &&
       client.readyState === 1 // OPEN
     ) {
-      client.send(payload);
+      client.send(payload)
     }
   }
-});
+})
 
 // Work board events — broadcasts board updates to matching org clients
-notificationBus.on("workboard", (event: { organizationId: string }) => {
-  const payload = JSON.stringify({ type: "workboard", data: event });
+notificationBus.on('workboard', (event: { organizationId: string }) => {
+  const payload = JSON.stringify({ type: 'workboard', data: event })
   for (const client of clients) {
     if (
       client.organizationId === event.organizationId &&
       client.readyState === 1 // OPEN
     ) {
-      client.send(payload);
+      client.send(payload)
     }
   }
-});
+})
 
 // Platform-wide notice. The only event here that ignores organizationId:
 // an infrastructure incident is not one workshop's business, it is everyone's.
-notificationBus.on("broadcast", (broadcast: unknown) => {
-  const payload = JSON.stringify({ type: "broadcast", data: broadcast });
+notificationBus.on('broadcast', (broadcast: unknown) => {
+  const payload = JSON.stringify({ type: 'broadcast', data: broadcast })
   for (const client of clients) {
-    if (client.readyState === 1) client.send(payload);
+    if (client.readyState === 1) client.send(payload)
   }
-});
+})
 
 /**
  * Resolve the session token from the Next.js cookie store.
@@ -60,59 +60,59 @@ notificationBus.on("broadcast", (broadcast: unknown) => {
  * and prefixes with __Secure- when useSecureCookies is enabled.
  */
 function getSessionToken(cookieStore: Awaited<ReturnType<typeof cookies>>): string | undefined {
-  const isSecure = process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://");
-  const prefix = isSecure ? "__Secure-" : "";
-  const baseName = `${prefix}better-auth.session_token`;
+  const isSecure = process.env.NEXT_PUBLIC_APP_URL?.startsWith('https://')
+  const prefix = isSecure ? '__Secure-' : ''
+  const baseName = `${prefix}better-auth.session_token`
 
   // Try single cookie first
-  let raw = cookieStore.get(baseName)?.value;
+  let raw = cookieStore.get(baseName)?.value
 
   // Try chunked cookies (.0, .1, .2, …)
   if (!raw) {
-    let chunked = "";
+    let chunked = ''
     for (let i = 0; ; i++) {
-      const chunk = cookieStore.get(`${baseName}.${i}`)?.value;
-      if (!chunk) break;
-      chunked += chunk;
+      const chunk = cookieStore.get(`${baseName}.${i}`)?.value
+      if (!chunk) break
+      chunked += chunk
     }
-    if (chunked) raw = chunked;
+    if (chunked) raw = chunked
   }
 
-  if (!raw) return undefined;
+  if (!raw) return undefined
 
   // better-auth signs cookies as "token.signature" — strip the signature
-  const dotIndex = raw.indexOf(".");
-  return dotIndex > 0 ? raw.substring(0, dotIndex) : raw;
+  const dotIndex = raw.indexOf('.')
+  return dotIndex > 0 ? raw.substring(0, dotIndex) : raw
 }
 
 export function UPGRADE(ws: WebSocket, _server: unknown, _request: IncomingMessage) {
-  const client = ws as TaggedWebSocket;
-  client.isAlive = true;
+  const client = ws as TaggedWebSocket
+  client.isAlive = true
 
-  (async () => {
+  ;(async () => {
     try {
       // next-ws patches cookies() to resolve WebSocket request cookies
-      const cookieStore = await cookies();
+      const cookieStore = await cookies()
 
-      const sessionToken = getSessionToken(cookieStore);
+      const sessionToken = getSessionToken(cookieStore)
       if (!sessionToken) {
-        ws.close(4001, "No session token");
-        return;
+        ws.close(4001, 'No session token')
+        return
       }
 
       // Look up session in DB
       const session = await db.session.findUnique({
         where: { token: sessionToken },
         select: { userId: true, expiresAt: true },
-      });
+      })
 
       if (!session || session.expiresAt < new Date()) {
-        ws.close(4001, "Invalid or expired session");
-        return;
+        ws.close(4001, 'Invalid or expired session')
+        return
       }
 
       // Get org membership
-      const activeOrgId = cookieStore.get("active-org-id")?.value;
+      const activeOrgId = cookieStore.get('active-org-id')?.value
 
       const membership = activeOrgId
         ? await db.organizationMember.findFirst({
@@ -122,49 +122,49 @@ export function UPGRADE(ws: WebSocket, _server: unknown, _request: IncomingMessa
         : await db.organizationMember.findFirst({
             where: { userId: session.userId },
             select: { organizationId: true, role: true },
-          });
+          })
 
       if (!membership) {
-        ws.close(4001, "No organization");
-        return;
+        ws.close(4001, 'No organization')
+        return
       }
 
-      const isAdminOrOwner = membership.role === "owner" || membership.role === "admin";
+      const isAdminOrOwner = membership.role === 'owner' || membership.role === 'admin'
       if (!isAdminOrOwner) {
-        ws.close(4003, "Insufficient role");
-        return;
+        ws.close(4003, 'Insufficient role')
+        return
       }
 
-      client.userId = session.userId;
-      client.organizationId = membership.organizationId;
-      client.role = membership.role;
+      client.userId = session.userId
+      client.organizationId = membership.organizationId
+      client.role = membership.role
 
-      clients.add(client);
+      clients.add(client)
 
       // Ping/pong keepalive
       const pingInterval = setInterval(() => {
         if (!client.isAlive) {
-          clearInterval(pingInterval);
-          ws.terminate();
-          return;
+          clearInterval(pingInterval)
+          ws.terminate()
+          return
         }
-        client.isAlive = false;
-        ws.ping();
-      }, 30_000);
+        client.isAlive = false
+        ws.ping()
+      }, 30_000)
 
-      ws.on("pong", () => {
-        client.isAlive = true;
-      });
+      ws.on('pong', () => {
+        client.isAlive = true
+      })
 
-      ws.on("close", () => {
-        clearInterval(pingInterval);
-        clients.delete(client);
-      });
+      ws.on('close', () => {
+        clearInterval(pingInterval)
+        clients.delete(client)
+      })
 
-      ws.send(JSON.stringify({ type: "connected" }));
+      ws.send(JSON.stringify({ type: 'connected' }))
     } catch (err) {
-      console.error("[WS] Auth error:", err);
-      ws.close(4500, "Auth error");
+      console.error('[WS] Auth error:', err)
+      ws.close(4500, 'Auth error')
     }
-  })();
+  })()
 }

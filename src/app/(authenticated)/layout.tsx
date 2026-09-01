@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { NoAccess } from './no-access'
 import { AppSidebar } from '@/components/app-sidebar'
 import { FeatureHintProvider } from '@/components/feature-hint'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
@@ -8,7 +9,7 @@ import { NotificationInitializer } from '@/features/notifications/Components/Not
 import { ConfirmProvider } from '@/components/confirm-dialog'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { parseHintIds } from '@/features/settings/Lib/featureHints'
+import { announcementsToShow, parseHintIds } from '@/features/settings/Lib/featureHints'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { WhiteLabelCtaProvider } from '@/components/white-label-cta-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
@@ -79,6 +80,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const allSubjects = Object.values(PermissionSubject)
   let visibleSubjects: string[] = allSubjects
 
+  /**
+   * Whether this account can reach anything at all.
+   *
+   * Kept separate from what the sidebar shows, because the two answer
+   * different questions and conflating them is what made a roleless account
+   * look like a broken product: the nav offered every screen and every screen
+   * refused, one at a time.
+   */
+  let hasAnyAccess = true
+
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
     // Members without a custom role have full access
@@ -90,8 +101,27 @@ export default async function DashboardLayout({ children }: { children: React.Re
           subject: subject as PermissionSubject,
         })
       )
+      // A role that grants nothing readable. Every page behind the nav would
+      // answer "Your role does not allow this", so say it once instead.
+      hasAnyAccess = visibleSubjects.length > 0
     }
   }
+
+  if (!hasAnyAccess) {
+    const org = data.organizations.find((o) => o.id === data.organizationId)
+    return <NoAccess organizationName={org?.name ?? ''} />
+  }
+
+  // Product announcements join the same queue as the hints a setting flip
+  // raises, so only ever one card shows. They are worked out per request
+  // rather than stored, because who may be told depends on the account
+  // reading the page, not on anything written when the feature shipped.
+  const announcements = announcementsToShow({
+    organizationCreatedAt: data.organizationCreatedAt,
+    visibleSubjects: isOwnerOrAdmin ? undefined : visibleSubjects,
+    features,
+    seen: seenHints,
+  })
 
   // Check license expiry (only for admin/owner with white-label)
   let daysUntilExpiry: number | null = null
@@ -159,7 +189,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 currencyFormat={data.currencyFormat}
               >
                 <ConfirmProvider>
-                  <FeatureHintProvider initialSeen={seenHints} pending={pendingHints}>
+                  <FeatureHintProvider
+                    initialSeen={seenHints}
+                    pending={[...pendingHints, ...announcements]}
+                  >
                     <AppSidebar
                       companyLogo={data.companyLogo}
                       organizations={data.organizations}
@@ -168,6 +201,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                       features={features}
                       tireHotelEnabled={tireHotelEnabled}
                       visibleSubjects={visibleSubjects}
+                      announcement={announcements[0] ?? null}
                       isAdminOrOwner={isOwnerOrAdmin}
                     />
                     <SidebarInset>

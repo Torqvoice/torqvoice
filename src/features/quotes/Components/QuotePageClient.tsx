@@ -1,5 +1,8 @@
 'use client'
 
+import { DocumentLockBanner } from '@/components/document-lock-banner'
+import { setQuoteEditUnlocked } from '@/features/settings/Actions/documentLockActions'
+import type { LockState } from '@/lib/document-lock'
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -13,12 +16,14 @@ import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
 import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
 import { QuoteShareDialog } from '@/features/quotes/Components/QuoteShareDialog'
+import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { QuoteImagesManager } from '@/features/quotes/Components/QuoteImagesManager'
 import { QuoteDocumentsManager } from '@/features/quotes/Components/QuoteDocumentsManager'
 import {
   ArrowLeft,
   Camera,
   Download,
+  Eye,
   FileText,
   Globe,
   Loader2,
@@ -61,6 +66,8 @@ function useIsLargeScreen() {
 export function QuotePageClient({
   quote,
   organizationId,
+  lockState,
+  canUnlock,
   currencyCode = 'USD',
   defaultTaxRate = 0,
   taxEnabled = true,
@@ -76,6 +83,12 @@ export function QuotePageClient({
 }: {
   quote: QuoteRecord
   organizationId: string
+  /**
+   * Required rather than defaulted: a call site that forgot to wire it would
+   * render a locked quote as editable, which is the trap this exists to close.
+   */
+  lockState: LockState
+  canUnlock: boolean
   currencyCode?: string
   defaultTaxRate?: number
   taxEnabled?: boolean
@@ -93,6 +106,7 @@ export function QuotePageClient({
   const router = useRouter()
   const isLarge = useIsLargeScreen()
   const t = useTranslations('quotes')
+  const tPreview = useTranslations('common.pdfPreview')
 
   const state = useQuoteFormState({
     quote,
@@ -100,14 +114,21 @@ export function QuotePageClient({
     defaultTaxRate,
     taxEnabled,
     defaultLaborRate,
+    locked: lockState.locked,
     t,
   })
+
+  // Sending is what can lock the quote — by email or by link — so the page is
+  // re-rendered to pick up the lock rather than leaving the fieldset open and
+  // the next autosave to be refused.
+  const handleQuoteSent = useCallback(() => router.refresh(), [router])
 
   useSaveShortcut(() => {
     if (state.hasUnsavedChanges) return state.saveNow()
   })
 
   const [showPresetPicker, setShowPresetPicker] = useState(false)
+  const [showPdfPreview, setShowPdfPreview] = useState(false)
 
   const handleSelectPreset = useCallback(
     (preset: LaborPresetOption) => {
@@ -272,6 +293,19 @@ export function QuotePageClient({
               <Button
                 variant="outline"
                 size="sm"
+                disabled={state.saving}
+                onClick={async () => {
+                  if (state.saving) return
+                  if (state.hasUnsavedChanges) await state.saveNow()
+                  setShowPdfPreview(true)
+                }}
+              >
+                <Eye className="mr-1 h-3.5 w-3.5" />
+                {tPreview('preview')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={state.handleDownloadPDF}
                 disabled={state.downloading}
               >
@@ -355,6 +389,17 @@ export function QuotePageClient({
         </div>
       </div>
 
+      {(lockState.locked || lockState.unlockedAt) && (
+        <div className="shrink-0 px-4 pt-3">
+          <DocumentLockBanner
+            state={lockState}
+            kind="quote"
+            canUnlock={canUnlock}
+            onSetUnlocked={(unlocked) => setQuoteEditUnlocked(quote.id, unlocked)}
+          />
+        </div>
+      )}
+
       {/* Tab Content */}
       {state.activeTab === 'details' && (
         <form
@@ -363,28 +408,33 @@ export function QuotePageClient({
           onSubmit={state.handleSubmit}
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
         >
-          {isLarge ? (
-            <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
-              <ResizablePanel defaultSize={75} minSize={40}>
-                <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
-                  <div className="space-y-3 pb-40">{leftColumn}</div>
+          {/* A locked quote offers no editing, rather than letting someone
+              retype a line and meet the refusal on save. display:contents
+              keeps the layout exactly as it was. */}
+          <fieldset disabled={lockState.locked} className="contents">
+            {isLarge ? (
+              <ResizablePanelGroup orientation="horizontal" className="flex-1 overflow-hidden">
+                <ResizablePanel defaultSize={75} minSize={40}>
+                  <div className="h-full overflow-y-auto overscroll-contain p-4 pr-2">
+                    <div className="space-y-3 pb-40">{leftColumn}</div>
+                  </div>
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+                <ResizablePanel defaultSize={25} minSize={15}>
+                  <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
+                    <div className="space-y-3 pb-40">{rightColumn}</div>
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            ) : (
+              <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+                <div className="space-y-3 pb-40">
+                  {leftColumn}
+                  {rightColumn}
                 </div>
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize={25} minSize={15}>
-                <div className="h-full overflow-y-auto overscroll-contain p-4 pl-2">
-                  <div className="space-y-3 pb-40">{rightColumn}</div>
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          ) : (
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-              <div className="space-y-3 pb-40">
-                {leftColumn}
-                {rightColumn}
               </div>
-            </div>
-          )}
+            )}
+          </fieldset>
         </form>
       )}
 
@@ -420,14 +470,22 @@ export function QuotePageClient({
       />
 
       {/* Dialogs */}
+      <PdfPreviewDialog
+        open={showPdfPreview}
+        onOpenChange={setShowPdfPreview}
+        url={`/api/protected/quotes/${quote.id}/pdf`}
+      />
+
       <SendEmailDialog
         open={state.showEmailDialog}
         onOpenChange={state.setShowEmailDialog}
         defaultEmail={quote.customer?.email || ''}
         entityLabel={t('page.entityLabel')}
-        onSend={async (email, message) =>
-          sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })
-        }
+        onSend={async (email, message) => {
+          const result = await sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })
+          if (result.success) handleQuoteSent()
+          return result
+        }}
       />
 
       <QuoteShareDialog
@@ -436,6 +494,7 @@ export function QuotePageClient({
         quoteId={quote.id}
         organizationId={organizationId}
         initialToken={quote.publicToken}
+        onSent={handleQuoteSent}
         customer={quote.customer}
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}

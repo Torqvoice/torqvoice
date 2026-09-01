@@ -19,6 +19,12 @@
     "description": "Descrição",
     "qty": "Qtd",
     "unitPrice": "Preço Unitário",
+    "items": "Itens",
+    "pos": "Nº",
+    "unitOfMeasure": "Unidade",
+    "invoiceNumberLabel": "Nº da fatura",
+    "customerNumberLabel": "Nº do cliente",
+    "dateLabel": "Data",
     "total": "Total",
     "labor": "Mão de Obra",
     "hours": "Horas",
@@ -64,7 +70,9 @@
     "professionalWorkshop": "Gestão Profissional de Oficina",
     "tel": "Tel: {phone}",
     "org": "CNPJ: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Informações adicionais",
+    "telegramConnect": "Fale conosco no Telegram"
   },
   "quote": {
     "title": "ORÇAMENTO",
@@ -100,7 +108,10 @@
     "validityFooter30": "Este orçamento é válido por 30 dias",
     "viewPortal": "Acesse seu portal: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Informações adicionais",
+    "quoteNumberLabel": "N.º do orçamento",
+    "validUntilLabel": "Válido até"
   },
   "inspection": {
     "title": "INSPEÇÃO VEICULAR",

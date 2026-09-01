@@ -75,7 +75,10 @@
     "standalone": "Standalone technician",
     "deleteTitle": "Delete Technician",
     "deleteDescription": "Remove \"{name}\" from the work board? Their existing assignments will also be removed.",
-    "addTechnician": "Add Technician"
+    "addTechnician": "Add Technician",
+    "standaloneOnly": "A name on the board for somebody who does not sign in, like an apprentice or a contractor. To add a mechanic who uses the app, add them on the Team page.",
+    "linkedTo": "Signs in as {name}",
+    "linkedManagedOnTeam": "Managed on the Team page, along with their app access."
   },
   "jobDetail": {
     "viewDetails": "View Details",

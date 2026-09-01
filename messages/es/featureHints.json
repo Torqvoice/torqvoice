@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram está activo",
     "body": "Las conversaciones con clientes llegan aquí. Responde sin salir de la app."
+  },
+  "invoice-designer": {
+    "title": "Las facturas se han renovado",
+    "body": "Define el diseño, los colores y las tipografías de tus facturas y presupuestos en el nuevo diseñador, en Plantillas.",
+    "cta": "Abrir Plantillas"
   }
 }

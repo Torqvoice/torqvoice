@@ -1,10 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { calculateTotals } from '@/lib/tax'
-import {
-  lineTotal,
-  markupFromCostAndPrice,
-  priceFromCostAndMarkup,
-} from '@/features/inventory/Lib/partPricing'
+import { useDeferredCommit } from '@/hooks/use-deferred-commit'
+import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
+import type { ServiceConcernInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 
@@ -14,12 +12,15 @@ export function useServiceFormState({
   defaultTaxRate,
   currentUserName,
   record,
+  locked = false,
 }: {
   vehicleId: string | null
   initialData: InitialData
   defaultTaxRate: number
   currentUserName: string
   record: ServiceDetail
+  /** A locked invoice refuses saves, so it must not queue one. */
+  locked?: boolean
 }) {
   // Form state
   const [loading, setLoading] = useState(false)
@@ -28,7 +29,9 @@ export function useServiceFormState({
   const [techName] = useState(initialData.techName || currentUserName)
   const [type, setType] = useState(initialData.type || 'maintenance')
   const [status, setStatus] = useState(initialData.status || 'completed')
+  const [concerns, setConcerns] = useState<ServiceConcernInput[]>(initialData.concerns || [])
   const [partItems, setPartItems] = useState<ServicePartInput[]>(initialData.partItems || [])
+  const { schedule: scheduleCommit, cancel: cancelCommit } = useDeferredCommit()
   const [laborItems, setLaborItems] = useState<ServiceLaborInput[]>(initialData.laborItems || [])
   const [taxRate, setTaxRate] = useState(initialData.taxRate ?? defaultTaxRate)
   const [taxInclusive] = useState<boolean>(initialData.taxInclusive ?? false)
@@ -52,6 +55,10 @@ export function useServiceFormState({
   const [showSaved, setShowSaved] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Read through a ref so markDirty stays stable; it is a dependency of most
+  // of the setters below and rebuilding them all on a lock change is churn.
+  const lockedRef = useRef(locked)
+  lockedRef.current = locked
   const isSavingRef = useRef(false)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -62,6 +69,9 @@ export function useServiceFormState({
   }, [])
 
   const markDirty = useCallback(() => {
+    // A locked invoice cannot be saved, so nothing may queue an autosave that
+    // the server will only refuse five seconds later.
+    if (lockedRef.current) return
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
@@ -70,6 +80,20 @@ export function useServiceFormState({
       }
     }, 5000)
   }, [])
+
+  // When the lock engages mid-session — the invoice was just sent, or an
+  // admin re-locked it — any save already queued can only be refused, and
+  // "Unsaved changes" would offer a save that can never complete (and keep
+  // the beforeunload warning armed). Drop both: the lock has closed every
+  // route those edits could take.
+  useEffect(() => {
+    if (!locked) return
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current)
+      autosaveTimer.current = null
+    }
+    setHasUnsavedChanges(false)
+  }, [locked])
 
   useEffect(() => {
     if (!hasUnsavedChanges) return
@@ -159,21 +183,26 @@ export function useServiceFormState({
   //
   // The three pricing fields (unitCost, markupPercent, unitPrice) are linked by:
   //   unitPrice = unitCost × (1 + markupPercent / 100)
-  // The user can edit any one and the others auto-sync so the row stays
-  // mathematically consistent — Markup % never lies about real margin.
+  // Cost, markup and price stay consistent with each other; repricePartRow
+  // owns which of them moves, and quote parts use the same rules.
   const updatePart = useCallback(
-    (index: number, field: keyof ServicePartInput, value: string | number) => {
+    (
+      index: number,
+      field: keyof ServicePartInput,
+      value: string | number,
+      options: { commit?: boolean } = {}
+    ) => {
+      // Any edit ends the wait on the previous one.
+      cancelCommit()
       setPartItems((prev) => {
         const updated = [...prev]
         const part = { ...updated[index], [field]: value }
 
-        if (field === 'unitCost' || field === 'markupPercent') {
-          // Cost or markup changed → recompute the customer-facing price.
-          part.unitPrice = priceFromCostAndMarkup(part.unitCost, part.markupPercent)
-        } else if (field === 'unitPrice') {
-          // Price was edited directly → derive markup back from cost so the
-          // displayed margin matches reality.
-          part.markupPercent = markupFromCostAndPrice(part.unitCost, part.unitPrice)
+        if (field === 'unitCost' || field === 'markupPercent' || field === 'unitPrice') {
+          const priced = repricePartRow(part, field, options)
+          part.unitPrice = priced.unitPrice
+          part.markupPercent = priced.markupPercent
+          part.priceOverridden = priced.priceOverridden
         }
 
         if (
@@ -187,9 +216,24 @@ export function useServiceFormState({
         updated[index] = part
         return updated
       })
+
+      // A cost typed under a hand-set price restates the margin once typing
+      // stops, so it lands on its own without needing the field to be left.
+      if (field === 'unitCost' && !options.commit) {
+        scheduleCommit(() =>
+          setPartItems((prev) => {
+            const row = prev[index]
+            if (!row?.priceOverridden) return prev
+            const updated = [...prev]
+            updated[index] = { ...row, ...repricePartRow(row, 'unitCost', { commit: true }) }
+            return updated
+          })
+        )
+      }
+
       markDirty()
     },
-    [markDirty]
+    [markDirty, cancelCommit, scheduleCommit]
   )
 
   const updateLabor = useCallback(
@@ -297,6 +341,8 @@ export function useServiceFormState({
     techName,
     type,
     status,
+    concerns,
+    setConcerns,
     partItems,
     laborItems,
     taxRate,
@@ -350,6 +396,13 @@ export function useServiceFormState({
     dirtySetTaxRate,
     dirtySetType,
     dirtySetStatus,
+    /**
+     * Sets the status without marking the form dirty. For a status that has
+     * already been persisted by updateServiceStatus: dirtying it there would
+     * show "Unsaved changes" for a change that is already saved, and the save
+     * it invites is refused if the invoice has since locked.
+     */
+    setStatus,
     dirtySetSelectedVehicleId,
     // Warranty
     warrantyMonths,

@@ -185,7 +185,11 @@
     "paidBadge": "PAYÉ",
     "entityLabel": "Facture",
     "emailSubject": "Confirmation de Paiement",
-    "statusEmailSubject": "Mise à jour du statut du service"
+    "statusEmailSubject": "Mise à jour du statut du service",
+    "markCompletedTitle": "Marquer cette facture comme terminée ?",
+    "markCompletedDescription": "Elle est partie chez le client mais reste marquée comme non terminée, elle continuera donc d'apparaître sur le tableau.",
+    "markCompletedConfirm": "Marquer comme terminée",
+    "lockedFieldsetLabel": "Facture verrouillée, modification désactivée"
   },
   "payments": {
     "title": "Paiements",
@@ -344,7 +348,23 @@
     "setDefaults": "Paramètres par défaut",
     "workBay": "Poste de travail",
     "selectWorkBay": "Choisir un poste…",
-    "noWorkBay": "Aucun poste"
+    "noWorkBay": "Aucun poste",
+    "technicians": "Techniciens",
+    "otherTeamMembers": "Autres membres de l’équipe",
+    "makeTechnician": "En fait un technicien",
+    "addSomeoneNew": "Ajouter quelqu’un",
+    "notOnBoard": "Pas encore sur le planning",
+    "putOnBoard": "Mettre au planning",
+    "slotTaken": "{count, plural, one {Ce créneau est déjà réservé} other {Ce créneau a # conflits}}",
+    "anotherJob": "un autre travail",
+    "clashTechnician": "le technicien est occupé",
+    "clashBay": "la baie est occupée",
+    "clashBoth": "les deux sont occupés",
+    "bookedAnyway": "Enregistré quand même. Changez l'heure ou choisissez le prochain créneau libre.",
+    "pickNextAvailable": "Choisir le prochain créneau libre",
+    "findingSlot": "Recherche d'un créneau…",
+    "slotPicked": "Placé sur le prochain créneau libre",
+    "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines"
   },
   "notifications": {
     "title": "Notifications client",
@@ -381,5 +401,14 @@
       "title": "Paramètres de garantie par défaut",
       "description": "Définir les conditions de garantie par défaut pour les nouveaux dossiers de service"
     }
+  },
+  "concerns": {
+    "title": "Demandes du client",
+    "addFirst": "Ajouter une demande du client",
+    "add": "En ajouter un autre",
+    "placeholder": "Il y a un bruit à l'arrière quand je freine",
+    "remove": "Retirer ce point",
+    "notAnswered": "Rien trouvé à ce sujet pour l'instant",
+    "answered": "{count} constat(s) à ce sujet"
   }
 }

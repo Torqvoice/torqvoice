@@ -185,7 +185,11 @@
     "paidBadge": "PAGADO",
     "entityLabel": "Factura",
     "emailSubject": "Confirmación de Pago",
-    "statusEmailSubject": "Actualización del estado del servicio"
+    "statusEmailSubject": "Actualización del estado del servicio",
+    "markCompletedTitle": "¿Marcar esta factura como completada?",
+    "markCompletedDescription": "Ya se ha enviado al cliente, pero sigue marcada como no terminada, así que continuará apareciendo en el tablero.",
+    "markCompletedConfirm": "Marcar como completada",
+    "lockedFieldsetLabel": "Factura bloqueada, edición desactivada"
   },
   "payments": {
     "title": "Pagos",
@@ -344,7 +348,23 @@
     "setDefaults": "Configurar valores",
     "workBay": "Puesto de trabajo",
     "selectWorkBay": "Seleccionar puesto…",
-    "noWorkBay": "Sin puesto"
+    "noWorkBay": "Sin puesto",
+    "technicians": "Técnicos",
+    "otherTeamMembers": "Otros miembros del equipo",
+    "makeTechnician": "Lo convierte en técnico",
+    "addSomeoneNew": "Añadir a alguien nuevo",
+    "notOnBoard": "Aún no está en el tablero",
+    "putOnBoard": "Poner en el tablero",
+    "slotTaken": "{count, plural, one {Esta franja ya está reservada} other {Esta franja tiene # conflictos}}",
+    "anotherJob": "otro trabajo",
+    "clashTechnician": "el técnico está ocupado",
+    "clashBay": "la bahía está ocupada",
+    "clashBoth": "ambos están ocupados",
+    "bookedAnyway": "Guardado igualmente. Cambia la hora o elige la siguiente franja libre.",
+    "pickNextAvailable": "Elegir la siguiente franja libre",
+    "findingSlot": "Buscando una franja…",
+    "slotPicked": "Reservado en la siguiente franja libre",
+    "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas"
   },
   "notifications": {
     "title": "Notificaciones al cliente",
@@ -381,5 +401,14 @@
       "title": "Configuración de garantía predeterminada",
       "description": "Establecer términos de garantía predeterminados para nuevos registros de servicio"
     }
+  },
+  "concerns": {
+    "title": "Motivos del cliente",
+    "addFirst": "Añadir un motivo del cliente",
+    "add": "Añadir otro",
+    "placeholder": "Hace un ruido detrás cuando freno",
+    "remove": "Quitar este punto",
+    "notAnswered": "Todavía no se ha encontrado nada",
+    "answered": "{count} hallazgo(s) sobre esto"
   }
 }

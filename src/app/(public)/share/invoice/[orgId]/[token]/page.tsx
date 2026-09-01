@@ -1,10 +1,17 @@
+import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
 import { getFeatures } from '@/lib/features'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
+import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
+import { headers } from 'next/headers'
 import type { Metadata } from 'next'
+import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -48,6 +55,7 @@ export default async function PublicInvoicePage({
         },
       },
       laborItems: true,
+      technician: { select: { name: true } },
       attachments: true,
       payments: { orderBy: { date: 'desc' } },
       customer: {
@@ -99,7 +107,10 @@ export default async function PublicInvoicePage({
             'workshop.address',
             'workshop.phone',
             'workshop.email',
+            'workshop.slogan',
             'workshop.logo',
+            'invoice.logo',
+            'workshop.unitSystem',
             'workshop.currencyCode',
             'workshop.currencyFormat',
             'invoice.bankAccount',
@@ -112,6 +123,14 @@ export default async function PublicInvoicePage({
             'invoice.showLogo',
             'invoice.showCompanyName',
             'invoice.primaryColor',
+            'invoice.backgroundColor',
+            'invoice.textColor',
+            'invoice.companyTextColor',
+            'invoice.frameBorderColor',
+            'invoice.frameShadow',
+            'invoice.frameRadius',
+            'invoice.frameSide',
+            'invoice.fontFamily',
             'invoice.headerStyle',
             'invoice.logoSize',
             'payment.providersEnabled',
@@ -145,24 +164,7 @@ export default async function PublicInvoicePage({
   })
 
   // Fetch custom field values for this service record
-  const customFieldValues = await db.customFieldValue.findMany({
-    where: { entityId: record.id, entityType: 'service_record' },
-    include: {
-      field: {
-        select: { id: true, label: true, fieldType: true, isActive: true, sortOrder: true },
-      },
-    },
-    orderBy: { field: { sortOrder: 'asc' } },
-  })
-
-  const customFields = customFieldValues
-    .filter((v) => v.field.isActive && v.value)
-    .map((v) => ({
-      label: v.field.label,
-      value: v.value,
-      fieldType: v.field.fieldType,
-      fieldId: v.field.id,
-    }))
+  const customFields = await getCustomFieldsForPrint(orgId, record.id, 'service_record')
 
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
@@ -172,6 +174,7 @@ export default async function PublicInvoicePage({
     address: settingsMap['workshop.address'] || '',
     phone: settingsMap['workshop.phone'] || '',
     email: settingsMap['workshop.email'] || '',
+    slogan: settingsMap['workshop.slogan'] || undefined,
   }
 
   const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
@@ -190,7 +193,7 @@ export default async function PublicInvoicePage({
 
   const showLogo = settingsMap['invoice.showLogo'] !== 'false'
   const showCompanyName = settingsMap['invoice.showCompanyName'] !== 'false'
-  const rawLogoUrl = settingsMap['workshop.logo'] || ''
+  const rawLogoUrl = documentLogoPath(settingsMap, 'invoice')
   const logoUrl = rawLogoUrl ? toPublicFileUrl(rawLogoUrl, token) : ''
 
   // Determine which online payment providers are enabled for this org
@@ -217,6 +220,63 @@ export default async function PublicInvoicePage({
     settingsMap['invoice.layoutConfig'] ? JSON.parse(settingsMap['invoice.layoutConfig']) : {}
   )
 
+  // The document the workshop designed, built here from the real job so the
+  // page a customer opens is the sheet the designer shows and the PDF prints.
+  const acceptLanguage = (await headers()).get('accept-language')
+  const locale = await resolveCustomerLocale(record.organizationId, acceptLanguage)
+  const labels = await loadPrintLabels(locale, settingsMap)
+
+  const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
+  const effectiveTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
+  const paymentSummary =
+    record.payments.length > 0 || record.manuallyPaid
+      ? {
+          totalPaid: record.manuallyPaid ? effectiveTotal : paidFromPayments,
+          payments: record.payments.map((p) => ({
+            amount: p.amount,
+            date: p.date.toLocaleDateString(),
+            method: p.method,
+          })),
+        }
+      : undefined
+
+  const torqvoiceLogoDataUri = features.brandingRemoved
+    ? undefined
+    : await getTorqvoiceLogoDataUri()
+
+  const spec = buildInvoicePrintSpec({
+    data: { ...record, customFields, findings },
+    workshop,
+    invoiceSettings: {
+      ...invoiceSettings,
+      currencyCode,
+      currencyFormat,
+      unitSystem: settingsMap['workshop.unitSystem'] || undefined,
+      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
+      timezone: settingsMap['workshop.timezone'] || undefined,
+    },
+    paymentSummary,
+    logoDataUri: logoUrl || undefined,
+    template: {
+      primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
+      backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
+      textColor: settingsMap['invoice.textColor'] || undefined,
+      companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
+      frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
+      frameShadow: settingsMap['invoice.frameShadow'],
+      frameRadius: Number(settingsMap['invoice.frameRadius']) || 0,
+      frameSide: settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left',
+      fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
+      showLogo,
+      showCompanyName,
+      headerStyle: settingsMap['invoice.headerStyle'] || 'standard',
+      logoSize: Number(settingsMap['invoice.logoSize']) || 100,
+      layoutConfig,
+    },
+    torqvoiceLogoDataUri,
+    labels,
+  })
+
   const termsOfSaleUrl =
     settingsMap['payment.termsOfSaleUrl'] ||
     (settingsMap['payment.termsOfSale'] ? `/share/terms/${orgId}` : undefined)
@@ -233,6 +293,7 @@ export default async function PublicInvoicePage({
 
   return (
     <InvoiceView
+      spec={spec}
       record={publicRecord}
       workshop={workshop}
       currencyCode={currencyCode}

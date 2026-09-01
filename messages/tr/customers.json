@@ -35,6 +35,8 @@
     "taxExemptBadge": "Vergiden muaf",
     "tabs": {
       "vehicles": "Araçlar ({count})",
+      "invoices": "Faturalar ({count})",
+      "quotes": "Teklifler ({count})",
       "messages": "Mesajlar",
       "requests": "Talepler ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Motor Saatleri",
       "services": "Servisler"
     },
-    "noVehicles": "Bu müşteriye atanmış araç yok"
+    "documentTable": {
+      "invoiceNumber": "Fatura no.",
+      "quoteNumber": "Teklif no.",
+      "title": "Başlık",
+      "vehicle": "Araç",
+      "status": "Durum",
+      "date": "Tarih",
+      "total": "Toplam",
+      "noVehicle": "Yalnızca parça",
+      "searchPlaceholder": "Ara...",
+      "noMatches": "Aramanızla eşleşen bir sonuç yok",
+      "sort": {
+        "asc": "artan",
+        "desc": "azalan"
+      }
+    },
+    "noVehicles": "Bu müşteriye atanmış araç yok",
+    "noInvoices": "Bu müşteri için fatura yok",
+    "noQuotes": "Bu müşteri için teklif yok"
   },
   "form": {
     "addTitle": "Yeni Müşteri Ekle",

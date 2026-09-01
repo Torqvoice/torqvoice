@@ -95,5 +95,10 @@
     "placeholder": "ör. Sunucu altyapımızda sorun yaşıyoruz ve üzerinde çalışıyoruz.",
     "posted": "Duyuru yayınlandı",
     "cleared": "Duyuru kaldırıldı"
+  },
+  "pdfPreview": {
+    "title": "PDF önizleme",
+    "preview": "Önizleme",
+    "failed": "PDF önizlemesi oluşturulamadı."
   }
 }

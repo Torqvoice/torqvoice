@@ -3,7 +3,7 @@
  * Supported variables: {year} -> current 4-digit year
  */
 export function resolveInvoicePrefix(prefix: string): string {
-  return prefix.replace(/\{year\}/g, String(new Date().getFullYear()));
+  return prefix.replace(/\{year\}/g, String(new Date().getFullYear()))
 }
 
 /**
@@ -12,11 +12,11 @@ export function resolveInvoicePrefix(prefix: string): string {
  * reach the database (out-of-range timestamps break rendering later).
  */
 export function toSafeDate(value: string | undefined | null): Date | undefined {
-  if (!value) return undefined;
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return undefined;
-  const year = d.getFullYear();
-  return year >= 1900 && year <= 2100 ? d : undefined;
+  if (!value) return undefined
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return undefined
+  const year = d.getFullYear()
+  return year >= 1900 && year <= 2100 ? d : undefined
 }
 
 /**
@@ -25,9 +25,9 @@ export function toSafeDate(value: string | undefined | null): Date | undefined {
  * Matches what the invoice PDF and share views print.
  */
 export function effectiveInvoiceDate(record: {
-  invoiceDate?: Date | string | null;
-  startDateTime?: Date | string | null;
-  serviceDate: Date | string;
+  invoiceDate?: Date | string | null
+  startDateTime?: Date | string | null
+  serviceDate: Date | string
 }): Date {
-  return new Date(record.invoiceDate ?? record.startDateTime ?? record.serviceDate);
+  return new Date(record.invoiceDate ?? record.startDateTime ?? record.serviceDate)
 }

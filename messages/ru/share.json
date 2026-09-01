@@ -71,7 +71,8 @@
     "findingSeverityUrgent": "Высокий",
     "findingSeverityNeedsWork": "Средний",
     "findingSeverityMonitor": "Низкий",
-    "tel": "Тел: {phone}"
+    "tel": "Тел: {phone}",
+    "customFields": "Дополнительные сведения"
   },
   "quote": {
     "title": "Предложение",
@@ -125,7 +126,8 @@
       "converted": "Конвертировано",
       "changes_requested": "Запрошены изменения"
     },
-    "tel": "Тел: {phone}"
+    "tel": "Тел: {phone}",
+    "customFields": "Дополнительные сведения"
   },
   "inspection": {
     "title": "Осмотр транспортного средства",

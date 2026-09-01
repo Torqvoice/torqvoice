@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Camera, Keyboard } from 'lucide-react'
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl'
 
 interface BarcodeScannerDialogProps {
   open: boolean
@@ -26,7 +26,7 @@ export function BarcodeScannerDialog({
   onScan,
   title = 'Scan Barcode',
 }: BarcodeScannerDialogProps) {
-  const t = useTranslations("common.shared");
+  const t = useTranslations('common.shared')
   const scannerRef = useRef<HTMLDivElement>(null)
   const html5QrRef = useRef<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -109,7 +109,9 @@ export function BarcodeScannerDialog({
         const onSuccess = (decodedText: string) => {
           if (mounted) handleScan(decodedText)
         }
-        const onError = () => { /* expected: fires on each frame without a match */ }
+        const onError = () => {
+          /* expected: fires on each frame without a match */
+        }
 
         try {
           // Try rear camera first (mobile)
@@ -125,16 +127,25 @@ export function BarcodeScannerDialog({
         if (!mounted) return
         console.error('[BarcodeScan] Camera error:', err?.name, err?.message, err)
 
-        const isInsecure = window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+        const isInsecure =
+          window.location.protocol === 'http:' &&
+          window.location.hostname !== 'localhost' &&
+          window.location.hostname !== '127.0.0.1'
 
         if (isInsecure) {
-          setError(`Camera requires HTTPS. You are on HTTP (${window.location.hostname}). Use localhost or enable HTTPS for camera access. You can enter the barcode manually below.`)
+          setError(
+            `Camera requires HTTPS. You are on HTTP (${window.location.hostname}). Use localhost or enable HTTPS for camera access. You can enter the barcode manually below.`
+          )
         } else if (err?.name === 'NotAllowedError' || err?.message?.includes('Permission')) {
-          setError('Camera access denied. Please allow camera permissions or enter the barcode manually.')
+          setError(
+            'Camera access denied. Please allow camera permissions or enter the barcode manually.'
+          )
         } else if (err?.name === 'NotFoundError' || err?.message === 'NotFoundError') {
           setError('No camera found on this device. Please enter the barcode manually.')
         } else {
-          setError(`Could not start camera: ${err?.message || 'Unknown error'}. Please enter the barcode manually.`)
+          setError(
+            `Could not start camera: ${err?.message || 'Unknown error'}. Please enter the barcode manually.`
+          )
         }
         setShowManual(true)
       }
@@ -151,7 +162,12 @@ export function BarcodeScannerDialog({
         const state = inst.getState?.()
         // State 2 = SCANNING, State 3 = PAUSED
         if (state === 2 || state === 3) {
-          inst.stop().then(() => inst.clear()).catch(() => { /* scanner already stopped */ })
+          inst
+            .stop()
+            .then(() => inst.clear())
+            .catch(() => {
+              /* scanner already stopped */
+            })
         }
       }
     }
@@ -179,9 +195,7 @@ export function BarcodeScannerDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {t("scanHint")}
-          </DialogDescription>
+          <DialogDescription className="sr-only">{t('scanHint')}</DialogDescription>
         </DialogHeader>
 
         {!showManual ? (
@@ -198,17 +212,15 @@ export function BarcodeScannerDialog({
               onClick={() => setShowManual(true)}
             >
               <Keyboard className="mr-2 h-4 w-4" />
-              {t("enterManually")}
+              {t('enterManually')}
             </Button>
           </div>
         ) : (
           <div className="space-y-3">
-            {error && (
-              <p className="text-sm text-muted-foreground">{error}</p>
-            )}
+            {error && <p className="text-sm text-muted-foreground">{error}</p>}
             <form onSubmit={handleManualSubmit} className="flex gap-2">
               <Input
-                placeholder={t("enterBarcode")}
+                placeholder={t('enterBarcode')}
                 value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
                 autoFocus
@@ -226,7 +238,7 @@ export function BarcodeScannerDialog({
                 onClick={() => setShowManual(false)}
               >
                 <Camera className="mr-2 h-4 w-4" />
-                {t("useCamera")}
+                {t('useCamera')}
               </Button>
             )}
           </div>

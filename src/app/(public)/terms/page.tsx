@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Torqvoice",
-  description: "Terms of Service for Torqvoice workshop management platform",
-};
+  title: 'Terms of Service | Torqvoice',
+  description: 'Terms of Service for Torqvoice workshop management platform',
+}
 
 export default function TermsOfServicePage() {
   return (
@@ -21,28 +21,21 @@ export default function TermsOfServicePage() {
               height={32}
               className="object-contain"
             />
-            <span className="text-lg font-bold tracking-wider uppercase">
-              Torqvoice
-            </span>
+            <span className="text-lg font-bold tracking-wider uppercase">Torqvoice</span>
           </div>
           <h1 className="mt-4 text-2xl font-bold">Terms of Service</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Last updated: March 2026
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Last updated: March 2026</p>
         </div>
 
         {/* Content */}
         <div className="mt-6 space-y-6 text-sm leading-relaxed text-muted-foreground">
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              1. Acceptance of Terms
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using Torqvoice (&quot;the Service&quot;,
-              &quot;the Platform&quot;), you agree to be bound by these Terms of
-              Service (&quot;Terms&quot;). If you do not agree to these Terms, do
-              not use the Service. Your continued use of the Service constitutes
-              acceptance of any changes to these Terms.
+              By accessing or using Torqvoice (&quot;the Service&quot;, &quot;the Platform&quot;),
+              you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not
+              agree to these Terms, do not use the Service. Your continued use of the Service
+              constitutes acceptance of any changes to these Terms.
             </p>
           </section>
 
@@ -51,10 +44,9 @@ export default function TermsOfServicePage() {
               2. Description of Service
             </h2>
             <p>
-              Torqvoice is a workshop management platform that provides tools
-              for managing vehicles, service records, customers, quotes,
-              invoices, and inventory. The Service is provided &quot;as is&quot;
-              and &quot;as available&quot; for your use.
+              Torqvoice is a workshop management platform that provides tools for managing vehicles,
+              service records, customers, quotes, invoices, and inventory. The Service is provided
+              &quot;as is&quot; and &quot;as available&quot; for your use.
             </p>
           </section>
 
@@ -65,30 +57,25 @@ export default function TermsOfServicePage() {
             <p>By using the Service, you acknowledge and agree that:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
               <li>
-                You are solely responsible for all data you enter, store, and
-                manage through the Service, including but not limited to customer
-                information, vehicle records, financial data, and invoices.
+                You are solely responsible for all data you enter, store, and manage through the
+                Service, including but not limited to customer information, vehicle records,
+                financial data, and invoices.
               </li>
               <li>
-                You are responsible for ensuring the accuracy and legality of all
-                information and content you submit.
+                You are responsible for ensuring the accuracy and legality of all information and
+                content you submit.
               </li>
               <li>
-                You are responsible for complying with all applicable local,
-                national, and international laws and regulations in your
-                jurisdiction, including tax laws, consumer protection laws, data
-                protection regulations (such as GDPR), and industry-specific
-                requirements.
+                You are responsible for complying with all applicable local, national, and
+                international laws and regulations in your jurisdiction, including tax laws,
+                consumer protection laws, data protection regulations (such as GDPR), and
+                industry-specific requirements.
               </li>
               <li>
-                You are responsible for maintaining the confidentiality of your
-                account credentials and for all activities that occur under your
-                account.
+                You are responsible for maintaining the confidentiality of your account credentials
+                and for all activities that occur under your account.
               </li>
-              <li>
-                You are responsible for maintaining appropriate backups of your
-                data.
-              </li>
+              <li>You are responsible for maintaining appropriate backups of your data.</li>
             </ul>
           </section>
 
@@ -97,19 +84,16 @@ export default function TermsOfServicePage() {
               4. Disclaimer of Warranties
             </h2>
             <p className="font-medium text-foreground">
-              THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS
-              AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR
-              IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF
-              MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+              THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT
+              WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+              IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
               NON-INFRINGEMENT, OR COURSE OF PERFORMANCE.
             </p>
             <p className="mt-2">
-              Torqvoice and its operators do not warrant that: (a) the Service
-              will function uninterrupted, secure, or available at any
-              particular time or location; (b) any errors or defects will be
-              corrected; (c) the Service is free of viruses or other harmful
-              components; or (d) the results of using the Service will meet your
-              requirements.
+              Torqvoice and its operators do not warrant that: (a) the Service will function
+              uninterrupted, secure, or available at any particular time or location; (b) any errors
+              or defects will be corrected; (c) the Service is free of viruses or other harmful
+              components; or (d) the results of using the Service will meet your requirements.
             </p>
           </section>
 
@@ -118,70 +102,56 @@ export default function TermsOfServicePage() {
               5. Limitation of Liability
             </h2>
             <p className="font-medium text-foreground">
-              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT
-              SHALL TORQVOICE, ITS OPERATORS, OWNERS, DEVELOPERS, AFFILIATES,
-              OR SERVICE PROVIDERS BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
-              SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT
-              LIMITED TO: LOSS OF PROFITS, DATA, BUSINESS, GOODWILL, OR OTHER
-              INTANGIBLE LOSSES, RESULTING FROM:
+              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL TORQVOICE, ITS
+              OPERATORS, OWNERS, DEVELOPERS, AFFILIATES, OR SERVICE PROVIDERS BE LIABLE FOR ANY
+              INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT
+              LIMITED TO: LOSS OF PROFITS, DATA, BUSINESS, GOODWILL, OR OTHER INTANGIBLE LOSSES,
+              RESULTING FROM:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-6 font-medium text-foreground">
               <li>Your access to or use of (or inability to use) the Service;</li>
-              <li>
-                Any conduct or content of any third party on the Service;
-              </li>
+              <li>Any conduct or content of any third party on the Service;</li>
               <li>Any content obtained from the Service;</li>
+              <li>Unauthorized access, use, or alteration of your data or transmissions;</li>
               <li>
-                Unauthorized access, use, or alteration of your data or
-                transmissions;
+                Errors, inaccuracies, or omissions in invoices, quotes, or other documents generated
+                through the Service;
               </li>
               <li>
-                Errors, inaccuracies, or omissions in invoices, quotes, or other
-                documents generated through the Service;
-              </li>
-              <li>
-                Any financial losses, tax liabilities, or legal claims arising
-                from your use of the Service;
+                Any financial losses, tax liabilities, or legal claims arising from your use of the
+                Service;
               </li>
               <li>Data loss or corruption;</li>
               <li>Service interruptions or downtime.</li>
             </ul>
             <p className="mt-2 font-medium text-foreground">
-              THIS LIMITATION APPLIES WHETHER THE ALLEGED LIABILITY IS BASED ON
-              CONTRACT, TORT, NEGLIGENCE, STRICT LIABILITY, OR ANY OTHER BASIS,
-              EVEN IF TORQVOICE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
-              DAMAGE.
+              THIS LIMITATION APPLIES WHETHER THE ALLEGED LIABILITY IS BASED ON CONTRACT, TORT,
+              NEGLIGENCE, STRICT LIABILITY, OR ANY OTHER BASIS, EVEN IF TORQVOICE HAS BEEN ADVISED
+              OF THE POSSIBILITY OF SUCH DAMAGE.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              6. Indemnification
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">6. Indemnification</h2>
             <p>
-              You agree to defend, indemnify, and hold harmless Torqvoice, its
-              operators, owners, developers, and affiliates from and against any
-              claims, damages, obligations, losses, liabilities, costs, or debt,
-              and expenses (including attorney&apos;s fees) arising from: (a)
-              your use of and access to the Service; (b) your violation of any
-              term of these Terms; (c) your violation of any third-party right,
-              including without limitation any intellectual property,
-              privacy, or consumer protection right; or (d) any claim that your
-              use of the Service caused damage to a third party.
+              You agree to defend, indemnify, and hold harmless Torqvoice, its operators, owners,
+              developers, and affiliates from and against any claims, damages, obligations, losses,
+              liabilities, costs, or debt, and expenses (including attorney&apos;s fees) arising
+              from: (a) your use of and access to the Service; (b) your violation of any term of
+              these Terms; (c) your violation of any third-party right, including without limitation
+              any intellectual property, privacy, or consumer protection right; or (d) any claim
+              that your use of the Service caused damage to a third party.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              7. Data and Privacy
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">7. Data and Privacy</h2>
             <p>
-              You retain ownership of all data you input into the Service. You
-              are solely responsible for the legality, reliability, and
-              appropriateness of the data you store and process through the
-              Service. If you collect personal data from your customers, you are
-              the data controller and are responsible for compliance with
-              applicable data protection laws.
+              You retain ownership of all data you input into the Service. You are solely
+              responsible for the legality, reliability, and appropriateness of the data you store
+              and process through the Service. If you collect personal data from your customers, you
+              are the data controller and are responsible for compliance with applicable data
+              protection laws.
             </p>
           </section>
 
@@ -190,37 +160,33 @@ export default function TermsOfServicePage() {
               8. Third-Party Services and AI
             </h2>
             <p>
-              The Service may integrate with third-party services, including but
-              not limited to:
+              The Service may integrate with third-party services, including but not limited to:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
               <li>
-                <strong>AI Providers</strong> (OpenAI, Anthropic): If you enable
-                AI features, data including service descriptions, vehicle
-                information, part details, and uploaded images may be sent to
-                these providers for processing. You are responsible for
-                reviewing and complying with their respective terms of service
-                and privacy policies. Torqvoice does not control how these
-                providers process, store, or use the data sent to them.
+                <strong>AI Providers</strong> (OpenAI, Anthropic): If you enable AI features, data
+                including service descriptions, vehicle information, part details, and uploaded
+                images may be sent to these providers for processing. You are responsible for
+                reviewing and complying with their respective terms of service and privacy policies.
+                Torqvoice does not control how these providers process, store, or use the data sent
+                to them.
               </li>
               <li>
-                <strong>Payment Providers</strong> (Stripe, Vipps, PayPal): If
-                you enable online payments, customer payment information is
-                processed directly by these providers. Torqvoice does not store
-                credit card numbers or bank account details. You are responsible
-                for compliance with PCI-DSS and applicable payment regulations.
+                <strong>Payment Providers</strong> (Stripe, Vipps, PayPal): If you enable online
+                payments, customer payment information is processed directly by these providers.
+                Torqvoice does not store credit card numbers or bank account details. You are
+                responsible for compliance with PCI-DSS and applicable payment regulations.
               </li>
               <li>
-                <strong>Messaging Services</strong> (Telegram, SMS, Email): If
-                you enable messaging integrations, customer contact information
-                and message content may be transmitted through these services.
+                <strong>Messaging Services</strong> (Telegram, SMS, Email): If you enable messaging
+                integrations, customer contact information and message content may be transmitted
+                through these services.
               </li>
             </ul>
             <p className="mt-2">
-              Torqvoice is not responsible for the practices, content, or
-              availability of any third-party service. Your use of third-party
-              integrations is at your own risk and subject to those
-              providers&apos; terms.
+              Torqvoice is not responsible for the practices, content, or availability of any
+              third-party service. Your use of third-party integrations is at your own risk and
+              subject to those providers&apos; terms.
             </p>
           </section>
 
@@ -229,18 +195,16 @@ export default function TermsOfServicePage() {
               9. Uploaded Content and Files
             </h2>
             <p>
-              You may upload files, images, documents, and other content to the
-              Service. You retain ownership of all uploaded content. By
-              uploading content, you represent that you have the right to do so
-              and that the content does not violate any third-party rights.
-              Torqvoice is not responsible for the content you upload and does
-              not monitor uploaded files for legality or appropriateness.
+              You may upload files, images, documents, and other content to the Service. You retain
+              ownership of all uploaded content. By uploading content, you represent that you have
+              the right to do so and that the content does not violate any third-party rights.
+              Torqvoice is not responsible for the content you upload and does not monitor uploaded
+              files for legality or appropriateness.
             </p>
             <p className="mt-2">
-              For self-hosted instances, all uploaded files are stored on your
-              own server infrastructure. For cloud-hosted instances, files are
-              stored on our servers and may be deleted when you delete your
-              account or the associated records.
+              For self-hosted instances, all uploaded files are stored on your own server
+              infrastructure. For cloud-hosted instances, files are stored on our servers and may be
+              deleted when you delete your account or the associated records.
             </p>
           </section>
 
@@ -249,14 +213,12 @@ export default function TermsOfServicePage() {
               10. Financial and Legal Disclaimer
             </h2>
             <p>
-              The Service is a tool to assist with workshop management. It does
-              not provide legal, financial, tax, or accounting advice. Invoices,
-              quotes, and reports generated by the Service are produced based on
-              data you provide and may not comply with the specific legal
-              requirements of your jurisdiction. You are solely responsible for
-              ensuring that all financial documents comply with applicable laws
-              and regulations. Torqvoice is not a licensed accounting, tax, or
-              legal service provider.
+              The Service is a tool to assist with workshop management. It does not provide legal,
+              financial, tax, or accounting advice. Invoices, quotes, and reports generated by the
+              Service are produced based on data you provide and may not comply with the specific
+              legal requirements of your jurisdiction. You are solely responsible for ensuring that
+              all financial documents comply with applicable laws and regulations. Torqvoice is not
+              a licensed accounting, tax, or legal service provider.
             </p>
           </section>
 
@@ -265,10 +227,9 @@ export default function TermsOfServicePage() {
               11. Service Availability
             </h2>
             <p>
-              Torqvoice reserves the right to modify, suspend, or discontinue
-              the Service (or any part thereof) at any time, with or without
-              notice. We shall not be liable to you or any third party for any
-              modification, suspension, or discontinuance of the Service.
+              Torqvoice reserves the right to modify, suspend, or discontinue the Service (or any
+              part thereof) at any time, with or without notice. We shall not be liable to you or
+              any third party for any modification, suspension, or discontinuance of the Service.
             </p>
           </section>
 
@@ -277,59 +238,47 @@ export default function TermsOfServicePage() {
               12. Account Termination
             </h2>
             <p>
-              We may terminate or suspend your account and access to the Service
-              immediately, without prior notice or liability, for any reason,
-              including if you breach these Terms. Upon termination, your right
-              to use the Service will immediately cease. You may also delete your
-              account at any time through the account settings.
+              We may terminate or suspend your account and access to the Service immediately,
+              without prior notice or liability, for any reason, including if you breach these
+              Terms. Upon termination, your right to use the Service will immediately cease. You may
+              also delete your account at any time through the account settings.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              13. Changes to Terms
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">13. Changes to Terms</h2>
             <p>
-              We reserve the right to modify these Terms at any time. Changes
-              will be effective immediately upon posting. Your continued use of
-              the Service after any changes constitutes acceptance of the new
-              Terms. It is your responsibility to review these Terms
-              periodically.
+              We reserve the right to modify these Terms at any time. Changes will be effective
+              immediately upon posting. Your continued use of the Service after any changes
+              constitutes acceptance of the new Terms. It is your responsibility to review these
+              Terms periodically.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              14. Governing Law
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">14. Governing Law</h2>
             <p>
-              These Terms shall be governed by and construed in accordance with
-              the laws of the jurisdiction in which the Service operator
-              resides, without regard to its conflict of law provisions.
+              These Terms shall be governed by and construed in accordance with the laws of the
+              jurisdiction in which the Service operator resides, without regard to its conflict of
+              law provisions.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              15. Severability
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">15. Severability</h2>
             <p>
-              If any provision of these Terms is held to be unenforceable or
-              invalid, such provision will be changed and interpreted to
-              accomplish the objectives of such provision to the greatest extent
-              possible under applicable law, and the remaining provisions will
+              If any provision of these Terms is held to be unenforceable or invalid, such provision
+              will be changed and interpreted to accomplish the objectives of such provision to the
+              greatest extent possible under applicable law, and the remaining provisions will
               continue in full force and effect.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-base font-semibold text-foreground">
-              16. Entire Agreement
-            </h2>
+            <h2 className="mb-2 text-base font-semibold text-foreground">16. Entire Agreement</h2>
             <p>
-              These Terms constitute the entire agreement between you and
-              Torqvoice regarding your use of the Service and supersede all
-              prior agreements and understandings.
+              These Terms constitute the entire agreement between you and Torqvoice regarding your
+              use of the Service and supersede all prior agreements and understandings.
             </p>
           </section>
         </div>
@@ -337,8 +286,7 @@ export default function TermsOfServicePage() {
         {/* Footer */}
         <div className="mt-8 border-t pt-4">
           <p className="text-xs text-muted-foreground">
-            If you have questions about these Terms, please contact the platform
-            administrator.
+            If you have questions about these Terms, please contact the platform administrator.
           </p>
           <Link
             href="/auth/sign-up"
@@ -349,5 +297,5 @@ export default function TermsOfServicePage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

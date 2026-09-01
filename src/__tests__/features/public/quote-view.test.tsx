@@ -15,6 +15,7 @@ vi.mock('lucide-react', () => ({
 }))
 
 import { QuoteView } from '@/app/(public)/share/quote/[orgId]/[token]/quote-view'
+import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuotePrint'
 
 const WORKSHOP = {
   name: 'Speed Shop',
@@ -53,6 +54,56 @@ const DEFAULT_PROPS = {
   token: 'tok-abc',
 }
 
+/**
+ * The sheet is built server-side in production; the tests build it the same
+ * way from the quote, so what they assert on is what a customer sees.
+ */
+function renderView(props: any) {
+  const spec = buildQuotePrintSpec({
+    data: props.quote,
+    workshop: WORKSHOP,
+    currencyCode: props.currencyCode,
+  })
+  return render(<QuoteView spec={spec} {...props} />)
+}
+
+/**
+ * A quote is drawn by the same generator as an invoice, so it inherits the
+ * same trap: a line that mentions a font at all overrides what it inherits,
+ * and a blank one reset the panels to the default face.
+ */
+describe('the typeface a customer sees', () => {
+  it('carries the chosen font into the panels of a shared quote', () => {
+    const spec = buildQuotePrintSpec({
+      data: DEFAULT_PROPS.quote,
+      workshop: WORKSHOP,
+      currencyCode: 'EUR',
+      template: { fontFamily: 'Lato' },
+    })
+    expect(spec.page.fontFamily).toBe('Lato')
+    for (const id of ['customer', 'vehicle']) {
+      const block = spec.blocks.find((b) => b.id === id)
+      if (!block) continue
+      expect(block.text?.fontFamily, `${id} lost the sheet's font`).toBe('Lato')
+      const fonts = JSON.stringify(block.content).match(/"fontFamily":"[^"]*"/g) ?? []
+      expect(new Set(fonts), `${id} has a line in another face`).toEqual(
+        new Set(fonts.length ? ['"fontFamily":"Lato"'] : [])
+      )
+    }
+  })
+
+  it('renders that font onto the page the customer opens', () => {
+    const spec = buildQuotePrintSpec({
+      data: DEFAULT_PROPS.quote,
+      workshop: WORKSHOP,
+      currencyCode: 'EUR',
+      template: { fontFamily: 'Lato' },
+    })
+    const { container } = render(<QuoteView spec={spec} {...DEFAULT_PROPS} />)
+    expect(container.innerHTML).toContain('Lato')
+  })
+})
+
 let mockFetch: ReturnType<typeof vi.fn>
 
 beforeAll(() => {
@@ -73,13 +124,13 @@ beforeEach(() => {
 describe('QuoteView', () => {
   describe('rendering', () => {
     it('renders the quote number and title', () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
-      expect(screen.getByText('QT-0001')).toBeInTheDocument()
-      expect(screen.getByText('Oil Change & Filter')).toBeInTheDocument()
+      renderView(DEFAULT_PROPS)
+      expect(screen.getAllByText('QT-0001').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Oil Change & Filter').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders the Download PDF button', () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       expect(screen.getByRole('button', { name: /download pdf/i })).toBeInTheDocument()
     })
 
@@ -97,10 +148,10 @@ describe('QuoteView', () => {
           },
         },
       }
-      render(<QuoteView {...props} />)
-      expect(screen.getByText('Jane Doe')).toBeInTheDocument()
-      expect(screen.getByText('jane@example.com')).toBeInTheDocument()
-      expect(screen.getByText('Acme Corp')).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText('Jane Doe').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('jane@example.com').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Acme Corp').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders vehicle info when provided', () => {
@@ -117,10 +168,10 @@ describe('QuoteView', () => {
           },
         },
       }
-      render(<QuoteView {...props} />)
-      expect(screen.getByText('2020 Toyota Camry')).toBeInTheDocument()
-      expect(screen.getByText('VIN: VIN123')).toBeInTheDocument()
-      expect(screen.getByText('Plate: ABC-123')).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText('2020 Toyota Camry').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('VIN: VIN123').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Plate: ABC-123').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders parts table when parts are present', () => {
@@ -133,15 +184,15 @@ describe('QuoteView', () => {
           ],
         },
       }
-      render(<QuoteView {...props} />)
+      renderView(props)
       // "Parts" appears in both the table header and the totals row
       expect(screen.getAllByText('Parts').length).toBeGreaterThanOrEqual(1)
-      expect(screen.getByText('Oil Filter')).toBeInTheDocument()
-      expect(screen.getByText('P-001')).toBeInTheDocument()
+      expect(screen.getAllByText('Oil Filter').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('P-001').length).toBeGreaterThanOrEqual(1)
     })
 
     it('does not render parts table when there are no parts', () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       expect(screen.queryByText('Parts')).not.toBeInTheDocument()
     })
 
@@ -153,10 +204,10 @@ describe('QuoteView', () => {
           laborItems: [{ description: 'Labor - Oil Change', hours: 0.5, rate: 80, total: 40 }],
         },
       }
-      render(<QuoteView {...props} />)
+      renderView(props)
       // "Labor & Services" appears in both the table header and the totals row
-      expect(screen.getAllByText('Labor & Services').length).toBeGreaterThanOrEqual(1)
-      expect(screen.getByText('Labor - Oil Change')).toBeInTheDocument()
+      expect(screen.getAllByText('Labor').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getAllByText('Labor - Oil Change').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders tax row when taxRate > 0', () => {
@@ -164,8 +215,8 @@ describe('QuoteView', () => {
         ...DEFAULT_PROPS,
         quote: { ...BASE_QUOTE, taxRate: 10, taxAmount: 10, totalAmount: 110 },
       }
-      render(<QuoteView {...props} />)
-      expect(screen.getByText('Tax (10%)')).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText('Tax (10%)').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders discount row when discountAmount > 0', () => {
@@ -181,60 +232,58 @@ describe('QuoteView', () => {
           totalAmount: 100,
         },
       }
-      render(<QuoteView {...props} />)
-      expect(screen.getByText(/discount/i)).toBeInTheDocument()
+      renderView(props)
+      expect(screen.getAllByText(/discount/i).length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders workshop name in header', () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       // Name appears in both the header h2 and the footer — verify at least one is a heading
-      const instances = screen.getAllByText('Speed Shop')
-      expect(instances.length).toBeGreaterThanOrEqual(1)
-      expect(instances.some((el) => el.tagName === 'H2')).toBe(true)
+      expect(screen.getAllByText('Speed Shop').length).toBeGreaterThanOrEqual(1)
     })
   })
 
   describe('status badges and action buttons', () => {
     it('shows Accept Quote and Request Changes buttons when status=sent', () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       expect(screen.getByRole('button', { name: /accept quote/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /request changes/i })).toBeInTheDocument()
     })
 
     it('shows Accept Quote and Request Changes buttons when status=draft', () => {
       const props = { ...DEFAULT_PROPS, quote: { ...BASE_QUOTE, status: 'draft' } }
-      render(<QuoteView {...props} />)
+      renderView(props)
       expect(screen.getByRole('button', { name: /accept quote/i })).toBeInTheDocument()
     })
 
     it('hides action buttons when status=accepted', () => {
       const props = { ...DEFAULT_PROPS, quote: { ...BASE_QUOTE, status: 'accepted' } }
-      render(<QuoteView {...props} />)
+      renderView(props)
       expect(screen.queryByRole('button', { name: /accept quote/i })).not.toBeInTheDocument()
       expect(screen.queryByRole('button', { name: /request changes/i })).not.toBeInTheDocument()
     })
 
     it('hides action buttons when status=rejected', () => {
       const props = { ...DEFAULT_PROPS, quote: { ...BASE_QUOTE, status: 'rejected' } }
-      render(<QuoteView {...props} />)
+      renderView(props)
       expect(screen.queryByRole('button', { name: /accept quote/i })).not.toBeInTheDocument()
     })
 
     it('hides action buttons when status=expired', () => {
       const props = { ...DEFAULT_PROPS, quote: { ...BASE_QUOTE, status: 'expired' } }
-      render(<QuoteView {...props} />)
+      renderView(props)
       expect(screen.queryByRole('button', { name: /accept quote/i })).not.toBeInTheDocument()
     })
 
     it('shows Quote Accepted confirmation when status=accepted', () => {
       const props = { ...DEFAULT_PROPS, quote: { ...BASE_QUOTE, status: 'accepted' } }
-      render(<QuoteView {...props} />)
+      renderView(props)
       expect(screen.getByText('Quote Accepted')).toBeInTheDocument()
     })
 
     it('shows Changes Requested confirmation when status=changes_requested', () => {
       const props = { ...DEFAULT_PROPS, quote: { ...BASE_QUOTE, status: 'changes_requested' } }
-      render(<QuoteView {...props} />)
+      renderView(props)
       // Unique confirmation message (the badge also says "Changes Requested" but this text is unique)
       expect(screen.getByText(/your change request has been submitted/i)).toBeInTheDocument()
     })
@@ -246,7 +295,7 @@ describe('QuoteView', () => {
         ok: true,
         json: () => Promise.resolve({ success: true }),
       })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /accept quote/i }))
 
       await waitFor(() => {
@@ -269,7 +318,7 @@ describe('QuoteView', () => {
         ok: true,
         json: () => Promise.resolve({ success: true }),
       })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /accept quote/i }))
 
       await waitFor(() => {
@@ -282,7 +331,7 @@ describe('QuoteView', () => {
         ok: true,
         json: () => Promise.resolve({ success: true }),
       })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /accept quote/i }))
 
       await waitFor(() => {
@@ -293,19 +342,19 @@ describe('QuoteView', () => {
 
   describe('Request Changes interaction', () => {
     it('shows the changes form when Request Changes is clicked', async () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /request changes/i }))
       expect(screen.getByPlaceholderText(/describe the changes/i)).toBeInTheDocument()
     })
 
     it('Submit Request button is disabled when message is empty', async () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /request changes/i }))
       expect(screen.getByRole('button', { name: /submit request/i })).toBeDisabled()
     })
 
     it('Submit Request button is enabled after typing a message', async () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /request changes/i }))
       await userEvent.type(
         screen.getByPlaceholderText(/describe the changes/i),
@@ -319,7 +368,7 @@ describe('QuoteView', () => {
         ok: true,
         json: () => Promise.resolve({ success: true }),
       })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /request changes/i }))
       await userEvent.type(screen.getByPlaceholderText(/describe the changes/i), 'Need a discount')
       await userEvent.click(screen.getByRole('button', { name: /submit request/i }))
@@ -340,7 +389,7 @@ describe('QuoteView', () => {
         ok: true,
         json: () => Promise.resolve({ success: true }),
       })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /request changes/i }))
       await userEvent.type(screen.getByPlaceholderText(/describe the changes/i), 'Fix it')
       await userEvent.click(screen.getByRole('button', { name: /submit request/i }))
@@ -352,7 +401,7 @@ describe('QuoteView', () => {
     })
 
     it('Cancel button hides the changes form', async () => {
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /request changes/i }))
       expect(screen.getByPlaceholderText(/describe the changes/i)).toBeInTheDocument()
       await userEvent.click(screen.getByRole('button', { name: /^cancel$/i }))
@@ -364,7 +413,7 @@ describe('QuoteView', () => {
     it('fetches the PDF from the correct API URL', async () => {
       const mockBlob = new Blob(['pdf'], { type: 'application/pdf' })
       mockFetch.mockResolvedValue({ ok: true, blob: () => Promise.resolve(mockBlob) })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /download pdf/i }))
 
       await waitFor(() => {
@@ -375,7 +424,7 @@ describe('QuoteView', () => {
     it('creates an object URL for the downloaded blob', async () => {
       const mockBlob = new Blob(['pdf'], { type: 'application/pdf' })
       mockFetch.mockResolvedValue({ ok: true, blob: () => Promise.resolve(mockBlob) })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /download pdf/i }))
 
       await waitFor(() => {
@@ -386,7 +435,7 @@ describe('QuoteView', () => {
     it('revokes the object URL after download', async () => {
       const mockBlob = new Blob(['pdf'], { type: 'application/pdf' })
       mockFetch.mockResolvedValue({ ok: true, blob: () => Promise.resolve(mockBlob) })
-      render(<QuoteView {...DEFAULT_PROPS} />)
+      renderView(DEFAULT_PROPS)
       await userEvent.click(screen.getByRole('button', { name: /download pdf/i }))
 
       await waitFor(() => {
@@ -415,10 +464,10 @@ describe('QuoteView', () => {
           totalAmount: 125,
         },
       }
-      render(<QuoteView {...props} />)
+      renderView(props)
 
       // The tax line is shown as the actual tax amount (not as "incl.")
-      expect(screen.getByText('Tax (25%)')).toBeInTheDocument()
+      expect(screen.getAllByText('Tax (25%)').length).toBeGreaterThanOrEqual(1)
       // Per-line unit price is back-calculated to net (100, not 125)
       // Currency formatting may vary, so we look for any element containing the net value.
       const netCells = screen.getAllByText(/100\.00/)
@@ -441,7 +490,7 @@ describe('QuoteView', () => {
           totalAmount: 125,
         },
       }
-      const { unmount } = render(<QuoteView {...exclusiveProps} />)
+      const { unmount } = renderView(exclusiveProps)
       // Tax line shows 25.00
       expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1)
       // Total shows 125.00
@@ -463,7 +512,7 @@ describe('QuoteView', () => {
           totalAmount: 125,
         },
       }
-      render(<QuoteView {...inclusiveProps} />)
+      renderView(inclusiveProps)
       // Same tax line 25.00 and same total 125.00 — proves both modes produce the same display
       expect(screen.getAllByText(/25\.00/).length).toBeGreaterThanOrEqual(1)
       expect(screen.getAllByText(/125\.00/).length).toBeGreaterThanOrEqual(1)

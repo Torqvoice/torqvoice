@@ -8,6 +8,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
 import { demoGuard } from '@/lib/demo'
+import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 
 export async function sendSmsToCustomer(input: {
   customerId: string
@@ -73,6 +74,16 @@ export async function sendSmsToCustomer(input: {
             providerMsgId: result.providerMsgId,
           },
         })
+
+        // These entity types are set only by the share dialogs, whose SMS
+        // carries the document's link: texting it is a way of sending the
+        // document, so it counts for "lock when sent". Plain conversations
+        // and reminders carry no entity type and stamp nothing.
+        if (input.relatedEntityType === 'invoice' && input.relatedEntityId) {
+          await markInvoiceSent(input.relatedEntityId, organizationId)
+        } else if (input.relatedEntityType === 'quote' && input.relatedEntityId) {
+          await markQuoteSent(input.relatedEntityId, organizationId)
+        }
 
         return {
           id: message.id,

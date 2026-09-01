@@ -6,5 +6,10 @@
   "telegram": {
     "title": "Telegram įjungtas",
     "body": "Pokalbiai su klientais atsiduria čia. Atsakykite neišeidami iš programos."
+  },
+  "invoice-designer": {
+    "title": "Sąskaitos buvo atnaujintos",
+    "body": "Nustatykite sąskaitų ir pasiūlymų išdėstymą, spalvas ir šriftus naujame redaktoriuje, skiltyje Šablonai.",
+    "cta": "Atidaryti šablonus"
   }
 }

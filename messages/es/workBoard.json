@@ -75,7 +75,10 @@
     "standalone": "Técnico independiente",
     "deleteTitle": "Eliminar Técnico",
     "deleteDescription": "¿Desea eliminar a \"{name}\" del tablero de trabajo? Sus asignaciones existentes también se eliminarán.",
-    "addTechnician": "Agregar Técnico"
+    "addTechnician": "Agregar Técnico",
+    "standaloneOnly": "Un nombre en el tablero para alguien que no inicia sesión, como un aprendiz o un externo. Para un mecánico que usa la aplicación, añádalo en la página de Equipo.",
+    "linkedTo": "Entra como {name}",
+    "linkedManagedOnTeam": "Se gestiona en la página de Equipo, junto con su acceso a la aplicación."
   },
   "jobDetail": {
     "viewDetails": "Ver Detalles",

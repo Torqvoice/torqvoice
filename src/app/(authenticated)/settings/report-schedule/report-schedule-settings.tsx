@@ -278,11 +278,7 @@ function ScheduleForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="end-date">{t('endDate')}</Label>
-            <DateInput
-              id="end-date"
-              value={endDate}
-              onChange={setEndDate}
-            />
+            <DateInput id="end-date" value={endDate} onChange={setEndDate} />
           </div>
         </div>
       </div>

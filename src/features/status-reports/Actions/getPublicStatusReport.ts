@@ -1,6 +1,6 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
+import { db } from '@/lib/db'
 
 export async function getPublicStatusReport(token: string) {
   const report = await db.statusReport.findUnique({
@@ -31,12 +31,12 @@ export async function getPublicStatusReport(token: string) {
         select: { name: true },
       },
     },
-  });
+  })
 
-  if (!report) throw new Error("Status report not found");
+  if (!report) throw new Error('Status report not found')
 
   if (report.expiresAt && report.expiresAt < new Date()) {
-    throw new Error("This status report has expired");
+    throw new Error('This status report has expired')
   }
 
   // Update viewedAt on first view
@@ -44,7 +44,7 @@ export async function getPublicStatusReport(token: string) {
     await db.statusReport.update({
       where: { id: report.id },
       data: { viewedAt: new Date() },
-    });
+    })
   }
 
   return {
@@ -73,5 +73,5 @@ export async function getPublicStatusReport(token: string) {
       : null,
     technician: report.technician ? { name: report.technician.name } : null,
     organization: { name: report.organization.name },
-  };
+  }
 }

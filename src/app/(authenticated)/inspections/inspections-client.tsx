@@ -1,5 +1,6 @@
 'use client'
 
+import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -183,6 +184,7 @@ export function InspectionsClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
+  useRememberedSort('inspections')
   const [showNewDialog, setShowNewDialog] = useState(false)
   const tcm = useTranslations('common.contextMenu')
   const t = useTranslations('inspections.list')

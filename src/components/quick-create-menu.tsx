@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   Plus,
   Loader2,
@@ -21,51 +21,52 @@ import {
   FileText,
   Package,
   ClipboardCheck,
-} from "lucide-react";
-import { VehiclePickerDialog } from "@/components/vehicle-picker-dialog";
-import { NewInspectionDialog } from "@/features/inspections/Components/NewInspectionDialog";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { getCustomersList } from "@/features/customers/Actions/customerActions";
-import { getTemplates } from "@/features/inspections/Actions/templateActions";
+  UserPlus,
+} from 'lucide-react'
+import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
+import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
+import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { getCustomersList } from '@/features/customers/Actions/customerActions'
+import { getTemplates } from '@/features/inspections/Actions/templateActions'
 
 interface VehicleOption {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string | null;
-  customer: { id: string; name: string; company: string | null } | null;
+  id: string
+  make: string
+  model: string
+  year: number
+  licensePlate: string | null
+  customer: { id: string; name: string; company: string | null } | null
 }
 
 interface CustomerOption {
-  id: string;
-  name: string;
-  company: string | null;
+  id: string
+  name: string
+  company: string | null
 }
 
 interface TemplateOption {
-  id: string;
-  name: string;
-  isDefault: boolean;
+  id: string
+  name: string
+  isDefault: boolean
 }
 
 export function QuickCreateMenu() {
-  const t = useTranslations("navigation");
-  const router = useRouter();
-  const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false);
-  const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
-  const [customers, setCustomers] = useState<CustomerOption[]>([]);
-  const [templates, setTemplates] = useState<TemplateOption[]>([]);
+  const t = useTranslations('navigation')
+  const router = useRouter()
+  const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false)
+  const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [vehicles, setVehicles] = useState<VehicleOption[]>([])
+  const [customers, setCustomers] = useState<CustomerOption[]>([])
+  const [templates, setTemplates] = useState<TemplateOption[]>([])
 
   const handleNewWorkOrder = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const [vehiclesResult, customersResult] = await Promise.all([
         getVehicles(),
         getCustomersList(),
-      ]);
+      ])
       setVehicles(
         vehiclesResult.success && vehiclesResult.data
           ? vehiclesResult.data.map((v) => ({
@@ -77,22 +78,18 @@ export function QuickCreateMenu() {
               customer: v.customer,
             }))
           : []
-      );
-      setCustomers(
-        customersResult.success && customersResult.data
-          ? customersResult.data
-          : []
-      );
-      setVehicleDialogOpen(true);
+      )
+      setCustomers(customersResult.success && customersResult.data ? customersResult.data : [])
+      setVehicleDialogOpen(true)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleNewInspection = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const result = await getTemplates();
+      const result = await getTemplates()
       setTemplates(
         result.success && result.data
           ? result.data.map((t) => ({
@@ -101,12 +98,12 @@ export function QuickCreateMenu() {
               isDefault: t.isDefault,
             }))
           : []
-      );
-      setInspectionDialogOpen(true);
+      )
+      setInspectionDialogOpen(true)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <>
@@ -118,35 +115,45 @@ export function QuickCreateMenu() {
             ) : (
               <Plus className="mr-1 h-3.5 w-3.5" />
             )}
-            {t("quickCreate.title")}
+            {t('quickCreate.title')}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel>{t("quickCreate.title")}</DropdownMenuLabel>
+          <DropdownMenuLabel>{t('quickCreate.title')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleNewWorkOrder}>
             <Wrench className="h-4 w-4" />
-            {t("quickCreate.workOrder")}
+            {t('quickCreate.workOrder')}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push("/customers?create=true")}>
+          <DropdownMenuItem onSelect={() => router.push('/customers?create=true')}>
             <Users className="h-4 w-4" />
-            {t("quickCreate.customer")}
+            {t('quickCreate.customer')}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push("/vehicles?create=true")}>
+          <DropdownMenuItem onSelect={() => router.push('/vehicles?create=true')}>
             <Car className="h-4 w-4" />
-            {t("quickCreate.vehicle")}
+            {t('quickCreate.vehicle')}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push("/quotes?create=true")}>
+          <DropdownMenuItem onSelect={() => router.push('/quotes?create=true')}>
             <FileText className="h-4 w-4" />
-            {t("quickCreate.quote")}
+            {t('quickCreate.quote')}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push("/inventory?create=true")}>
+          <DropdownMenuItem onSelect={() => router.push('/inventory?create=true')}>
             <Package className="h-4 w-4" />
-            {t("quickCreate.part")}
+            {t('quickCreate.part')}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleNewInspection}>
             <ClipboardCheck className="h-4 w-4" />
-            {t("quickCreate.inspection")}
+            {t('quickCreate.inspection')}
+          </DropdownMenuItem>
+
+          {/* Everything above creates a record. This creates a person, which
+              is a different kind of act and belongs behind its own heading:
+              adding a mechanic is not the same errand as booking a car in. */}
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>{t('quickCreate.shopActions')}</DropdownMenuLabel>
+          <DropdownMenuItem onSelect={() => router.push('/settings/team?add=true')}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            {t('quickCreate.person')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -162,5 +169,5 @@ export function QuickCreateMenu() {
         templates={templates}
       />
     </>
-  );
+  )
 }

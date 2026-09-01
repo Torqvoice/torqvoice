@@ -140,9 +140,18 @@
     "work_bay_create": "Создан пост",
     "work_bay_update": "Обновлён пост",
     "work_bay_delete": "Удалён пост",
-    "settings_whatsappUpdated": "Настройки WhatsApp обновлены",
-    "settings_whatsappNumberRegistered": "Номер WhatsApp зарегистрирован",
-    "settings_whatsappDisconnected": "WhatsApp отключён"
+    "auth_appSetupRedeemed": "Вход по коду настройки",
+    "auth_technicianCodeSignIn": "Вход по одноразовому коду",
+    "team_createAppSetupCode": "Выдан код настройки приложения",
+    "team_createTechnicianAccount": "Создана учётная запись механика",
+    "team_removeTechnicianAccess": "Механик удалён, доступ отозван",
+    "team_setMemberTechnician": "Изменён статус механика у участника",
+    "settings_whatsappUpdated": "Обновлены настройки WhatsApp",
+    "settings_whatsappDisconnected": "WhatsApp отключён",
+    "settings_whatsappNumberRegistered": "Зарегистрирован номер WhatsApp",
+    "team_giveTechnicianTheApp": "Механику с доски выдана учётная запись",
+    "team_createDefaultRoles": "Созданы стандартные роли",
+    "settings_setCustomFieldPlacement": "Обновлено расположение пользовательского поля"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -265,6 +274,7 @@
     "whatsapp_send": "Отправлено сообщение WhatsApp клиенту {name}",
     "work_bay_create": "Создан пост «{name}»",
     "work_bay_update": "Обновлён пост «{name}»",
-    "work_bay_delete": "Удалён пост {id}"
+    "work_bay_delete": "Удалён пост {id}",
+    "settings_setCustomFieldPlacement": "Изменено место печати пользовательского поля"
   }
 }

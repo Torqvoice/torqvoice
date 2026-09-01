@@ -166,6 +166,28 @@ describe('the routes implement the manifest', () => {
   const exportRoute = fs.readFileSync('src/app/api/protected/backup/export/route.ts', 'utf-8')
   const importRoute = fs.readFileSync('src/app/api/protected/backup/import/route.ts', 'utf-8')
 
+  it('restores every nested entity on the way back in', () => {
+    // The two tests below only cover top-level keys, because a nested entity
+    // has no key of its own. That left a hole: a model could be classified in
+    // the manifest, so the schema test passed, while neither route carried it
+    // and a restore quietly dropped the rows. TimeEntry shipped that way.
+    //
+    // The export side cannot be checked this way, because a relation is named
+    // for the field rather than the model (ServicePart arrives as partItems).
+    // The import side always reaches the model through its Prisma accessor.
+    const missing = BACKUP_ENTITIES.filter((entity) => entity.nestedUnder)
+      .filter((entity) => {
+        const accessor = entity.model.charAt(0).toLowerCase() + entity.model.slice(1)
+        return !importRoute.includes(`tx.${accessor}.`)
+      })
+      .map((entity) => entity.model)
+
+    expect(
+      missing,
+      `Nested in the manifest, but the import never writes them: ${missing.join(', ')}`
+    ).toEqual([])
+  })
+
   it('writes every top-level key on the way out', () => {
     const missing = topLevelEntities()
       .filter((entity) => !exportRoute.includes(`data.${entity.key} =`))

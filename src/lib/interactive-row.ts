@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent } from 'react'
 
 /**
  * Spread onto a clickable row — a `<TableRow>` or a list-row `<div>` — to make
@@ -19,15 +19,15 @@ import type { KeyboardEvent } from "react";
  */
 export function interactiveRow(activate: () => void) {
   return {
-    "data-row-interactive": true,
+    'data-row-interactive': true,
     tabIndex: 0,
     onClick: activate,
     onKeyDown: (e: KeyboardEvent<HTMLElement>) => {
-      if (e.target !== e.currentTarget) return;
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        activate();
+      if (e.target !== e.currentTarget) return
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        activate()
       }
     },
-  };
+  }
 }

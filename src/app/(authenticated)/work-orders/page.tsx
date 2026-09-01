@@ -1,43 +1,48 @@
-import { getTranslations } from "next-intl/server";
-import { getWorkOrders } from "@/features/vehicles/Actions/serviceActions";
-import { getSettings } from "@/features/settings/Actions/settingsActions";
-import { SETTING_KEYS } from "@/features/settings/Schema/settingsSchema";
-import { getVehicles } from "@/features/vehicles/Actions/vehicleActions";
-import { getCustomersList } from "@/features/customers/Actions/customerActions";
-import { getAuthContext } from "@/lib/get-auth-context";
-import { getFeatures } from "@/lib/features";
-import { WorkOrdersClient } from "./work-orders-client";
-import { PageHeader } from "@/components/page-header";
+import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { getTranslations } from 'next-intl/server'
+import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
+import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { getCustomersList } from '@/features/customers/Actions/customerActions'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { getFeatures } from '@/lib/features'
+import { WorkOrdersClient } from './work-orders-client'
+import { PageHeader } from '@/components/page-header'
 
 export default async function WorkOrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    page?: string;
-    pageSize?: string;
-    search?: string;
-    status?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }>;
+    page?: string
+    pageSize?: string
+    search?: string
+    status?: string
+    sortBy?: string
+    sortOrder?: string
+  }>
 }) {
-  const params = await searchParams;
+  const params = await searchParams
+  const sort = await resolveListSort('workOrders', params, {
+    sortBy: 'serviceDate',
+    sortOrder: 'desc',
+  })
   const [result, settingsResult, vehiclesResult, customersResult, authCtx] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       status: params.status,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder as "asc" | "desc" | undefined,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
     }),
     getSettings([SETTING_KEYS.CURRENCY_CODE]),
     getVehicles(),
     getCustomersList(),
     getAuthContext(),
-  ]);
+  ])
 
-  const features = authCtx ? await getFeatures(authCtx.organizationId) : null;
+  const features = authCtx ? await getFeatures(authCtx.organizationId) : null
 
   if (!result.success || !result.data) {
     return (
@@ -45,28 +50,27 @@ export default async function WorkOrdersPage({
         <PageHeader />
         <div className="flex h-[50vh] items-center justify-center">
           <p className="text-muted-foreground">
-            {result.error || (await getTranslations("workOrders.page"))("error")}
+            {result.error || (await getTranslations('workOrders.page'))('error')}
           </p>
         </div>
       </>
-    );
+    )
   }
 
-  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {};
-  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || "USD";
-  const vehicles = vehiclesResult.success && vehiclesResult.data
-    ? vehiclesResult.data.map((v) => ({
-        id: v.id,
-        make: v.make,
-        model: v.model,
-        year: v.year,
-        licensePlate: v.licensePlate,
-        customer: v.customer,
-      }))
-    : [];
-  const customers = customersResult.success && customersResult.data
-    ? customersResult.data
-    : [];
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = settings[SETTING_KEYS.CURRENCY_CODE] || 'USD'
+  const vehicles =
+    vehiclesResult.success && vehiclesResult.data
+      ? vehiclesResult.data.map((v) => ({
+          id: v.id,
+          make: v.make,
+          model: v.model,
+          year: v.year,
+          licensePlate: v.licensePlate,
+          customer: v.customer,
+        }))
+      : []
+  const customers = customersResult.success && customersResult.data ? customersResult.data : []
 
   return (
     <>
@@ -77,14 +81,14 @@ export default async function WorkOrdersPage({
           vehicles={vehicles}
           customers={customers}
           currencyCode={currencyCode}
-          search={params.search || ""}
-          statusFilter={params.status || "all"}
-          sortBy={params.sortBy || "serviceDate"}
-          sortOrder={(params.sortOrder as "asc" | "desc") || "desc"}
+          search={params.search || ''}
+          statusFilter={params.status || 'all'}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
           smsEnabled={features?.sms ?? false}
           emailEnabled={features?.smtp ?? false}
         />
       </div>
     </>
-  );
+  )
 }

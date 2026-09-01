@@ -19,6 +19,12 @@
     "description": "Description",
     "qty": "Qty",
     "unitPrice": "Unit Price",
+    "items": "Items",
+    "pos": "#",
+    "unitOfMeasure": "Unit",
+    "invoiceNumberLabel": "Invoice No.",
+    "customerNumberLabel": "Customer No.",
+    "dateLabel": "Date",
     "total": "Total",
     "labor": "Labor & Services",
     "hours": "Hours",
@@ -64,7 +70,9 @@
     "viewPortal": "View your portal: {url}",
     "professionalWorkshop": "Professional Workshop Management",
     "tel": "Tel: {phone}",
-    "org": "Org: {org}"
+    "org": "Org: {org}",
+    "customFieldsTitle": "Additional Information",
+    "telegramConnect": "Chat with us on Telegram"
   },
   "quote": {
     "title": "QUOTE",
@@ -100,7 +108,10 @@
     "validityFooterUntil": "This quote is valid until {date}",
     "validityFooter30": "This quote is valid for 30 days",
     "viewPortal": "View your portal: {url}",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFieldsTitle": "Additional Information",
+    "quoteNumberLabel": "Quote No.",
+    "validUntilLabel": "Valid Until"
   },
   "inspection": {
     "title": "VEHICLE INSPECTION",

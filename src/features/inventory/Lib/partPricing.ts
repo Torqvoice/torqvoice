@@ -130,7 +130,7 @@ export function lineTotal(quantity: unknown, unitPrice: unknown): number {
  */
 export function readPartsPricingSettings(
   settings: Record<string, string | undefined>,
-  keys: { defaultMarkupPercent: string; markupAppliesToInventory: string },
+  keys: { defaultMarkupPercent: string; markupAppliesToInventory: string }
 ): Required<PricingSettings> {
   return {
     defaultMarkupPercent: parseNumber(settings[keys.defaultMarkupPercent]),
@@ -140,7 +140,7 @@ export function readPartsPricingSettings(
 
 export function resolvePartPrice(
   part: PricedPart,
-  { defaultMarkupPercent = 0, markupAppliesToInventory = false }: PricingSettings = {},
+  { defaultMarkupPercent = 0, markupAppliesToInventory = false }: PricingSettings = {}
 ): ResolvedPrice {
   const cost = parseNumber(part.unitCost)
   const sell = parseNumber(part.sellPrice)
@@ -157,4 +157,96 @@ export function resolvePartPrice(
   // a part with no sell price set would otherwise be billed at zero, which is
   // worse than billing at cost and far easier to miss.
   return { unitPrice: sell > 0 ? sell : cost, markupPercent: 0 }
+}
+
+/**
+ * The three linked money fields on a parts line, plus whether the price has
+ * been set by hand.
+ */
+export interface PricedRow {
+  unitCost: unknown
+  markupPercent: unknown
+  unitPrice: unknown
+  /** See {@link repricePartRow}. Absent means "still following the formula". */
+  priceOverridden?: boolean
+}
+
+export type PricedRowField = 'unitCost' | 'markupPercent' | 'unitPrice'
+
+export interface RepricedRow extends ResolvedPrice {
+  priceOverridden: boolean
+}
+
+/**
+ * Does this row's price disagree with what its cost and markup imply?
+ *
+ * Only for seeding {@link repricePartRow} when a row first arrives from the
+ * database, where it is evaluated once against settled values. It must never
+ * be re-evaluated while someone is typing: each keystroke moves the numbers,
+ * and the answer flips as soon as an intermediate value happens to line up.
+ */
+export function isPriceOverridden(row: {
+  unitCost: unknown
+  markupPercent: unknown
+  unitPrice: unknown
+}): boolean {
+  return roundMoney(row.unitPrice) !== priceFromCostAndMarkup(row.unitCost, row.markupPercent)
+}
+
+/**
+ * Reconciles the three linked fields on a parts line after one of them is
+ * edited, so the row stays consistent and the markup never lies about the
+ * real margin.
+ *
+ * Editing the price makes it an override: it is a decision, and a later edit
+ * to the cost restates the margin instead of overwriting what was typed.
+ * Editing the markup is the opposite instruction, price this from cost, so it
+ * hands pricing back to the formula and clears the override.
+ *
+ * Two things here exist because these fields update on every keystroke, and a
+ * value being typed is not a value someone meant:
+ *
+ *  - The override is remembered rather than inferred from the numbers. Typing
+ *    a cost of 1500 against a price of 1000 passes through 1, and at a cost of
+ *    1 that price is exactly what a markup of 99900% implies, so anything
+ *    reading the numbers alone concludes the price is derived and multiplies
+ *    it up to 1500000.
+ *  - A margin is only restated on `commit`, when the field is left. Derived
+ *    live, it reported 99900%, then 6566.7%, then 566.7% before settling, and
+ *    a wildly wrong margin on screen reads as broken even when the price
+ *    beside it is right.
+ *
+ * The price still tracks a cost as it is typed, because there it simply
+ * mirrors the digits going in and stays recognisable the whole way.
+ */
+export function repricePartRow(
+  row: PricedRow,
+  field: PricedRowField,
+  { commit = false }: { commit?: boolean } = {}
+): RepricedRow {
+  if (field === 'unitPrice') {
+    return {
+      unitPrice: roundMoney(row.unitPrice),
+      markupPercent: markupFromCostAndPrice(row.unitCost, row.unitPrice),
+      priceOverridden: true,
+    }
+  }
+
+  if (field === 'markupPercent' || !row.priceOverridden) {
+    return {
+      unitPrice: priceFromCostAndMarkup(row.unitCost, row.markupPercent),
+      markupPercent: parseNumber(row.markupPercent),
+      priceOverridden: false,
+    }
+  }
+
+  // Cost changed under a hand-set price: hold the price, and restate the
+  // margin only once the cost has stopped moving.
+  return {
+    unitPrice: roundMoney(row.unitPrice),
+    markupPercent: commit
+      ? markupFromCostAndPrice(row.unitCost, row.unitPrice)
+      : parseNumber(row.markupPercent),
+    priceOverridden: true,
+  }
 }

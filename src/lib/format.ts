@@ -49,6 +49,9 @@ const CURRENCY_LOCALES: Record<string, string> = {
   NGN: 'en-NG',
   KES: 'en-KE',
   MAD: 'en-MA',
+  // French-Algerian formatting gives the idiomatic Latin "DA" symbol; the
+  // Arabic locale's د.ج would fall outside the PDF font's encoding.
+  DZD: 'fr-DZ',
   GHS: 'en-GH',
   QAR: 'en',
   KWD: 'en',
@@ -133,10 +136,9 @@ export function formatCurrency(
         const override = CURRENCY_SYMBOL_OVERRIDES[currencyCode]
         // If the original symbol was glued to a digit/letter (e.g. "¥1,234.56"),
         // a multi-character override needs a space for readability.
-        result = result.replace(sym, override).replace(
-          new RegExp(`(${override.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=\\d)`),
-          '$1 '
-        )
+        result = result
+          .replace(sym, override)
+          .replace(new RegExp(`(${override.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=\\d)`), '$1 ')
       }
     }
     return result

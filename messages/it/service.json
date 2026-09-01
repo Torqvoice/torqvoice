@@ -185,7 +185,11 @@
     "paidBadge": "PAGATO",
     "entityLabel": "Fattura",
     "emailSubject": "Conferma Pagamento",
-    "statusEmailSubject": "Aggiornamento dello stato del servizio"
+    "statusEmailSubject": "Aggiornamento dello stato del servizio",
+    "markCompletedTitle": "Contrassegnare questa fattura come completata?",
+    "markCompletedDescription": "È stata inviata al cliente ma risulta ancora non conclusa, quindi resterà visibile sulla lavagna.",
+    "markCompletedConfirm": "Segna come completata",
+    "lockedFieldsetLabel": "Fattura bloccata, modifica disattivata"
   },
   "payments": {
     "title": "Pagamenti",
@@ -344,7 +348,23 @@
     "setDefaults": "Valori predefiniti",
     "workBay": "Postazione",
     "selectWorkBay": "Seleziona postazione…",
-    "noWorkBay": "Nessuna postazione"
+    "noWorkBay": "Nessuna postazione",
+    "technicians": "Tecnici",
+    "otherTeamMembers": "Altri membri del team",
+    "makeTechnician": "Lo rende un tecnico",
+    "addSomeoneNew": "Aggiungi qualcuno",
+    "notOnBoard": "Non ancora sulla lavagna",
+    "putOnBoard": "Metti sulla lavagna",
+    "slotTaken": "{count, plural, one {Questa fascia è già occupata} other {Questa fascia ha # conflitti}}",
+    "anotherJob": "un altro lavoro",
+    "clashTechnician": "il tecnico è occupato",
+    "clashBay": "la postazione è occupata",
+    "clashBoth": "entrambi sono occupati",
+    "bookedAnyway": "Salvato comunque. Cambia l'orario o scegli la prossima fascia libera.",
+    "pickNextAvailable": "Scegli la prossima fascia libera",
+    "findingSlot": "Ricerca di una fascia…",
+    "slotPicked": "Spostato sulla prossima fascia libera",
+    "noSlotFound": "Nessuna fascia libera trovata nelle prossime settimane"
   },
   "notifications": {
     "title": "Notifiche al cliente",
@@ -381,5 +401,14 @@
       "title": "Impostazioni garanzia predefinite",
       "description": "Imposta i termini di garanzia predefiniti per i nuovi interventi"
     }
+  },
+  "concerns": {
+    "title": "Segnalazioni del cliente",
+    "addFirst": "Aggiungi una segnalazione del cliente",
+    "add": "Aggiungine un altro",
+    "placeholder": "C'è un rumore dietro quando freno",
+    "remove": "Rimuovi questo punto",
+    "notAnswered": "Non è ancora stato trovato nulla",
+    "answered": "{count} riscontro/i su questo"
   }
 }

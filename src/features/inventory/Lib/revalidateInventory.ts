@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from 'next/cache'
 
 /**
  * Invalidate every inventory view after stock has moved.
@@ -13,5 +13,5 @@ import { revalidatePath } from "next/cache";
  * `StockMovement`.
  */
 export function revalidateInventory() {
-  revalidatePath("/inventory", "layout");
+  revalidatePath('/inventory', 'layout')
 }

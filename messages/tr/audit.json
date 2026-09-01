@@ -140,9 +140,18 @@
     "work_bay_create": "Çalışma alanı oluşturuldu",
     "work_bay_update": "Çalışma alanı güncellendi",
     "work_bay_delete": "Çalışma alanı silindi",
+    "auth_appSetupRedeemed": "Kurulum koduyla giriş",
+    "auth_technicianCodeSignIn": "Tek kullanımlık kodla giriş",
+    "team_createAppSetupCode": "Uygulama kurulum kodu verildi",
+    "team_createTechnicianAccount": "Teknisyen hesabı oluşturuldu",
+    "team_removeTechnicianAccess": "Teknisyen kaldırıldı ve erişimi iptal edildi",
+    "team_setMemberTechnician": "Bir üyenin teknisyen olup olmadığı değiştirildi",
     "settings_whatsappUpdated": "WhatsApp ayarları güncellendi",
+    "settings_whatsappDisconnected": "WhatsApp bağlantısı kesildi",
     "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
-    "settings_whatsappDisconnected": "WhatsApp bağlantısı kesildi"
+    "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi",
+    "team_createDefaultRoles": "Standart roller oluşturuldu",
+    "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -265,6 +274,7 @@
     "whatsapp_send": "{name} kişisine WhatsApp mesajı gönderildi",
     "work_bay_create": "\"{name}\" çalışma alanı oluşturuldu",
     "work_bay_update": "\"{name}\" çalışma alanı güncellendi",
-    "work_bay_delete": "{id} çalışma alanı silindi"
+    "work_bay_delete": "{id} çalışma alanı silindi",
+    "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi"
   }
 }

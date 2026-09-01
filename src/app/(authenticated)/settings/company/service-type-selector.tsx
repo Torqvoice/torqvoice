@@ -1,36 +1,35 @@
-"use client";
+'use client'
 
-import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslations } from 'next-intl'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Car, Ship } from "lucide-react";
+} from '@/components/ui/select'
+import { Car, Ship } from 'lucide-react'
 
 interface ServiceTypeSelectorProps {
-  serviceType: string;
-  onServiceTypeChange: (value: string) => void;
+  serviceType: string
+  onServiceTypeChange: (value: string) => void
 }
 
-export function ServiceTypeSelector({ serviceType, onServiceTypeChange }: ServiceTypeSelectorProps) {
-  const t = useTranslations("settings");
+export function ServiceTypeSelector({
+  serviceType,
+  onServiceTypeChange,
+}: ServiceTypeSelectorProps) {
+  const t = useTranslations('settings')
 
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm text-muted-foreground">
-          {t("company.serviceType")}
-        </CardTitle>
-        <p className="text-xs text-muted-foreground">
-          {t("company.serviceTypeDescription")}
-        </p>
+        <CardTitle className="text-sm text-muted-foreground">{t('company.serviceType')}</CardTitle>
+        <p className="text-xs text-muted-foreground">{t('company.serviceTypeDescription')}</p>
       </CardHeader>
       <CardContent>
-        <Select value={serviceType || "automotive"} onValueChange={onServiceTypeChange}>
+        <Select value={serviceType || 'automotive'} onValueChange={onServiceTypeChange}>
           <SelectTrigger className="w-full sm:w-64">
             <SelectValue />
           </SelectTrigger>
@@ -38,18 +37,18 @@ export function ServiceTypeSelector({ serviceType, onServiceTypeChange }: Servic
             <SelectItem value="automotive">
               <span className="flex items-center gap-2">
                 <Car className="h-4 w-4" />
-                {t("company.automotive")}
+                {t('company.automotive')}
               </span>
             </SelectItem>
             <SelectItem value="marine">
               <span className="flex items-center gap-2">
                 <Ship className="h-4 w-4" />
-                {t("company.marineService")}
+                {t('company.marineService')}
               </span>
             </SelectItem>
           </SelectContent>
         </Select>
       </CardContent>
     </Card>
-  );
+  )
 }

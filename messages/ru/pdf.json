@@ -19,6 +19,12 @@
     "description": "Описание",
     "qty": "Кол-во",
     "unitPrice": "Цена за ед.",
+    "items": "Позиции",
+    "pos": "№",
+    "unitOfMeasure": "Ед.",
+    "invoiceNumberLabel": "№ счёта",
+    "customerNumberLabel": "№ клиента",
+    "dateLabel": "Дата",
     "total": "Итого",
     "labor": "Работа",
     "hours": "Часы",
@@ -64,7 +70,9 @@
     "professionalWorkshop": "Профессиональное управление мастерской",
     "tel": "Тел: {phone}",
     "org": "Орг: {org}",
-    "qtyOrHours": "Услуга / Часы"
+    "qtyOrHours": "Услуга / Часы",
+    "customFieldsTitle": "Дополнительная информация",
+    "telegramConnect": "Напишите нам в Telegram"
   },
   "quote": {
     "title": "КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ",
@@ -100,7 +108,10 @@
     "validityFooter30": "Это предложение действительно 30 дней",
     "viewPortal": "Ваш портал: {url}",
     "tel": "Тел: {phone}",
-    "qtyOrHours": "Услуга / Часы"
+    "qtyOrHours": "Услуга / Часы",
+    "customFieldsTitle": "Дополнительная информация",
+    "quoteNumberLabel": "№ предложения",
+    "validUntilLabel": "Действительно до"
   },
   "inspection": {
     "title": "ОСМОТР ТРАНСПОРТНОГО СРЕДСТВА",

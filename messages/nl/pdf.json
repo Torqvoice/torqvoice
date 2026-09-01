@@ -19,6 +19,12 @@
     "description": "Omschrijving",
     "qty": "Aantal",
     "unitPrice": "Stukprijs",
+    "items": "Artikelen",
+    "pos": "Nr.",
+    "unitOfMeasure": "Eenheid",
+    "invoiceNumberLabel": "Factuurnr.",
+    "customerNumberLabel": "Klantnr.",
+    "dateLabel": "Datum",
     "total": "Totaal",
     "labor": "Arbeid",
     "hours": "Uren",
@@ -64,7 +70,9 @@
     "professionalWorkshop": "Professioneel werkplaatsbeheer",
     "tel": "Tel: {phone}",
     "org": "KvK: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Aanvullende informatie",
+    "telegramConnect": "Chat met ons op Telegram"
   },
   "quote": {
     "title": "OFFERTE",
@@ -100,7 +108,10 @@
     "validityFooter30": "Deze offerte is 30 dagen geldig",
     "viewPortal": "Bekijk uw portaal: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Aanvullende informatie",
+    "quoteNumberLabel": "Offertenr.",
+    "validUntilLabel": "Geldig tot"
   },
   "inspection": {
     "title": "VOERTUIGINSPECTIE",

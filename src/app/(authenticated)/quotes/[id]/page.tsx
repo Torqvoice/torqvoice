@@ -4,6 +4,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { getQuoteLockState } from '@/lib/document-lock.server'
 import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
 import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
@@ -22,11 +23,13 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     getInventoryPartsList(),
     getAuthContext(),
   ])
-  const inventoryParts =
-    inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
+  const inventoryParts = inventoryResult.success && inventoryResult.data ? inventoryResult.data : []
 
   const orgId = authContext?.organizationId
   const features = orgId ? await getFeatures(orgId) : null
+  const lockState = orgId
+    ? await getQuoteLockState(id, orgId)
+    : { locked: false, reason: null, unlockedAt: null }
 
   if (!result.success || !result.data) {
     return (
@@ -61,6 +64,8 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
       <QuotePageClient
         quote={result.data}
         organizationId={organizationId}
+        lockState={lockState}
+        canUnlock={authContext?.isAdmin ?? false}
         imageAttachments={imageAttachments}
         documentAttachments={documentAttachments}
         maxImages={features?.maxImagesPerService}

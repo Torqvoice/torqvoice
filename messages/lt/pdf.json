@@ -19,6 +19,12 @@
     "description": "Aprašymas",
     "qty": "Kiekis",
     "unitPrice": "Vnt. kaina",
+    "items": "Pozicijos",
+    "pos": "Nr.",
+    "unitOfMeasure": "Mato vnt.",
+    "invoiceNumberLabel": "Sąskaitos Nr.",
+    "customerNumberLabel": "Kliento Nr.",
+    "dateLabel": "Data",
     "total": "Suma",
     "labor": "Darbai ir paslaugos",
     "hours": "Valandos",
@@ -64,7 +70,9 @@
     "viewPortal": "Peržiūrėkite savo portalą: {url}",
     "professionalWorkshop": "Profesionalus dirbtuvių valdymas",
     "tel": "Tel.: {phone}",
-    "org": "Įm. kodas: {org}"
+    "org": "Įm. kodas: {org}",
+    "customFieldsTitle": "Papildoma informacija",
+    "telegramConnect": "Susisiekite su mumis per Telegram"
   },
   "quote": {
     "title": "PASIŪLYMAS",
@@ -100,7 +108,10 @@
     "validityFooterUntil": "Šis pasiūlymas galioja iki {date}",
     "validityFooter30": "Šis pasiūlymas galioja 30 dienų",
     "viewPortal": "Peržiūrėkite savo portalą: {url}",
-    "tel": "Tel.: {phone}"
+    "tel": "Tel.: {phone}",
+    "customFieldsTitle": "Papildoma informacija",
+    "quoteNumberLabel": "Pasiūlymo nr.",
+    "validUntilLabel": "Galioja iki"
   },
   "inspection": {
     "title": "TRANSPORTO PRIEMONĖS APŽIŪRA",

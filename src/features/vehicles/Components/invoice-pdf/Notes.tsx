@@ -1,13 +1,7 @@
 import React from 'react'
 import { Text, View } from '@react-pdf/renderer'
-import type { InvoiceSettingsProps, OtherAttachment } from './types'
-import { getFontBold } from './styles'
 import type { Style } from '@react-pdf/types'
 import { sanitizeHtml } from '@/lib/sanitize-html'
-
-function fillTemplate(template: string, values: Record<string, string>): string {
-  return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
-}
 
 // Simple HTML token types
 type Token =
@@ -119,11 +113,9 @@ export function HtmlToPdf({
         )
       case 'em':
       case 'i':
-        return (
-          <Text key={k} style={{ fontStyle: 'italic' }}>
-            {children}
-          </Text>
-        )
+        // The embedded families carry no italic face, and react-pdf throws
+        // rather than substituting one, so emphasis prints in the regular cut.
+        return <Text key={k}>{children}</Text>
       case 'u':
         return (
           <Text key={k} style={{ textDecoration: 'underline' }}>
@@ -215,181 +207,4 @@ export function HtmlToPdf({
   }
 
   return <View>{renderNodes(ast)}</View>
-}
-
-function hasContent(html: string | null): boolean {
-  if (!html) return false
-  return html.replace(/<[^>]*>/g, '').trim().length > 0
-}
-
-// ---------------------------------------------------------------------------
-// Individual section components – used by InvoicePDF when layout ordering is
-// active so that notes, bank account, and diagnostic notes can be rendered
-// independently and in any order.
-// ---------------------------------------------------------------------------
-
-export function NotesOnly({
-  invoiceNotes,
-  otherAttachments,
-  pdfAttachmentNames,
-  fontFamily,
-  styles,
-  labels,
-}: {
-  invoiceNotes: string | null
-  otherAttachments: OtherAttachment[]
-  pdfAttachmentNames: string[]
-  fontFamily: string
-  styles: Record<string, Style>
-  labels: Record<string, string>
-}) {
-  const fontBold = getFontBold(fontFamily)
-  return (
-    <>
-      {hasContent(invoiceNotes) && (
-        <View wrap={false} style={styles.notesSection}>
-          <Text style={styles.notesLabel}>{labels.notes || 'Notes'}</Text>
-          <HtmlToPdf html={invoiceNotes!} baseStyle={styles.notesText} fontBold={fontBold} />
-        </View>
-      )}
-
-      {(otherAttachments.length > 0 || pdfAttachmentNames.length > 0) && (
-        <View wrap={false} style={{ ...styles.notesSection, marginTop: 8 }}>
-          <Text style={styles.notesLabel}>{labels.attachedDocuments || 'Attached Documents'}</Text>
-          {pdfAttachmentNames.map((name, i) => (
-            <Text key={`pdf-${i}`} style={styles.notesText}>
-              {labels.seeAppendedPages
-                ? fillTemplate(labels.seeAppendedPages, { name })
-                : `${name} (see appended pages)`}
-            </Text>
-          ))}
-          {otherAttachments.map((att, i) => (
-            <Text key={i} style={styles.notesText}>
-              {att.fileName}
-            </Text>
-          ))}
-        </View>
-      )}
-    </>
-  )
-}
-
-export function BankAccountSection({
-  invoiceSettings,
-  fontFamily,
-  styles,
-  labels,
-  visibleFields,
-  primaryColor = '#d97706',
-  dueDate,
-  invoiceDate,
-}: {
-  invoiceSettings?: InvoiceSettingsProps
-  fontFamily: string
-  styles: Record<string, Style>
-  labels: Record<string, string>
-  /** When provided by layoutConfig, takes priority over individual toggle props */
-  visibleFields?: Set<string> | null
-  primaryColor?: string
-  dueDate?: string | null
-  invoiceDate?: string | null
-}) {
-  const fontBold = getFontBold(fontFamily)
-
-  // layoutConfig fields take priority over individual toggle props
-  const showBankAccount = visibleFields
-    ? visibleFields.has('bank_account')
-    : (invoiceSettings?.showBankAccount ?? false)
-  const showOrgNumber = visibleFields
-    ? visibleFields.has('org_number')
-    : (invoiceSettings?.showOrgNumber ?? false)
-
-  const hasBankAccount = showBankAccount && invoiceSettings?.bankAccount
-  const hasOrgNumber = showOrgNumber && invoiceSettings?.orgNumber
-  const netDays =
-    dueDate && invoiceDate
-      ? Math.ceil((new Date(dueDate).getTime() - new Date(invoiceDate).getTime()) / 86400000)
-      : null
-  const paymentTermsText =
-    netDays !== null && netDays > 0
-      ? labels.netDays
-        ? labels.netDays.replace('{days}', String(netDays))
-        : `Net ${netDays} Days`
-      : invoiceSettings?.paymentTerms || null
-  const hasPaymentTerms = !!paymentTermsText
-  const hasDueDate = !!dueDate
-
-  if (!hasBankAccount && !hasOrgNumber && !hasPaymentTerms && !hasDueDate) return null
-
-  // Convert hex color to rgba-like background (10% opacity)
-  const bgColor = `${primaryColor}14`
-  const borderColor = primaryColor
-
-  return (
-    <View
-      wrap={false}
-      style={{
-        marginTop: 12,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: borderColor,
-        borderRadius: 4,
-        backgroundColor: bgColor,
-      }}
-    >
-      <Text
-        style={{
-          fontSize: 9,
-          fontFamily: fontBold,
-          color: primaryColor,
-          textTransform: 'uppercase',
-          letterSpacing: 0.5,
-          marginBottom: 8,
-        }}
-      >
-        {labels.paymentInformation || 'Payment Information'}
-      </Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-        {hasBankAccount && (
-          <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
-              {labels.bankAccount || 'Bank Account'}
-            </Text>
-            {invoiceSettings!
-              .bankAccount!.split(/\r?\n/)
-              .filter((line) => line.trim())
-              .map((line, i) => (
-                <Text key={i} style={{ fontSize: 10, fontFamily: fontBold }}>
-                  {line}
-                </Text>
-              ))}
-          </View>
-        )}
-        {hasOrgNumber && (
-          <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
-              {labels.orgNumberLabel || 'Org. Number'}
-            </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{invoiceSettings!.orgNumber}</Text>
-          </View>
-        )}
-        {hasPaymentTerms && (
-          <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
-              {labels.paymentTermsLabel || 'Payment Terms'}
-            </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{paymentTermsText}</Text>
-          </View>
-        )}
-        {hasDueDate && (
-          <View style={{ minWidth: '40%' }}>
-            <Text style={{ fontSize: 8, color: '#6b7280', marginBottom: 2 }}>
-              {labels.dueDateLabel || 'Due Date'}
-            </Text>
-            <Text style={{ fontSize: 10, fontFamily: fontBold }}>{dueDate}</Text>
-          </View>
-        )}
-      </View>
-    </View>
-  )
 }

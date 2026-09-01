@@ -28,7 +28,10 @@ function calculateNextRunDate(current: Date, frequency: string): Date {
 
 async function generateInvoiceNumber(organizationId: string): Promise<string> {
   const settings = await db.appSetting.findMany({
-    where: { organizationId, key: { in: ['workshop.invoicePrefix', 'workshop.invoiceStartNumber'] } },
+    where: {
+      organizationId,
+      key: { in: ['workshop.invoicePrefix', 'workshop.invoiceStartNumber'] },
+    },
   })
 
   const settingsMap: Record<string, string> = {}
@@ -110,13 +113,20 @@ export function processRecurringInvoices() {
                 vehicleId: ri.vehicleId,
                 partItems: {
                   create: ri.templateParts.map((p) => ({
-                    name: p.name, partNumber: p.partNumber,
-                    quantity: p.quantity, unitPrice: p.unitPrice, total: lineTotal(p.quantity, p.unitPrice),
+                    name: p.name,
+                    partNumber: p.partNumber,
+                    quantity: p.quantity,
+                    unitPrice: p.unitPrice,
+                    total: lineTotal(p.quantity, p.unitPrice),
                   })),
                 },
                 laborItems: {
                   create: ri.templateLabor.map((l) => ({
-                    description: l.description, hours: l.hours, rate: l.rate, total: l.hours * l.rate, pricingType: l.pricingType || "hourly",
+                    description: l.description,
+                    hours: l.hours,
+                    rate: l.rate,
+                    total: l.hours * l.rate,
+                    pricingType: l.pricingType || 'hourly',
                   })),
                 },
               },

@@ -409,18 +409,35 @@ describe('Permission bypass — privileged roles skip permission checks', () => 
     expect(result.error).not.toBe('Insufficient permissions')
   })
 
-  it('member without custom role bypasses permission checks (full access by design)', async () => {
-    setupMemberNoCustomRole()
-    vi.mocked(db.vehicle.findMany).mockResolvedValue([])
-    const result = await getVehicles()
-    expect(result.error).not.toBe('Insufficient permissions')
-  })
-
   it('super admin bypasses all permission checks even without org membership', async () => {
     setupSuperAdmin()
     vi.mocked(db.vehicle.findMany).mockResolvedValue([])
     const result = await getVehicles()
     expect(result.error).not.toBe('Insufficient permissions')
+  })
+})
+
+describe('Permission denial — member with no role at all', () => {
+  // This used to be listed as a bypass, "full access by design". It was not by
+  // design: withAuth skipped the check whenever a member had no custom role,
+  // while the settings screen told admins the opposite. A member with no role
+  // is a member with no permissions.
+
+  it('member without a custom role is denied', async () => {
+    setupMemberNoCustomRole()
+    vi.mocked(db.vehicle.findMany).mockResolvedValue([])
+    const result = await getVehicles()
+    expect(result).toEqual(
+      expect.objectContaining({ success: false, error: 'Insufficient permissions' })
+    )
+  })
+
+  it('member without a custom role is still denied on a write', async () => {
+    setupMemberNoCustomRole()
+    const result = await createVehicle({})
+    expect(result).toEqual(
+      expect.objectContaining({ success: false, error: 'Insufficient permissions' })
+    )
   })
 })
 

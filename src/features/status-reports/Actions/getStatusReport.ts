@@ -1,8 +1,8 @@
-"use server";
+'use server'
 
-import { db } from "@/lib/db";
-import { withAuth } from "@/lib/with-auth";
-import { PermissionAction, PermissionSubject } from "@/lib/permissions";
+import { db } from '@/lib/db'
+import { withAuth } from '@/lib/with-auth'
+import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
 export async function getStatusReport(statusReportId: string) {
   return withAuth(
@@ -34,16 +34,14 @@ export async function getStatusReport(statusReportId: string) {
             select: { name: true },
           },
         },
-      });
+      })
 
-      if (!report) throw new Error("Status report not found");
+      if (!report) throw new Error('Status report not found')
 
-      return report;
+      return report
     },
     {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.SERVICES },
-      ],
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
     }
-  );
+  )
 }

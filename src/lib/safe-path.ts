@@ -1,4 +1,4 @@
-import path from "path";
+import path from 'path'
 
 /**
  * Safely resolve an archive- or user-supplied relative path against a trusted
@@ -15,17 +15,17 @@ export function resolveWithinDir(baseDir: string, relativePath: string): string 
   // Callers pass archive-/backup-relative entry paths; an absolute input is
   // never legitimate and could escape via a drive/root, so reject it outright.
   if (path.isAbsolute(relativePath)) {
-    return null;
+    return null
   }
-  const base = path.resolve(baseDir);
-  const target = path.resolve(base, relativePath);
+  const base = path.resolve(baseDir)
+  const target = path.resolve(base, relativePath)
   // Use path.relative rather than a string prefix check so this stays correct
   // when base is the filesystem root (where `base + sep` would be `//`) and on
   // Windows. `target` is inside `base` iff the relative path neither climbs
   // out ("..") nor is itself absolute.
-  const rel = path.relative(base, target);
-  if (rel === "" || (rel !== ".." && !rel.startsWith(".." + path.sep) && !path.isAbsolute(rel))) {
-    return target;
+  const rel = path.relative(base, target)
+  if (rel === '' || (rel !== '..' && !rel.startsWith('..' + path.sep) && !path.isAbsolute(rel))) {
+    return target
   }
-  return null;
+  return null
 }

@@ -7,9 +7,9 @@
  * breaks the build.
  */
 export const STOCK_MOVEMENT_REASONS = [
-  "service_record",
-  "service_record_deleted",
-  "quote_conversion",
-  "manual_adjustment",
-  "bulk_markup",
-] as const;
+  'service_record',
+  'service_record_deleted',
+  'quote_conversion',
+  'manual_adjustment',
+  'bulk_markup',
+] as const

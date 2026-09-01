@@ -1,7 +1,7 @@
 'use client'
 
 import { AppCard } from '@/components/app-card'
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
@@ -9,28 +9,29 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { backfillCustomerNumbers } from '@/features/customers/Actions/customerActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { FileText, Loader2, Save } from 'lucide-react'
+import { FileText, Loader2, Lock, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { useConfirm } from '@/components/confirm-dialog'
-import { InvoiceLayoutEditor } from '@/features/settings/Components/InvoiceLayoutEditor'
-import { InvoiceLayoutPreview } from '@/features/settings/Components/InvoiceLayoutPreview'
-import {
-  saveInvoiceLayoutConfig,
-  saveQuoteLayoutConfig,
-} from '@/features/settings/Actions/invoiceLayoutActions'
 import {
   type InvoiceLayoutConfig,
   getDefaultInvoiceLayout,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
 
-type TabType = 'general' | 'layout' | 'customFields'
+type TabType = 'general' | 'customFields'
 
 interface FieldDef {
   id: string
@@ -39,6 +40,7 @@ interface FieldDef {
   fieldType: string
   entityType: string
   options: string | null
+  defaultValue: string | null
   required: boolean
   sortOrder: number
   isActive: boolean
@@ -46,6 +48,8 @@ interface FieldDef {
 
 interface InvoiceSettingsProps {
   settings: Record<string, string>
+  /** Fills the layout preview with this workshop's own letterhead. */
+  workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
   unnumberedCustomers?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig
@@ -56,6 +60,7 @@ interface InvoiceSettingsProps {
 
 export function InvoiceSettings({
   settings,
+  workshop,
   unnumberedCustomers = 0,
   initialInvoiceLayout,
   initialQuoteLayout,
@@ -102,32 +107,18 @@ export function InvoiceSettings({
   const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
     settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
-
-  // Sections to hide from layout editor when features are disabled
-  const hiddenLayoutSections = useMemo(() => {
-    const hidden = new Set<string>()
-    if (!telegramEnabled) hidden.add('telegram_qr')
-    return hidden
-  }, [telegramEnabled])
-
-  // Layout tab state
-  const [invoiceLayout, setInvoiceLayout] = useState(
-    initialInvoiceLayout ?? getDefaultInvoiceLayout()
+  const [invoiceLockEnabled, setInvoiceLockEnabled] = useState(
+    settings[SETTING_KEYS.INVOICE_LOCK_ENABLED] === 'true'
   )
-  const [quoteLayout, setQuoteLayout] = useState(initialQuoteLayout ?? getDefaultInvoiceLayout())
-  const [layoutDocType, setLayoutDocType] = useState<'invoice' | 'quote'>('invoice')
-
-  // Template values from saved settings
-  const invoiceTemplate = {
-    primaryColor: settings[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706',
-    fontFamily: settings[SETTING_KEYS.INVOICE_FONT_FAMILY] || 'Helvetica',
-    headerStyle: settings[SETTING_KEYS.INVOICE_HEADER_STYLE] || 'standard',
-  }
-  const quoteTemplate = {
-    primaryColor: settings[SETTING_KEYS.QUOTE_PRIMARY_COLOR] || invoiceTemplate.primaryColor,
-    fontFamily: settings[SETTING_KEYS.QUOTE_FONT_FAMILY] || invoiceTemplate.fontFamily,
-    headerStyle: settings[SETTING_KEYS.QUOTE_HEADER_STYLE] || invoiceTemplate.headerStyle,
-  }
+  const [invoiceLockTrigger, setInvoiceLockTrigger] = useState(
+    settings[SETTING_KEYS.INVOICE_LOCK_TRIGGER] || 'paid'
+  )
+  const [quoteLockEnabled, setQuoteLockEnabled] = useState(
+    settings[SETTING_KEYS.QUOTE_LOCK_ENABLED] === 'true'
+  )
+  const [quoteLockTrigger, setQuoteLockTrigger] = useState(
+    settings[SETTING_KEYS.QUOTE_LOCK_TRIGGER] || 'accepted'
+  )
 
   const handleSaveGeneral = async () => {
     setSaving(true)
@@ -140,6 +131,10 @@ export function InvoiceSettings({
       [SETTING_KEYS.INVOICE_FOOTER_NOTE]: footerNote,
       [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
       [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
+      [SETTING_KEYS.INVOICE_LOCK_ENABLED]: invoiceLockEnabled ? 'true' : 'false',
+      [SETTING_KEYS.INVOICE_LOCK_TRIGGER]: invoiceLockTrigger,
+      [SETTING_KEYS.QUOTE_LOCK_ENABLED]: quoteLockEnabled ? 'true' : 'false',
+      [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: quoteLockTrigger,
     })
     setSaving(false)
     router.refresh()
@@ -168,32 +163,13 @@ export function InvoiceSettings({
     }
   }
 
-  const handleSaveLayout = async () => {
-    setSaving(true)
-    try {
-      if (layoutDocType === 'invoice') {
-        await saveInvoiceLayoutConfig(invoiceLayout)
-      } else {
-        await saveQuoteLayoutConfig(quoteLayout)
-      }
-      toast.success(t('invoice.layoutSaved'))
-    } catch {
-      toast.error(t('templates.failedSave'))
-    }
-    setSaving(false)
-  }
-
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
       <div>
         <h2 className="text-lg font-semibold">{t('invoice.title')}</h2>
         <p className="text-sm text-muted-foreground">
-          {tab === 'layout'
-            ? t('invoice.layoutDescription')
-            : tab === 'customFields'
-              ? t('customFields.description')
-              : t('invoice.description')}
+          {tab === 'customFields' ? t('customFields.description') : t('invoice.description')}
         </p>
       </div>
 
@@ -210,18 +186,6 @@ export function InvoiceSettings({
           )}
         >
           {t('invoice.tabs.general')}
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('layout')}
-          className={cn(
-            'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            tab === 'layout'
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          {t('invoice.tabs.layout')}
         </button>
         {customFieldsEnabled && (
           <button
@@ -241,14 +205,10 @@ export function InvoiceSettings({
 
       {tab === 'general' ? (
         <ReadOnlyWrapper>
-          <AppCard
-            icon={FileText}
-            title={t('invoice.tabs.general')}
-            contentClassName="space-y-6"
-          >
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold">{t('invoice.sectionInvoices')}</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
+          <AppCard icon={FileText} title={t('invoice.tabs.general')} contentClassName="space-y-6">
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">{t('invoice.sectionInvoices')}</h3>
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="invoicePrefix">{t('invoice.invoiceNumberFormat')}</Label>
                   <Input
@@ -298,240 +258,238 @@ export function InvoiceSettings({
                   />
                   <p className="text-xs text-muted-foreground">{t('invoice.dueDaysHint')}</p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
+                <Textarea
+                  id="footerNote"
+                  placeholder={t('invoice.footerPlaceholder')}
+                  rows={2}
+                  value={footerNote}
+                  onChange={(e) => setFooterNote(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">{t('invoice.sectionQuotes')}</h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="quotePrefix">{t('invoice.quoteNumberFormat')}</Label>
+                  <Input
+                    id="quotePrefix"
+                    placeholder="QT-"
+                    value={quotePrefix}
+                    onChange={(e) => setQuotePrefix(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t.rich('invoice.quoteNumberFormatHint', {
+                      code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
+                      bold: (chunks) => <span className="font-medium">{chunks}</span>,
+                      year: '{year}',
+                      preview:
+                        quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
+                    })}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="quoteValidDays">{t('invoice.quoteValidDays')}</Label>
+                  <Input
+                    id="quoteValidDays"
+                    type="number"
+                    min="0"
+                    placeholder="30"
+                    value={quoteValidDays}
+                    onChange={(e) => setQuoteValidDays(e.target.value)}
+                    className="w-32"
+                  />
+                  <p className="text-xs text-muted-foreground">{t('invoice.quoteValidDaysHint')}</p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">{t('invoice.sectionCustomers')}</h3>
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-xs text-muted-foreground">
+                  {unnumbered > 0
+                    ? t('invoice.assignCustomerNumbersHint', { count: unnumbered })
+                    : t('invoice.allCustomersNumbered')}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={assigning || unnumbered === 0}
+                  onClick={handleAssignCustomerNumbers}
+                >
+                  {assigning && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                  {t('invoice.assignCustomerNumbers')}
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <div>
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                  <Lock className="h-3.5 w-3.5" />
+                  {t('invoice.lockTitle')}
+                </h3>
+                <p className="text-xs text-muted-foreground">{t('invoice.lockDescription')}</p>
+              </div>
+
+              <div className="rounded-md border border-dashed p-3">
+                <p className="text-xs text-muted-foreground">{t('invoice.lockWhatItDoes')}</p>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t('invoice.lockWhatItAllows')}
+                </p>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  {t('invoice.lockUnlockNote')}
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="invoiceLockEnabled"
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span>{t('invoice.lockInvoicesLabel')}</span>
+                    <Switch
+                      id="invoiceLockEnabled"
+                      checked={invoiceLockEnabled}
+                      onCheckedChange={setInvoiceLockEnabled}
+                    />
+                  </Label>
+                  <Select
+                    value={invoiceLockTrigger}
+                    onValueChange={setInvoiceLockTrigger}
+                    disabled={!invoiceLockEnabled}
+                  >
+                    <SelectTrigger id="invoiceLockTrigger" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sent">{t('invoice.lockTriggerSent')}</SelectItem>
+                      <SelectItem value="paid">{t('invoice.lockTriggerPaid')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {invoiceLockTrigger === 'sent'
+                      ? t('invoice.lockTriggerSentHint')
+                      : t('invoice.lockTriggerPaidHint')}
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="footerNote">{t('invoice.customFooter')}</Label>
-                  <Textarea
-                    id="footerNote"
-                    placeholder={t('invoice.footerPlaceholder')}
-                    rows={2}
-                    value={footerNote}
-                    onChange={(e) => setFooterNote(e.target.value)}
+                  <Label
+                    htmlFor="quoteLockEnabled"
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span>{t('invoice.lockQuotesLabel')}</span>
+                    <Switch
+                      id="quoteLockEnabled"
+                      checked={quoteLockEnabled}
+                      onCheckedChange={setQuoteLockEnabled}
+                    />
+                  </Label>
+                  <Select
+                    value={quoteLockTrigger}
+                    onValueChange={setQuoteLockTrigger}
+                    disabled={!quoteLockEnabled}
+                  >
+                    <SelectTrigger id="quoteLockTrigger" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sent">{t('invoice.quoteLockTriggerSent')}</SelectItem>
+                      <SelectItem value="accepted">
+                        {t('invoice.quoteLockTriggerAccepted')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {quoteLockTrigger === 'sent'
+                      ? t('invoice.quoteLockTriggerSentHint')
+                      : t('invoice.quoteLockTriggerAcceptedHint')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="space-y-3">
+              <div>
+                <h3 className="text-sm font-semibold">{t('invoice.partsMarkupTitle')}</h3>
+                <p className="text-xs text-muted-foreground">
+                  {t('invoice.partsMarkupDescription')}
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="defaultMarkupPercent">{t('invoice.defaultMarkupPercent')}</Label>
+                  <Input
+                    id="defaultMarkupPercent"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    placeholder="0"
+                    value={defaultMarkupPercent}
+                    onChange={(e) => setDefaultMarkupPercent(e.target.value)}
+                    className="w-32"
                   />
-                  <p className="text-xs text-muted-foreground">{t('invoice.footerHint')}</p>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold">{t('invoice.sectionQuotes')}</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="quotePrefix">{t('invoice.quoteNumberFormat')}</Label>
-                    <Input
-                      id="quotePrefix"
-                      placeholder="QT-"
-                      value={quotePrefix}
-                      onChange={(e) => setQuotePrefix(e.target.value)}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t.rich('invoice.quoteNumberFormatHint', {
-                        code: (chunks) => <code className="rounded bg-muted px-1">{chunks}</code>,
-                        bold: (chunks) => <span className="font-medium">{chunks}</span>,
-                        year: '{year}',
-                        preview:
-                          quotePrefix.replace(/\{year\}/g, String(new Date().getFullYear())) + '1001',
-                      })}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="quoteValidDays">{t('invoice.quoteValidDays')}</Label>
-                    <Input
-                      id="quoteValidDays"
-                      type="number"
-                      min="0"
-                      placeholder="30"
-                      value={quoteValidDays}
-                      onChange={(e) => setQuoteValidDays(e.target.value)}
-                      className="w-32"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t('invoice.quoteValidDaysHint')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold">{t('invoice.sectionCustomers')}</h3>
-                <div className="flex items-center justify-between gap-4">
                   <p className="text-xs text-muted-foreground">
-                    {unnumbered > 0
-                      ? t('invoice.assignCustomerNumbersHint', { count: unnumbered })
-                      : t('invoice.allCustomersNumbered')}
+                    {t('invoice.defaultMarkupPercentHint')}
                   </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={assigning || unnumbered === 0}
-                    onClick={handleAssignCustomerNumbers}
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="markupAppliesToInventory"
+                    className="flex items-center justify-between gap-3"
                   >
-                    {assigning && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                    {t('invoice.assignCustomerNumbers')}
-                  </Button>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-sm font-semibold">{t('invoice.partsMarkupTitle')}</h3>
+                    <span>{t('invoice.markupAppliesToInventory')}</span>
+                    <Switch
+                      id="markupAppliesToInventory"
+                      checked={markupAppliesToInventory}
+                      onCheckedChange={setMarkupAppliesToInventory}
+                    />
+                  </Label>
                   <p className="text-xs text-muted-foreground">
-                    {t('invoice.partsMarkupDescription')}
+                    {t('invoice.markupAppliesToInventoryHint')}
                   </p>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="defaultMarkupPercent">
-                      {t('invoice.defaultMarkupPercent')}
-                    </Label>
-                    <Input
-                      id="defaultMarkupPercent"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      placeholder="0"
-                      value={defaultMarkupPercent}
-                      onChange={(e) => setDefaultMarkupPercent(e.target.value)}
-                      className="w-32"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      {t('invoice.defaultMarkupPercentHint')}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="markupAppliesToInventory"
-                      className="flex items-center justify-between gap-3"
-                    >
-                      <span>{t('invoice.markupAppliesToInventory')}</span>
-                      <Switch
-                        id="markupAppliesToInventory"
-                        checked={markupAppliesToInventory}
-                        onCheckedChange={setMarkupAppliesToInventory}
-                      />
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      {t('invoice.markupAppliesToInventoryHint')}
-                    </p>
-                  </div>
-                </div>
               </div>
+            </div>
 
-              <SaveButton>
-                <Separator />
-                <div className="flex items-center gap-3">
-                  <Button onClick={handleSaveGeneral} disabled={saving}>
-                    {saving ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Save className="mr-2 h-4 w-4" />
-                    )}
-                    {t('invoice.saveInvoice')}
-                  </Button>
-                </div>
-              </SaveButton>
-            </AppCard>
+            <SaveButton>
+              <Separator />
+              <div className="flex items-center gap-3">
+                <Button onClick={handleSaveGeneral} disabled={saving}>
+                  {saving ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
+                  {t('invoice.saveInvoice')}
+                </Button>
+              </div>
+            </SaveButton>
+          </AppCard>
         </ReadOnlyWrapper>
-      ) : tab === 'layout' ? (
-        <>
-          <ReadOnlyWrapper>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-1 rounded-lg border bg-muted p-1 max-w-xs">
-                  <button
-                    type="button"
-                    onClick={() => setLayoutDocType('invoice')}
-                    className={cn(
-                      'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                      layoutDocType === 'invoice'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t('invoice.layoutDocInvoice')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setLayoutDocType('quote')}
-                    className={cn(
-                      'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                      layoutDocType === 'quote'
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {t('invoice.layoutDocQuote')}
-                  </button>
-                </div>
-                <div className="flex items-center gap-2 mr-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (layoutDocType === 'invoice') {
-                        setInvoiceLayout(getDefaultInvoiceLayout())
-                      } else {
-                        setQuoteLayout(getDefaultInvoiceLayout())
-                      }
-                    }}
-                  >
-                    {t('invoice.resetLayout')}
-                  </Button>
-                  <Button onClick={handleSaveLayout} disabled={saving} size="sm">
-                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('invoice.saveLayout')}
-                  </Button>
-                </div>
-              </div>
-              <div className="grid gap-6 xl:grid-cols-2">
-                <InvoiceLayoutEditor
-                  config={layoutDocType === 'invoice' ? invoiceLayout : quoteLayout}
-                  onChange={layoutDocType === 'invoice' ? setInvoiceLayout : setQuoteLayout}
-                  documentType={layoutDocType}
-                  customFields={customFields}
-                  hiddenSections={hiddenLayoutSections}
-                />
-                <div className="hidden xl:block pr-2">
-                  <div className="sticky top-6 space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground">
-                      {t('invoice.preview')}
-                    </p>
-                    <InvoiceLayoutPreview
-                      config={{
-                        sections: (layoutDocType === 'invoice' ? invoiceLayout : quoteLayout).sections.map(
-                          (s) => hiddenLayoutSections.has(s.id) ? { ...s, visible: false } : s
-                        ),
-                      }}
-                      documentType={layoutDocType}
-                      customFields={customFields}
-                      template={layoutDocType === 'invoice' ? invoiceTemplate : quoteTemplate}
-                      logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ReadOnlyWrapper>
-          <SaveButton>
-            <div className="flex justify-end">
-              <Button onClick={handleSaveLayout} disabled={saving}>
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('invoice.saveLayout')}
-              </Button>
-            </div>
-          </SaveButton>
-        </>
       ) : (
         <CustomFieldsManager
           initialFields={customFields}
-          layoutConfig={layoutDocType === 'invoice' ? invoiceLayout : quoteLayout}
+          layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
+          quoteLayoutConfig={initialQuoteLayout ?? getDefaultInvoiceLayout()}
         />
       )}
     </div>

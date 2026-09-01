@@ -1,18 +1,22 @@
-import Link from "next/link";
-import { Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { getTranslations } from "next-intl/server";
+import Link from 'next/link'
+import { Lock } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { getTranslations } from 'next-intl/server'
 
 interface FeatureLockedMessageProps {
-  feature: string;
-  description: string;
-  isCloud: boolean;
+  feature: string
+  description: string
+  isCloud: boolean
 }
 
-export async function FeatureLockedMessage({ feature, description, isCloud }: FeatureLockedMessageProps) {
-  const t = await getTranslations('settings');
-  const upgradeHref = isCloud ? "/settings/subscription" : "/settings/license";
-  const upgradeLabel = isCloud ? t('featureLocked.upgradePlan') : t('featureLocked.activateLicense');
+export async function FeatureLockedMessage({
+  feature,
+  description,
+  isCloud,
+}: FeatureLockedMessageProps) {
+  const t = await getTranslations('settings')
+  const upgradeHref = isCloud ? '/settings/subscription' : '/settings/license'
+  const upgradeLabel = isCloud ? t('featureLocked.upgradePlan') : t('featureLocked.activateLicense')
 
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -28,5 +32,5 @@ export async function FeatureLockedMessage({ feature, description, isCloud }: Fe
         <Link href={upgradeHref}>{upgradeLabel}</Link>
       </Button>
     </div>
-  );
+  )
 }

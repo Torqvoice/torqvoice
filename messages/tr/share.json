@@ -71,7 +71,8 @@
     "findingSeverityUrgent": "Yüksek",
     "findingSeverityNeedsWork": "Orta",
     "findingSeverityMonitor": "Düşük",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFields": "Ek bilgiler"
   },
   "quote": {
     "title": "Teklif",
@@ -125,7 +126,8 @@
       "converted": "Dönüştürüldü",
       "changes_requested": "Değişiklik Talep Edildi"
     },
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFields": "Ek bilgiler"
   },
   "inspection": {
     "title": "Araç Muayenesi",

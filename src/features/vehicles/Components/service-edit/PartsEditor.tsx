@@ -43,7 +43,12 @@ import {
 interface PartsEditorProps {
   partItems: ServicePartInput[]
   setPartItems: React.Dispatch<React.SetStateAction<ServicePartInput[]>>
-  updatePart: (index: number, field: keyof ServicePartInput, value: string | number) => void
+  updatePart: (
+    index: number,
+    field: keyof ServicePartInput,
+    value: string | number,
+    options?: { commit?: boolean }
+  ) => void
   partsSubtotal: number
   currencyCode: string
   hasInventory: boolean
@@ -74,7 +79,12 @@ function SortablePartRow({
   id: string
   part: ServicePartInput
   index: number
-  updatePart: (index: number, field: keyof ServicePartInput, value: string | number) => void
+  updatePart: (
+    index: number,
+    field: keyof ServicePartInput,
+    value: string | number,
+    options?: { commit?: boolean }
+  ) => void
   onDelete: () => void
   currencyCode: string
   inventoryParts: PartSuggestion[]
@@ -181,6 +191,9 @@ function SortablePartRow({
             title={t('unitCostHint')}
             value={part.unitCost ?? 0}
             onChange={(e) => updatePart(index, 'unitCost', e.target.value)}
+            // The margin is restated here rather than on each keystroke: a
+            // cost still being typed is not a cost anyone meant.
+            onBlur={(e) => updatePart(index, 'unitCost', e.target.value, { commit: true })}
           />
         </FieldRow>
         <FieldRow label={t('markupPercent')} hint={t('markupPercentHint')}>

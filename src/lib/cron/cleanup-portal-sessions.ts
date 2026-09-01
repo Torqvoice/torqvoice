@@ -13,10 +13,7 @@ export function cleanupPortalSessions() {
         }),
         db.customerMagicLink.deleteMany({
           where: {
-            OR: [
-              { expiresAt: { lt: now } },
-              { usedAt: { not: null } },
-            ],
+            OR: [{ expiresAt: { lt: now } }, { usedAt: { not: null } }],
           },
         }),
       ])

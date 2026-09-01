@@ -21,6 +21,8 @@ interface ShareDialogProps {
   recordId: string
   organizationId: string
   initialToken: string | null
+  /** Called once the invoice has actually gone to the customer. */
+  onSent?: () => void
   customer?: {
     id: string
     name: string
@@ -37,6 +39,7 @@ export function ShareDialog({
   recordId,
   organizationId,
   initialToken,
+  onSent,
   customer,
   smsEnabled = false,
   emailEnabled = false,
@@ -61,7 +64,11 @@ export function ShareDialog({
   const handleGenerate = async () => {
     setGeneratingLink(true)
     const result = await generatePublicLink(recordId)
-    if (result.success && result.data) setPublicToken(result.data.token)
+    if (result.success && result.data) {
+      setPublicToken(result.data.token)
+      // Handing over a link is a way of sending the invoice.
+      onSent?.()
+    }
     setGeneratingLink(false)
   }
 
@@ -125,6 +132,10 @@ export function ShareDialog({
       toast.success(results.join(' & '))
       setNotifyEmail(false)
       setNotifySms(false)
+      // Both channels count as sending the invoice — email stamps sentAt on
+      // the server, and the SMS carries the link — so the lock may have just
+      // engaged and the page needs to hear about it.
+      onSent?.()
     }
     setSending(false)
   }

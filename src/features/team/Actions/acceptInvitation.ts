@@ -1,54 +1,54 @@
-"use server";
+'use server'
 
-import { cookies } from "next/headers";
-import { db } from "@/lib/db";
-import { getCachedSession } from "@/lib/cached-session";
-import { acceptInvitationSchema } from "../Schema/teamSchema";
-import { isDemoMode } from "@/lib/demo";
+import { cookies } from 'next/headers'
+import { db } from '@/lib/db'
+import { getCachedSession } from '@/lib/cached-session'
+import { acceptInvitationSchema } from '../Schema/teamSchema'
+import { isDemoMode } from '@/lib/demo'
 
 export async function acceptInvitation(input: unknown) {
   if (isDemoMode) {
-    return { success: false, error: "This action is disabled on the demo." };
+    return { success: false, error: 'This action is disabled on the demo.' }
   }
   try {
-    const data = acceptInvitationSchema.parse(input);
+    const data = acceptInvitationSchema.parse(input)
 
-    const session = await getCachedSession();
+    const session = await getCachedSession()
     if (!session?.user?.id) {
-      return { success: false, error: "You must be signed in to accept an invitation" };
+      return { success: false, error: 'You must be signed in to accept an invitation' }
     }
 
     const invitation = await db.teamInvitation.findUnique({
       where: { token: data.token },
-    });
+    })
 
     if (!invitation) {
-      return { success: false, error: "Invitation not found" };
+      return { success: false, error: 'Invitation not found' }
     }
 
-    if (invitation.status !== "pending") {
-      return { success: false, error: "This invitation is no longer valid" };
+    if (invitation.status !== 'pending') {
+      return { success: false, error: 'This invitation is no longer valid' }
     }
 
     if (invitation.expiresAt < new Date()) {
-      return { success: false, error: "This invitation has expired" };
+      return { success: false, error: 'This invitation has expired' }
     }
 
     if (invitation.email !== session.user.email) {
-      return { success: false, error: "This invitation was sent to a different email address" };
+      return { success: false, error: 'This invitation was sent to a different email address' }
     }
 
     // Check if already a member
     const existingMembership = await db.organizationMember.findFirst({
       where: { userId: session.user.id, organizationId: invitation.organizationId },
-    });
+    })
     if (existingMembership) {
       // Mark invitation as accepted even if already a member
       await db.teamInvitation.update({
         where: { id: invitation.id },
-        data: { status: "accepted" },
-      });
-      return { success: true, data: { accepted: true } };
+        data: { status: 'accepted' },
+      })
+      return { success: true, data: { accepted: true } }
     }
 
     // Create membership, mark invitation as accepted, and verify email
@@ -63,27 +63,27 @@ export async function acceptInvitation(input: unknown) {
       }),
       db.teamInvitation.update({
         where: { id: invitation.id },
-        data: { status: "accepted" },
+        data: { status: 'accepted' },
       }),
       db.user.update({
         where: { id: session.user.id },
         data: { emailVerified: true },
       }),
-    ]);
+    ])
 
     // Set the active org cookie
-    const cookieStore = await cookies();
-    cookieStore.set("active-org-id", invitation.organizationId, {
+    const cookieStore = await cookies()
+    cookieStore.set('active-org-id', invitation.organizationId, {
       httpOnly: true,
-      sameSite: "lax",
-      path: "/",
+      sameSite: 'lax',
+      path: '/',
       maxAge: 60 * 60 * 24 * 365,
-    });
+    })
 
-    return { success: true, data: { accepted: true } };
+    return { success: true, data: { accepted: true } }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "An unexpected error occurred";
-    console.error("[acceptInvitation] Error:", message);
-    return { success: false, error: message };
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
+    console.error('[acceptInvitation] Error:', message)
+    return { success: false, error: message }
   }
 }

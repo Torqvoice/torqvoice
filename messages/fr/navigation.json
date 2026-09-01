@@ -72,7 +72,9 @@
     "vehicle": "Véhicule",
     "quote": "Devis",
     "part": "Pièce",
-    "inspection": "Inspection"
+    "inspection": "Inspection",
+    "shopActions": "Atelier",
+    "person": "Ajouter une personne"
   },
   "purchaseWhiteLabel": "Acheter la marque blanche",
   "licenseExpired": "Votre licence a expiré. Les fonctionnalités peuvent être limitées.",

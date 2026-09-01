@@ -21,6 +21,19 @@ interface FieldDef {
 
 interface TemplateValues {
   primaryColor: string
+  /** Sheet color behind the document. Empty leaves the paper white. */
+  backgroundColor?: string
+  /** Body and heading color. Empty leaves the near-black default. */
+  textColor?: string
+  /** The company name on the letterhead. Empty leaves the style's default. */
+  companyTextColor?: string
+  /** Line where the sheet meets a framed letterhead. Empty means no line. */
+  frameBorderColor?: string
+  /** "false" prints the frame flat against the sheet. */
+  frameShadow?: string
+  frameRadius?: string | number
+  /** Which edge the framed rail runs down. */
+  frameSide?: string
   fontFamily: string
   headerStyle: string
   logoSize?: number
@@ -32,6 +45,12 @@ export interface InvoiceLayoutPreviewProps {
   customFields?: FieldDef[]
   template: TemplateValues
   logoUrl?: string
+  /**
+   * The workshop's own details. Whatever is missing falls back to the sample
+   * shop, so a workshop that has filled in Company details sees its own
+   * letterhead rather than "Your Workshop".
+   */
+  workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
 }
 
 // The actual renderer must be in a separate file loaded only client-side

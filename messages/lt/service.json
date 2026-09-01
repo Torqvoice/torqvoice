@@ -185,7 +185,11 @@
     "paidBadge": "APMOKĖTA",
     "entityLabel": "Sąskaita",
     "emailSubject": "Mokėjimo patvirtinimas",
-    "statusEmailSubject": "Paslaugos būsenos atnaujinimas"
+    "statusEmailSubject": "Paslaugos būsenos atnaujinimas",
+    "markCompletedTitle": "Pažymėti šią sąskaitą kaip užbaigtą?",
+    "markCompletedDescription": "Ji jau išsiųsta klientui, bet vis dar pažymėta kaip nebaigta, todėl liks matoma darbų lentoje.",
+    "markCompletedConfirm": "Žymėti užbaigta",
+    "lockedFieldsetLabel": "Užrakinta sąskaita, redagavimas išjungtas"
   },
   "payments": {
     "title": "Mokėjimai",
@@ -344,7 +348,23 @@
     "setDefaults": "Nustatyti numatytuosius",
     "workBay": "Darbo vieta",
     "selectWorkBay": "Pasirinkite darbo vietą…",
-    "noWorkBay": "Be darbo vietos"
+    "noWorkBay": "Be darbo vietos",
+    "technicians": "Technikai",
+    "otherTeamMembers": "Kiti komandos nariai",
+    "makeTechnician": "Padarys jį techniku",
+    "addSomeoneNew": "Pridėti naują žmogų",
+    "notOnBoard": "Dar nėra lentoje",
+    "putOnBoard": "Įtraukti į lentą",
+    "slotTaken": "{count, plural, one {Šis laikas jau užimtas} other {Šiam laikui yra # sutapimų}}",
+    "anotherJob": "kitas darbas",
+    "clashTechnician": "technikas užimtas",
+    "clashBay": "postas užimtas",
+    "clashBoth": "abu užimti",
+    "bookedAnyway": "Vis tiek išsaugota. Pakeiskite laiką arba pasirinkite artimiausią laisvą.",
+    "pickNextAvailable": "Rinktis artimiausią laisvą laiką",
+    "findingSlot": "Ieškoma laiko…",
+    "slotPicked": "Priskirta artimiausiam laisvam laikui",
+    "noSlotFound": "Artimiausiomis savaitėmis laisvo laiko nerasta"
   },
   "notifications": {
     "title": "Kliento pranešimai",
@@ -381,5 +401,14 @@
       "title": "Numatytieji garantijos nustatymai",
       "description": "Nustatyti numatytas garantijos sąlygas naujiems aptarnavimo įrašams"
     }
+  },
+  "concerns": {
+    "title": "Kliento pranešimai",
+    "addFirst": "Pridėti kliento pranešimą",
+    "add": "Pridėti dar vieną",
+    "placeholder": "Stabdant gale girdisi garsas",
+    "remove": "Pašalinti šį punktą",
+    "notAnswered": "Kol kas nieko nenustatyta",
+    "answered": "Nustatymų: {count}"
   }
 }

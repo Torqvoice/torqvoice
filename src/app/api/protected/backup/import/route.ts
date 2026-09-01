@@ -67,6 +67,8 @@ async function importServiceRecordTree(
     vehicleId: string | null
     customerId: string | null
     workDayStartTime: string
+    /** Technicians restored by this import. See the time entries below. */
+    technicianIds: ReadonlySet<string>
   }
 ) {
   // Derive startDateTime/endDateTime from backup or fall back to serviceDate + work day start
@@ -150,6 +152,20 @@ async function importServiceRecordTree(
     })
   }
 
+  // Concerns. Restored before findings so a finding's concernId still has a
+  // row to point at.
+  const concerns = sr.concerns as Record<string, unknown>[] | undefined
+  if (concerns?.length) {
+    await tx.serviceConcern.createMany({
+      data: concerns.map((c, index) => ({
+        id: c.id as string,
+        description: c.description as string,
+        sortOrder: (c.sortOrder as number) ?? index,
+        serviceRecordId: sr.id as string,
+      })),
+    })
+  }
+
   // Service labor
   const laborItems = sr.laborItems as Record<string, unknown>[] | undefined
   if (laborItems?.length) {
@@ -192,6 +208,28 @@ async function importServiceRecordTree(
     sr.statusReports,
     {
       organizationId: opts.organizationId,
+    }
+  )
+
+  // Clocked time. This is what a technician's hours were billed from, and in
+  // Germany it is a statutory record, so losing it on a restore is not the
+  // same as losing a cached total.
+  //
+  // Each entry needs its technician, and technicianId is not nullable. A
+  // restore that took vehicles but not technicians has nowhere to attach
+  // them, so those are dropped rather than failing the whole import: the
+  // alternative is a foreign key error that rolls back everything and tells
+  // the user nothing.
+  const timeEntries = (sr.timeEntries as Record<string, unknown>[] | undefined)?.filter((entry) =>
+    opts.technicianIds.has(entry.technicianId as string)
+  )
+  await restoreRows(
+    'time entries',
+    (rows) => tx.timeEntry.createMany({ data: rows as never }),
+    timeEntries,
+    {
+      organizationId: opts.organizationId,
+      serviceRecordId: sr.id as string,
     }
   )
 
@@ -438,6 +476,19 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      // Which technicians this restore actually has, for the time entries
+      // nested inside each service record. Read back rather than taken from
+      // the file, so an older backup whose technicians were skipped does not
+      // claim rows that were never inserted.
+      const technicianIds = new Set(
+        (
+          await tx.technician.findMany({
+            where: { organizationId: ctx.organizationId },
+            select: { id: true },
+          })
+        ).map((t) => t.id)
+      )
+
       // 4b. Insert work bays. Service records and inspections point at them, so
       // they have to exist before either is restored.
       if (data.workBays?.length) {
@@ -634,6 +685,7 @@ export async function POST(request: NextRequest) {
                 vehicleId: v.id as string,
                 customerId: null,
                 workDayStartTime,
+                technicianIds,
               })
             }
           }
@@ -707,6 +759,7 @@ export async function POST(request: NextRequest) {
             vehicleId: null,
             customerId: (sr.customerId as string) || null,
             workDayStartTime,
+            technicianIds,
           })
         }
       }

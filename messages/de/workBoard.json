@@ -75,7 +75,10 @@
     "standalone": "Unabhängiger Techniker",
     "deleteTitle": "Techniker löschen",
     "deleteDescription": "\"{name}\" von der Arbeitsplatine entfernen? Ihre bestehenden Zuweisungen werden ebenfalls entfernt.",
-    "addTechnician": "Techniker hinzufügen"
+    "addTechnician": "Techniker hinzufügen",
+    "standaloneOnly": "Ein Name auf dem Board für jemanden ohne Anmeldung, etwa einen Azubi oder Subunternehmer. Einen Mechaniker mit App fügen Sie auf der Team-Seite hinzu.",
+    "linkedTo": "Meldet sich als {name} an",
+    "linkedManagedOnTeam": "Wird auf der Team-Seite verwaltet, zusammen mit dem App-Zugang."
   },
   "jobDetail": {
     "viewDetails": "Details anzeigen",

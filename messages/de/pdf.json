@@ -19,6 +19,12 @@
     "description": "Beschreibung",
     "qty": "Menge",
     "unitPrice": "Einzelpreis",
+    "items": "Positionen",
+    "pos": "Pos.",
+    "unitOfMeasure": "Einheit",
+    "invoiceNumberLabel": "Rechnungsnummer",
+    "customerNumberLabel": "Kundennummer",
+    "dateLabel": "Datum",
     "total": "Gesamt",
     "labor": "Arbeitsleistung",
     "hours": "Stunden",
@@ -64,7 +70,9 @@
     "professionalWorkshop": "Professionelle Werkstattverwaltung",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Zusätzliche Informationen",
+    "telegramConnect": "Chatten Sie mit uns auf Telegram"
   },
   "quote": {
     "title": "ANGEBOT",
@@ -100,7 +108,10 @@
     "validityFooter30": "Dieses Angebot ist 30 Tage gültig",
     "viewPortal": "Ihr Portal ansehen: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Zusätzliche Informationen",
+    "quoteNumberLabel": "Angebotsnr.",
+    "validUntilLabel": "Gültig bis"
   },
   "inspection": {
     "title": "FAHRZEUGINSPEKTION",

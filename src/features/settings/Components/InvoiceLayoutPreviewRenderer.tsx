@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useEffect } from 'react'
-import { useMessages } from 'next-intl'
+import { useMessages, useTranslations } from 'next-intl'
 import { PDFViewer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts.client'
 import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
@@ -12,6 +12,16 @@ import { useServiceType } from '@/components/service-type-context'
 // ---------------------------------------------------------------------------
 // Dummy data matching InvoiceData type exactly
 // ---------------------------------------------------------------------------
+
+/** The value once it has stopped changing for `delay` milliseconds. */
+function useSettled<T>(value: T, delay: number): T {
+  const [settled, setSettled] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setSettled(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return settled
+}
 
 function buildDummyCustomFields(customFields?: InvoiceLayoutPreviewProps['customFields']) {
   if (!customFields) return []
@@ -32,27 +42,34 @@ function buildDummyCustomFields(customFields?: InvoiceLayoutPreviewProps['custom
     }))
 }
 
-const DUMMY_INVOICE_DATA = {
+/** A translator, narrowed to what the sample job asks of it. */
+type PreviewT = (key: string) => string
+
+/**
+ * The made-up job the preview draws. The prose is translated, because the
+ * sheet it stands for is printed in the reader's language; the names, plates
+ * and part numbers are invented and read the same everywhere.
+ */
+const dummyInvoiceData = (t: PreviewT) => ({
   id: 'preview-dummy-id-00000001',
-  title: 'Brake Service & Oil Change',
+  title: t('preview.title'),
   description: null,
-  type: 'Maintenance',
+  type: t('preview.serviceType'),
   serviceDate: new Date('2026-03-10'),
   startDateTime: new Date('2026-03-10'),
-  shopName: 'Your Workshop',
+  shopName: t('designer.sample.companyName'),
   techName: 'Mike Johnson',
   mileage: 45230,
   diagnosticNotes: null,
   findings: [
     {
-      description: 'Rear brake pads worn to 15%',
+      description: t('preview.findingPads'),
       severity: 'needs_work',
-      notes: 'Recommend replacement within 5,000 miles',
+      notes: t('preview.findingPadsNote'),
     },
-    { description: 'Minor oil leak at valve cover gasket', severity: 'monitor', notes: null },
+    { description: t('preview.findingOilLeak'), severity: 'monitor', notes: null },
   ],
-  invoiceNotes:
-    '<p>Front brake pads replaced. Oil and filter changed with synthetic 5W-30. Next service recommended at 50,000 miles.</p>',
+  invoiceNotes: `<p>${t('preview.invoiceNotes')}</p>`,
   subtotal: 314.5,
   taxRate: 8,
   taxAmount: 25.16,
@@ -65,21 +82,21 @@ const DUMMY_INVOICE_DATA = {
   partItems: [
     {
       partNumber: 'BP-001',
-      name: 'Brake Pads (Front)',
+      name: t('preview.partBrakePads'),
       quantity: 2,
       unitPrice: 45.0,
       total: 90.0,
     },
     {
       partNumber: 'OF-042',
-      name: 'Oil Filter',
+      name: t('preview.partOilFilter'),
       quantity: 1,
       unitPrice: 12.0,
       total: 12.0,
     },
     {
       partNumber: 'SO-530',
-      name: 'Synthetic Oil 5W-30',
+      name: t('preview.partSyntheticOil'),
       quantity: 5,
       unit: 'l',
       unitPrice: 8.5,
@@ -88,12 +105,12 @@ const DUMMY_INVOICE_DATA = {
   ],
   laborItems: [
     {
-      description: 'Brake Replacement',
+      description: t('preview.laborBrakeReplacement'),
       hours: 1.5,
       rate: 85.0,
       total: 127.5,
     },
-    { description: 'Oil Change', hours: 0.5, rate: 85.0, total: 42.5 },
+    { description: t('preview.laborOilChange'), hours: 0.5, rate: 85.0, total: 42.5 },
   ],
   vehicle: {
     make: 'Toyota',
@@ -111,11 +128,11 @@ const DUMMY_INVOICE_DATA = {
       taxId: 'GB123456789',
     },
   },
-}
+})
 
-const DUMMY_QUOTE_DATA = {
+const dummyQuoteData = (t: PreviewT) => ({
   quoteNumber: 'QT-2026-1001',
-  title: 'Brake Service & Oil Change',
+  title: t('preview.title'),
   description: null,
   validUntil: new Date('2026-04-10'),
   createdAt: new Date('2026-03-10'),
@@ -126,26 +143,25 @@ const DUMMY_QUOTE_DATA = {
   discountValue: 0,
   discountAmount: 0,
   totalAmount: 339.66,
-  notes:
-    '<p>Front brake pads replacement recommended. Oil and filter change with synthetic 5W-30.</p>',
+  notes: `<p>${t('preview.quoteNotes')}</p>`,
   partItems: [
     {
       partNumber: 'BP-001',
-      name: 'Brake Pads (Front)',
+      name: t('preview.partBrakePads'),
       quantity: 2,
       unitPrice: 45.0,
       total: 90.0,
     },
     {
       partNumber: 'OF-042',
-      name: 'Oil Filter',
+      name: t('preview.partOilFilter'),
       quantity: 1,
       unitPrice: 12.0,
       total: 12.0,
     },
     {
       partNumber: 'SO-530',
-      name: 'Synthetic Oil 5W-30',
+      name: t('preview.partSyntheticOil'),
       quantity: 5,
       unit: 'l',
       unitPrice: 8.5,
@@ -154,12 +170,12 @@ const DUMMY_QUOTE_DATA = {
   ],
   laborItems: [
     {
-      description: 'Brake Replacement',
+      description: t('preview.laborBrakeReplacement'),
       hours: 1.5,
       rate: 85.0,
       total: 127.5,
     },
-    { description: 'Oil Change', hours: 0.5, rate: 85.0, total: 42.5 },
+    { description: t('preview.laborOilChange'), hours: 0.5, rate: 85.0, total: 42.5 },
   ],
   customer: {
     name: 'John Smith',
@@ -176,9 +192,9 @@ const DUMMY_QUOTE_DATA = {
     vin: '1HGBH41JXMN109186',
     licensePlate: 'ABC-1234',
   },
-}
+})
 
-const DUMMY_WORKSHOP = {
+const SAMPLE_WORKSHOP = {
   name: 'Your Workshop',
   address: '123 Main Street, Springfield',
   phone: '(555) 123-4567',
@@ -202,20 +218,49 @@ const DUMMY_INVOICE_SETTINGS = {
 // Renderer (loaded only client-side via dynamic import)
 // ---------------------------------------------------------------------------
 
+/** The workshop's own details where it has them, the sample's where it has not. */
+export function resolveWorkshop(
+  workshop: InvoiceLayoutPreviewProps['workshop'],
+  /** The stand-in name, translated by the caller that has a translator. */
+  sampleName: string = SAMPLE_WORKSHOP.name
+) {
+  return {
+    name: workshop?.name?.trim() || sampleName,
+    address: workshop?.address?.trim() || SAMPLE_WORKSHOP.address,
+    phone: workshop?.phone?.trim() || SAMPLE_WORKSHOP.phone,
+    email: workshop?.email?.trim() || SAMPLE_WORKSHOP.email,
+    // No stand-in for the slogan. A workshop always has a name and an address,
+    // so a placeholder there reads as "yours goes here"; an invented slogan
+    // reads as one the workshop never wrote.
+    slogan: workshop?.slogan?.trim() || undefined,
+  }
+}
+
 export function InvoiceLayoutPreviewRenderer({
   config,
   documentType,
   customFields,
   template,
   logoUrl,
+  workshop,
 }: InvoiceLayoutPreviewProps) {
   const messages = useMessages()
+  const t = useTranslations('settings')
   const serviceType = useServiceType()
+
+  const previewWorkshop = useMemo(
+    () => resolveWorkshop(workshop, t('designer.sample.companyName')),
+    [workshop, t]
+  )
 
   const labels = useMemo(() => {
     const pdf = (messages?.pdf ?? {}) as Record<string, Record<string, string>>
     const namespace = documentType === 'quote' ? 'quote' : 'invoice'
+    // The quote sheet is drawn by the invoice's builder, so its shared labels
+    // live in the invoice namespace. Layering quote wording on top keeps both
+    // translated instead of falling back to English column heads.
     const baseLabels = {
+      ...(pdf.invoice ?? {}),
       ...(pdf[namespace] ?? {}),
       ...(pdf.common ?? {}),
     }
@@ -234,16 +279,17 @@ export function InvoiceLayoutPreviewRenderer({
 
   const dummyCf = useMemo(() => buildDummyCustomFields(customFields), [customFields])
 
-  // Stable key to force PDFViewer remount when layout changes
-  const configKey = useMemo(
-    () =>
-      config.sections.map((s) => `${s.id}:${s.order}:${s.visible}:${s.column ?? 'f'}`).join('|'),
-    [config]
-  )
-
   const templateConfig = useMemo(
     () => ({
       primaryColor: template.primaryColor,
+      // Empty means the workshop has not chosen one, which is white paper.
+      backgroundColor: template.backgroundColor || undefined,
+      textColor: template.textColor || undefined,
+      companyTextColor: template.companyTextColor || undefined,
+      frameBorderColor: template.frameBorderColor || undefined,
+      frameShadow: template.frameShadow,
+      frameRadius: Number(template.frameRadius) || 0,
+      frameSide: template.frameSide === 'right' ? ('right' as const) : ('left' as const),
       fontFamily: template.fontFamily,
       headerStyle: template.headerStyle,
       logoSize: template.logoSize,
@@ -254,7 +300,24 @@ export function InvoiceLayoutPreviewRenderer({
     [template, config]
   )
 
-  const invoiceData = useMemo(() => ({ ...DUMMY_INVOICE_DATA, customFields: dummyCf }), [dummyCf])
+  // Remount on anything the document is drawn from, not a hand-picked subset.
+  // The key used to list four properties of each section, so every option added
+  // since — the colors, the frame edge, whether a section is boxed, which
+  // header fields show — changed the document without changing the key, and
+  // looked from the outside like it did nothing.
+  const documentKey = useMemo(
+    () => JSON.stringify({ config, templateConfig, logoUrl, previewWorkshop }),
+    [config, templateConfig, logoUrl, previewWorkshop]
+  )
+  // Settled, because a color picker fires on every step of a drag and each
+  // distinct key is a full re-render of the document.
+  const configKey = useSettled(documentKey, 250)
+
+  const invoiceData = useMemo(
+    () => ({ ...dummyInvoiceData(t), customFields: dummyCf }),
+    [dummyCf, t]
+  )
+  const quoteData = useMemo(() => dummyQuoteData(t), [t])
 
   const isQuote = documentType === 'quote'
 
@@ -284,8 +347,8 @@ export function InvoiceLayoutPreviewRenderer({
       >
         {isQuote ? (
           <QuotePDF
-            data={DUMMY_QUOTE_DATA}
-            workshop={DUMMY_WORKSHOP}
+            data={quoteData}
+            workshop={previewWorkshop}
             currencyCode={DUMMY_INVOICE_SETTINGS.currencyCode}
             logoDataUri={logoUrl || undefined}
             template={templateConfig}
@@ -296,12 +359,12 @@ export function InvoiceLayoutPreviewRenderer({
         ) : (
           <InvoicePDF
             data={invoiceData}
-            workshop={DUMMY_WORKSHOP}
+            workshop={previewWorkshop}
             invoiceSettings={DUMMY_INVOICE_SETTINGS}
             logoDataUri={logoUrl || undefined}
             template={templateConfig}
             telegramQrDataUri={telegramQrDataUri}
-            telegramLabel="Chat with us on Telegram"
+            telegramLabel={labels.telegramConnect || 'Chat with us on Telegram'}
             labels={labels}
           />
         )}

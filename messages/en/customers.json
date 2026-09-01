@@ -35,6 +35,8 @@
     "taxExemptBadge": "Tax exempt",
     "tabs": {
       "vehicles": "Vehicles ({count})",
+      "invoices": "Invoices ({count})",
+      "quotes": "Quotes ({count})",
       "messages": "Messages",
       "requests": "Requests ({count})",
       "sms": "SMS",
@@ -48,7 +50,25 @@
       "mileageMarine": "Engine Hours",
       "services": "Services"
     },
-    "noVehicles": "No vehicles assigned to this customer"
+    "documentTable": {
+      "invoiceNumber": "Invoice #",
+      "quoteNumber": "Quote #",
+      "title": "Title",
+      "vehicle": "Vehicle",
+      "status": "Status",
+      "date": "Date",
+      "total": "Total",
+      "noVehicle": "Parts only",
+      "searchPlaceholder": "Search...",
+      "noMatches": "Nothing matches your search",
+      "sort": {
+        "asc": "ascending",
+        "desc": "descending"
+      }
+    },
+    "noVehicles": "No vehicles assigned to this customer",
+    "noInvoices": "No invoices for this customer",
+    "noQuotes": "No quotes for this customer"
   },
   "form": {
     "addTitle": "Add New Customer",

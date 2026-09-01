@@ -8,6 +8,7 @@ import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPrese
 
 import { getTechnicians, getOrgMembers } from '@/features/workboard/Actions/technicianActions'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { getInvoiceLockState } from '@/lib/document-lock.server'
 import { getFeatures } from '@/lib/features'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
@@ -109,6 +110,9 @@ export async function ServiceRecordPage({
     (b) => ({ id: b.id, name: b.name })
   )
   const organizationId = authContext?.organizationId || ''
+  const lockState = organizationId
+    ? await getInvoiceLockState(serviceId, organizationId)
+    : { locked: false, reason: null, unlockedAt: null }
 
   // Fetch team members and features
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
@@ -174,6 +178,11 @@ export async function ServiceRecordPage({
             .toISOString()
             .split('T')[0]
         : '',
+    concerns: record.concerns.map((c) => ({
+      id: c.id,
+      description: c.description,
+      sortOrder: c.sortOrder,
+    })),
     partItems: record.partItems.map((p) => ({
       partNumber: p.partNumber || '',
       name: p.name,
@@ -215,14 +224,26 @@ export async function ServiceRecordPage({
     (record.attachments as ((typeof record.attachments)[number] & {
       includeInInvoice: boolean
     })[]) || []
+  // Files copied over from a linked tire set (category tire_hotel) are shown
+  // in the same tabs by file type. They end up on the invoice like any other
+  // attachment, and an attachment that changes the invoice must never be
+  // invisible on the page.
   const imageAttachmentsForManager = allAttachments
-    .filter((a) => a.category === 'image')
+    .filter(
+      (a) =>
+        a.category === 'image' || (a.category === 'tire_hotel' && a.fileType.startsWith('image/'))
+    )
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
   const videoAttachments = allAttachments
     .filter((a) => a.category === 'video')
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
   const documentAttachments = allAttachments
-    .filter((a) => a.category === 'document' || a.category === 'diagnostic')
+    .filter(
+      (a) =>
+        a.category === 'document' ||
+        a.category === 'diagnostic' ||
+        (a.category === 'tire_hotel' && !a.fileType.startsWith('image/'))
+    )
     .map((a) => ({ ...a, includeInInvoice: a.includeInInvoice ?? true }))
 
   // Fetch notification history for this service record
@@ -254,6 +275,8 @@ export async function ServiceRecordPage({
         record={result.data}
         vehicleId={vehicleId}
         organizationId={organizationId}
+        lockState={lockState}
+        canUnlock={authContext?.isAdmin ?? false}
         initialTab={initialTab}
         currencyCode={currencyCode}
         unitSystem={unitSystem}

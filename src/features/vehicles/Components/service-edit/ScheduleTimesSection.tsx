@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -19,14 +21,23 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from '@/components/ui/command'
-import { Input } from '@/components/ui/input'
-import { Check, ChevronsUpDown, Clock, Plus, Settings } from 'lucide-react'
+import {
+  AlertTriangle,
+  Check,
+  ChevronsUpDown,
+  Clock,
+  Plus,
+  Settings,
+  UserPlus,
+  Wand2,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import {
   assignTechnician,
+  checkSlotAvailability,
+  findNextSlot,
   scheduleJob,
   updateServiceTimes,
 } from '@/features/workboard/Actions/boardActions'
@@ -80,17 +91,41 @@ export function ScheduleTimesSection({
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
+  const router = useRouter()
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
   const [selectedBayId, setSelectedBayId] = useState(initialWorkBayId || NO_BAY)
   const [techOpen, setTechOpen] = useState(false)
   const [technicians, setTechnicians] = useState<Technician[]>(initialTechnicians)
   const [techSearch, setTechSearch] = useState('')
   const [creating, setCreating] = useState(false)
+  const [addingPerson, setAddingPerson] = useState(false)
   const [showNewInput, setShowNewInput] = useState(false)
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Opening a job that is already double-booked should say so, not wait for
+  // somebody to change something first.
+  useEffect(() => {
+    if (!initialStartDateTime || !initialEndDateTime) return
+    if (!initialTechnicianId && !initialWorkBayId) return
+    void checkSlotAvailability({
+      start: new Date(initialStartDateTime).toISOString(),
+      end: new Date(initialEndDateTime).toISOString(),
+      technicianId: initialTechnicianId || null,
+      workBayId: initialWorkBayId || null,
+      excludeId: serviceRecordId,
+    }).then((res) => {
+      if (res.success && res.data) setConflicts(res.data.conflicts)
+    })
+  }, [
+    initialStartDateTime,
+    initialEndDateTime,
+    initialTechnicianId,
+    initialWorkBayId,
+    serviceRecordId,
+  ])
   const [newTechName, setNewTechName] = useState('')
 
   const [startDateTime, setStartDateTime] = useState<Date | undefined>(
@@ -100,7 +135,75 @@ export function ScheduleTimesSection({
     initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000)
   )
 
-  const saveTimes = async (start: Date, end: Date) => {
+  /** What the current selection would double-book, if anything. */
+  const [conflicts, setConflicts] = useState<
+    {
+      id: string
+      label: string
+      start: string
+      end: string
+      onTechnician: boolean
+      onBay: boolean
+    }[]
+  >([])
+  const [checking, setChecking] = useState(false)
+  const [finding, setFinding] = useState(false)
+
+  const bayId = selectedBayId === NO_BAY ? null : selectedBayId
+
+  /**
+   * Ask whether a slot is free, for the resources currently chosen.
+   *
+   * Advisory rather than blocking: a shop sometimes double-books a person on
+   * purpose, and refusing the booking outright would make the board lie about
+   * what the day actually looks like. Saying so plainly is the useful part.
+   */
+  const checkSlot = async (start: Date, end: Date, techId: string, bay: string | null) => {
+    if ((!techId && !bay) || end <= start) {
+      setConflicts([])
+      return
+    }
+    setChecking(true)
+    const res = await checkSlotAvailability({
+      start: start.toISOString(),
+      end: end.toISOString(),
+      technicianId: techId || null,
+      workBayId: bay,
+      excludeId: serviceRecordId,
+    })
+    setChecking(false)
+    setConflicts(res.success && res.data ? res.data.conflicts : [])
+  }
+
+  /** Move the booking to the first slot that fits, inside working hours. */
+  const pickNextAvailable = async () => {
+    const minutes =
+      startDateTime && endDateTime
+        ? Math.max(15, Math.round((endDateTime.getTime() - startDateTime.getTime()) / 60000))
+        : 60
+    setFinding(true)
+    const res = await findNextSlot({
+      durationMinutes: minutes,
+      technicianId: selectedTechId || null,
+      workBayId: bayId,
+      excludeId: serviceRecordId,
+      from: new Date().toISOString(),
+    })
+    setFinding(false)
+    if (!res.success || !res.data?.start || !res.data?.end) {
+      toast.error(t('noSlotFound'))
+      return
+    }
+    const start = new Date(res.data.start)
+    const end = new Date(res.data.end)
+    setStartDateTime(start)
+    setEndDateTime(end)
+    setConflicts([])
+    await saveTimes(start, end, { skipCheck: true })
+    toast.success(t('slotPicked'))
+  }
+
+  const saveTimes = async (start: Date, end: Date, opts?: { skipCheck?: boolean }) => {
     if (end <= start) {
       toast.error(t('endBeforeStart'))
       return
@@ -112,6 +215,9 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      // Checked after the write rather than before it: the times save as they
+      // always did, and the clash is reported against what is now booked.
+      if (!opts?.skipCheck) void checkSlot(start, end, selectedTechId, bayId)
     } else {
       toast.error(res.error || t('failedUpdate'))
     }
@@ -134,6 +240,7 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, techId, bayId)
     } else {
       toast.error(t('failedAssign'))
       setSelectedTechId(initialTechnicianId || '')
@@ -186,6 +293,9 @@ export function ScheduleTimesSection({
     })
     if (res.success) {
       onSaved?.()
+      const nextBay = bayId === NO_BAY ? null : bayId
+      if (startDateTime && endDateTime)
+        void checkSlot(startDateTime, endDateTime, selectedTechId, nextBay)
     } else {
       toast.error(res.error || t('failedUpdate'))
       setSelectedBayId(previous)
@@ -261,9 +371,15 @@ export function ScheduleTimesSection({
               />
               <CommandList className="max-h-60 overflow-y-auto">
                 <CommandEmpty className="p-0" />
-                {/* Platform users (linked technicians + unlinked org members) */}
-                {(linkedTechnicians.length > 0 || unlinkedMembers.length > 0) && (
-                  <CommandGroup heading={t('platformUsers')}>
+                {/* Two different kinds of person, under two headings.
+                    They used to share one, so somebody who books cars in read
+                    as a mechanic, and choosing them quietly created a
+                    technician record for an account the desk had never said
+                    was one. The list still offers them, because assigning a
+                    colleague on the spot is worth keeping; it just says which
+                    is which. */}
+                {linkedTechnicians.length > 0 && (
+                  <CommandGroup heading={t('technicians')}>
                     {linkedTechnicians.map((tech) => (
                       <CommandItem
                         key={tech.id}
@@ -277,20 +393,6 @@ export function ScheduleTimesSection({
                           )}
                         />
                         {tech.name}
-                      </CommandItem>
-                    ))}
-                    {unlinkedMembers.map((member) => (
-                      <CommandItem
-                        key={`member-${member.id}`}
-                        value={member.name!}
-                        onSelect={() => handleMemberSelect(member)}
-                        disabled={creating}
-                      >
-                        <Check className="mr-2 h-4 w-4 opacity-0" />
-                        {member.name}
-                        <span className="ml-auto text-[10px] text-muted-foreground">
-                          {member.email}
-                        </span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -315,67 +417,49 @@ export function ScheduleTimesSection({
                     ))}
                   </CommandGroup>
                 )}
-                {techSearch.trim() && !exactMatch && (
-                  <CommandGroup>
-                    <CommandItem
-                      value={`__create__${techSearch}`}
-                      onSelect={() => doCreateTechnician(techSearch)}
-                      disabled={creating}
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      {creating
-                        ? t('creating')
-                        : t('createTechnician', { name: techSearch.trim() })}
-                    </CommandItem>
+                {/* Colleagues who are not on the board yet.
+                    This list was computed and then not rendered, which left no
+                    way at all to put somebody on a job from here: the only
+                    route was a phone icon on the team page, labelled as
+                    something else. It was dropped because choosing a colleague
+                    quietly turned them into a technician, and that is the part
+                    worth keeping fixed, so the heading says what will happen
+                    rather than the click doing it silently. */}
+                {unlinkedMembers.length > 0 && (
+                  <CommandGroup heading={t('notOnBoard')}>
+                    {unlinkedMembers.map((member) => (
+                      <CommandItem
+                        key={member.id}
+                        value={member.name ?? ''}
+                        disabled={creating}
+                        onSelect={() => handleMemberSelect(member)}
+                      >
+                        <UserPlus className="mr-2 h-4 w-4 text-muted-foreground" />
+                        <span className="flex-1">{member.name}</span>
+                        <span className="text-muted-foreground text-xs">{t('putOnBoard')}</span>
+                      </CommandItem>
+                    ))}
                   </CommandGroup>
                 )}
-                <CommandSeparator />
+                {/* Adding somebody is one workflow, and this is a door into
+                    it rather than a fourth way of doing it. */}
                 <CommandGroup>
-                  {showNewInput ? (
-                    <div
-                      className="flex items-center gap-1.5 px-2 py-1.5"
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <Input
-                        autoFocus
-                        placeholder={t('newTechPlaceholder')}
-                        value={newTechName}
-                        onChange={(e) => setNewTechName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault()
-                            doCreateTechnician(newTechName)
-                          }
-                          if (e.key === 'Escape') {
-                            setShowNewInput(false)
-                            setNewTechName('')
-                          }
-                        }}
-                        className="h-7 text-sm"
-                        disabled={creating}
-                      />
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 px-2 shrink-0"
-                        disabled={creating || !newTechName.trim()}
-                        onClick={() => doCreateTechnician(newTechName)}
-                      >
-                        {creating ? t('creating') : t('add')}
-                      </Button>
-                    </div>
-                  ) : (
-                    <CommandItem value="__add_new__" onSelect={() => setShowNewInput(true)}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      {t('addNew')}
-                    </CommandItem>
-                  )}
+                  <CommandItem value="__add_person__" onSelect={() => setAddingPerson(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    {t('addSomeoneNew')}
+                  </CommandItem>
                 </CommandGroup>
               </CommandList>
             </Command>
           </PopoverContent>
         </Popover>
       </div>
+
+      <AddPersonDialog
+        open={addingPerson}
+        onOpenChange={setAddingPerson}
+        onChanged={() => router.refresh()}
+      />
 
       {workBays.length > 0 && (
         <div className="space-y-1">
@@ -437,6 +521,61 @@ export function ScheduleTimesSection({
           <div className="h-9 rounded-md border" />
         )}
       </div>
+
+      {conflicts.length > 0 && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 dark:border-amber-900/60 dark:bg-amber-950/40">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="mt-px h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
+                {t('slotTaken', { count: conflicts.length })}
+              </p>
+              <ul className="space-y-0.5">
+                {conflicts.slice(0, 3).map((c) => (
+                  <li
+                    key={c.id}
+                    className="text-[11px] leading-snug text-amber-800 dark:text-amber-300"
+                  >
+                    {c.label || t('anotherJob')} ·{' '}
+                    {new Date(c.start).toLocaleString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                    {' – '}
+                    {new Date(c.end).toLocaleTimeString(undefined, {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                    {' · '}
+                    {c.onTechnician && c.onBay
+                      ? t('clashBoth')
+                      : c.onTechnician
+                        ? t('clashTechnician')
+                        : t('clashBay')}
+                  </li>
+                ))}
+              </ul>
+              {/* Advisory, not a block: a shop that means to double-book still
+                  can, and the board keeps telling the truth about the day. */}
+              <p className="text-[11px] text-amber-700 dark:text-amber-400">{t('bookedAnyway')}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Button
+        type="button"
+        variant={conflicts.length > 0 ? 'default' : 'outline'}
+        size="sm"
+        className="w-full"
+        disabled={finding || checking}
+        onClick={pickNextAvailable}
+      >
+        <Wand2 className="mr-1.5 h-3.5 w-3.5" />
+        {finding ? t('findingSlot') : t('pickNextAvailable')}
+      </Button>
 
       <div className="space-y-1">
         <span className="text-xs font-medium text-muted-foreground">Duration presets</span>

@@ -205,82 +205,88 @@ export function CustomerPortalSettings({
             ) : undefined
           }
         >
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="portal-enabled">{t('portal.enablePortal')}</Label>
-                <p className="text-xs text-muted-foreground">{t('portal.enablePortalHint')}</p>
-              </div>
-              <Switch
-                id="portal-enabled"
-                checked={enabled}
-                onCheckedChange={handleToggle}
-                disabled={isPending}
-              />
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="portal-enabled">{t('portal.enablePortal')}</Label>
+              <p className="text-xs text-muted-foreground">{t('portal.enablePortalHint')}</p>
             </div>
+            <Switch
+              id="portal-enabled"
+              checked={enabled}
+              onCheckedChange={handleToggle}
+              disabled={isPending}
+            />
+          </div>
 
-            {enabled && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="portal-slug">{t('portal.customSlug')}</Label>
-                  <Input
-                    id="portal-slug"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s/g, ''))}
-                    placeholder="e.g. my_shop"
-                    className="font-mono text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground">{t('portal.slugHint')}</p>
+          {enabled && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="portal-slug">{t('portal.customSlug')}</Label>
+                <Input
+                  id="portal-slug"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s/g, ''))}
+                  placeholder="e.g. my_shop"
+                  className="font-mono text-sm"
+                />
+                <p className="text-xs text-muted-foreground">{t('portal.slugHint')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="portal-description">{t('portal.descriptionLabel')}</Label>
+                <Textarea
+                  id="portal-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t('portal.descriptionPlaceholder')}
+                  rows={4}
+                />
+                <p className="text-xs text-muted-foreground">{t('portal.descriptionHint')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="portal-hours">{t('portal.hoursLabel')}</Label>
+                <Textarea
+                  id="portal-hours"
+                  value={hours}
+                  onChange={(e) => setHours(e.target.value)}
+                  placeholder={t('portal.hoursPlaceholder')}
+                  rows={4}
+                />
+                <p className="text-xs text-muted-foreground">{t('portal.hoursHint')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('portal.portalUrl')}</Label>
+                <div className="flex gap-2">
+                  <Input value={portalUrl} readOnly className="font-mono text-sm" />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleCopy}
+                    aria-label={t('portal.copyUrl')}
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
                 </div>
+                <p className="text-xs text-muted-foreground">{t('portal.shareHint')}</p>
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="portal-description">{t('portal.descriptionLabel')}</Label>
-                  <Textarea
-                    id="portal-description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={t('portal.descriptionPlaceholder')}
-                    rows={4}
-                  />
-                  <p className="text-xs text-muted-foreground">{t('portal.descriptionHint')}</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="portal-hours">{t('portal.hoursLabel')}</Label>
-                  <Textarea
-                    id="portal-hours"
-                    value={hours}
-                    onChange={(e) => setHours(e.target.value)}
-                    placeholder={t('portal.hoursPlaceholder')}
-                    rows={4}
-                  />
-                  <p className="text-xs text-muted-foreground">{t('portal.hoursHint')}</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t('portal.portalUrl')}</Label>
-                  <div className="flex gap-2">
-                    <Input value={portalUrl} readOnly className="font-mono text-sm" />
-                    <Button type="button" variant="outline" size="icon" onClick={handleCopy} aria-label={t('portal.copyUrl')}>
-                      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{t('portal.shareHint')}</p>
-                </div>
-
-                {/* Requests are submitted here but the alert that announces them
+              {/* Requests are submitted here but the alert that announces them
                     is configured on another page. Without a pointer, an operator
                     turning the portal on has no reason to go looking for it. */}
-                <div className="flex items-start gap-2 rounded-md border bg-muted/40 p-3">
-                  <Bell className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">
-                    {t('portal.serviceRequestAlertsHint')}{' '}
-                    <Link href="/settings/alerts" className="text-primary hover:underline">
-                      {t('portal.serviceRequestAlertsLink')}
-                    </Link>
-                  </p>
-                </div>
-              </>
-            )}
+              <div className="flex items-start gap-2 rounded-md border bg-muted/40 p-3">
+                <Bell className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground">
+                  {t('portal.serviceRequestAlertsHint')}{' '}
+                  <Link href="/settings/alerts" className="text-primary hover:underline">
+                    {t('portal.serviceRequestAlertsLink')}
+                  </Link>
+                </p>
+              </div>
+            </>
+          )}
         </AppCard>
 
         {enabled && (
@@ -290,134 +296,132 @@ export function CustomerPortalSettings({
             description={t('portal.background.description')}
             contentClassName="space-y-6"
           >
-              {/* Type selector */}
-              <div className="grid grid-cols-3 gap-2">
-                {(
-                  [
-                    { id: 'none', label: t('portal.background.typeNone') },
-                    { id: 'template', label: t('portal.background.typeTemplate') },
-                    { id: 'image', label: t('portal.background.typeImage') },
-                  ] as { id: PortalBackgroundType; label: string }[]
-                ).map((opt) => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => handleBackgroundTypeChange(opt.id)}
-                    className={cn(
-                      'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                      backgroundType === opt.id
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-input bg-background hover:bg-muted'
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+            {/* Type selector */}
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                [
+                  { id: 'none', label: t('portal.background.typeNone') },
+                  { id: 'template', label: t('portal.background.typeTemplate') },
+                  { id: 'image', label: t('portal.background.typeImage') },
+                ] as { id: PortalBackgroundType; label: string }[]
+              ).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => handleBackgroundTypeChange(opt.id)}
+                  className={cn(
+                    'rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                    backgroundType === opt.id
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-input bg-background hover:bg-muted'
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
 
-              {/* Template grid */}
-              {backgroundType === 'template' && (
-                <div className="space-y-2">
-                  <Label>{t('portal.background.chooseTemplate')}</Label>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    {PORTAL_BACKGROUND_TEMPLATES.map((tpl) => {
-                      const selected = backgroundTemplate === tpl.id
-                      return (
-                        <button
-                          key={tpl.id}
-                          type="button"
-                          onClick={() => handleTemplateChoose(tpl.id)}
-                          className={cn(
-                            'group relative h-24 overflow-hidden rounded-lg border-2 transition-all',
-                            selected
-                              ? 'border-primary ring-2 ring-primary/30'
-                              : 'border-input hover:border-primary/50'
-                          )}
-                          aria-pressed={selected}
-                        >
-                          <div className={cn('absolute inset-0', tpl.className)} />
-                          <span className="absolute inset-x-0 bottom-0 bg-background/80 px-2 py-1 text-xs font-medium backdrop-blur-sm">
-                            {t(`portal.background.templateNames.${tpl.labelKey}`)}
+            {/* Template grid */}
+            {backgroundType === 'template' && (
+              <div className="space-y-2">
+                <Label>{t('portal.background.chooseTemplate')}</Label>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {PORTAL_BACKGROUND_TEMPLATES.map((tpl) => {
+                    const selected = backgroundTemplate === tpl.id
+                    return (
+                      <button
+                        key={tpl.id}
+                        type="button"
+                        onClick={() => handleTemplateChoose(tpl.id)}
+                        className={cn(
+                          'group relative h-24 overflow-hidden rounded-lg border-2 transition-all',
+                          selected
+                            ? 'border-primary ring-2 ring-primary/30'
+                            : 'border-input hover:border-primary/50'
+                        )}
+                        aria-pressed={selected}
+                      >
+                        <div className={cn('absolute inset-0', tpl.className)} />
+                        <span className="absolute inset-x-0 bottom-0 bg-background/80 px-2 py-1 text-xs font-medium backdrop-blur-sm">
+                          {t(`portal.background.templateNames.${tpl.labelKey}`)}
+                        </span>
+                        {selected && (
+                          <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            <Check className="h-3 w-3" />
                           </span>
-                          {selected && (
-                            <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                              <Check className="h-3 w-3" />
-                            </span>
-                          )}
-                        </button>
-                      )
-                    })}
-                  </div>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Image upload */}
-              {backgroundType === 'image' && (
-                <div className="space-y-3">
-                  <Label>{t('portal.background.uploadLabel')}</Label>
-                  <div className="flex items-center gap-4">
-                    <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-lg border bg-muted">
-                      {backgroundImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={`/api/public/portal-bg/${portalParam}?v=${encodeURIComponent(backgroundImage)}`}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
+            {/* Image upload */}
+            {backgroundType === 'image' && (
+              <div className="space-y-3">
+                <Label>{t('portal.background.uploadLabel')}</Label>
+                <div className="flex items-center gap-4">
+                  <div className="relative h-24 w-40 shrink-0 overflow-hidden rounded-lg border bg-muted">
+                    {backgroundImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={`/api/public/portal-bg/${portalParam}?v=${encodeURIComponent(backgroundImage)}`}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <ImageIcon className="h-6 w-6 text-muted-foreground/50" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => bgFileInputRef.current?.click()}
+                      disabled={bgUploading}
+                    >
+                      {bgUploading ? (
+                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <ImageIcon className="h-6 w-6 text-muted-foreground/50" />
-                        </div>
+                        <Upload className="mr-1.5 h-3.5 w-3.5" />
                       )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                      {backgroundImage
+                        ? t('portal.background.replace')
+                        : t('portal.background.upload')}
+                    </Button>
+                    {backgroundImage && (
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        onClick={() => bgFileInputRef.current?.click()}
-                        disabled={bgUploading}
+                        className="text-destructive hover:text-destructive"
+                        onClick={handleBackgroundRemove}
                       >
-                        {bgUploading ? (
-                          <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Upload className="mr-1.5 h-3.5 w-3.5" />
-                        )}
-                        {backgroundImage
-                          ? t('portal.background.replace')
-                          : t('portal.background.upload')}
+                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                        {t('portal.background.remove')}
                       </Button>
-                      {backgroundImage && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={handleBackgroundRemove}
-                        >
-                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                          {t('portal.background.remove')}
-                        </Button>
-                      )}
-                    </div>
-                    <input
-                      ref={bgFileInputRef}
-                      type="file"
-                      accept=".jpg,.jpeg,.png,.webp"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleBackgroundUpload(file)
-                        e.target.value = ''
-                      }}
-                    />
+                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {t('portal.background.uploadHint')}
-                  </p>
+                  <input
+                    ref={bgFileInputRef}
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleBackgroundUpload(file)
+                      e.target.value = ''
+                    }}
+                  />
                 </div>
-              )}
-            </AppCard>
+                <p className="text-xs text-muted-foreground">{t('portal.background.uploadHint')}</p>
+              </div>
+            )}
+          </AppCard>
         )}
       </ReadOnlyWrapper>
     </div>

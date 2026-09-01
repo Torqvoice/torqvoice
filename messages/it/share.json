@@ -71,7 +71,8 @@
     "findingSeverityUrgent": "Alta",
     "findingSeverityNeedsWork": "Media",
     "findingSeverityMonitor": "Bassa",
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFields": "Informazioni aggiuntive"
   },
   "quote": {
     "title": "Preventivo",
@@ -125,7 +126,8 @@
       "converted": "Convertito",
       "changes_requested": "Modifiche Richieste"
     },
-    "tel": "Tel: {phone}"
+    "tel": "Tel: {phone}",
+    "customFields": "Informazioni aggiuntive"
   },
   "inspection": {
     "title": "Ispezione Veicolo",

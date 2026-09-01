@@ -96,6 +96,9 @@ export async function addTireSetAttachments(input: unknown) {
           fileType: file.fileType,
           fileSize: file.fileSize,
           description: file.description || null,
+          // Photos are taken to be shown and default onto the invoice;
+          // documents are the set's own paperwork and never travel to a job.
+          includeInInvoice: file.fileType.startsWith('image/'),
           sortOrder: start + index,
           tireSetId: set.id,
           organizationId,
@@ -112,7 +115,10 @@ export async function addTireSetAttachments(input: unknown) {
         action: 'tire_set.attach',
         entity: 'TireSet',
         entityId: result.tireSetId,
-        details: { key: 'tire_set_attach', params: { count: result.added, ref: result.reference ?? result.tireSetId } },
+        details: {
+          key: 'tire_set_attach',
+          params: { count: result.added, ref: result.reference ?? result.tireSetId },
+        },
       }),
     }
   )

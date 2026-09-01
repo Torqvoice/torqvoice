@@ -19,6 +19,12 @@
     "description": "Opis",
     "qty": "Ilość",
     "unitPrice": "Cena jednostkowa",
+    "items": "Pozycje",
+    "pos": "Lp.",
+    "unitOfMeasure": "Jedn.",
+    "invoiceNumberLabel": "Nr faktury",
+    "customerNumberLabel": "Nr klienta",
+    "dateLabel": "Data",
     "total": "Suma",
     "labor": "Robocizna",
     "hours": "Godziny",
@@ -64,7 +70,9 @@
     "professionalWorkshop": "Profesjonalne zarządzanie warsztatem",
     "tel": "Tel: {phone}",
     "org": "Org: {org}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Informacje dodatkowe",
+    "telegramConnect": "Napisz do nas na Telegramie"
   },
   "quote": {
     "title": "WYCENA",
@@ -100,7 +108,10 @@
     "validityFooter30": "Ta wycena jest ważna przez 30 dni",
     "viewPortal": "Zobacz swój portal: {url}",
     "tel": "Tel: {phone}",
-    "qtyOrHours": "Unit / Hours"
+    "qtyOrHours": "Unit / Hours",
+    "customFieldsTitle": "Informacje dodatkowe",
+    "quoteNumberLabel": "Nr oferty",
+    "validUntilLabel": "Ważne do"
   },
   "inspection": {
     "title": "INSPEKCJA POJAZDU",

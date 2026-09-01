@@ -1,31 +1,31 @@
-import { create } from "zustand";
+import { create } from 'zustand'
 
 export type Notification = {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  entityType: string;
-  entityId: string;
-  entityUrl: string;
-  read: boolean;
-  organizationId: string;
-  createdAt: string | Date;
-};
+  id: string
+  type: string
+  title: string
+  message: string
+  entityType: string
+  entityId: string
+  entityUrl: string
+  read: boolean
+  organizationId: string
+  createdAt: string | Date
+}
 
 type NotificationState = {
-  notifications: Notification[];
-  unreadCount: number;
-  isConnected: boolean;
-  isPanelOpen: boolean;
-  setNotifications: (notifications: Notification[], unreadCount: number) => void;
-  addNotification: (notification: Notification) => void;
-  markRead: (id: string) => void;
-  markAllRead: () => void;
-  removeNotification: (id: string) => void;
-  setConnected: (connected: boolean) => void;
-  setPanelOpen: (open: boolean) => void;
-};
+  notifications: Notification[]
+  unreadCount: number
+  isConnected: boolean
+  isPanelOpen: boolean
+  setNotifications: (notifications: Notification[], unreadCount: number) => void
+  addNotification: (notification: Notification) => void
+  markRead: (id: string) => void
+  markAllRead: () => void
+  removeNotification: (id: string) => void
+  setConnected: (connected: boolean) => void
+  setPanelOpen: (open: boolean) => void
+}
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
@@ -38,19 +38,20 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       // Dedupe by id: a reconnect race or a double-delivered broadcast must
       // never show (or count) the same notification twice.
       if (state.notifications.some((n) => n.id === notification.id)) {
-        return state;
+        return state
       }
       return {
         notifications: [notification, ...state.notifications].slice(0, 50),
         unreadCount: state.unreadCount + 1,
-      };
+      }
     }),
   markRead: (id) =>
     set((state) => ({
-      notifications: state.notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n,
+      notifications: state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      unreadCount: Math.max(
+        0,
+        state.unreadCount - (state.notifications.find((n) => n.id === id && !n.read) ? 1 : 0)
       ),
-      unreadCount: Math.max(0, state.unreadCount - (state.notifications.find((n) => n.id === id && !n.read) ? 1 : 0)),
     })),
   markAllRead: () =>
     set((state) => ({
@@ -59,12 +60,12 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     })),
   removeNotification: (id) =>
     set((state) => {
-      const target = state.notifications.find((n) => n.id === id);
+      const target = state.notifications.find((n) => n.id === id)
       return {
         notifications: state.notifications.filter((n) => n.id !== id),
         unreadCount: Math.max(0, state.unreadCount - (target && !target.read ? 1 : 0)),
-      };
+      }
     }),
   setConnected: (isConnected) => set({ isConnected }),
   setPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
-}));
+}))

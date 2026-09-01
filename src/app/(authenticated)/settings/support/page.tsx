@@ -19,14 +19,10 @@ export default async function SupportSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <AppCard
-        icon={Headset}
-        title={t('support.title')}
-        contentClassName="space-y-4"
-      >
-          <p className="text-sm text-muted-foreground">{t('support.description')}</p>
-          <SupportSettingsControls />
-        </AppCard>
+      <AppCard icon={Headset} title={t('support.title')} contentClassName="space-y-4">
+        <p className="text-sm text-muted-foreground">{t('support.description')}</p>
+        <SupportSettingsControls />
+      </AppCard>
     </div>
   )
 }

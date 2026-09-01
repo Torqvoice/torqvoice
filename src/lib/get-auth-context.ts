@@ -1,22 +1,22 @@
-import { getCachedSession, getCachedMembership } from "./cached-session";
-import { db } from "./db";
-import type { AuthContext } from "./with-auth";
+import { getCachedSession, getCachedMembership } from './cached-session'
+import { db } from './db'
+import type { AuthContext } from './with-auth'
 
 type AuthContextResult =
-  | { status: "unauthenticated" }
-  | { status: "no-organization" }
-  | { status: "ok"; context: AuthContext };
+  | { status: 'unauthenticated' }
+  | { status: 'no-organization' }
+  | { status: 'ok'; context: AuthContext }
 
 export async function getAuthContext(): Promise<AuthContext | null> {
-  const result = await getAuthContextDetailed();
-  if (result.status !== "ok") return null;
-  return result.context;
+  const result = await getAuthContextDetailed()
+  if (result.status !== 'ok') return null
+  return result.context
 }
 
 export async function getAuthContextDetailed(): Promise<AuthContextResult> {
-  const session = await getCachedSession();
+  const session = await getCachedSession()
 
-  if (!session?.user?.id) return { status: "unauthenticated" };
+  if (!session?.user?.id) return { status: 'unauthenticated' }
 
   const [membership, user] = await Promise.all([
     getCachedMembership(session.user.id),
@@ -24,23 +24,23 @@ export async function getAuthContextDetailed(): Promise<AuthContextResult> {
       where: { id: session.user.id },
       select: { isSuperAdmin: true },
     }),
-  ]);
+  ])
 
-  const isSuperAdmin = user?.isSuperAdmin ?? false;
+  const isSuperAdmin = user?.isSuperAdmin ?? false
 
-  if (!membership?.organizationId) return { status: "no-organization" };
+  if (!membership?.organizationId) return { status: 'no-organization' }
 
-  const isOwnerOrAdmin = membership.role === "owner" || membership.role === "admin";
-  const roleIsAdmin = membership.customRole?.isAdmin === true;
+  const isOwnerOrAdmin = membership.role === 'owner' || membership.role === 'admin'
+  const roleIsAdmin = membership.customRole?.isAdmin === true
 
   return {
-    status: "ok",
+    status: 'ok',
     context: {
       userId: session.user.id,
       organizationId: membership.organizationId,
-      role: isSuperAdmin ? "super_admin" : (membership.role ?? "member"),
+      role: isSuperAdmin ? 'super_admin' : (membership.role ?? 'member'),
       isSuperAdmin,
       isAdmin: isSuperAdmin || isOwnerOrAdmin || roleIsAdmin,
     },
-  };
+  }
 }

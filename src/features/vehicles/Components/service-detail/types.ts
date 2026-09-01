@@ -37,6 +37,7 @@ export interface ServiceDetail {
   workBayId: string | null
   parts: string | null
   laborHours: number | null
+  concerns: { id: string; description: string; sortOrder: number }[]
   diagnosticNotes: string | null
   invoiceNotes: string | null
   subtotal: number

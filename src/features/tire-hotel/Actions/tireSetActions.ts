@@ -387,7 +387,10 @@ export async function checkInTireSet(input: unknown) {
         action: 'tire_set.check_in',
         entity: 'TireSet',
         entityId: result.id,
-        details: { key: 'tire_set_check_in', params: { ref: result.reference ?? result.id, code: result.locationCode } },
+        details: {
+          key: 'tire_set_check_in',
+          params: { ref: result.reference ?? result.id, code: result.locationCode },
+        },
         metadata: { quantity: result.quantity },
       }),
     }
@@ -618,7 +621,10 @@ export async function returnTireSet(input: unknown) {
         action: 'tire_set.return',
         entity: 'TireSet',
         entityId: result.id,
-        details: { key: 'tire_set_return', params: { ref: result.reference ?? result.id, code: result.locationCode } },
+        details: {
+          key: 'tire_set_return',
+          params: { ref: result.reference ?? result.id, code: result.locationCode },
+        },
         metadata: { quantity: result.quantity },
       }),
     }
@@ -934,7 +940,10 @@ export async function addMeasurements(input: { tireSetId: string; measurements: 
         action: 'tire_measurement.create',
         entity: 'TireSet',
         entityId: result.id,
-        details: { key: 'tire_measurement_create', params: { count: result.count, ref: result.reference ?? result.id } },
+        details: {
+          key: 'tire_measurement_create',
+          params: { count: result.count, ref: result.reference ?? result.id },
+        },
       }),
     }
   )
