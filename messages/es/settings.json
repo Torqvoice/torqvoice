@@ -91,6 +91,10 @@
         "title": "Informes programados",
         "description": "Envío automático de informes"
       },
+      "integrations": {
+        "title": "Integraciones",
+        "description": "Calendarios, videollamadas y servicios conectados"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Notificaciones de eventos en tiempo real"

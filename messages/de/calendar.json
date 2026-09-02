@@ -34,7 +34,8 @@
     "services": "Aufträge",
     "reminders": "Erinnerungen",
     "quotes": "Angebote",
-    "messages": "Nachrichten"
+    "messages": "Nachrichten",
+    "external": "Verbundene Kalender"
   },
   "selectVehicle": "Fahrzeug für Arbeitsauftrag auswählen",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Überfällig",
       "upcoming": "Bevorstehend",
       "failed": "Fehlgeschlagen",
-      "queued": "In Warteschlange"
+      "queued": "In Warteschlange",
+      "busy": "Belegt"
     },
     "type": {
       "service": "Service",

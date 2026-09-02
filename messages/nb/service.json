@@ -34,7 +34,8 @@
     "delete": "Slett",
     "unpaid": "Ubetalt",
     "unsavedChanges": "Ulagrede endringer",
-    "saved": "Lagret"
+    "saved": "Lagret",
+    "joinCall": "Bli med i videosamtale"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",

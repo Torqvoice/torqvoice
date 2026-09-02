@@ -73,6 +73,8 @@ model Organization {
   tireSetAttachments     TireSetAttachment[]
   tireMovements          TireMovement[]
   tireTreatments         TireTreatment[]
+  integrationConnections IntegrationConnection[]
+  externalCalendarEvents ExternalCalendarEvent[]
 
   @@map("organizations")
 }

@@ -34,7 +34,8 @@
     "delete": "Sil",
     "unpaid": "Ödenmedi",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",
-    "saved": "Kaydedildi"
+    "saved": "Kaydedildi",
+    "joinCall": "Görüntülü görüşmeye katıl"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",

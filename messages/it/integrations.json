@@ -1,0 +1,139 @@
+{
+  "catalog": {
+    "title": "Integrazioni",
+    "description": "Collega i servizi che la tua officina usa già. Ogni integrazione si configura una sola volta e funziona in background.",
+    "all": "Tutte",
+    "empty": "Nessuna integrazione in questa categoria per ora.",
+    "notConnected": "Non collegata",
+    "connect": "Collega",
+    "manage": "Gestisci"
+  },
+  "categories": {
+    "calendar": "Calendario",
+    "conferencing": "Videochiamate",
+    "accounting": "Contabilità",
+    "messaging": "Messaggistica",
+    "payments": "Pagamenti",
+    "automation": "Automazione",
+    "storage": "File",
+    "registry": "Registro veicoli",
+    "other": "Altro"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Ordini di lavoro nel calendario",
+      "pull": "Impegni dal calendario",
+      "conference": "Link per videochiamate"
+    }
+  },
+  "statuses": {
+    "active": "Collegata",
+    "error": "Richiede attenzione",
+    "pending": "Configurazione in corso",
+    "disconnected": "Scollegata"
+  },
+  "connection": {
+    "back": "Tutte le integrazioni",
+    "account": "Account collegato",
+    "lastHealth": "Ultimo controllo",
+    "lastSync": "Ultima sincronizzazione",
+    "lastError": "L'ultima esecuzione non è riuscita",
+    "connected": "{name} è collegato.",
+    "connectedShort": "Collegato",
+    "connectWith": "Collega {name}",
+    "connect": "Collega",
+    "reconnect": "Ricollega",
+    "disconnect": "Scollega",
+    "disconnectTitle": "Scollegare {name}?",
+    "disconnectDescription": "Torqvoice dimentica l'account e interrompe la sincronizzazione. Gli eventi già creati nel calendario restano lì.",
+    "disconnected": "Scollegato",
+    "test": "Prova la connessione",
+    "testPassed": "La connessione funziona",
+    "syncNow": "Sincronizza ora",
+    "syncQueued": "Sincronizzazione in coda; verrà eseguita entro un minuto",
+    "backfill": "Invia gli ordini di lavoro pianificati",
+    "backfillQueued": "Messi in coda gli ordini di lavoro pianificati dall'ultima settimana in poi",
+    "retryQueued": "Attività rimessa in coda",
+    "settingsTitle": "Impostazioni",
+    "settingsDescription": "Cosa sincronizzare e dove. Le modifiche si applicano alla prossima sincronizzazione.",
+    "settingsSaved": "Impostazioni salvate",
+    "save": "Salva",
+    "loading": "Caricamento...",
+    "choose": "Scegli...",
+    "planLocked": "Le integrazioni non sono incluse nel tuo piano.",
+    "ownAppTitle": "Questa installazione usa la tua app presso il provider",
+    "redirectUri": "URI di reindirizzamento da registrare presso il provider:",
+    "saveApp": "Salva le credenziali dell'app"
+  },
+  "activity": {
+    "title": "Attività",
+    "description": "Attività recenti e righe di log per questa connessione.",
+    "retry": "Riprova",
+    "jobStatus": {
+      "queued": "In coda",
+      "running": "In esecuzione",
+      "done": "Completata",
+      "failed": "Non riuscita",
+      "dead": "Abbandonata"
+    }
+  },
+  "errors": {
+    "generic": "Qualcosa è andato storto",
+    "demo": "Le integrazioni non possono essere collegate nella demo.",
+    "forbidden": "Solo un amministratore può collegare le integrazioni.",
+    "unknown": "Integrazione sconosciuta.",
+    "plan": "Questa integrazione non è inclusa nel tuo piano.",
+    "no-client": "Nessuna credenziale dell'app configurata per questo provider.",
+    "denied": "Hai annullato l'accesso presso il provider.",
+    "vendor": "Il provider ha restituito un errore. Riprova.",
+    "invalid": "La risposta del provider era incompleta. Riprova.",
+    "state": "Questo accesso è scaduto o appartiene a un'altra sessione. Ricomincia da capo.",
+    "exchange": "Il provider ha rifiutato l'accesso. Controlla le credenziali dell'app e riprova.",
+    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo."
+  },
+  "meeting": {
+    "join": "Partecipa alla videochiamata",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams"
+  },
+  "calendar": {
+    "external": "Dai calendari collegati",
+    "busy": "Occupato"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Inserisci gli ordini di lavoro pianificati in un Google Calendar, aggiungi un link Google Meet e vedi gli impegni del calendario in Torqvoice.",
+      "tenantHelp": "Crea un client OAuth in Google Cloud Console (API e servizi → Credenziali), abilita l'API Google Calendar, aggiungi l'URI di reindirizzamento qui sotto e incolla qui l'ID client e il segreto.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "calendarId": "Calendario",
+        "pushEnabled": "Aggiungi gli ordini di lavoro pianificati a questo calendario",
+        "includeCustomer": "Includi nome e telefono del cliente nell'evento",
+        "addConference": "Aggiungi un link Google Meet a ogni evento",
+        "addConferenceHelp": "Il link viene mostrato nell'ordine di lavoro, così puoi condividerlo con il cliente.",
+        "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
+        "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
+      }
+    },
+    "microsoft-365": {
+      "description": "Inserisci gli ordini di lavoro pianificati in un calendario Outlook, aggiungi un link Microsoft Teams e vedi gli impegni del calendario in Torqvoice.",
+      "tenantHelp": "Registra un'applicazione in Microsoft Entra (Registrazioni app), consenti gli account personali e aziendali, aggiungi l'URI di reindirizzamento qui sotto come piattaforma Web, crea un segreto client e incolla entrambi qui.",
+      "fields": {
+        "clientId": "ID applicazione (client)",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "calendarId": "Calendario",
+        "pushEnabled": "Aggiungi gli ordini di lavoro pianificati a questo calendario",
+        "includeCustomer": "Includi nome e telefono del cliente nell'evento",
+        "addConference": "Aggiungi un link Microsoft Teams a ogni evento",
+        "addConferenceHelp": "Il link viene mostrato nell'ordine di lavoro, così puoi condividerlo con il cliente.",
+        "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
+        "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
+      }
+    }
+  }
+}

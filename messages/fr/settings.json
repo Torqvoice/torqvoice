@@ -91,6 +91,10 @@
         "title": "Rapports planifiés",
         "description": "Envoi automatique de rapports"
       },
+      "integrations": {
+        "title": "Intégrations",
+        "description": "Calendriers, appels vidéo et services connectés"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Notifications d'événements en temps réel"

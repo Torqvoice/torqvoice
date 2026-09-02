@@ -65,6 +65,7 @@ export function ServicePageClient({
   currencyCode,
   unitSystem,
   tireHotelEnabled = false,
+  meetingLink = null,
   tireThresholds,
   defaultTaxRate,
   taxEnabled,
@@ -338,6 +339,7 @@ export function ServicePageClient({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <UnifiedServiceHeader
         vehicleId={vehicleId}
+        meetingUrl={meetingLink?.url ?? null}
         vehicleName={formState.vehicleName}
         title={record.title}
         status={formState.status}

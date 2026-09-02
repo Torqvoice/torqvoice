@@ -34,7 +34,8 @@
     "services": "Serviços",
     "reminders": "Lembretes",
     "quotes": "Orçamentos",
-    "messages": "Mensagens"
+    "messages": "Mensagens",
+    "external": "Calendários conectados"
   },
   "selectVehicle": "Selecionar veículo para ordem de serviço",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Atrasado",
       "upcoming": "Próximo",
       "failed": "Falhou",
-      "queued": "Na fila"
+      "queued": "Na fila",
+      "busy": "Ocupado"
     },
     "type": {
       "service": "Serviço",

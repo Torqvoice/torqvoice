@@ -91,6 +91,10 @@
         "title": "Planlagte rapporter",
         "description": "Automatisk rapportlevering"
       },
+      "integrations": {
+        "title": "Integrasjoner",
+        "description": "Kalendere, videosamtaler og tilkoblede tjenester"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Sanntidsvarsler om hendelser"

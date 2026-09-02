@@ -91,6 +91,10 @@
         "title": "Report Schedule",
         "description": "Automated report delivery"
       },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Calendars, video calls and connected services"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Real-time event notifications"

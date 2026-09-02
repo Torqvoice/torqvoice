@@ -274,6 +274,14 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   CustomerSession: 'Portal session, recreated when the customer signs in.',
   CustomerSmsCode: 'One-time code, valid for minutes.',
   DashboardWidget: 'Per-user dashboard layout, tied to user accounts a backup does not carry.',
+  ExternalCalendarEvent:
+    'Cache of busy time pulled from a connected calendar; rebuilt by the next sync.',
+  IntegrationConnection:
+    'Sealed third-party credentials, which must never travel in a backup file; the workshop reconnects after a restore.',
+  IntegrationJob: 'Pending connector work, meaningless without the live connection it belongs to.',
+  IntegrationLink:
+    'Remote ids in a connected system, only valid for the connection that created them.',
+  IntegrationLog: 'Connector activity log, rewritten every time a job runs.',
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',

@@ -1,0 +1,139 @@
+{
+  "catalog": {
+    "title": "Integrations",
+    "description": "Connect the services your workshop already uses. Each integration is set up once and runs in the background.",
+    "all": "All",
+    "empty": "No integrations in this category yet.",
+    "notConnected": "Not connected",
+    "connect": "Connect",
+    "manage": "Manage"
+  },
+  "categories": {
+    "calendar": "Calendar",
+    "conferencing": "Video calls",
+    "accounting": "Accounting",
+    "messaging": "Messaging",
+    "payments": "Payments",
+    "automation": "Automation",
+    "storage": "Files",
+    "registry": "Vehicle registry",
+    "other": "Other"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Work orders to calendar",
+      "pull": "Busy time from calendar",
+      "conference": "Video call links"
+    }
+  },
+  "statuses": {
+    "active": "Connected",
+    "error": "Needs attention",
+    "pending": "Setup in progress",
+    "disconnected": "Disconnected"
+  },
+  "connection": {
+    "back": "All integrations",
+    "account": "Connected account",
+    "lastHealth": "Last checked",
+    "lastSync": "Last sync",
+    "lastError": "The last run failed",
+    "connected": "{name} is connected.",
+    "connectedShort": "Connected",
+    "connectWith": "Connect {name}",
+    "connect": "Connect",
+    "reconnect": "Reconnect",
+    "disconnect": "Disconnect",
+    "disconnectTitle": "Disconnect {name}?",
+    "disconnectDescription": "Torqvoice forgets the account and stops syncing. Events already created in the calendar stay there.",
+    "disconnected": "Disconnected",
+    "test": "Test connection",
+    "testPassed": "Connection works",
+    "syncNow": "Sync now",
+    "syncQueued": "Sync queued; it runs within a minute",
+    "backfill": "Push scheduled work orders",
+    "backfillQueued": "Queued the scheduled work orders from the last week onwards",
+    "retryQueued": "Job queued again",
+    "settingsTitle": "Settings",
+    "settingsDescription": "What to sync and where. Changes apply to the next sync.",
+    "settingsSaved": "Settings saved",
+    "save": "Save",
+    "loading": "Loading...",
+    "choose": "Choose...",
+    "planLocked": "Integrations are not included in your plan.",
+    "ownAppTitle": "This install uses your own app with the provider",
+    "redirectUri": "Redirect URI to register with the provider:",
+    "saveApp": "Save app credentials"
+  },
+  "activity": {
+    "title": "Activity",
+    "description": "Recent jobs and log lines for this connection.",
+    "retry": "Retry",
+    "jobStatus": {
+      "queued": "Queued",
+      "running": "Running",
+      "done": "Done",
+      "failed": "Failed",
+      "dead": "Gave up"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "demo": "Integrations cannot be connected on the demo.",
+    "forbidden": "Only an administrator can connect integrations.",
+    "unknown": "Unknown integration.",
+    "plan": "This integration is not included in your plan.",
+    "no-client": "No app credentials are configured for this provider.",
+    "denied": "You cancelled the sign-in with the provider.",
+    "vendor": "The provider returned an error. Try again.",
+    "invalid": "The provider's response was incomplete. Try again.",
+    "state": "This sign-in has expired or belongs to another session. Start again.",
+    "exchange": "The provider refused the sign-in. Check the app credentials and try again.",
+    "identify": "Connected, but the account could not be read. Try reconnecting."
+  },
+  "meeting": {
+    "join": "Join video call",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams"
+  },
+  "calendar": {
+    "external": "From connected calendars",
+    "busy": "Busy"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Put scheduled work orders on a Google Calendar, add a Google Meet link, and see the calendar's busy time in Torqvoice.",
+      "tenantHelp": "Create an OAuth client in Google Cloud Console (APIs & Services → Credentials), enable the Google Calendar API, add the redirect URI below, and paste the client id and secret here.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "calendarId": "Calendar",
+        "pushEnabled": "Add scheduled work orders to this calendar",
+        "includeCustomer": "Include the customer's name and phone in the event",
+        "addConference": "Add a Google Meet link to each event",
+        "addConferenceHelp": "The link is shown on the work order so you can share it with the customer.",
+        "pullEnabled": "Show this calendar's busy time on the Torqvoice calendar",
+        "pullEnabledHelp": "Read-only. Refreshed every 15 minutes, one week back and two months ahead."
+      }
+    },
+    "microsoft-365": {
+      "description": "Put scheduled work orders on an Outlook calendar, add a Microsoft Teams link, and see the calendar's busy time in Torqvoice.",
+      "tenantHelp": "Register an application in Microsoft Entra (App registrations), allow personal and work accounts, add the redirect URI below as a Web platform, create a client secret, and paste both here.",
+      "fields": {
+        "clientId": "Application (client) ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "calendarId": "Calendar",
+        "pushEnabled": "Add scheduled work orders to this calendar",
+        "includeCustomer": "Include the customer's name and phone in the event",
+        "addConference": "Add a Microsoft Teams link to each event",
+        "addConferenceHelp": "The link is shown on the work order so you can share it with the customer.",
+        "pullEnabled": "Show this calendar's busy time on the Torqvoice calendar",
+        "pullEnabledHelp": "Read-only. Refreshed every 15 minutes, one week back and two months ahead."
+      }
+    }
+  }
+}

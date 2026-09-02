@@ -34,7 +34,8 @@
     "delete": "Löschen",
     "unpaid": "Unbezahlt",
     "unsavedChanges": "Nicht gespeicherte Änderungen",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "joinCall": "Videoanruf beitreten"
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",

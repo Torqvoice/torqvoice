@@ -77,6 +77,8 @@ export interface ServicePageClientProps {
   aiEnabled?: boolean
   /** Gates the "Store tires" action, by plan and by the org's own switch. */
   tireHotelEnabled?: boolean
+  /** Video call link a connected calendar attached to this work order. */
+  meetingLink?: { url: string; provider: string } | null
   /** The workshop's tread limits, so a set checked in here grades correctly. */
   tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultDueDays?: number

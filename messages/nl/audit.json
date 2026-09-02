@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd",
     "team_giveTechnicianTheApp": "Bordmonteur een account gegeven",
     "team_createDefaultRoles": "Standaardrollen aangemaakt",
-    "settings_setCustomFieldPlacement": "Plaatsing van aangepast veld bijgewerkt"
+    "settings_setCustomFieldPlacement": "Plaatsing van aangepast veld bijgewerkt",
+    "integration_connect": "Integratie gekoppeld",
+    "integration_disconnect": "Integratie losgekoppeld"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -275,6 +277,8 @@
     "work_bay_create": "Werkplek \"{name}\" aangemaakt",
     "work_bay_update": "Werkplek \"{name}\" bijgewerkt",
     "work_bay_delete": "Werkplek {id} verwijderd",
-    "settings_setCustomFieldPlacement": "Wijzigde waar een aangepast veld wordt afgedrukt"
+    "settings_setCustomFieldPlacement": "Wijzigde waar een aangepast veld wordt afgedrukt",
+    "integration_connect": "{name} gekoppeld",
+    "integration_disconnect": "{name} losgekoppeld"
   }
 }

@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert",
     "team_giveTechnicianTheApp": "Board-Techniker ein Konto gegeben",
     "team_createDefaultRoles": "Standardrollen angelegt",
-    "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert"
+    "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert",
+    "integration_connect": "Integration verbunden",
+    "integration_disconnect": "Integration getrennt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -275,6 +277,8 @@
     "work_bay_create": "Arbeitsplatz „{name}“ angelegt",
     "work_bay_update": "Arbeitsplatz „{name}“ aktualisiert",
     "work_bay_delete": "Arbeitsplatz {id} gelöscht",
-    "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird"
+    "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird",
+    "integration_connect": "{name} verbunden",
+    "integration_disconnect": "{name} getrennt"
   }
 }

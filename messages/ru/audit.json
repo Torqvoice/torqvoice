@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Зарегистрирован номер WhatsApp",
     "team_giveTechnicianTheApp": "Механику с доски выдана учётная запись",
     "team_createDefaultRoles": "Созданы стандартные роли",
-    "settings_setCustomFieldPlacement": "Обновлено расположение пользовательского поля"
+    "settings_setCustomFieldPlacement": "Обновлено расположение пользовательского поля",
+    "integration_connect": "Подключена интеграция",
+    "integration_disconnect": "Отключена интеграция"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -275,6 +277,8 @@
     "work_bay_create": "Создан пост «{name}»",
     "work_bay_update": "Обновлён пост «{name}»",
     "work_bay_delete": "Удалён пост {id}",
-    "settings_setCustomFieldPlacement": "Изменено место печати пользовательского поля"
+    "settings_setCustomFieldPlacement": "Изменено место печати пользовательского поля",
+    "integration_connect": "Подключена интеграция {name}",
+    "integration_disconnect": "Отключена интеграция {name}"
   }
 }

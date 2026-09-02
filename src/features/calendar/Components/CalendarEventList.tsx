@@ -8,6 +8,7 @@ import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
 function getStatusColor(event: CalendarEvent) {
+  if (event.type === 'external') return 'bg-slate-400'
   if (event.type === 'service') {
     switch (event.status) {
       case 'completed':
@@ -45,6 +46,13 @@ function getStatusColor(event: CalendarEvent) {
 }
 
 function getStatusBadge(event: CalendarEvent, t: (key: string) => string) {
+  if (event.type === 'external') {
+    return (
+      <Badge variant="outline" className="text-xs text-muted-foreground">
+        {t('events.status.busy')}
+      </Badge>
+    )
+  }
   if (event.type === 'service') {
     switch (event.status) {
       case 'completed':

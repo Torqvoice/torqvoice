@@ -34,7 +34,8 @@
     "delete": "Usuń",
     "unpaid": "Niezapłacone",
     "unsavedChanges": "Niezapisane zmiany",
-    "saved": "Zapisano"
+    "saved": "Zapisano",
+    "joinCall": "Dołącz do rozmowy wideo"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",

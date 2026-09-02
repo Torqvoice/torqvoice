@@ -91,6 +91,10 @@
         "title": "Ataskaitų grafikas",
         "description": "Automatinis ataskaitų siuntimas"
       },
+      "integrations": {
+        "title": "Integracijos",
+        "description": "Kalendoriai, vaizdo skambučiai ir prijungtos paslaugos"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Realaus laiko įvykių pranešimai"

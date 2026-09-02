@@ -34,7 +34,8 @@
     "delete": "Deletar",
     "unpaid": "Não Pago",
     "unsavedChanges": "Alterações não salvas",
-    "saved": "Salvo"
+    "saved": "Salvo",
+    "joinCall": "Entrar na videochamada"
   },
   "basicInfo": {
     "title": "Informações Básicas",

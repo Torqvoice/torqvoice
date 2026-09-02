@@ -34,7 +34,8 @@
     "delete": "Ištrinti",
     "unpaid": "Neapmokėta",
     "unsavedChanges": "Neišsaugoti pakeitimai",
-    "saved": "Išsaugota"
+    "saved": "Išsaugota",
+    "joinCall": "Prisijungti prie vaizdo skambučio"
   },
   "basicInfo": {
     "title": "Pagrindinė informacija",

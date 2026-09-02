@@ -91,6 +91,10 @@
         "title": "Agendamento de relatórios",
         "description": "Envio automático de relatórios"
       },
+      "integrations": {
+        "title": "Integrações",
+        "description": "Calendários, videochamadas e serviços conectados"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Notificações de eventos em tempo real"

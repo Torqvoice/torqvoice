@@ -91,6 +91,10 @@
         "title": "Berichtsplanung",
         "description": "Automatischer Berichtsversand"
       },
+      "integrations": {
+        "title": "Integrationen",
+        "description": "Kalender, Videoanrufe und verbundene Dienste"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Echtzeit-Ereignisbenachrichtigungen"

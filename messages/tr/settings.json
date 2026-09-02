@@ -91,6 +91,10 @@
         "title": "Rapor zamanlayıcı",
         "description": "Otomatik rapor gönderimi"
       },
+      "integrations": {
+        "title": "Entegrasyonlar",
+        "description": "Takvimler, görüntülü görüşmeler ve bağlı servisler"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Gerçek zamanlı olay bildirimleri"

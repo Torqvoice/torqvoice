@@ -34,7 +34,8 @@
     "delete": "Supprimer",
     "unpaid": "Non Payé",
     "unsavedChanges": "Modifications non enregistrées",
-    "saved": "Enregistré"
+    "saved": "Enregistré",
+    "joinCall": "Rejoindre l'appel vidéo"
   },
   "basicInfo": {
     "title": "Informations de Base",

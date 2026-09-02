@@ -34,7 +34,8 @@
     "delete": "Verwijderen",
     "unpaid": "Onbetaald",
     "unsavedChanges": "Niet-opgeslagen wijzigingen",
-    "saved": "Opgeslagen"
+    "saved": "Opgeslagen",
+    "joinCall": "Deelnemen aan videogesprek"
   },
   "basicInfo": {
     "title": "Basisinformatie",

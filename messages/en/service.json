@@ -34,7 +34,8 @@
     "delete": "Delete",
     "unpaid": "Unpaid",
     "unsavedChanges": "Unsaved changes",
-    "saved": "Saved"
+    "saved": "Saved",
+    "joinCall": "Join video call"
   },
   "basicInfo": {
     "title": "Basic Information",

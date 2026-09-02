@@ -1,0 +1,139 @@
+{
+  "catalog": {
+    "title": "Integracijos",
+    "description": "Prijunkite paslaugas, kuriomis jūsų dirbtuvė jau naudojasi. Kiekviena integracija nustatoma vieną kartą ir veikia fone.",
+    "all": "Visos",
+    "empty": "Šioje kategorijoje integracijų kol kas nėra.",
+    "notConnected": "Neprijungta",
+    "connect": "Prijungti",
+    "manage": "Tvarkyti"
+  },
+  "categories": {
+    "calendar": "Kalendorius",
+    "conferencing": "Vaizdo skambučiai",
+    "accounting": "Apskaita",
+    "messaging": "Žinutės",
+    "payments": "Mokėjimai",
+    "automation": "Automatizavimas",
+    "storage": "Failai",
+    "registry": "Transporto priemonių registras",
+    "other": "Kita"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Darbo užsakymai į kalendorių",
+      "pull": "Užimtas laikas iš kalendoriaus",
+      "conference": "Vaizdo skambučių nuorodos"
+    }
+  },
+  "statuses": {
+    "active": "Prijungta",
+    "error": "Reikia dėmesio",
+    "pending": "Nustatoma",
+    "disconnected": "Atjungta"
+  },
+  "connection": {
+    "back": "Visos integracijos",
+    "account": "Prijungta paskyra",
+    "lastHealth": "Paskutinį kartą tikrinta",
+    "lastSync": "Paskutinis sinchronizavimas",
+    "lastError": "Paskutinis vykdymas nepavyko",
+    "connected": "{name} prijungta.",
+    "connectedShort": "Prijungta",
+    "connectWith": "Prijungti {name}",
+    "connect": "Prijungti",
+    "reconnect": "Prijungti iš naujo",
+    "disconnect": "Atjungti",
+    "disconnectTitle": "Atjungti {name}?",
+    "disconnectDescription": "Torqvoice pamirš paskyrą ir nustos sinchronizuoti. Kalendoriuje jau sukurti įvykiai liks.",
+    "disconnected": "Atjungta",
+    "test": "Tikrinti ryšį",
+    "testPassed": "Ryšys veikia",
+    "syncNow": "Sinchronizuoti dabar",
+    "syncQueued": "Sinchronizavimas eilėje; jis įvyks per minutę",
+    "backfill": "Perkelti suplanuotus darbo užsakymus",
+    "backfillQueued": "Į eilę įtraukti suplanuoti darbo užsakymai nuo praėjusios savaitės",
+    "retryQueued": "Užduotis vėl įtraukta į eilę",
+    "settingsTitle": "Nustatymai",
+    "settingsDescription": "Ką sinchronizuoti ir kur. Pakeitimai įsigalios kito sinchronizavimo metu.",
+    "settingsSaved": "Nustatymai išsaugoti",
+    "save": "Išsaugoti",
+    "loading": "Kraunama...",
+    "choose": "Pasirinkite...",
+    "planLocked": "Integracijos neįtrauktos į jūsų planą.",
+    "ownAppTitle": "Šis diegimas naudoja jūsų pačių programą pas tiekėją",
+    "redirectUri": "Nukreipimo URI, kurį reikia užregistruoti pas tiekėją:",
+    "saveApp": "Išsaugoti programos prisijungimo duomenis"
+  },
+  "activity": {
+    "title": "Veikla",
+    "description": "Naujausios šio ryšio užduotys ir žurnalo įrašai.",
+    "retry": "Bandyti dar kartą",
+    "jobStatus": {
+      "queued": "Eilėje",
+      "running": "Vykdoma",
+      "done": "Atlikta",
+      "failed": "Nepavyko",
+      "dead": "Nutraukta"
+    }
+  },
+  "errors": {
+    "generic": "Kažkas nepavyko",
+    "demo": "Demonstracinėje versijoje integracijų prijungti negalima.",
+    "forbidden": "Integracijas prijungti gali tik administratorius.",
+    "unknown": "Nežinoma integracija.",
+    "plan": "Ši integracija neįtraukta į jūsų planą.",
+    "no-client": "Šiam tiekėjui nesukonfigūruoti programos prisijungimo duomenys.",
+    "denied": "Atšaukėte prisijungimą pas tiekėją.",
+    "vendor": "Tiekėjas grąžino klaidą. Bandykite dar kartą.",
+    "invalid": "Tiekėjo atsakymas buvo neišsamus. Bandykite dar kartą.",
+    "state": "Šis prisijungimas baigė galioti arba priklauso kitai sesijai. Pradėkite iš naujo.",
+    "exchange": "Tiekėjas atmetė prisijungimą. Patikrinkite programos prisijungimo duomenis ir bandykite dar kartą.",
+    "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo."
+  },
+  "meeting": {
+    "join": "Prisijungti prie vaizdo skambučio",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams"
+  },
+  "calendar": {
+    "external": "Iš prijungtų kalendorių",
+    "busy": "Užimta"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Įtraukite suplanuotus darbo užsakymus į Google Calendar, pridėkite Google Meet nuorodą ir matykite kalendoriaus užimtą laiką Torqvoice.",
+      "tenantHelp": "Sukurkite OAuth klientą Google Cloud Console (APIs & Services → Credentials), įjunkite Google Calendar API, pridėkite žemiau nurodytą nukreipimo URI ir įklijuokite čia kliento ID ir slaptažodį.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "calendarId": "Kalendorius",
+        "pushEnabled": "Įtraukti suplanuotus darbo užsakymus į šį kalendorių",
+        "includeCustomer": "Įtraukti į įvykį kliento vardą ir telefoną",
+        "addConference": "Pridėti Google Meet nuorodą prie kiekvieno įvykio",
+        "addConferenceHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ja pasidalinti su klientu.",
+        "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
+        "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
+      }
+    },
+    "microsoft-365": {
+      "description": "Įtraukite suplanuotus darbo užsakymus į Outlook kalendorių, pridėkite Microsoft Teams nuorodą ir matykite kalendoriaus užimtą laiką Torqvoice.",
+      "tenantHelp": "Užregistruokite programą Microsoft Entra (App registrations), leiskite asmenines ir darbo paskyras, pridėkite žemiau nurodytą nukreipimo URI kaip Web platformą, sukurkite kliento slaptažodį ir įklijuokite abu čia.",
+      "fields": {
+        "clientId": "Programos (kliento) ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "calendarId": "Kalendorius",
+        "pushEnabled": "Įtraukti suplanuotus darbo užsakymus į šį kalendorių",
+        "includeCustomer": "Įtraukti į įvykį kliento vardą ir telefoną",
+        "addConference": "Pridėti Microsoft Teams nuorodą prie kiekvieno įvykio",
+        "addConferenceHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ja pasidalinti su klientu.",
+        "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
+        "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
+      }
+    }
+  }
+}

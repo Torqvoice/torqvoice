@@ -9,7 +9,7 @@ export type CalendarEvent = {
   title: string
   date: string // YYYY-MM-DD local date
   time: string | null // HH:MM or null
-  type: 'service' | 'reminder' | 'quote' | 'message'
+  type: 'service' | 'reminder' | 'quote' | 'message' | 'external'
   status: string
   /** Only on scheduled-message events: email | sms | telegram | in_app */
   channel?: string
@@ -39,7 +39,7 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
       const end = new Date(params.end)
       end.setHours(23, 59, 59, 999)
 
-      const [services, reminders, quotes, scheduledMessages] = await Promise.all([
+      const [services, reminders, quotes, scheduledMessages, external] = await Promise.all([
         db.serviceRecord.findMany({
           where: {
             organizationId,
@@ -136,9 +136,40 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
           },
           orderBy: { sendAt: 'asc' },
         }),
+        // Busy time pulled from connected calendars; read-only on this side.
+        db.externalCalendarEvent.findMany({
+          where: { organizationId, startAt: { lte: end }, endAt: { gte: start } },
+          select: { id: true, title: true, startAt: true, endAt: true, allDay: true },
+          orderBy: { startAt: 'asc' },
+        }),
       ])
 
+      const externalEvents: CalendarEvent[] = []
+      for (const e of external) {
+        // One entry per day the event covers, capped so a year-long block
+        // does not flood the month.
+        const first = new Date(e.startAt)
+        const last = new Date(e.endAt.getTime() - 1)
+        for (let d = new Date(first), n = 0; d <= last && n < 31; d.setDate(d.getDate() + 1), n++) {
+          if (d < start || d > end) continue
+          externalEvents.push({
+            id: `${e.id}:${n}`,
+            title: e.title,
+            date: toLocalDateStr(d),
+            time: e.allDay || n > 0 ? null : toTimeStr(e.startAt),
+            type: 'external' as const,
+            status: 'busy',
+            vehicleId: null,
+            vehicleLabel: '',
+            customerName: null,
+            invoiceNumber: null,
+            amount: null,
+          })
+        }
+      }
+
       const events: CalendarEvent[] = [
+        ...externalEvents,
         ...services.map((s) => ({
           id: s.id,
           title: s.title,

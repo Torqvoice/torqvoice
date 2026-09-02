@@ -34,7 +34,8 @@
     "services": "Usługi",
     "reminders": "Przypomnienia",
     "quotes": "Wyceny",
-    "messages": "Wiadomości"
+    "messages": "Wiadomości",
+    "external": "Połączone kalendarze"
   },
   "selectVehicle": "Wybierz pojazd do zlecenia",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Zaległe",
       "upcoming": "Nadchodzące",
       "failed": "Nieudane",
-      "queued": "W kolejce"
+      "queued": "W kolejce",
+      "busy": "Zajęte"
     },
     "type": {
       "service": "Usługa",
