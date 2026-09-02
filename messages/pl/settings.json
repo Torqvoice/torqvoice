@@ -1112,7 +1112,7 @@
   },
   "data": {
     "title": "Zarządzanie danymi",
-    "description": "Eksportuj dane jako kopie zapasowa lub importuj wczesniej wyeksportowany plik.",
+    "description": "Przenieś dane ze starego systemu, pobierz kopię zapasową wszystkiego lub ją przywróć.",
     "exportTitle": "Eksportuj dane",
     "exportDescription": "Pobierz dane jako plik zip. Wybierz kategorie do uwzglednienia w kopii zapasowej.",
     "includeInBackup": "Dolacz do kopii zapasowej:",
@@ -1199,7 +1199,16 @@
     "optTireHotel": "Hotel opon",
     "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania",
     "optWorkshopConfig": "Konfiguracja warsztatu",
-    "optWorkshopConfigDesc": "Szablony robocizny, role, webhooki i zaplanowane raporty"
+    "optWorkshopConfigDesc": "Szablony robocizny, role, webhooki i zaplanowane raporty",
+    "importHubDescription": "Wybierz, gdzie dziś są Twoje dane. Importy z arkuszy i aplikacji dodają się do tego, co masz, i można je cofnąć; przywrócenie kopii zapasowej zastępuje wszystko.",
+    "sourceSpreadsheet": "Arkusz lub CSV",
+    "sourceSpreadsheetDesc": "Eksporty z dowolnego systemu warsztatowego, programu księgowego, Kontaktów Google, Outlooka lub Excela. Potwierdzasz mapowanie kolumn i widzisz próbny przebieg, zanim cokolwiek zostanie zapisane.",
+    "sourceLubelogDesc": "Pojazdy, wpisy serwisowe i notatki z kopii zapasowej LubeLog.",
+    "sourceInvoiceNinjaDesc": "Klienci, produkty, faktury i płatności z eksportu Invoice Ninja.",
+    "sourceBackup": "Kopia zapasowa Torqvoice",
+    "sourceBackupDesc": "Plik .zip lub .json pobrany z tej strony. Przywrócenie zastępuje wszystko w tym warsztacie.",
+    "restore": "Przywróć",
+    "restoreTitle": "Przywróć kopię zapasową"
   },
   "license": {
     "title": "Licencja white-label",

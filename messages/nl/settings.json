@@ -1112,7 +1112,7 @@
   },
   "data": {
     "title": "Gegevensbeheer",
-    "description": "Exporteer uw gegevens als back-up of importeer een eerder geëxporteerd bestand.",
+    "description": "Haal gegevens uit uw oude systeem, download een back-up van alles of zet er een terug.",
     "exportTitle": "Gegevens exporteren",
     "exportDescription": "Download uw gegevens als zipbestand. Selecteer welke categorieën u wilt opnemen.",
     "includeInBackup": "Opnemen in back-up:",
@@ -1199,7 +1199,16 @@
     "optTireHotel": "Bandenhotel",
     "optTireHotelDesc": "Opgeslagen bandensets, stellingen, voorbereiding en opslagovereenkomsten",
     "optWorkshopConfig": "Werkplaatsinrichting",
-    "optWorkshopConfigDesc": "Arbeidsjablonen, rollen, webhooks en geplande rapporten"
+    "optWorkshopConfigDesc": "Arbeidsjablonen, rollen, webhooks en geplande rapporten",
+    "importHubDescription": "Kies waar uw gegevens nu staan. Imports uit spreadsheets en apps komen bovenop wat u al hebt en zijn terug te draaien; een back-up terugzetten vervangt alles.",
+    "sourceSpreadsheet": "Spreadsheet of CSV",
+    "sourceSpreadsheetDesc": "Exports uit elk werkplaatssysteem, boekhoudpakket, Google Contacten, Outlook of Excel. U bevestigt de kolomtoewijzing en ziet een proefrun voordat er iets wordt weggeschreven.",
+    "sourceLubelogDesc": "Voertuigen, onderhoudsrecords en notities uit een LubeLog-back-up.",
+    "sourceInvoiceNinjaDesc": "Klanten, producten, facturen en betalingen uit een Invoice Ninja-export.",
+    "sourceBackup": "Torqvoice-back-up",
+    "sourceBackupDesc": "Een .zip- of .json-bestand dat u op deze pagina hebt gedownload. Terugzetten vervangt alles in deze werkplaats.",
+    "restore": "Terugzetten",
+    "restoreTitle": "Een back-up terugzetten"
   },
   "license": {
     "title": "White-label licentie",

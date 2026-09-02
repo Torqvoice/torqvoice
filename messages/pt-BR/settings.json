@@ -1112,7 +1112,7 @@
   },
   "data": {
     "title": "Gerenciamento de dados",
-    "description": "Exporte seus dados como backup ou importe um arquivo previamente exportado.",
+    "description": "Traga dados do seu sistema antigo, baixe um backup de tudo ou restaure um.",
     "exportTitle": "Exportar dados",
     "exportDescription": "Baixe seus dados como arquivo zip. Selecione as categorias a incluir no backup.",
     "includeInBackup": "Incluir no backup:",
@@ -1199,7 +1199,16 @@
     "optTireHotel": "Hotel de pneus",
     "optTireHotelDesc": "Jogos armazenados, prateleiras, preparação e contratos de armazenagem",
     "optWorkshopConfig": "Configuração da oficina",
-    "optWorkshopConfigDesc": "Modelos de mão de obra, funções, webhooks e relatórios agendados"
+    "optWorkshopConfigDesc": "Modelos de mão de obra, funções, webhooks e relatórios agendados",
+    "importHubDescription": "Escolha onde seus dados estão hoje. Importações de planilhas e aplicativos são adicionadas ao que você já tem e podem ser desfeitas; restaurar um backup substitui tudo.",
+    "sourceSpreadsheet": "Planilha ou CSV",
+    "sourceSpreadsheetDesc": "Exportações de qualquer sistema de oficina, ferramenta contábil, Contatos do Google, Outlook ou Excel. Você confirma o mapeamento das colunas e vê uma simulação antes de qualquer gravação.",
+    "sourceLubelogDesc": "Veículos, registros de serviço e anotações de um backup do LubeLog.",
+    "sourceInvoiceNinjaDesc": "Clientes, produtos, faturas e pagamentos de uma exportação do Invoice Ninja.",
+    "sourceBackup": "Backup do Torqvoice",
+    "sourceBackupDesc": "Um arquivo .zip ou .json baixado nesta página. Restaurar substitui tudo nesta oficina.",
+    "restore": "Restaurar",
+    "restoreTitle": "Restaurar um backup"
   },
   "license": {
     "title": "Licença marca branca",

@@ -48,7 +48,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'customer',
     type: 'text',
     templateHeader: 'Customer name',
-    example: 'Anna Berg',
+    example: 'Example Customer',
     synonyms: [
       'name',
       'fullname',
@@ -171,7 +171,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'customer',
     type: 'email',
     templateHeader: 'Email',
-    example: 'anna@example.com',
+    example: 'customer@example.com',
     synonyms: [
       'email',
       'emailaddress',
@@ -198,7 +198,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'customer',
     type: 'phone',
     templateHeader: 'Phone',
-    example: '+47 912 34 567',
+    example: '+1 202 555 0100',
     synonyms: [
       'phone',
       'phonenumber',
@@ -236,7 +236,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'customer',
     type: 'text',
     templateHeader: 'Company',
-    example: 'Berg Transport AS',
+    example: 'Example Company Ltd',
     synonyms: [
       'company',
       'companyname',
@@ -269,7 +269,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'customer',
     type: 'text',
     templateHeader: 'Address',
-    example: 'Storgata 1, 0155 Oslo',
+    example: '1 Example Street, Example City',
     synonyms: [
       'address',
       'fulladdress',
@@ -563,7 +563,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'vehicle',
     type: 'vin',
     templateHeader: 'VIN',
-    example: 'JTDBR32E720012345',
+    example: '1HGBH41JXMN109186',
     synonyms: [
       'vin',
       'vinnumber',
@@ -595,7 +595,7 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     group: 'vehicle',
     type: 'plate',
     templateHeader: 'License plate',
-    example: 'AB 12345',
+    example: 'ABC 123',
     synonyms: [
       'licenseplate',
       'licenceplate',

@@ -1112,7 +1112,7 @@
   },
   "data": {
     "title": "Duomenų valdymas",
-    "description": "Eksportuokite duomenis kaip atsarginę kopiją arba importuokite anksčiau eksportuotą failą.",
+    "description": "Perkelkite duomenis iš senos sistemos, atsisiųskite visko atsarginę kopiją arba ją atkurkite.",
     "exportTitle": "Eksportuoti duomenis",
     "exportDescription": "Atsisiųskite duomenis kaip zip failą. Pasirinkite, kurias kategorijas įtraukti į atsarginę kopiją.",
     "includeInBackup": "Įtraukti į atsarginę kopiją:",
@@ -1199,7 +1199,16 @@
     "optTireHotel": "Padangų viešbutis",
     "optTireHotelDesc": "Saugomi komplektai, lentynos, paruošimas ir saugojimo sutartys",
     "optWorkshopConfig": "Dirbtuvių nustatymai",
-    "optWorkshopConfigDesc": "Darbo šablonai, rolės, webhook'ai ir suplanuotos ataskaitos"
+    "optWorkshopConfigDesc": "Darbo šablonai, rolės, webhook'ai ir suplanuotos ataskaitos",
+    "importHubDescription": "Pasirinkite, kur šiandien yra jūsų duomenys. Importas iš skaičiuoklių ir programų papildo tai, ką turite, ir gali būti atšauktas; atsarginės kopijos atkūrimas pakeičia viską.",
+    "sourceSpreadsheet": "Skaičiuoklė arba CSV",
+    "sourceSpreadsheetDesc": "Eksportas iš bet kurios dirbtuvių sistemos, apskaitos programos, „Google“ kontaktų, „Outlook“ ar „Excel“. Patvirtinate stulpelių atitikimą ir matote bandomąjį paleidimą prieš ką nors įrašant.",
+    "sourceLubelogDesc": "Transporto priemonės, aptarnavimo įrašai ir pastabos iš „LubeLog“ atsarginės kopijos.",
+    "sourceInvoiceNinjaDesc": "Klientai, produktai, sąskaitos ir mokėjimai iš „Invoice Ninja“ eksporto.",
+    "sourceBackup": "„Torqvoice“ atsarginė kopija",
+    "sourceBackupDesc": ".zip arba .json failas, atsisiųstas iš šio puslapio. Atkūrimas pakeičia viską šiose dirbtuvėse.",
+    "restore": "Atkurti",
+    "restoreTitle": "Atkurti atsarginę kopiją"
   },
   "license": {
     "title": "\"White-Label\" licencija",

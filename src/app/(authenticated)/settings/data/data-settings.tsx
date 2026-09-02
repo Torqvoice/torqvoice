@@ -19,14 +19,15 @@ import { Input } from '@/components/ui/input'
 import { useGlassModal } from '@/components/glass-modal'
 import {
   AlertTriangle,
-  ArrowRight,
   Download,
   FileArchive,
   FileSpreadsheet,
   Loader2,
+  Receipt,
   ShieldCheck,
   Trash2,
   Upload,
+  Wrench,
 } from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '../read-only-guard'
 import {
@@ -143,6 +144,7 @@ export function DataSettings({
   const [importRuns, setImportRuns] = useState(0)
   const tImport = useTranslations('dataImport.entry')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [restoreOpen, setRestoreOpen] = useState(false)
   const [options, setOptions] = useState<ExportOptions>({ ...ALL_TRUE })
 
   const allChecked = Object.values(options).every(Boolean)
@@ -226,6 +228,7 @@ export function DataSettings({
 
       setSelectedFile(null)
       if (fileInputRef.current) fileInputRef.current.value = ''
+      setRestoreOpen(false)
       modal.open('success', t('data.importComplete'), t('data.importCompleteMessage'))
     } catch (err) {
       const message = err instanceof Error ? err.message : t('data.importFailed')
@@ -460,77 +463,163 @@ export function DataSettings({
         })()}
 
       <ReadOnlyWrapper>
-        <div className="grid gap-6 lg:grid-cols-12">
-          {/* Export Card */}
-          <AppCard
-            icon={Download}
-            title={t('data.exportTitle')}
-            className="lg:col-span-7"
-            contentClassName="space-y-4"
-          >
-            <p className="text-sm text-muted-foreground">{t('data.exportDescription')}</p>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{t('data.includeInBackup')}</span>
-                <button
-                  type="button"
-                  onClick={toggleAll}
-                  className="text-xs text-primary hover:underline"
+        {/* Bring data in: one card, one row per source */}
+        <AppCard
+          icon={Upload}
+          title={t('data.importTitle')}
+          description={t('data.importHubDescription')}
+          contentClassName="p-0"
+        >
+          <ul className="divide-y">
+            <ImportSourceRow
+              icon={FileSpreadsheet}
+              title={t('data.sourceSpreadsheet')}
+              description={t('data.sourceSpreadsheetDesc')}
+            >
+              {(['customers', 'vehicles', 'services'] as const).map((entity) => (
+                <Button
+                  key={entity}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSpreadsheetEntity(entity)}
                 >
-                  {allChecked ? t('data.deselectAll') : t('data.selectAll')}
-                </button>
-              </div>
+                  {tImport(entity)}
+                </Button>
+              ))}
+            </ImportSourceRow>
+            <ImportSourceRow
+              icon={Wrench}
+              title={
+                <Image
+                  src="/images/import/lubelog.png"
+                  alt="LubeLog"
+                  width={120}
+                  height={30}
+                  className="h-5 w-auto object-contain"
+                  unoptimized
+                />
+              }
+              description={t('data.sourceLubelogDesc')}
+            >
+              <Button variant="outline" size="sm" onClick={() => setLubelogOpen(true)}>
+                {t('data.import')}
+              </Button>
+            </ImportSourceRow>
+            <ImportSourceRow
+              icon={Receipt}
+              title={
+                <Image
+                  src="/images/import/invoice_ninja.png"
+                  alt="Invoice Ninja"
+                  width={140}
+                  height={30}
+                  className="h-5 w-auto object-contain"
+                  unoptimized
+                />
+              }
+              description={t('data.sourceInvoiceNinjaDesc')}
+            >
+              <Button variant="outline" size="sm" onClick={() => setInvoiceNinjaOpen(true)}>
+                {t('data.import')}
+              </Button>
+            </ImportSourceRow>
+            <ImportSourceRow
+              icon={FileArchive}
+              title={t('data.sourceBackup')}
+              description={t('data.sourceBackupDesc')}
+            >
+              <Button variant="outline" size="sm" onClick={() => setRestoreOpen(true)}>
+                {t('data.restore')}
+              </Button>
+            </ImportSourceRow>
+          </ul>
+        </AppCard>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                {OPTION_META.map(({ key, labelKey, descKey }) => (
-                  <label
-                    key={key}
-                    className="flex items-start gap-3 rounded-md p-2 hover:bg-muted/50 cursor-pointer"
-                  >
-                    <Checkbox
-                      checked={options[key]}
-                      onCheckedChange={() => toggleOption(key)}
-                      className="mt-0.5"
-                    />
-                    <div className="space-y-0.5">
-                      <div className="text-sm font-medium leading-none">
-                        {t(`data.${labelKey}`)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">{t(`data.${descKey}`)}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
+        <ImportHistoryCard refreshKey={importRuns} />
 
-              {options.files && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                  <FileArchive className="h-3.5 w-3.5 shrink-0" />
-                  {t('data.filesWarning')}
-                </p>
-              )}
+        {/* Export */}
+        <AppCard
+          icon={Download}
+          title={t('data.exportTitle')}
+          description={t('data.exportDescription')}
+          contentClassName="space-y-4"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">{t('data.includeInBackup')}</span>
+              <button
+                type="button"
+                onClick={toggleAll}
+                className="text-xs text-primary hover:underline"
+              >
+                {allChecked ? t('data.deselectAll') : t('data.selectAll')}
+              </button>
             </div>
 
-            <Button onClick={handleExport} disabled={exporting || noneChecked}>
-              {exporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('data.downloadBackup')}
-            </Button>
-          </AppCard>
+            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3">
+              {OPTION_META.map(({ key, labelKey, descKey }) => (
+                <label
+                  key={key}
+                  className="flex cursor-pointer items-start gap-3 rounded-md p-2 hover:bg-muted/50"
+                >
+                  <Checkbox
+                    checked={options[key]}
+                    onCheckedChange={() => toggleOption(key)}
+                    className="mt-0.5"
+                  />
+                  <div className="space-y-0.5">
+                    <div className="text-sm font-medium leading-none">{t(`data.${labelKey}`)}</div>
+                    <div className="text-xs text-muted-foreground">{t(`data.${descKey}`)}</div>
+                  </div>
+                </label>
+              ))}
+            </div>
 
-          {/* Import Card */}
-          <AppCard
-            icon={Upload}
-            title={t('data.importTitle')}
-            className="lg:col-span-5"
-            contentClassName="space-y-4"
-          >
+            {options.files && (
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <FileArchive className="h-3.5 w-3.5 shrink-0" />
+                {t('data.filesWarning')}
+              </p>
+            )}
+          </div>
+
+          <Button onClick={handleExport} disabled={exporting || noneChecked}>
+            {exporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t('data.downloadBackup')}
+          </Button>
+        </AppCard>
+
+        {/* Onboarding sample data removal */}
+        {hasSampleData && <SampleDataCard />}
+      </ReadOnlyWrapper>
+
+      {/* Restore a Torqvoice backup: destructive, so it lives behind a dialog */}
+      <Dialog
+        open={restoreOpen}
+        onOpenChange={(open) => {
+          setRestoreOpen(open)
+          if (!open) {
+            setSelectedFile(null)
+            if (fileInputRef.current) fileInputRef.current.value = ''
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileArchive className="h-5 w-5" />
+              {t('data.restoreTitle')}
+            </DialogTitle>
+            <DialogDescription>{t('data.sourceBackupDesc')}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
             <div className="flex items-start gap-2 rounded-md bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 {t.rich('data.importWarning', { bold: (chunks) => <strong>{chunks}</strong> })}
               </span>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -539,79 +628,23 @@ export function DataSettings({
                 className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-md file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/20"
               />
               <p className="text-xs text-muted-foreground">{t('data.importFileHint')}</p>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setRestoreOpen(false)}>
+                {t('data.cancel')}
+              </Button>
               <Button
+                variant="destructive"
                 onClick={handleImport}
                 disabled={!selectedFile || importing}
-                variant="outline"
               >
                 {importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('data.uploadRestore')}
               </Button>
             </div>
-          </AppCard>
-        </div>
-
-        {/* Import from a spreadsheet */}
-        <AppCard icon={FileSpreadsheet} title={tImport('title')} contentClassName="space-y-4">
-          <p className="text-sm text-muted-foreground">{tImport('description')}</p>
-          <div className="flex flex-wrap gap-2">
-            {(['customers', 'vehicles', 'services'] as const).map((entity) => (
-              <Button
-                key={entity}
-                variant="outline"
-                size="sm"
-                onClick={() => setSpreadsheetEntity(entity)}
-              >
-                <Upload className="mr-1.5 h-3.5 w-3.5" />
-                {tImport(entity)}
-              </Button>
-            ))}
           </div>
-        </AppCard>
-
-        <ImportHistoryCard refreshKey={importRuns} />
-
-        {/* Import from Other Services */}
-        <AppCard icon={ArrowRight} title={t('data.importFromOther')} contentClassName="space-y-4">
-          <p className="text-sm text-muted-foreground">{t('data.importFromOtherDescription')}</p>
-          <div className="flex flex-wrap gap-4">
-            {/* LubeLog */}
-            <button
-              type="button"
-              onClick={() => setLubelogOpen(true)}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:border-primary/50 hover:shadow-md"
-            >
-              <Image
-                src="/images/import/lubelog.png"
-                alt="LubeLog"
-                width={120}
-                height={30}
-                className="w-[120px] h-auto object-contain"
-                unoptimized
-              />
-            </button>
-
-            {/* Invoice Ninja */}
-            <button
-              type="button"
-              onClick={() => setInvoiceNinjaOpen(true)}
-              className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 transition-all hover:border-primary/50 hover:shadow-md"
-            >
-              <Image
-                src="/images/import/invoice_ninja.png"
-                alt="Invoice Ninja"
-                width={140}
-                height={30}
-                className="w-[140px] h-auto object-contain"
-                unoptimized
-              />
-            </button>
-          </div>
-        </AppCard>
-
-        {/* Onboarding sample data removal */}
-        {hasSampleData && <SampleDataCard />}
-      </ReadOnlyWrapper>
+        </DialogContent>
+      </Dialog>
 
       <ImportWizard
         open={spreadsheetEntity !== null}
@@ -1129,5 +1162,35 @@ export function DataSettings({
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+/**
+ * One way in. The icon slot is a neutral chip rather than the vendor's
+ * colours so the four sources read as one list; a product wordmark goes in
+ * the title slot where it has room.
+ */
+function ImportSourceRow({
+  icon: Icon,
+  title,
+  description,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  title: React.ReactNode
+  description: string
+  children: React.ReactNode
+}) {
+  return (
+    <li className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center text-sm font-medium">{title}</div>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </div>
+      <div className="flex flex-wrap gap-2 sm:justify-end">{children}</div>
+    </li>
   )
 }

@@ -1112,7 +1112,7 @@
   },
   "data": {
     "title": "Gestión de datos",
-    "description": "Exporte sus datos como respaldo o importe un archivo previamente exportado.",
+    "description": "Traiga datos de su sistema anterior, descargue una copia de seguridad de todo o restaure una.",
     "exportTitle": "Exportar datos",
     "exportDescription": "Descargue sus datos como archivo zip. Seleccione las categorías a incluir en el respaldo.",
     "includeInBackup": "Incluir en el respaldo:",
@@ -1199,7 +1199,16 @@
     "optTireHotel": "Hotel de neumáticos",
     "optTireHotelDesc": "Juegos guardados, estantes, preparación y contratos de almacenaje",
     "optWorkshopConfig": "Configuración del taller",
-    "optWorkshopConfigDesc": "Plantillas de mano de obra, roles, webhooks e informes programados"
+    "optWorkshopConfigDesc": "Plantillas de mano de obra, roles, webhooks e informes programados",
+    "importHubDescription": "Elija dónde están sus datos hoy. Las importaciones desde hojas de cálculo y aplicaciones se añaden a lo que tiene y se pueden deshacer; restaurar una copia de seguridad lo reemplaza todo.",
+    "sourceSpreadsheet": "Hoja de cálculo o CSV",
+    "sourceSpreadsheetDesc": "Exportaciones de cualquier sistema de taller, programa contable, Contactos de Google, Outlook o Excel. Confirma la asignación de columnas y ve una prueba antes de que se escriba nada.",
+    "sourceLubelogDesc": "Vehículos, registros de servicio y notas de una copia de seguridad de LubeLog.",
+    "sourceInvoiceNinjaDesc": "Clientes, productos, facturas y pagos de una exportación de Invoice Ninja.",
+    "sourceBackup": "Copia de seguridad de Torqvoice",
+    "sourceBackupDesc": "Un archivo .zip o .json descargado desde esta página. Restaurar reemplaza todo en este taller.",
+    "restore": "Restaurar",
+    "restoreTitle": "Restaurar una copia de seguridad"
   },
   "license": {
     "title": "Licencia marca blanca",

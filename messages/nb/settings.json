@@ -1112,7 +1112,7 @@
   },
   "data": {
     "title": "Datahandtering",
-    "description": "Eksporter dataene dine som sikkerhetskopi eller importer en tidligere eksportert fil.",
+    "description": "Hent inn data fra det gamle systemet ditt, last ned en sikkerhetskopi av alt, eller gjenopprett en.",
     "exportTitle": "Eksporter data",
     "exportDescription": "Last ned dataene dine som en zip-fil. Velg hvilke kategorier som skal inkluderes.",
     "includeInBackup": "Inkluder i sikkerhetskopi:",
@@ -1199,7 +1199,16 @@
     "optTireHotel": "Dekkhotell",
     "optTireHotelDesc": "Lagrede dekksett, hyller, klargjøring og lagringsavtaler",
     "optWorkshopConfig": "Verkstedoppsett",
-    "optWorkshopConfigDesc": "Arbeidsmaler, roller, webhooks og planlagte rapporter"
+    "optWorkshopConfigDesc": "Arbeidsmaler, roller, webhooks og planlagte rapporter",
+    "importHubDescription": "Velg hvor dataene dine er i dag. Import fra regneark og apper legges til det du har og kan angres; gjenoppretting av en sikkerhetskopi erstatter alt.",
+    "sourceSpreadsheet": "Regneark eller CSV",
+    "sourceSpreadsheetDesc": "Eksporter fra ethvert verkstedsystem, regnskapsprogram, Google Kontakter, Outlook eller Excel. Du bekrefter kolonnetilordningen og ser en prøvekjøring før noe skrives.",
+    "sourceLubelogDesc": "Kjøretøy, serviceoppføringer og notater fra en LubeLog-sikkerhetskopi.",
+    "sourceInvoiceNinjaDesc": "Kunder, produkter, fakturaer og betalinger fra en Invoice Ninja-eksport.",
+    "sourceBackup": "Torqvoice-sikkerhetskopi",
+    "sourceBackupDesc": "En .zip- eller .json-fil lastet ned fra denne siden. Gjenoppretting erstatter alt i dette verkstedet.",
+    "restore": "Gjenopprett",
+    "restoreTitle": "Gjenopprett en sikkerhetskopi"
   },
   "license": {
     "title": "White-label-lisens",
