@@ -1,0 +1,132 @@
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  /// The mobile a technician signs in with, and the number a workshop holds
+  /// for whoever this is.
+  ///
+  /// Deliberately not unique. When a desk creates an account for a mechanic
+  /// standing at the counter, a second workshop may create another for the
+  /// same human, and neither should be able to block the other. Every lookup
+  /// reaches it through a technician row and so is already scoped to one
+  /// workshop; the number alone is never the question being asked.
+  phone         String?
+  image         String?
+  isSuperAdmin  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  twoFactorEnabled Boolean   @default(false)
+  termsAcceptedAt  DateTime?
+  lastLogin        DateTime?
+  lastSeen         DateTime?
+  /// App version this user last saw/dismissed the update banner for.
+  /// Null = never seeded (seeded silently on first load, no banner).
+  lastSeenVersion  String?
+  /// Per-user dashboard grid layout (card positions/sizes/hidden set).
+  /// Null = default layout. Shape validated in dashboardLayoutActions.
+  dashboardLayout  Json?
+
+  sessions               Session[]
+  accounts               Account[]
+  pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
+  vehicles               Vehicle[]
+  customers              Customer[]
+  settings               AppSetting[]
+  inventoryParts         InventoryPart[]
+  quotes                 Quote[]
+  customFieldDefinitions CustomFieldDefinition[]
+  twoFactor              TwoFactor?
+  passkeys               Passkey[]
+  organizationMembers    OrganizationMember[]
+  dashboardWidgets       DashboardWidget[]
+  auditLogs              AuditLog[]
+  technicians            Technician[]
+  stockMovements         StockMovement[]
+  tireWarehouses         TireWarehouse[]
+  tireSets               TireSet[]
+  tireSetAttachments     TireSetAttachment[]
+  tireMeasurements       TireMeasurement[]
+  tireMovements          TireMovement[]
+  tireTreatments         TireTreatment[]
+  importBatches          ImportBatch[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String    @unique
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verifications")
+}
+
+model TwoFactor {
+  id          String @id @default(cuid())
+  secret      String
+  backupCodes String
+  userId      String @unique
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("two_factor")
+}
+
+model Passkey {
+  id           String   @id @default(cuid())
+  name         String?
+  publicKey    String
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String   @unique
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  aaguid       String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("passkeys")
+}

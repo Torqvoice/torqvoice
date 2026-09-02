@@ -34,7 +34,8 @@
     "delete": "Deletar",
     "unpaid": "Não Pago",
     "unsavedChanges": "Alterações não salvas",
-    "saved": "Salvo"
+    "saved": "Salvo",
+    "joinCall": "Entrar na videochamada"
   },
   "basicInfo": {
     "title": "Informações Básicas",
@@ -410,5 +411,23 @@
     "remove": "Remover este item",
     "notAnswered": "Nada encontrado sobre isso ainda",
     "answered": "{count} constatação(ões) sobre isso"
+  },
+  "videoCall": {
+    "title": "Videochamada",
+    "none": "Nenhuma videochamada nesta ordem de serviço.",
+    "needsSchedule": "Defina um horário de início primeiro. A reunião segue o agendamento.",
+    "add": "Adicionar reunião do {provider}",
+    "addedHere": "adicionada por esta ordem de serviço",
+    "fromCalendar": "do evento do calendário",
+    "join": "Entrar",
+    "copy": "Copiar link",
+    "copied": "Link copiado",
+    "remove": "Remover",
+    "removeTitle": "Remover a videochamada?",
+    "removeDescription": "A reunião é excluída no provedor. Quem já tem o link não poderá mais entrar.",
+    "created": "Reunião criada. O link está na ordem de serviço.",
+    "removed": "Reunião removida",
+    "failed": "Algo deu errado",
+    "shareHint": "O cliente só recebe este link quando você envia. Copie-o em uma mensagem ou adicione-o a uma notificação."
   }
 }

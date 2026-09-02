@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Созданы стандартные роли",
     "settings_setCustomFieldPlacement": "Обновлено расположение пользовательского поля",
     "import_commit": "Импортирована таблица",
-    "import_undo": "Отменён импорт"
+    "import_undo": "Отменён импорт",
+    "integration_connect": "Подключена интеграция",
+    "integration_disconnect": "Отключена интеграция"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -279,6 +281,8 @@
     "work_bay_delete": "Удалён пост {id}",
     "settings_setCustomFieldPlacement": "Изменено место печати пользовательского поля",
     "import_commit": "Импортирована таблица, создано записей: {count}",
-    "import_undo": "Отменён импорт таблицы, удалено записей: {records}"
+    "import_undo": "Отменён импорт таблицы, удалено записей: {records}",
+    "integration_connect": "Подключена интеграция {name}",
+    "integration_disconnect": "Отключена интеграция {name}"
   }
 }

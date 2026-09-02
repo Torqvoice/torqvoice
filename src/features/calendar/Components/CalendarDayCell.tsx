@@ -19,6 +19,7 @@ import { getEventLink, toLocalDateStr } from './calendar-utils'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
 function getEventDotColor(event: CalendarEvent) {
+  if (event.type === 'external') return 'bg-slate-400'
   if (event.type === 'service') {
     switch (event.status) {
       case 'completed':
@@ -225,6 +226,9 @@ export function CalendarDayCell({
 }
 
 function getEventBgColor(event: CalendarEvent) {
+  if (event.type === 'external') {
+    return 'bg-slate-500/10 text-slate-600 dark:text-slate-400 italic'
+  }
   if (event.type === 'service') {
     switch (event.status) {
       case 'completed':

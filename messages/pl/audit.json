@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Utworzono role standardowe",
     "settings_setCustomFieldPlacement": "Zaktualizowano miejsce pola niestandardowego",
     "import_commit": "Zaimportowano arkusz",
-    "import_undo": "Cofnięto import"
+    "import_undo": "Cofnięto import",
+    "integration_connect": "Połączono integrację",
+    "integration_disconnect": "Rozłączono integrację"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -279,6 +281,8 @@
     "work_bay_delete": "Usunięto stanowisko {id}",
     "settings_setCustomFieldPlacement": "Zmieniono miejsce drukowania pola niestandardowego",
     "import_commit": "Zaimportowano arkusz: utworzono {count} rekordów",
-    "import_undo": "Cofnięto import arkusza: usunięto {records} rekordów"
+    "import_undo": "Cofnięto import arkusza: usunięto {records} rekordów",
+    "integration_connect": "Połączono {name}",
+    "integration_disconnect": "Rozłączono {name}"
   }
 }

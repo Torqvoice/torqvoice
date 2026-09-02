@@ -13,6 +13,8 @@ export async function register() {
       checkLowStock,
       checkDueReminders,
       processScheduledMessages,
+      processIntegrationJobs,
+      cleanupIntegrationLogs,
     } = await import('./cronTasks')
     checkLicenses()
     checkSubscriptions()
@@ -26,5 +28,7 @@ export async function register() {
     checkLowStock()
     checkDueReminders()
     processScheduledMessages()
+    processIntegrationJobs()
+    cleanupIntegrationLogs()
   }
 }

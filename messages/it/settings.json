@@ -7,7 +7,7 @@
       "billing": "Fatturazione e Documenti",
       "communications": "Comunicazioni",
       "workshop": "Officina",
-      "integrations": "Integrazioni",
+      "integrations": "App e API",
       "system": "Sistema"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Report programmati",
         "description": "Invio automatico dei report"
+      },
+      "integrations": {
+        "title": "Integrazioni",
+        "description": "Calendari, videochiamate e servizi collegati"
       },
       "webhooks": {
         "title": "Webhooks",

@@ -34,7 +34,8 @@
     "delete": "Usuń",
     "unpaid": "Niezapłacone",
     "unsavedChanges": "Niezapisane zmiany",
-    "saved": "Zapisano"
+    "saved": "Zapisano",
+    "joinCall": "Dołącz do rozmowy wideo"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",
@@ -410,5 +411,23 @@
     "remove": "Usuń ten punkt",
     "notAnswered": "Nic jeszcze nie ustalono",
     "answered": "Ustalenia: {count}"
+  },
+  "videoCall": {
+    "title": "Rozmowa wideo",
+    "none": "To zlecenie nie ma rozmowy wideo.",
+    "needsSchedule": "Najpierw ustaw godzinę rozpoczęcia. Spotkanie podąża za harmonogramem.",
+    "add": "Dodaj spotkanie {provider}",
+    "addedHere": "dodane z tego zlecenia",
+    "fromCalendar": "z wydarzenia w kalendarzu",
+    "join": "Dołącz",
+    "copy": "Kopiuj link",
+    "copied": "Link skopiowany",
+    "remove": "Usuń",
+    "removeTitle": "Usunąć rozmowę wideo?",
+    "removeDescription": "Spotkanie zostanie usunięte u dostawcy. Osoby, które mają już link, nie będą mogły dołączyć.",
+    "created": "Spotkanie utworzone. Link jest na zleceniu.",
+    "removed": "Spotkanie usunięte",
+    "failed": "Coś poszło nie tak",
+    "shareHint": "Klient dostaje ten link tylko wtedy, gdy go wyślesz. Skopiuj go do wiadomości lub dodaj do powiadomienia."
   }
 }

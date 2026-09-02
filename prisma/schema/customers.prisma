@@ -1,0 +1,120 @@
+model Customer {
+  id             String   @id @default(cuid())
+  /// Human-facing customer number: auto-assigned sequentially on create,
+  /// editable afterwards. Unique per organization (nulls allowed for
+  /// legacy customers).
+  customerNumber String?
+  name           String
+  email          String?
+  phone          String?
+  address        String?
+  company        String?
+  taxId          String?
+  taxExempt      Boolean  @default(false)
+  notes          String?
+  telegramChatId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  vehicles          Vehicle[]
+  quotes            Quote[]
+  smsMessages       SmsMessage[]
+  telegramMessages  TelegramMessage[]
+  whatsappMessages  WhatsappMessage[]
+  customerSessions  CustomerSession[]
+  scheduledMessages ScheduledMessage[]
+  serviceRequests   ServiceRequest[]
+
+  serviceRecords ServiceRecord[]
+  reminders      Reminder[]
+  tireSets       TireSet[]
+
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, customerNumber])
+  @@index([organizationId])
+  @@index([importBatchId])
+  @@map("customers")
+}
+
+model CustomerSession {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  @@index([token])
+  @@index([customerId, organizationId])
+  @@map("customer_sessions")
+}
+
+model CustomerMagicLink {
+  id             String    @id @default(cuid())
+  token          String    @unique
+  email          String
+  organizationId String
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([token])
+  @@map("customer_magic_links")
+}
+
+model CustomerSmsCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits, not the digits.
+  ///
+  /// The code reaches the customer in a text message and lives in their head
+  /// for a minute. It has no business also sitting in a table where reading a
+  /// row hands over somebody's portal session.
+  code String
+
+  /// Wrong guesses so far. Six digits is a million, which sounds like plenty
+  /// and is not: limiting by address does nothing about a hundred machines
+  /// sharing the work. Five attempts against one code makes the space
+  /// irrelevant, because the code is gone long before the guessing arrives.
+  attempts Int @default(0)
+
+  phone          String
+  organizationId String
+  expiresAt      DateTime
+  usedAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([phone, organizationId])
+  @@index([organizationId])
+  @@map("customer_sms_codes")
+}
+
+model ServiceRequest {
+  id            String    @id @default(cuid())
+  description   String
+  preferredDate DateTime?
+  status        String    @default("pending")
+  adminNotes    String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customerId     String
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicleId      String
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  @@index([organizationId, status])
+  @@index([customerId])
+  @@map("service_requests")
+}

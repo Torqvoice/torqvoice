@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Standardrollen angelegt",
     "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert",
     "import_commit": "Tabelle importiert",
-    "import_undo": "Import rückgängig gemacht"
+    "import_undo": "Import rückgängig gemacht",
+    "integration_connect": "Integration verbunden",
+    "integration_disconnect": "Integration getrennt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -279,6 +281,8 @@
     "work_bay_delete": "Arbeitsplatz {id} gelöscht",
     "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird",
     "import_commit": "Tabelle importiert: {count} Datensätze angelegt",
-    "import_undo": "Tabellenimport rückgängig gemacht: {records} Datensätze entfernt"
+    "import_undo": "Tabellenimport rückgängig gemacht: {records} Datensätze entfernt",
+    "integration_connect": "{name} verbunden",
+    "integration_disconnect": "{name} getrennt"
   }
 }

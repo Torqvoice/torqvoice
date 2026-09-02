@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Integracje",
+    "description": "Połącz usługi, z których warsztat już korzysta. Każdą integrację konfigurujesz raz, a potem działa w tle.",
+    "all": "Wszystkie",
+    "empty": "W tej kategorii nie ma jeszcze integracji.",
+    "notConnected": "Niepołączono",
+    "connect": "Połącz",
+    "manage": "Zarządzaj",
+    "connectedTitle": "Połączone",
+    "connectedDescription": "Usługi skonfigurowane w tym warsztacie. Otwórz jedną, aby sprawdzić stan, zmienić ustawienia lub rozłączyć.",
+    "noneConnected": "Nic jeszcze nie jest połączone. Wybierz usługę poniżej, aby zacząć.",
+    "availableTitle": "Dostępne",
+    "availableDescription": "Usługi, które możesz dodać. Każdą konfiguruje się raz, a potem działa w tle.",
+    "allConnected": "Wszystkie dostępne usługi są połączone."
+  },
+  "categories": {
+    "calendar": "Kalendarz",
+    "conferencing": "Rozmowy wideo",
+    "accounting": "Księgowość",
+    "messaging": "Wiadomości",
+    "payments": "Płatności",
+    "automation": "Automatyzacja",
+    "storage": "Pliki",
+    "registry": "Rejestr pojazdów",
+    "other": "Inne"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Zlecenia do kalendarza",
+      "pull": "Zajęty czas z kalendarza",
+      "conference": "Linki do rozmów wideo"
+    }
+  },
+  "statuses": {
+    "active": "Połączono",
+    "error": "Wymaga uwagi",
+    "pending": "Konfiguracja w toku",
+    "disconnected": "Rozłączono"
+  },
+  "connection": {
+    "back": "Wszystkie integracje",
+    "account": "Połączone konto",
+    "lastHealth": "Ostatnie sprawdzenie",
+    "lastSync": "Ostatnia synchronizacja",
+    "lastError": "Ostatnie uruchomienie nie powiodło się",
+    "connected": "{name} jest połączony.",
+    "connectedShort": "Połączono",
+    "connectWith": "Połącz {name}",
+    "connect": "Połącz",
+    "reconnect": "Połącz ponownie",
+    "disconnect": "Rozłącz",
+    "disconnectTitle": "Rozłączyć {name}?",
+    "disconnectDescription": "Torqvoice zapomni konto i przestanie synchronizować. Wydarzenia już utworzone w kalendarzu pozostaną.",
+    "disconnected": "Rozłączono",
+    "test": "Testuj połączenie",
+    "testPassed": "Połączenie działa",
+    "syncNow": "Synchronizuj teraz",
+    "syncQueued": "Synchronizacja w kolejce; uruchomi się w ciągu minuty",
+    "backfill": "Wyślij zaplanowane zlecenia",
+    "backfillQueued": "Dodano do kolejki zaplanowane zlecenia od ubiegłego tygodnia wzwyż",
+    "retryQueued": "Zadanie ponownie w kolejce",
+    "settingsTitle": "Ustawienia",
+    "settingsDescription": "Co synchronizować i dokąd. Zmiany obowiązują od następnej synchronizacji.",
+    "settingsSaved": "Zapisano ustawienia",
+    "save": "Zapisz",
+    "loading": "Ładowanie...",
+    "choose": "Wybierz...",
+    "planLocked": "Integracje nie są objęte Twoim planem.",
+    "ownAppTitle": "Ta instalacja używa własnej aplikacji u dostawcy",
+    "redirectUri": "Adres przekierowania (redirect URI) do zarejestrowania u dostawcy:"
+  },
+  "activity": {
+    "title": "Aktywność",
+    "description": "Ostatnie zadania i wpisy dziennika dla tego połączenia.",
+    "retry": "Ponów",
+    "jobStatus": {
+      "queued": "W kolejce",
+      "running": "W trakcie",
+      "done": "Gotowe",
+      "failed": "Nieudane",
+      "dead": "Przerwano"
+    }
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak",
+    "demo": "W wersji demo nie można łączyć integracji.",
+    "forbidden": "Tylko administrator może łączyć integracje.",
+    "unknown": "Nieznana integracja.",
+    "plan": "Ta integracja nie jest objęta Twoim planem.",
+    "no-client": "Dla tego dostawcy nie skonfigurowano danych aplikacji.",
+    "denied": "Anulowano logowanie u dostawcy.",
+    "vendor": "Dostawca zwrócił błąd. Spróbuj ponownie.",
+    "invalid": "Odpowiedź dostawcy była niekompletna. Spróbuj ponownie.",
+    "state": "To logowanie wygasło lub należy do innej sesji. Zacznij od nowa.",
+    "exchange": "Dostawca odrzucił logowanie. Sprawdź dane aplikacji i spróbuj ponownie.",
+    "identify": "Połączono, ale nie udało się odczytać konta. Spróbuj połączyć ponownie."
+  },
+  "meeting": {
+    "join": "Dołącz do rozmowy wideo",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Z połączonych kalendarzy",
+    "busy": "Zajęte"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Dodawaj zaplanowane zlecenia do Google Calendar, dołączaj link Google Meet i zobacz zajęty czas z kalendarza w Torqvoice.",
+      "tenantHelp": "Utwórz klienta OAuth w Google Cloud Console (APIs & Services → Credentials), włącz Google Calendar API, dodaj poniższy adres przekierowania i wklej tutaj identyfikator klienta oraz sekret.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "calendarId": "Kalendarz",
+        "pushEnabled": "Dodawaj zaplanowane zlecenia do tego kalendarza",
+        "includeCustomer": "Umieść w wydarzeniu imię i nazwisko oraz telefon klienta",
+        "addConference": "Dodaj link Google Meet do każdego wydarzenia",
+        "addConferenceHelp": "Link jest widoczny na zleceniu, więc możesz go przekazać klientowi.",
+        "pullEnabled": "Pokazuj zajęty czas z tego kalendarza w kalendarzu Torqvoice",
+        "pullEnabledHelp": "Tylko do odczytu. Odświeżane co 15 minut, tydzień wstecz i dwa miesiące do przodu."
+      }
+    },
+    "microsoft-365": {
+      "description": "Dodawaj zaplanowane zlecenia do kalendarza Outlook, dołączaj link Microsoft Teams i zobacz zajęty czas z kalendarza w Torqvoice.",
+      "tenantHelp": "Zarejestruj aplikację w Microsoft Entra (App registrations), zezwól na konta osobiste i służbowe, dodaj poniższy adres przekierowania jako platformę Web, utwórz sekret klienta i wklej oba tutaj.",
+      "fields": {
+        "clientId": "Identyfikator aplikacji (klienta)",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "calendarId": "Kalendarz",
+        "pushEnabled": "Dodawaj zaplanowane zlecenia do tego kalendarza",
+        "includeCustomer": "Umieść w wydarzeniu imię i nazwisko oraz telefon klienta",
+        "addConference": "Dodaj link Microsoft Teams do każdego wydarzenia",
+        "addConferenceHelp": "Link jest widoczny na zleceniu, więc możesz go przekazać klientowi.",
+        "pullEnabled": "Pokazuj zajęty czas z tego kalendarza w kalendarzu Torqvoice",
+        "pullEnabledHelp": "Tylko do odczytu. Odświeżane co 15 minut, tydzień wstecz i dwa miesiące do przodu."
+      }
+    },
+    "zoom": {
+      "description": "Dodaj spotkanie Zoom do zaplanowanego zlecenia i zachowaj na nim link, do zdalnej diagnostyki lub omówienia ustaleń z klientem.",
+      "tenantHelp": "W Zoom App Marketplace utwórz aplikację General (user-managed), dodaj poniższy adres przekierowania, dodaj zakresy meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting i user:read:user, a następnie wklej tutaj identyfikator i sekret klienta.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "autoCreate": "Automatycznie twórz spotkanie Zoom dla każdego zaplanowanego zlecenia",
+        "autoCreateHelp": "Wyłączone: rozmowę wideo dodajesz do zlecenia samodzielnie, z jego strony. Włączone: każde zlecenie z godziną rozpoczęcia dostaje spotkanie, przesuwane przy zmianie terminu i usuwane przy anulowaniu. W obu przypadkach klient dostaje link tylko wtedy, gdy go wyślesz.",
+        "includeCustomer": "Dodaj nazwę klienta do tematu spotkania",
+        "joinBeforeHost": "Pozwól klientowi dołączyć przed Tobą",
+        "waitingRoom": "Używaj poczekalni"
+      }
+    }
+  }
+}

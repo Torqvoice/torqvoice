@@ -51,3 +51,12 @@ ALTER TABLE "vehicles" ADD CONSTRAINT "vehicles_importBatchId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "service_records" ADD CONSTRAINT "service_records_importBatchId_fkey" FOREIGN KEY ("importBatchId") REFERENCES "import_batches"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "import_batches" ADD CONSTRAINT "import_batches_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AlterTable
+ALTER TABLE "inspections" ADD COLUMN "importBatchId" TEXT;
+
+-- AddForeignKey
+ALTER TABLE "inspections" ADD CONSTRAINT "inspections_importBatchId_fkey" FOREIGN KEY ("importBatchId") REFERENCES "import_batches"("id") ON DELETE SET NULL ON UPDATE CASCADE;

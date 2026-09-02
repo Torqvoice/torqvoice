@@ -7,7 +7,7 @@
       "billing": "Facturatie en documenten",
       "communications": "Communicatie",
       "workshop": "Werkplaats",
-      "integrations": "Integraties",
+      "integrations": "Apps en API",
       "system": "Systeem"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Rapportplanning",
         "description": "Automatische rapportlevering"
+      },
+      "integrations": {
+        "title": "Integraties",
+        "description": "Agenda's, videogesprekken en gekoppelde diensten"
       },
       "webhooks": {
         "title": "Webhooks",

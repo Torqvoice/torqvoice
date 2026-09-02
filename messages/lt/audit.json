@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Sukurtos standartinės rolės",
     "settings_setCustomFieldPlacement": "Atnaujinta pasirinktinio lauko vieta",
     "import_commit": "Importuota skaičiuoklė",
-    "import_undo": "Atšauktas importas"
+    "import_undo": "Atšauktas importas",
+    "integration_connect": "Prijungta integracija",
+    "integration_disconnect": "Atjungta integracija"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -279,6 +281,8 @@
     "work_bay_delete": "Ištrinta darbo vieta {id}",
     "settings_setCustomFieldPlacement": "Pakeitė, kur spausdinamas pasirinktinis laukas",
     "import_commit": "Importuota skaičiuoklė: sukurta įrašų: {count}",
-    "import_undo": "Atšauktas skaičiuoklės importas: pašalinta įrašų: {records}"
+    "import_undo": "Atšauktas skaičiuoklės importas: pašalinta įrašų: {records}",
+    "integration_connect": "Prijungta {name}",
+    "integration_disconnect": "Atjungta {name}"
   }
 }

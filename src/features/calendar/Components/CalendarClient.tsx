@@ -127,6 +127,7 @@ export default function CalendarClient({
   const [showReminders, setShowReminders] = useState(true)
   const [showQuotes, setShowQuotes] = useState(true)
   const [showMessages, setShowMessages] = useState(true)
+  const [showExternal, setShowExternal] = useState(true)
 
   // Vehicle picker
   const [showPicker, setShowPicker] = useState(false)
@@ -165,9 +166,10 @@ export default function CalendarClient({
       if (e.type === 'reminder' && !showReminders) return false
       if (e.type === 'quote' && !showQuotes) return false
       if (e.type === 'message' && !showMessages) return false
+      if (e.type === 'external' && !showExternal) return false
       return true
     })
-  }, [events, showServices, showReminders, showQuotes, showMessages])
+  }, [events, showServices, showReminders, showQuotes, showMessages, showExternal])
 
   // What the displayed month holds, counted before the filters hide anything
   const counts = useMemo(
@@ -176,6 +178,7 @@ export default function CalendarClient({
       reminders: events.filter((e) => e.type === 'reminder').length,
       quotes: events.filter((e) => e.type === 'quote').length,
       messages: events.filter((e) => e.type === 'message').length,
+      external: events.filter((e) => e.type === 'external').length,
       total: events.length,
     }),
     [events]
@@ -348,6 +351,17 @@ export default function CalendarClient({
                   <span className="text-muted-foreground">{t('filters.messages')}</span>
                   <span className="font-medium tabular-nums">{counts.messages}</span>
                 </label>
+                {counts.external > 0 && (
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <Checkbox
+                      checked={showExternal}
+                      onCheckedChange={(v) => setShowExternal(!!v)}
+                    />
+                    <div className="h-2 w-2 rounded-full bg-slate-400" />
+                    <span className="text-muted-foreground">{t('filters.external')}</span>
+                    <span className="font-medium tabular-nums">{counts.external}</span>
+                  </label>
+                )}
                 <span className="text-xs text-muted-foreground ml-auto">
                   {t('monthTotal', { count: counts.total })}
                 </span>

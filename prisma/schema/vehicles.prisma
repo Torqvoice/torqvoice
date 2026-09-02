@@ -1,0 +1,154 @@
+model Vehicle {
+  id                     String               @id @default(cuid())
+  make                   String
+  model                  String
+  year                   Int
+  vin                    String?
+  licensePlate           String?
+  color                  String?
+  mileage                Int                  @default(0)
+  fuelType               String?              @default("gasoline")
+  transmission           String?              @default("automatic")
+  engineSize             String?
+  engineCode             String?
+  purchaseDate           DateTime?
+  purchasePrice          Float?
+  imageUrl               String?
+  isArchived             Boolean              @default(false)
+  archiveReason          String?
+  maintenanceDismissed   Boolean              @default(false)
+  maintenanceDismissedAt DateTime?
+  aiMessages             AiGeneratedMessage[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  serviceRecords    ServiceRecord[]
+  notes             Note[]
+  fuelLogs          FuelLog[]
+  reminders         Reminder[]
+  quotes            Quote[]
+  recurringInvoices RecurringInvoice[]
+  inspections       Inspection[]
+  serviceRequests   ServiceRequest[]
+  findings          VehicleFinding[]
+  scheduledMessages ScheduledMessage[]
+  tireSets          TireSet[]
+
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([importBatchId])
+  @@map("vehicles")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("notes")
+}
+
+model FuelLog {
+  id             String   @id @default(cuid())
+  date           DateTime @default(now())
+  mileage        Int
+  gallons        Float
+  pricePerGallon Float
+  totalCost      Float
+  isFillUp       Boolean  @default(true)
+  station        String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("fuel_logs")
+}
+
+model Reminder {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  dueMileage  Int?
+  isCompleted Boolean   @default(false)
+  /// Per-reminder notification channels, chosen when creating the reminder
+  notifyInApp Boolean   @default(true)
+  notifyEmail Boolean   @default(false)
+  /// Set by the due-reminder cron once notified; cleared when dueDate changes
+  notifiedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  /// A reminder relates to a vehicle, a customer, or just the workshop
+  /// (both null). organizationId is the canonical scope for all three.
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([customerId])
+  @@index([organizationId])
+  @@map("reminders")
+}
+
+model VehicleFinding {
+  id          String   @id @default(cuid())
+  description String
+  severity    String   @default("needs_work")
+  status      String   @default("open")
+  notes       String?
+  imageUrls   String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation("FindingDiscoveredIn", fields: [serviceRecordId], references: [id], onDelete: SetNull)
+
+  resolvedServiceRecordId String?
+  resolvedServiceRecord   ServiceRecord? @relation("FindingResolvedIn", fields: [resolvedServiceRecordId], references: [id], onDelete: SetNull)
+
+  /// The customer concern this finding answers, if it answers one.
+  ///
+  /// Nullable because plenty of findings are things nobody asked about: the
+  /// perished bush somebody noticed while the car was on the lift. Those are
+  /// worth just as much, they just are not part of the story the customer
+  /// started. SetNull rather than Cascade because a finding is a fact about
+  /// the vehicle and outlives the concern that prompted the look.
+  concernId String?
+  concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId])
+  @@index([serviceRecordId])
+  @@index([concernId])
+  @@map("vehicle_findings")
+}

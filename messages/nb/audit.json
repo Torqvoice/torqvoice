@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Opprettet standardrollene",
     "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt",
     "import_commit": "Importerte regneark",
-    "import_undo": "Angret import"
+    "import_undo": "Angret import",
+    "integration_connect": "Koblet til en integrasjon",
+    "integration_disconnect": "Koblet fra en integrasjon"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -279,6 +281,8 @@
     "work_bay_delete": "Slettet arbeidsplass {id}",
     "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut",
     "import_commit": "Importerte et regneark: {count} poster opprettet",
-    "import_undo": "Angret en regnearkimport: {records} poster fjernet"
+    "import_undo": "Angret en regnearkimport: {records} poster fjernet",
+    "integration_connect": "Koblet til {name}",
+    "integration_disconnect": "Koblet fra {name}"
   }
 }

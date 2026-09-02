@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Ruoli standard creati",
     "settings_setCustomFieldPlacement": "Posizione del campo personalizzato aggiornata",
     "import_commit": "Foglio di calcolo importato",
-    "import_undo": "Importazione annullata"
+    "import_undo": "Importazione annullata",
+    "integration_connect": "Integrazione collegata",
+    "integration_disconnect": "Integrazione scollegata"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -279,6 +281,8 @@
     "work_bay_delete": "Postazione {id} eliminata",
     "settings_setCustomFieldPlacement": "Ha modificato dove viene stampato un campo personalizzato",
     "import_commit": "Foglio di calcolo importato: {count} record creati",
-    "import_undo": "Importazione da foglio di calcolo annullata: {records} record rimossi"
+    "import_undo": "Importazione da foglio di calcolo annullata: {records} record rimossi",
+    "integration_connect": "{name} collegato",
+    "integration_disconnect": "{name} scollegato"
   }
 }

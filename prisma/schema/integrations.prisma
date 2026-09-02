@@ -1,0 +1,130 @@
+/// One installed connector for one organisation: the account it is linked
+/// to, its sealed credentials, and the settings the workshop chose. Rows in
+/// the other integration tables hang off this one.
+model IntegrationConnection {
+  id                  String       @id @default(cuid())
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// Connector id from the registry, for example 'google-calendar'.
+  connectorId         String
+  /// pending | active | error | disconnected
+  status              String       @default("pending")
+  label               String?
+  /// Tokens or keys as one sealed string; only the vault reads it.
+  credentials         String?
+  settings            Json         @default("{}")
+  /// Connector-owned state such as sync cursors and last-run times.
+  state               Json         @default("{}")
+  externalAccountId   String?
+  externalAccountName String?
+  scopes              String?
+  /// OAuth handshake nonce, set while the connection is pending.
+  oauthState          String?      @unique
+  lastHealthAt        DateTime?
+  lastSyncAt          DateTime?
+  lastError           String?
+  createdById         String
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  links          IntegrationLink[]
+  jobs           IntegrationJob[]
+  logs           IntegrationLog[]
+  externalEvents ExternalCalendarEvent[]
+
+  @@unique([organizationId, connectorId])
+  @@index([organizationId])
+  @@map("integration_connections")
+}
+
+/// The remote id a local record has in one connected system, which is what
+/// makes every push an update instead of a duplicate.
+model IntegrationLink {
+  id              String                @id @default(cuid())
+  connectionId    String
+  connection      IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  /// Local model name, for example 'ServiceRecord'.
+  entityType      String
+  entityId        String
+  remoteId        String
+  remoteUrl       String?
+  /// Connector-owned extras, such as a meeting link.
+  metadata        Json?
+  checksum        String?
+  remoteUpdatedAt DateTime?
+  lastSyncedAt    DateTime              @default(now())
+  createdAt       DateTime              @default(now())
+
+  @@unique([connectionId, entityType, entityId])
+  @@index([connectionId, remoteId])
+  @@index([entityType, entityId])
+  @@map("integration_links")
+}
+
+/// A unit of work for a connector, claimed and retried by the cron.
+model IntegrationJob {
+  id             String                @id @default(cuid())
+  connectionId   String
+  connection     IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  organizationId String
+  kind           String
+  payload        Json?
+  /// Set while the job is pending so the same work is queued once; cleared when it runs.
+  idempotencyKey String?
+  /// queued | running | done | failed | dead
+  status         String                @default("queued")
+  attempts       Int                   @default(0)
+  maxAttempts    Int                   @default(5)
+  runAfter       DateTime              @default(now())
+  lockedAt       DateTime?
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  error          String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@unique([connectionId, idempotencyKey])
+  @@index([status, runAfter])
+  @@index([connectionId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("integration_jobs")
+}
+
+/// What a connector did and why it failed, per connection, kept for 30 days.
+model IntegrationLog {
+  id           String                @id @default(cuid())
+  connectionId String
+  connection   IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  jobId        String?
+  /// info | warn | error
+  level        String                @default("info")
+  message      String
+  details      Json?
+  createdAt    DateTime              @default(now())
+
+  @@index([connectionId, createdAt])
+  @@map("integration_logs")
+}
+
+/// Busy time pulled from a connected calendar, shown read-only on the
+/// workshop calendar. A cache: rebuilt by the pull job, never edited.
+model ExternalCalendarEvent {
+  id              String                @id @default(cuid())
+  connectionId    String
+  connection      IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  organizationId  String
+  organization    Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  remoteId        String
+  calendarId      String
+  title           String
+  startAt         DateTime
+  endAt           DateTime
+  allDay          Boolean               @default(false)
+  remoteUpdatedAt DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@unique([connectionId, remoteId])
+  @@index([organizationId, startAt])
+  @@map("external_calendar_events")
+}

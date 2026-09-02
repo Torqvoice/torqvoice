@@ -153,7 +153,9 @@
     "team_createDefaultRoles": "Standart roller oluşturuldu",
     "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi",
     "import_commit": "Hesap Tablosu İçe Aktarıldı",
-    "import_undo": "İçe Aktarma Geri Alındı"
+    "import_undo": "İçe Aktarma Geri Alındı",
+    "integration_connect": "Entegrasyon bağlandı",
+    "integration_disconnect": "Entegrasyon bağlantısı kesildi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -279,6 +281,8 @@
     "work_bay_delete": "{id} çalışma alanı silindi",
     "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi",
     "import_commit": "Bir hesap tablosu içe aktarıldı: {count} kayıt oluşturuldu",
-    "import_undo": "Bir hesap tablosu içe aktarması geri alındı: {records} kayıt kaldırıldı"
+    "import_undo": "Bir hesap tablosu içe aktarması geri alındı: {records} kayıt kaldırıldı",
+    "integration_connect": "{name} bağlandı",
+    "integration_disconnect": "{name} bağlantısı kesildi"
   }
 }

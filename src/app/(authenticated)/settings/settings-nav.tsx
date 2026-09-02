@@ -35,6 +35,7 @@ import {
   Wrench,
   BellRing,
   LifeBuoy,
+  Plug,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -107,7 +108,10 @@ const settingsCategories: SettingsCategory[] = [
   },
   {
     key: 'integrations',
-    items: [{ key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' }],
+    items: [
+      { key: 'integrations', href: '/settings/integrations', icon: Plug, gate: 'integrations' },
+      { key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' },
+    ],
   },
   {
     key: 'system',

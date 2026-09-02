@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Integraties",
+    "description": "Koppel de diensten die uw werkplaats al gebruikt. Elke integratie wordt eenmalig ingesteld en draait op de achtergrond.",
+    "all": "Alle",
+    "empty": "Nog geen integraties in deze categorie.",
+    "notConnected": "Niet gekoppeld",
+    "connect": "Koppelen",
+    "manage": "Beheren",
+    "connectedTitle": "Verbonden",
+    "connectedDescription": "Diensten die deze werkplaats heeft ingesteld. Open er een om de status te bekijken, instellingen te wijzigen of de verbinding te verbreken.",
+    "noneConnected": "Nog niets verbonden. Kies hieronder een dienst om te beginnen.",
+    "availableTitle": "Beschikbaar",
+    "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
+    "allConnected": "Alle beschikbare diensten zijn verbonden."
+  },
+  "categories": {
+    "calendar": "Agenda",
+    "conferencing": "Videogesprekken",
+    "accounting": "Boekhouding",
+    "messaging": "Berichten",
+    "payments": "Betalingen",
+    "automation": "Automatisering",
+    "storage": "Bestanden",
+    "registry": "Voertuigregister",
+    "other": "Overig"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Werkorders naar agenda",
+      "pull": "Bezette tijd uit agenda",
+      "conference": "Links voor videogesprekken"
+    }
+  },
+  "statuses": {
+    "active": "Gekoppeld",
+    "error": "Aandacht vereist",
+    "pending": "Installatie bezig",
+    "disconnected": "Losgekoppeld"
+  },
+  "connection": {
+    "back": "Alle integraties",
+    "account": "Gekoppeld account",
+    "lastHealth": "Laatst gecontroleerd",
+    "lastSync": "Laatste synchronisatie",
+    "lastError": "De laatste uitvoering is mislukt",
+    "connected": "{name} is gekoppeld.",
+    "connectedShort": "Gekoppeld",
+    "connectWith": "{name} koppelen",
+    "connect": "Koppelen",
+    "reconnect": "Opnieuw koppelen",
+    "disconnect": "Loskoppelen",
+    "disconnectTitle": "{name} loskoppelen?",
+    "disconnectDescription": "Torqvoice vergeet het account en stopt met synchroniseren. Afspraken die al in de agenda zijn aangemaakt, blijven daar staan.",
+    "disconnected": "Losgekoppeld",
+    "test": "Verbinding testen",
+    "testPassed": "Verbinding werkt",
+    "syncNow": "Nu synchroniseren",
+    "syncQueued": "Synchronisatie in wachtrij; wordt binnen een minuut uitgevoerd",
+    "backfill": "Geplande werkorders doorsturen",
+    "backfillQueued": "Geplande werkorders vanaf afgelopen week in de wachtrij gezet",
+    "retryQueued": "Taak opnieuw in de wachtrij gezet",
+    "settingsTitle": "Instellingen",
+    "settingsDescription": "Wat er wordt gesynchroniseerd en waarheen. Wijzigingen gelden vanaf de volgende synchronisatie.",
+    "settingsSaved": "Instellingen opgeslagen",
+    "save": "Opslaan",
+    "loading": "Laden...",
+    "choose": "Kiezen...",
+    "planLocked": "Integraties zijn niet inbegrepen in uw abonnement.",
+    "ownAppTitle": "Deze installatie gebruikt uw eigen app bij de provider",
+    "redirectUri": "Redirect-URI om bij de provider te registreren:"
+  },
+  "activity": {
+    "title": "Activiteit",
+    "description": "Recente taken en logregels voor deze koppeling.",
+    "retry": "Opnieuw proberen",
+    "jobStatus": {
+      "queued": "In wachtrij",
+      "running": "Bezig",
+      "done": "Klaar",
+      "failed": "Mislukt",
+      "dead": "Opgegeven"
+    }
+  },
+  "errors": {
+    "generic": "Er is iets misgegaan",
+    "demo": "Integraties kunnen niet worden gekoppeld in de demo.",
+    "forbidden": "Alleen een beheerder kan integraties koppelen.",
+    "unknown": "Onbekende integratie.",
+    "plan": "Deze integratie is niet inbegrepen in uw abonnement.",
+    "no-client": "Er zijn geen app-gegevens geconfigureerd voor deze provider.",
+    "denied": "U heeft het aanmelden bij de provider geannuleerd.",
+    "vendor": "De provider gaf een fout terug. Probeer het opnieuw.",
+    "invalid": "Het antwoord van de provider was onvolledig. Probeer het opnieuw.",
+    "state": "Deze aanmelding is verlopen of hoort bij een andere sessie. Begin opnieuw.",
+    "exchange": "De provider heeft de aanmelding geweigerd. Controleer de app-gegevens en probeer het opnieuw.",
+    "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen."
+  },
+  "meeting": {
+    "join": "Deelnemen aan videogesprek",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Uit gekoppelde agenda's",
+    "busy": "Bezet"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Zet geplande werkorders in een Google Calendar, voeg een Google Meet-link toe en bekijk de bezette tijd van de agenda in Torqvoice.",
+      "tenantHelp": "Maak een OAuth-client aan in Google Cloud Console (APIs & Services → Credentials), schakel de Google Calendar API in, voeg de onderstaande redirect-URI toe en plak hier de client-ID en het geheim.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "calendarId": "Agenda",
+        "pushEnabled": "Geplande werkorders aan deze agenda toevoegen",
+        "includeCustomer": "Naam en telefoonnummer van de klant in de afspraak opnemen",
+        "addConference": "Een Google Meet-link aan elke afspraak toevoegen",
+        "addConferenceHelp": "De link wordt op de werkorder getoond, zodat u die met de klant kunt delen.",
+        "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
+        "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
+      }
+    },
+    "microsoft-365": {
+      "description": "Zet geplande werkorders in een Outlook-agenda, voeg een Microsoft Teams-link toe en bekijk de bezette tijd van de agenda in Torqvoice.",
+      "tenantHelp": "Registreer een toepassing in Microsoft Entra (App registrations), sta persoonlijke en werkaccounts toe, voeg de onderstaande redirect-URI toe als Web-platform, maak een clientgeheim aan en plak beide hier.",
+      "fields": {
+        "clientId": "Toepassings-ID (client-ID)",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "calendarId": "Agenda",
+        "pushEnabled": "Geplande werkorders aan deze agenda toevoegen",
+        "includeCustomer": "Naam en telefoonnummer van de klant in de afspraak opnemen",
+        "addConference": "Een Microsoft Teams-link aan elke afspraak toevoegen",
+        "addConferenceHelp": "De link wordt op de werkorder getoond, zodat u die met de klant kunt delen.",
+        "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
+        "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
+      }
+    },
+    "zoom": {
+      "description": "Voeg een Zoom-vergadering toe aan een ingeplande werkorder en houd de deelnamelink erop, voor diagnose op afstand of om bevindingen met de klant door te nemen.",
+      "tenantHelp": "Maak in de Zoom App Marketplace een General-app (user-managed), voeg de onderstaande redirect-URI toe, voeg de scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting en user:read:user toe en plak hier de client-ID en het client secret.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "autoCreate": "Automatisch een Zoom-vergadering aanmaken voor elke ingeplande werkorder",
+        "autoCreateHelp": "Uit: u voegt het videogesprek zelf toe aan een werkorder, vanaf de pagina ervan. Aan: elke werkorder met een starttijd krijgt een vergadering, die meeschuift bij verplaatsen en verdwijnt bij annuleren. In beide gevallen krijgt de klant de link alleen als u die verstuurt.",
+        "includeCustomer": "Naam van de klant in het onderwerp opnemen",
+        "joinBeforeHost": "Klant vóór u laten deelnemen",
+        "waitingRoom": "Wachtkamer gebruiken"
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@
       "billing": "Fakturering og dokumenter",
       "communications": "Kommunikasjon",
       "workshop": "Verksted",
-      "integrations": "Integrasjoner",
+      "integrations": "Apper og API",
       "system": "System"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Planlagte rapporter",
         "description": "Automatisk rapportlevering"
+      },
+      "integrations": {
+        "title": "Integrasjoner",
+        "description": "Kalendere, videosamtaler og tilkoblede tjenester"
       },
       "webhooks": {
         "title": "Webhooks",

@@ -9,9 +9,10 @@ export function toLocalDateStr(d: Date): string {
 /** Where an event points: the quote itself, otherwise the vehicle it belongs to */
 export function getEventLink(event: {
   id: string
-  type: 'service' | 'reminder' | 'quote' | 'message'
+  type: 'service' | 'reminder' | 'quote' | 'message' | 'external'
   vehicleId: string | null
 }): string {
+  if (event.type === 'external') return '/settings/integrations'
   if (event.type === 'quote') return `/quotes/${event.id}`
   if (event.type === 'message') return '/messages?tab=scheduled'
   if (!event.vehicleId) return event.type === 'reminder' ? '/reminders' : `/sales/${event.id}`
