@@ -20,7 +20,9 @@ export const connector = messagingConnector(
   },
   {
     identify: async ({ credentials }) => {
-      const name = credentials.user ? `${credentials.user}@${credentials.host}` : credentials.host
+      // The username is often an email address already, so it is shown next
+      // to the server rather than joined to it.
+      const name = credentials.user ? `${credentials.user} (${credentials.host})` : credentials.host
       return { id: `${credentials.host}:${credentials.port}`, name }
     },
     sendTest: sendTestEmail,
