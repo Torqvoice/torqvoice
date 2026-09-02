@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Prisijungti prie vaizdo skambučio",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Iš prijungtų kalendorių",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ja pasidalinti su klientu.",
         "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
         "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
+      }
+    },
+    "zoom": {
+      "description": "Sukuria Zoom susitikimą kiekvienam suplanuotam darbo užsakymui ir rodo nuorodą jame: nuotolinei diagnostikai arba radiniams aptarti su klientu.",
+      "tenantHelp": "Zoom App Marketplace sukurkite General (user-managed) programą, pridėkite žemiau nurodytą peradresavimo URI, pridėkite apimtis meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ir user:read:user, tada čia įklijuokite kliento ID ir slaptažodį.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "autoCreate": "Sukurti Zoom susitikimą kiekvienam suplanuotam darbo užsakymui",
+        "autoCreateHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ją pasidalinti su klientu. Susitikimai atnaujinami perkėlus užsakymą ir pašalinami jį atšaukus.",
+        "includeCustomer": "Įtraukti kliento vardą į susitikimo temą",
+        "joinBeforeHost": "Leisti klientui prisijungti anksčiau už jus",
+        "waitingRoom": "Naudoti laukimo kambarį"
       }
     }
   }

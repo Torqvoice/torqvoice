@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Deelnemen aan videogesprek",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Uit gekoppelde agenda's",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "De link wordt op de werkorder getoond, zodat u die met de klant kunt delen.",
         "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
         "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
+      }
+    },
+    "zoom": {
+      "description": "Maakt een Zoom-vergadering voor elke geplande werkorder en toont de deelnamelink erop, voor diagnose op afstand of om bevindingen met de klant door te nemen.",
+      "tenantHelp": "Maak in de Zoom App Marketplace een General-app (user-managed), voeg de onderstaande redirect-URI toe, voeg de scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting en user:read:user toe en plak hier de client-ID en het client secret.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "autoCreate": "Maak een Zoom-vergadering voor elke geplande werkorder",
+        "autoCreateHelp": "De link staat op de werkorder zodat u die met de klant kunt delen. Vergaderingen worden bijgewerkt als de werkorder verschuift en verwijderd als die wordt geannuleerd.",
+        "includeCustomer": "Naam van de klant in het onderwerp opnemen",
+        "joinBeforeHost": "Klant vóór u laten deelnemen",
+        "waitingRoom": "Wachtkamer gebruiken"
       }
     }
   }

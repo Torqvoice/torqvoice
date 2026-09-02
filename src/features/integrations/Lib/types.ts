@@ -50,6 +50,11 @@ export type AuthSpec =
       /** Extra query parameters on the authorize request, such as access_type=offline. */
       authorizeParams?: Record<string, string>
       pkce?: boolean
+      /**
+       * Where the client id and secret go on token requests. Most vendors read
+       * them from the form body; Zoom and a few others want HTTP Basic auth.
+       */
+      tokenAuth?: 'body' | 'basic'
       /** Environment variable names holding the platform-owned app's client id and secret. */
       platformEnv?: { clientId: string; clientSecret: string }
       /** Fields a workshop fills in to use its own app. */

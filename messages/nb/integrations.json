@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Bli med i videosamtale",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Fra tilkoblede kalendere",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden.",
         "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
         "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
+      }
+    },
+    "zoom": {
+      "description": "Oppretter et Zoom-møte for hver planlagte arbeidsordre og viser lenken på den, til fjerndiagnose eller for å gå gjennom funn med kunden.",
+      "tenantHelp": "I Zoom App Marketplace oppretter du en General-app (user-managed), legger til redirect-URI-en under, legger til scopene meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting og user:read:user, og limer inn klient-ID og hemmelighet her.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "autoCreate": "Opprett et Zoom-møte for hver planlagte arbeidsordre",
+        "autoCreateHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden. Møter oppdateres når arbeidsordren flyttes og fjernes når den avlyses.",
+        "includeCustomer": "Ta med kundens navn i møteemnet",
+        "joinBeforeHost": "La kunden bli med før deg",
+        "waitingRoom": "Bruk venterom"
       }
     }
   }

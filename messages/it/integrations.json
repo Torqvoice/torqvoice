@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Partecipa alla videochiamata",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Dai calendari collegati",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Il link viene mostrato nell'ordine di lavoro, così puoi condividerlo con il cliente.",
         "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
         "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
+      }
+    },
+    "zoom": {
+      "description": "Crea una riunione Zoom per ogni ordine di lavoro pianificato e mostra il link sull'ordine, per diagnosi a distanza o per esaminare i risultati con il cliente.",
+      "tenantHelp": "Nello Zoom App Marketplace crea un'app General (user-managed), aggiungi l'URI di reindirizzamento qui sotto, aggiungi gli scope meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting e user:read:user, quindi incolla qui client ID e secret.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "autoCreate": "Crea una riunione Zoom per ogni ordine di lavoro pianificato",
+        "autoCreateHelp": "Il link viene mostrato sull'ordine di lavoro così puoi condividerlo con il cliente. Le riunioni si aggiornano quando l'ordine viene spostato e vengono rimosse quando viene annullato.",
+        "includeCustomer": "Includi il nome del cliente nell'argomento della riunione",
+        "joinBeforeHost": "Consenti al cliente di entrare prima di te",
+        "waitingRoom": "Usa la sala d'attesa"
       }
     }
   }

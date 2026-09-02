@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Rejoindre l'appel vidéo",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Depuis les calendriers connectés",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client.",
         "pullEnabled": "Afficher les plages occupées de ce calendrier dans le calendrier Torqvoice",
         "pullEnabledHelp": "Lecture seule. Actualisé toutes les 15 minutes, une semaine en arrière et deux mois en avant."
+      }
+    },
+    "zoom": {
+      "description": "Crée une réunion Zoom pour chaque ordre de travail planifié et affiche le lien dessus, pour un diagnostic à distance ou pour passer en revue les constats avec le client.",
+      "tenantHelp": "Dans Zoom App Marketplace, créez une application General (user-managed), ajoutez l'URI de redirection ci-dessous, ajoutez les scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting et user:read:user, puis collez ici l'ID client et le secret.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Secret client"
+      },
+      "settings": {
+        "autoCreate": "Créer une réunion Zoom pour chaque ordre de travail planifié",
+        "autoCreateHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client. Les réunions sont mises à jour quand l'ordre est déplacé et supprimées quand il est annulé.",
+        "includeCustomer": "Inclure le nom du client dans le sujet de la réunion",
+        "joinBeforeHost": "Laisser le client rejoindre avant vous",
+        "waitingRoom": "Utiliser une salle d'attente"
       }
     }
   }

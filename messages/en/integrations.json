@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Join video call",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "From connected calendars",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "The link is shown on the work order so you can share it with the customer.",
         "pullEnabled": "Show this calendar's busy time on the Torqvoice calendar",
         "pullEnabledHelp": "Read-only. Refreshed every 15 minutes, one week back and two months ahead."
+      }
+    },
+    "zoom": {
+      "description": "Create a Zoom meeting for each scheduled work order and show the join link on it, for remote diagnosis or walking a customer through findings.",
+      "tenantHelp": "In the Zoom App Marketplace, build a General app (user-managed), add the redirect URI below, add the scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting and user:read:user, and paste the client ID and secret here.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "autoCreate": "Create a Zoom meeting for each scheduled work order",
+        "autoCreateHelp": "The join link is shown on the work order so you can share it with the customer. Meetings are updated when the work order moves and removed when it is cancelled.",
+        "includeCustomer": "Include the customer's name in the meeting topic",
+        "joinBeforeHost": "Let the customer join before you",
+        "waitingRoom": "Use a waiting room"
       }
     }
   }

@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Görüntülü görüşmeye katıl",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Bağlı takvimlerden",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Bağlantı iş emrinde gösterilir, böylece müşteriyle paylaşabilirsiniz.",
         "pullEnabled": "Bu takvimin meşgul zamanlarını Torqvoice takviminde göster",
         "pullEnabledHelp": "Salt okunur. 15 dakikada bir yenilenir; bir hafta geriye ve iki ay ileriye."
+      }
+    },
+    "zoom": {
+      "description": "Planlanmış her iş emri için bir Zoom toplantısı oluşturur ve katılım bağlantısını iş emrinde gösterir; uzaktan teşhis veya bulguları müşteriyle gözden geçirmek için.",
+      "tenantHelp": "Zoom App Marketplace'te bir General (user-managed) uygulaması oluşturun, aşağıdaki yönlendirme URI'sini ekleyin, meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ve user:read:user kapsamlarını ekleyin ve istemci kimliği ile gizli anahtarı buraya yapıştırın.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "autoCreate": "Planlanmış her iş emri için Zoom toplantısı oluştur",
+        "autoCreateHelp": "Bağlantı iş emrinde gösterilir, böylece müşteriyle paylaşabilirsiniz. İş emri taşındığında toplantı güncellenir, iptal edildiğinde kaldırılır.",
+        "includeCustomer": "Toplantı konusuna müşteri adını ekle",
+        "joinBeforeHost": "Müşterinin sizden önce katılmasına izin ver",
+        "waitingRoom": "Bekleme odası kullan"
       }
     }
   }

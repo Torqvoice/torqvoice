@@ -124,6 +124,28 @@ describe('integration oauth', () => {
     ).rejects.toThrow('Bad code')
   })
 
+  it('sends client credentials as Basic auth when the vendor wants that', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ access_token: 'z1', refresh_token: 'zr', expires_in: 3600 }), {
+        status: 200,
+      })
+    )
+    const basicSpec = { ...spec, tokenAuth: 'basic' as const }
+    await exchangeCode({
+      spec: basicSpec,
+      client: { clientId: 'zid', clientSecret: 'zsec', ownership: 'platform' },
+      code: 'c',
+      redirectUri: 'https://x/cb',
+    })
+    const init = fetchMock.mock.calls[0][1]
+    const headers = new Headers(init?.headers)
+    expect(headers.get('authorization')).toBe(`Basic ${Buffer.from('zid:zsec').toString('base64')}`)
+    const sent = new URLSearchParams(String(init?.body))
+    expect(sent.get('client_secret')).toBeNull()
+    expect(sent.get('grant_type')).toBe('authorization_code')
+  })
+
   it('knows when a token is about to expire', () => {
     expect(needsRefresh({ accessToken: '' })).toBe(true)
     expect(needsRefresh({ accessToken: 'a' })).toBe(false)

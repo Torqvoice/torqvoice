@@ -97,13 +97,26 @@ interface TokenResponse {
 }
 
 async function tokenRequest(
-  tokenUrl: string,
+  spec: OAuth2Spec,
+  client: OAuthClient,
   params: Record<string, string>
 ): Promise<TokenResponse> {
-  const res = await fetch(tokenUrl, {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Accept: 'application/json',
+  }
+  const form = { ...params }
+  if (spec.tokenAuth === 'basic') {
+    const pair = `${client.clientId}:${client.clientSecret}`
+    headers.Authorization = `Basic ${Buffer.from(pair).toString('base64')}`
+  } else {
+    form.client_id = client.clientId
+    form.client_secret = client.clientSecret
+  }
+  const res = await fetch(spec.tokenUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-    body: new URLSearchParams(params).toString(),
+    headers,
+    body: new URLSearchParams(form).toString(),
   })
   const text = await res.text()
   let body: TokenResponse
@@ -141,12 +154,10 @@ export async function exchangeCode(input: {
   codeVerifier?: string
   previous?: OAuthCredentials
 }): Promise<OAuthCredentials> {
-  const body = await tokenRequest(input.spec.tokenUrl, {
+  const body = await tokenRequest(input.spec, input.client, {
     grant_type: 'authorization_code',
     code: input.code,
     redirect_uri: input.redirectUri,
-    client_id: input.client.clientId,
-    client_secret: input.client.clientSecret,
     ...(input.codeVerifier && { code_verifier: input.codeVerifier }),
   })
   return toCredentials(body, input.previous ?? { accessToken: '' })
@@ -159,11 +170,9 @@ export async function refreshToken(input: {
 }): Promise<OAuthCredentials> {
   if (!input.credentials.refreshToken)
     throw new Error('No refresh token; reconnect the integration')
-  const body = await tokenRequest(input.spec.tokenUrl, {
+  const body = await tokenRequest(input.spec, input.client, {
     grant_type: 'refresh_token',
     refresh_token: input.credentials.refreshToken,
-    client_id: input.client.clientId,
-    client_secret: input.client.clientSecret,
   })
   return toCredentials(body, input.credentials)
 }

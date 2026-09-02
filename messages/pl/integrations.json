@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Dołącz do rozmowy wideo",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Z połączonych kalendarzy",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Link jest widoczny na zleceniu, więc możesz go przekazać klientowi.",
         "pullEnabled": "Pokazuj zajęty czas z tego kalendarza w kalendarzu Torqvoice",
         "pullEnabledHelp": "Tylko do odczytu. Odświeżane co 15 minut, tydzień wstecz i dwa miesiące do przodu."
+      }
+    },
+    "zoom": {
+      "description": "Tworzy spotkanie Zoom dla każdego zaplanowanego zlecenia i pokazuje na nim link, do zdalnej diagnostyki lub omówienia ustaleń z klientem.",
+      "tenantHelp": "W Zoom App Marketplace utwórz aplikację General (user-managed), dodaj poniższy adres przekierowania, dodaj zakresy meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting i user:read:user, a następnie wklej tutaj identyfikator i sekret klienta.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "autoCreate": "Twórz spotkanie Zoom dla każdego zaplanowanego zlecenia",
+        "autoCreateHelp": "Link jest widoczny na zleceniu, więc możesz udostępnić go klientowi. Spotkania są aktualizowane przy zmianie terminu zlecenia i usuwane po jego anulowaniu.",
+        "includeCustomer": "Dodaj nazwę klienta do tematu spotkania",
+        "joinBeforeHost": "Pozwól klientowi dołączyć przed Tobą",
+        "waitingRoom": "Używaj poczekalni"
       }
     }
   }

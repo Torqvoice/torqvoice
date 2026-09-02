@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Videoanruf beitreten",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Aus verbundenen Kalendern",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Der Link wird im Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können.",
         "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
         "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
+      }
+    },
+    "zoom": {
+      "description": "Erstellt für jeden geplanten Auftrag ein Zoom-Meeting und zeigt den Beitrittslink darauf an, für Ferndiagnosen oder um Befunde mit dem Kunden durchzugehen.",
+      "tenantHelp": "Erstellen Sie im Zoom App Marketplace eine General-App (user-managed), tragen Sie die Redirect-URI unten ein, fügen Sie die Scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting und user:read:user hinzu und tragen Sie Client-ID und Client-Secret hier ein.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "autoCreate": "Für jeden geplanten Auftrag ein Zoom-Meeting erstellen",
+        "autoCreateHelp": "Der Beitrittslink wird am Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können. Meetings werden beim Verschieben des Auftrags aktualisiert und bei Stornierung entfernt.",
+        "includeCustomer": "Kundennamen in das Meeting-Thema aufnehmen",
+        "joinBeforeHost": "Kunden vor Ihnen beitreten lassen",
+        "waitingRoom": "Warteraum verwenden"
       }
     }
   }

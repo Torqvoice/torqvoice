@@ -10,6 +10,7 @@
 import type { ConnectorManifest, ConnectorServer } from '@/features/integrations/Lib/types'
 import { manifest as googleCalendar } from './google-calendar/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
+import { manifest as zoom } from './zoom/manifest'
 
 interface RegistryEntry {
   manifest: ConnectorManifest
@@ -19,6 +20,7 @@ interface RegistryEntry {
 const ENTRIES: readonly RegistryEntry[] = [
   { manifest: googleCalendar, load: () => import('./google-calendar/server') },
   { manifest: microsoft365, load: () => import('./microsoft-365/server') },
+  { manifest: zoom, load: () => import('./zoom/server') },
 ]
 
 const BY_ID = new Map(ENTRIES.map((e) => [e.manifest.id, e]))

@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Entrar na videochamada",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "De calendários conectados",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "O link aparece na ordem de serviço para que você possa compartilhá-lo com o cliente.",
         "pullEnabled": "Mostrar os horários ocupados deste calendário no calendário do Torqvoice",
         "pullEnabledHelp": "Somente leitura. Atualizado a cada 15 minutos, uma semana para trás e dois meses para a frente."
+      }
+    },
+    "zoom": {
+      "description": "Cria uma reunião do Zoom para cada ordem de serviço agendada e mostra o link nela, para diagnóstico remoto ou para revisar constatações com o cliente.",
+      "tenantHelp": "No Zoom App Marketplace, crie um app General (user-managed), adicione a URI de redirecionamento abaixo, adicione os escopos meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting e user:read:user, e cole aqui o ID e o segredo do cliente.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "autoCreate": "Criar uma reunião do Zoom para cada ordem de serviço agendada",
+        "autoCreateHelp": "O link aparece na ordem de serviço para você compartilhar com o cliente. As reuniões são atualizadas quando a ordem muda de horário e removidas quando ela é cancelada.",
+        "includeCustomer": "Incluir o nome do cliente no tópico da reunião",
+        "joinBeforeHost": "Permitir que o cliente entre antes de você",
+        "waitingRoom": "Usar sala de espera"
       }
     }
   }

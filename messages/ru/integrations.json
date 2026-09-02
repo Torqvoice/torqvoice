@@ -94,7 +94,8 @@
   "meeting": {
     "join": "Присоединиться к видеозвонку",
     "google-meet": "Google Meet",
-    "teams": "Microsoft Teams"
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
   },
   "calendar": {
     "external": "Из подключённых календарей",
@@ -133,6 +134,21 @@
         "addConferenceHelp": "Ссылка отображается в заказ-наряде, чтобы вы могли поделиться ею с клиентом.",
         "pullEnabled": "Показывать занятое время этого календаря в календаре Torqvoice",
         "pullEnabledHelp": "Только чтение. Обновляется каждые 15 минут: неделя назад и два месяца вперёд."
+      }
+    },
+    "zoom": {
+      "description": "Создаёт встречу Zoom для каждого запланированного заказ-наряда и показывает ссылку на нём: для удалённой диагностики или обсуждения результатов с клиентом.",
+      "tenantHelp": "В Zoom App Marketplace создайте приложение General (user-managed), добавьте указанный ниже redirect URI, добавьте scope meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting и user:read:user, затем вставьте сюда client ID и секрет.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Секрет клиента"
+      },
+      "settings": {
+        "autoCreate": "Создавать встречу Zoom для каждого запланированного заказ-наряда",
+        "autoCreateHelp": "Ссылка показывается на заказ-наряде, чтобы вы могли отправить её клиенту. Встреча обновляется при переносе заказ-наряда и удаляется при его отмене.",
+        "includeCustomer": "Указывать имя клиента в теме встречи",
+        "joinBeforeHost": "Разрешить клиенту входить раньше вас",
+        "waitingRoom": "Использовать зал ожидания"
       }
     }
   }
