@@ -31,6 +31,8 @@ export interface CredentialField {
   type: 'text' | 'password' | 'url'
   required?: boolean
   placeholder?: string
+  /** Prefilled on the connect page, for values with one usual answer such as a port. */
+  default?: string
   /** i18n key with guidance on where the value comes from */
   help?: string
 }
@@ -189,6 +191,12 @@ export interface ConnectorServer {
   identify?(ctx: ConnectorContext): Promise<{ id: string; name: string }>
   /** Cheap round trip that proves the credentials still work. */
   test(ctx: ConnectorContext): Promise<{ ok: boolean; message?: string }>
+  /**
+   * Send a real message to the signed-in user, for vendors where a key check
+   * is not proof that mail or texts actually go out. Throws with the vendor's
+   * reason when it fails.
+   */
+  sendTest?(ctx: ConnectorContext, to: { email: string }): Promise<void>
   /** Providers for remote-select settings, keyed by SettingField.source. */
   remoteOptions?: Record<string, (ctx: ConnectorContext) => Promise<SettingOption[]>>
   jobs: Record<string, JobHandler>
@@ -199,6 +207,12 @@ export interface ConnectorServer {
       ctx: ConnectorContext
     ): Promise<{ jobs: { kind: string; payload?: Record<string, unknown> }[]; response?: Response }>
   }
+  /**
+   * Set up remote state once the credentials have proved good, such as
+   * registering a webhook with the vendor. Settings returned here are saved
+   * on the connection, for values the vendor knows and the form did not ask.
+   */
+  onConnect?(ctx: ConnectorContext): Promise<{ settings?: Record<string, unknown> } | void>
   /** Clean up remote state when the workshop disconnects. */
   onDisconnect?(ctx: ConnectorContext): Promise<void>
 }

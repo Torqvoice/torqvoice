@@ -16,6 +16,7 @@ import { formatDateForPdf } from '@/lib/format'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { getOrgTelegramBotUsername } from '@/lib/telegram'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -303,7 +304,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
     // Generate Telegram QR if the telegram_qr section is visible in layout
     let telegramQrDataUri: string | undefined
-    const telegramBotUsername = settingsMap['telegram.botUsername']
+    const telegramBotUsername = await getOrgTelegramBotUsername(ctx.organizationId)
     const telegramQrVisible = layoutConfig.sections.some((s) => s.id === 'telegram_qr' && s.visible)
     if (telegramBotUsername && telegramQrVisible) {
       const { generateQrDataUri } = await import('@/lib/qr')

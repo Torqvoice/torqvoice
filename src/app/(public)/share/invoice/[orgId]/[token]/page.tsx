@@ -12,6 +12,7 @@ import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { getOrgTelegramBotUsername } from '@/lib/telegram'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -288,7 +289,9 @@ export default async function PublicInvoicePage({
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
-  const telegramBotUsername = settingsMap['telegram.botUsername'] || ''
+  // The bot follows the Telegram integration, whichever side of the move it
+  // was connected on.
+  const telegramBotUsername = (await getOrgTelegramBotUsername(record.organizationId)) || ''
   const telegramBotLink = telegramBotUsername ? `https://t.me/${telegramBotUsername}` : undefined
 
   return (
