@@ -34,7 +34,8 @@
     "delete": "Sil",
     "unpaid": "Ödenmedi",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",
-    "saved": "Kaydedildi"
+    "saved": "Kaydedildi",
+    "joinCall": "Görüntülü görüşmeye katıl"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
@@ -410,5 +411,23 @@
     "remove": "Bu maddeyi kaldır",
     "notAnswered": "Bu konuda henüz bir şey bulunmadı",
     "answered": "Bu konuda {count} tespit"
+  },
+  "videoCall": {
+    "title": "Görüntülü görüşme",
+    "none": "Bu iş emrinde görüntülü görüşme yok.",
+    "needsSchedule": "Önce bir başlangıç saati belirleyin. Toplantı programı izler.",
+    "add": "{provider} toplantısı ekle",
+    "addedHere": "bu iş emrinden eklendi",
+    "fromCalendar": "takvim etkinliğinden",
+    "join": "Katıl",
+    "copy": "Bağlantıyı kopyala",
+    "copied": "Bağlantı kopyalandı",
+    "remove": "Kaldır",
+    "removeTitle": "Görüntülü görüşme kaldırılsın mı?",
+    "removeDescription": "Toplantı sağlayıcıda silinir. Bağlantıya sahip olanlar artık katılamaz.",
+    "created": "Toplantı oluşturuldu. Bağlantı iş emrinde.",
+    "removed": "Toplantı kaldırıldı",
+    "failed": "Bir şeyler ters gitti",
+    "shareHint": "Müşteri bu bağlantıyı yalnızca siz gönderdiğinizde alır. Bir mesaja kopyalayın veya bir bildirime ekleyin."
   }
 }

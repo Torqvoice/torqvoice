@@ -7,7 +7,7 @@
       "billing": "Atsiskaitymai ir dokumentai",
       "communications": "Komunikacija",
       "workshop": "Dirbtuvės",
-      "integrations": "Integracijos",
+      "integrations": "Programos ir API",
       "system": "Sistema"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Ataskaitų grafikas",
         "description": "Automatinis ataskaitų siuntimas"
+      },
+      "integrations": {
+        "title": "Integracijos",
+        "description": "Kalendoriai, vaizdo skambučiai ir prijungtos paslaugos"
       },
       "webhooks": {
         "title": "Webhooks",

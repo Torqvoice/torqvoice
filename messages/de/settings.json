@@ -7,7 +7,7 @@
       "billing": "Abrechnung & Dokumente",
       "communications": "Kommunikation",
       "workshop": "Werkstatt",
-      "integrations": "Integrationen",
+      "integrations": "Apps & API",
       "system": "System"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Berichtsplanung",
         "description": "Automatischer Berichtsversand"
+      },
+      "integrations": {
+        "title": "Integrationen",
+        "description": "Kalender, Videoanrufe und verbundene Dienste"
       },
       "webhooks": {
         "title": "Webhooks",

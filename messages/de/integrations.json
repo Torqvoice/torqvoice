@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Integrationen",
+    "description": "Verbinden Sie die Dienste, die Ihre Werkstatt bereits nutzt. Jede Integration wird einmal eingerichtet und läuft im Hintergrund.",
+    "all": "Alle",
+    "empty": "In dieser Kategorie gibt es noch keine Integrationen.",
+    "notConnected": "Nicht verbunden",
+    "connect": "Verbinden",
+    "manage": "Verwalten",
+    "connectedTitle": "Verbunden",
+    "connectedDescription": "Dienste, die diese Werkstatt eingerichtet hat. Öffnen Sie einen, um den Status zu prüfen, Einstellungen zu ändern oder die Verbindung zu trennen.",
+    "noneConnected": "Noch nichts verbunden. Wählen Sie unten einen Dienst, um zu beginnen.",
+    "availableTitle": "Verfügbar",
+    "availableDescription": "Dienste, die Sie hinzufügen können. Jeder wird einmal eingerichtet und läuft im Hintergrund.",
+    "allConnected": "Alle verfügbaren Dienste sind verbunden."
+  },
+  "categories": {
+    "calendar": "Kalender",
+    "conferencing": "Videoanrufe",
+    "accounting": "Buchhaltung",
+    "messaging": "Nachrichten",
+    "payments": "Zahlungen",
+    "automation": "Automatisierung",
+    "storage": "Dateien",
+    "registry": "Fahrzeugregister",
+    "other": "Sonstiges"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Aufträge in den Kalender",
+      "pull": "Belegte Zeiten aus dem Kalender",
+      "conference": "Links für Videoanrufe"
+    }
+  },
+  "statuses": {
+    "active": "Verbunden",
+    "error": "Aufmerksamkeit erforderlich",
+    "pending": "Einrichtung läuft",
+    "disconnected": "Getrennt"
+  },
+  "connection": {
+    "back": "Alle Integrationen",
+    "account": "Verbundenes Konto",
+    "lastHealth": "Zuletzt geprüft",
+    "lastSync": "Letzte Synchronisierung",
+    "lastError": "Der letzte Durchlauf ist fehlgeschlagen",
+    "connected": "{name} ist verbunden.",
+    "connectedShort": "Verbunden",
+    "connectWith": "{name} verbinden",
+    "connect": "Verbinden",
+    "reconnect": "Erneut verbinden",
+    "disconnect": "Trennen",
+    "disconnectTitle": "{name} trennen?",
+    "disconnectDescription": "Torqvoice vergisst das Konto und beendet die Synchronisierung. Bereits im Kalender erstellte Termine bleiben erhalten.",
+    "disconnected": "Getrennt",
+    "test": "Verbindung testen",
+    "testPassed": "Verbindung funktioniert",
+    "syncNow": "Jetzt synchronisieren",
+    "syncQueued": "Synchronisierung eingereiht; sie läuft innerhalb einer Minute",
+    "backfill": "Geplante Aufträge übertragen",
+    "backfillQueued": "Die geplanten Aufträge ab der letzten Woche wurden eingereiht",
+    "retryQueued": "Job erneut eingereiht",
+    "settingsTitle": "Einstellungen",
+    "settingsDescription": "Was synchronisiert wird und wohin. Änderungen gelten ab der nächsten Synchronisierung.",
+    "settingsSaved": "Einstellungen gespeichert",
+    "save": "Speichern",
+    "loading": "Wird geladen...",
+    "choose": "Auswählen...",
+    "planLocked": "Integrationen sind in Ihrem Tarif nicht enthalten.",
+    "ownAppTitle": "Diese Installation verwendet Ihre eigene App beim Anbieter",
+    "redirectUri": "Beim Anbieter zu registrierende Redirect-URI:"
+  },
+  "activity": {
+    "title": "Aktivität",
+    "description": "Aktuelle Jobs und Protokollzeilen dieser Verbindung.",
+    "retry": "Erneut versuchen",
+    "jobStatus": {
+      "queued": "Eingereiht",
+      "running": "Läuft",
+      "done": "Erledigt",
+      "failed": "Fehlgeschlagen",
+      "dead": "Aufgegeben"
+    }
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen",
+    "demo": "In der Demo können keine Integrationen verbunden werden.",
+    "forbidden": "Nur ein Administrator kann Integrationen verbinden.",
+    "unknown": "Unbekannte Integration.",
+    "plan": "Diese Integration ist in Ihrem Tarif nicht enthalten.",
+    "no-client": "Für diesen Anbieter sind keine App-Zugangsdaten konfiguriert.",
+    "denied": "Sie haben die Anmeldung beim Anbieter abgebrochen.",
+    "vendor": "Der Anbieter hat einen Fehler zurückgegeben. Versuchen Sie es erneut.",
+    "invalid": "Die Antwort des Anbieters war unvollständig. Versuchen Sie es erneut.",
+    "state": "Diese Anmeldung ist abgelaufen oder gehört zu einer anderen Sitzung. Beginnen Sie erneut.",
+    "exchange": "Der Anbieter hat die Anmeldung abgelehnt. Prüfen Sie die App-Zugangsdaten und versuchen Sie es erneut.",
+    "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen."
+  },
+  "meeting": {
+    "join": "Videoanruf beitreten",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Aus verbundenen Kalendern",
+    "busy": "Belegt"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Geplante Aufträge in einen Google Calendar eintragen, einen Google Meet-Link hinzufügen und die belegten Zeiten des Kalenders in Torqvoice sehen.",
+      "tenantHelp": "Erstellen Sie einen OAuth-Client in der Google Cloud Console (APIs & Dienste → Anmeldedaten), aktivieren Sie die Google Calendar API, fügen Sie die untenstehende Redirect-URI hinzu und tragen Sie Client-ID und Client-Secret hier ein.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Geplante Aufträge in diesen Kalender eintragen",
+        "includeCustomer": "Name und Telefonnummer des Kunden in den Termin aufnehmen",
+        "addConference": "Jedem Termin einen Google Meet-Link hinzufügen",
+        "addConferenceHelp": "Der Link wird im Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können.",
+        "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
+        "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
+      }
+    },
+    "microsoft-365": {
+      "description": "Geplante Aufträge in einen Outlook-Kalender eintragen, einen Microsoft Teams-Link hinzufügen und die belegten Zeiten des Kalenders in Torqvoice sehen.",
+      "tenantHelp": "Registrieren Sie eine Anwendung in Microsoft Entra (App-Registrierungen), erlauben Sie persönliche und Geschäftskonten, fügen Sie die untenstehende Redirect-URI als Web-Plattform hinzu, erstellen Sie ein Client-Secret und tragen Sie beides hier ein.",
+      "fields": {
+        "clientId": "Anwendungs-ID (Client-ID)",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Geplante Aufträge in diesen Kalender eintragen",
+        "includeCustomer": "Name und Telefonnummer des Kunden in den Termin aufnehmen",
+        "addConference": "Jedem Termin einen Microsoft Teams-Link hinzufügen",
+        "addConferenceHelp": "Der Link wird im Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können.",
+        "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
+        "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
+      }
+    },
+    "zoom": {
+      "description": "Fügen Sie einem geplanten Auftrag ein Zoom-Meeting hinzu und behalten Sie den Beitrittslink am Auftrag, für Ferndiagnosen oder um Kunden durch Befunde zu führen.",
+      "tenantHelp": "Erstellen Sie im Zoom App Marketplace eine General-App (user-managed), tragen Sie die Redirect-URI unten ein, fügen Sie die Scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting und user:read:user hinzu und tragen Sie Client-ID und Client-Secret hier ein.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "autoCreate": "Für jeden geplanten Auftrag automatisch ein Zoom-Meeting erstellen",
+        "autoCreateHelp": "Aus: Sie fügen einem Auftrag den Videoanruf selbst hinzu, auf seiner Seite. An: Jeder Auftrag mit Startzeit bekommt ein Meeting, das bei Terminverschiebung mitwandert und bei Stornierung entfernt wird. In beiden Fällen erhält der Kunde den Link nur, wenn Sie ihn senden.",
+        "includeCustomer": "Kundennamen in das Meeting-Thema aufnehmen",
+        "joinBeforeHost": "Kunden vor Ihnen beitreten lassen",
+        "waitingRoom": "Warteraum verwenden"
+      }
+    }
+  }
+}

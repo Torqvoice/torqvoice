@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Intégrations",
+    "description": "Connectez les services que votre atelier utilise déjà. Chaque intégration se configure une seule fois et fonctionne en arrière-plan.",
+    "all": "Toutes",
+    "empty": "Aucune intégration dans cette catégorie pour le moment.",
+    "notConnected": "Non connectée",
+    "connect": "Connecter",
+    "manage": "Gérer",
+    "connectedTitle": "Connectés",
+    "connectedDescription": "Services configurés par cet atelier. Ouvrez-en un pour vérifier son état, modifier les réglages ou le déconnecter.",
+    "noneConnected": "Rien de connecté pour l'instant. Choisissez un service ci-dessous pour commencer.",
+    "availableTitle": "Disponibles",
+    "availableDescription": "Services que vous pouvez ajouter. Chacun se configure une fois et fonctionne en arrière-plan.",
+    "allConnected": "Tous les services disponibles sont connectés."
+  },
+  "categories": {
+    "calendar": "Calendrier",
+    "conferencing": "Appels vidéo",
+    "accounting": "Comptabilité",
+    "messaging": "Messagerie",
+    "payments": "Paiements",
+    "automation": "Automatisation",
+    "storage": "Fichiers",
+    "registry": "Registre des véhicules",
+    "other": "Autre"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Ordres de travail vers le calendrier",
+      "pull": "Plages occupées du calendrier",
+      "conference": "Liens d'appel vidéo"
+    }
+  },
+  "statuses": {
+    "active": "Connectée",
+    "error": "Attention requise",
+    "pending": "Configuration en cours",
+    "disconnected": "Déconnectée"
+  },
+  "connection": {
+    "back": "Toutes les intégrations",
+    "account": "Compte connecté",
+    "lastHealth": "Dernière vérification",
+    "lastSync": "Dernière synchronisation",
+    "lastError": "La dernière exécution a échoué",
+    "connected": "{name} est connecté.",
+    "connectedShort": "Connecté",
+    "connectWith": "Connecter {name}",
+    "connect": "Connecter",
+    "reconnect": "Reconnecter",
+    "disconnect": "Déconnecter",
+    "disconnectTitle": "Déconnecter {name} ?",
+    "disconnectDescription": "Torqvoice oublie le compte et arrête la synchronisation. Les événements déjà créés dans le calendrier y restent.",
+    "disconnected": "Déconnecté",
+    "test": "Tester la connexion",
+    "testPassed": "La connexion fonctionne",
+    "syncNow": "Synchroniser maintenant",
+    "syncQueued": "Synchronisation en file d'attente ; elle démarre d'ici une minute",
+    "backfill": "Envoyer les ordres de travail planifiés",
+    "backfillQueued": "Les ordres de travail planifiés depuis la semaine dernière ont été mis en file d'attente",
+    "retryQueued": "Tâche remise en file d'attente",
+    "settingsTitle": "Paramètres",
+    "settingsDescription": "Ce qu'il faut synchroniser et vers où. Les modifications s'appliquent à la prochaine synchronisation.",
+    "settingsSaved": "Paramètres enregistrés",
+    "save": "Enregistrer",
+    "loading": "Chargement...",
+    "choose": "Choisir...",
+    "planLocked": "Les intégrations ne sont pas incluses dans votre forfait.",
+    "ownAppTitle": "Cette installation utilise votre propre application auprès du fournisseur",
+    "redirectUri": "URI de redirection à enregistrer auprès du fournisseur :"
+  },
+  "activity": {
+    "title": "Activité",
+    "description": "Tâches récentes et lignes de journal pour cette connexion.",
+    "retry": "Réessayer",
+    "jobStatus": {
+      "queued": "En file d'attente",
+      "running": "En cours",
+      "done": "Terminée",
+      "failed": "Échec",
+      "dead": "Abandonnée"
+    }
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite",
+    "demo": "Les intégrations ne peuvent pas être connectées sur la démo.",
+    "forbidden": "Seul un administrateur peut connecter des intégrations.",
+    "unknown": "Intégration inconnue.",
+    "plan": "Cette intégration n'est pas incluse dans votre forfait.",
+    "no-client": "Aucun identifiant d'application n'est configuré pour ce fournisseur.",
+    "denied": "Vous avez annulé la connexion auprès du fournisseur.",
+    "vendor": "Le fournisseur a renvoyé une erreur. Réessayez.",
+    "invalid": "La réponse du fournisseur était incomplète. Réessayez.",
+    "state": "Cette connexion a expiré ou appartient à une autre session. Recommencez.",
+    "exchange": "Le fournisseur a refusé la connexion. Vérifiez les identifiants de l'application et réessayez.",
+    "identify": "Connecté, mais le compte n'a pas pu être lu. Essayez de vous reconnecter."
+  },
+  "meeting": {
+    "join": "Rejoindre l'appel vidéo",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Depuis les calendriers connectés",
+    "busy": "Occupé"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Ajoutez les ordres de travail planifiés à un Google Calendar, joignez un lien Google Meet et consultez les plages occupées du calendrier dans Torqvoice.",
+      "tenantHelp": "Créez un client OAuth dans Google Cloud Console (API et services → Identifiants), activez l'API Google Calendar, ajoutez l'URI de redirection ci-dessous, puis collez ici l'identifiant client et le secret.",
+      "fields": {
+        "clientId": "Identifiant client",
+        "clientSecret": "Secret client"
+      },
+      "settings": {
+        "calendarId": "Calendrier",
+        "pushEnabled": "Ajouter les ordres de travail planifiés à ce calendrier",
+        "includeCustomer": "Inclure le nom et le téléphone du client dans l'événement",
+        "addConference": "Ajouter un lien Google Meet à chaque événement",
+        "addConferenceHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client.",
+        "pullEnabled": "Afficher les plages occupées de ce calendrier dans le calendrier Torqvoice",
+        "pullEnabledHelp": "Lecture seule. Actualisé toutes les 15 minutes, une semaine en arrière et deux mois en avant."
+      }
+    },
+    "microsoft-365": {
+      "description": "Ajoutez les ordres de travail planifiés à un calendrier Outlook, joignez un lien Microsoft Teams et consultez les plages occupées du calendrier dans Torqvoice.",
+      "tenantHelp": "Enregistrez une application dans Microsoft Entra (Inscriptions d'applications), autorisez les comptes personnels et professionnels, ajoutez l'URI de redirection ci-dessous comme plateforme Web, créez un secret client, puis collez les deux ici.",
+      "fields": {
+        "clientId": "ID d'application (client)",
+        "clientSecret": "Secret client"
+      },
+      "settings": {
+        "calendarId": "Calendrier",
+        "pushEnabled": "Ajouter les ordres de travail planifiés à ce calendrier",
+        "includeCustomer": "Inclure le nom et le téléphone du client dans l'événement",
+        "addConference": "Ajouter un lien Microsoft Teams à chaque événement",
+        "addConferenceHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client.",
+        "pullEnabled": "Afficher les plages occupées de ce calendrier dans le calendrier Torqvoice",
+        "pullEnabledHelp": "Lecture seule. Actualisé toutes les 15 minutes, une semaine en arrière et deux mois en avant."
+      }
+    },
+    "zoom": {
+      "description": "Ajoutez une réunion Zoom à un ordre de travail planifié et gardez le lien dessus, pour un diagnostic à distance ou pour présenter des constats au client.",
+      "tenantHelp": "Dans Zoom App Marketplace, créez une application General (user-managed), ajoutez l'URI de redirection ci-dessous, ajoutez les scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting et user:read:user, puis collez ici l'ID client et le secret.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Secret client"
+      },
+      "settings": {
+        "autoCreate": "Créer automatiquement une réunion Zoom pour chaque ordre de travail planifié",
+        "autoCreateHelp": "Désactivé : vous ajoutez vous-même l'appel vidéo à un ordre de travail, depuis sa page. Activé : chaque ordre avec une heure de début reçoit une réunion, déplacée en cas de report et supprimée en cas d'annulation. Dans les deux cas, le client ne reçoit le lien que si vous l'envoyez.",
+        "includeCustomer": "Inclure le nom du client dans le sujet de la réunion",
+        "joinBeforeHost": "Laisser le client rejoindre avant vous",
+        "waitingRoom": "Utiliser une salle d'attente"
+      }
+    }
+  }
+}

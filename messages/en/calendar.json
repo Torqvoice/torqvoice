@@ -34,7 +34,8 @@
     "services": "Services",
     "reminders": "Reminders",
     "quotes": "Quotes",
-    "messages": "Messages"
+    "messages": "Messages",
+    "external": "Connected calendars"
   },
   "selectVehicle": "Select Vehicle for Work Order",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Overdue",
       "upcoming": "Upcoming",
       "failed": "Failed",
-      "queued": "Queued"
+      "queued": "Queued",
+      "busy": "Busy"
     },
     "type": {
       "service": "Service",

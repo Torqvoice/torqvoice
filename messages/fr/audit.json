@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Numéro WhatsApp enregistré",
     "team_giveTechnicianTheApp": "Compte donné à un technicien du tableau",
     "team_createDefaultRoles": "Rôles standard créés",
-    "settings_setCustomFieldPlacement": "Emplacement de champ personnalisé mis à jour"
+    "settings_setCustomFieldPlacement": "Emplacement de champ personnalisé mis à jour",
+    "integration_connect": "Intégration connectée",
+    "integration_disconnect": "Intégration déconnectée"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -275,6 +277,8 @@
     "work_bay_create": "Poste de travail « {name} » créé",
     "work_bay_update": "Poste de travail « {name} » mis à jour",
     "work_bay_delete": "Poste de travail {id} supprimé",
-    "settings_setCustomFieldPlacement": "A modifié l'emplacement d'impression d'un champ personnalisé"
+    "settings_setCustomFieldPlacement": "A modifié l'emplacement d'impression d'un champ personnalisé",
+    "integration_connect": "{name} connecté",
+    "integration_disconnect": "{name} déconnecté"
   }
 }

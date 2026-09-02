@@ -1,0 +1,40 @@
+model CustomFieldDefinition {
+  id           String   @id @default(cuid())
+  name         String
+  label        String
+  fieldType    String   @default("text")
+  options      String?
+  defaultValue String?
+  required     Boolean  @default(false)
+  entityType   String
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  values CustomFieldValue[]
+
+  @@unique([organizationId, name, entityType])
+  @@index([organizationId])
+  @@map("custom_field_definitions")
+}
+
+model CustomFieldValue {
+  id         String @id @default(cuid())
+  value      String
+  entityId   String
+  entityType String
+
+  fieldId String
+  field   CustomFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([fieldId, entityId])
+  @@index([fieldId])
+  @@map("custom_field_values")
+}

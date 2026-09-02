@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Integrações",
+    "description": "Conecte os serviços que sua oficina já usa. Cada integração é configurada uma vez e funciona em segundo plano.",
+    "all": "Todas",
+    "empty": "Ainda não há integrações nesta categoria.",
+    "notConnected": "Não conectada",
+    "connect": "Conectar",
+    "manage": "Gerenciar",
+    "connectedTitle": "Conectados",
+    "connectedDescription": "Serviços que esta oficina configurou. Abra um para ver o status, alterar configurações ou desconectar.",
+    "noneConnected": "Nada conectado ainda. Escolha um serviço abaixo para começar.",
+    "availableTitle": "Disponíveis",
+    "availableDescription": "Serviços que você pode adicionar. Cada um é configurado uma vez e roda em segundo plano.",
+    "allConnected": "Todos os serviços disponíveis estão conectados."
+  },
+  "categories": {
+    "calendar": "Calendário",
+    "conferencing": "Videochamadas",
+    "accounting": "Contabilidade",
+    "messaging": "Mensagens",
+    "payments": "Pagamentos",
+    "automation": "Automação",
+    "storage": "Arquivos",
+    "registry": "Registro de veículos",
+    "other": "Outros"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Ordens de serviço no calendário",
+      "pull": "Horários ocupados do calendário",
+      "conference": "Links de videochamada"
+    }
+  },
+  "statuses": {
+    "active": "Conectada",
+    "error": "Precisa de atenção",
+    "pending": "Configuração em andamento",
+    "disconnected": "Desconectada"
+  },
+  "connection": {
+    "back": "Todas as integrações",
+    "account": "Conta conectada",
+    "lastHealth": "Última verificação",
+    "lastSync": "Última sincronização",
+    "lastError": "A última execução falhou",
+    "connected": "{name} está conectado.",
+    "connectedShort": "Conectado",
+    "connectWith": "Conectar {name}",
+    "connect": "Conectar",
+    "reconnect": "Reconectar",
+    "disconnect": "Desconectar",
+    "disconnectTitle": "Desconectar {name}?",
+    "disconnectDescription": "O Torqvoice esquece a conta e para de sincronizar. Os eventos já criados no calendário permanecem lá.",
+    "disconnected": "Desconectado",
+    "test": "Testar conexão",
+    "testPassed": "A conexão funciona",
+    "syncNow": "Sincronizar agora",
+    "syncQueued": "Sincronização na fila; será executada em até um minuto",
+    "backfill": "Enviar ordens de serviço agendadas",
+    "backfillQueued": "Ordens de serviço agendadas a partir da semana passada colocadas na fila",
+    "retryQueued": "Tarefa colocada na fila novamente",
+    "settingsTitle": "Configurações",
+    "settingsDescription": "O que sincronizar e para onde. As alterações valem a partir da próxima sincronização.",
+    "settingsSaved": "Configurações salvas",
+    "save": "Salvar",
+    "loading": "Carregando...",
+    "choose": "Escolher...",
+    "planLocked": "As integrações não estão incluídas no seu plano.",
+    "ownAppTitle": "Esta instalação usa seu próprio aplicativo junto ao provedor",
+    "redirectUri": "URI de redirecionamento para registrar no provedor:"
+  },
+  "activity": {
+    "title": "Atividade",
+    "description": "Tarefas recentes e linhas de log desta conexão.",
+    "retry": "Tentar novamente",
+    "jobStatus": {
+      "queued": "Na fila",
+      "running": "Em execução",
+      "done": "Concluída",
+      "failed": "Falhou",
+      "dead": "Desistiu"
+    }
+  },
+  "errors": {
+    "generic": "Algo deu errado",
+    "demo": "Não é possível conectar integrações na demonstração.",
+    "forbidden": "Somente um administrador pode conectar integrações.",
+    "unknown": "Integração desconhecida.",
+    "plan": "Esta integração não está incluída no seu plano.",
+    "no-client": "Nenhuma credencial de aplicativo está configurada para este provedor.",
+    "denied": "Você cancelou o login no provedor.",
+    "vendor": "O provedor retornou um erro. Tente novamente.",
+    "invalid": "A resposta do provedor estava incompleta. Tente novamente.",
+    "state": "Este login expirou ou pertence a outra sessão. Comece de novo.",
+    "exchange": "O provedor recusou o login. Verifique as credenciais do aplicativo e tente novamente.",
+    "identify": "Conectado, mas não foi possível ler a conta. Tente reconectar."
+  },
+  "meeting": {
+    "join": "Entrar na videochamada",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "De calendários conectados",
+    "busy": "Ocupado"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Coloque as ordens de serviço agendadas em um Google Calendar, adicione um link do Google Meet e veja os horários ocupados do calendário no Torqvoice.",
+      "tenantHelp": "Crie um cliente OAuth no Google Cloud Console (APIs e serviços → Credenciais), ative a API do Google Calendar, adicione o URI de redirecionamento abaixo e cole aqui o ID do cliente e o segredo.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "calendarId": "Calendário",
+        "pushEnabled": "Adicionar ordens de serviço agendadas a este calendário",
+        "includeCustomer": "Incluir o nome e o telefone do cliente no evento",
+        "addConference": "Adicionar um link do Google Meet a cada evento",
+        "addConferenceHelp": "O link aparece na ordem de serviço para que você possa compartilhá-lo com o cliente.",
+        "pullEnabled": "Mostrar os horários ocupados deste calendário no calendário do Torqvoice",
+        "pullEnabledHelp": "Somente leitura. Atualizado a cada 15 minutos, uma semana para trás e dois meses para a frente."
+      }
+    },
+    "microsoft-365": {
+      "description": "Coloque as ordens de serviço agendadas em um calendário do Outlook, adicione um link do Microsoft Teams e veja os horários ocupados do calendário no Torqvoice.",
+      "tenantHelp": "Registre um aplicativo no Microsoft Entra (Registros de aplicativo), permita contas pessoais e corporativas, adicione o URI de redirecionamento abaixo como plataforma Web, crie um segredo do cliente e cole os dois aqui.",
+      "fields": {
+        "clientId": "ID do aplicativo (cliente)",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "calendarId": "Calendário",
+        "pushEnabled": "Adicionar ordens de serviço agendadas a este calendário",
+        "includeCustomer": "Incluir o nome e o telefone do cliente no evento",
+        "addConference": "Adicionar um link do Microsoft Teams a cada evento",
+        "addConferenceHelp": "O link aparece na ordem de serviço para que você possa compartilhá-lo com o cliente.",
+        "pullEnabled": "Mostrar os horários ocupados deste calendário no calendário do Torqvoice",
+        "pullEnabledHelp": "Somente leitura. Atualizado a cada 15 minutos, uma semana para trás e dois meses para a frente."
+      }
+    },
+    "zoom": {
+      "description": "Adicione uma reunião do Zoom a uma ordem de serviço agendada e mantenha o link nela, para diagnóstico remoto ou para mostrar as constatações ao cliente.",
+      "tenantHelp": "No Zoom App Marketplace, crie um app General (user-managed), adicione a URI de redirecionamento abaixo, adicione os escopos meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting e user:read:user, e cole aqui o ID e o segredo do cliente.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "autoCreate": "Criar uma reunião do Zoom automaticamente para cada ordem de serviço agendada",
+        "autoCreateHelp": "Desligado: você adiciona a videochamada à ordem de serviço pela página dela. Ligado: toda ordem com horário de início recebe uma reunião, movida ao reagendar e removida ao cancelar. Em ambos os casos o cliente só recebe o link quando você envia.",
+        "includeCustomer": "Incluir o nome do cliente no tópico da reunião",
+        "joinBeforeHost": "Permitir que o cliente entre antes de você",
+        "waitingRoom": "Usar sala de espera"
+      }
+    }
+  }
+}

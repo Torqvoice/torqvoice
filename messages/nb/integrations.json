@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Integrasjoner",
+    "description": "Koble til tjenestene verkstedet allerede bruker. Hver integrasjon settes opp én gang og kjører i bakgrunnen.",
+    "all": "Alle",
+    "empty": "Ingen integrasjoner i denne kategorien ennå.",
+    "notConnected": "Ikke tilkoblet",
+    "connect": "Koble til",
+    "manage": "Administrer",
+    "connectedTitle": "Tilkoblet",
+    "connectedDescription": "Tjenester dette verkstedet har satt opp. Åpne en for å sjekke status, endre innstillinger eller koble fra.",
+    "noneConnected": "Ingenting er koblet til ennå. Velg en tjeneste nedenfor for å komme i gang.",
+    "availableTitle": "Tilgjengelig",
+    "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
+    "allConnected": "Alle tilgjengelige tjenester er tilkoblet."
+  },
+  "categories": {
+    "calendar": "Kalender",
+    "conferencing": "Videosamtaler",
+    "accounting": "Regnskap",
+    "messaging": "Meldinger",
+    "payments": "Betalinger",
+    "automation": "Automatisering",
+    "storage": "Filer",
+    "registry": "Kjøretøyregister",
+    "other": "Annet"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Arbeidsordre til kalender",
+      "pull": "Opptatt tid fra kalender",
+      "conference": "Lenker til videosamtaler"
+    }
+  },
+  "statuses": {
+    "active": "Tilkoblet",
+    "error": "Trenger oppfølging",
+    "pending": "Oppsett pågår",
+    "disconnected": "Frakoblet"
+  },
+  "connection": {
+    "back": "Alle integrasjoner",
+    "account": "Tilkoblet konto",
+    "lastHealth": "Sist sjekket",
+    "lastSync": "Siste synkronisering",
+    "lastError": "Siste kjøring mislyktes",
+    "connected": "{name} er tilkoblet.",
+    "connectedShort": "Tilkoblet",
+    "connectWith": "Koble til {name}",
+    "connect": "Koble til",
+    "reconnect": "Koble til på nytt",
+    "disconnect": "Koble fra",
+    "disconnectTitle": "Koble fra {name}?",
+    "disconnectDescription": "Torqvoice glemmer kontoen og slutter å synkronisere. Hendelser som allerede er opprettet i kalenderen, blir liggende der.",
+    "disconnected": "Frakoblet",
+    "test": "Test tilkoblingen",
+    "testPassed": "Tilkoblingen fungerer",
+    "syncNow": "Synkroniser nå",
+    "syncQueued": "Synkronisering lagt i kø; den kjører innen ett minutt",
+    "backfill": "Send planlagte arbeidsordre",
+    "backfillQueued": "La planlagte arbeidsordre fra og med forrige uke i kø",
+    "retryQueued": "Jobben er lagt i kø på nytt",
+    "settingsTitle": "Innstillinger",
+    "settingsDescription": "Hva som skal synkroniseres og hvor. Endringer gjelder fra neste synkronisering.",
+    "settingsSaved": "Innstillinger lagret",
+    "save": "Lagre",
+    "loading": "Laster...",
+    "choose": "Velg...",
+    "planLocked": "Integrasjoner er ikke inkludert i abonnementet ditt.",
+    "ownAppTitle": "Denne installasjonen bruker din egen app hos leverandøren",
+    "redirectUri": "Omdirigerings-URI som må registreres hos leverandøren:"
+  },
+  "activity": {
+    "title": "Aktivitet",
+    "description": "Siste jobber og logglinjer for denne tilkoblingen.",
+    "retry": "Prøv igjen",
+    "jobStatus": {
+      "queued": "I kø",
+      "running": "Kjører",
+      "done": "Ferdig",
+      "failed": "Mislyktes",
+      "dead": "Ga opp"
+    }
+  },
+  "errors": {
+    "generic": "Noe gikk galt",
+    "demo": "Integrasjoner kan ikke kobles til i demoen.",
+    "forbidden": "Bare en administrator kan koble til integrasjoner.",
+    "unknown": "Ukjent integrasjon.",
+    "plan": "Denne integrasjonen er ikke inkludert i abonnementet ditt.",
+    "no-client": "Ingen app-legitimasjon er satt opp for denne leverandøren.",
+    "denied": "Du avbrøt påloggingen hos leverandøren.",
+    "vendor": "Leverandøren returnerte en feil. Prøv igjen.",
+    "invalid": "Svaret fra leverandøren var ufullstendig. Prøv igjen.",
+    "state": "Denne påloggingen har utløpt eller tilhører en annen økt. Start på nytt.",
+    "exchange": "Leverandøren avviste påloggingen. Sjekk app-legitimasjonen og prøv igjen.",
+    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt."
+  },
+  "meeting": {
+    "join": "Bli med i videosamtale",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Fra tilkoblede kalendere",
+    "busy": "Opptatt"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Legg planlagte arbeidsordre i en Google Calendar, legg til en Google Meet-lenke og se kalenderens opptatte tid i Torqvoice.",
+      "tenantHelp": "Opprett en OAuth-klient i Google Cloud Console (APIs & Services → Credentials), aktiver Google Calendar API, legg til omdirigerings-URI-en nedenfor og lim inn klient-ID og hemmelighet her.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Legg planlagte arbeidsordre i denne kalenderen",
+        "includeCustomer": "Ta med kundens navn og telefonnummer i hendelsen",
+        "addConference": "Legg til en Google Meet-lenke i hver hendelse",
+        "addConferenceHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden.",
+        "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
+        "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
+      }
+    },
+    "microsoft-365": {
+      "description": "Legg planlagte arbeidsordre i en Outlook-kalender, legg til en Microsoft Teams-lenke og se kalenderens opptatte tid i Torqvoice.",
+      "tenantHelp": "Registrer en applikasjon i Microsoft Entra (App registrations), tillat både personlige kontoer og jobbkontoer, legg til omdirigerings-URI-en nedenfor som en Web-plattform, opprett en klienthemmelighet og lim inn begge her.",
+      "fields": {
+        "clientId": "Applikasjons-ID (klient-ID)",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Legg planlagte arbeidsordre i denne kalenderen",
+        "includeCustomer": "Ta med kundens navn og telefonnummer i hendelsen",
+        "addConference": "Legg til en Microsoft Teams-lenke i hver hendelse",
+        "addConferenceHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden.",
+        "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
+        "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
+      }
+    },
+    "zoom": {
+      "description": "Legg til et Zoom-møte på en planlagt arbeidsordre og behold lenken på den, for fjerndiagnose eller for å gå gjennom funn med kunden.",
+      "tenantHelp": "I Zoom App Marketplace oppretter du en General-app (user-managed), legger til redirect-URI-en under, legger til scopene meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting og user:read:user, og limer inn klient-ID og hemmelighet her.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "autoCreate": "Opprett et Zoom-møte automatisk for hver planlagte arbeidsordre",
+        "autoCreateHelp": "Av: du legger til videosamtalen selv fra arbeidsordrens side. På: hver arbeidsordre med starttid får et møte, som flyttes når den omplanlegges og fjernes når den kanselleres. Uansett får kunden lenken bare når du sender den.",
+        "includeCustomer": "Ta med kundens navn i møteemnet",
+        "joinBeforeHost": "La kunden bli med før deg",
+        "waitingRoom": "Bruk venterom"
+      }
+    }
+  }
+}

@@ -34,7 +34,8 @@
     "delete": "Löschen",
     "unpaid": "Unbezahlt",
     "unsavedChanges": "Nicht gespeicherte Änderungen",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "joinCall": "Videoanruf beitreten"
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",
@@ -410,5 +411,23 @@
     "remove": "Dieses Anliegen entfernen",
     "notAnswered": "Dazu wurde noch nichts festgestellt",
     "answered": "{count} Feststellung(en) dazu"
+  },
+  "videoCall": {
+    "title": "Videoanruf",
+    "none": "Kein Videoanruf für diesen Auftrag.",
+    "needsSchedule": "Legen Sie zuerst eine Startzeit fest. Das Meeting folgt dem Termin.",
+    "add": "{provider}-Meeting hinzufügen",
+    "addedHere": "von diesem Auftrag hinzugefügt",
+    "fromCalendar": "aus dem Kalendereintrag",
+    "join": "Beitreten",
+    "copy": "Link kopieren",
+    "copied": "Link kopiert",
+    "remove": "Entfernen",
+    "removeTitle": "Videoanruf entfernen?",
+    "removeDescription": "Das Meeting wird beim Anbieter gelöscht. Wer den Link bereits hat, kann nicht mehr beitreten.",
+    "created": "Meeting erstellt. Der Link ist am Auftrag.",
+    "removed": "Meeting entfernt",
+    "failed": "Etwas ist schiefgelaufen",
+    "shareHint": "Der Kunde erhält diesen Link nur, wenn Sie ihn senden. Kopieren Sie ihn in eine Nachricht oder fügen Sie ihn einer Benachrichtigung hinzu."
   }
 }

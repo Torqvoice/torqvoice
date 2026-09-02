@@ -6,7 +6,17 @@ import { Badge } from '@/components/ui/badge'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { IconActionButton } from '@/components/icon-action-button'
 import { cn } from '@/lib/utils'
-import { ArrowLeft, Download, Eye, Globe, Mail, MessageSquare, Save, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  Download,
+  Eye,
+  Globe,
+  Mail,
+  MessageSquare,
+  Save,
+  Trash2,
+  Video,
+} from 'lucide-react'
 import { statusColors, paymentStatusColors, paymentStatusLabels } from '../service-detail/types'
 
 export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'
@@ -38,6 +48,8 @@ interface UnifiedServiceHeaderProps {
   onShowShare: () => void
   onNotifyCustomer?: () => void
   hasCustomer?: boolean
+  /** Video call link from a connected calendar, when one exists. */
+  meetingUrl?: string | null
 }
 
 export function UnifiedServiceHeader({
@@ -60,6 +72,7 @@ export function UnifiedServiceHeader({
   onShowShare,
   onNotifyCustomer,
   hasCustomer = false,
+  meetingUrl = null,
 }: UnifiedServiceHeaderProps) {
   const t = useTranslations('service.header')
   const tPreview = useTranslations('common.pdfPreview')
@@ -129,6 +142,13 @@ export function UnifiedServiceHeader({
             />
             <IconActionButton label={t('email')} icon={Mail} onClick={onShowEmail} />
             <IconActionButton label={t('share')} icon={Globe} onClick={onShowShare} />
+            {meetingUrl && (
+              <IconActionButton
+                label={t('joinCall')}
+                icon={Video}
+                onClick={() => window.open(meetingUrl, '_blank', 'noopener')}
+              />
+            )}
             {hasCustomer && onNotifyCustomer && (
               <IconActionButton
                 label={t('notify')}

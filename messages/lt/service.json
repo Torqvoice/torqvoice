@@ -34,7 +34,8 @@
     "delete": "Ištrinti",
     "unpaid": "Neapmokėta",
     "unsavedChanges": "Neišsaugoti pakeitimai",
-    "saved": "Išsaugota"
+    "saved": "Išsaugota",
+    "joinCall": "Prisijungti prie vaizdo skambučio"
   },
   "basicInfo": {
     "title": "Pagrindinė informacija",
@@ -410,5 +411,23 @@
     "remove": "Pašalinti šį punktą",
     "notAnswered": "Kol kas nieko nenustatyta",
     "answered": "Nustatymų: {count}"
+  },
+  "videoCall": {
+    "title": "Vaizdo skambutis",
+    "none": "Šis darbo užsakymas neturi vaizdo skambučio.",
+    "needsSchedule": "Pirmiausia nustatykite pradžios laiką. Susitikimas seka tvarkaraštį.",
+    "add": "Pridėti {provider} susitikimą",
+    "addedHere": "pridėta iš šio darbo užsakymo",
+    "fromCalendar": "iš kalendoriaus įvykio",
+    "join": "Prisijungti",
+    "copy": "Kopijuoti nuorodą",
+    "copied": "Nuoroda nukopijuota",
+    "remove": "Pašalinti",
+    "removeTitle": "Pašalinti vaizdo skambutį?",
+    "removeDescription": "Susitikimas ištrinamas pas teikėją. Jau turintys nuorodą nebegalės prisijungti.",
+    "created": "Susitikimas sukurtas. Nuoroda yra darbo užsakyme.",
+    "removed": "Susitikimas pašalintas",
+    "failed": "Kažkas nutiko ne taip",
+    "shareHint": "Klientas šią nuorodą gauna tik tada, kai ją išsiunčiate. Nukopijuokite ją į žinutę arba pridėkite prie pranešimo."
   }
 }

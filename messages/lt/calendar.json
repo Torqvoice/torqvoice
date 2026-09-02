@@ -34,7 +34,8 @@
     "services": "Paslaugos",
     "reminders": "Priminimai",
     "quotes": "Pasiūlymai",
-    "messages": "Žinutės"
+    "messages": "Žinutės",
+    "external": "Prijungti kalendoriai"
   },
   "selectVehicle": "Pasirinkite transporto priemonę darbo užsakymui",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Vėluoja",
       "upcoming": "Artėja",
       "failed": "Nepavyko",
-      "queued": "Eilėje"
+      "queued": "Eilėje",
+      "busy": "Užimta"
     },
     "type": {
       "service": "Paslauga",

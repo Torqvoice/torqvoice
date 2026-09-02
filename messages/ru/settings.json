@@ -7,7 +7,7 @@
       "billing": "Счета и документы",
       "communications": "Коммуникации",
       "workshop": "Мастерская",
-      "integrations": "Интеграции",
+      "integrations": "Приложения и API",
       "system": "Система"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Расписание отчётов",
         "description": "Автоматическая отправка отчётов"
+      },
+      "integrations": {
+        "title": "Интеграции",
+        "description": "Календари, видеозвонки и подключённые сервисы"
       },
       "webhooks": {
         "title": "Webhooks",

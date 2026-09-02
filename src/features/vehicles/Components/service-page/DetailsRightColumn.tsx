@@ -9,6 +9,8 @@ import { TotalsSection } from '../service-edit/TotalsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { WarrantySection } from './WarrantySection'
+import { VideoCallSection } from './VideoCallSection'
+import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
@@ -40,6 +42,7 @@ interface DetailsRightColumnProps {
     createdAt: string
     toNumber: string
   }[]
+  videoCall?: ServiceVideoCall
 }
 
 export function DetailsRightColumn({
@@ -55,6 +58,7 @@ export function DetailsRightColumn({
   workBays,
   orgMembers,
   notificationHistory = [],
+  videoCall,
 }: DetailsRightColumnProps) {
   const router = useRouter()
 
@@ -107,6 +111,13 @@ export function DetailsRightColumn({
         initialWorkBayId={record.workBayId}
         onSaved={formState.flashSaved}
       />
+      {videoCall && (
+        <VideoCallSection
+          serviceRecordId={record.id}
+          videoCall={videoCall}
+          scheduled={Boolean(formState.initialData.startDateTime)}
+        />
+      )}
       <TotalsSection
         partsSubtotal={formState.partsSubtotal}
         partsCostSubtotal={formState.partsCostSubtotal}

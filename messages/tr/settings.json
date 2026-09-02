@@ -7,7 +7,7 @@
       "billing": "Fatura & Belgeler",
       "communications": "İletişim",
       "workshop": "Atölye",
-      "integrations": "Entegrasyonlar",
+      "integrations": "Uygulamalar ve API",
       "system": "Sistem"
     },
     "items": {
@@ -90,6 +90,10 @@
       "reportSchedule": {
         "title": "Rapor zamanlayıcı",
         "description": "Otomatik rapor gönderimi"
+      },
+      "integrations": {
+        "title": "Entegrasyonlar",
+        "description": "Takvimler, görüntülü görüşmeler ve bağlı servisler"
       },
       "webhooks": {
         "title": "Webhooks",

@@ -1,0 +1,159 @@
+model LaborPreset {
+  id             String            @id @default(cuid())
+  name           String
+  description    String?
+  isArchived     Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  userId         String
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items          LaborPresetItem[]
+  parts          LaborPresetPart[]
+
+  @@index([organizationId])
+  @@map("labor_presets")
+}
+
+model LaborPresetItem {
+  id          String      @id @default(cuid())
+  description String
+  hours       Float       @default(0)
+  rate        Float       @default(0)
+  pricingType String      @default("hourly")
+  sortOrder   Int         @default(0)
+  presetId    String
+  preset      LaborPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+
+  @@index([presetId])
+  @@map("labor_preset_items")
+}
+
+model LaborPresetPart {
+  id              String  @id @default(cuid())
+  name            String
+  partNumber      String?
+  quantity        Float   @default(1)
+  /// Unit of measure snapshotted from InventoryPart at pick time.
+  unit            String?
+  unitPrice       Float   @default(0)
+  inventoryPartId String?
+  sortOrder       Int     @default(0)
+
+  presetId String
+  preset   LaborPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+
+  @@index([presetId])
+  @@map("labor_preset_parts")
+}
+
+model InventoryPart {
+  id            String  @id @default(cuid())
+  partNumber    String?
+  barcode       String?
+  name          String
+  description   String?
+  category      String?
+  quantity      Float   @default(0)
+  minQuantity   Float   @default(0)
+  /// Unit of measure for `quantity` (e.g. "pcs", "l", "kg"). Free text,
+  /// snapshotted onto part lines at pick time so invoices keep the unit the
+  /// part had when it was billed.
+  unit          String?
+  unitCost      Float   @default(0)
+  sellPrice     Float   @default(0)
+  supplier      String?
+  supplierPhone String?
+  supplierEmail String?
+  supplierUrl   String?
+  imageUrl      String?
+  location      String?
+  isArchived    Boolean @default(false)
+
+  /// Set when a low-stock alert has been sent for the current dip below
+  /// `minQuantity`, and cleared once stock climbs back above it. This
+  /// hysteresis is what stops a part that sits at zero from re-alerting on
+  /// every check — it alerts once per descent, not once per run.
+  lowStockAlertedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  gallery   StoredImage[]   @relation("InventoryPartImages")
+  movements StockMovement[]
+
+  @@unique([organizationId, barcode])
+  @@index([organizationId])
+  @@map("inventory_parts")
+}
+
+/// Append-only audit trail of every change to InventoryPart.quantity.
+///
+/// Written inside the same transaction as the stock mutation itself, so the
+/// ledger can never drift from the balance it describes. `quantityAfter` is
+/// captured from the atomic `UPDATE ... RETURNING`, giving an exact running
+/// balance even under concurrent writes.
+model StockMovement {
+  id String @id @default(cuid())
+
+  /// Signed change in stock units (fractional allowed, e.g. 0.5 l).
+  /// Negative = consumed, positive = restocked.
+  delta         Float
+  /// Part balance immediately after this movement was applied.
+  quantityAfter Float
+  /// Why the stock moved — see StockMovementReason in src/features/inventory/Lib/stockMovement.ts
+  reason        String
+  note          String?
+
+  inventoryPartId String
+  inventoryPart   InventoryPart @relation(fields: [inventoryPartId], references: [id], onDelete: Cascade)
+
+  /// The job the part was used on. Kept on SetNull so history survives
+  /// deletion of the service record — "where was this used" outlives the job.
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: SetNull)
+
+  /// Denormalised so history still reads correctly after a service record is
+  /// deleted and serviceRecordId goes null.
+  serviceRecordLabel String?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([inventoryPartId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([serviceRecordId])
+  @@map("stock_movements")
+}
+
+model StoredImage {
+  id          String   @id @default(cuid())
+  url         String
+  fileName    String?
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  inventoryPartId String?
+  inventoryPart   InventoryPart? @relation("InventoryPartImages", fields: [inventoryPartId], references: [id], onDelete: Cascade)
+
+  /// Condition photos taken when a tire is measured. Second parent on this
+  /// model — an image belongs to exactly one of them.
+  tireMeasurementId String?
+  tireMeasurement   TireMeasurement? @relation("TireMeasurementImages", fields: [tireMeasurementId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryPartId])
+  @@index([tireMeasurementId])
+  @@map("stored_images")
+}

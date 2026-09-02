@@ -1,0 +1,160 @@
+{
+  "catalog": {
+    "title": "Entegrasyonlar",
+    "description": "Atölyenizin zaten kullandığı servisleri bağlayın. Her entegrasyon bir kez kurulur ve arka planda çalışır.",
+    "all": "Tümü",
+    "empty": "Bu kategoride henüz entegrasyon yok.",
+    "notConnected": "Bağlı değil",
+    "connect": "Bağlan",
+    "manage": "Yönet",
+    "connectedTitle": "Bağlı",
+    "connectedDescription": "Bu atölyenin kurduğu hizmetler. Durumunu görmek, ayarları değiştirmek veya bağlantıyı kesmek için birini açın.",
+    "noneConnected": "Henüz bağlı bir hizmet yok. Başlamak için aşağıdan bir hizmet seçin.",
+    "availableTitle": "Kullanılabilir",
+    "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
+    "allConnected": "Kullanılabilir tüm hizmetler bağlı."
+  },
+  "categories": {
+    "calendar": "Takvim",
+    "conferencing": "Görüntülü görüşmeler",
+    "accounting": "Muhasebe",
+    "messaging": "Mesajlaşma",
+    "payments": "Ödemeler",
+    "automation": "Otomasyon",
+    "storage": "Dosyalar",
+    "registry": "Araç kayıt sistemi",
+    "other": "Diğer"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "İş emirlerini takvime aktarma",
+      "pull": "Takvimden meşgul zamanlar",
+      "conference": "Görüntülü görüşme bağlantıları"
+    }
+  },
+  "statuses": {
+    "active": "Bağlı",
+    "error": "Dikkat gerekiyor",
+    "pending": "Kurulum sürüyor",
+    "disconnected": "Bağlantı kesildi"
+  },
+  "connection": {
+    "back": "Tüm entegrasyonlar",
+    "account": "Bağlı hesap",
+    "lastHealth": "Son kontrol",
+    "lastSync": "Son senkronizasyon",
+    "lastError": "Son çalıştırma başarısız oldu",
+    "connected": "{name} bağlandı.",
+    "connectedShort": "Bağlı",
+    "connectWith": "{name} bağlantısını kur",
+    "connect": "Bağlan",
+    "reconnect": "Yeniden bağlan",
+    "disconnect": "Bağlantıyı kes",
+    "disconnectTitle": "{name} bağlantısı kesilsin mi?",
+    "disconnectDescription": "Torqvoice hesabı unutur ve senkronizasyonu durdurur. Takvimde zaten oluşturulmuş etkinlikler orada kalır.",
+    "disconnected": "Bağlantı kesildi",
+    "test": "Bağlantıyı test et",
+    "testPassed": "Bağlantı çalışıyor",
+    "syncNow": "Şimdi senkronize et",
+    "syncQueued": "Senkronizasyon sıraya alındı; bir dakika içinde çalışır",
+    "backfill": "Planlanmış iş emirlerini gönder",
+    "backfillQueued": "Geçen haftadan itibaren planlanmış iş emirleri sıraya alındı",
+    "retryQueued": "İş yeniden sıraya alındı",
+    "settingsTitle": "Ayarlar",
+    "settingsDescription": "Neyin nereye senkronize edileceği. Değişiklikler bir sonraki senkronizasyonda uygulanır.",
+    "settingsSaved": "Ayarlar kaydedildi",
+    "save": "Kaydet",
+    "loading": "Yükleniyor...",
+    "choose": "Seçin...",
+    "planLocked": "Entegrasyonlar planınıza dahil değil.",
+    "ownAppTitle": "Bu kurulum, sağlayıcıda kendi uygulamanızı kullanıyor",
+    "redirectUri": "Sağlayıcıya kaydedilecek yönlendirme URI'si:"
+  },
+  "activity": {
+    "title": "Aktivite",
+    "description": "Bu bağlantıya ait son işler ve günlük satırları.",
+    "retry": "Yeniden dene",
+    "jobStatus": {
+      "queued": "Sırada",
+      "running": "Çalışıyor",
+      "done": "Tamamlandı",
+      "failed": "Başarısız",
+      "dead": "Vazgeçildi"
+    }
+  },
+  "errors": {
+    "generic": "Bir şeyler ters gitti",
+    "demo": "Demoda entegrasyon bağlanamaz.",
+    "forbidden": "Entegrasyonları yalnızca bir yönetici bağlayabilir.",
+    "unknown": "Bilinmeyen entegrasyon.",
+    "plan": "Bu entegrasyon planınıza dahil değil.",
+    "no-client": "Bu sağlayıcı için yapılandırılmış uygulama kimlik bilgisi yok.",
+    "denied": "Sağlayıcıdaki oturum açmayı iptal ettiniz.",
+    "vendor": "Sağlayıcı bir hata döndürdü. Yeniden deneyin.",
+    "invalid": "Sağlayıcının yanıtı eksikti. Yeniden deneyin.",
+    "state": "Bu oturum açma işleminin süresi doldu veya başka bir oturuma ait. Yeniden başlayın.",
+    "exchange": "Sağlayıcı oturum açmayı reddetti. Uygulama kimlik bilgilerini kontrol edip yeniden deneyin.",
+    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin."
+  },
+  "meeting": {
+    "join": "Görüntülü görüşmeye katıl",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Bağlı takvimlerden",
+    "busy": "Meşgul"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Planlanmış iş emirlerini bir Google Calendar takvimine ekleyin, Google Meet bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
+      "tenantHelp": "Google Cloud Console'da (APIs & Services → Credentials) bir OAuth istemcisi oluşturun, Google Calendar API'sini etkinleştirin, aşağıdaki yönlendirme URI'sini ekleyin ve istemci kimliği ile gizli anahtarı buraya yapıştırın.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "calendarId": "Takvim",
+        "pushEnabled": "Planlanmış iş emirlerini bu takvime ekle",
+        "includeCustomer": "Etkinliğe müşterinin adını ve telefonunu ekle",
+        "addConference": "Her etkinliğe bir Google Meet bağlantısı ekle",
+        "addConferenceHelp": "Bağlantı iş emrinde gösterilir, böylece müşteriyle paylaşabilirsiniz.",
+        "pullEnabled": "Bu takvimin meşgul zamanlarını Torqvoice takviminde göster",
+        "pullEnabledHelp": "Salt okunur. 15 dakikada bir yenilenir; bir hafta geriye ve iki ay ileriye."
+      }
+    },
+    "microsoft-365": {
+      "description": "Planlanmış iş emirlerini bir Outlook takvimine ekleyin, Microsoft Teams bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
+      "tenantHelp": "Microsoft Entra'da (App registrations) bir uygulama kaydedin, kişisel ve iş hesaplarına izin verin, aşağıdaki yönlendirme URI'sini Web platformu olarak ekleyin, bir istemci gizli anahtarı oluşturun ve her ikisini buraya yapıştırın.",
+      "fields": {
+        "clientId": "Uygulama (istemci) kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "calendarId": "Takvim",
+        "pushEnabled": "Planlanmış iş emirlerini bu takvime ekle",
+        "includeCustomer": "Etkinliğe müşterinin adını ve telefonunu ekle",
+        "addConference": "Her etkinliğe bir Microsoft Teams bağlantısı ekle",
+        "addConferenceHelp": "Bağlantı iş emrinde gösterilir, böylece müşteriyle paylaşabilirsiniz.",
+        "pullEnabled": "Bu takvimin meşgul zamanlarını Torqvoice takviminde göster",
+        "pullEnabledHelp": "Salt okunur. 15 dakikada bir yenilenir; bir hafta geriye ve iki ay ileriye."
+      }
+    },
+    "zoom": {
+      "description": "Planlanmış bir iş emrine Zoom toplantısı ekleyin ve katılım bağlantısını iş emrinde tutun; uzaktan arıza tespiti veya bulguları müşteriyle gözden geçirmek için.",
+      "tenantHelp": "Zoom App Marketplace'te bir General (user-managed) uygulaması oluşturun, aşağıdaki yönlendirme URI'sini ekleyin, meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ve user:read:user kapsamlarını ekleyin ve istemci kimliği ile gizli anahtarı buraya yapıştırın.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "autoCreate": "Planlanmış her iş emri için otomatik olarak Zoom toplantısı oluştur",
+        "autoCreateHelp": "Kapalı: görüntülü görüşmeyi iş emrinin sayfasından kendiniz eklersiniz. Açık: başlangıç saati olan her iş emri bir toplantı alır; yeniden planlandığında taşınır, iptal edildiğinde kaldırılır. Her iki durumda da müşteri bağlantıyı yalnızca siz gönderdiğinizde alır.",
+        "includeCustomer": "Toplantı konusuna müşteri adını ekle",
+        "joinBeforeHost": "Müşterinin sizden önce katılmasına izin ver",
+        "waitingRoom": "Bekleme odası kullan"
+      }
+    }
+  }
+}

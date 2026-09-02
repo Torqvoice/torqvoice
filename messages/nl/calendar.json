@@ -34,7 +34,8 @@
     "services": "Diensten",
     "reminders": "Herinneringen",
     "quotes": "Offertes",
-    "messages": "Berichten"
+    "messages": "Berichten",
+    "external": "Gekoppelde agenda's"
   },
   "selectVehicle": "Selecteer voertuig voor werkorder",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Achterstallig",
       "upcoming": "Aanstaand",
       "failed": "Mislukt",
-      "queued": "In wachtrij"
+      "queued": "In wachtrij",
+      "busy": "Bezet"
     },
     "type": {
       "service": "Dienst",

@@ -8,6 +8,7 @@ import {
   topLevelEntities,
   UPLOAD_CATEGORIES,
 } from '@/lib/backup/manifest'
+import { readPrismaSchema } from '@/__tests__/stubs/prisma-schema'
 
 /**
  * Ten features shipped before anyone noticed they were missing from backups,
@@ -15,7 +16,7 @@ import {
  * does, without needing a database.
  */
 
-const SCHEMA = fs.readFileSync(path.join('prisma', 'schema.prisma'), 'utf-8')
+const SCHEMA = readPrismaSchema()
 
 /**
  * model -> the models it is cascade-deleted by.

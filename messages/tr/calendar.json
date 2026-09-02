@@ -34,7 +34,8 @@
     "services": "Servisler",
     "reminders": "Hatırlatıcılar",
     "quotes": "Teklifler",
-    "messages": "Mesajlar"
+    "messages": "Mesajlar",
+    "external": "Bağlı takvimler"
   },
   "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Gecikmiş",
       "upcoming": "Yaklaşan",
       "failed": "Başarısız",
-      "queued": "Sırada"
+      "queued": "Sırada",
+      "busy": "Meşgul"
     },
     "type": {
       "service": "Servis",

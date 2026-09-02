@@ -34,7 +34,8 @@
     "services": "Tjenester",
     "reminders": "Påminnelser",
     "quotes": "Tilbud",
-    "messages": "Meldinger"
+    "messages": "Meldinger",
+    "external": "Tilkoblede kalendere"
   },
   "selectVehicle": "Velg kjøretøy for arbeidsordre",
   "dateChoice": {
@@ -66,7 +67,8 @@
       "overdue": "Forfalt",
       "upcoming": "Kommende",
       "failed": "Mislyktes",
-      "queued": "I kø"
+      "queued": "I kø",
+      "busy": "Opptatt"
     },
     "type": {
       "service": "Tjeneste",

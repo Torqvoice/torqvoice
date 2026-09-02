@@ -34,7 +34,8 @@
     "delete": "Verwijderen",
     "unpaid": "Onbetaald",
     "unsavedChanges": "Niet-opgeslagen wijzigingen",
-    "saved": "Opgeslagen"
+    "saved": "Opgeslagen",
+    "joinCall": "Deelnemen aan videogesprek"
   },
   "basicInfo": {
     "title": "Basisinformatie",
@@ -410,5 +411,23 @@
     "remove": "Dit punt verwijderen",
     "notAnswered": "Hier is nog niets op gevonden",
     "answered": "{count} bevinding(en) hierop"
+  },
+  "videoCall": {
+    "title": "Videogesprek",
+    "none": "Geen videogesprek op deze werkorder.",
+    "needsSchedule": "Stel eerst een starttijd in. De vergadering volgt de planning.",
+    "add": "{provider}-vergadering toevoegen",
+    "addedHere": "toegevoegd vanaf deze werkorder",
+    "fromCalendar": "uit de agenda-afspraak",
+    "join": "Deelnemen",
+    "copy": "Link kopiëren",
+    "copied": "Link gekopieerd",
+    "remove": "Verwijderen",
+    "removeTitle": "Videogesprek verwijderen?",
+    "removeDescription": "De vergadering wordt bij de aanbieder verwijderd. Wie de link al heeft, kan niet meer deelnemen.",
+    "created": "Vergadering aangemaakt. De link staat op de werkorder.",
+    "removed": "Vergadering verwijderd",
+    "failed": "Er is iets misgegaan",
+    "shareHint": "De klant krijgt deze link alleen als u die verstuurt. Kopieer hem in een bericht of voeg hem toe aan een melding."
   }
 }

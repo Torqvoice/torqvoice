@@ -1,0 +1,229 @@
+model Technician {
+  id            String  @id @default(cuid())
+  name          String
+  color         String  @default("#3b82f6")
+  isActive      Boolean @default(true)
+  sortOrder     Int     @default(0)
+  dailyCapacity Int     @default(480)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  loginCodes     TechnicianLoginCode[]
+  serviceRecords ServiceRecord[]
+  inspections    Inspection[]
+  statusReports  StatusReport[]
+  timeEntries    TimeEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("technicians")
+}
+
+/// One stretch of a technician actually working on a job, as clocked from the
+/// technician app.
+///
+/// Deliberately separate from `ServiceRecord.startDateTime` / `endDateTime`:
+/// those are the work board's planned slot, one pair per job, owned by whoever
+/// schedules the day. This is what happened, many rows per job, one per person
+/// per stretch. A job worked on Monday, parked for parts and finished Thursday
+/// by someone else is two entries, and neither of them is the booking.
+///
+/// `endedAt` null means the clock is still running. At most one open entry per
+/// technician is enforced in the API rather than the schema, because "open"
+/// is not a value a partial unique index can express portably.
+model TimeEntry {
+  id String @id @default(cuid())
+
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  /// Cached on stop so reports do not recompute across millions of rows, and
+  /// so a correction to the timestamps stays visible against what was billed.
+  durationMinutes Int?
+
+  /// What the technician typed when stopping, if anything.
+  note String?
+
+  /// "app" | "web" | "manual". A manually corrected entry is not the same
+  /// evidence as one clocked live, and Arbeitszeiterfassung cares about that.
+  source String @default("app")
+
+  /// Set when someone edited the times after the fact, so the audit trail can
+  /// show the entry is no longer purely as-clocked.
+  editedAt       DateTime?
+  editedByUserId String?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([technicianId, startedAt])
+  @@index([serviceRecordId])
+  @@index([organizationId, startedAt])
+  /// Finding the technician's open entry is the hottest query in the app: it
+  /// runs on every launch and every job screen.
+  @@index([technicianId, endedAt])
+  @@map("time_entries")
+}
+
+/// A phone that has asked to be told about its technician's work.
+///
+/// Keyed on the Expo push token rather than on the user, because the unit that
+/// receives a notification is a device: one technician may carry a personal
+/// phone and a shared bench tablet, and a shared tablet may be signed into by
+/// several people over a week. Both cases have to work.
+///
+/// The token is a routing address, not a secret, but it is still deleted on
+/// sign-out: a device that has signed out must stop receiving a workshop's job
+/// details, and expiry alone would leave a window where it still did.
+/// A one-time code that puts a technician's phone onto a workshop.
+///
+/// Typing a URL and a password is the worst moment in the app, and it lands on
+/// the person least equipped for it: a technician with dirty hands, on a
+/// phone, being watched. The desk shows a QR instead and the phone reads it.
+///
+/// It is a bearer credential in a picture, so it is deliberately short-lived,
+/// single-use, and bound to one person in one workshop. It exchanges for a
+/// normal session and is then dead; it is never itself a way to authenticate.
+/// A one-time code that signs a technician back in.
+///
+/// Modelled on CustomerSmsCode, which does the same job for the customer
+/// portal: org-scoped, single use, short-lived. The organisation is not
+/// optional and is never inferred from the phone number. A technician's phone
+/// is only ever looked up inside the workshop their app already belongs to,
+/// so nothing here can reach across workshops even if a person works at two.
+model TechnicianLoginCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the digits. The code exists in a text message and in the
+  /// technician's head, and nowhere that can be read back out of a database.
+  codeHash String
+
+  /// How it was sent, so the app can say "check your messages" or "check your
+  /// email" rather than guessing on the technician's behalf.
+  channel String
+
+  /// Wrong guesses so far. Six digits is a million, which a rate limiter alone
+  /// does not protect: this burns the code after a handful of attempts.
+  attempts Int @default(0)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, technicianId])
+  @@index([expiresAt])
+  @@map("technician_login_codes")
+}
+
+model TechnicianSetupCode {
+  id String @id @default(cuid())
+
+  /// SHA-256 of the code. The code itself is shown once, on the screen that
+  /// asked for it, and is never written down anywhere it could be read back.
+  codeHash String @unique
+
+  expiresAt DateTime
+  /// Set on redemption. Kept rather than deleted so a second scan can say the
+  /// code was already used, which is a different problem from a wrong code.
+  usedAt    DateTime?
+
+  /// Who the code signs in.
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Who issued it, for the audit trail. Not a relation: the issuer may be
+  /// removed from the workshop later and that must not delete the record.
+  issuedByUserId String
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId, expiresAt])
+  @@index([userId])
+  @@map("technician_setup_codes")
+}
+
+model PushDevice {
+  id String @id @default(cuid())
+
+  /// Expo push token, unique across the estate. A reinstall issues a new one
+  /// and the old becomes invalid, which is why sends prune on rejection.
+  token String @unique
+
+  /// "ios" | "android". Only used to explain failures in logs.
+  platform String
+
+  /// Set false when Expo reports the token as dead, rather than deleting, so
+  /// a flapping device does not churn rows.
+  isActive Boolean @default(true)
+
+  /// Last time the app confirmed this token still belongs to this user, so a
+  /// device that stops checking in can be aged out.
+  lastSeenAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isActive])
+  @@index([organizationId])
+  @@map("push_devices")
+}
+
+/// A physical place work happens: a lift, a wash bay, an alignment rack. Shops
+/// plan by bay as often as by person — the bay is the scarce resource, and a
+/// technician moves between them during a day. The work board can group its
+/// lanes by either, so both are first-class.
+model WorkBay {
+  id            String  @id @default(cuid())
+  name          String
+  color         String  @default("#64748b")
+  isActive      Boolean @default(true)
+  /// Ordering on the board, left to right. Shops name bays by position
+  /// ("Bay 1", "Lift 2") and expect them in that order, not alphabetically.
+  sortOrder     Int     @default(0)
+  /// Bookable minutes per day, mirroring Technician.dailyCapacity so the board
+  /// can show utilisation for whichever lane grouping is on.
+  dailyCapacity Int     @default(480)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  serviceRecords ServiceRecord[]
+  inspections    Inspection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("work_bays")
+}

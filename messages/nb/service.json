@@ -34,7 +34,8 @@
     "delete": "Slett",
     "unpaid": "Ubetalt",
     "unsavedChanges": "Ulagrede endringer",
-    "saved": "Lagret"
+    "saved": "Lagret",
+    "joinCall": "Bli med i videosamtale"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",
@@ -410,5 +411,23 @@
     "remove": "Fjern dette punktet",
     "notAnswered": "Ingenting funnet på dette ennå",
     "answered": "{count} funn på dette"
+  },
+  "videoCall": {
+    "title": "Videosamtale",
+    "none": "Ingen videosamtale på denne arbeidsordren.",
+    "needsSchedule": "Sett en starttid først. Møtet følger tidsplanen.",
+    "add": "Legg til {provider}-møte",
+    "addedHere": "lagt til fra denne arbeidsordren",
+    "fromCalendar": "fra kalenderhendelsen",
+    "join": "Bli med",
+    "copy": "Kopier lenke",
+    "copied": "Lenke kopiert",
+    "remove": "Fjern",
+    "removeTitle": "Fjerne videosamtalen?",
+    "removeDescription": "Møtet slettes hos leverandøren. De som allerede har lenken, kan ikke lenger bli med.",
+    "created": "Møte opprettet. Lenken ligger på arbeidsordren.",
+    "removed": "Møte fjernet",
+    "failed": "Noe gikk galt",
+    "shareHint": "Kunden får denne lenken bare når du sender den. Kopier den inn i en melding eller legg den ved et varsel."
   }
 }
