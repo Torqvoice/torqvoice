@@ -1,5 +1,5 @@
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
-import { getServiceMeetingLink } from '@/features/integrations/Actions/integrationActions'
+import { getServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -44,7 +44,7 @@ export async function ServiceRecordPage({
     statusReportsResult,
     findingsResult,
     workBaysResult,
-    meetingLinkResult,
+    videoCallResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
     getSettings([
@@ -66,7 +66,7 @@ export async function ServiceRecordPage({
     getStatusReportsForService(serviceId),
     getServiceFindings(serviceId),
     getWorkBays(),
-    getServiceMeetingLink(serviceId),
+    getServiceVideoCall(serviceId),
   ])
 
   if (!result.success || !result.data) {
@@ -276,7 +276,11 @@ export async function ServiceRecordPage({
       <PageHeader />
       <ServicePageClient
         record={result.data}
-        meetingLink={meetingLinkResult.success ? (meetingLinkResult.data ?? null) : null}
+        videoCall={
+          videoCallResult.success && videoCallResult.data
+            ? videoCallResult.data
+            : { link: null, providers: [] }
+        }
         vehicleId={vehicleId}
         organizationId={organizationId}
         lockState={lockState}

@@ -6,7 +6,13 @@
     "empty": "Bu kategoride henüz entegrasyon yok.",
     "notConnected": "Bağlı değil",
     "connect": "Bağlan",
-    "manage": "Yönet"
+    "manage": "Yönet",
+    "connectedTitle": "Bağlı",
+    "connectedDescription": "Bu atölyenin kurduğu hizmetler. Durumunu görmek, ayarları değiştirmek veya bağlantıyı kesmek için birini açın.",
+    "noneConnected": "Henüz bağlı bir hizmet yok. Başlamak için aşağıdan bir hizmet seçin.",
+    "availableTitle": "Kullanılabilir",
+    "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
+    "allConnected": "Kullanılabilir tüm hizmetler bağlı."
   },
   "categories": {
     "calendar": "Takvim",
@@ -62,8 +68,7 @@
     "choose": "Seçin...",
     "planLocked": "Entegrasyonlar planınıza dahil değil.",
     "ownAppTitle": "Bu kurulum, sağlayıcıda kendi uygulamanızı kullanıyor",
-    "redirectUri": "Sağlayıcıya kaydedilecek yönlendirme URI'si:",
-    "saveApp": "Uygulama kimlik bilgilerini kaydet"
+    "redirectUri": "Sağlayıcıya kaydedilecek yönlendirme URI'si:"
   },
   "activity": {
     "title": "Aktivite",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Planlanmış her iş emri için bir Zoom toplantısı oluşturur ve katılım bağlantısını iş emrinde gösterir; uzaktan teşhis veya bulguları müşteriyle gözden geçirmek için.",
+      "description": "Planlanmış bir iş emrine Zoom toplantısı ekleyin ve katılım bağlantısını iş emrinde tutun; uzaktan arıza tespiti veya bulguları müşteriyle gözden geçirmek için.",
       "tenantHelp": "Zoom App Marketplace'te bir General (user-managed) uygulaması oluşturun, aşağıdaki yönlendirme URI'sini ekleyin, meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ve user:read:user kapsamlarını ekleyin ve istemci kimliği ile gizli anahtarı buraya yapıştırın.",
       "fields": {
         "clientId": "İstemci kimliği",
         "clientSecret": "İstemci gizli anahtarı"
       },
       "settings": {
-        "autoCreate": "Planlanmış her iş emri için Zoom toplantısı oluştur",
-        "autoCreateHelp": "Bağlantı iş emrinde gösterilir, böylece müşteriyle paylaşabilirsiniz. İş emri taşındığında toplantı güncellenir, iptal edildiğinde kaldırılır.",
+        "autoCreate": "Planlanmış her iş emri için otomatik olarak Zoom toplantısı oluştur",
+        "autoCreateHelp": "Kapalı: görüntülü görüşmeyi iş emrinin sayfasından kendiniz eklersiniz. Açık: başlangıç saati olan her iş emri bir toplantı alır; yeniden planlandığında taşınır, iptal edildiğinde kaldırılır. Her iki durumda da müşteri bağlantıyı yalnızca siz gönderdiğinizde alır.",
         "includeCustomer": "Toplantı konusuna müşteri adını ekle",
         "joinBeforeHost": "Müşterinin sizden önce katılmasına izin ver",
         "waitingRoom": "Bekleme odası kullan"

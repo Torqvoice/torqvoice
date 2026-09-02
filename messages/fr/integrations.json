@@ -6,7 +6,13 @@
     "empty": "Aucune intégration dans cette catégorie pour le moment.",
     "notConnected": "Non connectée",
     "connect": "Connecter",
-    "manage": "Gérer"
+    "manage": "Gérer",
+    "connectedTitle": "Connectés",
+    "connectedDescription": "Services configurés par cet atelier. Ouvrez-en un pour vérifier son état, modifier les réglages ou le déconnecter.",
+    "noneConnected": "Rien de connecté pour l'instant. Choisissez un service ci-dessous pour commencer.",
+    "availableTitle": "Disponibles",
+    "availableDescription": "Services que vous pouvez ajouter. Chacun se configure une fois et fonctionne en arrière-plan.",
+    "allConnected": "Tous les services disponibles sont connectés."
   },
   "categories": {
     "calendar": "Calendrier",
@@ -62,8 +68,7 @@
     "choose": "Choisir...",
     "planLocked": "Les intégrations ne sont pas incluses dans votre forfait.",
     "ownAppTitle": "Cette installation utilise votre propre application auprès du fournisseur",
-    "redirectUri": "URI de redirection à enregistrer auprès du fournisseur :",
-    "saveApp": "Enregistrer les identifiants de l'application"
+    "redirectUri": "URI de redirection à enregistrer auprès du fournisseur :"
   },
   "activity": {
     "title": "Activité",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Crée une réunion Zoom pour chaque ordre de travail planifié et affiche le lien dessus, pour un diagnostic à distance ou pour passer en revue les constats avec le client.",
+      "description": "Ajoutez une réunion Zoom à un ordre de travail planifié et gardez le lien dessus, pour un diagnostic à distance ou pour présenter des constats au client.",
       "tenantHelp": "Dans Zoom App Marketplace, créez une application General (user-managed), ajoutez l'URI de redirection ci-dessous, ajoutez les scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting et user:read:user, puis collez ici l'ID client et le secret.",
       "fields": {
         "clientId": "ID client",
         "clientSecret": "Secret client"
       },
       "settings": {
-        "autoCreate": "Créer une réunion Zoom pour chaque ordre de travail planifié",
-        "autoCreateHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client. Les réunions sont mises à jour quand l'ordre est déplacé et supprimées quand il est annulé.",
+        "autoCreate": "Créer automatiquement une réunion Zoom pour chaque ordre de travail planifié",
+        "autoCreateHelp": "Désactivé : vous ajoutez vous-même l'appel vidéo à un ordre de travail, depuis sa page. Activé : chaque ordre avec une heure de début reçoit une réunion, déplacée en cas de report et supprimée en cas d'annulation. Dans les deux cas, le client ne reçoit le lien que si vous l'envoyez.",
         "includeCustomer": "Inclure le nom du client dans le sujet de la réunion",
         "joinBeforeHost": "Laisser le client rejoindre avant vous",
         "waitingRoom": "Utiliser une salle d'attente"

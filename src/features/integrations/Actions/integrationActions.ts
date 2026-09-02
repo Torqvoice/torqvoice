@@ -11,14 +11,15 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getManifest, listManifests } from '@/integrations/registry'
 import { clearPulledEvents } from '../Lib/calendar-sync'
 import {
+  appUrl as configuredAppUrl,
   effectiveSettings,
   loadConnection,
   setConnectionStatus,
   storeCredentials,
   writeLog,
 } from '../Lib/connections'
-import { enqueueJob } from '../Lib/jobs'
-import { oauthSpec, platformClient } from '../Lib/oauth'
+import { enqueueJob, runJob } from '../Lib/jobs'
+import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import type { ConnectionStatus, ConnectorManifest, SettingOption } from '../Lib/types'
 import { openCredentials } from '../Lib/vault'
 
@@ -103,6 +104,12 @@ export interface ConnectionView {
   enabled: boolean
   isCloud: boolean
   webhookUrl: string | null
+  /**
+   * The callback the OAuth start route will send to the vendor. Computed on
+   * the server from the configured app URL, so it is the same on the server
+   * render and in the browser, and it matches what the vendor sees.
+   */
+  redirectUri: string
 }
 
 export async function getIntegrationConnection(connectorId: string) {
@@ -147,6 +154,7 @@ export async function getIntegrationConnection(connectorId: string) {
         isCloud: isCloudMode(),
         webhookUrl:
           row && appUrl ? `${appUrl}/api/integrations/${connectorId}/${row.id}/webhook` : null,
+        redirectUri: redirectUriFor(configuredAppUrl(), connectorId),
       }
     },
     { requiredPermissions: READ_PERMISSION }
@@ -488,28 +496,154 @@ export async function retryIntegrationJob(jobId: string) {
   )
 }
 
-/** Video call link a connected calendar attached to this work order, if any. */
-export async function getServiceMeetingLink(serviceRecordId: string) {
-  return withAuth(async ({ organizationId }) => {
-    const links = await db.integrationLink.findMany({
-      where: {
-        entityType: 'ServiceRecord',
-        entityId: serviceRecordId,
-        connection: { organizationId, status: { in: ['active', 'error'] } },
-      },
-      select: { metadata: true, connection: { select: { connectorId: true } } },
-    })
-    for (const l of links) {
-      const meta = (l.metadata as Record<string, unknown> | null) ?? {}
-      if (typeof meta.meetingUrl === 'string') {
-        return {
+const SERVICE_PERMISSION = [
+  { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
+]
+
+export interface ServiceVideoCall {
+  /** The link on the work order, from whichever connection put it there. */
+  link: {
+    url: string
+    /** Provider key for the label: zoom, google-meet, teams. */
+    provider: string
+    connectorId: string
+    /** True when a person added it from the work order rather than a calendar rule. */
+    manual: boolean
+    /** True when it can be removed from the work order: the connector owns the meeting. */
+    removable: boolean
+  } | null
+  /** Connected video call services a meeting can be added from. */
+  providers: { connectorId: string; name: string }[]
+}
+
+/**
+ * Video call state for one work order: the link a connection attached, and
+ * the connected conferencing services that could add one. Calendar
+ * connectors attach links as part of their event (Google Meet, Teams); a
+ * conferencing connector such as Zoom owns the meeting outright, which is
+ * the only kind a person can add or remove from the work order.
+ */
+export async function getServiceVideoCall(serviceRecordId: string) {
+  return withAuth(
+    async ({ organizationId }): Promise<ServiceVideoCall> => {
+      const [links, connections] = await Promise.all([
+        db.integrationLink.findMany({
+          where: {
+            entityType: 'ServiceRecord',
+            entityId: serviceRecordId,
+            connection: { organizationId, status: { in: ['active', 'error'] } },
+          },
+          select: { metadata: true, connection: { select: { connectorId: true } } },
+        }),
+        db.integrationConnection.findMany({
+          where: { organizationId, status: 'active' },
+          select: { connectorId: true },
+        }),
+      ])
+      let link: ServiceVideoCall['link'] = null
+      for (const l of links) {
+        const meta = (l.metadata as Record<string, unknown> | null) ?? {}
+        if (typeof meta.meetingUrl !== 'string') continue
+        const manifest = getManifest(l.connection.connectorId)
+        link = {
           url: meta.meetingUrl,
           provider: String(meta.meetingProvider ?? l.connection.connectorId),
+          connectorId: l.connection.connectorId,
+          manual: meta.manual === true,
+          removable: manifest?.category === 'conferencing',
         }
+        break
       }
-    }
-    return null
+      const providers = connections
+        .map((c) => getManifest(c.connectorId))
+        .filter((m): m is ConnectorManifest => Boolean(m && m.category === 'conferencing'))
+        .map((m) => ({ connectorId: m.id, name: m.name }))
+      return { link, providers }
+    },
+    { requiredPermissions: READ_PERMISSION }
+  )
+}
+
+/**
+ * Run a conferencing connector's sync for one work order right now, rather
+ * than within the minute the cron would take, and report what it left
+ * behind. The job still goes through the queue so it is logged, retried and
+ * visible on the integration page like any other.
+ */
+async function syncServiceConference(
+  organizationId: string,
+  connectorId: string,
+  serviceRecordId: string,
+  action: 'create' | 'remove'
+) {
+  const manifest = getManifest(connectorId)
+  if (!manifest || manifest.category !== 'conferencing') throw new Error('Unknown integration')
+  const job = manifest.subscriptions?.find((s) => s.event === 'service.update')?.job
+  if (!job) throw new Error('This integration cannot add video calls')
+  const row = await db.integrationConnection.findUnique({
+    where: { organizationId_connectorId: { organizationId, connectorId } },
+    select: { id: true, status: true },
   })
+  if (!row || row.status !== 'active') throw new Error('Connect the integration first')
+  const record = await db.serviceRecord.findFirst({
+    where: { id: serviceRecordId, organizationId },
+    select: { id: true, startDateTime: true },
+  })
+  if (!record) throw new Error('Work order not found')
+  if (action === 'create' && !record.startDateTime)
+    throw new Error('Set a start time on the work order first')
+
+  const jobId = await enqueueJob({
+    connectionId: row.id,
+    organizationId,
+    kind: job,
+    payload: { entityId: serviceRecordId, event: 'manual', action },
+    idempotencyKey: `${job}:${serviceRecordId}`,
+  })
+  if (jobId) await runJob(jobId)
+
+  const link = await db.integrationLink.findUnique({
+    where: {
+      connectionId_entityType_entityId: {
+        connectionId: row.id,
+        entityType: 'ServiceRecord',
+        entityId: serviceRecordId,
+      },
+    },
+    select: { metadata: true },
+  })
+  const meta = (link?.metadata as Record<string, unknown> | null) ?? {}
+  const url = typeof meta.meetingUrl === 'string' ? meta.meetingUrl : null
+  if ((action === 'create') !== Boolean(url)) {
+    const failed = jobId
+      ? await db.integrationJob.findUnique({ where: { id: jobId }, select: { error: true } })
+      : null
+    throw new Error(failed?.error ?? 'The video call service did not respond')
+  }
+  revalidatePath(`/settings/integrations/${connectorId}`)
+  return { url }
+}
+
+/** Add a video call to a work order from the work order page. */
+export async function createServiceMeeting(serviceRecordId: string, connectorId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      demoGuard()
+      return syncServiceConference(organizationId, connectorId, serviceRecordId, 'create')
+    },
+    { requiredPermissions: SERVICE_PERMISSION }
+  )
+}
+
+/** Delete the work order's meeting at the provider and drop the link. */
+export async function removeServiceMeeting(serviceRecordId: string, connectorId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      demoGuard()
+      return syncServiceConference(organizationId, connectorId, serviceRecordId, 'remove')
+    },
+    { requiredPermissions: SERVICE_PERMISSION }
+  )
 }
 
 /** Whether the sidebar should flag an integration problem. */

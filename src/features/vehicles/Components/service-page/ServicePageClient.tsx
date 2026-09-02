@@ -65,7 +65,7 @@ export function ServicePageClient({
   currencyCode,
   unitSystem,
   tireHotelEnabled = false,
-  meetingLink = null,
+  videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
   taxEnabled,
@@ -339,7 +339,7 @@ export function ServicePageClient({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <UnifiedServiceHeader
         vehicleId={vehicleId}
-        meetingUrl={meetingLink?.url ?? null}
+        meetingUrl={videoCall.link?.url ?? null}
         vehicleName={formState.vehicleName}
         title={record.title}
         status={formState.status}
@@ -442,6 +442,7 @@ export function ServicePageClient({
                 }
                 rightColumn={
                   <DetailsRightColumn
+                    videoCall={videoCall}
                     formState={formState}
                     actions={actions}
                     record={record}

@@ -6,7 +6,13 @@
     "empty": "In dieser Kategorie gibt es noch keine Integrationen.",
     "notConnected": "Nicht verbunden",
     "connect": "Verbinden",
-    "manage": "Verwalten"
+    "manage": "Verwalten",
+    "connectedTitle": "Verbunden",
+    "connectedDescription": "Dienste, die diese Werkstatt eingerichtet hat. Öffnen Sie einen, um den Status zu prüfen, Einstellungen zu ändern oder die Verbindung zu trennen.",
+    "noneConnected": "Noch nichts verbunden. Wählen Sie unten einen Dienst, um zu beginnen.",
+    "availableTitle": "Verfügbar",
+    "availableDescription": "Dienste, die Sie hinzufügen können. Jeder wird einmal eingerichtet und läuft im Hintergrund.",
+    "allConnected": "Alle verfügbaren Dienste sind verbunden."
   },
   "categories": {
     "calendar": "Kalender",
@@ -62,8 +68,7 @@
     "choose": "Auswählen...",
     "planLocked": "Integrationen sind in Ihrem Tarif nicht enthalten.",
     "ownAppTitle": "Diese Installation verwendet Ihre eigene App beim Anbieter",
-    "redirectUri": "Beim Anbieter zu registrierende Redirect-URI:",
-    "saveApp": "App-Zugangsdaten speichern"
+    "redirectUri": "Beim Anbieter zu registrierende Redirect-URI:"
   },
   "activity": {
     "title": "Aktivität",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Erstellt für jeden geplanten Auftrag ein Zoom-Meeting und zeigt den Beitrittslink darauf an, für Ferndiagnosen oder um Befunde mit dem Kunden durchzugehen.",
+      "description": "Fügen Sie einem geplanten Auftrag ein Zoom-Meeting hinzu und behalten Sie den Beitrittslink am Auftrag, für Ferndiagnosen oder um Kunden durch Befunde zu führen.",
       "tenantHelp": "Erstellen Sie im Zoom App Marketplace eine General-App (user-managed), tragen Sie die Redirect-URI unten ein, fügen Sie die Scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting und user:read:user hinzu und tragen Sie Client-ID und Client-Secret hier ein.",
       "fields": {
         "clientId": "Client-ID",
         "clientSecret": "Client-Secret"
       },
       "settings": {
-        "autoCreate": "Für jeden geplanten Auftrag ein Zoom-Meeting erstellen",
-        "autoCreateHelp": "Der Beitrittslink wird am Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können. Meetings werden beim Verschieben des Auftrags aktualisiert und bei Stornierung entfernt.",
+        "autoCreate": "Für jeden geplanten Auftrag automatisch ein Zoom-Meeting erstellen",
+        "autoCreateHelp": "Aus: Sie fügen einem Auftrag den Videoanruf selbst hinzu, auf seiner Seite. An: Jeder Auftrag mit Startzeit bekommt ein Meeting, das bei Terminverschiebung mitwandert und bei Stornierung entfernt wird. In beiden Fällen erhält der Kunde den Link nur, wenn Sie ihn senden.",
         "includeCustomer": "Kundennamen in das Meeting-Thema aufnehmen",
         "joinBeforeHost": "Kunden vor Ihnen beitreten lassen",
         "waitingRoom": "Warteraum verwenden"

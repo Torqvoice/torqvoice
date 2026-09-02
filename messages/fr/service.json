@@ -411,5 +411,23 @@
     "remove": "Retirer ce point",
     "notAnswered": "Rien trouvé à ce sujet pour l'instant",
     "answered": "{count} constat(s) à ce sujet"
+  },
+  "videoCall": {
+    "title": "Appel vidéo",
+    "none": "Aucun appel vidéo sur cet ordre de travail.",
+    "needsSchedule": "Définissez d'abord une heure de début. La réunion suit le planning.",
+    "add": "Ajouter une réunion {provider}",
+    "addedHere": "ajouté depuis cet ordre de travail",
+    "fromCalendar": "depuis l'événement du calendrier",
+    "join": "Rejoindre",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "remove": "Supprimer",
+    "removeTitle": "Supprimer l'appel vidéo ?",
+    "removeDescription": "La réunion est supprimée chez le fournisseur. Ceux qui ont déjà le lien ne pourront plus rejoindre.",
+    "created": "Réunion créée. Le lien est sur l'ordre de travail.",
+    "removed": "Réunion supprimée",
+    "failed": "Une erreur s'est produite",
+    "shareHint": "Le client ne reçoit ce lien que si vous l'envoyez. Copiez-le dans un message ou ajoutez-le à une notification."
   }
 }

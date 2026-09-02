@@ -6,7 +6,13 @@
     "empty": "Nog geen integraties in deze categorie.",
     "notConnected": "Niet gekoppeld",
     "connect": "Koppelen",
-    "manage": "Beheren"
+    "manage": "Beheren",
+    "connectedTitle": "Verbonden",
+    "connectedDescription": "Diensten die deze werkplaats heeft ingesteld. Open er een om de status te bekijken, instellingen te wijzigen of de verbinding te verbreken.",
+    "noneConnected": "Nog niets verbonden. Kies hieronder een dienst om te beginnen.",
+    "availableTitle": "Beschikbaar",
+    "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
+    "allConnected": "Alle beschikbare diensten zijn verbonden."
   },
   "categories": {
     "calendar": "Agenda",
@@ -62,8 +68,7 @@
     "choose": "Kiezen...",
     "planLocked": "Integraties zijn niet inbegrepen in uw abonnement.",
     "ownAppTitle": "Deze installatie gebruikt uw eigen app bij de provider",
-    "redirectUri": "Redirect-URI om bij de provider te registreren:",
-    "saveApp": "App-gegevens opslaan"
+    "redirectUri": "Redirect-URI om bij de provider te registreren:"
   },
   "activity": {
     "title": "Activiteit",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Maakt een Zoom-vergadering voor elke geplande werkorder en toont de deelnamelink erop, voor diagnose op afstand of om bevindingen met de klant door te nemen.",
+      "description": "Voeg een Zoom-vergadering toe aan een ingeplande werkorder en houd de deelnamelink erop, voor diagnose op afstand of om bevindingen met de klant door te nemen.",
       "tenantHelp": "Maak in de Zoom App Marketplace een General-app (user-managed), voeg de onderstaande redirect-URI toe, voeg de scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting en user:read:user toe en plak hier de client-ID en het client secret.",
       "fields": {
         "clientId": "Client-ID",
         "clientSecret": "Client secret"
       },
       "settings": {
-        "autoCreate": "Maak een Zoom-vergadering voor elke geplande werkorder",
-        "autoCreateHelp": "De link staat op de werkorder zodat u die met de klant kunt delen. Vergaderingen worden bijgewerkt als de werkorder verschuift en verwijderd als die wordt geannuleerd.",
+        "autoCreate": "Automatisch een Zoom-vergadering aanmaken voor elke ingeplande werkorder",
+        "autoCreateHelp": "Uit: u voegt het videogesprek zelf toe aan een werkorder, vanaf de pagina ervan. Aan: elke werkorder met een starttijd krijgt een vergadering, die meeschuift bij verplaatsen en verdwijnt bij annuleren. In beide gevallen krijgt de klant de link alleen als u die verstuurt.",
         "includeCustomer": "Naam van de klant in het onderwerp opnemen",
         "joinBeforeHost": "Klant vóór u laten deelnemen",
         "waitingRoom": "Wachtkamer gebruiken"

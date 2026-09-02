@@ -1,3 +1,4 @@
+import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import type { LockState } from '@/lib/document-lock'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { ServiceDetail } from '../service-detail/types'
@@ -77,8 +78,8 @@ export interface ServicePageClientProps {
   aiEnabled?: boolean
   /** Gates the "Store tires" action, by plan and by the org's own switch. */
   tireHotelEnabled?: boolean
-  /** Video call link a connected calendar attached to this work order. */
-  meetingLink?: { url: string; provider: string } | null
+  /** The work order's video call, and the connected services that could add one. */
+  videoCall?: ServiceVideoCall
   /** The workshop's tread limits, so a set checked in here grades correctly. */
   tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultDueDays?: number

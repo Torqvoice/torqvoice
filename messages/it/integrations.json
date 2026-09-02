@@ -6,7 +6,13 @@
     "empty": "Nessuna integrazione in questa categoria per ora.",
     "notConnected": "Non collegata",
     "connect": "Collega",
-    "manage": "Gestisci"
+    "manage": "Gestisci",
+    "connectedTitle": "Collegati",
+    "connectedDescription": "Servizi configurati da questa officina. Aprine uno per controllarne lo stato, cambiare le impostazioni o scollegarlo.",
+    "noneConnected": "Ancora nulla di collegato. Scegli un servizio qui sotto per iniziare.",
+    "availableTitle": "Disponibili",
+    "availableDescription": "Servizi che puoi aggiungere. Ognuno si configura una volta e lavora in background.",
+    "allConnected": "Tutti i servizi disponibili sono collegati."
   },
   "categories": {
     "calendar": "Calendario",
@@ -62,8 +68,7 @@
     "choose": "Scegli...",
     "planLocked": "Le integrazioni non sono incluse nel tuo piano.",
     "ownAppTitle": "Questa installazione usa la tua app presso il provider",
-    "redirectUri": "URI di reindirizzamento da registrare presso il provider:",
-    "saveApp": "Salva le credenziali dell'app"
+    "redirectUri": "URI di reindirizzamento da registrare presso il provider:"
   },
   "activity": {
     "title": "Attività",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Crea una riunione Zoom per ogni ordine di lavoro pianificato e mostra il link sull'ordine, per diagnosi a distanza o per esaminare i risultati con il cliente.",
+      "description": "Aggiungi una riunione Zoom a un ordine di lavoro programmato e tieni il link sull'ordine, per una diagnosi a distanza o per illustrare i risultati al cliente.",
       "tenantHelp": "Nello Zoom App Marketplace crea un'app General (user-managed), aggiungi l'URI di reindirizzamento qui sotto, aggiungi gli scope meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting e user:read:user, quindi incolla qui client ID e secret.",
       "fields": {
         "clientId": "Client ID",
         "clientSecret": "Client secret"
       },
       "settings": {
-        "autoCreate": "Crea una riunione Zoom per ogni ordine di lavoro pianificato",
-        "autoCreateHelp": "Il link viene mostrato sull'ordine di lavoro così puoi condividerlo con il cliente. Le riunioni si aggiornano quando l'ordine viene spostato e vengono rimosse quando viene annullato.",
+        "autoCreate": "Crea automaticamente una riunione Zoom per ogni ordine di lavoro programmato",
+        "autoCreateHelp": "Spento: aggiungi tu la videochiamata a un ordine di lavoro, dalla sua pagina. Acceso: ogni ordine con un'ora di inizio riceve una riunione, spostata se riprogrammato e rimossa se annullato. In entrambi i casi il cliente riceve il link solo quando glielo invii.",
         "includeCustomer": "Includi il nome del cliente nell'argomento della riunione",
         "joinBeforeHost": "Consenti al cliente di entrare prima di te",
         "waitingRoom": "Usa la sala d'attesa"

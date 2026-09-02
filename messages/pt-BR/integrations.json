@@ -6,7 +6,13 @@
     "empty": "Ainda não há integrações nesta categoria.",
     "notConnected": "Não conectada",
     "connect": "Conectar",
-    "manage": "Gerenciar"
+    "manage": "Gerenciar",
+    "connectedTitle": "Conectados",
+    "connectedDescription": "Serviços que esta oficina configurou. Abra um para ver o status, alterar configurações ou desconectar.",
+    "noneConnected": "Nada conectado ainda. Escolha um serviço abaixo para começar.",
+    "availableTitle": "Disponíveis",
+    "availableDescription": "Serviços que você pode adicionar. Cada um é configurado uma vez e roda em segundo plano.",
+    "allConnected": "Todos os serviços disponíveis estão conectados."
   },
   "categories": {
     "calendar": "Calendário",
@@ -62,8 +68,7 @@
     "choose": "Escolher...",
     "planLocked": "As integrações não estão incluídas no seu plano.",
     "ownAppTitle": "Esta instalação usa seu próprio aplicativo junto ao provedor",
-    "redirectUri": "URI de redirecionamento para registrar no provedor:",
-    "saveApp": "Salvar credenciais do aplicativo"
+    "redirectUri": "URI de redirecionamento para registrar no provedor:"
   },
   "activity": {
     "title": "Atividade",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Cria uma reunião do Zoom para cada ordem de serviço agendada e mostra o link nela, para diagnóstico remoto ou para revisar constatações com o cliente.",
+      "description": "Adicione uma reunião do Zoom a uma ordem de serviço agendada e mantenha o link nela, para diagnóstico remoto ou para mostrar as constatações ao cliente.",
       "tenantHelp": "No Zoom App Marketplace, crie um app General (user-managed), adicione a URI de redirecionamento abaixo, adicione os escopos meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting e user:read:user, e cole aqui o ID e o segredo do cliente.",
       "fields": {
         "clientId": "ID do cliente",
         "clientSecret": "Segredo do cliente"
       },
       "settings": {
-        "autoCreate": "Criar uma reunião do Zoom para cada ordem de serviço agendada",
-        "autoCreateHelp": "O link aparece na ordem de serviço para você compartilhar com o cliente. As reuniões são atualizadas quando a ordem muda de horário e removidas quando ela é cancelada.",
+        "autoCreate": "Criar uma reunião do Zoom automaticamente para cada ordem de serviço agendada",
+        "autoCreateHelp": "Desligado: você adiciona a videochamada à ordem de serviço pela página dela. Ligado: toda ordem com horário de início recebe uma reunião, movida ao reagendar e removida ao cancelar. Em ambos os casos o cliente só recebe o link quando você envia.",
         "includeCustomer": "Incluir o nome do cliente no tópico da reunião",
         "joinBeforeHost": "Permitir que o cliente entre antes de você",
         "waitingRoom": "Usar sala de espera"

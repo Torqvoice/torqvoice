@@ -1,9 +1,11 @@
 import type { ConnectorManifest } from '@/features/integrations/Lib/types'
 
 /**
- * Zoom: a video meeting for each scheduled work order, with the join link on
- * the work order. Granular user-level scopes, no admin scopes; Zoom puts the
- * client credentials in a Basic header on token requests.
+ * Zoom: a video meeting on a scheduled work order, with the join link on the
+ * work order. A person adds one from the work order page; the automatic
+ * option gives every scheduled work order a meeting instead. Granular
+ * user-level scopes, no admin scopes; Zoom puts the client credentials in a
+ * Basic header on token requests.
  */
 export const manifest: ConnectorManifest = {
   id: 'zoom',
@@ -42,28 +44,25 @@ export const manifest: ConnectorManifest = {
       type: 'boolean',
       label: 'autoCreate',
       help: 'autoCreateHelp',
-      default: true,
+      default: false,
     },
     {
       key: 'includeCustomer',
       type: 'boolean',
       label: 'includeCustomer',
       default: true,
-      showWhen: { key: 'autoCreate', equals: true },
     },
     {
       key: 'joinBeforeHost',
       type: 'boolean',
       label: 'joinBeforeHost',
       default: true,
-      showWhen: { key: 'autoCreate', equals: true },
     },
     {
       key: 'waitingRoom',
       type: 'boolean',
       label: 'waitingRoom',
       default: false,
-      showWhen: { key: 'autoCreate', equals: true },
     },
   ],
   subscriptions: [

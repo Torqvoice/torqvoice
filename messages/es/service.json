@@ -411,5 +411,23 @@
     "remove": "Quitar este punto",
     "notAnswered": "Todavía no se ha encontrado nada",
     "answered": "{count} hallazgo(s) sobre esto"
+  },
+  "videoCall": {
+    "title": "Videollamada",
+    "none": "Esta orden de trabajo no tiene videollamada.",
+    "needsSchedule": "Defina primero una hora de inicio. La reunión sigue la programación.",
+    "add": "Añadir reunión de {provider}",
+    "addedHere": "añadida desde esta orden de trabajo",
+    "fromCalendar": "del evento del calendario",
+    "join": "Unirse",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "remove": "Eliminar",
+    "removeTitle": "¿Eliminar la videollamada?",
+    "removeDescription": "La reunión se elimina en el proveedor. Quien ya tenga el enlace no podrá unirse.",
+    "created": "Reunión creada. El enlace está en la orden de trabajo.",
+    "removed": "Reunión eliminada",
+    "failed": "Algo salió mal",
+    "shareHint": "El cliente solo recibe este enlace cuando usted se lo envía. Cópielo en un mensaje o añádalo a una notificación."
   }
 }

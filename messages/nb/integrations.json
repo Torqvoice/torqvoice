@@ -6,7 +6,13 @@
     "empty": "Ingen integrasjoner i denne kategorien ennå.",
     "notConnected": "Ikke tilkoblet",
     "connect": "Koble til",
-    "manage": "Administrer"
+    "manage": "Administrer",
+    "connectedTitle": "Tilkoblet",
+    "connectedDescription": "Tjenester dette verkstedet har satt opp. Åpne en for å sjekke status, endre innstillinger eller koble fra.",
+    "noneConnected": "Ingenting er koblet til ennå. Velg en tjeneste nedenfor for å komme i gang.",
+    "availableTitle": "Tilgjengelig",
+    "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
+    "allConnected": "Alle tilgjengelige tjenester er tilkoblet."
   },
   "categories": {
     "calendar": "Kalender",
@@ -62,8 +68,7 @@
     "choose": "Velg...",
     "planLocked": "Integrasjoner er ikke inkludert i abonnementet ditt.",
     "ownAppTitle": "Denne installasjonen bruker din egen app hos leverandøren",
-    "redirectUri": "Omdirigerings-URI som må registreres hos leverandøren:",
-    "saveApp": "Lagre app-legitimasjon"
+    "redirectUri": "Omdirigerings-URI som må registreres hos leverandøren:"
   },
   "activity": {
     "title": "Aktivitet",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Oppretter et Zoom-møte for hver planlagte arbeidsordre og viser lenken på den, til fjerndiagnose eller for å gå gjennom funn med kunden.",
+      "description": "Legg til et Zoom-møte på en planlagt arbeidsordre og behold lenken på den, for fjerndiagnose eller for å gå gjennom funn med kunden.",
       "tenantHelp": "I Zoom App Marketplace oppretter du en General-app (user-managed), legger til redirect-URI-en under, legger til scopene meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting og user:read:user, og limer inn klient-ID og hemmelighet her.",
       "fields": {
         "clientId": "Klient-ID",
         "clientSecret": "Klienthemmelighet"
       },
       "settings": {
-        "autoCreate": "Opprett et Zoom-møte for hver planlagte arbeidsordre",
-        "autoCreateHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden. Møter oppdateres når arbeidsordren flyttes og fjernes når den avlyses.",
+        "autoCreate": "Opprett et Zoom-møte automatisk for hver planlagte arbeidsordre",
+        "autoCreateHelp": "Av: du legger til videosamtalen selv fra arbeidsordrens side. På: hver arbeidsordre med starttid får et møte, som flyttes når den omplanlegges og fjernes når den kanselleres. Uansett får kunden lenken bare når du sender den.",
         "includeCustomer": "Ta med kundens navn i møteemnet",
         "joinBeforeHost": "La kunden bli med før deg",
         "waitingRoom": "Bruk venterom"

@@ -22,7 +22,7 @@ interface ZoomMeeting {
 function settingsOf(ctx: ConnectorContext) {
   const s = ctx.connection.settings
   return {
-    autoCreate: s.autoCreate !== false,
+    autoCreate: s.autoCreate === true,
     includeCustomer: s.includeCustomer !== false,
     joinBeforeHost: s.joinBeforeHost !== false,
     waitingRoom: s.waitingRoom === true,
@@ -39,7 +39,21 @@ async function deleteMeeting(ctx: ConnectorContext, meetingId: string): Promise<
   }
 }
 
-async function syncMeeting(ctx: ConnectorContext, serviceRecordId: string) {
+/**
+ * Bring the work order's meeting in line with the work order.
+ *
+ * A meeting exists for one of two reasons: a person added it from the work
+ * order (`action: 'create'`, remembered as `manual` on the link), or the
+ * automatic option is on. Either way it follows the schedule afterwards and
+ * goes when the work order is cancelled or loses its start time. Switching
+ * the automatic option off removes only the meetings it created; manual
+ * ones stay until removed from the work order (`action: 'remove'`).
+ */
+async function syncMeeting(
+  ctx: ConnectorContext,
+  serviceRecordId: string,
+  action: 'create' | 'remove' | null
+) {
   const settings = settingsOf(ctx)
   const link = await ctx.links.get(SERVICE_ENTITY, serviceRecordId)
   const record = await loadServiceForCalendar(ctx.connection.organizationId, serviceRecordId)
@@ -47,7 +61,9 @@ async function syncMeeting(ctx: ConnectorContext, serviceRecordId: string) {
     ? draftCalendarEvent(record, { appUrl: ctx.appUrl, includeCustomer: settings.includeCustomer })
     : null
 
-  if (!draft || !settings.autoCreate) {
+  const manual = action === 'create' || link?.metadata?.manual === true
+  const wanted = Boolean(draft) && action !== 'remove' && (manual || settings.autoCreate)
+  if (!draft || !wanted) {
     if (!link) return { summary: 'nothing to do' }
     await deleteMeeting(ctx, link.remoteId)
     await ctx.links.remove(SERVICE_ENTITY, serviceRecordId)
@@ -107,6 +123,7 @@ async function syncMeeting(ctx: ConnectorContext, serviceRecordId: string) {
     checksum: draft.checksum,
     metadata: {
       ...(link?.metadata ?? {}),
+      ...(manual && { manual: true }),
       ...(meeting.join_url && { meetingUrl: meeting.join_url, meetingProvider: 'zoom' }),
       ...(meeting.password && { password: meeting.password }),
     },
@@ -130,7 +147,9 @@ export const connector: ConnectorServer = {
     'conference.sync': async (ctx, payload) => {
       const id = typeof payload.entityId === 'string' ? payload.entityId : null
       if (!id) return { summary: 'no record id' }
-      return syncMeeting(ctx, id)
+      const action =
+        payload.action === 'create' || payload.action === 'remove' ? payload.action : null
+      return syncMeeting(ctx, id, action)
     },
   },
 }

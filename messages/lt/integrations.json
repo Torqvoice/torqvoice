@@ -6,7 +6,13 @@
     "empty": "Šioje kategorijoje integracijų kol kas nėra.",
     "notConnected": "Neprijungta",
     "connect": "Prijungti",
-    "manage": "Tvarkyti"
+    "manage": "Tvarkyti",
+    "connectedTitle": "Prijungta",
+    "connectedDescription": "Paslaugos, kurias ši dirbtuvė nustatė. Atidarykite, kad patikrintumėte būseną, pakeistumėte nustatymus ar atjungtumėte.",
+    "noneConnected": "Kol kas niekas neprijungta. Pasirinkite paslaugą žemiau, kad pradėtumėte.",
+    "availableTitle": "Galima pridėti",
+    "availableDescription": "Paslaugos, kurias galite pridėti. Kiekviena nustatoma vieną kartą ir veikia fone.",
+    "allConnected": "Visos galimos paslaugos prijungtos."
   },
   "categories": {
     "calendar": "Kalendorius",
@@ -62,8 +68,7 @@
     "choose": "Pasirinkite...",
     "planLocked": "Integracijos neįtrauktos į jūsų planą.",
     "ownAppTitle": "Šis diegimas naudoja jūsų pačių programą pas tiekėją",
-    "redirectUri": "Nukreipimo URI, kurį reikia užregistruoti pas tiekėją:",
-    "saveApp": "Išsaugoti programos prisijungimo duomenis"
+    "redirectUri": "Nukreipimo URI, kurį reikia užregistruoti pas tiekėją:"
   },
   "activity": {
     "title": "Veikla",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Sukuria Zoom susitikimą kiekvienam suplanuotam darbo užsakymui ir rodo nuorodą jame: nuotolinei diagnostikai arba radiniams aptarti su klientu.",
+      "description": "Pridėkite „Zoom“ susitikimą prie suplanuoto darbo užsakymo ir laikykite nuorodą jame: nuotolinei diagnostikai ar radiniams aptarti su klientu.",
       "tenantHelp": "Zoom App Marketplace sukurkite General (user-managed) programą, pridėkite žemiau nurodytą peradresavimo URI, pridėkite apimtis meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ir user:read:user, tada čia įklijuokite kliento ID ir slaptažodį.",
       "fields": {
         "clientId": "Kliento ID",
         "clientSecret": "Kliento slaptažodis"
       },
       "settings": {
-        "autoCreate": "Sukurti Zoom susitikimą kiekvienam suplanuotam darbo užsakymui",
-        "autoCreateHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ją pasidalinti su klientu. Susitikimai atnaujinami perkėlus užsakymą ir pašalinami jį atšaukus.",
+        "autoCreate": "Automatiškai kurti „Zoom“ susitikimą kiekvienam suplanuotam darbo užsakymui",
+        "autoCreateHelp": "Išjungta: vaizdo skambutį prie darbo užsakymo pridedate patys jo puslapyje. Įjungta: kiekvienas darbo užsakymas su pradžios laiku gauna susitikimą, kuris perkeliamas perplanavus ir pašalinamas atšaukus. Bet kuriuo atveju klientas nuorodą gauna tik tada, kai ją išsiunčiate.",
         "includeCustomer": "Įtraukti kliento vardą į susitikimo temą",
         "joinBeforeHost": "Leisti klientui prisijungti anksčiau už jus",
         "waitingRoom": "Naudoti laukimo kambarį"

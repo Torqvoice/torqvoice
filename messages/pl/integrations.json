@@ -6,7 +6,13 @@
     "empty": "W tej kategorii nie ma jeszcze integracji.",
     "notConnected": "Niepołączono",
     "connect": "Połącz",
-    "manage": "Zarządzaj"
+    "manage": "Zarządzaj",
+    "connectedTitle": "Połączone",
+    "connectedDescription": "Usługi skonfigurowane w tym warsztacie. Otwórz jedną, aby sprawdzić stan, zmienić ustawienia lub rozłączyć.",
+    "noneConnected": "Nic jeszcze nie jest połączone. Wybierz usługę poniżej, aby zacząć.",
+    "availableTitle": "Dostępne",
+    "availableDescription": "Usługi, które możesz dodać. Każdą konfiguruje się raz, a potem działa w tle.",
+    "allConnected": "Wszystkie dostępne usługi są połączone."
   },
   "categories": {
     "calendar": "Kalendarz",
@@ -62,8 +68,7 @@
     "choose": "Wybierz...",
     "planLocked": "Integracje nie są objęte Twoim planem.",
     "ownAppTitle": "Ta instalacja używa własnej aplikacji u dostawcy",
-    "redirectUri": "Adres przekierowania (redirect URI) do zarejestrowania u dostawcy:",
-    "saveApp": "Zapisz dane aplikacji"
+    "redirectUri": "Adres przekierowania (redirect URI) do zarejestrowania u dostawcy:"
   },
   "activity": {
     "title": "Aktywność",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Tworzy spotkanie Zoom dla każdego zaplanowanego zlecenia i pokazuje na nim link, do zdalnej diagnostyki lub omówienia ustaleń z klientem.",
+      "description": "Dodaj spotkanie Zoom do zaplanowanego zlecenia i zachowaj na nim link, do zdalnej diagnostyki lub omówienia ustaleń z klientem.",
       "tenantHelp": "W Zoom App Marketplace utwórz aplikację General (user-managed), dodaj poniższy adres przekierowania, dodaj zakresy meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting i user:read:user, a następnie wklej tutaj identyfikator i sekret klienta.",
       "fields": {
         "clientId": "Identyfikator klienta",
         "clientSecret": "Sekret klienta"
       },
       "settings": {
-        "autoCreate": "Twórz spotkanie Zoom dla każdego zaplanowanego zlecenia",
-        "autoCreateHelp": "Link jest widoczny na zleceniu, więc możesz udostępnić go klientowi. Spotkania są aktualizowane przy zmianie terminu zlecenia i usuwane po jego anulowaniu.",
+        "autoCreate": "Automatycznie twórz spotkanie Zoom dla każdego zaplanowanego zlecenia",
+        "autoCreateHelp": "Wyłączone: rozmowę wideo dodajesz do zlecenia samodzielnie, z jego strony. Włączone: każde zlecenie z godziną rozpoczęcia dostaje spotkanie, przesuwane przy zmianie terminu i usuwane przy anulowaniu. W obu przypadkach klient dostaje link tylko wtedy, gdy go wyślesz.",
         "includeCustomer": "Dodaj nazwę klienta do tematu spotkania",
         "joinBeforeHost": "Pozwól klientowi dołączyć przed Tobą",
         "waitingRoom": "Używaj poczekalni"

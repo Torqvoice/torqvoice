@@ -6,7 +6,13 @@
     "empty": "No integrations in this category yet.",
     "notConnected": "Not connected",
     "connect": "Connect",
-    "manage": "Manage"
+    "manage": "Manage",
+    "connectedTitle": "Connected",
+    "connectedDescription": "Services this workshop has set up. Open one to check its status, change settings or disconnect.",
+    "noneConnected": "Nothing connected yet. Pick a service below to get started.",
+    "availableTitle": "Available",
+    "availableDescription": "Services you can add. Each one is set up once and runs in the background.",
+    "allConnected": "Every available service is connected."
   },
   "categories": {
     "calendar": "Calendar",
@@ -62,8 +68,7 @@
     "choose": "Choose...",
     "planLocked": "Integrations are not included in your plan.",
     "ownAppTitle": "This install uses your own app with the provider",
-    "redirectUri": "Redirect URI to register with the provider:",
-    "saveApp": "Save app credentials"
+    "redirectUri": "Redirect URI to register with the provider:"
   },
   "activity": {
     "title": "Activity",
@@ -137,15 +142,15 @@
       }
     },
     "zoom": {
-      "description": "Create a Zoom meeting for each scheduled work order and show the join link on it, for remote diagnosis or walking a customer through findings.",
+      "description": "Add a Zoom meeting to a scheduled work order and keep the join link on it, for remote diagnosis or walking a customer through findings.",
       "tenantHelp": "In the Zoom App Marketplace, build a General app (user-managed), add the redirect URI below, add the scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting and user:read:user, and paste the client ID and secret here.",
       "fields": {
         "clientId": "Client ID",
         "clientSecret": "Client secret"
       },
       "settings": {
-        "autoCreate": "Create a Zoom meeting for each scheduled work order",
-        "autoCreateHelp": "The join link is shown on the work order so you can share it with the customer. Meetings are updated when the work order moves and removed when it is cancelled.",
+        "autoCreate": "Create a Zoom meeting for every scheduled work order automatically",
+        "autoCreateHelp": "Off: you add a video call to a work order yourself, from its page. On: every work order with a start time gets a meeting, moved when it is rescheduled and removed when it is cancelled. Either way the customer only gets the link when you send it.",
         "includeCustomer": "Include the customer's name in the meeting topic",
         "joinBeforeHost": "Let the customer join before you",
         "waitingRoom": "Use a waiting room"

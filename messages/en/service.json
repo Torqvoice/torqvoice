@@ -411,5 +411,23 @@
     "remove": "Remove this concern",
     "notAnswered": "Nothing found against this yet",
     "answered": "{count} finding(s) against this"
+  },
+  "videoCall": {
+    "title": "Video call",
+    "none": "No video call on this work order.",
+    "needsSchedule": "Set a start time first. The meeting follows the schedule.",
+    "add": "Add {provider} meeting",
+    "addedHere": "added from this work order",
+    "fromCalendar": "from the calendar event",
+    "join": "Join",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "remove": "Remove",
+    "removeTitle": "Remove the video call?",
+    "removeDescription": "The meeting is deleted at the provider. Anyone who already has the link can no longer join.",
+    "created": "Meeting created. The link is on the work order.",
+    "removed": "Meeting removed",
+    "failed": "Something went wrong",
+    "shareHint": "The customer only gets this link when you send it. Copy it into a message or add it to a notification."
   }
 }

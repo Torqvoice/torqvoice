@@ -93,10 +93,6 @@ export function ConnectionSettings({
   const oauthNeedsTenantApp = isOAuth && !view.platformApp
   const connected = connection && (connection.status === 'active' || connection.status === 'error')
   const oauthStartUrl = `/api/integrations/${manifest.id}/oauth/start`
-  const redirectUri =
-    typeof window === 'undefined'
-      ? ''
-      : `${window.location.origin}/api/integrations/${manifest.id}/oauth/callback`
 
   const run = useCallback(
     async (
@@ -221,7 +217,7 @@ export function ConnectionSettings({
             manifest={manifest}
             tenantClientId={connection?.tenantClientId ?? null}
             needsTenantApp={oauthNeedsTenantApp}
-            redirectUri={redirectUri}
+            redirectUri={view.redirectUri}
             oauthStartUrl={oauthStartUrl}
             enabled={view.enabled}
             busy={busy}
@@ -393,6 +389,21 @@ function ConnectForm({
     return initial
   })
   const tenantReady = Boolean(tenantClientId)
+  const tenantComplete = Boolean(values.clientId) && (Boolean(values.clientSecret) || tenantReady)
+  const tenantDirty = values.clientId !== (tenantClientId ?? '') || Boolean(values.clientSecret)
+
+  /**
+   * One step for the workshop's own app: store whatever was typed, then go
+   * to the vendor. Saving alone left people on a page where "Connect" did
+   * nothing until they found the save button first.
+   */
+  const saveAndConnect = async () => {
+    if (tenantDirty) {
+      const ok = await onSave(values)
+      if (!ok) return
+    }
+    window.location.assign(oauthStartUrl)
+  }
 
   if (!enabled) {
     return <p className="text-sm text-muted-foreground">{t('connection.planLocked')}</p>
@@ -434,24 +445,14 @@ function ConnectForm({
       <div className="flex flex-wrap gap-2">
         {manifest.auth.type === 'oauth2' ? (
           needsTenantApp ? (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => onSave(values)}
-                disabled={
-                  busy !== null || !values.clientId || (!values.clientSecret && !tenantReady)
-                }
-              >
-                {busy === 'credentials' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('connection.saveApp')}
-              </Button>
-              <Button asChild disabled={!tenantReady}>
-                <a href={tenantReady ? oauthStartUrl : undefined} aria-disabled={!tenantReady}>
-                  <Plug className="mr-2 h-4 w-4" />
-                  {t('connection.connectWith', { name: manifest.name })}
-                </a>
-              </Button>
-            </>
+            <Button onClick={saveAndConnect} disabled={busy !== null || !tenantComplete}>
+              {busy === 'credentials' ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Plug className="mr-2 h-4 w-4" />
+              )}
+              {t('connection.connectWith', { name: manifest.name })}
+            </Button>
           ) : (
             <Button asChild>
               <a href={oauthStartUrl}>
