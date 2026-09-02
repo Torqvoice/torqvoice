@@ -76,7 +76,9 @@
     "allDoneTitle": "Her şey hazır",
     "allDoneDescription": "Tüm adımlar tamamlandı ve atölyeniz çalışıyor.",
     "dismiss": "Kartı gizle",
-    "dismissAriaLabel": "Bu listeyi gizle"
+    "dismissAriaLabel": "Bu listeyi gizle",
+    "importTitle": "Müşterileriniz ve araçlarınız zaten bir yerde kayıtlı mı?",
+    "importDescription": "Bunları bir hesap tablosundan veya eski sisteminizden içe aktarın"
   },
   "sampleData": {
     "title": "Örnek veriler",

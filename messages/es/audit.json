@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Número de WhatsApp registrado",
     "team_giveTechnicianTheApp": "Cuenta dada a un técnico solo de tablero",
     "team_createDefaultRoles": "Roles estándar creados",
-    "settings_setCustomFieldPlacement": "Ubicación de campo personalizado actualizada"
+    "settings_setCustomFieldPlacement": "Ubicación de campo personalizado actualizada",
+    "import_commit": "Hoja de cálculo importada",
+    "import_undo": "Importación deshecha"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -275,6 +277,8 @@
     "work_bay_create": "Puesto de trabajo «{name}» creado",
     "work_bay_update": "Puesto de trabajo «{name}» actualizado",
     "work_bay_delete": "Puesto de trabajo {id} eliminado",
-    "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado"
+    "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado",
+    "import_commit": "Importó una hoja de cálculo: {count} registros creados",
+    "import_undo": "Deshizo una importación de hoja de cálculo: {records} registros eliminados"
   }
 }

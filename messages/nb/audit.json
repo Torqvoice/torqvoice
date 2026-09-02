@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer",
     "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto",
     "team_createDefaultRoles": "Opprettet standardrollene",
-    "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt"
+    "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt",
+    "import_commit": "Importerte regneark",
+    "import_undo": "Angret import"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -275,6 +277,8 @@
     "work_bay_create": "Opprettet arbeidsplass «{name}»",
     "work_bay_update": "Oppdaterte arbeidsplass «{name}»",
     "work_bay_delete": "Slettet arbeidsplass {id}",
-    "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut"
+    "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut",
+    "import_commit": "Importerte et regneark: {count} poster opprettet",
+    "import_undo": "Angret en regnearkimport: {records} poster fjernet"
   }
 }

@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Registered a WhatsApp number",
     "team_giveTechnicianTheApp": "Gave a board-only technician an account",
     "team_createDefaultRoles": "Created the standard roles",
-    "settings_setCustomFieldPlacement": "Updated Custom Field Placement"
+    "settings_setCustomFieldPlacement": "Updated Custom Field Placement",
+    "import_commit": "Imported Spreadsheet",
+    "import_undo": "Undid Import"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -275,6 +277,8 @@
     "work_bay_create": "Created work bay \"{name}\"",
     "work_bay_update": "Updated work bay \"{name}\"",
     "work_bay_delete": "Deleted work bay {id}",
-    "settings_setCustomFieldPlacement": "Changed where a custom field prints"
+    "settings_setCustomFieldPlacement": "Changed where a custom field prints",
+    "import_commit": "Imported a spreadsheet: {count} records created",
+    "import_undo": "Undid a spreadsheet import: {records} records removed"
   }
 }

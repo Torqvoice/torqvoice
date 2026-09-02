@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Užregistruotas „WhatsApp“ numeris",
     "team_giveTechnicianTheApp": "Lentos technikui suteikta paskyra",
     "team_createDefaultRoles": "Sukurtos standartinės rolės",
-    "settings_setCustomFieldPlacement": "Atnaujinta pasirinktinio lauko vieta"
+    "settings_setCustomFieldPlacement": "Atnaujinta pasirinktinio lauko vieta",
+    "import_commit": "Importuota skaičiuoklė",
+    "import_undo": "Atšauktas importas"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -275,6 +277,8 @@
     "work_bay_create": "Sukurta darbo vieta „{name}“",
     "work_bay_update": "Atnaujinta darbo vieta „{name}“",
     "work_bay_delete": "Ištrinta darbo vieta {id}",
-    "settings_setCustomFieldPlacement": "Pakeitė, kur spausdinamas pasirinktinis laukas"
+    "settings_setCustomFieldPlacement": "Pakeitė, kur spausdinamas pasirinktinis laukas",
+    "import_commit": "Importuota skaičiuoklė: sukurta įrašų: {count}",
+    "import_undo": "Atšauktas skaičiuoklės importas: pašalinta įrašų: {records}"
   }
 }

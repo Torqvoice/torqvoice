@@ -22,6 +22,7 @@ import {
   ArrowRight,
   Download,
   FileArchive,
+  FileSpreadsheet,
   Loader2,
   ShieldCheck,
   Trash2,
@@ -34,6 +35,9 @@ import {
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
 import { SampleDataCard } from '@/features/onboarding/Components/SampleDataCard'
+import { ImportWizard } from '@/features/import/Components/ImportWizard'
+import { ImportHistoryCard } from '@/features/import/Components/ImportHistoryCard'
+import type { ImportEntity } from '@/features/import/Lib/fields'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { deleteWorkshop } from '@/features/team/Actions/deleteWorkshop'
 import { deleteAccount } from '@/features/settings/Actions/deleteAccount'
@@ -135,6 +139,9 @@ export function DataSettings({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [exporting, setExporting] = useState(false)
   const [importing, setImporting] = useState(false)
+  const [spreadsheetEntity, setSpreadsheetEntity] = useState<ImportEntity | null>(null)
+  const [importRuns, setImportRuns] = useState(0)
+  const tImport = useTranslations('dataImport.entry')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [options, setOptions] = useState<ExportOptions>({ ...ALL_TRUE })
 
@@ -544,6 +551,26 @@ export function DataSettings({
           </AppCard>
         </div>
 
+        {/* Import from a spreadsheet */}
+        <AppCard icon={FileSpreadsheet} title={tImport('title')} contentClassName="space-y-4">
+          <p className="text-sm text-muted-foreground">{tImport('description')}</p>
+          <div className="flex flex-wrap gap-2">
+            {(['customers', 'vehicles', 'services'] as const).map((entity) => (
+              <Button
+                key={entity}
+                variant="outline"
+                size="sm"
+                onClick={() => setSpreadsheetEntity(entity)}
+              >
+                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                {tImport(entity)}
+              </Button>
+            ))}
+          </div>
+        </AppCard>
+
+        <ImportHistoryCard refreshKey={importRuns} />
+
         {/* Import from Other Services */}
         <AppCard icon={ArrowRight} title={t('data.importFromOther')} contentClassName="space-y-4">
           <p className="text-sm text-muted-foreground">{t('data.importFromOtherDescription')}</p>
@@ -585,6 +612,15 @@ export function DataSettings({
         {/* Onboarding sample data removal */}
         {hasSampleData && <SampleDataCard />}
       </ReadOnlyWrapper>
+
+      <ImportWizard
+        open={spreadsheetEntity !== null}
+        onOpenChange={(open) => {
+          if (!open) setSpreadsheetEntity(null)
+        }}
+        entity={spreadsheetEntity ?? 'customers'}
+        onImported={() => setImportRuns((n) => n + 1)}
+      />
 
       {/* LubeLog Import Dialog */}
       <Dialog

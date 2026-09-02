@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "WhatsApp-nummer geregistreerd",
     "team_giveTechnicianTheApp": "Bordmonteur een account gegeven",
     "team_createDefaultRoles": "Standaardrollen aangemaakt",
-    "settings_setCustomFieldPlacement": "Plaatsing van aangepast veld bijgewerkt"
+    "settings_setCustomFieldPlacement": "Plaatsing van aangepast veld bijgewerkt",
+    "import_commit": "Spreadsheet geïmporteerd",
+    "import_undo": "Import ongedaan gemaakt"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -275,6 +277,8 @@
     "work_bay_create": "Werkplek \"{name}\" aangemaakt",
     "work_bay_update": "Werkplek \"{name}\" bijgewerkt",
     "work_bay_delete": "Werkplek {id} verwijderd",
-    "settings_setCustomFieldPlacement": "Wijzigde waar een aangepast veld wordt afgedrukt"
+    "settings_setCustomFieldPlacement": "Wijzigde waar een aangepast veld wordt afgedrukt",
+    "import_commit": "Spreadsheet geïmporteerd: {count} records aangemaakt",
+    "import_undo": "Spreadsheetimport ongedaan gemaakt: {records} records verwijderd"
   }
 }

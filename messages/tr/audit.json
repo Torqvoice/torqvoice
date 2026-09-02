@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
     "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi",
     "team_createDefaultRoles": "Standart roller oluşturuldu",
-    "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi"
+    "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi",
+    "import_commit": "Hesap Tablosu İçe Aktarıldı",
+    "import_undo": "İçe Aktarma Geri Alındı"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -275,6 +277,8 @@
     "work_bay_create": "\"{name}\" çalışma alanı oluşturuldu",
     "work_bay_update": "\"{name}\" çalışma alanı güncellendi",
     "work_bay_delete": "{id} çalışma alanı silindi",
-    "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi"
+    "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi",
+    "import_commit": "Bir hesap tablosu içe aktarıldı: {count} kayıt oluşturuldu",
+    "import_undo": "Bir hesap tablosu içe aktarması geri alındı: {records} kayıt kaldırıldı"
   }
 }

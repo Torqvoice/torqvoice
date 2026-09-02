@@ -151,7 +151,9 @@
     "settings_whatsappNumberRegistered": "Número do WhatsApp registrado",
     "team_giveTechnicianTheApp": "Conta dada a um técnico só do quadro",
     "team_createDefaultRoles": "Funções padrão criadas",
-    "settings_setCustomFieldPlacement": "Posição de campo personalizado atualizada"
+    "settings_setCustomFieldPlacement": "Posição de campo personalizado atualizada",
+    "import_commit": "Planilha importada",
+    "import_undo": "Importação desfeita"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -275,6 +277,8 @@
     "work_bay_create": "Baia \"{name}\" criada",
     "work_bay_update": "Baia \"{name}\" atualizada",
     "work_bay_delete": "Baia {id} excluída",
-    "settings_setCustomFieldPlacement": "Alterou onde um campo personalizado é impresso"
+    "settings_setCustomFieldPlacement": "Alterou onde um campo personalizado é impresso",
+    "import_commit": "Importou uma planilha: {count} registros criados",
+    "import_undo": "Desfez uma importação de planilha: {records} registros removidos"
   }
 }

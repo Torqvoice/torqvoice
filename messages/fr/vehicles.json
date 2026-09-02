@@ -4,6 +4,7 @@
     "archived": "Archivés",
     "searchPlaceholder": "Rechercher par plaque, marque, modèle, NIV...",
     "addVehicle": "Ajouter un véhicule",
+    "importVehicles": "Importer",
     "emptySearch": "Aucun véhicule ne correspond à votre recherche.",
     "emptyArchived": "Aucun véhicule archivé.",
     "empty": "Aucun véhicule pour le moment.",

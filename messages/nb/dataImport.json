@@ -1,0 +1,228 @@
+{
+  "title": "Importer {entity}",
+  "cancel": "Avbryt",
+  "done": "Ferdig",
+  "entities": {
+    "customers": "kunder",
+    "vehicles": "kjøretøy",
+    "services": "servicehistorikk"
+  },
+  "entityHints": {
+    "customers": "Navn, kontaktinformasjon, adresser. Én rad per kunde.",
+    "vehicles": "Merke, modell, årsmodell, skilt, VIN. En eierkolonne kobler til eller oppretter kunden.",
+    "services": "Tidligere jobber og fakturaer. Én rad per jobb, med kjøretøyet den hører til."
+  },
+  "groups": {
+    "customer": "Kunde",
+    "vehicle": "Kjøretøy",
+    "service": "Service"
+  },
+  "steps": {
+    "upload": "Velg hva du vil importere og last opp filen fra ditt nåværende system.",
+    "mapping": "Sjekk hvilken kolonne som blir hvilket felt. Ingenting er skrevet ennå.",
+    "preview": "Prøvekjøring: dette er nøyaktig hva importen vil gjøre. Gå gjennom det, og importer deretter.",
+    "importing": "Skriver rader. Hold dette vinduet åpent.",
+    "result": "Importen er fullført."
+  },
+  "upload": {
+    "drop": "Dra og slipp en fil her",
+    "formats": "CSV, Excel (.xlsx) eller vCard (.vcf), opptil 25 MB og 50 000 rader",
+    "browse": "Bla gjennom filer",
+    "reading": "Leser filen...",
+    "templateHint": "Ingen eksport ennå? Fyll ut en mal og last opp den.",
+    "templateXlsx": "Excel-mal",
+    "templateCsv": "CSV-mal",
+    "sourcesHint": "Fungerer med eksporter fra alle verkstedsystemer, regnskapsverktøy, Google Kontakter, Outlook eller et regneark. Kolonnenavn gjenkjennes på mange språk; du bekrefter koblingen før noe skrives."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# rad} other {# rader}}",
+    "colColumn": "Kolonne i filen din",
+    "colSample": "Eksempelverdier",
+    "colField": "Blir til",
+    "ignore": "Ignorer denne kolonnen",
+    "source": {
+      "preset": "Gjenkjent oppsett",
+      "header": "Matchet på overskrift",
+      "values": "Gjettet ut fra verdiene"
+    },
+    "suggestWithAi": "Foreslå med KI",
+    "aiApplied": "{count, plural, one {# kolonne koblet} other {# kolonner koblet}} av KI. Sjekk dem før du fortsetter.",
+    "chooseAnother": "Velg en annen fil",
+    "missingRequired": "Mangler fortsatt: {fields}",
+    "dryRunHint": "Prøvekjøringen sjekker hver rad mot eksisterende data uten å skrive noe.",
+    "runDryRun": "Kjør prøvekjøring"
+  },
+  "options": {
+    "dateFormat": "Datoformat",
+    "dateAuto": "Oppdag automatisk",
+    "dateDMY": "Dag / måned / år",
+    "dateMDY": "Måned / dag / år",
+    "dateYMD": "År / måned / dag",
+    "decimal": "Desimaltegn",
+    "decimalAuto": "Oppdag automatisk",
+    "decimalDot": "Punktum (1,234.56)",
+    "decimalComma": "Komma (1.234,56)",
+    "countryCode": "Landkode for telefonnumre",
+    "duplicates": "Når en rad samsvarer med en eksisterende post",
+    "duplicatesUpdate": "Oppdater den eksisterende posten",
+    "duplicatesSkip": "Hopp over raden",
+    "duplicatesCreate": "Opprett en ny post likevel"
+  },
+  "summary": {
+    "create": "Vil bli opprettet",
+    "update": "Vil bli oppdatert",
+    "skip": "Vil bli hoppet over",
+    "error": "Kan ikke importeres",
+    "warnings": "Med advarsler",
+    "customersToCreate": "{count, plural, one {# ny kunde} other {# nye kunder}}",
+    "customersToUpdate": "{count, plural, one {# kunde oppdatert} other {# kunder oppdatert}}",
+    "vehiclesToCreate": "{count, plural, one {# nytt kjøretøy} other {# nye kjøretøy}}",
+    "vehiclesToUpdate": "{count, plural, one {# kjøretøy oppdatert} other {# kjøretøy oppdatert}}",
+    "servicesToCreate": "{count, plural, one {# servicepost} other {# serviceposter}}"
+  },
+  "actions": {
+    "create": "Opprett",
+    "update": "Oppdater",
+    "skip": "Hopp over",
+    "error": "Feil"
+  },
+  "matchOn": {
+    "number": "kundenummer",
+    "email": "e-post",
+    "phone": "telefon",
+    "name": "navn",
+    "vin": "VIN",
+    "plate": "skilt",
+    "makeModelYear": "merke, modell og årsmodell"
+  },
+  "preview": {
+    "colAction": "Handling",
+    "colOwner": "Eier",
+    "colDetails": "Detaljer",
+    "empty": "Ingen rader samsvarer med dette filteret.",
+    "matchedOn": "Samsvarer med {name} (på {on})",
+    "linksCustomer": "Koblet til kunde {name}",
+    "linksVehicle": "Koblet til {label}",
+    "sameCustomerAsRow": "Samme kunde som rad {row}",
+    "sameVehicleAsRow": "Samme kjøretøy som rad {row}",
+    "createsCustomer": "Oppretter kunden",
+    "createsVehicle": "Oppretter kjøretøyet",
+    "downloadReport": "Last ned rapport fra prøvekjøringen",
+    "limitExceeded": "Abonnementet ditt tillater {remaining} kunder til, men denne importen ville opprette {needed}. Fjern rader eller oppgrader abonnementet.",
+    "pageInfo": "{from}–{to} av {total}",
+    "prev": "Forrige",
+    "next": "Neste",
+    "backToMapping": "Tilbake til kobling",
+    "import": "Importer {count, plural, one {# rad} other {# rader}}",
+    "nothingWrittenYet": "Ingenting er skrevet ennå. Importen kan angres etterpå fra Innstillinger → Data."
+  },
+  "importing": {
+    "title": "Importerer...",
+    "starting": "Starter",
+    "progress": "{done} av {total} rader",
+    "keepOpen": "Store filer tar et minutt eller to."
+  },
+  "result": {
+    "title": "Import fullført",
+    "undoneTitle": "Import angret",
+    "created": "{count, plural, one {# post opprettet} other {# poster opprettet}}",
+    "updated": "{count, plural, one {# post oppdatert} other {# poster oppdatert}}",
+    "skipped": "{count, plural, one {# rad hoppet over} other {# rader hoppet over}}",
+    "failed": "{count, plural, one {# rad ikke importert} other {# rader ikke importert}}",
+    "writeFailures": "{count, plural, one {# rad feilet under skriving} other {# rader feilet under skriving}}",
+    "rowFailure": "Rad {row}: {error}",
+    "undo": "Angre denne importen",
+    "undone": "Fjernet {customers} kunder, {vehicles} kjøretøy og {services} serviceposter.",
+    "undoHint": "Angre fjerner alle poster denne importen opprettet. Poster som bare ble oppdatert beholder de nye verdiene."
+  },
+  "history": {
+    "title": "Importhistorikk",
+    "description": "Regnearkimporter kjørt på dette verkstedet. Angre fjerner det en import opprettet.",
+    "loading": "Laster...",
+    "statusUndone": "Angret",
+    "counts": "{created} opprettet, {updated} oppdatert, {skipped} hoppet over, {failed} feilet",
+    "undo": "Angre",
+    "undone": "Fjernet {customers} kunder, {vehicles} kjøretøy og {services} serviceposter.",
+    "undoFailed": "Kunne ikke angre importen",
+    "confirmTitle": "Angre denne importen?",
+    "confirmDescription": "Fjerner det {file} opprettet: {customers} kunder, {vehicles} kjøretøy og {services} serviceposter. Poster importen bare oppdaterte beholdes.",
+    "cancel": "Avbryt",
+    "confirm": "Angre import"
+  },
+  "fields": {
+    "customer": {
+      "name": "Kundenavn",
+      "firstName": "Fornavn",
+      "lastName": "Etternavn",
+      "customerNumber": "Kundenummer",
+      "email": "E-post",
+      "phone": "Telefon",
+      "company": "Firma",
+      "address": "Adresse",
+      "street": "Gate",
+      "postalCode": "Postnummer",
+      "city": "Poststed",
+      "state": "Fylke / region",
+      "country": "Land",
+      "taxId": "Organisasjonsnummer",
+      "notes": "Kundenotater"
+    },
+    "vehicle": {
+      "description": "Kjøretøy (årsmodell merke modell i én kolonne)",
+      "make": "Merke",
+      "model": "Modell",
+      "year": "Årsmodell",
+      "vin": "VIN",
+      "licensePlate": "Registreringsnummer",
+      "color": "Farge",
+      "mileage": "Kilometerstand",
+      "fuelType": "Drivstofftype",
+      "transmission": "Girkasse",
+      "engineSize": "Motorstørrelse",
+      "engineCode": "Motorkode",
+      "purchaseDate": "Kjøpsdato",
+      "purchasePrice": "Kjøpspris"
+    },
+    "service": {
+      "date": "Servicedato",
+      "title": "Servicetittel",
+      "description": "Beskrivelse",
+      "total": "Totalbeløp",
+      "mileage": "Kilometerstand ved service",
+      "invoiceNumber": "Fakturanummer",
+      "notes": "Servicenotater",
+      "technician": "Tekniker"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Kundenavn mangler",
+    "invalid_email": "E-posten \"{value}\" er ikke gyldig og ble utelatt",
+    "invalid_vin": "VIN \"{value}\" er ikke 17 tegn; beholdt som skrevet",
+    "vehicle_make_model_required": "Merke og modell mangler",
+    "vehicle_year_required": "Årsmodell mangler",
+    "vehicle_year_invalid": "Årsmodell \"{value}\" er ikke et gyldig år",
+    "vehicle_identifier_required": "Ingen skilt, VIN eller merke og modell til å identifisere kjøretøyet",
+    "vehicle_not_found": "Ingen eksisterende kjøretøy samsvarer med \"{value}\", og det er ikke nok informasjon til å opprette et",
+    "service_date_required": "Servicedato mangler",
+    "service_date_invalid": "Datoen \"{value}\" kunne ikke leses",
+    "service_title_required": "Servicetittel eller beskrivelse mangler",
+    "invalid_date": "{field} \"{value}\" kunne ikke leses og ble utelatt",
+    "invalid_number": "{field} \"{value}\" er ikke et tall og ble utelatt",
+    "duplicate_invoice_number": "Fakturanummer {value} finnes allerede",
+    "write_failed": "Kunne ikke skrives: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Filen kunne ikke leses",
+    "aiFailed": "KI kunne ikke foreslå en kobling",
+    "dryRunFailed": "Prøvekjøringen mislyktes",
+    "importFailed": "Importen mislyktes",
+    "undoFailed": "Kunne ikke angre importen"
+  },
+  "entry": {
+    "title": "Importer fra et regneark",
+    "description": "Hent kunder, kjøretøy og servicehistorikk fra ethvert system som eksporterer CSV eller Excel. Koble kolonnene, kjør en prøvekjøring, og importer deretter. Hver import kan angres.",
+    "customers": "Importer kunder",
+    "vehicles": "Importer kjøretøy",
+    "services": "Importer servicehistorikk"
+  }
+}
