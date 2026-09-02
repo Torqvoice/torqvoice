@@ -1,0 +1,155 @@
+model Notification {
+  id             String   @id @default(cuid())
+  type           String
+  title          String
+  message        String
+  entityType     String
+  entityId       String
+  entityUrl      String
+  read           Boolean  @default(false)
+  organizationId String
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([organizationId, read])
+  @@map("notifications")
+}
+
+model SmsMessage {
+  id                String   @id @default(cuid())
+  direction         String // "inbound" | "outbound"
+  fromNumber        String
+  toNumber          String
+  body              String
+  status            String   @default("queued") // queued | sent | delivered | failed | received
+  providerMsgId     String?
+  errorMessage      String?
+  relatedEntityType String?
+  relatedEntityId   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([toNumber, organizationId])
+  @@map("sms_messages")
+}
+
+model TelegramMessage {
+  id                String   @id @default(cuid())
+  direction         String // "inbound" | "outbound"
+  chatId            String // Telegram chat ID
+  body              String
+  status            String   @default("queued") // queued | sent | delivered | failed | received
+  telegramMessageId String? // Telegram's message ID for tracking
+  errorMessage      String?
+  relatedEntityType String?
+  relatedEntityId   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, chatId, createdAt(sort: Desc)])
+  @@map("telegram_messages")
+}
+
+/// One WhatsApp message in either direction.
+///
+/// `provider` records which adapter carried it, because a workshop can switch
+/// provider without its history becoming unreadable, and a status callback
+/// arriving later has to find the row it belongs to.
+model WhatsappMessage {
+  id        String @id @default(cuid())
+  direction String // "inbound" | "outbound"
+  provider  String // "meta" | "twilio" | any adapter registered later
+
+  /// E.164 without the "whatsapp:" prefix a provider may use on the wire.
+  fromNumber String
+  toNumber   String
+
+  body String?
+
+  /// Media the message carried. Inbound URLs may need the provider's
+  /// credentials to fetch, so they are not necessarily public.
+  mediaUrl      String?
+  mediaType     String? // image | document | video | audio | sticker
+  mediaFilename String?
+
+  /// Set when the message had to go out as an approved template, which is the
+  /// only thing WhatsApp allows outside the 24 hour service window.
+  templateName String?
+
+  status            String  @default("queued") // queued | sent | delivered | read | failed | received
+  providerMessageId String?
+  errorMessage      String?
+
+  relatedEntityType String?
+  relatedEntityId   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([providerMessageId])
+  @@map("whatsapp_messages")
+}
+
+/// A message the workshop lines up to go out on a given day and time, through
+/// whichever channel suits the customer. One-off by default; a frequency other
+/// than "once" reschedules itself after each send, the way ReportSchedule does.
+model ScheduledMessage {
+  id      String  @id @default(cuid())
+  channel String // "email" | "sms" | "telegram" | "in_app"
+  subject String? // email only
+  body    String
+
+  /// Where it goes when no customer is attached, or when the workshop typed an
+  /// address by hand. Falls back to the customer's email/phone/chat id.
+  recipient String?
+
+  status       String    @default("scheduled") // scheduled | sent | failed | cancelled
+  sendAt       DateTime
+  frequency    String    @default("once") // once | daily | weekly | biweekly | monthly | yearly
+  endDate      DateTime?
+  lastRunAt    DateTime?
+  sentAt       DateTime?
+  runCount     Int       @default(0)
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  createdById String
+
+  @@index([organizationId, sendAt])
+  @@index([status, sendAt])
+  @@map("scheduled_messages")
+}

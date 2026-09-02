@@ -1,0 +1,153 @@
+model AppSetting {
+  id    String @id @default(cuid())
+  key   String
+  value String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@map("app_settings")
+}
+
+/// A user-defined dashboard card: a named, filtered table over one entity.
+/// The config shape (entity, filters, columns, limit) is validated against
+/// the field registry in customCardActions — nothing here reaches SQL raw.
+model DashboardWidget {
+  id             String   @id @default(cuid())
+  name           String
+  config         Json
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, organizationId])
+  @@map("dashboard_widgets")
+}
+
+model Organization {
+  id         String   @id @default(cuid())
+  name       String
+  portalSlug String?  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  members                OrganizationMember[]
+  roles                  Role[]
+  vehicles               Vehicle[]
+  serviceRecords         ServiceRecord[]
+  reminders              Reminder[]
+  customers              Customer[]
+  quotes                 Quote[]
+  inventoryParts         InventoryPart[]
+  laborPresets           LaborPreset[]
+  customFieldDefinitions CustomFieldDefinition[]
+  settings               AppSetting[]
+  subscription           Subscription?
+  invitations            TeamInvitation[]
+  inspectionTemplates    InspectionTemplate[]
+  smsMessages            SmsMessage[]
+  telegramMessages       TelegramMessage[]
+  whatsappMessages       WhatsappMessage[]
+  technicians            Technician[]
+  workBays               WorkBay[]
+  timeEntries            TimeEntry[]
+  pushDevices            PushDevice[]
+  appSetupCodes          TechnicianSetupCode[]
+  technicianLoginCodes   TechnicianLoginCode[]
+  auditLogs              AuditLog[]
+  statusReports          StatusReport[]
+  reportSchedules        ReportSchedule[]
+  scheduledMessages      ScheduledMessage[]
+  webhooks               Webhook[]
+  stockMovements         StockMovement[]
+  tireWarehouses         TireWarehouse[]
+  tireLocations          TireLocation[]
+  tireSets               TireSet[]
+  tireSetAttachments     TireSetAttachment[]
+  tireMovements          TireMovement[]
+  tireTreatments         TireTreatment[]
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id   String @id @default(cuid())
+  role String @default("member")
+
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  roleId     String?
+  customRole Role?   @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, organizationId])
+  @@map("organization_members")
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  permissions     Permission[]
+  members         OrganizationMember[]
+  teamInvitations TeamInvitation[]
+
+  @@unique([organizationId, name])
+  @@map("roles")
+}
+
+model Permission {
+  id      String @id @default(cuid())
+  action  String
+  subject String
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, action, subject])
+  @@index([roleId])
+  @@map("permissions")
+}
+
+model SystemSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("system_settings")
+}
+
+model TeamInvitation {
+  id             String       @id @default(cuid())
+  email          String
+  role           String       @default("member")
+  token          String       @unique
+  status         String       @default("pending") // pending | accepted | cancelled
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedById    String
+
+  roleId     String?
+  customRole Role?   @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  @@unique([email, organizationId])
+  @@index([token])
+  @@map("team_invitations")
+}

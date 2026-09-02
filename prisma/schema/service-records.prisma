@@ -1,0 +1,274 @@
+model ServiceRecord {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  type            String    @default("maintenance")
+  status          String    @default("completed")
+  cost            Float     @default(0)
+  mileage         Int?
+  serviceDate     DateTime  @default(now())
+  startDateTime   DateTime?
+  endDateTime     DateTime?
+  shopName        String?
+  techName        String?
+  parts           String?
+  laborHours      Float?
+  diagnosticNotes String?
+  invoiceNotes    String?
+  subtotal        Float     @default(0)
+  taxRate         Float     @default(0)
+  taxAmount       Float     @default(0)
+  taxInclusive    Boolean   @default(false)
+  totalAmount     Float     @default(0)
+  invoiceNumber   String?
+  invoiceDate     DateTime?
+  invoiceDueDate  DateTime?
+  discountType    String?
+  discountValue   Float     @default(0)
+  discountAmount  Float     @default(0)
+  manuallyPaid    Boolean   @default(false)
+
+  // Warranty tracking
+  warrantyMonths    Int?
+  warrantyMileage   Int?
+  warrantyExpiresAt DateTime?
+  warrantyNotes     String?
+
+  publicToken  String?   @unique
+  sharedAt     DateTime?
+  viewCount    Int       @default(0)
+  lastViewedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  /// First time this invoice reached the customer, by email or share link.
+  /// Distinct from sharedAt, which tracks only the link and is cleared when
+  /// the link is revoked; sending is not undone by withdrawing the link.
+  sentAt DateTime?
+
+  /// Set when an owner or admin deliberately reopens a locked document.
+  /// Nullable rather than a boolean so the audit trail can show when, and the
+  /// screen can say the document was reopened rather than never locked.
+  editUnlockedAt   DateTime?
+  editUnlockedById String?
+
+  /// The stored set this job is about, when it came out of the tire hotel.
+  /// Without it a tire-change work order says nothing about which tires, and
+  /// the technician has to go and ask.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
+
+  /// Null for parts-only / counter sales; such records use customerId
+  /// (or neither, for anonymous walk-in sales)
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  /// Direct customer for records without a vehicle. Vehicle-linked records
+  /// leave this null and resolve the customer through the vehicle, so
+  /// reassigning a vehicle keeps invoices following the vehicle's customer.
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  /// Set when the job came straight from an inspection, so the inspection can
+  /// show what was raised from it. SetNull: deleting the inspection must not
+  /// take the job — and its invoice — with it.
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
+  /// Denormalized from the vehicle historically; now the canonical scope so
+  /// records exist without a vehicle. Nullable to mirror Vehicle.organizationId.
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  technicianId String?
+  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+
+  /// Where in the shop the job is booked in: a lift, a ramp, an alignment
+  /// stand. Independent of the technician, because a shop plans its bays and
+  /// its people separately and the work board can lane by either.
+  workBayId String?
+  workBay   WorkBay? @relation(fields: [workBayId], references: [id], onDelete: SetNull)
+  sortOrder Int      @default(0)
+
+  partItems      ServicePart[]
+  laborItems     ServiceLabor[]
+  attachments    ServiceAttachment[]
+  payments       Payment[]
+  statusReports  StatusReport[]
+  stockMovements StockMovement[]
+  timeEntries    TimeEntry[]
+
+  concerns           ServiceConcern[]
+  discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
+  resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
+
+  @@index([vehicleId])
+  @@index([technicianId])
+  @@index([workBayId])
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([inspectionId])
+  @@map("service_records")
+}
+
+/// One thing the customer asked about, in their words.
+///
+/// A job is a list of these rather than a single note, because that is how the
+/// work actually divides: "it pulls right when braking" and "the aircon smells"
+/// are two conversations, two diagnoses and two lines on the bill. Storing them
+/// as one blob means the shop can answer one and quietly drop the other, which
+/// is the single most common reason a car comes back.
+///
+/// This is the first of the trade's three Cs. The cause is a VehicleFinding
+/// pointing back here, carrying its own notes and photographs; the correction
+/// is the labour and parts on the job. Together they let the invoice explain
+/// itself: you said this, we found that, we did this about it.
+model ServiceConcern {
+  id          String   @id @default(cuid())
+  /// The customer's own words, kept as they said them.
+  description String
+  /// The order the customer raised them in, which is the order they care about.
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  /// What the shop found when it went looking. Empty means nobody has answered
+  /// this one yet, which is worth being able to ask about before closing a job.
+  findings VehicleFinding[]
+
+  @@index([serviceRecordId])
+  @@map("service_concerns")
+}
+
+model Payment {
+  id         String   @id @default(cuid())
+  amount     Float
+  date       DateTime @default(now())
+  method     String   @default("other")
+  note       String?
+  provider   String?
+  externalId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("payments")
+}
+
+model ServiceAttachment {
+  id               String   @id @default(cuid())
+  fileName         String
+  fileUrl          String
+  fileType         String
+  fileSize         Int
+  category         String   @default("diagnostic")
+  description      String?
+  includeInInvoice Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("service_attachments")
+}
+
+model ServicePart {
+  id              String  @id @default(cuid())
+  partNumber      String?
+  name            String
+  quantity        Float   @default(1)
+  /// Unit of measure snapshotted from InventoryPart at pick time; null for
+  /// free-text lines and legacy rows.
+  unit            String?
+  unitPrice       Float   @default(0)
+  total           Float   @default(0)
+  unitCost        Float   @default(0)
+  markupPercent   Float   @default(0)
+  inventoryPartId String?
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("service_parts")
+}
+
+model ServiceLabor {
+  id          String @id @default(cuid())
+  description String
+  hours       Float  @default(0)
+  rate        Float  @default(0)
+  total       Float  @default(0)
+  pricingType String @default("hourly")
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([serviceRecordId])
+  @@map("service_labor")
+}
+
+model RecurringInvoice {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  frequency   String // "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly"
+  nextRunDate DateTime
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+  lastRunAt   DateTime?
+  runCount    Int       @default(0)
+
+  // Template fields (copied to ServiceRecord on generation)
+  type         String  @default("maintenance")
+  cost         Float   @default(0)
+  taxRate      Float   @default(0)
+  taxInclusive Boolean @default(false)
+  invoiceNotes String?
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  templateParts RecurringPart[]
+  templateLabor RecurringLabor[]
+
+  @@index([vehicleId])
+  @@index([nextRunDate, isActive])
+  @@map("recurring_invoices")
+}
+
+model RecurringPart {
+  id         String  @id @default(cuid())
+  name       String
+  partNumber String?
+  quantity   Float   @default(1)
+  unitPrice  Float   @default(0)
+
+  recurringInvoiceId String
+  recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_parts")
+}
+
+model RecurringLabor {
+  id          String @id @default(cuid())
+  description String
+  hours       Float  @default(0)
+  rate        Float  @default(0)
+  pricingType String @default("hourly")
+
+  recurringInvoiceId String
+  recurringInvoice   RecurringInvoice @relation(fields: [recurringInvoiceId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_labor")
+}
