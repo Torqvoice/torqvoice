@@ -41,6 +41,7 @@ import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { deleteVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
+import { ImportWizard } from '@/features/import/Components/ImportWizard'
 import { toast } from 'sonner'
 import {
   Archive,
@@ -59,6 +60,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
   Users,
   Wrench,
 } from 'lucide-react'
@@ -129,6 +131,7 @@ export function VehiclesClient({
   const tc = useTranslations('common.buttons')
   const tcm = useTranslations('common.contextMenu')
   const [showForm, setShowForm] = useState(false)
+  const [showImport, setShowImport] = useState(false)
   const [createCustomerId, setCreateCustomerId] = useState<string | undefined>(undefined)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
@@ -313,16 +316,29 @@ export function VehiclesClient({
             </Button>
           </div>
           {!isArchived && (
-            <Button
-              size="sm"
-              onClick={() => setShowForm(true)}
-              aria-label={t('addVehicle')}
-              title={t('addVehicle')}
-              className="ml-auto h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-            >
-              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-              <span className="hidden md:inline">{t('addVehicle')}</span>
-            </Button>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowImport(true)}
+                aria-label={t('importVehicles')}
+                title={t('importVehicles')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Upload className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('importVehicles')}</span>
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setShowForm(true)}
+                aria-label={t('addVehicle')}
+                title={t('addVehicle')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('addVehicle')}</span>
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -823,6 +839,8 @@ export function VehiclesClient({
         totalPages={data.totalPages}
         onNavigate={navigate}
       />
+
+      <ImportWizard open={showImport} onOpenChange={setShowImport} entity="vehicles" lockEntity />
 
       <VehicleForm
         open={showForm}

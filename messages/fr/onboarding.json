@@ -76,7 +76,9 @@
     "allDoneTitle": "Tout est prêt",
     "allDoneDescription": "Toutes les étapes sont terminées et votre atelier est opérationnel.",
     "dismiss": "Masquer la carte",
-    "dismissAriaLabel": "Masquer cette liste"
+    "dismissAriaLabel": "Masquer cette liste",
+    "importTitle": "Vous avez déjà des clients et des véhicules ailleurs ?",
+    "importDescription": "Importez-les depuis un tableur ou votre ancien système"
   },
   "sampleData": {
     "title": "Données d'exemple",

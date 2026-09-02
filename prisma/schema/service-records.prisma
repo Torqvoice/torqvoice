@@ -102,12 +102,16 @@ model ServiceRecord {
   discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
   resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
 
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
   @@index([vehicleId])
   @@index([technicianId])
   @@index([workBayId])
   @@index([organizationId])
   @@index([customerId])
   @@index([inspectionId])
+  @@index([importBatchId])
   @@map("service_records")
 }
 

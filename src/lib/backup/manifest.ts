@@ -274,6 +274,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   CustomerSession: 'Portal session, recreated when the customer signs in.',
   CustomerSmsCode: 'One-time code, valid for minutes.',
   DashboardWidget: 'Per-user dashboard layout, tied to user accounts a backup does not carry.',
+  ImportBatch:
+    'Spreadsheet import history. Restored rows are rebuilt without their batch id, so an undo after a restore is not offered.',
   ExternalCalendarEvent:
     'Cache of busy time pulled from a connected calendar; rebuilt by the next sync.',
   IntegrationConnection:

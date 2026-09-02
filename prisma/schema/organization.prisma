@@ -75,6 +75,7 @@ model Organization {
   tireTreatments         TireTreatment[]
   integrationConnections IntegrationConnection[]
   externalCalendarEvents ExternalCalendarEvent[]
+  importBatches          ImportBatch[]
 
   @@map("organizations")
 }

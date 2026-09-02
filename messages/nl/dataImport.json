@@ -1,0 +1,228 @@
+{
+  "title": "Importeren van {entity}",
+  "cancel": "Annuleren",
+  "done": "Gereed",
+  "entities": {
+    "customers": "klanten",
+    "vehicles": "voertuigen",
+    "services": "servicegeschiedenis"
+  },
+  "entityHints": {
+    "customers": "Namen, contactgegevens, adressen. Eén rij per klant.",
+    "vehicles": "Merk, model, bouwjaar, kenteken, VIN. Een eigenaarkolom koppelt of maakt de klant aan.",
+    "services": "Eerdere klussen en facturen. Eén rij per klus, met het voertuig waar die bij hoort."
+  },
+  "groups": {
+    "customer": "Klant",
+    "vehicle": "Voertuig",
+    "service": "Service"
+  },
+  "steps": {
+    "upload": "Kies wat u wilt importeren en upload het bestand uit uw huidige systeem.",
+    "mapping": "Controleer welke kolom welk veld wordt. Er wordt nog niets weggeschreven.",
+    "preview": "Proefimport: dit is precies wat de import gaat doen. Controleer het en importeer daarna.",
+    "importing": "Rijen worden weggeschreven. Houd dit venster open.",
+    "result": "Import voltooid."
+  },
+  "upload": {
+    "drop": "Sleep een bestand hierheen",
+    "formats": "CSV, Excel (.xlsx) of vCard (.vcf), tot 25 MB en 50.000 rijen",
+    "browse": "Bestand kiezen",
+    "reading": "Bestand wordt gelezen...",
+    "templateHint": "Nog geen export? Vul een sjabloon in en upload die.",
+    "templateXlsx": "Excel-sjabloon",
+    "templateCsv": "CSV-sjabloon",
+    "sourcesHint": "Werkt met exports uit elk werkplaatssysteem, boekhoudpakket, Google Contacts, Outlook of een spreadsheet. Kolomnamen worden in veel talen herkend; u bevestigt de toewijzing voordat er iets wordt weggeschreven."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# rij} other {# rijen}}",
+    "colColumn": "Kolom in uw bestand",
+    "colSample": "Voorbeeldwaarden",
+    "colField": "Wordt",
+    "ignore": "Deze kolom negeren",
+    "source": {
+      "preset": "Herkende indeling",
+      "header": "Gekoppeld op kolomkop",
+      "values": "Afgeleid uit de waarden"
+    },
+    "suggestWithAi": "Voorstel met AI",
+    "aiApplied": "{count, plural, one {# kolom toegewezen} other {# kolommen toegewezen}} door AI. Controleer ze voordat u verdergaat.",
+    "chooseAnother": "Ander bestand kiezen",
+    "missingRequired": "Nog nodig: {fields}",
+    "dryRunHint": "De proefimport controleert elke rij tegen uw bestaande gegevens zonder iets weg te schrijven.",
+    "runDryRun": "Proefimport uitvoeren"
+  },
+  "options": {
+    "dateFormat": "Datumnotatie",
+    "dateAuto": "Automatisch herkennen",
+    "dateDMY": "Dag / maand / jaar",
+    "dateMDY": "Maand / dag / jaar",
+    "dateYMD": "Jaar / maand / dag",
+    "decimal": "Decimaalteken",
+    "decimalAuto": "Automatisch herkennen",
+    "decimalDot": "Punt (1,234.56)",
+    "decimalComma": "Komma (1.234,56)",
+    "countryCode": "Landcode voor telefoonnummers",
+    "duplicates": "Als een rij overeenkomt met een bestaand record",
+    "duplicatesUpdate": "Bestaand record bijwerken",
+    "duplicatesSkip": "Rij overslaan",
+    "duplicatesCreate": "Toch een nieuw record aanmaken"
+  },
+  "summary": {
+    "create": "Wordt aangemaakt",
+    "update": "Wordt bijgewerkt",
+    "skip": "Wordt overgeslagen",
+    "error": "Kan niet worden geïmporteerd",
+    "warnings": "Met waarschuwingen",
+    "customersToCreate": "{count, plural, one {# nieuwe klant} other {# nieuwe klanten}}",
+    "customersToUpdate": "{count, plural, one {# klant bijgewerkt} other {# klanten bijgewerkt}}",
+    "vehiclesToCreate": "{count, plural, one {# nieuw voertuig} other {# nieuwe voertuigen}}",
+    "vehiclesToUpdate": "{count, plural, one {# voertuig bijgewerkt} other {# voertuigen bijgewerkt}}",
+    "servicesToCreate": "{count, plural, one {# servicerecord} other {# servicerecords}}"
+  },
+  "actions": {
+    "create": "Aanmaken",
+    "update": "Bijwerken",
+    "skip": "Overslaan",
+    "error": "Fout"
+  },
+  "matchOn": {
+    "number": "klantnummer",
+    "email": "e-mail",
+    "phone": "telefoon",
+    "name": "naam",
+    "vin": "VIN",
+    "plate": "kenteken",
+    "makeModelYear": "merk, model en bouwjaar"
+  },
+  "preview": {
+    "colAction": "Actie",
+    "colOwner": "Eigenaar",
+    "colDetails": "Details",
+    "empty": "Geen rijen voldoen aan dit filter.",
+    "matchedOn": "Komt overeen met {name} (op {on})",
+    "linksCustomer": "Gekoppeld aan klant {name}",
+    "linksVehicle": "Gekoppeld aan {label}",
+    "sameCustomerAsRow": "Zelfde klant als rij {row}",
+    "sameVehicleAsRow": "Zelfde voertuig als rij {row}",
+    "createsCustomer": "Maakt de klant aan",
+    "createsVehicle": "Maakt het voertuig aan",
+    "downloadReport": "Proefimportrapport downloaden",
+    "limitExceeded": "Uw abonnement staat nog {remaining} klanten toe, maar deze import zou er {needed} aanmaken. Verwijder rijen of upgrade uw abonnement.",
+    "pageInfo": "{from}–{to} van {total}",
+    "prev": "Vorige",
+    "next": "Volgende",
+    "backToMapping": "Terug naar toewijzing",
+    "import": "{count, plural, one {# rij} other {# rijen}} importeren",
+    "nothingWrittenYet": "Er is nog niets weggeschreven. De import kan achteraf ongedaan worden gemaakt via Instellingen → Gegevens."
+  },
+  "importing": {
+    "title": "Importeren...",
+    "starting": "Starten",
+    "progress": "{done} van {total} rijen",
+    "keepOpen": "Grote bestanden duren een minuut of twee."
+  },
+  "result": {
+    "title": "Import voltooid",
+    "undoneTitle": "Import ongedaan gemaakt",
+    "created": "{count, plural, one {# record aangemaakt} other {# records aangemaakt}}",
+    "updated": "{count, plural, one {# record bijgewerkt} other {# records bijgewerkt}}",
+    "skipped": "{count, plural, one {# rij overgeslagen} other {# rijen overgeslagen}}",
+    "failed": "{count, plural, one {# rij niet geïmporteerd} other {# rijen niet geïmporteerd}}",
+    "writeFailures": "{count, plural, one {# rij mislukt bij het wegschrijven} other {# rijen mislukt bij het wegschrijven}}",
+    "rowFailure": "Rij {row}: {error}",
+    "undo": "Deze import ongedaan maken",
+    "undone": "{customers} klanten, {vehicles} voertuigen en {services} servicerecords verwijderd.",
+    "undoHint": "Ongedaan maken verwijdert elk record dat deze import heeft aangemaakt. Records die alleen zijn bijgewerkt behouden hun nieuwe waarden."
+  },
+  "history": {
+    "title": "Importgeschiedenis",
+    "description": "Spreadsheetimports die in deze werkplaats zijn uitgevoerd. Ongedaan maken verwijdert wat een import heeft aangemaakt.",
+    "loading": "Laden...",
+    "statusUndone": "Ongedaan gemaakt",
+    "counts": "{created} aangemaakt, {updated} bijgewerkt, {skipped} overgeslagen, {failed} mislukt",
+    "undo": "Ongedaan maken",
+    "undone": "{customers} klanten, {vehicles} voertuigen en {services} servicerecords verwijderd.",
+    "undoFailed": "Kon de import niet ongedaan maken",
+    "confirmTitle": "Deze import ongedaan maken?",
+    "confirmDescription": "Verwijdert wat {file} heeft aangemaakt: {customers} klanten, {vehicles} voertuigen en {services} servicerecords. Records die de import alleen heeft bijgewerkt blijven behouden.",
+    "cancel": "Annuleren",
+    "confirm": "Import ongedaan maken"
+  },
+  "fields": {
+    "customer": {
+      "name": "Klantnaam",
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "customerNumber": "Klantnummer",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "company": "Bedrijf",
+      "address": "Adres",
+      "street": "Straat",
+      "postalCode": "Postcode",
+      "city": "Plaats",
+      "state": "Provincie / regio",
+      "country": "Land",
+      "taxId": "Btw-nummer",
+      "notes": "Klantnotities"
+    },
+    "vehicle": {
+      "description": "Voertuig (bouwjaar merk model in één kolom)",
+      "make": "Merk",
+      "model": "Model",
+      "year": "Bouwjaar",
+      "vin": "VIN",
+      "licensePlate": "Kenteken",
+      "color": "Kleur",
+      "mileage": "Kilometerstand",
+      "fuelType": "Brandstoftype",
+      "transmission": "Transmissie",
+      "engineSize": "Motorinhoud",
+      "engineCode": "Motorcode",
+      "purchaseDate": "Aankoopdatum",
+      "purchasePrice": "Aankoopprijs"
+    },
+    "service": {
+      "date": "Servicedatum",
+      "title": "Servicetitel",
+      "description": "Omschrijving",
+      "total": "Totaalbedrag",
+      "mileage": "Kilometerstand bij service",
+      "invoiceNumber": "Factuurnummer",
+      "notes": "Servicenotities",
+      "technician": "Monteur"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Klantnaam ontbreekt",
+    "invalid_email": "E-mailadres \"{value}\" is ongeldig en is weggelaten",
+    "invalid_vin": "VIN \"{value}\" heeft geen 17 tekens; bewaard zoals ingevoerd",
+    "vehicle_make_model_required": "Merk en model ontbreken",
+    "vehicle_year_required": "Bouwjaar ontbreekt",
+    "vehicle_year_invalid": "Bouwjaar \"{value}\" is geen geldig jaar",
+    "vehicle_identifier_required": "Geen kenteken, VIN of merk en model om het voertuig te herkennen",
+    "vehicle_not_found": "Geen bestaand voertuig komt overeen met \"{value}\" en er is te weinig informatie om er een aan te maken",
+    "service_date_required": "Servicedatum ontbreekt",
+    "service_date_invalid": "Datum \"{value}\" kon niet worden gelezen",
+    "service_title_required": "Servicetitel of omschrijving ontbreekt",
+    "invalid_date": "{field} \"{value}\" kon niet worden gelezen en is weggelaten",
+    "invalid_number": "{field} \"{value}\" is geen getal en is weggelaten",
+    "duplicate_invoice_number": "Factuurnummer {value} bestaat al",
+    "write_failed": "Kon niet worden weggeschreven: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Het bestand kon niet worden gelezen",
+    "aiFailed": "AI kon geen toewijzing voorstellen",
+    "dryRunFailed": "De proefimport is mislukt",
+    "importFailed": "De import is mislukt",
+    "undoFailed": "Kon de import niet ongedaan maken"
+  },
+  "entry": {
+    "title": "Importeren uit een spreadsheet",
+    "description": "Haal klanten, voertuigen en servicegeschiedenis over uit elk systeem dat CSV of Excel exporteert. Wijs de kolommen toe, voer een proefimport uit en importeer daarna. Elke import kan ongedaan worden gemaakt.",
+    "customers": "Klanten importeren",
+    "vehicles": "Voertuigen importeren",
+    "services": "Servicegeschiedenis importeren"
+  }
+}

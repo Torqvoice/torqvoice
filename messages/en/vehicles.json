@@ -4,6 +4,7 @@
     "archived": "Archived",
     "searchPlaceholder": "Search by plate, make, model, VIN...",
     "addVehicle": "Add Vehicle",
+    "importVehicles": "Import",
     "emptySearch": "No vehicles match your search.",
     "emptyArchived": "No archived vehicles.",
     "empty": "No vehicles yet.",

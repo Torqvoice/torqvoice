@@ -76,7 +76,9 @@
     "allDoneTitle": "Wszystko gotowe",
     "allDoneDescription": "Wszystkie kroki zostały wykonane i Twój warsztat działa.",
     "dismiss": "Ukryj kartę",
-    "dismissAriaLabel": "Ukryj tę listę"
+    "dismissAriaLabel": "Ukryj tę listę",
+    "importTitle": "Masz już gdzieś klientów i pojazdy?",
+    "importDescription": "Zaimportuj ich z arkusza kalkulacyjnego lub ze starego systemu"
   },
   "sampleData": {
     "title": "Dane przykładowe",

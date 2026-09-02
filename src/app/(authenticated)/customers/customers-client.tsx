@@ -36,7 +36,7 @@ import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
-import { ImportCustomersDialog } from '@/features/customers/Components/ImportCustomersDialog'
+import { ImportWizard } from '@/features/import/Components/ImportWizard'
 import { Checkbox } from '@/components/ui/checkbox'
 import { deleteCustomer, deleteCustomers } from '@/features/customers/Actions/customerActions'
 import { toast } from 'sonner'
@@ -563,7 +563,7 @@ export function CustomersClient({
         customer={editCustomer ?? undefined}
       />
 
-      <ImportCustomersDialog open={showImport} onOpenChange={setShowImport} />
+      <ImportWizard open={showImport} onOpenChange={setShowImport} entity="customers" lockEntity />
     </div>
   )
 }

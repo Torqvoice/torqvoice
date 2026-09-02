@@ -1116,7 +1116,7 @@
   },
   "data": {
     "title": "Veri Yönetimi",
-    "description": "Verilerinizi yedek olarak dışa aktarın veya daha önce dışa aktarılmış bir dosyayı içe aktarın.",
+    "description": "Eski sisteminizden veri aktarın, her şeyin yedeğini indirin veya bir yedeği geri yükleyin.",
     "exportTitle": "Veri Dışa Aktar",
     "exportDescription": "Verilerinizi zip dosyası olarak indirin. Yedeğe dahil edilecek kategorileri seçin.",
     "includeInBackup": "Yedeğe dahil et:",
@@ -1203,7 +1203,16 @@
     "optTireHotel": "Lastik oteli",
     "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri",
     "optWorkshopConfig": "Atölye kurulumu",
-    "optWorkshopConfigDesc": "İşçilik şablonları, roller, webhook'lar ve zamanlanmış raporlar"
+    "optWorkshopConfigDesc": "İşçilik şablonları, roller, webhook'lar ve zamanlanmış raporlar",
+    "importHubDescription": "Verilerinizin bugün nerede olduğunu seçin. Tablo ve uygulama içe aktarımları mevcut verilerinize eklenir ve geri alınabilir; yedek geri yükleme her şeyi değiştirir.",
+    "sourceSpreadsheet": "Tablo veya CSV",
+    "sourceSpreadsheetDesc": "Herhangi bir atölye sistemi, muhasebe aracı, Google Kişiler, Outlook veya Excel dışa aktarımları. Bir şey yazılmadan önce sütun eşlemesini onaylar ve deneme çalıştırmasını görürsünüz.",
+    "sourceLubelogDesc": "Bir LubeLog yedeğinden araçlar, servis kayıtları ve notlar.",
+    "sourceInvoiceNinjaDesc": "Bir Invoice Ninja dışa aktarımından müşteriler, ürünler, faturalar ve ödemeler.",
+    "sourceBackup": "Torqvoice yedeği",
+    "sourceBackupDesc": "Bu sayfadan indirilmiş bir .zip veya .json dosyası. Geri yükleme bu atölyedeki her şeyi değiştirir.",
+    "restore": "Geri yükle",
+    "restoreTitle": "Bir yedeği geri yükle"
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",

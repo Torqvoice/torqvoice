@@ -74,6 +74,7 @@ export default getRequestConfig(async () => {
   const search = (await import(`../../messages/${locale}/search.json`)).default
   const permissions = (await import(`../../messages/${locale}/permissions.json`)).default
   const featureHints = (await import(`../../messages/${locale}/featureHints.json`)).default
+  const dataImport = (await import(`../../messages/${locale}/dataImport.json`)).default
   const integrations = (await import(`../../messages/${locale}/integrations.json`)).default
 
   return {
@@ -118,6 +119,7 @@ export default getRequestConfig(async () => {
       search,
       permissions,
       featureHints,
+      dataImport,
       integrations,
     },
   }

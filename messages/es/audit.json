@@ -152,6 +152,8 @@
     "team_giveTechnicianTheApp": "Cuenta dada a un técnico solo de tablero",
     "team_createDefaultRoles": "Roles estándar creados",
     "settings_setCustomFieldPlacement": "Ubicación de campo personalizado actualizada",
+    "import_commit": "Hoja de cálculo importada",
+    "import_undo": "Importación deshecha",
     "integration_connect": "Integración conectada",
     "integration_disconnect": "Integración desconectada"
   },
@@ -278,6 +280,8 @@
     "work_bay_update": "Puesto de trabajo «{name}» actualizado",
     "work_bay_delete": "Puesto de trabajo {id} eliminado",
     "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado",
+    "import_commit": "Importó una hoja de cálculo: {count} registros creados",
+    "import_undo": "Deshizo una importación de hoja de cálculo: {records} registros eliminados",
     "integration_connect": "{name} conectado",
     "integration_disconnect": "{name} desconectado"
   }

@@ -1116,7 +1116,7 @@
   },
   "data": {
     "title": "Gestione dati",
-    "description": "Esporta i tuoi dati come backup o importa un file precedentemente esportato.",
+    "description": "Porta i dati dal tuo vecchio sistema, scarica un backup di tutto o ripristinane uno.",
     "exportTitle": "Esporta dati",
     "exportDescription": "Scarica i tuoi dati come file zip. Seleziona le categorie da includere nel backup.",
     "includeInBackup": "Includi nel backup:",
@@ -1203,7 +1203,16 @@
     "optTireHotel": "Hotel pneumatici",
     "optTireHotelDesc": "Treni in deposito, scaffali, preparazione e contratti di deposito",
     "optWorkshopConfig": "Configurazione officina",
-    "optWorkshopConfigDesc": "Preset di manodopera, ruoli, webhook e report programmati"
+    "optWorkshopConfigDesc": "Preset di manodopera, ruoli, webhook e report programmati",
+    "importHubDescription": "Scegli dove sono oggi i tuoi dati. Le importazioni da fogli di calcolo e app si aggiungono a ciò che hai e si possono annullare; il ripristino di un backup sostituisce tutto.",
+    "sourceSpreadsheet": "Foglio di calcolo o CSV",
+    "sourceSpreadsheetDesc": "Esportazioni da qualsiasi gestionale per officine, programma di contabilità, Contatti Google, Outlook o Excel. Confermi l'abbinamento delle colonne e vedi una prova prima che venga scritto qualcosa.",
+    "sourceLubelogDesc": "Veicoli, registri di manutenzione e note da un backup LubeLog.",
+    "sourceInvoiceNinjaDesc": "Clienti, prodotti, fatture e pagamenti da un'esportazione di Invoice Ninja.",
+    "sourceBackup": "Backup Torqvoice",
+    "sourceBackupDesc": "Un file .zip o .json scaricato da questa pagina. Il ripristino sostituisce tutto in questa officina.",
+    "restore": "Ripristina",
+    "restoreTitle": "Ripristina un backup"
   },
   "license": {
     "title": "Licenza White-Label",

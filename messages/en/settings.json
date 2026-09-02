@@ -1116,7 +1116,7 @@
   },
   "data": {
     "title": "Data Management",
-    "description": "Export your data as a backup or import a previously exported file.",
+    "description": "Bring data in from your old system, download a backup of everything, or restore one.",
     "exportTitle": "Export Data",
     "exportDescription": "Download your data as a zip file. Select which categories to include in the backup.",
     "includeInBackup": "Include in backup:",
@@ -1203,7 +1203,16 @@
     "optTireHotel": "Tire hotel",
     "optTireHotelDesc": "Stored tire sets, shelves, prep work and storage agreements",
     "optWorkshopConfig": "Workshop setup",
-    "optWorkshopConfigDesc": "Labour presets, roles, webhooks and scheduled reports"
+    "optWorkshopConfigDesc": "Labour presets, roles, webhooks and scheduled reports",
+    "importHubDescription": "Pick where your data is today. Spreadsheet and app imports add to what you have and can be undone; restoring a backup replaces everything.",
+    "sourceSpreadsheet": "Spreadsheet or CSV",
+    "sourceSpreadsheetDesc": "Exports from any shop system, accounting tool, Google Contacts, Outlook or Excel. You confirm the column mapping and see a dry run before anything is written.",
+    "sourceLubelogDesc": "Vehicles, service records and notes from a LubeLog backup.",
+    "sourceInvoiceNinjaDesc": "Clients, products, invoices and payments from an Invoice Ninja export.",
+    "sourceBackup": "Torqvoice backup",
+    "sourceBackupDesc": "A .zip or .json file downloaded from this page. Restoring replaces everything in this workshop.",
+    "restore": "Restore",
+    "restoreTitle": "Restore a backup"
   },
   "license": {
     "title": "White-Label License",

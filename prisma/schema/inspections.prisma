@@ -135,6 +135,9 @@ model Inspection {
   quotes         Quote[]
   serviceRecords ServiceRecord[]
 
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
   @@index([vehicleId])
   @@index([organizationId])
   @@index([technicianId])

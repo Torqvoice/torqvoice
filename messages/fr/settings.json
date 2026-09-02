@@ -1116,7 +1116,7 @@
   },
   "data": {
     "title": "Gestion des données",
-    "description": "Exportez vos données comme sauvegarde ou importez un fichier precedemment exporte.",
+    "description": "Récupérez les données de votre ancien système, téléchargez une sauvegarde complète ou restaurez-en une.",
     "exportTitle": "Exporter les données",
     "exportDescription": "Telechargez vos données sous forme de fichier zip. Sélectionnez les catégories a inclure.",
     "includeInBackup": "Inclure dans la sauvegarde :",
@@ -1203,7 +1203,16 @@
     "optTireHotel": "Hôtel à pneus",
     "optTireHotelDesc": "Jeux stockés, étagères, préparation et contrats de stockage",
     "optWorkshopConfig": "Configuration de l'atelier",
-    "optWorkshopConfigDesc": "Modèles de main-d'œuvre, rôles, webhooks et rapports programmés"
+    "optWorkshopConfigDesc": "Modèles de main-d'œuvre, rôles, webhooks et rapports programmés",
+    "importHubDescription": "Indiquez où se trouvent vos données aujourd'hui. Les imports depuis un tableur ou une application s'ajoutent à l'existant et peuvent être annulés ; la restauration d'une sauvegarde remplace tout.",
+    "sourceSpreadsheet": "Tableur ou CSV",
+    "sourceSpreadsheetDesc": "Exports de n'importe quel logiciel d'atelier, outil comptable, Google Contacts, Outlook ou Excel. Vous confirmez la correspondance des colonnes et voyez une simulation avant toute écriture.",
+    "sourceLubelogDesc": "Véhicules, historiques d'entretien et notes issus d'une sauvegarde LubeLog.",
+    "sourceInvoiceNinjaDesc": "Clients, produits, factures et paiements issus d'un export Invoice Ninja.",
+    "sourceBackup": "Sauvegarde Torqvoice",
+    "sourceBackupDesc": "Un fichier .zip ou .json téléchargé depuis cette page. La restauration remplace tout dans cet atelier.",
+    "restore": "Restaurer",
+    "restoreTitle": "Restaurer une sauvegarde"
   },
   "license": {
     "title": "Licence marque blanche",

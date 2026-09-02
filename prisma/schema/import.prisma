@@ -1,0 +1,33 @@
+/// One run of the spreadsheet importer. Rows it created point back here so
+/// the run can be undone, and the mapping is kept so the same source can be
+/// imported again without re-mapping.
+model ImportBatch {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  /// What the file was: 'spreadsheet', 'vcard', or a preset id such as 'google-contacts'.
+  source         String
+  /// 'customers' | 'vehicles' | 'services'
+  entity         String
+  fileName       String
+  /// 'completed' | 'undone'
+  status         String       @default("completed")
+  totalRows      Int          @default(0)
+  created        Int          @default(0)
+  updated        Int          @default(0)
+  skipped        Int          @default(0)
+  failed         Int          @default(0)
+  mapping        Json?
+  createdAt      DateTime     @default(now())
+  undoneAt       DateTime?
+
+  customers      Customer[]
+  vehicles       Vehicle[]
+  serviceRecords ServiceRecord[]
+  user           User            @relation(fields: [userId], references: [id])
+  inspections    Inspection[]
+
+  @@index([organizationId, createdAt])
+  @@map("import_batches")
+}

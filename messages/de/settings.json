@@ -1116,7 +1116,7 @@
   },
   "data": {
     "title": "Datenverwaltung",
-    "description": "Exportieren Sie Ihre Daten als Backup oder importieren Sie eine zuvor exportierte Datei.",
+    "description": "Übernehmen Sie Daten aus Ihrem alten System, laden Sie eine Sicherung von allem herunter oder stellen Sie eine wieder her.",
     "exportTitle": "Daten exportieren",
     "exportDescription": "Laden Sie Ihre Daten als ZIP-Datei herunter. Wählen Sie die Kategorien für das Backup aus.",
     "includeInBackup": "Im Backup enthalten:",
@@ -1203,7 +1203,16 @@
     "optTireHotel": "Reifenhotel",
     "optTireHotelDesc": "Eingelagerte Reifensätze, Regale, Vorbereitung und Lagervereinbarungen",
     "optWorkshopConfig": "Werkstatt-Einrichtung",
-    "optWorkshopConfigDesc": "Arbeitsvorlagen, Rollen, Webhooks und geplante Berichte"
+    "optWorkshopConfigDesc": "Arbeitsvorlagen, Rollen, Webhooks und geplante Berichte",
+    "importHubDescription": "Wählen Sie, wo Ihre Daten heute liegen. Importe aus Tabellen und Apps ergänzen Ihre Daten und lassen sich rückgängig machen; eine Wiederherstellung ersetzt alles.",
+    "sourceSpreadsheet": "Tabelle oder CSV",
+    "sourceSpreadsheetDesc": "Exporte aus jedem Werkstattsystem, Buchhaltungsprogramm, Google Kontakte, Outlook oder Excel. Sie bestätigen die Spaltenzuordnung und sehen einen Testlauf, bevor etwas geschrieben wird.",
+    "sourceLubelogDesc": "Fahrzeuge, Serviceeinträge und Notizen aus einer LubeLog-Sicherung.",
+    "sourceInvoiceNinjaDesc": "Kunden, Produkte, Rechnungen und Zahlungen aus einem Invoice-Ninja-Export.",
+    "sourceBackup": "Torqvoice-Sicherung",
+    "sourceBackupDesc": "Eine auf dieser Seite heruntergeladene .zip- oder .json-Datei. Die Wiederherstellung ersetzt alles in dieser Werkstatt.",
+    "restore": "Wiederherstellen",
+    "restoreTitle": "Sicherung wiederherstellen"
   },
   "license": {
     "title": "White-Label-Lizenz",

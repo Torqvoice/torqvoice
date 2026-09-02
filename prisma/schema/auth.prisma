@@ -51,6 +51,7 @@ model User {
   tireMeasurements       TireMeasurement[]
   tireMovements          TireMovement[]
   tireTreatments         TireTreatment[]
+  importBatches          ImportBatch[]
 
   @@map("users")
 }

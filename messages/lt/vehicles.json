@@ -4,6 +4,7 @@
     "archived": "Archyvuotos",
     "searchPlaceholder": "Ieškoti pagal numerį, markę, modelį, VIN...",
     "addVehicle": "Pridėti transporto priemonę",
+    "importVehicles": "Importuoti",
     "emptySearch": "Nėra transporto priemonių, atitinkančių paiešką.",
     "emptyArchived": "Archyvuotų transporto priemonių nėra.",
     "empty": "Transporto priemonių dar nėra.",

@@ -152,6 +152,8 @@
     "team_giveTechnicianTheApp": "Gave a board-only technician an account",
     "team_createDefaultRoles": "Created the standard roles",
     "settings_setCustomFieldPlacement": "Updated Custom Field Placement",
+    "import_commit": "Imported Spreadsheet",
+    "import_undo": "Undid Import",
     "integration_connect": "Connected Integration",
     "integration_disconnect": "Disconnected Integration"
   },
@@ -278,6 +280,8 @@
     "work_bay_update": "Updated work bay \"{name}\"",
     "work_bay_delete": "Deleted work bay {id}",
     "settings_setCustomFieldPlacement": "Changed where a custom field prints",
+    "import_commit": "Imported a spreadsheet: {count} records created",
+    "import_undo": "Undid a spreadsheet import: {records} records removed",
     "integration_connect": "Connected {name}",
     "integration_disconnect": "Disconnected {name}"
   }

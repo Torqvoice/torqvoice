@@ -35,8 +35,12 @@ model Customer {
   reminders      Reminder[]
   tireSets       TireSet[]
 
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
   @@unique([organizationId, customerNumber])
   @@index([organizationId])
+  @@index([importBatchId])
   @@map("customers")
 }
 

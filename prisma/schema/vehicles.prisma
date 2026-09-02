@@ -43,7 +43,11 @@ model Vehicle {
   scheduledMessages ScheduledMessage[]
   tireSets          TireSet[]
 
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
   @@index([organizationId])
+  @@index([importBatchId])
   @@map("vehicles")
 }
 
