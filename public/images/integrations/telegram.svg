@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="telegram">
+  <title>telegram</title>
+  <rect width="48" height="48" rx="11" fill="#0ea5e9"/>
+  <text x="24" y="24" fill="#ffffff" font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="18" font-weight="600" text-anchor="middle" dominant-baseline="central">Tg</text>
+</svg>

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { ORG_TELEGRAM_KEYS } from '@/features/telegram/Schema/telegramSettingsSchema'
-import { sendTelegramMessage } from '@/lib/telegram'
+import { getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
 import { notify } from '@/lib/notify'
 
 interface TelegramUpdate {
@@ -28,16 +27,11 @@ export async function POST(
       return NextResponse.json({ ok: true })
     }
 
-    const secretSetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: {
-          organizationId,
-          key: ORG_TELEGRAM_KEYS.TELEGRAM_WEBHOOK_SECRET,
-        },
-      },
-    })
+    // The secret follows the Telegram integration, so a bot connected before
+    // the move and one connected after are checked the same way.
+    const secret = await getOrgTelegramWebhookSecret(organizationId)
 
-    if (!secretSetting?.value || secretSetting.value !== secretHeader) {
+    if (!secret || secret !== secretHeader) {
       return NextResponse.json({ ok: true })
     }
 

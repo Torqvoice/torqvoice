@@ -1,23 +1,29 @@
-import { db } from './db'
+import { channelSettings } from '@/features/integrations/Lib/messaging'
 import { ORG_TELEGRAM_KEYS } from '@/features/telegram/Schema/telegramSettingsSchema'
 
 const TELEGRAM_API_BASE = 'https://api.telegram.org/bot'
 
 // ─── Settings helpers ───────────────────────────────────────────────────────
 
-async function getOrgSetting(organizationId: string, key: string): Promise<string | null> {
-  const setting = await db.appSetting.findUnique({
-    where: { organizationId_key: { organizationId, key } },
-  })
-  return setting?.value || null
-}
-
+/**
+ * Telegram's bot token and name come from the connected integration now. A
+ * bot set up before the move is adopted on the first read, so nothing has to
+ * be pasted again.
+ */
 export async function getOrgTelegramBotToken(organizationId: string): Promise<string | null> {
-  return getOrgSetting(organizationId, ORG_TELEGRAM_KEYS.TELEGRAM_BOT_TOKEN)
+  const settings = await channelSettings(organizationId, 'telegram')
+  return settings.get(ORG_TELEGRAM_KEYS.TELEGRAM_BOT_TOKEN) || null
 }
 
 export async function getOrgTelegramBotUsername(organizationId: string): Promise<string | null> {
-  return getOrgSetting(organizationId, ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME)
+  const settings = await channelSettings(organizationId, 'telegram')
+  return settings.get(ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME) || null
+}
+
+/** The secret Telegram signs its webhook calls with. */
+export async function getOrgTelegramWebhookSecret(organizationId: string): Promise<string | null> {
+  const settings = await channelSettings(organizationId, 'telegram')
+  return settings.get(ORG_TELEGRAM_KEYS.TELEGRAM_WEBHOOK_SECRET) || null
 }
 
 // ─── Bot API: getMe ─────────────────────────────────────────────────────────

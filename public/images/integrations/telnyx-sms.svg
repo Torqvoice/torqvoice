@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="telnyx sms">
+  <title>telnyx sms</title>
+  <rect width="48" height="48" rx="11" fill="#2563eb"/>
+  <text x="24" y="24" fill="#ffffff" font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="18" font-weight="600" text-anchor="middle" dominant-baseline="central">Tx</text>
+</svg>

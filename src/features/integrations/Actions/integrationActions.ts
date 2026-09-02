@@ -21,6 +21,7 @@ import {
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import type { ConnectionStatus, ConnectorManifest, SettingOption } from '../Lib/types'
+import { retireOtherProviders } from '../Lib/messaging'
 import { openCredentials } from '../Lib/vault'
 
 const SETTINGS_PERMISSION = [
@@ -221,6 +222,11 @@ export async function saveIntegrationCredentials(connectorId: string, raw: unkno
           })
         }
         await setConnectionStatus(connection.id, 'active')
+        // A workshop sends through one SMS vendor, one mail vendor and so on,
+        // the way the old provider dropdown worked, so connecting a second one
+        // in the same channel stands the first down rather than leaving the
+        // send path to pick.
+        await retireOtherProviders(organizationId, connectorId)
       }
       revalidatePath(`/settings/integrations/${connectorId}`)
       return { id: connection.id }

@@ -1,4 +1,5 @@
 import { db } from './db'
+import { channelProvider, channelSettings } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { normalizePortalPhone } from './portal-phone'
@@ -12,23 +13,17 @@ export interface SendSmsOptions {
 
 type SettingsMap = Map<string, string>
 
-async function getOrgSettings(organizationId: string, keys: string[]): Promise<SettingsMap> {
-  const rows = await db.appSetting.findMany({
-    where: { organizationId, key: { in: keys } },
-  })
-  return new Map(rows.map((r) => [r.key, r.value]))
+/**
+ * The workshop's SMS vendor and its keys, from the integration it connected.
+ * A setup made before SMS moved into the catalog is adopted on the way past,
+ * so this keeps answering for workshops that never touched the new screen.
+ */
+async function smsSettings(organizationId: string): Promise<SettingsMap> {
+  return channelSettings(organizationId, 'sms')
 }
 
 export async function getOrgSmsProvider(organizationId: string): Promise<SmsProvider | null> {
-  const setting = await db.appSetting.findUnique({
-    where: {
-      organizationId_key: {
-        organizationId,
-        key: ORG_SMS_KEYS.SMS_PROVIDER,
-      },
-    },
-  })
-  const value = setting?.value
+  const value = await channelProvider(organizationId, 'sms')
   if (value === 'twilio' || value === 'vonage' || value === 'telnyx') {
     return value
   }
@@ -36,15 +31,8 @@ export async function getOrgSmsProvider(organizationId: string): Promise<SmsProv
 }
 
 export async function getOrgSmsPhoneNumber(organizationId: string): Promise<string | null> {
-  const setting = await db.appSetting.findUnique({
-    where: {
-      organizationId_key: {
-        organizationId,
-        key: ORG_SMS_KEYS.SMS_PHONE_NUMBER,
-      },
-    },
-  })
-  return setting?.value || null
+  const settings = await smsSettings(organizationId)
+  return settings.get(ORG_SMS_KEYS.SMS_PHONE_NUMBER) || null
 }
 
 // ─── Twilio ──────────────────────────────────────────────────────────────────
@@ -228,24 +216,34 @@ export async function sendOrgSms(
   organizationId: string,
   options: SendSmsOptions
 ): Promise<SendSmsResult> {
-  const provider = await getOrgSmsProvider(organizationId)
-  if (!provider) {
+  // One read of the connection covers the vendor, its keys and the number,
+  // and the country code is a workshop setting rather than the vendor's.
+  const [settings, countryRow] = await Promise.all([
+    smsSettings(organizationId),
+    db.appSetting.findUnique({
+      where: {
+        organizationId_key: {
+          organizationId,
+          key: SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE,
+        },
+      },
+      select: { value: true },
+    }),
+  ])
+
+  const provider = settings.get(ORG_SMS_KEYS.SMS_PROVIDER)
+  if (provider !== 'twilio' && provider !== 'vonage' && provider !== 'telnyx') {
     throw new Error('SMS is not configured. Set up an SMS provider in Settings.')
   }
 
-  const from = await getOrgSmsPhoneNumber(organizationId)
+  const from = settings.get(ORG_SMS_KEYS.SMS_PHONE_NUMBER)
   if (!from) {
     throw new Error('SMS phone number is not configured.')
   }
 
-  // Load the SMS provider settings + the workshop's default country code
-  // in a single query so we can normalize the destination phone before
-  // any provider sees it. Twilio/Vonage/Telnyx all require strict E.164.
-  const allKeys = [...Object.values(ORG_SMS_KEYS), SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE]
-  const settings = await getOrgSettings(organizationId, allKeys)
-
-  const defaultCountryCode = settings.get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE) ?? null
-  const normalizedTo = normalizePortalPhone(options.to, defaultCountryCode)
+  // Twilio, Vonage and Telnyx all require strict E.164, so the destination is
+  // normalized before any of them sees it.
+  const normalizedTo = normalizePortalPhone(options.to, countryRow?.value ?? null)
   if (!normalizedTo) {
     throw new Error(
       'Invalid phone number format. Must be E.164 format (e.g. +15551234567), ' +
