@@ -33,6 +33,8 @@ vi.mock('@/lib/db', () => ({
     appSetting: {
       findUnique: vi.fn(),
       findMany: vi.fn(),
+      // Adoption leaves a marker row behind so it only ever happens once.
+      upsert: vi.fn(),
     },
     // SMS credentials live on an integration connection now. These tests seed
     // the old settings rows, so they run through the adoption path that a
@@ -40,6 +42,8 @@ vi.mock('@/lib/db', () => ({
     integrationConnection: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
       upsert: vi.fn(),
       update: vi.fn(),
       updateMany: vi.fn(),
@@ -172,11 +176,12 @@ beforeEach(() => {
   vi.mocked(db.appSetting.findMany).mockResolvedValue([] as any)
   vi.mocked(db.integrationConnection.findMany).mockResolvedValue([] as any)
   vi.mocked(db.integrationConnection.update).mockResolvedValue({} as any)
-  vi.mocked(db.integrationConnection.upsert).mockImplementation((({ create }: any) => ({
+  vi.mocked(db.integrationConnection.findUnique).mockResolvedValue(null as any)
+  vi.mocked(db.integrationConnection.create).mockImplementation((({ data }: any) => ({
     id: 'conn-test',
-    credentials: create.credentials,
-    settings: create.settings,
-    status: create.status,
+    credentials: data.credentials,
+    settings: data.settings,
+    status: data.status,
   })) as any)
 })
 

@@ -9,7 +9,9 @@ import {
   AlertTriangle,
   ArrowLeft,
   Check,
+  Copy,
   Loader2,
+  Mail,
   Play,
   Plug,
   RefreshCw,
@@ -41,6 +43,7 @@ import {
   retryIntegrationJob,
   runIntegrationJob,
   saveIntegrationCredentials,
+  sendIntegrationTestMessage,
   testIntegration,
   updateIntegrationSettings,
 } from '@/features/integrations/Actions/integrationActions'
@@ -79,6 +82,7 @@ export function ConnectionSettings({
   const confirm = useConfirm()
   const { manifest, connection } = view
   const [busy, setBusy] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   // Outcome of an OAuth round trip lands here as a query parameter.
   useEffect(() => {
@@ -134,7 +138,11 @@ export function ConnectionSettings({
   }
 
   const firstSchedule = manifest.schedules?.[0]?.job
+  const hasSync = Boolean(firstSchedule)
   const isCalendar = manifest.category === 'calendar'
+  // Mail vendors can prove themselves by delivering a message to the person
+  // looking at the page, which a key check cannot.
+  const canSendTestEmail = manifest.capabilities.includes('email.send')
 
   return (
     <div className="space-y-4">
@@ -184,7 +192,7 @@ export function ConnectionSettings({
         )}
 
         {connected ? (
-          <div className="grid gap-4 text-sm sm:grid-cols-3">
+          <div className={`grid gap-4 text-sm ${hasSync ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
             <div>
               <p className="text-xs text-muted-foreground">{t('connection.account')}</p>
               <p className="font-medium">{connection.externalAccountName ?? '-'}</p>
@@ -200,17 +208,20 @@ export function ConnectionSettings({
                   : '-'}
               </p>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">{t('connection.lastSync')}</p>
-              <p className="font-medium">
-                {connection.lastSyncAt
-                  ? format.dateTime(new Date(connection.lastSyncAt), {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })
-                  : '-'}
-              </p>
-            </div>
+            {/* Only connectors that sync on a timer have a last sync to show. */}
+            {hasSync && (
+              <div>
+                <p className="text-xs text-muted-foreground">{t('connection.lastSync')}</p>
+                <p className="font-medium">
+                  {connection.lastSyncAt
+                    ? format.dateTime(new Date(connection.lastSyncAt), {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                      })
+                    : '-'}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <ConnectForm
@@ -221,14 +232,73 @@ export function ConnectionSettings({
             oauthStartUrl={oauthStartUrl}
             enabled={view.enabled}
             busy={busy}
-            onSave={(values) =>
+            initialSettings={connection?.settings}
+            onSave={(values, settings) =>
               run(
                 'credentials',
-                () => saveIntegrationCredentials(manifest.id, values),
+                () => saveIntegrationCredentials(manifest.id, values, settings),
                 isOAuth ? undefined : t('connection.connectedShort')
               )
             }
           />
+        )}
+
+        {connected && view.inbound && (
+          <div className="mt-4 rounded-lg border bg-muted/30 p-3 text-sm">
+            <p className="font-medium">{t('connection.inboundUrl')}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t(`connection.${view.inbound.note}`)}
+            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <code className="block min-w-0 flex-1 select-all break-all rounded bg-background px-2 py-1 text-xs">
+                {view.inbound.url}
+              </code>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(view.inbound?.url ?? '')
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+              >
+                {copied ? (
+                  <Check className="mr-1 h-3.5 w-3.5" />
+                ) : (
+                  <Copy className="mr-1 h-3.5 w-3.5" />
+                )}
+                {copied ? t('connection.copied') : t('connection.copy')}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Keys that failed their check can be entered again without
+            disconnecting first, which would also throw the settings away. */}
+        {connected && connection.status === 'error' && !isOAuth && (
+          <div className="mt-4 rounded-lg border p-3">
+            <p className="mb-3 text-sm">
+              <span className="font-medium">{t('connection.updateKeys')}</span>{' '}
+              <span className="text-muted-foreground">{t('connection.updateKeysHint')}</span>
+            </p>
+            <ConnectForm
+              manifest={manifest}
+              tenantClientId={null}
+              needsTenantApp={false}
+              redirectUri={view.redirectUri}
+              oauthStartUrl={oauthStartUrl}
+              enabled={view.enabled}
+              busy={busy}
+              initialSettings={connection.settings}
+              onSave={(values, settings) =>
+                run(
+                  'credentials',
+                  () => saveIntegrationCredentials(manifest.id, values, settings),
+                  t('connection.connectedShort')
+                )
+              }
+            />
+          </div>
         )}
 
         {connected && (
@@ -248,6 +318,30 @@ export function ConnectionSettings({
               )}
               {t('connection.test')}
             </Button>
+            {canSendTestEmail && (
+              <Button
+                variant="outline"
+                size="sm"
+                title={t('connection.testEmailHint')}
+                onClick={() =>
+                  run('sendTest', async () => {
+                    const res = await sendIntegrationTestMessage(manifest.id)
+                    if (res.success && res.data) {
+                      toast.success(t('connection.testEmailSent', { email: res.data.sentTo }))
+                    }
+                    return res
+                  })
+                }
+                disabled={busy !== null}
+              >
+                {busy === 'sendTest' ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Mail className="mr-1 h-3.5 w-3.5" />
+                )}
+                {t('connection.sendTestEmail')}
+              </Button>
+            )}
             {firstSchedule && (
               <Button
                 variant="outline"
@@ -364,6 +458,7 @@ function ConnectForm({
   oauthStartUrl,
   enabled,
   busy,
+  initialSettings,
   onSave,
 }: {
   manifest: ConnectionView['manifest']
@@ -373,7 +468,9 @@ function ConnectForm({
   oauthStartUrl: string
   enabled: boolean
   busy: string | null
-  onSave: (values: Record<string, string>) => Promise<boolean>
+  /** Settings already on the connection, when keys are being entered again. */
+  initialSettings?: Record<string, unknown>
+  onSave: (values: Record<string, string>, settings?: SettingValues) => Promise<boolean>
 }) {
   const t = useTranslations('integrations')
   const tc = useTranslations(`integrations.connectors.${manifest.id}`)
@@ -385,9 +482,23 @@ function ConnectForm({
       : manifest.auth.fields
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
+    for (const f of fields) if (f.default) initial[f.key] = f.default
     if (tenantClientId) initial.clientId = tenantClientId
     return initial
   })
+  // Key-based vendors take their settings on the same page as the keys: an
+  // SMTP port means nothing without its TLS choice, and a from address is
+  // needed before a test email can go out. Remote selects need a connection
+  // to list from, so they wait for the settings card.
+  const settingFields: SettingField[] =
+    manifest.auth.type === 'oauth2'
+      ? []
+      : manifest.settings.filter((f) => f.type !== 'remote-select')
+  const [settings, setSettings] = useState<SettingValues>(() =>
+    initialSettingValues(settingFields, initialSettings ?? {})
+  )
+  const visibleSettings = visibleSettingFields(settingFields, settings)
+  const settingsMissing = visibleSettings.some((f) => f.required && !settings[f.key])
   const tenantReady = Boolean(tenantClientId)
   const tenantComplete = Boolean(values.clientId) && (Boolean(values.clientSecret) || tenantReady)
   const tenantDirty = values.clientId !== (tenantClientId ?? '') || Boolean(values.clientSecret)
@@ -442,6 +553,18 @@ function ConnectForm({
         </div>
       )}
 
+      {visibleSettings.length > 0 && (
+        <div className="rounded-lg border p-3">
+          <SettingFieldList
+            connectorId={manifest.id}
+            fields={visibleSettings}
+            values={settings}
+            setValues={setSettings}
+            remote={{}}
+          />
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         {manifest.auth.type === 'oauth2' ? (
           needsTenantApp ? (
@@ -463,14 +586,117 @@ function ConnectForm({
           )
         ) : (
           <Button
-            onClick={() => onSave(values)}
-            disabled={busy !== null || fields.some((f) => f.required && !values[f.key])}
+            onClick={() => onSave(values, settings)}
+            disabled={
+              busy !== null || settingsMissing || fields.some((f) => f.required && !values[f.key])
+            }
           >
             {busy === 'credentials' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t('connection.connect')}
           </Button>
         )}
       </div>
+    </div>
+  )
+}
+
+type SettingValues = Record<string, string | number | boolean>
+
+/** Saved values under the manifest defaults, with an empty value for the rest. */
+function initialSettingValues(
+  fields: SettingField[],
+  initial: Record<string, unknown>
+): SettingValues {
+  const out: SettingValues = {}
+  for (const f of fields) {
+    const v = initial[f.key]
+    out[f.key] =
+      (v as string | number | boolean | undefined) ??
+      (f.default as string | number | boolean | undefined) ??
+      (f.type === 'boolean' ? false : '')
+  }
+  return out
+}
+
+function visibleSettingFields(fields: SettingField[], values: SettingValues): SettingField[] {
+  return fields.filter((f) => !f.showWhen || values[f.showWhen.key] === f.showWhen.equals)
+}
+
+/** The rows of a settings form, shared by the connect page and the settings card. */
+function SettingFieldList({
+  connectorId,
+  fields,
+  values,
+  setValues,
+  remote,
+}: {
+  connectorId: string
+  fields: SettingField[]
+  values: SettingValues
+  setValues: (update: (prev: SettingValues) => SettingValues) => void
+  remote: Record<string, SettingOption[] | null>
+}) {
+  const t = useTranslations('integrations')
+  const tc = useTranslations(`integrations.connectors.${connectorId}`)
+  return (
+    <div className="space-y-4">
+      {fields.map((f) => (
+        <div
+          key={f.key}
+          className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+        >
+          <div className="min-w-0">
+            <Label className="text-sm">{tc(`settings.${f.label}`)}</Label>
+            {f.help && <p className="text-xs text-muted-foreground">{tc(`settings.${f.help}`)}</p>}
+          </div>
+          <div className="sm:w-72 sm:shrink-0">
+            {f.type === 'boolean' && (
+              <Switch
+                checked={Boolean(values[f.key])}
+                onCheckedChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
+              />
+            )}
+            {(f.type === 'text' || f.type === 'number') && (
+              <Input
+                type={f.type}
+                className="h-8"
+                value={String(values[f.key] ?? '')}
+                onChange={(e) =>
+                  setValues((s) => ({
+                    ...s,
+                    [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value,
+                  }))
+                }
+              />
+            )}
+            {(f.type === 'select' || f.type === 'remote-select') && (
+              <Select
+                value={String(values[f.key] ?? '')}
+                onValueChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
+              >
+                <SelectTrigger className="h-8">
+                  <SelectValue
+                    placeholder={
+                      f.type === 'remote-select' && remote[f.source ?? ''] === undefined
+                        ? t('connection.loading')
+                        : t('connection.choose')
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {(f.type === 'select' ? (f.options ?? []) : (remote[f.source ?? ''] ?? [])).map(
+                    (o) => (
+                      <SelectItem key={o.value} value={o.value}>
+                        {o.label}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -489,18 +715,7 @@ function SettingsForm({
   busy: boolean
 }) {
   const t = useTranslations('integrations')
-  const tc = useTranslations(`integrations.connectors.${connectorId}`)
-  const [values, setValues] = useState<Record<string, string | number | boolean>>(() => {
-    const out: Record<string, string | number | boolean> = {}
-    for (const f of fields) {
-      const v = initial[f.key]
-      out[f.key] =
-        (v as string | number | boolean | undefined) ??
-        (f.default as string | number | boolean | undefined) ??
-        (f.type === 'boolean' ? false : '')
-    }
-    return out
-  })
+  const [values, setValues] = useState<SettingValues>(() => initialSettingValues(fields, initial))
   const [remote, setRemote] = useState<Record<string, SettingOption[] | null>>({})
 
   const remoteSources = useMemo(
@@ -521,7 +736,7 @@ function SettingsForm({
     }
   }, [connectorId, remoteSources])
 
-  const visible = fields.filter((f) => !f.showWhen || values[f.showWhen.key] === f.showWhen.equals)
+  const visible = visibleSettingFields(fields, values)
   const missing = visible.some((f) => f.required && !values[f.key])
 
   return (
@@ -530,65 +745,13 @@ function SettingsForm({
       description={t('connection.settingsDescription')}
     >
       <div className="space-y-4">
-        {visible.map((f) => (
-          <div
-            key={f.key}
-            className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
-          >
-            <div className="min-w-0">
-              <Label className="text-sm">{tc(`settings.${f.label}`)}</Label>
-              {f.help && (
-                <p className="text-xs text-muted-foreground">{tc(`settings.${f.help}`)}</p>
-              )}
-            </div>
-            <div className="sm:w-72 sm:shrink-0">
-              {f.type === 'boolean' && (
-                <Switch
-                  checked={Boolean(values[f.key])}
-                  onCheckedChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
-                />
-              )}
-              {(f.type === 'text' || f.type === 'number') && (
-                <Input
-                  type={f.type}
-                  className="h-8"
-                  value={String(values[f.key] ?? '')}
-                  onChange={(e) =>
-                    setValues((s) => ({
-                      ...s,
-                      [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value,
-                    }))
-                  }
-                />
-              )}
-              {(f.type === 'select' || f.type === 'remote-select') && (
-                <Select
-                  value={String(values[f.key] ?? '')}
-                  onValueChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
-                >
-                  <SelectTrigger className="h-8">
-                    <SelectValue
-                      placeholder={
-                        f.type === 'remote-select' && remote[f.source ?? ''] === undefined
-                          ? t('connection.loading')
-                          : t('connection.choose')
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(f.type === 'select' ? (f.options ?? []) : (remote[f.source ?? ''] ?? [])).map(
-                      (o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                          {o.label}
-                        </SelectItem>
-                      )
-                    )}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-          </div>
-        ))}
+        <SettingFieldList
+          connectorId={connectorId}
+          fields={visible}
+          values={values}
+          setValues={setValues}
+          remote={remote}
+        />
         <div className="flex justify-end">
           <Button onClick={() => onSave(values)} disabled={busy || missing}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -21,8 +21,87 @@ import {
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import type { ConnectionStatus, ConnectorManifest, SettingOption } from '../Lib/types'
-import { retireOtherProviders } from '../Lib/messaging'
+import { messagingProvider } from '@/integrations/messaging/catalog'
+import {
+  type InboundWebhook,
+  completeMessagingCredentials,
+  inboundWebhook,
+  markChannelAdopted,
+  retireOtherProviders,
+} from '../Lib/messaging'
 import { openCredentials } from '../Lib/vault'
+
+/**
+ * The inbound URL for a messaging connection, from its sealed secret. A row
+ * whose credentials cannot be opened shows no URL rather than no page.
+ */
+function inboundFor(
+  row: { connectorId: string; organizationId: string; credentials: string | null },
+  appUrl: string
+): InboundWebhook | null {
+  if (!messagingProvider(row.connectorId)) return null
+  try {
+    return inboundWebhook(
+      row.connectorId,
+      row.organizationId,
+      openCredentials(row.credentials),
+      appUrl
+    )
+  } catch {
+    return null
+  }
+}
+
+const settingsSchema = z.record(
+  z.string(),
+  z.union([z.string().max(2000), z.number(), z.boolean()])
+)
+
+/** The settings the manifest declares, typed the way it declares them; the rest is dropped. */
+function cleanSettings(manifest: ConnectorManifest, raw: unknown): Record<string, unknown> {
+  const input = settingsSchema.parse(raw)
+  const clean: Record<string, unknown> = {}
+  for (const field of manifest.settings) {
+    if (!(field.key in input)) continue
+    const v = input[field.key]
+    if (field.type === 'boolean') clean[field.key] = Boolean(v)
+    else if (field.type === 'number') clean[field.key] = Number(v)
+    else clean[field.key] = String(v)
+  }
+  return clean
+}
+
+/**
+ * The one way a connection becomes live. A workshop sends through one SMS
+ * vendor, one mail vendor and so on, the way the old provider dropdown
+ * worked, so going live stands the channel's other vendors down, and records
+ * that the channel is decided by its connections from now on.
+ */
+async function activateConnection(
+  connectionId: string,
+  organizationId: string,
+  connectorId: string,
+  userId: string
+): Promise<void> {
+  await setConnectionStatus(connectionId, 'active')
+  const provider = messagingProvider(connectorId)
+  if (!provider) return
+  await retireOtherProviders(organizationId, connectorId)
+  await markChannelAdopted(organizationId, provider.channel, userId)
+}
+
+/** Settings a connector learned on its own, folded under what the workshop saved. */
+async function mergeSettings(connectionId: string, patch: Record<string, unknown>) {
+  const row = await db.integrationConnection.findUnique({
+    where: { id: connectionId },
+    select: { settings: true },
+  })
+  const settings = { ...((row?.settings as Record<string, unknown>) ?? {}), ...patch }
+  await db.integrationConnection.update({
+    where: { id: connectionId },
+    data: { settings: settings as object },
+  })
+}
 
 const SETTINGS_PERMISSION = [
   { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
@@ -106,6 +185,12 @@ export interface ConnectionView {
   isCloud: boolean
   webhookUrl: string | null
   /**
+   * Where a messaging vendor must deliver inbound messages, built from the
+   * connection's own secret. Null for vendors that register it themselves
+   * or have nothing inbound.
+   */
+  inbound: InboundWebhook | null
+  /**
    * The callback the OAuth start route will send to the vendor. Computed on
    * the server from the configured app URL, so it is the same on the server
    * render and in the browser, and it matches what the vendor sees.
@@ -155,6 +240,7 @@ export async function getIntegrationConnection(connectorId: string) {
         isCloud: isCloudMode(),
         webhookUrl:
           row && appUrl ? `${appUrl}/api/integrations/${connectorId}/${row.id}/webhook` : null,
+        inbound: row ? inboundFor(row, configuredAppUrl()) : null,
         redirectUri: redirectUriFor(configuredAppUrl(), connectorId),
       }
     },
@@ -168,7 +254,11 @@ const credentialsSchema = z.record(z.string(), z.string().max(4000))
  * Store credentials the workshop typed in: API keys, client-credential
  * keys, or its own OAuth client id and secret ahead of the handshake.
  */
-export async function saveIntegrationCredentials(connectorId: string, raw: unknown) {
+export async function saveIntegrationCredentials(
+  connectorId: string,
+  raw: unknown,
+  rawSettings?: unknown
+) {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
@@ -177,7 +267,14 @@ export async function saveIntegrationCredentials(connectorId: string, raw: unkno
       const features = await getFeatures(organizationId)
       if (!features.integrations)
         throw new FeatureGatedError('integrations', 'Integrations are not included in your plan.')
+      // A channel keeps the plan gate it had as a settings page.
+      if (manifest.plan && !features[manifest.plan])
+        throw new FeatureGatedError(manifest.plan, `${manifest.name} is not included in your plan.`)
       const input = credentialsSchema.parse(raw)
+      // Settings typed on the connect page, saved before the key check runs:
+      // an SMTP port needs its TLS choice and a Mailgun key needs its region
+      // before either can be proved.
+      const settings = rawSettings === undefined ? {} : cleanSettings(manifest, rawSettings)
 
       const fields =
         manifest.auth.type === 'oauth2' ? (manifest.auth.tenantFields ?? []) : manifest.auth.fields
@@ -186,22 +283,38 @@ export async function saveIntegrationCredentials(connectorId: string, raw: unkno
       }
       const allowed = new Set(fields.map((f) => f.key))
       const clean: Record<string, string> = {}
-      for (const [k, v] of Object.entries(input))
-        if (allowed.has(k) && v.trim()) clean[k] = v.trim()
+      // An optional field sent back empty is being cleared, not left alone.
+      const cleared = new Set<string>()
+      for (const [k, v] of Object.entries(input)) {
+        if (!allowed.has(k)) continue
+        if (v.trim()) clean[k] = v.trim()
+        else cleared.add(k)
+      }
 
       const existing = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
       })
       const previous = openCredentials(existing?.credentials)
-      // For OAuth the handshake still has to run; for keys the connection is live now.
-      const status = manifest.auth.type === 'oauth2' ? (existing?.status ?? 'pending') : 'active'
+      for (const k of cleared) delete previous[k]
+      // Nothing is live until the keys have been checked: the row keeps the
+      // status it had, and a brand-new one starts pending, so a send that
+      // lands in the middle of a connect neither picks up half-stored keys
+      // nor mints a secret over them.
       const connection = await db.integrationConnection.upsert({
         where: { organizationId_connectorId: { organizationId, connectorId } },
-        create: { organizationId, connectorId, status, createdById: userId },
-        update: { status },
+        create: { organizationId, connectorId, status: 'pending', createdById: userId },
+        update: {},
         select: { id: true },
       })
-      await storeCredentials(connection.id, { ...previous, ...clean })
+      // A messaging vendor also gets the secrets the workshop never types,
+      // such as the one its inbound webhook URL is built from, and the
+      // fingerprint that URL is later looked up by.
+      const completed = completeMessagingCredentials(connectorId, { ...previous, ...clean })
+      await storeCredentials(connection.id, completed.credentials)
+      const patch = { ...settings, ...completed.settings }
+      if (Object.keys(patch).length > 0) {
+        await mergeSettings(connection.id, patch)
+      }
 
       if (manifest.auth.type !== 'oauth2') {
         const { ctx, server } = await loadConnection(connection.id)
@@ -214,19 +327,35 @@ export async function saveIntegrationCredentials(connectorId: string, raw: unkno
           )
           throw new Error(result.message ?? 'Connection test failed')
         }
+        // Who the account is, when the vendor will say. Not being able to
+        // ask is no reason to refuse keys that just passed their check.
         if (server.identify) {
-          const who = await server.identify(ctx)
-          await db.integrationConnection.update({
-            where: { id: connection.id },
-            data: { externalAccountId: who.id, externalAccountName: who.name },
-          })
+          try {
+            const who = await server.identify(ctx)
+            await db.integrationConnection.update({
+              where: { id: connection.id },
+              data: { externalAccountId: who.id, externalAccountName: who.name },
+            })
+          } catch (err) {
+            await writeLog(connection.id, 'warn', 'Could not identify the account', {
+              error: err instanceof Error ? err.message : String(err),
+            })
+          }
         }
-        await setConnectionStatus(connection.id, 'active')
-        // A workshop sends through one SMS vendor, one mail vendor and so on,
-        // the way the old provider dropdown worked, so connecting a second one
-        // in the same channel stands the first down rather than leaving the
-        // send path to pick.
-        await retireOtherProviders(organizationId, connectorId)
+        // Remote setup, such as registering a webhook, happens before anything
+        // else is stood down, so a failure here leaves the previous vendor in
+        // charge rather than the workshop with no sender.
+        if (server.onConnect) {
+          try {
+            const outcome = await server.onConnect(ctx)
+            if (outcome?.settings) await mergeSettings(connection.id, outcome.settings)
+          } catch (err) {
+            const message = err instanceof Error ? err.message : 'Connection setup failed'
+            await setConnectionStatus(connection.id, 'error', message)
+            throw new Error(message)
+          }
+        }
+        await activateConnection(connection.id, organizationId, connectorId, userId)
       }
       revalidatePath(`/settings/integrations/${connectorId}`)
       return { id: connection.id }
@@ -246,26 +375,13 @@ export async function saveIntegrationCredentials(connectorId: string, raw: unkno
   )
 }
 
-const settingsSchema = z.record(
-  z.string(),
-  z.union([z.string().max(2000), z.number(), z.boolean()])
-)
-
 export async function updateIntegrationSettings(connectorId: string, raw: unknown) {
   return withAuth(
     async ({ organizationId }) => {
       demoGuard()
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
-      const input = settingsSchema.parse(raw)
-      const clean: Record<string, unknown> = {}
-      for (const field of manifest.settings) {
-        if (!(field.key in input)) continue
-        const v = input[field.key]
-        if (field.type === 'boolean') clean[field.key] = Boolean(v)
-        else if (field.type === 'number') clean[field.key] = Number(v)
-        else clean[field.key] = String(v)
-      }
+      const clean = cleanSettings(manifest, raw)
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true, settings: true, status: true },
@@ -303,20 +419,23 @@ export async function getIntegrationRemoteOptions(connectorId: string, source: s
 
 export async function testIntegration(connectorId: string) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
+      demoGuard()
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
-        select: { id: true },
+        select: { id: true, status: true },
       })
       if (!row) throw new Error('Connect the integration first')
+      // A vendor that was stood down or never finished connecting is not
+      // brought back by a passing check; that takes a deliberate connect.
+      if (row.status === 'pending' || row.status === 'disconnected') {
+        throw new Error('Connect the integration first')
+      }
       const { ctx, server } = await loadConnection(row.id)
       try {
         const result = await server.test(ctx)
-        await setConnectionStatus(
-          row.id,
-          result.ok ? 'active' : 'error',
-          result.ok ? null : (result.message ?? 'Test failed')
-        )
+        if (result.ok) await activateConnection(row.id, organizationId, connectorId, userId)
+        else await setConnectionStatus(row.id, 'error', result.message ?? 'Test failed')
         await writeLog(
           row.id,
           result.ok ? 'info' : 'error',
@@ -337,6 +456,46 @@ export async function testIntegration(connectorId: string) {
 }
 
 /** Queue one of the connector's jobs now, for example a full calendar pull. */
+/**
+ * Send a real message to the signed-in user through one connection. A key
+ * check proves the key; a delivered email proves the from address and the
+ * vendor's sending rules, which is what the old email page's test button did.
+ */
+export async function sendIntegrationTestMessage(connectorId: string) {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      demoGuard()
+      const row = await db.integrationConnection.findUnique({
+        where: { organizationId_connectorId: { organizationId, connectorId } },
+        select: { id: true, status: true },
+      })
+      if (!row) throw new Error('Connect the integration first')
+      if (row.status === 'pending' || row.status === 'disconnected') {
+        throw new Error('Connect the integration first')
+      }
+      const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
+      if (!user?.email) throw new Error('Could not find your email address')
+
+      const { ctx, server } = await loadConnection(row.id)
+      if (!server.sendTest) throw new Error('This integration cannot send a test message')
+      try {
+        await server.sendTest(ctx, { email: user.email })
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Sending failed'
+        await writeLog(row.id, 'error', `Test message failed: ${message}`)
+        throw new Error(message)
+      }
+      await writeLog(row.id, 'info', `Test message sent to ${user.email}`)
+      // A delivered message is the strongest check there is, so a vendor in
+      // error comes back live through the same door as any other.
+      await activateConnection(row.id, organizationId, connectorId, userId)
+      revalidatePath(`/settings/integrations/${connectorId}`)
+      return { sentTo: user.email }
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
+  )
+}
+
 export async function runIntegrationJob(connectorId: string, kind: string) {
   return withAuth(
     async ({ organizationId }) => {
@@ -400,7 +559,7 @@ export async function backfillIntegrationCalendar(connectorId: string) {
 
 export async function disconnectIntegration(connectorId: string) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId, userId }) => {
       demoGuard()
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
@@ -415,6 +574,11 @@ export async function disconnectIntegration(connectorId: string) {
           console.warn('[integrations] onDisconnect failed:', err)
         }
       }
+      // A messaging vendor the workshop disconnects stays disconnected: the
+      // rows it was set up from before the move must not be adopted back on
+      // the next send.
+      const provider = messagingProvider(connectorId)
+      if (provider) await markChannelAdopted(organizationId, provider.channel, userId)
       // Tokens go; links and logs go with the row so nothing dangles.
       await db.integrationConnection.delete({ where: { id: row.id } })
       await clearPulledEvents(row.id)

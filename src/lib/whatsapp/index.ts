@@ -1,5 +1,6 @@
 import 'server-only'
 import { channelSettings } from '@/features/integrations/Lib/messaging'
+import { legacyKeysForChannel } from '@/integrations/messaging/catalog'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getPhoneLookupVariants, normalizePortalPhone } from '@/lib/portal-phone'
@@ -69,20 +70,33 @@ export interface WhatsappConfig {
  * Everything the adapter needs is resolved here, so no caller has to know
  * which provider is in play or where its credentials are stored.
  */
-export async function getWhatsappConfig(organizationId: string): Promise<WhatsappConfig | null> {
+/**
+ * The connected integration is where WhatsApp lives now. The old settings
+ * rows still answer only for the keys the catalog does not carry, such as
+ * when the webhook was last seen and the flat template keys from before
+ * templates were namespaced; never for the vendor, its keys or the switch,
+ * or a vendor the workshop disconnected would keep sending from its old rows.
+ */
+async function whatsappSettings(organizationId: string): Promise<Map<string, string> | null> {
   const [rows, connected] = await Promise.all([
     db.appSetting.findMany({
-      where: { organizationId },
+      where: { organizationId, key: { startsWith: 'whatsapp.' } },
       select: { key: true, value: true },
     }),
     channelSettings(organizationId, 'whatsapp'),
   ])
-  // Settings rows first, then the connected integration on top of them: the
-  // connection is where WhatsApp lives now, and the rows behind it still
-  // answer for the few keys the catalog does not carry, such as when the
-  // webhook was last seen.
-  const settings = new Map(rows.map((row) => [row.key, row.value]))
+  if (connected.size === 0) return null
+
+  const owned = new Set([...legacyKeysForChannel('whatsapp'), ORG_WHATSAPP_KEYS.WHATSAPP_PROVIDER])
+  const settings = new Map<string, string>()
+  for (const row of rows) if (!owned.has(row.key)) settings.set(row.key, row.value)
   for (const [key, value] of connected) settings.set(key, value)
+  return settings
+}
+
+export async function getWhatsappConfig(organizationId: string): Promise<WhatsappConfig | null> {
+  const settings = await whatsappSettings(organizationId)
+  if (!settings) return null
 
   if (settings.get(ORG_WHATSAPP_KEYS.WHATSAPP_ENABLED) !== 'true') return null
 
@@ -176,19 +190,8 @@ export async function getWhatsappWebhookContext(
   const adapter = getWhatsappAdapter(providerId)
   if (!adapter) return null
 
-  const [rows, connected] = await Promise.all([
-    db.appSetting.findMany({
-      where: { organizationId },
-      select: { key: true, value: true },
-    }),
-    channelSettings(organizationId, 'whatsapp'),
-  ])
-  // Settings rows first, then the connected integration on top of them: the
-  // connection is where WhatsApp lives now, and the rows behind it still
-  // answer for the few keys the catalog does not carry, such as when the
-  // webhook was last seen.
-  const settings = new Map(rows.map((row) => [row.key, row.value]))
-  for (const [key, value] of connected) settings.set(key, value)
+  const settings = await whatsappSettings(organizationId)
+  if (!settings) return null
 
   // Only for the provider in the URL, so a stored Twilio token can never
   // authorise a call that claims to be from Meta.

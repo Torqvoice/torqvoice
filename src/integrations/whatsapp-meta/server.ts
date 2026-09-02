@@ -19,5 +19,10 @@ export const connector = messagingConnector(
       'Meta'
     )
   },
-  async ({ credentials }) => ({ id: credentials.phoneNumberId, name: credentials.phoneNumberId })
+  {
+    identify: async ({ credentials }) => ({
+      id: credentials.phoneNumberId,
+      name: credentials.phoneNumberId,
+    }),
+  }
 )

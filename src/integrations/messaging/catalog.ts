@@ -307,7 +307,7 @@ const EMAIL: MessagingProvider[] = [
     capabilities: ['email.send'],
     credentials: [
       text('host', ORG_EMAIL_KEYS.EMAIL_SMTP_HOST, { placeholder: 'smtp.example.com' }),
-      text('port', ORG_EMAIL_KEYS.EMAIL_SMTP_PORT, { placeholder: '587' }),
+      text('port', ORG_EMAIL_KEYS.EMAIL_SMTP_PORT, { placeholder: '587', default: '587' }),
       text('user', ORG_EMAIL_KEYS.EMAIL_SMTP_USER, { required: false }),
       secret('pass', ORG_EMAIL_KEYS.EMAIL_SMTP_PASS, { required: false }),
     ],
@@ -421,7 +421,11 @@ const EMAIL: MessagingProvider[] = [
     credentials: [
       text('accessKeyId', ORG_EMAIL_KEYS.EMAIL_SES_ACCESS_KEY_ID),
       secret('secretAccessKey', ORG_EMAIL_KEYS.EMAIL_SES_SECRET_ACCESS_KEY),
-      text('region', ORG_EMAIL_KEYS.EMAIL_SES_REGION, { placeholder: 'eu-west-1' }),
+      // The old send path assumed us-east-1 when no region row existed.
+      text('region', ORG_EMAIL_KEYS.EMAIL_SES_REGION, {
+        placeholder: 'eu-west-1',
+        default: 'us-east-1',
+      }),
     ],
     settings: fromAddress(ORG_EMAIL_KEYS.EMAIL_SES_FROM_EMAIL, ORG_EMAIL_KEYS.EMAIL_SES_FROM_NAME),
   },

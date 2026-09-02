@@ -16,8 +16,15 @@ export async function getOrgTelegramBotToken(organizationId: string): Promise<st
 }
 
 export async function getOrgTelegramBotUsername(organizationId: string): Promise<string | null> {
-  const settings = await channelSettings(organizationId, 'telegram')
-  return settings.get(ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME) || null
+  // Printed on invoices and the customer portal: a broken Telegram setup
+  // must cost the workshop the t.me link, never the invoice.
+  try {
+    const settings = await channelSettings(organizationId, 'telegram')
+    return settings.get(ORG_TELEGRAM_KEYS.TELEGRAM_BOT_USERNAME) || null
+  } catch (error) {
+    console.error('[telegram] Could not read the bot username:', error)
+    return null
+  }
 }
 
 /** The secret Telegram signs its webhook calls with. */

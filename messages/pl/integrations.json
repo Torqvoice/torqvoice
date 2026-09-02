@@ -83,7 +83,17 @@
     "choose": "Wybierz...",
     "planLocked": "Integracje nie są objęte Twoim planem.",
     "ownAppTitle": "Ta instalacja używa własnej aplikacji u dostawcy",
-    "redirectUri": "Adres przekierowania (redirect URI) do zarejestrowania u dostawcy:"
+    "redirectUri": "Adres przekierowania (redirect URI) do zarejestrowania u dostawcy:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
   },
   "activity": {
     "title": "Aktywność",

@@ -39,11 +39,20 @@ function settingField(field: MessagingProvider['settings'][number]): SettingFiel
   return rest
 }
 
+/** The plan feature each channel was gated on before it became a connector. */
+const CHANNEL_PLAN: Record<MessagingProvider['channel'], NonNullable<ConnectorManifest['plan']>> = {
+  sms: 'sms',
+  whatsapp: 'whatsapp',
+  telegram: 'telegram',
+  email: 'smtp',
+}
+
 export function messagingManifest(provider: MessagingProvider): ConnectorManifest {
   return {
     id: provider.id,
     name: provider.name,
     category: 'messaging',
+    plan: CHANNEL_PLAN[provider.channel],
     countries: provider.countries,
     logo: `/images/integrations/${provider.id}.svg`,
     docs: `/docs/integrations/${provider.id}`,
@@ -63,10 +72,27 @@ export function messagingManifestFor(id: string): ConnectorManifest {
   return messagingManifest(provider)
 }
 
+export type MessagingSendTest = (
+  input: {
+    connectorId: string
+    organizationId: string
+    credentials: Record<string, string>
+    settings: Record<string, unknown>
+  },
+  to: { email: string }
+) => Promise<void>
+
+export interface MessagingHooks {
+  /** Who the account is, shown as "Connected account" on the connection page. */
+  identify?: MessagingIdentify
+  /** A real message to the signed-in user, where a key check proves too little. */
+  sendTest?: MessagingSendTest
+}
+
 export function messagingConnector(
   manifest: ConnectorManifest,
   verify: MessagingVerify,
-  identify?: MessagingIdentify
+  hooks: MessagingHooks = {}
 ): ConnectorServer {
   function input(ctx: ConnectorContext) {
     return {
@@ -74,6 +100,7 @@ export function messagingConnector(
       settings: ctx.connection.settings,
     }
   }
+  const { identify, sendTest } = hooks
 
   return {
     manifest,
@@ -82,6 +109,19 @@ export function messagingConnector(
     jobs: {},
     test: (ctx) => verify(input(ctx)),
     ...(identify ? { identify: (ctx: ConnectorContext) => identify(input(ctx)) } : {}),
+    ...(sendTest
+      ? {
+          sendTest: (ctx: ConnectorContext, to: { email: string }) =>
+            sendTest(
+              {
+                connectorId: ctx.connection.connectorId,
+                organizationId: ctx.connection.organizationId,
+                ...input(ctx),
+              },
+              to
+            ),
+        }
+      : {}),
   }
 }
 

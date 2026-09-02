@@ -28,8 +28,16 @@ export async function POST(
     }
 
     // The secret follows the Telegram integration, so a bot connected before
-    // the move and one connected after are checked the same way.
-    const secret = await getOrgTelegramWebhookSecret(organizationId)
+    // the move and one connected after are checked the same way. Not being
+    // able to read it is our fault, not a bad caller: answer 500 so Telegram
+    // keeps the update and retries, rather than 200 which drops it for good.
+    let secret: string | null
+    try {
+      secret = await getOrgTelegramWebhookSecret(organizationId)
+    } catch (error) {
+      console.error('[webhook/telegram] Could not read the webhook secret:', error)
+      return NextResponse.json({ ok: false }, { status: 500 })
+    }
 
     if (!secret || secret !== secretHeader) {
       return NextResponse.json({ ok: true })

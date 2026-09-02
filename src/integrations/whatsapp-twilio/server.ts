@@ -15,5 +15,10 @@ export const connector = messagingConnector(
       'Twilio'
     )
   },
-  async ({ credentials }) => ({ id: credentials.accountSid, name: credentials.accountSid })
+  {
+    identify: async ({ credentials }) => ({
+      id: credentials.accountSid,
+      name: credentials.accountSid,
+    }),
+  }
 )

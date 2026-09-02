@@ -5,7 +5,13 @@ import Mailgun from 'mailgun.js'
 import FormData from 'form-data'
 import sgMail, { type MailDataRequired } from '@sendgrid/mail'
 import { SESClient, SendRawEmailCommand } from '@aws-sdk/client-ses'
-import { channelProvider, channelSettings } from '@/features/integrations/Lib/messaging'
+import {
+  asLegacyMap,
+  channelProvider,
+  channelSettings,
+  legacyProviderNamed,
+} from '@/features/integrations/Lib/messaging'
+import { messagingProvider } from '@/integrations/messaging/catalog'
 import { db } from './db'
 import { SYSTEM_SETTING_KEYS } from '@/features/admin/Schema/systemSettingsSchema'
 import { ORG_EMAIL_KEYS } from '@/features/email/Schema/emailSettingsSchema'
@@ -547,6 +553,39 @@ export async function getOrgFromAddress(organizationId: string): Promise<string>
     return getFromAddress()
   }
 
+  const settings = await channelSettings(organizationId, 'email')
+  return orgFromAddressFor(provider, settings)
+}
+
+/**
+ * Send through one specific email connection rather than whichever the
+ * organization is pointed at. The connection page's "send a test email" runs
+ * through here, so the vendor being looked at is the vendor being tested,
+ * even while a second one is still connected.
+ */
+export async function sendMailThroughConnection(
+  connectorId: string,
+  credentials: Record<string, string>,
+  settings: Record<string, unknown>,
+  options: Omit<SendMailOptions, 'from'>
+): Promise<{ from: string }> {
+  const provider = messagingProvider(connectorId)
+  if (!provider || !isEmailProvider(provider.legacyProvider)) {
+    throw new Error(`${connectorId} is not an email integration`)
+  }
+  const map = asLegacyMap({
+    connectionId: '',
+    connectorId,
+    provider,
+    credentials,
+    settings,
+  })
+  const from = orgFromAddressFor(provider.legacyProvider, map)
+  await sendWithProvider(provider.legacyProvider, { ...options, from }, map, 'org')
+  return { from }
+}
+
+function orgFromAddressFor(provider: EmailProvider, settings: SettingsMap): string {
   const keyMap: Record<EmailProvider, { email: string; name: string }> = {
     smtp: {
       email: ORG_EMAIL_KEYS.EMAIL_SMTP_FROM_EMAIL,
@@ -575,7 +614,6 @@ export async function getOrgFromAddress(organizationId: string): Promise<string>
   }
 
   const keys = keyMap[provider]
-  const settings = await channelSettings(organizationId, 'email')
 
   const fromEmail = settings.get(keys.email) || 'noreply@example.com'
   const fromName = settings.get(keys.name) || 'Torqvoice'
@@ -588,6 +626,13 @@ export async function sendOrgMail(organizationId: string, options: SendMailOptio
   const provider = settings.get(ORG_EMAIL_KEYS.EMAIL_PROVIDER)
 
   if (!isEmailProvider(provider)) {
+    // A workshop that named a vendor but never finished its setup used to
+    // get that vendor's error. It still does, rather than a quiet send from
+    // the platform's account that its customers would not recognise.
+    const named = await legacyProviderNamed(organizationId, 'email')
+    if (named) {
+      throw new Error(`Email provider ${named} is not fully configured. Check its integration.`)
+    }
     // Fall back to global platform email
     await sendMail(options)
     return
