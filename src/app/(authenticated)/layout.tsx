@@ -28,6 +28,10 @@ import { LicenseExpiryProvider } from '@/components/license-expiry-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
+import { findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup'
+import { getManifest } from '@/integrations/registry'
+import { PlateLookupProvider } from '@/components/plate-lookup-context'
+import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -89,6 +93,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
    * refused, one at a time.
    */
   let hasAnyAccess = true
+  /** Whether the plate lookup may offer to add a vehicle it did not find. */
+  let canCreateVehicles = true
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
@@ -101,6 +107,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
           subject: subject as PermissionSubject,
         })
       )
+      canCreateVehicles = hasPermission(userPermissions, {
+        action: PermissionAction.CREATE,
+        subject: PermissionSubject.VEHICLES,
+      })
       // A role that grants nothing readable. Every page behind the nav would
       // answer "Your role does not allow this", so say it once instead.
       hasAnyAccess = visibleSubjects.length > 0
@@ -122,6 +132,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
     features,
     seen: seenHints,
   })
+
+  // The header offers a plate lookup once a vehicle registry is connected.
+  // Resolved here so the first paint knows, rather than a button appearing a
+  // beat after the page does.
+  const lookupConnection =
+    features.integrations && visibleSubjects.includes(PermissionSubject.VEHICLES)
+      ? await findLookupConnection(data.organizationId)
+      : null
+  const plateLookupAvailable = lookupConnection !== null
+  const plateLookupRegistry = lookupConnection
+    ? (getManifest(lookupConnection.connectorId)?.name ?? null)
+    : null
 
   // Check license expiry (only for admin/owner with white-label)
   let daysUntilExpiry: number | null = null
@@ -189,34 +211,43 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 currencyFormat={data.currencyFormat}
               >
                 <ConfirmProvider>
-                  <FeatureHintProvider
-                    initialSeen={seenHints}
-                    pending={[...pendingHints, ...announcements]}
+                  <PlateLookupProvider
+                    value={{
+                      available: plateLookupAvailable,
+                      canCreate: canCreateVehicles,
+                      registryName: plateLookupRegistry,
+                    }}
                   >
-                    <AppSidebar
-                      companyLogo={data.companyLogo}
-                      organizations={data.organizations}
-                      activeOrgId={data.organizationId}
-                      isSuperAdmin={data.isSuperAdmin}
-                      features={features}
-                      tireHotelEnabled={tireHotelEnabled}
-                      visibleSubjects={visibleSubjects}
-                      announcement={announcements[0] ?? null}
-                      isAdminOrOwner={isOwnerOrAdmin}
-                    />
-                    <SidebarInset>
-                      {/* A flex column with a real height, so the `flex-1` every
+                    <FeatureHintProvider
+                      initialSeen={seenHints}
+                      pending={[...pendingHints, ...announcements]}
+                    >
+                      <AppSidebar
+                        companyLogo={data.companyLogo}
+                        organizations={data.organizations}
+                        activeOrgId={data.organizationId}
+                        isSuperAdmin={data.isSuperAdmin}
+                        features={features}
+                        tireHotelEnabled={tireHotelEnabled}
+                        visibleSubjects={visibleSubjects}
+                        announcement={announcements[0] ?? null}
+                        isAdminOrOwner={isOwnerOrAdmin}
+                      />
+                      <SidebarInset>
+                        {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                      <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">{children}</div>
-                    </SidebarInset>
-                    <SearchCommand />
-                    {isOwnerOrAdmin && <NotificationInitializer />}
-                    <OnlineTracker />
-                    <InstallBanner />
-                  </FeatureHintProvider>
+                        <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">{children}</div>
+                      </SidebarInset>
+                      <SearchCommand />
+                      <PlateLookupCommand />
+                      {isOwnerOrAdmin && <NotificationInitializer />}
+                      <OnlineTracker />
+                      <InstallBanner />
+                    </FeatureHintProvider>
+                  </PlateLookupProvider>
                 </ConfirmProvider>
               </CurrencySettingsProvider>
             </DateSettingsProvider>
