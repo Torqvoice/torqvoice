@@ -168,3 +168,23 @@ describe('the words the title strip prints', () => {
     expect(strip).not.toContain('Tax Invoice')
   })
 })
+
+/**
+ * A workshop still on the pre-designer sheet has no title strip: its
+ * letterhead prints the name itself. The name it prints is the one they wrote
+ * all the same, because a box that says what the document is called cannot
+ * quietly mean "on some sheets".
+ */
+describe('the classic letterhead', () => {
+  it('prints the name the workshop wrote', () => {
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'document_title' ? { ...s, text: 'Tax Invoice' } : s
+    )
+    // No version stamp is the classic era, which is what these sheets print.
+    const spec = buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
+    const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+    expect(header).toContain('Tax Invoice')
+    expect(spec.blocks.find((b) => b.id === 'document_title')).toBeUndefined()
+  })
+})

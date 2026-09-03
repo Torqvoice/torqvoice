@@ -831,9 +831,7 @@ function documentTitle(
               node: {
                 kind: 'text' as const,
                 id: 'document_title.title',
-                // The workshop's own word for this document when they have set
-                // one, the app's translated name otherwise.
-                text: section.text?.trim() || data.meta.title,
+                text: data.meta.title,
                 style: { fontSize: scale(size, 2.4), bold: true, color: look.text },
               },
             },
@@ -1752,9 +1750,15 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
 export function buildDocumentSpec(
   layout: InvoiceLayoutConfig,
   theme: DocumentTheme,
-  data: DocumentData
+  input: DocumentData
 ): DocumentSpec {
   const framed = theme.headerStyle === 'framed'
+  // What this document calls itself, resolved once for the whole sheet: the
+  // workshop's own word when they have written one, the app's translated name
+  // otherwise. Every block that prints the title reads it here, so a sheet
+  // whose letterhead carries the title cannot disagree with the title strip.
+  const titleText = layout.sections.find((s) => s.id === 'document_title')?.text?.trim()
+  const data = titleText ? { ...input, meta: { ...input.meta, title: titleText } } : input
   const anchors = layout.anchors ?? {}
   const contentWidth =
     595 - (framed ? FRAMED.padLeft + FRAMED.railWidth + theme.margin : theme.margin * 2)
