@@ -384,12 +384,10 @@ export function DesignerInspector({
         .filter((f) => !stored.some((existing) => existing.id === f.id))
         .map((f) => ({ id: f.id, visible: grandfathered.has(f.id) })),
     ]
-    // A switch for a row that cannot print is worse than no switch: payment
-    // terms print the workshop's own sentence, so with none written there is
-    // nothing to show or hide and the list says so by leaving the row out.
-    // The field stays in the layout, keeping whatever it was set to for the
-    // day terms are written.
-    const listedFields = resolvedFields.filter((f) => f.id !== 'payment_terms' || paymentTermsSet)
+    // A field whose text the workshop has not written yet: the switch stays,
+    // because it is theirs to set for the day they write some, but it is
+    // marked, because nothing prints there until they do.
+    const emptyFieldIds = new Set(paymentTermsSet ? [] : ['payment_terms'])
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The
     // same field can still be added to several sections.
@@ -728,7 +726,7 @@ export function DesignerInspector({
 
           {SECTIONS_WITH_FIELDS.has(section.id) && (
             <Group title={t('fields')}>
-              {listedFields.map((field) => (
+              {resolvedFields.map((field) => (
                 <div
                   key={field.id}
                   draggable
@@ -753,6 +751,14 @@ export function DesignerInspector({
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
+                  {/* The same mark the canvas puts on a block standing in for
+                      something unwritten, so the two say the same thing about
+                      the same field. */}
+                  {emptyFieldIds.has(field.id) && (
+                    <span className="shrink-0 rounded border border-[#e6d8a8] bg-[#fdf6e3] px-1.5 py-px text-[9px] font-semibold text-[#8a6d1f]">
+                      {t('placeholder')}
+                    </span>
+                  )}
                   {boldable(field.id) &&
                     (() => {
                       const boldOn = field.bold ?? defaultBoldIds.has(field.id)
