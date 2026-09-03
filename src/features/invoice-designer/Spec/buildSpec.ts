@@ -831,7 +831,9 @@ function documentTitle(
               node: {
                 kind: 'text' as const,
                 id: 'document_title.title',
-                text: data.meta.title,
+                // The workshop's own word for this document when they have set
+                // one, the app's translated name otherwise.
+                text: section.text?.trim() || data.meta.title,
                 style: { fontSize: scale(size, 2.4), bold: true, color: look.text },
               },
             },

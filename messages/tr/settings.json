@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Ödeme koşulları tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
     "paymentTermsSetHint": "Ödeme koşullarınız ödeme ayarlarınızdan gelir.",
     "paymentTermsLink": "Ödeme ayarları",
+    "titleText": "Başlık metni",
+    "titleTextHint": "Bu belgenin kendine verdiği ad. Boş bırakılırsa kendi adını okuyucunun dilinde yazdırır.",
     "placeholder": "Örnek",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",

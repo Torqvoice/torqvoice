@@ -85,6 +85,14 @@ export const invoiceSectionSchema = z.object({
    * customer card. Unset means shown, which every layout has always done.
    */
   heading: z.boolean().optional(),
+  /**
+   * Words this section prints in place of the ones the app would print. The
+   * title strip is the section that has any: what a sheet must call itself is
+   * a matter of local law and local habit, not of translation, and a business
+   * that has to print "Tax Invoice" cannot wait for a release to do it.
+   * Blank or unset prints the document's own name in the reader's language.
+   */
+  text: z.string().max(60).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */

@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Nenhuma condição de pagamento definida, então a folha mostra um texto de exemplo que não será impresso.",
     "paymentTermsSetHint": "Suas condições de pagamento vêm das configurações de pagamento.",
     "paymentTermsLink": "Configurações de pagamento",
+    "titleText": "Texto do título",
+    "titleTextHint": "Como este documento se chama. Deixado vazio, imprime o próprio nome no idioma do leitor.",
     "placeholder": "Exemplo",
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",

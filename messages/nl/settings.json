@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Er zijn geen betalingsvoorwaarden ingesteld, dus het blad toont een voorbeeldtekst die niet wordt afgedrukt.",
     "paymentTermsSetHint": "Je betalingsvoorwaarden komen uit je betaalinstellingen.",
     "paymentTermsLink": "Betaalinstellingen",
+    "titleText": "Titeltekst",
+    "titleTextHint": "Hoe dit document zichzelf noemt. Laat je het leeg, dan drukt het zijn eigen naam af in de taal van de lezer.",
     "placeholder": "Voorbeeld",
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",

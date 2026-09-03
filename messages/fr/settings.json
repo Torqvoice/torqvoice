@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Aucune condition de paiement n'est définie, la feuille affiche donc un texte d'exemple qui ne sera pas imprimé.",
     "paymentTermsSetHint": "Vos conditions de paiement proviennent des paramètres de paiement.",
     "paymentTermsLink": "Paramètres de paiement",
+    "titleText": "Texte du titre",
+    "titleTextHint": "Le nom que porte ce document. Laissé vide, il imprime son propre nom dans la langue du lecteur.",
     "placeholder": "Exemple",
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",

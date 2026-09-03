@@ -322,6 +322,7 @@ export function DesignerInspector({
   onLogo,
   sloganSet,
   paymentTermsSet,
+  documentTitleDefault,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -343,6 +344,8 @@ export function DesignerInspector({
   sloganSet: boolean
   /** Whether payment terms are set, or the panel is showing a stand-in. */
   paymentTermsSet: boolean
+  /** What the title strip prints when the workshop has not renamed it. */
+  documentTitleDefault: string
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -610,6 +613,26 @@ export function DesignerInspector({
               />
             )}
           </Group>
+
+          {/* What this document calls itself. It is the workshop's to write,
+              because the right word is a matter of local law and local habit:
+              a business registered for GST in Australia must head the sheet
+              "Tax Invoice" and one that is not registered must not. Kept with
+              the design rather than in settings, so a sheet sent last year
+              keeps the name it was sent under. */}
+          {section.id === 'document_title' && (
+            <Group title={t('titleText')}>
+              <input
+                type="text"
+                maxLength={60}
+                value={section.text ?? ''}
+                placeholder={documentTitleDefault}
+                onChange={(e) => onSection(section.id, { text: e.target.value || undefined })}
+                className="h-7 w-full rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('titleTextHint')}</p>
+            </Group>
+          )}
 
           {/* The slogan is the workshop's own words, kept in company settings
               rather than here, because it is the same line wherever it is

@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Nie ustawiono warunków płatności, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
     "paymentTermsSetHint": "Twoje warunki płatności pochodzą z ustawień płatności.",
     "paymentTermsLink": "Ustawienia płatności",
+    "titleText": "Tekst tytułu",
+    "titleTextHint": "Jak nazywa się ten dokument. Pozostawione puste, drukuje własną nazwę w języku odbiorcy.",
     "placeholder": "Symbol zastępczy",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",

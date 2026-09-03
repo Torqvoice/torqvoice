@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Es sind keine Zahlungsbedingungen hinterlegt, daher zeigt das Blatt einen Platzhalter, der nicht gedruckt wird.",
     "paymentTermsSetHint": "Ihre Zahlungsbedingungen stammen aus den Zahlungseinstellungen.",
     "paymentTermsLink": "Zahlungseinstellungen",
+    "titleText": "Titeltext",
+    "titleTextHint": "Wie sich dieses Dokument nennt. Leer gelassen, druckt es seinen eigenen Namen in der Sprache des Lesers.",
     "placeholder": "Platzhalter",
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",

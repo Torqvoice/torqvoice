@@ -1008,6 +1008,7 @@ export function InvoiceDesigner({
           ownLogo={!!template.logoUrl}
           sloganSet={!!companyWorkshop.slogan?.trim()}
           paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
+          documentTitleDefault={data.meta.title}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

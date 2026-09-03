@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Nessun termine di pagamento impostato, quindi il foglio mostra un segnaposto che non verrà stampato.",
     "paymentTermsSetHint": "I termini di pagamento provengono dalle impostazioni di pagamento.",
     "paymentTermsLink": "Impostazioni di pagamento",
+    "titleText": "Testo del titolo",
+    "titleTextHint": "Come si chiama questo documento. Se lasciato vuoto, stampa il proprio nome nella lingua del lettore.",
     "placeholder": "Segnaposto",
     "leaveTitle": "Uscire senza salvare?",
     "leaveBody": "Le modifiche a questo design non sono state salvate e andranno perse.",

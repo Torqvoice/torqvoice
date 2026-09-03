@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Mokėjimo sąlygos nenustatytos, todėl lape rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
     "paymentTermsSetHint": "Jūsų mokėjimo sąlygos imamos iš mokėjimų nustatymų.",
     "paymentTermsLink": "Mokėjimų nustatymai",
+    "titleText": "Pavadinimo tekstas",
+    "titleTextHint": "Kaip vadinasi šis dokumentas. Palikus tuščią, spausdinamas jo paties pavadinimas skaitytojo kalba.",
     "placeholder": "Vietaženklis",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",

@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "No payment terms are set, so the sheet shows a stand-in that will not print.",
     "paymentTermsSetHint": "Your payment terms come from your payment settings.",
     "paymentTermsLink": "Payment settings",
+    "titleText": "Title text",
+    "titleTextHint": "What this document calls itself. Left empty, it prints its own name in the reader's language.",
     "placeholder": "Placeholder",
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this design have not been saved. They will be lost.",

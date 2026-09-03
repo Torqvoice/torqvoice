@@ -141,3 +141,30 @@ describe('what the title strip shows', () => {
     expect(stripWith([])).toBeUndefined()
   })
 })
+
+/**
+ * What a sheet must call itself is local law, not translation: a business
+ * registered for GST in Australia heads its invoices "Tax Invoice", and one
+ * that is not registered must not. The word is the workshop's to write, and it
+ * lives with the design, so a sheet sent before they registered keeps the name
+ * it was sent under.
+ */
+describe('the words the title strip prints', () => {
+  /** The strip, as JSON, with `text` set on the Document Title section. */
+  function stripNamed(text?: string) {
+    const layout = { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION }
+    layout.sections = layout.sections.map((s) => (s.id === 'document_title' ? { ...s, text } : s))
+    const spec = buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
+    return JSON.stringify(spec.blocks.find((b) => b.id === 'document_title'))
+  }
+
+  it("prints the workshop's own word for the document", () => {
+    expect(stripNamed('Tax Invoice')).toContain('Tax Invoice')
+  })
+
+  it.each([undefined, '', '   '])('falls back to the printed name (%s)', (text) => {
+    const strip = stripNamed(text)
+    expect(strip).toContain('INVOICE')
+    expect(strip).not.toContain('Tax Invoice')
+  })
+})

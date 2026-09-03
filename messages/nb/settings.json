@@ -1958,6 +1958,8 @@
     "paymentTermsPlaceholderHint": "Det er ikke satt noen betalingsvilkår, så arket viser en plassholder som ikke skrives ut.",
     "paymentTermsSetHint": "Betalingsvilkårene hentes fra betalingsinnstillingene dine.",
     "paymentTermsLink": "Betalingsinnstillinger",
+    "titleText": "Titteltekst",
+    "titleTextHint": "Hva dette dokumentet kaller seg. Står feltet tomt, skrives dokumentets eget navn på leserens språk.",
     "placeholder": "Plassholder",
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
