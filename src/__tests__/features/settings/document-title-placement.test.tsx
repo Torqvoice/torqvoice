@@ -14,6 +14,8 @@ import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvo
 import {
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
+  invoiceLayoutConfigSchema,
+  mergeWithDefaults,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { InvoiceData } from '@/features/vehicles/Components/invoice-pdf/types'
 
@@ -81,6 +83,40 @@ describe('document title placement', () => {
           b.placement.order < title.placement.order
       )
       expect(between).toHaveLength(0)
+    }
+  })
+
+  it('reads a layout from before the switch as one the designer can save again', () => {
+    // The strip is put under the header by renumbering, not by a fraction:
+    // orders are whole numbers to the schema, and a 0.5 that reached the
+    // designer failed validation on Save, so nothing typed there ever stuck.
+    const layout = { ...getDefaultInvoiceLayout(), version: 2 }
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'document_title' ? { ...s, visible: false, order: 12 } : s
+    )
+    const merged = mergeWithDefaults(layout)
+    const ordered = [...merged.sections].sort((a, b) => a.order - b.order)
+    const header = ordered.findIndex((s) => s.id === 'header')
+    expect(ordered[header + 1]?.id).toBe('document_title')
+    expect(ordered[header + 1]?.visible).toBe(true)
+    expect(merged.sections.every((s) => Number.isInteger(s.order))).toBe(true)
+
+    const named = merged.sections.map((s) =>
+      s.id === 'document_title' ? { ...s, text: 'Tax Invoice' } : s
+    )
+    const saved = invoiceLayoutConfigSchema.safeParse({
+      ...merged,
+      sections: named,
+      version: DESIGNER_LAYOUT_VERSION,
+    })
+    expect(saved.success).toBe(true)
+    if (saved.success) {
+      const spec = buildInvoicePrintSpec({
+        data,
+        template: { headerStyle: 'compact', layoutConfig: saved.data },
+      })
+      expect(JSON.stringify(spec)).toContain('Tax Invoice')
+      expect(JSON.stringify(spec)).not.toContain('"INVOICE"')
     }
   })
 

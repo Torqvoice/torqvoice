@@ -673,11 +673,17 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
   // the date off every sheet that never chose to lose them. The designer
   // stamps the current version when it saves, so a workshop that switches the
   // strip off from now on keeps it off.
+  // Placed by renumbering the whole run rather than by a fraction after the
+  // header: orders are whole numbers as far as the saved layout's schema is
+  // concerned, and a 0.5 that reached the designer was rejected on Save, which
+  // silently kept every such workshop on the layout they were trying to change.
   if ((saved.version ?? 1) < HONEST_TITLE_SWITCH_VERSION) {
-    const title = merged.findIndex((s) => s.id === 'document_title')
-    if (title !== -1 && !merged[title].visible) {
-      const headerOrder = merged.find((s) => s.id === 'header')?.order ?? 0
-      merged[title] = { ...merged[title], visible: true, order: headerOrder + 0.5 }
+    const title = merged.find((s) => s.id === 'document_title')
+    if (title && !title.visible) {
+      const rest = merged.filter((s) => s !== title).sort((a, b) => a.order - b.order)
+      const headerIdx = rest.findIndex((s) => s.id === 'header')
+      rest.splice(headerIdx + 1, 0, { ...title, visible: true })
+      merged.splice(0, merged.length, ...rest.map((s, i) => ({ ...s, order: i })))
     }
   }
 
