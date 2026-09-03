@@ -10,7 +10,7 @@ import {
   type DocumentLayout,
   type PlacedRect,
 } from './layoutEngine'
-import { RenderNode, textCss } from './renderHtml'
+import { PlaceholderNodes, RenderNode, textCss } from './renderHtml'
 import { fontStack } from '../Components/types'
 
 /**
@@ -267,6 +267,12 @@ export function SpecCanvas({
 }) {
   const t = useTranslations('settings.designer')
   const placeholderLabel = t('placeholder')
+  // The same set marks blocks here and rows inside them further down, since a
+  // block id and a node id never name the same thing.
+  const placeholders = useMemo(
+    () => ({ ids: placeholderIds ?? new Set<string>(), label: placeholderLabel }),
+    [placeholderIds, placeholderLabel]
+  )
   const measureRef = useRef<HTMLDivElement>(null)
   const pagesRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -1183,47 +1189,49 @@ export function SpecCanvas({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-1 flex-col items-center overflow-auto bg-[#e4e7eb] px-10 pb-16 pt-9 outline-none"
-      tabIndex={0}
-      onKeyDown={nudge}
-      style={{ cursor: dragActive ? 'grabbing' : undefined }}
-    >
-      {/* Laid out but not shown, to measure every block at print width. */}
+    <PlaceholderNodes.Provider value={placeholders}>
       <div
-        ref={measureRef}
-        aria-hidden
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: -99999,
-          visibility: 'hidden',
-          fontFamily: fontStack(spec.page.fontFamily),
-          fontSize: spec.page.fontSize,
-        }}
+        ref={containerRef}
+        className="flex flex-1 flex-col items-center overflow-auto bg-[#e4e7eb] px-10 pb-16 pt-9 outline-none"
+        tabIndex={0}
+        onKeyDown={nudge}
+        style={{ cursor: dragActive ? 'grabbing' : undefined }}
       >
-        {spec.blocks.map((block) => (
-          <div key={block.id} style={{ width: widthFor(block), ...textCss(block.text) }}>
-            <RenderNode node={block.content} />
-          </div>
-        ))}
-      </div>
-
-      <div style={{ width: spec.page.width * zoom }}>
+        {/* Laid out but not shown, to measure every block at print width. */}
         <div
-          ref={pagesRef}
+          ref={measureRef}
+          aria-hidden
           style={{
-            transform: `scale(${zoom})`,
-            transformOrigin: 'top left',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
+            position: 'absolute',
+            top: 0,
+            left: -99999,
+            visibility: 'hidden',
+            fontFamily: fontStack(spec.page.fontFamily),
+            fontSize: spec.page.fontSize,
           }}
         >
-          {Array.from({ length: renderLayout.pageCount }, (_, i) => sheet(i + 1))}
+          {spec.blocks.map((block) => (
+            <div key={block.id} style={{ width: widthFor(block), ...textCss(block.text) }}>
+              <RenderNode node={block.content} />
+            </div>
+          ))}
+        </div>
+
+        <div style={{ width: spec.page.width * zoom }}>
+          <div
+            ref={pagesRef}
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: 'top left',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+            }}
+          >
+            {Array.from({ length: renderLayout.pageCount }, (_, i) => sheet(i + 1))}
+          </div>
         </div>
       </div>
-    </div>
+    </PlaceholderNodes.Provider>
   )
 }

@@ -108,7 +108,9 @@ describe('framed template preset', () => {
   it('is not what a workshop gets by default', () => {
     const seen = visibility(getDefaultInvoiceLayout())
     expect(seen.items_table).toBe(false)
-    expect(seen.document_title).toBe(false)
+    // The title strip is a block like any other now: shown, under the header,
+    // where it was drawn from behind a switch that claimed it was hidden.
+    expect(seen.document_title).toBe(true)
     expect(seen.parts_table).toBe(true)
     expect(seen.labor_table).toBe(true)
   })

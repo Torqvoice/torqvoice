@@ -35,9 +35,7 @@ export async function getCustomFieldsForPrint(
       fieldId: d.id,
       label: d.label,
       fieldType: d.fieldType,
-      value: valueByField.has(d.id)
-        ? (valueByField.get(d.id) as string)
-        : (d.defaultValue ?? ''),
+      value: valueByField.has(d.id) ? (valueByField.get(d.id) as string) : (d.defaultValue ?? ''),
     }))
     .filter((cf) => cf.value !== '')
 }

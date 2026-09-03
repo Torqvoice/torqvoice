@@ -199,13 +199,18 @@ export function InvoiceDesigner({
 
   const layout = layouts[docType]
   const template = templates[docType]
-  // Blocks the canvas is filling in for the workshop. The slogan is the only
-  // one today: the rest of the sample stands in for a job, which a real sheet
-  // will have, while a slogan nobody has written simply never prints.
-  const placeholderIds = useMemo(
-    () => new Set(companyWorkshop.slogan?.trim() ? [] : ['slogan']),
-    [companyWorkshop.slogan]
-  )
+  // What the canvas is filling in for the workshop: a slogan and payment terms
+  // nobody has written show a stand-in that prints as nothing, and are marked
+  // as such. The rest of the sample stands in for a job, which a real sheet
+  // will have. The slogan is a block of its own; the terms are one row of the
+  // payment panel, and marking the whole panel for them would be a lie about
+  // the bank account beside them.
+  const placeholderIds = useMemo(() => {
+    const ids: string[] = []
+    if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
+    if (!companyWorkshop.paymentTerms?.trim()) ids.push('payment_terms')
+    return new Set(ids)
+  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
@@ -307,8 +312,14 @@ export function InvoiceDesigner({
 
   /** What a saved design would produce, for its card in the gallery. */
   const specForDesign = useCallback(
-    (design: SavedDesign) =>
-      buildDocumentSpec(design.layout, themeOf(design.template, design.layout), data),
+    (design: SavedDesign) => {
+      // Merged the way applying it merges, so the card is the sheet the click
+      // produces rather than the one the design was saved against.
+      const layout = mergeWithDefaults(
+        JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig
+      )
+      return buildDocumentSpec(layout, themeOf(design.template, layout), data)
+    },
     [data]
   )
 
@@ -996,6 +1007,8 @@ export function InvoiceDesigner({
           logoUrl={workshop.logoUrl}
           ownLogo={!!template.logoUrl}
           sloganSet={!!companyWorkshop.slogan?.trim()}
+          paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
+          documentTitleDefault={data.meta.title}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

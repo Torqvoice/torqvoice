@@ -57,9 +57,7 @@ beforeEach(() => {
   // the rows whose keys it asked for.
   vi.mocked(db.appSetting.findMany).mockImplementation((async (args: any) => {
     const wanted: string[] = args?.where?.key?.in ?? Object.keys(SETTINGS)
-    return wanted
-      .filter((key) => key in SETTINGS)
-      .map((key) => ({ key, value: SETTINGS[key] }))
+    return wanted.filter((key) => key in SETTINGS).map((key) => ({ key, value: SETTINGS[key] }))
   }) as any)
   vi.mocked(db.$transaction).mockImplementation(async (cb: any) => cb(db))
 })

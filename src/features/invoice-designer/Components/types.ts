@@ -44,6 +44,8 @@ export interface DesignerWorkshop {
   email: string
   slogan: string
   orgNumber: string
+  /** Payment terms from payment settings. Empty prints nothing on the sheet. */
+  paymentTerms: string
   logoUrl: string
 }
 

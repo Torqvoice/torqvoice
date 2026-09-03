@@ -274,10 +274,14 @@ export function buildSampleData(
         value: values.org_number || `${L('org', 'Org: {org}').replace('{org}', '123 456 789')}`,
       },
       {
+        // The workshop's own terms, or a stand-in when they have written none,
+        // so the row is something to see and switch rather than an absence.
+        // The stand-in prints as nothing, which is why the canvas marks it.
+        id: 'payment_terms',
         label: L('paymentTermsLabel', 'Payment Terms'),
-        value: fillTemplate(L('netDays', '{days} Days'), { days: '10' }),
+        value: workshop.paymentTerms?.trim() || t('sample.paymentTerms'),
       },
-      { label: L('dueDateLabel', 'Due Date'), value: sample.due },
+      { id: 'due_date', label: L('dueDateLabel', 'Due Date'), value: sample.due },
     ],
     // A stand-in link, so the canvas shows the portal line the printed sheet
     // carries and the footer's switch for it has something to switch.

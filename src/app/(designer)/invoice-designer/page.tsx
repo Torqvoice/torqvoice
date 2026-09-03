@@ -123,6 +123,7 @@ export default async function InvoiceDesignerPage({
           email: settings[SETTING_KEYS.WORKSHOP_EMAIL] ?? '',
           slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] ?? '',
           orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] ?? '',
+          paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] ?? '',
           logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] ?? '',
         }}
       />
