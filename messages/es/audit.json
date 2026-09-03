@@ -160,7 +160,9 @@
     "settings_saveDocumentDesign": "Diseño de documento guardado",
     "settings_deleteDocumentDesign": "Diseño de documento eliminado",
     "settings_applyDocumentDesign": "Diseño de documento predeterminado establecido",
-    "settings_freezeInvoices": "Facturas anteriores congeladas"
+    "settings_freezeInvoices": "Facturas anteriores congeladas",
+    "inspection_reminders_sent": "Envió recordatorios de inspección",
+    "inspection_reminders_send": "Envió recordatorios de inspección"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -293,6 +295,7 @@
     "settings_saveDocumentDesign": "Guardó el diseño de documento {name}",
     "settings_deleteDocumentDesign": "Eliminó el diseño de documento {name}",
     "settings_applyDocumentDesign": "Estableció {name} como diseño de documento predeterminado",
-    "settings_freezeInvoices": "Congeló {count, plural, one {# factura} other {# facturas}} anteriores al bloqueo con el diseño actual"
+    "settings_freezeInvoices": "Congeló {count, plural, one {# factura} other {# facturas}} anteriores al bloqueo con el diseño actual",
+    "inspection_reminders_sent": "Envió {count} recordatorios de inspección"
   }
 }

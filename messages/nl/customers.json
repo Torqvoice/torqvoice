@@ -95,7 +95,9 @@
     "addScannedVehicle": "Voertuig {vehicle} toevoegen",
     "invoiceDesign": "Factuurontwerp",
     "invoiceDesignDefault": "Standaard van de werkplaats",
-    "invoiceDesignHint": "Facturen voor deze klant worden met dit ontwerp afgedrukt in plaats van de standaard van de werkplaats. Een factuur kan nog steeds een eigen ontwerp kiezen."
+    "invoiceDesignHint": "Facturen voor deze klant worden met dit ontwerp afgedrukt in plaats van de standaard van de werkplaats. Een factuur kan nog steeds een eigen ontwerp kiezen.",
+    "reminderOptOut": "Geen herinneringen",
+    "reminderOptOutHint": "Deze klant niet opnemen in keuringsherinneringen of andere campagnes."
   },
   "serviceRequests": {
     "statusNew": "Nieuw",

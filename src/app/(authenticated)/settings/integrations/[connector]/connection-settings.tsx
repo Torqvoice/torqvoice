@@ -64,7 +64,7 @@ type Activity = {
     finishedAt: string | null
     createdAt: string
   }[]
-  logs: { id: string; level: string; message: string; createdAt: string }[]
+  logs: { id: string; level: string; message: string; createdAt: string; details?: unknown }[]
 }
 
 export function ConnectionSettings({
@@ -188,6 +188,42 @@ export function ConnectionSettings({
               <p className="font-medium">{t('connection.lastError')}</p>
               <p className="text-muted-foreground">{connection.lastError}</p>
             </div>
+          </div>
+        )}
+
+        {connected && view.inspectionSync && (
+          <div className="mb-4 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
+            <p className="font-medium">{t('connection.inspectionSync.title')}</p>
+            <ul className="mt-1 space-y-0.5 text-muted-foreground">
+              <li>
+                {t('connection.inspectionSync.vehicles', {
+                  count: view.inspectionSync.vehiclesWithPlate,
+                })}
+              </li>
+              <li>
+                {t('connection.inspectionSync.dueNow', { count: view.inspectionSync.dueForCheck })}
+              </li>
+              <li>
+                {t('connection.inspectionSync.withDate', { count: view.inspectionSync.withDate })}
+              </li>
+              <li>
+                {view.inspectionSync.inProgress
+                  ? t('connection.inspectionSync.inProgress')
+                  : view.inspectionSync.lastPassAt
+                    ? t('connection.inspectionSync.lastPass', {
+                        date: format.dateTime(new Date(view.inspectionSync.lastPassAt), {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        }),
+                      })
+                    : t('connection.inspectionSync.never')}
+              </li>
+            </ul>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {connection.settings.syncInspections === true
+                ? t('connection.inspectionSync.syncNowHelp')
+                : t('connection.inspectionSync.off')}
+            </p>
           </div>
         )}
 
@@ -763,6 +799,20 @@ function SettingsForm({
   )
 }
 
+/** Log details on one line, key=value, so a lookup's fuel codes or a pass's counts are readable. */
+function describeDetails(details: Record<string, unknown>): string {
+  return Object.entries(details)
+    .map(([k, v]) => {
+      const text = Array.isArray(v)
+        ? v.join(',')
+        : typeof v === 'object' && v
+          ? JSON.stringify(v)
+          : String(v)
+      return `${k}=${text}`
+    })
+    .join(' ')
+}
+
 function ActivityCard({
   activity,
   onRetry,
@@ -786,7 +836,9 @@ function ActivityCard({
               className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm"
             >
               <div className="min-w-0">
-                <span className="font-medium">{j.kind}</span>
+                <span className="font-medium">
+                  {t.has(`jobKinds.${j.kind}`) ? t(`jobKinds.${j.kind}`) : j.kind}
+                </span>
                 <span className="ml-2 text-xs text-muted-foreground">{when(j.createdAt)}</span>
                 {j.error && <p className="truncate text-xs text-destructive">{j.error}</p>}
               </div>
@@ -829,6 +881,11 @@ function ActivityCard({
             >
               <span className="mr-2 opacity-70">{when(l.createdAt)}</span>
               {l.message}
+              {l.details && typeof l.details === 'object' ? (
+                <span className="ml-2 opacity-70">
+                  {describeDetails(l.details as Record<string, unknown>)}
+                </span>
+              ) : null}
             </div>
           ))}
         </div>

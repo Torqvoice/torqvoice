@@ -12,6 +12,8 @@ import {
 } from '../Lib/onboardingDefaults'
 import { seedSampleData } from '../Lib/sampleData'
 import { CHECKLIST_DISMISSED_KEY, SAMPLE_DATA_IDS_KEY } from '../Lib/onboardingKeys'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { safeTimeZone } from '@/lib/timezone'
 import type { ActionResult } from '@/lib/with-auth'
 
 export async function createOnboardingOrg(
@@ -58,6 +60,17 @@ export async function createOnboardingOrg(
     // never fails the action — the library sync tops templates up later
     // anyway.
     try {
+      const zone = safeTimeZone(data.timeZone, '')
+      if (zone) {
+        await db.appSetting.create({
+          data: {
+            organizationId: org.id,
+            key: SETTING_KEYS.TIMEZONE,
+            value: zone,
+            userId: session.user.id,
+          },
+        })
+      }
       const [locale, t] = await Promise.all([getLocale(), getTranslations('onboarding')])
 
       const template = await installDefaultInspectionTemplates(org.id, locale)

@@ -56,7 +56,8 @@
     "recentObservations": "Aktuelle Beobachtungen",
     "recentActivity": "Letzte Aktivitäten",
     "gettingStarted": "Erste Schritte",
-    "tireHotel": "Reifenhotel"
+    "tireHotel": "Reifenhotel",
+    "inspectionsDue": "Fällige Hauptuntersuchungen"
   },
   "maintenance": {
     "title": "Voraussichtlich fällige Wartung",
@@ -252,5 +253,15 @@
     "roomLeft": "Platz für {count} weitere",
     "needsPrep": "Vorbereitung offen",
     "unbilled": "Nicht berechnet ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Fällige Hauptuntersuchungen",
+    "viewAll": "Alle fälligen Fahrzeuge anzeigen",
+    "overdue": "Überfällig",
+    "within30": "Nächste 30 Tage",
+    "within90": "Nächste 90 Tage",
+    "noData": "In den nächsten 90 Tagen ist keine Untersuchung fällig",
+    "overdueSince": "Überfällig seit {date}",
+    "remind": "Erinnerungen senden"
   }
 }

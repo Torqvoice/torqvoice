@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Recherche par plaque et VIN",
+      "inspection": "Dates de contrôle technique"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Synchronisation des contrôles",
+      "vehicles": "{count} véhicules avec plaque dans cet atelier",
+      "dueNow": "{count} seraient recherchés à la prochaine exécution",
+      "withDate": "{count} ont déjà une date de contrôle",
+      "lastPass": "Dernier passage complet {date}",
+      "never": "Aucun passage complet pour l'instant",
+      "inProgress": "Un passage est en cours",
+      "off": "Activez le réglage et enregistrez ; d'ici là, un passage ne vérifie rien.",
+      "syncNowHelp": "Synchroniser maintenant lance un passage immédiatement au lieu d'attendre celui de l'heure. Il recherche 25 véhicules à la fois et continue seul jusqu'à ce que tous les véhicules à vérifier soient traités."
+    }
   },
   "activity": {
     "title": "Activité",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Remplissez un véhicule à partir de sa plaque ou de son VIN norvégien : marque, modèle, année, carburant, boîte de vitesses, moteur, couleur, dimensions des pneus et date du prochain EU-kontroll, directement depuis le registre de Statens vegvesen. Aucune donnée sur le propriétaire n'est renvoyée.",
+      "fields": {
+        "apiKey": "Clé API",
+        "apiKeyHelp": "Gratuite. Commandez la clé sur vegvesen.no, rubrique « API for tekniske kjøretøyopplysninger » : connectez-vous avec BankID, représentez l'atelier, et la clé est délivrée immédiatement. Elle autorise 50 000 recherches par jour."
+      },
+      "settings": {
+        "syncInspections": "Tenir à jour les dates de contrôle de tous les véhicules de cet atelier",
+        "syncInspectionsHelp": "Une fois par heure, les véhicules non vérifiés récemment sont recherchés par plaque et la date du prochain EU-kontroll est enregistrée. Seuls les véhicules de cet atelier sont envoyés. Un véhicule est revérifié chaque mois, et chaque semaine lorsque l'échéance est à moins de deux mois."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Ordres de travail vers l'agenda",
+      "pull": "Temps occupé depuis l'agenda"
+    },
+    "conference": {
+      "sync": "Liens de visioconférence"
+    },
+    "inspection": {
+      "refresh": "Mise à jour des dates de contrôle"
     }
   }
 }

@@ -95,7 +95,9 @@
     "addScannedVehicle": "Legg til kjøretøyet {vehicle}",
     "invoiceDesign": "Fakturadesign",
     "invoiceDesignDefault": "Verkstedets standard",
-    "invoiceDesignHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. En faktura kan fortsatt velge sitt eget."
+    "invoiceDesignHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. En faktura kan fortsatt velge sitt eget.",
+    "reminderOptOut": "Ingen påminnelser",
+    "reminderOptOutHint": "Ikke ta med denne kunden i påminnelser om EU-kontroll eller andre utsendinger."
   },
   "serviceRequests": {
     "statusNew": "Ny",

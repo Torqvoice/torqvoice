@@ -95,7 +95,9 @@
     "addScannedVehicle": "Ajouter le véhicule {vehicle}",
     "invoiceDesign": "Design de facture",
     "invoiceDesignDefault": "Défaut de l'atelier",
-    "invoiceDesignHint": "Les factures de ce client sont imprimées avec ce design au lieu du défaut de l'atelier. Une facture peut toujours choisir le sien."
+    "invoiceDesignHint": "Les factures de ce client sont imprimées avec ce design au lieu du défaut de l'atelier. Une facture peut toujours choisir le sien.",
+    "reminderOptOut": "Pas de rappels",
+    "reminderOptOutHint": "Ne pas inclure ce client dans les rappels de contrôle ni les autres campagnes."
   },
   "serviceRequests": {
     "statusNew": "Nouveau",

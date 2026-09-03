@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Ricerca per targa e VIN",
+      "inspection": "Scadenze revisione"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Sincronizzazione revisioni",
+      "vehicles": "{count} veicoli con targa in questa officina",
+      "dueNow": "{count} verrebbero cercati alla prossima esecuzione",
+      "withDate": "{count} hanno già una data di revisione",
+      "lastPass": "Ultimo passaggio completo {date}",
+      "never": "Nessun passaggio completo finora",
+      "inProgress": "Un passaggio è in corso",
+      "off": "Attiva l'impostazione e salva; fino ad allora un passaggio non controlla nulla.",
+      "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
+    }
   },
   "activity": {
     "title": "Attività",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Compila un veicolo dalla targa o dal VIN norvegese: marca, modello, anno, carburante, cambio, motore, colore, misure degli pneumatici e data della prossima EU-kontroll, direttamente dal registro di Statens vegvesen. Non vengono restituiti dati sul proprietario.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Gratuita. Richiedi la chiave su vegvesen.no alla voce «API for tekniske kjøretøyopplysninger»: accedi con BankID, rappresenta l'officina e la chiave viene rilasciata subito. Consente 50.000 ricerche al giorno."
+      },
+      "settings": {
+        "syncInspections": "Tieni aggiornate le scadenze di revisione di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data della prossima EU-kontroll viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Ordini di lavoro nel calendario",
+      "pull": "Impegni dal calendario"
+    },
+    "conference": {
+      "sync": "Link videochiamata"
+    },
+    "inspection": {
+      "refresh": "Aggiornamento scadenze revisione"
     }
   }
 }

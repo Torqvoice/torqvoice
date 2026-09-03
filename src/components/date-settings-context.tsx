@@ -1,6 +1,7 @@
 'use client'
 
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
+import { adoptDetectedTimezone } from '@/features/settings/Actions/timezoneActions'
 import { DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT } from '@/lib/format'
 
 interface DateSettings {
@@ -44,6 +45,21 @@ export function DateSettingsProvider({
         ? weekStartDay
         : 1,
   }
+
+  // A workshop with no chosen zone gets this browser's, once, as an explicit
+  // setting. Server-side scheduling cannot work from "automatic". No refresh
+  // afterwards: a refresh racing the first hydration is what a hydration
+  // mismatch looks like, and the zone matters on the next page load anyway.
+  const adopting = useRef(false)
+  useEffect(() => {
+    if (value.timezone || adopting.current) return
+    adopting.current = true
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const timer = setTimeout(() => {
+      adoptDetectedTimezone(detected).catch(() => undefined)
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [value.timezone])
 
   return <DateSettingsContext.Provider value={value}>{children}</DateSettingsContext.Provider>
 }

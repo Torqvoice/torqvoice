@@ -409,6 +409,10 @@ export async function POST(request: NextRequest) {
         WhatsappMessage: () => tx.whatsappMessage.deleteMany({ where: { organizationId } }),
         TelegramMessage: () => tx.telegramMessage.deleteMany({ where: { organizationId } }),
         ScheduledMessage: () => tx.scheduledMessage.deleteMany({ where: { organizationId } }),
+        InspectionReminderSend: () =>
+          tx.inspectionReminderSend.deleteMany({ where: { organizationId } }),
+        InspectionReminderCampaign: () =>
+          tx.inspectionReminderCampaign.deleteMany({ where: { organizationId } }),
         AuditLog: () => tx.auditLog.deleteMany({ where: { organizationId } }),
         Inspection: () => tx.inspection.deleteMany({ where: { organizationId } }),
         InspectionTemplate: () => tx.inspectionTemplate.deleteMany({ where: { organizationId } }),
@@ -786,6 +790,13 @@ export async function POST(request: NextRequest) {
             'service requests',
             (rows) => tx.serviceRequest.createMany({ data: rows as never }),
             v.serviceRequests,
+            { organizationId }
+          )
+          // One row, not a list: the vehicle's inspection deadline and where it came from.
+          await restoreRows(
+            'inspection status',
+            (rows) => tx.vehicleInspectionStatus.createMany({ data: rows as never }),
+            v.inspectionStatus ? [v.inspectionStatus] : [],
             { organizationId }
           )
           await restoreRows(
@@ -1238,6 +1249,53 @@ export async function POST(request: NextRequest) {
               createdById: ctx.userId,
             })),
         })
+      }
+
+      // 14b. Reminder campaigns and their send rows, after the messages, the
+      // customers and the vehicles they point at. A send whose vehicle or
+      // customer is not in this restore is left out rather than invented,
+      // and one whose message is missing keeps everything but the message link.
+      if (data.inspectionReminderCampaigns?.length) {
+        await restoreRows(
+          'reminder campaigns',
+          (rows) => tx.inspectionReminderCampaign.createMany({ data: rows as never }),
+          data.inspectionReminderCampaigns,
+          { organizationId, createdById: ctx.userId }
+        )
+        const vehicleIds = new Set(
+          ((data.vehicles as Record<string, unknown>[] | undefined) ?? []).map(
+            (v) => v.id as string
+          )
+        )
+        const customerIds = new Set(
+          ((data.customers as Record<string, unknown>[] | undefined) ?? []).map(
+            (c) => c.id as string
+          )
+        )
+        const messageIds = new Set(
+          ((data.scheduledMessages as Record<string, unknown>[] | undefined) ?? []).map(
+            (m) => m.id as string
+          )
+        )
+        const sends = (
+          (data.inspectionReminderSends as Record<string, unknown>[] | undefined) ?? []
+        )
+          .filter(
+            (row) =>
+              vehicleIds.has(row.vehicleId as string) && customerIds.has(row.customerId as string)
+          )
+          .map((row) => ({
+            ...row,
+            scheduledMessageId: messageIds.has(row.scheduledMessageId as string)
+              ? row.scheduledMessageId
+              : null,
+          }))
+        await restoreRows(
+          'reminder sends',
+          (rows) => tx.inspectionReminderSend.createMany({ data: rows as never }),
+          sends,
+          { organizationId }
+        )
       }
 
       // 15. Tire hotel. Last, because sets point at customers and vehicles,

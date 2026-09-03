@@ -95,7 +95,9 @@
     "addScannedVehicle": "Dodaj pojazd {vehicle}",
     "invoiceDesign": "Projekt faktury",
     "invoiceDesignDefault": "Domyślny warsztatu",
-    "invoiceDesignHint": "Faktury dla tego klienta są drukowane z tym projektem zamiast domyślnego projektu warsztatu. Faktura nadal może wybrać własny."
+    "invoiceDesignHint": "Faktury dla tego klienta są drukowane z tym projektem zamiast domyślnego projektu warsztatu. Faktura nadal może wybrać własny.",
+    "reminderOptOut": "Bez przypomnień",
+    "reminderOptOutHint": "Nie uwzględniaj tego klienta w przypomnieniach o przeglądzie ani innych kampaniach."
   },
   "serviceRequests": {
     "statusNew": "Nowe",

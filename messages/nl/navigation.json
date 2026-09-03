@@ -59,7 +59,8 @@
     "tireStorage": "Opslagindeling",
     "tireSetDetails": "Bandenset",
     "tireForecast": "Volgend seizoen",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Keuringsherinneringen"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",

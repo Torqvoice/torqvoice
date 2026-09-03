@@ -11,6 +11,8 @@ model Customer {
   company        String?
   taxId          String?
   taxExempt      Boolean  @default(false)
+  /// Asked not to receive reminders and campaigns. Honoured by every outreach flow.
+  reminderOptOut Boolean  @default(false)
   notes          String?
   telegramChatId String?
   createdAt      DateTime @default(now())
@@ -22,14 +24,15 @@ model Customer {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  vehicles          Vehicle[]
-  quotes            Quote[]
-  smsMessages       SmsMessage[]
-  telegramMessages  TelegramMessage[]
-  whatsappMessages  WhatsappMessage[]
-  customerSessions  CustomerSession[]
-  scheduledMessages ScheduledMessage[]
-  serviceRequests   ServiceRequest[]
+  vehicles            Vehicle[]
+  quotes              Quote[]
+  smsMessages         SmsMessage[]
+  telegramMessages    TelegramMessage[]
+  whatsappMessages    WhatsappMessage[]
+  customerSessions    CustomerSession[]
+  scheduledMessages   ScheduledMessage[]
+  serviceRequests     ServiceRequest[]
+  inspectionReminders InspectionReminderSend[]
 
   serviceRecords ServiceRecord[]
   reminders      Reminder[]

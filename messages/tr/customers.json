@@ -95,7 +95,9 @@
     "addScannedVehicle": "{vehicle} aracını ekle",
     "invoiceDesign": "Fatura tasarımı",
     "invoiceDesignDefault": "Atölye varsayılanı",
-    "invoiceDesignHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Bir fatura yine de kendi tasarımını seçebilir."
+    "invoiceDesignHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Bir fatura yine de kendi tasarımını seçebilir.",
+    "reminderOptOut": "Hatırlatma yok",
+    "reminderOptOutHint": "Bu müşteriyi muayene hatırlatmalarına veya diğer kampanyalara dahil etme."
   },
   "serviceRequests": {
     "statusNew": "Yeni",

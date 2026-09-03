@@ -95,7 +95,9 @@
     "addScannedVehicle": "Aggiungi il veicolo {vehicle}",
     "invoiceDesign": "Design della fattura",
     "invoiceDesignDefault": "Predefinito dell'officina",
-    "invoiceDesignHint": "Le fatture di questo cliente vengono stampate con questo design invece del predefinito dell'officina. Una fattura può comunque sceglierne uno proprio."
+    "invoiceDesignHint": "Le fatture di questo cliente vengono stampate con questo design invece del predefinito dell'officina. Una fattura può comunque sceglierne uno proprio.",
+    "reminderOptOut": "Nessun promemoria",
+    "reminderOptOutHint": "Non includere questo cliente nei promemoria revisione o in altre campagne."
   },
   "serviceRequests": {
     "statusNew": "Nuova",

@@ -9,6 +9,7 @@ export const createCustomerSchema = z.object({
   company: z.string().optional(),
   taxId: z.string().optional(),
   taxExempt: z.boolean().optional(),
+  reminderOptOut: z.boolean().optional(),
   notes: z.string().optional(),
   /** An invoice design for this customer's invoices; null follows the default. */
   invoiceDesignId: z.string().nullable().optional(),

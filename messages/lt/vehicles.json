@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Apžiūra pradelsta",
+    "inspectionDue30": "Per 30 dienų",
+    "inspectionDue90": "Per 90 dienų",
+    "inspectionDue": "Apžiūra {date}",
+    "remindCustomers": "Priminti šiems klientams"
   },
   "detail": {
     "vehicleArchived": "Ši transporto priemonė archyvuota",
@@ -91,7 +96,11 @@
     "severityUncommon": "Nedažna — pranešta nedaugelio savininkų",
     "severityRare": "Reta — pavieniai pranešimai, bet kritinė kai pasireiškia",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Apžiūra iki {date}",
+    "inspectionCheckedAt": "Patikrinta registre {date}",
+    "notRegistered": "Neregistruota",
+    "soldReported": "Klientas pranešė pardavęs {date}"
   },
   "quotes": {
     "newQuote": "Naujas pasiūlymas",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Nuotrauka ir savininkas",
     "sectionDetails": "Duomenys",
     "addScannedOwner": "Pridėti klientą {name}",
-    "ownerSaveFailed": "Nepavyko sukurti kliento"
+    "ownerSaveFailed": "Nepavyko sukurti kliento",
+    "lookupPlate": "Ieškoti pagal numerį",
+    "lookingUp": "Klausiama transporto priemonių registro...",
+    "lookupSuccess": "Laukai užpildyti iš {source}",
+    "lookupNotFound": "Registre nėra transporto priemonės su tokiu numeriu",
+    "lookupFailed": "Nepavyko rasti numerio",
+    "lookupUnavailable": "Prijunkite transporto priemonių registrą skiltyje Nustatymai → Integracijos",
+    "lookupEnterPlate": "Pirmiausia įveskite numerį",
+    "lookupInspectionDue": "{source}: kita techninė apžiūra iki {date}",
+    "lookupSource": "Užpildyta iš {source}",
+    "inspectionDue": "Kita periodinė apžiūra",
+    "inspectionDueHint": "Įveskite datą, jei jos nepateikia registras. Ją naudoja priminimai ir skydelis.",
+    "inspectionDueFromRegistry": "Iš transporto priemonių registro. Pakeiskite čia, kad perrašytumėte iki kito sinchronizavimo."
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Apžiūros priminimai",
+    "description": "Praneškite klientams, kurių techninė apžiūra artėja, su nuoroda laikui rezervuoti. Niekas nesiunčiama, kol nepatvirtinsite sąrašo.",
+    "window": "Terminas per",
+    "window30": "Per 30 dienų",
+    "window60": "Per 60 dienų",
+    "window90": "Per 90 dienų",
+    "channel": "Siųsti per",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "El. paštas",
+      "telegram": "Telegram"
+    },
+    "willReceive": "gaus žinutę",
+    "excludedCount": "{count} neįtraukta",
+    "nobodyToRemind": "Šiuo laikotarpiu nėra kam priminti. Kiekvienai transporto priemonei su terminu jau priminta, rezervuota arba jos nepavyksta pasiekti.",
+    "overdueOn": "Pradelsta nuo {date}",
+    "excludedTitle": "Neįtraukta",
+    "excludedDescription": "Kiekviena turi priežastį. Ištaisykite ją kliento ar transporto priemonės kortelėje ir ji atsiras sąraše.",
+    "reasons": {
+      "noCustomer": "Nėra kliento",
+      "optedOut": "Atsisakė priminimų",
+      "noRecipient": "Nėra kontakto šiam kanalui",
+      "alreadyReminded": "Jau priminta apie šį terminą",
+      "cooldown": "Neseniai rašyta",
+      "soldReported": "Klientas pranešė pardavęs",
+      "notRegistered": "Neregistruota",
+      "booked": "Jau rezervuota"
+    },
+    "message": "Žinutė",
+    "subject": "Tema",
+    "body": "Tekstas",
+    "placeholders": "Laukai: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Nežinomi laukai: {list}",
+    "sample": "Pavyzdys pirmam gavėjui",
+    "segments": "{count, plural, one {# SMS dalis} few {# SMS dalys} other {# SMS dalių}}",
+    "bookingModeDirectNote": "Nuoroda rezervuoja {minutes} min. laiką tiesiai darbų lentoje.",
+    "bookingModeRequestNote": "Nuoroda siunčia užklausą su pasirinktu laiku, kurį patvirtina biuras.",
+    "linkValidNote": "Nuorodos galioja bent {days} dienų ir po termino.",
+    "sendTest": "Siųsti man bandomąją",
+    "testSent": "Bandomoji eilėje į {to}",
+    "testFailed": "Nepavyko išsiųsti bandomosios",
+    "sendButton": "Siųsti {count}",
+    "confirmTitle": "Siųsti priminimus?",
+    "confirmDescription": "{count} žinutės išsiunčiamos per {channel}, po vieną transporto priemonei, vieną kartą. Apie tą patį terminą niekada neprimenama du kartus.",
+    "confirmInput": "Įveskite {count} patvirtinimui",
+    "cancel": "Atšaukti",
+    "sendNow": "Siųsti",
+    "created": "{count} priminimai eilėje",
+    "sendFailed": "Nepavyko sukurti kampanijos",
+    "loadFailed": "Nepavyko įkelti sąrašo",
+    "campaign": {
+      "title": "Kampanija nuo {date}",
+      "summary": "{channel}, terminai per {window} d.",
+      "recipients": "Gavėjai",
+      "sent": "Išsiųsta",
+      "failed": "Nepavyko",
+      "booked": "Rezervuota",
+      "retryFailedButton": "Bandyti dar kartą {count}",
+      "retried": "{count} grąžinta į eilę",
+      "retryFailed": "Nepavyko pakartoti",
+      "rows": "Gavėjai",
+      "status": {
+        "scheduled": "Eilėje",
+        "sent": "Išsiųsta",
+        "failed": "Nepavyko",
+        "cancelled": "Atšaukta"
+      },
+      "bookedOn": "Rezervuota {date}",
+      "requestedOn": "Užklausta {date}",
+      "cancelledOn": "Atšaukta {date}",
+      "none": "Kampanijų dar nėra.",
+      "start": "Siųsti apžiūros priminimus",
+      "recipientsCount": "{count} gavėjai",
+      "failedCount": "{count} nepavyko",
+      "bookedCount": "{count} rezervuota"
+    },
+    "defaults": {
+      "smsBody": "Sveiki, {customerName}, jūsų {vehicle} ({plate}) techninės apžiūros terminas {dueDate}. Rezervuokite laiką: {bookingLink} arba skambinkite {phone}. {workshopName}",
+      "emailSubject": "Apžiūra {dueDate}: {vehicle}",
+      "emailBody": "Sveiki, {customerName},\n\njūsų {vehicle} ({plate}) techninės apžiūros terminas yra {dueDate}.\n\nRezervuokite jums patogų laiką čia: {bookingLink}\n\nArba skambinkite {phone}.\n\nPagarbiai\n{workshopName}"
+    },
+    "refresh": "Atnaujinti sąrašą",
+    "timeZoneRequired": "Dirbtuvių laiko juosta nustatyta automatiškai, todėl rezervacijos laikai sektų naršyklę, paskutinę išsaugojusią nustatymus (dabar {zone}). Priminimų negalima siųsti, kol nepasirinkta juosta.",
+    "timeZoneRequiredLink": "Pasirinkite skiltyje Lokalizacija"
   }
 }

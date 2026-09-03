@@ -46,6 +46,7 @@ interface CustomerFormProps {
     company?: string | null
     taxId?: string | null
     taxExempt?: boolean
+    reminderOptOut?: boolean
     notes?: string | null
     invoiceDesignId?: string | null
   }
@@ -89,6 +90,8 @@ export function CustomerForm({
       cancelled = true
     }
   }, [open])
+
+  const [reminderOptOut, setReminderOptOut] = useState(customer?.reminderOptOut ?? false)
   const formRef = useRef<HTMLFormElement>(null)
   /** Vehicle details from a scanned document, offered once the customer exists. */
   const [scannedVehicle, setScannedVehicle] = useState<VehicleDocumentScan | null>(null)
@@ -131,6 +134,7 @@ export function CustomerForm({
       company: (formData.get('company') as string) || undefined,
       taxId: (formData.get('taxId') as string) || undefined,
       taxExempt,
+      reminderOptOut,
       notes: (formData.get('notes') as string) || undefined,
       invoiceDesignId: invoiceDesignId === FOLLOW_DEFAULT ? null : invoiceDesignId,
     }
@@ -331,6 +335,14 @@ export function CustomerForm({
                 <p className="text-xs text-muted-foreground">{t('invoiceDesignHint')}</p>
               </div>
             )}
+
+            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <Label>{t('reminderOptOut')}</Label>
+                <p className="text-xs text-muted-foreground">{t('reminderOptOutHint')}</p>
+              </div>
+              <Switch checked={reminderOptOut} onCheckedChange={setReminderOptOut} />
+            </div>
           </div>
 
           <div className="space-y-2 md:col-span-2">

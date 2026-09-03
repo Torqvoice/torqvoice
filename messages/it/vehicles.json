@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Revisione scaduta",
+    "inspectionDue30": "Scade entro 30 giorni",
+    "inspectionDue90": "Scade entro 90 giorni",
+    "inspectionDue": "Revisione {date}",
+    "remindCustomers": "Avvisa questi clienti"
   },
   "detail": {
     "vehicleArchived": "Questo veicolo è archiviato",
@@ -91,7 +96,11 @@
     "severityUncommon": "Non comune — segnalato da pochi proprietari",
     "severityRare": "Raro — segnalazioni isolate ma critico quando si verifica",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Revisione il {date}",
+    "inspectionCheckedAt": "Verificato nel registro il {date}",
+    "notRegistered": "Non immatricolato",
+    "soldReported": "Vendita segnalata dal cliente il {date}"
   },
   "quotes": {
     "newQuote": "Nuovo preventivo",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Foto e intestatario",
     "sectionDetails": "Dettagli",
     "addScannedOwner": "Aggiungi il cliente {name}",
-    "ownerSaveFailed": "Impossibile creare il cliente"
+    "ownerSaveFailed": "Impossibile creare il cliente",
+    "lookupPlate": "Cerca targa",
+    "lookingUp": "Interrogazione del registro veicoli...",
+    "lookupSuccess": "Campi compilati da {source}",
+    "lookupNotFound": "Il registro non ha alcun veicolo con questa targa",
+    "lookupFailed": "Impossibile cercare la targa",
+    "lookupUnavailable": "Collega un registro veicoli in Impostazioni → Integrazioni",
+    "lookupEnterPlate": "Inserisci prima una targa",
+    "lookupInspectionDue": "{source}: prossima revisione periodica il {date}",
+    "lookupSource": "Compilato da {source}",
+    "inspectionDue": "Prossima revisione periodica",
+    "inspectionDueHint": "Inserisci la data se nessun registro la fornisce. Promemoria e dashboard la usano.",
+    "inspectionDueFromRegistry": "Presa dal registro veicoli. Modificala qui per sovrascriverla fino alla prossima sincronizzazione."
   },
   "archiveDialog": {
     "title": "Archivia Veicolo",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Promemoria revisione",
+    "description": "Avvisa i clienti la cui revisione periodica si avvicina, con un link per prenotare. Nulla viene inviato finché non confermi l'elenco.",
+    "window": "Scadenza entro",
+    "window30": "Prossimi 30 giorni",
+    "window60": "Prossimi 60 giorni",
+    "window90": "Prossimi 90 giorni",
+    "channel": "Invia via",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "telegram": "Telegram"
+    },
+    "willReceive": "riceveranno un messaggio",
+    "excludedCount": "{count} esclusi",
+    "nobodyToRemind": "Nessuno da avvisare in questo periodo. Ogni veicolo in scadenza è già stato avvisato, ha prenotato o non è raggiungibile.",
+    "overdueOn": "Scaduta dal {date}",
+    "excludedTitle": "Non inclusi",
+    "excludedDescription": "Ognuno ha un motivo. Correggilo sul cliente o sul veicolo e comparirà nell'elenco.",
+    "reasons": {
+      "noCustomer": "Nessun cliente",
+      "optedOut": "Rifiuta i promemoria",
+      "noRecipient": "Nessun contatto per questo canale",
+      "alreadyReminded": "Già avvisato per questa scadenza",
+      "cooldown": "Contattato di recente",
+      "soldReported": "Il cliente segnala la vendita",
+      "notRegistered": "Non immatricolato",
+      "booked": "Già prenotato"
+    },
+    "message": "Messaggio",
+    "subject": "Oggetto",
+    "body": "Testo",
+    "placeholders": "Segnaposto: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Segnaposto sconosciuti: {list}",
+    "sample": "Esempio per il primo destinatario",
+    "segments": "{count, plural, one {# segmento SMS} other {# segmenti SMS}}",
+    "bookingModeDirectNote": "Il link prenota uno slot di {minutes} minuti direttamente sulla lavagna.",
+    "bookingModeRequestNote": "Il link invia una richiesta con l'orario scelto che l'ufficio conferma.",
+    "linkValidNote": "I link restano aperti almeno {days} giorni e oltre la scadenza.",
+    "sendTest": "Inviami un test",
+    "testSent": "Test in coda per {to}",
+    "testFailed": "Impossibile inviare il test",
+    "sendButton": "Invia a {count}",
+    "confirmTitle": "Inviare i promemoria?",
+    "confirmDescription": "{count} messaggi partono via {channel}, uno per veicolo, una volta sola. Un veicolo non riceve mai due avvisi per la stessa scadenza.",
+    "confirmInput": "Digita {count} per confermare",
+    "cancel": "Annulla",
+    "sendNow": "Invia",
+    "created": "{count} promemoria in coda",
+    "sendFailed": "Impossibile creare la campagna",
+    "loadFailed": "Impossibile caricare l'elenco",
+    "campaign": {
+      "title": "Campagna del {date}",
+      "summary": "{channel}, scadenze entro {window} giorni",
+      "recipients": "Destinatari",
+      "sent": "Inviati",
+      "failed": "Falliti",
+      "booked": "Prenotati",
+      "retryFailedButton": "Riprova {count} falliti",
+      "retried": "{count} rimessi in coda",
+      "retryFailed": "Impossibile riprovare",
+      "rows": "Destinatari",
+      "status": {
+        "scheduled": "In coda",
+        "sent": "Inviato",
+        "failed": "Fallito",
+        "cancelled": "Annullato"
+      },
+      "bookedOn": "Prenotato il {date}",
+      "requestedOn": "Richiesto il {date}",
+      "cancelledOn": "Annullato il {date}",
+      "none": "Nessuna campagna finora.",
+      "start": "Invia promemoria revisione",
+      "recipientsCount": "{count} destinatari",
+      "failedCount": "{count} falliti",
+      "bookedCount": "{count} prenotati"
+    },
+    "defaults": {
+      "smsBody": "Ciao {customerName}, la revisione periodica della tua {vehicle} ({plate}) scade il {dueDate}. Prenota qui: {bookingLink} o chiamaci al {phone}. {workshopName}",
+      "emailSubject": "Revisione il {dueDate} per {vehicle}",
+      "emailBody": "Ciao {customerName},\n\nla revisione periodica della tua {vehicle} ({plate}) scade il {dueDate}.\n\nPrenota qui l'orario che preferisci: {bookingLink}\n\nOppure chiamaci al {phone}.\n\nCordiali saluti,\n{workshopName}"
+    },
+    "refresh": "Aggiorna elenco",
+    "timeZoneRequired": "Il fuso orario dell'officina è su automatico, quindi gli orari di prenotazione seguirebbero l'ultimo browser che ha salvato le impostazioni (ora {zone}). Non si possono inviare promemoria finché non scegli un fuso.",
+    "timeZoneRequiredLink": "Scegli in Localizzazione"
   }
 }

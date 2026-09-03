@@ -19,6 +19,8 @@ export const createVehicleSchema = z.object({
   purchasePrice: z.coerce.number().optional(),
   imageUrl: z.string().optional(),
   customerId: z.string().optional(),
+  /** Next periodic inspection, YYYY-MM-DD, set by hand. Empty clears a manual date. */
+  inspectionDueAt: z.string().optional(),
 })
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({

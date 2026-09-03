@@ -134,6 +134,10 @@
       "providers": {
         "title": "Sağlayıcılar",
         "description": "E-posta, SMS, WhatsApp ve Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Muayene hatırlatmaları",
+        "description": "Randevu bağlantısı, süre ve öncelik"
       }
     },
     "pro": "PRO"
@@ -1993,5 +1997,31 @@
     "partSyntheticOil": "Sentetik yağ 5W-30",
     "laborBrakeReplacement": "Fren değişimi",
     "laborOilChange": "Yağ değişimi"
+  },
+  "inspectionReminders": {
+    "title": "Muayene hatırlatmaları ve randevu",
+    "description": "Hatırlatmadaki randevu bağlantısının nasıl çalışacağı. Bir kez ayarlanır; her kampanya bunları kullanır.",
+    "duration": "Muayene süresi (dakika)",
+    "durationHint": "Periyodik muayenenin bir lifti ne kadar meşgul ettiği. Bağlantı bu uzunlukta randevular ayırır.",
+    "leadDays": "En erken randevu (gün sonra)",
+    "leadDaysHint": "1, önerilen ilk saatin yarın olduğu, asla bugün olmadığı anlamına gelir.",
+    "horizonWeeks": "Ne kadar ileri (hafta)",
+    "horizonHint": "Müşteriler bu kadar hafta içindeki boş saatlerden seçebilir.",
+    "reserve": "Randevusuz gelenler için boş tut",
+    "reserveHint": "Bağlantının asla doldurmadığı lift veya teknisyenler. 0 tüm boşları kullanır.",
+    "linkValidDays": "Bağlantı açık kalır (gün)",
+    "linkValidHint": "En az {min}. Bağlantılar ayrıca son tarihten bir hafta sonrasına kadar açık kalır, hangisi daha geçse.",
+    "bookingMode": "Randevu ne oluşturur",
+    "bookingModeDirect": "Panoda planlanmış bir iş emri",
+    "bookingModeRequest": "Ofisin önce onayladığı bir talep",
+    "bookingModeHint": "Doğrudan randevu bağlantıyı tıklamaya değer kılar. Her seferinde onaylamak istiyorsanız talebi seçin.",
+    "phone": "Mesajlardaki telefon numarası",
+    "phoneHint": "Bağlantıya alternatif olarak gösterilir. Varsayılan atölye numarasıdır.",
+    "save": "Kaydet",
+    "saved": "Ayarlar kaydedildi",
+    "saveFailed": "Kaydedilemedi",
+    "timeZoneDetected": "Saat dilimi Yerelleştirme altında otomatik olduğundan sunucu, ayarları kaydeden bir tarayıcıda son görülen {zone} dilimini kullanıyor. Randevu saatlerinin son kaydeden kişiye bağlı olmaması için atölyenin dilimini açıkça seçin.",
+    "timeZoneExplicit": "Randevu saatleri ve çalışma saatleri {zone} diliminde okunur.",
+    "timeZoneChange": "Yerelleştirme altında değiştir"
   }
 }

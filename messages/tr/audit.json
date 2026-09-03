@@ -160,7 +160,9 @@
     "settings_saveDocumentDesign": "Belge tasarımı kaydedildi",
     "settings_deleteDocumentDesign": "Belge tasarımı silindi",
     "settings_applyDocumentDesign": "Varsayılan belge tasarımı ayarlandı",
-    "settings_freezeInvoices": "Eski faturalar donduruldu"
+    "settings_freezeInvoices": "Eski faturalar donduruldu",
+    "inspection_reminders_sent": "Muayene hatırlatmaları gönderildi",
+    "inspection_reminders_send": "Muayene hatırlatmaları gönderildi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -293,6 +295,7 @@
     "settings_saveDocumentDesign": "{name} belge tasarımını kaydetti",
     "settings_deleteDocumentDesign": "{name} belge tasarımını sildi",
     "settings_applyDocumentDesign": "{name} tasarımını varsayılan belge tasarımı yaptı",
-    "settings_freezeInvoices": "Kilitlemeden önceki {count, plural, one {# faturayı} other {# faturayı}} mevcut tasarımla dondurdu"
+    "settings_freezeInvoices": "Kilitlemeden önceki {count, plural, one {# faturayı} other {# faturayı}} mevcut tasarımla dondurdu",
+    "inspection_reminders_sent": "{count} muayene hatırlatması gönderildi"
   }
 }

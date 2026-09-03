@@ -95,7 +95,9 @@
     "addScannedVehicle": "Adicionar o veículo {vehicle}",
     "invoiceDesign": "Design da fatura",
     "invoiceDesignDefault": "Padrão da oficina",
-    "invoiceDesignHint": "As faturas deste cliente são impressas com este design em vez do padrão da oficina. Uma fatura ainda pode escolher o seu próprio."
+    "invoiceDesignHint": "As faturas deste cliente são impressas com este design em vez do padrão da oficina. Uma fatura ainda pode escolher o seu próprio.",
+    "reminderOptOut": "Sem lembretes",
+    "reminderOptOutHint": "Não incluir este cliente em lembretes de inspeção ou outras campanhas."
   },
   "serviceRequests": {
     "statusNew": "Novo",

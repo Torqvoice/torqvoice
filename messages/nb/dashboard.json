@@ -56,7 +56,8 @@
     "recentObservations": "Nylige observasjoner",
     "recentActivity": "Nylig aktivitet",
     "gettingStarted": "Kom i gang",
-    "tireHotel": "Dekkhotell"
+    "tireHotel": "Dekkhotell",
+    "inspectionsDue": "EU-kontroll forfaller"
   },
   "maintenance": {
     "title": "Forventet vedlikehold",
@@ -252,5 +253,15 @@
     "roomLeft": "Plass til {count} til",
     "needsPrep": "Trenger klargjøring",
     "unbilled": "Ufakturert ({count})"
+  },
+  "inspectionsDue": {
+    "title": "EU-kontroll forfaller",
+    "viewAll": "Vis alle kjøretøy med frist",
+    "overdue": "Forfalt",
+    "within30": "Neste 30 dager",
+    "within90": "Neste 90 dager",
+    "noData": "Ingen EU-kontroll forfaller de neste 90 dagene",
+    "overdueSince": "Forfalt siden {date}",
+    "remind": "Send påminnelser"
   }
 }

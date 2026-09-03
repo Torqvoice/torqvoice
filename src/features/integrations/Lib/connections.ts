@@ -8,7 +8,7 @@
  */
 
 import { db } from '@/lib/db'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { getConnector, getManifest } from '@/integrations/registry'
 import { createConnectorHttp } from './http'
 import { oauthSpec } from './oauth'
@@ -22,11 +22,7 @@ export function appUrl(): string {
 }
 
 export async function organizationTimezone(organizationId: string): Promise<string> {
-  const row = await db.appSetting.findUnique({
-    where: { organizationId_key: { organizationId, key: SETTING_KEYS.TIMEZONE } },
-    select: { value: true },
-  })
-  return row?.value?.trim() || DEFAULT_TIMEZONE
+  return workshopTimeZone(organizationId)
 }
 
 export async function writeLog(

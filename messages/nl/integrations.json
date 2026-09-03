@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Kenteken- en VIN-opzoeking",
+      "inspection": "APK-vervaldatums"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Keuringssynchronisatie",
+      "vehicles": "{count} voertuigen met kenteken in deze werkplaats",
+      "dueNow": "{count} zouden bij de volgende run worden opgezocht",
+      "withDate": "{count} hebben al een keuringsdatum",
+      "lastPass": "Laatste volledige ronde {date}",
+      "never": "Nog geen volledige ronde",
+      "inProgress": "Er loopt een ronde",
+      "off": "Zet de instelling aan en sla op; tot die tijd controleert een ronde niets.",
+      "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
+    }
   },
   "activity": {
     "title": "Activiteit",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Vul een voertuig in vanuit het Noorse kenteken of VIN: merk, model, bouwjaar, brandstof, versnellingsbak, motor, kleur, bandenmaten en de volgende EU-kontroll-datum, rechtstreeks uit het register van Statens vegvesen. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Gratis. Bestel de sleutel op vegvesen.no onder \"API for tekniske kjøretøyopplysninger\": log in met BankID, vertegenwoordig de werkplaats, en de sleutel wordt direct uitgegeven. Hij staat 50.000 opzoekingen per dag toe."
+      },
+      "settings": {
+        "syncInspections": "Keuringsdatums van alle voertuigen in deze werkplaats bijhouden",
+        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Werkorders naar agenda",
+      "pull": "Bezette tijd uit agenda"
+    },
+    "conference": {
+      "sync": "Videogesprek-links"
+    },
+    "inspection": {
+      "refresh": "Keuringsdatums verversen"
     }
   }
 }

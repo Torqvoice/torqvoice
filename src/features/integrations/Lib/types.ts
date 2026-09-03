@@ -185,6 +185,48 @@ export type JobHandler = (
   payload: Record<string, unknown>
 ) => Promise<JobOutcome | void>
 
+/** What a vehicle registry is asked for: a plate, a VIN, or both. */
+export interface VehicleLookupQuery {
+  plate?: string
+  vin?: string
+}
+
+/**
+ * A vehicle as a registry describes it, in the app's own vocabulary so the
+ * form can fill itself without knowing which country answered. Everything is
+ * optional: registries differ in what they publish, and none of them owe us
+ * a complete record.
+ */
+export interface VehicleLookupResult {
+  make?: string
+  model?: string
+  /** Year of first registration, the closest thing a registry has to a model year. */
+  year?: number
+  vin?: string
+  licensePlate?: string
+  color?: string
+  /** One of the form's fuel options, already normalised. */
+  fuelType?: string
+  /** One of the form's transmission options, already normalised. */
+  transmission?: string
+  engineSize?: string
+  engineCode?: string
+  /** Registry's own class label, such as "Personbil" or "Light goods vehicle". */
+  vehicleClass?: string
+  /** ISO date of first registration. */
+  firstRegistered?: string
+  /** ISO date the next periodic inspection is due. */
+  inspectionDue?: string
+  /** ISO date of the last approved periodic inspection. */
+  lastInspected?: string
+  /** Approved tyre and rim sizes per axle, front first. */
+  tyres?: { axle: number; tyre?: string; rim?: string; loadIndex?: string; speedRating?: string }[]
+  /** Kerb weight and permitted total weight in kilograms. */
+  weights?: { kerb?: number; grossMax?: number }
+  /** Whether the registry lists the vehicle as currently registered. */
+  registered?: boolean
+}
+
 export interface ConnectorServer {
   manifest: ConnectorManifest
   /** After connecting: who the account is, shown on the connection page. */
@@ -199,6 +241,15 @@ export interface ConnectorServer {
   sendTest?(ctx: ConnectorContext, to: { email: string }): Promise<void>
   /** Providers for remote-select settings, keyed by SettingField.source. */
   remoteOptions?: Record<string, (ctx: ConnectorContext) => Promise<SettingOption[]>>
+  /**
+   * Ask a vehicle registry about one vehicle, for connectors with the
+   * 'vehicle.lookup' capability. Synchronous because a form is waiting on it.
+   * Returns null when the registry has no such vehicle.
+   */
+  lookupVehicle?(
+    ctx: ConnectorContext,
+    query: VehicleLookupQuery
+  ): Promise<VehicleLookupResult | null>
   jobs: Record<string, JobHandler>
   /** Inbound webhook handling, where the vendor pushes. */
   webhook?: {

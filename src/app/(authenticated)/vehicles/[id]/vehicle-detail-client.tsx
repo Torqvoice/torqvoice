@@ -184,6 +184,7 @@ interface VehicleDetail {
   imageUrl: string | null
   isArchived: boolean
   archiveReason: string | null
+  soldReportedAt?: Date | null
   customerId: string | null
   customer: {
     id: string
@@ -191,6 +192,13 @@ interface VehicleDetail {
     company: string | null
     email: string | null
     phone: string | null
+  } | null
+  inspectionStatus?: {
+    dueAt: Date | null
+    lastAt: Date | null
+    source: string
+    checkedAt: Date | null
+    registered: boolean | null
   } | null
   serviceRecords: {
     id: string
@@ -700,6 +708,44 @@ export function VehicleDetailClient({
               {vehicle.color && (
                 <Badge variant="secondary" className="text-xs px-1.5 py-0">
                   {vehicle.color}
+                </Badge>
+              )}
+              {vehicle.inspectionStatus?.dueAt && (
+                <Badge
+                  variant="outline"
+                  className={`text-xs px-1.5 py-0 ${
+                    new Date(vehicle.inspectionStatus.dueAt).getTime() < Date.now()
+                      ? 'border-destructive/40 text-destructive'
+                      : new Date(vehicle.inspectionStatus.dueAt).getTime() - Date.now() <
+                          30 * 86_400_000
+                        ? 'border-amber-500/40 text-amber-700 dark:text-amber-400'
+                        : ''
+                  }`}
+                  title={
+                    vehicle.inspectionStatus.checkedAt
+                      ? t('inspectionCheckedAt', {
+                          date: formatDate(vehicle.inspectionStatus.checkedAt),
+                        })
+                      : undefined
+                  }
+                >
+                  {t('inspectionDue', { date: formatDate(vehicle.inspectionStatus.dueAt) })}
+                </Badge>
+              )}
+              {vehicle.soldReportedAt && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-1.5 py-0 border-amber-500/40 text-amber-700 dark:text-amber-400"
+                >
+                  {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
+                </Badge>
+              )}
+              {vehicle.inspectionStatus?.registered === false && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-1.5 py-0 border-destructive/40 text-destructive"
+                >
+                  {t('notRegistered')}
                 </Badge>
               )}
               {vehicle.customer && (

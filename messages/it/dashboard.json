@@ -56,7 +56,8 @@
     "recentObservations": "Osservazioni recenti",
     "recentActivity": "Attività recente",
     "gettingStarted": "Per iniziare",
-    "tireHotel": "Hotel pneumatici"
+    "tireHotel": "Hotel pneumatici",
+    "inspectionsDue": "Revisioni in scadenza"
   },
   "maintenance": {
     "title": "Manutenzione prevista in scadenza",
@@ -252,5 +253,15 @@
     "roomLeft": "Spazio per altri {count}",
     "needsPrep": "Da preparare",
     "unbilled": "Non fatturato ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Revisioni in scadenza",
+    "viewAll": "Vedi tutti i veicoli in scadenza",
+    "overdue": "Scadute",
+    "within30": "Prossimi 30 giorni",
+    "within90": "Prossimi 90 giorni",
+    "noData": "Nessuna revisione nei prossimi 90 giorni",
+    "overdueSince": "Scaduta dal {date}",
+    "remind": "Invia promemoria"
   }
 }

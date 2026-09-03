@@ -95,7 +95,9 @@
     "addScannedVehicle": "Fahrzeug {vehicle} anlegen",
     "invoiceDesign": "Rechnungsdesign",
     "invoiceDesignDefault": "Werkstatt-Standard",
-    "invoiceDesignHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Eine Rechnung kann trotzdem ein eigenes wählen."
+    "invoiceDesignHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Eine Rechnung kann trotzdem ein eigenes wählen.",
+    "reminderOptOut": "Keine Erinnerungen",
+    "reminderOptOutHint": "Diesen Kunden nicht in HU-Erinnerungen oder andere Kampagnen aufnehmen."
   },
   "serviceRequests": {
     "statusNew": "Neu",

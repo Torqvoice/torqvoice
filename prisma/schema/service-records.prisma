@@ -75,6 +75,9 @@ model ServiceRecord {
   /// Set when an owner or admin deliberately reopens a locked document.
   /// Nullable rather than a boolean so the audit trail can show when, and the
   /// screen can say the document was reopened rather than never locked.
+  /// "online" when the customer booked it from a link, so the office can tell.
+  bookingSource String?
+
   editUnlockedAt   DateTime?
   editUnlockedById String?
 

@@ -37,12 +37,14 @@ import { useGlassModal } from '@/components/glass-modal'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
+import { PlateLookupButton } from './PlateLookupButton'
+import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { nameSimilarity } from '@/lib/name-similarity'
 import { Camera, Check, ChevronsUpDown, Loader2, Plus, X } from 'lucide-react'
 import { compressImage } from '@/lib/compress-image'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
 import { createCustomer } from '@/features/customers/Actions/customerActions'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 
@@ -75,6 +77,7 @@ interface VehicleFormProps {
     engineCode?: string | null
     imageUrl?: string | null
     customerId?: string | null
+    inspectionStatus?: { dueAt: Date | string | null; source?: string } | null
   }
   customers?: { id: string; name: string; company: string | null }[]
   /** Preselects the customer when creating a new vehicle (ignored when editing) */
@@ -94,6 +97,7 @@ export function VehicleForm({
   const modal = useGlassModal()
   const t = useTranslations('vehicles.form')
   const tc = useTranslations('common.buttons')
+  const format = useFormatter()
   const [loading, setLoading] = useState(false)
   const [preview, setPreview] = useState<string | null>(vehicle?.imageUrl ?? null)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -104,6 +108,10 @@ export function VehicleForm({
   const [showCustomerForm, setShowCustomerForm] = useState(false)
   const [localCustomers, setLocalCustomers] = useState(customers || [])
   const [fuelType, setFuelType] = useState(vehicle?.fuelType ?? 'gasoline')
+  const defaultTransmission = vehicle?.transmission ?? (isMarine ? 'outboard' : 'automatic')
+  const [transmission, setTransmission] = useState(defaultTransmission)
+  /** What the registry said about the plate, kept under the field until the dialog closes. */
+  const [lookupNote, setLookupNote] = useState<VehicleLookup | null>(null)
   /** Keeper read off a scanned document, until it is tied to a customer. */
   const [scannedOwner, setScannedOwner] = useState<{ name?: string; address?: string } | null>(null)
   const [ownerMatches, setOwnerMatches] = useState<OwnerMatch[]>([])
@@ -119,10 +127,20 @@ export function VehicleForm({
     setPreview(vehicle?.imageUrl ?? null)
     setImageFile(null)
     setFuelType(vehicle?.fuelType ?? 'gasoline')
+    setTransmission(vehicle?.transmission ?? (isMarine ? 'outboard' : 'automatic'))
+    setLookupNote(null)
     setScannedOwner(null)
     setOwnerMatches([])
     setAddOwner(true)
-  }, [vehicle?.id, vehicle?.customerId, vehicle?.imageUrl, vehicle?.fuelType, defaultCustomerId])
+  }, [
+    vehicle?.id,
+    vehicle?.customerId,
+    vehicle?.imageUrl,
+    vehicle?.fuelType,
+    vehicle?.transmission,
+    isMarine,
+    defaultCustomerId,
+  ])
 
   const selectedCustomerLabel = useMemo(() => {
     if (!selectedCustomerId || selectedCustomerId === 'none') return t('noCustomer')
@@ -219,6 +237,25 @@ export function VehicleForm({
     if (candidates.length > 0) setShowOwnerMatch(true)
   }
 
+  /**
+   * A registry answer fills the same fields as a scanned document, plus the
+   * gearbox, which papers rarely state. The select only moves while it still
+   * holds the value the form opened with.
+   */
+  const applyLookup = (data: VehicleLookup) => {
+    applyScan(data)
+    if (data.inspectionDue) {
+      const input = formRef.current?.elements.namedItem(
+        'inspectionDueAt'
+      ) as HTMLInputElement | null
+      if (input && !input.value) input.value = data.inspectionDue.slice(0, 10)
+    }
+    if (data.transmission && transmission === defaultTransmission) {
+      setTransmission(data.transmission)
+    }
+    setLookupNote(data)
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -262,9 +299,11 @@ export function VehicleForm({
         color: (formData.get('color') as string) || undefined,
         mileage: Number(formData.get('mileage')) || 0,
         fuelType: fuelType || undefined,
-        transmission: (formData.get('transmission') as string) || undefined,
+        transmission: transmission || undefined,
         engineSize: (formData.get('engineSize') as string) || undefined,
         engineCode: (formData.get('engineCode') as string) || undefined,
+        // Sent as-is: an empty string clears a hand-typed date, undefined leaves it alone.
+        inspectionDueAt: isMarine ? undefined : ((formData.get('inspectionDueAt') as string) ?? ''),
         customerId,
       }
 
@@ -534,12 +573,40 @@ export function VehicleForm({
                   <Label htmlFor="licensePlate">
                     {isMarine ? t('licensePlateMarine') : t('licensePlate')}
                   </Label>
-                  <Input
-                    id="licensePlate"
-                    name="licensePlate"
-                    placeholder="ABC-1234"
-                    defaultValue={vehicle?.licensePlate ?? ''}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="licensePlate"
+                      name="licensePlate"
+                      placeholder="ABC-1234"
+                      defaultValue={vehicle?.licensePlate ?? ''}
+                      className="flex-1"
+                    />
+                    {!isMarine && (
+                      <PlateLookupButton
+                        getPlate={() =>
+                          (
+                            formRef.current?.elements.namedItem(
+                              'licensePlate'
+                            ) as HTMLInputElement | null
+                          )?.value ?? ''
+                        }
+                        onFound={applyLookup}
+                        vehicleId={vehicle?.id}
+                      />
+                    )}
+                  </div>
+                  {lookupNote && (
+                    <p className="text-xs text-muted-foreground">
+                      {lookupNote.inspectionDue
+                        ? t('lookupInspectionDue', {
+                            source: lookupNote.source,
+                            date: format.dateTime(new Date(lookupNote.inspectionDue), {
+                              dateStyle: 'medium',
+                            }),
+                          })
+                        : t('lookupSource', { source: lookupNote.source })}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -579,10 +646,7 @@ export function VehicleForm({
                 <Label htmlFor="transmission">
                   {isMarine ? t('transmissionMarine') : t('transmission')}
                 </Label>
-                <Select
-                  name="transmission"
-                  defaultValue={vehicle?.transmission ?? (isMarine ? 'outboard' : 'automatic')}
-                >
+                <Select name="transmission" value={transmission} onValueChange={setTransmission}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -625,6 +689,28 @@ export function VehicleForm({
                   />
                 </div>
               </div>
+
+              {!isMarine && (
+                <div className="space-y-2">
+                  <Label htmlFor="inspectionDueAt">{t('inspectionDue')}</Label>
+                  <Input
+                    id="inspectionDueAt"
+                    name="inspectionDueAt"
+                    type="date"
+                    defaultValue={
+                      vehicle?.inspectionStatus?.dueAt
+                        ? new Date(vehicle.inspectionStatus.dueAt).toISOString().slice(0, 10)
+                        : ''
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {vehicle?.inspectionStatus?.source &&
+                    vehicle.inspectionStatus.source !== 'manual'
+                      ? t('inspectionDueFromRegistry')
+                      : t('inspectionDueHint')}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end gap-3 border-t pt-4 md:col-span-2">

@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Paieška pagal numerį ir VIN",
+      "inspection": "Apžiūros terminai"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Apžiūrų sinchronizavimas",
+      "vehicles": "{count} transporto priemonės su numeriu šiose dirbtuvėse",
+      "dueNow": "{count} būtų patikrintos kito paleidimo metu",
+      "withDate": "{count} jau turi apžiūros datą",
+      "lastPass": "Paskutinis pilnas perėjimas {date}",
+      "never": "Pilno perėjimo dar nebuvo",
+      "inProgress": "Perėjimas vyksta",
+      "off": "Įjunkite nustatymą ir išsaugokite; iki tol perėjimas nieko netikrina.",
+      "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
+    }
   },
   "activity": {
     "title": "Veikla",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Užpildykite transporto priemonę pagal norvegišką numerį arba VIN: markė, modelis, metai, degalai, pavarų dėžė, variklis, spalva, padangų matmenys ir kita EU-kontroll data, tiesiai iš Statens vegvesen registro. Savininko duomenys negrąžinami.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Nemokamas. Užsisakykite raktą vegvesen.no skiltyje „API for tekniske kjøretøyopplysninger“: prisijunkite su BankID, atstovaukite dirbtuvėms, ir raktas išduodamas iš karto. Jis leidžia 50 000 užklausų per dieną."
+      },
+      "settings": {
+        "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių apžiūros terminus",
+        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Užsakymai į kalendorių",
+      "pull": "Užimtas laikas iš kalendoriaus"
+    },
+    "conference": {
+      "sync": "Vaizdo skambučių nuorodos"
+    },
+    "inspection": {
+      "refresh": "Apžiūros terminų atnaujinimas"
     }
   }
 }
