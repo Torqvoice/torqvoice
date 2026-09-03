@@ -362,18 +362,10 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     warrantyParts.push(`${data.warrantyMileage.toLocaleString()} ${L('km', 'km')}`)
   }
 
-  const netDays = dueDateRaw
-    ? Math.max(
-        0,
-        Math.ceil((dueDateRaw.getTime() - new Date(effectiveInvoiceDate).getTime()) / 86400000)
-      )
-    : 0
-  const paymentTermsText =
-    netDays > 0
-      ? labels.netDays
-        ? fillTemplate(labels.netDays, { days: String(netDays) })
-        : `Net ${netDays} Days`
-      : invoiceSettings?.paymentTerms || ''
+  // The workshop's own words, from payment settings. An empty field prints
+  // nothing at all: a due date is already its own line below, and terms
+  // counted off it ("Net 14 Days") read as a rule nobody wrote.
+  const paymentTermsText = invoiceSettings?.paymentTerms?.trim() || ''
 
   const payment: DocumentData['payment'] = []
   if (invoiceSettings?.bankAccount) {

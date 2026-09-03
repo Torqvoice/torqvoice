@@ -320,6 +320,7 @@ export function DesignerInspector({
   ownLogo,
   onLogo,
   sloganSet,
+  paymentTermsSet,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -339,6 +340,8 @@ export function DesignerInspector({
   onLogo: (url: string) => void
   /** Whether the workshop has a slogan, or the canvas is showing a stand-in. */
   sloganSet: boolean
+  /** Whether payment terms are set, or the panel is showing a stand-in. */
+  paymentTermsSet: boolean
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -621,6 +624,26 @@ export function DesignerInspector({
                   className="font-medium text-[#2563eb] underline underline-offset-2"
                 >
                   {t('sloganLink')}
+                </a>
+              </p>
+            </Group>
+          )}
+
+          {/* Payment terms live in payment settings, the same line on every
+              invoice, so they are not edited here. With none written the panel
+              shows a stand-in that prints as nothing, and the inspector says
+              so: it reads as a real term otherwise. */}
+          {section.id === 'bank_account' && (
+            <Group title={t('paymentTerms')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {paymentTermsSet ? t('paymentTermsSetHint') : t('paymentTermsPlaceholderHint')}{' '}
+                <a
+                  href="/settings/payment"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('paymentTermsLink')}
                 </a>
               </p>
             </Group>

@@ -274,8 +274,13 @@ export function buildSampleData(
         value: values.org_number || `${L('org', 'Org: {org}').replace('{org}', '123 456 789')}`,
       },
       {
+        // The workshop's own terms when they have written any, a stand-in
+        // otherwise, so the line can be found and placed. The stand-in prints
+        // as nothing, which is why the canvas marks the panel a placeholder.
         label: L('paymentTermsLabel', 'Payment Terms'),
-        value: fillTemplate(L('netDays', '{days} Days'), { days: '10' }),
+        value:
+          workshop.paymentTerms?.trim() ||
+          fillTemplate(L('netDays', '{days} Days'), { days: '10' }),
       },
       { label: L('dueDateLabel', 'Due Date'), value: sample.due },
     ],

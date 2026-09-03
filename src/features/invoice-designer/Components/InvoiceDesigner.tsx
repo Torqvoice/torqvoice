@@ -199,13 +199,16 @@ export function InvoiceDesigner({
 
   const layout = layouts[docType]
   const template = templates[docType]
-  // Blocks the canvas is filling in for the workshop. The slogan is the only
-  // one today: the rest of the sample stands in for a job, which a real sheet
-  // will have, while a slogan nobody has written simply never prints.
-  const placeholderIds = useMemo(
-    () => new Set(companyWorkshop.slogan?.trim() ? [] : ['slogan']),
-    [companyWorkshop.slogan]
-  )
+  // Blocks the canvas is filling in for the workshop: what the sheet shows
+  // here is a stand-in that prints as nothing, unlike the rest of the sample,
+  // which stands in for a job a real sheet will have. A slogan and payment
+  // terms nobody has written simply never print.
+  const placeholderIds = useMemo(() => {
+    const ids: string[] = []
+    if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
+    if (!companyWorkshop.paymentTerms?.trim()) ids.push('bank_account')
+    return new Set(ids)
+  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.
@@ -996,6 +999,7 @@ export function InvoiceDesigner({
           logoUrl={workshop.logoUrl}
           ownLogo={!!template.logoUrl}
           sloganSet={!!companyWorkshop.slogan?.trim()}
+          paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>
