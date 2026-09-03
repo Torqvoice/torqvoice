@@ -79,7 +79,17 @@
       "typePrompt": "Įveskite vardą...",
       "boardTechnicians": "Lentos technikai",
       "teamMembers": "Komandos nariai"
-    }
+    },
+    "design": "Sąskaitos dizainas",
+    "designDefault": "Dirbtuvės numatytasis",
+    "designFollowing": "Numatytasis ({name})",
+    "designPinned": "Lapas užfiksuotas išrašant sąskaitą {date}. Naujas pasirinkimas galios tik po to, kai savininkas atrakins sąskaitą ir ji bus išsiųsta dar kartą.",
+    "designSaved": "Sąskaitos dizainas atnaujintas",
+    "designFollowingRule": "Numatytasis ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Tik dalių pardavimas"
+    },
+    "designSaveFailed": "Nepavyko pakeisti sąskaitos dizaino"
   },
   "parts": {
     "title": "Dalys",

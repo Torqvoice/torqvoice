@@ -38,12 +38,20 @@ model Customer {
   reminders      Reminder[]
   tireSets       TireSet[]
 
+  /// The invoice design this customer's invoices use in place of the
+  /// workshop's default: a fleet account that wants its own paper. An
+  /// invoice's own choice wins over it. SetNull: a deleted design falls
+  /// back to the default.
+  invoiceDesignId String?
+  invoiceDesign   DocumentDesign? @relation(fields: [invoiceDesignId], references: [id], onDelete: SetNull)
+
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
   @@unique([organizationId, customerNumber])
   @@index([organizationId])
   @@index([importBatchId])
+  @@index([invoiceDesignId])
   @@map("customers")
 }
 

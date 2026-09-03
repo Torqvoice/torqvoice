@@ -33,6 +33,8 @@
     "phoneCopied": "Telefonnummer in die Zwischenablage kopiert",
     "taxIdLabel": "USt-IdNr.",
     "taxExemptBadge": "Steuerbefreit",
+    "invoiceDesignBadge": "Rechnungsdesign: {name}",
+    "invoiceDesignBadgeHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Im Designer öffnen.",
     "tabs": {
       "vehicles": "Fahrzeuge ({count})",
       "invoices": "Rechnungen ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "Kontakt",
     "sectionBilling": "Rechnung",
     "addScannedVehicle": "Fahrzeug {vehicle} anlegen",
+    "invoiceDesign": "Rechnungsdesign",
+    "invoiceDesignDefault": "Werkstatt-Standard",
+    "invoiceDesignHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Eine Rechnung kann trotzdem ein eigenes wählen.",
     "reminderOptOut": "Keine Erinnerungen",
     "reminderOptOutHint": "Diesen Kunden nicht in HU-Erinnerungen oder andere Kampagnen aufnehmen."
   },

@@ -82,11 +82,41 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  if (options.settings) {
+    queries.push(
+      db.documentDesign
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.documentDesigns = result
+        })
+    )
+  }
+
   if (options.customers) {
     queries.push(
       db.customer.findMany({ where: { organizationId: ctx.organizationId } }).then((result) => {
         data.customers = result
       })
+    )
+  }
+
+  if (options.vehicles) {
+    // What issued invoices were issued with. The logo bytes travel as base64,
+    // since the file is JSON.
+    queries.push(
+      db.documentDesignSnapshot
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.documentDesignSnapshots = result
+        }),
+      db.documentAssetSnapshot
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.documentAssetSnapshots = result.map((row) => ({
+            ...row,
+            data: Buffer.from(row.data).toString('base64'),
+          }))
+        })
     )
   }
 

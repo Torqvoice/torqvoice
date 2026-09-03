@@ -10,6 +10,19 @@ import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraf
 import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 
+/**
+ * A design a customer is being pointed at has to be this workshop's and an
+ * invoice design; anything else is refused rather than stored.
+ */
+async function assertInvoiceDesign(organizationId: string, designId: string | null | undefined) {
+  if (!designId) return
+  const design = await db.documentDesign.findFirst({
+    where: { id: designId, organizationId, documentType: 'invoice' },
+    select: { id: true },
+  })
+  if (!design) throw new Error('Design not found')
+}
+
 export async function getCustomers() {
   return withAuth(
     async ({ userId, organizationId }) => {
@@ -35,6 +48,9 @@ export async function getCustomer(customerId: string) {
       const customer = await db.customer.findFirst({
         where: { id: customerId, organizationId },
         include: {
+          // The name, so the page can say which design this customer's
+          // invoices print with rather than only that one was chosen.
+          invoiceDesign: { select: { id: true, name: true } },
           vehicles: {
             where: { isArchived: false },
             include: {
@@ -77,6 +93,7 @@ export async function createCustomer(input: unknown) {
       }
 
       const data = createCustomerSchema.parse(input)
+      await assertInvoiceDesign(organizationId, data.invoiceDesignId)
 
       // Auto-assign the next sequential number when none was provided; the
       // per-org unique index guards against races and manual duplicates.
@@ -135,6 +152,7 @@ export async function updateCustomer(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const { id, ...data } = updateCustomerSchema.parse(input)
+      await assertInvoiceDesign(organizationId, data.invoiceDesignId)
       let result
       try {
         result = await db.customer.updateMany({

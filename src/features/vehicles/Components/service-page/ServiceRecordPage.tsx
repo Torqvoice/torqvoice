@@ -10,6 +10,10 @@ import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPrese
 import { getTechnicians, getOrgMembers } from '@/features/workboard/Actions/technicianActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getInvoiceLockState } from '@/lib/document-lock.server'
+import {
+  designRuleSubjectOf,
+  findRuleDesign,
+} from '@/features/invoice-designer/Lib/designRules.server'
 import { getFeatures } from '@/lib/features'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
@@ -17,6 +21,8 @@ import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { db } from '@/lib/db'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
+import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
+import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
 import { PageHeader } from '@/components/page-header'
 import { getTranslations } from 'next-intl/server'
 
@@ -45,6 +51,7 @@ export async function ServiceRecordPage({
     findingsResult,
     workBaysResult,
     videoCallResult,
+    designOptionsResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
     getSettings([
@@ -56,6 +63,7 @@ export async function ServiceRecordPage({
       SETTING_KEYS.INVOICE_DUE_DAYS,
       SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
       SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY,
+      SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
     ]),
     getInventoryPartsList(),
     getTechnicians(),
@@ -67,6 +75,7 @@ export async function ServiceRecordPage({
     getServiceFindings(serviceId),
     getWorkBays(),
     getServiceVideoCall(serviceId),
+    listDesignOptions('invoice'),
   ])
 
   if (!result.success || !result.data) {
@@ -144,6 +153,32 @@ export async function ServiceRecordPage({
   ])
 
   const currentUserName = currentUser?.name || ''
+
+  // The picker on the invoice: the saved designs, what "default" means for
+  // this invoice (the customer's design, else the one in use), and whether
+  // the sheet is frozen at an issue.
+  const designOptions =
+    designOptionsResult.success && designOptionsResult.data ? designOptionsResult.data : []
+  const customerDesignId =
+    record.customer?.invoiceDesignId ?? record.vehicle?.customer?.invoiceDesignId ?? null
+  const activeDesign = settings[SETTING_KEYS.INVOICE_ACTIVE_DESIGN] || ''
+  const activeDesignId = activeDesign.startsWith('design:')
+    ? activeDesign.slice('design:'.length)
+    : null
+  // What "default" means for this invoice: the customer's design, else the
+  // design that volunteers for this kind of invoice, else the one in use.
+  const customerDesignName = designOptions.find((d) => d.id === customerDesignId)?.name ?? null
+  const ruleDesign =
+    !customerDesignName && organizationId
+      ? await findRuleDesign(organizationId, designRuleSubjectOf(record))
+      : null
+  const designFollowsName =
+    customerDesignName ??
+    ruleDesign?.name ??
+    designOptions.find((d) => d.id === activeDesignId)?.name ??
+    null
+  const designFollowsRule = ruleDesign?.autoRule ?? null
+  const designPinnedAt = rendersFromIssue(record) ? (record.issuedAt?.toISOString() ?? null) : null
   const aiSettingsMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
   const aiEnabled =
     features?.ai === true &&
@@ -334,6 +369,10 @@ export async function ServiceRecordPage({
           ...n,
           createdAt: n.createdAt.toISOString(),
         }))}
+        designOptions={designOptions}
+        designFollowsName={designFollowsName}
+        designFollowsRule={designFollowsRule}
+        designPinnedAt={designPinnedAt}
       />
     </div>
   )

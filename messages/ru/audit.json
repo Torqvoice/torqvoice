@@ -156,6 +156,12 @@
     "import_undo": "Отменён импорт",
     "integration_connect": "Подключена интеграция",
     "integration_disconnect": "Отключена интеграция",
+    "service_setInvoiceDesign": "Изменён дизайн счёта",
+    "settings_saveDocumentDesign": "Сохранён дизайн документа",
+    "settings_deleteDocumentDesign": "Удалён дизайн документа",
+    "settings_applyDocumentDesign": "Установлен дизайн документа по умолчанию",
+    "settings_setDocumentDesignRule": "Изменено, когда используется дизайн",
+    "settings_freezeInvoices": "Зафиксированы старые счета",
     "inspection_reminders_sent": "Отправлены напоминания о техосмотре",
     "inspection_reminders_send": "Отправлены напоминания о техосмотре"
   },
@@ -286,6 +292,12 @@
     "import_undo": "Отменён импорт таблицы, удалено записей: {records}",
     "integration_connect": "Подключена интеграция {name}",
     "integration_disconnect": "Отключена интеграция {name}",
+    "service_setInvoiceDesign": "Изменил, с каким дизайном печатается счёт",
+    "settings_saveDocumentDesign": "Сохранил дизайн документа {name}",
+    "settings_deleteDocumentDesign": "Удалил дизайн документа {name}",
+    "settings_applyDocumentDesign": "Сделал {name} дизайном документа по умолчанию",
+    "settings_setDocumentDesignRule": "Изменено, когда используется дизайн документа {name}",
+    "settings_freezeInvoices": "Зафиксировал {count, plural, one {# счёт} few {# счёта} many {# счетов} other {# счёта}} до появления блокировки с текущим дизайном",
     "inspection_reminders_sent": "Отправлено напоминаний о техосмотре: {count}"
   }
 }

@@ -79,7 +79,17 @@
       "typePrompt": "Digite um nome...",
       "boardTechnicians": "Técnicos do Quadro",
       "teamMembers": "Membros do Time"
-    }
+    },
+    "design": "Design da fatura",
+    "designDefault": "Padrão da oficina",
+    "designFollowing": "Padrão ({name})",
+    "designPinned": "A folha foi congelada quando a fatura foi emitida em {date}. Uma nova escolha só vale depois que um proprietário desbloquear a fatura e ela for enviada de novo.",
+    "designSaved": "Design da fatura atualizado",
+    "designFollowingRule": "Padrão ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Venda apenas de peças"
+    },
+    "designSaveFailed": "Não foi possível alterar o design da fatura"
   },
   "parts": {
     "title": "Peças",

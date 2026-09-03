@@ -79,6 +79,9 @@ model Organization {
   vehicleInspectionStatuses   VehicleInspectionStatus[]
   inspectionReminderCampaigns InspectionReminderCampaign[]
   inspectionReminderSends     InspectionReminderSend[]
+  documentDesigns             DocumentDesign[]
+  documentDesignSnapshots     DocumentDesignSnapshot[]
+  documentAssetSnapshots      DocumentAssetSnapshot[]
 
   @@map("organizations")
 }

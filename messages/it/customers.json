@@ -33,6 +33,8 @@
     "phoneCopied": "Numero di telefono copiato negli appunti",
     "taxIdLabel": "P. IVA",
     "taxExemptBadge": "Esente da imposta",
+    "invoiceDesignBadge": "Design fattura: {name}",
+    "invoiceDesignBadgeHint": "Le fatture di questo cliente si stampano con questo design invece di quello predefinito dell'officina. Aprilo nel designer.",
     "tabs": {
       "vehicles": "Veicoli ({count})",
       "invoices": "Fatture ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "Contatto",
     "sectionBilling": "Fatturazione",
     "addScannedVehicle": "Aggiungi il veicolo {vehicle}",
+    "invoiceDesign": "Design della fattura",
+    "invoiceDesignDefault": "Predefinito dell'officina",
+    "invoiceDesignHint": "Le fatture di questo cliente vengono stampate con questo design invece del predefinito dell'officina. Una fattura può comunque sceglierne uno proprio.",
     "reminderOptOut": "Nessun promemoria",
     "reminderOptOutHint": "Non includere questo cliente nei promemoria revisione o in altre campagne."
   },

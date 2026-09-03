@@ -46,6 +46,32 @@ model ServiceRecord {
   /// the link is revoked; sending is not undone by withdrawing the link.
   sentAt DateTime?
 
+  /// The design this invoice prints with while it is still being written.
+  /// Null follows the customer's design, then the workshop's default. SetNull:
+  /// a deleted design sends its drafts back to the default rather than
+  /// taking them with it.
+  designId String?
+  design   DocumentDesign? @relation(fields: [designId], references: [id], onDelete: SetNull)
+
+  /// When the invoice became the customer's document: first send, share or
+  /// payment. From then on the sheet prints from the three snapshots below,
+  /// never from live settings, so a changed address, logo, payment terms or
+  /// title cannot rewrite paper already issued, and a preview and a re-send
+  /// always show the same sheet. Only an owner's unlock followed by a send
+  /// captures a fresh copy: the corrected one.
+  issuedAt               DateTime?
+  /// The look at issue. Restrict: a snapshot referenced by an invoice is a
+  /// record and cannot be removed.
+  issuedDesignSnapshotId String?
+  issuedDesignSnapshot   DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
+  issuedLogoSnapshotId   String?
+  issuedLogoSnapshot     DocumentAssetSnapshot?  @relation(fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
+  /// Everything else the sheet printed that the record does not own: the
+  /// workshop's details and payment settings, the customer, the vehicle, the
+  /// technician's name, the findings and the custom fields. Shape in
+  /// issuedInvoice.ts; read leniently so old snapshots render on new code.
+  issuedData             Json?
+
   /// Set when an owner or admin deliberately reopens a locked document.
   /// Nullable rather than a boolean so the audit trail can show when, and the
   /// screen can say the document was reopened rather than never locked.
@@ -111,6 +137,9 @@ model ServiceRecord {
   @@index([vehicleId])
   @@index([technicianId])
   @@index([workBayId])
+  @@index([designId])
+  @@index([issuedDesignSnapshotId])
+  @@index([issuedLogoSnapshotId])
   @@index([organizationId])
   @@index([customerId])
   @@index([inspectionId])

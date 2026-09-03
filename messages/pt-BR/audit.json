@@ -156,6 +156,12 @@
     "import_undo": "Importação desfeita",
     "integration_connect": "Integração conectada",
     "integration_disconnect": "Integração desconectada",
+    "service_setInvoiceDesign": "Design da fatura alterado",
+    "settings_saveDocumentDesign": "Design de documento salvo",
+    "settings_deleteDocumentDesign": "Design de documento excluído",
+    "settings_applyDocumentDesign": "Design de documento padrão definido",
+    "settings_setDocumentDesignRule": "Alterou quando um design é usado",
+    "settings_freezeInvoices": "Faturas anteriores travadas",
     "inspection_reminders_sent": "Enviou lembretes de inspeção",
     "inspection_reminders_send": "Enviou lembretes de inspeção"
   },
@@ -286,6 +292,12 @@
     "import_undo": "Desfez uma importação de planilha: {records} registros removidos",
     "integration_connect": "{name} conectado",
     "integration_disconnect": "{name} desconectado",
+    "service_setInvoiceDesign": "Alterou com qual design uma fatura é impressa",
+    "settings_saveDocumentDesign": "Salvou o design de documento {name}",
+    "settings_deleteDocumentDesign": "Excluiu o design de documento {name}",
+    "settings_applyDocumentDesign": "Definiu {name} como design de documento padrão",
+    "settings_setDocumentDesignRule": "Alterou quando o design de documento {name} é usado",
+    "settings_freezeInvoices": "Travou {count, plural, one {# fatura} other {# faturas}} anteriores ao bloqueio com o design atual",
     "inspection_reminders_sent": "Enviou {count} lembretes de inspeção"
   }
 }

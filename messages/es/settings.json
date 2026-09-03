@@ -580,7 +580,16 @@
     "quoteLockTriggerSent": "Cuando se envía el presupuesto",
     "quoteLockTriggerAccepted": "Cuando se acepta el presupuesto",
     "quoteLockTriggerSentHint": "Se bloquea en cuanto el presupuesto llega al cliente. Elija esta opción solo si nunca revisa un presupuesto durante la negociación.",
-    "quoteLockTriggerAcceptedHint": "Se bloquea cuando el cliente acepta el presupuesto o este se convierte en un trabajo. Los presupuestos enviados siguen siendo editables."
+    "quoteLockTriggerAcceptedHint": "Se bloquea cuando el cliente acepta el presupuesto o este se convierte en un trabajo. Los presupuestos enviados siguen siendo editables.",
+    "freezeTitle": "Facturas anteriores al bloqueo",
+    "freezeBody": "{count, plural, one {# factura} other {# facturas}} llegaron a un cliente antes de que esta versión pudiera bloquear lo que imprime una factura. Siguen imprimiéndose con sus datos, logotipo y diseño actuales, así que un cambio de hoy también les afecta. Bloquearlas conserva cada una tal como se imprime ahora.",
+    "freezeNone": "Todas las facturas que llegaron a un cliente están bloqueadas tal como se enviaron.",
+    "freezeButton": "Bloquearlas con el diseño actual",
+    "freezeConfirmTitle": "¿Bloquear {count, plural, one {# factura} other {# facturas}}?",
+    "freezeConfirmBody": "Cada una conserva el diseño, el logotipo, los datos del taller, el cliente, el vehículo y los hallazgos con los que se imprime ahora. No se puede deshacer, y las facturas siguen editables o bloqueadas para edición exactamente como hoy.",
+    "freezeProgress": "Bloqueadas {done} de {total}",
+    "freezeDone": "{count, plural, one {# factura bloqueada} other {# facturas bloqueadas}}",
+    "freezeFailed": "No se pudieron bloquear las facturas"
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",
@@ -1783,6 +1792,14 @@
     "galleryTitle": "Empieza con una plantilla",
     "galleryHint": "Elige un punto de partida. Puedes cambiarlo todo en el diseñador.",
     "yourDesigns": "Tus diseños",
+    "autoRuleHint": "Las ventas sin vehículo se imprimen con el diseño marcado para ellas, salvo que la venta o su cliente hayan elegido otro.",
+    "useForPartsSale": "Usar para ventas solo de piezas",
+    "usedForPartsSale": "Se usa para ventas solo de piezas",
+    "autoRule": {
+      "parts_sale": "Venta solo de piezas"
+    },
+    "autoRuleSaved": "Uso de «{name}» actualizado",
+    "couldNotSaveRule": "No se pudo actualizar la regla",
     "templates": "Plantillas",
     "inUse": "En uso",
     "savedOn": "Guardado el {date}",
@@ -1968,7 +1985,12 @@
     "leaveTitle": "¿Salir sin guardar?",
     "leaveBody": "Los cambios de este diseño no se han guardado y se perderán.",
     "leaveConfirm": "Salir",
-    "boldField": "Negrita"
+    "boldField": "Negrita",
+    "deleteDesignDrafts": "{count, plural, one {# borrador de factura} other {# borradores de factura}} que lo usan volverán al diseño predeterminado.",
+    "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clientes}} asignados a él volverán al diseño predeterminado.",
+    "setDefault": "Establecer como predeterminado",
+    "defaultSet": "«{name}» está ahora en uso",
+    "couldNotSetDefault": "No se pudo establecer el diseño predeterminado"
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

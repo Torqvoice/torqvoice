@@ -580,7 +580,16 @@
     "quoteLockTriggerSent": "Kai pasiūlymas išsiųstas",
     "quoteLockTriggerAccepted": "Kai pasiūlymas priimtas",
     "quoteLockTriggerSentHint": "Užrakina, kai tik pasiūlymas išsiunčiamas klientui. Rinkitės tik jei niekada nekeičiate pasiūlymo derybų metu.",
-    "quoteLockTriggerAcceptedHint": "Užrakina, kai klientas priima pasiūlymą arba jis paverčiamas darbu. Išsiųstus pasiūlymus galima redaguoti."
+    "quoteLockTriggerAcceptedHint": "Užrakina, kai klientas priima pasiūlymą arba jis paverčiamas darbu. Išsiųstus pasiūlymus galima redaguoti.",
+    "freezeTitle": "Sąskaitos iki užrakinimo",
+    "freezeBody": "{count, plural, one {# sąskaita pasiekė} few {# sąskaitos pasiekė} other {# sąskaitų pasiekė}} klientą anksčiau, nei ši versija galėjo užrakinti, ką sąskaita spausdina. Jos vis dar spausdinamos su dabartiniais duomenimis, logotipu ir dizainu, tad šiandienos pakeitimas pasiekia ir jas. Užrakinus, kiekviena lieka tokia, kokia spausdinama dabar.",
+    "freezeNone": "Kiekviena klientą pasiekusi sąskaita užrakinta tokia, kokia buvo išsiųsta.",
+    "freezeButton": "Užrakinti su dabartiniu dizainu",
+    "freezeConfirmTitle": "Užrakinti {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}}?",
+    "freezeConfirmBody": "Kiekviena išlaiko dizainą, logotipą, dirbtuvės duomenis, klientą, transporto priemonę ir pastebėjimus, su kuriais spausdinama dabar. To atšaukti negalima; sąskaitos lieka redaguojamos arba užrakintos redagavimui lygiai kaip šiandien.",
+    "freezeProgress": "Užrakinta {done} iš {total}",
+    "freezeDone": "Užrakinta {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
+    "freezeFailed": "Nepavyko užrakinti sąskaitų"
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -1783,6 +1792,14 @@
     "galleryTitle": "Pradėkite nuo šablono",
     "galleryHint": "Pasirinkite atspirties tašką. Kūrimo įrankyje galėsite pakeisti viską.",
     "yourDesigns": "Jūsų dizainai",
+    "autoRuleHint": "Pardavimai be transporto priemonės spausdinami jiems pažymėtu dizainu, nebent pardavimas ar jo klientas pasirinko kitą.",
+    "useForPartsSale": "Naudoti tik dalių pardavimams",
+    "usedForPartsSale": "Naudojamas tik dalių pardavimams",
+    "autoRule": {
+      "parts_sale": "Tik dalių pardavimas"
+    },
+    "autoRuleSaved": "„{name}“ naudojimas atnaujintas",
+    "couldNotSaveRule": "Nepavyko atnaujinti taisyklės",
     "templates": "Šablonai",
     "inUse": "Naudojamas",
     "savedOn": "Išsaugota {date}",
@@ -1968,7 +1985,12 @@
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
     "leaveConfirm": "Išeiti",
-    "boldField": "Paryškinta"
+    "boldField": "Paryškinta",
+    "deleteDesignDrafts": "{count, plural, one {# sąskaitos juodraštis} few {# sąskaitų juodraščiai} other {# sąskaitų juodraščių}}, kurie jį naudoja, grįš prie numatytojo dizaino.",
+    "deleteDesignCustomers": "{count, plural, one {# klientas} few {# klientai} other {# klientų}}, kuriems jis priskirtas, grįš prie numatytojo dizaino.",
+    "setDefault": "Nustatyti kaip numatytąjį",
+    "defaultSet": "„{name}“ dabar naudojamas",
+    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

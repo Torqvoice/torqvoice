@@ -12,12 +12,16 @@ import { toast } from 'sonner'
 import { setSetting } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { layoutPresets } from '@/features/settings/Schema/layoutPresets'
-import { Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
+import { Check, Loader2, Palette, MessageSquare, RotateCcw } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
 import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
 import { DesignPreview, PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
+import {
+  applyDocumentDesign,
+  setDocumentDesignRule,
+} from '@/features/invoice-designer/Actions/documentDesignActions'
 import { Textarea } from '@/components/ui/textarea'
 import { type InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -147,6 +151,45 @@ function TemplateTab({
 }) {
   const t = useTranslations('settings')
   const tDesigner = useTranslations('settings.designer')
+  const router = useRouter()
+  const [applying, setApplying] = useState<string | null>(null)
+  const [ruling, setRuling] = useState<string | null>(null)
+
+  // Only invoices are printed through the design resolution that reads
+  // rules; a quote design has nowhere to volunteer itself yet.
+  const rulesApply = documentType === 'invoice'
+  // One rule exists today, so the card offers it as a button that toggles,
+  // beside "Set as default", rather than a menu of one.
+  const togglePartsSale = async (design: SavedDesign) => {
+    setRuling(design.id)
+    try {
+      const next = design.autoRule === 'parts_sale' ? null : 'parts_sale'
+      const result = await setDocumentDesignRule(design.id, next)
+      if (!result.success) throw new Error(result.error)
+      toast.success(tDesigner('autoRuleSaved', { name: design.name }))
+      router.refresh()
+    } catch {
+      toast.error(tDesigner('couldNotSaveRule'))
+    } finally {
+      setRuling(null)
+    }
+  }
+
+  // Makes a saved design the one this document prints with, without a trip
+  // through the designer: the same writes its Save makes.
+  const setDefault = async (design: SavedDesign) => {
+    setApplying(design.id)
+    try {
+      const result = await applyDocumentDesign(design.id)
+      if (!result.success) throw new Error(result.error)
+      toast.success(tDesigner('defaultSet', { name: design.name }))
+      router.refresh()
+    } catch {
+      toast.error(tDesigner('couldNotSetDefault'))
+    } finally {
+      setApplying(null)
+    }
+  }
 
   return (
     <AppCard icon={Palette} title={t('templates.presets')} contentClassName="space-y-4">
@@ -157,17 +200,17 @@ function TemplateTab({
       {savedDesigns.length > 0 && (
         <div>
           <h3 className="mb-2 text-sm font-medium">{tDesigner('yourDesigns')}</h3>
+          {rulesApply && (
+            <p className="mb-3 text-xs text-muted-foreground">{tDesigner('autoRuleHint')}</p>
+          )}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {savedDesigns.map((design) => {
               const active = activeDesign === `design:${design.id}`
               return (
-                <Link
+                <div
                   key={design.id}
-                  href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
-                  target="_blank"
-                  rel="noopener"
                   className={cn(
-                    'relative rounded-lg border p-3 text-left transition-colors hover:bg-muted',
+                    'relative flex flex-col rounded-lg border p-3 text-left transition-colors hover:bg-muted',
                     active && 'border-primary'
                   )}
                 >
@@ -176,16 +219,61 @@ function TemplateTab({
                       {tDesigner('inUse')}
                     </span>
                   )}
-                  <div className="flex justify-center">
-                    <DesignPreview
-                      design={design}
-                      docType={documentType}
-                      workshop={workshop}
-                      logoUrl={logoUrl}
-                    />
-                  </div>
-                  <p className="mt-2 truncate text-xs font-medium">{design.name}</p>
-                </Link>
+                  {rulesApply && design.autoRule && (
+                    <span className="absolute left-2 top-2 z-10 rounded-full border border-primary/40 bg-background px-2 py-0.5 text-[10px] font-semibold text-primary">
+                      {tDesigner(`autoRule.${design.autoRule}`)}
+                    </span>
+                  )}
+                  <Link
+                    href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="block"
+                  >
+                    <div className="flex justify-center">
+                      <DesignPreview
+                        design={design}
+                        docType={documentType}
+                        workshop={workshop}
+                        logoUrl={logoUrl}
+                      />
+                    </div>
+                    <p className="mt-2 truncate text-xs font-medium">{design.name}</p>
+                  </Link>
+                  {!active && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 h-7 text-xs"
+                      disabled={applying === design.id}
+                      onClick={() => void setDefault(design)}
+                    >
+                      {applying === design.id && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                      {tDesigner('setDefault')}
+                    </Button>
+                  )}
+                  {rulesApply && (design.autoRule === 'parts_sale' || !active) && (
+                    <Button
+                      type="button"
+                      variant={design.autoRule === 'parts_sale' ? 'secondary' : 'outline'}
+                      size="sm"
+                      className="mt-2 h-7 text-xs"
+                      disabled={ruling === design.id}
+                      aria-pressed={design.autoRule === 'parts_sale'}
+                      onClick={() => void togglePartsSale(design)}
+                    >
+                      {ruling === design.id ? (
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      ) : (
+                        design.autoRule === 'parts_sale' && <Check className="mr-1 h-3 w-3" />
+                      )}
+                      {design.autoRule === 'parts_sale'
+                        ? tDesigner('usedForPartsSale')
+                        : tDesigner('useForPartsSale')}
+                    </Button>
+                  )}
+                </div>
               )
             })}
           </div>

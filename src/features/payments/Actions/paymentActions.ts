@@ -2,6 +2,7 @@
 
 import { toSafeDate } from '@/lib/invoice-utils'
 import { db } from '@/lib/db'
+import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createPaymentSchema } from '../Schema/paymentSchema'
@@ -30,6 +31,9 @@ export async function createPayment(input: unknown) {
           note: data.note || null,
         },
       })
+      // Money against it makes the invoice the customer's document, even one
+      // handed over on paper and never sent through the app.
+      await issueInvoice(data.serviceRecordId, organizationId, 'paid')
 
       revalidatePath(
         serviceRecord.vehicleId

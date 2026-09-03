@@ -96,6 +96,10 @@ export function ServicePageClient({
   findings = [],
   openObservations = [],
   notificationHistory = [],
+  designOptions = [],
+  designFollowsName = null,
+  designPinnedAt = null,
+  designFollowsRule = null,
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -455,6 +459,10 @@ export function ServicePageClient({
                     workBays={workBays}
                     orgMembers={orgMembers}
                     notificationHistory={notificationHistory}
+                    designOptions={designOptions}
+                    designFollowsName={designFollowsName}
+                    designPinnedAt={designPinnedAt}
+                    designFollowsRule={designFollowsRule}
                   />
                 }
               />

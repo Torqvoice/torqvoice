@@ -55,6 +55,7 @@ import {
   Users,
   Wrench,
   X,
+  Palette,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
@@ -117,6 +118,9 @@ interface CustomerDetail {
   taxId: string | null
   taxExempt: boolean
   notes: string | null
+  invoiceDesignId?: string | null
+  /** The design the customer's invoices print with, when one was chosen. */
+  invoiceDesign?: { id: string; name: string } | null
   vehicles: {
     id: string
     make: string
@@ -284,7 +288,8 @@ export function CustomerDetailClient({
     customer.address ||
     customer.company ||
     customer.taxId ||
-    customer.notes
+    customer.notes ||
+    customer.invoiceDesign
 
   return (
     <div className="space-y-6">
@@ -361,6 +366,20 @@ export function CustomerDetailClient({
                   <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
                     {t('taxExemptBadge')}
                   </span>
+                )}
+                {/* A customer on another design is easy to forget about when
+                    the workshop redesigns its paper, so it is said up front. */}
+                {customer.invoiceDesign && (
+                  <Link
+                    href={`/invoice-designer?doc=invoice&design=${customer.invoiceDesign.id}`}
+                    target="_blank"
+                    rel="noopener"
+                    title={t('invoiceDesignBadgeHint')}
+                    className="flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary hover:bg-primary/20"
+                  >
+                    <Palette className="h-3 w-3" />
+                    {t('invoiceDesignBadge', { name: customer.invoiceDesign.name })}
+                  </Link>
                 )}
               </div>
             )}

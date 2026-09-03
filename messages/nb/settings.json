@@ -580,7 +580,16 @@
     "quoteLockTriggerSent": "Når tilbudet er sendt",
     "quoteLockTriggerAccepted": "Når tilbudet er akseptert",
     "quoteLockTriggerSentHint": "Låses så snart tilbudet går til kunden. Velg dette bare hvis du aldri endrer et tilbud underveis i forhandlingen.",
-    "quoteLockTriggerAcceptedHint": "Låses når kunden har akseptert tilbudet, eller det er gjort om til en jobb. Sendte tilbud kan fortsatt endres."
+    "quoteLockTriggerAcceptedHint": "Låses når kunden har akseptert tilbudet, eller det er gjort om til en jobb. Sendte tilbud kan fortsatt endres.",
+    "freezeTitle": "Fakturaer fra før låsing",
+    "freezeBody": "{count, plural, one {# faktura} other {# fakturaer}} nådde en kunde før denne versjonen kunne låse det en faktura skriver ut. De skrives fortsatt ut med dagens opplysninger, logo og design, så en endring du gjør i dag når også dem. Låser du dem, beholder hver av dem det den skriver ut akkurat nå.",
+    "freezeNone": "Alle fakturaer som har nådd en kunde er låst slik de ble sendt.",
+    "freezeButton": "Lås dem med gjeldende design",
+    "freezeConfirmTitle": "Låse {count, plural, one {# faktura} other {# fakturaer}}?",
+    "freezeConfirmBody": "Hver av dem beholder designet, logoen, verkstedopplysningene, kunden, kjøretøyet og funnene den skrives ut med akkurat nå. Dette kan ikke angres, og fakturaene forblir redigerbare eller låst for redigering nøyaktig som i dag.",
+    "freezeProgress": "Låst {done} av {total}",
+    "freezeDone": "{count, plural, one {# faktura} other {# fakturaer}} låst",
+    "freezeFailed": "Kunne ikke låse fakturaene"
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",
@@ -1783,6 +1792,14 @@
     "galleryTitle": "Start fra en mal",
     "galleryHint": "Velg et utgangspunkt. Du kan endre alt i designeren.",
     "yourDesigns": "Dine design",
+    "autoRuleHint": "Salg uten kjøretøy skrives ut med designet som er merket for dem, med mindre salget eller kunden har valgt et annet.",
+    "useForPartsSale": "Bruk for rene delesalg",
+    "usedForPartsSale": "Brukes for rene delesalg",
+    "autoRule": {
+      "parts_sale": "Kun delesalg"
+    },
+    "autoRuleSaved": "Oppdaterte når «{name}» brukes",
+    "couldNotSaveRule": "Kunne ikke oppdatere regelen",
     "templates": "Maler",
     "inUse": "I bruk",
     "savedOn": "Lagret {date}",
@@ -1968,7 +1985,12 @@
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
-    "boldField": "Fet"
+    "boldField": "Fet",
+    "deleteDesignDrafts": "{count, plural, one {# fakturautkast} other {# fakturautkast}} som bruker det, går tilbake til standarddesignet.",
+    "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
+    "setDefault": "Bruk som standard",
+    "defaultSet": "«{name}» er nå i bruk",
+    "couldNotSetDefault": "Kunne ikke sette standarddesignet"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

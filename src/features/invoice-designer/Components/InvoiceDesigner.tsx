@@ -34,6 +34,11 @@ import {
   saveQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import {
+  deleteDocumentDesign,
+  getDocumentDesignUsage,
+  saveDocumentDesign,
+} from '../Actions/documentDesignActions'
 import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
@@ -54,18 +59,6 @@ function presetTemplatePatch(preset: (typeof layoutPresets)[number]) {
     backgroundColor: preset.template.backgroundColor ?? '',
     textColor: preset.template.textColor ?? '',
   }
-}
-
-/**
- * An id for a saved design. crypto.randomUUID only exists in secure contexts,
- * and a dev server reached over a LAN address is not one, so it gets a plain
- * random fallback rather than a crash.
- */
-function designId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
-  }
-  return `design-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 }
 
 export function InvoiceDesigner({
@@ -284,14 +277,6 @@ export function InvoiceDesigner({
     [docType, setLayout, setTemplate]
   )
 
-  /** Keep the named designs, in state and in settings, in one move. */
-  const persistDesigns = useCallback((next: SavedDesign[]) => {
-    setSavedDesigns(next)
-    setSettings({ 'designer.savedDesigns': JSON.stringify(next) }).catch(() => {
-      toast.error(t('couldNotSaveDesigns'))
-    })
-  }, [])
-
   /** Bring a saved design back, onto whichever document is being edited. */
   const applyDesign = useCallback(
     (design: SavedDesign) => {
@@ -330,14 +315,33 @@ export function InvoiceDesigner({
    */
   const deleteDesign = useCallback(
     async (design: SavedDesign) => {
+      // What the delete costs, so the dialog can say it: drafts and
+      // customers pointing at this design go back to the default. Issued
+      // invoices keep what they were issued with and are not mentioned.
+      const usage = await getDocumentDesignUsage(design.id)
+      const drafts = usage.success && usage.data ? usage.data.drafts : 0
+      const customers = usage.success && usage.data ? usage.data.customers : 0
+      const consequences = [
+        drafts > 0 ? t('deleteDesignDrafts', { count: drafts }) : '',
+        customers > 0 ? t('deleteDesignCustomers', { count: customers }) : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
       const ok = await confirm({
         title: t('deleteDesignTitle'),
-        description: t('deleteDesignBody', { name: design.name }),
+        description: [t('deleteDesignBody', { name: design.name }), consequences]
+          .filter(Boolean)
+          .join(' '),
         confirmLabel: t('delete'),
         destructive: true,
       })
       if (!ok) return false
-      persistDesigns(savedDesigns.filter((d) => d.id !== design.id))
+      const result = await deleteDocumentDesign(design.id)
+      if (!result.success) {
+        toast.error(t('couldNotSaveDesigns'))
+        return false
+      }
+      setSavedDesigns((prev) => prev.filter((d) => d.id !== design.id))
       setActiveDesigns((prev) => ({
         invoice: prev.invoice === `design:${design.id}` ? '' : prev.invoice,
         quote: prev.quote === `design:${design.id}` ? '' : prev.quote,
@@ -347,7 +351,7 @@ export function InvoiceDesigner({
       }
       return true
     },
-    [confirm, t, persistDesigns, savedDesigns, designName]
+    [confirm, t, designName]
   )
 
   /** The saved design this document is based on, when it is based on one. */
@@ -570,27 +574,24 @@ export function InvoiceDesigner({
     try {
       const prefix = docType === 'invoice' ? 'invoice' : 'quote'
 
-      const snapshot = {
-        savedAt: new Date().toISOString(),
+      // The row is the design: saved on the server under its name, which is
+      // also what makes the same name update in place rather than fill the
+      // gallery with near-copies.
+      const savedResult = await saveDocumentDesign({
+        id: existing?.id,
+        documentType: docType,
+        name,
         layout: JSON.parse(JSON.stringify(layout)) as InvoiceLayoutConfig,
         template: { ...template },
+      })
+      if (!savedResult.success || !savedResult.data) {
+        throw new Error(savedResult.success ? 'No design returned' : savedResult.error)
       }
-      if (existing) {
-        persistDesigns(savedDesigns.map((d) => (d.id === existing.id ? { ...d, ...snapshot } : d)))
-      } else {
-        // The same name means the same design: saving again updates it in
-        // place rather than filling the gallery with near-copies.
-        const sameName = savedDesigns.find(
-          (d) => d.name.trim().toLowerCase() === name.toLowerCase()
-        )
-        const id = sameName?.id ?? designId()
-        persistDesigns(
-          sameName
-            ? savedDesigns.map((d) => (d.id === id ? { ...d, name, ...snapshot } : d))
-            : [{ id, name, ...snapshot }, ...savedDesigns].slice(0, 24)
-        )
+      const saved = savedResult.data
+      setSavedDesigns((prev) => [saved, ...prev.filter((d) => d.id !== saved.id)])
+      if (!existing) {
         setDesignName(name)
-        active = `design:${id}`
+        active = `design:${saved.id}`
         setActiveDesigns((prev) => ({ ...prev, [docType]: active }))
       }
 
@@ -687,6 +688,7 @@ export function InvoiceDesigner({
                         <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
                         <div className="text-xs leading-snug text-[#71767e]">
                           {t('savedOn', { date: new Date(design.savedAt).toLocaleDateString() })}
+                          {design.autoRule && ` · ${t(`autoRule.${design.autoRule}`)}`}
                         </div>
                       </button>
                       <button

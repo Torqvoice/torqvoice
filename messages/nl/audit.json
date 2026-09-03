@@ -156,6 +156,12 @@
     "import_undo": "Import ongedaan gemaakt",
     "integration_connect": "Integratie gekoppeld",
     "integration_disconnect": "Integratie losgekoppeld",
+    "service_setInvoiceDesign": "Factuurontwerp gewijzigd",
+    "settings_saveDocumentDesign": "Documentontwerp opgeslagen",
+    "settings_deleteDocumentDesign": "Documentontwerp verwijderd",
+    "settings_applyDocumentDesign": "Standaard documentontwerp ingesteld",
+    "settings_setDocumentDesignRule": "Gewijzigd wanneer een ontwerp wordt gebruikt",
+    "settings_freezeInvoices": "Oudere facturen vergrendeld",
     "inspection_reminders_sent": "Keuringsherinneringen verstuurd",
     "inspection_reminders_send": "Keuringsherinneringen verstuurd"
   },
@@ -286,6 +292,12 @@
     "import_undo": "Spreadsheetimport ongedaan gemaakt: {records} records verwijderd",
     "integration_connect": "{name} gekoppeld",
     "integration_disconnect": "{name} losgekoppeld",
+    "service_setInvoiceDesign": "Wijzigde met welk ontwerp een factuur wordt afgedrukt",
+    "settings_saveDocumentDesign": "Sloeg het documentontwerp {name} op",
+    "settings_deleteDocumentDesign": "Verwijderde het documentontwerp {name}",
+    "settings_applyDocumentDesign": "Maakte {name} het standaard documentontwerp",
+    "settings_setDocumentDesignRule": "Gewijzigd wanneer het documentontwerp {name} wordt gebruikt",
+    "settings_freezeInvoices": "Vergrendelde {count, plural, one {# factuur} other {# facturen}} van vóór het vergrendelen met het huidige ontwerp",
     "inspection_reminders_sent": "{count} keuringsherinneringen verstuurd"
   }
 }

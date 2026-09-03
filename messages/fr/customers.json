@@ -33,6 +33,8 @@
     "phoneCopied": "Numéro de téléphone copié dans le presse-papiers",
     "taxIdLabel": "N° TVA",
     "taxExemptBadge": "Exonéré de taxe",
+    "invoiceDesignBadge": "Design de facture : {name}",
+    "invoiceDesignBadgeHint": "Les factures de ce client s'impriment avec ce design au lieu de celui par défaut de l'atelier. Ouvrir dans le designer.",
     "tabs": {
       "vehicles": "Véhicules ({count})",
       "invoices": "Factures ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "Contact",
     "sectionBilling": "Facturation",
     "addScannedVehicle": "Ajouter le véhicule {vehicle}",
+    "invoiceDesign": "Design de facture",
+    "invoiceDesignDefault": "Défaut de l'atelier",
+    "invoiceDesignHint": "Les factures de ce client sont imprimées avec ce design au lieu du défaut de l'atelier. Une facture peut toujours choisir le sien.",
     "reminderOptOut": "Pas de rappels",
     "reminderOptOutHint": "Ne pas inclure ce client dans les rappels de contrôle ni les autres campagnes."
   },

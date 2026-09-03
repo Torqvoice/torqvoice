@@ -156,6 +156,12 @@
     "import_undo": "Import annulé",
     "integration_connect": "Intégration connectée",
     "integration_disconnect": "Intégration déconnectée",
+    "service_setInvoiceDesign": "Design de facture modifié",
+    "settings_saveDocumentDesign": "Design de document enregistré",
+    "settings_deleteDocumentDesign": "Design de document supprimé",
+    "settings_applyDocumentDesign": "Design de document par défaut défini",
+    "settings_setDocumentDesignRule": "A modifié quand un design est utilisé",
+    "settings_freezeInvoices": "Anciennes factures verrouillées",
     "inspection_reminders_sent": "Rappels de contrôle envoyés",
     "inspection_reminders_send": "Rappels de contrôle envoyés"
   },
@@ -286,6 +292,12 @@
     "import_undo": "Import de feuille de calcul annulé : {records} enregistrements supprimés",
     "integration_connect": "{name} connecté",
     "integration_disconnect": "{name} déconnecté",
+    "service_setInvoiceDesign": "A changé le design avec lequel une facture est imprimée",
+    "settings_saveDocumentDesign": "A enregistré le design de document {name}",
+    "settings_deleteDocumentDesign": "A supprimé le design de document {name}",
+    "settings_applyDocumentDesign": "A défini {name} comme design de document par défaut",
+    "settings_setDocumentDesignRule": "A modifié quand le design de document {name} est utilisé",
+    "settings_freezeInvoices": "A verrouillé {count, plural, one {# facture} other {# factures}} antérieures au verrouillage avec le design actuel",
     "inspection_reminders_sent": "{count} rappels de contrôle envoyés"
   }
 }

@@ -33,6 +33,8 @@
     "phoneCopied": "Telefon numarası panoya kopyalandı",
     "taxIdLabel": "Vergi no",
     "taxExemptBadge": "Vergiden muaf",
+    "invoiceDesignBadge": "Fatura tasarımı: {name}",
+    "invoiceDesignBadgeHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Tasarımcıda açın.",
     "tabs": {
       "vehicles": "Araçlar ({count})",
       "invoices": "Faturalar ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "İletişim",
     "sectionBilling": "Faturalama",
     "addScannedVehicle": "{vehicle} aracını ekle",
+    "invoiceDesign": "Fatura tasarımı",
+    "invoiceDesignDefault": "Atölye varsayılanı",
+    "invoiceDesignHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Bir fatura yine de kendi tasarımını seçebilir.",
     "reminderOptOut": "Hatırlatma yok",
     "reminderOptOutHint": "Bu müşteriyi muayene hatırlatmalarına veya diğer kampanyalara dahil etme."
   },

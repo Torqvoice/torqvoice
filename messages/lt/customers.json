@@ -33,6 +33,8 @@
     "phoneCopied": "Telefono numeris nukopijuotas į iškarpinę",
     "taxIdLabel": "PVM kodas",
     "taxExemptBadge": "Atleistas nuo mokesčio",
+    "invoiceDesignBadge": "Sąskaitos dizainas: {name}",
+    "invoiceDesignBadgeHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvių numatytojo. Atidaryti dizaino įrankyje.",
     "tabs": {
       "vehicles": "Transporto priemonės ({count})",
       "invoices": "Sąskaitos ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "Kontaktai",
     "sectionBilling": "Atsiskaitymas",
     "addScannedVehicle": "Pridėti transporto priemonę {vehicle}",
+    "invoiceDesign": "Sąskaitos dizainas",
+    "invoiceDesignDefault": "Dirbtuvės numatytasis",
+    "invoiceDesignHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvės numatytojo. Sąskaita vis tiek gali pasirinkti savo.",
     "reminderOptOut": "Be priminimų",
     "reminderOptOutHint": "Neįtraukti šio kliento į apžiūros priminimus ar kitas kampanijas."
   },

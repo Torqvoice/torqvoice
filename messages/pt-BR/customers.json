@@ -33,6 +33,8 @@
     "phoneCopied": "Número de telefone copiado para a área de transferência",
     "taxIdLabel": "CNPJ",
     "taxExemptBadge": "Isento de imposto",
+    "invoiceDesignBadge": "Design da fatura: {name}",
+    "invoiceDesignBadgeHint": "As faturas deste cliente são impressas com este design em vez do padrão da oficina. Abra no designer.",
     "tabs": {
       "vehicles": "Veículos ({count})",
       "invoices": "Faturas ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "Contato",
     "sectionBilling": "Faturamento",
     "addScannedVehicle": "Adicionar o veículo {vehicle}",
+    "invoiceDesign": "Design da fatura",
+    "invoiceDesignDefault": "Padrão da oficina",
+    "invoiceDesignHint": "As faturas deste cliente são impressas com este design em vez do padrão da oficina. Uma fatura ainda pode escolher o seu próprio.",
     "reminderOptOut": "Sem lembretes",
     "reminderOptOutHint": "Não incluir este cliente em lembretes de inspeção ou outras campanhas."
   },

@@ -54,6 +54,11 @@ async function parseBackup(
   return { backup, files: null }
 }
 
+/** A foreign key from the backup, kept only when this import restored its target. */
+function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): string | null {
+  return typeof id === 'string' && id && restored?.has(id) ? id : null
+}
+
 /**
  * Restores one service record with its nested parts/labor/attachments/payments.
  * Used for both vehicle-linked records (nested under vehicles in the backup)
@@ -69,6 +74,14 @@ async function importServiceRecordTree(
     workDayStartTime: string
     /** Technicians restored by this import. See the time entries below. */
     technicianIds: ReadonlySet<string>
+    /**
+     * Designs and snapshots restored by this import. A reference to one the
+     * backup did not carry is dropped rather than left dangling: the record
+     * then prints from the default, as any invoice without a design does.
+     */
+    designIds?: ReadonlySet<string>
+    designSnapshotIds?: ReadonlySet<string>
+    assetSnapshotIds?: ReadonlySet<string>
   }
 ) {
   // Derive startDateTime/endDateTime from backup or fall back to serviceDate + work day start
@@ -127,6 +140,14 @@ async function importServiceRecordTree(
       updatedAt: toSafeDate(sr.updatedAt as string),
       vehicleId: opts.vehicleId,
       customerId: opts.customerId,
+      designId: keptReference(sr.designId, opts.designIds),
+      issuedAt: sr.issuedAt ? toSafeDate(sr.issuedAt as string) : null,
+      issuedDesignSnapshotId: keptReference(sr.issuedDesignSnapshotId, opts.designSnapshotIds),
+      issuedLogoSnapshotId: keptReference(sr.issuedLogoSnapshotId, opts.assetSnapshotIds),
+      issuedData:
+        sr.issuedData && typeof sr.issuedData === 'object'
+          ? (sr.issuedData as Prisma.InputJsonValue)
+          : undefined,
     },
   })
 
@@ -414,6 +435,11 @@ export async function POST(request: NextRequest) {
         Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
         ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
         AppSetting: () => tx.appSetting.deleteMany({ where: { organizationId } }),
+        DocumentDesign: () => tx.documentDesign.deleteMany({ where: { organizationId } }),
+        DocumentDesignSnapshot: () =>
+          tx.documentDesignSnapshot.deleteMany({ where: { organizationId } }),
+        DocumentAssetSnapshot: () =>
+          tx.documentAssetSnapshot.deleteMany({ where: { organizationId } }),
       }
 
       for (const model of clearPlanFor(Object.keys(data))) {
@@ -441,6 +467,66 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      // 2b. Named designs, and what issued invoices were issued with. Before
+      // customers and service records, which point at them. Backups from
+      // before these existed have none of the keys and restore as before.
+      const designIds = new Set<string>()
+      if (data.documentDesigns?.length) {
+        const rows = (data.documentDesigns as Record<string, unknown>[]).filter(
+          (d) => typeof d.id === 'string' && typeof d.name === 'string'
+        )
+        await tx.documentDesign.createMany({
+          data: rows.map((d) => ({
+            id: d.id as string,
+            organizationId: ctx.organizationId,
+            documentType: (d.documentType as string) || 'invoice',
+            name: d.name as string,
+            layout: (d.layout ?? {}) as Prisma.InputJsonValue,
+            template: (d.template ?? {}) as Prisma.InputJsonValue,
+            createdAt: toSafeDate(d.createdAt as string),
+            updatedAt: toSafeDate(d.updatedAt as string),
+          })),
+        })
+        for (const d of rows) designIds.add(d.id as string)
+      }
+      const designSnapshotIds = new Set<string>()
+      if (data.documentDesignSnapshots?.length) {
+        const rows = (data.documentDesignSnapshots as Record<string, unknown>[]).filter(
+          (d) => typeof d.id === 'string' && typeof d.hash === 'string'
+        )
+        await tx.documentDesignSnapshot.createMany({
+          data: rows.map((d) => ({
+            id: d.id as string,
+            organizationId: ctx.organizationId,
+            hash: d.hash as string,
+            layout: (d.layout ?? {}) as Prisma.InputJsonValue,
+            template: (d.template ?? {}) as Prisma.InputJsonValue,
+            createdAt: toSafeDate(d.createdAt as string),
+          })),
+          skipDuplicates: true,
+        })
+        for (const d of rows) designSnapshotIds.add(d.id as string)
+      }
+      const assetSnapshotIds = new Set<string>()
+      if (data.documentAssetSnapshots?.length) {
+        const rows = (data.documentAssetSnapshots as Record<string, unknown>[]).filter(
+          (d) =>
+            typeof d.id === 'string' && typeof d.hash === 'string' && typeof d.data === 'string'
+        )
+        await tx.documentAssetSnapshot.createMany({
+          data: rows.map((d) => ({
+            id: d.id as string,
+            organizationId: ctx.organizationId,
+            hash: d.hash as string,
+            mimeType: (d.mimeType as string) || 'image/png',
+            data: new Uint8Array(Buffer.from(d.data as string, 'base64')),
+            createdAt: toSafeDate(d.createdAt as string),
+          })),
+          skipDuplicates: true,
+        })
+        for (const d of rows) assetSnapshotIds.add(d.id as string)
+      }
+
       // 3. Insert customers
       if (data.customers?.length) {
         await tx.customer.createMany({
@@ -452,6 +538,7 @@ export async function POST(request: NextRequest) {
             address: (c.address as string) || null,
             company: (c.company as string) || null,
             notes: (c.notes as string) || null,
+            invoiceDesignId: keptReference(c.invoiceDesignId, designIds),
             createdAt: toSafeDate(c.createdAt as string),
             updatedAt: toSafeDate(c.updatedAt as string),
             userId: ctx.userId,
@@ -690,6 +777,9 @@ export async function POST(request: NextRequest) {
                 customerId: null,
                 workDayStartTime,
                 technicianIds,
+                designIds,
+                designSnapshotIds,
+                assetSnapshotIds,
               })
             }
           }
@@ -771,6 +861,9 @@ export async function POST(request: NextRequest) {
             customerId: (sr.customerId as string) || null,
             workDayStartTime,
             technicianIds,
+            designIds,
+            designSnapshotIds,
+            assetSnapshotIds,
           })
         }
       }

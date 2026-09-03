@@ -580,7 +580,16 @@
     "quoteLockTriggerSent": "Sobald das Angebot versendet ist",
     "quoteLockTriggerAccepted": "Sobald das Angebot angenommen ist",
     "quoteLockTriggerSentHint": "Sperrt, sobald das Angebot zum Kunden geht. Nur wählen, wenn Sie Angebote nie nachverhandeln.",
-    "quoteLockTriggerAcceptedHint": "Sperrt, sobald der Kunde das Angebot angenommen hat oder es in einen Auftrag umgewandelt wurde. Versendete Angebote bleiben bearbeitbar."
+    "quoteLockTriggerAcceptedHint": "Sperrt, sobald der Kunde das Angebot angenommen hat oder es in einen Auftrag umgewandelt wurde. Versendete Angebote bleiben bearbeitbar.",
+    "freezeTitle": "Rechnungen von vor der Sperre",
+    "freezeBody": "{count, plural, one {# Rechnung} other {# Rechnungen}} erreichte einen Kunden, bevor diese Version sperren konnte, was eine Rechnung druckt. Sie werden weiterhin mit Ihren aktuellen Angaben, Logo und Design gedruckt, sodass eine Änderung von heute auch sie erreicht. Sperren bewahrt jede so, wie sie jetzt gedruckt wird.",
+    "freezeNone": "Jede Rechnung, die einen Kunden erreicht hat, ist so gesperrt, wie sie versandt wurde.",
+    "freezeButton": "Mit dem aktuellen Design sperren",
+    "freezeConfirmTitle": "{count, plural, one {# Rechnung} other {# Rechnungen}} sperren?",
+    "freezeConfirmBody": "Jede behält das Design, das Logo, die Werkstattangaben, den Kunden, das Fahrzeug und die Befunde, mit denen sie jetzt gedruckt wird. Das kann nicht rückgängig gemacht werden; die Rechnungen bleiben genau so bearbeitbar oder für die Bearbeitung gesperrt wie heute.",
+    "freezeProgress": "{done} von {total} gesperrt",
+    "freezeDone": "{count, plural, one {# Rechnung} other {# Rechnungen}} gesperrt",
+    "freezeFailed": "Rechnungen konnten nicht gesperrt werden"
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",
@@ -1783,6 +1792,14 @@
     "galleryTitle": "Mit einer Vorlage beginnen",
     "galleryHint": "Wählen Sie einen Ausgangspunkt. Im Designer lässt sich alles ändern.",
     "yourDesigns": "Ihre Designs",
+    "autoRuleHint": "Verkäufe ohne Fahrzeug werden mit dem dafür markierten Design gedruckt, sofern der Verkauf oder der Kunde kein anderes gewählt hat.",
+    "useForPartsSale": "Für reine Teileverkäufe verwenden",
+    "usedForPartsSale": "Wird für reine Teileverkäufe verwendet",
+    "autoRule": {
+      "parts_sale": "Reiner Teileverkauf"
+    },
+    "autoRuleSaved": "Verwendung von „{name}“ aktualisiert",
+    "couldNotSaveRule": "Regel konnte nicht aktualisiert werden",
     "templates": "Vorlagen",
     "inUse": "In Verwendung",
     "savedOn": "Gespeichert am {date}",
@@ -1968,7 +1985,12 @@
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
     "leaveConfirm": "Verlassen",
-    "boldField": "Fett"
+    "boldField": "Fett",
+    "deleteDesignDrafts": "{count, plural, one {# Rechnungsentwurf} other {# Rechnungsentwürfe}} mit diesem Design fallen auf das Standarddesign zurück.",
+    "deleteDesignCustomers": "{count, plural, one {# Kunde} other {# Kunden}} mit diesem Design fallen auf das Standarddesign zurück.",
+    "setDefault": "Als Standard festlegen",
+    "defaultSet": "„{name}“ wird jetzt verwendet",
+    "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden"
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

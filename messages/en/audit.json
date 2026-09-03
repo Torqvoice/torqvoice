@@ -156,6 +156,12 @@
     "import_undo": "Undid Import",
     "integration_connect": "Connected Integration",
     "integration_disconnect": "Disconnected Integration",
+    "service_setInvoiceDesign": "Changed Invoice Design",
+    "settings_saveDocumentDesign": "Saved Document Design",
+    "settings_deleteDocumentDesign": "Deleted Document Design",
+    "settings_applyDocumentDesign": "Set Default Document Design",
+    "settings_setDocumentDesignRule": "Changed When a Design Is Used",
+    "settings_freezeInvoices": "Locked Older Invoices",
     "inspection_reminders_sent": "Sent inspection reminders",
     "inspection_reminders_send": "Sent inspection reminders"
   },
@@ -286,6 +292,12 @@
     "import_undo": "Undid a spreadsheet import: {records} records removed",
     "integration_connect": "Connected {name}",
     "integration_disconnect": "Disconnected {name}",
+    "service_setInvoiceDesign": "Changed which design an invoice prints with",
+    "settings_saveDocumentDesign": "Saved the document design {name}",
+    "settings_deleteDocumentDesign": "Deleted the document design {name}",
+    "settings_applyDocumentDesign": "Made {name} the default document design",
+    "settings_setDocumentDesignRule": "Changed when the document design {name} is used",
+    "settings_freezeInvoices": "Locked {count, plural, one {# invoice} other {# invoices}} from before locking with the current design",
     "inspection_reminders_sent": "Sent {count} inspection reminders"
   }
 }

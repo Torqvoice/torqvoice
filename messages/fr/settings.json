@@ -580,7 +580,16 @@
     "quoteLockTriggerSent": "Une fois le devis envoyé",
     "quoteLockTriggerAccepted": "Une fois le devis accepté",
     "quoteLockTriggerSentHint": "Verrouille dès que le devis part chez le client. À choisir uniquement si vous ne révisez jamais un devis en cours de négociation.",
-    "quoteLockTriggerAcceptedHint": "Verrouille une fois le devis accepté par le client ou converti en intervention. Les devis envoyés restent modifiables."
+    "quoteLockTriggerAcceptedHint": "Verrouille une fois le devis accepté par le client ou converti en intervention. Les devis envoyés restent modifiables.",
+    "freezeTitle": "Factures antérieures au verrouillage",
+    "freezeBody": "{count, plural, one {# facture a atteint} other {# factures ont atteint}} un client avant que cette version puisse verrouiller ce qu'une facture imprime. Elles s'impriment toujours avec vos coordonnées, logo et design actuels, donc un changement fait aujourd'hui les atteint aussi. Les verrouiller conserve chacune telle qu'elle s'imprime maintenant.",
+    "freezeNone": "Chaque facture ayant atteint un client est verrouillée telle qu'elle a été envoyée.",
+    "freezeButton": "Les verrouiller avec le design actuel",
+    "freezeConfirmTitle": "Verrouiller {count, plural, one {# facture} other {# factures}} ?",
+    "freezeConfirmBody": "Chacune conserve le design, le logo, les coordonnées de l'atelier, le client, le véhicule et les constats avec lesquels elle s'imprime maintenant. Irréversible ; les factures restent modifiables ou verrouillées en modification exactement comme aujourd'hui.",
+    "freezeProgress": "{done} sur {total} verrouillées",
+    "freezeDone": "{count, plural, one {# facture verrouillée} other {# factures verrouillées}}",
+    "freezeFailed": "Impossible de verrouiller les factures"
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",
@@ -1783,6 +1792,14 @@
     "galleryTitle": "Partir d'un modèle",
     "galleryHint": "Choisissez un point de départ. Vous pourrez tout modifier dans le concepteur.",
     "yourDesigns": "Vos maquettes",
+    "autoRuleHint": "Les ventes sans véhicule s'impriment avec le design qui leur est attribué, sauf si la vente ou son client en a choisi un autre.",
+    "useForPartsSale": "Utiliser pour les ventes de pièces seules",
+    "usedForPartsSale": "Utilisé pour les ventes de pièces seules",
+    "autoRule": {
+      "parts_sale": "Vente de pièces seule"
+    },
+    "autoRuleSaved": "Utilisation de « {name} » mise à jour",
+    "couldNotSaveRule": "Impossible de mettre à jour la règle",
     "templates": "Modèles",
     "inUse": "Utilisée",
     "savedOn": "Enregistrée le {date}",
@@ -1968,7 +1985,12 @@
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",
     "leaveConfirm": "Quitter",
-    "boldField": "Gras"
+    "boldField": "Gras",
+    "deleteDesignDrafts": "{count, plural, one {# brouillon de facture} other {# brouillons de facture}} qui l'utilisent reviendront au design par défaut.",
+    "deleteDesignCustomers": "{count, plural, one {# client} other {# clients}} qui y sont associés reviendront au design par défaut.",
+    "setDefault": "Définir par défaut",
+    "defaultSet": "« {name} » est maintenant utilisé",
+    "couldNotSetDefault": "Impossible de définir le design par défaut"
   },
   "preview": {
     "title": "Révision des freins et vidange",

@@ -79,7 +79,17 @@
       "typePrompt": "Escriba un nombre...",
       "boardTechnicians": "Técnicos del Tablero",
       "teamMembers": "Miembros del Equipo"
-    }
+    },
+    "design": "Diseño de factura",
+    "designDefault": "Predeterminado del taller",
+    "designFollowing": "Predeterminado ({name})",
+    "designPinned": "La hoja se congeló al emitir la factura el {date}. Una nueva elección se aplica solo después de que un propietario desbloquee la factura y se envíe de nuevo.",
+    "designSaved": "Diseño de factura actualizado",
+    "designFollowingRule": "Predeterminado ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Venta solo de piezas"
+    },
+    "designSaveFailed": "No se pudo cambiar el diseño de la factura"
   },
   "parts": {
     "title": "Piezas",

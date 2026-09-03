@@ -33,6 +33,8 @@
     "phoneCopied": "Telefonnummer kopiert til utklippstavlen",
     "taxIdLabel": "Org.nr",
     "taxExemptBadge": "Avgiftsfritatt",
+    "invoiceDesignBadge": "Fakturadesign: {name}",
+    "invoiceDesignBadgeHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. Åpne det i designeren.",
     "tabs": {
       "vehicles": "Kjøretøy ({count})",
       "invoices": "Fakturaer ({count})",
@@ -93,6 +95,9 @@
     "sectionContact": "Kontakt",
     "sectionBilling": "Fakturering",
     "addScannedVehicle": "Legg til kjøretøyet {vehicle}",
+    "invoiceDesign": "Fakturadesign",
+    "invoiceDesignDefault": "Verkstedets standard",
+    "invoiceDesignHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. En faktura kan fortsatt velge sitt eget.",
     "reminderOptOut": "Ingen påminnelser",
     "reminderOptOutHint": "Ikke ta med denne kunden i påminnelser om EU-kontroll eller andre utsendinger."
   },
