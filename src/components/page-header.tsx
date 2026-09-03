@@ -75,6 +75,8 @@ const docsMap: Record<string, string> = {
   '/settings/webhooks': '/docs/integrations/webhooks',
   '/settings/subscription': '/docs/configuration/subscription',
   '/settings/license': '/docs/licensing/white-label',
+  '/settings/inspection-reminders': '/docs/features/inspection-reminders',
+  '/vehicles/inspection-reminders': '/docs/features/inspection-reminders',
   '/': '/docs/features/dashboard',
   '/settings/company': '/docs/configuration/workshop-profile',
   '/settings/workshop': '/docs/configuration/workshop-profile',
@@ -169,7 +171,11 @@ export function PageHeader() {
   // as likely to want the manual as somebody reading the list.
   const docsHref =
     docsMap[pathname] ??
-    (/^\/tire-hotel\/[^/]+$/.test(pathname) ? '/docs/features/tire-hotel' : undefined)
+    (/^\/tire-hotel\/[^/]+$/.test(pathname)
+      ? '/docs/features/tire-hotel'
+      : /^\/vehicles\/inspection-reminders\/[^/]+$/.test(pathname)
+        ? '/docs/features/inspection-reminders'
+        : undefined)
 
   // Match exact route first
   let segments = breadcrumbMap[pathname]

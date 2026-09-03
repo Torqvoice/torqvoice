@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { ClipboardCheck, Loader2, Save } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
+import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -105,7 +106,12 @@ export function InspectionReminderSettings({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <AppCard icon={ClipboardCheck} title={t('title')} contentClassName="space-y-6">
+        <AppCard
+          icon={ClipboardCheck}
+          title={t('title')}
+          action={<DocsLink href="/docs/features/inspection-reminders" variant="hint" />}
+          contentClassName="space-y-6"
+        >
           <p className="text-sm text-muted-foreground">{t('description')}</p>
 
           <div

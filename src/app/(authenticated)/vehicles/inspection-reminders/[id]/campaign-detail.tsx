@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Loader2, RotateCcw } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
+import { DocsLink } from '@/components/docs-link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TableCellLink } from '@/components/table-cell-link'
@@ -54,6 +55,7 @@ export function CampaignDetail({ campaign }: { campaign: Campaign }) {
           channel: tc(`channels.${campaign.channel}`),
           window: campaign.windowDays,
         })}
+        action={<DocsLink href="/docs/features/inspection-reminders" variant="hint" />}
         contentClassName="space-y-4"
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

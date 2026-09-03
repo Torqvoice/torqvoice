@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { AlertTriangle, Loader2, RefreshCw, Send, Sparkles } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
+import { DocsLink } from '@/components/docs-link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -187,7 +188,12 @@ export function RemindersWizard({
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="space-y-4">
-        <AppCard title={t('title')} description={t('description')} contentClassName="space-y-4">
+        <AppCard
+          title={t('title')}
+          description={t('description')}
+          action={<DocsLink href="/docs/features/inspection-reminders" variant="hint" />}
+          contentClassName="space-y-4"
+        >
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1.5">
               <Label>{t('window')}</Label>
