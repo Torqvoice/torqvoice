@@ -1,0 +1,27 @@
+{
+  "data": {
+    "Description": "CITROEN C4 Cactus",
+    "RegistrationYear": "2018",
+    "CarMake": "CITROEN",
+    "CarModel": "C4 Cactus",
+    "EngineSize": "1560",
+    "FuelType": "Diesel",
+    "MakeDescription": "CITROEN",
+    "ModelDescription": "C4 Cactus",
+    "Immobiliser": "",
+    "NumberOfDoors": "",
+    "Version": "CITROEN BlueHDi 100 S&S Live ( 2/2018 )",
+    "ABS": "",
+    "AirBag": "",
+    "Vin": "",
+    "KType": "",
+    "PowerCV": 99,
+    "PowerKW": 73,
+    "PowerFiscal": 17,
+    "TimeStamp": 1710153399,
+    "LicensePlate": "FS918BG"
+  },
+  "success": true,
+  "message": "",
+  "error": null
+}

@@ -1,0 +1,29 @@
+{
+  "data": {
+    "LicensePlate": "AA-00-AA",
+    "ABICode": "939747",
+    "Description": "VOLKSWAGEN ID.4 ID.4 77 kWh Pro Urban",
+    "RegistrationYear": "2025",
+    "CarMake": "VOLKSWAGEN",
+    "CarModel": "ID.4",
+    "EngineSize": "0",
+    "FuelType": "E",
+    "MakeDescription": "VOLKSWAGEN",
+    "ModelDescription": "ID.4",
+    "Immobiliser": "",
+    "NumberOfSeats": "5",
+    "IndicativeValue": "",
+    "DriverSide": "",
+    "Version": "ID.4 77 kWh Pro Urban",
+    "Colour": "",
+    "VechileIdentificationNumber": "",
+    "GrossWeight": "1979",
+    "NetWeight": "1979",
+    "Imported": 0,
+    "RegistrationDate": "01/4/2025",
+    "TimeStamp": 1743605674
+  },
+  "success": true,
+  "message": "",
+  "error": null
+}

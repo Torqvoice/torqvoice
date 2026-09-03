@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { ConnectorContext } from '@/features/integrations/Lib/types'
 import {
@@ -74,6 +76,29 @@ const PORTUGAL: AutomotiveRecord = {
   GrossWeight: '2660',
   NetWeight: '2124',
   RegistrationDate: '01/4/2025',
+}
+
+/**
+ * The vendor's plate formats, copied from the path parameter patterns in its
+ * OpenAPI document. A plate that fails these is refused with a 406 before any
+ * registry is asked, so what leaves normalisePlate has to pass them.
+ */
+const VENDOR_PLATE_PATTERNS: Record<string, RegExp> = {
+  FR: /^[a-zA-Z]{2}[0-9]{3}[a-zA-Z]{2}$|^[0-9]{2,4}[a-zA-Z]{2,3}[0-9]{2}$/,
+  IT: /^[a-zA-Z]{2}[0-9]{3}[a-zA-Z]{2}$|^[a-zA-Z]{2}[a-zA-Z0-9]{6}$/,
+  ES: /^[0-9]{4}[a-zA-Z]{3}$|^[a-zA-Z]{1,2}[0-9]{1,6}$|^[a-zA-Z]{1,2}[0-9]{4}[a-zA-Z]{1,2}$/,
+  // The published pattern omits the 2005 to 2020 series (00-AA-00); the
+  // sandbox accepted it on 3 September 2026, so it is allowed here too.
+  PT: /^[0-9]{4}[a-zA-Z]{2}$|^[a-zA-Z]{2}[0-9]{2}[a-zA-Z]{2}$|^[0-9]{2}[a-zA-Z]{2}[0-9]{2}$|^[0-9]{2}-[0-9]{2}-[a-zA-Z]{2}$|^[a-zA-Z]{2}-[0-9]{2}-[a-zA-Z]{2}$/,
+  GB: /^[a-zA-Z]{1}[0-9]{1,3}[a-zA-Z]{3}$|^[a-zA-Z]{2}[0-9]{2}[a-zA-Z]{3}$|^[a-zA-Z]{3}[0-9]{4}$/,
+}
+
+/** Recorded answers from the vendor's sandbox, one per endpoint, taken 3 September 2026. */
+const FIXTURES = path.join(__dirname, 'fixtures/openapi-automotive')
+function sandbox(name: string): AutomotiveRecord {
+  const body = JSON.parse(fs.readFileSync(path.join(FIXTURES, `${name}.json`), 'utf-8'))
+  expect(body.success).toBe(true)
+  return body.data as AutomotiveRecord
 }
 
 function envelope(data: unknown, status = 200, headers?: Record<string, string>) {
@@ -210,6 +235,123 @@ describe('openapi automotive mapper', () => {
     expect(normalisePlate('90-27-QL')).toBe('9027QL')
     expect(normalisePlate('LT17 MLE')).toBe('LT17MLE')
     expect(normalisePlate(' 5776 cns ')).toBe('5776CNS')
+  })
+
+  it('turns plates as people type them into what the vendor accepts', () => {
+    const typed: Record<string, string[]> = {
+      // SIV since 2009, and the older FNI series still on the road.
+      FR: ['AB-123-CD', 'ab 123 cd', '123 ABC 12', '9876 ZZ 75'],
+      IT: ['ZR 567 ZY', 'zr567zy', 'MI 684033'],
+      ES: ['5776 CNS', '5776-CNS', 'M 1234 AB', 'B-123456'],
+      PT: ['90-27-QL', '9027QL', 'AA 00 AA', '00-AA-00'],
+      GB: ['LT17 MLE', 'lt17mle', 'A123 BCD', 'ABC 1234', 'A1 BCD'],
+    }
+    for (const [country, plates] of Object.entries(typed)) {
+      for (const plate of plates) {
+        expect(normalisePlate(plate), `${country} ${plate}`).toMatch(VENDOR_PLATE_PATTERNS[country])
+      }
+    }
+    // Two-letter Portuguese groups keep their meaning without hyphens; the vendor accepts both.
+    expect(normalisePlate('AA-00-AA')).toMatch(VENDOR_PLATE_PATTERNS.PT)
+  })
+})
+
+/**
+ * What the vendor's sandbox actually sends, country by country. The spec's
+ * examples and the live shapes differ in places (Spain spells its VIN field
+ * correctly on the wire, Italy puts the plate last, Portugal keeps hyphens in
+ * the plate), and these are the shapes the mapper has to keep reading.
+ */
+describe('openapi automotive sandbox contract', () => {
+  it('France: capacity and VIN come from the SIV extension, fiscal power is ignored', () => {
+    const record = sandbox('FR-car')
+    expect(record.EngineSize).toBe('5')
+    expect(record.ExtendedData?.EngineCC).toBe('1461')
+    expect(mapRecord(record)).toEqual({
+      make: 'Renault',
+      model: 'SCÉNIC III',
+      year: 2016,
+      vin: 'VF1JZ890H55864144',
+      licensePlate: 'EG258MA',
+      fuelType: 'diesel',
+      transmission: 'manual',
+      engineSize: '1.5 L',
+      vehicleClass: 'MONOSPACE COMPACT',
+      firstRegistered: '2016-06-24',
+    })
+  })
+
+  it('France, motorcycles: same shape, body type and gearbox included', () => {
+    expect(mapRecord(sandbox('FR-bike'))).toEqual({
+      make: 'BMW',
+      model: 'R 1200',
+      year: 2014,
+      vin: 'WB10A0101EZ151151',
+      licensePlate: 'DJ455BR',
+      fuelType: 'gasoline',
+      transmission: 'manual',
+      vehicleClass: 'TOUS TERRAINS',
+      firstRegistered: '2014-07-30',
+    })
+  })
+
+  it('Italy: capacity in cc, fuel in Italian, no VIN or date on the wire', () => {
+    const record = sandbox('IT-car')
+    expect(record.Vin).toBe('')
+    expect(mapRecord(record)).toEqual({
+      make: 'Citroen',
+      model: 'C4 Cactus',
+      year: 2018,
+      licensePlate: 'FS918BG',
+      fuelType: 'diesel',
+      engineSize: '1.6 L',
+    })
+  })
+
+  it('United Kingdom: the richest record, with gearbox, engine code and colour', () => {
+    expect(mapRecord(sandbox('UK-car'))).toEqual({
+      make: 'Maserati',
+      model: 'Levante D V6 Auto',
+      year: 2017,
+      vin: 'ZN6TU61C00X248858',
+      licensePlate: 'CT17MLE',
+      color: 'Black',
+      fuelType: 'diesel',
+      transmission: 'automatic',
+      engineSize: '3.0 L',
+      engineCode: 'B630WM',
+      vehicleClass: 'SUV',
+    })
+  })
+
+  it('Spain: day-first date, fuel under "Fuel", VIN field spelt correctly and empty', () => {
+    const record = sandbox('ES-car')
+    expect(record.RegistrationDate).toMatch(/^\d{2}\/\d{2}\/\d{4}$/)
+    expect(record).toHaveProperty('VehicleIdentificationNumber')
+    expect(mapRecord(record)).toEqual({
+      make: 'Renault',
+      model: 'MEGANE',
+      year: 2010,
+      licensePlate: '5428GXS',
+      fuelType: 'diesel',
+      engineSize: '1.5 L',
+      firstRegistered: '2010-07-06',
+    })
+  })
+
+  it('Portugal: fuel as a letter, weights in kilograms, plate with hyphens, no capacity for an EV', () => {
+    const record = sandbox('PT-car')
+    expect(record.FuelType).toBe('E')
+    expect(record.EngineSize).toBe('0')
+    expect(mapRecord(record)).toEqual({
+      make: 'Volkswagen',
+      model: 'ID.4',
+      year: 2025,
+      licensePlate: 'AA-00-AA',
+      fuelType: 'electric',
+      firstRegistered: '2025-04-01',
+      weights: { kerb: 1979, grossMax: 1979 },
+    })
   })
 })
 
