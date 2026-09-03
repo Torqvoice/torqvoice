@@ -1934,6 +1934,7 @@
       "serviceType": "Naprawa",
       "companyName": "Twój warsztat",
       "slogan": "Jakość, której możesz zaufać",
+      "paymentTerms": "Płatne w ciągu 14 dni",
       "footerNote": "Dziękujemy za współpracę",
       "value": "Przykład"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Twój slogan pochodzi z danych firmy.",
     "sloganLink": "Ustawienia firmy",
     "paymentTerms": "Warunki płatności",
-    "paymentTermsEmptyHint": "Nie ustawiono warunków płatności, więc wiersz z warunkami nie jest drukowany.",
+    "paymentTermsPlaceholderHint": "Nie ustawiono warunków płatności, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
     "paymentTermsSetHint": "Twoje warunki płatności pochodzą z ustawień płatności.",
     "paymentTermsLink": "Ustawienia płatności",
     "placeholder": "Symbol zastępczy",

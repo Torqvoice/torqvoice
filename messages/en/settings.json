@@ -1934,6 +1934,7 @@
       "serviceType": "Repair",
       "companyName": "Your Workshop",
       "slogan": "Quality service you can trust",
+      "paymentTerms": "Due within 14 days",
       "footerNote": "Thank you for your business",
       "value": "Sample"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Your slogan comes from your company details.",
     "sloganLink": "Company settings",
     "paymentTerms": "Payment terms",
-    "paymentTermsEmptyHint": "No payment terms are set, so no terms row prints.",
+    "paymentTermsPlaceholderHint": "No payment terms are set, so the sheet shows a stand-in that will not print.",
     "paymentTermsSetHint": "Your payment terms come from your payment settings.",
     "paymentTermsLink": "Payment settings",
     "placeholder": "Placeholder",

@@ -1934,6 +1934,7 @@
       "serviceType": "Reparatie",
       "companyName": "Uw werkplaats",
       "slogan": "Kwaliteit waar u op kunt bouwen",
+      "paymentTerms": "Betaling binnen 14 dagen",
       "footerNote": "Bedankt voor uw opdracht",
       "value": "Voorbeeld"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Je slogan komt uit je bedrijfsgegevens.",
     "sloganLink": "Bedrijfsinstellingen",
     "paymentTerms": "Betalingsvoorwaarden",
-    "paymentTermsEmptyHint": "Er zijn geen betalingsvoorwaarden ingesteld, dus er wordt geen voorwaardenregel afgedrukt.",
+    "paymentTermsPlaceholderHint": "Er zijn geen betalingsvoorwaarden ingesteld, dus het blad toont een voorbeeldtekst die niet wordt afgedrukt.",
     "paymentTermsSetHint": "Je betalingsvoorwaarden komen uit je betaalinstellingen.",
     "paymentTermsLink": "Betaalinstellingen",
     "placeholder": "Voorbeeld",

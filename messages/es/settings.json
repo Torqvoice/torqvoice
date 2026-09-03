@@ -1934,6 +1934,7 @@
       "serviceType": "Reparación",
       "companyName": "Tu taller",
       "slogan": "Calidad de servicio en la que puedes confiar",
+      "paymentTerms": "Pago en 14 días",
       "footerNote": "Gracias por confiar en nosotros",
       "value": "Ejemplo"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Tu eslogan proviene de los datos de tu empresa.",
     "sloganLink": "Ajustes de empresa",
     "paymentTerms": "Condiciones de pago",
-    "paymentTermsEmptyHint": "No hay condiciones de pago definidas, así que no se imprime ninguna fila de condiciones.",
+    "paymentTermsPlaceholderHint": "No hay condiciones de pago definidas, así que la hoja muestra un texto de ejemplo que no se imprimirá.",
     "paymentTermsSetHint": "Tus condiciones de pago provienen de los ajustes de pago.",
     "paymentTermsLink": "Ajustes de pago",
     "placeholder": "Marcador",

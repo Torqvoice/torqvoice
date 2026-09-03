@@ -1934,6 +1934,7 @@
       "serviceType": "Remontas",
       "companyName": "Jūsų servisas",
       "slogan": "Kokybiškas aptarnavimas, kuriuo galite pasitikėti",
+      "paymentTerms": "Apmokėti per 14 dienų",
       "footerNote": "Ačiū, kad renkatės mus",
       "value": "Pavyzdys"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Jūsų šūkis imamas iš įmonės duomenų.",
     "sloganLink": "Įmonės nustatymai",
     "paymentTerms": "Mokėjimo sąlygos",
-    "paymentTermsEmptyHint": "Mokėjimo sąlygos nenustatytos, todėl sąlygų eilutė nespausdinama.",
+    "paymentTermsPlaceholderHint": "Mokėjimo sąlygos nenustatytos, todėl lape rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
     "paymentTermsSetHint": "Jūsų mokėjimo sąlygos imamos iš mokėjimų nustatymų.",
     "paymentTermsLink": "Mokėjimų nustatymai",
     "placeholder": "Vietaženklis",

@@ -1934,6 +1934,7 @@
       "serviceType": "Onarım",
       "companyName": "Servisiniz",
       "slogan": "Güvenebileceğiniz kaliteli hizmet",
+      "paymentTerms": "14 gün içinde ödenir",
       "footerNote": "İş birliğiniz için teşekkürler",
       "value": "Örnek"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Sloganınız şirket bilgilerinizden gelir.",
     "sloganLink": "Şirket ayarları",
     "paymentTerms": "Ödeme koşulları",
-    "paymentTermsEmptyHint": "Ödeme koşulları tanımlanmadığı için koşullar satırı yazdırılmaz.",
+    "paymentTermsPlaceholderHint": "Ödeme koşulları tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
     "paymentTermsSetHint": "Ödeme koşullarınız ödeme ayarlarınızdan gelir.",
     "paymentTermsLink": "Ödeme ayarları",
     "placeholder": "Örnek",

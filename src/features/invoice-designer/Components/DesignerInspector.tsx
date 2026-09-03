@@ -384,10 +384,6 @@ export function DesignerInspector({
         .filter((f) => !stored.some((existing) => existing.id === f.id))
         .map((f) => ({ id: f.id, visible: grandfathered.has(f.id) })),
     ]
-    // A field whose text the workshop has not written yet: the switch stays,
-    // because it is theirs to set for the day they write some, but it is
-    // marked, because nothing prints there until they do.
-    const emptyFieldIds = new Set(paymentTermsSet ? [] : ['payment_terms'])
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The
     // same field can still be added to several sections.
@@ -638,13 +634,14 @@ export function DesignerInspector({
           )}
 
           {/* Payment terms live in payment settings, the same line on every
-              invoice, so they are not edited here. With none written the row
-              does not print and has no switch above, which needs saying: the
-              option looks lost otherwise. */}
+              invoice, so they are not edited here. When there is none the
+              panel shows a stand-in so the row can be seen and switched, and
+              that has to say so: it reads as a real term otherwise, and it
+              prints as nothing. */}
           {section.id === 'bank_account' && (
             <Group title={t('paymentTerms')}>
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">
-                {paymentTermsSet ? t('paymentTermsSetHint') : t('paymentTermsEmptyHint')}{' '}
+                {paymentTermsSet ? t('paymentTermsSetHint') : t('paymentTermsPlaceholderHint')}{' '}
                 <a
                   href="/settings/payment"
                   target="_blank"
@@ -751,14 +748,6 @@ export function DesignerInspector({
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
                     {fieldName(field.id)}
                   </span>
-                  {/* The same mark the canvas puts on a block standing in for
-                      something unwritten, so the two say the same thing about
-                      the same field. */}
-                  {emptyFieldIds.has(field.id) && (
-                    <span className="shrink-0 rounded border border-[#e6d8a8] bg-[#fdf6e3] px-1.5 py-px text-[9px] font-semibold text-[#8a6d1f]">
-                      {t('placeholder')}
-                    </span>
-                  )}
                   {boldable(field.id) &&
                     (() => {
                       const boldOn = field.bold ?? defaultBoldIds.has(field.id)

@@ -1934,6 +1934,7 @@
       "serviceType": "Reparasjon",
       "companyName": "Ditt verksted",
       "slogan": "Kvalitetsservice du kan stole på",
+      "paymentTerms": "Betales innen 14 dager",
       "footerNote": "Takk for handelen",
       "value": "Eksempel"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Slagordet hentes fra firmaopplysningene dine.",
     "sloganLink": "Firmainnstillinger",
     "paymentTerms": "Betalingsvilkår",
-    "paymentTermsEmptyHint": "Det er ikke satt noen betalingsvilkår, så ingen vilkårsrad skrives ut.",
+    "paymentTermsPlaceholderHint": "Det er ikke satt noen betalingsvilkår, så arket viser en plassholder som ikke skrives ut.",
     "paymentTermsSetHint": "Betalingsvilkårene hentes fra betalingsinnstillingene dine.",
     "paymentTermsLink": "Betalingsinnstillinger",
     "placeholder": "Plassholder",

@@ -1412,10 +1412,13 @@ function paymentBlock(
   const variant = section.variant || (framed ? 'outline' : 'accent')
 
   const inline = variant === 'lines'
+  // The pair's own id rides on the node, so the designer can mark one row of
+  // the panel rather than the whole panel.
   const cell = (pair: PaymentPair): Node =>
     inline
       ? {
           kind: 'row',
+          id: pair.id,
           gap: 4,
           children: [
             {
@@ -1436,6 +1439,7 @@ function paymentBlock(
         }
       : {
           kind: 'stack',
+          id: pair.id,
           gap: 1,
           children: [
             {

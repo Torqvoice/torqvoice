@@ -1934,6 +1934,7 @@
       "serviceType": "Réparation",
       "companyName": "Votre atelier",
       "slogan": "Un service de qualité en toute confiance",
+      "paymentTerms": "Payable sous 14 jours",
       "footerNote": "Merci de votre confiance",
       "value": "Exemple"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Votre slogan provient des informations de votre entreprise.",
     "sloganLink": "Paramètres de l'entreprise",
     "paymentTerms": "Conditions de paiement",
-    "paymentTermsEmptyHint": "Aucune condition de paiement n'est définie, aucune ligne de conditions n'est donc imprimée.",
+    "paymentTermsPlaceholderHint": "Aucune condition de paiement n'est définie, la feuille affiche donc un texte d'exemple qui ne sera pas imprimé.",
     "paymentTermsSetHint": "Vos conditions de paiement proviennent des paramètres de paiement.",
     "paymentTermsLink": "Paramètres de paiement",
     "placeholder": "Exemple",

@@ -1934,6 +1934,7 @@
       "serviceType": "Reparatur",
       "companyName": "Ihre Werkstatt",
       "slogan": "Qualität, auf die Sie sich verlassen können",
+      "paymentTerms": "Zahlbar innerhalb von 14 Tagen",
       "footerNote": "Vielen Dank für Ihren Auftrag",
       "value": "Beispiel"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Ihr Slogan stammt aus Ihren Firmendaten.",
     "sloganLink": "Firmeneinstellungen",
     "paymentTerms": "Zahlungsbedingungen",
-    "paymentTermsEmptyHint": "Es sind keine Zahlungsbedingungen hinterlegt, daher wird keine Zeile dafür gedruckt.",
+    "paymentTermsPlaceholderHint": "Es sind keine Zahlungsbedingungen hinterlegt, daher zeigt das Blatt einen Platzhalter, der nicht gedruckt wird.",
     "paymentTermsSetHint": "Ihre Zahlungsbedingungen stammen aus den Zahlungseinstellungen.",
     "paymentTermsLink": "Zahlungseinstellungen",
     "placeholder": "Platzhalter",

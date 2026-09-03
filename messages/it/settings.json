@@ -1934,6 +1934,7 @@
       "serviceType": "Riparazione",
       "companyName": "La tua officina",
       "slogan": "Un servizio di qualità di cui fidarsi",
+      "paymentTerms": "Pagamento entro 14 giorni",
       "footerNote": "Grazie per averci scelto",
       "value": "Esempio"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Lo slogan proviene dai dati della tua azienda.",
     "sloganLink": "Impostazioni azienda",
     "paymentTerms": "Termini di pagamento",
-    "paymentTermsEmptyHint": "Nessun termine di pagamento impostato, quindi non viene stampata alcuna riga dei termini.",
+    "paymentTermsPlaceholderHint": "Nessun termine di pagamento impostato, quindi il foglio mostra un segnaposto che non verrà stampato.",
     "paymentTermsSetHint": "I termini di pagamento provengono dalle impostazioni di pagamento.",
     "paymentTermsLink": "Impostazioni di pagamento",
     "placeholder": "Segnaposto",

@@ -1934,6 +1934,7 @@
       "serviceType": "Reparo",
       "companyName": "Sua oficina",
       "slogan": "Serviço de qualidade em que você pode confiar",
+      "paymentTerms": "Pagamento em 14 dias",
       "footerNote": "Obrigado pela preferência",
       "value": "Exemplo"
     },
@@ -1950,7 +1951,7 @@
     "sloganSetHint": "Seu slogan vem dos dados da sua empresa.",
     "sloganLink": "Configurações da empresa",
     "paymentTerms": "Condições de pagamento",
-    "paymentTermsEmptyHint": "Nenhuma condição de pagamento definida, então nenhuma linha de condições é impressa.",
+    "paymentTermsPlaceholderHint": "Nenhuma condição de pagamento definida, então a folha mostra um texto de exemplo que não será impresso.",
     "paymentTermsSetHint": "Suas condições de pagamento vêm das configurações de pagamento.",
     "paymentTermsLink": "Configurações de pagamento",
     "placeholder": "Exemplo",

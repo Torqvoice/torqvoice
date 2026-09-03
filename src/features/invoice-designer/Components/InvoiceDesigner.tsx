@@ -199,15 +199,18 @@ export function InvoiceDesigner({
 
   const layout = layouts[docType]
   const template = templates[docType]
-  // Blocks the canvas is filling in for the workshop. The slogan is the only
-  // one today: the rest of the sample stands in for a job, which a real sheet
-  // will have, while a slogan nobody has written simply never prints. Payment
-  // terms are not among them: an empty field drops the row from the panel
-  // rather than standing in for it, so there is nothing to mark.
-  const placeholderIds = useMemo(
-    () => new Set(companyWorkshop.slogan?.trim() ? [] : ['slogan']),
-    [companyWorkshop.slogan]
-  )
+  // What the canvas is filling in for the workshop: a slogan and payment terms
+  // nobody has written show a stand-in that prints as nothing, and are marked
+  // as such. The rest of the sample stands in for a job, which a real sheet
+  // will have. The slogan is a block of its own; the terms are one row of the
+  // payment panel, and marking the whole panel for them would be a lie about
+  // the bank account beside them.
+  const placeholderIds = useMemo(() => {
+    const ids: string[] = []
+    if (!companyWorkshop.slogan?.trim()) ids.push('slogan')
+    if (!companyWorkshop.paymentTerms?.trim()) ids.push('payment_terms')
+    return new Set(ids)
+  }, [companyWorkshop.slogan, companyWorkshop.paymentTerms])
   // What this document actually prints: its own mark when it has one, the
   // company logo otherwise. The same fallback the print routes apply, so the
   // canvas cannot promise a picture the paper will not carry.

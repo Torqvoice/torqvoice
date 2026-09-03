@@ -273,17 +273,14 @@ export function buildSampleData(
         label: L('orgNumberLabel', 'Org. Number'),
         value: values.org_number || `${L('org', 'Org: {org}').replace('{org}', '123 456 789')}`,
       },
-      // The workshop's own terms, and only theirs: an empty field prints no
-      // terms row at all, so the canvas must not show one either.
-      ...(workshop.paymentTerms?.trim()
-        ? [
-            {
-              id: 'payment_terms',
-              label: L('paymentTermsLabel', 'Payment Terms'),
-              value: workshop.paymentTerms.trim(),
-            },
-          ]
-        : []),
+      {
+        // The workshop's own terms, or a stand-in when they have written none,
+        // so the row is something to see and switch rather than an absence.
+        // The stand-in prints as nothing, which is why the canvas marks it.
+        id: 'payment_terms',
+        label: L('paymentTermsLabel', 'Payment Terms'),
+        value: workshop.paymentTerms?.trim() || t('sample.paymentTerms'),
+      },
       { id: 'due_date', label: L('dueDateLabel', 'Due Date'), value: sample.due },
     ],
     // A stand-in link, so the canvas shows the portal line the printed sheet
