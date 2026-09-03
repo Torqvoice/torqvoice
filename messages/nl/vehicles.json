@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "APK verlopen",
+    "inspectionDue30": "Vervalt binnen 30 dagen",
+    "inspectionDue90": "Vervalt binnen 90 dagen",
+    "inspectionDue": "APK {date}",
+    "remindCustomers": "Deze klanten herinneren"
   },
   "detail": {
     "vehicleArchived": "Dit voertuig is gearchiveerd",
@@ -91,7 +96,11 @@
     "severityUncommon": "Ongebruikelijk — gemeld door weinig eigenaren",
     "severityRare": "Zeldzaam — geïsoleerde meldingen maar kritiek wanneer het optreedt",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "APK vervalt {date}",
+    "inspectionCheckedAt": "Gecontroleerd bij het register op {date}",
+    "notRegistered": "Niet geregistreerd",
+    "soldReported": "Klant meldde verkocht op {date}"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Foto en eigenaar",
     "sectionDetails": "Details",
     "addScannedOwner": "Klant {name} toevoegen",
-    "ownerSaveFailed": "Kon de klant niet aanmaken"
+    "ownerSaveFailed": "Kon de klant niet aanmaken",
+    "lookupPlate": "Kenteken opzoeken",
+    "lookingUp": "Voertuigregister wordt geraadpleegd...",
+    "lookupSuccess": "Velden ingevuld vanuit {source}",
+    "lookupNotFound": "Het register kent geen voertuig met dit kenteken",
+    "lookupFailed": "Kenteken kon niet worden opgezocht",
+    "lookupUnavailable": "Koppel een voertuigregister onder Instellingen → Integraties",
+    "lookupEnterPlate": "Voer eerst een kenteken in",
+    "lookupInspectionDue": "{source}: volgende periodieke keuring op {date}",
+    "lookupSource": "Ingevuld vanuit {source}",
+    "inspectionDue": "Volgende periodieke keuring",
+    "inspectionDueHint": "Vul de datum in als geen register die levert. Herinneringen en het dashboard gebruiken hem.",
+    "inspectionDueFromRegistry": "Uit het voertuigregister. Wijzig hier om te overschrijven tot de volgende synchronisatie."
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Keuringsherinneringen",
+    "description": "Laat klanten weten dat hun periodieke keuring eraan komt, met een link om een tijd te boeken. Er wordt niets verstuurd voordat u de lijst bevestigt.",
+    "window": "Vervalt binnen",
+    "window30": "Komende 30 dagen",
+    "window60": "Komende 60 dagen",
+    "window90": "Komende 90 dagen",
+    "channel": "Versturen via",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "telegram": "Telegram"
+    },
+    "willReceive": "krijgen een bericht",
+    "excludedCount": "{count} uitgesloten",
+    "nobodyToRemind": "Niemand om te herinneren in deze periode. Elk voertuig met een vervaldatum is al herinnerd, heeft geboekt of is niet bereikbaar.",
+    "overdueOn": "Verlopen sinds {date}",
+    "excludedTitle": "Niet opgenomen",
+    "excludedDescription": "Elk heeft een reden. Los die op bij de klant of het voertuig en het verschijnt in de lijst.",
+    "reasons": {
+      "noCustomer": "Geen klant",
+      "optedOut": "Wil geen herinneringen",
+      "noRecipient": "Geen contact voor dit kanaal",
+      "alreadyReminded": "Al herinnerd voor deze datum",
+      "cooldown": "Onlangs bericht gehad",
+      "soldReported": "Klant meldt verkocht",
+      "notRegistered": "Niet geregistreerd",
+      "booked": "Al geboekt"
+    },
+    "message": "Bericht",
+    "subject": "Onderwerp",
+    "body": "Tekst",
+    "placeholders": "Velden: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Onbekende velden: {list}",
+    "sample": "Voorbeeld voor de eerste ontvanger",
+    "segments": "{count, plural, one {# sms-deel} other {# sms-delen}}",
+    "bookingModeDirectNote": "De link boekt een afspraak van {minutes} minuten direct op het werkbord.",
+    "bookingModeRequestNote": "De link stuurt een verzoek met de gekozen tijd dat de balie bevestigt.",
+    "linkValidNote": "Links blijven minstens {days} dagen open en tot na de vervaldatum.",
+    "sendTest": "Stuur mij een test",
+    "testSent": "Test in de wachtrij naar {to}",
+    "testFailed": "Test kon niet worden verstuurd",
+    "sendButton": "Versturen naar {count}",
+    "confirmTitle": "Herinneringen versturen?",
+    "confirmDescription": "{count} berichten gaan via {channel}, één per voertuig, eenmalig. Een voertuig wordt nooit twee keer herinnerd voor dezelfde datum.",
+    "confirmInput": "Typ {count} om te bevestigen",
+    "cancel": "Annuleren",
+    "sendNow": "Versturen",
+    "created": "{count} herinneringen in de wachtrij",
+    "sendFailed": "Campagne kon niet worden gemaakt",
+    "loadFailed": "Lijst kon niet worden geladen",
+    "campaign": {
+      "title": "Campagne van {date}",
+      "summary": "{channel}, vervaldatums binnen {window} dagen",
+      "recipients": "Ontvangers",
+      "sent": "Verstuurd",
+      "failed": "Mislukt",
+      "booked": "Geboekt",
+      "retryFailedButton": "{count} mislukte opnieuw",
+      "retried": "{count} terug in de wachtrij",
+      "retryFailed": "Opnieuw proberen mislukt",
+      "rows": "Ontvangers",
+      "status": {
+        "scheduled": "In wachtrij",
+        "sent": "Verstuurd",
+        "failed": "Mislukt",
+        "cancelled": "Geannuleerd"
+      },
+      "bookedOn": "Geboekt {date}",
+      "requestedOn": "Aangevraagd {date}",
+      "cancelledOn": "Geannuleerd {date}",
+      "none": "Nog geen campagnes.",
+      "start": "Keuringsherinneringen versturen",
+      "recipientsCount": "{count} ontvangers",
+      "failedCount": "{count} mislukt",
+      "bookedCount": "{count} geboekt"
+    },
+    "defaults": {
+      "smsBody": "Hallo {customerName}, de periodieke keuring van uw {vehicle} ({plate}) vervalt op {dueDate}. Boek een tijd: {bookingLink} of bel ons op {phone}. {workshopName}",
+      "emailSubject": "Keuring op {dueDate} voor {vehicle}",
+      "emailBody": "Hallo {customerName},\n\nDe periodieke keuring van uw {vehicle} ({plate}) vervalt op {dueDate}.\n\nBoek hier een tijd die u uitkomt: {bookingLink}\n\nOf bel ons op {phone}.\n\nMet vriendelijke groet,\n{workshopName}"
+    },
+    "refresh": "Lijst vernieuwen",
+    "timeZoneRequired": "De tijdzone van de werkplaats staat op automatisch, dus boekingstijden zouden de browser volgen die het laatst opsloeg (nu {zone}). Herinneringen kunnen pas worden verstuurd als een zone is gekozen.",
+    "timeZoneRequiredLink": "Kies hem onder Lokalisatie"
   }
 }

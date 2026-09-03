@@ -134,6 +134,10 @@
       "providers": {
         "title": "Providers",
         "description": "E-mail, sms, WhatsApp en Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Keuringsherinneringen",
+        "description": "Boekingslink, duur en aanlooptijd"
       }
     },
     "pro": "PRO"
@@ -1966,5 +1970,31 @@
     "partSyntheticOil": "Synthetische olie 5W-30",
     "laborBrakeReplacement": "Remmen vervangen",
     "laborOilChange": "Oliewissel"
+  },
+  "inspectionReminders": {
+    "title": "Keuringsherinneringen en boeken",
+    "description": "Hoe de boekingslink in een herinnering zich gedraagt. Eén keer instellen; elke campagne gebruikt dit.",
+    "duration": "Duur van de keuring (minuten)",
+    "durationHint": "Hoe lang een periodieke keuring een brug bezet. De link boekt tijden van deze lengte.",
+    "leadDays": "Vroegste boeking (dagen vooruit)",
+    "leadDaysHint": "1 betekent dat de eerste aangeboden tijd morgen is, nooit vandaag.",
+    "horizonWeeks": "Hoe ver vooruit (weken)",
+    "horizonHint": "Klanten kunnen elke vrije tijd binnen zoveel weken kiezen.",
+    "reserve": "Vrijhouden voor inloop",
+    "reserveHint": "Bruggen of monteurs die de link nooit vult. 0 laat alle vrije gebruiken.",
+    "linkValidDays": "Link blijft open (dagen)",
+    "linkValidHint": "Minstens {min}. Links blijven ook open tot een week na de vervaldatum, wat later is.",
+    "bookingMode": "Wat een boeking aanmaakt",
+    "bookingModeDirect": "Een geplande werkorder op het bord",
+    "bookingModeRequest": "Een verzoek dat de balie eerst bevestigt",
+    "bookingModeHint": "Direct boeken maakt de link de moeite waard. Kies verzoek als u elke keer wilt goedkeuren.",
+    "phone": "Telefoonnummer in berichten",
+    "phoneHint": "Getoond als alternatief voor de link. Standaard het nummer van de werkplaats.",
+    "save": "Opslaan",
+    "saved": "Instellingen opgeslagen",
+    "saveFailed": "Opslaan mislukt",
+    "timeZoneDetected": "De tijdzone staat op automatisch onder Lokalisatie, dus de server gebruikt {zone}, de zone die het laatst is gezien in een browser die instellingen opsloeg. Kies de zone van de werkplaats expliciet zodat boekingstijden nooit afhangen van wie het laatst opsloeg.",
+    "timeZoneExplicit": "Boekingstijden en openingstijden worden gelezen in {zone}.",
+    "timeZoneChange": "Wijzigen onder Lokalisatie"
   }
 }

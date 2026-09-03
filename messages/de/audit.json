@@ -155,7 +155,9 @@
     "import_commit": "Tabelle importiert",
     "import_undo": "Import rückgängig gemacht",
     "integration_connect": "Integration verbunden",
-    "integration_disconnect": "Integration getrennt"
+    "integration_disconnect": "Integration getrennt",
+    "inspection_reminders_sent": "HU-Erinnerungen gesendet",
+    "inspection_reminders_send": "HU-Erinnerungen gesendet"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -283,6 +285,7 @@
     "import_commit": "Tabelle importiert: {count} Datensätze angelegt",
     "import_undo": "Tabellenimport rückgängig gemacht: {records} Datensätze entfernt",
     "integration_connect": "{name} verbunden",
-    "integration_disconnect": "{name} getrennt"
+    "integration_disconnect": "{name} getrennt",
+    "inspection_reminders_sent": "{count} HU-Erinnerungen gesendet"
   }
 }

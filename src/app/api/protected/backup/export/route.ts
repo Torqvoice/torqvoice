@@ -126,6 +126,7 @@ export async function POST(request: NextRequest) {
             fuelLogs: true,
             reminders: true,
             serviceRequests: true,
+            inspectionStatus: true,
             serviceRecords: {
               include: {
                 concerns: true,
@@ -343,6 +344,20 @@ export async function POST(request: NextRequest) {
         .findMany({ where: { organizationId: ctx.organizationId } })
         .then((result) => {
           data.scheduledMessages = result
+        })
+    )
+    queries.push(
+      db.inspectionReminderCampaign
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.inspectionReminderCampaigns = result
+        })
+    )
+    queries.push(
+      db.inspectionReminderSend
+        .findMany({ where: { organizationId: ctx.organizationId } })
+        .then((result) => {
+          data.inspectionReminderSends = result
         })
     )
   }

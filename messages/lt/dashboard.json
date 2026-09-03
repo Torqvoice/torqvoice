@@ -56,7 +56,8 @@
     "recentObservations": "Naujausi pastebėjimai",
     "recentActivity": "Naujausia veikla",
     "gettingStarted": "Pradžia",
-    "tireHotel": "Padangų viešbutis"
+    "tireHotel": "Padangų viešbutis",
+    "inspectionsDue": "Artėjančios techninės apžiūros"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",
@@ -252,5 +253,15 @@
     "roomLeft": "Vietos dar {count}",
     "needsPrep": "Reikia paruošti",
     "unbilled": "Neapmokestinta ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Artėjančios techninės apžiūros",
+    "viewAll": "Rodyti visas transporto priemones",
+    "overdue": "Pradelsta",
+    "within30": "Per 30 dienų",
+    "within90": "Per 90 dienų",
+    "noData": "Per artimiausias 90 dienų apžiūrų nėra",
+    "overdueSince": "Pradelsta nuo {date}",
+    "remind": "Siųsti priminimus"
   }
 }

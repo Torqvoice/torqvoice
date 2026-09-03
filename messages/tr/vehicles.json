@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Muayene gecikmiş",
+    "inspectionDue30": "30 gün içinde",
+    "inspectionDue90": "90 gün içinde",
+    "inspectionDue": "Muayene {date}",
+    "remindCustomers": "Bu müşterilere hatırlat"
   },
   "detail": {
     "vehicleArchived": "Bu araç arşivlenmiş",
@@ -91,7 +96,11 @@
     "severityUncommon": "Nadir — az sayıda araç sahibi tarafından bildirilmiş",
     "severityRare": "Çok nadir — tek tük bildirimler ancak gerçekleştiğinde kritik",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Muayene {date}",
+    "inspectionCheckedAt": "Sicilde {date} tarihinde kontrol edildi",
+    "notRegistered": "Kayıtlı değil",
+    "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi"
   },
   "quotes": {
     "newQuote": "Yeni teklif",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Fotoğraf ve sahibi",
     "sectionDetails": "Ayrıntılar",
     "addScannedOwner": "{name} müşterisini ekle",
-    "ownerSaveFailed": "Müşteri oluşturulamadı"
+    "ownerSaveFailed": "Müşteri oluşturulamadı",
+    "lookupPlate": "Plakayı sorgula",
+    "lookingUp": "Araç sicili sorgulanıyor...",
+    "lookupSuccess": "Alanlar {source} kaynağından dolduruldu",
+    "lookupNotFound": "Sicilde bu plakaya sahip araç yok",
+    "lookupFailed": "Plaka sorgulanamadı",
+    "lookupUnavailable": "Ayarlar → Entegrasyonlar altından bir araç sicili bağlayın",
+    "lookupEnterPlate": "Önce bir plaka yazın",
+    "lookupInspectionDue": "{source}: sonraki periyodik muayene tarihi {date}",
+    "lookupSource": "{source} kaynağından dolduruldu",
+    "inspectionDue": "Sonraki periyodik muayene",
+    "inspectionDueHint": "Bir sicil sağlamıyorsa tarihi yazın. Hatırlatmalar ve pano bunu kullanır.",
+    "inspectionDueFromRegistry": "Araç sicilinden alındı. Bir sonraki eşitlemeye kadar geçersiz kılmak için burada değiştirin."
   },
   "archiveDialog": {
     "title": "Aracı Arşivle",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Muayene hatırlatmaları",
+    "description": "Periyodik muayenesi yaklaşan müşterilere randevu bağlantısıyla haber verin. Listeyi onaylayana kadar hiçbir şey gönderilmez.",
+    "window": "Son tarih",
+    "window30": "Önümüzdeki 30 gün",
+    "window60": "Önümüzdeki 60 gün",
+    "window90": "Önümüzdeki 90 gün",
+    "channel": "Gönderim kanalı",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-posta",
+      "telegram": "Telegram"
+    },
+    "willReceive": "mesaj alacak",
+    "excludedCount": "{count} hariç",
+    "nobodyToRemind": "Bu dönemde hatırlatılacak kimse yok. Tarihi olan her araç ya hatırlatıldı, ya randevu aldı ya da ulaşılamıyor.",
+    "overdueOn": "{date} tarihinden beri gecikmiş",
+    "excludedTitle": "Dahil edilmeyenler",
+    "excludedDescription": "Her birinin bir nedeni var. Nedeni müşteride veya araçta düzeltin, listede görünür.",
+    "reasons": {
+      "noCustomer": "Müşteri yok",
+      "optedOut": "Hatırlatma istemiyor",
+      "noRecipient": "Bu kanal için iletişim yok",
+      "alreadyReminded": "Bu tarih için zaten hatırlatıldı",
+      "cooldown": "Yakın zamanda mesaj gönderildi",
+      "soldReported": "Müşteri satıldığını bildirdi",
+      "notRegistered": "Kayıtlı değil",
+      "booked": "Zaten randevu aldı"
+    },
+    "message": "Mesaj",
+    "subject": "Konu",
+    "body": "Metin",
+    "placeholders": "Alanlar: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Bilinmeyen alanlar: {list}",
+    "sample": "İlk alıcı için örnek",
+    "segments": "{count, plural, one {# SMS parçası} other {# SMS parçası}}",
+    "bookingModeDirectNote": "Bağlantı {minutes} dakikalık bir randevuyu doğrudan iş panosuna yazar.",
+    "bookingModeRequestNote": "Bağlantı seçilen saatle bir talep gönderir, ofis onaylar.",
+    "linkValidNote": "Bağlantılar en az {days} gün ve son tarihten sonra da açık kalır.",
+    "sendTest": "Bana test gönder",
+    "testSent": "Test {to} için kuyruğa alındı",
+    "testFailed": "Test gönderilemedi",
+    "sendButton": "{count} kişiye gönder",
+    "confirmTitle": "Hatırlatmalar gönderilsin mi?",
+    "confirmDescription": "{count} mesaj {channel} ile, araç başına bir tane, bir kez gider. Bir araca aynı tarih için asla iki kez hatırlatılmaz.",
+    "confirmInput": "Onaylamak için {count} yazın",
+    "cancel": "İptal",
+    "sendNow": "Gönder",
+    "created": "{count} hatırlatma kuyruğa alındı",
+    "sendFailed": "Kampanya oluşturulamadı",
+    "loadFailed": "Liste yüklenemedi",
+    "campaign": {
+      "title": "{date} kampanyası",
+      "summary": "{channel}, {window} gün içindeki tarihler",
+      "recipients": "Alıcılar",
+      "sent": "Gönderildi",
+      "failed": "Başarısız",
+      "booked": "Randevu aldı",
+      "retryFailedButton": "{count} başarısızı yeniden dene",
+      "retried": "{count} kuyruğa geri alındı",
+      "retryFailed": "Yeniden denenemedi",
+      "rows": "Alıcılar",
+      "status": {
+        "scheduled": "Kuyrukta",
+        "sent": "Gönderildi",
+        "failed": "Başarısız",
+        "cancelled": "İptal edildi"
+      },
+      "bookedOn": "{date} randevu alındı",
+      "requestedOn": "{date} talep edildi",
+      "cancelledOn": "{date} iptal edildi",
+      "none": "Henüz kampanya yok.",
+      "start": "Muayene hatırlatması gönder",
+      "recipientsCount": "{count} alıcı",
+      "failedCount": "{count} başarısız",
+      "bookedCount": "{count} randevu"
+    },
+    "defaults": {
+      "smsBody": "Merhaba {customerName}, {vehicle} ({plate}) aracınızın periyodik muayene tarihi {dueDate}. Randevu alın: {bookingLink} veya bizi arayın: {phone}. {workshopName}",
+      "emailSubject": "{vehicle} için muayene tarihi {dueDate}",
+      "emailBody": "Merhaba {customerName},\n\n{vehicle} ({plate}) aracınızın periyodik muayene tarihi {dueDate}.\n\nSize uygun bir saati buradan ayırtın: {bookingLink}\n\nVeya bizi arayın: {phone}.\n\nSaygılarımızla,\n{workshopName}"
+    },
+    "refresh": "Listeyi yenile",
+    "timeZoneRequired": "Atölyenin saat dilimi otomatik olduğundan randevu saatleri ayarları en son kaydeden tarayıcıyı izlerdi (şu anda {zone}). Bir dilim seçilene kadar hatırlatma gönderilemez.",
+    "timeZoneRequiredLink": "Yerelleştirme altından seçin"
   }
 }

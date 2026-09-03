@@ -1,3 +1,4 @@
+import { addZonedDays, atZonedTime, isZonedWeekend, startOfZonedDay } from '@/lib/timezone'
 /**
  * Whether a slot in the shop is free, and where the next free one is.
  *
@@ -28,10 +29,16 @@ export interface Slot {
   workBayId?: string | null
 }
 
-/** The shop's bookable hours, as "HH:mm" in the shop's own reckoning. */
+/** The shop's bookable hours, as "HH:mm" on the shop's own clock. */
 export interface WorkingHours {
   start: string
   end: string
+  /**
+   * IANA zone the hours are read in. The server may well run in UTC while
+   * the shop is in Oslo, so "08:00" means nothing until the zone is named.
+   * Missing means the process's own zone, which is only right by luck.
+   */
+  timeZone?: string
   /**
    * Whether Saturday and Sunday can be booked. Off by default: a shop that
    * works weekends says so, and one that does not should never be handed a
@@ -62,29 +69,24 @@ export function findConflicts(slot: Slot, bookings: Booking[], excludeId?: strin
   })
 }
 
-function minutesOf(hhmm: string): number {
-  const [h, m] = hhmm.split(':').map(Number)
-  return (Number.isFinite(h) ? h : 0) * 60 + (Number.isFinite(m) ? m : 0)
+function zoneOf(hours: WorkingHours): string {
+  return hours.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone
 }
 
-const isWeekend = (d: Date) => d.getDay() === 0 || d.getDay() === 6
+const isWeekend = (d: Date, hours: WorkingHours) => isZonedWeekend(d, zoneOf(hours))
 
 /** The opening moment of the working day `date` falls in. */
 function dayStart(date: Date, hours: WorkingHours): Date {
-  const d = new Date(date)
-  d.setHours(0, minutesOf(hours.start), 0, 0)
-  return d
+  return atZonedTime(date, hours.start, zoneOf(hours))
 }
 
 function dayEnd(date: Date, hours: WorkingHours): Date {
-  const d = new Date(date)
-  d.setHours(0, minutesOf(hours.end), 0, 0)
-  return d
+  return atZonedTime(date, hours.end, zoneOf(hours))
 }
 
 /** Whether the whole slot sits inside one bookable day. */
 export function withinWorkingHours(slot: Slot, hours: WorkingHours): boolean {
-  if (!hours.includeWeekends && isWeekend(slot.start)) return false
+  if (!hours.includeWeekends && isWeekend(slot.start, hours)) return false
   const open = dayStart(slot.start, hours)
   const close = dayEnd(slot.start, hours)
   return slot.start >= open && slot.end <= close
@@ -119,13 +121,12 @@ export function nextAvailableSlot({
   searchDays?: number
 }): Slot | null {
   const durationMs = Math.max(1, durationMinutes) * 60_000
-  const day = new Date(from)
-  day.setHours(0, 0, 0, 0)
+  const zone = zoneOf(hours)
+  const day = startOfZonedDay(from, zone)
 
   for (let i = 0; i < searchDays; i++) {
-    const cursorDay = new Date(day)
-    cursorDay.setDate(day.getDate() + i)
-    if (!hours.includeWeekends && isWeekend(cursorDay)) continue
+    const cursorDay = addZonedDays(day, i, zone)
+    if (!hours.includeWeekends && isWeekend(cursorDay, hours)) continue
 
     const close = dayEnd(cursorDay, hours)
     // Today starts from now rather than from opening time, so a search at

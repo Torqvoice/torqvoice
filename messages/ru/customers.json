@@ -92,7 +92,9 @@
     "customerNumberAuto": "Авто",
     "sectionContact": "Контакты",
     "sectionBilling": "Выставление счетов",
-    "addScannedVehicle": "Добавить автомобиль {vehicle}"
+    "addScannedVehicle": "Добавить автомобиль {vehicle}",
+    "reminderOptOut": "Без напоминаний",
+    "reminderOptOutHint": "Не включать этого клиента в напоминания о техосмотре и другие рассылки."
   },
   "serviceRequests": {
     "statusNew": "Новая",

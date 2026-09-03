@@ -56,7 +56,8 @@
     "recentObservations": "Ostatnie obserwacje",
     "recentActivity": "Ostatnia aktywność",
     "gettingStarted": "Pierwsze kroki",
-    "tireHotel": "Hotel opon"
+    "tireHotel": "Hotel opon",
+    "inspectionsDue": "Zbliżające się przeglądy"
   },
   "maintenance": {
     "title": "Przewidywany termin konserwacji",
@@ -252,5 +253,15 @@
     "roomLeft": "Miejsce na {count} więcej",
     "needsPrep": "Do przygotowania",
     "unbilled": "Nierozliczone ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Zbliżające się przeglądy",
+    "viewAll": "Pokaż wszystkie pojazdy z terminem",
+    "overdue": "Po terminie",
+    "within30": "Najbliższe 30 dni",
+    "within90": "Najbliższe 90 dni",
+    "noData": "Brak przeglądów w ciągu najbliższych 90 dni",
+    "overdueSince": "Po terminie od {date}",
+    "remind": "Wyślij przypomnienia"
   }
 }

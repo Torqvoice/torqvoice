@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contact",
     "sectionBilling": "Facturatie",
-    "addScannedVehicle": "Voertuig {vehicle} toevoegen"
+    "addScannedVehicle": "Voertuig {vehicle} toevoegen",
+    "reminderOptOut": "Geen herinneringen",
+    "reminderOptOutHint": "Deze klant niet opnemen in keuringsherinneringen of andere campagnes."
   },
   "serviceRequests": {
     "statusNew": "Nieuw",

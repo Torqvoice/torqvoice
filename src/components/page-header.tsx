@@ -75,6 +75,8 @@ const docsMap: Record<string, string> = {
   '/settings/webhooks': '/docs/integrations/webhooks',
   '/settings/subscription': '/docs/configuration/subscription',
   '/settings/license': '/docs/licensing/white-label',
+  '/settings/inspection-reminders': '/docs/features/inspection-reminders',
+  '/vehicles/inspection-reminders': '/docs/features/inspection-reminders',
   '/': '/docs/features/dashboard',
   '/settings/company': '/docs/configuration/workshop-profile',
   '/settings/workshop': '/docs/configuration/workshop-profile',
@@ -133,6 +135,14 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/license': [{ key: 'settings', href: '/settings' }, { key: 'license' }],
   '/settings/subscription': [{ key: 'settings', href: '/settings' }, { key: 'subscription' }],
   '/settings/maintenance': [{ key: 'settings', href: '/settings' }, { key: 'maintenance' }],
+  '/settings/inspection-reminders': [
+    { key: 'settings', href: '/settings' },
+    { key: 'inspectionReminders' },
+  ],
+  '/vehicles/inspection-reminders': [
+    { key: 'vehicles', href: '/vehicles' },
+    { key: 'inspectionReminders' },
+  ],
   '/settings/customer-portal': [{ key: 'settings', href: '/settings' }, { key: 'customerPortal' }],
   '/ai': [{ key: 'aiAssistant' }],
   '/audit-log': [{ key: 'auditLog' }],
@@ -161,7 +171,11 @@ export function PageHeader() {
   // as likely to want the manual as somebody reading the list.
   const docsHref =
     docsMap[pathname] ??
-    (/^\/tire-hotel\/[^/]+$/.test(pathname) ? '/docs/features/tire-hotel' : undefined)
+    (/^\/tire-hotel\/[^/]+$/.test(pathname)
+      ? '/docs/features/tire-hotel'
+      : /^\/vehicles\/inspection-reminders\/[^/]+$/.test(pathname)
+        ? '/docs/features/inspection-reminders'
+        : undefined)
 
   // Match exact route first
   let segments = breadcrumbMap[pathname]

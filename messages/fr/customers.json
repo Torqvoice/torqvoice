@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contact",
     "sectionBilling": "Facturation",
-    "addScannedVehicle": "Ajouter le véhicule {vehicle}"
+    "addScannedVehicle": "Ajouter le véhicule {vehicle}",
+    "reminderOptOut": "Pas de rappels",
+    "reminderOptOutHint": "Ne pas inclure ce client dans les rappels de contrôle ni les autres campagnes."
   },
   "serviceRequests": {
     "statusNew": "Nouveau",

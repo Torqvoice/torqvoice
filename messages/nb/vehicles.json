@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "EU-kontroll forfalt",
+    "inspectionDue30": "Frist innen 30 dager",
+    "inspectionDue90": "Frist innen 90 dager",
+    "inspectionDue": "EU-kontroll {date}",
+    "remindCustomers": "Minn disse kundene"
   },
   "detail": {
     "vehicleArchived": "Dette kjoretoyet er arkivert",
@@ -91,7 +96,11 @@
     "severityUncommon": "Uvanlig — rapportert av få eiere",
     "severityRare": "Sjelden — isolerte rapporter, men kritisk når det oppstår",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "EU-kontroll {date}",
+    "inspectionCheckedAt": "Sjekket mot registeret {date}",
+    "notRegistered": "Avregistrert",
+    "soldReported": "Kunden meldte solgt {date}"
   },
   "quotes": {
     "newQuote": "Nytt tilbud",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Bilde og eier",
     "sectionDetails": "Detaljer",
     "addScannedOwner": "Legg til kunden {name}",
-    "ownerSaveFailed": "Kunne ikke opprette kunden"
+    "ownerSaveFailed": "Kunne ikke opprette kunden",
+    "lookupPlate": "Slå opp skilt",
+    "lookingUp": "Spør kjøretøyregisteret...",
+    "lookupSuccess": "Feltene er fylt ut fra {source}",
+    "lookupNotFound": "Registeret har ingen kjøretøy med det skiltet",
+    "lookupFailed": "Kunne ikke slå opp skiltet",
+    "lookupUnavailable": "Koble til et kjøretøyregister under Innstillinger → Integrasjoner",
+    "lookupEnterPlate": "Skriv inn et registreringsnummer først",
+    "lookupInspectionDue": "{source}: frist for EU-kontroll {date}",
+    "lookupSource": "Fylt ut fra {source}",
+    "inspectionDue": "Neste EU-kontroll",
+    "inspectionDueHint": "Skriv inn datoen hvis ingen register leverer den. Påminnelser og dashbordet bruker den.",
+    "inspectionDueFromRegistry": "Hentet fra kjøretøyregisteret. Endre her for å overstyre til neste synkronisering."
   },
   "archiveDialog": {
     "title": "Arkiver kjøretøy",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Påminnelser om EU-kontroll",
+    "description": "Gi beskjed til kunder som snart har frist for EU-kontroll, med lenke for å bestille time. Ingenting sendes før du bekrefter listen.",
+    "window": "Frist innen",
+    "window30": "Neste 30 dager",
+    "window60": "Neste 60 dager",
+    "window90": "Neste 90 dager",
+    "channel": "Send via",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-post",
+      "telegram": "Telegram"
+    },
+    "willReceive": "får melding",
+    "excludedCount": "{count} utelatt",
+    "nobodyToRemind": "Ingen å minne på i dette vinduet. Alle kjøretøy med frist er enten allerede minnet på, bestilt, eller kan ikke nås.",
+    "overdueOn": "Forfalt siden {date}",
+    "excludedTitle": "Ikke med",
+    "excludedDescription": "Hver av disse har en grunn. Rett opp på kunden eller kjøretøyet, så dukker de opp i listen.",
+    "reasons": {
+      "noCustomer": "Ingen kunde",
+      "optedOut": "Reservert mot påminnelser",
+      "noRecipient": "Ingen kontaktinfo for kanalen",
+      "alreadyReminded": "Allerede minnet på denne fristen",
+      "cooldown": "Fikk melding nylig",
+      "soldReported": "Kunden har meldt solgt",
+      "notRegistered": "Avregistrert",
+      "booked": "Allerede bestilt"
+    },
+    "message": "Melding",
+    "subject": "Emne",
+    "body": "Tekst",
+    "placeholders": "Felter: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Ukjente felter: {list}",
+    "sample": "Eksempel for første mottaker",
+    "segments": "{count, plural, one {# SMS-del} other {# SMS-deler}}",
+    "bookingModeDirectNote": "Lenken bestiller en time på {minutes} minutter rett inn på arbeidstavlen.",
+    "bookingModeRequestNote": "Lenken sender en forespørsel med valgt tid som kontoret bekrefter.",
+    "linkValidNote": "Lenker er åpne i minst {days} dager og forbi fristen.",
+    "sendTest": "Send en test til meg",
+    "testSent": "Test lagt i kø til {to}",
+    "testFailed": "Kunne ikke sende testen",
+    "sendButton": "Send til {count}",
+    "confirmTitle": "Sende påminnelsene?",
+    "confirmDescription": "{count} meldinger sendes via {channel}, én per kjøretøy, én gang. Et kjøretøy minnes aldri på samme frist to ganger.",
+    "confirmInput": "Skriv {count} for å bekrefte",
+    "cancel": "Avbryt",
+    "sendNow": "Send",
+    "created": "{count} påminnelser lagt i kø",
+    "sendFailed": "Kunne ikke opprette utsendingen",
+    "loadFailed": "Kunne ikke laste listen",
+    "campaign": {
+      "title": "Utsending fra {date}",
+      "summary": "{channel}, frist innen {window} dager",
+      "recipients": "Mottakere",
+      "sent": "Sendt",
+      "failed": "Feilet",
+      "booked": "Bestilt",
+      "retryFailedButton": "Prøv {count} feilede på nytt",
+      "retried": "{count} lagt tilbake i køen",
+      "retryFailed": "Kunne ikke prøve på nytt",
+      "rows": "Mottakere",
+      "status": {
+        "scheduled": "I kø",
+        "sent": "Sendt",
+        "failed": "Feilet",
+        "cancelled": "Avbrutt"
+      },
+      "bookedOn": "Bestilt {date}",
+      "requestedOn": "Forespurt {date}",
+      "cancelledOn": "Avbestilt {date}",
+      "none": "Ingen utsendinger ennå.",
+      "start": "Send påminnelser om EU-kontroll",
+      "recipientsCount": "{count} mottakere",
+      "failedCount": "{count} feilet",
+      "bookedCount": "{count} bestilt"
+    },
+    "defaults": {
+      "smsBody": "Hei {customerName}, fristen for EU-kontroll på {vehicle} ({plate}) er {dueDate}. Bestill time her: {bookingLink} eller ring oss på {phone}. {workshopName}",
+      "emailSubject": "EU-kontroll {dueDate} for {vehicle}",
+      "emailBody": "Hei {customerName},\n\nFristen for EU-kontroll på {vehicle} ({plate}) er {dueDate}.\n\nBestill en time som passer deg her: {bookingLink}\n\nEller ring oss på {phone}.\n\nVennlig hilsen\n{workshopName}"
+    },
+    "refresh": "Oppdater listen",
+    "timeZoneRequired": "Verkstedets tidssone står på automatisk, så bestillingstider ville fulgt nettleseren som sist lagret innstillinger (nå {zone}). Påminnelser kan ikke sendes før en sone er valgt.",
+    "timeZoneRequiredLink": "Velg den under Lokalisering"
   }
 }

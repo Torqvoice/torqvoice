@@ -59,7 +59,8 @@
     "tireStorage": "Lagerstruktur",
     "tireSetDetails": "Reifensatz",
     "tireForecast": "Nächste Saison",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "HU-Erinnerungen"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",

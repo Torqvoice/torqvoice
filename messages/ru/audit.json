@@ -155,7 +155,9 @@
     "import_commit": "Импортирована таблица",
     "import_undo": "Отменён импорт",
     "integration_connect": "Подключена интеграция",
-    "integration_disconnect": "Отключена интеграция"
+    "integration_disconnect": "Отключена интеграция",
+    "inspection_reminders_sent": "Отправлены напоминания о техосмотре",
+    "inspection_reminders_send": "Отправлены напоминания о техосмотре"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -283,6 +285,7 @@
     "import_commit": "Импортирована таблица, создано записей: {count}",
     "import_undo": "Отменён импорт таблицы, удалено записей: {records}",
     "integration_connect": "Подключена интеграция {name}",
-    "integration_disconnect": "Отключена интеграция {name}"
+    "integration_disconnect": "Отключена интеграция {name}",
+    "inspection_reminders_sent": "Отправлено напоминаний о техосмотре: {count}"
   }
 }

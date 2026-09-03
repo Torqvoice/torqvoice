@@ -38,6 +38,7 @@ interface CustomerFormProps {
     company?: string | null
     taxId?: string | null
     taxExempt?: boolean
+    reminderOptOut?: boolean
     notes?: string | null
   }
   /**
@@ -62,6 +63,7 @@ export function CustomerForm({
   const tv = useTranslations('vehicles.form')
   const [loading, setLoading] = useState(false)
   const [taxExempt, setTaxExempt] = useState(customer?.taxExempt ?? false)
+  const [reminderOptOut, setReminderOptOut] = useState(customer?.reminderOptOut ?? false)
   const formRef = useRef<HTMLFormElement>(null)
   /** Vehicle details from a scanned document, offered once the customer exists. */
   const [scannedVehicle, setScannedVehicle] = useState<VehicleDocumentScan | null>(null)
@@ -104,6 +106,7 @@ export function CustomerForm({
       company: (formData.get('company') as string) || undefined,
       taxId: (formData.get('taxId') as string) || undefined,
       taxExempt,
+      reminderOptOut,
       notes: (formData.get('notes') as string) || undefined,
     }
 
@@ -282,6 +285,14 @@ export function CustomerForm({
                 <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
               </div>
               <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <Label>{t('reminderOptOut')}</Label>
+                <p className="text-xs text-muted-foreground">{t('reminderOptOutHint')}</p>
+              </div>
+              <Switch checked={reminderOptOut} onCheckedChange={setReminderOptOut} />
             </div>
           </div>
 

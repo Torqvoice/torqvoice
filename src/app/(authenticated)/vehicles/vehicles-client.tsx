@@ -63,8 +63,10 @@ import {
   Upload,
   Users,
   Wrench,
+  Send,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
 
 interface Vehicle {
@@ -83,6 +85,7 @@ interface Vehicle {
   imageUrl: string | null
   customerId: string | null
   customer: { id: string; name: string; company: string | null } | null
+  inspectionStatus?: { dueAt: Date | string | null; source: string } | null
   _count: { serviceRecords: number }
 }
 
@@ -99,9 +102,26 @@ interface PaginatedData {
   pageSize: number
   totalPages: number
   archivedCount: number
+  hasInspectionData?: boolean
 }
 
+type InspectionDueFilter = 'overdue' | 30 | 90
+
 const VIEW_COOKIE = 'torqvoice-vehicles-view'
+
+/** How urgent a periodic inspection date is, for the badge colour. */
+function inspectionTone(dueAt: Date | string): 'overdue' | 'soon' | 'later' {
+  const days = (new Date(dueAt).getTime() - Date.now()) / 86_400_000
+  if (days < 0) return 'overdue'
+  if (days < 30) return 'soon'
+  return 'later'
+}
+
+const INSPECTION_TONE_CLASS: Record<ReturnType<typeof inspectionTone>, string> = {
+  overdue: 'border-destructive/40 bg-destructive/10 text-destructive',
+  soon: 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  later: 'border-border bg-muted text-muted-foreground',
+}
 
 export function VehiclesClient({
   data,
@@ -112,6 +132,8 @@ export function VehiclesClient({
   initialView = 'table',
   isArchived = false,
   archivedCount = 0,
+  inspectionDue,
+  hasInspectionData = false,
 }: {
   data: PaginatedData
   customers: CustomerOption[]
@@ -121,6 +143,10 @@ export function VehiclesClient({
   initialView?: 'table' | 'grid' | 'grid6'
   isArchived?: boolean
   archivedCount?: number
+  /** Active periodic-inspection filter, from the URL. */
+  inspectionDue?: InspectionDueFilter
+  /** Whether any vehicle has an inspection date, which is when the filter is offered. */
+  hasInspectionData?: boolean
 }) {
   const serviceType = useServiceType()
   const router = useRouter()
@@ -130,6 +156,7 @@ export function VehiclesClient({
   const t = useTranslations('vehicles.list')
   const tc = useTranslations('common.buttons')
   const tcm = useTranslations('common.contextMenu')
+  const { formatDate } = useFormatDate()
   const [showForm, setShowForm] = useState(false)
   const [showImport, setShowImport] = useState(false)
   const [createCustomerId, setCreateCustomerId] = useState<string | undefined>(undefined)
@@ -273,6 +300,47 @@ export function VehiclesClient({
               {archivedCount > 0 ? ` (${archivedCount})` : ''}
             </button>
           </div>
+          {hasInspectionData && !isArchived && (
+            <div className="hidden gap-1 rounded-lg border p-1 shrink-0 sm:flex">
+              {(
+                [
+                  ['overdue', t('inspectionOverdue')],
+                  [30, t('inspectionDue30')],
+                  [90, t('inspectionDue90')],
+                ] as [InspectionDueFilter, string][]
+              ).map(([value, label]) => (
+                <button
+                  key={String(value)}
+                  type="button"
+                  onClick={() =>
+                    router.push(inspectionDue === value ? '/vehicles' : `/vehicles?due=${value}`)
+                  }
+                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                    inspectionDue === value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          {inspectionDue && !isArchived && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden sm:inline-flex"
+              onClick={() =>
+                router.push(
+                  `/vehicles/inspection-reminders?due=${inspectionDue === 'overdue' ? 30 : inspectionDue}`
+                )
+              }
+            >
+              <Send className="mr-1.5 h-3.5 w-3.5" />
+              {t('remindCustomers')}
+            </Button>
+          )}
           <div className="relative flex-1 min-w-0 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -374,6 +442,13 @@ export function VehiclesClient({
                     <span>
                       {t('table.services')}: {v._count.serviceRecords}
                     </span>
+                    {v.inspectionStatus?.dueAt && (
+                      <span
+                        className={`rounded border px-1.5 py-0.5 ${INSPECTION_TONE_CLASS[inspectionTone(v.inspectionStatus.dueAt)]}`}
+                      >
+                        {t('inspectionDue', { date: formatDate(v.inspectionStatus.dueAt) })}
+                      </span>
+                    )}
                   </div>
                 </button>
                 <DropdownMenu>
@@ -501,6 +576,13 @@ export function VehiclesClient({
                           <span className="font-medium">
                             {v.year} {v.make} {v.model}
                           </span>
+                          {v.inspectionStatus?.dueAt && (
+                            <span
+                              className={`ml-2 rounded border px-1.5 py-0.5 font-sans text-xs ${INSPECTION_TONE_CLASS[inspectionTone(v.inspectionStatus.dueAt)]}`}
+                            >
+                              {t('inspectionDue', { date: formatDate(v.inspectionStatus.dueAt) })}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
                           {v.customer ? (

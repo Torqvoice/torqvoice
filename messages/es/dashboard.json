@@ -56,7 +56,8 @@
     "recentObservations": "Observaciones recientes",
     "recentActivity": "Actividad reciente",
     "gettingStarted": "Primeros pasos",
-    "tireHotel": "Hotel de neumáticos"
+    "tireHotel": "Hotel de neumáticos",
+    "inspectionsDue": "Inspecciones pendientes"
   },
   "maintenance": {
     "title": "Mantenimiento previsto pendiente",
@@ -252,5 +253,15 @@
     "roomLeft": "Sitio para {count} más",
     "needsPrep": "Pendiente de preparar",
     "unbilled": "Sin facturar ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Inspecciones pendientes",
+    "viewAll": "Ver todos los vehículos con vencimiento",
+    "overdue": "Vencidas",
+    "within30": "Próximos 30 días",
+    "within90": "Próximos 90 días",
+    "noData": "No hay inspecciones en los próximos 90 días",
+    "overdueSince": "Vencida desde {date}",
+    "remind": "Enviar recordatorios"
   }
 }

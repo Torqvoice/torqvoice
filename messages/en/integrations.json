@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Plate and VIN lookup",
+      "inspection": "Inspection due dates"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Inspection sync",
+      "vehicles": "{count} vehicles with a plate in this workshop",
+      "dueNow": "{count} would be looked up on the next run",
+      "withDate": "{count} already have an inspection date",
+      "lastPass": "Last complete pass {date}",
+      "never": "No complete pass yet",
+      "inProgress": "A pass is running",
+      "off": "Turn the setting on and save; until then a pass checks nothing.",
+      "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done."
+    }
   },
   "activity": {
     "title": "Activity",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Fill in a vehicle from its Norwegian plate or VIN: make, model, year, fuel, gearbox, engine, colour, tyre sizes and the next EU-kontroll date, straight from Statens vegvesen's register. No owner data is returned.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Free. Order the key on vegvesen.no under \"API for tekniske kjøretøyopplysninger\": sign in with BankID, represent the workshop, and the key is issued at once. It allows 50,000 lookups a day."
+      },
+      "settings": {
+        "syncInspections": "Keep inspection dates up to date for every vehicle in this workshop",
+        "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next EU-kontroll date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Work orders to calendar",
+      "pull": "Busy time from calendar"
+    },
+    "conference": {
+      "sync": "Video call links"
+    },
+    "inspection": {
+      "refresh": "Inspection date refresh"
     }
   }
 }

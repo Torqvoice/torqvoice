@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Kontakt",
     "sectionBilling": "Rozliczenia",
-    "addScannedVehicle": "Dodaj pojazd {vehicle}"
+    "addScannedVehicle": "Dodaj pojazd {vehicle}",
+    "reminderOptOut": "Bez przypomnień",
+    "reminderOptOutHint": "Nie uwzględniaj tego klienta w przypomnieniach o przeglądzie ani innych kampaniach."
   },
   "serviceRequests": {
     "statusNew": "Nowe",

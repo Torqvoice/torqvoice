@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Kontakt",
     "sectionBilling": "Fakturering",
-    "addScannedVehicle": "Legg til kjøretøyet {vehicle}"
+    "addScannedVehicle": "Legg til kjøretøyet {vehicle}",
+    "reminderOptOut": "Ingen påminnelser",
+    "reminderOptOutHint": "Ikke ta med denne kunden i påminnelser om EU-kontroll eller andre utsendinger."
   },
   "serviceRequests": {
     "statusNew": "Ny",

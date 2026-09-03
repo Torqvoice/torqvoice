@@ -7,7 +7,8 @@
       "scheduled": "Planlanmış",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Kampanyalar"
     },
     "smsNotConfiguredTitle": "SMS kurulmadı",
     "smsNotConfiguredHint": "Burada mesaj gönderip almak için bir SMS sağlayıcısı bağlayın. Planlanmış e-posta bunsuz da çalışır.",

@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "HU überfällig",
+    "inspectionDue30": "Fällig in 30 Tagen",
+    "inspectionDue90": "Fällig in 90 Tagen",
+    "inspectionDue": "HU {date}",
+    "remindCustomers": "Diese Kunden erinnern"
   },
   "detail": {
     "vehicleArchived": "Dieses Fahrzeug ist archiviert",
@@ -91,7 +96,11 @@
     "severityUncommon": "Ungewöhnlich — von wenigen Besitzern gemeldet",
     "severityRare": "Selten — vereinzelte Berichte, aber kritisch wenn es auftritt",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "HU fällig {date}",
+    "inspectionCheckedAt": "Mit dem Register abgeglichen am {date}",
+    "notRegistered": "Nicht zugelassen",
+    "soldReported": "Kunde meldet Verkauf am {date}"
   },
   "quotes": {
     "newQuote": "Neues Angebot",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Foto und Halter",
     "sectionDetails": "Details",
     "addScannedOwner": "Kunde {name} anlegen",
-    "ownerSaveFailed": "Kunde konnte nicht angelegt werden"
+    "ownerSaveFailed": "Kunde konnte nicht angelegt werden",
+    "lookupPlate": "Kennzeichen nachschlagen",
+    "lookingUp": "Fahrzeugregister wird abgefragt...",
+    "lookupSuccess": "Felder aus {source} ausgefüllt",
+    "lookupNotFound": "Das Register kennt kein Fahrzeug mit diesem Kennzeichen",
+    "lookupFailed": "Kennzeichen konnte nicht nachgeschlagen werden",
+    "lookupUnavailable": "Verbinden Sie ein Fahrzeugregister unter Einstellungen → Integrationen",
+    "lookupEnterPlate": "Geben Sie zuerst ein Kennzeichen ein",
+    "lookupInspectionDue": "{source}: nächste Hauptuntersuchung fällig am {date}",
+    "lookupSource": "Ausgefüllt aus {source}",
+    "inspectionDue": "Nächste Hauptuntersuchung",
+    "inspectionDueHint": "Datum eintragen, wenn kein Register es liefert. Erinnerungen und Dashboard nutzen es.",
+    "inspectionDueFromRegistry": "Aus dem Fahrzeugregister. Hier ändern, um es bis zum nächsten Abgleich zu überschreiben."
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "HU-Erinnerungen",
+    "description": "Kunden informieren, deren Hauptuntersuchung ansteht, mit einem Link zur Terminbuchung. Nichts wird gesendet, bevor Sie die Liste bestätigen.",
+    "window": "Frist innerhalb",
+    "window30": "Nächste 30 Tage",
+    "window60": "Nächste 60 Tage",
+    "window90": "Nächste 90 Tage",
+    "channel": "Senden per",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-Mail",
+      "telegram": "Telegram"
+    },
+    "willReceive": "erhalten eine Nachricht",
+    "excludedCount": "{count} ausgeschlossen",
+    "nobodyToRemind": "Niemand zu erinnern in diesem Zeitraum. Jedes Fahrzeug mit Frist wurde bereits erinnert, hat gebucht oder ist nicht erreichbar.",
+    "overdueOn": "Überfällig seit {date}",
+    "excludedTitle": "Nicht enthalten",
+    "excludedDescription": "Jeder Eintrag hat einen Grund. Beheben Sie ihn am Kunden oder Fahrzeug, dann erscheint er in der Liste.",
+    "reasons": {
+      "noCustomer": "Kein Kunde",
+      "optedOut": "Erinnerungen abgelehnt",
+      "noRecipient": "Kein Kontakt für diesen Kanal",
+      "alreadyReminded": "Für diese Frist bereits erinnert",
+      "cooldown": "Kürzlich angeschrieben",
+      "soldReported": "Kunde meldet Verkauf",
+      "notRegistered": "Nicht zugelassen",
+      "booked": "Bereits gebucht"
+    },
+    "message": "Nachricht",
+    "subject": "Betreff",
+    "body": "Text",
+    "placeholders": "Platzhalter: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Unbekannte Platzhalter: {list}",
+    "sample": "Beispiel für den ersten Empfänger",
+    "segments": "{count, plural, one {# SMS-Teil} other {# SMS-Teile}}",
+    "bookingModeDirectNote": "Der Link bucht einen Termin von {minutes} Minuten direkt auf die Werkstatttafel.",
+    "bookingModeRequestNote": "Der Link sendet eine Anfrage mit der gewählten Zeit, die das Büro bestätigt.",
+    "linkValidNote": "Links bleiben mindestens {days} Tage und über die Frist hinaus offen.",
+    "sendTest": "Test an mich senden",
+    "testSent": "Test an {to} eingereiht",
+    "testFailed": "Test konnte nicht gesendet werden",
+    "sendButton": "An {count} senden",
+    "confirmTitle": "Erinnerungen senden?",
+    "confirmDescription": "{count} Nachrichten gehen per {channel} hinaus, eine pro Fahrzeug, einmal. Ein Fahrzeug wird für dieselbe Frist nie zweimal erinnert.",
+    "confirmInput": "Geben Sie {count} zur Bestätigung ein",
+    "cancel": "Abbrechen",
+    "sendNow": "Senden",
+    "created": "{count} Erinnerungen eingereiht",
+    "sendFailed": "Kampagne konnte nicht erstellt werden",
+    "loadFailed": "Liste konnte nicht geladen werden",
+    "campaign": {
+      "title": "Kampagne vom {date}",
+      "summary": "{channel}, Fristen innerhalb {window} Tagen",
+      "recipients": "Empfänger",
+      "sent": "Gesendet",
+      "failed": "Fehlgeschlagen",
+      "booked": "Gebucht",
+      "retryFailedButton": "{count} fehlgeschlagene erneut senden",
+      "retried": "{count} wieder eingereiht",
+      "retryFailed": "Erneuter Versuch fehlgeschlagen",
+      "rows": "Empfänger",
+      "status": {
+        "scheduled": "In Warteschlange",
+        "sent": "Gesendet",
+        "failed": "Fehlgeschlagen",
+        "cancelled": "Abgebrochen"
+      },
+      "bookedOn": "Gebucht {date}",
+      "requestedOn": "Angefragt {date}",
+      "cancelledOn": "Storniert {date}",
+      "none": "Noch keine Erinnerungskampagnen.",
+      "start": "HU-Erinnerungen senden",
+      "recipientsCount": "{count} Empfänger",
+      "failedCount": "{count} fehlgeschlagen",
+      "bookedCount": "{count} gebucht"
+    },
+    "defaults": {
+      "smsBody": "Hallo {customerName}, die Hauptuntersuchung für Ihren {vehicle} ({plate}) ist am {dueDate} fällig. Termin buchen: {bookingLink} oder rufen Sie uns an: {phone}. {workshopName}",
+      "emailSubject": "HU fällig am {dueDate} für {vehicle}",
+      "emailBody": "Hallo {customerName},\n\ndie Hauptuntersuchung für Ihren {vehicle} ({plate}) ist am {dueDate} fällig.\n\nBuchen Sie hier einen passenden Termin: {bookingLink}\n\nOder rufen Sie uns an: {phone}.\n\nMit freundlichen Grüßen\n{workshopName}"
+    },
+    "refresh": "Liste aktualisieren",
+    "timeZoneRequired": "Die Zeitzone der Werkstatt steht auf automatisch, Buchungszeiten würden also dem Browser folgen, der zuletzt gespeichert hat (derzeit {zone}). Erinnerungen können erst gesendet werden, wenn eine Zone gewählt ist.",
+    "timeZoneRequiredLink": "Unter Lokalisierung wählen"
   }
 }

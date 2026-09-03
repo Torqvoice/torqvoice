@@ -19,6 +19,7 @@ import { manifest as smtp } from './smtp/manifest'
 import { manifest as telegram } from './telegram/manifest'
 import { manifest as telnyxSms } from './telnyx-sms/manifest'
 import { manifest as twilioSms } from './twilio-sms/manifest'
+import { manifest as vegvesen } from './vegvesen/manifest'
 import { manifest as vonageSms } from './vonage-sms/manifest'
 import { manifest as whatsappMeta } from './whatsapp-meta/manifest'
 import { manifest as whatsappTwilio } from './whatsapp-twilio/manifest'
@@ -33,6 +34,7 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: googleCalendar, load: () => import('./google-calendar/server') },
   { manifest: microsoft365, load: () => import('./microsoft-365/server') },
   { manifest: zoom, load: () => import('./zoom/server') },
+  { manifest: vegvesen, load: () => import('./vegvesen/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },

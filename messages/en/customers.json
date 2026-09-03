@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contact",
     "sectionBilling": "Billing",
-    "addScannedVehicle": "Add vehicle {vehicle}"
+    "addScannedVehicle": "Add vehicle {vehicle}",
+    "reminderOptOut": "No reminders",
+    "reminderOptOutHint": "Do not include this customer in inspection reminders or other campaigns."
   },
   "serviceRequests": {
     "statusNew": "New",
