@@ -358,6 +358,19 @@
         "syncInspections": "HU-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
         "syncInspectionsHelp": "Einmal pro Stunde werden Fahrzeuge, die länger nicht geprüft wurden, per Kennzeichen abgefragt und der nächste EU-kontroll-Termin gespeichert. Es werden nur Fahrzeuge dieser Werkstatt gesendet. Ein Fahrzeug wird monatlich geprüft, wöchentlich sobald die Frist unter zwei Monaten liegt."
       }
+    },
+    "openapi-automotive": {
+      "description": "Fahrzeug aus dem französischen, italienischen, spanischen, portugiesischen oder britischen Kennzeichen ausfüllen: Marke, Modell, Baujahr, FIN, Kraftstoff, Hubraum und mehr aus den Zulassungsdaten des Landes über Openapi.com. Jede Abfrage wird dem eigenen Openapi-Konto der Werkstatt berechnet. Halterdaten werden nicht geliefert.",
+      "fields": {
+        "token": "API-Token",
+        "tokenHelp": "Legen Sie ein Konto auf console.openapi.com an, laden Sie Guthaben auf und erstellen Sie unter Automotive ein Token für die Produktionsumgebung. Jede erfolgreiche Abfrage kostet einige Dutzend Cent; ein Fehltreffer ist kostenlos."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Das zu durchsuchende Register. Französische und italienische Kennzeichen sehen gleich aus, das Land lässt sich daher nicht am Kennzeichen ablesen.",
+        "bikes": "Auch Motorräder abfragen",
+        "bikesHelp": "Ist ein Kennzeichen kein Pkw, wird zusätzlich das Motorradregister gefragt. Ein Fehltreffer beim Pkw ist kostenlos, es entstehen also nur Kosten, wenn ein Motorrad gefunden wird. Für Portugal nicht verfügbar."
+      }
     }
   },
   "jobKinds": {

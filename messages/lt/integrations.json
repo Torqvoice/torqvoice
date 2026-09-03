@@ -358,6 +358,19 @@
         "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių apžiūros terminus",
         "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
       }
+    },
+    "openapi-automotive": {
+      "description": "Užpildykite transporto priemonę pagal prancūzišką, itališką, ispanišką, portugališką arba britišką numerį: markė, modelis, metai, VIN, degalai, variklio tūris ir daugiau iš šalies registracijos duomenų per Openapi.com. Kiekviena užklausa apmokestinama iš pačių dirbtuvių Openapi paskyros. Savininko duomenys negrąžinami.",
+      "fields": {
+        "token": "API žetonas",
+        "tokenHelp": "Susikurkite paskyrą console.openapi.com, papildykite piniginę ir skiltyje Automotive sukurkite žetoną gamybinei aplinkai. Kiekviena sėkminga užklausa kainuoja kelias dešimtis centų; nerastas rezultatas nemokamas."
+      },
+      "settings": {
+        "country": "Šalis",
+        "countryHelp": "Registras, kuriame ieškoti. Prancūziški ir itališki numeriai atrodo vienodai, todėl šalies negalima nustatyti iš numerio.",
+        "bikes": "Ieškoti ir motociklų",
+        "bikesHelp": "Kai numeris nėra automobilio, papildomai užklausiamas motociklų registras. Nerastas automobilis nekainuoja, todėl papildomų išlaidų nėra, nebent randamas motociklas. Portugalijai neprieinama."
+      }
     }
   },
   "jobKinds": {

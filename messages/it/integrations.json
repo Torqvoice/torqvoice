@@ -358,6 +358,19 @@
         "syncInspections": "Tieni aggiornate le scadenze di revisione di tutti i veicoli di questa officina",
         "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data della prossima EU-kontroll viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
       }
+    },
+    "openapi-automotive": {
+      "description": "Compila un veicolo dalla targa francese, italiana, spagnola, portoghese o britannica: marca, modello, anno, VIN, carburante, cilindrata e altro, dai dati di immatricolazione del paese tramite Openapi.com. Ogni ricerca è addebitata sull'account Openapi dell'officina. Non vengono restituiti dati sul proprietario.",
+      "fields": {
+        "token": "Token API",
+        "tokenHelp": "Crea un account su console.openapi.com, ricarica il portafoglio e, sotto Automotive, crea un token per l'ambiente di produzione. Ogni ricerca con esito costa qualche decina di centesimi; una senza esito è gratuita."
+      },
+      "settings": {
+        "country": "Paese",
+        "countryHelp": "Il registro da consultare. Le targhe francesi e italiane hanno lo stesso formato, quindi il paese non si può ricavare dalla targa.",
+        "bikes": "Cerca anche i motocicli",
+        "bikesHelp": "Quando una targa non è di un'auto, viene consultato anche il registro dei motocicli. Una ricerca auto senza esito è gratuita, quindi non costa nulla in più a meno che non venga trovato un motociclo. Non disponibile per il Portogallo."
+      }
     }
   },
   "jobKinds": {

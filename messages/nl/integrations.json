@@ -358,6 +358,19 @@
         "syncInspections": "Keuringsdatums van alle voertuigen in deze werkplaats bijhouden",
         "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
       }
+    },
+    "openapi-automotive": {
+      "description": "Vul een voertuig in vanuit het Franse, Italiaanse, Spaanse, Portugese of Britse kenteken: merk, model, bouwjaar, VIN, brandstof, cilinderinhoud en meer uit de registratiegegevens van het land via Openapi.com. Elke opzoeking wordt in rekening gebracht op het eigen Openapi-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "token": "API-token",
+        "tokenHelp": "Maak een account op console.openapi.com, zet tegoed in de portemonnee en maak onder Automotive een token voor de productieomgeving. Elke geslaagde opzoeking kost enkele tientallen centen; geen resultaat is gratis."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Het register om in te zoeken. Franse en Italiaanse kentekens zien er hetzelfde uit, dus het land is niet van het kenteken af te lezen.",
+        "bikes": "Ook motorfietsen opzoeken",
+        "bikesHelp": "Als een kenteken geen auto is, wordt ook het motorfietsregister bevraagd. Geen resultaat bij auto's is gratis, dus dit kost niets extra tenzij een motorfiets wordt gevonden. Niet beschikbaar voor Portugal."
+      }
     }
   },
   "jobKinds": {

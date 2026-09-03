@@ -1,0 +1,29 @@
+{
+  "data": {
+    "LicensePlate": "5428GXS",
+    "Description": "RENAULT MEGANE",
+    "CarMake": "RENAULT",
+    "CarModel": "MEGANE",
+    "MakeDescription": "RENAULT",
+    "ModelDescription": "MEGANE",
+    "EngineSize": "1461",
+    "VehicleIdentificationNumber": null,
+    "RegistrationYear": "2010",
+    "RegistrationDate": "06/07/2010",
+    "Variation": "EXPRESSION 1.5DCI 85",
+    "Seats": null,
+    "VariantType": "Diesel 1461 cc 5 puertas",
+    "VehicleType": "Car",
+    "Fuel": "Diesel",
+    "IndicativePrice": null,
+    "Doors": "5",
+    "AllTerain": null,
+    "KType": null,
+    "DynamicPower": "85.0",
+    "Stolen": null,
+    "TimeStamp": 1744108907
+  },
+  "success": true,
+  "message": "",
+  "error": null
+}

@@ -358,6 +358,19 @@
         "syncInspections": "Aktualizuj terminy przeglądów wszystkich pojazdów w tym warsztacie",
         "syncInspectionsHelp": "Raz na godzinę pojazdy, które nie były ostatnio sprawdzane, są wyszukiwane po tablicy, a termin następnego EU-kontroll jest zapisywany. Wysyłane są tylko pojazdy tego warsztatu. Pojazd jest sprawdzany co miesiąc, a co tydzień, gdy do terminu zostały mniej niż dwa miesiące."
       }
+    },
+    "openapi-automotive": {
+      "description": "Uzupełnij pojazd na podstawie francuskiej, włoskiej, hiszpańskiej, portugalskiej lub brytyjskiej tablicy: marka, model, rocznik, VIN, paliwo, pojemność silnika i więcej, z danych rejestracyjnych kraju przez Openapi.com. Każde zapytanie jest rozliczane z własnego konta Openapi warsztatu. Dane właściciela nie są zwracane.",
+      "fields": {
+        "token": "Token API",
+        "tokenHelp": "Załóż konto na console.openapi.com, zasil portfel i w sekcji Automotive utwórz token dla środowiska produkcyjnego. Każde udane zapytanie kosztuje kilkadziesiąt centów; brak wyniku jest bezpłatny."
+      },
+      "settings": {
+        "country": "Kraj",
+        "countryHelp": "Rejestr, w którym szukać. Francuskie i włoskie tablice wyglądają tak samo, więc kraju nie da się odczytać z tablicy.",
+        "bikes": "Wyszukuj także motocykle",
+        "bikesHelp": "Gdy tablica nie należy do samochodu, odpytywany jest również rejestr motocykli. Brak wyniku dla samochodu jest bezpłatny, więc nie kosztuje to nic więcej, chyba że zostanie znaleziony motocykl. Niedostępne dla Portugalii."
+      }
     }
   },
   "jobKinds": {

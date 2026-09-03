@@ -358,6 +358,19 @@
         "syncInspections": "Keep inspection dates up to date for every vehicle in this workshop",
         "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next EU-kontroll date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
       }
+    },
+    "openapi-automotive": {
+      "description": "Fill in a vehicle from its French, Italian, Spanish, Portuguese or British plate: make, model, year, VIN, fuel, engine size and more, from the country's registration data through Openapi.com. Each lookup is billed to the workshop's own Openapi account. No owner data is returned.",
+      "fields": {
+        "token": "API token",
+        "tokenHelp": "Create an account on console.openapi.com, add credit to the wallet, and under Automotive create a token for the production environment. Each successful lookup costs a few tens of cents; a miss is free."
+      },
+      "settings": {
+        "country": "Country",
+        "countryHelp": "The registry to search. French and Italian plates look the same, so the country cannot be read off the plate.",
+        "bikes": "Also look up motorcycles",
+        "bikesHelp": "When a plate is not a car, ask the motorcycle registry too. A miss on the car side is free, so this costs nothing extra unless a motorcycle is found. Not available for Portugal."
+      }
     }
   },
   "jobKinds": {
