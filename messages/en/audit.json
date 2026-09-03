@@ -155,7 +155,9 @@
     "import_commit": "Imported Spreadsheet",
     "import_undo": "Undid Import",
     "integration_connect": "Connected Integration",
-    "integration_disconnect": "Disconnected Integration"
+    "integration_disconnect": "Disconnected Integration",
+    "inspection_reminders_sent": "Sent inspection reminders",
+    "inspection_reminders_send": "Sent inspection reminders"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -283,6 +285,7 @@
     "import_commit": "Imported a spreadsheet: {count} records created",
     "import_undo": "Undid a spreadsheet import: {records} records removed",
     "integration_connect": "Connected {name}",
-    "integration_disconnect": "Disconnected {name}"
+    "integration_disconnect": "Disconnected {name}",
+    "inspection_reminders_sent": "Sent {count} inspection reminders"
   }
 }

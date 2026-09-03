@@ -56,7 +56,8 @@
     "recentObservations": "Recent Observations",
     "recentActivity": "Recent Activity",
     "gettingStarted": "Getting Started",
-    "tireHotel": "Tire Hotel"
+    "tireHotel": "Tire Hotel",
+    "inspectionsDue": "Inspections due"
   },
   "maintenance": {
     "title": "Predicted Maintenance Due",
@@ -252,5 +253,15 @@
     "roomLeft": "Room for {count} more",
     "needsPrep": "Needs prep",
     "unbilled": "Unbilled ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Inspections due",
+    "viewAll": "View all due vehicles",
+    "overdue": "Overdue",
+    "within30": "Next 30 days",
+    "within90": "Next 90 days",
+    "noData": "No inspections due in the next 90 days",
+    "overdueSince": "Overdue since {date}",
+    "remind": "Send reminders"
   }
 }

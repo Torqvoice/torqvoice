@@ -71,6 +71,12 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'Vehicle', key: 'vehicles', option: 'vehicles', restore: 'replace', clearOrder: 50 },
   { model: 'ServiceRequest', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
   {
+    model: 'VehicleInspectionStatus',
+    option: 'vehicles',
+    nestedUnder: 'Vehicle',
+    restore: 'replace',
+  },
+  {
     model: 'ServiceRecord',
     key: 'counterSales',
     option: 'vehicles',
@@ -150,6 +156,23 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     option: 'scheduledMessages',
     restore: 'replace',
     clearOrder: 13,
+  },
+  // Reminder campaigns travel with the messages they queued. The send rows
+  // are the guard against reminding a deadline twice, so a restore that
+  // dropped them would let the next campaign message everyone again.
+  {
+    model: 'InspectionReminderCampaign',
+    key: 'inspectionReminderCampaigns',
+    option: 'scheduledMessages',
+    restore: 'replace',
+    clearOrder: 4,
+  },
+  {
+    model: 'InspectionReminderSend',
+    key: 'inspectionReminderSends',
+    option: 'scheduledMessages',
+    restore: 'replace',
+    clearOrder: 3,
   },
   {
     model: 'Notification',

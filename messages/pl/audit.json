@@ -155,7 +155,9 @@
     "import_commit": "Zaimportowano arkusz",
     "import_undo": "Cofnięto import",
     "integration_connect": "Połączono integrację",
-    "integration_disconnect": "Rozłączono integrację"
+    "integration_disconnect": "Rozłączono integrację",
+    "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
+    "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -283,6 +285,7 @@
     "import_commit": "Zaimportowano arkusz: utworzono {count} rekordów",
     "import_undo": "Cofnięto import arkusza: usunięto {records} rekordów",
     "integration_connect": "Połączono {name}",
-    "integration_disconnect": "Rozłączono {name}"
+    "integration_disconnect": "Rozłączono {name}",
+    "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie"
   }
 }

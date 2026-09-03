@@ -134,6 +134,10 @@
       "providers": {
         "title": "Providers",
         "description": "Email, SMS, WhatsApp & Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Inspection reminders",
+        "description": "Booking link, duration and lead time"
       }
     },
     "pro": "PRO"
@@ -1979,5 +1983,31 @@
     "partSyntheticOil": "Synthetic Oil 5W-30",
     "laborBrakeReplacement": "Brake Replacement",
     "laborOilChange": "Oil Change"
+  },
+  "inspectionReminders": {
+    "title": "Inspection reminders and booking",
+    "description": "How the booking link in a reminder behaves. Set once; every campaign uses these.",
+    "duration": "Inspection duration (minutes)",
+    "durationHint": "How long a periodic inspection occupies a bay. The link books slots of this length.",
+    "leadDays": "Earliest booking (days ahead)",
+    "leadDaysHint": "1 means the first time offered is tomorrow, never today.",
+    "horizonWeeks": "How far ahead (weeks)",
+    "horizonHint": "Customers can pick any free time inside this many weeks.",
+    "reserve": "Keep free for walk-ins",
+    "reserveHint": "Bays or technicians the link never fills. 0 lets it use every free one.",
+    "linkValidDays": "Link stays open (days)",
+    "linkValidHint": "At least {min}. Links also stay open until a week after the deadline, whichever is later.",
+    "bookingMode": "What a booking creates",
+    "bookingModeDirect": "A scheduled work order on the board",
+    "bookingModeRequest": "A request the office confirms first",
+    "bookingModeHint": "Direct booking is what makes the link worth clicking. Choose the request if you want to approve every time.",
+    "phone": "Phone number in messages",
+    "phoneHint": "Shown as the alternative to the link. Defaults to the workshop phone number.",
+    "save": "Save",
+    "saved": "Settings saved",
+    "saveFailed": "Could not save",
+    "timeZoneDetected": "Timezone is on automatic under Localization, so the server uses {zone}, the zone last seen in a browser that saved settings. Choose the workshop's zone explicitly so booking times never depend on who saved last.",
+    "timeZoneExplicit": "Booking times and opening hours are read in {zone}.",
+    "timeZoneChange": "Change under Localization"
   }
 }

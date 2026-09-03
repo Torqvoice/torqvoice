@@ -134,6 +134,10 @@
       "providers": {
         "title": "Anbieter",
         "description": "E-Mail, SMS, WhatsApp & Telegram"
+      },
+      "inspectionReminders": {
+        "title": "HU-Erinnerungen",
+        "description": "Buchungslink, Dauer und Vorlauf"
       }
     },
     "pro": "PRO"
@@ -1979,5 +1983,31 @@
     "partSyntheticOil": "Synthetiköl 5W-30",
     "laborBrakeReplacement": "Bremsenwechsel",
     "laborOilChange": "Ölwechsel"
+  },
+  "inspectionReminders": {
+    "title": "HU-Erinnerungen und Buchung",
+    "description": "Wie sich der Buchungslink in einer Erinnerung verhält. Einmal festlegen; jede Kampagne nutzt diese Werte.",
+    "duration": "Dauer der Untersuchung (Minuten)",
+    "durationHint": "Wie lange eine Hauptuntersuchung eine Bühne belegt. Der Link bucht Termine dieser Länge.",
+    "leadDays": "Früheste Buchung (Tage im Voraus)",
+    "leadDaysHint": "1 bedeutet: der erste angebotene Termin ist morgen, nie heute.",
+    "horizonWeeks": "Wie weit im Voraus (Wochen)",
+    "horizonHint": "Kunden können jede freie Zeit innerhalb so vieler Wochen wählen.",
+    "reserve": "Für Laufkundschaft freihalten",
+    "reserveHint": "Bühnen oder Techniker, die der Link nie belegt. 0 erlaubt alle freien.",
+    "linkValidDays": "Link bleibt offen (Tage)",
+    "linkValidHint": "Mindestens {min}. Links bleiben außerdem bis eine Woche nach der Frist offen, je nachdem, was später ist.",
+    "bookingMode": "Was eine Buchung anlegt",
+    "bookingModeDirect": "Einen geplanten Auftrag auf der Tafel",
+    "bookingModeRequest": "Eine Anfrage, die das Büro zuerst bestätigt",
+    "bookingModeHint": "Die Direktbuchung macht den Link erst sinnvoll. Wählen Sie die Anfrage, wenn Sie jeden Termin freigeben wollen.",
+    "phone": "Telefonnummer in Nachrichten",
+    "phoneHint": "Wird als Alternative zum Link gezeigt. Standard ist die Werkstattnummer.",
+    "save": "Speichern",
+    "saved": "Einstellungen gespeichert",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "timeZoneDetected": "Die Zeitzone steht unter Lokalisierung auf automatisch, daher nutzt der Server {zone}, die zuletzt in einem Browser gesehene Zone. Wählen Sie die Zone der Werkstatt ausdrücklich, damit Buchungszeiten nie davon abhängen, wer zuletzt gespeichert hat.",
+    "timeZoneExplicit": "Buchungszeiten und Öffnungszeiten werden in {zone} gelesen.",
+    "timeZoneChange": "Unter Lokalisierung ändern"
   }
 }

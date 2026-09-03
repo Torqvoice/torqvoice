@@ -155,7 +155,9 @@
     "import_commit": "Spreadsheet geïmporteerd",
     "import_undo": "Import ongedaan gemaakt",
     "integration_connect": "Integratie gekoppeld",
-    "integration_disconnect": "Integratie losgekoppeld"
+    "integration_disconnect": "Integratie losgekoppeld",
+    "inspection_reminders_sent": "Keuringsherinneringen verstuurd",
+    "inspection_reminders_send": "Keuringsherinneringen verstuurd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -283,6 +285,7 @@
     "import_commit": "Spreadsheet geïmporteerd: {count} records aangemaakt",
     "import_undo": "Spreadsheetimport ongedaan gemaakt: {records} records verwijderd",
     "integration_connect": "{name} gekoppeld",
-    "integration_disconnect": "{name} losgekoppeld"
+    "integration_disconnect": "{name} losgekoppeld",
+    "inspection_reminders_sent": "{count} keuringsherinneringen verstuurd"
   }
 }

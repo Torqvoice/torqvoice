@@ -134,6 +134,10 @@
       "providers": {
         "title": "Fournisseurs",
         "description": "E-mail, SMS, WhatsApp et Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Rappels de contrôle",
+        "description": "Lien de réservation, durée et délai"
       }
     },
     "pro": "PRO"
@@ -1979,5 +1983,31 @@
     "partSyntheticOil": "Huile synthétique 5W-30",
     "laborBrakeReplacement": "Remplacement des freins",
     "laborOilChange": "Vidange"
+  },
+  "inspectionReminders": {
+    "title": "Rappels de contrôle et réservation",
+    "description": "Comment se comporte le lien de réservation d'un rappel. Réglé une fois ; chaque campagne l'utilise.",
+    "duration": "Durée du contrôle (minutes)",
+    "durationHint": "Combien de temps un contrôle occupe un pont. Le lien réserve des créneaux de cette durée.",
+    "leadDays": "Réservation au plus tôt (jours)",
+    "leadDaysHint": "1 signifie que le premier créneau proposé est demain, jamais aujourd'hui.",
+    "horizonWeeks": "Jusqu'à quand (semaines)",
+    "horizonHint": "Les clients peuvent choisir tout créneau libre dans ce nombre de semaines.",
+    "reserve": "Garder libre pour les sans rendez-vous",
+    "reserveHint": "Ponts ou techniciens que le lien ne remplit jamais. 0 autorise tous les libres.",
+    "linkValidDays": "Le lien reste ouvert (jours)",
+    "linkValidHint": "Au moins {min}. Les liens restent aussi ouverts jusqu'à une semaine après l'échéance, selon le plus tard.",
+    "bookingMode": "Ce qu'une réservation crée",
+    "bookingModeDirect": "Un ordre de travail planifié sur le planning",
+    "bookingModeRequest": "Une demande que l'accueil confirme d'abord",
+    "bookingModeHint": "La réservation directe est ce qui rend le lien utile. Choisissez la demande si vous voulez valider à chaque fois.",
+    "phone": "Numéro de téléphone dans les messages",
+    "phoneHint": "Affiché comme alternative au lien. Par défaut, le numéro de l'atelier.",
+    "save": "Enregistrer",
+    "saved": "Paramètres enregistrés",
+    "saveFailed": "Enregistrement impossible",
+    "timeZoneDetected": "Le fuseau horaire est en automatique sous Localisation, le serveur utilise donc {zone}, le dernier fuseau vu dans un navigateur ayant enregistré les paramètres. Choisissez explicitement le fuseau de l'atelier pour que les horaires de réservation ne dépendent jamais de qui a enregistré en dernier.",
+    "timeZoneExplicit": "Les horaires de réservation et d'ouverture sont lus en {zone}.",
+    "timeZoneChange": "Modifier sous Localisation"
   }
 }

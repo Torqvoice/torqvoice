@@ -16,6 +16,7 @@ export default async function VehiclesPage({
     archived?: string
     sortBy?: string
     sortOrder?: string
+    due?: string
   }>
 }) {
   const params = await searchParams
@@ -24,6 +25,14 @@ export default async function VehiclesPage({
     sortOrder: 'desc',
   })
   const isArchived = params.archived === 'true'
+  const inspectionDue =
+    params.due === 'overdue'
+      ? 'overdue'
+      : params.due === '30'
+        ? 30
+        : params.due === '90'
+          ? 90
+          : undefined
   const cookieStore = await cookies()
   const viewCookie = cookieStore.get('torqvoice-vehicles-view')?.value
   const initialView = viewCookie === 'table' ? 'table' : viewCookie === 'grid6' ? 'grid6' : 'grid'
@@ -35,6 +44,7 @@ export default async function VehiclesPage({
       archived: isArchived,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
+      inspectionDue,
     }),
     getCustomersList(),
   ])
@@ -65,6 +75,8 @@ export default async function VehiclesPage({
           initialView={initialView}
           isArchived={isArchived}
           archivedCount={result.data.archivedCount}
+          inspectionDue={inspectionDue}
+          hasInspectionData={result.data.hasInspectionData}
         />
       </div>
     </>

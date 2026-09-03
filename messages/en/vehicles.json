@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Inspection overdue",
+    "inspectionDue30": "Due in 30 days",
+    "inspectionDue90": "Due in 90 days",
+    "inspectionDue": "Inspection {date}",
+    "remindCustomers": "Remind these customers"
   },
   "detail": {
     "vehicleArchived": "This vehicle is archived",
@@ -91,7 +96,11 @@
     "severityUncommon": "Uncommon — reported by few owners",
     "severityRare": "Rare — isolated reports but critical when it occurs",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Inspection due {date}",
+    "inspectionCheckedAt": "Checked against the registry {date}",
+    "notRegistered": "Not registered",
+    "soldReported": "Customer reported sold {date}"
   },
   "quotes": {
     "newQuote": "New Quote",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Photo and owner",
     "sectionDetails": "Details",
     "addScannedOwner": "Add customer {name}",
-    "ownerSaveFailed": "Could not create the customer"
+    "ownerSaveFailed": "Could not create the customer",
+    "lookupPlate": "Look up plate",
+    "lookingUp": "Asking the vehicle registry...",
+    "lookupSuccess": "Fields filled from {source}",
+    "lookupNotFound": "The registry has no vehicle with that plate",
+    "lookupFailed": "Could not look up the plate",
+    "lookupUnavailable": "Connect a vehicle registry under Settings → Integrations",
+    "lookupEnterPlate": "Type a plate first",
+    "lookupInspectionDue": "{source}: next periodic inspection due {date}",
+    "lookupSource": "Filled from {source}",
+    "inspectionDue": "Next periodic inspection",
+    "inspectionDueHint": "Type the date if no registry supplies it. Reminders and the dashboard use it.",
+    "inspectionDueFromRegistry": "Filled from the vehicle registry. Change it here to override until the next sync."
   },
   "archiveDialog": {
     "title": "Archive Vehicle",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Inspection reminders",
+    "description": "Tell customers whose periodic inspection is coming up, with a link to book a time. Nothing is sent until you confirm the list.",
+    "window": "Deadline within",
+    "window30": "Next 30 days",
+    "window60": "Next 60 days",
+    "window90": "Next 90 days",
+    "channel": "Send by",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "Email",
+      "telegram": "Telegram"
+    },
+    "willReceive": "will receive a message",
+    "excludedCount": "{count} excluded",
+    "nobodyToRemind": "Nobody to remind in this window. Every vehicle with a deadline has either been reminded, booked, or has no way to be reached.",
+    "overdueOn": "Overdue since {date}",
+    "excludedTitle": "Not included",
+    "excludedDescription": "Each of these has a reason. Fix the reason on the customer or vehicle and they will appear in the list.",
+    "reasons": {
+      "noCustomer": "No customer",
+      "optedOut": "Opted out of reminders",
+      "noRecipient": "No contact for this channel",
+      "alreadyReminded": "Already reminded for this deadline",
+      "cooldown": "Messaged recently",
+      "soldReported": "Customer reported sold",
+      "notRegistered": "Not registered",
+      "booked": "Already booked"
+    },
+    "message": "Message",
+    "subject": "Subject",
+    "body": "Text",
+    "placeholders": "Placeholders: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Unknown placeholders: {list}",
+    "sample": "Example for the first recipient",
+    "segments": "{count, plural, one {# SMS segment} other {# SMS segments}}",
+    "bookingModeDirectNote": "The link books a {minutes}-minute slot straight onto the work board.",
+    "bookingModeRequestNote": "The link sends a request with the chosen time for the office to confirm.",
+    "linkValidNote": "Links stay open at least {days} days and past the deadline.",
+    "sendTest": "Send a test to me",
+    "testSent": "Test queued to {to}",
+    "testFailed": "Could not send the test",
+    "sendButton": "Send to {count}",
+    "confirmTitle": "Send the reminders?",
+    "confirmDescription": "{count} messages go out by {channel}, one per vehicle, once. A vehicle is never reminded twice for the same deadline.",
+    "confirmInput": "Type {count} to confirm",
+    "cancel": "Cancel",
+    "sendNow": "Send",
+    "created": "{count} reminders queued",
+    "sendFailed": "Could not create the campaign",
+    "loadFailed": "Could not load the list",
+    "campaign": {
+      "title": "Campaign from {date}",
+      "summary": "{channel}, deadlines within {window} days",
+      "recipients": "Recipients",
+      "sent": "Sent",
+      "failed": "Failed",
+      "booked": "Booked",
+      "retryFailedButton": "Retry {count} failed",
+      "retried": "{count} put back in the queue",
+      "retryFailed": "Could not retry",
+      "rows": "Recipients",
+      "status": {
+        "scheduled": "Queued",
+        "sent": "Sent",
+        "failed": "Failed",
+        "cancelled": "Cancelled"
+      },
+      "bookedOn": "Booked {date}",
+      "requestedOn": "Requested {date}",
+      "cancelledOn": "Cancelled {date}",
+      "none": "No reminder campaigns yet.",
+      "start": "Send inspection reminders",
+      "recipientsCount": "{count} recipients",
+      "failedCount": "{count} failed",
+      "bookedCount": "{count} booked"
+    },
+    "defaults": {
+      "smsBody": "Hi {customerName}, the periodic inspection for your {vehicle} ({plate}) is due {dueDate}. Book a time: {bookingLink} or call us on {phone}. {workshopName}",
+      "emailSubject": "Inspection due {dueDate} for {vehicle}",
+      "emailBody": "Hi {customerName},\n\nThe periodic inspection for your {vehicle} ({plate}) is due on {dueDate}.\n\nBook a time that suits you here: {bookingLink}\n\nOr call us on {phone}.\n\nKind regards,\n{workshopName}"
+    },
+    "refresh": "Refresh list",
+    "timeZoneRequired": "The workshop timezone is on automatic, so booking times would follow whichever browser saved settings last (currently {zone}). Reminders cannot be sent until a zone is chosen.",
+    "timeZoneRequiredLink": "Choose it under Localization"
   }
 }

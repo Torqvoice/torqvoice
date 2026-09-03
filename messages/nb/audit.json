@@ -155,7 +155,9 @@
     "import_commit": "Importerte regneark",
     "import_undo": "Angret import",
     "integration_connect": "Koblet til en integrasjon",
-    "integration_disconnect": "Koblet fra en integrasjon"
+    "integration_disconnect": "Koblet fra en integrasjon",
+    "inspection_reminders_sent": "Sendte påminnelser om EU-kontroll",
+    "inspection_reminders_send": "Sendte påminnelser om EU-kontroll"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -283,6 +285,7 @@
     "import_commit": "Importerte et regneark: {count} poster opprettet",
     "import_undo": "Angret en regnearkimport: {records} poster fjernet",
     "integration_connect": "Koblet til {name}",
-    "integration_disconnect": "Koblet fra {name}"
+    "integration_disconnect": "Koblet fra {name}",
+    "inspection_reminders_sent": "Sendte {count} påminnelser om EU-kontroll"
   }
 }

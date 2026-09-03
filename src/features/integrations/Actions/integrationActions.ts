@@ -11,6 +11,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getManifest, listManifests } from '@/integrations/registry'
 import { clearPulledEvents } from '../Lib/calendar-sync'
 import {
+  INSPECTION_CAPABILITY,
+  type InspectionSyncOverview,
+  inspectionSyncOverview,
+} from '../Lib/inspection-sync'
+import {
   appUrl as configuredAppUrl,
   effectiveSettings,
   loadConnection,
@@ -184,6 +189,8 @@ export interface ConnectionView {
   enabled: boolean
   isCloud: boolean
   webhookUrl: string | null
+  /** For registries that can keep inspection dates fresh: what a pass covers. Null otherwise. */
+  inspectionSync: InspectionSyncOverview | null
   /**
    * Where a messaging vendor must deliver inbound messages, built from the
    * connection's own secret. Null for vendors that register it themselves
@@ -242,6 +249,13 @@ export async function getIntegrationConnection(connectorId: string) {
           row && appUrl ? `${appUrl}/api/integrations/${connectorId}/${row.id}/webhook` : null,
         inbound: row ? inboundFor(row, configuredAppUrl()) : null,
         redirectUri: redirectUriFor(configuredAppUrl(), connectorId),
+        inspectionSync:
+          row && manifest.capabilities.includes(INSPECTION_CAPABILITY)
+            ? await inspectionSyncOverview(
+                organizationId,
+                (row.state as Record<string, unknown>) ?? {}
+              )
+            : null,
       }
     },
     { requiredPermissions: READ_PERMISSION }
@@ -630,7 +644,7 @@ export async function getIntegrationActivity(connectorId: string) {
           where: { connectionId: row.id },
           orderBy: { createdAt: 'desc' },
           take: 50,
-          select: { id: true, level: true, message: true, createdAt: true },
+          select: { id: true, level: true, message: true, details: true, createdAt: true },
         }),
       ])
       return {

@@ -59,7 +59,8 @@
     "tireStorage": "Storage Layout",
     "tireSetDetails": "Tire Set",
     "tireForecast": "Next season",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Inspection reminders"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",

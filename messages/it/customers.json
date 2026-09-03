@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contatto",
     "sectionBilling": "Fatturazione",
-    "addScannedVehicle": "Aggiungi il veicolo {vehicle}"
+    "addScannedVehicle": "Aggiungi il veicolo {vehicle}",
+    "reminderOptOut": "Nessun promemoria",
+    "reminderOptOutHint": "Non includere questo cliente nei promemoria revisione o in altre campagne."
   },
   "serviceRequests": {
     "statusNew": "Nuova",

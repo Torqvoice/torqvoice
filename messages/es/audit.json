@@ -155,7 +155,9 @@
     "import_commit": "Hoja de cálculo importada",
     "import_undo": "Importación deshecha",
     "integration_connect": "Integración conectada",
-    "integration_disconnect": "Integración desconectada"
+    "integration_disconnect": "Integración desconectada",
+    "inspection_reminders_sent": "Envió recordatorios de inspección",
+    "inspection_reminders_send": "Envió recordatorios de inspección"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -283,6 +285,7 @@
     "import_commit": "Importó una hoja de cálculo: {count} registros creados",
     "import_undo": "Deshizo una importación de hoja de cálculo: {records} registros eliminados",
     "integration_connect": "{name} conectado",
-    "integration_disconnect": "{name} desconectado"
+    "integration_disconnect": "{name} desconectado",
+    "inspection_reminders_sent": "Envió {count} recordatorios de inspección"
   }
 }

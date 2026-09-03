@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Contrôle en retard",
+    "inspectionDue30": "Dans 30 jours",
+    "inspectionDue90": "Dans 90 jours",
+    "inspectionDue": "Contrôle {date}",
+    "remindCustomers": "Rappeler ces clients"
   },
   "detail": {
     "vehicleArchived": "Ce véhicule est archivé",
@@ -91,7 +96,11 @@
     "severityUncommon": "Peu courant — signalé par peu de propriétaires",
     "severityRare": "Rare — signalements isolés mais critique lorsqu'il survient",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Contrôle le {date}",
+    "inspectionCheckedAt": "Vérifié auprès du registre le {date}",
+    "notRegistered": "Non immatriculé",
+    "soldReported": "Vente signalée par le client le {date}"
   },
   "quotes": {
     "newQuote": "Nouveau devis",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Photo et titulaire",
     "sectionDetails": "Détails",
     "addScannedOwner": "Ajouter le client {name}",
-    "ownerSaveFailed": "Impossible de créer le client"
+    "ownerSaveFailed": "Impossible de créer le client",
+    "lookupPlate": "Rechercher la plaque",
+    "lookingUp": "Interrogation du registre des véhicules...",
+    "lookupSuccess": "Champs remplis depuis {source}",
+    "lookupNotFound": "Le registre ne connaît aucun véhicule avec cette plaque",
+    "lookupFailed": "Impossible de rechercher la plaque",
+    "lookupUnavailable": "Connectez un registre des véhicules dans Paramètres → Intégrations",
+    "lookupEnterPlate": "Saisissez d'abord une plaque",
+    "lookupInspectionDue": "{source} : prochain contrôle périodique le {date}",
+    "lookupSource": "Rempli depuis {source}",
+    "inspectionDue": "Prochain contrôle périodique",
+    "inspectionDueHint": "Saisissez la date si aucun registre ne la fournit. Les rappels et le tableau de bord l'utilisent.",
+    "inspectionDueFromRegistry": "Issue du registre des véhicules. Modifiez-la ici pour la remplacer jusqu'à la prochaine synchronisation."
   },
   "archiveDialog": {
     "title": "Archiver le véhicule",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Rappels de contrôle technique",
+    "description": "Prévenez les clients dont le contrôle approche, avec un lien pour réserver un créneau. Rien n'est envoyé avant que vous confirmiez la liste.",
+    "window": "Échéance sous",
+    "window30": "30 prochains jours",
+    "window60": "60 prochains jours",
+    "window90": "90 prochains jours",
+    "channel": "Envoyer par",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "telegram": "Telegram"
+    },
+    "willReceive": "recevront un message",
+    "excludedCount": "{count} exclus",
+    "nobodyToRemind": "Personne à rappeler sur cette période. Chaque véhicule à échéance a déjà été rappelé, a réservé ou ne peut pas être joint.",
+    "overdueOn": "En retard depuis le {date}",
+    "excludedTitle": "Non inclus",
+    "excludedDescription": "Chacun a une raison. Corrigez-la sur le client ou le véhicule et il apparaîtra dans la liste.",
+    "reasons": {
+      "noCustomer": "Pas de client",
+      "optedOut": "Refuse les rappels",
+      "noRecipient": "Pas de contact pour ce canal",
+      "alreadyReminded": "Déjà rappelé pour cette échéance",
+      "cooldown": "Contacté récemment",
+      "soldReported": "Le client signale une vente",
+      "notRegistered": "Non immatriculé",
+      "booked": "Déjà réservé"
+    },
+    "message": "Message",
+    "subject": "Objet",
+    "body": "Texte",
+    "placeholders": "Champs : {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Champs inconnus : {list}",
+    "sample": "Exemple pour le premier destinataire",
+    "segments": "{count, plural, one {# segment SMS} other {# segments SMS}}",
+    "bookingModeDirectNote": "Le lien réserve un créneau de {minutes} minutes directement sur le planning.",
+    "bookingModeRequestNote": "Le lien envoie une demande avec l'heure choisie, que l'accueil confirme.",
+    "linkValidNote": "Les liens restent ouverts au moins {days} jours et au-delà de l'échéance.",
+    "sendTest": "M'envoyer un test",
+    "testSent": "Test en file pour {to}",
+    "testFailed": "Impossible d'envoyer le test",
+    "sendButton": "Envoyer à {count}",
+    "confirmTitle": "Envoyer les rappels ?",
+    "confirmDescription": "{count} messages partent par {channel}, un par véhicule, une seule fois. Un véhicule n'est jamais rappelé deux fois pour la même échéance.",
+    "confirmInput": "Saisissez {count} pour confirmer",
+    "cancel": "Annuler",
+    "sendNow": "Envoyer",
+    "created": "{count} rappels en file",
+    "sendFailed": "Impossible de créer la campagne",
+    "loadFailed": "Impossible de charger la liste",
+    "campaign": {
+      "title": "Campagne du {date}",
+      "summary": "{channel}, échéances sous {window} jours",
+      "recipients": "Destinataires",
+      "sent": "Envoyés",
+      "failed": "Échoués",
+      "booked": "Réservés",
+      "retryFailedButton": "Réessayer {count} échoués",
+      "retried": "{count} remis en file",
+      "retryFailed": "Impossible de réessayer",
+      "rows": "Destinataires",
+      "status": {
+        "scheduled": "En file",
+        "sent": "Envoyé",
+        "failed": "Échoué",
+        "cancelled": "Annulé"
+      },
+      "bookedOn": "Réservé le {date}",
+      "requestedOn": "Demandé le {date}",
+      "cancelledOn": "Annulé le {date}",
+      "none": "Aucune campagne pour l'instant.",
+      "start": "Envoyer des rappels de contrôle",
+      "recipientsCount": "{count} destinataires",
+      "failedCount": "{count} échoués",
+      "bookedCount": "{count} réservés"
+    },
+    "defaults": {
+      "smsBody": "Bonjour {customerName}, le contrôle technique de votre {vehicle} ({plate}) est dû le {dueDate}. Réservez un créneau : {bookingLink} ou appelez-nous au {phone}. {workshopName}",
+      "emailSubject": "Contrôle technique le {dueDate} pour {vehicle}",
+      "emailBody": "Bonjour {customerName},\n\nLe contrôle technique de votre {vehicle} ({plate}) est dû le {dueDate}.\n\nRéservez ici le créneau qui vous convient : {bookingLink}\n\nOu appelez-nous au {phone}.\n\nCordialement,\n{workshopName}"
+    },
+    "refresh": "Actualiser la liste",
+    "timeZoneRequired": "Le fuseau horaire de l'atelier est en automatique : les horaires de réservation suivraient le dernier navigateur ayant enregistré les paramètres (actuellement {zone}). Aucun rappel ne peut partir tant qu'un fuseau n'est pas choisi.",
+    "timeZoneRequiredLink": "Choisissez-le sous Localisation"
   }
 }

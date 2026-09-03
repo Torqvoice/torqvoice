@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { AppCard } from '@/components/app-card'
+import type { InspectionsDueSummary } from '@/features/vehicles/Actions/inspectionStatusActions'
 import { CardEmpty } from '@/components/card-empty'
 import { StatTile } from '@/components/stat-tile'
 import { Badge } from '@/components/ui/badge'
@@ -295,6 +296,7 @@ export function DashboardClient({
   customWidgets = [],
   onboardingChecklist = null,
   tireHotelSummary = null,
+  inspectionsDue = null,
 }: {
   stats: DashboardStats
   currencyCode?: string
@@ -327,6 +329,8 @@ export function DashboardClient({
   customWidgets?: CustomWidget[]
   onboardingChecklist?: OnboardingChecklistData | null
   tireHotelSummary?: TireHotelSummary | null
+  /** Null until a registry has put an inspection date on a vehicle, which hides the card. */
+  inspectionsDue?: InspectionsDueSummary | null
 }) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('dashboard')
@@ -374,6 +378,7 @@ export function DashboardClient({
     excludedCard,
     ...(onboardingChecklist ? [] : (['gettingStarted'] as const)),
     ...(tireHotelSummary ? [] : (['tireHotel'] as const)),
+    ...(inspectionsDue ? [] : (['inspectionsDue'] as const)),
     ...(serviceRequests ? [] : (['serviceRequests'] as const)),
   ])
   const availableIds = DASHBOARD_CARD_IDS.filter((id) => !excludedIds.has(id))
@@ -2110,6 +2115,117 @@ export function DashboardClient({
             // Tire hotel: only present when the module is on, so a shop without
             // it never sees an empty card. Three numbers a shop acts on — room
             // to say yes, work queued, money earned but not yet invoiced.
+            inspectionsDue: inspectionsDue ? (
+              <AppCard
+                icon={ClipboardCheck}
+                title={t('inspectionsDue.title')}
+                badge={inspectionsDue.overdue || undefined}
+                contentClassName="p-0"
+                footer={
+                  <div className="flex w-full items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => router.push('/vehicles?due=90')}
+                      className="flex items-center gap-1 font-medium transition-colors hover:text-foreground"
+                    >
+                      {t('inspectionsDue.viewAll')}
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/vehicles/inspection-reminders?due=90')}
+                      className="font-medium text-primary transition-colors hover:underline"
+                    >
+                      {t('inspectionsDue.remind')}
+                    </button>
+                  </div>
+                }
+              >
+                <div className="grid grid-cols-3 divide-x border-b text-center">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/vehicles?due=overdue')}
+                    className="px-3 py-3 transition-colors hover:bg-muted/60"
+                  >
+                    <p
+                      className={`text-lg font-semibold tabular-nums ${inspectionsDue.overdue > 0 ? 'text-destructive' : ''}`}
+                    >
+                      {inspectionsDue.overdue}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t('inspectionsDue.overdue')}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/vehicles?due=30')}
+                    className="px-3 py-3 transition-colors hover:bg-muted/60"
+                  >
+                    <p className="text-lg font-semibold tabular-nums">
+                      {inspectionsDue.dueWithin30}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t('inspectionsDue.within30')}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/vehicles?due=90')}
+                    className="px-3 py-3 transition-colors hover:bg-muted/60"
+                  >
+                    <p className="text-lg font-semibold tabular-nums">
+                      {inspectionsDue.dueWithin90}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{t('inspectionsDue.within90')}</p>
+                  </button>
+                </div>
+                {inspectionsDue.items.length === 0 ? (
+                  <CardEmpty icon={ClipboardCheck} title={t('inspectionsDue.noData')} />
+                ) : (
+                  <div className="divide-y">
+                    {inspectionsDue.items.map((item) => {
+                      const due = new Date(item.dueAt)
+                      const isOverdue = due.getTime() < Date.now()
+                      const isSoon = !isOverdue && due.getTime() - Date.now() < 30 * 86_400_000
+                      return (
+                        <div
+                          key={item.vehicleId}
+                          className="flex items-center justify-between px-5 py-2.5 cursor-pointer hover:bg-muted/50 transition-colors"
+                          {...interactiveRow(() => router.push(`/vehicles/${item.vehicleId}`))}
+                        >
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm truncate">
+                              {item.label}
+                              {item.licensePlate && (
+                                <span className="ml-2 font-mono text-xs text-muted-foreground">
+                                  {item.licensePlate}
+                                </span>
+                              )}
+                            </p>
+                            {item.customerName && (
+                              <p className="text-xs text-muted-foreground truncate">
+                                {item.customerName}
+                              </p>
+                            )}
+                          </div>
+                          <div className="shrink-0 ml-3">
+                            {isOverdue ? (
+                              <Badge variant="destructive" className="text-[10px]">
+                                {t('inspectionsDue.overdueSince', { date: formatDate(due) })}
+                              </Badge>
+                            ) : isSoon ? (
+                              <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px]">
+                                {formatDate(due)}
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(due)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </AppCard>
+            ) : null,
             tireHotel: tireHotelSummary ? (
               <AppCard
                 icon={Disc3}

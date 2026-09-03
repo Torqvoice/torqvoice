@@ -134,6 +134,10 @@
       "providers": {
         "title": "Leverandører",
         "description": "E-post, SMS, WhatsApp og Telegram"
+      },
+      "inspectionReminders": {
+        "title": "EU-kontroll-påminnelser",
+        "description": "Bestillingslenke, varighet og frist"
       }
     },
     "pro": "PRO"
@@ -1979,5 +1983,31 @@
     "partSyntheticOil": "Syntetisk olje 5W-30",
     "laborBrakeReplacement": "Bremseskift",
     "laborOilChange": "Oljeskift"
+  },
+  "inspectionReminders": {
+    "title": "EU-kontroll-påminnelser og bestilling",
+    "description": "Hvordan bestillingslenken i en påminnelse oppfører seg. Settes én gang; alle utsendinger bruker disse.",
+    "duration": "Varighet EU-kontroll (minutter)",
+    "durationHint": "Hvor lenge en EU-kontroll opptar en bås. Lenken bestiller timer av denne lengden.",
+    "leadDays": "Tidligste bestilling (dager frem)",
+    "leadDaysHint": "1 betyr at første tid som tilbys er i morgen, aldri i dag.",
+    "horizonWeeks": "Hvor langt frem (uker)",
+    "horizonHint": "Kunder kan velge ledig tid innenfor så mange uker.",
+    "reserve": "Hold ledig for drop-in",
+    "reserveHint": "Båser eller mekanikere lenken aldri fyller. 0 lar den bruke alle ledige.",
+    "linkValidDays": "Lenken er åpen (dager)",
+    "linkValidHint": "Minst {min}. Lenker er også åpne til en uke etter fristen, det som er senest.",
+    "bookingMode": "Hva en bestilling oppretter",
+    "bookingModeDirect": "En planlagt arbeidsordre på tavlen",
+    "bookingModeRequest": "En forespørsel kontoret bekrefter først",
+    "bookingModeHint": "Direkte bestilling er det som gjør lenken verdt å trykke på. Velg forespørsel om du vil godkjenne hver gang.",
+    "phone": "Telefonnummer i meldinger",
+    "phoneHint": "Vises som alternativ til lenken. Bruker verkstedets telefonnummer som standard.",
+    "save": "Lagre",
+    "saved": "Innstillinger lagret",
+    "saveFailed": "Kunne ikke lagre",
+    "timeZoneDetected": "Tidssone står på automatisk under Lokalisering, så serveren bruker {zone}, sonen sist sett i en nettleser som lagret innstillinger. Velg verkstedets sone eksplisitt så bestillingstider aldri avhenger av hvem som lagret sist.",
+    "timeZoneExplicit": "Bestillingstider og åpningstider leses i {zone}.",
+    "timeZoneChange": "Endre under Lokalisering"
   }
 }

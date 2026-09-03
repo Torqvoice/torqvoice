@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contato",
     "sectionBilling": "Faturamento",
-    "addScannedVehicle": "Adicionar o veículo {vehicle}"
+    "addScannedVehicle": "Adicionar o veículo {vehicle}",
+    "reminderOptOut": "Sem lembretes",
+    "reminderOptOutHint": "Não incluir este cliente em lembretes de inspeção ou outras campanhas."
   },
   "serviceRequests": {
     "statusNew": "Novo",

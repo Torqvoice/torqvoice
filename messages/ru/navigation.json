@@ -59,7 +59,8 @@
     "tireStorage": "Структура склада",
     "tireSetDetails": "Комплект шин",
     "tireForecast": "Следующий сезон",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Напоминания о техосмотре"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",
