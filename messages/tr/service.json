@@ -87,8 +87,7 @@
     "designSaved": "Fatura tasarımı güncellendi",
     "designFollowingRule": "Varsayılan ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Yalnızca parça satışı",
-      "vehicle_job": "Araç işleri"
+      "parts_sale": "Yalnızca parça satışı"
     },
     "designSaveFailed": "Fatura tasarımı değiştirilemedi"
   },

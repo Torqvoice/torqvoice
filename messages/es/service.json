@@ -87,8 +87,7 @@
     "designSaved": "Diseño de factura actualizado",
     "designFollowingRule": "Predeterminado ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Venta solo de piezas",
-      "vehicle_job": "Trabajos de vehículo"
+      "parts_sale": "Venta solo de piezas"
     },
     "designSaveFailed": "No se pudo cambiar el diseño de la factura"
   },

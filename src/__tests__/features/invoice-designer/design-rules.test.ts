@@ -14,26 +14,19 @@ const partsSale = { hasVehicle: false }
 const vehicleJob = { hasVehicle: true }
 
 describe('designRuleMatches', () => {
-  it('splits parts-only sales from vehicle jobs on the vehicle alone', () => {
+  it('claims a sale without a vehicle and nothing else', () => {
     expect(designRuleMatches('parts_sale', partsSale)).toBe(true)
     expect(designRuleMatches('parts_sale', vehicleJob)).toBe(false)
-    expect(designRuleMatches('vehicle_job', vehicleJob)).toBe(true)
-    expect(designRuleMatches('vehicle_job', partsSale)).toBe(false)
   })
 })
 
 describe('pickDesignByRule', () => {
   const sale = { id: 'sale', autoRule: 'parts_sale' }
-  const job = { id: 'job', autoRule: 'vehicle_job' }
   const plain = { id: 'plain', autoRule: null }
 
-  it('picks the design for the kind of job', () => {
-    expect(pickDesignByRule([job, sale, plain], partsSale)).toBe(sale)
-    expect(pickDesignByRule([job, sale, plain], vehicleJob)).toBe(job)
-  })
-
-  it('returns null when no design volunteers for this kind', () => {
-    expect(pickDesignByRule([sale, plain], vehicleJob)).toBeNull()
+  it('picks the sale design for a sale and leaves a vehicle job to the default', () => {
+    expect(pickDesignByRule([plain, sale], partsSale)).toBe(sale)
+    expect(pickDesignByRule([plain, sale], vehicleJob)).toBeNull()
   })
 
   it('never picks a design without a rule, or with one it does not know', () => {

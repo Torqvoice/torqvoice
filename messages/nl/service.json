@@ -87,8 +87,7 @@
     "designSaved": "Factuurontwerp bijgewerkt",
     "designFollowingRule": "Standaard ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Alleen onderdelenverkoop",
-      "vehicle_job": "Voertuigopdrachten"
+      "parts_sale": "Alleen onderdelenverkoop"
     },
     "designSaveFailed": "Kon het factuurontwerp niet wijzigen"
   },

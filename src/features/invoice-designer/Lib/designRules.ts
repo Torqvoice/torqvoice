@@ -5,18 +5,18 @@
  * from the sales page, with no vehicle at all. A workshop often wants the
  * second kind on a different sheet: no vehicle block, a shorter table, maybe
  * another title. Choosing the design by hand on each sale is the kind of
- * step that gets forgotten, so a design can volunteer itself for one of the
- * two kinds. The rule is read from the invoice at print time and never
- * stored on it, so attaching a vehicle to a sale moves it to the other
- * design by itself.
+ * step that gets forgotten, so a design can volunteer itself for them. The
+ * rule is read from the invoice at print time and never stored on it, so
+ * attaching a vehicle to a sale moves it back to the default by itself.
  *
- * The names follow the picker the workshop sees when it creates a job,
- * which offers a vehicle or a "Parts-Only Sale". Everything here is pure;
- * the lookup that turns a matched rule into a design row lives beside the
- * print assembly.
+ * There is no rule for vehicle jobs, because the workshop default already
+ * is that: everything a rule does not claim. The name follows the picker
+ * the workshop sees when it creates a job, which offers a vehicle or a
+ * "Parts-Only Sale". Everything here is pure; the lookup that turns a
+ * matched rule into a design row lives beside the print assembly.
  */
 
-export const DESIGN_AUTO_RULES = ['parts_sale', 'vehicle_job'] as const
+export const DESIGN_AUTO_RULES = ['parts_sale'] as const
 
 export type DesignAutoRule = (typeof DESIGN_AUTO_RULES)[number]
 
@@ -33,8 +33,6 @@ export function designRuleMatches(rule: DesignAutoRule, subject: DesignRuleSubje
   switch (rule) {
     case 'parts_sale':
       return !subject.hasVehicle
-    case 'vehicle_job':
-      return subject.hasVehicle
   }
 }
 

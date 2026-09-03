@@ -87,8 +87,7 @@
     "designSaved": "Design da fatura atualizado",
     "designFollowingRule": "Padrão ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Venda apenas de peças",
-      "vehicle_job": "Serviços em veículo"
+      "parts_sale": "Venda apenas de peças"
     },
     "designSaveFailed": "Não foi possível alterar o design da fatura"
   },

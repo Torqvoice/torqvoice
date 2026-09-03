@@ -87,8 +87,7 @@
     "designSaved": "Design della fattura aggiornato",
     "designFollowingRule": "Predefinito ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Vendita solo ricambi",
-      "vehicle_job": "Lavori su veicolo"
+      "parts_sale": "Vendita solo ricambi"
     },
     "designSaveFailed": "Impossibile cambiare il design della fattura"
   },

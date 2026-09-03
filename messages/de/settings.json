@@ -1792,13 +1792,11 @@
     "galleryTitle": "Mit einer Vorlage beginnen",
     "galleryHint": "Wählen Sie einen Ausgangspunkt. Im Designer lässt sich alles ändern.",
     "yourDesigns": "Ihre Designs",
-    "autoRuleLabel": "Automatisch verwenden für",
-    "autoRuleNone": "Nur wenn ausgewählt",
-    "autoRuleDefault": "Alles andere",
-    "autoRuleHint": "Druckt passende Rechnungen, die kein Design gewählt haben und deren Kunde auch keines gewählt hat.",
+    "autoRuleHint": "Verkäufe ohne Fahrzeug werden mit dem dafür markierten Design gedruckt, sofern der Verkauf oder der Kunde kein anderes gewählt hat.",
+    "useForPartsSale": "Für reine Teileverkäufe verwenden",
+    "usedForPartsSale": "Wird für reine Teileverkäufe verwendet",
     "autoRule": {
-      "parts_sale": "Reiner Teileverkauf",
-      "vehicle_job": "Fahrzeugaufträge"
+      "parts_sale": "Reiner Teileverkauf"
     },
     "autoRuleSaved": "Verwendung von „{name}“ aktualisiert",
     "couldNotSaveRule": "Regel konnte nicht aktualisiert werden",

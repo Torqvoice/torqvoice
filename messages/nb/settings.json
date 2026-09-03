@@ -1792,13 +1792,11 @@
     "galleryTitle": "Start fra en mal",
     "galleryHint": "Velg et utgangspunkt. Du kan endre alt i designeren.",
     "yourDesigns": "Dine design",
-    "autoRuleLabel": "Bruk automatisk for",
-    "autoRuleNone": "Bare når valgt",
-    "autoRuleDefault": "Alt annet",
-    "autoRuleHint": "Skriver ut fakturaer som passer og ikke har valgt et design, og der kunden heller ikke har det.",
+    "autoRuleHint": "Salg uten kjøretøy skrives ut med designet som er merket for dem, med mindre salget eller kunden har valgt et annet.",
+    "useForPartsSale": "Bruk for rene delesalg",
+    "usedForPartsSale": "Brukes for rene delesalg",
     "autoRule": {
-      "parts_sale": "Kun delesalg",
-      "vehicle_job": "Kjøretøyjobber"
+      "parts_sale": "Kun delesalg"
     },
     "autoRuleSaved": "Oppdaterte når «{name}» brukes",
     "couldNotSaveRule": "Kunne ikke oppdatere regelen",

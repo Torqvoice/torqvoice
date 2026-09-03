@@ -87,8 +87,7 @@
     "designSaved": "Sąskaitos dizainas atnaujintas",
     "designFollowingRule": "Numatytasis ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Tik dalių pardavimas",
-      "vehicle_job": "Transporto priemonių darbai"
+      "parts_sale": "Tik dalių pardavimas"
     },
     "designSaveFailed": "Nepavyko pakeisti sąskaitos dizaino"
   },

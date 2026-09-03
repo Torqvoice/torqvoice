@@ -87,8 +87,7 @@
     "designSaved": "Rechnungsdesign aktualisiert",
     "designFollowingRule": "Standard ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Reiner Teileverkauf",
-      "vehicle_job": "Fahrzeugaufträge"
+      "parts_sale": "Reiner Teileverkauf"
     },
     "designSaveFailed": "Rechnungsdesign konnte nicht geändert werden"
   },

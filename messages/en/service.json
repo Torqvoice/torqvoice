@@ -87,8 +87,7 @@
     "designSaved": "Invoice design updated",
     "designFollowingRule": "Default ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Parts-Only Sale",
-      "vehicle_job": "Vehicle jobs"
+      "parts_sale": "Parts-Only Sale"
     },
     "designSaveFailed": "Could not change the invoice design"
   },

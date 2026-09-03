@@ -87,8 +87,7 @@
     "designSaved": "Fakturadesign oppdatert",
     "designFollowingRule": "Standard ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Kun delesalg",
-      "vehicle_job": "Kjøretøyjobber"
+      "parts_sale": "Kun delesalg"
     },
     "designSaveFailed": "Kunne ikke endre fakturadesignet"
   },

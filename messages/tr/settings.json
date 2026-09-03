@@ -1792,13 +1792,11 @@
     "galleryTitle": "Bir şablonla başlayın",
     "galleryHint": "Bir başlangıç noktası seçin. Tasarımcıda her şeyi değiştirebilirsiniz.",
     "yourDesigns": "Tasarımlarınız",
-    "autoRuleLabel": "Şunun için otomatik kullan",
-    "autoRuleNone": "Yalnızca seçildiğinde",
-    "autoRuleDefault": "Diğer her şey",
-    "autoRuleHint": "Tasarım seçmemiş ve müşterisi de seçmemiş eşleşen faturaları yazdırır.",
+    "autoRuleHint": "Araçsız satışlar, satış veya müşterisi başka birini seçmedikçe, kendileri için işaretlenen tasarımla yazdırılır.",
+    "useForPartsSale": "Yalnızca parça satışları için kullan",
+    "usedForPartsSale": "Yalnızca parça satışları için kullanılıyor",
     "autoRule": {
-      "parts_sale": "Yalnızca parça satışı",
-      "vehicle_job": "Araç işleri"
+      "parts_sale": "Yalnızca parça satışı"
     },
     "autoRuleSaved": "\"{name}\" kullanımı güncellendi",
     "couldNotSaveRule": "Kural güncellenemedi",

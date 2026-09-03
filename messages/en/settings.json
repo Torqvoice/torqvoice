@@ -1792,13 +1792,11 @@
     "galleryTitle": "Start from a template",
     "galleryHint": "Pick a starting point. You can change everything in the designer.",
     "yourDesigns": "Your designs",
-    "autoRuleLabel": "Use automatically for",
-    "autoRuleNone": "Only when chosen",
-    "autoRuleDefault": "Everything else",
-    "autoRuleHint": "Prints matching invoices that have not chosen a design, and whose customer has not either.",
+    "autoRuleHint": "Sales made without a vehicle print with the design marked for them, unless the sale or its customer chose another.",
+    "useForPartsSale": "Use for parts-only sales",
+    "usedForPartsSale": "Used for parts-only sales",
     "autoRule": {
-      "parts_sale": "Parts-Only Sale",
-      "vehicle_job": "Vehicle jobs"
+      "parts_sale": "Parts-Only Sale"
     },
     "autoRuleSaved": "Updated when \"{name}\" is used",
     "couldNotSaveRule": "Could not update the rule",

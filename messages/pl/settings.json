@@ -1792,13 +1792,11 @@
     "galleryTitle": "Zacznij od szablonu",
     "galleryHint": "Wybierz punkt wyjścia. W kreatorze zmienisz wszystko.",
     "yourDesigns": "Twoje projekty",
-    "autoRuleLabel": "Używaj automatycznie dla",
-    "autoRuleNone": "Tylko po wybraniu",
-    "autoRuleDefault": "Wszystko inne",
-    "autoRuleHint": "Drukuje pasujące faktury, które nie wybrały projektu i których klient też go nie wybrał.",
+    "autoRuleHint": "Sprzedaże bez pojazdu drukują się z oznaczonym dla nich projektem, chyba że sprzedaż lub jej klient wybrali inny.",
+    "useForPartsSale": "Używaj do sprzedaży samych części",
+    "usedForPartsSale": "Używany do sprzedaży samych części",
     "autoRule": {
-      "parts_sale": "Sprzedaż samych części",
-      "vehicle_job": "Zlecenia pojazdów"
+      "parts_sale": "Sprzedaż samych części"
     },
     "autoRuleSaved": "Zaktualizowano, kiedy używany jest „{name}”",
     "couldNotSaveRule": "Nie udało się zaktualizować reguły",

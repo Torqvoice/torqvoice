@@ -19,9 +19,10 @@ model DocumentDesign {
   /// DesignerTemplate: the colours, type, header style and logo.
   template       Json
   /// Picks this design by itself for one kind of job, when neither the
-  /// invoice nor its customer chose one: parts_sale (no vehicle) or
-  /// vehicle_job. Null means only when chosen. One design per rule, which
-  /// the unique index below keeps honest; see designRules.ts.
+  /// invoice nor its customer chose one. Today only parts_sale, a job with
+  /// no vehicle; vehicle jobs are what the default already covers. Null
+  /// means only when chosen. One design per rule, which the unique index
+  /// below keeps honest; see designRules.ts.
   autoRule       String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

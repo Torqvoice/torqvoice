@@ -87,8 +87,7 @@
     "designSaved": "Projekt faktury zaktualizowany",
     "designFollowingRule": "Domyślny ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Sprzedaż samych części",
-      "vehicle_job": "Zlecenia pojazdów"
+      "parts_sale": "Sprzedaż samych części"
     },
     "designSaveFailed": "Nie udało się zmienić projektu faktury"
   },

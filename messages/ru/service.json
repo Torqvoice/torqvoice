@@ -87,8 +87,7 @@
     "designSaved": "Дизайн счёта обновлён",
     "designFollowingRule": "По умолчанию ({name}, {rule})",
     "designRule": {
-      "parts_sale": "Продажа только запчастей",
-      "vehicle_job": "Заказы по автомобилю"
+      "parts_sale": "Продажа только запчастей"
     },
     "designSaveFailed": "Не удалось изменить дизайн счёта"
   },

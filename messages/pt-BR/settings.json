@@ -1792,13 +1792,11 @@
     "galleryTitle": "Comece por um modelo",
     "galleryHint": "Escolha um ponto de partida. Você pode mudar tudo no designer.",
     "yourDesigns": "Seus designs",
-    "autoRuleLabel": "Usar automaticamente para",
-    "autoRuleNone": "Somente quando escolhido",
-    "autoRuleDefault": "Todo o resto",
-    "autoRuleHint": "Imprime as faturas correspondentes que não escolheram um design, e cujo cliente também não escolheu.",
+    "autoRuleHint": "Vendas sem veículo são impressas com o design marcado para elas, a menos que a venda ou seu cliente tenha escolhido outro.",
+    "useForPartsSale": "Usar para vendas só de peças",
+    "usedForPartsSale": "Usado para vendas só de peças",
     "autoRule": {
-      "parts_sale": "Venda apenas de peças",
-      "vehicle_job": "Serviços em veículo"
+      "parts_sale": "Venda apenas de peças"
     },
     "autoRuleSaved": "Uso de \"{name}\" atualizado",
     "couldNotSaveRule": "Não foi possível atualizar a regra",
