@@ -83,7 +83,7 @@
     "design": "Design della fattura",
     "designDefault": "Predefinito dell'officina",
     "designFollowing": "Predefinito ({name})",
-    "designPinned": "Il foglio è stato congelato all'emissione della fattura il {date}. Una nuova scelta vale per la prossima copia inviata.",
+    "designPinned": "Il foglio è stato congelato all'emissione della fattura il {date}. Una nuova scelta vale solo dopo che un titolare sblocca la fattura e questa viene inviata di nuovo.",
     "designSaved": "Design della fattura aggiornato",
     "designSaveFailed": "Impossibile cambiare il design della fattura"
   },

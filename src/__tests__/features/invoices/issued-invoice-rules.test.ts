@@ -44,21 +44,25 @@ describe('rendersFromIssue', () => {
 describe('shouldIssue', () => {
   it('captures a never-issued invoice for any reason', () => {
     for (const reason of ['sent', 'paid', 'backfill'] as const) {
-      expect(shouldIssue({ issuedAt: null }, false, reason)).toBe(true)
+      expect(shouldIssue({ issuedAt: null }, reason)).toBe(true)
     }
   })
 
-  it('re-captures on send while the invoice is not locked', () => {
-    expect(shouldIssue({ issuedAt: t0 }, false, 'sent')).toBe(true)
+  it('keeps the snapshot when an issued invoice is sent again', () => {
+    // The design, the address or the terms may all have changed since. The
+    // customer holds the first copy, and the preview shows it, so the email
+    // must carry that same copy. This is the case that went wrong once.
+    expect(shouldIssue({ issuedAt: t0 }, 'sent')).toBe(false)
+    expect(shouldIssue({ issuedAt: t1, editUnlockedAt: t0 }, 'sent')).toBe(false)
   })
 
-  it('keeps the snapshot a locked invoice already has when sent again', () => {
-    expect(shouldIssue({ issuedAt: t0 }, true, 'sent')).toBe(false)
+  it('re-captures on send after an owner unlocked the invoice', () => {
+    expect(shouldIssue({ issuedAt: t0, editUnlockedAt: t1 }, 'sent')).toBe(true)
   })
 
-  it('never overwrites an issue on payment or backfill', () => {
-    expect(shouldIssue({ issuedAt: t0 }, false, 'paid')).toBe(false)
-    expect(shouldIssue({ issuedAt: t0 }, false, 'backfill')).toBe(false)
+  it('never overwrites an issue on payment or backfill, even when unlocked', () => {
+    expect(shouldIssue({ issuedAt: t0, editUnlockedAt: t1 }, 'paid')).toBe(false)
+    expect(shouldIssue({ issuedAt: t0, editUnlockedAt: t1 }, 'backfill')).toBe(false)
   })
 })
 

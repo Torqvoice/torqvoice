@@ -131,38 +131,48 @@ export interface IssueMarks {
 }
 
 /**
- * Whether the invoice prints from what was issued rather than from live
- * data. An unlock after the issue reopens the document: the owner is
- * correcting it, and the sheet has to show the correction while they work.
- * Issuing it again, which sending does, freezes the corrected copy.
+ * Whether an owner has reopened the document since it was issued. An unlock
+ * is the one deliberate act that says "this copy is being corrected"; nothing
+ * else, and in particular not sending, reopens an issued invoice.
  */
-export function rendersFromIssue(record: IssueMarks & { issuedData?: unknown }): boolean {
-  if (!record.issuedAt || record.issuedData == null) return false
-  if (record.editUnlockedAt && record.editUnlockedAt.getTime() > record.issuedAt.getTime()) {
-    return false
-  }
-  return true
+export function reopenedSinceIssue(record: IssueMarks): boolean {
+  return Boolean(
+    record.issuedAt &&
+      record.editUnlockedAt &&
+      record.editUnlockedAt.getTime() > record.issuedAt.getTime()
+  )
 }
 
 /**
- * Why an invoice is being issued. Sending is a new issue whenever the
- * document could have changed; payment, and the freeze a workshop asks for
- * on invoices that went out before issuing existed, only ever fill an
+ * Whether the invoice prints from what was issued rather than from live
+ * data. While an unlock is newer than the issue the owner is correcting the
+ * document, and the sheet has to show the correction as they work; sending
+ * it again then issues the corrected copy and freezes it once more.
+ */
+export function rendersFromIssue(record: IssueMarks & { issuedData?: unknown }): boolean {
+  if (!record.issuedAt || record.issuedData == null) return false
+  return !reopenedSinceIssue(record)
+}
+
+/**
+ * Why an invoice is being issued. Sending issues a document that was never
+ * issued, or one an owner reopened; payment, and the freeze a workshop asks
+ * for on invoices that went out before issuing existed, only ever fill an
  * empty slot.
  */
 export type IssueReason = 'sent' | 'paid' | 'backfill'
 
 /**
- * Whether to capture now. A locked invoice cannot have changed since its
- * last issue, so sending it again keeps the snapshot the customer already
- * has; an unlocked or never-locked one is re-issued on every send, so the
- * snapshot is always the last copy that went out. Decide this before the
- * send is stamped, because under the "lock when sent" rule the stamp itself
- * is what locks the document.
+ * Whether to capture now. An issued invoice keeps its snapshot through every
+ * later send: the customer already holds that copy, and a preview and a
+ * re-send must show the same sheet whatever the workshop has changed since.
+ * The one way to a fresh capture is an owner's unlock followed by a send,
+ * which is the corrected copy going out. The lock setting plays no part, so
+ * a workshop that never turned locking on gets the same guarantee.
  */
-export function shouldIssue(record: IssueMarks, locked: boolean, reason: IssueReason): boolean {
+export function shouldIssue(record: IssueMarks, reason: IssueReason): boolean {
   if (!record.issuedAt) return true
-  if (reason === 'sent') return !locked
+  if (reason === 'sent') return reopenedSinceIssue(record)
   return false
 }
 

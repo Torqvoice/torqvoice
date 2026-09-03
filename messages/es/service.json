@@ -83,7 +83,7 @@
     "design": "Diseño de factura",
     "designDefault": "Predeterminado del taller",
     "designFollowing": "Predeterminado ({name})",
-    "designPinned": "La hoja se congeló al emitir la factura el {date}. Una nueva elección se aplica a la próxima copia enviada.",
+    "designPinned": "La hoja se congeló al emitir la factura el {date}. Una nueva elección se aplica solo después de que un propietario desbloquee la factura y se envíe de nuevo.",
     "designSaved": "Diseño de factura actualizado",
     "designSaveFailed": "No se pudo cambiar el diseño de la factura"
   },

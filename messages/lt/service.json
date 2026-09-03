@@ -83,7 +83,7 @@
     "design": "Sąskaitos dizainas",
     "designDefault": "Dirbtuvės numatytasis",
     "designFollowing": "Numatytasis ({name})",
-    "designPinned": "Lapas užfiksuotas išrašant sąskaitą {date}. Naujas pasirinkimas galios kitai išsiųstai kopijai.",
+    "designPinned": "Lapas užfiksuotas išrašant sąskaitą {date}. Naujas pasirinkimas galios tik po to, kai savininkas atrakins sąskaitą ir ji bus išsiųsta dar kartą.",
     "designSaved": "Sąskaitos dizainas atnaujintas",
     "designSaveFailed": "Nepavyko pakeisti sąskaitos dizaino"
   },

@@ -83,7 +83,7 @@
     "design": "Design de facture",
     "designDefault": "Défaut de l'atelier",
     "designFollowing": "Défaut ({name})",
-    "designPinned": "La feuille a été figée à l'émission de la facture le {date}. Un nouveau choix s'applique à la prochaine copie envoyée.",
+    "designPinned": "La feuille a été figée à l'émission de la facture le {date}. Un nouveau choix ne s'applique qu'après qu'un propriétaire déverrouille la facture et qu'elle soit renvoyée.",
     "designSaved": "Design de facture mis à jour",
     "designSaveFailed": "Impossible de changer le design de la facture"
   },

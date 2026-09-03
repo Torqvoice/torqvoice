@@ -83,7 +83,7 @@
     "design": "Projekt faktury",
     "designDefault": "Domyślny warsztatu",
     "designFollowing": "Domyślny ({name})",
-    "designPinned": "Arkusz został zamrożony przy wystawieniu faktury {date}. Nowy wybór dotyczy następnej wysłanej kopii.",
+    "designPinned": "Arkusz został zamrożony przy wystawieniu faktury {date}. Nowy wybór zadziała dopiero, gdy właściciel odblokuje fakturę i zostanie ona wysłana ponownie.",
     "designSaved": "Projekt faktury zaktualizowany",
     "designSaveFailed": "Nie udało się zmienić projektu faktury"
   },

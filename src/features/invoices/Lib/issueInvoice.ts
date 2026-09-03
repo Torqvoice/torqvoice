@@ -1,7 +1,5 @@
 import { db } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
-import { invoiceLockState, readDocumentLockSettings } from '@/lib/document-lock'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   ensureAssetSnapshot,
   ensureDesignSnapshot,
@@ -59,28 +57,6 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
   }
 }
 
-const LOCK_SETTING_KEYS = {
-  invoiceLockEnabled: SETTING_KEYS.INVOICE_LOCK_ENABLED,
-  invoiceLockTrigger: SETTING_KEYS.INVOICE_LOCK_TRIGGER,
-  quoteLockEnabled: SETTING_KEYS.QUOTE_LOCK_ENABLED,
-  quoteLockTrigger: SETTING_KEYS.QUOTE_LOCK_TRIGGER,
-}
-
-/**
- * The lock configuration, read here rather than through the request-cached
- * helper in document-lock.server: that module is server-only, and issuing
- * also runs from the backfill script, outside Next.
- */
-async function loadLockSettings(organizationId: string) {
-  const rows = await db.appSetting.findMany({
-    where: { organizationId, key: { in: Object.values(LOCK_SETTING_KEYS) } },
-    select: { key: true, value: true },
-  })
-  const map: Record<string, string> = {}
-  for (const row of rows) map[row.key] = row.value
-  return readDocumentLockSettings(map, LOCK_SETTING_KEYS)
-}
-
 /**
  * Freezes what an invoice prints, if this occasion calls for it.
  *
@@ -88,6 +64,8 @@ async function loadLockSettings(organizationId: string) {
  * sending by email or link, recording a payment, marking it paid, and the
  * freeze of older invoices a workshop asks for in invoice settings. The
  * decision of whether to capture is in shouldIssue; this does the capture.
+ * An invoice already issued is left exactly as it is unless an owner has
+ * unlocked it since.
  * Returns whether a snapshot was taken.
  */
 export async function issueInvoice(
@@ -95,25 +73,12 @@ export async function issueInvoice(
   organizationId: string,
   reason: IssueReason
 ): Promise<boolean> {
-  const [record, lockSettings] = await Promise.all([
-    db.serviceRecord.findFirst({
-      where: { id: recordId, organizationId },
-      select: {
-        id: true,
-        issuedAt: true,
-        editUnlockedAt: true,
-        sentAt: true,
-        manuallyPaid: true,
-        totalAmount: true,
-        cost: true,
-        payments: { select: { amount: true } },
-      },
-    }),
-    loadLockSettings(organizationId),
-  ])
+  const record = await db.serviceRecord.findFirst({
+    where: { id: recordId, organizationId },
+    select: { id: true, issuedAt: true, editUnlockedAt: true, sentAt: true },
+  })
   if (!record) return false
-  const lock = invoiceLockState(record, lockSettings)
-  if (!shouldIssue(record, lock.locked, reason)) return false
+  if (!shouldIssue(record, reason)) return false
 
   const assembly = await assembleInvoicePrint(recordId, { mode: 'live' })
   if (!assembly) return false

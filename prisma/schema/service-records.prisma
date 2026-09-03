@@ -53,12 +53,12 @@ model ServiceRecord {
   designId String?
   design   DocumentDesign? @relation(fields: [designId], references: [id], onDelete: SetNull)
 
-  /// When the invoice became the customer's document: first send, share,
-  /// payment or lock. From then on the sheet prints from the three
-  /// snapshots below, never from live settings, so a changed address, logo,
-  /// payment terms or title cannot rewrite paper already issued. Sending
-  /// again while the invoice is not locked re-issues it, so the snapshot is
-  /// always the last copy the customer received.
+  /// When the invoice became the customer's document: first send, share or
+  /// payment. From then on the sheet prints from the three snapshots below,
+  /// never from live settings, so a changed address, logo, payment terms or
+  /// title cannot rewrite paper already issued, and a preview and a re-send
+  /// always show the same sheet. Only an owner's unlock followed by a send
+  /// captures a fresh copy: the corrected one.
   issuedAt               DateTime?
   /// The look at issue. Restrict: a snapshot referenced by an invoice is a
   /// record and cannot be removed.

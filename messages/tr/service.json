@@ -83,7 +83,7 @@
     "design": "Fatura tasarımı",
     "designDefault": "Atölye varsayılanı",
     "designFollowing": "Varsayılan ({name})",
-    "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim bir sonraki gönderilen kopyaya uygulanır.",
+    "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim yalnızca bir sahip faturanın kilidini açıp yeniden gönderildikten sonra uygulanır.",
     "designSaved": "Fatura tasarımı güncellendi",
     "designSaveFailed": "Fatura tasarımı değiştirilemedi"
   },

@@ -83,7 +83,7 @@
     "design": "Factuurontwerp",
     "designDefault": "Standaard van de werkplaats",
     "designFollowing": "Standaard ({name})",
-    "designPinned": "Het blad is bevroren toen de factuur op {date} werd uitgegeven. Een nieuwe keuze geldt voor de volgende verzonden kopie.",
+    "designPinned": "Het blad is bevroren toen de factuur op {date} werd uitgegeven. Een nieuwe keuze geldt pas nadat een eigenaar de factuur ontgrendelt en ze opnieuw wordt verzonden.",
     "designSaved": "Factuurontwerp bijgewerkt",
     "designSaveFailed": "Kon het factuurontwerp niet wijzigen"
   },

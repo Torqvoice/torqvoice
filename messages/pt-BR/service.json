@@ -83,7 +83,7 @@
     "design": "Design da fatura",
     "designDefault": "Padrão da oficina",
     "designFollowing": "Padrão ({name})",
-    "designPinned": "A folha foi congelada quando a fatura foi emitida em {date}. Uma nova escolha vale para a próxima cópia enviada.",
+    "designPinned": "A folha foi congelada quando a fatura foi emitida em {date}. Uma nova escolha só vale depois que um proprietário desbloquear a fatura e ela for enviada de novo.",
     "designSaved": "Design da fatura atualizado",
     "designSaveFailed": "Não foi possível alterar o design da fatura"
   },

@@ -109,8 +109,9 @@ export async function markInvoiceSent(
     alreadyIssued?: boolean
   } = {}
 ) {
-  // Issued before the stamp: under "lock when sent" the stamp is what locks
-  // the invoice, and a locked invoice is one whose issue is kept as it is.
+  // Issued before the stamp, so what the customer receives and what is kept
+  // are the same copy. An invoice already issued is left as it is, unless an
+  // owner unlocked it since; see shouldIssue.
   if (!options.alreadyIssued) {
     const { issueInvoice } = await import('@/features/invoices/Lib/issueInvoice')
     await issueInvoice(recordId, organizationId, 'sent')

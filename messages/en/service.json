@@ -83,7 +83,7 @@
     "design": "Invoice design",
     "designDefault": "Workshop default",
     "designFollowing": "Default ({name})",
-    "designPinned": "The sheet was frozen when the invoice was issued on {date}. A new choice applies to the next copy sent.",
+    "designPinned": "The sheet was frozen when the invoice was issued on {date}. A new choice applies only after an owner unlocks the invoice and it is sent again.",
     "designSaved": "Invoice design updated",
     "designSaveFailed": "Could not change the invoice design"
   },
