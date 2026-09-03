@@ -312,8 +312,14 @@ export function InvoiceDesigner({
 
   /** What a saved design would produce, for its card in the gallery. */
   const specForDesign = useCallback(
-    (design: SavedDesign) =>
-      buildDocumentSpec(design.layout, themeOf(design.template, design.layout), data),
+    (design: SavedDesign) => {
+      // Merged the way applying it merges, so the card is the sheet the click
+      // produces rather than the one the design was saved against.
+      const layout = mergeWithDefaults(
+        JSON.parse(JSON.stringify(design.layout)) as InvoiceLayoutConfig
+      )
+      return buildDocumentSpec(layout, themeOf(design.template, layout), data)
+    },
     [data]
   )
 

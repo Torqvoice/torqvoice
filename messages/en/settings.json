@@ -640,6 +640,10 @@
       "org_number": "Organization Number",
       "payment_terms": "Payment Terms",
       "due_date": "Due Date",
+      "title": "Title",
+      "invoice_number": "Invoice No.",
+      "customer_number": "Customer No.",
+      "date": "Date",
       "portal_link": "Portal Link"
     },
     "presetsTitle": "Start from an arrangement",

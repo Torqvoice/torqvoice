@@ -640,6 +640,10 @@
       "org_number": "Organisasjonsnummer",
       "payment_terms": "Betalingsbetingelser",
       "due_date": "Forfallsdato",
+      "title": "Tittel",
+      "invoice_number": "Fakturanr.",
+      "customer_number": "Kundenr.",
+      "date": "Dato",
       "portal_link": "Portallenke"
     },
     "presetsTitle": "Start fra et oppsett",

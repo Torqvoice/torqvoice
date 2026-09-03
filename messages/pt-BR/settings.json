@@ -640,6 +640,10 @@
       "org_number": "Número da organização",
       "payment_terms": "Condições de pagamento",
       "due_date": "Data de vencimento",
+      "title": "Título",
+      "invoice_number": "Nº da fatura",
+      "customer_number": "Nº do cliente",
+      "date": "Data",
       "portal_link": "Link do portal"
     },
     "presetsTitle": "Começar por uma disposição",

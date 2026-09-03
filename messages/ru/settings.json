@@ -640,6 +640,10 @@
       "org_number": "Номер организации",
       "payment_terms": "Условия оплаты",
       "due_date": "Срок оплаты",
+      "title": "Заголовок",
+      "invoice_number": "№ счёта",
+      "customer_number": "№ клиента",
+      "date": "Дата",
       "portal_link": "Ссылка на портал"
     },
     "presetsTitle": "Начать с расположения",

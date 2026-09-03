@@ -640,6 +640,10 @@
       "org_number": "Numéro d'organisation",
       "payment_terms": "Conditions de paiement",
       "due_date": "Date d'échéance",
+      "title": "Titre",
+      "invoice_number": "N° de facture",
+      "customer_number": "N° de client",
+      "date": "Date",
       "portal_link": "Lien du portail"
     },
     "presetsTitle": "Partir d’une disposition",

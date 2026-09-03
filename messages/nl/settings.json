@@ -640,6 +640,10 @@
       "org_number": "Organisatienummer",
       "payment_terms": "Betalingsvoorwaarden",
       "due_date": "Vervaldatum",
+      "title": "Titel",
+      "invoice_number": "Factuurnr.",
+      "customer_number": "Klantnr.",
+      "date": "Datum",
       "portal_link": "Portaallink"
     },
     "presetsTitle": "Begin met een indeling",

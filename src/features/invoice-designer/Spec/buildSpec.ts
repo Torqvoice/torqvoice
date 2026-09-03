@@ -791,17 +791,33 @@ function sloganBlock(
   }
 }
 
-function documentTitle(section: InvoiceSection, theme: DocumentTheme, data: DocumentData): Node {
+function documentTitle(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
+  // What the strip is asked to say. A cell also needs something to say: a job
+  // with no customer number has no such cell, switch or no switch.
+  const fields = new Set(sectionFields(section))
   const cells = [
-    [label(data, 'invoiceNumberLabel', 'Invoice No.'), data.meta.number],
-    data.meta.customerNumber
+    fields.has('invoice_number')
+      ? [label(data, 'invoiceNumberLabel', 'Invoice No.'), data.meta.number]
+      : null,
+    data.meta.customerNumber && fields.has('customer_number')
       ? [label(data, 'customerNumberLabel', 'Customer No.'), data.meta.customerNumber]
       : null,
-    [label(data, 'dateLabel', 'Date'), data.meta.date],
-    data.meta.due ? [label(data, 'dueDateLabel', 'Due'), data.meta.due] : null,
+    fields.has('date') ? [label(data, 'dateLabel', 'Date'), data.meta.date] : null,
+    data.meta.due && fields.has('due_date')
+      ? [label(data, 'dueDateLabel', 'Due'), data.meta.due]
+      : null,
   ].filter(Boolean) as [string, string][]
+
+  const showTitle = fields.has('title')
+  // Everything switched off is a strip with nothing to print, and an empty
+  // block would still take its room and its rule on the sheet.
+  if (!showTitle && !cells.length) return null
 
   return {
     kind: 'row',
@@ -809,45 +825,59 @@ function documentTitle(section: InvoiceSection, theme: DocumentTheme, data: Docu
     justify: 'between',
     align: 'end',
     children: [
-      {
-        node: {
-          kind: 'text',
-          id: 'document_title.title',
-          text: data.meta.title,
-          style: { fontSize: scale(size, 2.4), bold: true, color: look.text },
-        },
-      },
-      {
-        node: {
-          kind: 'row',
-          id: 'document_title.meta',
-          style: { borderColor: look.border || look.text, borderWidth: 1, background: look.fill },
-          children: cells.map(([cellLabel, value]) => ({
-            node: {
-              kind: 'stack',
-              gap: 0,
-              style: { padding: 5 },
-              children: [
-                {
-                  kind: 'text',
-                  text: cellLabel,
-                  style: { color: look.muted, fontSize: scale(size, 0.62), align: 'center' },
+      ...(showTitle
+        ? [
+            {
+              node: {
+                kind: 'text' as const,
+                id: 'document_title.title',
+                text: data.meta.title,
+                style: { fontSize: scale(size, 2.4), bold: true, color: look.text },
+              },
+            },
+          ]
+        : []),
+      // No cells left means no strip beside the title: an empty framed box is
+      // a box the workshop switched the contents out of.
+      ...(cells.length
+        ? [
+            {
+              node: {
+                kind: 'row' as const,
+                id: 'document_title.meta',
+                style: {
+                  borderColor: look.border || look.text,
+                  borderWidth: 1,
+                  background: look.fill,
                 },
-                {
-                  kind: 'text',
-                  text: value,
-                  style: {
-                    bold: true,
-                    fontSize: scale(size, 0.95),
-                    align: 'center',
-                    color: look.text,
-                  },
-                },
-              ],
-            } as Node,
-          })),
-        },
-      },
+                children: cells.map(([cellLabel, value]) => ({
+                  node: {
+                    kind: 'stack',
+                    gap: 0,
+                    style: { padding: 5 },
+                    children: [
+                      {
+                        kind: 'text',
+                        text: cellLabel,
+                        style: { color: look.muted, fontSize: scale(size, 0.62), align: 'center' },
+                      },
+                      {
+                        kind: 'text',
+                        text: value,
+                        style: {
+                          bold: true,
+                          fontSize: scale(size, 0.95),
+                          align: 'center',
+                          color: look.text,
+                        },
+                      },
+                    ],
+                  } as Node,
+                })),
+              },
+            },
+          ]
+        : []),
     ],
   }
 }
@@ -1803,16 +1833,6 @@ export function buildDocumentSpec(
       continue
     }
     push(section)
-  }
-
-  // The number, the date and the amount a customer quotes back must print
-  // exactly once. When the layout has no title section of its own, the block
-  // is borrowed and set directly under the header, which is where every
-  // header used to print it.
-  const titleSection = ordered.find((s) => s.id === 'document_title')
-  if (titleSection && !titleSection.visible && !theme.classic) {
-    const headerOrder = ordered.find((s) => s.id === 'header')?.order ?? 0
-    push({ ...titleSection, visible: true }, { mode: 'flow', order: headerOrder + 0.5 }, true)
   }
 
   return {

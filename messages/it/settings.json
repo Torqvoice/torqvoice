@@ -640,6 +640,10 @@
       "org_number": "Numero organizzazione",
       "payment_terms": "Condizioni di pagamento",
       "due_date": "Data di scadenza",
+      "title": "Titolo",
+      "invoice_number": "N. fattura",
+      "customer_number": "N. cliente",
+      "date": "Data",
       "portal_link": "Link al portale"
     },
     "presetsTitle": "Partire da una disposizione",

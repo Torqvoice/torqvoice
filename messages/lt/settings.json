@@ -640,6 +640,10 @@
       "org_number": "Įmonės kodas",
       "payment_terms": "Mokėjimo sąlygos",
       "due_date": "Mokėjimo terminas",
+      "title": "Pavadinimas",
+      "invoice_number": "Sąskaitos Nr.",
+      "customer_number": "Kliento Nr.",
+      "date": "Data",
       "portal_link": "Portalo nuoroda"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",

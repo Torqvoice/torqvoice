@@ -640,6 +640,10 @@
       "org_number": "Organisationsnummer",
       "payment_terms": "Zahlungsbedingungen",
       "due_date": "Fälligkeitsdatum",
+      "title": "Titel",
+      "invoice_number": "Rechnungsnummer",
+      "customer_number": "Kundennummer",
+      "date": "Datum",
       "portal_link": "Portal-Link"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",

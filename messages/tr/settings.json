@@ -640,6 +640,10 @@
       "org_number": "Kuruluş numarası",
       "payment_terms": "Ödeme koşulları",
       "due_date": "Vade tarihi",
+      "title": "Başlık",
+      "invoice_number": "Fatura No",
+      "customer_number": "Müşteri No",
+      "date": "Tarih",
       "portal_link": "Portal bağlantısı"
     },
     "presetsTitle": "Bir düzenle başlayın",

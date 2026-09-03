@@ -640,6 +640,10 @@
       "org_number": "Numer organizacji",
       "payment_terms": "Warunki płatności",
       "due_date": "Termin płatności",
+      "title": "Tytuł",
+      "invoice_number": "Nr faktury",
+      "customer_number": "Nr klienta",
+      "date": "Data",
       "portal_link": "Link do portalu"
     },
     "presetsTitle": "Zacznij od układu",
