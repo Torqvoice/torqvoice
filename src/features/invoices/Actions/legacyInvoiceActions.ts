@@ -8,10 +8,14 @@ import { issueInvoice } from '../Lib/issueInvoice'
 
 /**
  * Invoices that reached a customer before issuing existed: sent, shared,
- * paid or marked paid, and never frozen. They print from live rows, so a
- * changed address, logo, terms or title still reaches them. Nothing freezes
+ * paid or marked paid, and never issued. They print from live rows, so a
+ * changed address, logo, terms or title still reaches them. Nothing captures
  * them behind the workshop's back; invoice settings shows the count and
- * offers to freeze them with the design and details in use right now.
+ * offers to lock them with the design and details in use right now.
+ *
+ * The screen says "lock", which is the word a workshop uses for a document
+ * that must stop changing, and the same word the manual uses. In the code the
+ * act is called issuing, because it is the same capture that a send performs.
  */
 const LEGACY_WHERE = (organizationId: string) => ({
   organizationId,
@@ -28,11 +32,11 @@ export async function countUnfrozenInvoices() {
   )
 }
 
-/** How many invoices one call freezes, so the request stays short. */
+/** How many invoices one call locks, so the request stays short. */
 const FREEZE_BATCH = 100
 
 /**
- * Freezes a batch of those invoices with the current design and details, and
+ * Locks a batch of those invoices with the current design and details, and
  * says how many are left. The page calls it until nothing remains, which
  * keeps a workshop with thousands of old invoices inside request limits.
  */

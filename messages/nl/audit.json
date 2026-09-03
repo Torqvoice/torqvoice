@@ -160,7 +160,7 @@
     "settings_saveDocumentDesign": "Documentontwerp opgeslagen",
     "settings_deleteDocumentDesign": "Documentontwerp verwijderd",
     "settings_applyDocumentDesign": "Standaard documentontwerp ingesteld",
-    "settings_freezeInvoices": "Oudere facturen bevroren",
+    "settings_freezeInvoices": "Oudere facturen vergrendeld",
     "inspection_reminders_sent": "Keuringsherinneringen verstuurd",
     "inspection_reminders_send": "Keuringsherinneringen verstuurd"
   },
@@ -295,7 +295,7 @@
     "settings_saveDocumentDesign": "Sloeg het documentontwerp {name} op",
     "settings_deleteDocumentDesign": "Verwijderde het documentontwerp {name}",
     "settings_applyDocumentDesign": "Maakte {name} het standaard documentontwerp",
-    "settings_freezeInvoices": "Bevroor {count, plural, one {# factuur} other {# facturen}} van vóór het vergrendelen met het huidige ontwerp",
+    "settings_freezeInvoices": "Vergrendelde {count, plural, one {# factuur} other {# facturen}} van vóór het vergrendelen met het huidige ontwerp",
     "inspection_reminders_sent": "{count} keuringsherinneringen verstuurd"
   }
 }

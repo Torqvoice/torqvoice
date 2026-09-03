@@ -160,7 +160,7 @@
     "settings_saveDocumentDesign": "Išsaugotas dokumento dizainas",
     "settings_deleteDocumentDesign": "Ištrintas dokumento dizainas",
     "settings_applyDocumentDesign": "Nustatytas numatytasis dokumento dizainas",
-    "settings_freezeInvoices": "Užfiksuotos senesnės sąskaitos",
+    "settings_freezeInvoices": "Užrakintos senesnės sąskaitos",
     "inspection_reminders_sent": "Išsiųsti apžiūros priminimai",
     "inspection_reminders_send": "Išsiųsti apžiūros priminimai"
   },
@@ -295,7 +295,7 @@
     "settings_saveDocumentDesign": "Išsaugojo dokumento dizainą {name}",
     "settings_deleteDocumentDesign": "Ištrynė dokumento dizainą {name}",
     "settings_applyDocumentDesign": "Nustatė {name} kaip numatytąjį dokumento dizainą",
-    "settings_freezeInvoices": "Užfiksavo {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}} iki užrakinimo su dabartiniu dizainu",
+    "settings_freezeInvoices": "Užrakino {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}} iki užrakinimo su dabartiniu dizainu",
     "inspection_reminders_sent": "Išsiųsta {count} apžiūros priminimų"
   }
 }

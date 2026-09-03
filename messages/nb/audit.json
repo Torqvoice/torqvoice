@@ -160,7 +160,7 @@
     "settings_saveDocumentDesign": "Lagret dokumentdesign",
     "settings_deleteDocumentDesign": "Slettet dokumentdesign",
     "settings_applyDocumentDesign": "Satte standard dokumentdesign",
-    "settings_freezeInvoices": "Frøs eldre fakturaer",
+    "settings_freezeInvoices": "Låste eldre fakturaer",
     "inspection_reminders_sent": "Sendte påminnelser om EU-kontroll",
     "inspection_reminders_send": "Sendte påminnelser om EU-kontroll"
   },
@@ -295,7 +295,7 @@
     "settings_saveDocumentDesign": "Lagret dokumentdesignet {name}",
     "settings_deleteDocumentDesign": "Slettet dokumentdesignet {name}",
     "settings_applyDocumentDesign": "Gjorde {name} til standard dokumentdesign",
-    "settings_freezeInvoices": "Frøs {count, plural, one {# faktura} other {# fakturaer}} fra før låsing med gjeldende design",
+    "settings_freezeInvoices": "Låste {count, plural, one {# faktura} other {# fakturaer}} fra før låsing med gjeldende design",
     "inspection_reminders_sent": "Sendte {count} påminnelser om EU-kontroll"
   }
 }

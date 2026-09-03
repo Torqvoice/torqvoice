@@ -582,14 +582,14 @@
     "quoteLockTriggerSentHint": "Užrakina, kai tik pasiūlymas išsiunčiamas klientui. Rinkitės tik jei niekada nekeičiate pasiūlymo derybų metu.",
     "quoteLockTriggerAcceptedHint": "Užrakina, kai klientas priima pasiūlymą arba jis paverčiamas darbu. Išsiųstus pasiūlymus galima redaguoti.",
     "freezeTitle": "Sąskaitos iki užrakinimo",
-    "freezeBody": "{count, plural, one {# sąskaita pasiekė} few {# sąskaitos pasiekė} other {# sąskaitų pasiekė}} klientą anksčiau, nei ši versija galėjo užfiksuoti, ką sąskaita spausdina. Jos vis dar spausdinamos su dabartiniais duomenimis, logotipu ir dizainu, tad šiandienos pakeitimas pasiekia ir jas. Užfiksavus, kiekviena lieka tokia, kokia spausdinama dabar.",
-    "freezeNone": "Kiekviena klientą pasiekusi sąskaita užfiksuota tokia, kokia išrašyta.",
-    "freezeButton": "Užfiksuoti su dabartiniu dizainu",
-    "freezeConfirmTitle": "Užfiksuoti {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}}?",
-    "freezeConfirmBody": "Kiekviena išlaiko dizainą, logotipą, dirbtuvės duomenis, klientą, transporto priemonę ir pastebėjimus, su kuriais spausdinama dabar. To atšaukti negalima; sąskaitos lieka redaguojamos arba užrakintos lygiai kaip šiandien.",
-    "freezeProgress": "Užfiksuota {done} iš {total}",
-    "freezeDone": "Užfiksuota {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
-    "freezeFailed": "Nepavyko užfiksuoti sąskaitų"
+    "freezeBody": "{count, plural, one {# sąskaita pasiekė} few {# sąskaitos pasiekė} other {# sąskaitų pasiekė}} klientą anksčiau, nei ši versija galėjo užrakinti, ką sąskaita spausdina. Jos vis dar spausdinamos su dabartiniais duomenimis, logotipu ir dizainu, tad šiandienos pakeitimas pasiekia ir jas. Užrakinus, kiekviena lieka tokia, kokia spausdinama dabar.",
+    "freezeNone": "Kiekviena klientą pasiekusi sąskaita užrakinta tokia, kokia buvo išsiųsta.",
+    "freezeButton": "Užrakinti su dabartiniu dizainu",
+    "freezeConfirmTitle": "Užrakinti {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}}?",
+    "freezeConfirmBody": "Kiekviena išlaiko dizainą, logotipą, dirbtuvės duomenis, klientą, transporto priemonę ir pastebėjimus, su kuriais spausdinama dabar. To atšaukti negalima; sąskaitos lieka redaguojamos arba užrakintos redagavimui lygiai kaip šiandien.",
+    "freezeProgress": "Užrakinta {done} iš {total}",
+    "freezeDone": "Užrakinta {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
+    "freezeFailed": "Nepavyko užrakinti sąskaitų"
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",

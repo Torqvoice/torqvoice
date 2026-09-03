@@ -582,14 +582,14 @@
     "quoteLockTriggerSentHint": "Si blocca appena il preventivo raggiunge il cliente. Da scegliere solo se non rivedi mai un preventivo durante la trattativa.",
     "quoteLockTriggerAcceptedHint": "Si blocca quando il cliente accetta il preventivo o questo viene convertito in un lavoro. I preventivi inviati restano modificabili.",
     "freezeTitle": "Fatture precedenti al blocco",
-    "freezeBody": "{count, plural, one {# fattura ha raggiunto} other {# fatture hanno raggiunto}} un cliente prima che questa versione potesse congelare ciò che una fattura stampa. Si stampano ancora con dati, logo e design attuali, quindi una modifica di oggi le raggiunge. Congelarle conserva ciascuna come si stampa adesso.",
-    "freezeNone": "Ogni fattura che ha raggiunto un cliente è congelata come è stata emessa.",
-    "freezeButton": "Congelale con il design attuale",
-    "freezeConfirmTitle": "Congelare {count, plural, one {# fattura} other {# fatture}}?",
-    "freezeConfirmBody": "Ciascuna conserva il design, il logo, i dati dell'officina, il cliente, il veicolo e i rilievi con cui si stampa adesso. Non si può annullare, e le fatture restano modificabili o bloccate esattamente come oggi.",
-    "freezeProgress": "Congelate {done} di {total}",
-    "freezeDone": "{count, plural, one {# fattura congelata} other {# fatture congelate}}",
-    "freezeFailed": "Impossibile congelare le fatture"
+    "freezeBody": "{count, plural, one {# fattura ha raggiunto} other {# fatture hanno raggiunto}} un cliente prima che questa versione potesse bloccare ciò che una fattura stampa. Si stampano ancora con dati, logo e design attuali, quindi una modifica di oggi le raggiunge. Bloccarle conserva ciascuna come si stampa adesso.",
+    "freezeNone": "Ogni fattura che ha raggiunto un cliente è bloccata come è stata inviata.",
+    "freezeButton": "Bloccale con il design attuale",
+    "freezeConfirmTitle": "Bloccare {count, plural, one {# fattura} other {# fatture}}?",
+    "freezeConfirmBody": "Ciascuna conserva il design, il logo, i dati dell'officina, il cliente, il veicolo e i rilievi con cui si stampa adesso. Non si può annullare, e le fatture restano modificabili o bloccate in modifica esattamente come oggi.",
+    "freezeProgress": "Bloccate {done} di {total}",
+    "freezeDone": "{count, plural, one {# fattura bloccata} other {# fatture bloccate}}",
+    "freezeFailed": "Impossibile bloccare le fatture"
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",

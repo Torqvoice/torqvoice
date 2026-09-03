@@ -582,14 +582,14 @@
     "quoteLockTriggerSentHint": "Blokuje, gdy oferta trafi do klienta. Wybierz tylko wtedy, gdy nigdy nie zmieniasz oferty w trakcie negocjacji.",
     "quoteLockTriggerAcceptedHint": "Blokuje po zaakceptowaniu oferty przez klienta lub przekształceniu jej w zlecenie. Wysłane oferty pozostają edytowalne.",
     "freezeTitle": "Faktury sprzed blokady",
-    "freezeBody": "{count, plural, one {# faktura dotarła} few {# faktury dotarły} many {# faktur dotarło} other {# faktury dotarło}} do klienta, zanim ta wersja mogła zamrozić to, co drukuje faktura. Nadal drukują się z bieżącymi danymi, logo i projektem, więc dzisiejsza zmiana dotrze też do nich. Zamrożenie zachowuje każdą taką, jaka drukuje się teraz.",
-    "freezeNone": "Każda faktura, która dotarła do klienta, jest zamrożona tak, jak została wystawiona.",
-    "freezeButton": "Zamroź je z bieżącym projektem",
-    "freezeConfirmTitle": "Zamrozić {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}?",
-    "freezeConfirmBody": "Każda zachowa projekt, logo, dane warsztatu, klienta, pojazd i ustalenia, z którymi drukuje się teraz. Nie da się tego cofnąć; faktury pozostaną edytowalne lub zablokowane dokładnie tak jak dziś.",
-    "freezeProgress": "Zamrożono {done} z {total}",
-    "freezeDone": "Zamrożono {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}",
-    "freezeFailed": "Nie udało się zamrozić faktur"
+    "freezeBody": "{count, plural, one {# faktura dotarła} few {# faktury dotarły} many {# faktur dotarło} other {# faktury dotarło}} do klienta, zanim ta wersja mogła zablokować to, co drukuje faktura. Nadal drukują się z bieżącymi danymi, logo i projektem, więc dzisiejsza zmiana dotrze też do nich. Zablokowanie zachowuje każdą taką, jaka drukuje się teraz.",
+    "freezeNone": "Każda faktura, która dotarła do klienta, jest zablokowana tak, jak została wysłana.",
+    "freezeButton": "Zablokuj je z bieżącym projektem",
+    "freezeConfirmTitle": "Zablokować {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}?",
+    "freezeConfirmBody": "Każda zachowa projekt, logo, dane warsztatu, klienta, pojazd i ustalenia, z którymi drukuje się teraz. Nie da się tego cofnąć; faktury pozostaną edytowalne lub zablokowane do edycji dokładnie tak jak dziś.",
+    "freezeProgress": "Zablokowano {done} z {total}",
+    "freezeDone": "Zablokowano {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}",
+    "freezeFailed": "Nie udało się zablokować faktur"
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",

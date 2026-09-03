@@ -149,8 +149,8 @@ export function InvoiceSettings({
   const [assigning, setAssigning] = useState(false)
   const [unnumbered, setUnnumbered] = useState(unnumberedCustomers)
 
-  // Invoices sent before this version could freeze what they print. Frozen
-  // in batches, one request each, so a workshop with thousands of them sees
+  // Invoices sent before this version could lock what they print. Locked in
+  // batches, one request each, so a workshop with thousands of them sees
   // progress rather than a timeout.
   const [unfrozen, setUnfrozen] = useState(unfrozenInvoices)
   const [freezing, setFreezing] = useState<{ done: number; total: number } | null>(null)
@@ -172,7 +172,7 @@ export function InvoiceSettings({
         done += result.data.frozen
         remaining = result.data.remaining
         setFreezing({ done, total })
-        // A batch that froze nothing yet left some behind would loop forever.
+        // A batch that locked nothing yet left some behind would loop forever.
         if (result.data.frozen === 0) break
       }
       setUnfrozen(remaining)

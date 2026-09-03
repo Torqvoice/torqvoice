@@ -582,14 +582,14 @@
     "quoteLockTriggerSentHint": "Låses så snart tilbudet går til kunden. Velg dette bare hvis du aldri endrer et tilbud underveis i forhandlingen.",
     "quoteLockTriggerAcceptedHint": "Låses når kunden har akseptert tilbudet, eller det er gjort om til en jobb. Sendte tilbud kan fortsatt endres.",
     "freezeTitle": "Fakturaer fra før låsing",
-    "freezeBody": "{count, plural, one {# faktura} other {# fakturaer}} nådde en kunde før denne versjonen kunne fryse det en faktura skriver ut. De skrives fortsatt ut med dagens opplysninger, logo og design, så en endring du gjør i dag når også dem. Fryser du dem, beholder hver av dem det den skriver ut akkurat nå.",
-    "freezeNone": "Alle fakturaer som har nådd en kunde er fryst slik de ble utstedt.",
-    "freezeButton": "Frys dem med gjeldende design",
-    "freezeConfirmTitle": "Fryse {count, plural, one {# faktura} other {# fakturaer}}?",
-    "freezeConfirmBody": "Hver av dem beholder designet, logoen, verkstedopplysningene, kunden, kjøretøyet og funnene den skrives ut med akkurat nå. Dette kan ikke angres, og fakturaene forblir redigerbare eller låst nøyaktig som i dag.",
-    "freezeProgress": "Fryst {done} av {total}",
-    "freezeDone": "{count, plural, one {# faktura} other {# fakturaer}} fryst",
-    "freezeFailed": "Kunne ikke fryse fakturaene"
+    "freezeBody": "{count, plural, one {# faktura} other {# fakturaer}} nådde en kunde før denne versjonen kunne låse det en faktura skriver ut. De skrives fortsatt ut med dagens opplysninger, logo og design, så en endring du gjør i dag når også dem. Låser du dem, beholder hver av dem det den skriver ut akkurat nå.",
+    "freezeNone": "Alle fakturaer som har nådd en kunde er låst slik de ble sendt.",
+    "freezeButton": "Lås dem med gjeldende design",
+    "freezeConfirmTitle": "Låse {count, plural, one {# faktura} other {# fakturaer}}?",
+    "freezeConfirmBody": "Hver av dem beholder designet, logoen, verkstedopplysningene, kunden, kjøretøyet og funnene den skrives ut med akkurat nå. Dette kan ikke angres, og fakturaene forblir redigerbare eller låst for redigering nøyaktig som i dag.",
+    "freezeProgress": "Låst {done} av {total}",
+    "freezeDone": "{count, plural, one {# faktura} other {# fakturaer}} låst",
+    "freezeFailed": "Kunne ikke låse fakturaene"
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",

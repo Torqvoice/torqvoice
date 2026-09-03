@@ -160,7 +160,7 @@
     "settings_saveDocumentDesign": "Dokumentdesign gespeichert",
     "settings_deleteDocumentDesign": "Dokumentdesign gelöscht",
     "settings_applyDocumentDesign": "Standard-Dokumentdesign festgelegt",
-    "settings_freezeInvoices": "Ältere Rechnungen eingefroren",
+    "settings_freezeInvoices": "Ältere Rechnungen gesperrt",
     "inspection_reminders_sent": "HU-Erinnerungen gesendet",
     "inspection_reminders_send": "HU-Erinnerungen gesendet"
   },
@@ -295,7 +295,7 @@
     "settings_saveDocumentDesign": "Hat das Dokumentdesign {name} gespeichert",
     "settings_deleteDocumentDesign": "Hat das Dokumentdesign {name} gelöscht",
     "settings_applyDocumentDesign": "Hat {name} zum Standard-Dokumentdesign gemacht",
-    "settings_freezeInvoices": "Hat {count, plural, one {# Rechnung} other {# Rechnungen}} von vor der Sperre mit dem aktuellen Design eingefroren",
+    "settings_freezeInvoices": "Hat {count, plural, one {# Rechnung} other {# Rechnungen}} von vor der Sperre mit dem aktuellen Design gesperrt",
     "inspection_reminders_sent": "{count} HU-Erinnerungen gesendet"
   }
 }

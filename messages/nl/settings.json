@@ -582,14 +582,14 @@
     "quoteLockTriggerSentHint": "Vergrendelt zodra de offerte naar de klant gaat. Kies dit alleen als je een offerte nooit aanpast tijdens de onderhandeling.",
     "quoteLockTriggerAcceptedHint": "Vergrendelt zodra de klant de offerte heeft geaccepteerd of die is omgezet naar een opdracht. Verstuurde offertes blijven bewerkbaar.",
     "freezeTitle": "Facturen van vóór het vergrendelen",
-    "freezeBody": "{count, plural, one {# factuur} other {# facturen}} bereikte een klant voordat deze versie kon bevriezen wat een factuur afdrukt. Ze worden nog met uw huidige gegevens, logo en ontwerp afgedrukt, dus een wijziging van vandaag bereikt ze ook. Bevriezen houdt elke factuur zoals ze nu wordt afgedrukt.",
-    "freezeNone": "Elke factuur die een klant bereikte is bevroren zoals ze is uitgegeven.",
-    "freezeButton": "Bevriezen met het huidige ontwerp",
-    "freezeConfirmTitle": "{count, plural, one {# factuur} other {# facturen}} bevriezen?",
-    "freezeConfirmBody": "Elke factuur behoudt het ontwerp, het logo, de werkplaatsgegevens, de klant, het voertuig en de bevindingen waarmee ze nu wordt afgedrukt. Dit kan niet ongedaan worden gemaakt; de facturen blijven precies zo bewerkbaar of vergrendeld als vandaag.",
-    "freezeProgress": "{done} van {total} bevroren",
-    "freezeDone": "{count, plural, one {# factuur} other {# facturen}} bevroren",
-    "freezeFailed": "Kon de facturen niet bevriezen"
+    "freezeBody": "{count, plural, one {# factuur} other {# facturen}} bereikte een klant voordat deze versie kon vergrendelen wat een factuur afdrukt. Ze worden nog met uw huidige gegevens, logo en ontwerp afgedrukt, dus een wijziging van vandaag bereikt ze ook. Vergrendelen houdt elke factuur zoals ze nu wordt afgedrukt.",
+    "freezeNone": "Elke factuur die een klant bereikte is vergrendeld zoals ze is verstuurd.",
+    "freezeButton": "Vergrendelen met het huidige ontwerp",
+    "freezeConfirmTitle": "{count, plural, one {# factuur} other {# facturen}} vergrendelen?",
+    "freezeConfirmBody": "Elke factuur behoudt het ontwerp, het logo, de werkplaatsgegevens, de klant, het voertuig en de bevindingen waarmee ze nu wordt afgedrukt. Dit kan niet ongedaan worden gemaakt; de facturen blijven precies zo bewerkbaar of voor bewerking vergrendeld als vandaag.",
+    "freezeProgress": "{done} van {total} vergrendeld",
+    "freezeDone": "{count, plural, one {# factuur} other {# facturen}} vergrendeld",
+    "freezeFailed": "Kon de facturen niet vergrendelen"
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",
