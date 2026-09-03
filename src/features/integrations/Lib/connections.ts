@@ -9,7 +9,6 @@
 
 import { db } from '@/lib/db'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getConnector, getManifest } from '@/integrations/registry'
 import { createConnectorHttp } from './http'
 import { oauthSpec } from './oauth'
