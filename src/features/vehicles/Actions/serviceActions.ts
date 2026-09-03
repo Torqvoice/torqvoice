@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
@@ -244,6 +245,7 @@ export async function getServiceRecord(recordId: string) {
               address: true,
               company: true,
               telegramChatId: true,
+              invoiceDesignId: true,
             },
           },
           vehicle: {
@@ -264,6 +266,7 @@ export async function getServiceRecord(recordId: string) {
                   address: true,
                   company: true,
                   telegramChatId: true,
+                  invoiceDesignId: true,
                 },
               },
             },
@@ -905,6 +908,9 @@ export async function toggleManuallyPaid(recordId: string) {
         where: { id: recordId },
         data: { manuallyPaid: !record.manuallyPaid },
       })
+      // A paid invoice is the customer's document whether or not it was ever
+      // sent through the app.
+      if (!record.manuallyPaid) await issueInvoice(recordId, organizationId, 'paid')
 
       revalidatePath('/')
       revalidatePath('/services')
@@ -1141,6 +1147,10 @@ export async function generatePublicLink(serviceRecordId: string) {
         where: { id: serviceRecordId, organizationId },
       })
       if (!record) throw new Error('Record not found')
+
+      // The link is a way of sending the invoice, so what it shows is frozen
+      // now, before the stamp below locks it.
+      await issueInvoice(serviceRecordId, organizationId, 'sent')
 
       const token = randomUUID()
       await db.serviceRecord.update({

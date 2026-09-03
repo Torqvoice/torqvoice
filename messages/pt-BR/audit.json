@@ -155,7 +155,11 @@
     "import_commit": "Planilha importada",
     "import_undo": "Importação desfeita",
     "integration_connect": "Integração conectada",
-    "integration_disconnect": "Integração desconectada"
+    "integration_disconnect": "Integração desconectada",
+    "service_setInvoiceDesign": "Design da fatura alterado",
+    "settings_saveDocumentDesign": "Design de documento salvo",
+    "settings_deleteDocumentDesign": "Design de documento excluído",
+    "settings_applyDocumentDesign": "Design de documento padrão definido"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -283,6 +287,10 @@
     "import_commit": "Importou uma planilha: {count} registros criados",
     "import_undo": "Desfez uma importação de planilha: {records} registros removidos",
     "integration_connect": "{name} conectado",
-    "integration_disconnect": "{name} desconectado"
+    "integration_disconnect": "{name} desconectado",
+    "service_setInvoiceDesign": "Alterou com qual design uma fatura é impressa",
+    "settings_saveDocumentDesign": "Salvou o design de documento {name}",
+    "settings_deleteDocumentDesign": "Excluiu o design de documento {name}",
+    "settings_applyDocumentDesign": "Definiu {name} como design de documento padrão"
   }
 }

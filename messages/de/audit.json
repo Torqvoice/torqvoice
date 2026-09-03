@@ -155,7 +155,11 @@
     "import_commit": "Tabelle importiert",
     "import_undo": "Import rückgängig gemacht",
     "integration_connect": "Integration verbunden",
-    "integration_disconnect": "Integration getrennt"
+    "integration_disconnect": "Integration getrennt",
+    "service_setInvoiceDesign": "Rechnungsdesign geändert",
+    "settings_saveDocumentDesign": "Dokumentdesign gespeichert",
+    "settings_deleteDocumentDesign": "Dokumentdesign gelöscht",
+    "settings_applyDocumentDesign": "Standard-Dokumentdesign festgelegt"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -283,6 +287,10 @@
     "import_commit": "Tabelle importiert: {count} Datensätze angelegt",
     "import_undo": "Tabellenimport rückgängig gemacht: {records} Datensätze entfernt",
     "integration_connect": "{name} verbunden",
-    "integration_disconnect": "{name} getrennt"
+    "integration_disconnect": "{name} getrennt",
+    "service_setInvoiceDesign": "Hat geändert, mit welchem Design eine Rechnung gedruckt wird",
+    "settings_saveDocumentDesign": "Hat das Dokumentdesign {name} gespeichert",
+    "settings_deleteDocumentDesign": "Hat das Dokumentdesign {name} gelöscht",
+    "settings_applyDocumentDesign": "Hat {name} zum Standard-Dokumentdesign gemacht"
   }
 }

@@ -2,7 +2,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { MessageSquare } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
-import { InvoiceDetailsSection } from '../service-edit/InvoiceDetailsSection'
+import { InvoiceDetailsSection, type DesignOption } from '../service-edit/InvoiceDetailsSection'
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../service-edit/TotalsSection'
@@ -43,6 +43,9 @@ interface DetailsRightColumnProps {
     toNumber: string
   }[]
   videoCall?: ServiceVideoCall
+  designOptions?: DesignOption[]
+  designFollowsName?: string | null
+  designPinnedAt?: string | null
 }
 
 export function DetailsRightColumn({
@@ -59,6 +62,9 @@ export function DetailsRightColumn({
   orgMembers,
   notificationHistory = [],
   videoCall,
+  designOptions = [],
+  designFollowsName = null,
+  designPinnedAt = null,
 }: DetailsRightColumnProps) {
   const router = useRouter()
 
@@ -89,6 +95,10 @@ export function DetailsRightColumn({
         paymentStatus={formState.paymentStatus}
         onTogglePaid={actions.handleTogglePaid}
         paymentLoading={actions.paymentLoading}
+        designOptions={designOptions}
+        designId={record.designId ?? null}
+        designFollowsName={designFollowsName}
+        designPinnedAt={designPinnedAt}
       />
       <BasicInfoSection
         initialData={formState.initialData}

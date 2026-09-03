@@ -92,7 +92,10 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contact",
     "sectionBilling": "Facturation",
-    "addScannedVehicle": "Ajouter le véhicule {vehicle}"
+    "addScannedVehicle": "Ajouter le véhicule {vehicle}",
+    "invoiceDesign": "Design de facture",
+    "invoiceDesignDefault": "Défaut de l'atelier",
+    "invoiceDesignHint": "Les factures de ce client sont imprimées avec ce design au lieu du défaut de l'atelier. Une facture peut toujours choisir le sien."
   },
   "serviceRequests": {
     "statusNew": "Nouveau",

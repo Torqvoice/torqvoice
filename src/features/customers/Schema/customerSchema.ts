@@ -10,6 +10,8 @@ export const createCustomerSchema = z.object({
   taxId: z.string().optional(),
   taxExempt: z.boolean().optional(),
   notes: z.string().optional(),
+  /** An invoice design for this customer's invoices; null follows the default. */
+  invoiceDesignId: z.string().nullable().optional(),
 })
 
 export const updateCustomerSchema = createCustomerSchema.partial().extend({

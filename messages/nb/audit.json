@@ -155,7 +155,11 @@
     "import_commit": "Importerte regneark",
     "import_undo": "Angret import",
     "integration_connect": "Koblet til en integrasjon",
-    "integration_disconnect": "Koblet fra en integrasjon"
+    "integration_disconnect": "Koblet fra en integrasjon",
+    "service_setInvoiceDesign": "Endret fakturadesign",
+    "settings_saveDocumentDesign": "Lagret dokumentdesign",
+    "settings_deleteDocumentDesign": "Slettet dokumentdesign",
+    "settings_applyDocumentDesign": "Satte standard dokumentdesign"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -283,6 +287,10 @@
     "import_commit": "Importerte et regneark: {count} poster opprettet",
     "import_undo": "Angret en regnearkimport: {records} poster fjernet",
     "integration_connect": "Koblet til {name}",
-    "integration_disconnect": "Koblet fra {name}"
+    "integration_disconnect": "Koblet fra {name}",
+    "service_setInvoiceDesign": "Endret hvilket design en faktura skrives ut med",
+    "settings_saveDocumentDesign": "Lagret dokumentdesignet {name}",
+    "settings_deleteDocumentDesign": "Slettet dokumentdesignet {name}",
+    "settings_applyDocumentDesign": "Gjorde {name} til standard dokumentdesign"
   }
 }

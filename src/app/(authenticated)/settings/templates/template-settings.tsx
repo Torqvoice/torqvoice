@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
 import { DesignPreview, PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
+import { applyDocumentDesign } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { Textarea } from '@/components/ui/textarea'
 import { type InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -147,6 +148,24 @@ function TemplateTab({
 }) {
   const t = useTranslations('settings')
   const tDesigner = useTranslations('settings.designer')
+  const router = useRouter()
+  const [applying, setApplying] = useState<string | null>(null)
+
+  // Makes a saved design the one this document prints with, without a trip
+  // through the designer: the same writes its Save makes.
+  const setDefault = async (design: SavedDesign) => {
+    setApplying(design.id)
+    try {
+      const result = await applyDocumentDesign(design.id)
+      if (!result.success) throw new Error(result.error)
+      toast.success(tDesigner('defaultSet', { name: design.name }))
+      router.refresh()
+    } catch {
+      toast.error(tDesigner('couldNotSetDefault'))
+    } finally {
+      setApplying(null)
+    }
+  }
 
   return (
     <AppCard icon={Palette} title={t('templates.presets')} contentClassName="space-y-4">
@@ -161,13 +180,10 @@ function TemplateTab({
             {savedDesigns.map((design) => {
               const active = activeDesign === `design:${design.id}`
               return (
-                <Link
+                <div
                   key={design.id}
-                  href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
-                  target="_blank"
-                  rel="noopener"
                   className={cn(
-                    'relative rounded-lg border p-3 text-left transition-colors hover:bg-muted',
+                    'relative flex flex-col rounded-lg border p-3 text-left transition-colors hover:bg-muted',
                     active && 'border-primary'
                   )}
                 >
@@ -176,16 +192,36 @@ function TemplateTab({
                       {tDesigner('inUse')}
                     </span>
                   )}
-                  <div className="flex justify-center">
-                    <DesignPreview
-                      design={design}
-                      docType={documentType}
-                      workshop={workshop}
-                      logoUrl={logoUrl}
-                    />
-                  </div>
-                  <p className="mt-2 truncate text-xs font-medium">{design.name}</p>
-                </Link>
+                  <Link
+                    href={`/invoice-designer?doc=${documentType}&design=${design.id}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="block"
+                  >
+                    <div className="flex justify-center">
+                      <DesignPreview
+                        design={design}
+                        docType={documentType}
+                        workshop={workshop}
+                        logoUrl={logoUrl}
+                      />
+                    </div>
+                    <p className="mt-2 truncate text-xs font-medium">{design.name}</p>
+                  </Link>
+                  {!active && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 h-7 text-xs"
+                      disabled={applying === design.id}
+                      onClick={() => void setDefault(design)}
+                    >
+                      {applying === design.id && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                      {tDesigner('setDefault')}
+                    </Button>
+                  )}
+                </div>
               )
             })}
           </div>

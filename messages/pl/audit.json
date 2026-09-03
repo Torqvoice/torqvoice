@@ -155,7 +155,11 @@
     "import_commit": "Zaimportowano arkusz",
     "import_undo": "Cofnięto import",
     "integration_connect": "Połączono integrację",
-    "integration_disconnect": "Rozłączono integrację"
+    "integration_disconnect": "Rozłączono integrację",
+    "service_setInvoiceDesign": "Zmieniono projekt faktury",
+    "settings_saveDocumentDesign": "Zapisano projekt dokumentu",
+    "settings_deleteDocumentDesign": "Usunięto projekt dokumentu",
+    "settings_applyDocumentDesign": "Ustawiono domyślny projekt dokumentu"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -283,6 +287,10 @@
     "import_commit": "Zaimportowano arkusz: utworzono {count} rekordów",
     "import_undo": "Cofnięto import arkusza: usunięto {records} rekordów",
     "integration_connect": "Połączono {name}",
-    "integration_disconnect": "Rozłączono {name}"
+    "integration_disconnect": "Rozłączono {name}",
+    "service_setInvoiceDesign": "Zmienił projekt, z którym drukowana jest faktura",
+    "settings_saveDocumentDesign": "Zapisał projekt dokumentu {name}",
+    "settings_deleteDocumentDesign": "Usunął projekt dokumentu {name}",
+    "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu"
   }
 }

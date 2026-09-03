@@ -92,7 +92,10 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Kontakt",
     "sectionBilling": "Rechnung",
-    "addScannedVehicle": "Fahrzeug {vehicle} anlegen"
+    "addScannedVehicle": "Fahrzeug {vehicle} anlegen",
+    "invoiceDesign": "Rechnungsdesign",
+    "invoiceDesignDefault": "Werkstatt-Standard",
+    "invoiceDesignHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Eine Rechnung kann trotzdem ein eigenes wählen."
   },
   "serviceRequests": {
     "statusNew": "Neu",

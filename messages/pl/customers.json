@@ -92,7 +92,10 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Kontakt",
     "sectionBilling": "Rozliczenia",
-    "addScannedVehicle": "Dodaj pojazd {vehicle}"
+    "addScannedVehicle": "Dodaj pojazd {vehicle}",
+    "invoiceDesign": "Projekt faktury",
+    "invoiceDesignDefault": "Domyślny warsztatu",
+    "invoiceDesignHint": "Faktury dla tego klienta są drukowane z tym projektem zamiast domyślnego projektu warsztatu. Faktura nadal może wybrać własny."
   },
   "serviceRequests": {
     "statusNew": "Nowe",

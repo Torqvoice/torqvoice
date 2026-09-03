@@ -155,7 +155,11 @@
     "import_commit": "Foglio di calcolo importato",
     "import_undo": "Importazione annullata",
     "integration_connect": "Integrazione collegata",
-    "integration_disconnect": "Integrazione scollegata"
+    "integration_disconnect": "Integrazione scollegata",
+    "service_setInvoiceDesign": "Design della fattura cambiato",
+    "settings_saveDocumentDesign": "Design del documento salvato",
+    "settings_deleteDocumentDesign": "Design del documento eliminato",
+    "settings_applyDocumentDesign": "Design del documento predefinito impostato"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -283,6 +287,10 @@
     "import_commit": "Foglio di calcolo importato: {count} record creati",
     "import_undo": "Importazione da foglio di calcolo annullata: {records} record rimossi",
     "integration_connect": "{name} collegato",
-    "integration_disconnect": "{name} scollegato"
+    "integration_disconnect": "{name} scollegato",
+    "service_setInvoiceDesign": "Ha cambiato il design con cui viene stampata una fattura",
+    "settings_saveDocumentDesign": "Ha salvato il design del documento {name}",
+    "settings_deleteDocumentDesign": "Ha eliminato il design del documento {name}",
+    "settings_applyDocumentDesign": "Ha impostato {name} come design del documento predefinito"
   }
 }

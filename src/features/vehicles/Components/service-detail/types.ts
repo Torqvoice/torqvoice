@@ -60,6 +60,10 @@ export interface ServiceDetail {
   // Counter sales (parts-only) have no vehicle and link a customer directly.
   vehicle: Vehicle | null
   customer: Vehicle['customer']
+  /** The design this invoice chose; null follows the default. */
+  designId?: string | null
+  /** When the invoice was issued and its sheet frozen. */
+  issuedAt?: Date | null
 }
 
 export interface PartItem {
@@ -116,6 +120,7 @@ export interface Vehicle {
     address: string | null
     company: string | null
     telegramChatId: string | null
+    invoiceDesignId?: string | null
   } | null
 }
 

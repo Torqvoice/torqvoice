@@ -92,7 +92,10 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contact",
     "sectionBilling": "Billing",
-    "addScannedVehicle": "Add vehicle {vehicle}"
+    "addScannedVehicle": "Add vehicle {vehicle}",
+    "invoiceDesign": "Invoice design",
+    "invoiceDesignDefault": "Workshop default",
+    "invoiceDesignHint": "Invoices for this customer print with this design instead of the workshop default. An invoice can still choose its own."
   },
   "serviceRequests": {
     "statusNew": "New",

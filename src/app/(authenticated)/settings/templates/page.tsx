@@ -13,6 +13,7 @@ import {
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
+import { listDocumentDesigns } from '@/features/invoice-designer/Actions/documentDesignActions'
 export default async function TemplatePage() {
   const data = await getLayoutData()
 
@@ -31,55 +32,63 @@ export default async function TemplatePage() {
     )
   }
 
-  const [result, inspectionTemplatesResult, invoiceLayoutResult, quoteLayoutResult, organization] =
-    await Promise.all([
-      getSettings([
-        SETTING_KEYS.INVOICE_PRIMARY_COLOR,
-        SETTING_KEYS.INVOICE_BACKGROUND_COLOR,
-        SETTING_KEYS.INVOICE_TEXT_COLOR,
-        SETTING_KEYS.INVOICE_COMPANY_TEXT_COLOR,
-        SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR,
-        SETTING_KEYS.INVOICE_FRAME_SHADOW,
-        SETTING_KEYS.INVOICE_FONT_FAMILY,
-        SETTING_KEYS.INVOICE_HEADER_STYLE,
-        SETTING_KEYS.INVOICE_LOGO_SIZE,
-        SETTING_KEYS.QUOTE_PRIMARY_COLOR,
-        SETTING_KEYS.QUOTE_BACKGROUND_COLOR,
-        SETTING_KEYS.QUOTE_TEXT_COLOR,
-        SETTING_KEYS.QUOTE_COMPANY_TEXT_COLOR,
-        SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR,
-        SETTING_KEYS.QUOTE_FRAME_SHADOW,
-        SETTING_KEYS.QUOTE_FONT_FAMILY,
-        SETTING_KEYS.QUOTE_HEADER_STYLE,
-        SETTING_KEYS.QUOTE_LOGO_SIZE,
-        SETTING_KEYS.COMPANY_LOGO,
-        SETTING_KEYS.DESIGNER_SAVED_DESIGNS,
-        SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
-        SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
-        SETTING_KEYS.WORKSHOP_ADDRESS,
-        SETTING_KEYS.WORKSHOP_SLOGAN,
-        SETTING_KEYS.WORKSHOP_PHONE,
-        SETTING_KEYS.WORKSHOP_EMAIL,
-        SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
-        SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
-        SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
-        SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
-        SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
-        SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
-        SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
-        SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
-      ]),
-      getTemplates(),
-      getInvoiceLayoutConfig(),
-      getQuoteLayoutConfig(),
-      // Read straight off the organization, the way the real PDF does. Going
-      // through the membership list would miss anyone viewing a workshop they
-      // are not a member of.
-      db.organization.findUnique({
-        where: { id: data.organizationId },
-        select: { name: true },
-      }),
-    ])
+  const [
+    result,
+    inspectionTemplatesResult,
+    invoiceLayoutResult,
+    quoteLayoutResult,
+    organization,
+    invoiceDesigns,
+    quoteDesigns,
+  ] = await Promise.all([
+    getSettings([
+      SETTING_KEYS.INVOICE_PRIMARY_COLOR,
+      SETTING_KEYS.INVOICE_BACKGROUND_COLOR,
+      SETTING_KEYS.INVOICE_TEXT_COLOR,
+      SETTING_KEYS.INVOICE_COMPANY_TEXT_COLOR,
+      SETTING_KEYS.INVOICE_FRAME_BORDER_COLOR,
+      SETTING_KEYS.INVOICE_FRAME_SHADOW,
+      SETTING_KEYS.INVOICE_FONT_FAMILY,
+      SETTING_KEYS.INVOICE_HEADER_STYLE,
+      SETTING_KEYS.INVOICE_LOGO_SIZE,
+      SETTING_KEYS.QUOTE_PRIMARY_COLOR,
+      SETTING_KEYS.QUOTE_BACKGROUND_COLOR,
+      SETTING_KEYS.QUOTE_TEXT_COLOR,
+      SETTING_KEYS.QUOTE_COMPANY_TEXT_COLOR,
+      SETTING_KEYS.QUOTE_FRAME_BORDER_COLOR,
+      SETTING_KEYS.QUOTE_FRAME_SHADOW,
+      SETTING_KEYS.QUOTE_FONT_FAMILY,
+      SETTING_KEYS.QUOTE_HEADER_STYLE,
+      SETTING_KEYS.QUOTE_LOGO_SIZE,
+      SETTING_KEYS.COMPANY_LOGO,
+      SETTING_KEYS.INVOICE_ACTIVE_DESIGN,
+      SETTING_KEYS.QUOTE_ACTIVE_DESIGN,
+      SETTING_KEYS.WORKSHOP_ADDRESS,
+      SETTING_KEYS.WORKSHOP_SLOGAN,
+      SETTING_KEYS.WORKSHOP_PHONE,
+      SETTING_KEYS.WORKSHOP_EMAIL,
+      SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY,
+      SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY,
+      SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_READY,
+      SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
+      SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
+    ]),
+    getTemplates(),
+    getInvoiceLayoutConfig(),
+    getQuoteLayoutConfig(),
+    // Read straight off the organization, the way the real PDF does. Going
+    // through the membership list would miss anyone viewing a workshop they
+    // are not a member of.
+    db.organization.findUnique({
+      where: { id: data.organizationId },
+      select: { name: true },
+    }),
+    listDocumentDesigns('invoice'),
+    listDocumentDesigns('quote'),
+  ])
 
   const settings = result.success && result.data ? result.data : {}
   const inspectionTemplates =
@@ -90,15 +99,12 @@ export default async function TemplatePage() {
   const t = await getTranslations('settings')
 
   // The workshop's own saved designs, for cards beside the built-in templates.
-  let savedDesigns: SavedDesign[] = []
-  try {
-    const parsed = settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS]
-      ? JSON.parse(settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS])
-      : []
-    if (Array.isArray(parsed)) savedDesigns = parsed
-  } catch {
-    savedDesigns = []
-  }
+  // Both documents' designs on both tabs, the way the designer's gallery
+  // shows them: a look saved for one is a starting point for the other.
+  const savedDesigns: SavedDesign[] = [
+    ...(invoiceDesigns.success && invoiceDesigns.data ? invoiceDesigns.data : []),
+    ...(quoteDesigns.success && quoteDesigns.data ? quoteDesigns.data : []),
+  ]
 
   // The preview is meant to look like this workshop's own paper, so it gets the
   // real company details rather than the sample shop's.

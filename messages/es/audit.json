@@ -155,7 +155,11 @@
     "import_commit": "Hoja de cálculo importada",
     "import_undo": "Importación deshecha",
     "integration_connect": "Integración conectada",
-    "integration_disconnect": "Integración desconectada"
+    "integration_disconnect": "Integración desconectada",
+    "service_setInvoiceDesign": "Diseño de factura cambiado",
+    "settings_saveDocumentDesign": "Diseño de documento guardado",
+    "settings_deleteDocumentDesign": "Diseño de documento eliminado",
+    "settings_applyDocumentDesign": "Diseño de documento predeterminado establecido"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -283,6 +287,10 @@
     "import_commit": "Importó una hoja de cálculo: {count} registros creados",
     "import_undo": "Deshizo una importación de hoja de cálculo: {records} registros eliminados",
     "integration_connect": "{name} conectado",
-    "integration_disconnect": "{name} desconectado"
+    "integration_disconnect": "{name} desconectado",
+    "service_setInvoiceDesign": "Cambió con qué diseño se imprime una factura",
+    "settings_saveDocumentDesign": "Guardó el diseño de documento {name}",
+    "settings_deleteDocumentDesign": "Eliminó el diseño de documento {name}",
+    "settings_applyDocumentDesign": "Estableció {name} como diseño de documento predeterminado"
   }
 }

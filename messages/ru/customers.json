@@ -92,7 +92,10 @@
     "customerNumberAuto": "Авто",
     "sectionContact": "Контакты",
     "sectionBilling": "Выставление счетов",
-    "addScannedVehicle": "Добавить автомобиль {vehicle}"
+    "addScannedVehicle": "Добавить автомобиль {vehicle}",
+    "invoiceDesign": "Дизайн счёта",
+    "invoiceDesignDefault": "По умолчанию для мастерской",
+    "invoiceDesignHint": "Счета этого клиента печатаются с этим дизайном вместо дизайна мастерской по умолчанию. Счёт по-прежнему может выбрать свой."
   },
   "serviceRequests": {
     "statusNew": "Новая",

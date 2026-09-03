@@ -1964,7 +1964,12 @@
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
     "leaveConfirm": "Weggaan",
-    "boldField": "Vet"
+    "boldField": "Vet",
+    "deleteDesignDrafts": "{count, plural, one {# conceptfactuur} other {# conceptfacturen}} die het gebruiken, vallen terug op het standaardontwerp.",
+    "deleteDesignCustomers": "{count, plural, one {# klant} other {# klanten}} die erop zijn ingesteld, vallen terug op het standaardontwerp.",
+    "setDefault": "Als standaard instellen",
+    "defaultSet": "\"{name}\" is nu in gebruik",
+    "couldNotSetDefault": "Kon het standaardontwerp niet instellen"
   },
   "preview": {
     "title": "Remservice en oliewissel",

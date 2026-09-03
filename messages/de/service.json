@@ -79,7 +79,13 @@
       "typePrompt": "Geben Sie einen Namen ein...",
       "boardTechnicians": "Board-Techniker",
       "teamMembers": "Teamitglieder"
-    }
+    },
+    "design": "Rechnungsdesign",
+    "designDefault": "Werkstatt-Standard",
+    "designFollowing": "Standard ({name})",
+    "designPinned": "Das Blatt wurde beim Ausstellen der Rechnung am {date} eingefroren. Eine neue Wahl gilt für die nächste gesendete Kopie.",
+    "designSaved": "Rechnungsdesign aktualisiert",
+    "designSaveFailed": "Rechnungsdesign konnte nicht geändert werden"
   },
   "parts": {
     "title": "Teile",

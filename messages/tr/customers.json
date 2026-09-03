@@ -92,7 +92,10 @@
     "customerNumberAuto": "Oto",
     "sectionContact": "İletişim",
     "sectionBilling": "Faturalama",
-    "addScannedVehicle": "{vehicle} aracını ekle"
+    "addScannedVehicle": "{vehicle} aracını ekle",
+    "invoiceDesign": "Fatura tasarımı",
+    "invoiceDesignDefault": "Atölye varsayılanı",
+    "invoiceDesignHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Bir fatura yine de kendi tasarımını seçebilir."
   },
   "serviceRequests": {
     "statusNew": "Yeni",

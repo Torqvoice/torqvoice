@@ -1964,7 +1964,12 @@
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",
     "leaveConfirm": "Quitter",
-    "boldField": "Gras"
+    "boldField": "Gras",
+    "deleteDesignDrafts": "{count, plural, one {# brouillon de facture} other {# brouillons de facture}} qui l'utilisent reviendront au design par défaut.",
+    "deleteDesignCustomers": "{count, plural, one {# client} other {# clients}} qui y sont associés reviendront au design par défaut.",
+    "setDefault": "Définir par défaut",
+    "defaultSet": "« {name} » est maintenant utilisé",
+    "couldNotSetDefault": "Impossible de définir le design par défaut"
   },
   "preview": {
     "title": "Révision des freins et vidange",

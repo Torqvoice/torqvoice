@@ -117,6 +117,7 @@ interface CustomerDetail {
   taxId: string | null
   taxExempt: boolean
   notes: string | null
+  invoiceDesignId?: string | null
   vehicles: {
     id: string
     make: string

@@ -79,7 +79,13 @@
       "typePrompt": "Typ een naam...",
       "boardTechnicians": "Werkbordtechnici",
       "teamMembers": "Teamleden"
-    }
+    },
+    "design": "Factuurontwerp",
+    "designDefault": "Standaard van de werkplaats",
+    "designFollowing": "Standaard ({name})",
+    "designPinned": "Het blad is bevroren toen de factuur op {date} werd uitgegeven. Een nieuwe keuze geldt voor de volgende verzonden kopie.",
+    "designSaved": "Factuurontwerp bijgewerkt",
+    "designSaveFailed": "Kon het factuurontwerp niet wijzigen"
   },
   "parts": {
     "title": "Onderdelen",

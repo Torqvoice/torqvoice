@@ -79,7 +79,13 @@
       "typePrompt": "Tapez un nom...",
       "boardTechnicians": "Techniciens du Tableau",
       "teamMembers": "Membres de l'Équipe"
-    }
+    },
+    "design": "Design de facture",
+    "designDefault": "Défaut de l'atelier",
+    "designFollowing": "Défaut ({name})",
+    "designPinned": "La feuille a été figée à l'émission de la facture le {date}. Un nouveau choix s'applique à la prochaine copie envoyée.",
+    "designSaved": "Design de facture mis à jour",
+    "designSaveFailed": "Impossible de changer le design de la facture"
   },
   "parts": {
     "title": "Pièces",

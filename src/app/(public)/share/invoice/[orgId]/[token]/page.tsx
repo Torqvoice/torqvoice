@@ -1,17 +1,15 @@
-import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
 import { getFeatures } from '@/lib/features'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { assembleInvoicePrint } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
@@ -39,163 +37,44 @@ export default async function PublicInvoicePage({
   const resolvedOrg = await resolvePortalOrg(orgParam)
   const orgId = resolvedOrg?.id ?? orgParam
 
-  const record = await db.serviceRecord.findUnique({
+  const shared = await db.serviceRecord.findUnique({
     where: { publicToken: token },
-    include: {
-      // Explicit select: internal unitCost/markupPercent must never reach
-      // the public customer-facing payload
-      partItems: {
-        select: {
-          id: true,
-          partNumber: true,
-          name: true,
-          quantity: true,
-          unit: true,
-          unitPrice: true,
-          total: true,
-        },
-      },
-      laborItems: true,
-      technician: { select: { name: true } },
-      attachments: true,
-      payments: { orderBy: { date: 'desc' } },
-      customer: {
-        select: {
-          name: true,
-          email: true,
-          phone: true,
-          address: true,
-          company: true,
-          taxId: true,
-        },
-      },
-      vehicle: {
-        select: {
-          make: true,
-          model: true,
-          year: true,
-          vin: true,
-          licensePlate: true,
-          mileage: true,
-          userId: true,
-          organizationId: true,
-          customer: {
-            select: {
-              name: true,
-              email: true,
-              phone: true,
-              address: true,
-              company: true,
-              taxId: true,
-            },
-          },
-        },
-      },
-    },
+    select: { id: true, organizationId: true },
   })
-
-  if (!record || record.organizationId !== orgId) {
+  if (!shared || shared.organizationId !== orgId) {
     notFound()
   }
 
-  // Fetch workshop settings and features
-  const [settings, org, features] = await Promise.all([
-    db.appSetting.findMany({
-      where: {
-        organizationId: record.organizationId,
-        key: {
-          in: [
-            'workshop.address',
-            'workshop.phone',
-            'workshop.email',
-            'workshop.slogan',
-            'workshop.logo',
-            'invoice.logo',
-            'workshop.unitSystem',
-            'workshop.currencyCode',
-            'workshop.currencyFormat',
-            'invoice.bankAccount',
-            'invoice.orgNumber',
-            'invoice.paymentTerms',
-            'invoice.footerNote',
-            'invoice.showBankAccount',
-            'invoice.showOrgNumber',
-            'invoice.dueDays',
-            'invoice.showLogo',
-            'invoice.showCompanyName',
-            'invoice.primaryColor',
-            'invoice.backgroundColor',
-            'invoice.textColor',
-            'invoice.companyTextColor',
-            'invoice.frameBorderColor',
-            'invoice.frameShadow',
-            'invoice.frameRadius',
-            'invoice.frameSide',
-            'invoice.fontFamily',
-            'invoice.headerStyle',
-            'invoice.logoSize',
-            'payment.providersEnabled',
-            'payment.termsOfSale',
-            'payment.termsOfSaleUrl',
-            'workshop.dateFormat',
-            'workshop.timezone',
-            'workshop.serviceType',
-            'workshop.taxLabel',
-            'portal.enabled',
-            'invoice.layoutConfig',
-            'telegram.botUsername',
-          ],
-        },
-      },
-    }),
-    record.organizationId
-      ? db.organization.findUnique({
-          where: { id: record.organizationId },
-          select: { name: true, portalSlug: true },
-        })
-      : null,
-    getFeatures(orgId),
-  ])
+  // The document as it was issued, or the live draft: one assembler decides,
+  // and the page a customer opens is the sheet the PDF prints.
+  const assembly = await assembleInvoicePrint(shared.id)
+  if (!assembly) notFound()
+  const { record, settingsMap, org } = assembly
 
-  // Fetch findings for this service record (open ones to show on invoice)
-  const findings = await db.vehicleFinding.findMany({
-    where: { serviceRecordId: record.id, status: { not: 'resolved' } },
-    select: { description: true, severity: true, notes: true },
-    orderBy: { createdAt: 'desc' },
-  })
-
-  // Fetch custom field values for this service record
-  const customFields = await getCustomFieldsForPrint(orgId, record.id, 'service_record')
-
-  const settingsMap: Record<string, string> = {}
-  for (const s of settings) settingsMap[s.key] = s.value
+  const features = await getFeatures(orgId)
 
   const workshop = {
-    name: org?.name || '',
-    address: settingsMap['workshop.address'] || '',
-    phone: settingsMap['workshop.phone'] || '',
-    email: settingsMap['workshop.email'] || '',
-    slogan: settingsMap['workshop.slogan'] || undefined,
+    name: assembly.workshop.name,
+    address: assembly.workshop.address,
+    phone: assembly.workshop.phone,
+    email: assembly.workshop.email,
   }
 
-  const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
-  const currencyFormat: 'symbol' | 'code' =
-    settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
+  const currencyCode = assembly.invoiceSettings.currencyCode || 'USD'
+  const currencyFormat: 'symbol' | 'code' = assembly.invoiceSettings.currencyFormat || 'symbol'
 
   const invoiceSettings = {
-    bankAccount: settingsMap['invoice.bankAccount'] || '',
-    orgNumber: settingsMap['invoice.orgNumber'] || '',
-    paymentTerms: settingsMap['invoice.paymentTerms'] || '',
-    footerNote: settingsMap['invoice.footerNote'] || '',
-    showBankAccount: settingsMap['invoice.showBankAccount'] !== 'false',
-    showOrgNumber: settingsMap['invoice.showOrgNumber'] !== 'false',
-    dueDays: Number(settingsMap['invoice.dueDays']) || 0,
+    bankAccount: assembly.invoiceSettings.bankAccount || '',
+    orgNumber: assembly.invoiceSettings.orgNumber || '',
+    paymentTerms: assembly.invoiceSettings.paymentTerms || '',
+    footerNote: assembly.invoiceSettings.footerNote || '',
+    showBankAccount: assembly.invoiceSettings.showBankAccount !== false,
+    showOrgNumber: assembly.invoiceSettings.showOrgNumber !== false,
+    dueDays: assembly.invoiceSettings.dueDays || 0,
   }
 
-  const showLogo = settingsMap['invoice.showLogo'] !== 'false'
-  const showCompanyName = settingsMap['invoice.showCompanyName'] !== 'false'
-  const rawLogoUrl = documentLogoPath(settingsMap, 'invoice')
-  const logoUrl = rawLogoUrl ? toPublicFileUrl(rawLogoUrl, token) : ''
+  const showLogo = assembly.template.showLogo !== false
+  const showCompanyName = assembly.template.showCompanyName !== false
 
   // Determine which online payment providers are enabled for this org
   const enabledProvidersRaw = settingsMap['payment.providersEnabled'] || ''
@@ -204,10 +83,24 @@ export default async function PublicInvoicePage({
     .map((s) => s.trim())
     .filter(Boolean)
 
-  // Rewrite attachment file URLs to use the public file route (no auth required)
-  // Only include attachments marked for invoice display
+  // What reaches the browser: internal unitCost/markupPercent must never be
+  // in the customer-facing payload, attachment URLs go through the public
+  // file route, and the customer, vehicle and technician are the ones the
+  // sheet prints, frozen at issue or live for a draft.
   const publicRecord = {
     ...record,
+    techName: assembly.data.techName,
+    customer: assembly.data.customer,
+    vehicle: assembly.data.vehicle,
+    partItems: record.partItems.map((p) => ({
+      id: p.id,
+      partNumber: p.partNumber,
+      name: p.name,
+      quantity: p.quantity,
+      unit: p.unit,
+      unitPrice: p.unitPrice,
+      total: p.total,
+    })),
     attachments: record.attachments
       .filter((att) => att.includeInInvoice !== false)
       .map((att) => ({
@@ -216,64 +109,21 @@ export default async function PublicInvoicePage({
       })),
   }
 
-  // Parse layout config
-  const layoutConfig = mergeWithDefaults(
-    settingsMap['invoice.layoutConfig'] ? JSON.parse(settingsMap['invoice.layoutConfig']) : {}
-  )
-
-  // The document the workshop designed, built here from the real job so the
-  // page a customer opens is the sheet the designer shows and the PDF prints.
   const acceptLanguage = (await headers()).get('accept-language')
-  const locale = await resolveCustomerLocale(record.organizationId, acceptLanguage)
-  const labels = await loadPrintLabels(locale, settingsMap)
-
-  const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
-  const effectiveTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
-  const paymentSummary =
-    record.payments.length > 0 || record.manuallyPaid
-      ? {
-          totalPaid: record.manuallyPaid ? effectiveTotal : paidFromPayments,
-          payments: record.payments.map((p) => ({
-            amount: p.amount,
-            date: p.date.toLocaleDateString(),
-            method: p.method,
-          })),
-        }
-      : undefined
+  const locale = await resolveCustomerLocale(orgId, acceptLanguage)
+  const labels = await loadPrintLabels(locale, assembly.labelSettings)
 
   const torqvoiceLogoDataUri = features.brandingRemoved
     ? undefined
     : await getTorqvoiceLogoDataUri()
 
   const spec = buildInvoicePrintSpec({
-    data: { ...record, customFields, findings },
-    workshop,
-    invoiceSettings: {
-      ...invoiceSettings,
-      currencyCode,
-      currencyFormat,
-      unitSystem: settingsMap['workshop.unitSystem'] || undefined,
-      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
-      timezone: settingsMap['workshop.timezone'] || undefined,
-    },
-    paymentSummary,
-    logoDataUri: logoUrl || undefined,
-    template: {
-      primaryColor: settingsMap['invoice.primaryColor'] || '#d97706',
-      backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
-      textColor: settingsMap['invoice.textColor'] || undefined,
-      companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
-      frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
-      frameShadow: settingsMap['invoice.frameShadow'],
-      frameRadius: Number(settingsMap['invoice.frameRadius']) || 0,
-      frameSide: settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left',
-      fontFamily: settingsMap['invoice.fontFamily'] || 'Helvetica',
-      showLogo,
-      showCompanyName,
-      headerStyle: settingsMap['invoice.headerStyle'] || 'standard',
-      logoSize: Number(settingsMap['invoice.logoSize']) || 100,
-      layoutConfig,
-    },
+    data: assembly.data,
+    workshop: assembly.workshop,
+    invoiceSettings: assembly.invoiceSettings,
+    paymentSummary: assembly.paymentSummary,
+    logoDataUri: assembly.logoDataUri,
+    template: assembly.template,
     torqvoiceLogoDataUri,
     labels,
   })
@@ -291,7 +141,7 @@ export default async function PublicInvoicePage({
 
   // The bot follows the Telegram integration, whichever side of the move it
   // was connected on.
-  const telegramBotUsername = (await getOrgTelegramBotUsername(record.organizationId)) || ''
+  const telegramBotUsername = (await getOrgTelegramBotUsername(orgId)) || ''
   const telegramBotLink = telegramBotUsername ? `https://t.me/${telegramBotUsername}` : undefined
 
   return (
@@ -305,23 +155,23 @@ export default async function PublicInvoicePage({
       token={token}
       enabledProviders={enabledProviders}
       invoiceSettings={invoiceSettings}
-      logoUrl={logoUrl}
+      logoUrl={assembly.logoDataUri || ''}
       showLogo={showLogo}
       showCompanyName={showCompanyName}
       showTorqvoiceBranding={!features.brandingRemoved}
-      dateFormat={settingsMap['workshop.dateFormat'] || undefined}
-      timezone={settingsMap['workshop.timezone'] || undefined}
+      dateFormat={assembly.invoiceSettings.dateFormat}
+      timezone={assembly.invoiceSettings.timezone}
       termsOfSaleUrl={termsOfSaleUrl}
-      primaryColor={settingsMap['invoice.primaryColor'] || '#d97706'}
-      headerStyle={settingsMap['invoice.headerStyle'] || 'standard'}
-      logoSize={Number(settingsMap['invoice.logoSize']) || 100}
+      primaryColor={assembly.template.primaryColor || '#d97706'}
+      headerStyle={assembly.template.headerStyle || 'standard'}
+      logoSize={assembly.template.logoSize || 100}
       portalUrl={portalUrl}
-      layoutConfig={layoutConfig}
-      customFields={customFields}
-      findings={findings}
+      layoutConfig={assembly.layoutConfig}
+      customFields={assembly.data.customFields}
+      findings={assembly.data.findings}
       telegramBotLink={telegramBotLink}
-      serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
-      taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
+      serviceType={assembly.serviceType}
+      taxLabel={assembly.taxLabel}
     />
   )
 }

@@ -79,7 +79,13 @@
       "typePrompt": "Type a name...",
       "boardTechnicians": "Board Technicians",
       "teamMembers": "Team Members"
-    }
+    },
+    "design": "Invoice design",
+    "designDefault": "Workshop default",
+    "designFollowing": "Default ({name})",
+    "designPinned": "The sheet was frozen when the invoice was issued on {date}. A new choice applies to the next copy sent.",
+    "designSaved": "Invoice design updated",
+    "designSaveFailed": "Could not change the invoice design"
   },
   "parts": {
     "title": "Parts",

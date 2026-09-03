@@ -11,12 +11,10 @@ import { PDFDocument } from 'pdf-lib'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
-import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
-import { formatDateForPdf } from '@/lib/format'
-import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
+import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -26,121 +24,32 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Load locale-based PDF translations
-    const cookieStore = await cookies()
-    const locale = cookieStore.get('locale')?.value || 'en'
-    let pdfMessages: Record<string, Record<string, string>>
-    try {
-      pdfMessages = (await import(`../../../../../../../messages/${locale}/pdf.json`)).default
-    } catch {
-      pdfMessages = (await import(`../../../../../../../messages/en/pdf.json`)).default
-    }
-    const labels = {
-      ...pdfMessages.invoice,
-      ...pdfMessages.common,
-    }
-
     const { id } = await params
 
-    const [record, settings, org] = await Promise.all([
-      db.serviceRecord.findFirst({
-        where: { id, organizationId: ctx.organizationId },
-        include: {
-          partItems: true,
-          laborItems: true,
-          attachments: true,
-          payments: { orderBy: { date: 'desc' } },
-          // Pull the linked technician's current name as the source of truth.
-          // The denormalized `techName` field can drift out of sync; the FK
-          // relation is always correct. The PDF prefers technician.name and
-          // falls back to techName for legacy records that have no FK.
-          technician: { select: { name: true } },
-          customer: {
-            select: {
-              name: true,
-              email: true,
-              phone: true,
-              address: true,
-              company: true,
-              taxId: true,
-              customerNumber: true,
-            },
-          },
-          vehicle: {
-            select: {
-              make: true,
-              model: true,
-              year: true,
-              vin: true,
-              licensePlate: true,
-              mileage: true,
-              customer: {
-                select: {
-                  name: true,
-                  email: true,
-                  phone: true,
-                  address: true,
-                  company: true,
-                  taxId: true,
-                  customerNumber: true,
-                },
-              },
-            },
-          },
-        },
-      }),
-      db.appSetting.findMany({
-        where: { organizationId: ctx.organizationId },
-      }),
-      db.organization.findUnique({
-        where: { id: ctx.organizationId },
-        select: { name: true, portalSlug: true },
-      }),
-    ])
-
-    if (!record) {
+    const owned = await db.serviceRecord.findFirst({
+      where: { id, organizationId: ctx.organizationId },
+      select: { id: true },
+    })
+    if (!owned) {
       return NextResponse.json({ error: 'Record not found' }, { status: 404 })
     }
+
+    // What the sheet says: an issued invoice from its snapshots, a draft
+    // from live rows. Everything below adds what is not part of the document.
+    const assembly = await assembleInvoicePrint(owned.id)
+    if (!assembly) {
+      return NextResponse.json({ error: 'Record not found' }, { status: 404 })
+    }
+    const { record, settingsMap, org, layoutConfig } = assembly
 
     // Getting-started checklist: a downloaded invoice leaves no other trace
     // in the data, so record it here. Best-effort, never blocks the PDF.
     void markInvoiceIssued(ctx.organizationId, ctx.userId, record.id)
 
-    // Fetch findings for this service record (open ones to show on invoice)
-    const findings = await db.vehicleFinding.findMany({
-      where: { serviceRecordId: record.id, status: { not: 'resolved' } },
-      select: { description: true, severity: true, notes: true },
-      orderBy: { createdAt: 'desc' },
-    })
-
-    // Custom fields for this service record (definition defaults included)
-    const customFields = await getCustomFieldsForPrint(
-      ctx.organizationId,
-      record.id,
-      'service_record'
-    )
-
-    // Build settings map
-    const settingsMap: Record<string, string> = {}
-    for (const s of settings) settingsMap[s.key] = s.value
-
-    // Override labels for marine service type
-    const serviceType = settingsMap['workshop.serviceType'] || 'automotive'
-    if (serviceType === 'marine') {
-      if (pdfMessages.invoice.mileageMarine) labels.mileage = pdfMessages.invoice.mileageMarine
-      if (pdfMessages.invoice.vinMarine) labels.vin = pdfMessages.invoice.vinMarine
-      if (pdfMessages.invoice.plateMarine) labels.plate = pdfMessages.invoice.plateMarine
-      if (pdfMessages.invoice.vehicleMarine) labels.vehicle = pdfMessages.invoice.vehicleMarine
-      // Override unit labels for engine hours
-      labels.km = 'hrs'
-      labels.mi = 'hrs'
-    }
-
-    // Custom tax label override (e.g. "VAT", "MVA", "GST", "MwSt.")
-    const customTaxLabel = settingsMap['workshop.taxLabel']?.trim()
-    if (customTaxLabel) {
-      labels.tax = `${customTaxLabel} ({rate}%)`
-    }
+    // Load locale-based PDF translations
+    const cookieStore = await cookies()
+    const locale = cookieStore.get('locale')?.value || 'en'
+    const labels = await loadPrintLabels(locale, assembly.labelSettings)
 
     // Load image attachments as base64 data URIs for PDF embedding
     const imageAttachments: { fileName: string; dataUri: string; description?: string }[] = []
@@ -185,107 +94,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       }
     }
 
-    // The document's own mark when it has one, the company logo otherwise.
-    let logoDataUri: string | undefined
-    const logoPath = documentLogoPath(settingsMap, 'invoice')
-    if (logoPath) {
-      try {
-        const fullPath = resolveUploadPath(logoPath)
-        const logoBuffer = await readFile(fullPath)
-        const ext = logoPath.split('.').pop()?.toLowerCase() || 'png'
-        const mimeMap: Record<string, string> = {
-          png: 'image/png',
-          jpg: 'image/jpeg',
-          jpeg: 'image/jpeg',
-          webp: 'image/webp',
-          svg: 'image/svg+xml',
-        }
-        const mime = mimeMap[ext] || 'image/png'
-        logoDataUri = `data:${mime};base64,${logoBuffer.toString('base64')}`
-      } catch {
-        // Logo file not found, skip
-      }
-    }
-
-    const invoiceSettings = {
-      bankAccount: settingsMap['invoice.bankAccount'] || '',
-      orgNumber: settingsMap['invoice.orgNumber'] || '',
-      paymentTerms: settingsMap['invoice.paymentTerms'] || '',
-      footerNote: settingsMap['invoice.footerNote'] || '',
-      showBankAccount: settingsMap['invoice.showBankAccount'] === 'true',
-      showOrgNumber: settingsMap['invoice.showOrgNumber'] === 'true',
-      dueDays: Number(settingsMap['invoice.dueDays']) || 0,
-      currencyCode: settingsMap['workshop.currencyCode'] || 'USD',
-      currencyFormat: (settingsMap['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol') as
-        | 'symbol'
-        | 'code',
-      unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
-      dateFormat: settingsMap['workshop.dateFormat'] || undefined,
-      timezone: settingsMap['workshop.timezone'] || undefined,
-    }
-
-    // Build payment summary
-    const pdfDateFormat = settingsMap['workshop.dateFormat'] || undefined
-    const pdfTimezone = settingsMap['workshop.timezone'] || undefined
-
-    const paidFromPayments =
-      record.payments?.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0) ?? 0
-    const effectiveTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
-    const totalPaidForPdf = record.manuallyPaid ? effectiveTotal : paidFromPayments
-
-    const paymentSummary =
-      (record.payments && record.payments.length > 0) || record.manuallyPaid
-        ? {
-            totalPaid: totalPaidForPdf,
-            payments: (record.payments || []).map(
-              (p: { amount: number; date: Date; method: string }) => ({
-                amount: p.amount,
-                date: formatDateForPdf(p.date, pdfDateFormat, pdfTimezone),
-                method: p.method,
-              })
-            ),
-          }
-        : undefined
-
-    // Fetch layout config
-    const layoutConfigSetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: { organizationId: ctx.organizationId, key: 'invoice.layoutConfig' },
-      },
-    })
-    const layoutConfig = mergeWithDefaults(
-      layoutConfigSetting?.value ? JSON.parse(layoutConfigSetting.value) : {}
-    )
-
-    const template = {
-      primaryColor:
-        settingsMap['invoice.primaryColor'] ||
-        settingsMap['invoice.template.primaryColor'] ||
-        '#d97706',
-      backgroundColor: settingsMap['invoice.backgroundColor'] || undefined,
-      textColor: settingsMap['invoice.textColor'] || undefined,
-      companyTextColor: settingsMap['invoice.companyTextColor'] || undefined,
-      frameBorderColor: settingsMap['invoice.frameBorderColor'] || undefined,
-      frameShadow: settingsMap['invoice.frameShadow'],
-      frameRadius: Number(settingsMap['invoice.frameRadius']) || 0,
-      frameSide: (settingsMap['invoice.frameSide'] === 'right' ? 'right' : 'left') as
-        | 'left'
-        | 'right',
-      fontFamily:
-        settingsMap['invoice.fontFamily'] ||
-        settingsMap['invoice.template.fontFamily'] ||
-        'Helvetica',
-      showLogo:
-        (settingsMap['invoice.showLogo'] ?? settingsMap['invoice.template.showLogo']) !== 'false',
-      showCompanyName: settingsMap['invoice.showCompanyName'] !== 'false',
-      headerStyle:
-        settingsMap['invoice.headerStyle'] ||
-        settingsMap['invoice.template.headerStyle'] ||
-        'standard',
-      logoSize: Number(settingsMap['invoice.logoSize']) || 100,
-      layoutConfig,
-    }
-
     // Check if Torqvoice branding should be shown
     const features = await getFeatures(ctx.organizationId)
     let torqvoiceLogoDataUri: string | undefined
@@ -312,21 +120,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }
 
     const element = React.createElement(InvoicePDF, {
-      data: { ...record, customFields, findings },
-      workshop: {
-        name: org?.name || '',
-        address: settingsMap['workshop.address'] || '',
-        phone: settingsMap['workshop.phone'] || '',
-        email: settingsMap['workshop.email'] || '',
-        slogan: settingsMap['workshop.slogan'] || undefined,
-      },
-      invoiceSettings,
-      paymentSummary,
+      data: assembly.data,
+      workshop: assembly.workshop,
+      invoiceSettings: assembly.invoiceSettings,
+      paymentSummary: assembly.paymentSummary,
       imageAttachments,
       otherAttachments,
       pdfAttachmentNames: pdfAttachments.map((a) => a.fileName),
-      logoDataUri,
-      template,
+      logoDataUri: assembly.logoDataUri,
+      template: assembly.template,
       torqvoiceLogoDataUri,
       portalUrl,
       telegramQrDataUri,
@@ -336,7 +138,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }) as any
     const invoiceBuffer = await renderToBuffer(element)
 
-    const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
+    const invoiceNum = invoiceNumberOf(record)
 
     // Merge attached PDF diagnostic reports into the invoice
     let finalBuffer: ArrayBuffer

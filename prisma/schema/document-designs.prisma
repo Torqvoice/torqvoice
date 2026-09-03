@@ -1,0 +1,69 @@
+/// A look for a document, saved under a name: the arrangement the designer
+/// edits and the colours and type around it. A workshop keeps several, one
+/// of them in use by default, and points an invoice or a customer at another
+/// when the default is wrong for them: a business that becomes GST registered
+/// keeps "Invoice" for its old paper and prints "Tax Invoice" from now on.
+///
+/// Rows used to live as one JSON list in a settings row. They are rows now
+/// because invoices and customers reference them, and a reference into a
+/// blob cannot be kept honest by the database.
+model DocumentDesign {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// invoice | quote
+  documentType   String
+  name           String
+  /// InvoiceLayoutConfig as saved, before defaults are merged in.
+  layout         Json
+  /// DesignerTemplate: the colours, type, header style and logo.
+  template       Json
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  serviceRecords ServiceRecord[]
+  customers      Customer[]
+
+  @@index([organizationId, documentType])
+  @@map("document_designs")
+}
+
+/// A design exactly as it was when a document was issued, kept once per
+/// distinct content and shared by every document issued with it. An issued
+/// invoice reads its look from here and never from the live design, so
+/// editing or deleting a design cannot change paper a customer already holds.
+/// The hash is over the canonical JSON of layout and template, so the same
+/// design issued a thousand times costs one row.
+model DocumentDesignSnapshot {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  hash           String
+  layout         Json
+  template       Json
+  createdAt      DateTime     @default(now())
+
+  serviceRecords ServiceRecord[]
+
+  @@unique([organizationId, hash])
+  @@map("document_design_snapshots")
+}
+
+/// A file as it was when a document was issued. Today that is the logo: the
+/// upload route deletes the previous file when a new one arrives, so a path
+/// alone would leave old invoices printing the new mark, or none. Keyed by
+/// content hash for the same reason as the design snapshots.
+model DocumentAssetSnapshot {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  hash           String
+  mimeType       String
+  data           Bytes
+  createdAt      DateTime     @default(now())
+
+  serviceRecords ServiceRecord[]
+
+  @@unique([organizationId, hash])
+  @@map("document_asset_snapshots")
+}

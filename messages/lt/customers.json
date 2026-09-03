@@ -92,7 +92,10 @@
     "customerNumberAuto": "Autom.",
     "sectionContact": "Kontaktai",
     "sectionBilling": "Atsiskaitymas",
-    "addScannedVehicle": "Pridėti transporto priemonę {vehicle}"
+    "addScannedVehicle": "Pridėti transporto priemonę {vehicle}",
+    "invoiceDesign": "Sąskaitos dizainas",
+    "invoiceDesignDefault": "Dirbtuvės numatytasis",
+    "invoiceDesignHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvės numatytojo. Sąskaita vis tiek gali pasirinkti savo."
   },
   "serviceRequests": {
     "statusNew": "Nauja",

@@ -1964,7 +1964,12 @@
     "leaveTitle": "Sair sem salvar?",
     "leaveBody": "Suas alterações neste design não foram salvas e serão perdidas.",
     "leaveConfirm": "Sair",
-    "boldField": "Negrito"
+    "boldField": "Negrito",
+    "deleteDesignDrafts": "{count, plural, one {# rascunho de fatura} other {# rascunhos de fatura}} que o usam voltarão ao design padrão.",
+    "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clientes}} definidos com ele voltarão ao design padrão.",
+    "setDefault": "Definir como padrão",
+    "defaultSet": "\"{name}\" está em uso agora",
+    "couldNotSetDefault": "Não foi possível definir o design padrão"
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

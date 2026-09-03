@@ -155,7 +155,11 @@
     "import_commit": "Импортирована таблица",
     "import_undo": "Отменён импорт",
     "integration_connect": "Подключена интеграция",
-    "integration_disconnect": "Отключена интеграция"
+    "integration_disconnect": "Отключена интеграция",
+    "service_setInvoiceDesign": "Изменён дизайн счёта",
+    "settings_saveDocumentDesign": "Сохранён дизайн документа",
+    "settings_deleteDocumentDesign": "Удалён дизайн документа",
+    "settings_applyDocumentDesign": "Установлен дизайн документа по умолчанию"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -283,6 +287,10 @@
     "import_commit": "Импортирована таблица, создано записей: {count}",
     "import_undo": "Отменён импорт таблицы, удалено записей: {records}",
     "integration_connect": "Подключена интеграция {name}",
-    "integration_disconnect": "Отключена интеграция {name}"
+    "integration_disconnect": "Отключена интеграция {name}",
+    "service_setInvoiceDesign": "Изменил, с каким дизайном печатается счёт",
+    "settings_saveDocumentDesign": "Сохранил дизайн документа {name}",
+    "settings_deleteDocumentDesign": "Удалил дизайн документа {name}",
+    "settings_applyDocumentDesign": "Сделал {name} дизайном документа по умолчанию"
   }
 }

@@ -25,6 +25,11 @@ vi.mock('@/lib/notification-bus', () => ({
   notificationBus: { publish: vi.fn(), emit: vi.fn() },
 }))
 vi.mock('@/lib/audit', () => ({ logAudit: vi.fn() }))
+// Sending and paying freeze what the invoice prints. That capture reads the
+// whole record and the workshop's files; here only the lock is under test.
+vi.mock('@/features/invoices/Lib/issueInvoice', () => ({
+  issueInvoice: vi.fn().mockResolvedValue(false),
+}))
 
 vi.mock('@/lib/db', () => ({
   db: {

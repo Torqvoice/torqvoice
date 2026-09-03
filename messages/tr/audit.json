@@ -155,7 +155,11 @@
     "import_commit": "Hesap Tablosu İçe Aktarıldı",
     "import_undo": "İçe Aktarma Geri Alındı",
     "integration_connect": "Entegrasyon bağlandı",
-    "integration_disconnect": "Entegrasyon bağlantısı kesildi"
+    "integration_disconnect": "Entegrasyon bağlantısı kesildi",
+    "service_setInvoiceDesign": "Fatura tasarımı değiştirildi",
+    "settings_saveDocumentDesign": "Belge tasarımı kaydedildi",
+    "settings_deleteDocumentDesign": "Belge tasarımı silindi",
+    "settings_applyDocumentDesign": "Varsayılan belge tasarımı ayarlandı"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -283,6 +287,10 @@
     "import_commit": "Bir hesap tablosu içe aktarıldı: {count} kayıt oluşturuldu",
     "import_undo": "Bir hesap tablosu içe aktarması geri alındı: {records} kayıt kaldırıldı",
     "integration_connect": "{name} bağlandı",
-    "integration_disconnect": "{name} bağlantısı kesildi"
+    "integration_disconnect": "{name} bağlantısı kesildi",
+    "service_setInvoiceDesign": "Bir faturanın hangi tasarımla yazdırılacağını değiştirdi",
+    "settings_saveDocumentDesign": "{name} belge tasarımını kaydetti",
+    "settings_deleteDocumentDesign": "{name} belge tasarımını sildi",
+    "settings_applyDocumentDesign": "{name} tasarımını varsayılan belge tasarımı yaptı"
   }
 }

@@ -1964,7 +1964,12 @@
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
     "leaveConfirm": "Çık",
-    "boldField": "Kalın"
+    "boldField": "Kalın",
+    "deleteDesignDrafts": "Bunu kullanan {count, plural, one {# taslak fatura} other {# taslak fatura}} varsayılan tasarıma döner.",
+    "deleteDesignCustomers": "Buna ayarlı {count, plural, one {# müşteri} other {# müşteri}} varsayılan tasarıma döner.",
+    "setDefault": "Varsayılan yap",
+    "defaultSet": "\"{name}\" artık kullanımda",
+    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

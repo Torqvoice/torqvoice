@@ -1964,7 +1964,12 @@
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
     "leaveConfirm": "Išeiti",
-    "boldField": "Paryškinta"
+    "boldField": "Paryškinta",
+    "deleteDesignDrafts": "{count, plural, one {# sąskaitos juodraštis} few {# sąskaitų juodraščiai} other {# sąskaitų juodraščių}}, kurie jį naudoja, grįš prie numatytojo dizaino.",
+    "deleteDesignCustomers": "{count, plural, one {# klientas} few {# klientai} other {# klientų}}, kuriems jis priskirtas, grįš prie numatytojo dizaino.",
+    "setDefault": "Nustatyti kaip numatytąjį",
+    "defaultSet": "„{name}“ dabar naudojamas",
+    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

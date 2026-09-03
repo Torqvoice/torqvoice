@@ -9,6 +9,7 @@ import {
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
+import { listDocumentDesigns } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceDesigner'
 import { DismissOnArrival } from '@/components/feature-hint'
 import { INVOICE_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
@@ -28,26 +29,36 @@ export default async function InvoiceDesignerPage({
   // gate the settings page used applies here.
   if (!features.customTemplates) redirect('/settings/templates')
 
-  const [settingsResult, invoiceLayout, quoteLayout, organization, customFieldsResult, seenRow] =
-    await Promise.all([
-      getSettings(),
-      getInvoiceLayoutConfig(),
-      getQuoteLayoutConfig(),
-      db.organization.findUnique({
-        where: { id: data.organizationId },
-        select: { name: true },
-      }),
-      features.customFields ? getFieldDefinitions() : Promise.resolve({ success: true, data: [] }),
-      db.appSetting.findUnique({
-        where: {
-          organizationId_key: {
-            organizationId: data.organizationId,
-            key: SETTING_KEYS.FEATURE_HINTS_SEEN,
-          },
+  const [
+    settingsResult,
+    invoiceLayout,
+    quoteLayout,
+    organization,
+    customFieldsResult,
+    seenRow,
+    invoiceDesigns,
+    quoteDesigns,
+  ] = await Promise.all([
+    getSettings(),
+    getInvoiceLayoutConfig(),
+    getQuoteLayoutConfig(),
+    db.organization.findUnique({
+      where: { id: data.organizationId },
+      select: { name: true },
+    }),
+    features.customFields ? getFieldDefinitions() : Promise.resolve({ success: true, data: [] }),
+    db.appSetting.findUnique({
+      where: {
+        organizationId_key: {
+          organizationId: data.organizationId,
+          key: SETTING_KEYS.FEATURE_HINTS_SEEN,
         },
-        select: { value: true },
-      }),
-    ])
+      },
+      select: { value: true },
+    }),
+    listDocumentDesigns('invoice'),
+    listDocumentDesigns('quote'),
+  ])
 
   // Somebody is looking at the designer, so the workshop knows it exists. Only
   // written when the card is still outstanding, to keep a settled announcement
@@ -56,15 +67,13 @@ export default async function InvoiceDesignerPage({
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
 
-  let savedDesigns: unknown = []
-  try {
-    savedDesigns = settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS]
-      ? JSON.parse(settings[SETTING_KEYS.DESIGNER_SAVED_DESIGNS])
-      : []
-    if (!Array.isArray(savedDesigns)) savedDesigns = []
-  } catch {
-    savedDesigns = []
-  }
+  // One gallery for both documents, as before: a design saved on the quote
+  // canvas is as much a starting point for the invoice as the other way
+  // round. Invoice designs first, because that is what most of them are.
+  const savedDesigns: SavedDesign[] = [
+    ...(invoiceDesigns.success && invoiceDesigns.data ? invoiceDesigns.data : []),
+    ...(quoteDesigns.success && quoteDesigns.data ? quoteDesigns.data : []),
+  ]
   const { doc, view, preset, design } = await searchParams
 
   const templateFor = (prefix: 'invoice' | 'quote') => ({
@@ -101,7 +110,17 @@ export default async function InvoiceDesignerPage({
         quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
         invoiceTemplate={templateFor('invoice')}
         quoteTemplate={templateFor('quote')}
-        initialSavedDesigns={savedDesigns as SavedDesign[]}
+        initialSavedDesigns={savedDesigns}
+        workshop={{
+          name: organization?.name || '',
+          address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] || '',
+          phone: settings[SETTING_KEYS.WORKSHOP_PHONE] || '',
+          email: settings[SETTING_KEYS.WORKSHOP_EMAIL] || '',
+          slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] || '',
+          orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || '',
+          paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
+          logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+        }}
         customFields={
           customFieldsResult.success && customFieldsResult.data
             ? customFieldsResult.data
@@ -116,16 +135,6 @@ export default async function InvoiceDesignerPage({
                 .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
             : []
         }
-        workshop={{
-          name: organization?.name ?? '',
-          address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] ?? '',
-          phone: settings[SETTING_KEYS.WORKSHOP_PHONE] ?? '',
-          email: settings[SETTING_KEYS.WORKSHOP_EMAIL] ?? '',
-          slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] ?? '',
-          orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] ?? '',
-          paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] ?? '',
-          logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] ?? '',
-        }}
       />
     </>
   )

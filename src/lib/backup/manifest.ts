@@ -52,6 +52,31 @@ export interface BackupEntity {
 
 export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'AppSetting', key: 'settings', option: 'settings', restore: 'replace', clearOrder: 90 },
+  // Named designs go with settings, which is where their default lives.
+  // Cleared before settings and after everything that points at them.
+  {
+    model: 'DocumentDesign',
+    key: 'documentDesigns',
+    option: 'settings',
+    restore: 'replace',
+    clearOrder: 88,
+  },
+  // What issued invoices were issued with. Service records point at these
+  // with Restrict, so they clear only after every service record has.
+  {
+    model: 'DocumentDesignSnapshot',
+    key: 'documentDesignSnapshots',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 55,
+  },
+  {
+    model: 'DocumentAssetSnapshot',
+    key: 'documentAssetSnapshots',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 56,
+  },
   { model: 'Customer', key: 'customers', option: 'customers', restore: 'replace', clearOrder: 80 },
   {
     model: 'CustomFieldDefinition',

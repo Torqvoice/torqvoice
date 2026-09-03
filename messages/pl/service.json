@@ -79,7 +79,13 @@
       "typePrompt": "Wpisz nazwę...",
       "boardTechnicians": "Technicy z Tablicy",
       "teamMembers": "Członkowie Zespołu"
-    }
+    },
+    "design": "Projekt faktury",
+    "designDefault": "Domyślny warsztatu",
+    "designFollowing": "Domyślny ({name})",
+    "designPinned": "Arkusz został zamrożony przy wystawieniu faktury {date}. Nowy wybór dotyczy następnej wysłanej kopii.",
+    "designSaved": "Projekt faktury zaktualizowany",
+    "designSaveFailed": "Nie udało się zmienić projektu faktury"
   },
   "parts": {
     "title": "Części",

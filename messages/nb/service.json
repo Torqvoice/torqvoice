@@ -79,7 +79,13 @@
       "typePrompt": "Skriv navn...",
       "boardTechnicians": "Tavleteknikere",
       "teamMembers": "Lagmedlemmer"
-    }
+    },
+    "design": "Fakturadesign",
+    "designDefault": "Verkstedets standard",
+    "designFollowing": "Standard ({name})",
+    "designPinned": "Arket ble fryst da fakturaen ble utstedt {date}. Et nytt valg gjelder neste kopi som sendes.",
+    "designSaved": "Fakturadesign oppdatert",
+    "designSaveFailed": "Kunne ikke endre fakturadesignet"
   },
   "parts": {
     "title": "Deler",

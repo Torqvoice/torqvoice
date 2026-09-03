@@ -14,8 +14,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Check, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { setInvoiceDesign } from '@/features/invoices/Actions/invoiceDesignActions'
 import type { InitialData } from './form-types'
+
+export interface DesignOption {
+  id: string
+  name: string
+}
+
+/** The value the picker uses for "follow the default": Radix reserves "". */
+const FOLLOW_DEFAULT = '__default__'
 
 interface InvoiceDetailsSectionProps {
   initialData: InitialData
@@ -29,6 +40,14 @@ interface InvoiceDetailsSectionProps {
   paymentStatus: string
   onTogglePaid: () => void
   paymentLoading?: boolean
+  /** The workshop's saved invoice designs. No picker when there are none. */
+  designOptions?: DesignOption[]
+  /** The design this invoice chose, or null to follow the default. */
+  designId?: string | null
+  /** What "default" resolves to for this invoice, when it has a name. */
+  designFollowsName?: string | null
+  /** When the sheet was frozen, ISO. Set only while it prints from that copy. */
+  designPinnedAt?: string | null
 }
 
 export function InvoiceDetailsSection({
@@ -42,8 +61,36 @@ export function InvoiceDetailsSection({
   paymentStatus,
   onTogglePaid,
   paymentLoading,
+  designOptions = [],
+  designId = null,
+  designFollowsName = null,
+  designPinnedAt = null,
 }: InvoiceDetailsSectionProps) {
   const t = useTranslations('service.basicInfo')
+  const router = useRouter()
+  // Saved on change rather than with the form: the choice is its own edit,
+  // the way the schedule card's technician is, and must not wait for a save
+  // of lines it has nothing to do with.
+  const [design, setDesign] = useState(designId ?? FOLLOW_DEFAULT)
+  const [savingDesign, setSavingDesign] = useState(false)
+  useEffect(() => {
+    setDesign(designId ?? FOLLOW_DEFAULT)
+  }, [designId])
+
+  const changeDesign = async (value: string) => {
+    const previous = design
+    setDesign(value)
+    setSavingDesign(true)
+    const result = await setInvoiceDesign(initialData.id, value === FOLLOW_DEFAULT ? null : value)
+    setSavingDesign(false)
+    if (result.success) {
+      toast.success(t('designSaved'))
+      router.refresh()
+    } else {
+      setDesign(previous)
+      toast.error(t('designSaveFailed'))
+    }
+  }
   // ISO YYYY-MM-DD strings, matching the native date input's value format
   const [invoiceDate, setInvoiceDate] = useState(initialData.invoiceDate || '')
   const [invoiceDueDate, setInvoiceDueDate] = useState(initialData.invoiceDueDate || '')
@@ -179,6 +226,34 @@ export function InvoiceDetailsSection({
           />
         </div>
       </div>
+
+      {designOptions.length > 0 && (
+        <div className="space-y-1">
+          <Label className="text-xs">{t('design')}</Label>
+          <Select value={design} onValueChange={(v) => void changeDesign(v)}>
+            <SelectTrigger className="w-full" disabled={savingDesign}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={FOLLOW_DEFAULT}>
+                {designFollowsName
+                  ? t('designFollowing', { name: designFollowsName })
+                  : t('designDefault')}
+              </SelectItem>
+              {designOptions.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {designPinnedAt && (
+            <p className="text-xs text-muted-foreground">
+              {t('designPinned', { date: new Date(designPinnedAt).toLocaleDateString() })}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

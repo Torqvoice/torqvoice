@@ -1964,7 +1964,12 @@
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
     "leaveConfirm": "Wyjdź",
-    "boldField": "Pogrubienie"
+    "boldField": "Pogrubienie",
+    "deleteDesignDrafts": "{count, plural, one {# szkic faktury} few {# szkice faktur} many {# szkiców faktur} other {# szkicu faktury}} z tym projektem wróci do projektu domyślnego.",
+    "deleteDesignCustomers": "{count, plural, one {# klient} few {# klientów} many {# klientów} other {# klienta}} z tym projektem wróci do projektu domyślnego.",
+    "setDefault": "Ustaw jako domyślny",
+    "defaultSet": "„{name}” jest teraz w użyciu",
+    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

@@ -155,7 +155,11 @@
     "import_commit": "Imported Spreadsheet",
     "import_undo": "Undid Import",
     "integration_connect": "Connected Integration",
-    "integration_disconnect": "Disconnected Integration"
+    "integration_disconnect": "Disconnected Integration",
+    "service_setInvoiceDesign": "Changed Invoice Design",
+    "settings_saveDocumentDesign": "Saved Document Design",
+    "settings_deleteDocumentDesign": "Deleted Document Design",
+    "settings_applyDocumentDesign": "Set Default Document Design"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -283,6 +287,10 @@
     "import_commit": "Imported a spreadsheet: {count} records created",
     "import_undo": "Undid a spreadsheet import: {records} records removed",
     "integration_connect": "Connected {name}",
-    "integration_disconnect": "Disconnected {name}"
+    "integration_disconnect": "Disconnected {name}",
+    "service_setInvoiceDesign": "Changed which design an invoice prints with",
+    "settings_saveDocumentDesign": "Saved the document design {name}",
+    "settings_deleteDocumentDesign": "Deleted the document design {name}",
+    "settings_applyDocumentDesign": "Made {name} the default document design"
   }
 }

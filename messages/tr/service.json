@@ -79,7 +79,13 @@
       "typePrompt": "Adını yazın...",
       "boardTechnicians": "Pano Teknisyenleri",
       "teamMembers": "Takım Üyeleri"
-    }
+    },
+    "design": "Fatura tasarımı",
+    "designDefault": "Atölye varsayılanı",
+    "designFollowing": "Varsayılan ({name})",
+    "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim bir sonraki gönderilen kopyaya uygulanır.",
+    "designSaved": "Fatura tasarımı güncellendi",
+    "designSaveFailed": "Fatura tasarımı değiştirilemedi"
   },
   "parts": {
     "title": "Parçalar",

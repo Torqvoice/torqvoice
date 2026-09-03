@@ -1964,7 +1964,12 @@
     "leaveTitle": "Uscire senza salvare?",
     "leaveBody": "Le modifiche a questo design non sono state salvate e andranno perse.",
     "leaveConfirm": "Esci",
-    "boldField": "Grassetto"
+    "boldField": "Grassetto",
+    "deleteDesignDrafts": "{count, plural, one {# bozza di fattura} other {# bozze di fattura}} che lo usano torneranno al design predefinito.",
+    "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clienti}} impostati su di esso torneranno al design predefinito.",
+    "setDefault": "Imposta come predefinito",
+    "defaultSet": "«{name}» è ora in uso",
+    "couldNotSetDefault": "Impossibile impostare il design predefinito"
   },
   "preview": {
     "title": "Servizio freni e cambio olio",

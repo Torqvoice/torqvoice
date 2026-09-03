@@ -90,9 +90,6 @@ export const SETTING_KEYS = {
   QUOTE_FRAME_SHADOW: 'quote.frameShadow',
   QUOTE_FRAME_SIDE: 'quote.frameSide',
   QUOTE_FRAME_RADIUS: 'quote.frameRadius',
-  /// The workshop's own saved designs: a JSON list of named layout+template
-  /// snapshots the designer can bring back after trying something else.
-  DESIGNER_SAVED_DESIGNS: 'designer.savedDesigns',
   /// What the current design is based on: "preset:<id>" or "design:<id>".
   INVOICE_ACTIVE_DESIGN: 'invoice.activeDesign',
   QUOTE_ACTIVE_DESIGN: 'quote.activeDesign',

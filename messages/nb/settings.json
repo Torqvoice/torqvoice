@@ -1964,7 +1964,12 @@
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
-    "boldField": "Fet"
+    "boldField": "Fet",
+    "deleteDesignDrafts": "{count, plural, one {# fakturautkast} other {# fakturautkast}} som bruker det, går tilbake til standarddesignet.",
+    "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
+    "setDefault": "Bruk som standard",
+    "defaultSet": "«{name}» er nå i bruk",
+    "couldNotSetDefault": "Kunne ikke sette standarddesignet"
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

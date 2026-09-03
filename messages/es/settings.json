@@ -1964,7 +1964,12 @@
     "leaveTitle": "¿Salir sin guardar?",
     "leaveBody": "Los cambios de este diseño no se han guardado y se perderán.",
     "leaveConfirm": "Salir",
-    "boldField": "Negrita"
+    "boldField": "Negrita",
+    "deleteDesignDrafts": "{count, plural, one {# borrador de factura} other {# borradores de factura}} que lo usan volverán al diseño predeterminado.",
+    "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clientes}} asignados a él volverán al diseño predeterminado.",
+    "setDefault": "Establecer como predeterminado",
+    "defaultSet": "«{name}» está ahora en uso",
+    "couldNotSetDefault": "No se pudo establecer el diseño predeterminado"
   },
   "preview": {
     "title": "Servicio de frenos y cambio de aceite",

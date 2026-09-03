@@ -92,7 +92,10 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Contacto",
     "sectionBilling": "Facturación",
-    "addScannedVehicle": "Añadir el vehículo {vehicle}"
+    "addScannedVehicle": "Añadir el vehículo {vehicle}",
+    "invoiceDesign": "Diseño de factura",
+    "invoiceDesignDefault": "Predeterminado del taller",
+    "invoiceDesignHint": "Las facturas de este cliente se imprimen con este diseño en lugar del predeterminado del taller. Una factura puede elegir el suyo."
   },
   "serviceRequests": {
     "statusNew": "Nuevo",

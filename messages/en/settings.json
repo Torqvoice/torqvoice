@@ -1964,7 +1964,12 @@
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this design have not been saved. They will be lost.",
     "leaveConfirm": "Leave",
-    "boldField": "Bold"
+    "boldField": "Bold",
+    "deleteDesignDrafts": "{count, plural, one {# draft invoice} other {# draft invoices}} using it will go back to the default design.",
+    "deleteDesignCustomers": "{count, plural, one {# customer} other {# customers}} set to it will go back to the default design.",
+    "setDefault": "Set as default",
+    "defaultSet": "\"{name}\" is now in use",
+    "couldNotSetDefault": "Could not set the default design"
   },
   "preview": {
     "title": "Brake Service & Oil Change",

@@ -1964,7 +1964,12 @@
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
     "leaveConfirm": "Verlassen",
-    "boldField": "Fett"
+    "boldField": "Fett",
+    "deleteDesignDrafts": "{count, plural, one {# Rechnungsentwurf} other {# Rechnungsentwürfe}} mit diesem Design fallen auf das Standarddesign zurück.",
+    "deleteDesignCustomers": "{count, plural, one {# Kunde} other {# Kunden}} mit diesem Design fallen auf das Standarddesign zurück.",
+    "setDefault": "Als Standard festlegen",
+    "defaultSet": "„{name}“ wird jetzt verwendet",
+    "couldNotSetDefault": "Standarddesign konnte nicht festgelegt werden"
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

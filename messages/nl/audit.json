@@ -155,7 +155,11 @@
     "import_commit": "Spreadsheet geïmporteerd",
     "import_undo": "Import ongedaan gemaakt",
     "integration_connect": "Integratie gekoppeld",
-    "integration_disconnect": "Integratie losgekoppeld"
+    "integration_disconnect": "Integratie losgekoppeld",
+    "service_setInvoiceDesign": "Factuurontwerp gewijzigd",
+    "settings_saveDocumentDesign": "Documentontwerp opgeslagen",
+    "settings_deleteDocumentDesign": "Documentontwerp verwijderd",
+    "settings_applyDocumentDesign": "Standaard documentontwerp ingesteld"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -283,6 +287,10 @@
     "import_commit": "Spreadsheet geïmporteerd: {count} records aangemaakt",
     "import_undo": "Spreadsheetimport ongedaan gemaakt: {records} records verwijderd",
     "integration_connect": "{name} gekoppeld",
-    "integration_disconnect": "{name} losgekoppeld"
+    "integration_disconnect": "{name} losgekoppeld",
+    "service_setInvoiceDesign": "Wijzigde met welk ontwerp een factuur wordt afgedrukt",
+    "settings_saveDocumentDesign": "Sloeg het documentontwerp {name} op",
+    "settings_deleteDocumentDesign": "Verwijderde het documentontwerp {name}",
+    "settings_applyDocumentDesign": "Maakte {name} het standaard documentontwerp"
   }
 }

@@ -92,7 +92,10 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Kontakt",
     "sectionBilling": "Fakturering",
-    "addScannedVehicle": "Legg til kjøretøyet {vehicle}"
+    "addScannedVehicle": "Legg til kjøretøyet {vehicle}",
+    "invoiceDesign": "Fakturadesign",
+    "invoiceDesignDefault": "Verkstedets standard",
+    "invoiceDesignHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. En faktura kan fortsatt velge sitt eget."
   },
   "serviceRequests": {
     "statusNew": "Ny",
