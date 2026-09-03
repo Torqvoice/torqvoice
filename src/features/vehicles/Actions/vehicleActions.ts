@@ -37,6 +37,9 @@ export async function getVehicle(vehicleId: string) {
         where: { id: vehicleId, organizationId },
         include: {
           customer: { select: { id: true, name: true, company: true, email: true, phone: true } },
+          inspectionStatus: {
+            select: { dueAt: true, lastAt: true, source: true, checkedAt: true, registered: true },
+          },
           serviceRecords: {
             orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
             take: 10,
@@ -89,6 +92,8 @@ export async function getVehiclesPaginated(params: {
   archived?: boolean
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  /** Periodic inspection filter: overdue, or due within this many days. */
+  inspectionDue?: 'overdue' | 30 | 90
 }) {
   return withAuth(
     async ({ organizationId }) => {
@@ -122,15 +127,28 @@ export async function getVehiclesPaginated(params: {
         }
       }
 
-      const [vehicles, total, archivedCount] = await Promise.all([
+      if (params.inspectionDue) {
+        const now = new Date()
+        where.inspectionStatus =
+          params.inspectionDue === 'overdue'
+            ? { dueAt: { lt: now } }
+            : { dueAt: { lt: new Date(now.getTime() + params.inspectionDue * 86_400_000) } }
+      }
+
+      const [vehicles, total, archivedCount, inspectionDataCount] = await Promise.all([
         db.vehicle.findMany({
           where,
           include: {
             customer: { select: { id: true, name: true, company: true } },
+            inspectionStatus: { select: { dueAt: true, source: true } },
             _count: { select: { serviceRecords: true } },
           },
           orderBy: (() => {
             const dir = params.sortOrder || 'desc'
+            // A due-date filter reads soonest first unless a column was chosen.
+            if (params.inspectionDue && !params.sortBy) {
+              return { inspectionStatus: { dueAt: 'asc' as const } }
+            }
             switch (params.sortBy) {
               case 'plate':
                 return { licensePlate: { sort: dir, nulls: 'last' as const } }
@@ -153,6 +171,7 @@ export async function getVehiclesPaginated(params: {
         }),
         db.vehicle.count({ where }),
         db.vehicle.count({ where: { organizationId, isArchived: true } }),
+        db.vehicleInspectionStatus.count({ where: { organizationId, dueAt: { not: null } } }),
       ])
 
       return {
@@ -162,6 +181,8 @@ export async function getVehiclesPaginated(params: {
         pageSize,
         totalPages: Math.ceil(total / pageSize),
         archivedCount,
+        /** Whether any vehicle here has an inspection date, which is when the filter is worth showing. */
+        hasInspectionData: inspectionDataCount > 0,
       }
     },
     {
@@ -170,10 +191,40 @@ export async function getVehiclesPaginated(params: {
   )
 }
 
+/**
+ * A date typed on the vehicle form. Kept beside the registry's answer with
+ * its own source, so a workshop in a country without a registry, or one
+ * that knows better than the register, can still drive reminders. A
+ * registry answer with a date takes over again on the next sync.
+ */
+async function saveManualInspectionDate(
+  organizationId: string,
+  vehicleId: string,
+  value: string | undefined
+): Promise<void> {
+  if (value === undefined) return
+  const trimmed = value.trim()
+  if (!trimmed) {
+    // Clearing only removes a date the workshop typed; a registry date stays.
+    await db.vehicleInspectionStatus.updateMany({
+      where: { vehicleId, organizationId, source: 'manual' },
+      data: { dueAt: null },
+    })
+    return
+  }
+  const dueAt = toSafeDate(trimmed)
+  if (!dueAt) throw new Error('Invalid inspection date')
+  await db.vehicleInspectionStatus.upsert({
+    where: { vehicleId },
+    create: { organizationId, vehicleId, dueAt, source: 'manual', found: true },
+    update: { dueAt, source: 'manual', lastError: null },
+  })
+}
+
 export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const data = createVehicleSchema.parse(input)
+      const { inspectionDueAt, ...data } = createVehicleSchema.parse(input)
       const vehicle = await db.vehicle.create({
         data: {
           ...data,
@@ -183,6 +234,7 @@ export async function createVehicle(input: unknown) {
           organizationId,
         },
       })
+      await saveManualInspectionDate(organizationId, vehicle.id, inspectionDueAt)
       revalidatePath('/')
       revalidatePath('/vehicles')
       return vehicle
@@ -208,7 +260,7 @@ export async function createVehicle(input: unknown) {
 export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      const { id, ...data } = updateVehicleSchema.parse(input)
+      const { id, inspectionDueAt, ...data } = updateVehicleSchema.parse(input)
 
       // Fetch current record for display/diff
       const before = await db.vehicle.findFirst({
@@ -248,6 +300,7 @@ export async function updateVehicle(input: unknown) {
         },
       })
       if (updateResult.count === 0) throw new Error('Vehicle not found')
+      await saveManualInspectionDate(organizationId, id, inspectionDueAt)
       const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
       const changedKeys = Object.keys(data).filter(
         (k) => (data as Record<string, unknown>)[k] !== undefined

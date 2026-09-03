@@ -134,6 +134,10 @@
       "providers": {
         "title": "Provider",
         "description": "Email, SMS, WhatsApp e Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Promemoria revisione",
+        "description": "Link di prenotazione, durata e preavviso"
       }
     },
     "pro": "PRO"
@@ -1966,5 +1970,31 @@
     "partSyntheticOil": "Olio sintetico 5W-30",
     "laborBrakeReplacement": "Sostituzione freni",
     "laborOilChange": "Cambio olio"
+  },
+  "inspectionReminders": {
+    "title": "Promemoria revisione e prenotazione",
+    "description": "Come si comporta il link di prenotazione in un promemoria. Si imposta una volta; ogni campagna lo usa.",
+    "duration": "Durata della revisione (minuti)",
+    "durationHint": "Quanto una revisione periodica occupa un ponte. Il link prenota slot di questa durata.",
+    "leadDays": "Prenotazione più vicina (giorni)",
+    "leadDaysHint": "1 significa che il primo orario proposto è domani, mai oggi.",
+    "horizonWeeks": "Fino a quando (settimane)",
+    "horizonHint": "I clienti possono scegliere qualsiasi orario libero entro queste settimane.",
+    "reserve": "Tieni libero per chi passa",
+    "reserveHint": "Ponti o tecnici che il link non occupa mai. 0 permette di usare tutti quelli liberi.",
+    "linkValidDays": "Il link resta aperto (giorni)",
+    "linkValidHint": "Almeno {min}. I link restano aperti anche fino a una settimana dopo la scadenza, se successiva.",
+    "bookingMode": "Cosa crea una prenotazione",
+    "bookingModeDirect": "Un ordine di lavoro pianificato sulla lavagna",
+    "bookingModeRequest": "Una richiesta che l'ufficio conferma prima",
+    "bookingModeHint": "La prenotazione diretta è ciò che rende utile il link. Scegli la richiesta se vuoi approvare ogni volta.",
+    "phone": "Telefono nei messaggi",
+    "phoneHint": "Mostrato come alternativa al link. Predefinito: il telefono dell'officina.",
+    "save": "Salva",
+    "saved": "Impostazioni salvate",
+    "saveFailed": "Impossibile salvare",
+    "timeZoneDetected": "Il fuso orario è su automatico in Localizzazione, quindi il server usa {zone}, l'ultimo visto in un browser che ha salvato le impostazioni. Scegli esplicitamente il fuso dell'officina così gli orari di prenotazione non dipendono mai da chi ha salvato per ultimo.",
+    "timeZoneExplicit": "Orari di prenotazione e di apertura sono letti in {zone}.",
+    "timeZoneChange": "Cambia in Localizzazione"
   }
 }

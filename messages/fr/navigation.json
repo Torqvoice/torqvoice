@@ -59,7 +59,8 @@
     "tireStorage": "Organisation du stockage",
     "tireSetDetails": "Jeu de pneus",
     "tireForecast": "La saison prochaine",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Rappels de contrôle"
   },
   "search": "Rechercher…",
   "shortcut": "Ctrl+K",

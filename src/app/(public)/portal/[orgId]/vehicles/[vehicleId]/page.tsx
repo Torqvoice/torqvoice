@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
+import { ReportSoldButton } from '@/features/portal/Components/ReportSoldButton'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
   active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -25,12 +26,13 @@ export default async function PortalVehicleDetailPage({
   const t = await getTranslations('portal.vehicles')
   const tInvoices = await getTranslations('portal.invoices')
   const tWarranty = await getTranslations('vehicles.services.warranty.status')
-  const [result, serviceTypeSetting] = await Promise.all([
+  const [result, serviceTypeSetting, ownership] = await Promise.all([
     getPortalVehicleDetail(vehicleId),
     db.appSetting.findUnique({
       where: { organizationId_key: { organizationId: orgId, key: 'workshop.serviceType' } },
       select: { value: true },
     }),
+    db.vehicle.findUnique({ where: { id: vehicleId }, select: { soldReportedAt: true } }),
   ])
   const serviceType = (serviceTypeSetting?.value || 'automotive') as 'automotive' | 'marine'
 
@@ -72,6 +74,12 @@ export default async function PortalVehicleDetailPage({
                 </span>
               )}
               {v.color && <span>{v.color}</span>}
+            </div>
+            <div className="mt-3">
+              <ReportSoldButton
+                vehicleId={v.id}
+                reportedAt={ownership?.soldReportedAt?.toISOString() ?? null}
+              />
             </div>
           </div>
         </div>

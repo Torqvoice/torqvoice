@@ -155,7 +155,9 @@
     "import_commit": "Foglio di calcolo importato",
     "import_undo": "Importazione annullata",
     "integration_connect": "Integrazione collegata",
-    "integration_disconnect": "Integrazione scollegata"
+    "integration_disconnect": "Integrazione scollegata",
+    "inspection_reminders_sent": "Promemoria revisione inviati",
+    "inspection_reminders_send": "Promemoria revisione inviati"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -283,6 +285,7 @@
     "import_commit": "Foglio di calcolo importato: {count} record creati",
     "import_undo": "Importazione da foglio di calcolo annullata: {records} record rimossi",
     "integration_connect": "{name} collegato",
-    "integration_disconnect": "{name} scollegato"
+    "integration_disconnect": "{name} scollegato",
+    "inspection_reminders_sent": "Inviati {count} promemoria revisione"
   }
 }

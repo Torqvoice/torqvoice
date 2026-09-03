@@ -134,6 +134,10 @@
       "providers": {
         "title": "Proveedores",
         "description": "Correo, SMS, WhatsApp y Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Recordatorios de inspección",
+        "description": "Enlace de reserva, duración y antelación"
       }
     },
     "pro": "PRO"
@@ -1966,5 +1970,31 @@
     "partSyntheticOil": "Aceite sintético 5W-30",
     "laborBrakeReplacement": "Sustitución de frenos",
     "laborOilChange": "Cambio de aceite"
+  },
+  "inspectionReminders": {
+    "title": "Recordatorios de inspección y reservas",
+    "description": "Cómo se comporta el enlace de reserva de un recordatorio. Se define una vez; todas las campañas lo usan.",
+    "duration": "Duración de la inspección (minutos)",
+    "durationHint": "Cuánto ocupa una inspección periódica un puesto. El enlace reserva citas de esta duración.",
+    "leadDays": "Reserva más temprana (días)",
+    "leadDaysHint": "1 significa que la primera hora ofrecida es mañana, nunca hoy.",
+    "horizonWeeks": "Hasta cuándo (semanas)",
+    "horizonHint": "Los clientes pueden elegir cualquier hora libre dentro de estas semanas.",
+    "reserve": "Reservar para clientes sin cita",
+    "reserveHint": "Puestos o técnicos que el enlace nunca ocupa. 0 permite usar todos los libres.",
+    "linkValidDays": "El enlace sigue abierto (días)",
+    "linkValidHint": "Al menos {min}. Los enlaces también siguen abiertos hasta una semana después del vencimiento, lo que sea más tarde.",
+    "bookingMode": "Qué crea una reserva",
+    "bookingModeDirect": "Una orden de trabajo programada en el tablero",
+    "bookingModeRequest": "Una solicitud que la oficina confirma primero",
+    "bookingModeHint": "La reserva directa es lo que hace que merezca la pena pulsar el enlace. Elige solicitud si quieres aprobar cada vez.",
+    "phone": "Teléfono en los mensajes",
+    "phoneHint": "Se muestra como alternativa al enlace. Por defecto, el teléfono del taller.",
+    "save": "Guardar",
+    "saved": "Ajustes guardados",
+    "saveFailed": "No se pudo guardar",
+    "timeZoneDetected": "La zona horaria está en automático en Localización, así que el servidor usa {zone}, la última vista en un navegador que guardó ajustes. Elige la zona del taller explícitamente para que las horas de reserva nunca dependan de quién guardó último.",
+    "timeZoneExplicit": "Las horas de reserva y el horario se leen en {zone}.",
+    "timeZoneChange": "Cambiar en Localización"
   }
 }

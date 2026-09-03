@@ -134,6 +134,10 @@
       "providers": {
         "title": "Dostawcy",
         "description": "E-mail, SMS, WhatsApp i Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Przypomnienia o przeglądzie",
+        "description": "Link do rezerwacji, czas trwania i wyprzedzenie"
       }
     },
     "pro": "PRO"
@@ -1966,5 +1970,31 @@
     "partSyntheticOil": "Olej syntetyczny 5W-30",
     "laborBrakeReplacement": "Wymiana hamulców",
     "laborOilChange": "Wymiana oleju"
+  },
+  "inspectionReminders": {
+    "title": "Przypomnienia o przeglądzie i rezerwacje",
+    "description": "Jak działa link do rezerwacji w przypomnieniu. Ustawiane raz; używa każda kampania.",
+    "duration": "Czas przeglądu (minuty)",
+    "durationHint": "Jak długo przegląd okresowy zajmuje stanowisko. Link rezerwuje terminy tej długości.",
+    "leadDays": "Najwcześniejsza rezerwacja (dni)",
+    "leadDaysHint": "1 oznacza, że pierwszy oferowany termin to jutro, nigdy dziś.",
+    "horizonWeeks": "Jak daleko (tygodnie)",
+    "horizonHint": "Klienci mogą wybrać dowolny wolny termin w tylu tygodniach.",
+    "reserve": "Zostaw wolne dla klientów bez zapisu",
+    "reserveHint": "Stanowiska lub technicy, których link nigdy nie zajmuje. 0 pozwala użyć wszystkich wolnych.",
+    "linkValidDays": "Link pozostaje aktywny (dni)",
+    "linkValidHint": "Co najmniej {min}. Linki są też aktywne do tygodnia po terminie, w zależności od tego, co później.",
+    "bookingMode": "Co tworzy rezerwacja",
+    "bookingModeDirect": "Zaplanowane zlecenie na tablicy",
+    "bookingModeRequest": "Prośbę, którą biuro najpierw potwierdza",
+    "bookingModeHint": "Bezpośrednia rezerwacja to sens tego linku. Wybierz prośbę, jeśli chcesz zatwierdzać każdą.",
+    "phone": "Numer telefonu w wiadomościach",
+    "phoneHint": "Pokazywany jako alternatywa dla linku. Domyślnie numer warsztatu.",
+    "save": "Zapisz",
+    "saved": "Ustawienia zapisane",
+    "saveFailed": "Nie udało się zapisać",
+    "timeZoneDetected": "Strefa czasowa jest ustawiona na automatyczną w Lokalizacji, więc serwer używa {zone}, strefy ostatnio widzianej w przeglądarce, która zapisała ustawienia. Wybierz strefę warsztatu jawnie, aby godziny rezerwacji nigdy nie zależały od tego, kto zapisał ostatni.",
+    "timeZoneExplicit": "Godziny rezerwacji i otwarcia są odczytywane w strefie {zone}.",
+    "timeZoneChange": "Zmień w Lokalizacji"
   }
 }

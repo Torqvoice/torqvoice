@@ -155,7 +155,9 @@
     "import_commit": "Importuota skaičiuoklė",
     "import_undo": "Atšauktas importas",
     "integration_connect": "Prijungta integracija",
-    "integration_disconnect": "Atjungta integracija"
+    "integration_disconnect": "Atjungta integracija",
+    "inspection_reminders_sent": "Išsiųsti apžiūros priminimai",
+    "inspection_reminders_send": "Išsiųsti apžiūros priminimai"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -283,6 +285,7 @@
     "import_commit": "Importuota skaičiuoklė: sukurta įrašų: {count}",
     "import_undo": "Atšauktas skaičiuoklės importas: pašalinta įrašų: {records}",
     "integration_connect": "Prijungta {name}",
-    "integration_disconnect": "Atjungta {name}"
+    "integration_disconnect": "Atjungta {name}",
+    "inspection_reminders_sent": "Išsiųsta {count} apžiūros priminimų"
   }
 }

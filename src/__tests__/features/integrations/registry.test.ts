@@ -1,6 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import {
+  INSPECTION_CAPABILITY,
+  INSPECTION_JOB,
+  INSPECTION_SETTING,
+} from '@/features/integrations/Lib/inspection-sync'
 import { getConnector, getManifest, listManifests } from '@/integrations/registry'
 
 const ROOT = process.cwd()
@@ -104,6 +109,35 @@ describe('integration registry', () => {
     for (const m of listManifests()) {
       for (const s of m.subscriptions ?? [])
         expect(known.has(s.event), `${m.id} subscribes to ${s.event}`).toBe(true)
+    }
+  })
+
+  /**
+   * Any registry that can say when a vehicle is due takes part in the
+   * inspection sync the same way, whatever country it serves: the same
+   * setting, the same hourly tick, the same job. A connector that declares
+   * the capability without the rest would show a toggle that does nothing.
+   */
+  it('wires every inspection-capable registry into the sync the same way', async () => {
+    for (const m of listManifests()) {
+      const capable = m.capabilities.includes(INSPECTION_CAPABILITY)
+      const scheduled = (m.schedules ?? []).some((s) => s.job === INSPECTION_JOB)
+      const setting = m.settings.find((s) => s.key === INSPECTION_SETTING)
+      const server = await getConnector(m.id)
+      const handler = server.jobs[INSPECTION_JOB]
+      if (capable) {
+        expect(m.category, m.id).toBe('registry')
+        expect(setting?.type, m.id).toBe('boolean')
+        expect(setting?.default, m.id).toBe(false)
+        expect(scheduled, m.id).toBe(true)
+        expect(typeof handler, m.id).toBe('function')
+        expect(typeof server.lookupVehicle, m.id).toBe('function')
+        expect(m.capabilities, m.id).toContain('vehicle.lookup')
+      } else {
+        expect(scheduled, m.id).toBe(false)
+        expect(handler, m.id).toBeUndefined()
+        expect(setting, m.id).toBeUndefined()
+      }
     }
   })
 })

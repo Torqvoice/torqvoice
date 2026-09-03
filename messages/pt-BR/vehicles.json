@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Inspeção vencida",
+    "inspectionDue30": "Vence em 30 dias",
+    "inspectionDue90": "Vence em 90 dias",
+    "inspectionDue": "Inspeção {date}",
+    "remindCustomers": "Lembrar estes clientes"
   },
   "detail": {
     "vehicleArchived": "Este veículo está arquivado",
@@ -91,7 +96,11 @@
     "severityUncommon": "Incomum — relatado por poucos proprietários",
     "severityRare": "Raro — relatos isolados, mas crítico quando ocorre",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Inspeção em {date}",
+    "inspectionCheckedAt": "Verificado no registro em {date}",
+    "notRegistered": "Não registrado",
+    "soldReported": "Cliente informou venda em {date}"
   },
   "quotes": {
     "newQuote": "Novo orçamento",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Foto e proprietário",
     "sectionDetails": "Detalhes",
     "addScannedOwner": "Adicionar o cliente {name}",
-    "ownerSaveFailed": "Não foi possível criar o cliente"
+    "ownerSaveFailed": "Não foi possível criar o cliente",
+    "lookupPlate": "Consultar placa",
+    "lookingUp": "Consultando o registro de veículos...",
+    "lookupSuccess": "Campos preenchidos de {source}",
+    "lookupNotFound": "O registro não tem nenhum veículo com essa placa",
+    "lookupFailed": "Não foi possível consultar a placa",
+    "lookupUnavailable": "Conecte um registro de veículos em Configurações → Integrações",
+    "lookupEnterPlate": "Digite uma placa primeiro",
+    "lookupInspectionDue": "{source}: próxima inspeção periódica em {date}",
+    "lookupSource": "Preenchido de {source}",
+    "inspectionDue": "Próxima inspeção periódica",
+    "inspectionDueHint": "Digite a data se nenhum registro a fornecer. Lembretes e o painel a usam.",
+    "inspectionDueFromRegistry": "Obtida do registro de veículos. Altere aqui para substituir até a próxima sincronização."
   },
   "archiveDialog": {
     "title": "Arquivar Veículo",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Lembretes de inspeção",
+    "description": "Avise os clientes cuja inspeção periódica está próxima, com um link para agendar. Nada é enviado até você confirmar a lista.",
+    "window": "Vencimento em",
+    "window30": "Próximos 30 dias",
+    "window60": "Próximos 60 dias",
+    "window90": "Próximos 90 dias",
+    "channel": "Enviar por",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "telegram": "Telegram"
+    },
+    "willReceive": "receberão uma mensagem",
+    "excludedCount": "{count} excluídos",
+    "nobodyToRemind": "Ninguém para lembrar neste período. Cada veículo com vencimento já foi avisado, tem agendamento ou não pode ser contatado.",
+    "overdueOn": "Vencida desde {date}",
+    "excludedTitle": "Não incluídos",
+    "excludedDescription": "Cada um tem um motivo. Corrija no cliente ou no veículo e ele aparecerá na lista.",
+    "reasons": {
+      "noCustomer": "Sem cliente",
+      "optedOut": "Recusa lembretes",
+      "noRecipient": "Sem contato para este canal",
+      "alreadyReminded": "Já avisado para este vencimento",
+      "cooldown": "Contatado recentemente",
+      "soldReported": "Cliente informou venda",
+      "notRegistered": "Não registrado",
+      "booked": "Já agendado"
+    },
+    "message": "Mensagem",
+    "subject": "Assunto",
+    "body": "Texto",
+    "placeholders": "Campos: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Campos desconhecidos: {list}",
+    "sample": "Exemplo para o primeiro destinatário",
+    "segments": "{count, plural, one {# segmento de SMS} other {# segmentos de SMS}}",
+    "bookingModeDirectNote": "O link agenda um horário de {minutes} minutos direto no quadro.",
+    "bookingModeRequestNote": "O link envia uma solicitação com o horário escolhido para o balcão confirmar.",
+    "linkValidNote": "Os links ficam abertos por pelo menos {days} dias e após o vencimento.",
+    "sendTest": "Enviar um teste para mim",
+    "testSent": "Teste na fila para {to}",
+    "testFailed": "Não foi possível enviar o teste",
+    "sendButton": "Enviar para {count}",
+    "confirmTitle": "Enviar os lembretes?",
+    "confirmDescription": "{count} mensagens saem por {channel}, uma por veículo, uma vez. Um veículo nunca é lembrado duas vezes do mesmo vencimento.",
+    "confirmInput": "Digite {count} para confirmar",
+    "cancel": "Cancelar",
+    "sendNow": "Enviar",
+    "created": "{count} lembretes na fila",
+    "sendFailed": "Não foi possível criar a campanha",
+    "loadFailed": "Não foi possível carregar a lista",
+    "campaign": {
+      "title": "Campanha de {date}",
+      "summary": "{channel}, vencimentos em {window} dias",
+      "recipients": "Destinatários",
+      "sent": "Enviados",
+      "failed": "Falhas",
+      "booked": "Agendados",
+      "retryFailedButton": "Repetir {count} com falha",
+      "retried": "{count} de volta à fila",
+      "retryFailed": "Não foi possível repetir",
+      "rows": "Destinatários",
+      "status": {
+        "scheduled": "Na fila",
+        "sent": "Enviado",
+        "failed": "Falhou",
+        "cancelled": "Cancelado"
+      },
+      "bookedOn": "Agendado em {date}",
+      "requestedOn": "Solicitado em {date}",
+      "cancelledOn": "Cancelado em {date}",
+      "none": "Nenhuma campanha ainda.",
+      "start": "Enviar lembretes de inspeção",
+      "recipientsCount": "{count} destinatários",
+      "failedCount": "{count} falhas",
+      "bookedCount": "{count} agendados"
+    },
+    "defaults": {
+      "smsBody": "Olá {customerName}, a inspeção periódica do seu {vehicle} ({plate}) vence em {dueDate}. Agende: {bookingLink} ou ligue para {phone}. {workshopName}",
+      "emailSubject": "Inspeção em {dueDate} para {vehicle}",
+      "emailBody": "Olá {customerName},\n\nA inspeção periódica do seu {vehicle} ({plate}) vence em {dueDate}.\n\nAgende aqui um horário conveniente: {bookingLink}\n\nOu ligue para {phone}.\n\nAtenciosamente,\n{workshopName}"
+    },
+    "refresh": "Atualizar lista",
+    "timeZoneRequired": "O fuso horário da oficina está em automático, então os horários de agendamento seguiriam o último navegador que salvou configurações (agora {zone}). Lembretes não podem ser enviados até escolher um fuso.",
+    "timeZoneRequiredLink": "Escolha em Localização"
   }
 }

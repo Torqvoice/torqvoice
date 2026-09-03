@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Przegląd po terminie",
+    "inspectionDue30": "W ciągu 30 dni",
+    "inspectionDue90": "W ciągu 90 dni",
+    "inspectionDue": "Przegląd {date}",
+    "remindCustomers": "Przypomnij tym klientom"
   },
   "detail": {
     "vehicleArchived": "Ten pojazd jest zarchiwizowany",
@@ -91,7 +96,11 @@
     "severityUncommon": "Rzadkie — zgłaszane przez niewielu właścicieli",
     "severityRare": "Bardzo rzadkie — pojedyncze zgłoszenia, ale krytyczne gdy wystąpi",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Przegląd do {date}",
+    "inspectionCheckedAt": "Sprawdzono w rejestrze {date}",
+    "notRegistered": "Niezarejestrowany",
+    "soldReported": "Klient zgłosił sprzedaż {date}"
   },
   "quotes": {
     "newQuote": "Nowa wycena",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Zdjęcie i właściciel",
     "sectionDetails": "Szczegóły",
     "addScannedOwner": "Dodaj klienta {name}",
-    "ownerSaveFailed": "Nie udało się utworzyć klienta"
+    "ownerSaveFailed": "Nie udało się utworzyć klienta",
+    "lookupPlate": "Sprawdź tablicę",
+    "lookingUp": "Odpytywanie rejestru pojazdów...",
+    "lookupSuccess": "Pola uzupełnione z {source}",
+    "lookupNotFound": "Rejestr nie zna pojazdu o tej tablicy",
+    "lookupFailed": "Nie udało się sprawdzić tablicy",
+    "lookupUnavailable": "Podłącz rejestr pojazdów w Ustawienia → Integracje",
+    "lookupEnterPlate": "Najpierw wpisz numer tablicy",
+    "lookupInspectionDue": "{source}: następny przegląd okresowy do {date}",
+    "lookupSource": "Uzupełniono z {source}",
+    "inspectionDue": "Następny przegląd okresowy",
+    "inspectionDueHint": "Wpisz datę, jeśli żaden rejestr jej nie dostarcza. Używają jej przypomnienia i pulpit.",
+    "inspectionDueFromRegistry": "Z rejestru pojazdów. Zmień tutaj, aby nadpisać do następnej synchronizacji."
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Przypomnienia o przeglądzie",
+    "description": "Powiadom klientów, których przegląd okresowy się zbliża, z linkiem do rezerwacji terminu. Nic nie zostanie wysłane, dopóki nie potwierdzisz listy.",
+    "window": "Termin w ciągu",
+    "window30": "Najbliższe 30 dni",
+    "window60": "Najbliższe 60 dni",
+    "window90": "Najbliższe 90 dni",
+    "channel": "Wyślij przez",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "telegram": "Telegram"
+    },
+    "willReceive": "otrzyma wiadomość",
+    "excludedCount": "{count} pominięto",
+    "nobodyToRemind": "Nie ma kogo przypominać w tym okresie. Każdy pojazd z terminem został już powiadomiony, ma rezerwację lub nie można się z nim skontaktować.",
+    "overdueOn": "Po terminie od {date}",
+    "excludedTitle": "Nieuwzględnione",
+    "excludedDescription": "Każdy ma powód. Popraw go u klienta lub pojazdu, a pojawi się na liście.",
+    "reasons": {
+      "noCustomer": "Brak klienta",
+      "optedOut": "Nie chce przypomnień",
+      "noRecipient": "Brak kontaktu dla tego kanału",
+      "alreadyReminded": "Już przypomniano o tym terminie",
+      "cooldown": "Niedawno kontaktowany",
+      "soldReported": "Klient zgłosił sprzedaż",
+      "notRegistered": "Niezarejestrowany",
+      "booked": "Już zarezerwowano"
+    },
+    "message": "Wiadomość",
+    "subject": "Temat",
+    "body": "Treść",
+    "placeholders": "Pola: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Nieznane pola: {list}",
+    "sample": "Przykład dla pierwszego odbiorcy",
+    "segments": "{count, plural, one {# część SMS} few {# części SMS} other {# części SMS}}",
+    "bookingModeDirectNote": "Link rezerwuje termin na {minutes} minut bezpośrednio na tablicy.",
+    "bookingModeRequestNote": "Link wysyła prośbę z wybraną godziną, którą biuro potwierdza.",
+    "linkValidNote": "Linki są aktywne co najmniej {days} dni i po terminie.",
+    "sendTest": "Wyślij test do mnie",
+    "testSent": "Test w kolejce do {to}",
+    "testFailed": "Nie udało się wysłać testu",
+    "sendButton": "Wyślij do {count}",
+    "confirmTitle": "Wysłać przypomnienia?",
+    "confirmDescription": "{count} wiadomości wyjdzie przez {channel}, po jednej na pojazd, jednorazowo. Pojazd nigdy nie dostaje dwóch przypomnień o tym samym terminie.",
+    "confirmInput": "Wpisz {count}, aby potwierdzić",
+    "cancel": "Anuluj",
+    "sendNow": "Wyślij",
+    "created": "{count} przypomnień w kolejce",
+    "sendFailed": "Nie udało się utworzyć kampanii",
+    "loadFailed": "Nie udało się wczytać listy",
+    "campaign": {
+      "title": "Kampania z {date}",
+      "summary": "{channel}, terminy w ciągu {window} dni",
+      "recipients": "Odbiorcy",
+      "sent": "Wysłane",
+      "failed": "Nieudane",
+      "booked": "Zarezerwowane",
+      "retryFailedButton": "Ponów {count} nieudanych",
+      "retried": "{count} wróciło do kolejki",
+      "retryFailed": "Nie udało się ponowić",
+      "rows": "Odbiorcy",
+      "status": {
+        "scheduled": "W kolejce",
+        "sent": "Wysłano",
+        "failed": "Nieudane",
+        "cancelled": "Anulowano"
+      },
+      "bookedOn": "Zarezerwowano {date}",
+      "requestedOn": "Zgłoszono {date}",
+      "cancelledOn": "Odwołano {date}",
+      "none": "Brak kampanii.",
+      "start": "Wyślij przypomnienia o przeglądzie",
+      "recipientsCount": "{count} odbiorców",
+      "failedCount": "{count} nieudanych",
+      "bookedCount": "{count} zarezerwowanych"
+    },
+    "defaults": {
+      "smsBody": "Cześć {customerName}, termin przeglądu okresowego Twojego {vehicle} ({plate}) mija {dueDate}. Zarezerwuj termin: {bookingLink} lub zadzwoń: {phone}. {workshopName}",
+      "emailSubject": "Przegląd do {dueDate}: {vehicle}",
+      "emailBody": "Cześć {customerName},\n\ntermin przeglądu okresowego Twojego {vehicle} ({plate}) mija {dueDate}.\n\nZarezerwuj dogodny termin tutaj: {bookingLink}\n\nLub zadzwoń do nas: {phone}.\n\nPozdrawiamy,\n{workshopName}"
+    },
+    "refresh": "Odśwież listę",
+    "timeZoneRequired": "Strefa czasowa warsztatu jest ustawiona na automatyczną, więc godziny rezerwacji zależałyby od przeglądarki, która ostatnio zapisała ustawienia (teraz {zone}). Przypomnień nie można wysłać, dopóki nie wybierzesz strefy.",
+    "timeZoneRequiredLink": "Wybierz ją w Lokalizacji"
   }
 }

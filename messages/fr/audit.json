@@ -155,7 +155,9 @@
     "import_commit": "Feuille de calcul importée",
     "import_undo": "Import annulé",
     "integration_connect": "Intégration connectée",
-    "integration_disconnect": "Intégration déconnectée"
+    "integration_disconnect": "Intégration déconnectée",
+    "inspection_reminders_sent": "Rappels de contrôle envoyés",
+    "inspection_reminders_send": "Rappels de contrôle envoyés"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -283,6 +285,7 @@
     "import_commit": "Feuille de calcul importée : {count} enregistrements créés",
     "import_undo": "Import de feuille de calcul annulé : {records} enregistrements supprimés",
     "integration_connect": "{name} connecté",
-    "integration_disconnect": "{name} déconnecté"
+    "integration_disconnect": "{name} déconnecté",
+    "inspection_reminders_sent": "{count} rappels de contrôle envoyés"
   }
 }

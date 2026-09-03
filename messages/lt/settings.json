@@ -134,6 +134,10 @@
       "providers": {
         "title": "Tiekėjai",
         "description": "El. paštas, SMS, „WhatsApp“ ir „Telegram“"
+      },
+      "inspectionReminders": {
+        "title": "Apžiūros priminimai",
+        "description": "Rezervacijos nuoroda, trukmė ir terminas"
       }
     },
     "pro": "PRO"
@@ -1966,5 +1970,31 @@
     "partSyntheticOil": "Sintetinė alyva 5W-30",
     "laborBrakeReplacement": "Stabdžių keitimas",
     "laborOilChange": "Alyvos keitimas"
+  },
+  "inspectionReminders": {
+    "title": "Apžiūros priminimai ir rezervacija",
+    "description": "Kaip veikia priminimo rezervacijos nuoroda. Nustatoma kartą; naudoja visos kampanijos.",
+    "duration": "Apžiūros trukmė (min.)",
+    "durationHint": "Kiek laiko apžiūra užima postą. Nuoroda rezervuoja tokios trukmės laikus.",
+    "leadDays": "Anksčiausia rezervacija (dienos)",
+    "leadDaysHint": "1 reiškia, kad pirmas siūlomas laikas yra rytoj, niekada šiandien.",
+    "horizonWeeks": "Kiek į priekį (savaitės)",
+    "horizonHint": "Klientai gali rinktis bet kurį laisvą laiką per tiek savaičių.",
+    "reserve": "Palikti laisvą be užsakymo",
+    "reserveHint": "Postai ar meistrai, kurių nuoroda niekada neužpildo. 0 leidžia naudoti visus laisvus.",
+    "linkValidDays": "Nuoroda galioja (dienos)",
+    "linkValidHint": "Bent {min}. Nuorodos taip pat galioja iki savaitės po termino, priklausomai nuo to, kas vėliau.",
+    "bookingMode": "Ką sukuria rezervacija",
+    "bookingModeDirect": "Suplanuotą užsakymą lentoje",
+    "bookingModeRequest": "Užklausą, kurią biuras pirmiausia patvirtina",
+    "bookingModeHint": "Tiesioginė rezervacija ir yra nuorodos vertė. Rinkitės užklausą, jei norite tvirtinti kiekvieną kartą.",
+    "phone": "Telefono numeris žinutėse",
+    "phoneHint": "Rodomas kaip alternatyva nuorodai. Numatytasis – dirbtuvių numeris.",
+    "save": "Išsaugoti",
+    "saved": "Nustatymai išsaugoti",
+    "saveFailed": "Nepavyko išsaugoti",
+    "timeZoneDetected": "Laiko juosta nustatyta automatiškai skiltyje Lokalizacija, todėl serveris naudoja {zone} – paskutinę naršyklėje matytą juostą išsaugant nustatymus. Pasirinkite dirbtuvių juostą aiškiai, kad rezervacijos laikai niekada nepriklausytų nuo to, kas išsaugojo paskutinis.",
+    "timeZoneExplicit": "Rezervacijos ir darbo laikai skaitomi {zone} juostoje.",
+    "timeZoneChange": "Keisti skiltyje Lokalizacija"
   }
 }

@@ -92,7 +92,9 @@
     "customerNumberAuto": "Auto",
     "sectionContact": "Kontakt",
     "sectionBilling": "Rechnung",
-    "addScannedVehicle": "Fahrzeug {vehicle} anlegen"
+    "addScannedVehicle": "Fahrzeug {vehicle} anlegen",
+    "reminderOptOut": "Keine Erinnerungen",
+    "reminderOptOutHint": "Diesen Kunden nicht in HU-Erinnerungen oder andere Kampagnen aufnehmen."
   },
   "serviceRequests": {
     "statusNew": "Neu",

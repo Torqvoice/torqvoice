@@ -96,6 +96,8 @@ export function AppearanceSettings({ settings }: { settings: Record<string, stri
       [SETTING_KEYS.DATE_FORMAT]: dateFormat,
       [SETTING_KEYS.TIME_FORMAT]: timeFormat,
       [SETTING_KEYS.TIMEZONE]: timezone,
+      // What the browser resolved, so the server can follow "automatic".
+      [SETTING_KEYS.TIMEZONE_DETECTED]: Intl.DateTimeFormat().resolvedOptions().timeZone,
     })
     setSaving(false)
     router.refresh()

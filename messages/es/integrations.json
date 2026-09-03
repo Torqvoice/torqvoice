@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Consulta por matrícula y VIN",
+      "inspection": "Fechas de inspección"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Sincronización de inspecciones",
+      "vehicles": "{count} vehículos con matrícula en este taller",
+      "dueNow": "{count} se consultarían en la próxima ejecución",
+      "withDate": "{count} ya tienen fecha de inspección",
+      "lastPass": "Última pasada completa {date}",
+      "never": "Aún no hay una pasada completa",
+      "inProgress": "Hay una pasada en curso",
+      "off": "Activa el ajuste y guarda; hasta entonces una pasada no comprueba nada.",
+      "syncNowHelp": "Sincronizar ahora inicia una pasada de inmediato en vez de esperar a la horaria. Consulta 25 vehículos cada vez y continúa sola hasta terminar con todos los pendientes."
+    }
   },
   "activity": {
     "title": "Actividad",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Rellena un vehículo a partir de su matrícula o VIN noruegos: marca, modelo, año, combustible, caja de cambios, motor, color, medidas de neumáticos y la próxima fecha de EU-kontroll, directamente del registro de Statens vegvesen. No se devuelven datos del propietario.",
+      "fields": {
+        "apiKey": "Clave de API",
+        "apiKeyHelp": "Gratuita. Pide la clave en vegvesen.no, en «API for tekniske kjøretøyopplysninger»: inicia sesión con BankID, representa al taller y la clave se emite al instante. Permite 50.000 consultas al día."
+      },
+      "settings": {
+        "syncInspections": "Mantener actualizadas las fechas de inspección de todos los vehículos de este taller",
+        "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos que no se han comprobado hace poco y se guarda la próxima fecha de EU-kontroll. Solo se envían vehículos almacenados en este taller. Un vehículo se revisa cada mes, y cada semana cuando faltan menos de dos meses."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Órdenes de trabajo al calendario",
+      "pull": "Tiempo ocupado del calendario"
+    },
+    "conference": {
+      "sync": "Enlaces de videollamada"
+    },
+    "inspection": {
+      "refresh": "Actualización de fechas de inspección"
     }
   }
 }

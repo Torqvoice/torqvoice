@@ -92,7 +92,9 @@
     "customerNumberAuto": "Oto",
     "sectionContact": "İletişim",
     "sectionBilling": "Faturalama",
-    "addScannedVehicle": "{vehicle} aracını ekle"
+    "addScannedVehicle": "{vehicle} aracını ekle",
+    "reminderOptOut": "Hatırlatma yok",
+    "reminderOptOutHint": "Bu müşteriyi muayene hatırlatmalarına veya diğer kampanyalara dahil etme."
   },
   "serviceRequests": {
     "statusNew": "Yeni",

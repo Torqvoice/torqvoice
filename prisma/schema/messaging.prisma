@@ -149,6 +149,8 @@ model ScheduledMessage {
 
   createdById String
 
+  inspectionReminder InspectionReminderSend?
+
   @@index([organizationId, sendAt])
   @@index([status, sendAt])
   @@map("scheduled_messages")

@@ -155,7 +155,9 @@
     "import_commit": "Planilha importada",
     "import_undo": "Importação desfeita",
     "integration_connect": "Integração conectada",
-    "integration_disconnect": "Integração desconectada"
+    "integration_disconnect": "Integração desconectada",
+    "inspection_reminders_sent": "Enviou lembretes de inspeção",
+    "inspection_reminders_send": "Enviou lembretes de inspeção"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -283,6 +285,7 @@
     "import_commit": "Importou uma planilha: {count} registros criados",
     "import_undo": "Desfez uma importação de planilha: {records} registros removidos",
     "integration_connect": "{name} conectado",
-    "integration_disconnect": "{name} desconectado"
+    "integration_disconnect": "{name} desconectado",
+    "inspection_reminders_sent": "Enviou {count} lembretes de inspeção"
   }
 }

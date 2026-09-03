@@ -31,7 +31,12 @@
     "viewTable": "Table view",
     "viewGrid": "Grid view",
     "viewLargeGrid": "Large grid view",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "inspectionOverdue": "Техосмотр просрочен",
+    "inspectionDue30": "В течение 30 дней",
+    "inspectionDue90": "В течение 90 дней",
+    "inspectionDue": "Техосмотр {date}",
+    "remindCustomers": "Напомнить этим клиентам"
   },
   "detail": {
     "vehicleArchived": "Это транспортное средство архивировано",
@@ -91,7 +96,11 @@
     "severityUncommon": "Нечасто — отмечено немногими владельцами",
     "severityRare": "Редко — единичные случаи, но критично при возникновении",
     "openMenu": "Open menu",
-    "dismissMaintenance": "Dismiss"
+    "dismissMaintenance": "Dismiss",
+    "inspectionDue": "Техосмотр до {date}",
+    "inspectionCheckedAt": "Проверено в реестре {date}",
+    "notRegistered": "Не зарегистрирован",
+    "soldReported": "Клиент сообщил о продаже {date}"
   },
   "quotes": {
     "newQuote": "Новое предложение",
@@ -339,7 +348,19 @@
     "sectionAssignment": "Фото и владелец",
     "sectionDetails": "Характеристики",
     "addScannedOwner": "Добавить клиента {name}",
-    "ownerSaveFailed": "Не удалось создать клиента"
+    "ownerSaveFailed": "Не удалось создать клиента",
+    "lookupPlate": "Найти по номеру",
+    "lookingUp": "Запрос в реестр транспортных средств...",
+    "lookupSuccess": "Поля заполнены из {source}",
+    "lookupNotFound": "В реестре нет автомобиля с таким номером",
+    "lookupFailed": "Не удалось найти номер",
+    "lookupUnavailable": "Подключите реестр транспортных средств в Настройки → Интеграции",
+    "lookupEnterPlate": "Сначала введите номер",
+    "lookupInspectionDue": "{source}: следующий техосмотр до {date}",
+    "lookupSource": "Заполнено из {source}",
+    "inspectionDue": "Следующий техосмотр",
+    "inspectionDueHint": "Введите дату, если её не даёт реестр. Её используют напоминания и панель.",
+    "inspectionDueFromRegistry": "Из реестра транспортных средств. Измените здесь, чтобы переопределить до следующей синхронизации."
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",
@@ -354,5 +375,92 @@
     "previousPage": "Previous page",
     "nextPage": "Next page",
     "lastPage": "Last page"
+  },
+  "inspectionReminders": {
+    "title": "Напоминания о техосмотре",
+    "description": "Сообщите клиентам, у которых приближается техосмотр, со ссылкой на запись. Ничего не отправляется, пока вы не подтвердите список.",
+    "window": "Срок в течение",
+    "window30": "Ближайшие 30 дней",
+    "window60": "Ближайшие 60 дней",
+    "window90": "Ближайшие 90 дней",
+    "channel": "Отправить через",
+    "channels": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "Эл. почта",
+      "telegram": "Telegram"
+    },
+    "willReceive": "получат сообщение",
+    "excludedCount": "{count} исключено",
+    "nobodyToRemind": "Некому напоминать за этот период. Каждому автомобилю со сроком уже напомнили, он записан или с ним нет связи.",
+    "overdueOn": "Просрочено с {date}",
+    "excludedTitle": "Не включены",
+    "excludedDescription": "У каждого есть причина. Исправьте её у клиента или автомобиля, и он появится в списке.",
+    "reasons": {
+      "noCustomer": "Нет клиента",
+      "optedOut": "Отказался от напоминаний",
+      "noRecipient": "Нет контакта для этого канала",
+      "alreadyReminded": "Уже напомнили об этом сроке",
+      "cooldown": "Недавно писали",
+      "soldReported": "Клиент сообщил о продаже",
+      "notRegistered": "Не зарегистрирован",
+      "booked": "Уже записан"
+    },
+    "message": "Сообщение",
+    "subject": "Тема",
+    "body": "Текст",
+    "placeholders": "Поля: {customerName} {vehicle} {plate} {dueDate} {workshopName} {bookingLink} {phone}",
+    "unknownPlaceholders": "Неизвестные поля: {list}",
+    "sample": "Пример для первого получателя",
+    "segments": "{count, plural, one {# часть SMS} few {# части SMS} other {# частей SMS}}",
+    "bookingModeDirectNote": "Ссылка записывает на {minutes} минут прямо на доску работ.",
+    "bookingModeRequestNote": "Ссылка отправляет запрос с выбранным временем, который подтверждает офис.",
+    "linkValidNote": "Ссылки действуют не менее {days} дней и после срока.",
+    "sendTest": "Отправить мне тест",
+    "testSent": "Тест в очереди на {to}",
+    "testFailed": "Не удалось отправить тест",
+    "sendButton": "Отправить {count}",
+    "confirmTitle": "Отправить напоминания?",
+    "confirmDescription": "{count} сообщений уйдёт через {channel}, по одному на автомобиль, один раз. Об одном и том же сроке никогда не напоминают дважды.",
+    "confirmInput": "Введите {count} для подтверждения",
+    "cancel": "Отмена",
+    "sendNow": "Отправить",
+    "created": "{count} напоминаний в очереди",
+    "sendFailed": "Не удалось создать кампанию",
+    "loadFailed": "Не удалось загрузить список",
+    "campaign": {
+      "title": "Кампания от {date}",
+      "summary": "{channel}, сроки в течение {window} дн.",
+      "recipients": "Получатели",
+      "sent": "Отправлено",
+      "failed": "Ошибки",
+      "booked": "Записались",
+      "retryFailedButton": "Повторить {count} с ошибкой",
+      "retried": "{count} возвращено в очередь",
+      "retryFailed": "Не удалось повторить",
+      "rows": "Получатели",
+      "status": {
+        "scheduled": "В очереди",
+        "sent": "Отправлено",
+        "failed": "Ошибка",
+        "cancelled": "Отменено"
+      },
+      "bookedOn": "Записан {date}",
+      "requestedOn": "Запрошено {date}",
+      "cancelledOn": "Отменено {date}",
+      "none": "Кампаний пока нет.",
+      "start": "Отправить напоминания о техосмотре",
+      "recipientsCount": "{count} получателей",
+      "failedCount": "{count} с ошибкой",
+      "bookedCount": "{count} записались"
+    },
+    "defaults": {
+      "smsBody": "Здравствуйте, {customerName}! Срок техосмотра вашего {vehicle} ({plate}) — {dueDate}. Запишитесь: {bookingLink} или позвоните {phone}. {workshopName}",
+      "emailSubject": "Техосмотр {dueDate}: {vehicle}",
+      "emailBody": "Здравствуйте, {customerName}!\n\nСрок техосмотра вашего {vehicle} ({plate}) наступает {dueDate}.\n\nЗапишитесь на удобное время здесь: {bookingLink}\n\nИли позвоните нам: {phone}.\n\nС уважением,\n{workshopName}"
+    },
+    "refresh": "Обновить список",
+    "timeZoneRequired": "Часовой пояс мастерской стоит на автоматическом, поэтому время записи зависело бы от браузера, сохранившего настройки последним (сейчас {zone}). Напоминания нельзя отправить, пока пояс не выбран.",
+    "timeZoneRequiredLink": "Выберите в Локализации"
   }
 }

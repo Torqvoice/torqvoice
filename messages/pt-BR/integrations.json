@@ -45,6 +45,10 @@
     },
     "email": {
       "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Consulta por placa e VIN",
+      "inspection": "Datas de inspeção"
     }
   },
   "statuses": {
@@ -93,7 +97,18 @@
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
-    "updateKeysHint": "The last check failed. Enter the keys again to try once more."
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Sincronização de inspeções",
+      "vehicles": "{count} veículos com placa nesta oficina",
+      "dueNow": "{count} seriam consultados na próxima execução",
+      "withDate": "{count} já têm data de inspeção",
+      "lastPass": "Última passagem completa {date}",
+      "never": "Nenhuma passagem completa ainda",
+      "inProgress": "Uma passagem está em andamento",
+      "off": "Ative a opção e salve; até lá uma passagem não verifica nada.",
+      "syncNowHelp": "Sincronizar agora inicia uma passagem imediatamente em vez de esperar a de hora em hora. Consulta 25 veículos por vez e continua sozinha até terminar todos os veículos pendentes."
+    }
   },
   "activity": {
     "title": "Atividade",
@@ -327,6 +342,29 @@
         "fromEmail": "Send from this address",
         "fromName": "Name shown as the sender"
       }
+    },
+    "vegvesen": {
+      "description": "Preencha um veículo a partir da placa ou do VIN norueguês: marca, modelo, ano, combustível, câmbio, motor, cor, medidas dos pneus e a data do próximo EU-kontroll, direto do registro da Statens vegvesen. Nenhum dado do proprietário é retornado.",
+      "fields": {
+        "apiKey": "Chave de API",
+        "apiKeyHelp": "Gratuita. Solicite a chave em vegvesen.no, em \"API for tekniske kjøretøyopplysninger\": entre com BankID, represente a oficina e a chave é emitida na hora. Ela permite 50.000 consultas por dia."
+      },
+      "settings": {
+        "syncInspections": "Manter as datas de inspeção de todos os veículos desta oficina atualizadas",
+        "syncInspectionsHelp": "Uma vez por hora, veículos não verificados recentemente são consultados pela placa e a próxima data de EU-kontroll é salva. Só veículos desta oficina são enviados. Um veículo é verificado mensalmente, e semanalmente quando o prazo está a menos de dois meses."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Ordens de serviço para o calendário",
+      "pull": "Horários ocupados do calendário"
+    },
+    "conference": {
+      "sync": "Links de videochamada"
+    },
+    "inspection": {
+      "refresh": "Atualização de datas de inspeção"
     }
   }
 }

@@ -1,11 +1,16 @@
 'use client'
 
+import {
+  CampaignList,
+  type CampaignListItem,
+} from '@/features/inspection-reminders/Components/CampaignList'
+
 import { useCallback, useState, useTransition } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { CalendarClock, Inbox } from 'lucide-react'
+import { CalendarClock, Inbox, Megaphone } from 'lucide-react'
 import { ScheduledMessageList } from '@/features/scheduled-messages/Components/ScheduledMessageList'
 import { ScheduleMessageDialog } from '@/features/scheduled-messages/Components/ScheduleMessageDialog'
 import {
@@ -24,13 +29,14 @@ import { UnifiedInbox } from './UnifiedInbox'
  * it always described itself as: the page's two halves and the frame they sit
  * in.
  */
-type Tab = 'inbox' | 'scheduled'
+type Tab = 'inbox' | 'scheduled' | 'campaigns'
 
 export function MessagesPageClient({
   threads,
   initialCursor = null,
   channels,
   initialScheduled = [],
+  campaigns = [],
   availableChannels = [],
 }: {
   threads: InboxThread[]
@@ -39,6 +45,7 @@ export function MessagesPageClient({
   /** Channels with a working provider, for the composer. */
   channels: MessagingChannel[]
   initialScheduled?: ScheduledMessageListItem[]
+  campaigns?: CampaignListItem[]
   availableChannels?: MessageChannel[]
 }) {
   const t = useTranslations('messaging.inbox')
@@ -52,7 +59,9 @@ export function MessagesPageClient({
   const [scheduled, setScheduled] = useState(initialScheduled)
   const [showScheduleDialog, setShowScheduleDialog] = useState(false)
 
-  const tab: Tab = searchParams.get('tab') === 'scheduled' ? 'scheduled' : 'inbox'
+  const tabParam = searchParams.get('tab')
+  const tab: Tab =
+    tabParam === 'scheduled' ? 'scheduled' : tabParam === 'campaigns' ? 'campaigns' : 'inbox'
 
   /** The tab lives in the URL, so the queue and the inbox can be linked to. */
   const setTab = useCallback(
@@ -100,6 +109,15 @@ export function MessagesPageClient({
               </Badge>
             )}
           </Button>
+          <Button
+            size="sm"
+            variant={tab === 'campaigns' ? 'default' : 'ghost'}
+            className="h-8"
+            onClick={() => setTab('campaigns')}
+          >
+            <Megaphone className="mr-1.5 h-3.5 w-3.5" />
+            {tp('tabs.campaigns')}
+          </Button>
         </div>
 
         <Button size="sm" variant="outline" onClick={() => setShowScheduleDialog(true)}>
@@ -109,7 +127,9 @@ export function MessagesPageClient({
       </div>
 
       <div className="flex min-h-0 flex-1 overflow-hidden rounded-lg border bg-background">
-        {tab === 'scheduled' ? (
+        {tab === 'campaigns' ? (
+          <CampaignList campaigns={campaigns} />
+        ) : tab === 'scheduled' ? (
           <div className="min-w-0 flex-1">
             <ScheduledMessageList
               messages={scheduled}

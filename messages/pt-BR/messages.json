@@ -7,7 +7,8 @@
       "scheduled": "Agendadas",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Campanhas"
     },
     "smsNotConfiguredTitle": "O SMS não está configurado",
     "smsNotConfiguredHint": "Conecte um provedor de SMS para enviar e receber mensagens aqui. E-mails agendados funcionam sem isso.",

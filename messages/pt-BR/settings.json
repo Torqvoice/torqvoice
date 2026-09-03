@@ -134,6 +134,10 @@
       "providers": {
         "title": "Provedores",
         "description": "E-mail, SMS, WhatsApp e Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Lembretes de inspeção",
+        "description": "Link de agendamento, duração e antecedência"
       }
     },
     "pro": "PRO"
@@ -1966,5 +1970,31 @@
     "partSyntheticOil": "Óleo sintético 5W-30",
     "laborBrakeReplacement": "Substituição de freios",
     "laborOilChange": "Troca de óleo"
+  },
+  "inspectionReminders": {
+    "title": "Lembretes de inspeção e agendamento",
+    "description": "Como o link de agendamento em um lembrete se comporta. Definido uma vez; todas as campanhas usam.",
+    "duration": "Duração da inspeção (minutos)",
+    "durationHint": "Quanto tempo uma inspeção periódica ocupa um box. O link agenda horários com essa duração.",
+    "leadDays": "Agendamento mais cedo (dias)",
+    "leadDaysHint": "1 significa que o primeiro horário oferecido é amanhã, nunca hoje.",
+    "horizonWeeks": "Até quando (semanas)",
+    "horizonHint": "Os clientes podem escolher qualquer horário livre dentro dessas semanas.",
+    "reserve": "Manter livre para quem chega sem hora",
+    "reserveHint": "Boxes ou técnicos que o link nunca ocupa. 0 permite usar todos os livres.",
+    "linkValidDays": "Link fica aberto (dias)",
+    "linkValidHint": "Pelo menos {min}. Os links também ficam abertos até uma semana após o vencimento, o que for mais tarde.",
+    "bookingMode": "O que um agendamento cria",
+    "bookingModeDirect": "Uma ordem de serviço agendada no quadro",
+    "bookingModeRequest": "Uma solicitação que o balcão confirma antes",
+    "bookingModeHint": "O agendamento direto é o que faz o link valer o clique. Escolha solicitação se quiser aprovar sempre.",
+    "phone": "Telefone nas mensagens",
+    "phoneHint": "Mostrado como alternativa ao link. Padrão: o telefone da oficina.",
+    "save": "Salvar",
+    "saved": "Configurações salvas",
+    "saveFailed": "Não foi possível salvar",
+    "timeZoneDetected": "O fuso horário está em automático em Localização, então o servidor usa {zone}, o último visto em um navegador que salvou configurações. Escolha o fuso da oficina explicitamente para que os horários de agendamento nunca dependam de quem salvou por último.",
+    "timeZoneExplicit": "Horários de agendamento e de funcionamento são lidos em {zone}.",
+    "timeZoneChange": "Alterar em Localização"
   }
 }
