@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="RegCheck">
+  <title>RegCheck</title>
+  <rect width="48" height="48" rx="11" fill="#1d7fd6"/>
+  <g fill="#ffffff">
+    <circle cx="30.5" cy="17.5" r="8.5"/>
+    <circle cx="32.5" cy="15.5" r="2.6" fill="#1d7fd6"/>
+    <path d="M24.2 22.6l3.2 3.2-13.6 13.6H9.4v-4.4z"/>
+    <path d="M13.2 33.4l3.4-3.4 3.2 3.2-3.4 3.4z" fill="#1d7fd6"/>
+    <path d="M17.6 29l3.4-3.4 3.2 3.2-3.4 3.4z" fill="#1d7fd6"/>
+  </g>
+</svg>

@@ -290,18 +290,26 @@ export function VehicleForm({
         }
       }
 
+      // An emptied field has to reach the server as '' when editing, which
+      // the update action turns into null; undefined there means "not
+      // touched" and would bring the old value back. On create, leaving an
+      // empty field out is the same thing as clearing it.
+      const optional = (name: string): string | undefined => {
+        const value = ((formData.get(name) as string | null) ?? '').trim()
+        return value || (vehicle ? '' : undefined)
+      }
       const data: CreateVehicleInput & { imageUrl?: string } = {
         make: formData.get('make') as string,
         model: formData.get('model') as string,
         year: Number(formData.get('year')),
-        vin: (formData.get('vin') as string) || undefined,
-        licensePlate: (formData.get('licensePlate') as string) || undefined,
-        color: (formData.get('color') as string) || undefined,
+        vin: optional('vin'),
+        licensePlate: optional('licensePlate'),
+        color: optional('color'),
         mileage: Number(formData.get('mileage')) || 0,
         fuelType: fuelType || undefined,
         transmission: transmission || undefined,
-        engineSize: (formData.get('engineSize') as string) || undefined,
-        engineCode: (formData.get('engineCode') as string) || undefined,
+        engineSize: optional('engineSize'),
+        engineCode: optional('engineCode'),
         // Sent as-is: an empty string clears a hand-typed date, undefined leaves it alone.
         inspectionDueAt: isMarine ? undefined : ((formData.get('inspectionDueAt') as string) ?? ''),
         customerId,

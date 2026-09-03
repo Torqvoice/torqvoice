@@ -371,6 +371,32 @@
         "bikes": "Cerca anche i motocicli",
         "bikesHelp": "Quando una targa non è di un'auto, viene consultato anche il registro dei motocicli. Una ricerca auto senza esito è gratuita, quindi non costa nulla in più a meno che non venga trovato un motociclo. Non disponibile per il Portogallo."
       }
+    },
+    "rdw": {
+      "description": "Compila un veicolo dalla targa olandese: marca, modello, anno, carburante, cilindrata, colore, masse e data del prossimo APK, direttamente dal registro veicoli aperto della RDW. Gratuito, senza chiave. Non vengono pubblicati né i dati del proprietario né il VIN.",
+      "fields": {
+        "appToken": "Token applicazione (facoltativo)",
+        "appTokenHelp": "I dati aperti della RDW funzionano senza chiave, ma le richieste anonime condividono una quota limitata. Per la sincronizzazione delle revisioni, crea un account gratuito su opendata.rdw.nl, apri le impostazioni sviluppatore del tuo profilo e crea un token applicazione."
+      },
+      "settings": {
+        "syncInspections": "Tieni aggiornate le date APK di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data del prossimo APK viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+      }
+    },
+    "regcheck": {
+      "description": "Compila un veicolo dalla targa in Australia, Nuova Zelanda, Stati Uniti, Irlanda, Norvegia, Svezia, Danimarca, Finlandia, Estonia, Cechia, Slovacchia, Ungheria o Croazia: marca, modello, anno, VIN, carburante e cilindrata quando il paese li pubblica, tramite RegCheck. Ogni ricerca con esito consuma un credito dall'account RegCheck dell'officina. Non vengono restituiti dati sul proprietario.",
+      "fields": {
+        "username": "Nome utente RegCheck",
+        "usernameHelp": "Registrati su regcheck.org.uk; l'account include 10 ricerche gratuite e le altre si acquistano in blocchi da 100 dal pannello. Qui serve solo il nome utente, mai la password. Una targa non trovata non costa nulla."
+      },
+      "settings": {
+        "country": "Paese",
+        "countryHelp": "Il registro da consultare. Ogni paese ha un proprio servizio, quindi la connessione ne consulta uno.",
+        "auState": "Stato o territorio",
+        "auStateHelp": "L'Australia immatricola i veicoli per stato e al registro va detto quale consultare. Scegli quello in cui è immatricolata la maggior parte dei veicoli dei tuoi clienti.",
+        "usState": "Stato",
+        "usStateHelp": "Il codice di due lettere dello stato in cui sono immatricolati i veicoli, come CA o TX. I registri americani si consultano per stato."
+      }
     }
   },
   "jobKinds": {

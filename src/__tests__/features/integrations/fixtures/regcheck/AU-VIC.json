@@ -1,0 +1,26 @@
+{
+  "Description": "TOYOTA Hiace",
+  "RegistrationYear": "2014",
+  "CarMake": {
+    "CurrentTextValue": "TOYOTA"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "TOYOTA"
+  },
+  "CarModel": {
+    "CurrentTextValue": "Hiace"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "Hiace"
+  },
+  "Colour": "WHITE",
+  "VechileIdentificationNumber": "JTFHT02P700145015",
+  "Engine": "1KD2418294",
+  "Stolen": "",
+  "GoodsCarryingVehicle": "Yes",
+  "RegistrationSerialNumber": "7168554",
+  "ComplianceDate": "07/2014",
+  "ImageUrl": "http://www.carregistrationapi.com/image.aspx/@VE9ZT1RBIEhpYWNl",
+  "Expiry": "08/08/2023",
+  "State": "VIC"
+}

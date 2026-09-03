@@ -1,0 +1,18 @@
+{
+  "Description": "Maroon FORD ED FALCON",
+  "CarMake": {
+    "CurrentTextValue": "FORD"
+  },
+  "CarModel": {
+    "CurrentTextValue": "ED FALCON"
+  },
+  "RegistrationYear": 1994,
+  "Colour": "Maroon",
+  "Expiry": "01/10/2026",
+  "EngineNumber": "3915",
+  "Stolen": "N",
+  "NetWeight": "1514",
+  "InsuranceCompany": "AAMI",
+  "Image": "http://www.carregistrationapi.com/image.aspx/@Rk9SRCBFRCBGQUxDT04=",
+  "State": "ACT"
+}

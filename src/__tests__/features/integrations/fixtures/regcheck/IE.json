@@ -1,0 +1,39 @@
+{
+  "ABICode": "",
+  "Description": "AUDI A6 1.9 TDI SE 130BHP 4DR A",
+  "RegistrationYear": "2004",
+  "CarMake": {
+    "CurrentTextValue": "AUDI"
+  },
+  "CarModel": {
+    "CurrentTextValue": "A6"
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "SALOON"
+  },
+  "Transmission": {
+    "CurrentTextValue": ""
+  },
+  "FuelType": {
+    "CurrentTextValue": "DIESEL"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "AUDI"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "A6"
+  },
+  "NumberOfSeats": {
+    "CurrentTextValue": "0"
+  },
+  "NumberOfDoors": {
+    "CurrentTextValue": "4"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "1896"
+  },
+  "VIN": "WAUZZZ4BX4N093080",
+  "Engine": "AVF596706",
+  "ImageUrl": "http://www.carregistrationapi.ie/image.aspx/@QVVESSBBNg==",
+  "County": "Meath"
+}

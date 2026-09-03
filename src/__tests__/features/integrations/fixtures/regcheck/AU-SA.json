@@ -1,0 +1,19 @@
+{
+  "Description": "WHITE MITSUBISHI STATION WAGON",
+  "CarMake": {
+    "CurrentTextValue": "MITSUBISHI"
+  },
+  "CarModel": {
+    "CurrentTextValue": ""
+  },
+  "RegistrationYear": "",
+  "BodyStyle": {
+    "CurrentTextValue": "STATION WAGON"
+  },
+  "Colour": "WHITE",
+  "Expiry": "05/12/2026",
+  "VechileIdentificationNumber": "",
+  "InsuranceCompany": "AAMI",
+  "ImageUrl": "http://www.carregistrationapi.com/image.aspx/@TUlUU1VCSVNISSA=",
+  "State": "SA"
+}

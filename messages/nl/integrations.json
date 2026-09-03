@@ -371,6 +371,32 @@
         "bikes": "Ook motorfietsen opzoeken",
         "bikesHelp": "Als een kenteken geen auto is, wordt ook het motorfietsregister bevraagd. Geen resultaat bij auto's is gratis, dus dit kost niets extra tenzij een motorfiets wordt gevonden. Niet beschikbaar voor Portugal."
       }
+    },
+    "rdw": {
+      "description": "Vul een voertuig in vanuit het Nederlandse kenteken: merk, model, bouwjaar, brandstof, cilinderinhoud, kleur, massa's en de volgende APK-vervaldatum, rechtstreeks uit het open voertuigregister van de RDW. Gratis, geen sleutel nodig. Eigenaarsgegevens en VIN worden niet gepubliceerd.",
+      "fields": {
+        "appToken": "App-token (optioneel)",
+        "appTokenHelp": "De open data van de RDW werkt zonder sleutel, maar anonieme verzoeken delen een beperkt quotum. Voor de APK-synchronisatie: maak een gratis account op opendata.rdw.nl, open de ontwikkelaarsinstellingen van je profiel en maak een app-token aan."
+      },
+      "settings": {
+        "syncInspections": "APK-vervaldatums van alle voertuigen in deze werkplaats bijhouden",
+        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende APK-vervaldatum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+      }
+    },
+    "regcheck": {
+      "description": "Vul een voertuig in vanuit het kenteken in Australië, Nieuw-Zeeland, de Verenigde Staten, Ierland, Noorwegen, Zweden, Denemarken, Finland, Estland, Tsjechië, Slowakije, Hongarije of Kroatië: merk, model, bouwjaar, VIN, brandstof en cilinderinhoud waar het land ze publiceert, via RegCheck. Elke geslaagde opzoeking kost één credit van het eigen RegCheck-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "username": "RegCheck-gebruikersnaam",
+        "usernameHelp": "Registreer op regcheck.org.uk; het account komt met 10 gratis opzoekingen en meer koop je in blokken van 100 via het dashboard. Hier is alleen de gebruikersnaam nodig, nooit het wachtwoord. Een kenteken dat niet wordt gevonden kost niets."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Het register om in te zoeken. Elk land heeft zijn eigen dienst, dus de verbinding zoekt in één.",
+        "auState": "Staat of territorium",
+        "auStateHelp": "Australië registreert voertuigen per staat en het register moet weten welke te doorzoeken. Kies waar de meeste voertuigen van je klanten geregistreerd zijn.",
+        "usState": "Staat",
+        "usStateHelp": "De tweeletterige code van de staat waar de voertuigen geregistreerd zijn, zoals CA of TX. Amerikaanse registers worden per staat doorzocht."
+      }
     }
   },
   "jobKinds": {

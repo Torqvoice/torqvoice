@@ -371,6 +371,32 @@
         "bikes": "Consultar também motocicletas",
         "bikesHelp": "Quando uma placa não é de carro, o registro de motocicletas também é consultado. Uma consulta de carro sem resultado é gratuita, então não custa nada a mais a menos que uma motocicleta seja encontrada. Indisponível para Portugal."
       }
+    },
+    "rdw": {
+      "description": "Preencha um veículo a partir da placa holandesa: marca, modelo, ano, combustível, cilindrada, cor, pesos e a próxima data de APK, direto do registro aberto de veículos da RDW. Gratuito, sem chave. Dados do proprietário e VIN não são publicados.",
+      "fields": {
+        "appToken": "Token de aplicativo (opcional)",
+        "appTokenHelp": "Os dados abertos da RDW funcionam sem chave, mas as requisições anônimas compartilham uma cota limitada. Para a sincronização de inspeções, crie uma conta gratuita em opendata.rdw.nl, abra as configurações de desenvolvedor do seu perfil e crie um token de aplicativo."
+      },
+      "settings": {
+        "syncInspections": "Manter as datas de APK de todos os veículos desta oficina atualizadas",
+        "syncInspectionsHelp": "Uma vez por hora, veículos não verificados recentemente são consultados pela placa e a próxima data de APK é salva. Só veículos desta oficina são enviados. Um veículo é verificado mensalmente, e semanalmente quando o prazo está a menos de dois meses."
+      }
+    },
+    "regcheck": {
+      "description": "Preencha um veículo a partir da placa na Austrália, Nova Zelândia, Estados Unidos, Irlanda, Noruega, Suécia, Dinamarca, Finlândia, Estônia, Tchéquia, Eslováquia, Hungria ou Croácia: marca, modelo, ano, VIN, combustível e cilindrada quando o país os publica, via RegCheck. Cada consulta bem-sucedida gasta um crédito da conta RegCheck da própria oficina. Nenhum dado do proprietário é retornado.",
+      "fields": {
+        "username": "Usuário RegCheck",
+        "usernameHelp": "Cadastre-se em regcheck.org.uk; a conta vem com 10 consultas gratuitas e as demais são compradas em blocos de 100 pelo painel. Aqui só é preciso o usuário, nunca a senha. Uma placa não encontrada não custa nada."
+      },
+      "settings": {
+        "country": "País",
+        "countryHelp": "O registro a consultar. Cada país tem seu próprio serviço, então a conexão consulta um.",
+        "auState": "Estado ou território",
+        "auStateHelp": "A Austrália registra veículos por estado e o registro precisa saber qual consultar. Escolha onde a maioria dos veículos dos seus clientes está registrada.",
+        "usState": "Estado",
+        "usStateHelp": "O código de duas letras do estado em que os veículos estão registrados, como CA ou TX. Os registros americanos são consultados por estado."
+      }
     }
   },
   "jobKinds": {

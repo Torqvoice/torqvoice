@@ -1,0 +1,39 @@
+{
+  "Description": "Volkswagen GOLF",
+  "RegistrationYear": "2010",
+  "CarMake": {
+    "CurrentTextValue": "Volkswagen"
+  },
+  "CarModel": {
+    "CurrentTextValue": "GOLF"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "1598"
+  },
+  "FuelType": {
+    "CurrentTextValue": "Diesel"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "Volkswagen"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "GOLF"
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "Car"
+  },
+  "InsuranceCompany": "LähiTapiola",
+  "VechileIdentificationNumber": "WVWZZZ1KZBW072586",
+  "TowBar": "True",
+  "RegistrationDate": "21/09/2010",
+  "Axles": "",
+  "Power": "77",
+  "Turbo": "No",
+  "NetWeight": "1340",
+  "EngineCode": "CAYC",
+  "Transmission": "Automaattinen",
+  "BodyType": "Kombi-sedan",
+  "ModelYear": "2011",
+  "Variant": "VW GOLF VI 09-13",
+  "ImageUrl": "http://www.rekisterinumeroapi.com/image.aspx/@Vm9sa3N3YWdlbiBHT0xG"
+}

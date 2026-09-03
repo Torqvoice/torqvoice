@@ -371,6 +371,32 @@
         "bikes": "Motosikletleri de sorgula",
         "bikesHelp": "Bir plaka otomobil değilse motosiklet sicili de sorgulanır. Otomobil tarafında sonuçsuz sorgu ücretsizdir, bu nedenle bir motosiklet bulunmadıkça ek maliyet oluşmaz. Portekiz için kullanılamaz."
       }
+    },
+    "rdw": {
+      "description": "Hollanda plakasından aracı doldurun: marka, model, yıl, yakıt, motor hacmi, renk, ağırlıklar ve bir sonraki APK tarihi, doğrudan RDW'nin açık araç sicilinden. Ücretsiz, anahtar gerekmez. Araç sahibi bilgisi ve VIN yayımlanmaz.",
+      "fields": {
+        "appToken": "Uygulama belirteci (isteğe bağlı)",
+        "appTokenHelp": "RDW açık verileri anahtarsız çalışır, ancak anonim istekler sınırlı bir kotayı paylaşır. Muayene eşitlemesi için opendata.rdw.nl'de ücretsiz bir hesap açın, profilinizin geliştirici ayarlarını açın ve bir uygulama belirteci oluşturun."
+      },
+      "settings": {
+        "syncInspections": "Bu atölyedeki tüm araçların APK tarihlerini güncel tut",
+        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki APK tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+      }
+    },
+    "regcheck": {
+      "description": "Avustralya, Yeni Zelanda, ABD, İrlanda, Norveç, İsveç, Danimarka, Finlandiya, Estonya, Çekya, Slovakya, Macaristan veya Hırvatistan plakasından aracı doldurun: ülke yayımlıyorsa marka, model, yıl, VIN, yakıt ve motor hacmi, RegCheck aracılığıyla. Her başarılı sorgu atölyenin kendi RegCheck hesabından bir kredi harcar. Araç sahibi bilgisi döndürülmez.",
+      "fields": {
+        "username": "RegCheck kullanıcı adı",
+        "usernameHelp": "regcheck.org.uk'de kaydolun; hesap 10 ücretsiz sorguyla gelir, fazlası panelden 100'lük bloklar halinde satın alınır. Burada yalnızca kullanıcı adı gerekir, şifre asla. Bulunamayan plaka ücret oluşturmaz."
+      },
+      "settings": {
+        "country": "Ülke",
+        "countryHelp": "Aranacak sicil. Her ülkenin kendi hizmeti vardır, bu yüzden bağlantı tek birinde arar.",
+        "auState": "Eyalet veya bölge",
+        "auStateHelp": "Avustralya araçları eyalet bazında tescil eder ve sicile hangisinde aranacağı söylenmelidir. Müşterilerinizin araçlarının çoğunun tescilli olduğu eyaleti seçin.",
+        "usState": "Eyalet",
+        "usStateHelp": "Araçların tescilli olduğu eyaletin iki harfli kodu, örneğin CA veya TX. ABD sicilleri eyalet bazında sorgulanır."
+      }
     }
   },
   "jobKinds": {

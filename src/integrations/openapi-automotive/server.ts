@@ -4,6 +4,7 @@ import type {
   VehicleLookupQuery,
   VehicleLookupResult,
 } from '@/features/integrations/Lib/types'
+import { makeCase } from '@/features/integrations/Lib/make-case'
 import { manifest } from './manifest'
 
 /**
@@ -106,18 +107,6 @@ function text(value: unknown): string | undefined {
   return trimmed ? trimmed : undefined
 }
 
-/** "PEUGEOT" as Peugeot, "alfa romeo" as Alfa Romeo, but BMW, VW and DS stay the initials they are. */
-export function titleCase(value: string): string {
-  return value
-    .split(/(\s+|-)/)
-    .map((part) => {
-      if (!part.trim() || part === '-') return part
-      if (part.length <= 3) return part.toUpperCase()
-      return part[0].toUpperCase() + part.slice(1).toLowerCase()
-    })
-    .join('')
-}
-
 /**
  * One fuel for the form's select, from words in five languages. Two fuels
  * named together, such as "Petrol/Electric", make a hybrid; a word the list
@@ -202,12 +191,12 @@ export function mapRecord(record: AutomotiveRecord, plate?: string): VehicleLook
   const grossMax = kilograms(record.GrossWeight)
 
   const result: VehicleLookupResult = {
-    make: make ? titleCase(make) : undefined,
+    make: make ? makeCase(make) : undefined,
     model: text(record.CarModel) ?? text(record.ModelDescription),
     year: Number.isFinite(year) && year > 1800 ? year : undefined,
     vin: vin(record),
     licensePlate: text(record.LicensePlate) ?? plate,
-    color: colour ? titleCase(colour) : undefined,
+    color: colour ? makeCase(colour) : undefined,
     fuelType: fuelType(text(record.FuelType) ?? text(record.Fuel)),
     transmission: transmission(
       text(record.Transmission) ?? text(record.ExtendedData?.boiteDeVitesse)

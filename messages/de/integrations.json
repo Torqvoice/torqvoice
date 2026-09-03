@@ -371,6 +371,32 @@
         "bikes": "Auch Motorräder abfragen",
         "bikesHelp": "Ist ein Kennzeichen kein Pkw, wird zusätzlich das Motorradregister gefragt. Ein Fehltreffer beim Pkw ist kostenlos, es entstehen also nur Kosten, wenn ein Motorrad gefunden wird. Für Portugal nicht verfügbar."
       }
+    },
+    "rdw": {
+      "description": "Fahrzeug aus dem niederländischen Kennzeichen ausfüllen: Marke, Modell, Baujahr, Kraftstoff, Hubraum, Farbe, Gewichte und der nächste APK-Termin, direkt aus dem offenen Fahrzeugregister der RDW. Kostenlos, kein Schlüssel nötig. Halterdaten und FIN werden nicht veröffentlicht.",
+      "fields": {
+        "appToken": "App-Token (optional)",
+        "appTokenHelp": "Die offenen Daten der RDW funktionieren ohne Schlüssel, anonyme Anfragen teilen sich aber ein gedrosseltes Kontingent. Für die Prüfterminsynchronisation legen Sie auf opendata.rdw.nl ein kostenloses Konto an, öffnen die Entwicklereinstellungen Ihres Profils und erstellen ein App-Token."
+      },
+      "settings": {
+        "syncInspections": "APK-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
+        "syncInspectionsHelp": "Einmal pro Stunde werden Fahrzeuge, die länger nicht geprüft wurden, per Kennzeichen abgefragt und der nächste APK-Termin gespeichert. Es werden nur Fahrzeuge dieser Werkstatt gesendet. Ein Fahrzeug wird monatlich geprüft, wöchentlich sobald die Frist unter zwei Monaten liegt."
+      }
+    },
+    "regcheck": {
+      "description": "Fahrzeug aus dem Kennzeichen in Australien, Neuseeland, den USA, Irland, Norwegen, Schweden, Dänemark, Finnland, Estland, Tschechien, der Slowakei, Ungarn oder Kroatien ausfüllen: Marke, Modell, Baujahr, FIN, Kraftstoff und Hubraum, soweit das Land sie veröffentlicht, über RegCheck. Jede erfolgreiche Abfrage verbraucht ein Guthaben aus dem eigenen RegCheck-Konto der Werkstatt. Halterdaten werden nicht geliefert.",
+      "fields": {
+        "username": "RegCheck-Benutzername",
+        "usernameHelp": "Registrieren Sie sich auf regcheck.org.uk; das Konto enthält 10 kostenlose Abfragen, weitere werden über das Dashboard in Blöcken von 100 gekauft. Hier wird nur der Benutzername benötigt, nie das Passwort. Ein nicht gefundenes Kennzeichen kostet nichts."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Das zu durchsuchende Register. Jedes Land hat einen eigenen Dienst, die Verbindung durchsucht daher eines.",
+        "auState": "Bundesstaat oder Territorium",
+        "auStateHelp": "Australien lässt Fahrzeuge je Bundesstaat zu, und dem Register muss gesagt werden, welcher durchsucht wird. Wählen Sie den Staat, in dem die meisten Fahrzeuge Ihrer Kunden zugelassen sind.",
+        "usState": "Bundesstaat",
+        "usStateHelp": "Der zweibuchstabige Code des Bundesstaats, in dem die Fahrzeuge zugelassen sind, etwa CA oder TX. Amerikanische Register werden je Bundesstaat durchsucht."
+      }
     }
   },
   "jobKinds": {

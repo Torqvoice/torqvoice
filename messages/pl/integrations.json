@@ -371,6 +371,32 @@
         "bikes": "Wyszukuj także motocykle",
         "bikesHelp": "Gdy tablica nie należy do samochodu, odpytywany jest również rejestr motocykli. Brak wyniku dla samochodu jest bezpłatny, więc nie kosztuje to nic więcej, chyba że zostanie znaleziony motocykl. Niedostępne dla Portugalii."
       }
+    },
+    "rdw": {
+      "description": "Uzupełnij pojazd na podstawie holenderskiej tablicy: marka, model, rocznik, paliwo, pojemność silnika, kolor, masy i termin następnego APK, prosto z otwartego rejestru pojazdów RDW. Bezpłatnie, bez klucza. Dane właściciela i VIN nie są publikowane.",
+      "fields": {
+        "appToken": "Token aplikacji (opcjonalny)",
+        "appTokenHelp": "Otwarte dane RDW działają bez klucza, ale anonimowe zapytania dzielą ograniczoną pulę. Do synchronizacji przeglądów załóż bezpłatne konto na opendata.rdw.nl, otwórz ustawienia programisty w profilu i utwórz token aplikacji."
+      },
+      "settings": {
+        "syncInspections": "Aktualizuj terminy APK wszystkich pojazdów w tym warsztacie",
+        "syncInspectionsHelp": "Raz na godzinę pojazdy, które nie były ostatnio sprawdzane, są wyszukiwane po tablicy, a termin następnego APK jest zapisywany. Wysyłane są tylko pojazdy tego warsztatu. Pojazd jest sprawdzany co miesiąc, a co tydzień, gdy do terminu zostały mniej niż dwa miesiące."
+      }
+    },
+    "regcheck": {
+      "description": "Uzupełnij pojazd na podstawie tablicy w Australii, Nowej Zelandii, USA, Irlandii, Norwegii, Szwecji, Danii, Finlandii, Estonii, Czechach, Słowacji, na Węgrzech lub w Chorwacji: marka, model, rocznik, VIN, paliwo i pojemność silnika, o ile kraj je publikuje, przez RegCheck. Każde udane zapytanie zużywa jeden kredyt z własnego konta RegCheck warsztatu. Dane właściciela nie są zwracane.",
+      "fields": {
+        "username": "Nazwa użytkownika RegCheck",
+        "usernameHelp": "Zarejestruj się na regcheck.org.uk; konto zawiera 10 bezpłatnych zapytań, a kolejne kupuje się w pakietach po 100 w panelu. Tutaj potrzebna jest tylko nazwa użytkownika, nigdy hasło. Nieznaleziona tablica nic nie kosztuje."
+      },
+      "settings": {
+        "country": "Kraj",
+        "countryHelp": "Rejestr, w którym szukać. Każdy kraj ma własną usługę, więc połączenie przeszukuje jeden.",
+        "auState": "Stan lub terytorium",
+        "auStateHelp": "Australia rejestruje pojazdy według stanów, a rejestrowi trzeba wskazać, który przeszukać. Wybierz ten, w którym zarejestrowana jest większość pojazdów Twoich klientów.",
+        "usState": "Stan",
+        "usStateHelp": "Dwuliterowy kod stanu, w którym zarejestrowane są pojazdy, np. CA lub TX. Amerykańskie rejestry są przeszukiwane według stanu."
+      }
     }
   },
   "jobKinds": {
