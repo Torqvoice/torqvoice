@@ -8,6 +8,7 @@ import {
   isoDate,
   mapRecord,
   normalisePlate,
+  titleCase,
   transmission,
 } from '@/integrations/openapi-automotive/server'
 
@@ -195,6 +196,13 @@ describe('openapi automotive mapper', () => {
     expect(isoDate('1/4/2025')).toBe('2025-04-01')
     expect(isoDate('22102008')).toBe('2008-10-22')
     expect(isoDate('yesterday')).toBeUndefined()
+  })
+
+  it('cases makes the way they are written, initials included', () => {
+    expect(titleCase('PEUGEOT')).toBe('Peugeot')
+    expect(titleCase('alfa romeo')).toBe('Alfa Romeo')
+    expect(titleCase('BMW')).toBe('BMW')
+    expect(titleCase('MERCEDES-BENZ')).toBe('Mercedes-Benz')
   })
 
   it('normalises plates the way each country prints them', () => {

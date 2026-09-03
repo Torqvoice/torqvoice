@@ -106,11 +106,15 @@ function text(value: unknown): string | undefined {
   return trimmed ? trimmed : undefined
 }
 
-function titleCase(value: string): string {
+/** "PEUGEOT" as Peugeot, "alfa romeo" as Alfa Romeo, but BMW, VW and DS stay the initials they are. */
+export function titleCase(value: string): string {
   return value
-    .toLowerCase()
     .split(/(\s+|-)/)
-    .map((part) => (part.trim() && part !== '-' ? part[0].toUpperCase() + part.slice(1) : part))
+    .map((part) => {
+      if (!part.trim() || part === '-') return part
+      if (part.length <= 3) return part.toUpperCase()
+      return part[0].toUpperCase() + part.slice(1).toLowerCase()
+    })
     .join('')
 }
 

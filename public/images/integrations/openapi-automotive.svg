@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Openapi Automotive">
-  <title>Openapi Automotive</title>
-  <rect width="48" height="48" rx="11" fill="#1d4ed8"/>
-  <text x="24" y="24" fill="#ffffff" font-family="system-ui, -apple-system, Segoe UI, sans-serif"
-        font-size="18" font-weight="600" text-anchor="middle" dominant-baseline="central">Oa</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.7 7.4 26.6 26.6" width="48" height="48" role="img" aria-label="Openapi">
+  <title>Openapi</title>
+  <path fill="#6d3e91" fill-rule="evenodd" d="M14,7.4c7.4,0,13.3,6,13.3,13.3s-6,13.3-13.3,13.3s-13.3-6-13.3-13.3S6.6,7.4,14,7.4z"/>
+  <path fill="#fff" d="M14.1,24.3L14.1,24.3c0-1,0.8-1.7,1.7-1.7h6.5c1,0,1.7,0.8,1.7,1.7l0,0c0,1-0.8,1.7-1.7,1.7h-6.5C14.9,26.1,14.1,25.3,14.1,24.3z"/>
+  <path fill="#fff" d="M13.3,21L13.3,21c-0.7,0.7-1.8,0.7-2.5,0l-4.6-4.6c-0.7-0.7-0.7-1.8,0-2.5l0,0c0.7-0.7,1.8-0.7,2.5,0l4.6,4.6C14,19.2,14,20.3,13.3,21z"/>
+  <path fill="#fff" d="M13.3,18.6L13.3,18.6c0.7,0.7,0.7,1.8,0,2.5l-4.6,4.6c-0.7,0.7-1.8,0.7-2.5,0l0,0c-0.7-0.7-0.7-1.8,0-2.5l4.6-4.6C11.5,17.9,12.6,17.9,13.3,18.6z"/>
 </svg>
