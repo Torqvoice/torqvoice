@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { AlertTriangle, Search, X, Zap } from 'lucide-react'
+import { openPlateLookup, usePlateLookupAccess } from '@/components/plate-lookup-context'
 import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
@@ -37,6 +38,35 @@ function SearchTrigger() {
       <kbd className="rounded border bg-background px-1.5 py-0.5 text-[10px] font-medium">
         {t('shortcut')}
       </kbd>
+    </button>
+  )
+}
+
+/**
+ * The plate lookup, drawn as the thing it looks up: a small plate beside
+ * the word. Only rendered once a registry is connected, so a workshop that
+ * has none never sees a button that would only explain itself away.
+ */
+function PlateTrigger() {
+  const t = useTranslations('vehicles.plateLookup')
+  const { available } = usePlateLookupAccess()
+  if (!available) return null
+  return (
+    <button
+      type="button"
+      className="group flex h-8 cursor-pointer items-center gap-2 rounded-md border bg-muted/50 px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      onClick={() => openPlateLookup()}
+      aria-label={t('open')}
+      title={`${t('open')} (${t('shortcut')})`}
+    >
+      <span
+        aria-hidden
+        className="flex h-4 items-center overflow-hidden rounded-[3px] border border-foreground/40 bg-background font-mono text-[9px] font-semibold leading-none tracking-wider text-foreground/80"
+      >
+        <span className="h-full w-1.5 bg-primary/80" />
+        <span className="px-1">AB 123</span>
+      </span>
+      <span className="hidden lg:inline">{t('open')}</span>
     </button>
   )
 }
@@ -262,6 +292,7 @@ export function PageHeader() {
         </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">
           {docsHref && <DocsLink href={docsHref} variant="header" className="hidden sm:flex" />}
+          <PlateTrigger />
           <SearchTrigger />
           <QuickCreateMenu />
           {showWhiteLabelCta && (

@@ -82,6 +82,11 @@ interface VehicleFormProps {
   customers?: { id: string; name: string; company: string | null }[]
   /** Preselects the customer when creating a new vehicle (ignored when editing) */
   defaultCustomerId?: string
+  /**
+   * What a registry already said about the plate, for a form opened from the
+   * plate lookup: filled in as if the search button had been pressed.
+   */
+  initialLookup?: VehicleLookup | null
 }
 
 export function VehicleForm({
@@ -90,6 +95,7 @@ export function VehicleForm({
   vehicle,
   customers,
   defaultCustomerId,
+  initialLookup,
 }: VehicleFormProps) {
   const serviceType = useServiceType()
   const isMarine = serviceType === 'marine'
@@ -255,6 +261,23 @@ export function VehicleForm({
     }
     setLookupNote(data)
   }
+
+  // The fields are uncontrolled, so the registry's answer is written once the
+  // form has rendered, the same way the lookup button writes it.
+  const appliedLookupRef = useRef<VehicleLookup | null>(null)
+  useEffect(() => {
+    if (!open || vehicle || !initialLookup) return
+    if (appliedLookupRef.current === initialLookup) return
+    appliedLookupRef.current = initialLookup
+    const frame = requestAnimationFrame(() => applyLookup(initialLookup))
+    return () => cancelAnimationFrame(frame)
+    // applyLookup reads the current form and selects; running it again on
+    // their change would overwrite what the user has since typed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, vehicle, initialLookup])
+  useEffect(() => {
+    if (!open) appliedLookupRef.current = null
+  }, [open])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
