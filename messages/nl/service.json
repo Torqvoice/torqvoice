@@ -85,6 +85,11 @@
     "designFollowing": "Standaard ({name})",
     "designPinned": "Het blad is bevroren toen de factuur op {date} werd uitgegeven. Een nieuwe keuze geldt pas nadat een eigenaar de factuur ontgrendelt en ze opnieuw wordt verzonden.",
     "designSaved": "Factuurontwerp bijgewerkt",
+    "designFollowingRule": "Standaard ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Alleen onderdelenverkoop",
+      "vehicle_job": "Voertuigopdrachten"
+    },
     "designSaveFailed": "Kon het factuurontwerp niet wijzigen"
   },
   "parts": {

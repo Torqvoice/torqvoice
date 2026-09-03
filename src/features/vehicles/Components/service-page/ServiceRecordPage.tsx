@@ -10,6 +10,10 @@ import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPrese
 import { getTechnicians, getOrgMembers } from '@/features/workboard/Actions/technicianActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getInvoiceLockState } from '@/lib/document-lock.server'
+import {
+  designRuleSubjectOf,
+  findRuleDesign,
+} from '@/features/invoice-designer/Lib/designRules.server'
 import { getFeatures } from '@/lib/features'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
@@ -161,10 +165,19 @@ export async function ServiceRecordPage({
   const activeDesignId = activeDesign.startsWith('design:')
     ? activeDesign.slice('design:'.length)
     : null
+  // What "default" means for this invoice: the customer's design, else the
+  // design that volunteers for this kind of invoice, else the one in use.
+  const customerDesignName = designOptions.find((d) => d.id === customerDesignId)?.name ?? null
+  const ruleDesign =
+    !customerDesignName && organizationId
+      ? await findRuleDesign(organizationId, designRuleSubjectOf(record))
+      : null
   const designFollowsName =
-    designOptions.find((d) => d.id === customerDesignId)?.name ??
+    customerDesignName ??
+    ruleDesign?.name ??
     designOptions.find((d) => d.id === activeDesignId)?.name ??
     null
+  const designFollowsRule = ruleDesign?.autoRule ?? null
   const designPinnedAt = rendersFromIssue(record) ? (record.issuedAt?.toISOString() ?? null) : null
   const aiSettingsMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
   const aiEnabled =
@@ -358,6 +371,7 @@ export async function ServiceRecordPage({
         }))}
         designOptions={designOptions}
         designFollowsName={designFollowsName}
+        designFollowsRule={designFollowsRule}
         designPinnedAt={designPinnedAt}
       />
     </div>

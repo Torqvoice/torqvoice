@@ -1792,6 +1792,16 @@
     "galleryTitle": "Comece por um modelo",
     "galleryHint": "Escolha um ponto de partida. Você pode mudar tudo no designer.",
     "yourDesigns": "Seus designs",
+    "autoRuleLabel": "Usar automaticamente para",
+    "autoRuleNone": "Somente quando escolhido",
+    "autoRuleDefault": "Todo o resto",
+    "autoRuleHint": "Imprime as faturas correspondentes que não escolheram um design, e cujo cliente também não escolheu.",
+    "autoRule": {
+      "parts_sale": "Venda apenas de peças",
+      "vehicle_job": "Serviços em veículo"
+    },
+    "autoRuleSaved": "Uso de \"{name}\" atualizado",
+    "couldNotSaveRule": "Não foi possível atualizar a regra",
     "templates": "Modelos",
     "inUse": "Em uso",
     "savedOn": "Salvo em {date}",

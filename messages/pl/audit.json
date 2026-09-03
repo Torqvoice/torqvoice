@@ -160,6 +160,7 @@
     "settings_saveDocumentDesign": "Zapisano projekt dokumentu",
     "settings_deleteDocumentDesign": "Usunięto projekt dokumentu",
     "settings_applyDocumentDesign": "Ustawiono domyślny projekt dokumentu",
+    "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt",
     "settings_freezeInvoices": "Zablokowano starsze faktury",
     "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
     "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie"
@@ -295,6 +296,7 @@
     "settings_saveDocumentDesign": "Zapisał projekt dokumentu {name}",
     "settings_deleteDocumentDesign": "Usunął projekt dokumentu {name}",
     "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu",
+    "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt dokumentu {name}",
     "settings_freezeInvoices": "Zablokował {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}} sprzed blokady z bieżącym projektem",
     "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie"
   }

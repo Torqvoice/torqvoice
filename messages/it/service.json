@@ -85,6 +85,11 @@
     "designFollowing": "Predefinito ({name})",
     "designPinned": "Il foglio è stato congelato all'emissione della fattura il {date}. Una nuova scelta vale solo dopo che un titolare sblocca la fattura e questa viene inviata di nuovo.",
     "designSaved": "Design della fattura aggiornato",
+    "designFollowingRule": "Predefinito ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Vendita solo ricambi",
+      "vehicle_job": "Lavori su veicolo"
+    },
     "designSaveFailed": "Impossibile cambiare il design della fattura"
   },
   "parts": {

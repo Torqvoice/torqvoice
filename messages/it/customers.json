@@ -33,6 +33,8 @@
     "phoneCopied": "Numero di telefono copiato negli appunti",
     "taxIdLabel": "P. IVA",
     "taxExemptBadge": "Esente da imposta",
+    "invoiceDesignBadge": "Design fattura: {name}",
+    "invoiceDesignBadgeHint": "Le fatture di questo cliente si stampano con questo design invece di quello predefinito dell'officina. Aprilo nel designer.",
     "tabs": {
       "vehicles": "Veicoli ({count})",
       "invoices": "Fatture ({count})",

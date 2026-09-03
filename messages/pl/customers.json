@@ -33,6 +33,8 @@
     "phoneCopied": "Numer telefonu skopiowany do schowka",
     "taxIdLabel": "NIP",
     "taxExemptBadge": "Zwolniony z podatku",
+    "invoiceDesignBadge": "Projekt faktury: {name}",
+    "invoiceDesignBadgeHint": "Faktury tego klienta są drukowane z tym projektem zamiast domyślnego warsztatu. Otwórz w projektancie.",
     "tabs": {
       "vehicles": "Pojazdy ({count})",
       "invoices": "Faktury ({count})",

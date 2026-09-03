@@ -85,6 +85,11 @@
     "designFollowing": "Numatytasis ({name})",
     "designPinned": "Lapas užfiksuotas išrašant sąskaitą {date}. Naujas pasirinkimas galios tik po to, kai savininkas atrakins sąskaitą ir ji bus išsiųsta dar kartą.",
     "designSaved": "Sąskaitos dizainas atnaujintas",
+    "designFollowingRule": "Numatytasis ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Tik dalių pardavimas",
+      "vehicle_job": "Transporto priemonių darbai"
+    },
     "designSaveFailed": "Nepavyko pakeisti sąskaitos dizaino"
   },
   "parts": {

@@ -6,6 +6,7 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import type { DesignerTemplate, DocumentType, SavedDesign } from '../Components/types'
+import { isDesignAutoRule } from './designRules'
 
 /**
  * A design as something that can be printed from: the layout and the
@@ -147,6 +148,7 @@ export function savedDesignFromRow(row: {
   updatedAt: Date
   layout: unknown
   template: unknown
+  autoRule?: string | null
 }): SavedDesign | null {
   const source = designSourceFromStored(row.layout, row.template)
   if (!source) return null
@@ -156,5 +158,6 @@ export function savedDesignFromRow(row: {
     savedAt: row.updatedAt.toISOString(),
     layout: mergeWithDefaults(source.layout),
     template: source.template,
+    autoRule: isDesignAutoRule(row.autoRule) ? row.autoRule : null,
   }
 }

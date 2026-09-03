@@ -1792,6 +1792,16 @@
     "galleryTitle": "Partir d'un modèle",
     "galleryHint": "Choisissez un point de départ. Vous pourrez tout modifier dans le concepteur.",
     "yourDesigns": "Vos maquettes",
+    "autoRuleLabel": "Utiliser automatiquement pour",
+    "autoRuleNone": "Seulement si choisi",
+    "autoRuleDefault": "Tout le reste",
+    "autoRuleHint": "Imprime les factures correspondantes qui n'ont pas choisi de design, et dont le client n'en a pas choisi non plus.",
+    "autoRule": {
+      "parts_sale": "Vente de pièces seule",
+      "vehicle_job": "Interventions véhicule"
+    },
+    "autoRuleSaved": "Utilisation de « {name} » mise à jour",
+    "couldNotSaveRule": "Impossible de mettre à jour la règle",
     "templates": "Modèles",
     "inUse": "Utilisée",
     "savedOn": "Enregistrée le {date}",

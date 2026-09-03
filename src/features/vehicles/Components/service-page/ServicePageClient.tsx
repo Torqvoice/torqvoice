@@ -99,6 +99,7 @@ export function ServicePageClient({
   designOptions = [],
   designFollowsName = null,
   designPinnedAt = null,
+  designFollowsRule = null,
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -461,6 +462,7 @@ export function ServicePageClient({
                     designOptions={designOptions}
                     designFollowsName={designFollowsName}
                     designPinnedAt={designPinnedAt}
+                    designFollowsRule={designFollowsRule}
                   />
                 }
               />

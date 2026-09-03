@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -48,6 +49,8 @@ interface InvoiceDetailsSectionProps {
   designFollowsName?: string | null
   /** When the sheet was frozen, ISO. Set only while it prints from that copy. */
   designPinnedAt?: string | null
+  /** Set when a design rule, not the customer or the default, is what "default" means here. */
+  designFollowsRule?: DesignAutoRule | null
 }
 
 export function InvoiceDetailsSection({
@@ -65,6 +68,7 @@ export function InvoiceDetailsSection({
   designId = null,
   designFollowsName = null,
   designPinnedAt = null,
+  designFollowsRule = null,
 }: InvoiceDetailsSectionProps) {
   const t = useTranslations('service.basicInfo')
   const router = useRouter()
@@ -236,9 +240,14 @@ export function InvoiceDetailsSection({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={FOLLOW_DEFAULT}>
-                {designFollowsName
-                  ? t('designFollowing', { name: designFollowsName })
-                  : t('designDefault')}
+                {designFollowsName && designFollowsRule
+                  ? t('designFollowingRule', {
+                      name: designFollowsName,
+                      rule: t(`designRule.${designFollowsRule}`),
+                    })
+                  : designFollowsName
+                    ? t('designFollowing', { name: designFollowsName })
+                    : t('designDefault')}
               </SelectItem>
               {designOptions.map((option) => (
                 <SelectItem key={option.id} value={option.id}>

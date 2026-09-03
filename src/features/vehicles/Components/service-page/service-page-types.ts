@@ -1,3 +1,4 @@
+import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import type { LockState } from '@/lib/document-lock'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -106,6 +107,8 @@ export interface ServicePageClientProps {
   designFollowsName?: string | null
   /** When the sheet was frozen, ISO, while it prints from that copy. */
   designPinnedAt?: string | null
+  /** The rule that picked the default design, when a rule did. */
+  designFollowsRule?: DesignAutoRule | null
   findings?: {
     id: string
     description: string

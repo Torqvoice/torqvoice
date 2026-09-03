@@ -85,6 +85,11 @@
     "designFollowing": "Standard ({name})",
     "designPinned": "Das Blatt wurde beim Ausstellen der Rechnung am {date} eingefroren. Eine neue Wahl gilt erst, wenn ein Inhaber die Rechnung entsperrt und sie erneut gesendet wird.",
     "designSaved": "Rechnungsdesign aktualisiert",
+    "designFollowingRule": "Standard ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Reiner Teileverkauf",
+      "vehicle_job": "Fahrzeugaufträge"
+    },
     "designSaveFailed": "Rechnungsdesign konnte nicht geändert werden"
   },
   "parts": {

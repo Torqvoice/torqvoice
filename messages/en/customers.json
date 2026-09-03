@@ -33,6 +33,8 @@
     "phoneCopied": "Phone number copied to clipboard",
     "taxIdLabel": "Tax ID",
     "taxExemptBadge": "Tax exempt",
+    "invoiceDesignBadge": "Invoice design: {name}",
+    "invoiceDesignBadgeHint": "Invoices for this customer print with this design instead of the workshop default. Open it in the designer.",
     "tabs": {
       "vehicles": "Vehicles ({count})",
       "invoices": "Invoices ({count})",

@@ -18,7 +18,18 @@ import { cn } from '@/lib/utils'
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
 import { DesignPreview, PresetPreview } from '@/features/invoice-designer/Components/PresetPreview'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
-import { applyDocumentDesign } from '@/features/invoice-designer/Actions/documentDesignActions'
+import {
+  applyDocumentDesign,
+  setDocumentDesignRule,
+} from '@/features/invoice-designer/Actions/documentDesignActions'
+import { DESIGN_AUTO_RULES } from '@/features/invoice-designer/Lib/designRules'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { type InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -150,6 +161,25 @@ function TemplateTab({
   const tDesigner = useTranslations('settings.designer')
   const router = useRouter()
   const [applying, setApplying] = useState<string | null>(null)
+  const [ruling, setRuling] = useState<string | null>(null)
+
+  // Only invoices are printed through the design resolution that reads
+  // rules; a quote design has nowhere to volunteer itself yet.
+  const rulesApply = documentType === 'invoice'
+  const NO_RULE = '__none__'
+  const setRule = async (design: SavedDesign, value: string) => {
+    setRuling(design.id)
+    try {
+      const result = await setDocumentDesignRule(design.id, value === NO_RULE ? null : value)
+      if (!result.success) throw new Error(result.error)
+      toast.success(tDesigner('autoRuleSaved', { name: design.name }))
+      router.refresh()
+    } catch {
+      toast.error(tDesigner('couldNotSaveRule'))
+    } finally {
+      setRuling(null)
+    }
+  }
 
   // Makes a saved design the one this document prints with, without a trip
   // through the designer: the same writes its Save makes.
@@ -176,6 +206,11 @@ function TemplateTab({
       {savedDesigns.length > 0 && (
         <div>
           <h3 className="mb-2 text-sm font-medium">{tDesigner('yourDesigns')}</h3>
+          {rulesApply && (
+            <p className="mb-3 text-xs text-muted-foreground">
+              {tDesigner('autoRuleLabel')}: {tDesigner('autoRuleHint')}
+            </p>
+          )}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {savedDesigns.map((design) => {
               const active = activeDesign === `design:${design.id}`
@@ -190,6 +225,11 @@ function TemplateTab({
                   {active && (
                     <span className="absolute right-2 top-2 z-10 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
                       {tDesigner('inUse')}
+                    </span>
+                  )}
+                  {rulesApply && design.autoRule && (
+                    <span className="absolute left-2 top-2 z-10 rounded-full border border-primary/40 bg-background px-2 py-0.5 text-[10px] font-semibold text-primary">
+                      {tDesigner(`autoRule.${design.autoRule}`)}
                     </span>
                   )}
                   <Link
@@ -208,6 +248,34 @@ function TemplateTab({
                     </div>
                     <p className="mt-2 truncate text-xs font-medium">{design.name}</p>
                   </Link>
+                  {rulesApply && (
+                    <Select
+                      value={design.autoRule ?? NO_RULE}
+                      onValueChange={(value) => void setRule(design, value)}
+                      disabled={ruling === design.id}
+                    >
+                      <SelectTrigger
+                        className="mt-2 h-7 text-xs"
+                        aria-label={tDesigner('autoRuleLabel')}
+                        title={tDesigner('autoRuleHint')}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {/* The design in use is the fallback for every invoice
+                            no rule claims, so its no-rule state is not
+                            "only when chosen" but "everything else". */}
+                        <SelectItem value={NO_RULE}>
+                          {active ? tDesigner('autoRuleDefault') : tDesigner('autoRuleNone')}
+                        </SelectItem>
+                        {DESIGN_AUTO_RULES.map((rule) => (
+                          <SelectItem key={rule} value={rule}>
+                            {tDesigner(`autoRule.${rule}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                   {!active && (
                     <Button
                       type="button"

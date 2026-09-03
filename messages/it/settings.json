@@ -1792,6 +1792,16 @@
     "galleryTitle": "Parti da un modello",
     "galleryHint": "Scegli un punto di partenza. Nel designer puoi cambiare tutto.",
     "yourDesigns": "I tuoi design",
+    "autoRuleLabel": "Usa automaticamente per",
+    "autoRuleNone": "Solo quando scelto",
+    "autoRuleDefault": "Tutto il resto",
+    "autoRuleHint": "Stampa le fatture corrispondenti che non hanno scelto un design, e il cui cliente non l'ha scelto.",
+    "autoRule": {
+      "parts_sale": "Vendita solo ricambi",
+      "vehicle_job": "Lavori su veicolo"
+    },
+    "autoRuleSaved": "Uso di \"{name}\" aggiornato",
+    "couldNotSaveRule": "Impossibile aggiornare la regola",
     "templates": "Modelli",
     "inUse": "In uso",
     "savedOn": "Salvato il {date}",

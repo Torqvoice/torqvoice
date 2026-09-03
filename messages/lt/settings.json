@@ -1792,6 +1792,16 @@
     "galleryTitle": "Pradėkite nuo šablono",
     "galleryHint": "Pasirinkite atspirties tašką. Kūrimo įrankyje galėsite pakeisti viską.",
     "yourDesigns": "Jūsų dizainai",
+    "autoRuleLabel": "Naudoti automatiškai",
+    "autoRuleNone": "Tik pasirinkus",
+    "autoRuleDefault": "Visa kita",
+    "autoRuleHint": "Spausdina atitinkančias sąskaitas, kurios nepasirinko dizaino ir kurių klientas taip pat nepasirinko.",
+    "autoRule": {
+      "parts_sale": "Tik dalių pardavimas",
+      "vehicle_job": "Transporto priemonių darbai"
+    },
+    "autoRuleSaved": "„{name}“ naudojimas atnaujintas",
+    "couldNotSaveRule": "Nepavyko atnaujinti taisyklės",
     "templates": "Šablonai",
     "inUse": "Naudojamas",
     "savedOn": "Išsaugota {date}",

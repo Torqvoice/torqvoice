@@ -160,6 +160,7 @@
     "settings_saveDocumentDesign": "Belge tasarımı kaydedildi",
     "settings_deleteDocumentDesign": "Belge tasarımı silindi",
     "settings_applyDocumentDesign": "Varsayılan belge tasarımı ayarlandı",
+    "settings_setDocumentDesignRule": "Bir tasarımın ne zaman kullanılacağı değiştirildi",
     "settings_freezeInvoices": "Eski faturalar kilitlendi",
     "inspection_reminders_sent": "Muayene hatırlatmaları gönderildi",
     "inspection_reminders_send": "Muayene hatırlatmaları gönderildi"
@@ -295,6 +296,7 @@
     "settings_saveDocumentDesign": "{name} belge tasarımını kaydetti",
     "settings_deleteDocumentDesign": "{name} belge tasarımını sildi",
     "settings_applyDocumentDesign": "{name} tasarımını varsayılan belge tasarımı yaptı",
+    "settings_setDocumentDesignRule": "{name} belge tasarımının ne zaman kullanılacağı değiştirildi",
     "settings_freezeInvoices": "Kilitlemeden önceki {count, plural, one {# faturayı} other {# faturayı}} mevcut tasarımla kilitledi",
     "inspection_reminders_sent": "{count} muayene hatırlatması gönderildi"
   }

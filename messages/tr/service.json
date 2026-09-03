@@ -85,6 +85,11 @@
     "designFollowing": "Varsayılan ({name})",
     "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim yalnızca bir sahip faturanın kilidini açıp yeniden gönderildikten sonra uygulanır.",
     "designSaved": "Fatura tasarımı güncellendi",
+    "designFollowingRule": "Varsayılan ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Yalnızca parça satışı",
+      "vehicle_job": "Araç işleri"
+    },
     "designSaveFailed": "Fatura tasarımı değiştirilemedi"
   },
   "parts": {

@@ -33,6 +33,8 @@
     "phoneCopied": "Telefoonnummer gekopieerd naar klembord",
     "taxIdLabel": "Btw-nr.",
     "taxExemptBadge": "Belastingvrijgesteld",
+    "invoiceDesignBadge": "Factuurontwerp: {name}",
+    "invoiceDesignBadgeHint": "Facturen voor deze klant worden met dit ontwerp afgedrukt in plaats van de werkplaatsstandaard. Open het in de ontwerper.",
     "tabs": {
       "vehicles": "Voertuigen ({count})",
       "invoices": "Facturen ({count})",

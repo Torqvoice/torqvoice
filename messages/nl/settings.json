@@ -1792,6 +1792,16 @@
     "galleryTitle": "Begin met een sjabloon",
     "galleryHint": "Kies een startpunt. In de ontwerper kunt u alles wijzigen.",
     "yourDesigns": "Uw ontwerpen",
+    "autoRuleLabel": "Automatisch gebruiken voor",
+    "autoRuleNone": "Alleen wanneer gekozen",
+    "autoRuleDefault": "Al het andere",
+    "autoRuleHint": "Drukt passende facturen af die geen ontwerp hebben gekozen, en waarvan de klant er ook geen heeft gekozen.",
+    "autoRule": {
+      "parts_sale": "Alleen onderdelenverkoop",
+      "vehicle_job": "Voertuigopdrachten"
+    },
+    "autoRuleSaved": "Gebruik van \"{name}\" bijgewerkt",
+    "couldNotSaveRule": "Kon de regel niet bijwerken",
     "templates": "Sjablonen",
     "inUse": "In gebruik",
     "savedOn": "Opgeslagen {date}",

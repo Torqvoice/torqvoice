@@ -1792,6 +1792,16 @@
     "galleryTitle": "Mit einer Vorlage beginnen",
     "galleryHint": "Wählen Sie einen Ausgangspunkt. Im Designer lässt sich alles ändern.",
     "yourDesigns": "Ihre Designs",
+    "autoRuleLabel": "Automatisch verwenden für",
+    "autoRuleNone": "Nur wenn ausgewählt",
+    "autoRuleDefault": "Alles andere",
+    "autoRuleHint": "Druckt passende Rechnungen, die kein Design gewählt haben und deren Kunde auch keines gewählt hat.",
+    "autoRule": {
+      "parts_sale": "Reiner Teileverkauf",
+      "vehicle_job": "Fahrzeugaufträge"
+    },
+    "autoRuleSaved": "Verwendung von „{name}“ aktualisiert",
+    "couldNotSaveRule": "Regel konnte nicht aktualisiert werden",
     "templates": "Vorlagen",
     "inUse": "In Verwendung",
     "savedOn": "Gespeichert am {date}",

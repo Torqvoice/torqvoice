@@ -33,6 +33,8 @@
     "phoneCopied": "Numéro de téléphone copié dans le presse-papiers",
     "taxIdLabel": "N° TVA",
     "taxExemptBadge": "Exonéré de taxe",
+    "invoiceDesignBadge": "Design de facture : {name}",
+    "invoiceDesignBadgeHint": "Les factures de ce client s'impriment avec ce design au lieu de celui par défaut de l'atelier. Ouvrir dans le designer.",
     "tabs": {
       "vehicles": "Véhicules ({count})",
       "invoices": "Factures ({count})",

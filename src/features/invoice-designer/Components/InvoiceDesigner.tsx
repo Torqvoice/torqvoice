@@ -688,6 +688,7 @@ export function InvoiceDesigner({
                         <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
                         <div className="text-xs leading-snug text-[#71767e]">
                           {t('savedOn', { date: new Date(design.savedAt).toLocaleDateString() })}
+                          {design.autoRule && ` · ${t(`autoRule.${design.autoRule}`)}`}
                         </div>
                       </button>
                       <button

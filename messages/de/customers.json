@@ -33,6 +33,8 @@
     "phoneCopied": "Telefonnummer in die Zwischenablage kopiert",
     "taxIdLabel": "USt-IdNr.",
     "taxExemptBadge": "Steuerbefreit",
+    "invoiceDesignBadge": "Rechnungsdesign: {name}",
+    "invoiceDesignBadgeHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Im Designer öffnen.",
     "tabs": {
       "vehicles": "Fahrzeuge ({count})",
       "invoices": "Rechnungen ({count})",

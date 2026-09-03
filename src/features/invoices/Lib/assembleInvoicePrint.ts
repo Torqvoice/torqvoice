@@ -40,6 +40,10 @@ import {
   type DesignSource,
 } from '@/features/invoice-designer/Lib/designSource'
 import { assetDataUri } from '@/features/invoice-designer/Lib/designSnapshots'
+import {
+  designRuleSubjectOf,
+  findRuleDesign,
+} from '@/features/invoice-designer/Lib/designRules.server'
 import { readIssuedInvoiceData, rendersFromIssue, type IssuedInvoiceData } from './issuedInvoice'
 
 const PARTY_SELECT = {
@@ -144,10 +148,12 @@ async function loadLogoDataUri(logoPath: string): Promise<string | undefined> {
 async function resolveLiveDesign(
   organizationId: string,
   settingsMap: Record<string, string>,
-  designId: string | null,
+  record: InvoiceRecordForPrint,
   customerDesignId: string | null | undefined
 ): Promise<DesignSource> {
-  for (const id of [designId, customerDesignId]) {
+  // The invoice's own choice, then its customer's, then whichever design
+  // volunteers for this kind of invoice, then the workshop default.
+  for (const id of [record.designId, customerDesignId]) {
     if (!id) continue
     const row = await db.documentDesign.findFirst({
       where: { id, organizationId, documentType: 'invoice' },
@@ -156,6 +162,9 @@ async function resolveLiveDesign(
     const source = row ? designSourceFromStored(row.layout, row.template) : null
     if (source) return source
   }
+  const byRule = await findRuleDesign(organizationId, designRuleSubjectOf(record))
+  const ruled = byRule ? designSourceFromStored(byRule.layout, byRule.template) : null
+  if (ruled) return ruled
   return designSourceFromSettings(settingsMap, 'invoice')
 }
 
@@ -262,7 +271,7 @@ async function assembleLive(
       orderBy: { createdAt: 'desc' },
     }),
     getCustomFieldsForPrint(organizationId, record.id, 'service_record'),
-    resolveLiveDesign(organizationId, settingsMap, record.designId, customerRow?.invoiceDesignId),
+    resolveLiveDesign(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
   ])
 
   const logoPath =

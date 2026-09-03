@@ -33,6 +33,8 @@
     "phoneCopied": "Telefono numeris nukopijuotas į iškarpinę",
     "taxIdLabel": "PVM kodas",
     "taxExemptBadge": "Atleistas nuo mokesčio",
+    "invoiceDesignBadge": "Sąskaitos dizainas: {name}",
+    "invoiceDesignBadgeHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvių numatytojo. Atidaryti dizaino įrankyje.",
     "tabs": {
       "vehicles": "Transporto priemonės ({count})",
       "invoices": "Sąskaitos ({count})",

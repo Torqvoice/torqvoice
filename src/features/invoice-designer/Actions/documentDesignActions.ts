@@ -18,6 +18,7 @@ import {
   designTemplateSchema,
   savedDesignFromRow,
 } from '../Lib/designSource'
+import { DESIGN_AUTO_RULES } from '../Lib/designRules'
 
 const documentTypeSchema = z.enum(['invoice', 'quote'])
 
@@ -245,6 +246,58 @@ export async function applyDocumentDesign(id: string) {
         entity: 'DocumentDesign',
         entityId: result.id,
         details: { key: 'settings_applyDocumentDesign', params: { name: result.name } },
+      }),
+    }
+  )
+}
+
+const autoRuleSchema = z.enum(DESIGN_AUTO_RULES).nullable()
+
+/**
+ * Makes a design volunteer itself for one kind of invoice, or stop doing so.
+ * A rule belongs to one design at a time: giving it to this one takes it
+ * from whichever had it, in the same transaction, so the unique index never
+ * refuses the move. Issued invoices are unaffected, as ever: they print from
+ * their snapshot, and a rule only ever decides a draft's look.
+ */
+export async function setDocumentDesignRule(id: string, rule: string | null) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const autoRule = autoRuleSchema.parse(rule)
+      const design = await db.documentDesign.findFirst({
+        where: { id, organizationId },
+        select: { id: true, name: true, documentType: true },
+      })
+      if (!design) throw new Error('Design not found')
+      await db.$transaction(async (tx) => {
+        if (autoRule) {
+          await tx.documentDesign.updateMany({
+            where: {
+              organizationId,
+              documentType: design.documentType,
+              autoRule,
+              id: { not: design.id },
+            },
+            data: { autoRule: null },
+          })
+        }
+        await tx.documentDesign.update({ where: { id: design.id }, data: { autoRule } })
+      })
+      revalidatePath('/settings/templates')
+      return { id: design.id, name: design.name, autoRule }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
+      ],
+      audit: ({ result }) => ({
+        action: 'settings.setDocumentDesignRule',
+        entity: 'DocumentDesign',
+        entityId: result.id,
+        details: {
+          key: 'settings_setDocumentDesignRule',
+          params: { name: result.name, rule: result.autoRule ?? 'none' },
+        },
       }),
     }
   )

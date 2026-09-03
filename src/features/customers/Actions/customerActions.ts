@@ -48,6 +48,9 @@ export async function getCustomer(customerId: string) {
       const customer = await db.customer.findFirst({
         where: { id: customerId, organizationId },
         include: {
+          // The name, so the page can say which design this customer's
+          // invoices print with rather than only that one was chosen.
+          invoiceDesign: { select: { id: true, name: true } },
           vehicles: {
             where: { isArchived: false },
             include: {
