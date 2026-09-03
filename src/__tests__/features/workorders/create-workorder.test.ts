@@ -659,6 +659,17 @@ describe('createDraftServiceRecord — scheduling', () => {
   })
 
   /**
+   * The slot finder books on the workshop's wall clock, not the server's, so
+   * these tests pin the workshop to UTC and read the answer in UTC. Without
+   * that the assertions held only on a machine whose own zone was UTC, and
+   * drifted by the local offset everywhere else.
+   */
+  const SHOP_HOURS = [
+    { key: 'workboard.workDayStart', value: '08:30' },
+    { key: 'workshop.timezone', value: 'UTC' },
+  ] as any[]
+
+  /**
    * A draft with no stated time used to land on today at opening time, which
    * is usually an hour that has already gone, and every job created that day
    * got the same one. It now takes the first slot the shop can actually take
@@ -667,12 +678,10 @@ describe('createDraftServiceRecord — scheduling', () => {
   it("books a new job into the shop's opening hour when the day has not started", async () => {
     vi.useFakeTimers()
     // A Tuesday, before the shop opens at 08:30.
-    vi.setSystemTime(new Date(2026, 8, 1, 6, 0, 0))
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 6, 0, 0)))
     setupAuth()
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
-    vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: 'workboard.workDayStart', value: '08:30' } as any,
-    ])
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
     vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
     vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-daystart' } as any)
@@ -681,20 +690,18 @@ describe('createDraftServiceRecord — scheduling', () => {
 
     const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
     const startDT: Date = createCall.data.startDateTime
-    expect(startDT.getHours()).toBe(8)
-    expect(startDT.getMinutes()).toBe(30)
+    expect(startDT.getUTCHours()).toBe(8)
+    expect(startDT.getUTCMinutes()).toBe(30)
     vi.useRealTimers()
   })
 
   it('does not offer an hour that has already passed', async () => {
     vi.useFakeTimers()
     // Same Tuesday, but the shop has been open for hours.
-    vi.setSystemTime(new Date(2026, 8, 1, 11, 0, 0))
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
     setupAuth()
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
-    vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: 'workboard.workDayStart', value: '08:30' } as any,
-    ])
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
     vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
     vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-now' } as any)
@@ -703,26 +710,24 @@ describe('createDraftServiceRecord — scheduling', () => {
 
     const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
     const startDT: Date = createCall.data.startDateTime
-    expect(startDT.getHours()).toBe(11)
+    expect(startDT.getUTCHours()).toBe(11)
     vi.useRealTimers()
   })
 
   it('steps past a booking the technician already has', async () => {
     vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 8, 1, 6, 0, 0))
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 6, 0, 0)))
     setupAuth()
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
-    vi.mocked(db.appSetting.findMany).mockResolvedValue([
-      { key: 'workboard.workDayStart', value: '08:30' } as any,
-    ])
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
     vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
     vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
       {
         id: 'busy',
         title: 'Existing',
-        startDateTime: new Date(2026, 8, 1, 8, 30),
-        endDateTime: new Date(2026, 8, 1, 10, 0),
+        startDateTime: new Date(Date.UTC(2026, 8, 1, 8, 30)),
+        endDateTime: new Date(Date.UTC(2026, 8, 1, 10, 0)),
         technicianId: TECH_ID,
         workBayId: null,
         vehicle: null,
@@ -734,8 +739,8 @@ describe('createDraftServiceRecord — scheduling', () => {
 
     const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
     const startDT: Date = createCall.data.startDateTime
-    expect(startDT.getHours()).toBe(10)
-    expect(startDT.getMinutes()).toBe(0)
+    expect(startDT.getUTCHours()).toBe(10)
+    expect(startDT.getUTCMinutes()).toBe(0)
     vi.useRealTimers()
   })
 })
