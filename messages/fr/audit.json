@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Design de facture modifié",
     "settings_saveDocumentDesign": "Design de document enregistré",
     "settings_deleteDocumentDesign": "Design de document supprimé",
-    "settings_applyDocumentDesign": "Design de document par défaut défini"
+    "settings_applyDocumentDesign": "Design de document par défaut défini",
+    "settings_freezeInvoices": "Anciennes factures figées"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "A changé le design avec lequel une facture est imprimée",
     "settings_saveDocumentDesign": "A enregistré le design de document {name}",
     "settings_deleteDocumentDesign": "A supprimé le design de document {name}",
-    "settings_applyDocumentDesign": "A défini {name} comme design de document par défaut"
+    "settings_applyDocumentDesign": "A défini {name} comme design de document par défaut",
+    "settings_freezeInvoices": "A figé {count, plural, one {# facture} other {# factures}} antérieures au verrouillage avec le design actuel"
   }
 }

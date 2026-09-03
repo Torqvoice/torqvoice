@@ -576,7 +576,16 @@
     "quoteLockTriggerSent": "Teklif gönderildiğinde",
     "quoteLockTriggerAccepted": "Teklif kabul edildiğinde",
     "quoteLockTriggerSentHint": "Teklif müşteriye ulaşır ulaşmaz kilitlenir. Yalnızca pazarlık sırasında teklifi hiç revize etmiyorsanız seçin.",
-    "quoteLockTriggerAcceptedHint": "Müşteri teklifi kabul ettiğinde veya teklif bir işe dönüştürüldüğünde kilitlenir. Gönderilmiş teklifler düzenlenebilir kalır."
+    "quoteLockTriggerAcceptedHint": "Müşteri teklifi kabul ettiğinde veya teklif bir işe dönüştürüldüğünde kilitlenir. Gönderilmiş teklifler düzenlenebilir kalır.",
+    "freezeTitle": "Kilitlemeden önceki faturalar",
+    "freezeBody": "{count, plural, one {# fatura} other {# fatura}}, bu sürüm bir faturanın yazdırdığını donduramadan önce bir müşteriye ulaştı. Hâlâ mevcut bilgileriniz, logonuz ve tasarımınızla yazdırılıyorlar; bugün yaptığınız bir değişiklik onlara da ulaşır. Dondurmak her birini şu anda yazdırıldığı gibi korur.",
+    "freezeNone": "Müşteriye ulaşan her fatura düzenlendiği haliyle dondurulmuş.",
+    "freezeButton": "Mevcut tasarımla dondur",
+    "freezeConfirmTitle": "{count, plural, one {# fatura} other {# fatura}} dondurulsun mu?",
+    "freezeConfirmBody": "Her biri şu anda yazdırıldığı tasarımı, logoyu, atölye bilgilerini, müşteriyi, aracı ve bulguları korur. Geri alınamaz; faturalar bugünkü gibi düzenlenebilir ya da kilitli kalır.",
+    "freezeProgress": "{total} faturadan {done} tanesi donduruldu",
+    "freezeDone": "{count, plural, one {# fatura} other {# fatura}} donduruldu",
+    "freezeFailed": "Faturalar dondurulamadı"
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",

@@ -576,7 +576,16 @@
     "quoteLockTriggerSent": "Sobald das Angebot versendet ist",
     "quoteLockTriggerAccepted": "Sobald das Angebot angenommen ist",
     "quoteLockTriggerSentHint": "Sperrt, sobald das Angebot zum Kunden geht. Nur wählen, wenn Sie Angebote nie nachverhandeln.",
-    "quoteLockTriggerAcceptedHint": "Sperrt, sobald der Kunde das Angebot angenommen hat oder es in einen Auftrag umgewandelt wurde. Versendete Angebote bleiben bearbeitbar."
+    "quoteLockTriggerAcceptedHint": "Sperrt, sobald der Kunde das Angebot angenommen hat oder es in einen Auftrag umgewandelt wurde. Versendete Angebote bleiben bearbeitbar.",
+    "freezeTitle": "Rechnungen von vor der Sperre",
+    "freezeBody": "{count, plural, one {# Rechnung} other {# Rechnungen}} erreichte einen Kunden, bevor diese Version einfrieren konnte, was eine Rechnung druckt. Sie werden weiterhin mit Ihren aktuellen Angaben, Logo und Design gedruckt, sodass eine Änderung von heute auch sie erreicht. Einfrieren bewahrt jede so, wie sie jetzt gedruckt wird.",
+    "freezeNone": "Jede Rechnung, die einen Kunden erreicht hat, ist so eingefroren, wie sie ausgestellt wurde.",
+    "freezeButton": "Mit dem aktuellen Design einfrieren",
+    "freezeConfirmTitle": "{count, plural, one {# Rechnung} other {# Rechnungen}} einfrieren?",
+    "freezeConfirmBody": "Jede behält das Design, das Logo, die Werkstattangaben, den Kunden, das Fahrzeug und die Befunde, mit denen sie jetzt gedruckt wird. Das kann nicht rückgängig gemacht werden; die Rechnungen bleiben genau so bearbeitbar oder gesperrt wie heute.",
+    "freezeProgress": "{done} von {total} eingefroren",
+    "freezeDone": "{count, plural, one {# Rechnung} other {# Rechnungen}} eingefroren",
+    "freezeFailed": "Rechnungen konnten nicht eingefroren werden"
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",

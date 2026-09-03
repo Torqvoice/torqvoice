@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Endret fakturadesign",
     "settings_saveDocumentDesign": "Lagret dokumentdesign",
     "settings_deleteDocumentDesign": "Slettet dokumentdesign",
-    "settings_applyDocumentDesign": "Satte standard dokumentdesign"
+    "settings_applyDocumentDesign": "Satte standard dokumentdesign",
+    "settings_freezeInvoices": "Frøs eldre fakturaer"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Endret hvilket design en faktura skrives ut med",
     "settings_saveDocumentDesign": "Lagret dokumentdesignet {name}",
     "settings_deleteDocumentDesign": "Slettet dokumentdesignet {name}",
-    "settings_applyDocumentDesign": "Gjorde {name} til standard dokumentdesign"
+    "settings_applyDocumentDesign": "Gjorde {name} til standard dokumentdesign",
+    "settings_freezeInvoices": "Frøs {count, plural, one {# faktura} other {# fakturaer}} fra før låsing med gjeldende design"
   }
 }

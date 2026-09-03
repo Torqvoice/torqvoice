@@ -146,8 +146,9 @@ export function rendersFromIssue(record: IssueMarks & { issuedData?: unknown }):
 
 /**
  * Why an invoice is being issued. Sending is a new issue whenever the
- * document could have changed; payment and the backfill of invoices that
- * went out before issuing existed only ever fill an empty slot.
+ * document could have changed; payment, and the freeze a workshop asks for
+ * on invoices that went out before issuing existed, only ever fill an
+ * empty slot.
  */
 export type IssueReason = 'sent' | 'paid' | 'backfill'
 
@@ -167,7 +168,8 @@ export function shouldIssue(record: IssueMarks, locked: boolean, reason: IssueRe
 
 /**
  * Whether an invoice that predates issuing has already reached the
- * customer, and so is owed a snapshot the first time it is printed again.
+ * customer, and so prints from live rows that may since have changed. These
+ * are what invoice settings counts and offers to freeze.
  */
 export function wasIssuedBeforeTracking(record: {
   issuedAt: Date | null

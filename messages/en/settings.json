@@ -576,7 +576,16 @@
     "quoteLockTriggerSent": "Once the quote is sent",
     "quoteLockTriggerAccepted": "Once the quote is accepted",
     "quoteLockTriggerSentHint": "Locks as soon as the quote goes to the customer. Choose this only if you never revise a quote during negotiation.",
-    "quoteLockTriggerAcceptedHint": "Locks once the customer has accepted the quote, or it has been converted to a job. Sent quotes stay editable."
+    "quoteLockTriggerAcceptedHint": "Locks once the customer has accepted the quote, or it has been converted to a job. Sent quotes stay editable.",
+    "freezeTitle": "Invoices from before locking",
+    "freezeBody": "{count, plural, one {# invoice} other {# invoices}} reached a customer before this version could freeze what an invoice prints. They still print from your current details, logo and design, so a change you make today reaches them too. Freezing them keeps each one as it prints right now.",
+    "freezeNone": "Every invoice that reached a customer is frozen as it was issued.",
+    "freezeButton": "Freeze them with the current design",
+    "freezeConfirmTitle": "Freeze {count, plural, one {# invoice} other {# invoices}}?",
+    "freezeConfirmBody": "Each one keeps the design, logo, workshop details, customer, vehicle and findings it prints with right now. This cannot be undone, and the invoices stay editable or locked exactly as they are today.",
+    "freezeProgress": "Frozen {done} of {total}",
+    "freezeDone": "{count, plural, one {# invoice} other {# invoices}} frozen",
+    "freezeFailed": "Could not freeze the invoices"
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

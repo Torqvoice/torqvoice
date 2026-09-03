@@ -9,6 +9,10 @@
  * them. Now there is one assembler, and it has two sources: live rows for a
  * draft, and the snapshots an invoice was issued with for everything else.
  *
+ * Invoices sent before issuing existed keep printing from live rows until
+ * they are sent again or frozen from invoice settings; nothing is captured
+ * behind the workshop's back on a read.
+ *
  * The result is the print builders' input, with the design as a source the
  * issue step can freeze. What a caller adds on top is whatever is not part
  * of the document: portal links, the Telegram code, Torqvoice branding, and
@@ -36,12 +40,7 @@ import {
   type DesignSource,
 } from '@/features/invoice-designer/Lib/designSource'
 import { assetDataUri } from '@/features/invoice-designer/Lib/designSnapshots'
-import {
-  readIssuedInvoiceData,
-  rendersFromIssue,
-  wasIssuedBeforeTracking,
-  type IssuedInvoiceData,
-} from './issuedInvoice'
+import { readIssuedInvoiceData, rendersFromIssue, type IssuedInvoiceData } from './issuedInvoice'
 
 const PARTY_SELECT = {
   name: true,
@@ -92,12 +91,6 @@ export interface AssembleOptions {
    * rows. `live` always reads the rows, which is what issuing itself needs.
    */
   mode?: PrintMode
-  /**
-   * Whether an invoice that reached the customer before issuing existed gets
-   * its snapshot taken on this read. On by default, so the first reprint
-   * after the upgrade freezes it; off while issuing, to keep the two apart.
-   */
-  backfill?: boolean
 }
 
 export interface InvoicePrintAssembly {
@@ -237,22 +230,6 @@ export async function assembleInvoicePrint(
   const record = await loadRecord(recordId)
   if (!record?.organizationId) return null
   const organizationId = record.organizationId
-
-  // An invoice that went out before issuing existed gets its snapshot the
-  // first time it is printed again, so a later change to the workshop's
-  // details cannot reach it. Once, then it reads like any issued invoice.
-  if (mode === 'auto' && options.backfill !== false && wasIssuedBeforeTracking(record)) {
-    try {
-      const { issueInvoice } = await import('./issueInvoice')
-      if (await issueInvoice(record.id, organizationId, 'backfill')) {
-        return assembleInvoicePrint(recordId, { ...options, backfill: false })
-      }
-    } catch (err) {
-      // A capture that fails must not stop the print: the sheet renders from
-      // live rows as it always did, and the next print tries again.
-      console.error('[assembleInvoicePrint] Could not issue legacy invoice:', err)
-    }
-  }
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({ where: { organizationId }, select: { key: true, value: true } }),

@@ -86,7 +86,7 @@ async function loadLockSettings(organizationId: string) {
  *
  * Called by every path that makes the invoice the customer's document:
  * sending by email or link, recording a payment, marking it paid, and the
- * first reprint of an invoice that went out before issuing existed. The
+ * freeze of older invoices a workshop asks for in invoice settings. The
  * decision of whether to capture is in shouldIssue; this does the capture.
  * Returns whether a snapshot was taken.
  */
@@ -115,7 +115,7 @@ export async function issueInvoice(
   const lock = invoiceLockState(record, lockSettings)
   if (!shouldIssue(record, lock.locked, reason)) return false
 
-  const assembly = await assembleInvoicePrint(recordId, { mode: 'live', backfill: false })
+  const assembly = await assembleInvoicePrint(recordId, { mode: 'live' })
   if (!assembly) return false
 
   const [issuedDesignSnapshotId, issuedLogoSnapshotId] = await Promise.all([

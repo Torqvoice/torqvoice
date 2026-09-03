@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Изменён дизайн счёта",
     "settings_saveDocumentDesign": "Сохранён дизайн документа",
     "settings_deleteDocumentDesign": "Удалён дизайн документа",
-    "settings_applyDocumentDesign": "Установлен дизайн документа по умолчанию"
+    "settings_applyDocumentDesign": "Установлен дизайн документа по умолчанию",
+    "settings_freezeInvoices": "Зафиксированы старые счета"
   },
   "summary": {
     "customField_create": "Создано настраиваемое поле «{name}»",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Изменил, с каким дизайном печатается счёт",
     "settings_saveDocumentDesign": "Сохранил дизайн документа {name}",
     "settings_deleteDocumentDesign": "Удалил дизайн документа {name}",
-    "settings_applyDocumentDesign": "Сделал {name} дизайном документа по умолчанию"
+    "settings_applyDocumentDesign": "Сделал {name} дизайном документа по умолчанию",
+    "settings_freezeInvoices": "Зафиксировал {count, plural, one {# счёт} few {# счёта} many {# счетов} other {# счёта}} до появления блокировки с текущим дизайном"
   }
 }

@@ -576,7 +576,16 @@
     "quoteLockTriggerSent": "Une fois le devis envoyé",
     "quoteLockTriggerAccepted": "Une fois le devis accepté",
     "quoteLockTriggerSentHint": "Verrouille dès que le devis part chez le client. À choisir uniquement si vous ne révisez jamais un devis en cours de négociation.",
-    "quoteLockTriggerAcceptedHint": "Verrouille une fois le devis accepté par le client ou converti en intervention. Les devis envoyés restent modifiables."
+    "quoteLockTriggerAcceptedHint": "Verrouille une fois le devis accepté par le client ou converti en intervention. Les devis envoyés restent modifiables.",
+    "freezeTitle": "Factures antérieures au verrouillage",
+    "freezeBody": "{count, plural, one {# facture a atteint} other {# factures ont atteint}} un client avant que cette version puisse figer ce qu'une facture imprime. Elles s'impriment toujours avec vos coordonnées, logo et design actuels, donc un changement fait aujourd'hui les atteint aussi. Les figer conserve chacune telle qu'elle s'imprime maintenant.",
+    "freezeNone": "Chaque facture ayant atteint un client est figée telle qu'elle a été émise.",
+    "freezeButton": "Les figer avec le design actuel",
+    "freezeConfirmTitle": "Figer {count, plural, one {# facture} other {# factures}} ?",
+    "freezeConfirmBody": "Chacune conserve le design, le logo, les coordonnées de l'atelier, le client, le véhicule et les constats avec lesquels elle s'imprime maintenant. Irréversible ; les factures restent modifiables ou verrouillées exactement comme aujourd'hui.",
+    "freezeProgress": "{done} sur {total} figées",
+    "freezeDone": "{count, plural, one {# facture figée} other {# factures figées}}",
+    "freezeFailed": "Impossible de figer les factures"
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",

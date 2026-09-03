@@ -576,7 +576,16 @@
     "quoteLockTriggerSent": "Cuando se envía el presupuesto",
     "quoteLockTriggerAccepted": "Cuando se acepta el presupuesto",
     "quoteLockTriggerSentHint": "Se bloquea en cuanto el presupuesto llega al cliente. Elija esta opción solo si nunca revisa un presupuesto durante la negociación.",
-    "quoteLockTriggerAcceptedHint": "Se bloquea cuando el cliente acepta el presupuesto o este se convierte en un trabajo. Los presupuestos enviados siguen siendo editables."
+    "quoteLockTriggerAcceptedHint": "Se bloquea cuando el cliente acepta el presupuesto o este se convierte en un trabajo. Los presupuestos enviados siguen siendo editables.",
+    "freezeTitle": "Facturas anteriores al bloqueo",
+    "freezeBody": "{count, plural, one {# factura} other {# facturas}} llegaron a un cliente antes de que esta versión pudiera congelar lo que imprime una factura. Siguen imprimiéndose con sus datos, logotipo y diseño actuales, así que un cambio de hoy también les afecta. Congelarlas conserva cada una tal como se imprime ahora.",
+    "freezeNone": "Todas las facturas que llegaron a un cliente están congeladas tal como se emitieron.",
+    "freezeButton": "Congelarlas con el diseño actual",
+    "freezeConfirmTitle": "¿Congelar {count, plural, one {# factura} other {# facturas}}?",
+    "freezeConfirmBody": "Cada una conserva el diseño, el logotipo, los datos del taller, el cliente, el vehículo y los hallazgos con los que se imprime ahora. No se puede deshacer, y las facturas siguen editables o bloqueadas exactamente como hoy.",
+    "freezeProgress": "Congeladas {done} de {total}",
+    "freezeDone": "{count, plural, one {# factura congelada} other {# facturas congeladas}}",
+    "freezeFailed": "No se pudieron congelar las facturas"
   },
   "layoutEditor": {
     "helpText": "Arrastra para reordenar. Usa el selector de ancho para colocar secciones lado a lado. Las secciones consecutivas de medio ancho (I/D) se mostrarán en dos columnas.",

@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Pakeistas sąskaitos dizainas",
     "settings_saveDocumentDesign": "Išsaugotas dokumento dizainas",
     "settings_deleteDocumentDesign": "Ištrintas dokumento dizainas",
-    "settings_applyDocumentDesign": "Nustatytas numatytasis dokumento dizainas"
+    "settings_applyDocumentDesign": "Nustatytas numatytasis dokumento dizainas",
+    "settings_freezeInvoices": "Užfiksuotos senesnės sąskaitos"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Pakeitė, kokiu dizainu spausdinama sąskaita",
     "settings_saveDocumentDesign": "Išsaugojo dokumento dizainą {name}",
     "settings_deleteDocumentDesign": "Ištrynė dokumento dizainą {name}",
-    "settings_applyDocumentDesign": "Nustatė {name} kaip numatytąjį dokumento dizainą"
+    "settings_applyDocumentDesign": "Nustatė {name} kaip numatytąjį dokumento dizainą",
+    "settings_freezeInvoices": "Užfiksavo {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}} iki užrakinimo su dabartiniu dizainu"
   }
 }

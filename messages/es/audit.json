@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Diseño de factura cambiado",
     "settings_saveDocumentDesign": "Diseño de documento guardado",
     "settings_deleteDocumentDesign": "Diseño de documento eliminado",
-    "settings_applyDocumentDesign": "Diseño de documento predeterminado establecido"
+    "settings_applyDocumentDesign": "Diseño de documento predeterminado establecido",
+    "settings_freezeInvoices": "Facturas anteriores congeladas"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Cambió con qué diseño se imprime una factura",
     "settings_saveDocumentDesign": "Guardó el diseño de documento {name}",
     "settings_deleteDocumentDesign": "Eliminó el diseño de documento {name}",
-    "settings_applyDocumentDesign": "Estableció {name} como diseño de documento predeterminado"
+    "settings_applyDocumentDesign": "Estableció {name} como diseño de documento predeterminado",
+    "settings_freezeInvoices": "Congeló {count, plural, one {# factura} other {# facturas}} anteriores al bloqueo con el diseño actual"
   }
 }

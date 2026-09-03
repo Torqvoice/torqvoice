@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Fatura tasarımı değiştirildi",
     "settings_saveDocumentDesign": "Belge tasarımı kaydedildi",
     "settings_deleteDocumentDesign": "Belge tasarımı silindi",
-    "settings_applyDocumentDesign": "Varsayılan belge tasarımı ayarlandı"
+    "settings_applyDocumentDesign": "Varsayılan belge tasarımı ayarlandı",
+    "settings_freezeInvoices": "Eski faturalar donduruldu"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Bir faturanın hangi tasarımla yazdırılacağını değiştirdi",
     "settings_saveDocumentDesign": "{name} belge tasarımını kaydetti",
     "settings_deleteDocumentDesign": "{name} belge tasarımını sildi",
-    "settings_applyDocumentDesign": "{name} tasarımını varsayılan belge tasarımı yaptı"
+    "settings_applyDocumentDesign": "{name} tasarımını varsayılan belge tasarımı yaptı",
+    "settings_freezeInvoices": "Kilitlemeden önceki {count, plural, one {# faturayı} other {# faturayı}} mevcut tasarımla dondurdu"
   }
 }

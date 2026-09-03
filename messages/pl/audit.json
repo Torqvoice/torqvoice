@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Zmieniono projekt faktury",
     "settings_saveDocumentDesign": "Zapisano projekt dokumentu",
     "settings_deleteDocumentDesign": "Usunięto projekt dokumentu",
-    "settings_applyDocumentDesign": "Ustawiono domyślny projekt dokumentu"
+    "settings_applyDocumentDesign": "Ustawiono domyślny projekt dokumentu",
+    "settings_freezeInvoices": "Zamrożono starsze faktury"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Zmienił projekt, z którym drukowana jest faktura",
     "settings_saveDocumentDesign": "Zapisał projekt dokumentu {name}",
     "settings_deleteDocumentDesign": "Usunął projekt dokumentu {name}",
-    "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu"
+    "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu",
+    "settings_freezeInvoices": "Zamroził {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}} sprzed blokady z bieżącym projektem"
   }
 }

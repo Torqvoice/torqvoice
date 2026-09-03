@@ -159,7 +159,8 @@
     "service_setInvoiceDesign": "Changed Invoice Design",
     "settings_saveDocumentDesign": "Saved Document Design",
     "settings_deleteDocumentDesign": "Deleted Document Design",
-    "settings_applyDocumentDesign": "Set Default Document Design"
+    "settings_applyDocumentDesign": "Set Default Document Design",
+    "settings_freezeInvoices": "Froze Older Invoices"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -291,6 +292,7 @@
     "service_setInvoiceDesign": "Changed which design an invoice prints with",
     "settings_saveDocumentDesign": "Saved the document design {name}",
     "settings_deleteDocumentDesign": "Deleted the document design {name}",
-    "settings_applyDocumentDesign": "Made {name} the default document design"
+    "settings_applyDocumentDesign": "Made {name} the default document design",
+    "settings_freezeInvoices": "Froze {count, plural, one {# invoice} other {# invoices}} from before locking with the current design"
   }
 }
