@@ -1,0 +1,27 @@
+[
+  {
+    "kenteken": "SK209X",
+    "brandstof_volgnummer": "1",
+    "brandstof_omschrijving": "Elektriciteit",
+    "emissiecode_omschrijving": "Z",
+    "nominaal_continu_maximumvermogen": "18.00",
+    "netto_max_vermogen_elektrisch": "60.00",
+    "klasse_hybride_elektrisch_voertuig": "NOVC-HEV",
+    "uitlaatemissieniveau": "EURO 6"
+  },
+  {
+    "kenteken": "SK209X",
+    "brandstof_volgnummer": "2",
+    "brandstof_omschrijving": "Benzine",
+    "brandstofverbruik_gecombineerd": "4.40",
+    "co2_uitstoot_gecombineerd": "101",
+    "geluidsniveau_rijdend": "68",
+    "geluidsniveau_stationair": "75",
+    "emissiecode_omschrijving": "6",
+    "milieuklasse_eg_goedkeuring_licht": "715/2007*2016/427W",
+    "nettomaximumvermogen": "73.00",
+    "toerental_geluidsniveau": "2500",
+    "klasse_hybride_elektrisch_voertuig": "NOVC-HEV",
+    "uitlaatemissieniveau": "EURO 6 W"
+  }
+]

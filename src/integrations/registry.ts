@@ -14,6 +14,7 @@ import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as postmark } from './postmark/manifest'
+import { manifest as rdw } from './rdw/manifest'
 import { manifest as resend } from './resend/manifest'
 import { manifest as sendgrid } from './sendgrid/manifest'
 import { manifest as smtp } from './smtp/manifest'
@@ -37,6 +38,7 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: zoom, load: () => import('./zoom/server') },
   { manifest: vegvesen, load: () => import('./vegvesen/server') },
   { manifest: openapiAutomotive, load: () => import('./openapi-automotive/server') },
+  { manifest: rdw, load: () => import('./rdw/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },

@@ -371,6 +371,17 @@
         "bikes": "Buscar también motocicletas",
         "bikesHelp": "Cuando una matrícula no es de un coche, se consulta también el registro de motocicletas. Un fallo en la búsqueda de coches es gratis, así que no cuesta nada más salvo que se encuentre una motocicleta. No disponible para Portugal."
       }
+    },
+    "rdw": {
+      "description": "Rellena un vehículo a partir de su matrícula neerlandesa: marca, modelo, año, combustible, cilindrada, color, pesos y la próxima fecha de APK, directamente del registro abierto de vehículos de la RDW. Gratis, sin clave. No se publican datos del propietario ni el VIN.",
+      "fields": {
+        "appToken": "Token de aplicación (opcional)",
+        "appTokenHelp": "Los datos abiertos de la RDW funcionan sin clave, pero las peticiones anónimas comparten un cupo limitado. Para la sincronización de inspecciones, crea una cuenta gratuita en opendata.rdw.nl, abre los ajustes de desarrollador de tu perfil y crea un token de aplicación."
+      },
+      "settings": {
+        "syncInspections": "Mantener actualizadas las fechas de APK de todos los vehículos de este taller",
+        "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos que no se han comprobado hace poco y se guarda la próxima fecha de APK. Solo se envían vehículos almacenados en este taller. Un vehículo se revisa cada mes, y cada semana cuando faltan menos de dos meses."
+      }
     }
   },
   "jobKinds": {

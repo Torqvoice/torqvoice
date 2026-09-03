@@ -371,6 +371,17 @@
         "bikes": "Ieškoti ir motociklų",
         "bikesHelp": "Kai numeris nėra automobilio, papildomai užklausiamas motociklų registras. Nerastas automobilis nekainuoja, todėl papildomų išlaidų nėra, nebent randamas motociklas. Portugalijai neprieinama."
       }
+    },
+    "rdw": {
+      "description": "Užpildykite transporto priemonę pagal olandišką numerį: markė, modelis, metai, degalai, variklio tūris, spalva, masės ir kita APK data, tiesiai iš atviro RDW transporto priemonių registro. Nemokamai, be rakto. Savininko duomenys ir VIN neskelbiami.",
+      "fields": {
+        "appToken": "Programos žetonas (neprivaloma)",
+        "appTokenHelp": "RDW atviri duomenys veikia be rakto, bet anoniminės užklausos dalijasi ribotą kvotą. Apžiūrų sinchronizavimui susikurkite nemokamą paskyrą opendata.rdw.nl, atverkite profilio kūrėjo nustatymus ir sukurkite programos žetoną."
+      },
+      "settings": {
+        "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių APK datas",
+        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+      }
     }
   },
   "jobKinds": {

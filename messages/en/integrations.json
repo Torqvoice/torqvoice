@@ -371,6 +371,17 @@
         "bikes": "Also look up motorcycles",
         "bikesHelp": "When a plate is not a car, ask the motorcycle registry too. A miss on the car side is free, so this costs nothing extra unless a motorcycle is found. Not available for Portugal."
       }
+    },
+    "rdw": {
+      "description": "Fill in a vehicle from its Dutch plate: make, model, year, fuel, engine size, colour, weights and the next APK date, straight from RDW's open vehicle register. Free, no key needed. No owner data and no VIN are published.",
+      "fields": {
+        "appToken": "App token (optional)",
+        "appTokenHelp": "RDW's open data works without a key, but anonymous requests share a throttled pool. For the inspection sync, create a free account on opendata.rdw.nl, open your profile's developer settings and create an app token."
+      },
+      "settings": {
+        "syncInspections": "Keep APK dates up to date for every vehicle in this workshop",
+        "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next APK date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
+      }
     }
   },
   "jobKinds": {

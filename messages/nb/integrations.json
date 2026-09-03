@@ -371,6 +371,17 @@
         "bikes": "Slå også opp motorsykler",
         "bikesHelp": "Når et skilt ikke er en bil, spørres motorsykkelregisteret også. Et bomskudd på bilsiden er gratis, så dette koster ikke noe ekstra med mindre en motorsykkel blir funnet. Ikke tilgjengelig for Portugal."
       }
+    },
+    "rdw": {
+      "description": "Fyll ut et kjøretøy fra nederlandsk registreringsnummer: merke, modell, årsmodell, drivstoff, slagvolum, farge, vekter og frist for neste APK, rett fra RDWs åpne kjøretøyregister. Gratis, ingen nøkkel nødvendig. Eieropplysninger og understellsnummer publiseres ikke.",
+      "fields": {
+        "appToken": "App-token (valgfritt)",
+        "appTokenHelp": "RDWs åpne data fungerer uten nøkkel, men anonyme forespørsler deler en begrenset kvote. For kontrollsynkroniseringen: opprett en gratis konto på opendata.rdw.nl, åpne utviklerinnstillingene i profilen og lag et app-token."
+      },
+      "settings": {
+        "syncInspections": "Hold APK-fristen oppdatert for alle kjøretøy i dette verkstedet",
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste APK lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+      }
     }
   },
   "jobKinds": {

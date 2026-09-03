@@ -371,6 +371,17 @@
         "bikes": "Cerca anche i motocicli",
         "bikesHelp": "Quando una targa non è di un'auto, viene consultato anche il registro dei motocicli. Una ricerca auto senza esito è gratuita, quindi non costa nulla in più a meno che non venga trovato un motociclo. Non disponibile per il Portogallo."
       }
+    },
+    "rdw": {
+      "description": "Compila un veicolo dalla targa olandese: marca, modello, anno, carburante, cilindrata, colore, masse e data del prossimo APK, direttamente dal registro veicoli aperto della RDW. Gratuito, senza chiave. Non vengono pubblicati né i dati del proprietario né il VIN.",
+      "fields": {
+        "appToken": "Token applicazione (facoltativo)",
+        "appTokenHelp": "I dati aperti della RDW funzionano senza chiave, ma le richieste anonime condividono una quota limitata. Per la sincronizzazione delle revisioni, crea un account gratuito su opendata.rdw.nl, apri le impostazioni sviluppatore del tuo profilo e crea un token applicazione."
+      },
+      "settings": {
+        "syncInspections": "Tieni aggiornate le date APK di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data del prossimo APK viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+      }
     }
   },
   "jobKinds": {

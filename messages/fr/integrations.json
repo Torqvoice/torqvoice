@@ -371,6 +371,17 @@
         "bikes": "Rechercher aussi les motos",
         "bikesHelp": "Quand une plaque n'est pas celle d'une voiture, le registre des motos est interrogé à son tour. Une recherche voiture sans résultat est gratuite, cela ne coûte donc rien de plus sauf si une moto est trouvée. Indisponible pour le Portugal."
       }
+    },
+    "rdw": {
+      "description": "Remplissez un véhicule à partir de sa plaque néerlandaise : marque, modèle, année, carburant, cylindrée, couleur, masses et date du prochain APK, directement depuis le registre ouvert des véhicules de la RDW. Gratuit, sans clé. Ni les données du propriétaire ni le VIN ne sont publiés.",
+      "fields": {
+        "appToken": "Jeton d'application (facultatif)",
+        "appTokenHelp": "Les données ouvertes de la RDW fonctionnent sans clé, mais les requêtes anonymes partagent un quota limité. Pour la synchronisation des contrôles, créez un compte gratuit sur opendata.rdw.nl, ouvrez les paramètres développeur de votre profil et créez un jeton d'application."
+      },
+      "settings": {
+        "syncInspections": "Tenir à jour les dates d'APK de tous les véhicules de cet atelier",
+        "syncInspectionsHelp": "Une fois par heure, les véhicules non vérifiés récemment sont recherchés par plaque et la date du prochain APK est enregistrée. Seuls les véhicules de cet atelier sont envoyés. Un véhicule est revérifié chaque mois, et chaque semaine lorsque l'échéance est à moins de deux mois."
+      }
     }
   },
   "jobKinds": {

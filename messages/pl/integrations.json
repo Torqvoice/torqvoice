@@ -371,6 +371,17 @@
         "bikes": "Wyszukuj także motocykle",
         "bikesHelp": "Gdy tablica nie należy do samochodu, odpytywany jest również rejestr motocykli. Brak wyniku dla samochodu jest bezpłatny, więc nie kosztuje to nic więcej, chyba że zostanie znaleziony motocykl. Niedostępne dla Portugalii."
       }
+    },
+    "rdw": {
+      "description": "Uzupełnij pojazd na podstawie holenderskiej tablicy: marka, model, rocznik, paliwo, pojemność silnika, kolor, masy i termin następnego APK, prosto z otwartego rejestru pojazdów RDW. Bezpłatnie, bez klucza. Dane właściciela i VIN nie są publikowane.",
+      "fields": {
+        "appToken": "Token aplikacji (opcjonalny)",
+        "appTokenHelp": "Otwarte dane RDW działają bez klucza, ale anonimowe zapytania dzielą ograniczoną pulę. Do synchronizacji przeglądów załóż bezpłatne konto na opendata.rdw.nl, otwórz ustawienia programisty w profilu i utwórz token aplikacji."
+      },
+      "settings": {
+        "syncInspections": "Aktualizuj terminy APK wszystkich pojazdów w tym warsztacie",
+        "syncInspectionsHelp": "Raz na godzinę pojazdy, które nie były ostatnio sprawdzane, są wyszukiwane po tablicy, a termin następnego APK jest zapisywany. Wysyłane są tylko pojazdy tego warsztatu. Pojazd jest sprawdzany co miesiąc, a co tydzień, gdy do terminu zostały mniej niż dwa miesiące."
+      }
     }
   },
   "jobKinds": {
