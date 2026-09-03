@@ -16,6 +16,7 @@ import {
   Plug,
   RefreshCw,
   RotateCcw,
+  Trash2,
   Unplug,
   Upload,
 } from 'lucide-react'
@@ -133,6 +134,27 @@ export function ConnectionSettings({
       'disconnect',
       () => disconnectIntegration(manifest.id),
       t('connection.disconnected')
+    )
+    if (done) router.push('/settings/integrations')
+  }
+
+  // A row that never got past setup, or was disconnected and kept its
+  // settings, still shows under "Connected" as in progress. Clearing the
+  // fields cannot get rid of it, because the required ones refuse to be
+  // empty; this can. The same action as disconnect, worded for a service
+  // that was never actually connected.
+  const removeSetup = async () => {
+    const ok = await confirm({
+      title: t('connection.removeSetupTitle', { name: manifest.name }),
+      description: t('connection.removeSetupDescription', { name: manifest.name }),
+      confirmLabel: t('connection.removeSetup'),
+      destructive: true,
+    })
+    if (!ok) return
+    const done = await run(
+      'disconnect',
+      () => disconnectIntegration(manifest.id),
+      t('connection.removeSetupDone', { name: manifest.name })
     )
     if (done) router.push('/settings/integrations')
   }
@@ -260,23 +282,44 @@ export function ConnectionSettings({
             )}
           </div>
         ) : (
-          <ConnectForm
-            manifest={manifest}
-            tenantClientId={connection?.tenantClientId ?? null}
-            needsTenantApp={oauthNeedsTenantApp}
-            redirectUri={view.redirectUri}
-            oauthStartUrl={oauthStartUrl}
-            enabled={view.enabled}
-            busy={busy}
-            initialSettings={connection?.settings}
-            onSave={(values, settings) =>
-              run(
-                'credentials',
-                () => saveIntegrationCredentials(manifest.id, values, settings),
-                isOAuth ? undefined : t('connection.connectedShort')
-              )
-            }
-          />
+          <>
+            <ConnectForm
+              manifest={manifest}
+              tenantClientId={connection?.tenantClientId ?? null}
+              needsTenantApp={oauthNeedsTenantApp}
+              redirectUri={view.redirectUri}
+              oauthStartUrl={oauthStartUrl}
+              enabled={view.enabled}
+              busy={busy}
+              initialSettings={connection?.settings}
+              onSave={(values, settings) =>
+                run(
+                  'credentials',
+                  () => saveIntegrationCredentials(manifest.id, values, settings),
+                  isOAuth ? undefined : t('connection.connectedShort')
+                )
+              }
+            />
+            {connection && (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-3 text-sm">
+                <p className="text-muted-foreground">{t('connection.removeSetupHint')}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive hover:text-destructive"
+                  onClick={removeSetup}
+                  disabled={busy !== null}
+                >
+                  {busy === 'disconnect' ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="mr-1 h-3.5 w-3.5" />
+                  )}
+                  {t('connection.removeSetup')}
+                </Button>
+              </div>
+            )}
+          </>
         )}
 
         {connected && view.inbound && (
