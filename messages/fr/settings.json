@@ -638,6 +638,8 @@
       "bank_account": "Compte bancaire",
       "footer_note": "Note de bas de page",
       "org_number": "Numéro d'organisation",
+      "payment_terms": "Conditions de paiement",
+      "due_date": "Date d'échéance",
       "portal_link": "Lien du portail"
     },
     "presetsTitle": "Partir d’une disposition",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Votre slogan provient des informations de votre entreprise.",
     "sloganLink": "Paramètres de l'entreprise",
     "paymentTerms": "Conditions de paiement",
-    "paymentTermsPlaceholderHint": "Aucune condition de paiement n'est définie, le panneau affiche donc un texte d'exemple qui ne sera pas imprimé.",
+    "paymentTermsEmptyHint": "Aucune condition de paiement n'est définie, aucune ligne de conditions n'est donc imprimée.",
     "paymentTermsSetHint": "Vos conditions de paiement proviennent des paramètres de paiement.",
     "paymentTermsLink": "Paramètres de paiement",
     "placeholder": "Exemple",

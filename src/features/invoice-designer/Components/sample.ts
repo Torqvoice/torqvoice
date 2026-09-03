@@ -273,16 +273,18 @@ export function buildSampleData(
         label: L('orgNumberLabel', 'Org. Number'),
         value: values.org_number || `${L('org', 'Org: {org}').replace('{org}', '123 456 789')}`,
       },
-      {
-        // The workshop's own terms when they have written any, a stand-in
-        // otherwise, so the line can be found and placed. The stand-in prints
-        // as nothing, which is why the canvas marks the panel a placeholder.
-        label: L('paymentTermsLabel', 'Payment Terms'),
-        value:
-          workshop.paymentTerms?.trim() ||
-          fillTemplate(L('netDays', '{days} Days'), { days: '10' }),
-      },
-      { label: L('dueDateLabel', 'Due Date'), value: sample.due },
+      // The workshop's own terms, and only theirs: an empty field prints no
+      // terms row at all, so the canvas must not show one either.
+      ...(workshop.paymentTerms?.trim()
+        ? [
+            {
+              id: 'payment_terms',
+              label: L('paymentTermsLabel', 'Payment Terms'),
+              value: workshop.paymentTerms.trim(),
+            },
+          ]
+        : []),
+      { id: 'due_date', label: L('dueDateLabel', 'Due Date'), value: sample.due },
     ],
     // A stand-in link, so the canvas shows the portal line the printed sheet
     // carries and the footer's switch for it has something to switch.

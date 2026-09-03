@@ -638,6 +638,8 @@
       "bank_account": "Cuenta bancaria",
       "footer_note": "Nota de pie",
       "org_number": "Número de organización",
+      "payment_terms": "Condiciones de pago",
+      "due_date": "Fecha de vencimiento",
       "portal_link": "Enlace al portal"
     },
     "presetsTitle": "Empezar con una disposición",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Tu eslogan proviene de los datos de tu empresa.",
     "sloganLink": "Ajustes de empresa",
     "paymentTerms": "Condiciones de pago",
-    "paymentTermsPlaceholderHint": "No hay condiciones de pago definidas, así que el panel muestra un texto de ejemplo que no se imprimirá.",
+    "paymentTermsEmptyHint": "No hay condiciones de pago definidas, así que no se imprime ninguna fila de condiciones.",
     "paymentTermsSetHint": "Tus condiciones de pago provienen de los ajustes de pago.",
     "paymentTermsLink": "Ajustes de pago",
     "placeholder": "Marcador",

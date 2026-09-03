@@ -638,6 +638,8 @@
       "bank_account": "Conto bancario",
       "footer_note": "Nota a piè di pagina",
       "org_number": "Numero organizzazione",
+      "payment_terms": "Condizioni di pagamento",
+      "due_date": "Data di scadenza",
       "portal_link": "Link al portale"
     },
     "presetsTitle": "Partire da una disposizione",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Lo slogan proviene dai dati della tua azienda.",
     "sloganLink": "Impostazioni azienda",
     "paymentTerms": "Termini di pagamento",
-    "paymentTermsPlaceholderHint": "Nessun termine di pagamento impostato, quindi il pannello mostra un segnaposto che non verrà stampato.",
+    "paymentTermsEmptyHint": "Nessun termine di pagamento impostato, quindi non viene stampata alcuna riga dei termini.",
     "paymentTermsSetHint": "I termini di pagamento provengono dalle impostazioni di pagamento.",
     "paymentTermsLink": "Impostazioni di pagamento",
     "placeholder": "Segnaposto",

@@ -276,7 +276,33 @@ export const BUILTIN_FOOTER_FIELDS = [
 export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'bank_account', name: 'Bank Account' },
   { id: 'org_number', name: 'Organization Number' },
+  { id: 'payment_terms', name: 'Payment Terms' },
+  { id: 'due_date', name: 'Due Date' },
 ] as const
+
+/**
+ * Fields that printed before they had a switch, by section.
+ *
+ * A field added to a section is off in every layout saved before it existed,
+ * which is right for a line that never printed and wrong for one that always
+ * did: switches arrived for the payment panel's terms and due date long after
+ * the rows themselves, and defaulting them off would have quietly stripped
+ * them from every existing design. A layout that does not mention them shows
+ * them; switching one off is a choice somebody made, and is stored.
+ */
+export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
+  bank_account: ['payment_terms', 'due_date'],
+}
+
+/** The ids of `sectionId`'s grandfathered fields that `fields` never mentions. */
+export function unmentionedGrandfathered(
+  sectionId: string,
+  fields: ReadonlyArray<{ id: string }> | undefined
+): string[] {
+  const ids = GRANDFATHERED_FIELDS[sectionId]
+  if (!ids || !fields) return []
+  return ids.filter((id) => !fields.some((f) => f.id === id))
+}
 
 /** The footer's rows that are not detail lines: the mark, the portal link and the closing note. */
 export const FOOTER_SPECIAL_FIELD_IDS: Set<string> = new Set(['logo', 'portal_link', 'footer_note'])

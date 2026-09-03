@@ -44,7 +44,13 @@ describe('overlapping in time', () => {
 
 describe('what counts as a clash', () => {
   const existing = [
-    booking({ id: 'job-1', start: at(1, 9), end: at(1, 11), technicianId: 't1', workBayId: 'bay1' }),
+    booking({
+      id: 'job-1',
+      start: at(1, 9),
+      end: at(1, 11),
+      technicianId: 't1',
+      workBayId: 'bay1',
+    }),
   ]
 
   it('clashes when the same technician is already busy', () => {
@@ -60,7 +66,10 @@ describe('what counts as a clash', () => {
   it('allows another person in another bay at the same hour', () => {
     // Two jobs at once is the whole point of having two ramps.
     expect(
-      findConflicts({ start: at(1, 10), end: at(1, 12), technicianId: 't2', workBayId: 'bay2' }, existing)
+      findConflicts(
+        { start: at(1, 10), end: at(1, 12), technicianId: 't2', workBayId: 'bay2' },
+        existing
+      )
     ).toEqual([])
   })
 
@@ -68,7 +77,10 @@ describe('what counts as a clash', () => {
     // Unassigned work is on the list, not in the shop, so nothing collides.
     const loose = [booking({ id: 'job-2', start: at(1, 9), end: at(1, 11) })]
     expect(
-      findConflicts({ start: at(1, 10), end: at(1, 12), technicianId: 't1', workBayId: 'bay1' }, loose)
+      findConflicts(
+        { start: at(1, 10), end: at(1, 12), technicianId: 't1', workBayId: 'bay1' },
+        loose
+      )
     ).toEqual([])
   })
 
@@ -84,7 +96,13 @@ describe('what counts as a clash', () => {
 
   it('catches an inspection holding the bay, not only a job', () => {
     const inspections = [
-      booking({ id: 'insp-1', kind: 'inspection', start: at(1, 9), end: at(1, 10), workBayId: 'bay1' }),
+      booking({
+        id: 'insp-1',
+        kind: 'inspection',
+        start: at(1, 9),
+        end: at(1, 10),
+        workBayId: 'bay1',
+      }),
     ]
     const c = findConflicts({ start: at(1, 9, 30), end: at(1, 11), workBayId: 'bay1' }, inspections)
     expect(c.map((b) => b.kind)).toEqual(['inspection'])

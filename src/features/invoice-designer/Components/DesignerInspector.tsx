@@ -19,6 +19,7 @@ import {
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
+  unmentionedGrandfathered,
   isCustomFieldId,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -373,13 +374,22 @@ export function DesignerInspector({
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
     // A field added after this layout was written still needs its switch.
     // Without this a saved design, which is loaded as it was stored, can never
-    // reach anything built since, and the option looks simply missing.
+    // reach anything built since, and the option looks simply missing. It
+    // arrives off, except for the rows that printed before they had a switch:
+    // those show what the sheet is already doing.
+    const grandfathered = new Set(unmentionedGrandfathered(section.id, stored))
     const resolvedFields: InvoiceFieldConfig[] = [
       ...stored,
       ...builtins
         .filter((f) => !stored.some((existing) => existing.id === f.id))
-        .map((f) => ({ id: f.id, visible: false })),
+        .map((f) => ({ id: f.id, visible: grandfathered.has(f.id) })),
     ]
+    // A switch for a row that cannot print is worse than no switch: payment
+    // terms print the workshop's own sentence, so with none written there is
+    // nothing to show or hide and the list says so by leaving the row out.
+    // The field stays in the layout, keeping whatever it was set to for the
+    // day terms are written.
+    const listedFields = resolvedFields.filter((f) => f.id !== 'payment_terms' || paymentTermsSet)
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The
     // same field can still be added to several sections.
@@ -630,13 +640,13 @@ export function DesignerInspector({
           )}
 
           {/* Payment terms live in payment settings, the same line on every
-              invoice, so they are not edited here. With none written the panel
-              shows a stand-in that prints as nothing, and the inspector says
-              so: it reads as a real term otherwise. */}
+              invoice, so they are not edited here. With none written the row
+              does not print and has no switch above, which needs saying: the
+              option looks lost otherwise. */}
           {section.id === 'bank_account' && (
             <Group title={t('paymentTerms')}>
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">
-                {paymentTermsSet ? t('paymentTermsSetHint') : t('paymentTermsPlaceholderHint')}{' '}
+                {paymentTermsSet ? t('paymentTermsSetHint') : t('paymentTermsEmptyHint')}{' '}
                 <a
                   href="/settings/payment"
                   target="_blank"
@@ -718,7 +728,7 @@ export function DesignerInspector({
 
           {SECTIONS_WITH_FIELDS.has(section.id) && (
             <Group title={t('fields')}>
-              {resolvedFields.map((field) => (
+              {listedFields.map((field) => (
                 <div
                   key={field.id}
                   draggable

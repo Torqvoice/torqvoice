@@ -638,6 +638,8 @@
       "bank_account": "Banko sąskaita",
       "footer_note": "Poraštės pastaba",
       "org_number": "Įmonės kodas",
+      "payment_terms": "Mokėjimo sąlygos",
+      "due_date": "Mokėjimo terminas",
       "portal_link": "Portalo nuoroda"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Jūsų šūkis imamas iš įmonės duomenų.",
     "sloganLink": "Įmonės nustatymai",
     "paymentTerms": "Mokėjimo sąlygos",
-    "paymentTermsPlaceholderHint": "Mokėjimo sąlygos nenustatytos, todėl skydelyje rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
+    "paymentTermsEmptyHint": "Mokėjimo sąlygos nenustatytos, todėl sąlygų eilutė nespausdinama.",
     "paymentTermsSetHint": "Jūsų mokėjimo sąlygos imamos iš mokėjimų nustatymų.",
     "paymentTermsLink": "Mokėjimų nustatymai",
     "placeholder": "Vietaženklis",

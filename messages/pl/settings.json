@@ -638,6 +638,8 @@
       "bank_account": "Konto bankowe",
       "footer_note": "Notatka w stopce",
       "org_number": "Numer organizacji",
+      "payment_terms": "Warunki płatności",
+      "due_date": "Termin płatności",
       "portal_link": "Link do portalu"
     },
     "presetsTitle": "Zacznij od układu",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Twój slogan pochodzi z danych firmy.",
     "sloganLink": "Ustawienia firmy",
     "paymentTerms": "Warunki płatności",
-    "paymentTermsPlaceholderHint": "Nie ustawiono warunków płatności, więc panel pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
+    "paymentTermsEmptyHint": "Nie ustawiono warunków płatności, więc wiersz z warunkami nie jest drukowany.",
     "paymentTermsSetHint": "Twoje warunki płatności pochodzą z ustawień płatności.",
     "paymentTermsLink": "Ustawienia płatności",
     "placeholder": "Symbol zastępczy",

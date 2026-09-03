@@ -2,6 +2,7 @@ import {
   FOOTER_SPECIAL_FIELD_IDS,
   footerColumnsOf,
   getBuiltinFieldsForSection,
+  unmentionedGrandfathered,
   isCustomFieldId,
   type InvoiceLayoutConfig,
   type InvoiceSection,
@@ -175,7 +176,12 @@ function lookOf(section: InvoiceSection, theme: DocumentTheme) {
  */
 export function sectionFields(section: InvoiceSection): string[] {
   if (!section.fields) return getBuiltinFieldsForSection(section.id).map((f) => f.id)
-  return section.fields.filter((f) => f.visible).map((f) => f.id)
+  return [
+    ...section.fields.filter((f) => f.visible).map((f) => f.id),
+    // A row that printed before it had a switch keeps printing until somebody
+    // uses the switch, so adding one takes nothing off a saved layout.
+    ...unmentionedGrandfathered(section.id, section.fields),
+  ]
 }
 
 /**

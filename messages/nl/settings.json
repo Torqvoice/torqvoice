@@ -638,6 +638,8 @@
       "bank_account": "Bankrekening",
       "footer_note": "Voettekstnotitie",
       "org_number": "Organisatienummer",
+      "payment_terms": "Betalingsvoorwaarden",
+      "due_date": "Vervaldatum",
       "portal_link": "Portaallink"
     },
     "presetsTitle": "Begin met een indeling",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Je slogan komt uit je bedrijfsgegevens.",
     "sloganLink": "Bedrijfsinstellingen",
     "paymentTerms": "Betalingsvoorwaarden",
-    "paymentTermsPlaceholderHint": "Er zijn geen betalingsvoorwaarden ingesteld, dus het paneel toont een voorbeeldtekst die niet wordt afgedrukt.",
+    "paymentTermsEmptyHint": "Er zijn geen betalingsvoorwaarden ingesteld, dus er wordt geen voorwaardenregel afgedrukt.",
     "paymentTermsSetHint": "Je betalingsvoorwaarden komen uit je betaalinstellingen.",
     "paymentTermsLink": "Betaalinstellingen",
     "placeholder": "Voorbeeld",

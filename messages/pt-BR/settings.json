@@ -638,6 +638,8 @@
       "bank_account": "Conta bancária",
       "footer_note": "Nota de rodapé",
       "org_number": "Número da organização",
+      "payment_terms": "Condições de pagamento",
+      "due_date": "Data de vencimento",
       "portal_link": "Link do portal"
     },
     "presetsTitle": "Começar por uma disposição",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Seu slogan vem dos dados da sua empresa.",
     "sloganLink": "Configurações da empresa",
     "paymentTerms": "Condições de pagamento",
-    "paymentTermsPlaceholderHint": "Nenhuma condição de pagamento definida, então o painel mostra um texto de exemplo que não será impresso.",
+    "paymentTermsEmptyHint": "Nenhuma condição de pagamento definida, então nenhuma linha de condições é impressa.",
     "paymentTermsSetHint": "Suas condições de pagamento vêm das configurações de pagamento.",
     "paymentTermsLink": "Configurações de pagamento",
     "placeholder": "Exemplo",

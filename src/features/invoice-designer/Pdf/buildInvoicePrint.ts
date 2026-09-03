@@ -383,10 +383,14 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     })
   }
   if (paymentTermsText) {
-    payment.push({ label: L('paymentTermsLabel', 'Payment Terms'), value: paymentTermsText })
+    payment.push({
+      id: 'payment_terms',
+      label: L('paymentTermsLabel', 'Payment Terms'),
+      value: paymentTermsText,
+    })
   }
   if (dueDate) {
-    payment.push({ label: L('dueDateLabel', 'Due Date'), value: dueDate })
+    payment.push({ id: 'due_date', label: L('dueDateLabel', 'Due Date'), value: dueDate })
   }
 
   const documentData: DocumentData = {

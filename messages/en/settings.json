@@ -638,6 +638,8 @@
       "bank_account": "Bank Account",
       "footer_note": "Footer Note",
       "org_number": "Organization Number",
+      "payment_terms": "Payment Terms",
+      "due_date": "Due Date",
       "portal_link": "Portal Link"
     },
     "presetsTitle": "Start from an arrangement",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Your slogan comes from your company details.",
     "sloganLink": "Company settings",
     "paymentTerms": "Payment terms",
-    "paymentTermsPlaceholderHint": "No payment terms are set, so the panel shows a stand-in that will not print.",
+    "paymentTermsEmptyHint": "No payment terms are set, so no terms row prints.",
     "paymentTermsSetHint": "Your payment terms come from your payment settings.",
     "paymentTermsLink": "Payment settings",
     "placeholder": "Placeholder",

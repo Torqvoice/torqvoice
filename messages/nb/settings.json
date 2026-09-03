@@ -638,6 +638,8 @@
       "bank_account": "Bankkonto",
       "footer_note": "Bunntekstnotat",
       "org_number": "Organisasjonsnummer",
+      "payment_terms": "Betalingsbetingelser",
+      "due_date": "Forfallsdato",
       "portal_link": "Portallenke"
     },
     "presetsTitle": "Start fra et oppsett",
@@ -1948,7 +1950,7 @@
     "sloganSetHint": "Slagordet hentes fra firmaopplysningene dine.",
     "sloganLink": "Firmainnstillinger",
     "paymentTerms": "Betalingsvilkår",
-    "paymentTermsPlaceholderHint": "Det er ikke satt noen betalingsvilkår, så feltet viser en plassholder som ikke skrives ut.",
+    "paymentTermsEmptyHint": "Det er ikke satt noen betalingsvilkår, så ingen vilkårsrad skrives ut.",
     "paymentTermsSetHint": "Betalingsvilkårene hentes fra betalingsinnstillingene dine.",
     "paymentTermsLink": "Betalingsinnstillinger",
     "placeholder": "Plassholder",
