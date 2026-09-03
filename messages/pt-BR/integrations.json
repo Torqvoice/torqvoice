@@ -358,6 +358,19 @@
         "syncInspections": "Manter as datas de inspeção de todos os veículos desta oficina atualizadas",
         "syncInspectionsHelp": "Uma vez por hora, veículos não verificados recentemente são consultados pela placa e a próxima data de EU-kontroll é salva. Só veículos desta oficina são enviados. Um veículo é verificado mensalmente, e semanalmente quando o prazo está a menos de dois meses."
       }
+    },
+    "openapi-automotive": {
+      "description": "Preencha um veículo a partir da placa francesa, italiana, espanhola, portuguesa ou britânica: marca, modelo, ano, VIN, combustível, cilindrada e mais, dos dados de registro do país via Openapi.com. Cada consulta é cobrada na conta Openapi da própria oficina. Nenhum dado do proprietário é retornado.",
+      "fields": {
+        "token": "Token de API",
+        "tokenHelp": "Crie uma conta em console.openapi.com, adicione crédito à carteira e, em Automotive, crie um token para o ambiente de produção. Cada consulta bem-sucedida custa algumas dezenas de centavos; uma sem resultado é gratuita."
+      },
+      "settings": {
+        "country": "País",
+        "countryHelp": "O registro a consultar. Placas francesas e italianas têm o mesmo formato, então o país não pode ser deduzido da placa.",
+        "bikes": "Consultar também motocicletas",
+        "bikesHelp": "Quando uma placa não é de carro, o registro de motocicletas também é consultado. Uma consulta de carro sem resultado é gratuita, então não custa nada a mais a menos que uma motocicleta seja encontrada. Indisponível para Portugal."
+      }
     }
   },
   "jobKinds": {

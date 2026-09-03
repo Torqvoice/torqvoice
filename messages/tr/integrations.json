@@ -358,6 +358,19 @@
         "syncInspections": "Bu atölyedeki tüm araçların muayene tarihlerini güncel tut",
         "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki EU-kontroll tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
       }
+    },
+    "openapi-automotive": {
+      "description": "Fransız, İtalyan, İspanyol, Portekiz veya İngiliz plakasından aracı doldurun: marka, model, yıl, VIN, yakıt, motor hacmi ve daha fazlası, ülkenin tescil verilerinden Openapi.com aracılığıyla. Her sorgu atölyenin kendi Openapi hesabına yansıtılır. Araç sahibi bilgisi döndürülmez.",
+      "fields": {
+        "token": "API belirteci",
+        "tokenHelp": "console.openapi.com'da bir hesap oluşturun, cüzdana bakiye yükleyin ve Automotive altında üretim ortamı için bir belirteç oluşturun. Her başarılı sorgu birkaç on sent tutar; sonuçsuz sorgu ücretsizdir."
+      },
+      "settings": {
+        "country": "Ülke",
+        "countryHelp": "Aranacak sicil. Fransız ve İtalyan plakaları aynı görünür, bu yüzden ülke plakadan okunamaz.",
+        "bikes": "Motosikletleri de sorgula",
+        "bikesHelp": "Bir plaka otomobil değilse motosiklet sicili de sorgulanır. Otomobil tarafında sonuçsuz sorgu ücretsizdir, bu nedenle bir motosiklet bulunmadıkça ek maliyet oluşmaz. Portekiz için kullanılamaz."
+      }
     }
   },
   "jobKinds": {

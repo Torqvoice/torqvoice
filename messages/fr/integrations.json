@@ -358,6 +358,19 @@
         "syncInspections": "Tenir à jour les dates de contrôle de tous les véhicules de cet atelier",
         "syncInspectionsHelp": "Une fois par heure, les véhicules non vérifiés récemment sont recherchés par plaque et la date du prochain EU-kontroll est enregistrée. Seuls les véhicules de cet atelier sont envoyés. Un véhicule est revérifié chaque mois, et chaque semaine lorsque l'échéance est à moins de deux mois."
       }
+    },
+    "openapi-automotive": {
+      "description": "Remplissez un véhicule à partir de sa plaque française, italienne, espagnole, portugaise ou britannique : marque, modèle, année, VIN, carburant, cylindrée et plus, depuis les données d'immatriculation du pays via Openapi.com. Chaque recherche est facturée sur le compte Openapi de l'atelier. Aucune donnée sur le propriétaire n'est renvoyée.",
+      "fields": {
+        "token": "Jeton d'API",
+        "tokenHelp": "Créez un compte sur console.openapi.com, créditez le portefeuille et, dans Automotive, créez un jeton pour l'environnement de production. Chaque recherche aboutie coûte quelques dizaines de centimes ; une recherche sans résultat est gratuite."
+      },
+      "settings": {
+        "country": "Pays",
+        "countryHelp": "Le registre à interroger. Les plaques françaises et italiennes ont le même format, le pays ne peut donc pas être déduit de la plaque.",
+        "bikes": "Rechercher aussi les motos",
+        "bikesHelp": "Quand une plaque n'est pas celle d'une voiture, le registre des motos est interrogé à son tour. Une recherche voiture sans résultat est gratuite, cela ne coûte donc rien de plus sauf si une moto est trouvée. Indisponible pour le Portugal."
+      }
     }
   },
   "jobKinds": {

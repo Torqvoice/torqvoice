@@ -358,6 +358,19 @@
         "syncInspections": "Mantener actualizadas las fechas de inspección de todos los vehículos de este taller",
         "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos que no se han comprobado hace poco y se guarda la próxima fecha de EU-kontroll. Solo se envían vehículos almacenados en este taller. Un vehículo se revisa cada mes, y cada semana cuando faltan menos de dos meses."
       }
+    },
+    "openapi-automotive": {
+      "description": "Rellena un vehículo a partir de su matrícula francesa, italiana, española, portuguesa o británica: marca, modelo, año, VIN, combustible, cilindrada y más, desde los datos de matriculación del país a través de Openapi.com. Cada consulta se cobra a la cuenta de Openapi del propio taller. No se devuelven datos del propietario.",
+      "fields": {
+        "token": "Token de API",
+        "tokenHelp": "Crea una cuenta en console.openapi.com, añade saldo al monedero y, en Automotive, crea un token para el entorno de producción. Cada consulta con resultado cuesta unas decenas de céntimos; una sin resultado es gratis."
+      },
+      "settings": {
+        "country": "País",
+        "countryHelp": "El registro donde buscar. Las matrículas francesas e italianas son iguales, así que el país no puede deducirse de la matrícula.",
+        "bikes": "Buscar también motocicletas",
+        "bikesHelp": "Cuando una matrícula no es de un coche, se consulta también el registro de motocicletas. Un fallo en la búsqueda de coches es gratis, así que no cuesta nada más salvo que se encuentre una motocicleta. No disponible para Portugal."
+      }
     }
   },
   "jobKinds": {

@@ -358,6 +358,19 @@
         "syncInspections": "Hold EU-kontrollfristen oppdatert for alle kjøretøy i dette verkstedet",
         "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste EU-kontroll lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
       }
+    },
+    "openapi-automotive": {
+      "description": "Fyll ut et kjøretøy fra fransk, italiensk, spansk, portugisisk eller britisk registreringsnummer: merke, modell, årsmodell, understellsnummer, drivstoff, slagvolum og mer fra landets registreringsdata via Openapi.com. Hvert oppslag belastes verkstedets egen Openapi-konto. Eieropplysninger leveres ikke.",
+      "fields": {
+        "token": "API-token",
+        "tokenHelp": "Opprett en konto på console.openapi.com, fyll på lommeboken, og lag et token for produksjonsmiljøet under Automotive. Hvert vellykkede oppslag koster noen titalls cent; et bomskudd er gratis."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Registeret som skal søkes i. Franske og italienske skilt ser like ut, så landet kan ikke leses av skiltet.",
+        "bikes": "Slå også opp motorsykler",
+        "bikesHelp": "Når et skilt ikke er en bil, spørres motorsykkelregisteret også. Et bomskudd på bilsiden er gratis, så dette koster ikke noe ekstra med mindre en motorsykkel blir funnet. Ikke tilgjengelig for Portugal."
+      }
     }
   },
   "jobKinds": {

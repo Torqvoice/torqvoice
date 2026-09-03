@@ -12,6 +12,7 @@ import { manifest as amazonSes } from './amazon-ses/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
 import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
+import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as resend } from './resend/manifest'
 import { manifest as sendgrid } from './sendgrid/manifest'
@@ -35,6 +36,7 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: microsoft365, load: () => import('./microsoft-365/server') },
   { manifest: zoom, load: () => import('./zoom/server') },
   { manifest: vegvesen, load: () => import('./vegvesen/server') },
+  { manifest: openapiAutomotive, load: () => import('./openapi-automotive/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },
