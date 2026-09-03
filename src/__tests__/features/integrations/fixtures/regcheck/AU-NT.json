@@ -1,0 +1,26 @@
+{
+  "Description": "BLACK TOYOTA FJCRUISER 2012",
+  "CarMake": {
+    "CurrentTextValue": "TOYOTA"
+  },
+  "CarModel": {
+    "CurrentTextValue": "FJCRUISER"
+  },
+  "RegistrationYear": 2012,
+  "Colour": "BLACK",
+  "RegistrationPlate": {
+    "can_register": true,
+    "plate": "CB78MH",
+    "can_inspect": true,
+    "insurance_class": "A",
+    "insurance_class_desc": "Vehicle not exceeding 4.5 tonne GVM or bus used for private or business.",
+    "date_inspection": 1493510400000,
+    "plate_type": "C",
+    "class_code": "",
+    "can_remind": true,
+    "status": "REGISTERED",
+    "date_expired": 1493510400000
+  },
+  "ImageUrl": "http://www.carregistrationapi.com/image.aspx/@VE9ZT1RBIEZKQ1JVSVNFUg==",
+  "State": "NT"
+}

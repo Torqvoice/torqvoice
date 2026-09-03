@@ -1,0 +1,26 @@
+{
+  "Description": "ŠKODA OCTAVIA",
+  "CarMake": {
+    "CurrentTextValue": "ŠKODA"
+  },
+  "CarModel": {
+    "CurrentTextValue": "OCTAVIA"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "ŠKODA"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "OCTAVIA"
+  },
+  "Date": "04/10/2005",
+  "EngineSize": "1896",
+  "RegistrationYear": 2005,
+  "ImageUrl": "http://www.spzapi.com/image.aspx/@xaBLT0RBIE9DVEFWSUE=",
+  "FuelType": "D",
+  "BodyStyle": "sedan/limuzína",
+  "VIN": "TMBCS21Z262149586",
+  "GrossWeight": "1970",
+  "NetWeight": "1 385 - 1 575",
+  "Power": "77",
+  "Region": "Hlavní město Praha"
+}

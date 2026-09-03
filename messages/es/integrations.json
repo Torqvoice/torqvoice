@@ -382,6 +382,21 @@
         "syncInspections": "Mantener actualizadas las fechas de APK de todos los vehículos de este taller",
         "syncInspectionsHelp": "Una vez por hora se consultan por matrícula los vehículos que no se han comprobado hace poco y se guarda la próxima fecha de APK. Solo se envían vehículos almacenados en este taller. Un vehículo se revisa cada mes, y cada semana cuando faltan menos de dos meses."
       }
+    },
+    "regcheck": {
+      "description": "Rellena un vehículo a partir de su matrícula en Australia, Nueva Zelanda, Estados Unidos, Irlanda, Suecia, Dinamarca, Finlandia, Estonia, Chequia, Eslovaquia, Hungría o Croacia: marca, modelo, año, VIN, combustible y cilindrada cuando el país los publica, a través de RegCheck. Cada consulta con resultado gasta un crédito de la cuenta de RegCheck del propio taller. No se devuelven datos del propietario.",
+      "fields": {
+        "username": "Usuario de RegCheck",
+        "usernameHelp": "Regístrate en regcheck.org.uk; la cuenta incluye 10 consultas gratuitas y las demás se compran en bloques de 100 desde el panel. Aquí solo hace falta el usuario, nunca la contraseña. Una matrícula no encontrada no cuesta nada."
+      },
+      "settings": {
+        "country": "País",
+        "countryHelp": "El registro donde buscar. Cada país tiene su propio servicio, así que la conexión busca en uno.",
+        "auState": "Estado o territorio",
+        "auStateHelp": "Australia matricula los vehículos por estado y hay que indicar al registro cuál buscar. Elige donde están matriculados la mayoría de los vehículos de tus clientes.",
+        "usState": "Estado",
+        "usStateHelp": "El código de dos letras del estado donde están matriculados los vehículos, como CA o TX. Los registros estadounidenses se consultan por estado."
+      }
     }
   },
   "jobKinds": {

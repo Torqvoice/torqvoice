@@ -1,0 +1,122 @@
+{
+  "ABICode": "",
+  "Description": "FERRARI 348 TS",
+  "RegistrationYear": "1993",
+  "CarMake": {
+    "CurrentTextValue": "FERRARI"
+  },
+  "CarModel": {
+    "CurrentTextValue": "348"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "3405.0"
+  },
+  "FuelType": {
+    "CurrentTextValue": "Benzin"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "FERRARI"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "348"
+  },
+  "Immobiliser": {
+    "CurrentTextValue": ""
+  },
+  "NumberOfSeats": {
+    "CurrentTextValue": ""
+  },
+  "DriverSide": {
+    "CurrentTextValue": ""
+  },
+  "BodyStyle": {
+    "CurrentTextValue": ""
+  },
+  "VechileIdentificationNumber": "ZFFKA36B000096243",
+  "ImageUrl": "http://www.registreringsnummerapi.dk/image.aspx/@RkVSUkFSSSAzNDg=",
+  "ExtendedInformation": {
+    "@xmlns": "http://skat.dk/dmr/2007/05/31/",
+    "KoeretoejIdent": "1007801199310004",
+    "KoeretoejArtNummer": "1",
+    "KoeretoejArtNavn": "Personbil",
+    "KoeretoejAnvendelseStruktur": {
+      "KoeretoejAnvendelseNummer": "1",
+      "KoeretoejAnvendelseNavn": "Privat personkørsel"
+    },
+    "RegistreringNummerNummer": "ZU47209",
+    "KoeretoejOplysningGrundStruktur": {
+      "KoeretoejOplysningOprettetUdFra": "Registreringssyn",
+      "KoeretoejOplysningStatus": "Registreret",
+      "KoeretoejOplysningStatusDato": "2009-04-20T23:00:00+01:00",
+      "KoeretoejOplysningFoersteRegistreringDato": "1993-05-03+02:00",
+      "KoeretoejOplysningStelNummer": "ZFFKA36B000096243",
+      "KoeretoejOplysningTotalVaegt": "1680",
+      "KoeretoejOplysningEgenVaegt": "1440",
+      "KoeretoejOplysningKoereklarVaegtMinimum": "1565",
+      "KoeretoejOplysningTekniskTotalVaegt": "1680",
+      "KoeretoejOplysningAkselAntal": "2",
+      "KoeretoejOplysningSiddepladserMinimum": "2",
+      "KoeretoejOplysningTilkoblingMulighed": "false",
+      "KoeretoejOplysningKommentar": "DMR Konvertering",
+      "KoeretoejOplysningAntalGear": "5",
+      "KoeretoejBetegnelseStruktur": {
+        "KoeretoejMaerkeTypeNummer": "10078",
+        "KoeretoejMaerkeTypeNavn": "FERRARI",
+        "Model": {
+          "KoeretoejModelTypeNummer": "10078008",
+          "KoeretoejModelTypeNavn": "348"
+        },
+        "Variant": {
+          "KoeretoejVariantTypeNummer": "1007800851",
+          "KoeretoejVariantTypeNavn": "TS"
+        },
+        "Type": {
+          "KoeretoejTypeTypeNummer": "10078008510000000",
+          "KoeretoejTypeTypeNavn": "F119AS"
+        }
+      },
+      "KoeretoejFarveStruktur": {
+        "FarveTypeStruktur": {
+          "FarveTypeNummer": "1",
+          "FarveTypeNavn": "Ukendt"
+        }
+      },
+      "KoeretoejNormStruktur": {
+        "NormTypeStruktur": {
+          "NormTypeNummer": "1",
+          "NormTypeNavn": "Ingen Norm"
+        }
+      },
+      "KoeretoejMiljoeOplysningStruktur": {
+        "KoeretoejMiljoeOplysningPartikelFilter": "false"
+      },
+      "KoeretoejMotorStruktur": {
+        "KoeretoejMotorCylinderAntal": "8",
+        "KoeretoejMotorSlagVolumen": "3405.0",
+        "KoeretoejMotorStoersteEffekt": "217.0",
+        "KoeretoejMotorKilometerstand": "122",
+        "KoeretoejDrivmiddelSamlingStruktur": {
+          "KoeretoejDrivmiddelSamling": {
+            "DrivmiddelStruktur": {
+              "DrivkraftTypeStruktur": {
+                "DrivkraftTypeNummer": "1",
+                "DrivkraftTypeNavn": "Benzin"
+              },
+              "KoeretoejMotorDrivmiddelPrimaer": "true"
+            }
+          }
+        }
+      }
+    },
+    "SynResultatStruktur": {
+      "SynResultatSynsType": "PeriodiskSyn",
+      "SynResultatSynsDato": "2025-04-10+02:00",
+      "SynResultatSynsResultat": "Godkendt",
+      "SynResultatSynStatus": "Aktiv",
+      "SynResultatSynStatusDato": "2025-04-10+02:00",
+      "KoeretoejMotorKilometerstand": "122"
+    },
+    "KoeretoejRegistreringStatus": "Registreret",
+    "KoeretoejRegistreringStatusDato": "2009-04-20T23:00:00+01:00"
+  }
+}

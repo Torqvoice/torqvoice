@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+import { makeCase } from '@/features/integrations/Lib/make-case'
 import type { ConnectorContext } from '@/features/integrations/Lib/types'
 import {
   type AutomotiveRecord,
@@ -10,7 +11,6 @@ import {
   isoDate,
   mapRecord,
   normalisePlate,
-  titleCase,
   transmission,
 } from '@/integrations/openapi-automotive/server'
 
@@ -224,10 +224,12 @@ describe('openapi automotive mapper', () => {
   })
 
   it('cases makes the way they are written, initials included', () => {
-    expect(titleCase('PEUGEOT')).toBe('Peugeot')
-    expect(titleCase('alfa romeo')).toBe('Alfa Romeo')
-    expect(titleCase('BMW')).toBe('BMW')
-    expect(titleCase('MERCEDES-BENZ')).toBe('Mercedes-Benz')
+    expect(makeCase('PEUGEOT')).toBe('Peugeot')
+    expect(makeCase('alfa romeo')).toBe('Alfa Romeo')
+    expect(makeCase('BMW')).toBe('BMW')
+    expect(makeCase('MERCEDES-BENZ')).toBe('Mercedes-Benz')
+    expect(makeCase('Kia')).toBe('Kia')
+    expect(makeCase('Land Rover')).toBe('Land Rover')
   })
 
   it('normalises plates the way each country prints them', () => {

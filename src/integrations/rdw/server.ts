@@ -4,6 +4,7 @@ import type {
   VehicleLookupQuery,
   VehicleLookupResult,
 } from '@/features/integrations/Lib/types'
+import { makeCase } from '@/features/integrations/Lib/make-case'
 import { inspectionJobs } from '@/features/integrations/Lib/inspection-sync'
 import { manifest } from './manifest'
 
@@ -47,17 +48,6 @@ function text(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
   const trimmed = value.trim()
   return trimmed ? trimmed : undefined
-}
-
-function titleCase(value: string): string {
-  return value
-    .split(/(\s+|-)/)
-    .map((part) => {
-      if (!part.trim() || part === '-') return part
-      if (part.length <= 3) return part.toUpperCase()
-      return part[0].toUpperCase() + part.slice(1).toLowerCase()
-    })
-    .join('')
 }
 
 /** RDW writes dates as YYYYMMDD. */
@@ -120,7 +110,7 @@ export function mapVehicle(vehicle: RdwVehicle, fuels: RdwFuel[]): VehicleLookup
   const exported = text(vehicle.export_indicator)?.toLowerCase()
 
   const result: VehicleLookupResult = {
-    make: make ? titleCase(make) : undefined,
+    make: make ? makeCase(make) : undefined,
     // RDW often repeats the make in the trade name ("TOYOTA PRIUS PLUS").
     model:
       model && make && model.toUpperCase().startsWith(`${make.toUpperCase()} `)
@@ -128,7 +118,7 @@ export function mapVehicle(vehicle: RdwVehicle, fuels: RdwFuel[]): VehicleLookup
         : model,
     year: firstRegistered ? Number(firstRegistered.slice(0, 4)) : undefined,
     licensePlate: text(vehicle.kenteken),
-    color: colour && !NO_COLOUR.has(colour.toLowerCase()) ? titleCase(colour) : undefined,
+    color: colour && !NO_COLOUR.has(colour.toLowerCase()) ? makeCase(colour) : undefined,
     fuelType: fuelType(fuels),
     engineSize: engineSize(vehicle.cilinderinhoud),
     vehicleClass: text(vehicle.voertuigsoort),

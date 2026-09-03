@@ -382,6 +382,21 @@
         "syncInspections": "Tenir à jour les dates d'APK de tous les véhicules de cet atelier",
         "syncInspectionsHelp": "Une fois par heure, les véhicules non vérifiés récemment sont recherchés par plaque et la date du prochain APK est enregistrée. Seuls les véhicules de cet atelier sont envoyés. Un véhicule est revérifié chaque mois, et chaque semaine lorsque l'échéance est à moins de deux mois."
       }
+    },
+    "regcheck": {
+      "description": "Remplissez un véhicule à partir de sa plaque en Australie, Nouvelle-Zélande, aux États-Unis, en Irlande, Suède, Danemark, Finlande, Estonie, Tchéquie, Slovaquie, Hongrie ou Croatie : marque, modèle, année, VIN, carburant et cylindrée lorsque le pays les publie, via RegCheck. Chaque recherche aboutie consomme un crédit du compte RegCheck de l'atelier. Aucune donnée sur le propriétaire n'est renvoyée.",
+      "fields": {
+        "username": "Nom d'utilisateur RegCheck",
+        "usernameHelp": "Inscrivez-vous sur regcheck.org.uk ; le compte comprend 10 recherches gratuites, les suivantes s'achètent par blocs de 100 depuis le tableau de bord. Seul le nom d'utilisateur est nécessaire ici, jamais le mot de passe. Une plaque introuvable ne coûte rien."
+      },
+      "settings": {
+        "country": "Pays",
+        "countryHelp": "Le registre à interroger. Chaque pays a son propre service, la connexion n'en interroge donc qu'un.",
+        "auState": "État ou territoire",
+        "auStateHelp": "L'Australie immatricule les véhicules par État et le registre doit savoir lequel interroger. Choisissez celui où la plupart des véhicules de vos clients sont immatriculés.",
+        "usState": "État",
+        "usStateHelp": "Le code à deux lettres de l'État où les véhicules sont immatriculés, comme CA ou TX. Les registres américains sont interrogés par État."
+      }
     }
   },
   "jobKinds": {

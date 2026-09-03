@@ -1,0 +1,27 @@
+{
+  "Description": "VW AMAROK 2.0 BiTDI 4motion",
+  "RegistrationYear": "2011",
+  "CarMake": {
+    "CurrentTextValue": "VW"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "VW"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "AMAROK"
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "Ute"
+  },
+  "Fuel": "Diesel",
+  "Colour": "",
+  "VechileIdentificationNumber": "WV1ZZZ2HZEA044303",
+  "Engine": "1968",
+  "extended": null,
+  "ImageUrl": "http://www.carregistrationapi.com/image.aspx/@VlcgQU1BUk9L",
+  "Expiry": "",
+  "Cylinders": "4",
+  "EngineCode": "CNEA|CSHA",
+  "Drive": "AWD",
+  "State": "TAS"
+}

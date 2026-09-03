@@ -382,6 +382,21 @@
         "syncInspections": "Bu atölyedeki tüm araçların APK tarihlerini güncel tut",
         "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki APK tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
       }
+    },
+    "regcheck": {
+      "description": "Avustralya, Yeni Zelanda, ABD, İrlanda, İsveç, Danimarka, Finlandiya, Estonya, Çekya, Slovakya, Macaristan veya Hırvatistan plakasından aracı doldurun: ülke yayımlıyorsa marka, model, yıl, VIN, yakıt ve motor hacmi, RegCheck aracılığıyla. Her başarılı sorgu atölyenin kendi RegCheck hesabından bir kredi harcar. Araç sahibi bilgisi döndürülmez.",
+      "fields": {
+        "username": "RegCheck kullanıcı adı",
+        "usernameHelp": "regcheck.org.uk'de kaydolun; hesap 10 ücretsiz sorguyla gelir, fazlası panelden 100'lük bloklar halinde satın alınır. Burada yalnızca kullanıcı adı gerekir, şifre asla. Bulunamayan plaka ücret oluşturmaz."
+      },
+      "settings": {
+        "country": "Ülke",
+        "countryHelp": "Aranacak sicil. Her ülkenin kendi hizmeti vardır, bu yüzden bağlantı tek birinde arar.",
+        "auState": "Eyalet veya bölge",
+        "auStateHelp": "Avustralya araçları eyalet bazında tescil eder ve sicile hangisinde aranacağı söylenmelidir. Müşterilerinizin araçlarının çoğunun tescilli olduğu eyaleti seçin.",
+        "usState": "Eyalet",
+        "usStateHelp": "Araçların tescilli olduğu eyaletin iki harfli kodu, örneğin CA veya TX. ABD sicilleri eyalet bazında sorgulanır."
+      }
     }
   },
   "jobKinds": {

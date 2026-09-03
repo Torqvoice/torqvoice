@@ -1,0 +1,24 @@
+{
+  "Description": "ŠKODA OCTAVIA",
+  "CarMake": {
+    "CurrentTextValue": "ŠKODA"
+  },
+  "CarModel": {
+    "CurrentTextValue": "OCTAVIA"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "ŠKODA"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "OCTAVIA"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "1595"
+  },
+  "RegistrationYear": 2010,
+  "Power": "74",
+  "Colour": "MODRÁ",
+  "VechileIdentificationNumber": "TMBCK11U4Y2370804",
+  "Region": "Žilina",
+  "ImageUrl": "http://ečv.com/image.aspx/@xaBLT0RBIE9DVEFWSUE="
+}

@@ -1,0 +1,29 @@
+{
+  "Description": "SUZUKI GS500",
+  "CarMake": {
+    "CurrentTextValue": "SUZUKI"
+  },
+  "CarModel": {
+    "CurrentTextValue": "GS500"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "SUZUKI"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "GS500"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "487"
+  },
+  "FuelType": {
+    "CurrentTextValue": "benzin"
+  },
+  "RegistrationYear": 2006,
+  "ProductionYear": "2006",
+  "Power": "35",
+  "GrossWeight": "380",
+  "NetWeight": "380",
+  "RegistrationDate": "2006.11.23",
+  "VechileIdentificationNumber": "VTTBK232100104138",
+  "ImageUrl": "http://rendszám.com/image.aspx/@U1VaVUtJIEdTNTAw"
+}

@@ -382,6 +382,21 @@
         "syncInspections": "Hold APK-fristen oppdatert for alle kjøretøy i dette verkstedet",
         "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste APK lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
       }
+    },
+    "regcheck": {
+      "description": "Fyll ut et kjøretøy fra skiltet i Australia, New Zealand, USA, Irland, Sverige, Danmark, Finland, Estland, Tsjekkia, Slovakia, Ungarn eller Kroatia: merke, modell, årsmodell, understellsnummer, drivstoff og slagvolum der landet publiserer dem, via RegCheck. Hvert vellykkede oppslag bruker én kreditt fra verkstedets egen RegCheck-konto. Eieropplysninger leveres ikke.",
+      "fields": {
+        "username": "RegCheck-brukernavn",
+        "usernameHelp": "Registrer deg på regcheck.org.uk; kontoen kommer med 10 gratis oppslag, og flere kjøpes i blokker på 100 fra dashbordet. Bare brukernavnet trengs her, aldri passordet. Et skilt som ikke blir funnet koster ingenting."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Registeret som skal søkes i. Hvert land har sin egen tjeneste, så tilkoblingen søker i ett.",
+        "auState": "Delstat eller territorium",
+        "auStateHelp": "Australia registrerer kjøretøy per delstat, og registeret må få vite hvilken som skal søkes. Velg der de fleste av kundenes kjøretøy er registrert.",
+        "usState": "Delstat",
+        "usStateHelp": "Tobokstavskoden for delstaten kjøretøyene er registrert i, som CA eller TX. Amerikanske registre søkes per delstat."
+      }
     }
   },
   "jobKinds": {

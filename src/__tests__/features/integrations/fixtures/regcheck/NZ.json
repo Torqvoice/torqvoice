@@ -1,0 +1,44 @@
+{
+  "Description": "2008 Toyota Mark X",
+  "RegistrationYear": "2008",
+  "CarMake": {
+    "CurrentTextValue": "Toyota"
+  },
+  "CarModel": {
+    "CurrentTextValue": "Mark X"
+  },
+  "EngineSize": {
+    "CurrentTextValue": 2499
+  },
+  "FuelType": {
+    "CurrentTextValue": "Petrol"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "Toyota"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "Mark X"
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "SEDAN"
+  },
+  "VechileIdentificationNumber": "7AT0H64TX13059294",
+  "Chassis": "NZVTOYO2008AEIQ",
+  "EngineNumber": "",
+  "Colour": "",
+  "NumberOfSeats": {
+    "CurrentTextValue": "0"
+  },
+  "Assembly": "",
+  "Stolen": "N",
+  "EstimatedCurrentOdometer": "0",
+  "LastOdometerReading": "",
+  "WarrantOfFitness": "",
+  "PlateType": "",
+  "Origin": "",
+  "VehiclePurpose": "",
+  "ReasonLatestRegistration": "",
+  "FirstLocalRegistration": "",
+  "Imported": "",
+  "ImageUrl": "http://nz.carregistrationapi.com/image.aspx/@VG95b3RhIE1hcmsgWA=="
+}

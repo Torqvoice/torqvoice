@@ -382,6 +382,21 @@
         "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių APK datas",
         "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
       }
+    },
+    "regcheck": {
+      "description": "Užpildykite transporto priemonę pagal numerį Australijoje, Naujojoje Zelandijoje, JAV, Airijoje, Švedijoje, Danijoje, Suomijoje, Estijoje, Čekijoje, Slovakijoje, Vengrijoje arba Kroatijoje: markė, modelis, metai, VIN, degalai ir variklio tūris, kai šalis juos skelbia, per RegCheck. Kiekviena sėkminga užklausa išleidžia vieną kreditą iš pačių dirbtuvių RegCheck paskyros. Savininko duomenys negrąžinami.",
+      "fields": {
+        "username": "RegCheck naudotojo vardas",
+        "usernameHelp": "Užsiregistruokite regcheck.org.uk; paskyroje yra 10 nemokamų užklausų, daugiau perkama po 100 valdymo skydelyje. Čia reikia tik naudotojo vardo, niekada slaptažodžio. Nerastas numeris nieko nekainuoja."
+      },
+      "settings": {
+        "country": "Šalis",
+        "countryHelp": "Registras, kuriame ieškoti. Kiekviena šalis turi savo paslaugą, todėl ryšys ieško vienoje.",
+        "auState": "Valstija arba teritorija",
+        "auStateHelp": "Australija registruoja transporto priemones pagal valstijas, ir registrui reikia nurodyti, kurioje ieškoti. Pasirinkite tą, kurioje registruota dauguma jūsų klientų transporto priemonių.",
+        "usState": "Valstija",
+        "usStateHelp": "Dviejų raidžių valstijos, kurioje registruotos transporto priemonės, kodas, pvz., CA arba TX. JAV registrai užklausiami pagal valstiją."
+      }
     }
   },
   "jobKinds": {
