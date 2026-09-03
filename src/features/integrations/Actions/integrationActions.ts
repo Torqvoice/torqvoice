@@ -198,6 +198,12 @@ export interface ConnectionView {
    */
   inbound: InboundWebhook | null
   /**
+   * Where a messaging vendor must deliver inbound messages, built from the
+   * connection's own secret. Null for vendors that register it themselves
+   * or have nothing inbound.
+   */
+  inbound: InboundWebhook | null
+  /**
    * The callback the OAuth start route will send to the vendor. Computed on
    * the server from the configured app URL, so it is the same on the server
    * render and in the browser, and it matches what the vendor sees.
