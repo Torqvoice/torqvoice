@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Uzupełnij pojazd na podstawie tablicy w Australii, Nowej Zelandii, USA, Irlandii, Szwecji, Danii, Finlandii, Estonii, Czechach, Słowacji, na Węgrzech lub w Chorwacji: marka, model, rocznik, VIN, paliwo i pojemność silnika, o ile kraj je publikuje, przez RegCheck. Każde udane zapytanie zużywa jeden kredyt z własnego konta RegCheck warsztatu. Dane właściciela nie są zwracane.",
+      "description": "Uzupełnij pojazd na podstawie tablicy w Australii, Nowej Zelandii, USA, Irlandii, Norwegii, Szwecji, Danii, Finlandii, Estonii, Czechach, Słowacji, na Węgrzech lub w Chorwacji: marka, model, rocznik, VIN, paliwo i pojemność silnika, o ile kraj je publikuje, przez RegCheck. Każde udane zapytanie zużywa jeden kredyt z własnego konta RegCheck warsztatu. Dane właściciela nie są zwracane.",
       "fields": {
         "username": "Nazwa użytkownika RegCheck",
         "usernameHelp": "Zarejestruj się na regcheck.org.uk; konto zawiera 10 bezpłatnych zapytań, a kolejne kupuje się w pakietach po 100 w panelu. Tutaj potrzebna jest tylko nazwa użytkownika, nigdy hasło. Nieznaleziona tablica nic nie kosztuje."

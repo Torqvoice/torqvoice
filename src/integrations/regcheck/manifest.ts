@@ -5,7 +5,8 @@ import type { ConnectorManifest } from '@/features/integrations/Lib/types'
  * countries through one web service. Offered here for the countries the
  * app has no free or national registry for and whose answers the vendor
  * documents: Australia and New Zealand, the United States, Ireland, the
- * Nordics outside Norway, and central Europe.
+ * Nordics, and central Europe. Norway is here as a fallback beside the free
+ * Statens vegvesen connector.
  *
  * The account is the workshop's own: a username, with credits bought on the
  * vendor's site and spent per successful lookup. Australia and the United
@@ -19,7 +20,7 @@ export const manifest: ConnectorManifest = {
   id: 'regcheck',
   name: 'RegCheck',
   category: 'registry',
-  countries: ['AU', 'NZ', 'US', 'IE', 'SE', 'DK', 'FI', 'EE', 'CZ', 'SK', 'HU', 'HR'],
+  countries: ['AU', 'NZ', 'US', 'IE', 'NO', 'SE', 'DK', 'FI', 'EE', 'CZ', 'SK', 'HU', 'HR'],
   logo: '/images/integrations/regcheck.svg',
   docs: '/docs/integrations/regcheck',
   auth: {
@@ -41,6 +42,7 @@ export const manifest: ConnectorManifest = {
         { value: 'NZ', label: 'New Zealand' },
         { value: 'US', label: 'United States' },
         { value: 'IE', label: 'Ireland' },
+        { value: 'NO', label: 'Norge' },
         { value: 'SE', label: 'Sverige' },
         { value: 'DK', label: 'Danmark' },
         { value: 'FI', label: 'Suomi' },

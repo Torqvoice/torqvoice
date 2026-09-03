@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Fahrzeug aus dem Kennzeichen in Australien, Neuseeland, den USA, Irland, Schweden, Dänemark, Finnland, Estland, Tschechien, der Slowakei, Ungarn oder Kroatien ausfüllen: Marke, Modell, Baujahr, FIN, Kraftstoff und Hubraum, soweit das Land sie veröffentlicht, über RegCheck. Jede erfolgreiche Abfrage verbraucht ein Guthaben aus dem eigenen RegCheck-Konto der Werkstatt. Halterdaten werden nicht geliefert.",
+      "description": "Fahrzeug aus dem Kennzeichen in Australien, Neuseeland, den USA, Irland, Norwegen, Schweden, Dänemark, Finnland, Estland, Tschechien, der Slowakei, Ungarn oder Kroatien ausfüllen: Marke, Modell, Baujahr, FIN, Kraftstoff und Hubraum, soweit das Land sie veröffentlicht, über RegCheck. Jede erfolgreiche Abfrage verbraucht ein Guthaben aus dem eigenen RegCheck-Konto der Werkstatt. Halterdaten werden nicht geliefert.",
       "fields": {
         "username": "RegCheck-Benutzername",
         "usernameHelp": "Registrieren Sie sich auf regcheck.org.uk; das Konto enthält 10 kostenlose Abfragen, weitere werden über das Dashboard in Blöcken von 100 gekauft. Hier wird nur der Benutzername benötigt, nie das Passwort. Ein nicht gefundenes Kennzeichen kostet nichts."

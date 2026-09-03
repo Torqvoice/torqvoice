@@ -252,6 +252,28 @@ describe('regcheck mapper, other countries', () => {
     })
   })
 
+  it('Norway: VIN, colour, fuel code, tyres, weights and EU-kontroll dates from the register block', () => {
+    expect(mapVehicle(fixture('NO'), 'ZT49510')).toEqual({
+      make: 'Capron',
+      model: 'T 68/T 447/T 742',
+      year: 2014,
+      vin: 'ZFA25000002498708',
+      licensePlate: 'ZT49510',
+      color: 'Hvit',
+      fuelType: 'diesel',
+      engineSize: '2.3 L',
+      firstRegistered: '2014-08-19',
+      inspectionDue: '2018-10-31',
+      tyres: [
+        { axle: 1, tyre: '215/70 R 15C', rim: '6JX15H2', loadIndex: '105', speedRating: 'N' },
+        { axle: 2, tyre: '215/70 R 15C', rim: '6JX15H2', loadIndex: '108', speedRating: undefined },
+      ],
+      weights: { kerb: 2855, grossMax: 3495 },
+    })
+    // 00000000 is the register's "never", not a date.
+    expect(mapVehicle(fixture('NO')).lastInspected).toBeUndefined()
+  })
+
   it('Hungary: lower-case benzin and a dotted date', () => {
     expect(mapVehicle(fixture('HU'))).toEqual({
       make: 'Suzuki',
@@ -301,6 +323,8 @@ describe('regcheck mapper, other countries', () => {
     expect(isoDate('2006.11.23')).toBe('2006-11-23')
     expect(isoDate('1993-05-03+02:00')).toBe('1993-05-03')
     expect(isoDate('2006')).toBeUndefined()
+    expect(isoDate('20181031')).toBe('2018-10-31')
+    expect(isoDate('00000000')).toBeUndefined()
     expect(normalisePlate('bew 76p')).toBe('BEW76P')
     expect(normalisePlate('LZF-630')).toBe('LZF630')
   })

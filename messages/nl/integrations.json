@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Vul een voertuig in vanuit het kenteken in Australië, Nieuw-Zeeland, de Verenigde Staten, Ierland, Zweden, Denemarken, Finland, Estland, Tsjechië, Slowakije, Hongarije of Kroatië: merk, model, bouwjaar, VIN, brandstof en cilinderinhoud waar het land ze publiceert, via RegCheck. Elke geslaagde opzoeking kost één credit van het eigen RegCheck-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "description": "Vul een voertuig in vanuit het kenteken in Australië, Nieuw-Zeeland, de Verenigde Staten, Ierland, Noorwegen, Zweden, Denemarken, Finland, Estland, Tsjechië, Slowakije, Hongarije of Kroatië: merk, model, bouwjaar, VIN, brandstof en cilinderinhoud waar het land ze publiceert, via RegCheck. Elke geslaagde opzoeking kost één credit van het eigen RegCheck-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
       "fields": {
         "username": "RegCheck-gebruikersnaam",
         "usernameHelp": "Registreer op regcheck.org.uk; het account komt met 10 gratis opzoekingen en meer koop je in blokken van 100 via het dashboard. Hier is alleen de gebruikersnaam nodig, nooit het wachtwoord. Een kenteken dat niet wordt gevonden kost niets."

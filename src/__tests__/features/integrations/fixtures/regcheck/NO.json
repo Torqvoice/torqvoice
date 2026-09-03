@@ -1,0 +1,80 @@
+{
+  "Description": "CAPRON T 68/T 447/T 742",
+  "RegistrationYear": 2014,
+  "CarMake": {
+    "CurrentTextValue": "CAPRON"
+  },
+  "CarModel": {
+    "CurrentTextValue": "T 68/T 447/T 742"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "2287"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "CAPRON"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "T 68/T 447/T 742"
+  },
+  "IndicativeValue": {
+    "CurrentTextValue": "0"
+  },
+  "Power": 96,
+  "Region": "Alta\tFinnmark",
+  "ExtendedInformation": {
+    "kjm": "ZT49510",
+    "unr": "ZFA25000002498708",
+    "reg-aar": "2014",
+    "f-g-n": "20140819",
+    "merke": "4140",
+    "modell": "T 68/T 447/T 742",
+    "type": "EG/CF002",
+    "kjtgrp": "316",
+    "motorytelse": "0009600",
+    "slagvolum": "002287",
+    "drivst": "02",
+    "lengde": "0743",
+    "bredde": "233",
+    "dekk-f": "215/70 R 15C",
+    "dekk-b": "215/70 R 15C",
+    "felg-f": "6JX15H2",
+    "felg-b": "6JX15H2",
+    "mili-f": "105",
+    "mili-b": "108",
+    "hast-f": "N",
+    "hast-b": "",
+    "innp-f": "0068",
+    "innp-b": "0068",
+    "spor-f": "1810",
+    "spor-b": "1980",
+    "totvekt": "003495",
+    "egenvekt": "02855",
+    "for-last": "01850",
+    "bak-last": "002000",
+    "eu-variant": "FTS8FE",
+    "eu-versjon": "M4GI0G04CAE017",
+    "bruktimp": "0",
+    "avreg-dato": "00000000",
+    "farge": "HVIT",
+    "aksler": "02",
+    "aksler-drift": "1",
+    "thv-m-brems": "02000",
+    "thv-u-brems": "00750",
+    "tilh-kobling": "0000",
+    "bel-h-feste": "00100",
+    "maks-taklast": "0000",
+    "vogntogvekt": "005495",
+    "ytelsesmaal": "1",
+    "siste-pkk": "00000000",
+    "neste-pkk": "20181031",
+    "reg-dato": "20160406",
+    "reg-mnd": "08",
+    "reg-dag": "19",
+    "co2-utslipp": "0000",
+    "euronorm": "5",
+    "sitteplasser-totalt": "04",
+    "registration": "ZT49510",
+    "Kode": "4140",
+    "Name": "CAPRON"
+  }
+}

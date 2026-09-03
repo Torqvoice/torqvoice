@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Fill in a vehicle from its plate in Australia, New Zealand, the United States, Ireland, Sweden, Denmark, Finland, Estonia, Czechia, Slovakia, Hungary or Croatia: make, model, year, VIN, fuel and engine size where the country publishes them, through RegCheck. Each successful lookup spends one credit from the workshop's own RegCheck account. No owner data is returned.",
+      "description": "Fill in a vehicle from its plate in Australia, New Zealand, the United States, Ireland, Norway, Sweden, Denmark, Finland, Estonia, Czechia, Slovakia, Hungary or Croatia: make, model, year, VIN, fuel and engine size where the country publishes them, through RegCheck. Each successful lookup spends one credit from the workshop's own RegCheck account. No owner data is returned.",
       "fields": {
         "username": "RegCheck username",
         "usernameHelp": "Register on regcheck.org.uk; the account comes with 10 free lookups and more are bought in blocks of 100 through the dashboard. Only the username is needed here, never the password. A plate that is not found costs nothing."

@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Rellena un vehículo a partir de su matrícula en Australia, Nueva Zelanda, Estados Unidos, Irlanda, Suecia, Dinamarca, Finlandia, Estonia, Chequia, Eslovaquia, Hungría o Croacia: marca, modelo, año, VIN, combustible y cilindrada cuando el país los publica, a través de RegCheck. Cada consulta con resultado gasta un crédito de la cuenta de RegCheck del propio taller. No se devuelven datos del propietario.",
+      "description": "Rellena un vehículo a partir de su matrícula en Australia, Nueva Zelanda, Estados Unidos, Irlanda, Noruega, Suecia, Dinamarca, Finlandia, Estonia, Chequia, Eslovaquia, Hungría o Croacia: marca, modelo, año, VIN, combustible y cilindrada cuando el país los publica, a través de RegCheck. Cada consulta con resultado gasta un crédito de la cuenta de RegCheck del propio taller. No se devuelven datos del propietario.",
       "fields": {
         "username": "Usuario de RegCheck",
         "usernameHelp": "Regístrate en regcheck.org.uk; la cuenta incluye 10 consultas gratuitas y las demás se compran en bloques de 100 desde el panel. Aquí solo hace falta el usuario, nunca la contraseña. Una matrícula no encontrada no cuesta nada."

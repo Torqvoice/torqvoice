@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Fyll ut et kjøretøy fra skiltet i Australia, New Zealand, USA, Irland, Sverige, Danmark, Finland, Estland, Tsjekkia, Slovakia, Ungarn eller Kroatia: merke, modell, årsmodell, understellsnummer, drivstoff og slagvolum der landet publiserer dem, via RegCheck. Hvert vellykkede oppslag bruker én kreditt fra verkstedets egen RegCheck-konto. Eieropplysninger leveres ikke.",
+      "description": "Fyll ut et kjøretøy fra skiltet i Australia, New Zealand, USA, Irland, Norge, Sverige, Danmark, Finland, Estland, Tsjekkia, Slovakia, Ungarn eller Kroatia: merke, modell, årsmodell, understellsnummer, drivstoff og slagvolum der landet publiserer dem, via RegCheck. Hvert vellykkede oppslag bruker én kreditt fra verkstedets egen RegCheck-konto. Eieropplysninger leveres ikke.",
       "fields": {
         "username": "RegCheck-brukernavn",
         "usernameHelp": "Registrer deg på regcheck.org.uk; kontoen kommer med 10 gratis oppslag, og flere kjøpes i blokker på 100 fra dashbordet. Bare brukernavnet trengs her, aldri passordet. Et skilt som ikke blir funnet koster ingenting."

@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Užpildykite transporto priemonę pagal numerį Australijoje, Naujojoje Zelandijoje, JAV, Airijoje, Švedijoje, Danijoje, Suomijoje, Estijoje, Čekijoje, Slovakijoje, Vengrijoje arba Kroatijoje: markė, modelis, metai, VIN, degalai ir variklio tūris, kai šalis juos skelbia, per RegCheck. Kiekviena sėkminga užklausa išleidžia vieną kreditą iš pačių dirbtuvių RegCheck paskyros. Savininko duomenys negrąžinami.",
+      "description": "Užpildykite transporto priemonę pagal numerį Australijoje, Naujojoje Zelandijoje, JAV, Airijoje, Norvegijoje, Švedijoje, Danijoje, Suomijoje, Estijoje, Čekijoje, Slovakijoje, Vengrijoje arba Kroatijoje: markė, modelis, metai, VIN, degalai ir variklio tūris, kai šalis juos skelbia, per RegCheck. Kiekviena sėkminga užklausa išleidžia vieną kreditą iš pačių dirbtuvių RegCheck paskyros. Savininko duomenys negrąžinami.",
       "fields": {
         "username": "RegCheck naudotojo vardas",
         "usernameHelp": "Užsiregistruokite regcheck.org.uk; paskyroje yra 10 nemokamų užklausų, daugiau perkama po 100 valdymo skydelyje. Čia reikia tik naudotojo vardo, niekada slaptažodžio. Nerastas numeris nieko nekainuoja."

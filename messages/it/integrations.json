@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Compila un veicolo dalla targa in Australia, Nuova Zelanda, Stati Uniti, Irlanda, Svezia, Danimarca, Finlandia, Estonia, Cechia, Slovacchia, Ungheria o Croazia: marca, modello, anno, VIN, carburante e cilindrata quando il paese li pubblica, tramite RegCheck. Ogni ricerca con esito consuma un credito dall'account RegCheck dell'officina. Non vengono restituiti dati sul proprietario.",
+      "description": "Compila un veicolo dalla targa in Australia, Nuova Zelanda, Stati Uniti, Irlanda, Norvegia, Svezia, Danimarca, Finlandia, Estonia, Cechia, Slovacchia, Ungheria o Croazia: marca, modello, anno, VIN, carburante e cilindrata quando il paese li pubblica, tramite RegCheck. Ogni ricerca con esito consuma un credito dall'account RegCheck dell'officina. Non vengono restituiti dati sul proprietario.",
       "fields": {
         "username": "Nome utente RegCheck",
         "usernameHelp": "Registrati su regcheck.org.uk; l'account include 10 ricerche gratuite e le altre si acquistano in blocchi da 100 dal pannello. Qui serve solo il nome utente, mai la password. Una targa non trovata non costa nulla."

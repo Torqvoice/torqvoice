@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Preencha um veículo a partir da placa na Austrália, Nova Zelândia, Estados Unidos, Irlanda, Suécia, Dinamarca, Finlândia, Estônia, Tchéquia, Eslováquia, Hungria ou Croácia: marca, modelo, ano, VIN, combustível e cilindrada quando o país os publica, via RegCheck. Cada consulta bem-sucedida gasta um crédito da conta RegCheck da própria oficina. Nenhum dado do proprietário é retornado.",
+      "description": "Preencha um veículo a partir da placa na Austrália, Nova Zelândia, Estados Unidos, Irlanda, Noruega, Suécia, Dinamarca, Finlândia, Estônia, Tchéquia, Eslováquia, Hungria ou Croácia: marca, modelo, ano, VIN, combustível e cilindrada quando o país os publica, via RegCheck. Cada consulta bem-sucedida gasta um crédito da conta RegCheck da própria oficina. Nenhum dado do proprietário é retornado.",
       "fields": {
         "username": "Usuário RegCheck",
         "usernameHelp": "Cadastre-se em regcheck.org.uk; a conta vem com 10 consultas gratuitas e as demais são compradas em blocos de 100 pelo painel. Aqui só é preciso o usuário, nunca a senha. Uma placa não encontrada não custa nada."

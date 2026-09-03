@@ -384,7 +384,7 @@
       }
     },
     "regcheck": {
-      "description": "Avustralya, Yeni Zelanda, ABD, İrlanda, İsveç, Danimarka, Finlandiya, Estonya, Çekya, Slovakya, Macaristan veya Hırvatistan plakasından aracı doldurun: ülke yayımlıyorsa marka, model, yıl, VIN, yakıt ve motor hacmi, RegCheck aracılığıyla. Her başarılı sorgu atölyenin kendi RegCheck hesabından bir kredi harcar. Araç sahibi bilgisi döndürülmez.",
+      "description": "Avustralya, Yeni Zelanda, ABD, İrlanda, Norveç, İsveç, Danimarka, Finlandiya, Estonya, Çekya, Slovakya, Macaristan veya Hırvatistan plakasından aracı doldurun: ülke yayımlıyorsa marka, model, yıl, VIN, yakıt ve motor hacmi, RegCheck aracılığıyla. Her başarılı sorgu atölyenin kendi RegCheck hesabından bir kredi harcar. Araç sahibi bilgisi döndürülmez.",
       "fields": {
         "username": "RegCheck kullanıcı adı",
         "usernameHelp": "regcheck.org.uk'de kaydolun; hesap 10 ücretsiz sorguyla gelir, fazlası panelden 100'lük bloklar halinde satın alınır. Burada yalnızca kullanıcı adı gerekir, şifre asla. Bulunamayan plaka ücret oluşturmaz."

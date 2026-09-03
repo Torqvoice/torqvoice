@@ -39,6 +39,7 @@ export type Country =
   | 'SK'
   | 'HU'
   | 'HR'
+  | 'NO'
 
 const OPERATIONS: Record<Country, string> = {
   AU: 'CheckAustralia',
@@ -53,6 +54,7 @@ const OPERATIONS: Record<Country, string> = {
   SK: 'CheckSlovakia',
   HU: 'CheckHungary',
   HR: 'CheckCroatia',
+  NO: 'CheckNorway',
 }
 
 /** A field the vendor sends either bare or wrapped, depending on the country. */
@@ -112,7 +114,11 @@ export interface RegCheckVehicle {
   } | null
   /** Australia, NT: registration and inspection as epoch milliseconds. */
   RegistrationPlate?: { date_inspection?: number; status?: string }
-  /** Denmark: the Motorregister record behind the summary. */
+  /**
+   * Denmark: the Motorregister record behind the summary. Norway: the
+   * vehicle register's own fields, zero-padded numbers and YYYYMMDD dates,
+   * with 00000000 for a date that is not set.
+   */
   ExtendedInformation?: {
     KoeretoejOplysningGrundStruktur?: {
       KoeretoejOplysningFoersteRegistreringDato?: string
@@ -120,7 +126,31 @@ export interface RegCheckVehicle {
       KoeretoejOplysningEgenVaegt?: string
     }
     SynResultatStruktur?: { SynResultatSynsDato?: string; SynResultatSynsResultat?: string }
+    unr?: string
+    'f-g-n'?: string
+    farge?: string
+    girkasse?: string
+    drivst?: string
+    egenvekt?: string
+    totvekt?: string
+    'siste-pkk'?: string
+    'neste-pkk'?: string
+    'dekk-f'?: string
+    'dekk-b'?: string
+    'felg-f'?: string
+    'felg-b'?: string
+    'mili-f'?: string
+    'mili-b'?: string
+    'hast-f'?: string
+    'hast-b'?: string
   }
+}
+
+/** Norway's drivst codes, the same code list Statens vegvesen publishes. */
+const NORWEGIAN_FUEL: Record<string, string> = {
+  '01': 'gasoline',
+  '02': 'diesel',
+  '05': 'electric',
 }
 
 export function text(value: Wrapped | undefined): string | undefined {
@@ -187,6 +217,9 @@ export function isoDate(value: string | undefined): string | undefined {
   if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`
   m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(v)
   if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`
+  // Norway's YYYYMMDD, where 00000000 means not set.
+  m = /^(\d{4})(\d{2})(\d{2})$/.exec(v)
+  if (m && m[1] !== '0000') return `${m[1]}-${m[2]}-${m[3]}`
   return undefined
 }
 
@@ -205,6 +238,7 @@ function vin(record: RegCheckVehicle): string | undefined {
     record.VIN,
     record.VehicleIdentificationNumber,
     record.VechileIdentificationNumber,
+    record.ExtendedInformation?.unr,
   ]) {
     const v = text(candidate)?.toUpperCase()
     // NSW, TAS and WA put a NEVDIS code here ("FORFMT---7402E01994A"), not a VIN.
@@ -221,22 +255,53 @@ function kilograms(value: string | number | undefined): number | undefined {
   return n > 0 ? n : undefined
 }
 
+/** Norway's tyre and rim sizes, front then rear, with the load index and speed rating. */
+function norwegianTyres(ext: NonNullable<RegCheckVehicle['ExtendedInformation']>) {
+  const axles = [
+    {
+      axle: 1,
+      tyre: text(ext['dekk-f']),
+      rim: text(ext['felg-f']),
+      loadIndex: text(ext['mili-f']),
+      speedRating: text(ext['hast-f']),
+    },
+    {
+      axle: 2,
+      tyre: text(ext['dekk-b']),
+      rim: text(ext['felg-b']),
+      loadIndex: text(ext['mili-b']),
+      speedRating: text(ext['hast-b']),
+    },
+  ]
+  const present = axles.filter((a) => a.tyre || a.rim)
+  return present.length > 0 ? present : undefined
+}
+
 /** The vendor's JSON in the app's vocabulary. Exported for the contract test. */
 export function mapVehicle(record: RegCheckVehicle, plate?: string): VehicleLookupResult {
   const make = text(record.CarMake) ?? text(record.MakeDescription)
   const model = text(record.CarModel) ?? text(record.ModelDescription)
-  const dmr = record.ExtendedInformation?.KoeretoejOplysningGrundStruktur
-  const syn = record.ExtendedInformation?.SynResultatStruktur
+  const ext = record.ExtendedInformation
+  const dmr = ext?.KoeretoejOplysningGrundStruktur
+  const syn = ext?.SynResultatStruktur
   const capacity = record.extended?.engine?.capacity
   const firstRegistered =
     isoDate(text(record.RegistrationDate)) ??
     isoDate(text(record.Date)) ??
-    isoDate(text(dmr?.KoeretoejOplysningFoersteRegistreringDato))
+    isoDate(text(dmr?.KoeretoejOplysningFoersteRegistreringDato)) ??
+    isoDate(text(ext?.['f-g-n']))
   const yearText = text(record.RegistrationYear) ?? firstRegistered?.slice(0, 4)
   const year = Number(yearText)
-  const colour = text(record.Colour)
-  const kerb = kilograms(record.NetWeight) ?? kilograms(dmr?.KoeretoejOplysningEgenVaegt)
-  const grossMax = kilograms(record.GrossWeight) ?? kilograms(dmr?.KoeretoejOplysningTotalVaegt)
+  const colour = text(record.Colour) ?? text(ext?.farge)
+  const kerb =
+    kilograms(record.NetWeight) ??
+    kilograms(dmr?.KoeretoejOplysningEgenVaegt) ??
+    kilograms(ext?.egenvekt)
+  const grossMax =
+    kilograms(record.GrossWeight) ??
+    kilograms(dmr?.KoeretoejOplysningTotalVaegt) ??
+    kilograms(ext?.totvekt)
+  const drivst = text(ext?.drivst)
   const inspection = record.RegistrationPlate?.date_inspection
 
   const result: VehicleLookupResult = {
@@ -247,11 +312,11 @@ export function mapVehicle(record: RegCheckVehicle, plate?: string): VehicleLook
     vin: vin(record),
     licensePlate: plate,
     color: colour ? makeCase(colour) : undefined,
-    fuelType: fuelType(
-      text(record.FuelType) ?? text(record.Fuel) ?? text(record.extended?.fuelType)
-    ),
+    fuelType:
+      fuelType(text(record.FuelType) ?? text(record.Fuel) ?? text(record.extended?.fuelType)) ??
+      (drivst ? NORWEGIAN_FUEL[drivst] : undefined),
     transmission: transmission(
-      text(record.Transmission) ?? text(record.extended?.transmissionType)
+      text(record.Transmission) ?? text(record.extended?.transmissionType) ?? text(ext?.girkasse)
     ),
     engineSize:
       engineSize(text(capacity?.value), capacity?.unit) ??
@@ -264,11 +329,12 @@ export function mapVehicle(record: RegCheckVehicle, plate?: string): VehicleLook
     inspectionDue:
       typeof inspection === 'number' && inspection > 0
         ? new Date(inspection).toISOString().slice(0, 10)
-        : undefined,
+        : isoDate(text(ext?.['neste-pkk'])),
     lastInspected:
       syn?.SynResultatSynsResultat === 'Godkendt'
         ? isoDate(text(syn.SynResultatSynsDato))
-        : undefined,
+        : isoDate(text(ext?.['siste-pkk'])),
+    tyres: ext ? norwegianTyres(ext) : undefined,
     weights: kerb || grossMax ? { kerb, grossMax } : undefined,
   }
   // Drop the keys that came back empty so a form's fill-if-empty sees only values.
