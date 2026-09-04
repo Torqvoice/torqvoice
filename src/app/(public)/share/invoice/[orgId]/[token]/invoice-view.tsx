@@ -443,7 +443,8 @@ export function InvoiceView({
     const sessionId = params.get('session_id')
     const reference = params.get('reference')
 
-    const paypalOrderId = params.get('paypal_order_id')
+    // PayPal sends the order id back as "token" beside the marker we set.
+    const paypalOrderId = params.get('paypal') === 'return' ? params.get('token') : null
 
     if (sessionId) {
       verifyPayment('stripe', sessionId)
@@ -500,7 +501,11 @@ export function InvoiceView({
       })
       const data = await res.json()
       if (!res.ok) {
-        setPaymentError(data.error || t('errorCheckoutFailed'))
+        // A vendor failure is the workshop's to read, on the integration's
+        // activity log; the customer gets one line they can act on.
+        setPaymentError(
+          res.status >= 500 ? t('errorCheckoutFailed') : data.error || t('errorCheckoutFailed')
+        )
         return
       }
       window.location.href = data.redirectUrl

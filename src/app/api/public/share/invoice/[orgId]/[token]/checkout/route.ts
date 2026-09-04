@@ -6,6 +6,7 @@ import {
   isOffered,
   paymentProviderFor,
 } from '@/features/integrations/Lib/payments'
+import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { calculateTotals } from '@/lib/tax'
@@ -111,21 +112,33 @@ export async function POST(
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''
     const invoiceUrl = `${appUrl}/share/invoice/${orgId}/${token}`
 
-    const result = await connected.provider.createCheckout({
-      amount,
-      currency: currencyCode,
-      invoiceNumber,
-      description: `Payment for ${invoiceNumber} - ${record.title}`,
-      successUrl: invoiceUrl,
-      cancelUrl: invoiceUrl,
-      serviceRecordId: record.id,
-      orgId,
-    })
-
-    return NextResponse.json(result)
+    try {
+      const result = await connected.provider.createCheckout({
+        amount,
+        currency: currencyCode,
+        invoiceNumber,
+        description: `Payment for ${invoiceNumber} - ${record.title}`,
+        successUrl: invoiceUrl,
+        cancelUrl: invoiceUrl,
+        serviceRecordId: record.id,
+        orgId,
+      })
+      return NextResponse.json(result)
+    } catch (error) {
+      // The vendor's answer is for the workshop, on the connection's
+      // activity log, where whoever set the keys up will look. The customer
+      // is told only that it did not work.
+      const message = error instanceof Error ? error.message : String(error)
+      console.error('[Checkout] Error:', error)
+      await writeLog(connected.setup.connectionId, 'error', `Checkout failed: ${message}`, {
+        invoiceNumber,
+        amount,
+        currency: currencyCode,
+      })
+      return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
+    }
   } catch (error) {
     console.error('[Checkout] Error:', error)
-    const message = error instanceof Error ? error.message : 'Checkout failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
   }
 }

@@ -79,7 +79,10 @@ export class PayPalProvider implements PaymentProvider {
         payment_source: {
           paypal: {
             experience_context: {
-              return_url: `${req.successUrl}?paypal_order_id={order.id}`,
+              // PayPal has no placeholder syntax; it appends its own
+              // token (the order id) and PayerID to whatever is given. The
+              // marker tells the invoice page which vendor it is back from.
+              return_url: `${req.successUrl}?paypal=return`,
               cancel_url: req.cancelUrl,
               user_action: 'PAY_NOW',
               brand_name: req.description.split(' - ')[0] || 'Invoice Payment',
