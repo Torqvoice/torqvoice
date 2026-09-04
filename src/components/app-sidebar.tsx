@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import {
   BarChart3,
@@ -340,9 +341,22 @@ export function AppSidebar({
             </Link>
           </SidebarMenuButton>
           {count > 0 && item.countKey && (
-            <SidebarMenuBadge title={t(item.countKey, { count })}>
-              {count > 99 ? '99+' : count}
-            </SidebarMenuBadge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {/* The pill sits over the link, so it takes the pointer
+                    itself and forwards a click to where the row goes. */}
+                <SidebarMenuBadge
+                  className="pointer-events-auto cursor-pointer"
+                  onClick={() => {
+                    closeMobileSidebar()
+                    router.push(item.url)
+                  }}
+                >
+                  {count > 99 ? '99+' : count}
+                </SidebarMenuBadge>
+              </TooltipTrigger>
+              <TooltipContent side="right">{t(item.countKey, { count })}</TooltipContent>
+            </Tooltip>
           )}
         </SidebarMenuItem>
       )
