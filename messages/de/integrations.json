@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Texte und Zusammenfassungen"
+    },
+    "payments": {
+      "checkout": "Bezahlen über den Rechnungslink"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Fügen Sie diese URL im Stripe-Dashboard unter Developers, Webhooks hinzu, abonniert auf checkout.session.completed. Tragen Sie dann das von Stripe angezeigte Signaturgeheimnis hier im Feld Webhook-Geheimnis ein, damit Benachrichtigungen geprüft werden können.",
+    "inboundHintVipps": "Tragen Sie diese URL als Callback-URL im Vipps-MobilePay-Portal ein. Vipps verlangt außerdem veröffentlichte Verkaufsbedingungen, die unter Einstellungen, Zahlung hinterlegt werden.",
+    "inboundHintPaypal": "Fügen Sie diese URL im PayPal-Entwicklerdashboard unter Webhooks hinzu, abonniert auf PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Modell",
         "modelHelp": "Welches Modell antwortet. Die Liste kommt aus Ihrem Konto, neueste zuerst. Kleinere Modelle kosten pro Aufruf weniger und reichen für die meisten Werkstatttexte."
+      }
+    },
+    "stripe": {
+      "description": "Kartenzahlungen über den Rechnungslink auf Ihr eigenes Stripe-Konto. Der Kunde zahlt, Stripe meldet es Torqvoice, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "secretKey": "Geheimer Schlüssel",
+        "secretKeyHelp": "Aus dem Stripe-Dashboard unter Developers, API keys. Testschlüssel verarbeiten nichts Echtes, probieren Sie also zuerst eine Zahlung damit und wechseln Sie danach zu Live-Schlüsseln.",
+        "publishableKey": "Veröffentlichbarer Schlüssel",
+        "webhookSecret": "Webhook-Signaturgeheimnis",
+        "webhookSecretHelp": "Wird von Stripe angezeigt, sobald Sie die Benachrichtigungs-URL dieser Seite als Webhook hinzufügen. Damit wird jede Benachrichtigung geprüft, bevor eine Zahlung erfasst wird."
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay über den Rechnungslink. Der Kunde zahlt in der App, die er ohnehin hat, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret",
+        "subscriptionKey": "Subscription Key",
+        "subscriptionKeyHelp": "Der Ocp-Apim-Subscription-Key aus dem Vipps-MobilePay-Portal, unter den API-Schlüsseln der Verkaufseinheit.",
+        "merchantSerialNumber": "Merchant Serial Number"
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst.",
+        "testMode": "Testmodus",
+        "testModeHelp": "Die Vipps-Testumgebung mit Testschlüsseln verwenden. Lassen Sie ihn an, bis eine vollständige Zahlung durchgelaufen ist, und schalten Sie dann um auf die Live-Schlüssel."
+      }
+    },
+    "paypal": {
+      "description": "PayPal-Checkout über den Rechnungslink mit Ihrer eigenen PayPal-App. Der Kunde zahlt mit PayPal-Konto oder Karte, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst.",
+        "sandbox": "Sandbox-Modus",
+        "sandboxHelp": "Die PayPal-Sandbox mit Sandbox-App-Schlüsseln verwenden. Lassen Sie ihn an, bis eine vollständige Zahlung durchgelaufen ist, und tragen Sie dann die Schlüssel der Live-App ein."
       }
     }
   },

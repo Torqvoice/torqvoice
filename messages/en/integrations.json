@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Writing and summaries"
+    },
+    "payments": {
+      "checkout": "Pay from the invoice link"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Add this URL in your Stripe dashboard under Developers, Webhooks, subscribed to checkout.session.completed. Then paste the signing secret Stripe shows into the webhook secret field here, so notifications can be verified.",
+    "inboundHintVipps": "Enter this URL as the callback URL in the Vipps MobilePay portal. Vipps also requires published terms of sale, which are set under Settings, Payment.",
+    "inboundHintPaypal": "Add this URL in the PayPal developer dashboard under Webhooks, subscribed to PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Model",
         "modelHelp": "Which model answers. The list is read from your account, newest first. Smaller models cost less per call and are enough for most workshop text."
+      }
+    },
+    "stripe": {
+      "description": "Card payments from the invoice link, into your own Stripe account. The customer pays, Stripe tells Torqvoice, and the invoice marks itself paid.",
+      "fields": {
+        "secretKey": "Secret key",
+        "secretKeyHelp": "From the Stripe dashboard under Developers, API keys. Test keys process nothing real, so try a payment on them first and swap to live keys after.",
+        "publishableKey": "Publishable key",
+        "webhookSecret": "Webhook signing secret",
+        "webhookSecretHelp": "Shown by Stripe once you add the notification URL from this page as a webhook. With it, every notification is verified before a payment is recorded."
+      },
+      "settings": {
+        "enabled": "Offer on invoice links",
+        "enabledHelp": "Switch off to take the pay button off shared invoices for a while, without disconnecting. Payments already started are still recorded."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay from the invoice link. The customer pays in the app they already have, and the invoice marks itself paid.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Subscription key",
+        "subscriptionKeyHelp": "The Ocp-Apim-Subscription-Key from the Vipps MobilePay portal, under the sales unit's API keys.",
+        "merchantSerialNumber": "Merchant serial number"
+      },
+      "settings": {
+        "enabled": "Offer on invoice links",
+        "enabledHelp": "Switch off to take the pay button off shared invoices for a while, without disconnecting. Payments already started are still recorded.",
+        "testMode": "Test mode",
+        "testModeHelp": "Use the Vipps test environment with test keys. Leave it on until a full payment has gone through, then turn it off and enter the live keys."
+      }
+    },
+    "paypal": {
+      "description": "PayPal checkout from the invoice link, through your own PayPal app. The customer pays with a PayPal account or a card, and the invoice marks itself paid.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Offer on invoice links",
+        "enabledHelp": "Switch off to take the pay button off shared invoices for a while, without disconnecting. Payments already started are still recorded.",
+        "sandbox": "Sandbox mode",
+        "sandboxHelp": "Use PayPal's sandbox with sandbox app keys. Leave it on until a full payment has gone through, then turn it off and enter the live app's keys."
       }
     }
   },

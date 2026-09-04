@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getPaymentProvider } from '@/lib/payment-providers'
+import { paymentProviderFor } from '@/features/integrations/Lib/payments'
 
 export async function POST(request: Request) {
   try {
@@ -47,19 +46,12 @@ async function processVippsPayment(reference: string, orgId: string, serviceReco
     return NextResponse.json({ received: true })
   }
 
-  // Load org settings
-  const settings = await db.appSetting.findMany({
-    where: { organizationId: orgId },
-  })
-  const settingsMap: Record<string, string> = {}
-  for (const s of settings) settingsMap[s.key] = s.value
-
-  if (!settingsMap[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_ID]) {
+  const connected = await paymentProviderFor(orgId, 'vipps')
+  if (!connected) {
     return NextResponse.json({ error: 'Vipps not configured for this org' }, { status: 400 })
   }
 
-  const provider = getPaymentProvider('vipps', settingsMap)
-  const result = await provider.verifyPayment(reference)
+  const result = await connected.provider.verifyPayment(reference)
 
   if (!result || !result.paid) {
     return NextResponse.json({ received: true, status: 'not_paid' })

@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Textos e resumos"
+    },
+    "payments": {
+      "checkout": "Pagar pelo link da fatura"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Adicione esta URL no painel do Stripe em Developers, Webhooks, inscrita em checkout.session.completed. Depois cole o segredo de assinatura que o Stripe mostra no campo de segredo do webhook aqui, para que as notificações possam ser verificadas.",
+    "inboundHintVipps": "Informe esta URL como URL de callback no portal do Vipps MobilePay. O Vipps também exige termos de venda publicados, definidos em Configurações, Pagamento.",
+    "inboundHintPaypal": "Adicione esta URL no painel de desenvolvedor do PayPal em Webhooks, inscrita em PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Modelo",
         "modelHelp": "Qual modelo responde. A lista vem da sua conta, os mais novos primeiro. Modelos menores custam menos por chamada e bastam para a maior parte dos textos da oficina."
+      }
+    },
+    "stripe": {
+      "description": "Pagamentos com cartão pelo link da fatura, na sua própria conta Stripe. O cliente paga, o Stripe avisa a Torqvoice e a fatura se marca como paga sozinha.",
+      "fields": {
+        "secretKey": "Chave secreta",
+        "secretKeyHelp": "Do painel do Stripe em Developers, API keys. Chaves de teste não processam nada real, então teste um pagamento com elas primeiro e troque pelas chaves reais depois.",
+        "publishableKey": "Chave publicável",
+        "webhookSecret": "Segredo de assinatura do webhook",
+        "webhookSecretHelp": "Mostrado pelo Stripe quando você adiciona a URL de notificação desta página como webhook. Com ele, cada notificação é verificada antes de registrar um pagamento."
+      },
+      "settings": {
+        "enabled": "Oferecer nos links de fatura",
+        "enabledHelp": "Desative para tirar o botão de pagamento das faturas compartilhadas por um tempo, sem desconectar. Pagamentos já iniciados continuam sendo registrados."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay pelo link da fatura. O cliente paga no app que já tem e a fatura se marca como paga sozinha.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente",
+        "subscriptionKey": "Chave de assinatura",
+        "subscriptionKeyHelp": "A Ocp-Apim-Subscription-Key do portal do Vipps MobilePay, nas chaves de API da unidade de venda.",
+        "merchantSerialNumber": "Número de série do comerciante"
+      },
+      "settings": {
+        "enabled": "Oferecer nos links de fatura",
+        "enabledHelp": "Desative para tirar o botão de pagamento das faturas compartilhadas por um tempo, sem desconectar. Pagamentos já iniciados continuam sendo registrados.",
+        "testMode": "Modo de teste",
+        "testModeHelp": "Usar o ambiente de teste do Vipps com chaves de teste. Deixe ligado até um pagamento completo funcionar, depois desligue e informe as chaves reais."
+      }
+    },
+    "paypal": {
+      "description": "Checkout do PayPal pelo link da fatura, pelo seu próprio app do PayPal. O cliente paga com conta PayPal ou cartão e a fatura se marca como paga sozinha.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "enabled": "Oferecer nos links de fatura",
+        "enabledHelp": "Desative para tirar o botão de pagamento das faturas compartilhadas por um tempo, sem desconectar. Pagamentos já iniciados continuam sendo registrados.",
+        "sandbox": "Modo sandbox",
+        "sandboxHelp": "Usar o sandbox do PayPal com as chaves do app de sandbox. Deixe ligado até um pagamento completo funcionar, depois desligue e informe as chaves do app real."
       }
     }
   },

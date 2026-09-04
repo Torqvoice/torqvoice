@@ -11,6 +11,7 @@ import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
+import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -76,12 +77,9 @@ export default async function PublicInvoicePage({
   const showLogo = assembly.template.showLogo !== false
   const showCompanyName = assembly.template.showCompanyName !== false
 
-  // Determine which online payment providers are enabled for this org
-  const enabledProvidersRaw = settingsMap['payment.providersEnabled'] || ''
-  const enabledProviders = enabledProvidersRaw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
+  // The vendors the customer can pay through, whichever side of the move
+  // into the integrations catalog they were connected on.
+  const enabledProviders = await offeredPaymentProviders(orgId)
 
   // What reaches the browser: internal unitCost/markupPercent must never be
   // in the customer-facing payload, attachment URLs go through the public

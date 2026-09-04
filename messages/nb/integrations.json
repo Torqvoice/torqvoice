@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Tekst og sammendrag"
+    },
+    "payments": {
+      "checkout": "Betal fra fakturalenken"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet under Developers, Webhooks, abonnert på checkout.session.completed. Lim deretter signeringshemmeligheten Stripe viser inn i feltet for webhook-hemmelighet her, slik at varslene kan verifiseres.",
+    "inboundHintVipps": "Legg inn denne URL-en som callback-URL i Vipps MobilePay-portalen. Vipps krever også publiserte salgsvilkår, som settes under Innstillinger, Betaling.",
+    "inboundHintPaypal": "Legg inn denne URL-en i PayPal-utviklerdashbordet under Webhooks, abonnert på PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Modell",
         "modelHelp": "Hvilken modell som svarer. Listen leses fra kontoen din, nyeste først. Mindre modeller koster mindre per kall og holder for det meste av verkstedteksten."
+      }
+    },
+    "stripe": {
+      "description": "Kortbetaling fra fakturalenken, rett inn på din egen Stripe-konto. Kunden betaler, Stripe sier fra til Torqvoice, og fakturaen merkes betalt av seg selv.",
+      "fields": {
+        "secretKey": "Hemmelig nøkkel",
+        "secretKeyHelp": "Fra Stripe-dashbordet under Developers, API keys. Testnøkler behandler ingenting ekte, så prøv en betaling med dem først og bytt til live-nøkler etterpå.",
+        "publishableKey": "Publiserbar nøkkel",
+        "webhookSecret": "Signeringshemmelighet for webhook",
+        "webhookSecretHelp": "Vises av Stripe når du legger inn varslings-URL-en fra denne siden som webhook. Med den verifiseres hvert varsel før en betaling registreres."
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay fra fakturalenken. Kunden betaler i appen de allerede har, og fakturaen merkes betalt av seg selv.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Subscription key",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key fra Vipps MobilePay-portalen, under salgsenhetens API-nøkler.",
+        "merchantSerialNumber": "Merchant Serial Number (MSN)"
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt.",
+        "testMode": "Testmodus",
+        "testModeHelp": "Bruk Vipps sitt testmiljø med testnøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-nøklene."
+      }
+    },
+    "paypal": {
+      "description": "PayPal-betaling fra fakturalenken, gjennom din egen PayPal-app. Kunden betaler med PayPal-konto eller kort, og fakturaen merkes betalt av seg selv.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt.",
+        "sandbox": "Sandkassemodus",
+        "sandboxHelp": "Bruk PayPal sin sandkasse med sandkasse-appens nøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-appens nøkler."
       }
     }
   },

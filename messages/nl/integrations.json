@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Teksten en samenvattingen"
+    },
+    "payments": {
+      "checkout": "Betalen via de factuurlink"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard onder Developers, Webhooks, geabonneerd op checkout.session.completed. Plak daarna het ondertekeningsgeheim dat Stripe toont in het veld webhookgeheim hier, zodat meldingen geverifieerd kunnen worden.",
+    "inboundHintVipps": "Vul deze URL in als callback-URL in het Vipps MobilePay-portaal. Vipps vereist ook gepubliceerde verkoopvoorwaarden, die staan onder Instellingen, Betaling.",
+    "inboundHintPaypal": "Voeg deze URL toe in het PayPal-ontwikkelaarsdashboard onder Webhooks, geabonneerd op PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Model",
         "modelHelp": "Welk model antwoordt. De lijst komt uit uw account, nieuwste eerst. Kleinere modellen kosten minder per aanroep en volstaan voor de meeste werkplaatsteksten."
+      }
+    },
+    "stripe": {
+      "description": "Kaartbetalingen via de factuurlink, op je eigen Stripe-account. De klant betaalt, Stripe meldt het aan Torqvoice en de factuur markeert zichzelf als betaald.",
+      "fields": {
+        "secretKey": "Geheime sleutel",
+        "secretKeyHelp": "Uit het Stripe-dashboard onder Developers, API keys. Testsleutels verwerken niets echts, dus probeer er eerst een betaling mee en wissel daarna naar live-sleutels.",
+        "publishableKey": "Publiceerbare sleutel",
+        "webhookSecret": "Ondertekeningsgeheim van webhook",
+        "webhookSecretHelp": "Stripe toont dit zodra je de meldings-URL van deze pagina als webhook toevoegt. Hiermee wordt elke melding geverifieerd voordat een betaling wordt vastgelegd."
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay via de factuurlink. De klant betaalt in de app die hij al heeft en de factuur markeert zichzelf als betaald.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Subscription key",
+        "subscriptionKeyHelp": "De Ocp-Apim-Subscription-Key uit het Vipps MobilePay-portaal, onder de API-sleutels van de verkoopeenheid.",
+        "merchantSerialNumber": "Merchant serial number"
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd.",
+        "testMode": "Testmodus",
+        "testModeHelp": "Gebruik de testomgeving van Vipps met testsleutels. Laat dit aan tot een volledige betaling is gelukt, zet het dan uit en vul de live-sleutels in."
+      }
+    },
+    "paypal": {
+      "description": "PayPal-checkout via de factuurlink, met je eigen PayPal-app. De klant betaalt met een PayPal-account of een kaart en de factuur markeert zichzelf als betaald.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd.",
+        "sandbox": "Sandboxmodus",
+        "sandboxHelp": "Gebruik de sandbox van PayPal met de sleutels van de sandbox-app. Laat dit aan tot een volledige betaling is gelukt, zet het dan uit en vul de sleutels van de live-app in."
       }
     }
   },

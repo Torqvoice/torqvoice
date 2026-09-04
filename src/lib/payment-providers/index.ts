@@ -1,61 +1,36 @@
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import type { PaymentProvider } from './types'
 import { StripeProvider } from './stripe'
-import { VippsProvider } from './vipps'
-import { PayPalProvider } from './paypal'
+import { VippsProvider, vippsConfigFrom } from './vipps'
+import { PayPalProvider, paypalConfigFrom } from './paypal'
 
 export type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
 
-export function getPaymentProvider(
-  provider: string,
-  settings: Record<string, string>
-): PaymentProvider {
-  switch (provider) {
+/**
+ * The client for one payment connection, from the credentials and settings
+ * the connection holds. Null when the connection is missing something the
+ * vendor cannot work without, which the caller reports as "not configured"
+ * rather than letting a half-built client fail somewhere deeper.
+ */
+export function buildPaymentProvider(
+  connectorId: string,
+  credentials: Record<string, unknown>,
+  settings: Record<string, unknown>
+): PaymentProvider | null {
+  switch (connectorId) {
     case 'stripe': {
-      const secretKey = settings[SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY]
-      if (!secretKey) {
-        throw new Error('Stripe secret key not configured')
-      }
-      return new StripeProvider(secretKey)
+      const secretKey = credentials.secretKey
+      if (typeof secretKey !== 'string' || !secretKey.trim()) return null
+      return new StripeProvider(secretKey.trim())
     }
     case 'vipps': {
-      const clientId = settings[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_ID]
-      const clientSecret = settings[SETTING_KEYS.PAYMENT_VIPPS_CLIENT_SECRET]
-      const subscriptionKey = settings[SETTING_KEYS.PAYMENT_VIPPS_SUBSCRIPTION_KEY]
-      const msn = settings[SETTING_KEYS.PAYMENT_VIPPS_MSN]
-      if (!clientId || !clientSecret || !subscriptionKey || !msn) {
-        throw new Error('Vipps credentials not fully configured')
-      }
-      return new VippsProvider({
-        clientId,
-        clientSecret,
-        subscriptionKey,
-        merchantSerialNumber: msn,
-        useTestMode: settings[SETTING_KEYS.PAYMENT_VIPPS_USE_TEST] === 'true',
-      })
+      const config = vippsConfigFrom(credentials, settings)
+      return config ? new VippsProvider(config) : null
     }
     case 'paypal': {
-      const clientId = settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_ID]
-      const clientSecret = settings[SETTING_KEYS.PAYMENT_PAYPAL_CLIENT_SECRET]
-      if (!clientId || !clientSecret) {
-        throw new Error('PayPal credentials not fully configured')
-      }
-      return new PayPalProvider({
-        clientId,
-        clientSecret,
-        useSandbox: settings[SETTING_KEYS.PAYMENT_PAYPAL_USE_SANDBOX] === 'true',
-      })
+      const config = paypalConfigFrom(credentials, settings)
+      return config ? new PayPalProvider(config) : null
     }
     default:
-      throw new Error(`Unknown payment provider: ${provider}`)
+      return null
   }
-}
-
-export function getEnabledProviders(settings: Record<string, string>): string[] {
-  const raw = settings[SETTING_KEYS.PAYMENT_PROVIDERS_ENABLED]
-  if (!raw) return []
-  return raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
 }

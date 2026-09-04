@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { getPaymentProvider, getEnabledProviders } from '@/lib/payment-providers'
+import {
+  PAYMENT_CONNECTOR_IDS,
+  isOffered,
+  paymentProviderFor,
+} from '@/features/integrations/Lib/payments'
+import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { calculateTotals } from '@/lib/tax'
 
 const checkoutSchema = z.object({
-  provider: z.enum(['stripe', 'vipps', 'paypal']),
+  provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
   amount: z.number().positive(),
 })
 
@@ -86,43 +91,54 @@ export async function POST(
       )
     }
 
-    // Load org payment settings
-    const settings = await db.appSetting.findMany({
-      where: { organizationId: orgId },
-    })
-    const settingsMap: Record<string, string> = {}
-    for (const s of settings) settingsMap[s.key] = s.value
-
-    const enabledProviders = getEnabledProviders(settingsMap)
-    if (!enabledProviders.includes(provider)) {
+    // The vendor's connection, adopted from the old settings rows on the
+    // first checkout after the move. A vendor the workshop has paused with
+    // the offered switch takes no new payments, whatever the page showed.
+    const connected = await paymentProviderFor(orgId, provider)
+    if (!connected || !isOffered(connected.setup)) {
       return NextResponse.json(
         { error: `Payment provider "${provider}" is not enabled` },
         { status: 400 }
       )
     }
 
-    const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
+    const currencySetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: orgId, key: 'workshop.currencyCode' } },
+      select: { value: true },
+    })
+    const currencyCode = currencySetting?.value || 'USD'
     const invoiceNumber = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''
     const invoiceUrl = `${appUrl}/share/invoice/${orgId}/${token}`
 
-    const paymentProvider = getPaymentProvider(provider, settingsMap)
-    const result = await paymentProvider.createCheckout({
-      amount,
-      currency: currencyCode,
-      invoiceNumber,
-      description: `Payment for ${invoiceNumber} - ${record.title}`,
-      successUrl: invoiceUrl,
-      cancelUrl: invoiceUrl,
-      serviceRecordId: record.id,
-      orgId,
-    })
-
-    return NextResponse.json(result)
+    try {
+      const result = await connected.provider.createCheckout({
+        amount,
+        currency: currencyCode,
+        invoiceNumber,
+        description: `Payment for ${invoiceNumber} - ${record.title}`,
+        successUrl: invoiceUrl,
+        cancelUrl: invoiceUrl,
+        serviceRecordId: record.id,
+        orgId,
+      })
+      return NextResponse.json(result)
+    } catch (error) {
+      // The vendor's answer is for the workshop, on the connection's
+      // activity log, where whoever set the keys up will look. The customer
+      // is told only that it did not work.
+      const message = error instanceof Error ? error.message : String(error)
+      console.error('[Checkout] Error:', error)
+      await writeLog(connected.setup.connectionId, 'error', `Checkout failed: ${message}`, {
+        invoiceNumber,
+        amount,
+        currency: currencyCode,
+      })
+      return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
+    }
   } catch (error) {
     console.error('[Checkout] Error:', error)
-    const message = error instanceof Error ? error.message : 'Checkout failed'
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 })
   }
 }

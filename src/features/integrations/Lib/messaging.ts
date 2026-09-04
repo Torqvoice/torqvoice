@@ -23,6 +23,7 @@ import {
   providersForChannel,
 } from '@/integrations/messaging/catalog'
 import { db } from '@/lib/db'
+import type { PaymentWebhook } from './payments'
 import { openCredentials, sealCredentials } from './vault'
 
 export type { MessagingChannel }
@@ -564,7 +565,7 @@ export async function organizationForWebhookSecret(
 export interface InboundWebhook {
   url: string
   /** What the vendor also needs beside the URL, as an i18n key under connection. */
-  note: 'inboundHintSecret' | 'inboundHintMeta'
+  note: 'inboundHintSecret' | 'inboundHintMeta' | PaymentWebhook['note']
 }
 
 /**

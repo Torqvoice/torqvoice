@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { db } from '@/lib/db'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { paymentProviderFor } from '@/features/integrations/Lib/payments'
 
 export async function POST(request: Request) {
   try {
@@ -31,30 +31,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing metadata' }, { status: 400 })
     }
 
-    const [webhookSecretSetting, secretKeySetting] = await Promise.all([
-      db.appSetting.findUnique({
-        where: {
-          organizationId_key: {
-            organizationId: routingOrgId,
-            key: SETTING_KEYS.PAYMENT_STRIPE_WEBHOOK_SECRET,
-          },
-        },
-      }),
-      db.appSetting.findUnique({
-        where: {
-          organizationId_key: {
-            organizationId: routingOrgId,
-            key: SETTING_KEYS.PAYMENT_STRIPE_SECRET_KEY,
-          },
-        },
-      }),
-    ])
-
-    if (!secretKeySetting?.value) {
+    // The org's Stripe connection, adopted from the old settings rows if this
+    // is the first payment after the move.
+    const connected = await paymentProviderFor(routingOrgId, 'stripe')
+    const secretKey = connected?.setup.credentials.secretKey
+    if (typeof secretKey !== 'string' || !secretKey) {
       return NextResponse.json({ error: 'Stripe not configured for this org' }, { status: 400 })
     }
+    const webhookSecret = connected?.setup.credentials.webhookSecret
+    const signingSecret = typeof webhookSecret === 'string' ? webhookSecret : ''
 
-    const stripe = new Stripe(secretKeySetting.value)
+    const stripe = new Stripe(secretKey)
 
     // Establish an AUTHENTIC session object. Two trust paths, never the body:
     //  - webhook secret configured → verify the signature over the raw body;
@@ -64,13 +51,13 @@ export async function POST(request: Request) {
     //    way while real payments keep recording.
     let session: Stripe.Checkout.Session
 
-    if (webhookSecretSetting?.value) {
+    if (signingSecret) {
       if (!signature) {
         return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 })
       }
       let event: Stripe.Event
       try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecretSetting.value)
+        event = stripe.webhooks.constructEvent(body, signature, signingSecret)
       } catch {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
       }

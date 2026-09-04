@@ -137,7 +137,9 @@ describe('AI connection', () => {
   })
 
   it('falls back to the old rows when the vault cannot open a connection', async () => {
-    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {
+      // The fallback logs on purpose; the test only checks that it does.
+    })
     integrationConnection.findMany.mockResolvedValue([
       { id: 'conn-1', connectorId: 'openai', credentials: 'v1.bad.bad.bad', settings: {} },
     ])
