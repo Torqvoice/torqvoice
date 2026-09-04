@@ -4,9 +4,22 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+/**
+ * `containerClassName` styles the scroll box around the table. A sticky header
+ * sticks to the nearest scrolling ancestor, and that is always this box — so a
+ * list that scrolls its rows has to make the height limit and the overflow land
+ * here, not on a wrapper further out, or the header scrolls away with them.
+ */
+function Table({
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentProps<'table'> & { containerClassName?: string }) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div
+      data-slot="table-container"
+      className={cn('relative w-full overflow-auto', containerClassName)}
+    >
       <table
         data-slot="table"
         className={cn('w-full caption-bottom text-sm', className)}
@@ -16,8 +29,28 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
   )
 }
 
-function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
-  return <thead data-slot="table-header" className={cn('[&_tr]:border-b', className)} {...props} />
+/**
+ * `sticky` pins the header while the rows scroll under it. The bottom rule is
+ * drawn as an inset shadow because a collapsed table border belongs to the
+ * cells and does not travel with a stuck header.
+ */
+function TableHeader({
+  className,
+  sticky,
+  ...props
+}: React.ComponentProps<'thead'> & { sticky?: boolean }) {
+  return (
+    <thead
+      data-slot="table-header"
+      className={cn(
+        '[&_tr]:border-b',
+        sticky &&
+          'sticky top-0 z-10 bg-background [&_tr]:border-b-0 [&_th]:shadow-[inset_0_-1px_0_var(--border)]',
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {

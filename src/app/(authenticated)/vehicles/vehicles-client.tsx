@@ -273,9 +273,9 @@ export function VehiclesClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex shrink-0 flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div className="flex flex-1 items-center gap-2 min-w-0">
           <div className="flex gap-1 rounded-lg border p-1 shrink-0">
             <button
@@ -412,13 +412,13 @@ export function VehiclesClient({
       </div>
 
       {data.vehicles.length === 0 ? (
-        <div className="flex h-32 items-center justify-center rounded-lg border text-muted-foreground">
+        <div className="flex h-32 shrink-0 items-center justify-center rounded-lg border text-muted-foreground">
           {search ? t('emptySearch') : isArchived ? t('emptyArchived') : t('empty')}
         </div>
       ) : view === 'table' ? (
         <>
-          {/* Card list (phones + small tablets) */}
-          <div className="space-y-2 md:hidden">
+          {/* Card list (phones + small tablets) - only this scrolls */}
+          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
             {data.vehicles.map((v) => (
               <div key={v.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
                 <button
@@ -504,11 +504,14 @@ export function VehiclesClient({
             ))}
           </div>
 
-          {/* Table (md and up) */}
-          <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+          {/* Table (md and up) - only the rows scroll */}
+          <div
+            className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+            {...tableNav.containerProps}
+          >
             <TableContextMenuHint />
-            <Table className="table-fixed">
-              <TableHeader>
+            <Table containerClassName="min-h-0 flex-1" className="table-fixed">
+              <TableHeader sticky>
                 <TableRow>
                   <TableHead className="w-[120px]">
                     <button
@@ -720,7 +723,7 @@ export function VehiclesClient({
       ) : isPending ? (
         /* Grid skeleton */
         <div
-          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+          className={`-m-1 grid min-h-0 flex-1 content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
           {Array.from({ length: view === 'grid6' ? 12 : 6 }).map((_, i) => (
             <Card key={i} className="overflow-hidden border-0 py-0 gap-0 shadow-sm">
@@ -735,7 +738,7 @@ export function VehiclesClient({
       ) : (
         /* Grid view */
         <div
-          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+          className={`-m-1 grid min-h-0 flex-1 content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
           {data.vehicles.map((v) => (
             <ContextMenu key={v.id} modal={false}>

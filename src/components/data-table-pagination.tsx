@@ -51,7 +51,7 @@ export function DataTablePagination({
   const goTo = (target: number) => onNavigate({ [pageParam]: target })
 
   return (
-    <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+    <div className="flex shrink-0 flex-col items-center justify-between gap-3 sm:flex-row">
       <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
         <span>{t('showing', { start: startItem, end: endItem, total })}</span>
         <Select
