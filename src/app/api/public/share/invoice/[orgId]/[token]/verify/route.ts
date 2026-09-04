@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { getPaymentProvider, getEnabledProviders } from '@/lib/payment-providers'
+import { PAYMENT_CONNECTOR_IDS, paymentProviderFor } from '@/features/integrations/Lib/payments'
 import { rateLimit } from '@/lib/rate-limit'
 import { notify } from '@/lib/notify'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 
 const verifySchema = z.object({
-  provider: z.enum(['stripe', 'vipps', 'paypal']),
+  provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
   externalId: z.string().min(1),
 })
 
@@ -48,20 +48,15 @@ export async function POST(
 
     const { provider, externalId } = parsed.data
 
-    // Load org payment settings
-    const settings = await db.appSetting.findMany({
-      where: { organizationId: orgId },
-    })
-    const settingsMap: Record<string, string> = {}
-    for (const s of settings) settingsMap[s.key] = s.value
-
-    const enabledProviders = getEnabledProviders(settingsMap)
-    if (!enabledProviders.includes(provider)) {
+    // The customer is back from the vendor, so the money may already have
+    // moved: a vendor the workshop paused in the meantime still gets its
+    // payment recorded, as long as it is connected.
+    const connected = await paymentProviderFor(orgId, provider)
+    if (!connected) {
       return NextResponse.json({ error: `Provider "${provider}" is not enabled` }, { status: 400 })
     }
 
-    const paymentProvider = getPaymentProvider(provider, settingsMap)
-    const result = await paymentProvider.verifyPayment(externalId)
+    const result = await connected.provider.verifyPayment(externalId)
 
     if (!result || !result.paid) {
       return NextResponse.json({ verified: false })

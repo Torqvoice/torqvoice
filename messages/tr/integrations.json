@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Metinler ve özetler"
+    },
+    "payments": {
+      "checkout": "Fatura bağlantısından ödeme"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Bu URL'yi Stripe panelinde Developers, Webhooks altında checkout.session.completed olayına abone olarak ekleyin. Ardından Stripe'ın gösterdiği imza sırrını buradaki webhook sırrı alanına yapıştırın ki bildirimler doğrulanabilsin.",
+    "inboundHintVipps": "Bu URL'yi Vipps MobilePay portalında geri çağırma URL'si olarak girin. Vipps ayrıca yayımlanmış satış koşulları ister; bunlar Ayarlar, Ödeme altında ayarlanır.",
+    "inboundHintPaypal": "Bu URL'yi PayPal geliştirici panelinde Webhooks altında PAYMENT.CAPTURE.COMPLETED olayına abone olarak ekleyin.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Model",
         "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
+      }
+    },
+    "stripe": {
+      "description": "Fatura bağlantısından kendi Stripe hesabınıza kart ödemesi. Müşteri öder, Stripe Torqvoice'a bildirir ve fatura kendini ödendi olarak işaretler.",
+      "fields": {
+        "secretKey": "Gizli anahtar",
+        "secretKeyHelp": "Stripe panelinde Developers, API keys altından. Test anahtarları gerçek hiçbir şeyi işlemez; önce onlarla bir ödeme deneyin, sonra canlı anahtarlara geçin.",
+        "publishableKey": "Yayımlanabilir anahtar",
+        "webhookSecret": "Webhook imza sırrı",
+        "webhookSecretHelp": "Bu sayfadaki bildirim URL'sini webhook olarak eklediğinizde Stripe gösterir. Onunla her bildirim, ödeme kaydedilmeden önce doğrulanır."
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir."
+      }
+    },
+    "vipps": {
+      "description": "Fatura bağlantısından Vipps MobilePay. Müşteri zaten sahip olduğu uygulamada öder ve fatura kendini ödendi olarak işaretler.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci sırrı",
+        "subscriptionKey": "Abonelik anahtarı",
+        "subscriptionKeyHelp": "Vipps MobilePay portalında satış biriminin API anahtarları altındaki Ocp-Apim-Subscription-Key.",
+        "merchantSerialNumber": "Satıcı seri numarası"
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir.",
+        "testMode": "Test modu",
+        "testModeHelp": "Vipps test ortamını test anahtarlarıyla kullanın. Tam bir ödeme geçene kadar açık bırakın, sonra kapatıp canlı anahtarları girin."
+      }
+    },
+    "paypal": {
+      "description": "Kendi PayPal uygulamanız üzerinden fatura bağlantısından PayPal ödemesi. Müşteri PayPal hesabı veya kartla öder ve fatura kendini ödendi olarak işaretler.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci sırrı"
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir.",
+        "sandbox": "Sandbox modu",
+        "sandboxHelp": "PayPal sandbox'ını sandbox uygulama anahtarlarıyla kullanın. Tam bir ödeme geçene kadar açık bırakın, sonra kapatıp canlı uygulamanın anahtarlarını girin."
       }
     }
   },

@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Tekstai ir santraukos"
+    },
+    "payments": {
+      "checkout": "Mokėti iš sąskaitos nuorodos"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Pridėkite šį URL Stripe valdymo skydelyje, skiltyje Developers, Webhooks, prenumeruodami checkout.session.completed. Tada įklijuokite Stripe rodomą parašo paslaptį į webhook paslapties lauką čia, kad pranešimus būtų galima patikrinti.",
+    "inboundHintVipps": "Įveskite šį URL kaip atgalinio iškvietimo URL Vipps MobilePay portale. Vipps taip pat reikalauja paskelbtų pardavimo sąlygų, kurios nustatomos skiltyje Nustatymai, Mokėjimas.",
+    "inboundHintPaypal": "Pridėkite šį URL PayPal kūrėjų skydelyje, skiltyje Webhooks, prenumeruodami PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Modelis",
         "modelHelp": "Kuris modelis atsako. Sąrašas nuskaitomas iš jūsų paskyros, naujausi viršuje. Mažesni modeliai kainuoja mažiau ir daugumai serviso tekstų visiškai pakanka."
+      }
+    },
+    "stripe": {
+      "description": "Mokėjimai kortele iš sąskaitos nuorodos į jūsų Stripe paskyrą. Klientas sumoka, Stripe praneša Torqvoice, ir sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "secretKey": "Slaptasis raktas",
+        "secretKeyHelp": "Iš Stripe valdymo skydelio, Developers, API keys. Bandomieji raktai nieko tikro neapdoroja, todėl pirmiausia išbandykite mokėjimą su jais, o paskui pereikite prie tikrų raktų.",
+        "publishableKey": "Viešasis raktas",
+        "webhookSecret": "Webhook parašo paslaptis",
+        "webhookSecretHelp": "Stripe ją parodo, kai šio puslapio pranešimų URL pridedate kaip webhook. Su ja kiekvienas pranešimas patikrinamas prieš užregistruojant mokėjimą."
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay iš sąskaitos nuorodos. Klientas sumoka programėlėje, kurią jau turi, ir sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento paslaptis",
+        "subscriptionKey": "Prenumeratos raktas",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key iš Vipps MobilePay portalo, pardavimo vieneto API raktuose.",
+        "merchantSerialNumber": "Prekybininko serijos numeris"
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami.",
+        "testMode": "Bandomasis režimas",
+        "testModeHelp": "Naudoti Vipps bandomąją aplinką su bandomaisiais raktais. Palikite įjungtą, kol pavyks visas mokėjimas, tada išjunkite ir įveskite tikrus raktus."
+      }
+    },
+    "paypal": {
+      "description": "PayPal atsiskaitymas iš sąskaitos nuorodos per jūsų PayPal programėlę. Klientas sumoka PayPal paskyra arba kortele, ir sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento paslaptis"
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami.",
+        "sandbox": "Smėlio dėžės režimas",
+        "sandboxHelp": "Naudoti PayPal smėlio dėžę su smėlio dėžės programėlės raktais. Palikite įjungtą, kol pavyks visas mokėjimas, tada išjunkite ir įveskite tikros programėlės raktus."
       }
     }
   },

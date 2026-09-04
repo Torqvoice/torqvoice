@@ -36,16 +36,26 @@ import {
 } from '../Lib/messaging'
 import { openCredentials } from '../Lib/vault'
 import { AI_CONNECTOR_IDS, adoptLegacyAi, markAiAdopted, retireOtherAiProviders } from '../Lib/ai'
+import {
+  PAYMENT_CONNECTOR_IDS,
+  adoptLegacyPayments,
+  isOffered,
+  isPaymentConnector,
+  markPaymentsAdopted,
+  paymentWebhook,
+} from '../Lib/payments'
 import { anyConnectorAllowed, connectorAllowed } from '../Lib/plan'
 
 /**
- * The inbound URL for a messaging connection, from its sealed secret. A row
- * whose credentials cannot be opened shows no URL rather than no page.
+ * The inbound URL for a messaging connection, from its sealed secret, or the
+ * notification URL a payment vendor must be given. A row whose credentials
+ * cannot be opened shows no URL rather than no page.
  */
 function inboundFor(
   row: { connectorId: string; organizationId: string; credentials: string | null },
   appUrl: string
 ): InboundWebhook | null {
+  if (isPaymentConnector(row.connectorId)) return paymentWebhook(row.connectorId, appUrl)
   if (!messagingProvider(row.connectorId)) return null
   try {
     return inboundWebhook(
@@ -82,7 +92,8 @@ function cleanSettings(manifest: ConnectorManifest, raw: unknown): Record<string
  * The one way a connection becomes live. A workshop sends through one SMS
  * vendor, one mail vendor and so on, the way the old provider dropdown
  * worked, so going live stands the channel's other vendors down, and records
- * that the channel is decided by its connections from now on.
+ * that the channel is decided by its connections from now on. Payment
+ * vendors run side by side, so going live there only records the move.
  */
 async function activateConnection(
   connectionId: string,
@@ -94,6 +105,10 @@ async function activateConnection(
   if (AI_CONNECTOR_IDS.includes(connectorId as (typeof AI_CONNECTOR_IDS)[number])) {
     await retireOtherAiProviders(organizationId, connectorId)
     await markAiAdopted(organizationId, userId)
+    return
+  }
+  if (isPaymentConnector(connectorId)) {
+    await markPaymentsAdopted(organizationId, userId)
     return
   }
   const provider = messagingProvider(connectorId)
@@ -138,10 +153,11 @@ function manifestForClient(m: ConnectorManifest): ConnectorManifest {
 export async function getIntegrationCatalog() {
   return withAuth(
     async ({ organizationId }) => {
-      // AI moved into the catalog from a settings page of its own. Adopting
-      // here as well as on first use means a workshop that had it switched on
-      // opens this page and finds it already connected.
-      await adoptLegacyAi(organizationId)
+      // AI and online payments moved into the catalog from settings pages of
+      // their own. Adopting here as well as on first use means a workshop
+      // that had them switched on opens this page and finds them already
+      // connected.
+      await Promise.all([adoptLegacyAi(organizationId), adoptLegacyPayments(organizationId)])
       const [features, connections, countrySetting] = await Promise.all([
         getFeatures(organizationId),
         db.integrationConnection.findMany({
@@ -265,11 +281,12 @@ export async function getIntegrationConnection(connectorId: string) {
     async ({ organizationId }): Promise<ConnectionView> => {
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
-      // Opening an AI vendor's page directly, without passing the catalog,
-      // still finds an old settings-page setup already connected.
+      // Opening a vendor's page directly, without passing the catalog, still
+      // finds an old settings-page setup already connected.
       if (AI_CONNECTOR_IDS.includes(connectorId as (typeof AI_CONNECTOR_IDS)[number])) {
         await adoptLegacyAi(organizationId)
       }
+      if (isPaymentConnector(connectorId)) await adoptLegacyPayments(organizationId)
       const [features, row, supersedes] = await Promise.all([
         getFeatures(organizationId),
         db.integrationConnection.findUnique({
@@ -651,11 +668,12 @@ export async function disconnectIntegration(connectorId: string) {
           console.warn('[integrations] onDisconnect failed:', err)
         }
       }
-      // A messaging vendor the workshop disconnects stays disconnected: the
-      // rows it was set up from before the move must not be adopted back on
-      // the next send.
+      // A messaging or payment vendor the workshop disconnects stays
+      // disconnected: the rows it was set up from before the move must not
+      // be adopted back on the next send or checkout.
       const provider = messagingProvider(connectorId)
       if (provider) await markChannelAdopted(organizationId, provider.channel, userId)
+      if (isPaymentConnector(connectorId)) await markPaymentsAdopted(organizationId, userId)
       // Tokens go; links and logs go with the row so nothing dangles.
       await db.integrationConnection.delete({ where: { id: row.id } })
       await clearPulledEvents(row.id)
@@ -901,4 +919,51 @@ export async function hasIntegrationErrors() {
     })
     return count > 0
   })
+}
+
+export interface PaymentConnectionSummary {
+  id: string
+  name: string
+  logo: string
+  status: ConnectionStatus | null
+  /** Connected and switched on for the invoice link. */
+  offered: boolean
+}
+
+/**
+ * The payment vendors as the payment settings page lists them: every one
+ * the catalog offers, with whether this workshop has it connected. Online
+ * payments used to be configured on that page, so it keeps showing where
+ * they stand and points at the catalog for the rest. Adopts an old setup
+ * first, so a workshop that had Vipps switched on sees it connected.
+ */
+export async function getPaymentConnections() {
+  return withAuth(
+    async ({ organizationId }): Promise<PaymentConnectionSummary[]> => {
+      await adoptLegacyPayments(organizationId)
+      const rows = await db.integrationConnection.findMany({
+        where: { organizationId, connectorId: { in: [...PAYMENT_CONNECTOR_IDS] } },
+        select: { connectorId: true, status: true, settings: true },
+      })
+      const byId = new Map(rows.map((r) => [r.connectorId, r]))
+      return PAYMENT_CONNECTOR_IDS.flatMap((id) => {
+        const manifest = getManifest(id)
+        if (!manifest) return []
+        const row = byId.get(id)
+        const status = (row?.status as ConnectionStatus | undefined) ?? null
+        return [
+          {
+            id,
+            name: manifest.name,
+            logo: manifest.logo,
+            status,
+            offered:
+              status === 'active' &&
+              isOffered({ settings: (row?.settings as Record<string, unknown>) ?? {} }),
+          },
+        ]
+      })
+    },
+    { requiredPermissions: READ_PERMISSION }
+  )
 }

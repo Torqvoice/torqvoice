@@ -1,9 +1,24 @@
 import type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
 
-interface PayPalConfig {
+export interface PayPalConfig {
   clientId: string
   clientSecret: string
   useSandbox: boolean
+}
+
+function text(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+/** The config a connection's credentials and settings amount to, or null without an id and secret. */
+export function paypalConfigFrom(
+  credentials: Record<string, unknown>,
+  settings: Record<string, unknown>
+): PayPalConfig | null {
+  const clientId = text(credentials.clientId)
+  const clientSecret = text(credentials.clientSecret)
+  if (!clientId || !clientSecret) return null
+  return { clientId, clientSecret, useSandbox: settings.sandbox === true }
 }
 
 export class PayPalProvider implements PaymentProvider {
@@ -17,7 +32,7 @@ export class PayPalProvider implements PaymentProvider {
       : 'https://api-m.paypal.com'
   }
 
-  private async getAccessToken(): Promise<string> {
+  async getAccessToken(): Promise<string> {
     const credentials = Buffer.from(`${this.config.clientId}:${this.config.clientSecret}`).toString(
       'base64'
     )

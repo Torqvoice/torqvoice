@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Тексты и сводки"
+    },
+    "payments": {
+      "checkout": "Оплата по ссылке на счёт"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Добавьте этот URL в панели Stripe в разделе Developers, Webhooks с подпиской на checkout.session.completed. Затем вставьте секрет подписи, который покажет Stripe, в поле секрета вебхука здесь, чтобы уведомления можно было проверять.",
+    "inboundHintVipps": "Укажите этот URL как callback-URL в портале Vipps MobilePay. Vipps также требует опубликованных условий продажи, они задаются в разделе Настройки, Оплата.",
+    "inboundHintPaypal": "Добавьте этот URL в панели разработчика PayPal в разделе Webhooks с подпиской на PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Модель",
         "modelHelp": "Какая модель отвечает. Список берётся из вашего аккаунта, новые сверху. Модели поменьше дешевле за запрос и справляются с большинством текстов мастерской."
+      }
+    },
+    "stripe": {
+      "description": "Оплата картой по ссылке на счёт на ваш собственный аккаунт Stripe. Клиент платит, Stripe сообщает Torqvoice, и счёт сам отмечается оплаченным.",
+      "fields": {
+        "secretKey": "Секретный ключ",
+        "secretKeyHelp": "Из панели Stripe в разделе Developers, API keys. Тестовые ключи ничего реального не проводят, поэтому сначала попробуйте платёж на них, а затем переключитесь на боевые ключи.",
+        "publishableKey": "Публикуемый ключ",
+        "webhookSecret": "Секрет подписи вебхука",
+        "webhookSecretHelp": "Stripe показывает его, когда вы добавляете URL уведомлений с этой страницы как вебхук. С ним каждое уведомление проверяется перед записью платежа."
+      },
+      "settings": {
+        "enabled": "Предлагать в ссылках на счета",
+        "enabledHelp": "Выключите, чтобы на время убрать кнопку оплаты с общих счетов, не отключая интеграцию. Уже начатые платежи всё равно записываются."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay по ссылке на счёт. Клиент платит в приложении, которое у него уже есть, и счёт сам отмечается оплаченным.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Ключ подписки",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key из портала Vipps MobilePay, в API-ключах торговой единицы.",
+        "merchantSerialNumber": "Серийный номер продавца"
+      },
+      "settings": {
+        "enabled": "Предлагать в ссылках на счета",
+        "enabledHelp": "Выключите, чтобы на время убрать кнопку оплаты с общих счетов, не отключая интеграцию. Уже начатые платежи всё равно записываются.",
+        "testMode": "Тестовый режим",
+        "testModeHelp": "Использовать тестовую среду Vipps с тестовыми ключами. Оставьте включённым, пока не пройдёт полный платёж, затем выключите и введите боевые ключи."
+      }
+    },
+    "paypal": {
+      "description": "Оплата через PayPal по ссылке на счёт через ваше собственное приложение PayPal. Клиент платит аккаунтом PayPal или картой, и счёт сам отмечается оплаченным.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Предлагать в ссылках на счета",
+        "enabledHelp": "Выключите, чтобы на время убрать кнопку оплаты с общих счетов, не отключая интеграцию. Уже начатые платежи всё равно записываются.",
+        "sandbox": "Режим песочницы",
+        "sandboxHelp": "Использовать песочницу PayPal с ключами приложения песочницы. Оставьте включённым, пока не пройдёт полный платёж, затем выключите и введите ключи боевого приложения."
       }
     }
   },

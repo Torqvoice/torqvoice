@@ -55,6 +55,9 @@
     },
     "ai": {
       "chat": "Teksty i podsumowania"
+    },
+    "payments": {
+      "checkout": "Płatność z linku do faktury"
     }
   },
   "statuses": {
@@ -105,6 +108,9 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Dodaj ten adres URL w panelu Stripe w sekcji Developers, Webhooks, z subskrypcją checkout.session.completed. Następnie wklej sekret podpisu pokazany przez Stripe w polu sekretu webhooka tutaj, aby powiadomienia mogły być weryfikowane.",
+    "inboundHintVipps": "Wpisz ten adres URL jako adres callback w portalu Vipps MobilePay. Vipps wymaga też opublikowanych warunków sprzedaży, które ustawia się w Ustawienia, Płatność.",
+    "inboundHintPaypal": "Dodaj ten adres URL w panelu dewelopera PayPal w sekcji Webhooks, z subskrypcją PAYMENT.CAPTURE.COMPLETED.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -425,6 +431,49 @@
       "settings": {
         "model": "Model",
         "modelHelp": "Który model odpowiada. Lista pochodzi z Twojego konta, najnowsze na górze. Mniejsze modele kosztują mniej za wywołanie i wystarczają do większości tekstów warsztatowych."
+      }
+    },
+    "stripe": {
+      "description": "Płatności kartą z linku do faktury, na Twoje własne konto Stripe. Klient płaci, Stripe informuje Torqvoice, a faktura sama oznacza się jako opłacona.",
+      "fields": {
+        "secretKey": "Klucz tajny",
+        "secretKeyHelp": "Z panelu Stripe w sekcji Developers, API keys. Klucze testowe niczego naprawdę nie przetwarzają, więc najpierw wypróbuj na nich płatność, a potem przejdź na klucze produkcyjne.",
+        "publishableKey": "Klucz publikowalny",
+        "webhookSecret": "Sekret podpisu webhooka",
+        "webhookSecretHelp": "Stripe pokazuje go po dodaniu adresu powiadomień z tej strony jako webhooka. Dzięki niemu każde powiadomienie jest weryfikowane przed zapisaniem płatności."
+      },
+      "settings": {
+        "enabled": "Oferuj w linkach do faktur",
+        "enabledHelp": "Wyłącz, aby na jakiś czas usunąć przycisk płatności z udostępnianych faktur bez rozłączania. Rozpoczęte już płatności nadal są rejestrowane."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay z linku do faktury. Klient płaci w aplikacji, którą już ma, a faktura sama oznacza się jako opłacona.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta",
+        "subscriptionKey": "Klucz subskrypcji",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key z portalu Vipps MobilePay, w kluczach API jednostki sprzedaży.",
+        "merchantSerialNumber": "Numer seryjny sprzedawcy"
+      },
+      "settings": {
+        "enabled": "Oferuj w linkach do faktur",
+        "enabledHelp": "Wyłącz, aby na jakiś czas usunąć przycisk płatności z udostępnianych faktur bez rozłączania. Rozpoczęte już płatności nadal są rejestrowane.",
+        "testMode": "Tryb testowy",
+        "testModeHelp": "Używaj środowiska testowego Vipps z kluczami testowymi. Zostaw włączony, aż pełna płatność przejdzie, potem wyłącz i wpisz klucze produkcyjne."
+      }
+    },
+    "paypal": {
+      "description": "Płatność PayPal z linku do faktury przez Twoją własną aplikację PayPal. Klient płaci kontem PayPal lub kartą, a faktura sama oznacza się jako opłacona.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "enabled": "Oferuj w linkach do faktur",
+        "enabledHelp": "Wyłącz, aby na jakiś czas usunąć przycisk płatności z udostępnianych faktur bez rozłączania. Rozpoczęte już płatności nadal są rejestrowane.",
+        "sandbox": "Tryb sandbox",
+        "sandboxHelp": "Używaj sandboxa PayPal z kluczami aplikacji sandbox. Zostaw włączony, aż pełna płatność przejdzie, potem wyłącz i wpisz klucze aplikacji produkcyjnej."
       }
     }
   },

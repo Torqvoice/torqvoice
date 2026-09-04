@@ -15,16 +15,19 @@ import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
 import { manifest as openai } from './openai/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
+import { manifest as paypal } from './paypal/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as rdw } from './rdw/manifest'
 import { manifest as regcheck } from './regcheck/manifest'
 import { manifest as resend } from './resend/manifest'
 import { manifest as sendgrid } from './sendgrid/manifest'
 import { manifest as smtp } from './smtp/manifest'
+import { manifest as stripe } from './stripe/manifest'
 import { manifest as telegram } from './telegram/manifest'
 import { manifest as telnyxSms } from './telnyx-sms/manifest'
 import { manifest as twilioSms } from './twilio-sms/manifest'
 import { manifest as vegvesen } from './vegvesen/manifest'
+import { manifest as vipps } from './vipps/manifest'
 import { manifest as vonageSms } from './vonage-sms/manifest'
 import { manifest as whatsappMeta } from './whatsapp-meta/manifest'
 import { manifest as whatsappTwilio } from './whatsapp-twilio/manifest'
@@ -57,6 +60,9 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: mailgun, load: () => import('./mailgun/server') },
   { manifest: sendgrid, load: () => import('./sendgrid/server') },
   { manifest: amazonSes, load: () => import('./amazon-ses/server') },
+  { manifest: stripe, load: () => import('./stripe/server') },
+  { manifest: vipps, load: () => import('./vipps/server') },
+  { manifest: paypal, load: () => import('./paypal/server') },
 ]
 
 const BY_ID = new Map(ENTRIES.map((e) => [e.manifest.id, e]))

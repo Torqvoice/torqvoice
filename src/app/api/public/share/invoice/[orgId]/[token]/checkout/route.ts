@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
-import { getPaymentProvider, getEnabledProviders } from '@/lib/payment-providers'
+import {
+  PAYMENT_CONNECTOR_IDS,
+  isOffered,
+  paymentProviderFor,
+} from '@/features/integrations/Lib/payments'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { calculateTotals } from '@/lib/tax'
 
 const checkoutSchema = z.object({
-  provider: z.enum(['stripe', 'vipps', 'paypal']),
+  provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
   amount: z.number().positive(),
 })
 
@@ -86,29 +90,28 @@ export async function POST(
       )
     }
 
-    // Load org payment settings
-    const settings = await db.appSetting.findMany({
-      where: { organizationId: orgId },
-    })
-    const settingsMap: Record<string, string> = {}
-    for (const s of settings) settingsMap[s.key] = s.value
-
-    const enabledProviders = getEnabledProviders(settingsMap)
-    if (!enabledProviders.includes(provider)) {
+    // The vendor's connection, adopted from the old settings rows on the
+    // first checkout after the move. A vendor the workshop has paused with
+    // the offered switch takes no new payments, whatever the page showed.
+    const connected = await paymentProviderFor(orgId, provider)
+    if (!connected || !isOffered(connected.setup)) {
       return NextResponse.json(
         { error: `Payment provider "${provider}" is not enabled` },
         { status: 400 }
       )
     }
 
-    const currencyCode = settingsMap['workshop.currencyCode'] || 'USD'
+    const currencySetting = await db.appSetting.findUnique({
+      where: { organizationId_key: { organizationId: orgId, key: 'workshop.currencyCode' } },
+      select: { value: true },
+    })
+    const currencyCode = currencySetting?.value || 'USD'
     const invoiceNumber = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''
     const invoiceUrl = `${appUrl}/share/invoice/${orgId}/${token}`
 
-    const paymentProvider = getPaymentProvider(provider, settingsMap)
-    const result = await paymentProvider.createCheckout({
+    const result = await connected.provider.createCheckout({
       amount,
       currency: currencyCode,
       invoiceNumber,
