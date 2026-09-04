@@ -21,6 +21,10 @@
     "deleteFailed": "Nie udało się usunąć rozmowy",
     "delete": "Usuń",
     "cancel": "Anuluj",
-    "loadMore": "Wczytaj więcej"
+    "loadMore": "Wczytaj więcej",
+    "unread": "{count} nieprzeczytane",
+    "markUnread": "Oznacz jako nieprzeczytane",
+    "nothingToMarkUnread": "Klient jeszcze nic nie napisał w tej rozmowie.",
+    "markUnreadFailed": "Nie udało się oznaczyć rozmowy jako nieprzeczytanej."
   }
 }

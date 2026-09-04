@@ -127,6 +127,7 @@
       "member": "Membre"
     },
     "badges": {
+      "messages": "{count} messages non lus",
       "workOrders": "{count} ordres de travail ouverts",
       "inspections": "{count} inspections en cours",
       "reminders": "{count} rappels à échéance"

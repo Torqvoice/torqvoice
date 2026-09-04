@@ -22,6 +22,7 @@ function thread(channel: InboxThread['channel'], minutesAgo: number): InboxThrea
     lastMessage: 'hello',
     lastDirection: 'inbound',
     lastAt: at.toISOString(),
+    unread: 0,
   }
 }
 

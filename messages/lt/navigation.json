@@ -127,6 +127,7 @@
       "member": "Narys"
     },
     "badges": {
+      "messages": "{count} neperskaityti pranešimai",
       "workOrders": "{count} atviri darbo užsakymai",
       "inspections": "{count} vykdomos apžiūros",
       "reminders": "{count} priminimai, kurių terminas suėjo"

@@ -21,6 +21,10 @@
     "deleteFailed": "Konversation konnte nicht gelöscht werden",
     "delete": "Löschen",
     "cancel": "Abbrechen",
-    "loadMore": "Mehr laden"
+    "loadMore": "Mehr laden",
+    "unread": "{count} ungelesen",
+    "markUnread": "Als ungelesen markieren",
+    "nothingToMarkUnread": "Der Kunde hat in dieser Unterhaltung noch nicht geschrieben.",
+    "markUnreadFailed": "Die Unterhaltung konnte nicht als ungelesen markiert werden."
   }
 }

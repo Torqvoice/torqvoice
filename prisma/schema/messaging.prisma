@@ -16,18 +16,21 @@ model Notification {
 }
 
 model SmsMessage {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   direction         String // "inbound" | "outbound"
   fromNumber        String
   toNumber          String
   body              String
-  status            String   @default("queued") // queued | sent | delivered | failed | received
+  status            String    @default("queued") // queued | sent | delivered | failed | received
   providerMsgId     String?
   errorMessage      String?
   relatedEntityType String?
   relatedEntityId   String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  /// When the workshop first opened the thread this arrived in. Null on an
+  /// inbound message nobody has read yet; never set on an outbound row.
+  readAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -38,21 +41,25 @@ model SmsMessage {
   @@index([organizationId, customerId, createdAt(sort: Desc)])
   @@index([organizationId, createdAt(sort: Desc)])
   @@index([toNumber, organizationId])
+  @@index([organizationId, readAt])
   @@map("sms_messages")
 }
 
 model TelegramMessage {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   direction         String // "inbound" | "outbound"
   chatId            String // Telegram chat ID
   body              String
-  status            String   @default("queued") // queued | sent | delivered | failed | received
+  status            String    @default("queued") // queued | sent | delivered | failed | received
   telegramMessageId String? // Telegram's message ID for tracking
   errorMessage      String?
   relatedEntityType String?
   relatedEntityId   String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  /// When the workshop first opened the thread this arrived in. Null on an
+  /// inbound message nobody has read yet; never set on an outbound row.
+  readAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -62,6 +69,7 @@ model TelegramMessage {
 
   @@index([organizationId, customerId, createdAt(sort: Desc)])
   @@index([organizationId, chatId, createdAt(sort: Desc)])
+  @@index([organizationId, readAt])
   @@map("telegram_messages")
 }
 
@@ -98,8 +106,11 @@ model WhatsappMessage {
   relatedEntityType String?
   relatedEntityId   String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  /// When the workshop first opened the thread this arrived in. Null on an
+  /// inbound message nobody has read yet; never set on an outbound row.
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -110,6 +121,7 @@ model WhatsappMessage {
   @@index([organizationId, customerId, createdAt(sort: Desc)])
   @@index([organizationId, createdAt(sort: Desc)])
   @@index([providerMessageId])
+  @@index([organizationId, readAt])
   @@map("whatsapp_messages")
 }
 

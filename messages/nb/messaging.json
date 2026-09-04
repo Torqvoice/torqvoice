@@ -21,6 +21,10 @@
     "deleteFailed": "Kunne ikke slette samtalen",
     "delete": "Slett",
     "cancel": "Avbryt",
-    "loadMore": "Last mer"
+    "loadMore": "Last mer",
+    "unread": "{count} ulest",
+    "markUnread": "Merk som ulest",
+    "nothingToMarkUnread": "Kunden har ikke skrevet i denne samtalen ennå.",
+    "markUnreadFailed": "Kunne ikke merke samtalen som ulest."
   }
 }

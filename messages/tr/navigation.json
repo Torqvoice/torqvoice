@@ -127,6 +127,7 @@
       "member": "Üye"
     },
     "badges": {
+      "messages": "{count} okunmamış mesaj",
       "workOrders": "{count} açık iş emri",
       "inspections": "{count} devam eden muayene",
       "reminders": "{count} vadesi gelen hatırlatma"

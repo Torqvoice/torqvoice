@@ -127,6 +127,7 @@
       "member": "Medlem"
     },
     "badges": {
+      "messages": "{count} uleste meldinger",
       "workOrders": "{count} åpne arbeidsordrer",
       "inspections": "{count} pågående inspeksjoner",
       "reminders": "{count} forfalte påminnelser"

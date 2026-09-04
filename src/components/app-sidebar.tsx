@@ -95,9 +95,10 @@ type OrgInfo = { id: string; name: string; role: string }
  * These are things still in hand, never running totals: a total would only
  * ever grow, and a four-digit pill says nothing. Work orders count the ones
  * not yet finished, inspections the ones still being walked, reminders the
- * ones past their date.
+ * ones past their date, messages the inbound ones nobody has opened.
  */
 export type SidebarCounts = {
+  messages: number
   workOrders: number
   inspections: number
   reminders: number
@@ -173,6 +174,8 @@ export function AppSidebar({
       url: '/messages',
       icon: MessageSquare,
       subject: 'customers',
+      count: counts?.messages,
+      countKey: 'sidebar.badges.messages',
     },
   ].filter((item) => canAccess(item.subject))
 

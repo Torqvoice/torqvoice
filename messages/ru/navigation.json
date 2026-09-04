@@ -127,6 +127,7 @@
       "member": "Участник"
     },
     "badges": {
+      "messages": "{count} непрочитанных сообщений",
       "workOrders": "{count} открытых заказ-нарядов",
       "inspections": "{count} проверок в работе",
       "reminders": "{count} напоминаний просрочено"
