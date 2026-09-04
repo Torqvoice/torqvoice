@@ -360,6 +360,7 @@
     "workBay": "Puesto de trabajo",
     "selectWorkBay": "Seleccionar puesto…",
     "noWorkBay": "Sin puesto",
+    "noTechnician": "Sin técnico",
     "technicians": "Técnicos",
     "otherTeamMembers": "Otros miembros del equipo",
     "makeTechnician": "Lo convierte en técnico",

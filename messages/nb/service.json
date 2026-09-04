@@ -360,6 +360,7 @@
     "workBay": "Arbeidsplass",
     "selectWorkBay": "Velg arbeidsplass …",
     "noWorkBay": "Ingen arbeidsplass",
+    "noTechnician": "Uten mekaniker",
     "technicians": "Teknikere",
     "otherTeamMembers": "Andre i teamet",
     "makeTechnician": "Gjør dem til tekniker",

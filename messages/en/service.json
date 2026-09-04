@@ -360,6 +360,7 @@
     "workBay": "Work bay",
     "selectWorkBay": "Select work bay...",
     "noWorkBay": "No work bay",
+    "noTechnician": "No technician",
     "technicians": "Technicians",
     "otherTeamMembers": "Other team members",
     "makeTechnician": "Makes them a technician",

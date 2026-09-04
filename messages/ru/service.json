@@ -360,6 +360,7 @@
     "workBay": "Пост",
     "selectWorkBay": "Выберите пост…",
     "noWorkBay": "Без поста",
+    "noTechnician": "Без механика",
     "technicians": "Механики",
     "otherTeamMembers": "Другие участники",
     "makeTechnician": "Сделает механиком",
