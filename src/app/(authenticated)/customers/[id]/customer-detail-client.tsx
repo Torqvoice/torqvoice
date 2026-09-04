@@ -1073,7 +1073,7 @@ function ServiceRequestCard({
     startTransition(async () => {
       const result = await updateServiceRequest(request.id, {
         status: 'dismissed',
-        adminNotes: notes || undefined,
+        adminNotes: notes,
       })
       if (result.success) {
         toast.success(t('requestDismissed'))
@@ -1086,9 +1086,7 @@ function ServiceRequestCard({
 
   const handleSaveNotes = () => {
     startTransition(async () => {
-      const result = await updateServiceRequest(request.id, {
-        adminNotes: notes || undefined,
-      })
+      const result = await updateServiceRequest(request.id, { adminNotes: notes })
       if (result.success) {
         toast.success(t('notesSaved'))
         router.refresh()

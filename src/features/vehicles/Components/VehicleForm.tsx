@@ -47,6 +47,7 @@ import { createCustomer } from '@/features/customers/Actions/customerActions'
 import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
+import { clearableInput } from '@/lib/clearable'
 
 /**
  * How alike two names must read before the scanned keeper is offered as an
@@ -300,7 +301,11 @@ export function VehicleForm({
 
       // The keeper read off the papers is nobody until a customer row exists,
       // and losing them to an unnoticed checkbox is worse than an extra record.
-      let customerId = selectedCustomerId === 'none' ? undefined : selectedCustomerId || undefined
+      // '' when editing tells the update action to drop the owner.
+      let customerId = clearableInput(
+        selectedCustomerId === 'none' ? '' : selectedCustomerId,
+        Boolean(vehicle)
+      )
       if (!customerId && addOwner && scannedOwner?.name) {
         const created = await createCustomer({
           name: scannedOwner.name,
@@ -317,10 +322,7 @@ export function VehicleForm({
       // the update action turns into null; undefined there means "not
       // touched" and would bring the old value back. On create, leaving an
       // empty field out is the same thing as clearing it.
-      const optional = (name: string): string | undefined => {
-        const value = ((formData.get(name) as string | null) ?? '').trim()
-        return value || (vehicle ? '' : undefined)
-      }
+      const optional = (name: string) => clearableInput(formData.get(name), Boolean(vehicle))
       const data: CreateVehicleInput & { imageUrl?: string } = {
         make: formData.get('make') as string,
         model: formData.get('model') as string,

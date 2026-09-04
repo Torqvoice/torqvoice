@@ -9,6 +9,7 @@ import { getFeatures, FeatureGatedError } from '@/lib/features'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
 import { serviceDateOrderBy } from '@/lib/date-sort'
+import { clearedToNull } from '@/lib/clearable'
 
 /**
  * A design a customer is being pointed at has to be this workshop's and an
@@ -157,14 +158,17 @@ export async function updateCustomer(input: unknown) {
       try {
         result = await db.customer.updateMany({
           where: { id, organizationId },
+          // Fields left out of the input stay as they are; an emptied one
+          // ('') is cleared.
           data: {
             ...data,
-            customerNumber:
-              data.customerNumber !== undefined ? data.customerNumber.trim() || null : undefined,
-            email: data.email || null,
-            company: data.company || null,
-            phone: data.phone || null,
-            address: data.address || null,
+            customerNumber: clearedToNull(data.customerNumber),
+            email: clearedToNull(data.email),
+            company: clearedToNull(data.company),
+            phone: clearedToNull(data.phone),
+            address: clearedToNull(data.address),
+            taxId: clearedToNull(data.taxId),
+            notes: clearedToNull(data.notes),
           },
         })
       } catch (err: unknown) {
@@ -418,7 +422,7 @@ export async function updateServiceRequest(
     async ({ userId, organizationId }) => {
       const result = await db.serviceRequest.updateMany({
         where: { id: requestId, organizationId },
-        data,
+        data: { status: data.status, adminNotes: clearedToNull(data.adminNotes) },
       })
       if (result.count === 0) throw new Error('Service request not found')
       revalidatePath('/customers')

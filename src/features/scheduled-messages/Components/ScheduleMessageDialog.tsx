@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { DocsLink } from '@/components/docs-link'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { createScheduledMessage, updateScheduledMessage } from '../Actions/scheduledMessageActions'
+import { clearableInput } from '@/lib/clearable'
 import {
   MESSAGE_FREQUENCIES,
   type MessageChannel,
@@ -166,9 +167,11 @@ export function ScheduleMessageDialog({
 
     const payload = {
       channel,
-      subject: subject.trim() || undefined,
+      // When editing, an emptied subject or recipient override goes as ''
+      // so the update action clears it.
+      subject: clearableInput(subject, isEdit),
       body: body.trim(),
-      recipient: recipient.trim() || undefined,
+      recipient: clearableInput(recipient, isEdit),
       customerId: customerId || null,
       sendAt: `${date}T${time}`,
       frequency,

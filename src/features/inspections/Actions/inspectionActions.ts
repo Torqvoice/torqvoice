@@ -12,6 +12,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notificationBus } from '@/lib/notification-bus'
 import { isDefect } from '../Lib/conditions'
 import { findCompletionBlockers, summariseBlockers } from '../Lib/completion'
+import { clearedToNull } from '@/lib/clearable'
 
 export async function getInspectionsPaginated(params: {
   page?: number
@@ -294,10 +295,10 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
         where: { id: itemId },
         data: {
           condition: data.condition,
-          notes: data.notes,
+          notes: clearedToNull(data.notes),
           imageUrls: data.imageUrls,
           measuredValue: data.measuredValue,
-          textValue: data.textValue,
+          textValue: clearedToNull(data.textValue),
         },
       })
 

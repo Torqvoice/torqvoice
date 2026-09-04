@@ -12,6 +12,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { copyFile, mkdir } from 'fs/promises'
 import path from 'path'
+import { clearedToNull } from '@/lib/clearable'
 
 /**
  * Default valid-until for new quotes: today plus workshop.quoteValidDays
@@ -304,9 +305,18 @@ export async function updateQuote(input: unknown) {
       const quote = await db.$transaction(async (tx) => {
         const updated = await tx.quote.update({
           where: { id },
+          // Fields left out of the input stay as they are; emptied ones are
+          // cleared.
           data: {
             ...quoteData,
-            validUntil: toSafeDate(quoteData.validUntil),
+            description: clearedToNull(quoteData.description),
+            notes: clearedToNull(quoteData.notes),
+            customerId: clearedToNull(quoteData.customerId),
+            vehicleId: clearedToNull(quoteData.vehicleId),
+            validUntil:
+              quoteData.validUntil !== undefined
+                ? (toSafeDate(quoteData.validUntil) ?? null)
+                : undefined,
             discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
           },
         })

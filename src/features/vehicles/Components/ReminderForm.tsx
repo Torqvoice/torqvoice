@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { createReminder, updateReminder } from '../Actions/reminderActions'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { clearableInput } from '@/lib/clearable'
 
 interface ReminderData {
   id: string
@@ -72,9 +73,11 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
     const payload = {
       vehicleId,
       title,
-      description: description || undefined,
-      dueDate: dueDate || undefined,
-      dueMileage: dueMileage ? Number(dueMileage) : undefined,
+      // When editing, emptied fields are sent as cleared ('' or null) so the
+      // update action drops the old value.
+      description: clearableInput(description, Boolean(reminder)),
+      dueDate: clearableInput(dueDate, Boolean(reminder)),
+      dueMileage: dueMileage ? Number(dueMileage) : reminder ? null : undefined,
       notifyInApp,
       notifyEmail,
     }

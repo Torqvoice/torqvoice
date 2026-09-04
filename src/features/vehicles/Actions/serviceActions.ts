@@ -623,8 +623,14 @@ export async function updateServiceRecord(input: unknown) {
               recordData.invoiceNumber !== undefined ? recordData.invoiceNumber || null : undefined,
             mileage: recordData.mileage !== undefined ? (recordData.mileage ?? null) : undefined,
             serviceDate: toSafeDate(data.serviceDate),
-            invoiceDate: toSafeDate(data.invoiceDate),
-            invoiceDueDate: toSafeDate(data.invoiceDueDate),
+            // An emptied date clears it; the invoice then falls back to the
+            // scheduled start or the service date, as it did before one was set.
+            invoiceDate:
+              data.invoiceDate !== undefined ? (toSafeDate(data.invoiceDate) ?? null) : undefined,
+            invoiceDueDate:
+              data.invoiceDueDate !== undefined
+                ? (toSafeDate(data.invoiceDueDate) ?? null)
+                : undefined,
             warrantyMonths:
               data.warrantyMonths !== undefined ? data.warrantyMonths || null : undefined,
             warrantyMileage:

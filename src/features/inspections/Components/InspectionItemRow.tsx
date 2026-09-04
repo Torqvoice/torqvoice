@@ -248,7 +248,8 @@ export function InspectionItemRow({
     startSaving(async () => {
       const result = await updateInspectionItem(item.id, {
         condition: next.condition,
-        notes: next.notes || undefined,
+        // '' clears notes; the action turns it into null.
+        notes: next.notes,
         imageUrls: next.imageUrls,
         measuredValue: next.measuredValue,
         textValue: next.textValue,

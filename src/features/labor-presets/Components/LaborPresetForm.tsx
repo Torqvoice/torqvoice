@@ -14,6 +14,7 @@ import { createLaborPreset, updateLaborPreset } from '../Actions/laborPresetActi
 import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { PresetPartsEditor } from './PresetPartsEditor'
 import type { PresetPartItem } from './PresetPartsEditor'
+import { clearableInput } from '@/lib/clearable'
 
 type PricingType = 'hourly' | 'service'
 
@@ -276,7 +277,8 @@ export function LaborPresetForm({
         const result = await updateLaborPreset({
           id: preset.id,
           name: '',
-          description: item.description || undefined,
+          // '' clears a description the preset used to have.
+          description: item.description.trim(),
           items: [
             {
               description: item.name,
@@ -332,7 +334,7 @@ export function LaborPresetForm({
 
       const data = {
         name,
-        description: description || undefined,
+        description: clearableInput(description, Boolean(preset)),
         items: validItems.map((item, index) => ({
           description: item.description,
           hours: Number(item.hours) || 0,
