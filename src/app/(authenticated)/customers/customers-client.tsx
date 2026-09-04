@@ -216,9 +216,9 @@ export function CustomersClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex shrink-0 items-center justify-between gap-3">
         {selected.size > 0 ? (
           <>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -280,8 +280,8 @@ export function CustomersClient({
         )}
       </div>
 
-      {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      {/* Card list (phones + small tablets) - only this scrolls */}
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.customers.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {search ? t('emptySearch') : t('empty')}
@@ -353,197 +353,198 @@ export function CustomersClient({
         )}
       </div>
 
-      {/* Table (md and up) - only this scrolls */}
-      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+      {/* Table (md and up) - only the rows scroll */}
+      <div
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+        {...tableNav.containerProps}
+      >
         <TableContextMenuHint />
-        <div className="overflow-auto max-h-[calc(100vh-220px)]">
-          <Table className="table-fixed">
-            <TableHeader className="sticky top-0 z-10 bg-background">
+        <Table containerClassName="min-h-0 flex-1" className="table-fixed">
+          <TableHeader sticky>
+            <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={
+                    data.customers.length > 0 && selected.size === data.customers.length
+                      ? true
+                      : selected.size > 0
+                        ? 'indeterminate'
+                        : false
+                  }
+                  onCheckedChange={toggleSelectAll}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </TableHead>
+              <TableHead className="w-[80px]">
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('number')}
+                >
+                  {t('table.number')}
+                  <SortIcon column="number" />
+                </button>
+              </TableHead>
+              <TableHead>
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('name')}
+                >
+                  {t('table.name')}
+                  <SortIcon column="name" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[20%] sm:table-cell">
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('company')}
+                >
+                  {t('table.company')}
+                  <SortIcon column="company" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[16%] md:table-cell">
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('phone')}
+                >
+                  {t('table.phone')}
+                  <SortIcon column="phone" />
+                </button>
+              </TableHead>
+              <TableHead className="hidden w-[22%] lg:table-cell">
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('email')}
+                >
+                  {t('table.email')}
+                  <SortIcon column="email" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[80px]">
+                <button
+                  type="button"
+                  className="mx-auto flex items-center hover:text-foreground"
+                  onClick={() => handleSort('vehicles')}
+                >
+                  {t('table.vehicles')}
+                  <SortIcon column="vehicles" />
+                </button>
+              </TableHead>
+              <TableHead className="w-[50px]" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.customers.length === 0 ? (
               <TableRow>
-                <TableHead className="w-[40px]">
-                  <Checkbox
-                    checked={
-                      data.customers.length > 0 && selected.size === data.customers.length
-                        ? true
-                        : selected.size > 0
-                          ? 'indeterminate'
-                          : false
-                    }
-                    onCheckedChange={toggleSelectAll}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </TableHead>
-                <TableHead className="w-[80px]">
-                  <button
-                    type="button"
-                    className="flex items-center hover:text-foreground"
-                    onClick={() => handleSort('number')}
-                  >
-                    {t('table.number')}
-                    <SortIcon column="number" />
-                  </button>
-                </TableHead>
-                <TableHead>
-                  <button
-                    type="button"
-                    className="flex items-center hover:text-foreground"
-                    onClick={() => handleSort('name')}
-                  >
-                    {t('table.name')}
-                    <SortIcon column="name" />
-                  </button>
-                </TableHead>
-                <TableHead className="hidden w-[20%] sm:table-cell">
-                  <button
-                    type="button"
-                    className="flex items-center hover:text-foreground"
-                    onClick={() => handleSort('company')}
-                  >
-                    {t('table.company')}
-                    <SortIcon column="company" />
-                  </button>
-                </TableHead>
-                <TableHead className="hidden w-[16%] md:table-cell">
-                  <button
-                    type="button"
-                    className="flex items-center hover:text-foreground"
-                    onClick={() => handleSort('phone')}
-                  >
-                    {t('table.phone')}
-                    <SortIcon column="phone" />
-                  </button>
-                </TableHead>
-                <TableHead className="hidden w-[22%] lg:table-cell">
-                  <button
-                    type="button"
-                    className="flex items-center hover:text-foreground"
-                    onClick={() => handleSort('email')}
-                  >
-                    {t('table.email')}
-                    <SortIcon column="email" />
-                  </button>
-                </TableHead>
-                <TableHead className="w-[80px]">
-                  <button
-                    type="button"
-                    className="mx-auto flex items-center hover:text-foreground"
-                    onClick={() => handleSort('vehicles')}
-                  >
-                    {t('table.vehicles')}
-                    <SortIcon column="vehicles" />
-                  </button>
-                </TableHead>
-                <TableHead className="w-[50px]" />
+                <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
+                  {search ? t('emptySearch') : t('empty')}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.customers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
-                    {search ? t('emptySearch') : t('empty')}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                data.customers.map((c) => (
-                  <ContextMenu key={c.id} modal={false}>
-                    <ContextMenuTrigger asChild>
-                      <TableRow
-                        className={`cursor-pointer ${selected.has(c.id) ? 'bg-muted/50' : ''}`}
-                        {...interactiveRow(() => router.push(`/customers/${c.id}`))}
-                      >
-                        <TableCell className="w-[40px]">
-                          <Checkbox
-                            checked={selected.has(c.id)}
-                            onCheckedChange={() => toggleSelect(c.id)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {c.customerNumber || '-'}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-                            <span className="truncate font-medium">{c.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
-                          {c.company || '-'}
-                        </TableCell>
-                        <TableCell className="hidden truncate md:table-cell text-muted-foreground">
-                          {c.phone || '-'}
-                        </TableCell>
-                        <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
-                          {c.email || '-'}
-                        </TableCell>
-                        <TableCell className="text-center">{c._count.vehicles}</TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                aria-label={t('openMenu')}
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setEditCustomer(c)
-                                  setShowForm(true)
-                                }}
-                              >
-                                <Pencil className="mr-2 h-4 w-4" />
-                                {tc('buttons.edit')}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleDelete(c.id, c.name)
-                                }}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                {tc('buttons.delete')}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="min-w-52">
-                      <ContextMenuItem onClick={() => router.push(`/customers/${c.id}`)}>
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        {tcm('open')}
-                      </ContextMenuItem>
-                      <ContextMenuSeparator />
-                      <ContextMenuItem
-                        onClick={() => {
-                          setEditCustomer(c)
-                          setShowForm(true)
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        {tc('buttons.edit')}
-                      </ContextMenuItem>
-                      <ContextMenuItem
-                        variant="destructive"
-                        onClick={() => handleDelete(c.id, c.name)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        {tc('buttons.delete')}
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+            ) : (
+              data.customers.map((c) => (
+                <ContextMenu key={c.id} modal={false}>
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      className={`cursor-pointer ${selected.has(c.id) ? 'bg-muted/50' : ''}`}
+                      {...interactiveRow(() => router.push(`/customers/${c.id}`))}
+                    >
+                      <TableCell className="w-[40px]">
+                        <Checkbox
+                          checked={selected.has(c.id)}
+                          onCheckedChange={() => toggleSelect(c.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {c.customerNumber || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="truncate font-medium">{c.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
+                        {c.company || '-'}
+                      </TableCell>
+                      <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                        {c.phone || '-'}
+                      </TableCell>
+                      <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
+                        {c.email || '-'}
+                      </TableCell>
+                      <TableCell className="text-center">{c._count.vehicles}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              aria-label={t('openMenu')}
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setEditCustomer(c)
+                                setShowForm(true)
+                              }}
+                            >
+                              <Pencil className="mr-2 h-4 w-4" />
+                              {tc('buttons.edit')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDelete(c.id, c.name)
+                              }}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              {tc('buttons.delete')}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem onClick={() => router.push(`/customers/${c.id}`)}>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tcm('open')}
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                      onClick={() => {
+                        setEditCustomer(c)
+                        setShowForm(true)
+                      }}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      {tc('buttons.edit')}
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      variant="destructive"
+                      onClick={() => handleDelete(c.id, c.name)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {tc('buttons.delete')}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       <DataTablePagination

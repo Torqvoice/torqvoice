@@ -1,5 +1,6 @@
 import { getObservationsPaginated } from '@/features/vehicles/Actions/findingActions'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 import { ObservationsClient } from './observations-client'
 
 export default async function ObservationsPage({
@@ -37,14 +38,14 @@ export default async function ObservationsPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <ObservationsClient
           data={result.data}
           search={params.search || ''}
           statusFilter={params.status || 'open'}
           severityFilter={params.severity || 'all'}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

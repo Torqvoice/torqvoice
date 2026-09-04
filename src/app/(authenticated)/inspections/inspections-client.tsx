@@ -233,9 +233,9 @@ export function InspectionsClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Status filters: one scrollable row on phones, wrapped above sm. */}
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <div className="-mx-1 flex shrink-0 gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
           const isActive = statusFilter === tab.key
           const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
@@ -258,7 +258,7 @@ export function InspectionsClient({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex shrink-0 items-center justify-between gap-2">
         <div className="flex flex-1 items-center gap-2">
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -284,8 +284,8 @@ export function InspectionsClient({
         </Button>
       </div>
 
-      {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      {/* Card list (phones + small tablets) - only this scrolls */}
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.records.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {t('empty')}
@@ -331,11 +331,14 @@ export function InspectionsClient({
         )}
       </div>
 
-      {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+      {/* Table (md and up) - only the rows scroll */}
+      <div
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+        {...tableNav.containerProps}
+      >
         <TableContextMenuHint />
-        <Table className="table-fixed">
-          <TableHeader>
+        <Table containerClassName="min-h-0 flex-1" className="table-fixed">
+          <TableHeader sticky>
             <TableRow>
               <TableHead>
                 <button

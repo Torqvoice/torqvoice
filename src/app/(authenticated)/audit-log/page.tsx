@@ -1,5 +1,6 @@
 import { getAuditLogsPaginated } from '@/features/audit/Actions/auditActions'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 import { AuditLogClient } from './audit-log-client'
 
 export default async function AuditLogPage({
@@ -39,7 +40,7 @@ export default async function AuditLogPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <AuditLogClient
           data={result.data}
           search={params.search || ''}
@@ -47,7 +48,7 @@ export default async function AuditLogPage({
           entityFilter={params.entity || 'all'}
           userFilter={params.userId || 'all'}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

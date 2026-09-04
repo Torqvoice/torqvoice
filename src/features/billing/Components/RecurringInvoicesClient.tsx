@@ -283,9 +283,9 @@ export default function RecurringInvoicesClient({
   const fmt = (n: number) => formatCurrency(n, currencyCode)
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <Link href="/billing">
             <Button variant="outline" size="sm">
@@ -329,16 +329,16 @@ export default function RecurringInvoicesClient({
 
       {/* Table */}
       {invoices.length === 0 ? (
-        <Card>
+        <Card className="shrink-0">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground">{t('recurring.noInvoices')}</p>
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            {/* Card list (phones + small tablets) */}
-            <div className="space-y-2 p-3 md:hidden">
+        <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+            {/* Card list (phones + small tablets) - only this scrolls */}
+            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3 md:hidden">
               {invoices.map((inv) => {
                 const partsTotal = inv.templateParts.reduce(
                   (s, p) => s + p.quantity * p.unitPrice,
@@ -403,11 +403,12 @@ export default function RecurringInvoicesClient({
               })}
             </div>
 
-            {/* Table (md and up) */}
-            <div className="hidden md:block">
+            {/* Table (md and up) - only the rows scroll */}
+            <div className="hidden min-h-0 flex-1 flex-col md:flex">
               <TableContextMenuHint />
-              <Table>
-                <TableHeader>
+              <Table containerClassName="min-h-0 flex-1">
+                {/* Inside a Card, so the pinned header takes the card surface. */}
+                <TableHeader sticky className="bg-card">
                   <TableRow>
                     <TableHead>{t('recurring.columnTitle')}</TableHead>
                     <TableHead>{t('recurring.columnVehicle')}</TableHead>

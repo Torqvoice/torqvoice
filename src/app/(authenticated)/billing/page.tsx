@@ -2,6 +2,7 @@ import { getBillingHistory } from '@/features/billing/Actions/billingActions'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 import BillingClient from './billing-client'
 
 export default async function BillingPage({
@@ -46,7 +47,7 @@ export default async function BillingPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <BillingClient
           data={result.data}
           currencyCode={currencyCode}
@@ -55,7 +56,7 @@ export default async function BillingPage({
           sortBy={sortBy}
           sortOrder={sortOrder}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

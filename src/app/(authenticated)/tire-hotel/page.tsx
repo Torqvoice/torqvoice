@@ -8,6 +8,7 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { totalFree as sumFree } from '@/features/tire-hotel/Lib/capacity'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 import { TireHotelClient } from './tire-hotel-client'
 
 export default async function TireHotelPage({
@@ -71,7 +72,7 @@ export default async function TireHotelPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <TireHotelClient
           data={data}
           locations={locations}
@@ -86,7 +87,7 @@ export default async function TireHotelPage({
           statusFilter={status}
           totalFree={sumFree(locations)}
         />
-      </div>
+      </ListPage>
     </>
   )
 }
