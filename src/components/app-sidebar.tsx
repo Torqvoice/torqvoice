@@ -32,7 +32,6 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Input } from '@/components/ui/input'
@@ -552,7 +551,10 @@ export function AppSidebar({
         {/* Settings, set apart from the page groups above it */}
         {canAccess('settings') && (
           <>
-            <SidebarSeparator className="mt-2" />
+            {/* A plain hairline rather than SidebarSeparator: that one is
+                full width with side margins on top, which is wider than the
+                panel and gives the content a horizontal scrollbar. */}
+            <div aria-hidden className="mx-4 mt-2 h-px shrink-0 bg-sidebar-border" />
             <SidebarGroup>
               <SidebarMenu className="gap-1">
                 {/* Product announcements hang off Settings: everything they
