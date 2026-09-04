@@ -5,7 +5,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useState, useCallback, useEffect, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -197,6 +197,18 @@ export function WorkOrdersClient({
     },
     [router, pathname, searchParams]
   )
+
+  // The sidebar's "New work order" lands here with ?new=1. Open the picker
+  // and drop the flag from the address, so a reload or a back-step does not
+  // open it again.
+  useEffect(() => {
+    if (searchParams.get('new') !== '1') return
+    setShowPicker(true)
+    const rest = new URLSearchParams(searchParams.toString())
+    rest.delete('new')
+    const query = rest.toString()
+    router.replace(query ? `${pathname}?${query}` : pathname)
+  }, [searchParams, pathname, router])
 
   const handleSort = useCallback(
     (column: string) => {

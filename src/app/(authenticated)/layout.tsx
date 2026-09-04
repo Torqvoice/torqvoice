@@ -32,6 +32,8 @@ import { findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup
 import { getManifest } from '@/integrations/registry'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
+import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
+import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -120,6 +122,41 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!hasAnyAccess) {
     const org = data.organizations.find((o) => o.id === data.organizationId)
     return <NoAccess organizationName={org?.name ?? ''} />
+  }
+
+  // Live work for the sidebar pills. Each is a count of things still in hand,
+  // never a running total, so the numbers stay small enough to mean
+  // something. Only the screens this role can see are counted at all.
+  const timeZone = safeTimeZone(data.timezone)
+  const endOfToday = startOfZonedDay(addZonedDays(new Date(), 1, timeZone), timeZone)
+  const [openWorkOrders, activeInspections, dueReminders] = await Promise.all([
+    visibleSubjects.includes(PermissionSubject.WORK_ORDERS)
+      ? db.serviceRecord.count({
+          where: {
+            organizationId: data.organizationId,
+            status: { in: [...OPEN_SERVICE_STATUSES] },
+          },
+        })
+      : 0,
+    visibleSubjects.includes(PermissionSubject.INSPECTIONS)
+      ? db.inspection.count({
+          where: { organizationId: data.organizationId, status: 'in_progress' },
+        })
+      : 0,
+    visibleSubjects.includes(PermissionSubject.VEHICLES)
+      ? db.reminder.count({
+          where: {
+            organizationId: data.organizationId,
+            isCompleted: false,
+            dueDate: { lt: endOfToday },
+          },
+        })
+      : 0,
+  ])
+  const sidebarCounts = {
+    workOrders: openWorkOrders,
+    inspections: activeInspections,
+    reminders: dueReminders,
   }
 
   // Product announcements join the same queue as the hints a setting flip
@@ -232,6 +269,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         visibleSubjects={visibleSubjects}
                         announcement={announcements[0] ?? null}
                         isAdminOrOwner={isOwnerOrAdmin}
+                        counts={sidebarCounts}
                       />
                       <SidebarInset>
                         {/* A flex column with a real height, so the `flex-1` every

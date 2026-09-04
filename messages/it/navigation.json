@@ -118,6 +118,18 @@
     "auditLog": "Registro attività",
     "aiAssistant": "Assistente IA",
     "tireHotel": "Hotel pneumatici",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Nuovo ordine di lavoro",
+    "installApp": "Installa l'app",
+    "roles": {
+      "owner": "Proprietario",
+      "admin": "Amministratore",
+      "member": "Membro"
+    },
+    "badges": {
+      "workOrders": "{count} ordini di lavoro aperti",
+      "inspections": "{count} ispezioni in corso",
+      "reminders": "{count} promemoria in scadenza"
+    }
   }
 }

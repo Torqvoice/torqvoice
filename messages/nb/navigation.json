@@ -118,6 +118,18 @@
     "auditLog": "Aktivitetslogg",
     "aiAssistant": "AI-assistent",
     "tireHotel": "Dekkhotell",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Ny arbeidsordre",
+    "installApp": "Installer appen",
+    "roles": {
+      "owner": "Eier",
+      "admin": "Administrator",
+      "member": "Medlem"
+    },
+    "badges": {
+      "workOrders": "{count} åpne arbeidsordrer",
+      "inspections": "{count} pågående inspeksjoner",
+      "reminders": "{count} forfalte påminnelser"
+    }
   }
 }

@@ -29,8 +29,10 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Input } from '@/components/ui/input'
@@ -79,13 +81,42 @@ import {
   NotificationBell,
   NotificationPanel,
 } from '@/features/notifications/Components/NotificationPanel'
-import { SidebarInstallButton } from '@/components/pwa-install-prompt'
-import { FullscreenToggle } from '@/components/fullscreen-toggle'
+import { InstallMenuItem } from '@/components/pwa-install-prompt'
+import { FullscreenLauncher, FullscreenMenuItem } from '@/components/fullscreen-toggle'
 import { FeatureHint } from '@/components/feature-hint'
 import { ANNOUNCEMENTS } from '@/features/settings/Lib/featureHints'
 import { cn } from '@/lib/utils'
 
 type OrgInfo = { id: string; name: string; role: string }
+
+/**
+ * Live work, counted on the server for the rows that carry a pill.
+ *
+ * These are things still in hand, never running totals: a total would only
+ * ever grow, and a four-digit pill says nothing. Work orders count the ones
+ * not yet finished, inspections the ones still being walked, reminders the
+ * ones past their date.
+ */
+export type SidebarCounts = {
+  workOrders: number
+  inspections: number
+  reminders: number
+}
+
+type NavItem = {
+  titleKey: string
+  url: string
+  icon: React.ComponentType<{ className?: string }>
+  subject: string
+  /** Set to point a one-time note at this link the first time it appears. */
+  hint?: string
+  /** A pill on the row, with the translation key that reads it out. */
+  count?: number
+  countKey?: string
+}
+
+/** Roles the sidebar has a word for; custom roles fall back to the raw name. */
+const NAMED_ROLES = new Set(['owner', 'admin', 'member'])
 
 export function AppSidebar({
   companyLogo,
@@ -97,6 +128,7 @@ export function AppSidebar({
   isAdminOrOwner = false,
   visibleSubjects,
   announcement = null,
+  counts,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -109,6 +141,7 @@ export function AppSidebar({
   visibleSubjects?: string[]
   /** The one product announcement to show, worked out on the server. */
   announcement?: string | null
+  counts?: SidebarCounts
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -128,7 +161,7 @@ export function AppSidebar({
 
   const canAccess = (subject: string) => !visibleSubjects || visibleSubjects.includes(subject)
 
-  const clientItems = [
+  const clientItems: NavItem[] = [
     {
       titleKey: 'sidebar.customers' as const,
       url: '/customers',
@@ -143,25 +176,36 @@ export function AppSidebar({
     },
   ].filter((item) => canAccess(item.subject))
 
-  const workshopItems = [
+  const workshopItems: NavItem[] = [
     {
       titleKey: isMarine ? ('sidebar.vessels' as const) : ('sidebar.vehicles' as const),
       url: '/vehicles',
       icon: isMarine ? Ship : Car,
       subject: 'vehicles',
     },
-    { titleKey: 'sidebar.reminders' as const, url: '/reminders', icon: Bell, subject: 'vehicles' },
+    {
+      titleKey: 'sidebar.reminders' as const,
+      url: '/reminders',
+      icon: Bell,
+      subject: 'vehicles',
+      count: counts?.reminders,
+      countKey: 'sidebar.badges.reminders',
+    },
     {
       titleKey: 'sidebar.workOrders' as const,
       url: '/work-orders',
       icon: ClipboardList,
       subject: 'work_orders',
+      count: counts?.workOrders,
+      countKey: 'sidebar.badges.workOrders',
     },
     {
       titleKey: 'sidebar.inspections' as const,
       url: '/inspections',
       icon: ClipboardCheck,
       subject: 'inspections',
+      count: counts?.inspections,
+      countKey: 'sidebar.badges.inspections',
     },
     {
       titleKey: 'sidebar.calendar' as const,
@@ -191,7 +235,7 @@ export function AppSidebar({
       : []),
   ].filter((item) => canAccess(item.subject))
 
-  const businessItems = [
+  const businessItems: NavItem[] = [
     { titleKey: 'sidebar.quotes' as const, url: '/quotes', icon: FileText, subject: 'quotes' },
     { titleKey: 'sidebar.billing' as const, url: '/billing', icon: Receipt, subject: 'billing' },
     {
@@ -242,7 +286,7 @@ export function AppSidebar({
           tooltip={t('sidebar.settings')}
           className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
         >
-          <Link href="/settings" className="font-medium" onClick={closeMobileSidebar}>
+          <Link href="/settings" onClick={closeMobileSidebar}>
             <Settings className="size-4" />
             {t('sidebar.settings')}
           </Link>
@@ -273,17 +317,10 @@ export function AppSidebar({
     )
   }
 
-  const renderNavGroup = (
-    items: {
-      titleKey: string
-      url: string
-      icon: React.ComponentType<{ className?: string }>
-      /** Set to point a one-time note at this link the first time it appears. */
-      hint?: string
-    }[]
-  ) =>
+  const renderNavGroup = (items: NavItem[]) =>
     items.map((item) => {
       const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
+      const count = item.count ?? 0
       const row = (highlighted: boolean) => (
         <SidebarMenuItem key={item.titleKey}>
           <SidebarMenuButton
@@ -292,13 +329,21 @@ export function AppSidebar({
             tooltip={t(item.titleKey)}
             // Marked while the card is up, so it is obvious which of a dozen
             // links the card is talking about.
-            className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
+            className={cn(
+              count > 0 && 'pr-10',
+              highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar'
+            )}
           >
-            <Link href={item.url} className="font-medium" onClick={closeMobileSidebar}>
+            <Link href={item.url} onClick={closeMobileSidebar}>
               <item.icon className="size-4" />
               {t(item.titleKey)}
             </Link>
           </SidebarMenuButton>
+          {count > 0 && item.countKey && (
+            <SidebarMenuBadge title={t(item.countKey, { count })}>
+              {count > 99 ? '99+' : count}
+            </SidebarMenuBadge>
+          )}
         </SidebarMenuItem>
       )
 
@@ -319,6 +364,11 @@ export function AppSidebar({
     })
 
   const activeOrg = organizations.find((o) => o.id === activeOrgId) || organizations[0]
+  const roleLabel = activeOrg?.role
+    ? NAMED_ROLES.has(activeOrg.role)
+      ? t(`sidebar.roles.${activeOrg.role}`)
+      : activeOrg.role
+    : null
 
   const handleSwitchOrg = async (orgId: string) => {
     await switchOrganization(orgId)
@@ -357,29 +407,37 @@ export function AppSidebar({
 
   return (
     <Sidebar variant="floating" collapsible="icon" {...props}>
-      <SidebarHeader>
+      <FullscreenLauncher />
+      <SidebarHeader className="gap-2 p-2 pb-1">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
+          <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <div className="flex aspect-square size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg group-data-[collapsible=icon]:size-8">
+                  {/* The mark sits in its own bordered tile, so a logo of any
+                      shape or colour reads as one deliberate object. */}
+                  <div className="flex aspect-square size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-sidebar-border bg-card p-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0.5">
                     <Image
                       src={companyLogo || '/torqvoice_app_logo.png'}
                       alt={activeOrg?.name ?? 'Company'}
-                      width={38}
-                      height={38}
+                      width={32}
+                      height={32}
                       unoptimized
                       className="h-auto max-h-full w-auto max-w-full object-contain"
                     />
                   </div>
-                  <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                    <span className="font-semibold">
+                  <div className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
+                    <span className="truncate font-semibold">
                       {activeOrg?.name ?? t('sidebar.noOrganization')}
                     </span>
+                    {roleLabel && (
+                      <span className="truncate text-xs text-sidebar-foreground/60">
+                        {roleLabel}
+                      </span>
+                    )}
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
@@ -411,22 +469,39 @@ export function AppSidebar({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAdminOrOwner && <NotificationBell />}
           </SidebarMenuItem>
+          {/* The one filled button in the sidebar: the action a workshop
+              reaches for most, kept where it is never scrolled away. */}
+          {canAccess('work_orders') && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                tooltip={t('sidebar.newWorkOrder')}
+                className="justify-center bg-sidebar-primary font-medium text-sidebar-primary-foreground shadow-xs hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground active:bg-sidebar-primary/90 active:text-sidebar-primary-foreground [&>svg]:text-sidebar-primary-foreground hover:[&>svg]:text-sidebar-primary-foreground"
+              >
+                <Link href="/work-orders?new=1" onClick={closeMobileSidebar}>
+                  <Plus className="size-4" />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    {t('sidebar.newWorkOrder')}
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="gap-0">
         {/* Dashboard */}
         {canAccess('dashboard') && (
-          <SidebarGroup>
-            <SidebarMenu className="gap-2">
+          <SidebarGroup className="pb-0">
+            <SidebarMenu className="gap-1">
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={dashboardActive}
                   tooltip={t('sidebar.dashboard')}
                 >
-                  <Link href="/" className="font-medium" onClick={closeMobileSidebar}>
+                  <Link href="/" onClick={closeMobileSidebar}>
                     <LayoutDashboard className="size-4" />
                     {t('sidebar.dashboard')}
                   </Link>
@@ -440,7 +515,7 @@ export function AppSidebar({
         {clientItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.clients')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">{renderNavGroup(clientItems)}</SidebarMenu>
+            <SidebarMenu className="gap-1">{renderNavGroup(clientItems)}</SidebarMenu>
           </SidebarGroup>
         )}
 
@@ -448,7 +523,7 @@ export function AppSidebar({
         {workshopItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.workshop')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">{renderNavGroup(workshopItems)}</SidebarMenu>
+            <SidebarMenu className="gap-1">{renderNavGroup(workshopItems)}</SidebarMenu>
           </SidebarGroup>
         )}
 
@@ -456,35 +531,38 @@ export function AppSidebar({
         {businessItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.business')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">{renderNavGroup(businessItems)}</SidebarMenu>
+            <SidebarMenu className="gap-1">{renderNavGroup(businessItems)}</SidebarMenu>
           </SidebarGroup>
         )}
 
-        {/* Settings */}
+        {/* Settings, set apart from the page groups above it */}
         {canAccess('settings') && (
-          <SidebarGroup>
-            <SidebarMenu className="gap-2">
-              {/* Product announcements hang off Settings: everything they
-                  point at so far lives behind it, and it is the one link on
-                  the screen that is never scrolled away or filtered out by a
-                  role. Which one is worth showing was decided on the server,
-                  so this only says where the card goes. */}
-              {settingsRow()}
-            </SidebarMenu>
-          </SidebarGroup>
+          <>
+            <SidebarSeparator className="mt-2" />
+            <SidebarGroup>
+              <SidebarMenu className="gap-1">
+                {/* Product announcements hang off Settings: everything they
+                    point at so far lives behind it, and it is the one link on
+                    the screen that is never scrolled away or filtered out by a
+                    role. Which one is worth showing was decided on the server,
+                    so this only says where the card goes. */}
+                {settingsRow()}
+              </SidebarMenu>
+            </SidebarGroup>
+          </>
         )}
 
         {isSuperAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>{t('sidebar.superAdmin')}</SidebarGroupLabel>
-            <SidebarMenu className="gap-2">
+            <SidebarMenu className="gap-1">
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname.startsWith('/admin')}
                   tooltip={t('sidebar.adminPanel')}
                 >
-                  <Link href="/admin" className="font-medium" onClick={closeMobileSidebar}>
+                  <Link href="/admin" onClick={closeMobileSidebar}>
                     <ShieldCheck className="size-4" />
                     {t('sidebar.adminPanel')}
                   </Link>
@@ -493,26 +571,24 @@ export function AppSidebar({
             </SidebarMenu>
           </SidebarGroup>
         )}
-        <SidebarInstallButton />
-        <FullscreenToggle />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border p-2">
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <Avatar className="size-8 rounded-lg">
-                    <AvatarFallback className="rounded-lg bg-sidebar-primary/10 text-xs font-semibold text-sidebar-primary">
+                  <Avatar className="size-8 rounded-full">
+                    <AvatarFallback className="rounded-full bg-sidebar-primary/15 text-xs font-semibold text-sidebar-foreground">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{session?.user?.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate font-medium">{session?.user?.name}</span>
+                    <span className="truncate text-xs text-sidebar-foreground/60">
                       {session?.user?.email}
                     </span>
                   </div>
@@ -521,8 +597,8 @@ export function AppSidebar({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                side="bottom"
-                align="end"
+                side="top"
+                align="start"
                 sideOffset={4}
               >
                 {canAccess('settings') && (
@@ -585,6 +661,11 @@ export function AppSidebar({
                     </DropdownMenuRadioGroup>
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
+                {/* Device conveniences, out of the navigation where they
+                    used to pass for pages. Each renders nothing where it
+                    does not apply. */}
+                <InstallMenuItem />
+                <FullscreenMenuItem />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 size-4" />
@@ -592,6 +673,7 @@ export function AppSidebar({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {isAdminOrOwner && <NotificationBell />}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -118,6 +118,18 @@
     "auditLog": "Dziennik audytu",
     "aiAssistant": "Asystent AI",
     "tireHotel": "Hotel opon",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Nowe zlecenie",
+    "installApp": "Zainstaluj aplikację",
+    "roles": {
+      "owner": "Właściciel",
+      "admin": "Administrator",
+      "member": "Członek"
+    },
+    "badges": {
+      "workOrders": "{count} otwarte zlecenia",
+      "inspections": "{count} przeglądy w toku",
+      "reminders": "{count} zaległe przypomnienia"
+    }
   }
 }

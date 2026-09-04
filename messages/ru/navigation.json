@@ -118,6 +118,18 @@
     "auditLog": "Журнал аудита",
     "aiAssistant": "ИИ-ассистент",
     "tireHotel": "Шинный отель",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Новый заказ-наряд",
+    "installApp": "Установить приложение",
+    "roles": {
+      "owner": "Владелец",
+      "admin": "Администратор",
+      "member": "Участник"
+    },
+    "badges": {
+      "workOrders": "{count} открытых заказ-нарядов",
+      "inspections": "{count} проверок в работе",
+      "reminders": "{count} напоминаний просрочено"
+    }
   }
 }

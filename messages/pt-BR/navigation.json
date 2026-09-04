@@ -118,6 +118,18 @@
     "auditLog": "Registro de auditoria",
     "aiAssistant": "Assistente IA",
     "tireHotel": "Hotel de pneus",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Nova ordem de serviço",
+    "installApp": "Instalar o app",
+    "roles": {
+      "owner": "Proprietário",
+      "admin": "Administrador",
+      "member": "Membro"
+    },
+    "badges": {
+      "workOrders": "{count} ordens de serviço abertas",
+      "inspections": "{count} inspeções em andamento",
+      "reminders": "{count} lembretes vencidos"
+    }
   }
 }

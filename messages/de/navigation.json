@@ -118,6 +118,18 @@
     "auditLog": "Aktivitätsprotokoll",
     "aiAssistant": "KI-Assistent",
     "tireHotel": "Reifenhotel",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Neuer Arbeitsauftrag",
+    "installApp": "App installieren",
+    "roles": {
+      "owner": "Inhaber",
+      "admin": "Administrator",
+      "member": "Mitglied"
+    },
+    "badges": {
+      "workOrders": "{count} offene Arbeitsaufträge",
+      "inspections": "{count} laufende Inspektionen",
+      "reminders": "{count} fällige Erinnerungen"
+    }
   }
 }

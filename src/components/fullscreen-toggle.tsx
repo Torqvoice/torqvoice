@@ -3,12 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Maximize, Minimize } from 'lucide-react'
-import {
-  SidebarGroup,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { useInstallPrompt } from '@/components/pwa-install-prompt'
 
 /**
@@ -41,6 +36,22 @@ function prefersFullscreen(): boolean {
   }
 }
 
+/** Whether the browser offers fullscreen at all, and whether it is on now. */
+function useFullscreenState() {
+  const [supported, setSupported] = useState(false)
+  const [active, setActive] = useState(false)
+
+  useEffect(() => {
+    setSupported(typeof document !== 'undefined' && document.fullscreenEnabled)
+    const sync = () => setActive(document.fullscreenElement !== null)
+    sync()
+    document.addEventListener('fullscreenchange', sync)
+    return () => document.removeEventListener('fullscreenchange', sync)
+  }, [])
+
+  return { supported, active }
+}
+
 /**
  * Fullscreen for the installed app.
  *
@@ -57,20 +68,14 @@ function prefersFullscreen(): boolean {
  *
  * Only ever automatic for the installed app. Doing this to a browser tab would
  * hijack the first click on a page somebody opened alongside others.
+ *
+ * Renders nothing. It lives apart from the menu item because that item sits
+ * in a dropdown that is not mounted until somebody opens it, and the first
+ * gesture after launch has to be caught before then.
  */
-export function FullscreenToggle() {
-  const t = useTranslations('common.shared')
+export function FullscreenLauncher() {
   const { installed } = useInstallPrompt()
-  const [supported, setSupported] = useState(false)
-  const [active, setActive] = useState(false)
-
-  useEffect(() => {
-    setSupported(typeof document !== 'undefined' && document.fullscreenEnabled)
-    const sync = () => setActive(document.fullscreenElement !== null)
-    sync()
-    document.addEventListener('fullscreenchange', sync)
-    return () => document.removeEventListener('fullscreenchange', sync)
-  }, [])
+  const { supported } = useFullscreenState()
 
   // Spend the remembered preference on the first click or keypress. Listening
   // once, in capture, so the gesture still reaches whatever was clicked.
@@ -89,6 +94,14 @@ export function FullscreenToggle() {
       document.removeEventListener('keydown', enter, { capture: true })
     }
   }, [installed, supported])
+
+  return null
+}
+
+/** The fullscreen switch, as an entry in the account menu. */
+export function FullscreenMenuItem() {
+  const t = useTranslations('common.shared')
+  const { supported, active } = useFullscreenState()
 
   const toggle = useCallback(() => {
     if (document.fullscreenElement) {
@@ -112,20 +125,9 @@ export function FullscreenToggle() {
   if (!supported) return null
 
   return (
-    <SidebarGroup>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            onClick={toggle}
-            tooltip={active ? t('exitFullscreen') : t('enterFullscreen')}
-          >
-            {active ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
-            <span className="font-medium">
-              {active ? t('exitFullscreen') : t('enterFullscreen')}
-            </span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarGroup>
+    <DropdownMenuItem onClick={toggle}>
+      {active ? <Minimize className="mr-2 size-4" /> : <Maximize className="mr-2 size-4" />}
+      {active ? t('exitFullscreen') : t('enterFullscreen')}
+    </DropdownMenuItem>
   )
 }
