@@ -360,6 +360,7 @@
     "workBay": "Werkplek",
     "selectWorkBay": "Werkplek kiezen…",
     "noWorkBay": "Geen werkplek",
+    "noTechnician": "Zonder monteur",
     "technicians": "Monteurs",
     "otherTeamMembers": "Andere teamleden",
     "makeTechnician": "Maakt hen monteur",

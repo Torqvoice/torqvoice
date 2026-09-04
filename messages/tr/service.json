@@ -360,6 +360,7 @@
     "workBay": "Çalışma alanı",
     "selectWorkBay": "Çalışma alanı seçin…",
     "noWorkBay": "Çalışma alanı yok",
+    "noTechnician": "Teknisyensiz",
     "technicians": "Teknisyenler",
     "otherTeamMembers": "Diğer ekip üyeleri",
     "makeTechnician": "Onu teknisyen yapar",

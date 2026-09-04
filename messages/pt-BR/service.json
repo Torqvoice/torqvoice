@@ -360,6 +360,7 @@
     "workBay": "Baia",
     "selectWorkBay": "Selecionar baia…",
     "noWorkBay": "Sem baia",
+    "noTechnician": "Sem técnico",
     "technicians": "Técnicos",
     "otherTeamMembers": "Outros membros da equipe",
     "makeTechnician": "Torna essa pessoa técnica",
