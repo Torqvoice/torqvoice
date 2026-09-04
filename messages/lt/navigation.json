@@ -118,6 +118,18 @@
     "auditLog": "Audito žurnalas",
     "aiAssistant": "DI asistentas",
     "tireHotel": "Padangų viešbutis",
-    "whatsapp": "„WhatsApp“"
+    "whatsapp": "„WhatsApp“",
+    "newWorkOrder": "Naujas darbo užsakymas",
+    "installApp": "Įdiegti programėlę",
+    "roles": {
+      "owner": "Savininkas",
+      "admin": "Administratorius",
+      "member": "Narys"
+    },
+    "badges": {
+      "workOrders": "{count} atviri darbo užsakymai",
+      "inspections": "{count} vykdomos apžiūros",
+      "reminders": "{count} priminimai, kurių terminas suėjo"
+    }
   }
 }

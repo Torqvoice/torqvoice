@@ -118,6 +118,18 @@
     "auditLog": "Denetim günlüğü",
     "aiAssistant": "AI Asistanı",
     "tireHotel": "Lastik oteli",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Yeni iş emri",
+    "installApp": "Uygulamayı yükle",
+    "roles": {
+      "owner": "Sahip",
+      "admin": "Yönetici",
+      "member": "Üye"
+    },
+    "badges": {
+      "workOrders": "{count} açık iş emri",
+      "inspections": "{count} devam eden muayene",
+      "reminders": "{count} vadesi gelen hatırlatma"
+    }
   }
 }

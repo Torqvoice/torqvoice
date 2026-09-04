@@ -118,6 +118,18 @@
     "auditLog": "Audit Log",
     "aiAssistant": "AI Assistant",
     "tireHotel": "Tire hotel",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "New work order",
+    "installApp": "Install app",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "badges": {
+      "workOrders": "{count} open work orders",
+      "inspections": "{count} inspections in progress",
+      "reminders": "{count} reminders due"
+    }
   }
 }
