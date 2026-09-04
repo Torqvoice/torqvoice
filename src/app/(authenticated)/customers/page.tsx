@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import { getCustomersPaginated } from '@/features/customers/Actions/customerActions'
 import { CustomersClient } from './customers-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function CustomersPage({
   searchParams,
@@ -43,14 +44,14 @@ export default async function CustomersPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <CustomersClient
           data={result.data}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

@@ -2,6 +2,7 @@ import { getRecurringInvoices } from '@/features/billing/Actions/recurringInvoic
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 import RecurringInvoicesClient from '@/features/billing/Components/RecurringInvoicesClient'
 import { db } from '@/lib/db'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
@@ -37,13 +38,13 @@ export default async function RecurringInvoicesPage() {
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <RecurringInvoicesClient
           invoices={invoices}
           vehicles={vehicles}
           currencyCode={currencyCode}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

@@ -5,6 +5,7 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { LaborPresetsClient } from './labor-presets-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function LaborPresetsPage({
   searchParams,
@@ -66,7 +67,7 @@ export default async function LaborPresetsPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <LaborPresetsClient
           data={result.data}
           search={params.search || ''}
@@ -76,7 +77,7 @@ export default async function LaborPresetsPage({
           defaultLaborRate={defaultLaborRate}
           inventoryParts={inventoryParts}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

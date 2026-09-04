@@ -31,7 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <aside className="w-full shrink-0 overflow-y-auto md:w-56 lg:w-64">
             <AdminNav />
           </aside>
-          <div className="min-w-0 flex-1 overflow-y-auto pb-8">{children}</div>
+          <div className="flex min-w-0 flex-1 flex-col overflow-y-auto pb-8">{children}</div>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { QuotesClient } from './quotes-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function QuotesPage({
   searchParams,
@@ -51,7 +52,7 @@ export default async function QuotesPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <QuotesClient
           data={result.data}
           currencyCode={currencyCode}
@@ -60,7 +61,7 @@ export default async function QuotesPage({
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

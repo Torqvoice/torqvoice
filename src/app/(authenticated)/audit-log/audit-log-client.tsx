@@ -148,9 +148,9 @@ export function AuditLogClient({
   )
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -212,7 +212,7 @@ export function AuditLogClient({
       </div>
 
       {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.logs.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {t('noLogsFound')}
@@ -253,11 +253,14 @@ export function AuditLogClient({
         )}
       </div>
 
-      {/* Table (md and up) */}
-      <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
+      {/* Table (md and up) - only the rows scroll */}
+      <div
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-md border md:flex"
+        {...tableNav.containerProps}
+      >
         <TableContextMenuHint />
-        <Table>
-          <TableHeader>
+        <Table containerClassName="min-h-0 flex-1">
+          <TableHeader sticky>
             <TableRow>
               <TableHead className="w-[170px]">{t('timestamp')}</TableHead>
               <TableHead className="w-[140px]">{t('user')}</TableHead>

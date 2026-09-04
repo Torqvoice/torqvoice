@@ -120,8 +120,8 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex shrink-0 items-center gap-2">
         <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -135,7 +135,7 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
       </div>
 
       {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.organizations.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {search ? t('organizations.noResults') : t('organizations.noOrganizations')}
@@ -190,10 +190,10 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
         )}
       </div>
 
-      {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block">
-        <Table>
-          <TableHeader>
+      {/* Table (md and up) - only the rows scroll */}
+      <div className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex">
+        <Table containerClassName="min-h-0 flex-1">
+          <TableHeader sticky>
             <TableRow>
               <TableHead>{t('organizations.name')}</TableHead>
               <TableHead>{t('organizations.owner')}</TableHead>

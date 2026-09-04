@@ -5,6 +5,7 @@ import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { VehiclesClient } from './vehicles-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function VehiclesPage({
   searchParams,
@@ -65,7 +66,7 @@ export default async function VehiclesPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <VehiclesClient
           data={result.data}
           customers={customersResult.data ?? []}
@@ -78,7 +79,7 @@ export default async function VehiclesPage({
           inspectionDue={inspectionDue}
           hasInspectionData={result.data.hasInspectionData}
         />
-      </div>
+      </ListPage>
     </>
   )
 }
