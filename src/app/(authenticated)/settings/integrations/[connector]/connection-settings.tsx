@@ -249,6 +249,21 @@ export function ConnectionSettings({
           </div>
         )}
 
+        {/* Only one AI provider, and one vendor per messaging channel, stays in
+            charge. Connecting this one stands the other down, which is worth
+            knowing before the button is pressed rather than after. */}
+        {!connected && view.supersedes && (
+          <div className="mb-4 flex gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <p className="text-muted-foreground">
+              {t('connection.supersedes', {
+                current: view.supersedes.name,
+                next: manifest.name,
+              })}
+            </p>
+          </div>
+        )}
+
         {connected ? (
           <div className={`grid gap-4 text-sm ${hasSync ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
             <div>

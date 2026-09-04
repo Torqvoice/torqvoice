@@ -12,7 +12,9 @@
     "noneConnected": "Nothing connected yet. Pick a service below to get started.",
     "availableTitle": "Available",
     "availableDescription": "Services you can add. Each one is set up once and runs in the background.",
-    "allConnected": "Every available service is connected."
+    "allConnected": "Every available service is connected.",
+    "searchPlaceholder": "Search integrations",
+    "noMatches": "Nothing matches \"{query}\"."
   },
   "categories": {
     "calendar": "Calendar",
@@ -23,7 +25,8 @@
     "automation": "Automation",
     "storage": "Files",
     "registry": "Vehicle registry",
-    "other": "Other"
+    "other": "Other",
+    "ai": "AI"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Plate and VIN lookup",
       "inspection": "Inspection due dates"
+    },
+    "ai": {
+      "chat": "Writing and summaries"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "A pass is running",
       "off": "Turn the setting on and save; until then a pass checks nothing.",
       "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done."
-    }
+    },
+    "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live."
   },
   "activity": {
     "title": "Activity",
@@ -396,6 +403,28 @@
         "auStateHelp": "Australia registers vehicles per state, and the registry must be told which one to search. Choose where most of your customers' vehicles are registered.",
         "usState": "State",
         "usStateHelp": "The two-letter code of the state the vehicles are registered in, such as CA or TX. American registries are searched per state."
+      }
+    },
+    "openai": {
+      "description": "Service descriptions, history summaries, document scanning and the assistant, answered by your own OpenAI account. Every call is billed to that account, and you choose which model answers.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Create one at platform.openai.com under API keys. The account needs credit on it; OpenAI bills the usage, per call."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Which model answers. The list is read from your account, newest first. Smaller models cost less per call and are enough for most workshop text."
+      }
+    },
+    "anthropic": {
+      "description": "Service descriptions, history summaries, document scanning and the assistant, answered by Claude on your own Anthropic account. Every call is billed to that account, and you choose which model answers.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Create one at console.anthropic.com under API keys. The account needs credit on it; Anthropic bills the usage, per call."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Which model answers. The list is read from your account, newest first. Smaller models cost less per call and are enough for most workshop text."
       }
     }
   },

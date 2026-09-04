@@ -4,7 +4,7 @@
   "placeholder": "Ask about your workshop...",
   "clear": "Clear conversation",
   "error": "Something went wrong. Please try again.",
-  "notEnabled": "AI is not enabled. Configure it in Settings → AI.",
+  "notEnabled": "AI is not connected. Connect OpenAI or Anthropic under Settings → Integrations.",
   "suggestion1": "Which vehicles are due for service?",
   "suggestion2": "Show me unpaid invoices",
   "suggestion3": "What's the revenue this month?",

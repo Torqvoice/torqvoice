@@ -5,6 +5,7 @@ import { getFeatures } from '@/lib/features'
 import { isDemoMode } from '@/lib/demo'
 import { getManifest } from '@/integrations/registry'
 import { appUrl } from '@/features/integrations/Lib/connections'
+import { connectorAllowed } from '@/features/integrations/Lib/plan'
 import {
   buildAuthorizeUrl,
   newCodeVerifier,
@@ -38,7 +39,7 @@ export async function GET(
   if (!manifest || !spec) return fail('unknown')
 
   const features = await getFeatures(ctx.organizationId)
-  if (!features.integrations || (manifest.plan && !features[manifest.plan])) return fail('plan')
+  if (!connectorAllowed(manifest, features)) return fail('plan')
 
   const existing = await db.integrationConnection.findUnique({
     where: {

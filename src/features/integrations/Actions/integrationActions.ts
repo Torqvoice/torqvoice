@@ -26,7 +26,7 @@ import {
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import type { ConnectionStatus, ConnectorManifest, SettingOption } from '../Lib/types'
-import { messagingProvider } from '@/integrations/messaging/catalog'
+import { messagingProvider, providersForChannel } from '@/integrations/messaging/catalog'
 import {
   type InboundWebhook,
   completeMessagingCredentials,
@@ -35,6 +35,8 @@ import {
   retireOtherProviders,
 } from '../Lib/messaging'
 import { openCredentials } from '../Lib/vault'
+import { AI_CONNECTOR_IDS, adoptLegacyAi, markAiAdopted, retireOtherAiProviders } from '../Lib/ai'
+import { anyConnectorAllowed, connectorAllowed } from '../Lib/plan'
 
 /**
  * The inbound URL for a messaging connection, from its sealed secret. A row
@@ -89,6 +91,11 @@ async function activateConnection(
   userId: string
 ): Promise<void> {
   await setConnectionStatus(connectionId, 'active')
+  if (AI_CONNECTOR_IDS.includes(connectorId as (typeof AI_CONNECTOR_IDS)[number])) {
+    await retireOtherAiProviders(organizationId, connectorId)
+    await markAiAdopted(organizationId, userId)
+    return
+  }
   const provider = messagingProvider(connectorId)
   if (!provider) return
   await retireOtherProviders(organizationId, connectorId)
@@ -131,6 +138,10 @@ function manifestForClient(m: ConnectorManifest): ConnectorManifest {
 export async function getIntegrationCatalog() {
   return withAuth(
     async ({ organizationId }) => {
+      // AI moved into the catalog from a settings page of its own. Adopting
+      // here as well as on first use means a workshop that had it switched on
+      // opens this page and finds it already connected.
+      await adoptLegacyAi(organizationId)
       const [features, connections, countrySetting] = await Promise.all([
         getFeatures(organizationId),
         db.integrationConnection.findMany({
@@ -146,23 +157,25 @@ export async function getIntegrationCatalog() {
       ])
       const byId = new Map(connections.map((c) => [c.connectorId, c]))
       const country = countrySetting?.value ?? null
-      const entries: CatalogEntry[] = listManifests().map((manifest) => {
-        const c = byId.get(manifest.id)
-        const spec = oauthSpec(manifest)
-        return {
-          manifest: manifestForClient(manifest),
-          status: (c?.status as ConnectionStatus | undefined) ?? null,
-          externalAccountName: c?.externalAccountName ?? null,
-          lastError: c?.lastError ?? null,
-          platformApp: spec ? Boolean(platformClient(spec)) : true,
-          featured:
-            manifest.countries === 'global' ||
-            (country ? manifest.countries.includes(country) : false),
-        }
-      })
+      const entries: CatalogEntry[] = listManifests()
+        .filter((manifest) => features.integrations || connectorAllowed(manifest, features))
+        .map((manifest) => {
+          const c = byId.get(manifest.id)
+          const spec = oauthSpec(manifest)
+          return {
+            manifest: manifestForClient(manifest),
+            status: (c?.status as ConnectionStatus | undefined) ?? null,
+            externalAccountName: c?.externalAccountName ?? null,
+            lastError: c?.lastError ?? null,
+            platformApp: spec ? Boolean(platformClient(spec)) : true,
+            featured:
+              manifest.countries === 'global' ||
+              (country ? manifest.countries.includes(country) : false),
+          }
+        })
       return {
         entries,
-        enabled: features.integrations,
+        enabled: anyConnectorAllowed(features),
         isCloud: isCloudMode(),
       }
     },
@@ -198,6 +211,12 @@ export interface ConnectionView {
    */
   inbound: InboundWebhook | null
   /**
+   * The vendor connecting this one would stand down, when only one at a time
+   * is allowed: the other AI provider, or the vendor already sending on this
+   * messaging channel. Null when connecting takes nothing away.
+   */
+  supersedes: { connectorId: string; name: string } | null
+  /**
    * The callback the OAuth start route will send to the vendor. Computed on
    * the server from the configured app URL, so it is the same on the server
    * render and in the browser, and it matches what the vendor sees.
@@ -205,16 +224,58 @@ export interface ConnectionView {
   redirectUri: string
 }
 
+/**
+ * Vendors that would be stood down by connecting this one.
+ *
+ * A workshop sends through one SMS vendor and asks one AI vendor, so
+ * connecting a second retires the first rather than leaving the app to guess.
+ * That is worth saying before the button is pressed rather than after.
+ */
+function siblingIdsOf(connectorId: string): string[] {
+  if (AI_CONNECTOR_IDS.includes(connectorId as (typeof AI_CONNECTOR_IDS)[number])) {
+    return AI_CONNECTOR_IDS.filter((id) => id !== connectorId)
+  }
+  const provider = messagingProvider(connectorId)
+  if (!provider) return []
+  return providersForChannel(provider.channel)
+    .map((p) => p.id)
+    .filter((id) => id !== connectorId)
+}
+
+async function supersededVendor(
+  organizationId: string,
+  connectorId: string
+): Promise<{ connectorId: string; name: string } | null> {
+  const siblings = siblingIdsOf(connectorId)
+  if (siblings.length === 0) return null
+  const rows = await db.integrationConnection.findMany({
+    where: { organizationId, connectorId: { in: siblings }, status: 'active' },
+    orderBy: { updatedAt: 'desc' },
+    select: { connectorId: true },
+  })
+  for (const row of rows) {
+    const manifest = getManifest(row.connectorId)
+    if (manifest) return { connectorId: manifest.id, name: manifest.name }
+  }
+  return null
+}
+
 export async function getIntegrationConnection(connectorId: string) {
   return withAuth(
     async ({ organizationId }): Promise<ConnectionView> => {
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
-      const [features, row] = await Promise.all([
+      // Opening an AI vendor's page directly, without passing the catalog,
+      // still finds an old settings-page setup already connected.
+      if (AI_CONNECTOR_IDS.includes(connectorId as (typeof AI_CONNECTOR_IDS)[number])) {
+        await adoptLegacyAi(organizationId)
+      }
+      const [features, row, supersedes] = await Promise.all([
         getFeatures(organizationId),
         db.integrationConnection.findUnique({
           where: { organizationId_connectorId: { organizationId, connectorId } },
         }),
+        supersededVendor(organizationId, connectorId),
       ])
       const spec = oauthSpec(manifest)
       let tenantClientId: string | null = null
@@ -243,11 +304,12 @@ export async function getIntegrationConnection(connectorId: string) {
             }
           : null,
         platformApp: spec ? Boolean(platformClient(spec)) : true,
-        enabled: features.integrations && (!manifest.plan || Boolean(features[manifest.plan])),
+        enabled: connectorAllowed(manifest, features),
         isCloud: isCloudMode(),
         webhookUrl:
           row && appUrl ? `${appUrl}/api/integrations/${connectorId}/${row.id}/webhook` : null,
         inbound: row ? inboundFor(row, configuredAppUrl()) : null,
+        supersedes,
         redirectUri: redirectUriFor(configuredAppUrl(), connectorId),
         inspectionSync:
           row && manifest.capabilities.includes(INSPECTION_CAPABILITY)
@@ -279,11 +341,12 @@ export async function saveIntegrationCredentials(
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
       const features = await getFeatures(organizationId)
-      if (!features.integrations)
-        throw new FeatureGatedError('integrations', 'Integrations are not included in your plan.')
-      // A channel keeps the plan gate it had as a settings page.
+      // A connector that names its own plan feature keeps the gate it had as a
+      // settings page; everything else needs the integrations flag.
       if (manifest.plan && !features[manifest.plan])
         throw new FeatureGatedError(manifest.plan, `${manifest.name} is not included in your plan.`)
+      if (!manifest.plan && !features.integrations)
+        throw new FeatureGatedError('integrations', 'Integrations are not included in your plan.')
       const input = credentialsSchema.parse(raw)
       // Settings typed on the connect page, saved before the key check runs:
       // an SMTP port needs its TLS choice and a Mailgun key needs its region

@@ -1,6 +1,5 @@
 import 'server-only'
-import { db } from '@/lib/db'
-import { AI_KEYS } from '@/features/ai/Schema/aiSettingsSchema'
+import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
 import { describeAiError } from '@/lib/ai-error'
@@ -11,33 +10,21 @@ interface AiConfig {
   model: string
 }
 
+/**
+ * The AI vendor this workshop sends to. Either an active connection in the
+ * integrations catalog, or the settings a workshop saved before AI moved
+ * there, adopted into one on this first call.
+ */
 export async function getAiConfig(organizationId: string): Promise<AiConfig> {
-  const settings = await db.appSetting.findMany({
-    where: {
-      organizationId,
-      key: {
-        in: [AI_KEYS.AI_ENABLED, AI_KEYS.AI_PROVIDER, AI_KEYS.AI_API_KEY, AI_KEYS.AI_MODEL],
-      },
-    },
-  })
+  const setup = await aiSetup(organizationId)
 
-  const map = new Map(settings.map((s) => [s.key, s.value]))
-
-  if (map.get(AI_KEYS.AI_ENABLED) !== 'true') {
-    throw new Error('AI is not enabled. Configure it in Settings → AI.')
-  }
-
-  const provider = map.get(AI_KEYS.AI_PROVIDER)
-  const apiKey = map.get(AI_KEYS.AI_API_KEY)
-  const model = map.get(AI_KEYS.AI_MODEL)
-
-  if (!provider || !apiKey || !model) {
+  if (!setup) {
     throw new Error(
-      'AI is not fully configured. Set provider, API key, and model in Settings → AI.'
+      'AI is not connected. Connect OpenAI or Anthropic in Settings → Integrations.'
     )
   }
 
-  return { provider, apiKey, model }
+  return { provider: setup.provider, apiKey: setup.apiKey, model: setup.model }
 }
 
 export function createClient(config: AiConfig): OpenAI {

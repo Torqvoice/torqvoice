@@ -12,7 +12,9 @@
     "noneConnected": "Ancora nulla di collegato. Scegli un servizio qui sotto per iniziare.",
     "availableTitle": "Disponibili",
     "availableDescription": "Servizi che puoi aggiungere. Ognuno si configura una volta e lavora in background.",
-    "allConnected": "Tutti i servizi disponibili sono collegati."
+    "allConnected": "Tutti i servizi disponibili sono collegati.",
+    "searchPlaceholder": "Cerca integrazioni",
+    "noMatches": "Nessun risultato per «{query}»."
   },
   "categories": {
     "calendar": "Calendario",
@@ -23,7 +25,8 @@
     "automation": "Automazione",
     "storage": "File",
     "registry": "Registro veicoli",
-    "other": "Altro"
+    "other": "Altro",
+    "ai": "IA"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Ricerca per targa e VIN",
       "inspection": "Scadenze revisione"
+    },
+    "ai": {
+      "chat": "Testi e riepiloghi"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "Un passaggio è in corso",
       "off": "Attiva l'impostazione e salva; fino ad allora un passaggio non controlla nulla.",
       "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
-    }
+    },
+    "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio."
   },
   "activity": {
     "title": "Attività",
@@ -396,6 +403,28 @@
         "auStateHelp": "L'Australia immatricola i veicoli per stato e al registro va detto quale consultare. Scegli quello in cui è immatricolata la maggior parte dei veicoli dei tuoi clienti.",
         "usState": "Stato",
         "usStateHelp": "Il codice di due lettere dello stato in cui sono immatricolati i veicoli, come CA o TX. I registri americani si consultano per stato."
+      }
+    },
+    "openai": {
+      "description": "Descrizioni di servizio, riepiloghi dello storico, lettura dei documenti e l'assistente, risposti dal vostro account OpenAI. Ogni chiamata è addebitata su quell'account e il modello lo scegliete voi.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Da creare su platform.openai.com, in API keys. L'account deve avere credito; OpenAI fattura a chiamata."
+      },
+      "settings": {
+        "model": "Modello",
+        "modelHelp": "Quale modello risponde. L'elenco arriva dal vostro account, prima i più recenti. I modelli piccoli costano meno a chiamata e bastano per quasi tutti i testi dell'officina."
+      }
+    },
+    "anthropic": {
+      "description": "Descrizioni di servizio, riepiloghi dello storico, lettura dei documenti e l'assistente, risposti da Claude sul vostro account Anthropic. Ogni chiamata è addebitata su quell'account e il modello lo scegliete voi.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Da creare su console.anthropic.com, in API keys. L'account deve avere credito; Anthropic fattura a chiamata."
+      },
+      "settings": {
+        "model": "Modello",
+        "modelHelp": "Quale modello risponde. L'elenco arriva dal vostro account, prima i più recenti. I modelli piccoli costano meno a chiamata e bastano per quasi tutti i testi dell'officina."
       }
     }
   },

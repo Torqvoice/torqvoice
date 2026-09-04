@@ -4,7 +4,7 @@
   "placeholder": "Spør om verkstedet ditt...",
   "clear": "Tøm samtale",
   "error": "Noe gikk galt. Vennligst prøv igjen.",
-  "notEnabled": "AI er ikke aktivert. Konfigurer det i Innstillinger → AI.",
+  "notEnabled": "AI er ikke koblet til. Koble til OpenAI eller Anthropic under Innstillinger → Integrasjoner.",
   "suggestion1": "Hvilke kjøretøy trenger snart service?",
   "suggestion2": "Vis meg ubetalte fakturaer",
   "suggestion3": "Hva er inntekten denne måneden?",

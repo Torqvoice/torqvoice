@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
+import { anyConnectorAllowed } from '@/features/integrations/Lib/plan'
 import { getIntegrationCatalog } from '@/features/integrations/Actions/integrationActions'
 import { FeatureLockedMessage } from '../feature-locked-message'
 import { IntegrationsCatalog } from './integrations-catalog'
@@ -11,7 +12,7 @@ export default async function IntegrationsPage() {
   if (data.status === 'no-organization') redirect('/onboarding')
 
   const features = await getFeatures(data.organizationId)
-  if (!features.integrations) {
+  if (!anyConnectorAllowed(features)) {
     return (
       <FeatureLockedMessage
         feature="Integrations"

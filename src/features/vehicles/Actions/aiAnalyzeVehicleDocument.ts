@@ -2,8 +2,7 @@
 
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { db } from '@/lib/db'
-import { AI_KEYS } from '@/features/ai/Schema/aiSettingsSchema'
+import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { visionCompletion } from '@/lib/ai'
 import { getLocale } from 'next-intl/server'
 import { localeNames, type Locale } from '@/i18n/config'
@@ -37,25 +36,9 @@ export interface VehicleDocumentScan {
  * have to thread that down from its own server page.
  */
 export async function isVehicleScanAvailable() {
-  return withAuth(
-    async ({ organizationId }) => {
-      const settings = await db.appSetting.findMany({
-        where: {
-          organizationId,
-          key: { in: [AI_KEYS.AI_ENABLED, AI_KEYS.AI_API_KEY, AI_KEYS.AI_MODEL] },
-        },
-      })
-      const map = new Map(settings.map((s) => [s.key, s.value]))
-      return (
-        map.get(AI_KEYS.AI_ENABLED) === 'true' &&
-        Boolean(map.get(AI_KEYS.AI_API_KEY)) &&
-        Boolean(map.get(AI_KEYS.AI_MODEL))
-      )
-    },
-    {
-      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
-    }
-  )
+  return withAuth(async ({ organizationId }) => isAiConfigured(organizationId), {
+    requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
+  })
 }
 
 const FUEL_TYPES = ['gasoline', 'diesel', 'electric', 'hybrid', 'two-stroke', 'other']

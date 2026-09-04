@@ -12,7 +12,9 @@
     "noneConnected": "Ingenting er koblet til ennå. Velg en tjeneste nedenfor for å komme i gang.",
     "availableTitle": "Tilgjengelig",
     "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
-    "allConnected": "Alle tilgjengelige tjenester er tilkoblet."
+    "allConnected": "Alle tilgjengelige tjenester er tilkoblet.",
+    "searchPlaceholder": "Søk i integrasjoner",
+    "noMatches": "Ingenting passer med «{query}»."
   },
   "categories": {
     "calendar": "Kalender",
@@ -23,7 +25,8 @@
     "automation": "Automatisering",
     "storage": "Filer",
     "registry": "Kjøretøyregister",
-    "other": "Annet"
+    "other": "Annet",
+    "ai": "KI"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Oppslag på skilt og understellsnummer",
       "inspection": "Frist for EU-kontroll"
+    },
+    "ai": {
+      "chat": "Tekst og sammendrag"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "En gjennomgang pågår",
       "off": "Slå på innstillingen og lagre; før det sjekker en gjennomgang ingenting.",
       "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige."
-    }
+    },
+    "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang."
   },
   "activity": {
     "title": "Aktivitet",
@@ -396,6 +403,28 @@
         "auStateHelp": "Australia registrerer kjøretøy per delstat, og registeret må få vite hvilken som skal søkes. Velg der de fleste av kundenes kjøretøy er registrert.",
         "usState": "Delstat",
         "usStateHelp": "Tobokstavskoden for delstaten kjøretøyene er registrert i, som CA eller TX. Amerikanske registre søkes per delstat."
+      }
+    },
+    "openai": {
+      "description": "Servicebeskrivelser, historikksammendrag, lesing av vognkort og assistenten, besvart av din egen OpenAI-konto. Hvert kall belastes den kontoen, og du velger modellen.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Lag en på platform.openai.com under API keys. Kontoen må ha saldo; OpenAI fakturerer per kall."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Hvilken modell som svarer. Listen leses fra kontoen din, nyeste først. Mindre modeller koster mindre per kall og holder for det meste av verkstedteksten."
+      }
+    },
+    "anthropic": {
+      "description": "Servicebeskrivelser, historikksammendrag, lesing av vognkort og assistenten, besvart av Claude på din egen Anthropic-konto. Hvert kall belastes den kontoen, og du velger modellen.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Lag en på console.anthropic.com under API keys. Kontoen må ha saldo; Anthropic fakturerer per kall."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Hvilken modell som svarer. Listen leses fra kontoen din, nyeste først. Mindre modeller koster mindre per kall og holder for det meste av verkstedteksten."
       }
     }
   },

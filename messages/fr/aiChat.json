@@ -4,7 +4,7 @@
   "placeholder": "Demandez à propos de votre atelier...",
   "clear": "Effacer la conversation",
   "error": "Une erreur s'est produite. Veuillez réessayer.",
-  "notEnabled": "L'IA n'est pas activée. Configurez-la dans Paramètres → IA.",
+  "notEnabled": "L'IA n'est pas connectée. Connectez OpenAI ou Anthropic dans Paramètres → Intégrations.",
   "suggestion1": "Quels véhicules doivent bientôt être révisés ?",
   "suggestion2": "Montrez-moi les factures impayées",
   "suggestion3": "Quel est le chiffre d'affaires ce mois-ci ?",

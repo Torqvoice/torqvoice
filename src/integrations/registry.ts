@@ -9,9 +9,11 @@
 
 import type { ConnectorManifest, ConnectorServer } from '@/features/integrations/Lib/types'
 import { manifest as amazonSes } from './amazon-ses/manifest'
+import { manifest as anthropic } from './anthropic/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
 import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
+import { manifest as openai } from './openai/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as rdw } from './rdw/manifest'
@@ -34,6 +36,8 @@ interface RegistryEntry {
 }
 
 const ENTRIES: readonly RegistryEntry[] = [
+  { manifest: openai, load: () => import('./openai/server') },
+  { manifest: anthropic, load: () => import('./anthropic/server') },
   { manifest: googleCalendar, load: () => import('./google-calendar/server') },
   { manifest: microsoft365, load: () => import('./microsoft-365/server') },
   { manifest: zoom, load: () => import('./zoom/server') },

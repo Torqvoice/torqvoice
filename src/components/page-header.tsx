@@ -119,7 +119,6 @@ const docsMap: Record<string, string> = {
   '/settings/maintenance': '/docs/configuration/predicted-maintenance',
   '/settings/data': '/docs/configuration/backup-and-restore',
   '/settings/alerts': '/docs/features/low-stock-alerts',
-  '/settings/ai': '/docs/integrations/ai',
   '/settings/telegram': '/docs/integrations/telegram',
   '/telegram': '/docs/integrations/telegram',
   '/settings/report-schedule': '/docs/features/reports',

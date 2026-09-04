@@ -12,6 +12,7 @@
 import type { PlanFeatures } from '@/lib/features'
 
 export type IntegrationCategory =
+  | 'ai'
   | 'calendar'
   | 'conferencing'
   | 'accounting'

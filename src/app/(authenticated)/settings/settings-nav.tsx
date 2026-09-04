@@ -28,7 +28,6 @@ import {
   Layout,
   MessagesSquare,
   Percent,
-  Sparkles,
   UserCog,
   UsersRound,
   Webhook,
@@ -99,7 +98,6 @@ const settingsCategories: SettingsCategory[] = [
       { key: 'inspectionReminders', href: '/settings/inspection-reminders', icon: ClipboardCheck },
       { key: 'alerts', href: '/settings/alerts', icon: BellRing },
       { key: 'tireHotel', href: '/settings/tire-hotel', icon: Disc3, gate: 'tireHotel' },
-      { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
       {
         key: 'reportSchedule',
         href: '/settings/report-schedule',
