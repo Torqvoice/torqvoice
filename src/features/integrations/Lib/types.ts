@@ -58,6 +58,12 @@ export type AuthSpec =
        * them from the form body; Zoom and a few others want HTTP Basic auth.
        */
       tokenAuth?: 'body' | 'basic'
+      /**
+       * Query parameters the vendor adds to the callback beside code and
+       * state, kept on the connection's state under the same names. Intuit
+       * sends the company id (realmId) this way and nowhere else.
+       */
+      callbackParams?: string[]
       /** Environment variable names holding the platform-owned app's client id and secret. */
       platformEnv?: { clientId: string; clientSecret: string }
       /** Fields a workshop fills in to use its own app. */
@@ -149,6 +155,11 @@ export interface LinkStore {
   remove(entityType: string, entityId: string): Promise<void>
   /** Remote ids this connection created, so a pull can leave them out. */
   remoteIds(entityType: string): Promise<Set<string>>
+  /** The local record behind a remote id, for a pull that starts from the vendor's side. */
+  byRemoteId(
+    entityType: string,
+    remoteId: string
+  ): Promise<(LinkRecord & { entityId: string }) | null>
 }
 
 export interface ConnectionSnapshot {

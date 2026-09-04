@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Fatura bağlantısından ödeme"
+    },
+    "accounting": {
+      "invoices": "Faturalar muhasebeye",
+      "customers": "Müşteriler muhasebeye",
+      "payments": "Ödemeler iki yönlü"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Senkronizasyon sıraya alındı; bir dakika içinde çalışır",
     "backfill": "Planlanmış iş emirlerini gönder",
     "backfillQueued": "Geçen haftadan itibaren planlanmış iş emirleri sıraya alındı",
+    "backfillInvoices": "Kesilen faturaları gönder",
+    "backfillInvoicesQueued": "Son 90 günde kesilen faturalar kuyruğa alındı",
     "retryQueued": "İş yeniden sıraya alındı",
     "settingsTitle": "Ayarlar",
     "settingsDescription": "Neyin nereye senkronize edileceği. Değişiklikler bir sonraki senkronizasyonda uygulanır.",
@@ -475,6 +482,38 @@
         "sandbox": "Sandbox modu",
         "sandboxHelp": "PayPal sandbox'ını sandbox uygulama anahtarlarıyla kullanın. Tam bir ödeme geçene kadar açık bırakın, sonra kapatıp canlı uygulamanın anahtarlarını girin."
       }
+    },
+    "quickbooks": {
+      "description": "Kesilen faturaları, müşterilerini ve ödemelerini QuickBooks Online'a gönderin ve orada kaydedilen ödemeleri geri alın.",
+      "tenantHelp": "Intuit Developer portalında bir uygulama oluşturun. Client id ve secret'ı Keys and credentials'dan kopyalayın, aşağıdaki yönlendirme URI'sini Settings, Redirect URIs altına girin. Geliştirme anahtarları sandbox şirketlerine, üretim anahtarları gerçek şirketlere ulaşır.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "pushInvoices": "Kesilen faturaları QuickBooks'a gönder",
+        "pushOnComplete": "İş tamamlandı olarak işaretlendiğinde faturaları da gönder",
+        "pushOnCompleteHelp": "Bu olmadan fatura gönderildiğinde, paylaşıldığında veya ödendiğinde aktarılır. Bununla tamamlanan iş hemen aktarılır ve değişirse güncellenir.",
+        "startDate": "Yalnızca şu tarih ve sonrasındaki faturalar",
+        "startDateHelp": "YYYY-AA-GG. Kesilen her faturayı göndermek için boş bırakın. Eski faturaların iki kez girilmemesi için defterlerinizin QuickBooks'a taşındığı tarihi kullanın.",
+        "includeVehicle": "Aracı faturada belirt",
+        "includeVehicleHelp": "Kalemlerin üzerinde yıl, marka, model, plaka ve kilometreyi içeren bir metin satırı; böylece defterler hangi araç olduğunu söyler.",
+        "laborItemId": "İşçilik satırları için kalem",
+        "laborItemIdHelp": "Boş bırakın; ilk seferde gelir hesabınızın altında Labour adlı bir kalem oluşturulur.",
+        "partsItemId": "Parça satırları için kalem",
+        "partsItemIdHelp": "Boş bırakın; ilk seferde gelir hesabınızın altında Parts adlı bir kalem oluşturulur.",
+        "taxCodeId": "Vergili faturalar için vergi kodu",
+        "taxCodeIdHelp": "QuickBooks vergiyi bu koddan hesaplar; oranı faturalarınızdaki vergi oranıyla eşleşeni seçin. ABD şirketinde TAX seçin.",
+        "zeroTaxCodeId": "Vergisiz faturalar için vergi kodu",
+        "zeroTaxCodeIdHelp": "Faturada vergi yoksa veya müşteri vergiden muafsa kullanılır. ABD şirketinde NON seçin.",
+        "pushPayments": "Ödemeleri QuickBooks'a kaydet",
+        "depositAccountId": "Ödemeleri şuraya yatır",
+        "depositAccountIdHelp": "Undeposited Funds kullanmak için boş bırakın.",
+        "manualPaidAsPayment": "Fatura elle ödendi olarak işaretlendiğinde ödeme kaydet",
+        "manualPaidAsPaymentHelp": "Torqvoice'ta ödeme kaydı olmadan ödendi olarak işaretlenen bir fatura, QuickBooks'ta hâlâ alacak görünen tutar kadar tek bir ödeme alır. Kapalıysa bir ödeme kaydedilene kadar orada açık kalır.",
+        "pullPayments": "QuickBooks'ta kaydedilen ödemeleri geri al",
+        "pullPaymentsHelp": "Her 30 dakikada bir. QuickBooks'ta bir Torqvoice faturası için alınan ödeme burada faturaya kaydedilir."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Muayene tarihlerini yenileme"
+    },
+    "accounting": {
+      "invoice": "Fatura muhasebeye",
+      "payment": "Ödeme muhasebeye",
+      "customer": "Müşteri muhasebeye",
+      "pull": "Ödemeler muhasebeden"
     }
   }
 }

@@ -17,6 +17,7 @@ import { manifest as openai } from './openai/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as paypal } from './paypal/manifest'
 import { manifest as postmark } from './postmark/manifest'
+import { manifest as quickbooks } from './quickbooks/manifest'
 import { manifest as rdw } from './rdw/manifest'
 import { manifest as regcheck } from './regcheck/manifest'
 import { manifest as resend } from './resend/manifest'
@@ -63,6 +64,7 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: stripe, load: () => import('./stripe/server') },
   { manifest: vipps, load: () => import('./vipps/server') },
   { manifest: paypal, load: () => import('./paypal/server') },
+  { manifest: quickbooks, load: () => import('./quickbooks/server') },
 ]
 
 const BY_ID = new Map(ENTRIES.map((e) => [e.manifest.id, e]))

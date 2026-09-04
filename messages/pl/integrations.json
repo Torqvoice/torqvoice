@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Płatność z linku do faktury"
+    },
+    "accounting": {
+      "invoices": "Faktury do księgowości",
+      "customers": "Klienci do księgowości",
+      "payments": "Płatności w obie strony"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Synchronizacja w kolejce; uruchomi się w ciągu minuty",
     "backfill": "Wyślij zaplanowane zlecenia",
     "backfillQueued": "Dodano do kolejki zaplanowane zlecenia od ubiegłego tygodnia wzwyż",
+    "backfillInvoices": "Wyślij wystawione faktury",
+    "backfillInvoicesQueued": "Faktury wystawione w ciągu ostatnich 90 dni trafiły do kolejki",
     "retryQueued": "Zadanie ponownie w kolejce",
     "settingsTitle": "Ustawienia",
     "settingsDescription": "Co synchronizować i dokąd. Zmiany obowiązują od następnej synchronizacji.",
@@ -475,6 +482,38 @@
         "sandbox": "Tryb sandbox",
         "sandboxHelp": "Używaj sandboxa PayPal z kluczami aplikacji sandbox. Zostaw włączony, aż pełna płatność przejdzie, potem wyłącz i wpisz klucze aplikacji produkcyjnej."
       }
+    },
+    "quickbooks": {
+      "description": "Wysyłaj wystawione faktury, ich klientów i płatności do QuickBooks Online i pobieraj płatności zarejestrowane tam.",
+      "tenantHelp": "Utwórz aplikację w portalu Intuit Developer. Skopiuj client id i secret z Keys and credentials, a poniższy adres URI przekierowania wpisz w Settings, Redirect URIs. Klucze deweloperskie działają z firmami sandbox, produkcyjne z prawdziwymi.",
+      "fields": {
+        "clientId": "Identyfikator klienta",
+        "clientSecret": "Sekret klienta"
+      },
+      "settings": {
+        "pushInvoices": "Wysyłaj wystawione faktury do QuickBooks",
+        "pushOnComplete": "Wysyłaj faktury także wtedy, gdy zlecenie zostanie oznaczone jako ukończone",
+        "pushOnCompleteHelp": "Bez tej opcji faktura trafia do księgowości po wysłaniu, udostępnieniu lub opłaceniu. Z nią ukończone zlecenie trafia od razu i jest aktualizowane, gdy się zmieni.",
+        "startDate": "Tylko faktury z datą od",
+        "startDateHelp": "RRRR-MM-DD. Zostaw puste, aby wysyłać każdą wystawioną fakturę. Użyj daty przeniesienia księgowości do QuickBooks, aby starsze faktury nie zostały wprowadzone dwa razy.",
+        "includeVehicle": "Podaj pojazd na fakturze",
+        "includeVehicleHelp": "Wiersz tekstu nad pozycjami z rocznikiem, marką, modelem, rejestracją i przebiegiem, aby księgowość wiedziała, o który samochód chodzi.",
+        "laborItemId": "Pozycja dla robocizny",
+        "laborItemIdHelp": "Zostaw puste, a za pierwszym razem na Twoim koncie przychodów zostanie utworzona pozycja o nazwie Labour.",
+        "partsItemId": "Pozycja dla części",
+        "partsItemIdHelp": "Zostaw puste, a za pierwszym razem na Twoim koncie przychodów zostanie utworzona pozycja o nazwie Parts.",
+        "taxCodeId": "Kod podatku dla faktur opodatkowanych",
+        "taxCodeIdHelp": "QuickBooks wylicza podatek z tego kodu, więc wybierz ten, którego stawka odpowiada stawce na Twoich fakturach. W firmie z USA wybierz TAX.",
+        "zeroTaxCodeId": "Kod podatku dla faktur bez podatku",
+        "zeroTaxCodeIdHelp": "Używany, gdy faktura nie ma podatku lub klient jest zwolniony. W firmie z USA wybierz NON.",
+        "pushPayments": "Rejestruj płatności w QuickBooks",
+        "depositAccountId": "Wpłacaj płatności na",
+        "depositAccountIdHelp": "Zostaw puste, aby użyć Undeposited Funds.",
+        "manualPaidAsPayment": "Rejestruj płatność, gdy faktura zostanie ręcznie oznaczona jako opłacona",
+        "manualPaidAsPaymentHelp": "Faktura oznaczona w Torqvoice jako opłacona bez wpisu płatności otrzymuje w QuickBooks jedną płatność na kwotę, która tam nadal figuruje jako należna. Wyłączone: pozostaje tam otwarta do czasu zarejestrowania płatności.",
+        "pullPayments": "Pobieraj płatności zarejestrowane w QuickBooks",
+        "pullPaymentsHelp": "Co 30 minut. Płatność przyjęta w QuickBooks za fakturę z Torqvoice zostaje zarejestrowana tutaj na fakturze."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Odświeżenie terminów przeglądów"
+    },
+    "accounting": {
+      "invoice": "Faktura do księgowości",
+      "payment": "Płatność do księgowości",
+      "customer": "Klient do księgowości",
+      "pull": "Płatności z księgowości"
     }
   }
 }

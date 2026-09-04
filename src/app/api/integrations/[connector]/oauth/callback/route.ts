@@ -79,6 +79,15 @@ export async function GET(
     return fail('exchange')
   }
 
+  // What the vendor tells us only here, such as which company was chosen,
+  // goes on the state so identify and every job after it can read it.
+  const extra: Record<string, string> = {}
+  for (const name of spec.callbackParams ?? []) {
+    const value = params.get(name)
+    if (value) extra[name] = value
+  }
+  const state0 = (connection.state as Record<string, unknown>) ?? {}
+
   await db.integrationConnection.update({
     where: { id: connection.id },
     data: {
@@ -88,6 +97,7 @@ export async function GET(
       status: 'active',
       lastError: null,
       lastHealthAt: new Date(),
+      ...(Object.keys(extra).length > 0 && { state: { ...state0, ...extra } as object }),
     },
   })
 

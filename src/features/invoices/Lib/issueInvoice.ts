@@ -101,5 +101,18 @@ export async function issueInvoice(
       issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
     },
   })
+  // Issuing is the moment an accounting connector wants the invoice, and
+  // sending or sharing logs no service event of its own. Lazy so this
+  // module stays free of the integrations platform.
+  import('@/features/integrations/Lib/events')
+    .then(({ notifyIntegrations }) =>
+      notifyIntegrations({
+        event: 'service.update',
+        organizationId,
+        entity: 'ServiceRecord',
+        entityId: recordId,
+      })
+    )
+    .catch((err) => console.error('[integrations] issue notify failed:', err))
   return true
 }

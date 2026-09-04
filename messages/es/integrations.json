@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Pagar desde el enlace de la factura"
+    },
+    "accounting": {
+      "invoices": "Facturas al libro contable",
+      "customers": "Clientes al libro contable",
+      "payments": "Pagos en ambos sentidos"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Sincronización en cola; se ejecuta en menos de un minuto",
     "backfill": "Enviar órdenes de trabajo programadas",
     "backfillQueued": "Se pusieron en cola las órdenes de trabajo programadas desde la semana pasada en adelante",
+    "backfillInvoices": "Enviar facturas emitidas",
+    "backfillInvoicesQueued": "Se pusieron en cola las facturas emitidas en los últimos 90 días",
     "retryQueued": "Tarea puesta en cola de nuevo",
     "settingsTitle": "Configuración",
     "settingsDescription": "Qué sincronizar y dónde. Los cambios se aplican en la próxima sincronización.",
@@ -475,6 +482,38 @@
         "sandbox": "Modo sandbox",
         "sandboxHelp": "Usar el sandbox de PayPal con las claves de la app de sandbox. Déjalo activado hasta que un pago completo haya funcionado, luego desactívalo e introduce las claves de la app real."
       }
+    },
+    "quickbooks": {
+      "description": "Envía las facturas emitidas, sus clientes y sus pagos a QuickBooks Online y trae de vuelta los pagos registrados allí.",
+      "tenantHelp": "Crea una app en el portal de desarrolladores de Intuit. Copia el client id y el secret de Keys and credentials e introduce la URI de redirección de abajo en Settings, Redirect URIs. Las claves de desarrollo llegan a empresas sandbox, las de producción a empresas reales.",
+      "fields": {
+        "clientId": "ID de cliente",
+        "clientSecret": "Secreto de cliente"
+      },
+      "settings": {
+        "pushInvoices": "Enviar facturas emitidas a QuickBooks",
+        "pushOnComplete": "Enviar también las facturas cuando el trabajo se marque como completado",
+        "pushOnCompleteHelp": "Sin esto, una factura pasa cuando se envía, se comparte o se paga. Con esto, un trabajo completado pasa de inmediato y se actualiza si cambia.",
+        "startDate": "Solo facturas con fecha igual o posterior a",
+        "startDateHelp": "AAAA-MM-DD. Déjalo vacío para enviar todas las facturas emitidas. Usa la fecha en que tu contabilidad pasó a QuickBooks para no registrar dos veces las facturas antiguas.",
+        "includeVehicle": "Indicar el vehículo en la factura",
+        "includeVehicleHelp": "Una línea de texto encima de los cargos con año, marca, modelo, matrícula y kilometraje, para que la contabilidad sepa de qué coche se trata.",
+        "laborItemId": "Artículo para líneas de mano de obra",
+        "laborItemIdHelp": "Déjalo vacío y la primera vez se creará un artículo llamado Labour en tu cuenta de ingresos.",
+        "partsItemId": "Artículo para líneas de piezas",
+        "partsItemIdHelp": "Déjalo vacío y la primera vez se creará un artículo llamado Parts en tu cuenta de ingresos.",
+        "taxCodeId": "Código de impuesto para facturas gravadas",
+        "taxCodeIdHelp": "QuickBooks calcula el impuesto a partir de este código, así que elige el que tenga el mismo tipo que tus facturas. En una empresa de EE. UU. elige TAX.",
+        "zeroTaxCodeId": "Código de impuesto para facturas sin impuesto",
+        "zeroTaxCodeIdHelp": "Se usa cuando la factura no tiene impuesto o el cliente está exento. En una empresa de EE. UU. elige NON.",
+        "pushPayments": "Registrar pagos en QuickBooks",
+        "depositAccountId": "Depositar pagos en",
+        "depositAccountIdHelp": "Déjalo vacío para usar Undeposited Funds.",
+        "manualPaidAsPayment": "Registrar un pago cuando una factura se marca como pagada a mano",
+        "manualPaidAsPaymentHelp": "Una factura marcada como pagada en Torqvoice sin registro de pago recibe en QuickBooks un pago por lo que aún figure pendiente. Desactivado, queda abierta allí hasta que se registre un pago.",
+        "pullPayments": "Traer los pagos registrados en QuickBooks",
+        "pullPaymentsHelp": "Cada 30 minutos. Un pago recibido en QuickBooks contra una factura de Torqvoice se registra aquí en la factura."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Actualización de fechas de inspección"
+    },
+    "accounting": {
+      "invoice": "Factura a contabilidad",
+      "payment": "Pago a contabilidad",
+      "customer": "Cliente a contabilidad",
+      "pull": "Pagos desde contabilidad"
     }
   }
 }

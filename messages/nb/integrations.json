@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Betal fra fakturalenken"
+    },
+    "accounting": {
+      "invoices": "Fakturaer til regnskapet",
+      "customers": "Kunder til regnskapet",
+      "payments": "Betalinger begge veier"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Synkronisering lagt i kø; den kjører innen ett minutt",
     "backfill": "Send planlagte arbeidsordre",
     "backfillQueued": "La planlagte arbeidsordre fra og med forrige uke i kø",
+    "backfillInvoices": "Send utstedte fakturaer",
+    "backfillInvoicesQueued": "Fakturaene utstedt de siste 90 dagene er lagt i kø",
     "retryQueued": "Jobben er lagt i kø på nytt",
     "settingsTitle": "Innstillinger",
     "settingsDescription": "Hva som skal synkroniseres og hvor. Endringer gjelder fra neste synkronisering.",
@@ -475,6 +482,38 @@
         "sandbox": "Sandkassemodus",
         "sandboxHelp": "Bruk PayPal sin sandkasse med sandkasse-appens nøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-appens nøkler."
       }
+    },
+    "quickbooks": {
+      "description": "Send utstedte fakturaer, kundene deres og betalingene deres til QuickBooks Online, og hent tilbake betalinger registrert der.",
+      "tenantHelp": "Opprett en app i Intuit Developer-portalen. Kopier klient-ID og hemmelighet fra Keys and credentials, og skriv inn omdirigerings-URI-en nedenfor under Settings, Redirect URIs. Utviklingsnøkler når sandkasse-selskaper, produksjonsnøkler ekte.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "pushInvoices": "Send utstedte fakturaer til QuickBooks",
+        "pushOnComplete": "Send også fakturaer når jobben markeres som fullført",
+        "pushOnCompleteHelp": "Uten dette går en faktura over når den er sendt, delt eller betalt. Med det går en fullført jobb over med en gang og oppdateres om den endres.",
+        "startDate": "Bare fakturaer datert fra og med",
+        "startDateHelp": "ÅÅÅÅ-MM-DD. La stå tomt for å sende alle utstedte fakturaer. Bruk datoen regnskapet flyttet til QuickBooks, så eldre fakturaer ikke føres to ganger.",
+        "includeVehicle": "Oppgi kjøretøyet på fakturaen",
+        "includeVehicleHelp": "En tekstlinje over postene med årsmodell, merke, modell, skilt og kilometerstand, så regnskapet vet hvilken bil det gjelder.",
+        "laborItemId": "Vare for arbeidslinjer",
+        "laborItemIdHelp": "La stå tomt, så opprettes en vare kalt Labour under inntektskontoen din første gang.",
+        "partsItemId": "Vare for delelinjer",
+        "partsItemIdHelp": "La stå tomt, så opprettes en vare kalt Parts under inntektskontoen din første gang.",
+        "taxCodeId": "Avgiftskode for avgiftspliktige fakturaer",
+        "taxCodeIdHelp": "QuickBooks regner ut avgiften fra denne koden, så velg den med samme sats som mva-satsen på fakturaene dine. I et amerikansk selskap velger du TAX.",
+        "zeroTaxCodeId": "Avgiftskode for avgiftsfrie fakturaer",
+        "zeroTaxCodeIdHelp": "Brukes når fakturaen er uten avgift eller kunden er fritatt. I et amerikansk selskap velger du NON.",
+        "pushPayments": "Registrer betalinger i QuickBooks",
+        "depositAccountId": "Sett betalinger inn på",
+        "depositAccountIdHelp": "La stå tomt for å bruke Undeposited Funds.",
+        "manualPaidAsPayment": "Registrer en betaling når en faktura markeres som betalt for hånd",
+        "manualPaidAsPaymentHelp": "En faktura markert som betalt i Torqvoice uten betalingsføring får én betaling i QuickBooks for det den fortsatt viser som skyldig der. Avslått blir den stående åpen der til en betaling registreres.",
+        "pullPayments": "Hent tilbake betalinger registrert i QuickBooks",
+        "pullPaymentsHelp": "Hvert 30. minutt. En betaling mottatt i QuickBooks mot en faktura fra Torqvoice registreres her på fakturaen."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Oppdatering av EU-kontrollfrister"
+    },
+    "accounting": {
+      "invoice": "Faktura til regnskap",
+      "payment": "Betaling til regnskap",
+      "customer": "Kunde til regnskap",
+      "pull": "Betalinger fra regnskap"
     }
   }
 }

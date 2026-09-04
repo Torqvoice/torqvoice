@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/select'
 import { useConfirm } from '@/components/confirm-dialog'
 import {
+  backfillIntegrationAccounting,
   backfillIntegrationCalendar,
   type ConnectionView,
   disconnectIntegration,
@@ -162,6 +163,7 @@ export function ConnectionSettings({
   const firstSchedule = manifest.schedules?.[0]?.job
   const hasSync = Boolean(firstSchedule)
   const isCalendar = manifest.category === 'calendar'
+  const isAccounting = manifest.category === 'accounting'
   // Mail vendors can prove themselves by delivering a message to the person
   // looking at the page, which a key check cannot.
   const canSendTestEmail = manifest.capabilities.includes('email.send')
@@ -476,6 +478,27 @@ export function ConnectionSettings({
                   <Upload className="mr-1 h-3.5 w-3.5" />
                 )}
                 {t('connection.backfill')}
+              </Button>
+            )}
+            {isAccounting && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  run(
+                    'backfill',
+                    () => backfillIntegrationAccounting(manifest.id),
+                    t('connection.backfillInvoicesQueued')
+                  )
+                }
+                disabled={busy !== null}
+              >
+                {busy === 'backfill' ? (
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Upload className="mr-1 h-3.5 w-3.5" />
+                )}
+                {t('connection.backfillInvoices')}
               </Button>
             )}
             {isOAuth && (
