@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Pagar pelo link da fatura"
+    },
+    "accounting": {
+      "invoices": "Faturas para a contabilidade",
+      "customers": "Clientes para a contabilidade",
+      "payments": "Pagamentos nos dois sentidos"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Sincronização na fila; será executada em até um minuto",
     "backfill": "Enviar ordens de serviço agendadas",
     "backfillQueued": "Ordens de serviço agendadas a partir da semana passada colocadas na fila",
+    "backfillInvoices": "Enviar faturas emitidas",
+    "backfillInvoicesQueued": "As faturas emitidas nos últimos 90 dias entraram na fila",
     "retryQueued": "Tarefa colocada na fila novamente",
     "settingsTitle": "Configurações",
     "settingsDescription": "O que sincronizar e para onde. As alterações valem a partir da próxima sincronização.",
@@ -475,6 +482,38 @@
         "sandbox": "Modo sandbox",
         "sandboxHelp": "Usar o sandbox do PayPal com as chaves do app de sandbox. Deixe ligado até um pagamento completo funcionar, depois desligue e informe as chaves do app real."
       }
+    },
+    "quickbooks": {
+      "description": "Envie faturas emitidas, seus clientes e seus pagamentos para o QuickBooks Online e traga de volta os pagamentos registrados lá.",
+      "tenantHelp": "Crie um app no portal de desenvolvedores da Intuit. Copie o client id e o secret em Keys and credentials e informe a URI de redirecionamento abaixo em Settings, Redirect URIs. Chaves de desenvolvimento alcançam empresas sandbox, chaves de produção as reais.",
+      "fields": {
+        "clientId": "ID do cliente",
+        "clientSecret": "Segredo do cliente"
+      },
+      "settings": {
+        "pushInvoices": "Enviar faturas emitidas para o QuickBooks",
+        "pushOnComplete": "Enviar faturas também quando o serviço for marcado como concluído",
+        "pushOnCompleteHelp": "Sem isso, uma fatura vai quando é enviada, compartilhada ou paga. Com isso, um serviço concluído vai na hora e é atualizado se mudar.",
+        "startDate": "Somente faturas com data a partir de",
+        "startDateHelp": "AAAA-MM-DD. Deixe vazio para enviar toda fatura emitida. Use a data em que sua contabilidade passou para o QuickBooks para não lançar faturas antigas duas vezes.",
+        "includeVehicle": "Indicar o veículo na fatura",
+        "includeVehicleHelp": "Uma linha de texto acima dos itens com ano, marca, modelo, placa e quilometragem, para que a contabilidade saiba de qual carro se trata.",
+        "laborItemId": "Item para linhas de mão de obra",
+        "laborItemIdHelp": "Deixe vazio e um item chamado Labour será criado na sua conta de receita na primeira vez.",
+        "partsItemId": "Item para linhas de peças",
+        "partsItemIdHelp": "Deixe vazio e um item chamado Parts será criado na sua conta de receita na primeira vez.",
+        "taxCodeId": "Código de imposto para faturas tributáveis",
+        "taxCodeIdHelp": "O QuickBooks calcula o imposto a partir deste código, então escolha o que tem a mesma alíquota das suas faturas. Em uma empresa dos EUA, escolha TAX.",
+        "zeroTaxCodeId": "Código de imposto para faturas sem imposto",
+        "zeroTaxCodeIdHelp": "Usado quando a fatura não tem imposto ou o cliente é isento. Em uma empresa dos EUA, escolha NON.",
+        "pushPayments": "Registrar pagamentos no QuickBooks",
+        "depositAccountId": "Depositar pagamentos em",
+        "depositAccountIdHelp": "Deixe vazio para usar Undeposited Funds.",
+        "manualPaidAsPayment": "Registrar um pagamento quando uma fatura for marcada como paga manualmente",
+        "manualPaidAsPaymentHelp": "Uma fatura marcada como paga no Torqvoice sem lançamento de pagamento recebe no QuickBooks um pagamento pelo valor que ainda consta em aberto lá. Desligado, ela fica aberta lá até que um pagamento seja registrado.",
+        "pullPayments": "Trazer de volta pagamentos registrados no QuickBooks",
+        "pullPaymentsHelp": "A cada 30 minutos. Um pagamento recebido no QuickBooks para uma fatura do Torqvoice é registrado aqui na fatura."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Atualização de datas de inspeção"
+    },
+    "accounting": {
+      "invoice": "Fatura para a contabilidade",
+      "payment": "Pagamento para a contabilidade",
+      "customer": "Cliente para a contabilidade",
+      "pull": "Pagamentos da contabilidade"
     }
   }
 }

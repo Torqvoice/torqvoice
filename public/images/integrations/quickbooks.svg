@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="QuickBooks">
+  <circle cx="32" cy="32" r="32" fill="#2CA01C"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="5.6" stroke-linecap="butt" stroke-linejoin="round">
+    <!-- q: bowl on the left, stem on its right dropping to the bottom -->
+    <path d="M22.5 42.5h-2.7a10.3 10.3 0 0 1 0-20.6h6.4v30.7"/>
+    <!-- b: bowl on the right, stem on its left rising to the top -->
+    <path d="M41.5 21.5h2.7a10.3 10.3 0 0 1 0 20.6h-6.4V11.4"/>
+  </g>
+</svg>

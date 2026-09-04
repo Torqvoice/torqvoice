@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Bezahlen über den Rechnungslink"
+    },
+    "accounting": {
+      "invoices": "Rechnungen ins Buchhaltungssystem",
+      "customers": "Kunden ins Buchhaltungssystem",
+      "payments": "Zahlungen in beide Richtungen"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Synchronisierung eingereiht; sie läuft innerhalb einer Minute",
     "backfill": "Geplante Aufträge übertragen",
     "backfillQueued": "Die geplanten Aufträge ab der letzten Woche wurden eingereiht",
+    "backfillInvoices": "Ausgestellte Rechnungen übertragen",
+    "backfillInvoicesQueued": "Die in den letzten 90 Tagen ausgestellten Rechnungen wurden eingereiht",
     "retryQueued": "Job erneut eingereiht",
     "settingsTitle": "Einstellungen",
     "settingsDescription": "Was synchronisiert wird und wohin. Änderungen gelten ab der nächsten Synchronisierung.",
@@ -475,6 +482,38 @@
         "sandbox": "Sandbox-Modus",
         "sandboxHelp": "Die PayPal-Sandbox mit Sandbox-App-Schlüsseln verwenden. Lassen Sie ihn an, bis eine vollständige Zahlung durchgelaufen ist, und tragen Sie dann die Schlüssel der Live-App ein."
       }
+    },
+    "quickbooks": {
+      "description": "Sende ausgestellte Rechnungen, ihre Kunden und ihre Zahlungen an QuickBooks Online und hole dort erfasste Zahlungen zurück.",
+      "tenantHelp": "Erstelle eine App im Intuit Developer Portal. Kopiere Client-ID und Secret unter Keys and credentials und trage die Redirect-URI unten unter Settings, Redirect URIs ein. Entwicklungsschlüssel erreichen Sandbox-Firmen, Produktionsschlüssel echte.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "pushInvoices": "Ausgestellte Rechnungen an QuickBooks senden",
+        "pushOnComplete": "Rechnungen auch senden, wenn der Auftrag als abgeschlossen markiert wird",
+        "pushOnCompleteHelp": "Ohne diese Option geht eine Rechnung erst über, wenn sie gesendet, geteilt oder bezahlt wurde. Mit ihr geht ein abgeschlossener Auftrag sofort über und wird bei Änderungen aktualisiert.",
+        "startDate": "Nur Rechnungen mit Datum ab",
+        "startDateHelp": "JJJJ-MM-TT. Leer lassen, um jede ausgestellte Rechnung zu senden. Nutze das Datum, an dem deine Bücher zu QuickBooks gewechselt sind, damit ältere Rechnungen nicht doppelt erfasst werden.",
+        "includeVehicle": "Fahrzeug auf der Rechnung nennen",
+        "includeVehicleHelp": "Eine Textzeile über den Positionen mit Baujahr, Marke, Modell, Kennzeichen und Kilometerstand, damit die Buchhaltung weiß, um welches Auto es geht.",
+        "laborItemId": "Artikel für Arbeitspositionen",
+        "laborItemIdHelp": "Leer lassen, dann wird beim ersten Mal ein Artikel namens Labour unter deinem Ertragskonto angelegt.",
+        "partsItemId": "Artikel für Teilepositionen",
+        "partsItemIdHelp": "Leer lassen, dann wird beim ersten Mal ein Artikel namens Parts unter deinem Ertragskonto angelegt.",
+        "taxCodeId": "Steuercode für steuerpflichtige Rechnungen",
+        "taxCodeIdHelp": "QuickBooks berechnet die Steuer aus diesem Code. Wähle den, dessen Satz dem Steuersatz deiner Rechnungen entspricht. In einer US-Firma TAX wählen.",
+        "zeroTaxCodeId": "Steuercode für steuerfreie Rechnungen",
+        "zeroTaxCodeIdHelp": "Wird verwendet, wenn die Rechnung keine Steuer hat oder der Kunde steuerbefreit ist. In einer US-Firma NON wählen.",
+        "pushPayments": "Zahlungen in QuickBooks erfassen",
+        "depositAccountId": "Zahlungen einzahlen auf",
+        "depositAccountIdHelp": "Leer lassen, um Undeposited Funds zu verwenden.",
+        "manualPaidAsPayment": "Zahlung erfassen, wenn eine Rechnung von Hand als bezahlt markiert wird",
+        "manualPaidAsPaymentHelp": "Eine in Torqvoice ohne Zahlungseintrag als bezahlt markierte Rechnung erhält in QuickBooks eine Zahlung über den dort noch offenen Betrag. Ausgeschaltet bleibt sie dort offen, bis eine Zahlung erfasst wird.",
+        "pullPayments": "In QuickBooks erfasste Zahlungen zurückholen",
+        "pullPaymentsHelp": "Alle 30 Minuten. Eine in QuickBooks gegen eine Rechnung aus Torqvoice erhaltene Zahlung wird hier auf der Rechnung erfasst."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "HU-Termine aktualisieren"
+    },
+    "accounting": {
+      "invoice": "Rechnung an die Buchhaltung",
+      "payment": "Zahlung an die Buchhaltung",
+      "customer": "Kunde an die Buchhaltung",
+      "pull": "Zahlungen aus der Buchhaltung"
     }
   }
 }

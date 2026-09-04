@@ -88,6 +88,19 @@ function linkStore(connectionId: string): LinkStore {
       })
       return new Set(rows.map((r) => r.remoteId))
     },
+    async byRemoteId(entityType, remoteId) {
+      const row = await db.integrationLink.findFirst({
+        where: { connectionId, entityType, remoteId },
+      })
+      if (!row) return null
+      return {
+        entityId: row.entityId,
+        remoteId: row.remoteId,
+        remoteUrl: row.remoteUrl,
+        metadata: (row.metadata as Record<string, unknown> | null) ?? null,
+        checksum: row.checksum,
+      }
+    },
   }
 }
 

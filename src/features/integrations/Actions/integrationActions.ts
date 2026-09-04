@@ -9,6 +9,7 @@ import { FeatureGatedError, getFeatures, isCloudMode } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getManifest, listManifests } from '@/integrations/registry'
+import { invoicesForBackfill } from '../Lib/accounting-sync'
 import { clearPulledEvents } from '../Lib/calendar-sync'
 import {
   INSPECTION_CAPABILITY,
@@ -646,6 +647,39 @@ export async function backfillIntegrationCalendar(connectorId: string) {
       }
       await writeLog(row.id, 'info', `Queued ${records.length} work orders for push`)
       return { queued: records.length }
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
+  )
+}
+
+/** How far back a fresh ledger connection reaches for issued invoices. */
+const ACCOUNTING_BACKFILL_DAYS = 90
+
+/** Push every invoice issued in the last months, for a fresh accounting connection. */
+export async function backfillIntegrationAccounting(connectorId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      demoGuard()
+      const manifest = getManifest(connectorId)
+      if (manifest?.category !== 'accounting') throw new Error('Unknown integration')
+      const row = await db.integrationConnection.findUnique({
+        where: { organizationId_connectorId: { organizationId, connectorId } },
+        select: { id: true, status: true },
+      })
+      if (!row || row.status !== 'active') throw new Error('Connect the integration first')
+      const since = new Date(Date.now() - ACCOUNTING_BACKFILL_DAYS * 86_400_000)
+      const ids = await invoicesForBackfill(organizationId, since)
+      for (const id of ids) {
+        await enqueueJob({
+          connectionId: row.id,
+          organizationId,
+          kind: 'accounting.invoice',
+          payload: { entityId: id, event: 'backfill' },
+          idempotencyKey: `accounting.invoice:${id}`,
+        })
+      }
+      await writeLog(row.id, 'info', `Queued ${ids.length} issued invoices for push`)
+      return { queued: ids.length }
     },
     { requiredPermissions: SETTINGS_PERMISSION }
   )

@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Pay from the invoice link"
+    },
+    "accounting": {
+      "invoices": "Invoices to the ledger",
+      "customers": "Customers to the ledger",
+      "payments": "Payments both ways"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Sync queued; it runs within a minute",
     "backfill": "Push scheduled work orders",
     "backfillQueued": "Queued the scheduled work orders from the last week onwards",
+    "backfillInvoices": "Push issued invoices",
+    "backfillInvoicesQueued": "Queued the invoices issued in the last 90 days",
     "retryQueued": "Job queued again",
     "settingsTitle": "Settings",
     "settingsDescription": "What to sync and where. Changes apply to the next sync.",
@@ -475,6 +482,38 @@
         "sandbox": "Sandbox mode",
         "sandboxHelp": "Use PayPal's sandbox with sandbox app keys. Leave it on until a full payment has gone through, then turn it off and enter the live app's keys."
       }
+    },
+    "quickbooks": {
+      "description": "Send issued invoices, their customers and their payments to QuickBooks Online, and bring back payments recorded there.",
+      "tenantHelp": "Create an app in the Intuit Developer portal. Copy the client id and secret from Keys and credentials, and enter the redirect URI below under Settings, Redirect URIs. Development keys reach sandbox companies, production keys live ones.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "pushInvoices": "Send issued invoices to QuickBooks",
+        "pushOnComplete": "Also send invoices when the job is marked completed",
+        "pushOnCompleteHelp": "Without this an invoice goes over once it is sent, shared or paid. With it, a completed job goes over straight away and is updated if it changes.",
+        "startDate": "Only invoices dated on or after",
+        "startDateHelp": "YYYY-MM-DD. Leave empty to send every issued invoice. Use the date your books moved to QuickBooks so older invoices are not entered twice.",
+        "includeVehicle": "Name the vehicle on the invoice",
+        "includeVehicleHelp": "A text line above the charges with the year, make, model, plate and mileage, so the books say which car.",
+        "laborItemId": "Item for labour lines",
+        "laborItemIdHelp": "Leave empty and an item named Labour is created under your income account the first time.",
+        "partsItemId": "Item for parts lines",
+        "partsItemIdHelp": "Leave empty and an item named Parts is created under your income account the first time.",
+        "taxCodeId": "Tax code for taxable invoices",
+        "taxCodeIdHelp": "QuickBooks works the tax out from this code, so pick the one whose rate matches the tax rate on your invoices. In a US company choose TAX.",
+        "zeroTaxCodeId": "Tax code for tax-free invoices",
+        "zeroTaxCodeIdHelp": "Used when the invoice has no tax or the customer is tax exempt. In a US company choose NON.",
+        "pushPayments": "Record payments in QuickBooks",
+        "depositAccountId": "Deposit payments to",
+        "depositAccountIdHelp": "Leave empty to use Undeposited Funds.",
+        "manualPaidAsPayment": "Record a payment when an invoice is marked paid by hand",
+        "manualPaidAsPaymentHelp": "An invoice marked as paid in Torqvoice without a payment entry gets one payment in QuickBooks for whatever it still shows as owed. Off, it stays open there until a payment is recorded.",
+        "pullPayments": "Bring back payments recorded in QuickBooks",
+        "pullPaymentsHelp": "Every 30 minutes. A payment received in QuickBooks against an invoice from Torqvoice is recorded on the invoice here."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Inspection date refresh"
+    },
+    "accounting": {
+      "invoice": "Invoice to ledger",
+      "payment": "Payment to ledger",
+      "customer": "Customer to ledger",
+      "pull": "Payments from ledger"
     }
   }
 }

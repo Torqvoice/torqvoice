@@ -58,6 +58,11 @@
     },
     "payments": {
       "checkout": "Payer depuis le lien de la facture"
+    },
+    "accounting": {
+      "invoices": "Factures vers la comptabilité",
+      "customers": "Clients vers la comptabilité",
+      "payments": "Paiements dans les deux sens"
     }
   },
   "statuses": {
@@ -92,6 +97,8 @@
     "syncQueued": "Synchronisation en file d'attente ; elle démarre d'ici une minute",
     "backfill": "Envoyer les ordres de travail planifiés",
     "backfillQueued": "Les ordres de travail planifiés depuis la semaine dernière ont été mis en file d'attente",
+    "backfillInvoices": "Envoyer les factures émises",
+    "backfillInvoicesQueued": "Les factures émises ces 90 derniers jours ont été mises en file",
     "retryQueued": "Tâche remise en file d'attente",
     "settingsTitle": "Paramètres",
     "settingsDescription": "Ce qu'il faut synchroniser et vers où. Les modifications s'appliquent à la prochaine synchronisation.",
@@ -475,6 +482,38 @@
         "sandbox": "Mode sandbox",
         "sandboxHelp": "Utiliser le sandbox PayPal avec les clés de l'application sandbox. Laissez-le activé jusqu'à ce qu'un paiement complet ait abouti, puis désactivez-le et saisissez les clés de l'application réelle."
       }
+    },
+    "quickbooks": {
+      "description": "Envoyez les factures émises, leurs clients et leurs paiements vers QuickBooks Online, et récupérez les paiements enregistrés là-bas.",
+      "tenantHelp": "Créez une application sur le portail développeur Intuit. Copiez le client id et le secret depuis Keys and credentials, et saisissez l'URI de redirection ci-dessous sous Settings, Redirect URIs. Les clés de développement atteignent les entreprises sandbox, les clés de production les vraies.",
+      "fields": {
+        "clientId": "Identifiant client",
+        "clientSecret": "Secret client"
+      },
+      "settings": {
+        "pushInvoices": "Envoyer les factures émises vers QuickBooks",
+        "pushOnComplete": "Envoyer aussi les factures quand le travail est marqué terminé",
+        "pushOnCompleteHelp": "Sans cette option, une facture part une fois envoyée, partagée ou payée. Avec, un travail terminé part tout de suite et est mis à jour s'il change.",
+        "startDate": "Uniquement les factures datées à partir du",
+        "startDateHelp": "AAAA-MM-JJ. Laissez vide pour envoyer toutes les factures émises. Utilisez la date où votre comptabilité est passée sur QuickBooks pour ne pas saisir deux fois les anciennes factures.",
+        "includeVehicle": "Indiquer le véhicule sur la facture",
+        "includeVehicleHelp": "Une ligne de texte au-dessus des lignes facturées avec l'année, la marque, le modèle, la plaque et le kilométrage, pour que la comptabilité sache de quelle voiture il s'agit.",
+        "laborItemId": "Article pour les lignes de main-d'œuvre",
+        "laborItemIdHelp": "Laissez vide et un article nommé Labour sera créé sous votre compte de produits la première fois.",
+        "partsItemId": "Article pour les lignes de pièces",
+        "partsItemIdHelp": "Laissez vide et un article nommé Parts sera créé sous votre compte de produits la première fois.",
+        "taxCodeId": "Code de taxe pour les factures taxables",
+        "taxCodeIdHelp": "QuickBooks calcule la taxe à partir de ce code : choisissez celui dont le taux correspond à celui de vos factures. Dans une entreprise américaine, choisissez TAX.",
+        "zeroTaxCodeId": "Code de taxe pour les factures sans taxe",
+        "zeroTaxCodeIdHelp": "Utilisé quand la facture n'a pas de taxe ou que le client est exonéré. Dans une entreprise américaine, choisissez NON.",
+        "pushPayments": "Enregistrer les paiements dans QuickBooks",
+        "depositAccountId": "Déposer les paiements sur",
+        "depositAccountIdHelp": "Laissez vide pour utiliser Undeposited Funds.",
+        "manualPaidAsPayment": "Enregistrer un paiement quand une facture est marquée payée à la main",
+        "manualPaidAsPaymentHelp": "Une facture marquée payée dans Torqvoice sans écriture de paiement reçoit dans QuickBooks un paiement du montant qu'elle y affiche encore comme dû. Désactivé, elle y reste ouverte jusqu'à l'enregistrement d'un paiement.",
+        "pullPayments": "Récupérer les paiements enregistrés dans QuickBooks",
+        "pullPaymentsHelp": "Toutes les 30 minutes. Un paiement reçu dans QuickBooks sur une facture Torqvoice est enregistré ici sur la facture."
+      }
     }
   },
   "jobKinds": {
@@ -487,6 +526,12 @@
     },
     "inspection": {
       "refresh": "Mise à jour des dates de contrôle"
+    },
+    "accounting": {
+      "invoice": "Facture vers la comptabilité",
+      "payment": "Paiement vers la comptabilité",
+      "customer": "Client vers la comptabilité",
+      "pull": "Paiements depuis la comptabilité"
     }
   }
 }
