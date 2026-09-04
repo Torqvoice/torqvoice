@@ -634,12 +634,22 @@ function ConnectForm({
           {fields.map((f) => (
             <div key={f.key} className="space-y-1">
               <Label className="text-xs">{tc(`fields.${f.label}`)}</Label>
+              {/* Vendor keys are not a login. Browsers ignore autocomplete="off"
+                  on a password field and fill the site's saved sign-in into it,
+                  with the username into the field before it, so the secrets
+                  ask for a "new password" instead, which nothing has saved,
+                  and the password managers are told to stay out. */}
               <Input
                 type={f.type === 'password' ? 'password' : 'text'}
+                name={`${manifest.id}-${f.key}`}
                 value={values[f.key] ?? ''}
                 placeholder={f.key === 'clientSecret' && tenantReady ? '••••••••' : f.placeholder}
                 onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-                autoComplete="off"
+                autoComplete={f.type === 'password' ? 'new-password' : 'off'}
+                data-1p-ignore
+                data-lpignore="true"
+                data-bwignore
+                data-form-type="other"
               />
               {f.help && <p className="text-xs text-muted-foreground">{tc(`fields.${f.help}`)}</p>}
             </div>
@@ -753,7 +763,12 @@ function SettingFieldList({
             {(f.type === 'text' || f.type === 'number') && (
               <Input
                 type={f.type}
+                name={`${connectorId}-${f.key}`}
                 className="h-8"
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
                 value={String(values[f.key] ?? '')}
                 onChange={(e) =>
                   setValues((s) => ({
