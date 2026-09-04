@@ -12,7 +12,9 @@
     "noneConnected": "Henüz bağlı bir hizmet yok. Başlamak için aşağıdan bir hizmet seçin.",
     "availableTitle": "Kullanılabilir",
     "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
-    "allConnected": "Kullanılabilir tüm hizmetler bağlı."
+    "allConnected": "Kullanılabilir tüm hizmetler bağlı.",
+    "searchPlaceholder": "Entegrasyonlarda ara",
+    "noMatches": "\"{query}\" ile eşleşen bir şey yok."
   },
   "categories": {
     "calendar": "Takvim",
@@ -23,7 +25,8 @@
     "automation": "Otomasyon",
     "storage": "Dosyalar",
     "registry": "Araç kayıt sistemi",
-    "other": "Diğer"
+    "other": "Diğer",
+    "ai": "Yapay zekâ"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Plaka ve VIN sorgulama",
       "inspection": "Muayene tarihleri"
+    },
+    "ai": {
+      "chat": "Metinler ve özetler"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "Bir tarama sürüyor",
       "off": "Ayarı açıp kaydedin; o zamana kadar tarama hiçbir şeyi kontrol etmez.",
       "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
-    }
+    },
+    "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır."
   },
   "activity": {
     "title": "Aktivite",
@@ -396,6 +403,28 @@
         "auStateHelp": "Avustralya araçları eyalet bazında tescil eder ve sicile hangisinde aranacağı söylenmelidir. Müşterilerinizin araçlarının çoğunun tescilli olduğu eyaleti seçin.",
         "usState": "Eyalet",
         "usStateHelp": "Araçların tescilli olduğu eyaletin iki harfli kodu, örneğin CA veya TX. ABD sicilleri eyalet bazında sorgulanır."
+      }
+    },
+    "openai": {
+      "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan; kendi OpenAI hesabınız yanıtlar. Her çağrı o hesaba faturalanır ve modeli siz seçersiniz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "platform.openai.com adresinde API keys bölümünden oluşturun. Hesapta bakiye olmalı; OpenAI her çağrı için ücretlendirir."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
+      }
+    },
+    "anthropic": {
+      "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan; kendi Anthropic hesabınızda Claude yanıtlar. Her çağrı o hesaba faturalanır ve modeli siz seçersiniz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "console.anthropic.com adresinde API keys bölümünden oluşturun. Hesapta bakiye olmalı; Anthropic her çağrı için ücretlendirir."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
       }
     }
   },

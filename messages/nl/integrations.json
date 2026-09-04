@@ -12,7 +12,9 @@
     "noneConnected": "Nog niets verbonden. Kies hieronder een dienst om te beginnen.",
     "availableTitle": "Beschikbaar",
     "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
-    "allConnected": "Alle beschikbare diensten zijn verbonden."
+    "allConnected": "Alle beschikbare diensten zijn verbonden.",
+    "searchPlaceholder": "Integraties zoeken",
+    "noMatches": "Niets komt overeen met \"{query}\"."
   },
   "categories": {
     "calendar": "Agenda",
@@ -23,7 +25,8 @@
     "automation": "Automatisering",
     "storage": "Bestanden",
     "registry": "Voertuigregister",
-    "other": "Overig"
+    "other": "Overig",
+    "ai": "AI"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Kenteken- en VIN-opzoeking",
       "inspection": "APK-vervaldatums"
+    },
+    "ai": {
+      "chat": "Teksten en samenvattingen"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "Er loopt een ronde",
       "off": "Zet de instelling aan en sla op; tot die tijd controleert een ronde niets.",
       "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
-    }
+    },
+    "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat."
   },
   "activity": {
     "title": "Activiteit",
@@ -396,6 +403,28 @@
         "auStateHelp": "Australië registreert voertuigen per staat en het register moet weten welke te doorzoeken. Kies waar de meeste voertuigen van je klanten geregistreerd zijn.",
         "usState": "Staat",
         "usStateHelp": "De tweeletterige code van de staat waar de voertuigen geregistreerd zijn, zoals CA of TX. Amerikaanse registers worden per staat doorzocht."
+      }
+    },
+    "openai": {
+      "description": "Servicebeschrijvingen, samenvattingen van de historie, documenten lezen en de assistent, beantwoord door uw eigen OpenAI-account. Elke aanroep wordt op dat account afgerekend, en u kiest het model.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Maak er een aan op platform.openai.com onder API keys. Het account moet tegoed hebben; OpenAI rekent per aanroep af."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Welk model antwoordt. De lijst komt uit uw account, nieuwste eerst. Kleinere modellen kosten minder per aanroep en volstaan voor de meeste werkplaatsteksten."
+      }
+    },
+    "anthropic": {
+      "description": "Servicebeschrijvingen, samenvattingen van de historie, documenten lezen en de assistent, beantwoord door Claude op uw eigen Anthropic-account. Elke aanroep wordt op dat account afgerekend, en u kiest het model.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Maak er een aan op console.anthropic.com onder API keys. Het account moet tegoed hebben; Anthropic rekent per aanroep af."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Welk model antwoordt. De lijst komt uit uw account, nieuwste eerst. Kleinere modellen kosten minder per aanroep en volstaan voor de meeste werkplaatsteksten."
       }
     }
   },

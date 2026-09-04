@@ -12,7 +12,9 @@
     "noneConnected": "Nic jeszcze nie jest połączone. Wybierz usługę poniżej, aby zacząć.",
     "availableTitle": "Dostępne",
     "availableDescription": "Usługi, które możesz dodać. Każdą konfiguruje się raz, a potem działa w tle.",
-    "allConnected": "Wszystkie dostępne usługi są połączone."
+    "allConnected": "Wszystkie dostępne usługi są połączone.",
+    "searchPlaceholder": "Szukaj integracji",
+    "noMatches": "Nic nie pasuje do „{query}”."
   },
   "categories": {
     "calendar": "Kalendarz",
@@ -23,7 +25,8 @@
     "automation": "Automatyzacja",
     "storage": "Pliki",
     "registry": "Rejestr pojazdów",
-    "other": "Inne"
+    "other": "Inne",
+    "ai": "SI"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Wyszukiwanie po tablicy i VIN",
       "inspection": "Terminy przeglądów"
+    },
+    "ai": {
+      "chat": "Teksty i podsumowania"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "Trwa przebieg",
       "off": "Włącz ustawienie i zapisz; do tego czasu przebieg niczego nie sprawdza.",
       "syncNowHelp": "Synchronizuj teraz uruchamia przebieg od razu zamiast czekać na cogodzinny. Sprawdza po 25 pojazdów i kontynuuje sam, aż wszystkie oczekujące pojazdy zostaną obsłużone."
-    }
+    },
+    "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać."
   },
   "activity": {
     "title": "Aktywność",
@@ -396,6 +403,28 @@
         "auStateHelp": "Australia rejestruje pojazdy według stanów, a rejestrowi trzeba wskazać, który przeszukać. Wybierz ten, w którym zarejestrowana jest większość pojazdów Twoich klientów.",
         "usState": "Stan",
         "usStateHelp": "Dwuliterowy kod stanu, w którym zarejestrowane są pojazdy, np. CA lub TX. Amerykańskie rejestry są przeszukiwane według stanu."
+      }
+    },
+    "openai": {
+      "description": "Opisy usług, podsumowania historii, odczyt dokumentów i asystent, obsługiwane przez Twoje własne konto OpenAI. Każde wywołanie jest rozliczane na tym koncie, a model wybierasz sam.",
+      "fields": {
+        "apiKey": "Klucz API",
+        "apiKeyHelp": "Utwórz go na platform.openai.com w sekcji API keys. Konto musi mieć środki; OpenAI rozlicza każde wywołanie."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Który model odpowiada. Lista pochodzi z Twojego konta, najnowsze na górze. Mniejsze modele kosztują mniej za wywołanie i wystarczają do większości tekstów warsztatowych."
+      }
+    },
+    "anthropic": {
+      "description": "Opisy usług, podsumowania historii, odczyt dokumentów i asystent, obsługiwane przez Claude na Twoim własnym koncie Anthropic. Każde wywołanie jest rozliczane na tym koncie, a model wybierasz sam.",
+      "fields": {
+        "apiKey": "Klucz API",
+        "apiKeyHelp": "Utwórz go na console.anthropic.com w sekcji API keys. Konto musi mieć środki; Anthropic rozlicza każde wywołanie."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Który model odpowiada. Lista pochodzi z Twojego konta, najnowsze na górze. Mniejsze modele kosztują mniej za wywołanie i wystarczają do większości tekstów warsztatowych."
       }
     }
   },

@@ -6,6 +6,7 @@ import {
   getIntegrationConnection,
 } from '@/features/integrations/Actions/integrationActions'
 import { getManifest } from '@/integrations/registry'
+import { connectorAllowed } from '@/features/integrations/Lib/plan'
 import { FeatureLockedMessage } from '../../feature-locked-message'
 import { ConnectionSettings } from './connection-settings'
 
@@ -15,17 +16,18 @@ export default async function IntegrationConnectionPage({
   params: Promise<{ connector: string }>
 }) {
   const { connector } = await params
-  if (!getManifest(connector)) notFound()
+  const manifest = getManifest(connector)
+  if (!manifest) notFound()
 
   const data = await getLayoutData()
   if (data.status === 'unauthenticated') redirect('/auth/sign-in')
   if (data.status === 'no-organization') redirect('/onboarding')
 
   const features = await getFeatures(data.organizationId)
-  if (!features.integrations) {
+  if (!connectorAllowed(manifest, features)) {
     return (
       <FeatureLockedMessage
-        feature="Integrations"
+        feature={manifest.plan ? manifest.name : 'Integrations'}
         description="Connect calendars, video calls and other services to your workshop."
         isCloud={isCloudMode()}
       />

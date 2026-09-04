@@ -12,7 +12,9 @@
     "noneConnected": "Kol kas niekas neprijungta. Pasirinkite paslaugą žemiau, kad pradėtumėte.",
     "availableTitle": "Galima pridėti",
     "availableDescription": "Paslaugos, kurias galite pridėti. Kiekviena nustatoma vieną kartą ir veikia fone.",
-    "allConnected": "Visos galimos paslaugos prijungtos."
+    "allConnected": "Visos galimos paslaugos prijungtos.",
+    "searchPlaceholder": "Ieškoti integracijų",
+    "noMatches": "Nieko nerasta pagal „{query}“."
   },
   "categories": {
     "calendar": "Kalendorius",
@@ -23,7 +25,8 @@
     "automation": "Automatizavimas",
     "storage": "Failai",
     "registry": "Transporto priemonių registras",
-    "other": "Kita"
+    "other": "Kita",
+    "ai": "DI"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Paieška pagal numerį ir VIN",
       "inspection": "Apžiūros terminai"
+    },
+    "ai": {
+      "chat": "Tekstai ir santraukos"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "Perėjimas vyksta",
       "off": "Įjunkite nustatymą ir išsaugokite; iki tol perėjimas nieko netikrina.",
       "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
-    }
+    },
+    "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti."
   },
   "activity": {
     "title": "Veikla",
@@ -396,6 +403,28 @@
         "auStateHelp": "Australija registruoja transporto priemones pagal valstijas, ir registrui reikia nurodyti, kurioje ieškoti. Pasirinkite tą, kurioje registruota dauguma jūsų klientų transporto priemonių.",
         "usState": "Valstija",
         "usStateHelp": "Dviejų raidžių valstijos, kurioje registruotos transporto priemonės, kodas, pvz., CA arba TX. JAV registrai užklausiami pagal valstiją."
+      }
+    },
+    "openai": {
+      "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas — atsako jūsų pačių OpenAI paskyra. Kiekvienas užklausimas apmokestinamas toje paskyroje, o modelį pasirenkate jūs.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Susikurkite platform.openai.com skiltyje API keys. Paskyroje reikia lėšų; OpenAI apmokestina kiekvieną užklausimą."
+      },
+      "settings": {
+        "model": "Modelis",
+        "modelHelp": "Kuris modelis atsako. Sąrašas nuskaitomas iš jūsų paskyros, naujausi viršuje. Mažesni modeliai kainuoja mažiau ir daugumai serviso tekstų visiškai pakanka."
+      }
+    },
+    "anthropic": {
+      "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas — atsako Claude jūsų pačių Anthropic paskyroje. Kiekvienas užklausimas apmokestinamas toje paskyroje, o modelį pasirenkate jūs.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Susikurkite console.anthropic.com skiltyje API keys. Paskyroje reikia lėšų; Anthropic apmokestina kiekvieną užklausimą."
+      },
+      "settings": {
+        "model": "Modelis",
+        "modelHelp": "Kuris modelis atsako. Sąrašas nuskaitomas iš jūsų paskyros, naujausi viršuje. Mažesni modeliai kainuoja mažiau ir daugumai serviso tekstų visiškai pakanka."
       }
     }
   },

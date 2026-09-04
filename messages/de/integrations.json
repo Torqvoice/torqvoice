@@ -12,7 +12,9 @@
     "noneConnected": "Noch nichts verbunden. Wählen Sie unten einen Dienst, um zu beginnen.",
     "availableTitle": "Verfügbar",
     "availableDescription": "Dienste, die Sie hinzufügen können. Jeder wird einmal eingerichtet und läuft im Hintergrund.",
-    "allConnected": "Alle verfügbaren Dienste sind verbunden."
+    "allConnected": "Alle verfügbaren Dienste sind verbunden.",
+    "searchPlaceholder": "Integrationen durchsuchen",
+    "noMatches": "Nichts passt zu „{query}“."
   },
   "categories": {
     "calendar": "Kalender",
@@ -23,7 +25,8 @@
     "automation": "Automatisierung",
     "storage": "Dateien",
     "registry": "Fahrzeugregister",
-    "other": "Sonstiges"
+    "other": "Sonstiges",
+    "ai": "KI"
   },
   "capabilities": {
     "calendar": {
@@ -49,6 +52,9 @@
     "vehicle": {
       "lookup": "Kennzeichen- und FIN-Abfrage",
       "inspection": "HU-Fälligkeitsdaten"
+    },
+    "ai": {
+      "chat": "Texte und Zusammenfassungen"
     }
   },
   "statuses": {
@@ -113,7 +119,8 @@
       "inProgress": "Ein Durchlauf läuft",
       "off": "Einstellung einschalten und speichern; bis dahin prüft ein Durchlauf nichts.",
       "syncNowHelp": "Jetzt synchronisieren startet sofort einen Durchlauf statt auf den stündlichen zu warten. Er fragt 25 Fahrzeuge auf einmal ab und macht von selbst weiter, bis alle fälligen Fahrzeuge erledigt sind."
-    }
+    },
+    "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt."
   },
   "activity": {
     "title": "Aktivität",
@@ -396,6 +403,28 @@
         "auStateHelp": "Australien lässt Fahrzeuge je Bundesstaat zu, und dem Register muss gesagt werden, welcher durchsucht wird. Wählen Sie den Staat, in dem die meisten Fahrzeuge Ihrer Kunden zugelassen sind.",
         "usState": "Bundesstaat",
         "usStateHelp": "Der zweibuchstabige Code des Bundesstaats, in dem die Fahrzeuge zugelassen sind, etwa CA oder TX. Amerikanische Register werden je Bundesstaat durchsucht."
+      }
+    },
+    "openai": {
+      "description": "Servicebeschreibungen, Verlaufszusammenfassungen, Dokumentenerkennung und der Assistent, beantwortet über Ihr eigenes OpenAI-Konto. Jeder Aufruf wird diesem Konto berechnet, und Sie wählen das Modell.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Auf platform.openai.com unter API keys anlegen. Das Konto braucht Guthaben; OpenAI rechnet pro Aufruf ab."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Welches Modell antwortet. Die Liste kommt aus Ihrem Konto, neueste zuerst. Kleinere Modelle kosten pro Aufruf weniger und reichen für die meisten Werkstatttexte."
+      }
+    },
+    "anthropic": {
+      "description": "Servicebeschreibungen, Verlaufszusammenfassungen, Dokumentenerkennung und der Assistent, beantwortet von Claude über Ihr eigenes Anthropic-Konto. Jeder Aufruf wird diesem Konto berechnet, und Sie wählen das Modell.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Auf console.anthropic.com unter API keys anlegen. Das Konto braucht Guthaben; Anthropic rechnet pro Aufruf ab."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Welches Modell antwortet. Die Liste kommt aus Ihrem Konto, neueste zuerst. Kleinere Modelle kosten pro Aufruf weniger und reichen für die meisten Werkstatttexte."
       }
     }
   },

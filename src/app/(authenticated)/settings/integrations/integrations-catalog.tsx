@@ -1,17 +1,19 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { AlertTriangle, ArrowRight, Check, Plug, Settings2 } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Check, Plug, Search, Settings2 } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { CatalogEntry } from '@/features/integrations/Actions/integrationActions'
 import type { IntegrationCategory } from '@/features/integrations/Lib/types'
 
 const CATEGORY_ORDER: IntegrationCategory[] = [
+  'ai',
   'calendar',
   'conferencing',
   'accounting',
@@ -23,14 +25,60 @@ const CATEGORY_ORDER: IntegrationCategory[] = [
   'other',
 ]
 
+/** Lower case and without accents, so "intégrations" is found by "integr". */
+function normalize(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+}
+
 /**
  * Two cards: what the workshop has set up, then what it could add. The
  * first is a plain list, since a connected service is something to check on
- * rather than shop for; the second is the browsable grid with categories.
+ * rather than shop for; the second is the browsable grid with categories,
+ * and the one the search box narrows. Searching is shopping: the list of
+ * what this workshop already runs stays whole while you look for something
+ * to add to it.
  */
 export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
   const t = useTranslations('integrations')
   const [category, setCategory] = useState<IntegrationCategory | 'all'>('all')
+  const [query, setQuery] = useState('')
+
+  /**
+   * Everything a card shows, in the reader's own language: the vendor name,
+   * what it does, its category and its capability badges. Searching the
+   * translated text is what lets "kalender" find Google Calendar.
+   */
+  const haystacks = useMemo(() => {
+    const index = new Map<string, string>()
+    for (const e of entries) {
+      const m = e.manifest
+      index.set(
+        m.id,
+        normalize(
+          [
+            m.name,
+            m.id,
+            t(`connectors.${m.id}.description`),
+            t(`categories.${m.category}`),
+            ...(m.also ?? []).map((c) => t(`categories.${c}`)),
+            ...m.capabilities.map((cap) => t(`capabilities.${cap}`)),
+          ].join(' ')
+        )
+      )
+    }
+    return index
+  }, [entries, t])
+
+  const needle = normalize(query)
+  const matches = useCallback(
+    (entry: CatalogEntry) =>
+      !needle || (haystacks.get(entry.manifest.id)?.includes(needle) ?? false),
+    [haystacks, needle]
+  )
 
   const connected = useMemo(
     () => entries.filter((e) => e.status && e.status !== 'disconnected'),
@@ -53,13 +101,14 @@ export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
   const visible = useMemo(() => {
     const list = available.filter(
       (e) =>
-        category === 'all' ||
-        e.manifest.category === category ||
-        e.manifest.also?.includes(category)
+        (category === 'all' ||
+          e.manifest.category === category ||
+          e.manifest.also?.includes(category)) &&
+        matches(e)
     )
     // The ones that matter for this workshop's country first.
     return list.sort((a, b) => Number(b.featured) - Number(a.featured))
-  }, [available, category])
+  }, [available, category, matches])
 
   return (
     <div className="space-y-4">
@@ -121,6 +170,18 @@ export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
         title={t('catalog.availableTitle')}
         description={t('catalog.availableDescription')}
       >
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('catalog.searchPlaceholder')}
+            aria-label={t('catalog.searchPlaceholder')}
+            className="pl-9"
+          />
+        </div>
+
         {categories.length > 1 && (
           <div className="-mx-1 mb-4 flex gap-2 overflow-x-auto px-1 sm:flex-wrap sm:overflow-visible">
             <Button
@@ -146,8 +207,12 @@ export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
         )}
 
         {visible.length === 0 ? (
-          <div className="flex h-24 items-center justify-center rounded-lg border text-sm text-muted-foreground">
-            {available.length === 0 ? t('catalog.allConnected') : t('catalog.empty')}
+          <div className="flex h-24 items-center justify-center rounded-lg border px-4 text-center text-sm text-muted-foreground">
+            {needle
+              ? t('catalog.noMatches', { query: query.trim() })
+              : available.length === 0
+                ? t('catalog.allConnected')
+                : t('catalog.empty')}
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
