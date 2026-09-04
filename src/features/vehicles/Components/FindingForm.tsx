@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import { createFinding, updateFinding } from '../Actions/findingActions'
 import { Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { clearableInput } from '@/lib/clearable'
 
 interface FindingData {
   id: string
@@ -83,7 +84,7 @@ export function FindingForm({
       vehicleId,
       description,
       severity: severity as 'needs_work' | 'monitor' | 'urgent',
-      notes: notes || undefined,
+      notes: clearableInput(notes, isEdit),
       serviceRecordId: serviceRecordId || undefined,
       concernId: concernId === 'none' ? null : concernId,
     }

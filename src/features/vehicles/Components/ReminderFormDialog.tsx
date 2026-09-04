@@ -26,6 +26,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useGlassModal } from '@/components/glass-modal'
 import { createReminder, updateReminder } from '../Actions/reminderActions'
+import { clearableInput } from '@/lib/clearable'
 
 export interface ReminderFormVehicle {
   id: string
@@ -136,11 +137,13 @@ export function ReminderFormDialog({
       vehicleId: formVehicleId || null,
       customerId: formCustomerId || null,
       title: formTitle,
-      description: formDescription || undefined,
+      // When editing, emptied fields are sent as cleared ('' or null) so the
+      // update action drops the old value.
+      description: clearableInput(formDescription, isEdit),
       // Midday on the local day, so the reminder stays on the day that was
       // picked whichever side of UTC the workshop sits on
-      dueDate: formDueDate ? `${toLocalDateStr(formDueDate)}T12:00:00` : undefined,
-      dueMileage: formDueMileage ? Number(formDueMileage) : undefined,
+      dueDate: formDueDate ? `${toLocalDateStr(formDueDate)}T12:00:00` : isEdit ? '' : undefined,
+      dueMileage: formDueMileage ? Number(formDueMileage) : isEdit ? null : undefined,
       notifyInApp: formNotifyInApp,
       notifyEmail: formNotifyEmail,
     }

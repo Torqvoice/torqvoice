@@ -32,6 +32,7 @@ import { createVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { ScanDocumentButton } from '@/features/vehicles/Components/ScanDocumentButton'
 import type { VehicleDocumentScan } from '@/features/vehicles/Actions/aiAnalyzeVehicleDocument'
 import { Loader2 } from 'lucide-react'
+import { clearableInput } from '@/lib/clearable'
 
 interface CustomerFormProps {
   open: boolean
@@ -125,17 +126,19 @@ export function CustomerForm({
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    // An emptied field reaches the update action as '' so it can be cleared.
+    const optional = (name: string) => clearableInput(formData.get(name), Boolean(customer))
     const data = {
       name: formData.get('name') as string,
-      customerNumber: (formData.get('customerNumber') as string) || undefined,
-      email: (formData.get('email') as string) || undefined,
-      phone: (formData.get('phone') as string) || undefined,
-      address: (formData.get('address') as string) || undefined,
-      company: (formData.get('company') as string) || undefined,
-      taxId: (formData.get('taxId') as string) || undefined,
+      customerNumber: optional('customerNumber'),
+      email: optional('email'),
+      phone: optional('phone'),
+      address: optional('address'),
+      company: optional('company'),
+      taxId: optional('taxId'),
       taxExempt,
       reminderOptOut,
-      notes: (formData.get('notes') as string) || undefined,
+      notes: optional('notes'),
       invoiceDesignId: invoiceDesignId === FOLLOW_DEFAULT ? null : invoiceDesignId,
     }
 
