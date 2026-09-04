@@ -21,6 +21,7 @@
     "deleteFailed": "Kon het gesprek niet verwijderen",
     "delete": "Verwijderen",
     "cancel": "Annuleren",
-    "loadMore": "Meer laden"
+    "loadMore": "Meer laden",
+    "unread": "{count} ongelezen"
   }
 }

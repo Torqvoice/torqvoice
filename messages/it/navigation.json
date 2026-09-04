@@ -127,6 +127,7 @@
       "member": "Membro"
     },
     "badges": {
+      "messages": "{count} messaggi non letti",
       "workOrders": "{count} ordini di lavoro aperti",
       "inspections": "{count} ispezioni in corso",
       "reminders": "{count} promemoria in scadenza"

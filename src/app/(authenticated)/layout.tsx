@@ -33,6 +33,7 @@ import { getManifest } from '@/integrations/registry'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
+import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -129,7 +130,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // something. Only the screens this role can see are counted at all.
   const timeZone = safeTimeZone(data.timezone)
   const endOfToday = startOfZonedDay(addZonedDays(new Date(), 1, timeZone), timeZone)
-  const [openWorkOrders, activeInspections, dueReminders] = await Promise.all([
+  const [openWorkOrders, activeInspections, dueReminders, unreadMessages] = await Promise.all([
     visibleSubjects.includes(PermissionSubject.WORK_ORDERS)
       ? db.serviceRecord.count({
           where: {
@@ -152,11 +153,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
           },
         })
       : 0,
+    visibleSubjects.includes(PermissionSubject.CUSTOMERS)
+      ? countUnreadMessages(data.organizationId)
+      : 0,
   ])
   const sidebarCounts = {
     workOrders: openWorkOrders,
     inspections: activeInspections,
     reminders: dueReminders,
+    messages: unreadMessages,
   }
 
   // Product announcements join the same queue as the hints a setting flip

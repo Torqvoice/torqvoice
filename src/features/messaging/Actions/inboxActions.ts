@@ -35,6 +35,8 @@ export interface InboxThread {
   lastMessage: string
   lastDirection: string
   lastAt: string
+  /** Inbound messages nobody has opened yet. */
+  unread: number
 }
 
 export interface InboxPage {
@@ -62,13 +64,22 @@ interface ThreadRow {
   createdAt: Date
 }
 
+interface UnreadRow {
+  identity: string
+  unread: number
+}
+
 /** Empty bodies are common on media messages, so say what arrived instead. */
 function preview(body: string | null, mediaType?: string | null): string {
   if (body?.trim()) return body
   return mediaType ? `[${mediaType}]` : ''
 }
 
-function toThread(channel: MessagingChannel, row: ThreadRow): InboxThread {
+function toThread(
+  channel: MessagingChannel,
+  row: ThreadRow,
+  unread: Map<string, number>
+): InboxThread {
   const contact = row.contact ?? ''
   return {
     key: `${channel}:${row.identity}`,
@@ -79,7 +90,12 @@ function toThread(channel: MessagingChannel, row: ThreadRow): InboxThread {
     lastMessage: preview(row.body, row.mediaType),
     lastDirection: row.direction,
     lastAt: row.createdAt.toISOString(),
+    unread: unread.get(row.identity) ?? 0,
   }
+}
+
+function byIdentity(rows: UnreadRow[]): Map<string, number> {
+  return new Map(rows.map((row) => [row.identity, row.unread]))
 }
 
 export interface InboxQuery {
@@ -121,8 +137,13 @@ export async function getInboxThreads(query: InboxQuery = {}) {
       // (organizationId, customerId, createdAt DESC) indexes already order for.
       // History outlives configuration, so this does not check `channels`: a
       // workshop that switched a provider off can still read what it sent.
-      const [smsRows, telegramRows, whatsappRows] = await Promise.all([
-        db.$queryRaw<ThreadRow[]>`
+      //
+      // Unread is counted per thread in its own small query rather than
+      // folded into the DISTINCT ON, which only ever sees one row per thread.
+      // Unread rows are few, so the whole workshop is counted at once.
+      const [smsRows, telegramRows, whatsappRows, smsUnread, telegramUnread, whatsappUnread] =
+        await Promise.all([
+          db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
             SELECT DISTINCT ON (m."customerId")
               m."customerId" AS identity,
@@ -145,7 +166,7 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
-        db.$queryRaw<ThreadRow[]>`
+          db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
             SELECT DISTINCT ON (m."customerId")
               m."customerId" AS identity,
@@ -168,10 +189,10 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
-        // WhatsApp threads can belong to a number we never matched to a
-        // customer, so they group by customer when there is one and by the
-        // number itself when there is not.
-        db.$queryRaw<ThreadRow[]>`
+          // WhatsApp threads can belong to a number we never matched to a
+          // customer, so they group by customer when there is one and by the
+          // number itself when there is not.
+          db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
             SELECT DISTINCT ON (COALESCE(m."customerId", CASE WHEN m."direction" = 'inbound' THEN m."fromNumber" ELSE m."toNumber" END))
               COALESCE(m."customerId", CASE WHEN m."direction" = 'inbound' THEN m."fromNumber" ELSE m."toNumber" END) AS identity,
@@ -195,18 +216,90 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
-      ])
+          db.$queryRaw<UnreadRow[]>`
+          SELECT "customerId" AS identity, COUNT(*)::int AS unread
+          FROM "sms_messages"
+          WHERE "organizationId" = ${organizationId}
+            AND "direction" = 'inbound' AND "readAt" IS NULL AND "customerId" IS NOT NULL
+          GROUP BY "customerId"
+        `,
+          db.$queryRaw<UnreadRow[]>`
+          SELECT "customerId" AS identity, COUNT(*)::int AS unread
+          FROM "telegram_messages"
+          WHERE "organizationId" = ${organizationId}
+            AND "direction" = 'inbound' AND "readAt" IS NULL AND "customerId" IS NOT NULL
+          GROUP BY "customerId"
+        `,
+          db.$queryRaw<UnreadRow[]>`
+          SELECT COALESCE("customerId", "fromNumber") AS identity, COUNT(*)::int AS unread
+          FROM "whatsapp_messages"
+          WHERE "organizationId" = ${organizationId}
+            AND "direction" = 'inbound' AND "readAt" IS NULL
+          GROUP BY COALESCE("customerId", "fromNumber")
+        `,
+        ])
 
       const { threads, nextCursor } = mergeChannelPages(
         [
-          smsRows.map((row) => toThread('sms', row)),
-          telegramRows.map((row) => toThread('telegram', row)),
-          whatsappRows.map((row) => toThread('whatsapp', row)),
+          smsRows.map((row) => toThread('sms', row, byIdentity(smsUnread))),
+          telegramRows.map((row) => toThread('telegram', row, byIdentity(telegramUnread))),
+          whatsappRows.map((row) => toThread('whatsapp', row, byIdentity(whatsappUnread))),
         ],
         limit
       )
 
       return { threads, nextCursor, channels }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}
+
+/**
+ * Marks everything inbound in one thread as read.
+ *
+ * Called when the thread is opened. Reading a conversation is what the
+ * customers permission already grants, so no extra permission is asked for.
+ * Returns how many rows changed, so the caller can skip a refresh when it was
+ * nothing.
+ */
+export async function markThreadRead(thread: {
+  channel: MessagingChannel
+  customerId: string | null
+  /** The phone number a WhatsApp thread without a customer is filed under. */
+  contact: string
+}) {
+  return withAuth(
+    async ({ organizationId }): Promise<{ marked: number }> => {
+      const now = new Date()
+      const unread = { organizationId, direction: 'inbound', readAt: null }
+
+      if (thread.channel === 'whatsapp') {
+        const result = await db.whatsappMessage.updateMany({
+          where: thread.customerId
+            ? { ...unread, customerId: thread.customerId }
+            : { ...unread, customerId: null, fromNumber: thread.contact },
+          data: { readAt: now },
+        })
+        return { marked: result.count }
+      }
+
+      if (!thread.customerId) return { marked: 0 }
+
+      const result =
+        thread.channel === 'sms'
+          ? await db.smsMessage.updateMany({
+              where: { ...unread, customerId: thread.customerId },
+              data: { readAt: now },
+            })
+          : await db.telegramMessage.updateMany({
+              where: { ...unread, customerId: thread.customerId },
+              data: { readAt: now },
+            })
+      return { marked: result.count }
     },
     {
       requiredPermissions: [

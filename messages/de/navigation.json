@@ -127,6 +127,7 @@
       "member": "Mitglied"
     },
     "badges": {
+      "messages": "{count} ungelesene Nachrichten",
       "workOrders": "{count} offene Arbeitsaufträge",
       "inspections": "{count} laufende Inspektionen",
       "reminders": "{count} fällige Erinnerungen"

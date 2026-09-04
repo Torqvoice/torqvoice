@@ -127,6 +127,7 @@
       "member": "Lid"
     },
     "badges": {
+      "messages": "{count} ongelezen berichten",
       "workOrders": "{count} open werkorders",
       "inspections": "{count} lopende inspecties",
       "reminders": "{count} herinneringen vervallen"

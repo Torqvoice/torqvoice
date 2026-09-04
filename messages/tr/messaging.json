@@ -21,6 +21,7 @@
     "deleteFailed": "Görüşme silinemedi",
     "delete": "Sil",
     "cancel": "İptal",
-    "loadMore": "Daha fazla yükle"
+    "loadMore": "Daha fazla yükle",
+    "unread": "{count} okunmamış"
   }
 }

@@ -21,6 +21,7 @@
     "deleteFailed": "Could not delete the conversation",
     "delete": "Delete",
     "cancel": "Cancel",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "unread": "{count} unread"
   }
 }

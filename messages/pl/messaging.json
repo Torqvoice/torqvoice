@@ -21,6 +21,7 @@
     "deleteFailed": "Nie udało się usunąć rozmowy",
     "delete": "Usuń",
     "cancel": "Anuluj",
-    "loadMore": "Wczytaj więcej"
+    "loadMore": "Wczytaj więcej",
+    "unread": "{count} nieprzeczytane"
   }
 }

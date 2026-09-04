@@ -21,6 +21,7 @@
     "deleteFailed": "Konversation konnte nicht gelöscht werden",
     "delete": "Löschen",
     "cancel": "Abbrechen",
-    "loadMore": "Mehr laden"
+    "loadMore": "Mehr laden",
+    "unread": "{count} ungelesen"
   }
 }

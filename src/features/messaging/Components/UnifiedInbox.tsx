@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
@@ -53,7 +54,12 @@ import {
   deleteWhatsappConversation,
   deleteWhatsappConversationByPhone,
 } from '@/features/whatsapp/Actions/whatsappActions'
-import { getInboxThreads, type InboxThread, type MessagingChannel } from '../Actions/inboxActions'
+import {
+  getInboxThreads,
+  markThreadRead,
+  type InboxThread,
+  type MessagingChannel,
+} from '../Actions/inboxActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
 import { avatarTint, initials } from '../Lib/threadDisplay'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -95,6 +101,7 @@ export function UnifiedInbox({
   onChanged?: () => void
 }) {
   const t = useTranslations('messaging.inbox')
+  const router = useRouter()
   const [threads, setThreads] = useState(initialThreads)
   const [cursor, setCursor] = useState<string | null>(initialCursor)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -162,25 +169,49 @@ export function UnifiedInbox({
 
   const visibleThreads = threads
 
-  /** SMS and Telegram hand their history over as props, so it loads on select. */
-  const select = useCallback(async (thread: InboxThread) => {
-    setSelected(thread)
-    setSmsData(null)
-    setTelegramData(null)
-    if (!thread.customerId) return
+  /**
+   * Opening a thread is reading it. The row loses its marker at once, the
+   * server is told, and the layout is refreshed so the sidebar pill follows.
+   */
+  const markRead = useCallback(
+    async (thread: InboxThread) => {
+      if (thread.unread === 0) return
+      setThreads((previous) =>
+        previous.map((row) => (row.key === thread.key ? { ...row, unread: 0 } : row))
+      )
+      const result = await markThreadRead({
+        channel: thread.channel,
+        customerId: thread.customerId,
+        contact: thread.contact,
+      })
+      if (result.success && result.data && result.data.marked > 0) router.refresh()
+    },
+    [router]
+  )
 
-    if (thread.channel === 'sms') {
-      setLoadingConversation(true)
-      const result = await getConversation(thread.customerId)
-      if (result.success && result.data) setSmsData(result.data)
-      setLoadingConversation(false)
-    } else if (thread.channel === 'telegram') {
-      setLoadingConversation(true)
-      const result = await getTelegramConversation(thread.customerId)
-      if (result.success && result.data) setTelegramData(result.data)
-      setLoadingConversation(false)
-    }
-  }, [])
+  /** SMS and Telegram hand their history over as props, so it loads on select. */
+  const select = useCallback(
+    async (thread: InboxThread) => {
+      setSelected(thread)
+      setSmsData(null)
+      setTelegramData(null)
+      void markRead(thread)
+      if (!thread.customerId) return
+
+      if (thread.channel === 'sms') {
+        setLoadingConversation(true)
+        const result = await getConversation(thread.customerId)
+        if (result.success && result.data) setSmsData(result.data)
+        setLoadingConversation(false)
+      } else if (thread.channel === 'telegram') {
+        setLoadingConversation(true)
+        const result = await getTelegramConversation(thread.customerId)
+        if (result.success && result.data) setTelegramData(result.data)
+        setLoadingConversation(false)
+      }
+    },
+    [markRead]
+  )
 
   /** Removes our copy of a conversation; the customer's phone keeps theirs. */
   const confirmDelete = async () => {
@@ -235,6 +266,7 @@ export function UnifiedInbox({
         lastMessage: '',
         lastDirection: 'outbound',
         lastAt: new Date(0).toISOString(),
+        unread: 0,
       }
     )
   }
@@ -293,6 +325,7 @@ export function UnifiedInbox({
           ) : (
             visibleThreads.map((thread) => {
               const isInbound = thread.lastDirection === 'inbound'
+              const isUnread = thread.unread > 0
               return (
                 <button
                   key={thread.key}
@@ -314,17 +347,35 @@ export function UnifiedInbox({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate text-sm font-medium">{thread.name}</span>
+                        <span
+                          className={cn(
+                            'truncate text-sm',
+                            isUnread ? 'font-semibold' : 'font-medium'
+                          )}
+                        >
+                          {thread.name}
+                        </span>
                         <ChannelBadge channel={thread.channel} />
                       </div>
-                      <p
-                        className={cn(
-                          'mt-0.5 truncate text-xs',
-                          isInbound ? 'text-foreground' : 'text-muted-foreground'
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <p
+                          className={cn(
+                            'min-w-0 flex-1 truncate text-xs',
+                            isInbound ? 'text-foreground' : 'text-muted-foreground',
+                            isUnread && 'font-medium'
+                          )}
+                        >
+                          {thread.lastMessage}
+                        </p>
+                        {/* Waiting messages get a primary dot; the count is
+                            on the sidebar, where it sums every thread. */}
+                        {isUnread && (
+                          <span
+                            aria-label={t('unread', { count: thread.unread })}
+                            className="size-2 shrink-0 rounded-full bg-primary"
+                          />
                         )}
-                      >
-                        {thread.lastMessage}
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </button>

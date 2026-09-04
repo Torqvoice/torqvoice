@@ -21,6 +21,7 @@
     "deleteFailed": "Impossible de supprimer la conversation",
     "delete": "Supprimer",
     "cancel": "Annuler",
-    "loadMore": "Charger plus"
+    "loadMore": "Charger plus",
+    "unread": "{count} non lus"
   }
 }

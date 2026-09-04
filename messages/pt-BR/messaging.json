@@ -21,6 +21,7 @@
     "deleteFailed": "Não foi possível excluir a conversa",
     "delete": "Excluir",
     "cancel": "Cancelar",
-    "loadMore": "Carregar mais"
+    "loadMore": "Carregar mais",
+    "unread": "{count} não lidas"
   }
 }
