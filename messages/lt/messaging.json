@@ -22,6 +22,9 @@
     "delete": "Ištrinti",
     "cancel": "Atšaukti",
     "loadMore": "Įkelti daugiau",
-    "unread": "{count} neperskaityta"
+    "unread": "{count} neperskaityta",
+    "markUnread": "Pažymėti kaip neskaitytą",
+    "nothingToMarkUnread": "Klientas šiame pokalbyje dar nieko nerašė.",
+    "markUnreadFailed": "Nepavyko pažymėti pokalbio kaip neskaityto."
   }
 }

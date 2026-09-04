@@ -22,6 +22,9 @@
     "delete": "Elimina",
     "cancel": "Annulla",
     "loadMore": "Carica altro",
-    "unread": "{count} non letti"
+    "unread": "{count} non letti",
+    "markUnread": "Segna come non letto",
+    "nothingToMarkUnread": "Il cliente non ha ancora scritto in questa conversazione.",
+    "markUnreadFailed": "Impossibile segnare la conversazione come non letta."
   }
 }

@@ -308,3 +308,61 @@ export async function markThreadRead(thread: {
     }
   )
 }
+
+/**
+ * Puts a thread back in the unread pile.
+ *
+ * Only the newest inbound message is unstamped: one waiting message is what
+ * "come back to this" means, and it keeps the pill honest about how much is
+ * actually new. A thread the customer has never written to has nothing to
+ * mark, and says so with a zero.
+ */
+export async function markThreadUnread(thread: {
+  channel: MessagingChannel
+  customerId: string | null
+  contact: string
+}) {
+  return withAuth(
+    async ({ organizationId }): Promise<{ marked: number }> => {
+      const inbound = { organizationId, direction: 'inbound' }
+      const newest = { orderBy: { createdAt: 'desc' as const }, select: { id: true } }
+
+      if (thread.channel === 'whatsapp') {
+        const latest = await db.whatsappMessage.findFirst({
+          where: thread.customerId
+            ? { ...inbound, customerId: thread.customerId }
+            : { ...inbound, customerId: null, fromNumber: thread.contact },
+          ...newest,
+        })
+        if (!latest) return { marked: 0 }
+        await db.whatsappMessage.update({ where: { id: latest.id }, data: { readAt: null } })
+        return { marked: 1 }
+      }
+
+      if (!thread.customerId) return { marked: 0 }
+
+      if (thread.channel === 'sms') {
+        const latest = await db.smsMessage.findFirst({
+          where: { ...inbound, customerId: thread.customerId },
+          ...newest,
+        })
+        if (!latest) return { marked: 0 }
+        await db.smsMessage.update({ where: { id: latest.id }, data: { readAt: null } })
+        return { marked: 1 }
+      }
+
+      const latest = await db.telegramMessage.findFirst({
+        where: { ...inbound, customerId: thread.customerId },
+        ...newest,
+      })
+      if (!latest) return { marked: 0 }
+      await db.telegramMessage.update({ where: { id: latest.id }, data: { readAt: null } })
+      return { marked: 1 }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
+    }
+  )
+}

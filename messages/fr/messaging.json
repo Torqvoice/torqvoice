@@ -22,6 +22,9 @@
     "delete": "Supprimer",
     "cancel": "Annuler",
     "loadMore": "Charger plus",
-    "unread": "{count} non lus"
+    "unread": "{count} non lus",
+    "markUnread": "Marquer comme non lu",
+    "nothingToMarkUnread": "Le client n'a pas encore écrit dans cette conversation.",
+    "markUnreadFailed": "Impossible de marquer la conversation comme non lue."
   }
 }

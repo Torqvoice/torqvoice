@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Inbox,
   Loader2,
+  MailOpen,
   MoreVertical,
   Plus,
   Search,
@@ -37,6 +38,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
@@ -57,6 +59,7 @@ import {
 import {
   getInboxThreads,
   markThreadRead,
+  markThreadUnread,
   type InboxThread,
   type MessagingChannel,
 } from '../Actions/inboxActions'
@@ -187,6 +190,34 @@ export function UnifiedInbox({
       if (result.success && result.data && result.data.marked > 0) router.refresh()
     },
     [router]
+  )
+
+  /**
+   * The opposite gesture, for "come back to this later". The thread stays
+   * open; it is only the marker and the pill that come back. Selecting it
+   * again reads it again, which is what a mail client does too.
+   */
+  const markUnread = useCallback(
+    async (thread: InboxThread) => {
+      const result = await markThreadUnread({
+        channel: thread.channel,
+        customerId: thread.customerId,
+        contact: thread.contact,
+      })
+      if (!result.success) {
+        toast.error(result.error ?? t('markUnreadFailed'))
+        return
+      }
+      if (!result.data || result.data.marked === 0) {
+        toast.info(t('nothingToMarkUnread'))
+        return
+      }
+      setThreads((previous) =>
+        previous.map((row) => (row.key === thread.key ? { ...row, unread: 1 } : row))
+      )
+      router.refresh()
+    },
+    [router, t]
   )
 
   /** SMS and Telegram hand their history over as props, so it loads on select. */
@@ -433,6 +464,11 @@ export function UnifiedInbox({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => markUnread(selected)}>
+                      <MailOpen className="mr-2 h-4 w-4" />
+                      {t('markUnread')}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive"
                       onClick={() => setDeleteTarget(selected)}

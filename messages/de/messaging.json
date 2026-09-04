@@ -22,6 +22,9 @@
     "delete": "Löschen",
     "cancel": "Abbrechen",
     "loadMore": "Mehr laden",
-    "unread": "{count} ungelesen"
+    "unread": "{count} ungelesen",
+    "markUnread": "Als ungelesen markieren",
+    "nothingToMarkUnread": "Der Kunde hat in dieser Unterhaltung noch nicht geschrieben.",
+    "markUnreadFailed": "Die Unterhaltung konnte nicht als ungelesen markiert werden."
   }
 }

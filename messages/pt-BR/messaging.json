@@ -22,6 +22,9 @@
     "delete": "Excluir",
     "cancel": "Cancelar",
     "loadMore": "Carregar mais",
-    "unread": "{count} não lidas"
+    "unread": "{count} não lidas",
+    "markUnread": "Marcar como não lida",
+    "nothingToMarkUnread": "O cliente ainda não escreveu nesta conversa.",
+    "markUnreadFailed": "Não foi possível marcar a conversa como não lida."
   }
 }

@@ -22,6 +22,9 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "loadMore": "Load more",
-    "unread": "{count} unread"
+    "unread": "{count} unread",
+    "markUnread": "Mark as unread",
+    "nothingToMarkUnread": "The customer has not written in this conversation yet.",
+    "markUnreadFailed": "Could not mark the conversation as unread."
   }
 }

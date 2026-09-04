@@ -22,6 +22,9 @@
     "delete": "Sil",
     "cancel": "İptal",
     "loadMore": "Daha fazla yükle",
-    "unread": "{count} okunmamış"
+    "unread": "{count} okunmamış",
+    "markUnread": "Okunmadı olarak işaretle",
+    "nothingToMarkUnread": "Müşteri bu konuşmada henüz bir şey yazmadı.",
+    "markUnreadFailed": "Konuşma okunmadı olarak işaretlenemedi."
   }
 }

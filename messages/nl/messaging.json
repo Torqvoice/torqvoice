@@ -22,6 +22,9 @@
     "delete": "Verwijderen",
     "cancel": "Annuleren",
     "loadMore": "Meer laden",
-    "unread": "{count} ongelezen"
+    "unread": "{count} ongelezen",
+    "markUnread": "Markeren als ongelezen",
+    "nothingToMarkUnread": "De klant heeft in dit gesprek nog niets geschreven.",
+    "markUnreadFailed": "Het gesprek kon niet als ongelezen worden gemarkeerd."
   }
 }
