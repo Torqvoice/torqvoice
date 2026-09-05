@@ -77,6 +77,10 @@ function makeCtx(input: {
     homeCurrency: 'GBP',
     multiCurrency: false,
     customTxnNumbers: true,
+    salesTaxEnabled: true,
+    automatedSalesTax: false,
+    // Read and empty, so a push does not go to the tax tables unless a test asks.
+    taxCatalog: { fetchedAt: new Date().toISOString(), codes: [] },
     ...input.state,
   }
   const key = (t: string, e: string) => `${t}:${e}`
@@ -493,7 +497,7 @@ describe('QuickBooks: pushing an invoice', () => {
 
   it('falls back to TAX and NON for a US company with no tax codes chosen', async () => {
     const t = makeCtx({
-      state: { country: 'US' },
+      state: { country: 'US', automatedSalesTax: true },
       settings: { taxCodeId: '', zeroTaxCodeId: '' },
       answer: emptyCompany(),
     })
@@ -511,7 +515,7 @@ describe('QuickBooks: pushing an invoice', () => {
 
   it('offers TAX and NON ahead of the rate codes in a US company', async () => {
     const t = makeCtx({
-      state: { country: 'US' },
+      state: { country: 'US', automatedSalesTax: true },
       answer: (call) =>
         call.query.query.includes('from TaxCode')
           ? {
@@ -530,6 +534,180 @@ describe('QuickBooks: pushing an invoice', () => {
       { value: '4', label: 'California' },
       { value: '5', label: 'Tucson' },
     ])
+  })
+
+  it('sends the billed tax as an override to an automated-sales-tax company', async () => {
+    const t = makeCtx({
+      state: { country: 'US', automatedSalesTax: true },
+      settings: { taxCodeId: '', zeroTaxCodeId: '' },
+      answer: emptyCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    expect(inv?.body?.TxnTaxDetail).toEqual({ TxnTaxCodeRef: { value: 'TAX' }, TotalTax: 60 })
+    expect(inv?.body?.GlobalTaxCalculation).toBeUndefined()
+  })
+
+  it('marks an untaxed invoice NON with no tax in an automated-sales-tax company', async () => {
+    loadInvoice.mockResolvedValue({ ...invoice, taxRate: 0, taxAmount: 0, totalAmount: 300 })
+    const t = makeCtx({
+      state: { country: 'US', automatedSalesTax: true },
+      settings: { taxCodeId: '', zeroTaxCodeId: '' },
+      answer: emptyCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    expect(inv?.body?.TxnTaxDetail).toEqual({ TxnTaxCodeRef: { value: 'NON' }, TotalTax: 0 })
+    const lines = (inv?.body?.Line ?? []) as {
+      SalesItemLineDetail?: { TaxCodeRef?: { value: string } }
+    }[]
+    for (const l of lines.filter((l) => l.SalesItemLineDetail)) {
+      expect(l.SalesItemLineDetail?.TaxCodeRef).toEqual({ value: 'NON' })
+    }
+  })
+
+  /** The first charge line; the vehicle text line comes before it. */
+  function firstCharge(lines: unknown) {
+    const all = (lines ?? []) as { SalesItemLineDetail?: { TaxCodeRef?: { value: string } } }[]
+    const line = all.find((l) => l.SalesItemLineDetail)
+    if (!line?.SalesItemLineDetail) throw new Error('no charge line')
+    return line as { SalesItemLineDetail: { TaxCodeRef?: { value: string } } }
+  }
+
+  /** A company with real codes: 20% and 25% VAT plus a zero-rated code. */
+  function ratesCompany(): Answer {
+    const base = emptyCompany()
+    return (call) => {
+      const q = call.query.query ?? ''
+      if (q.includes('from TaxCode'))
+        return {
+          QueryResponse: {
+            TaxCode: [
+              {
+                Id: '9',
+                Name: '25.0% NO',
+                Taxable: true,
+                SalesTaxRateList: { TaxRateDetail: { TaxRateRef: { value: 'r9' } } },
+              },
+              {
+                Id: '3',
+                Name: '20.0% S',
+                Taxable: true,
+                SalesTaxRateList: {
+                  TaxRateDetail: [
+                    { TaxRateRef: { value: 'r3' }, TaxTypeApplicable: 'TaxOnAmount' },
+                  ],
+                },
+              },
+              {
+                Id: '4',
+                Name: '0.0% Z',
+                SalesTaxRateList: { TaxRateDetail: [{ TaxRateRef: { value: 'r4' } }] },
+              },
+            ],
+          },
+        }
+      if (q.includes('from TaxRate'))
+        return {
+          QueryResponse: {
+            TaxRate: [
+              { Id: 'r3', RateValue: 20 },
+              { Id: 'r9', RateValue: 25 },
+              { Id: 'r4', RateValue: 0 },
+            ],
+          },
+        }
+      return base(call)
+    }
+  }
+
+  it('reads the tax codes once and books under the one that carries the invoice rate', async () => {
+    const t = makeCtx({
+      state: { taxCatalog: undefined },
+      settings: { taxCodeId: '9', zeroTaxCodeId: '' },
+      answer: ratesCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    const line = firstCharge(inv?.body?.Line)
+    // The chosen code is 25%, the invoice is 20%: the 20% code wins.
+    expect(line.SalesItemLineDetail.TaxCodeRef).toEqual({ value: '3' })
+    expect(inv?.body?.TxnTaxDetail).toEqual({
+      TotalTax: 60,
+      TaxLine: [
+        {
+          Amount: 60,
+          DetailType: 'TaxLineDetail',
+          TaxLineDetail: {
+            TaxRateRef: { value: 'r3' },
+            PercentBased: true,
+            TaxPercent: 20,
+            NetAmountTaxable: 300,
+          },
+        },
+      ],
+    })
+    expect(t.logs.filter((l) => l.level === 'warn')).toEqual([])
+    const catalog = t.state.taxCatalog as { codes: { id: string; percent: number | null }[] }
+    expect(catalog.codes.map((c) => [c.id, c.percent])).toEqual([
+      ['4', 0],
+      ['3', 20],
+      ['9', 25],
+    ])
+    expect(t.calls.filter((c) => (c.query.query ?? '').includes('from TaxCode'))).toHaveLength(1)
+  })
+
+  it('warns and keeps the chosen code when no code carries the invoice rate', async () => {
+    loadInvoice.mockResolvedValue({ ...invoice, taxRate: 19, taxAmount: 57, totalAmount: 357 })
+    const t = makeCtx({
+      state: { taxCatalog: undefined },
+      settings: { taxCodeId: '9', zeroTaxCodeId: '' },
+      answer: ratesCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    const line = firstCharge(inv?.body?.Line)
+    expect(line.SalesItemLineDetail.TaxCodeRef).toEqual({ value: '9' })
+    expect(inv?.body?.TxnTaxDetail).toBeUndefined()
+    const warn = t.logs.find((l) => l.message.includes('No QuickBooks tax code carries 19%'))
+    expect(warn?.message).toContain('"25.0% NO" (25%)')
+  })
+
+  it('lets QuickBooks work the tax out when the workshop asks for that', async () => {
+    const t = makeCtx({
+      state: { taxCatalog: undefined },
+      settings: { taxCodeId: '3', taxAmounts: 'quickbooks' },
+      answer: ratesCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    expect(inv?.body?.TxnTaxDetail).toBeUndefined()
+    expect(inv?.body?.GlobalTaxCalculation).toBe('TaxExcluded')
+  })
+
+  it('puts an untaxed invoice on the zero-rated code when none is chosen', async () => {
+    loadInvoice.mockResolvedValue({ ...invoice, taxRate: 0, taxAmount: 0, totalAmount: 300 })
+    const t = makeCtx({
+      state: { taxCatalog: undefined },
+      settings: { taxCodeId: '3', zeroTaxCodeId: '' },
+      answer: ratesCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    const line = firstCharge(inv?.body?.Line)
+    expect(line.SalesItemLineDetail.TaxCodeRef).toEqual({ value: '4' })
+    expect(inv?.body?.GlobalTaxCalculation).toBe('NotApplicable')
+    expect(inv?.body?.TxnTaxDetail).toBeUndefined()
+  })
+
+  it('sends no override when sales tax is switched off in QuickBooks', async () => {
+    const t = makeCtx({
+      state: { country: 'US', automatedSalesTax: true, salesTaxEnabled: false },
+      answer: emptyCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    expect(inv?.body?.TxnTaxDetail).toBeUndefined()
   })
 
   it('warns when QuickBooks arrives at another total', async () => {
@@ -840,6 +1018,7 @@ describe('QuickBooks: connecting', () => {
             Preferences: {
               CurrencyPrefs: { HomeCurrency: { value: 'GBP' }, MultiCurrencyEnabled: true },
               SalesFormsPrefs: { CustomTxnNumbers: false },
+              TaxPrefs: { UsingSalesTax: true },
             },
           }
         throw new Error(`unexpected ${call.path}`)
@@ -853,9 +1032,32 @@ describe('QuickBooks: connecting', () => {
       homeCurrency: 'GBP',
       multiCurrency: true,
       customTxnNumbers: false,
+      salesTaxEnabled: true,
+      automatedSalesTax: false,
+      taxCatalog: null,
     })
     expect(t.logs.some((l) => l.message.includes('Custom transaction numbers'))).toBe(true)
     expect(t.calls.at(-1)?.host).toBe('sandbox-quickbooks.api.intuit.com')
+  })
+
+  it('recognises automated sales tax and says when sales tax is off', async () => {
+    const t = makeCtx({
+      answer: (call) => {
+        if (call.path.endsWith('/companyinfo/9130357'))
+          return { CompanyInfo: { CompanyName: 'Main Street Auto', Country: 'US' } }
+        if (call.path.endsWith('/preferences'))
+          return {
+            Preferences: {
+              SalesFormsPrefs: { CustomTxnNumbers: true },
+              TaxPrefs: { UsingSalesTax: false, PartnerTaxEnabled: false },
+            },
+          }
+        throw new Error(`unexpected ${call.path}`)
+      },
+    })
+    await connector.identify?.(t.ctx)
+    expect(t.state).toMatchObject({ automatedSalesTax: true, salesTaxEnabled: false })
+    expect(t.logs.some((l) => l.message.includes('Sales tax is switched off'))).toBe(true)
   })
 
   it('reports a failed test with the vendor wording', async () => {

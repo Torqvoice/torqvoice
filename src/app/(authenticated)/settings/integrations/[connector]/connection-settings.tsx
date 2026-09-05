@@ -832,7 +832,9 @@ function SettingFieldList({
                   {(f.type === 'select' ? (f.options ?? []) : (remote[f.source ?? ''] ?? [])).map(
                     (o) => (
                       <SelectItem key={o.value} value={o.value}>
-                        {o.label}
+                        {f.type === 'select' && tc.has(`settings.${o.label}`)
+                          ? tc(`settings.${o.label}`)
+                          : o.label}
                       </SelectItem>
                     )
                   )}

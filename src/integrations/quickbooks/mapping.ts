@@ -56,11 +56,26 @@ export interface QboItem {
   Active?: boolean
 }
 
+export interface QboTaxRateDetail {
+  TaxRateRef?: QboRef
+  /** TaxOnAmount for a plain rate; TaxOnTax marks a compounding rate in a group. */
+  TaxTypeApplicable?: string
+}
+
 export interface QboTaxCode {
   Id: string
   Name: string
   Active?: boolean
   Taxable?: boolean
+  SalesTaxRateList?: { TaxRateDetail?: QboTaxRateDetail | QboTaxRateDetail[] }
+}
+
+export interface QboTaxRate {
+  Id: string
+  Name?: string
+  Active?: boolean
+  /** The percentage, 20 for 20%. */
+  RateValue?: number
 }
 
 export interface QboAccount {
@@ -86,6 +101,12 @@ export interface QboLine {
   }
   DescriptionLineDetail?: { ServiceDate?: string }
   DiscountLineDetail?: { PercentBased: boolean; DiscountPercent?: number }
+  TaxLineDetail?: {
+    TaxRateRef: QboRef
+    PercentBased: boolean
+    TaxPercent?: number
+    NetAmountTaxable?: number
+  }
   LinkedTxn?: { TxnId: string; TxnType: string }[]
 }
 
@@ -242,6 +263,12 @@ export interface InvoiceOptions {
   taxExempt: boolean
   /** A text line naming the vehicle above the charges, so the books say which car. */
   includeVehicle: boolean
+  /**
+   * The tax as billed, for QuickBooks to keep instead of its own figure:
+   * TxnTaxDetail as the tax module builds it, or null to let QuickBooks
+   * work the tax out from the code.
+   */
+  txnTaxDetail: Record<string, unknown> | null
 }
 
 /** "2018 Toyota Corolla, AB 12345, 84 200 km", or null without a vehicle. */
@@ -256,7 +283,8 @@ function itemLine(
   line: AccountingInvoice['lines'][number],
   itemId: string,
   taxCode: string | null,
-  serviceDate: string
+  serviceDate: string,
+  netFactor: number
 ): QboLine {
   const description = [line.partNumber, line.description].filter(Boolean).join(' ').slice(0, 4000)
   // QuickBooks derives Amount from Qty × UnitPrice and rejects a line where
@@ -266,12 +294,12 @@ function itemLine(
   const unit = consistent ? line.unitPrice : line.total
   return {
     DetailType: 'SalesItemLineDetail',
-    Amount: round2(line.total),
+    Amount: round2(line.total * netFactor),
     Description: description,
     SalesItemLineDetail: {
       ItemRef: { value: itemId },
       Qty: qty,
-      UnitPrice: round2(unit),
+      UnitPrice: round2(unit * netFactor),
       ServiceDate: serviceDate,
       ...(taxCode && { TaxCodeRef: { value: taxCode } }),
     },
@@ -287,6 +315,10 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
   const taxable = inv.taxRate > 0 && !o.taxExempt
   const taxCode = taxable ? o.taxCodeId : o.zeroTaxCodeId
   const serviceDate = zonedDayKey(inv.serviceDate, o.timezone)
+  // A US company has no tax-inclusive mode: QuickBooks adds tax on top of
+  // the lines whatever they say. Gross prices go over as net so the total,
+  // with the billed tax on top, is the gross the customer saw.
+  const netFactor = !o.globalTax && inv.taxInclusive && taxable ? 1 / (1 + inv.taxRate / 100) : 1
   const lines: QboLine[] = []
   const vehicle = o.includeVehicle ? vehicleDescription(inv) : null
   if (vehicle) {
@@ -299,13 +331,13 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
   for (const line of inv.lines) {
     const itemId = line.kind === 'labor' ? o.laborItemId : o.partsItemId
     if (!itemId) continue
-    lines.push(itemLine(line, itemId, taxCode, serviceDate))
+    lines.push(itemLine(line, itemId, taxCode, serviceDate, netFactor))
   }
   if (inv.discountAmount > 0) {
     const percent = inv.discountType === 'percentage' && inv.discountValue > 0
     lines.push({
       DetailType: 'DiscountLineDetail',
-      Amount: round2(inv.discountAmount),
+      Amount: round2(inv.discountAmount * netFactor),
       DiscountLineDetail: percent
         ? { PercentBased: true, DiscountPercent: inv.discountValue }
         : { PercentBased: false },
@@ -324,6 +356,7 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
     ...(o.currency && { CurrencyRef: { value: o.currency } }),
     // Torqvoice taxes the amount after the discount, so the ledger must too.
     ...(inv.discountAmount > 0 && { ApplyTaxAfterDiscount: true }),
+    ...(o.txnTaxDetail && { TxnTaxDetail: o.txnTaxDetail }),
   }
   if (o.globalTax) {
     body.GlobalTaxCalculation = !taxable
