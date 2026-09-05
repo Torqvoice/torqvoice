@@ -133,6 +133,20 @@ describe('NHTSA recalls and complaints', () => {
     expect((summary.latest[0].date ?? '') >= (summary.latest[1].date ?? '')).toBe(true)
   })
 
+  it('keeps the newest complaint texts per component so a bar can be opened', () => {
+    const summary = summarizeComplaints(COMPLAINTS, 8, 2)
+    const airBags = summary.byComponent.find((g) => g.component === 'AIR BAGS')
+    expect(airBags?.examples?.length).toBeGreaterThan(0)
+    expect(airBags?.examples?.length).toBeLessThanOrEqual(airBags?.count ?? 0)
+    const dates = airBags?.examples?.map((e) => e.date ?? '') ?? []
+    expect([...dates].sort().reverse()).toEqual(dates)
+    for (const e of airBags?.examples ?? []) {
+      expect(e.summary.length).toBeGreaterThan(0)
+      expect(e.summary.length).toBeLessThanOrEqual(400)
+      expect(typeof e.crash).toBe('boolean')
+    }
+  })
+
   it('writes component paths for people', () => {
     expect(humanizeComponent('AIR BAGS:FRONTAL:DRIVER SIDE:INFLATOR MODULE')).toBe(
       'Air bags, frontal, driver side, inflator module'

@@ -264,11 +264,20 @@ export interface SafetyRecall {
   manufacturer: string
 }
 
+export interface SafetyComplaintExample {
+  date: string | null
+  summary: string
+  crash: boolean
+  fire: boolean
+}
+
 export interface SafetyComplaintGroup {
   component: string
   count: number
   /** Share of all complaints, 0 to 1. */
   share: number
+  /** The most recent few complaints naming this component, newest first, for reading on the spot. */
+  examples?: SafetyComplaintExample[]
 }
 
 export interface SafetyRating {

@@ -9,6 +9,7 @@
 
 import { makeCase } from '@/features/integrations/Lib/make-case'
 import type {
+  SafetyComplaintExample,
   SafetyComplaintGroup,
   SafetyRating,
   SafetyRecall,
@@ -223,19 +224,42 @@ export interface ComplaintSummary {
   latest: { date: string | null; component: string; summary: string }[]
 }
 
+/** How many complaint texts each component keeps for reading in the panel. */
+export const EXAMPLES_PER_COMPONENT = 5
+const EXAMPLE_MAX_CHARS = 400
+
 export function summarizeComplaints(rows: NhtsaComplaint[], top = 8, latest = 5): ComplaintSummary {
   const counts = new Map<string, number>()
+  const examples = new Map<string, SafetyComplaintExample[]>()
   let crashes = 0
   let fires = 0
   let injuries = 0
   let deaths = 0
-  for (const c of rows) {
+  const dated = rows.map((c) => ({
+    row: c,
+    date: isoDate(c.dateComplaintFiled) ?? isoDate(c.dateOfIncident),
+    components: complaintComponents(c.components),
+  }))
+  // Newest first, so the first few per component are the ones worth reading.
+  dated.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+  for (const { row: c, date, components } of dated) {
     if (c.crash) crashes++
     if (c.fire) fires++
     injuries += Number(c.numberOfInjuries) || 0
     deaths += Number(c.numberOfDeaths) || 0
-    for (const component of complaintComponents(c.components)) {
+    for (const component of components) {
       counts.set(component, (counts.get(component) ?? 0) + 1)
+      const list = examples.get(component) ?? []
+      const summary = text(c.summary)
+      if (list.length < EXAMPLES_PER_COMPONENT && summary) {
+        list.push({
+          date,
+          summary: summary.slice(0, EXAMPLE_MAX_CHARS),
+          crash: c.crash === true,
+          fire: c.fire === true,
+        })
+        examples.set(component, list)
+      }
     }
   }
   const total = rows.length
@@ -246,15 +270,13 @@ export function summarizeComplaints(rows: NhtsaComplaint[], top = 8, latest = 5)
       component,
       count,
       share: total > 0 ? Math.round((count / total) * 1000) / 1000 : 0,
+      examples: examples.get(component) ?? [],
     }))
-  const newest = [...rows]
-    .map((c) => ({
-      date: isoDate(c.dateComplaintFiled) ?? isoDate(c.dateOfIncident),
-      component: complaintComponents(c.components).join(', ') || 'UNKNOWN',
-      summary: (text(c.summary) ?? '').slice(0, 400),
-    }))
-    .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
-    .slice(0, latest)
+  const newest = dated.slice(0, latest).map(({ row: c, date, components }) => ({
+    date,
+    component: components.join(', ') || 'UNKNOWN',
+    summary: (text(c.summary) ?? '').slice(0, EXAMPLE_MAX_CHARS),
+  }))
   return { total, crashes, fires, injuries, deaths, byComponent, latest: newest }
 }
 

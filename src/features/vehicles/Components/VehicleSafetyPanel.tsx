@@ -64,8 +64,9 @@ export function VehicleSafetyPanel({
   const [failed, setFailed] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [expanded, setExpanded] = useState(false)
-  const [showRecalls, setShowRecalls] = useState(false)
+  const [showRecalls, setShowRecalls] = useState(true)
   const [showAllComponents, setShowAllComponents] = useState(false)
+  const [openComponent, setOpenComponent] = useState<string | null>(null)
   const [added, setAdded] = useState<Set<string>>(() => new Set())
   const [adding, setAdding] = useState<string | null>(null)
 
@@ -308,7 +309,9 @@ export function VehicleSafetyPanel({
             </div>
           </div>
 
-          {/* What owners report: the workshop's diagnostic prior. */}
+          {/* What owners report: the workshop's diagnostic prior. Each bar
+              opens the newest complaints in that category, so the number
+              can be read as what people actually wrote. */}
           {report.complaints.byComponent.length > 0 && (
             <div className="px-4 py-3">
               <div className="mb-2 flex items-baseline justify-between gap-2">
@@ -317,34 +320,91 @@ export function VehicleSafetyPanel({
                   {t('ofComplaints', { total: report.complaints.total })}
                 </span>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-1">
                 {(showAllComponents
                   ? report.complaints.byComponent
                   : report.complaints.byComponent.slice(0, 4)
                 ).map((g) => {
                   const top = report.complaints.byComponent[0]?.share || 1
+                  const open = openComponent === g.component
                   return (
-                    <li
-                      key={g.component}
-                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-sm"
-                    >
-                      <div className="min-w-0">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <span className="truncate">{humanizeComponent(g.component)}</span>
-                          <span className="shrink-0 tabular-nums text-xs text-muted-foreground">
-                            {Math.round(g.share * 100)}%
-                          </span>
+                    <li key={g.component}>
+                      <button
+                        type="button"
+                        className={cn(
+                          'grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 rounded-md px-1.5 py-1 text-left text-sm hover:bg-muted/50',
+                          open && 'bg-muted/50'
+                        )}
+                        onClick={() => setOpenComponent(open ? null : g.component)}
+                        aria-expanded={open}
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <span className="truncate">{humanizeComponent(g.component)}</span>
+                            <span className="shrink-0 tabular-nums text-xs text-muted-foreground">
+                              {Math.round(g.share * 100)}%
+                            </span>
+                          </div>
+                          <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-primary/70"
+                              style={{ width: `${Math.max(4, (g.share / top) * 100)}%` }}
+                            />
+                          </div>
                         </div>
-                        <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full bg-primary/70"
-                            style={{ width: `${Math.max(4, (g.share / top) * 100)}%` }}
-                          />
+                        <span className="w-10 text-right tabular-nums text-xs text-muted-foreground">
+                          {g.count}
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            'h-3.5 w-3.5 text-muted-foreground transition-transform',
+                            open && 'rotate-180'
+                          )}
+                        />
+                      </button>
+                      {open && (
+                        <div className="mb-2 ml-1.5 mt-1 border-l-2 border-primary/30 pl-3">
+                          {g.examples && g.examples.length > 0 ? (
+                            <ul className="space-y-2">
+                              {g.examples.map((e, i) => (
+                                <li key={`${e.date ?? ''}-${i}`} className="text-sm">
+                                  <p className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                                    {e.date && <span>{formatDate(new Date(e.date))}</span>}
+                                    {e.crash && (
+                                      <Badge
+                                        variant="outline"
+                                        className="border-red-500/40 text-[10px] text-red-600"
+                                      >
+                                        {t('crash')}
+                                      </Badge>
+                                    )}
+                                    {e.fire && (
+                                      <Badge
+                                        variant="outline"
+                                        className="border-red-500/40 text-[10px] text-red-600"
+                                      >
+                                        {t('fire')}
+                                      </Badge>
+                                    )}
+                                  </p>
+                                  <p className="mt-0.5 text-muted-foreground">{e.summary}</p>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">{t('noExamples')}</p>
+                          )}
+                          <a
+                            href={`${report.url}#complaints`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            {t('readAll', { count: g.count, source: view?.source ?? '' })}
+                          </a>
                         </div>
-                      </div>
-                      <span className="w-10 text-right tabular-nums text-xs text-muted-foreground">
-                        {g.count}
-                      </span>
+                      )}
                     </li>
                   )
                 })}
