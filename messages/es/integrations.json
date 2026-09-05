@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Consulta por matrícula y VIN",
-      "inspection": "Fechas de inspección"
+      "inspection": "Fechas de inspección",
+      "safety": "Llamadas a revisión y quejas de propietarios"
     },
     "ai": {
       "chat": "Textos y resúmenes"
@@ -514,6 +515,14 @@
         "pullPayments": "Traer los pagos registrados en QuickBooks",
         "pullPaymentsHelp": "Cada 30 minutos. Un pago recibido en QuickBooks contra una factura de Torqvoice se registra aquí en la factura."
       }
+    },
+    "nhtsa": {
+      "description": "Rellena un vehículo a partir de su VIN y consulta llamadas a revisión, quejas de propietarios y calificaciones de choque de cada año de modelo, de la autoridad de seguridad de EE. UU. Gratis, sin clave.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Mantener al día los datos de llamadas a revisión y quejas de todos los vehículos de este taller",
+        "refreshFleetHelp": "Una vez al día se vuelven a consultar los modelos no actualizados en la última semana, para que la página del vehículo nunca espere y una nueva llamada a revisión aparezca en una semana. Solo se envían marca, modelo y año."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,9 @@
       "payment": "Pago a contabilidad",
       "customer": "Cliente a contabilidad",
       "pull": "Pagos desde contabilidad"
+    },
+    "safety": {
+      "refresh": "Actualización de datos de llamadas a revisión"
     }
   }
 }

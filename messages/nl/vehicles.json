@@ -360,7 +360,8 @@
     "lookupSource": "Ingevuld vanuit {source}",
     "inspectionDue": "Volgende periodieke keuring",
     "inspectionDueHint": "Vul de datum in als geen register die levert. Herinneringen en het dashboard gebruiken hem.",
-    "inspectionDueFromRegistry": "Uit het voertuigregister. Wijzig hier om te overschrijven tot de volgende synchronisatie."
+    "inspectionDueFromRegistry": "Uit het voertuigregister. Wijzig hier om te overschrijven tot de volgende synchronisatie.",
+    "lookupEnterPlateOrVin": "Typ eerst een kenteken of VIN"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",
@@ -520,5 +521,42 @@
     "emptyTitle": "Zoek elk kenteken op",
     "emptyBody": "Zie het voertuig, van wie het hier is en wat {source} erover heeft. Nog niet van jou? Voeg het in één stap toe.",
     "registryWord": "het register"
+  },
+  "safety": {
+    "title": "Veiligheid en bekende problemen",
+    "loading": "Veiligheidsautoriteit wordt geraadpleegd...",
+    "from": "Van {source} voor {model}, bijgewerkt op {date}",
+    "stale": "{source} was niet bereikbaar; rapport van {date} wordt getoond",
+    "notKnown": "{source} heeft geen gegevens over een {model}.",
+    "notKnownHint": "Controleer merk, model en bouwjaar, of voeg het VIN toe zodat het model exact wordt herkend.",
+    "recalls": "Terugroepacties",
+    "recallsNone": "Geen terugroepacties",
+    "complaints": "Klachten van eigenaren",
+    "complaintsNone": "Geen ingediend",
+    "crashes": "{count, plural, one {# ongeval} other {# ongevallen}}",
+    "fires": "{count, plural, one {# brand} other {# branden}}",
+    "rating": "Botsproefscore",
+    "notRated": "Niet beoordeeld",
+    "stars": "{count} van 5 sterren",
+    "frontal": "Frontaal",
+    "side": "Zijkant",
+    "rollover": "Kantelen",
+    "ownersReport": "Wat eigenaren melden",
+    "ofComplaints": "van {total} ingediende klachten",
+    "showRecalls": "{count, plural, one {Toon # terugroepactie} other {Toon # terugroepacties}}",
+    "hideRecalls": "Terugroepacties verbergen",
+    "more": "Meer",
+    "less": "Minder",
+    "consequence": "Risico",
+    "remedy": "Oplossing",
+    "parkIt": "Niet rijden",
+    "parkOutside": "Buiten parkeren",
+    "addFinding": "Toevoegen aan observaties",
+    "findingAdded": "In observaties",
+    "findingDescription": "Terugroepactie {campaign}: {component}",
+    "refresh": "Vernieuwen vanaf de bron",
+    "refreshed": "Veiligheidsgegevens vernieuwd",
+    "openSite": "Openen op {source}",
+    "errorLoad": "Veiligheidsgegevens konden niet worden geladen"
   }
 }

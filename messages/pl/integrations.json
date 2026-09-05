@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Wyszukiwanie po tablicy i VIN",
-      "inspection": "Terminy przeglądów"
+      "inspection": "Terminy przeglądów",
+      "safety": "Akcje serwisowe i skargi właścicieli"
     },
     "ai": {
       "chat": "Teksty i podsumowania"
@@ -514,6 +515,14 @@
         "pullPayments": "Pobieraj płatności zarejestrowane w QuickBooks",
         "pullPaymentsHelp": "Co 30 minut. Płatność przyjęta w QuickBooks za fakturę z Torqvoice zostaje zarejestrowana tutaj na fakturze."
       }
+    },
+    "nhtsa": {
+      "description": "Uzupełnij pojazd na podstawie VIN i zobacz akcje serwisowe, skargi właścicieli i oceny z testów zderzeniowych dla każdego rocznika, z amerykańskiego urzędu bezpieczeństwa ruchu. Za darmo, bez klucza.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Utrzymuj aktualne dane o akcjach serwisowych i skargach dla każdego pojazdu w tym warsztacie",
+        "refreshFleetHelp": "Raz dziennie modele nieodświeżone w ostatnim tygodniu są pobierane ponownie, aby strona pojazdu nigdy nie czekała, a nowa akcja serwisowa pojawiła się w ciągu tygodnia. Wysyłane są tylko marka, model i rocznik."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,9 @@
       "payment": "Płatność do księgowości",
       "customer": "Klient do księgowości",
       "pull": "Płatności z księgowości"
+    },
+    "safety": {
+      "refresh": "Odświeżanie danych o akcjach serwisowych"
     }
   }
 }

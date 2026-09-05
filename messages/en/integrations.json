@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Plate and VIN lookup",
-      "inspection": "Inspection due dates"
+      "inspection": "Inspection due dates",
+      "safety": "Recalls and owner complaints"
     },
     "ai": {
       "chat": "Writing and summaries"
@@ -514,6 +515,14 @@
         "pullPayments": "Bring back payments recorded in QuickBooks",
         "pullPaymentsHelp": "Every 30 minutes. A payment received in QuickBooks against an invoice from Torqvoice is recorded on the invoice here."
       }
+    },
+    "nhtsa": {
+      "description": "Fill in a vehicle from its VIN, and see recalls, owner complaints and crash ratings for every model year, from the US safety authority. Free, no key.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Keep recall and complaint data fresh for every vehicle in this workshop",
+        "refreshFleetHelp": "Once a day, models not refreshed in the last week are fetched again, so the vehicle page never waits and a new recall shows within a week of being filed. Only make, model and year are sent."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,9 @@
       "payment": "Payment to ledger",
       "customer": "Customer to ledger",
       "pull": "Payments from ledger"
+    },
+    "safety": {
+      "refresh": "Recall data refresh"
     }
   }
 }

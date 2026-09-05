@@ -360,7 +360,8 @@
     "lookupSource": "Rellenado desde {source}",
     "inspectionDue": "Próxima inspección periódica",
     "inspectionDueHint": "Escribe la fecha si ningún registro la aporta. Los recordatorios y el panel la usan.",
-    "inspectionDueFromRegistry": "Tomada del registro de vehículos. Cámbiala aquí para anularla hasta la próxima sincronización."
+    "inspectionDueFromRegistry": "Tomada del registro de vehículos. Cámbiala aquí para anularla hasta la próxima sincronización.",
+    "lookupEnterPlateOrVin": "Escribe primero una matrícula o un VIN"
   },
   "archiveDialog": {
     "title": "Archivar vehículo",
@@ -520,5 +521,42 @@
     "emptyTitle": "Busca cualquier matrícula",
     "emptyBody": "Ve el vehículo, quién es su dueño aquí y lo que {source} tiene registrado. ¿Aún no es tuyo? Añádelo en un paso.",
     "registryWord": "el registro"
+  },
+  "safety": {
+    "title": "Seguridad y problemas conocidos",
+    "loading": "Consultando a la autoridad de seguridad...",
+    "from": "De {source} para {model}, actualizado el {date}",
+    "stale": "No se pudo contactar con {source}; se muestra el informe del {date}",
+    "notKnown": "{source} no tiene registro de un {model}.",
+    "notKnownHint": "Comprueba marca, modelo y año, o añade el VIN para que el modelo se identifique con exactitud.",
+    "recalls": "Llamadas a revisión",
+    "recallsNone": "Sin campañas de revisión",
+    "complaints": "Quejas de propietarios",
+    "complaintsNone": "Ninguna presentada",
+    "crashes": "{count, plural, one {# choque} other {# choques}}",
+    "fires": "{count, plural, one {# incendio} other {# incendios}}",
+    "rating": "Calificación de choque",
+    "notRated": "Sin calificar",
+    "stars": "{count} de 5 estrellas",
+    "frontal": "Frontal",
+    "side": "Lateral",
+    "rollover": "Vuelco",
+    "ownersReport": "Lo que reportan los propietarios",
+    "ofComplaints": "de {total} quejas presentadas",
+    "showRecalls": "{count, plural, one {Mostrar # llamada a revisión} other {Mostrar # llamadas a revisión}}",
+    "hideRecalls": "Ocultar llamadas a revisión",
+    "more": "Más",
+    "less": "Menos",
+    "consequence": "Riesgo",
+    "remedy": "Solución",
+    "parkIt": "No conducir",
+    "parkOutside": "Aparcar al aire libre",
+    "addFinding": "Añadir a observaciones",
+    "findingAdded": "En observaciones",
+    "findingDescription": "Llamada a revisión {campaign}: {component}",
+    "refresh": "Actualizar desde la fuente",
+    "refreshed": "Datos de seguridad actualizados",
+    "openSite": "Abrir en {source}",
+    "errorLoad": "No se pudieron cargar los datos de seguridad"
   }
 }

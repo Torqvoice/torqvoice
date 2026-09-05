@@ -360,7 +360,8 @@
     "lookupSource": "Compilato da {source}",
     "inspectionDue": "Prossima revisione periodica",
     "inspectionDueHint": "Inserisci la data se nessun registro la fornisce. Promemoria e dashboard la usano.",
-    "inspectionDueFromRegistry": "Presa dal registro veicoli. Modificala qui per sovrascriverla fino alla prossima sincronizzazione."
+    "inspectionDueFromRegistry": "Presa dal registro veicoli. Modificala qui per sovrascriverla fino alla prossima sincronizzazione.",
+    "lookupEnterPlateOrVin": "Scrivi prima una targa o un VIN"
   },
   "archiveDialog": {
     "title": "Archivia Veicolo",
@@ -520,5 +521,42 @@
     "emptyTitle": "Cerca qualsiasi targa",
     "emptyBody": "Vedi il veicolo, chi ne è il proprietario qui e cosa ha registrato {source}. Non è ancora tuo? Aggiungilo in un passaggio.",
     "registryWord": "il registro"
+  },
+  "safety": {
+    "title": "Sicurezza e problemi noti",
+    "loading": "Interrogazione dell'autorità per la sicurezza...",
+    "from": "Da {source} per {model}, aggiornato il {date}",
+    "stale": "{source} non raggiungibile; mostrato il rapporto del {date}",
+    "notKnown": "{source} non ha alcun record di {model}.",
+    "notKnownHint": "Controlla marca, modello e anno, oppure aggiungi il VIN per identificare il modello con esattezza.",
+    "recalls": "Richiami",
+    "recallsNone": "Nessuna campagna di richiamo",
+    "complaints": "Reclami dei proprietari",
+    "complaintsNone": "Nessuno presentato",
+    "crashes": "{count, plural, one {# incidente} other {# incidenti}}",
+    "fires": "{count, plural, one {# incendio} other {# incendi}}",
+    "rating": "Valutazione crash test",
+    "notRated": "Non valutato",
+    "stars": "{count} stelle su 5",
+    "frontal": "Frontale",
+    "side": "Laterale",
+    "rollover": "Ribaltamento",
+    "ownersReport": "Cosa segnalano i proprietari",
+    "ofComplaints": "su {total} reclami presentati",
+    "showRecalls": "{count, plural, one {Mostra # richiamo} other {Mostra # richiami}}",
+    "hideRecalls": "Nascondi richiami",
+    "more": "Altro",
+    "less": "Meno",
+    "consequence": "Rischio",
+    "remedy": "Rimedio",
+    "parkIt": "Non guidare",
+    "parkOutside": "Parcheggiare all'aperto",
+    "addFinding": "Aggiungi alle osservazioni",
+    "findingAdded": "Nelle osservazioni",
+    "findingDescription": "Richiamo {campaign}: {component}",
+    "refresh": "Aggiorna dalla fonte",
+    "refreshed": "Dati di sicurezza aggiornati",
+    "openSite": "Apri su {source}",
+    "errorLoad": "Impossibile caricare i dati di sicurezza"
   }
 }

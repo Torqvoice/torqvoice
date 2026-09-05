@@ -25,6 +25,7 @@ import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { NoteForm } from '@/features/vehicles/Components/NoteForm'
 import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
+import { VehicleSafetyPanel } from '@/features/vehicles/Components/VehicleSafetyPanel'
 import { ServiceRecordsTable } from './service-records-table'
 import { NotesTable } from './notes-table'
 import { FindingsTable } from './findings-table'
@@ -290,6 +291,7 @@ export function VehicleDetailClient({
   inspectionTemplates,
   quotes = [],
   aiEnabled = false,
+  safetyAvailable = false,
   paginatedFindings,
   tireSets = [],
 }: {
@@ -325,6 +327,8 @@ export function VehicleDetailClient({
   inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
   quotes?: QuoteRecord[]
   aiEnabled?: boolean
+  /** A safety authority such as NHTSA is connected and this vehicle has a model to ask about. */
+  safetyAvailable?: boolean
 }) {
   const formatCurrency = useFormatCurrency()
   const serviceType = useServiceType()
@@ -1213,6 +1217,17 @@ export function VehicleDetailClient({
             )}
           </div>
         </Card>
+      )}
+
+      {/* Recalls, owner complaints and crash rating for this model year. */}
+      {safetyAvailable && !isMarine && (
+        <VehicleSafetyPanel
+          vehicleId={vehicle.id}
+          make={vehicle.make}
+          model={vehicle.model}
+          year={vehicle.year}
+          existingFindings={paginatedFindings.records.map((f) => f.description)}
+        />
       )}
 
       {/* Tabs */}

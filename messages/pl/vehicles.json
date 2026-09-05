@@ -360,7 +360,8 @@
     "lookupSource": "Uzupełniono z {source}",
     "inspectionDue": "Następny przegląd okresowy",
     "inspectionDueHint": "Wpisz datę, jeśli żaden rejestr jej nie dostarcza. Używają jej przypomnienia i pulpit.",
-    "inspectionDueFromRegistry": "Z rejestru pojazdów. Zmień tutaj, aby nadpisać do następnej synchronizacji."
+    "inspectionDueFromRegistry": "Z rejestru pojazdów. Zmień tutaj, aby nadpisać do następnej synchronizacji.",
+    "lookupEnterPlateOrVin": "Najpierw wpisz rejestrację lub VIN"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",
@@ -520,5 +521,42 @@
     "emptyTitle": "Sprawdź dowolną tablicę",
     "emptyBody": "Zobacz pojazd, kto jest tu jego właścicielem i co ma o nim {source}. Jeszcze nie Twój? Dodaj go jednym krokiem.",
     "registryWord": "rejestr"
+  },
+  "safety": {
+    "title": "Bezpieczeństwo i znane problemy",
+    "loading": "Zapytanie do urzędu bezpieczeństwa...",
+    "from": "Z {source} dla {model}, zaktualizowano {date}",
+    "stale": "Nie udało się połączyć z {source}; pokazano raport z {date}",
+    "notKnown": "{source} nie ma wpisu dla {model}.",
+    "notKnownHint": "Sprawdź markę, model i rocznik albo dodaj VIN, aby dokładnie dopasować model.",
+    "recalls": "Akcje serwisowe",
+    "recallsNone": "Brak akcji serwisowych",
+    "complaints": "Skargi właścicieli",
+    "complaintsNone": "Brak zgłoszeń",
+    "crashes": "{count, plural, one {# wypadek} few {# wypadki} other {# wypadków}}",
+    "fires": "{count, plural, one {# pożar} few {# pożary} other {# pożarów}}",
+    "rating": "Ocena zderzeniowa",
+    "notRated": "Brak oceny",
+    "stars": "{count} z 5 gwiazdek",
+    "frontal": "Czołowe",
+    "side": "Boczne",
+    "rollover": "Dachowanie",
+    "ownersReport": "Co zgłaszają właściciele",
+    "ofComplaints": "z {total} złożonych skarg",
+    "showRecalls": "{count, plural, one {Pokaż # akcję serwisową} few {Pokaż # akcje serwisowe} other {Pokaż # akcji serwisowych}}",
+    "hideRecalls": "Ukryj akcje serwisowe",
+    "more": "Więcej",
+    "less": "Mniej",
+    "consequence": "Ryzyko",
+    "remedy": "Naprawa",
+    "parkIt": "Nie jeździć",
+    "parkOutside": "Parkować na zewnątrz",
+    "addFinding": "Dodaj do obserwacji",
+    "findingAdded": "W obserwacjach",
+    "findingDescription": "Akcja serwisowa {campaign}: {component}",
+    "refresh": "Odśwież ze źródła",
+    "refreshed": "Dane bezpieczeństwa odświeżone",
+    "openSite": "Otwórz na {source}",
+    "errorLoad": "Nie udało się wczytać danych bezpieczeństwa"
   }
 }

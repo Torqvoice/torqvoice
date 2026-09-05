@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Recherche par plaque et VIN",
-      "inspection": "Dates de contrôle technique"
+      "inspection": "Dates de contrôle technique",
+      "safety": "Rappels et plaintes de propriétaires"
     },
     "ai": {
       "chat": "Textes et résumés"
@@ -514,6 +515,14 @@
         "pullPayments": "Récupérer les paiements enregistrés dans QuickBooks",
         "pullPaymentsHelp": "Toutes les 30 minutes. Un paiement reçu dans QuickBooks sur une facture Torqvoice est enregistré ici sur la facture."
       }
+    },
+    "nhtsa": {
+      "description": "Remplissez un véhicule à partir de son VIN et consultez les rappels, les plaintes de propriétaires et les notes aux crash-tests pour chaque année-modèle, auprès de l'autorité de sécurité américaine. Gratuit, sans clé.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Tenir à jour les données de rappels et de plaintes pour chaque véhicule de cet atelier",
+        "refreshFleetHelp": "Une fois par jour, les modèles non actualisés depuis une semaine sont récupérés à nouveau, pour que la page du véhicule n'attende jamais et qu'un nouveau rappel apparaisse dans la semaine. Seuls la marque, le modèle et l'année sont envoyés."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,9 @@
       "payment": "Paiement vers la comptabilité",
       "customer": "Client vers la comptabilité",
       "pull": "Paiements depuis la comptabilité"
+    },
+    "safety": {
+      "refresh": "Actualisation des données de rappel"
     }
   }
 }

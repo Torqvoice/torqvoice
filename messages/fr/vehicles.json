@@ -360,7 +360,8 @@
     "lookupSource": "Rempli depuis {source}",
     "inspectionDue": "Prochain contrôle périodique",
     "inspectionDueHint": "Saisissez la date si aucun registre ne la fournit. Les rappels et le tableau de bord l'utilisent.",
-    "inspectionDueFromRegistry": "Issue du registre des véhicules. Modifiez-la ici pour la remplacer jusqu'à la prochaine synchronisation."
+    "inspectionDueFromRegistry": "Issue du registre des véhicules. Modifiez-la ici pour la remplacer jusqu'à la prochaine synchronisation.",
+    "lookupEnterPlateOrVin": "Saisissez d'abord une plaque ou un VIN"
   },
   "archiveDialog": {
     "title": "Archiver le véhicule",
@@ -520,5 +521,42 @@
     "emptyTitle": "Recherchez n'importe quelle plaque",
     "emptyBody": "Voyez le véhicule, à qui il appartient ici et ce que {source} a enregistré. Pas encore le vôtre ? Ajoutez-le en une étape.",
     "registryWord": "le registre"
+  },
+  "safety": {
+    "title": "Sécurité et problèmes connus",
+    "loading": "Interrogation de l'autorité de sécurité...",
+    "from": "De {source} pour {model}, mis à jour le {date}",
+    "stale": "{source} est injoignable ; rapport du {date} affiché",
+    "notKnown": "{source} n'a aucune fiche pour {model}.",
+    "notKnownHint": "Vérifiez la marque, le modèle et l'année, ou ajoutez le VIN pour identifier le modèle exactement.",
+    "recalls": "Rappels",
+    "recallsNone": "Aucune campagne de rappel",
+    "complaints": "Plaintes de propriétaires",
+    "complaintsNone": "Aucune déposée",
+    "crashes": "{count, plural, one {# accident} other {# accidents}}",
+    "fires": "{count, plural, one {# incendie} other {# incendies}}",
+    "rating": "Note aux crash-tests",
+    "notRated": "Non noté",
+    "stars": "{count} étoiles sur 5",
+    "frontal": "Frontal",
+    "side": "Latéral",
+    "rollover": "Retournement",
+    "ownersReport": "Ce que signalent les propriétaires",
+    "ofComplaints": "sur {total} plaintes déposées",
+    "showRecalls": "{count, plural, one {Afficher # rappel} other {Afficher # rappels}}",
+    "hideRecalls": "Masquer les rappels",
+    "more": "Plus",
+    "less": "Moins",
+    "consequence": "Risque",
+    "remedy": "Remède",
+    "parkIt": "Ne pas conduire",
+    "parkOutside": "Stationner à l'extérieur",
+    "addFinding": "Ajouter aux observations",
+    "findingAdded": "Dans les observations",
+    "findingDescription": "Rappel {campaign} : {component}",
+    "refresh": "Actualiser depuis la source",
+    "refreshed": "Données de sécurité actualisées",
+    "openSite": "Ouvrir sur {source}",
+    "errorLoad": "Impossible de charger les données de sécurité"
   }
 }

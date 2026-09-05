@@ -360,7 +360,8 @@
     "lookupSource": "Filled from {source}",
     "inspectionDue": "Next periodic inspection",
     "inspectionDueHint": "Type the date if no registry supplies it. Reminders and the dashboard use it.",
-    "inspectionDueFromRegistry": "Filled from the vehicle registry. Change it here to override until the next sync."
+    "inspectionDueFromRegistry": "Filled from the vehicle registry. Change it here to override until the next sync.",
+    "lookupEnterPlateOrVin": "Type a plate or VIN first"
   },
   "archiveDialog": {
     "title": "Archive Vehicle",
@@ -520,5 +521,42 @@
     "emptyTitle": "Look up any plate",
     "emptyBody": "See the vehicle, who owns it here, and what {source} has on file. Not yours yet? Add it in one step.",
     "registryWord": "the registry"
+  },
+  "safety": {
+    "title": "Safety and known issues",
+    "loading": "Asking the safety authority...",
+    "from": "From {source} for {model}, updated {date}",
+    "stale": "{source} could not be reached; showing the report from {date}",
+    "notKnown": "{source} has no record of a {model}.",
+    "notKnownHint": "Check the make, model and year, or add the VIN so the model can be matched exactly.",
+    "recalls": "Recalls",
+    "recallsNone": "No recall campaigns",
+    "complaints": "Owner complaints",
+    "complaintsNone": "None filed",
+    "crashes": "{count, plural, one {# crash} other {# crashes}}",
+    "fires": "{count, plural, one {# fire} other {# fires}}",
+    "rating": "Crash rating",
+    "notRated": "Not rated",
+    "stars": "{count} of 5 stars",
+    "frontal": "Frontal",
+    "side": "Side",
+    "rollover": "Rollover",
+    "ownersReport": "What owners report",
+    "ofComplaints": "of {total} complaints filed",
+    "showRecalls": "{count, plural, one {Show # recall} other {Show # recalls}}",
+    "hideRecalls": "Hide recalls",
+    "more": "More",
+    "less": "Less",
+    "consequence": "Risk",
+    "remedy": "Remedy",
+    "parkIt": "Do not drive",
+    "parkOutside": "Park outdoors",
+    "addFinding": "Add to observations",
+    "findingAdded": "In observations",
+    "findingDescription": "Recall {campaign}: {component}",
+    "refresh": "Refresh from the source",
+    "refreshed": "Safety data refreshed",
+    "openSite": "Open on {source}",
+    "errorLoad": "Could not load safety data"
   }
 }

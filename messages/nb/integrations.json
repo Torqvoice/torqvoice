@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Oppslag på skilt og understellsnummer",
-      "inspection": "Frist for EU-kontroll"
+      "inspection": "Frist for EU-kontroll",
+      "safety": "Tilbakekallinger og eierklager"
     },
     "ai": {
       "chat": "Tekst og sammendrag"
@@ -514,6 +515,14 @@
         "pullPayments": "Hent tilbake betalinger registrert i QuickBooks",
         "pullPaymentsHelp": "Hvert 30. minutt. En betaling mottatt i QuickBooks mot en faktura fra Torqvoice registreres her på fakturaen."
       }
+    },
+    "nhtsa": {
+      "description": "Fyll ut et kjøretøy fra VIN, og se tilbakekallinger, eierklager og kollisjonsvurderinger for hver årsmodell, fra den amerikanske trafikksikkerhetsmyndigheten. Gratis, uten nøkkel.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Hold tilbakekallings- og klagedata oppdatert for alle kjøretøy i dette verkstedet",
+        "refreshFleetHelp": "En gang om dagen hentes modeller som ikke er oppdatert siste uke på nytt, så kjøretøysiden aldri venter og en ny tilbakekalling vises innen en uke. Bare merke, modell og år sendes."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,9 @@
       "payment": "Betaling til regnskap",
       "customer": "Kunde til regnskap",
       "pull": "Betalinger fra regnskap"
+    },
+    "safety": {
+      "refresh": "Oppdatering av tilbakekallingsdata"
     }
   }
 }

@@ -11,6 +11,7 @@ import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
 import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
 import { getFeatures } from '@/lib/features'
+import { findSafetyConnection } from '@/features/integrations/Lib/vehicle-safety'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
@@ -158,8 +159,9 @@ export default async function VehicleDetailPage({
   const authContext = await getAuthContext()
   const orgId = authContext?.organizationId
   let aiEnabled = false
+  let safetyAvailable = false
   if (orgId) {
-    const [features, aiSettings] = await Promise.all([
+    const [features, aiSettings, safetyConnection] = await Promise.all([
       getFeatures(orgId),
       db.appSetting.findMany({
         where: {
@@ -168,7 +170,14 @@ export default async function VehicleDetailPage({
         },
         select: { key: true, value: true },
       }),
+      findSafetyConnection(orgId),
     ])
+    // Recall and complaint data needs a safety authority connected and a
+    // model to ask about; the panel is left out entirely otherwise.
+    safetyAvailable =
+      features?.integrations === true &&
+      safetyConnection !== null &&
+      Boolean(result.data.make && result.data.model && result.data.year)
     const aiMap = Object.fromEntries(aiSettings.map((s) => [s.key, s.value]))
     aiEnabled =
       features?.ai === true &&
@@ -198,6 +207,7 @@ export default async function VehicleDetailPage({
           }
           quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
           aiEnabled={aiEnabled}
+          safetyAvailable={safetyAvailable}
           paginatedFindings={paginatedFindings}
           tireSets={tireSetsResult.success && tireSetsResult.data ? tireSetsResult.data : []}
         />

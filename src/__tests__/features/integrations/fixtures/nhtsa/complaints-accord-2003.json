@@ -1,0 +1,116 @@
+{
+ "count": 5,
+ "message": "Results returned successfully",
+ "results": [
+  {
+   "odiNumber": 11746949,
+   "manufacturer": "Honda (American Honda Motor Co.)",
+   "crash": true,
+   "fire": false,
+   "numberOfInjuries": 1,
+   "numberOfDeaths": 0,
+   "dateOfIncident": "06/18/2026",
+   "dateComplaintFiled": "06/27/2026",
+   "vin": "JHMCM56323C",
+   "components": "AIR BAGS",
+   "summary": "The vehicle was rear-ended on I-5 in Seattle Washington.  The impact drove the subject car into the car in front of it. The front passenger airbag deployed (no ",
+   "products": [
+    {
+     "type": "Vehicle",
+     "productYear": "2003",
+     "productMake": "HONDA",
+     "productModel": "ACCORD",
+     "manufacturer": "Honda (American Honda Motor Co.)"
+    }
+   ]
+  },
+  {
+   "odiNumber": 11635240,
+   "manufacturer": "Honda (American Honda Motor Co.)",
+   "crash": true,
+   "fire": false,
+   "numberOfInjuries": 1,
+   "numberOfDeaths": 0,
+   "dateOfIncident": "12/12/2024",
+   "dateComplaintFiled": "01/10/2025",
+   "vin": "1HGCM81623A",
+   "components": "AIR BAGS",
+   "summary": "My 2003 Honda Accord Coupe was struck by an SUV/crossover, after the other driver ran a red light, and I tried, but was unable to avoid the accident.  My car wa",
+   "products": [
+    {
+     "type": "Vehicle",
+     "productYear": "2003",
+     "productMake": "HONDA",
+     "productModel": "ACCORD",
+     "manufacturer": "Honda (American Honda Motor Co.)"
+    }
+   ]
+  },
+  {
+   "odiNumber": 11746949,
+   "manufacturer": "Honda (American Honda Motor Co.)",
+   "crash": true,
+   "fire": false,
+   "numberOfInjuries": 1,
+   "numberOfDeaths": 0,
+   "dateOfIncident": "06/18/2026",
+   "dateComplaintFiled": "06/27/2026",
+   "vin": "JHMCM56323C",
+   "components": "AIR BAGS",
+   "summary": "The vehicle was rear-ended on I-5 in Seattle Washington.  The impact drove the subject car into the car in front of it. The front passenger airbag deployed (no ",
+   "products": [
+    {
+     "type": "Vehicle",
+     "productYear": "2003",
+     "productMake": "HONDA",
+     "productModel": "ACCORD",
+     "manufacturer": "Honda (American Honda Motor Co.)"
+    }
+   ]
+  },
+  {
+   "odiNumber": 11740104,
+   "manufacturer": "Honda (American Honda Motor Co.)",
+   "crash": false,
+   "fire": false,
+   "numberOfInjuries": 0,
+   "numberOfDeaths": 0,
+   "dateOfIncident": "05/22/2026",
+   "dateComplaintFiled": "05/26/2026",
+   "vin": "1HGCM66533A",
+   "components": "AIR BAGS",
+   "summary": "The contact owns a 2003 Honda Accord. The contact stated while attempting to start the vehicle, the contact noticed an unusual sound and the front passenger's s",
+   "products": [
+    {
+     "type": "Vehicle",
+     "productYear": "2003",
+     "productMake": "HONDA",
+     "productModel": "ACCORD",
+     "manufacturer": "Honda (American Honda Motor Co.)"
+    }
+   ]
+  },
+  {
+   "odiNumber": 11729508,
+   "manufacturer": "Honda (American Honda Motor Co.)",
+   "crash": false,
+   "fire": false,
+   "numberOfInjuries": 0,
+   "numberOfDeaths": 0,
+   "dateOfIncident": "04/02/2026",
+   "dateComplaintFiled": "04/06/2026",
+   "vin": "JHMCM56343C",
+   "components": "ELECTRICAL SYSTEM,AIR BAGS,UNKNOWN OR OTHER",
+   "summary": "I brought my vehicle to a Honda dealership for a safety recall repair (airbag/SRS related). After the repair, the SRS warning light appeared on my dashboard, in",
+   "products": [
+    {
+     "type": "Vehicle",
+     "productYear": "2003",
+     "productMake": "HONDA",
+     "productModel": "ACCORD",
+     "manufacturer": "Honda (American Honda Motor Co.)"
+    }
+   ]
+  }
+ ]
+}

@@ -15,6 +15,8 @@ import {
 interface PlateLookupButtonProps {
   /** The plate as typed right now; read when the button is pressed. */
   getPlate: () => string
+  /** The VIN as typed right now, for registries that answer to a VIN rather than a plate. */
+  getVin?: () => string
   /** Called with what the registry knows, for the form to apply. */
   onFound: (data: VehicleLookup) => void
   /** Set when editing, so the answer is also recorded on the vehicle. */
@@ -28,7 +30,12 @@ interface PlateLookupButtonProps {
  * scanner: three dialogs render this form and none should have to know which
  * registries exist.
  */
-export function PlateLookupButton({ getPlate, onFound, vehicleId }: PlateLookupButtonProps) {
+export function PlateLookupButton({
+  getPlate,
+  getVin,
+  onFound,
+  vehicleId,
+}: PlateLookupButtonProps) {
   const t = useTranslations('vehicles.form')
   const [busy, setBusy] = useState(false)
   /** null while the availability check is still in flight. */
@@ -46,14 +53,19 @@ export function PlateLookupButton({ getPlate, onFound, vehicleId }: PlateLookupB
 
   const handleClick = useCallback(async () => {
     const plate = getPlate().trim()
-    if (!plate) {
-      toast.error(t('lookupEnterPlate'))
+    const vin = getVin?.().trim() ?? ''
+    if (!plate && !vin) {
+      toast.error(getVin ? t('lookupEnterPlateOrVin') : t('lookupEnterPlate'))
       return
     }
     setBusy(true)
     const toastId = toast.loading(t('lookingUp'))
     try {
-      const result = await lookupVehicle({ plate, vehicleId })
+      const result = await lookupVehicle({
+        plate: plate || undefined,
+        vin: vin || undefined,
+        vehicleId,
+      })
       if (!result.success) {
         toast.error(result.error || t('lookupFailed'), { id: toastId })
         return
@@ -69,7 +81,7 @@ export function PlateLookupButton({ getPlate, onFound, vehicleId }: PlateLookupB
     } finally {
       setBusy(false)
     }
-  }, [getPlate, onFound, vehicleId, t])
+  }, [getPlate, getVin, onFound, vehicleId, t])
 
   return (
     <Tooltip>

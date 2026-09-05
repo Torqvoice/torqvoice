@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Kenteken- en VIN-opzoeking",
-      "inspection": "APK-vervaldatums"
+      "inspection": "APK-vervaldatums",
+      "safety": "Terugroepacties en klachten van eigenaren"
     },
     "ai": {
       "chat": "Teksten en samenvattingen"
@@ -514,6 +515,14 @@
         "pullPayments": "In QuickBooks geregistreerde betalingen terughalen",
         "pullPaymentsHelp": "Elke 30 minuten. Een betaling die in QuickBooks op een factuur van Torqvoice is ontvangen, wordt hier op de factuur geregistreerd."
       }
+    },
+    "nhtsa": {
+      "description": "Vul een voertuig in vanuit het VIN en bekijk terugroepacties, klachten van eigenaren en botsproefscores per modeljaar, van de Amerikaanse verkeersveiligheidsautoriteit. Gratis, zonder sleutel.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Terugroep- en klachtgegevens actueel houden voor elk voertuig in deze werkplaats",
+        "refreshFleetHelp": "Eén keer per dag worden modellen die de afgelopen week niet zijn vernieuwd opnieuw opgehaald, zodat de voertuigpagina nooit wacht en een nieuwe terugroepactie binnen een week zichtbaar is. Alleen merk, model en bouwjaar worden verstuurd."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,9 @@
       "payment": "Betaling naar boekhouding",
       "customer": "Klant naar boekhouding",
       "pull": "Betalingen uit boekhouding"
+    },
+    "safety": {
+      "refresh": "Vernieuwing van terugroepgegevens"
     }
   }
 }

@@ -623,6 +623,10 @@ export function VehicleForm({
                             ) as HTMLInputElement | null
                           )?.value ?? ''
                         }
+                        getVin={() =>
+                          (formRef.current?.elements.namedItem('vin') as HTMLInputElement | null)
+                            ?.value ?? ''
+                        }
                         onFound={applyLookup}
                         vehicleId={vehicle?.id}
                       />
