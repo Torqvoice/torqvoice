@@ -25,6 +25,7 @@ import { AppCard } from '@/components/app-card'
 import { DocsLink } from '@/components/docs-link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { DateInput } from '@/components/ui/date-input'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -103,8 +104,8 @@ export function ConnectionSettings({
   const run = useCallback(
     async (
       key: string,
-      fn: () => Promise<{ success: boolean; error?: string } | void>,
-      done?: string
+      fn: () => Promise<{ success: boolean; error?: string; data?: unknown } | void>,
+      done?: string | ((data: unknown) => string)
     ) => {
       setBusy(key)
       try {
@@ -113,7 +114,7 @@ export function ConnectionSettings({
           toast.error(res.error || t('errors.generic'))
           return false
         }
-        if (done) toast.success(done)
+        if (done) toast.success(typeof done === 'function' ? done(res?.data) : done)
         router.refresh()
         return true
       } finally {
@@ -446,7 +447,7 @@ export function ConnectionSettings({
                   run(
                     'sync',
                     () => runIntegrationJob(manifest.id, firstSchedule),
-                    t('connection.syncQueued')
+                    isAccounting ? t('connection.pullQueued') : t('connection.syncQueued')
                   )
                 }
                 disabled={busy !== null}
@@ -456,7 +457,7 @@ export function ConnectionSettings({
                 ) : (
                   <RefreshCw className="mr-1 h-3.5 w-3.5" />
                 )}
-                {t('connection.syncNow')}
+                {isAccounting ? t('connection.pullNow') : t('connection.syncNow')}
               </Button>
             )}
             {isCalendar && (
@@ -488,7 +489,12 @@ export function ConnectionSettings({
                   run(
                     'backfill',
                     () => backfillIntegrationAccounting(manifest.id),
-                    t('connection.backfillInvoicesQueued')
+                    (data) => {
+                      const n = (data as { queued?: number } | undefined)?.queued ?? 0
+                      return n > 0
+                        ? t('connection.backfillInvoicesQueuedCount', { count: n })
+                        : t('connection.backfillInvoicesNone')
+                    }
                   )
                 }
                 disabled={busy !== null}
@@ -799,6 +805,12 @@ function SettingFieldList({
                     [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value,
                   }))
                 }
+              />
+            )}
+            {f.type === 'date' && (
+              <DateInput
+                value={String(values[f.key] ?? '')}
+                onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
               />
             )}
             {(f.type === 'select' || f.type === 'remote-select') && (

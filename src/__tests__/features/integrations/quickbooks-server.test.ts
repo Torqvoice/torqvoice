@@ -491,6 +491,47 @@ describe('QuickBooks: pushing an invoice', () => {
     expect(inv?.body?.GlobalTaxCalculation).toBeUndefined()
   })
 
+  it('falls back to TAX and NON for a US company with no tax codes chosen', async () => {
+    const t = makeCtx({
+      state: { country: 'US' },
+      settings: { taxCodeId: '', zeroTaxCodeId: '' },
+      answer: emptyCompany(),
+    })
+    await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+    const inv = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
+    const lines = (inv?.body?.Line ?? []) as {
+      SalesItemLineDetail?: { TaxCodeRef?: { value: string } }
+    }[]
+    const codes = lines
+      .filter((l) => l.SalesItemLineDetail)
+      .map((l) => l.SalesItemLineDetail?.TaxCodeRef?.value)
+    expect(codes.length).toBeGreaterThan(0)
+    expect(new Set(codes)).toEqual(new Set(['TAX']))
+  })
+
+  it('offers TAX and NON ahead of the rate codes in a US company', async () => {
+    const t = makeCtx({
+      state: { country: 'US' },
+      answer: (call) =>
+        call.query.query.includes('from TaxCode')
+          ? {
+              QueryResponse: {
+                TaxCode: [
+                  { Id: '5', Name: 'Tucson' },
+                  { Id: '4', Name: 'California' },
+                ],
+              },
+            }
+          : { QueryResponse: {} },
+    })
+    expect(await connector.remoteOptions?.taxCodes(t.ctx)).toEqual([
+      { value: 'TAX', label: 'TAX (taxable)' },
+      { value: 'NON', label: 'NON (not taxable)' },
+      { value: '4', label: 'California' },
+      { value: '5', label: 'Tucson' },
+    ])
+  })
+
   it('warns when QuickBooks arrives at another total', async () => {
     const t = makeCtx({
       answer: (call) => {

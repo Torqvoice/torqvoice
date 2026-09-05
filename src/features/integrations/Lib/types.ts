@@ -81,7 +81,8 @@ export interface SettingOption {
 
 export interface SettingField {
   key: string
-  type: 'boolean' | 'text' | 'number' | 'select' | 'remote-select'
+  /** A date is an ISO YYYY-MM-DD string, '' when unset. */
+  type: 'boolean' | 'text' | 'number' | 'date' | 'select' | 'remote-select'
   /** i18n key under integrations.connectors.<id>.settings */
   label: string
   help?: string

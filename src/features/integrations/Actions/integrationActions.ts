@@ -70,6 +70,8 @@ function inboundFor(
   }
 }
 
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
+
 const settingsSchema = z.record(
   z.string(),
   z.union([z.string().max(2000), z.number(), z.boolean()])
@@ -84,6 +86,7 @@ function cleanSettings(manifest: ConnectorManifest, raw: unknown): Record<string
     const v = input[field.key]
     if (field.type === 'boolean') clean[field.key] = Boolean(v)
     else if (field.type === 'number') clean[field.key] = Number(v)
+    else if (field.type === 'date') clean[field.key] = ISO_DAY.test(String(v)) ? String(v) : ''
     else clean[field.key] = String(v)
   }
   return clean
