@@ -57,6 +57,18 @@ import {
 const PROVIDER = 'quickbooks'
 /** Change data capture reaches back at most a month. */
 const CDC_MAX_DAYS = 30
+/**
+ * The two pseudo tax codes of a US company under automated sales tax. They
+ * are what a line carries there; the rate itself comes from the customer's
+ * address. They are not TaxCode rows, so they are offered and defaulted here.
+ */
+const US_TAXABLE = 'TAX'
+const US_NON_TAXABLE = 'NON'
+const US_TAX_CODES = [
+  { value: US_TAXABLE, label: 'TAX (taxable)' },
+  { value: US_NON_TAXABLE, label: 'NON (not taxable)' },
+]
+
 /** Ledger and workshop totals may differ by rounding; beyond this the tax code is wrong. */
 const TOTAL_TOLERANCE = 0.05
 
@@ -399,8 +411,8 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
     customerEmail: customer.email,
     laborItemId: hasLabor ? await ensureItem(ctx, 'labor') : null,
     partsItemId: hasParts ? await ensureItem(ctx, 'part') : null,
-    taxCodeId: settings.taxCodeId,
-    zeroTaxCodeId: settings.zeroTaxCodeId,
+    taxCodeId: settings.taxCodeId ?? (state.country === 'US' ? US_TAXABLE : null),
+    zeroTaxCodeId: settings.zeroTaxCodeId ?? (state.country === 'US' ? US_NON_TAXABLE : null),
     globalTax: state.country !== 'US',
     currency: await currencyFor(ctx),
     timezone: ctx.timezone,
@@ -799,9 +811,13 @@ export const connector: ConnectorServer = {
         'TaxCode',
         'select Id, Name, Taxable from TaxCode where Active = true maxresults 1000'
       )
-      return codes
+      const listed = codes
         .sort((a, b) => a.Name.localeCompare(b.Name))
         .map((c) => ({ value: c.Id, label: c.Name }))
+      // A US company runs automated sales tax: TAX and NON are the codes a
+      // line carries, and the TaxCode query does not return them, only the
+      // company's own rate codes.
+      return stateOf(ctx).country === 'US' ? [...US_TAX_CODES, ...listed] : listed
     },
     async depositAccounts(ctx) {
       const accounts = await query<QboAccount>(

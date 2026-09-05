@@ -47,7 +47,7 @@ export const manifest: ConnectorManifest = {
     },
     {
       key: 'startDate',
-      type: 'text',
+      type: 'date',
       label: 'startDate',
       help: 'startDateHelp',
       showWhen: { key: 'pushInvoices', equals: true },
