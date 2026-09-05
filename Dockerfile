@@ -52,6 +52,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.
 # Copy generated Prisma client
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
+# Give the install below the lockfile the app was built with. Without it npm
+# re-resolves the whole tree against the live registry on every build, so the
+# runtime image drifts from what was tested, and a registry change can break
+# the build with nothing changed here (npm 10 crashed with "Cannot read
+# properties of null (reading 'edgesOut')" resolving vitest's peers this way).
+COPY --from=builder --chown=nextjs:nodejs /app/package-lock.json ./package-lock.json
+
 # Remove Next.js standalone's traced stubs for pg/prisma (tracer copies package.json
 # but not all files), then install the full runtime packages fresh.
 RUN rm -rf \
@@ -71,7 +78,7 @@ RUN rm -rf \
       /app/node_modules/prisma \
       /app/node_modules/@prisma \
       /app/node_modules/.prisma \
-    && npm install prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx sharp
+    && npm install --omit=dev prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx sharp
 
 # The npm install above re-resolves the dependency tree and replaces the
 # standalone build's PATCHED next package with a fresh unpatched copy from the
