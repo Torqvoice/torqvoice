@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Sécurité et problèmes connus",
+    "summaryRecalls": "{count, plural, one {# rappel} other {# rappels}}",
+    "summaryComplaints": "{count, plural, one {# plainte de propriétaire} other {# plaintes de propriétaires}}",
+    "expand": "Afficher les détails",
+    "collapse": "Masquer les détails",
     "loading": "Interrogation de l'autorité de sécurité...",
     "from": "De {source} pour {model}, mis à jour le {date}",
     "stale": "{source} est injoignable ; rapport du {date} affiché",

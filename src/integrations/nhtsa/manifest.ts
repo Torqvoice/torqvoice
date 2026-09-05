@@ -14,7 +14,7 @@ import type { ConnectorManifest } from '@/features/integrations/Lib/types'
  */
 export const manifest: ConnectorManifest = {
   id: 'nhtsa',
-  name: 'NHTSA',
+  name: 'NHTSA (USA)',
   category: 'registry',
   countries: ['US'],
   logo: '/images/integrations/nhtsa.svg',

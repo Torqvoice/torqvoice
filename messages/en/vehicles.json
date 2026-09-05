@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Safety and known issues",
+    "summaryRecalls": "{count, plural, one {# recall} other {# recalls}}",
+    "summaryComplaints": "{count, plural, one {# owner complaint} other {# owner complaints}}",
+    "expand": "Show details",
+    "collapse": "Hide details",
     "loading": "Asking the safety authority...",
     "from": "From {source} for {model}, updated {date}",
     "stale": "{source} could not be reached; showing the report from {date}",

@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Güvenlik ve bilinen sorunlar",
+    "summaryRecalls": "{count, plural, one {# geri çağırma} other {# geri çağırma}}",
+    "summaryComplaints": "{count, plural, one {# sahip şikâyeti} other {# sahip şikâyeti}}",
+    "expand": "Ayrıntıları göster",
+    "collapse": "Ayrıntıları gizle",
     "loading": "Güvenlik kurumuna soruluyor...",
     "from": "{model} için {source} kaynağından, {date} tarihinde güncellendi",
     "stale": "{source} kaynağına ulaşılamadı; {date} tarihli rapor gösteriliyor",

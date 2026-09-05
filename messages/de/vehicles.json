@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Sicherheit und bekannte Probleme",
+    "summaryRecalls": "{count, plural, one {# Rückruf} other {# Rückrufe}}",
+    "summaryComplaints": "{count, plural, one {# Halterbeschwerde} other {# Halterbeschwerden}}",
+    "expand": "Details anzeigen",
+    "collapse": "Details ausblenden",
     "loading": "Sicherheitsbehörde wird gefragt...",
     "from": "Von {source} für {model}, aktualisiert am {date}",
     "stale": "{source} war nicht erreichbar; der Bericht vom {date} wird gezeigt",

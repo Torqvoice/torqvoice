@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Bezpieczeństwo i znane problemy",
+    "summaryRecalls": "{count, plural, one {# akcja serwisowa} few {# akcje serwisowe} other {# akcji serwisowych}}",
+    "summaryComplaints": "{count, plural, one {# skarga właściciela} few {# skargi właścicieli} other {# skarg właścicieli}}",
+    "expand": "Pokaż szczegóły",
+    "collapse": "Ukryj szczegóły",
     "loading": "Zapytanie do urzędu bezpieczeństwa...",
     "from": "Z {source} dla {model}, zaktualizowano {date}",
     "stale": "Nie udało się połączyć z {source}; pokazano raport z {date}",

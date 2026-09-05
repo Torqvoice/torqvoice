@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Sicurezza e problemi noti",
+    "summaryRecalls": "{count, plural, one {# richiamo} other {# richiami}}",
+    "summaryComplaints": "{count, plural, one {# reclamo dei proprietari} other {# reclami dei proprietari}}",
+    "expand": "Mostra dettagli",
+    "collapse": "Nascondi dettagli",
     "loading": "Interrogazione dell'autorità per la sicurezza...",
     "from": "Da {source} per {model}, aggiornato il {date}",
     "stale": "{source} non raggiungibile; mostrato il rapporto del {date}",

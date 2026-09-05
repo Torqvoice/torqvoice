@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Veiligheid en bekende problemen",
+    "summaryRecalls": "{count, plural, one {# terugroepactie} other {# terugroepacties}}",
+    "summaryComplaints": "{count, plural, one {# klacht van eigenaren} other {# klachten van eigenaren}}",
+    "expand": "Details tonen",
+    "collapse": "Details verbergen",
     "loading": "Veiligheidsautoriteit wordt geraadpleegd...",
     "from": "Van {source} voor {model}, bijgewerkt op {date}",
     "stale": "{source} was niet bereikbaar; rapport van {date} wordt getoond",

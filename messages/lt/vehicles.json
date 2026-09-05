@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Sauga ir žinomos problemos",
+    "summaryRecalls": "{count, plural, one {# atšaukimas} few {# atšaukimai} other {# atšaukimų}}",
+    "summaryComplaints": "{count, plural, one {# savininko skundas} few {# savininkų skundai} other {# savininkų skundų}}",
+    "expand": "Rodyti išsamiau",
+    "collapse": "Slėpti išsamiau",
     "loading": "Klausiama saugos institucijos...",
     "from": "Iš {source} apie {model}, atnaujinta {date}",
     "stale": "{source} nepasiekiama; rodoma {date} ataskaita",

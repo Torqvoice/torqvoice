@@ -63,6 +63,7 @@ export function VehicleSafetyPanel({
   const [view, setView] = useState<VehicleSafetyView | null | undefined>(undefined)
   const [failed, setFailed] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const [showRecalls, setShowRecalls] = useState(false)
   const [showAllComponents, setShowAllComponents] = useState(false)
   const [added, setAdded] = useState<Set<string>>(() => new Set())
@@ -151,19 +152,27 @@ export function VehicleSafetyPanel({
       title={<span className={cn(iconTone)}>{t('title')}</span>}
       badge={openRecalls || undefined}
       description={
-        report
-          ? view?.stale
-            ? t('stale', { date: formatDate(new Date(view.fetchedAt)) })
-            : t('from', {
-                source: view?.source ?? '',
-                model: modelLabel,
-                date: formatDate(new Date(view?.fetchedAt ?? Date.now())),
-              })
-          : t('loading')
+        !report
+          ? t('loading')
+          : !expanded && report.matched
+            ? [
+                t('summaryRecalls', { count: openRecalls }),
+                t('summaryComplaints', { count: report.complaints.total }),
+                report.rating?.overall
+                  ? t('stars', { count: report.rating.overall })
+                  : t('notRated'),
+              ].join(' · ')
+            : view?.stale
+              ? t('stale', { date: formatDate(new Date(view.fetchedAt)) })
+              : t('from', {
+                  source: view?.source ?? '',
+                  model: modelLabel,
+                  date: formatDate(new Date(view?.fetchedAt ?? Date.now())),
+                })
       }
       action={
         <div className="flex items-center gap-1">
-          {report && (
+          {report && expanded && (
             <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" asChild>
               <a href={report.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -171,30 +180,45 @@ export function VehicleSafetyPanel({
               </a>
             </Button>
           )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0"
-                onClick={() => load(true)}
-                disabled={refreshing || view === undefined}
-                aria-label={t('refresh')}
-              >
-                {refreshing ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-3.5 w-3.5" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('refresh')}</TooltipContent>
-          </Tooltip>
+          {expanded && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => load(true)}
+                  disabled={refreshing || view === undefined}
+                  aria-label={t('refresh')}
+                >
+                  {refreshing ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('refresh')}</TooltipContent>
+            </Tooltip>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1 text-xs"
+            onClick={() => setExpanded((e) => !e)}
+            aria-expanded={expanded}
+            disabled={view === undefined}
+          >
+            {expanded ? t('collapse') : t('expand')}
+            <ChevronDown
+              className={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-180')}
+            />
+          </Button>
         </div>
       }
       contentClassName="p-0"
     >
-      {view === undefined ? (
+      {!expanded ? null : view === undefined ? (
         <div className="grid gap-3 p-4 sm:grid-cols-3">
           <Skeleton className="h-16 rounded-lg" />
           <Skeleton className="h-16 rounded-lg" />

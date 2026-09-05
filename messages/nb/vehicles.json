@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Sikkerhet og kjente problemer",
+    "summaryRecalls": "{count, plural, one {# tilbakekalling} other {# tilbakekallinger}}",
+    "summaryComplaints": "{count, plural, one {# eierklage} other {# eierklager}}",
+    "expand": "Vis detaljer",
+    "collapse": "Skjul detaljer",
     "loading": "Spør sikkerhetsmyndigheten...",
     "from": "Fra {source} for {model}, oppdatert {date}",
     "stale": "{source} kunne ikke nås; viser rapporten fra {date}",

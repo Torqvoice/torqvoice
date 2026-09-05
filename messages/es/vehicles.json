@@ -524,6 +524,10 @@
   },
   "safety": {
     "title": "Seguridad y problemas conocidos",
+    "summaryRecalls": "{count, plural, one {# llamada a revisión} other {# llamadas a revisión}}",
+    "summaryComplaints": "{count, plural, one {# queja de propietario} other {# quejas de propietarios}}",
+    "expand": "Ver detalles",
+    "collapse": "Ocultar detalles",
     "loading": "Consultando a la autoridad de seguridad...",
     "from": "De {source} para {model}, actualizado el {date}",
     "stale": "No se pudo contactar con {source}; se muestra el informe del {date}",
