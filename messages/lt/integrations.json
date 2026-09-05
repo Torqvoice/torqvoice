@@ -543,7 +543,8 @@
       "pull": "Mokėjimai iš apskaitos"
     },
     "safety": {
-      "refresh": "Atšaukimų duomenų atnaujinimas"
+      "refresh": "Atšaukimų duomenų atnaujinimas",
+      "vehicle": "Naujos transporto priemonės atšaukimų patikra"
     }
   }
 }

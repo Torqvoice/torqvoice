@@ -9,6 +9,7 @@ import {
   type VehicleSafetyReport,
 } from '@/features/integrations/Lib/types'
 import { safetyJobs } from '@/features/integrations/Lib/vehicle-safety'
+import { SAFETY_REPORT_VERSION } from '@/features/integrations/Lib/vehicle-safety-contract'
 import { manifest } from './manifest'
 import {
   API_URL,
@@ -156,6 +157,7 @@ async function vehicleSafety(
   if (!matched) {
     return {
       source: manifest.id,
+      version: SAFETY_REPORT_VERSION,
       matched: null,
       recalls: [],
       complaints: {
@@ -186,6 +188,7 @@ async function vehicleSafety(
 
   return {
     source: manifest.id,
+    version: SAFETY_REPORT_VERSION,
     matched: { make: make.toUpperCase(), model: matched, year },
     recalls: recallList,
     complaints: summarizeComplaints(complaintRows),

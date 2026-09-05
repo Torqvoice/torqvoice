@@ -543,7 +543,8 @@
       "pull": "Pagos desde contabilidad"
     },
     "safety": {
-      "refresh": "Actualización de datos de llamadas a revisión"
+      "refresh": "Actualización de datos de llamadas a revisión",
+      "vehicle": "Comprobación de llamadas a revisión para un vehículo nuevo"
     }
   }
 }

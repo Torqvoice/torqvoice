@@ -369,7 +369,9 @@ export function VehicleSafetyPanel({
                               {g.examples.map((e, i) => (
                                 <li key={`${e.date ?? ''}-${i}`} className="text-sm">
                                   <p className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                                    {e.date && <span>{formatDate(new Date(e.date))}</span>}
+                                    {safeDate(e.date, formatDate) && (
+                                      <span>{safeDate(e.date, formatDate)}</span>
+                                    )}
                                     {e.crash && (
                                       <Badge
                                         variant="outline"
@@ -535,11 +537,7 @@ function RecallRow({
             )}
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {[
-              recall.reported ? formatDate(new Date(recall.reported)) : null,
-              recall.campaign,
-              recall.manufacturer,
-            ]
+            {[safeDate(recall.reported, formatDate), recall.campaign, recall.manufacturer]
               .filter(Boolean)
               .join(' · ')}
           </p>
@@ -591,6 +589,13 @@ function RecallRow({
       </button>
     </li>
   )
+}
+
+/** A stored date, formatted, or nothing when it cannot be read. */
+function safeDate(value: string | null, formatDate: (d: Date) => string): string | null {
+  if (!value) return null
+  const time = Date.parse(value)
+  return Number.isNaN(time) ? null : formatDate(new Date(time))
 }
 
 function titleCase(value: string): string {

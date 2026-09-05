@@ -543,7 +543,8 @@
       "pull": "Zahlungen aus der Buchhaltung"
     },
     "safety": {
-      "refresh": "Aktualisierung der Rückrufdaten"
+      "refresh": "Aktualisierung der Rückrufdaten",
+      "vehicle": "Rückrufprüfung für ein neues Fahrzeug"
     }
   }
 }

@@ -22,5 +22,6 @@ export const manifest: ConnectorManifest = {
   auth: { type: 'api-key', fields: [] },
   capabilities: ['vehicle.lookup', SAFETY_MANIFEST.capability],
   settings: [SAFETY_MANIFEST.setting],
+  subscriptions: SAFETY_MANIFEST.subscriptions,
   schedules: [SAFETY_MANIFEST.schedule],
 }

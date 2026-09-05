@@ -543,7 +543,8 @@
       "pull": "Pagamentos da contabilidade"
     },
     "safety": {
-      "refresh": "Atualização dos dados de recall"
+      "refresh": "Atualização dos dados de recall",
+      "vehicle": "Verificação de recall para um veículo novo"
     }
   }
 }

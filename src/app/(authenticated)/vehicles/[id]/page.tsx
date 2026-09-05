@@ -170,7 +170,9 @@ export default async function VehicleDetailPage({
         },
         select: { key: true, value: true },
       }),
-      findSafetyConnection(orgId),
+      // An integration must never take the vehicle page down with it: a
+      // failed lookup means no panel, nothing more.
+      findSafetyConnection(orgId).catch(() => null),
     ])
     // Recall and complaint data needs a safety authority connected and a
     // model to ask about; the panel is left out entirely otherwise.

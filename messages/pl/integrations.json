@@ -543,7 +543,8 @@
       "pull": "Płatności z księgowości"
     },
     "safety": {
-      "refresh": "Odświeżanie danych o akcjach serwisowych"
+      "refresh": "Odświeżanie danych o akcjach serwisowych",
+      "vehicle": "Sprawdzenie akcji serwisowych dla nowego pojazdu"
     }
   }
 }

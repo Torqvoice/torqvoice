@@ -1,7 +1,7 @@
 import { db } from '@/lib/db'
 import { getManifest } from '@/integrations/registry'
 import { loadConnection } from './connections'
-import type { ConnectorContext, JobOutcome, VehicleSafetyReport } from './types'
+import type { ConnectorContext, JobHandler, JobOutcome, VehicleSafetyReport } from './types'
 
 /**
  * Recalls, owner complaints and crash ratings for the vehicles a workshop
@@ -18,10 +18,19 @@ import {
   SAFETY_CAPABILITY,
   SAFETY_JOB,
   SAFETY_MANIFEST,
+  SAFETY_REPORT_VERSION,
   SAFETY_SETTING,
+  SAFETY_VEHICLE_JOB,
 } from './vehicle-safety-contract'
 
-export { SAFETY_CAPABILITY, SAFETY_JOB, SAFETY_MANIFEST, SAFETY_SETTING }
+export {
+  SAFETY_CAPABILITY,
+  SAFETY_JOB,
+  SAFETY_MANIFEST,
+  SAFETY_REPORT_VERSION,
+  SAFETY_SETTING,
+  SAFETY_VEHICLE_JOB,
+}
 
 /** A report older than this is fetched again when a page asks for it. */
 export const REPORT_TTL_DAYS = 7
@@ -65,11 +74,12 @@ async function readCache(
     where: { source_make_model_year: { source, ...key } },
   })
   if (!row) return null
+  const report = row.data as unknown as VehicleSafetyReport
   return {
-    report: row.data as unknown as VehicleSafetyReport,
+    report,
     found: row.found,
     fetchedAt: row.fetchedAt,
-    stale: isStale(row.fetchedAt),
+    stale: isStale(row.fetchedAt) || report.version !== SAFETY_REPORT_VERSION,
   }
 }
 
@@ -181,9 +191,13 @@ export async function refreshFleetReports(ctx: ConnectorContext): Promise<JobOut
   const cutoff = new Date(Date.now() - REPORT_TTL_DAYS * 86_400_000)
   const fresh = await db.vehicleSafetyReport.findMany({
     where: { source, fetchedAt: { gte: cutoff } },
-    select: { make: true, model: true, year: true },
+    select: { make: true, model: true, year: true, data: true },
   })
-  const freshIds = new Set(fresh.map((r) => `${r.make}|${r.model}|${r.year}`))
+  const freshIds = new Set(
+    fresh
+      .filter((r) => (r.data as { version?: number }).version === SAFETY_REPORT_VERSION)
+      .map((r) => `${r.make}|${r.model}|${r.year}`)
+  )
   const due = [...byKey.entries()].filter(([id]) => !freshIds.has(id))
 
   let refreshed = 0
@@ -214,9 +228,50 @@ export async function refreshFleetReports(ctx: ConnectorContext): Promise<JobOut
   }
 }
 
-/** The job map entry for a safety connector's server module. */
-export function safetyJobs(): Record<string, (ctx: ConnectorContext) => Promise<JobOutcome>> {
-  return { [SAFETY_JOB]: refreshFleetReports }
+/**
+ * A vehicle was just added, or its make, model or year changed: fetch its
+ * model's report now, so the front desk sees recalls the moment the page
+ * opens rather than a few seconds later. A model already fresh in the cache
+ * costs nothing.
+ */
+export async function warmVehicleReport(
+  ctx: ConnectorContext,
+  payload: Record<string, unknown>
+): Promise<JobOutcome> {
+  const vehicleId = typeof payload.entityId === 'string' ? payload.entityId : null
+  if (!vehicleId) return { summary: 'no vehicle id' }
+  const connection = await db.integrationConnection.findUnique({
+    where: { id: ctx.connection.id },
+    select: { connectorId: true },
+  })
+  if (!connection) return { summary: 'connection gone' }
+  const vehicle = await db.vehicle.findFirst({
+    where: { id: vehicleId, organizationId: ctx.connection.organizationId },
+    select: { make: true, model: true, year: true, vin: true },
+  })
+  if (!vehicle || !vehicle.make.trim() || !vehicle.model.trim() || !vehicle.year)
+    return { summary: 'vehicle has no model to ask about' }
+  const key = modelKey(vehicle)
+  const cached = await readCache(connection.connectorId, key)
+  if (cached && !cached.stale)
+    return { summary: `${key.year} ${key.make} ${key.model} already fresh` }
+  const result = await fetchAndCache(ctx.connection.id, key, {
+    make: vehicle.make,
+    model: vehicle.model,
+    year: vehicle.year,
+    vin: vehicle.vin ?? undefined,
+  })
+  const recalls = result.report.recalls.length
+  return {
+    summary: result.report.matched
+      ? `${key.year} ${key.make} ${key.model}: ${recalls} recalls, ${result.report.complaints.total} complaints`
+      : `${key.year} ${key.make} ${key.model}: not known to the source`,
+  }
+}
+
+/** The job map entries for a safety connector's server module. */
+export function safetyJobs(): Record<string, JobHandler> {
+  return { [SAFETY_JOB]: refreshFleetReports, [SAFETY_VEHICLE_JOB]: warmVehicleReport }
 }
 
 /**

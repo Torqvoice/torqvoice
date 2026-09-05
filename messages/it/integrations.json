@@ -543,7 +543,8 @@
       "pull": "Pagamenti dalla contabilità"
     },
     "safety": {
-      "refresh": "Aggiornamento dei dati sui richiami"
+      "refresh": "Aggiornamento dei dati sui richiami",
+      "vehicle": "Controllo richiami per un nuovo veicolo"
     }
   }
 }

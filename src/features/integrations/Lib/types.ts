@@ -298,6 +298,8 @@ export interface SafetyRating {
 export interface VehicleSafetyReport {
   /** Connector id. */
   source: string
+  /** SAFETY_REPORT_VERSION at the time the connector built it. */
+  version?: number
   /** The model as the authority names it, or null when it has no record of it. */
   matched: { make: string; model: string; year: number } | null
   recalls: SafetyRecall[]

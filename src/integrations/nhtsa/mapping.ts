@@ -160,11 +160,17 @@ export function decodeToLookup(row: VpicRow, vin: string): VehicleLookupResult |
   }
 }
 
-/** MM/DD/YYYY as NHTSA writes it, to ISO. */
-export function isoDate(value: string | undefined): string | null {
+/**
+ * NHTSA's two services disagree on dates: recalls are written day first
+ * (27/06/2019) and complaints month first (06/27/2026), checked against
+ * live answers on 5 September 2026. Each caller says which it is reading.
+ */
+export function isoDate(value: string | undefined, order: 'dmy' | 'mdy'): string | null {
   const m = value ? /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(value.trim()) : null
   if (!m) return null
-  return `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`
+  const [day, month] = order === 'dmy' ? [m[1], m[2]] : [m[2], m[1]]
+  if (Number(month) < 1 || Number(month) > 12 || Number(day) < 1 || Number(day) > 31) return null
+  return `${m[3]}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
 }
 
 /**
@@ -194,7 +200,7 @@ export function mapRecall(r: NhtsaRecall): SafetyRecall | null {
     summary: text(r.Summary) ?? '',
     consequence: text(r.Consequence) ?? '',
     remedy: text(r.Remedy) ?? '',
-    reported: isoDate(r.ReportReceivedDate),
+    reported: isoDate(r.ReportReceivedDate, 'dmy'),
     parkIt: r.parkIt === true,
     parkOutside: r.parkOutSide === true,
     manufacturer: text(r.Manufacturer) ?? '',
@@ -237,7 +243,7 @@ export function summarizeComplaints(rows: NhtsaComplaint[], top = 8, latest = 5)
   let deaths = 0
   const dated = rows.map((c) => ({
     row: c,
-    date: isoDate(c.dateComplaintFiled) ?? isoDate(c.dateOfIncident),
+    date: isoDate(c.dateComplaintFiled, 'mdy') ?? isoDate(c.dateOfIncident, 'mdy'),
     components: complaintComponents(c.components),
   }))
   // Newest first, so the first few per component are the ones worth reading.

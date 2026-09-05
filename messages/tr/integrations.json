@@ -543,7 +543,8 @@
       "pull": "Ödemeler muhasebeden"
     },
     "safety": {
-      "refresh": "Geri çağırma verisi yenileme"
+      "refresh": "Geri çağırma verisi yenileme",
+      "vehicle": "Yeni araç için geri çağırma kontrolü"
     }
   }
 }

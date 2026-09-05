@@ -543,7 +543,8 @@
       "pull": "Betalinger fra regnskap"
     },
     "safety": {
-      "refresh": "Oppdatering av tilbakekallingsdata"
+      "refresh": "Oppdatering av tilbakekallingsdata",
+      "vehicle": "Tilbakekallingssjekk for nytt kjøretøy"
     }
   }
 }

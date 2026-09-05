@@ -543,7 +543,8 @@
       "pull": "Payments from ledger"
     },
     "safety": {
-      "refresh": "Recall data refresh"
+      "refresh": "Recall data refresh",
+      "vehicle": "Recall check for a new vehicle"
     }
   }
 }

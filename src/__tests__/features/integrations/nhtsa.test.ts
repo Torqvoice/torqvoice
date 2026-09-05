@@ -95,15 +95,18 @@ describe('NHTSA recalls and complaints', () => {
     expect(recall).toMatchObject({
       campaign: '19V182000',
       component: 'AIR BAGS:FRONTAL:DRIVER SIDE:INFLATOR MODULE',
-      reported: '2019-06-03',
+      // Written 06/03/2019 by the recall service, which is day first.
+      reported: '2019-03-06',
       parkIt: false,
       parkOutside: false,
       manufacturer: 'Honda (American Honda Motor Co.)',
     })
     expect(recall?.remedy).toContain('free of charge')
     expect(mapRecall({ Component: 'X' })).toBeNull()
-    expect(isoDate('6/3/2019')).toBe('2019-06-03')
-    expect(isoDate('nope')).toBeNull()
+    expect(isoDate('27/06/2019', 'dmy')).toBe('2019-06-27')
+    expect(isoDate('06/27/2026', 'mdy')).toBe('2026-06-27')
+    expect(isoDate('27/06/2019', 'mdy')).toBeNull()
+    expect(isoDate('nope', 'dmy')).toBeNull()
   })
 
   it('splits the components of a complaint the way NHTSA joins them', () => {
@@ -226,6 +229,12 @@ describe('NHTSA connector', () => {
     expect(manifest.capabilities).toContain('vehicle.safety')
     expect(manifest.schedules?.[0].job).toBe('safety.refresh')
     expect(connector.jobs['safety.refresh']).toBeTypeOf('function')
+    // A vehicle just added gets its report before anyone opens the page.
+    expect(manifest.subscriptions?.map((s) => `${s.event}>${s.job}`)).toEqual([
+      'vehicle.create>safety.vehicle',
+      'vehicle.update>safety.vehicle',
+    ])
+    expect(connector.jobs['safety.vehicle']).toBeTypeOf('function')
   })
 
   it('decodes a VIN and refuses a plate', async () => {
@@ -256,8 +265,8 @@ describe('NHTSA connector', () => {
       vin: '1HGCM82633A004352',
     })
     expect(report?.matched).toEqual({ make: 'HONDA', model: 'ACCORD', year: 2003 })
-    // Duplicated campaign counted once, newest first.
-    expect(report?.recalls.map((r) => r.campaign)).toEqual(['19V499000', '19E068000', '19V182000'])
+    // Duplicated campaign counted once, newest first by the day-first recall dates.
+    expect(report?.recalls.map((r) => r.campaign)).toEqual(['19E068000', '19V499000', '19V182000'])
     expect(report?.complaints.total).toBe(COMPLAINTS.length)
     expect(report?.rating?.frontal).toBe(5)
     expect(report?.url).toBe('https://www.nhtsa.gov/vehicle/2003/HONDA/ACCORD')

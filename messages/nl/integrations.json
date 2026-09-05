@@ -543,7 +543,8 @@
       "pull": "Betalingen uit boekhouding"
     },
     "safety": {
-      "refresh": "Vernieuwing van terugroepgegevens"
+      "refresh": "Vernieuwing van terugroepgegevens",
+      "vehicle": "Terugroepcontrole voor een nieuw voertuig"
     }
   }
 }
