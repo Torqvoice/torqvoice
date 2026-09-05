@@ -80,24 +80,29 @@ export async function GET(
   }
 
   // What the vendor tells us only here, such as which company was chosen,
-  // goes on the state so identify and every job after it can read it.
+  // goes into the sealed credentials, next to the tokens, so identify and
+  // every job after it can read it and it never sits in the database in the
+  // clear: Intuit's rules put the realm id under the same encryption as the
+  // refresh token. A token refresh spreads the previous credentials, so it
+  // survives those.
   const extra: Record<string, string> = {}
   for (const name of spec.callbackParams ?? []) {
     const value = params.get(name)
     if (value) extra[name] = value
   }
-  const state0 = (connection.state as Record<string, unknown>) ?? {}
 
   await db.integrationConnection.update({
     where: { id: connection.id },
     data: {
       oauthState: null,
-      credentials: sealCredentials(credentials as unknown as Record<string, unknown>),
+      credentials: sealCredentials({
+        ...(credentials as unknown as Record<string, unknown>),
+        ...extra,
+      }),
       scopes: credentials.scope ?? spec.scopes.join(' '),
       status: 'active',
       lastError: null,
       lastHealthAt: new Date(),
-      ...(Object.keys(extra).length > 0 && { state: { ...state0, ...extra } as object }),
     },
   })
 

@@ -1,3 +1,4 @@
+import { realmRef } from '@/integrations/quickbooks/mapping'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
   AccountingCustomer,
@@ -93,7 +94,7 @@ function makeCtx(input: {
       state,
       externalAccountId: '9130357',
     },
-    credentials: { accessToken: 'tok', refreshToken: 'ref' },
+    credentials: { accessToken: 'tok', refreshToken: 'ref', realmId: '9130357' },
     http: {
       fetch: async () => {
         throw new Error('not used')
@@ -1025,7 +1026,8 @@ describe('QuickBooks: connecting', () => {
       },
     })
     const who = await connector.identify?.(t.ctx)
-    expect(who).toEqual({ id: '9130357', name: 'Sandbox Garage Ltd (sandbox)' })
+    expect(who).toEqual({ id: realmRef('9130357'), name: 'Sandbox Garage Ltd (sandbox)' })
+    expect(who?.id).not.toContain('9130357')
     expect(t.state).toMatchObject({
       environment: 'sandbox',
       country: 'GB',
@@ -1038,6 +1040,17 @@ describe('QuickBooks: connecting', () => {
     })
     expect(t.logs.some((l) => l.message.includes('Custom transaction numbers'))).toBe(true)
     expect(t.calls.at(-1)?.host).toBe('sandbox-quickbooks.api.intuit.com')
+  })
+
+  it('reads the company from the sealed credentials, falling back to older state', async () => {
+    const fresh = makeCtx({ state: { realmId: undefined }, answer: emptyCompany() })
+    await connector.jobs['accounting.invoice'](fresh.ctx, { entityId: 'svc1' })
+    expect(fresh.calls[0].path).toBe('/v3/company/9130357/query')
+
+    const legacy = makeCtx({ answer: emptyCompany() })
+    legacy.ctx.credentials = { accessToken: 'tok', refreshToken: 'ref' }
+    await connector.jobs['accounting.invoice'](legacy.ctx, { entityId: 'svc1' })
+    expect(legacy.calls[0].path).toBe('/v3/company/9130357/query')
   })
 
   it('recognises automated sales tax and says when sales tax is off', async () => {

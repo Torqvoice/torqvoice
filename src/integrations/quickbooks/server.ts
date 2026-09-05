@@ -37,6 +37,7 @@ import {
   type QboPayment,
   type QboTaxCode,
   type QboTaxRate,
+  realmRef,
   REVOKE_URL,
   WALK_IN_NAME,
   apiHost,
@@ -83,6 +84,7 @@ class QboError extends Error {
 }
 
 interface State {
+  /** Legacy: newer connections keep the realm in the sealed credentials. */
   realmId: string
   environment: Environment
   country: string | null
@@ -144,8 +146,14 @@ function settingsOf(ctx: ConnectorContext) {
   }
 }
 
+/**
+ * The company id. It arrives on the OAuth callback and is kept in the
+ * sealed credentials next to the tokens. Connections made before that was
+ * so still carry it on the state; they lose it the next time they connect.
+ */
 function realmOf(ctx: ConnectorContext): string {
-  const realm = stateOf(ctx).realmId
+  const sealed = ctx.credentials.realmId
+  const realm = typeof sealed === 'string' && sealed ? sealed : stateOf(ctx).realmId
   if (!realm) throw new Error('No QuickBooks company on this connection; reconnect')
   return realm
 }
@@ -934,7 +942,12 @@ export const connector: ConnectorServer = {
         'Custom transaction numbers are off in this QuickBooks company, so invoices there get QuickBooks numbers instead of the Torqvoice invoice numbers. Turn them on under Account and settings, Sales, Sales form content.'
       )
     }
-    return { id: realm, name: env === 'sandbox' ? `${company.name} (sandbox)` : company.name }
+    // The realm is customer-identifying, so the row and the browser get a
+    // reference derived from it, enough to tell two companies apart.
+    return {
+      id: realmRef(realm),
+      name: env === 'sandbox' ? `${company.name} (sandbox)` : company.name,
+    }
   },
   async test(ctx) {
     try {

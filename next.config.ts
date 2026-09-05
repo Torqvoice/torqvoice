@@ -14,6 +14,24 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Every response. Later, more specific entries win on the same key, so
+      // the status-report share below still gets its stricter values.
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Nothing off this origin may frame the app; the app frames its own
+          // previews and print views, so same-origin stays allowed.
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Camera and microphone are used by our own pages (scanning, photos,
+          // recordings); an embedded third-party frame gets neither.
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(self), geolocation=(self)',
+          },
+        ],
+      },
       {
         source: '/share/status-report/:path*',
         headers: [

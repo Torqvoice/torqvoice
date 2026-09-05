@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useRef, useState } from 'react'
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -50,8 +51,7 @@ function SignInFormInner({
         setPassword('')
         passwordRef.current?.focus()
       } else {
-        const redirect = searchParams.get('redirect') || '/'
-        router.push(redirect)
+        router.push(safeRedirectPath(searchParams.get('redirect')))
         router.refresh()
       }
     } catch {
@@ -100,8 +100,7 @@ function SignInFormInner({
         const msg = typeof result.error.message === 'string' ? result.error.message : ''
         setError(msg || t('errors.passkeyFailed'))
       } else {
-        const redirect = searchParams.get('redirect') || '/'
-        router.push(redirect)
+        router.push(safeRedirectPath(searchParams.get('redirect')))
         router.refresh()
       }
     } catch {
@@ -234,7 +233,7 @@ function SignInFormInner({
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {t('noAccount')}{' '}
           <Link
-            href={`/auth/sign-up${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect')!)}` : ''}`}
+            href={`/auth/sign-up${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(safeRedirectPath(searchParams.get('redirect')))}` : ''}`}
             className="font-medium text-primary hover:underline"
           >
             {t('createOne')}

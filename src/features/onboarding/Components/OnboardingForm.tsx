@@ -1,5 +1,6 @@
 'use client'
 
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -34,7 +35,7 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
       if (!result.success) {
         modal.open('error', t('setupFailed'), result.error || t('couldNotCreate'))
       } else {
-        router.push(redirectTo || '/')
+        router.push(safeRedirectPath(redirectTo))
         router.refresh()
       }
     } catch {

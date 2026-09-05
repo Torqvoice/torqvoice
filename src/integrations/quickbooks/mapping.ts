@@ -7,6 +7,7 @@
  * that the ledger arrived at the same total.
  */
 
+import { createHash } from 'node:crypto'
 import type {
   AccountingCustomer,
   AccountingInvoice,
@@ -32,6 +33,11 @@ export const NOTE_MARK = 'Torqvoice'
 export const NOTES_MAX = 2000
 
 export type Environment = 'production' | 'sandbox'
+
+/** A stable, non-reversible reference for a company id, for rows the browser sees. */
+export function realmRef(realm: string): string {
+  return `qbo-${createHash('sha256').update(realm).digest('hex').slice(0, 16)}`
+}
 
 export interface QboRef {
   value: string
