@@ -86,6 +86,7 @@ const options = {
   taxExempt: false,
   includeVehicle: false,
   customTxnNumbers: true,
+  txnTaxDetail: null,
 }
 
 /**
@@ -164,6 +165,29 @@ describe('QuickBooks invoice mapping', () => {
 
     const us = buildInvoice(invoice, { ...options, globalTax: false })
     expect(us.GlobalTaxCalculation).toBeUndefined()
+  })
+
+  it('carries the billed tax detail when given one', () => {
+    const detail = { TotalTax: 300, TaxLine: [] }
+    expect(buildInvoice(invoice, { ...options, txnTaxDetail: detail }).TxnTaxDetail).toBe(detail)
+    expect(buildInvoice(invoice, options).TxnTaxDetail).toBeUndefined()
+  })
+
+  it('sends gross prices as net for a US company that bills tax-inclusive', () => {
+    // 1000 + 500 gross at 25% inclusive: net 800 + 400, so tax on top lands on the gross.
+    const gross = { ...invoice, taxInclusive: true, taxRate: 25 }
+    const us = buildInvoice(gross, { ...options, globalTax: false })
+    const [labor, part, discount] = us.Line as Record<string, Record<string, unknown>>[]
+    expect(labor.Amount).toBe(800)
+    expect(labor.SalesItemLineDetail.UnitPrice).toBe(400)
+    expect(part.Amount).toBe(400)
+    expect(discount.Amount).toBe(120)
+    // The same invoice in a company with real rates keeps its gross prices
+    // and says so, because QuickBooks backs the tax out itself there.
+    const global = buildInvoice(gross, options)
+    const [globalLabor] = global.Line as Record<string, Record<string, unknown>>[]
+    expect(globalLabor.Amount).toBe(1000)
+    expect(global.GlobalTaxCalculation).toBe('TaxInclusive')
   })
 
   it('leaves out lines whose item is unknown and fixed discounts stay fixed', () => {

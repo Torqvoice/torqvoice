@@ -26,6 +26,7 @@ import { DocsLink } from '@/components/docs-link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { DateInput } from '@/components/ui/date-input'
+import { OptionPicker } from './option-picker'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -811,30 +812,30 @@ function SettingFieldList({
               <DateInput
                 value={String(values[f.key] ?? '')}
                 onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
+                placeholder={t('connection.noLimit')}
               />
             )}
-            {(f.type === 'select' || f.type === 'remote-select') && (
+            {f.type === 'remote-select' && (
+              <OptionPicker
+                value={String(values[f.key] ?? '')}
+                options={remote[f.source ?? '']}
+                onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
+              />
+            )}
+            {f.type === 'select' && (
               <Select
                 value={String(values[f.key] ?? '')}
                 onValueChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
               >
                 <SelectTrigger className="h-8">
-                  <SelectValue
-                    placeholder={
-                      f.type === 'remote-select' && remote[f.source ?? ''] === undefined
-                        ? t('connection.loading')
-                        : t('connection.choose')
-                    }
-                  />
+                  <SelectValue placeholder={t('connection.choose')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(f.type === 'select' ? (f.options ?? []) : (remote[f.source ?? ''] ?? [])).map(
-                    (o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.label}
-                      </SelectItem>
-                    )
-                  )}
+                  {(f.options ?? []).map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {tc.has(`settings.${o.label}`) ? tc(`settings.${o.label}`) : o.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}

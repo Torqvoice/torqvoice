@@ -77,6 +77,18 @@ export const manifest: ConnectorManifest = {
       showWhen: { key: 'pushInvoices', equals: true },
     },
     {
+      key: 'taxAmounts',
+      type: 'select',
+      label: 'taxAmounts',
+      help: 'taxAmountsHelp',
+      default: 'billed',
+      options: [
+        { value: 'billed', label: 'taxAmountsBilled' },
+        { value: 'quickbooks', label: 'taxAmountsQuickbooks' },
+      ],
+      showWhen: { key: 'pushInvoices', equals: true },
+    },
+    {
       key: 'taxCodeId',
       type: 'remote-select',
       label: 'taxCodeId',

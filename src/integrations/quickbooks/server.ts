@@ -36,6 +36,7 @@ import {
   type QboItem,
   type QboPayment,
   type QboTaxCode,
+  type QboTaxRate,
   REVOKE_URL,
   WALK_IN_NAME,
   apiHost,
@@ -53,22 +54,21 @@ import {
   round2,
   sqlString,
 } from './mapping'
+import {
+  US_NON_TAXABLE,
+  US_TAX_CODES,
+  US_TAXABLE,
+  astTaxDetail,
+  buildTaxCatalog,
+  globalTaxDetail,
+  pickTaxableCode,
+  pickZeroCode,
+  type TaxCatalogEntry,
+} from './tax'
 
 const PROVIDER = 'quickbooks'
 /** Change data capture reaches back at most a month. */
 const CDC_MAX_DAYS = 30
-/**
- * The two pseudo tax codes of a US company under automated sales tax. They
- * are what a line carries there; the rate itself comes from the customer's
- * address. They are not TaxCode rows, so they are offered and defaulted here.
- */
-const US_TAXABLE = 'TAX'
-const US_NON_TAXABLE = 'NON'
-const US_TAX_CODES = [
-  { value: US_TAXABLE, label: 'TAX (taxable)' },
-  { value: US_NON_TAXABLE, label: 'NON (not taxable)' },
-]
-
 /** Ledger and workshop totals may differ by rounding; beyond this the tax code is wrong. */
 const TOTAL_TOLERANCE = 0.05
 
@@ -90,6 +90,12 @@ interface State {
   multiCurrency: boolean
   /** Whether the company lets a transaction carry its own number; without it DocNumber is ignored. */
   customTxnNumbers: boolean
+  /** Sales tax is set up in the company; without it QuickBooks drops any tax sent. */
+  salesTaxEnabled: boolean
+  /** A US company on automated sales tax: lines carry TAX or NON, not real codes. */
+  automatedSalesTax: boolean
+  /** The company's tax codes with their rates, read at most once a day. */
+  taxCatalog: { fetchedAt: string; codes: TaxCatalogEntry[] } | null
   defaultItems: Partial<Record<'labor' | 'part', string>>
   walkInCustomerId: string | null
   lastPullAt: string | null
@@ -104,6 +110,12 @@ function stateOf(ctx: ConnectorContext): State {
     homeCurrency: typeof s.homeCurrency === 'string' ? s.homeCurrency : null,
     multiCurrency: s.multiCurrency === true,
     customTxnNumbers: s.customTxnNumbers !== false,
+    salesTaxEnabled: s.salesTaxEnabled !== false,
+    // Connections made before this was recorded: every US company opened
+    // since 2017 is on automated sales tax, so the country is the best guess.
+    automatedSalesTax:
+      typeof s.automatedSalesTax === 'boolean' ? s.automatedSalesTax : s.country === 'US',
+    taxCatalog: isTaxCatalog(s.taxCatalog) ? s.taxCatalog : null,
     defaultItems: (s.defaultItems as State['defaultItems']) ?? {},
     walkInCustomerId: typeof s.walkInCustomerId === 'string' ? s.walkInCustomerId : null,
     lastPullAt: typeof s.lastPullAt === 'string' ? s.lastPullAt : null,
@@ -123,6 +135,8 @@ function settingsOf(ctx: ConnectorContext) {
     partsItemId: str('partsItemId'),
     taxCodeId: str('taxCodeId'),
     zeroTaxCodeId: str('zeroTaxCodeId'),
+    /** billed: QuickBooks keeps the tax as it stands on the invoice; quickbooks: it works its own out. */
+    taxAmounts: s.taxAmounts === 'quickbooks' ? ('quickbooks' as const) : ('billed' as const),
     pushPayments: s.pushPayments !== false,
     depositAccountId: str('depositAccountId'),
     manualPaidAsPayment: s.manualPaidAsPayment === true,
@@ -185,6 +199,7 @@ interface Preferences {
   Preferences: {
     CurrencyPrefs?: { HomeCurrency?: { value?: string }; MultiCurrencyEnabled?: boolean }
     SalesFormsPrefs?: { CustomTxnNumbers?: boolean }
+    TaxPrefs?: { UsingSalesTax?: boolean; PartnerTaxEnabled?: boolean }
   }
 }
 
@@ -198,7 +213,120 @@ async function readCompany(ctx: ConnectorContext, env: Environment) {
     homeCurrency: prefs.Preferences.CurrencyPrefs?.HomeCurrency?.value ?? null,
     multiCurrency: prefs.Preferences.CurrencyPrefs?.MultiCurrencyEnabled === true,
     customTxnNumbers: prefs.Preferences.SalesFormsPrefs?.CustomTxnNumbers === true,
+    salesTaxEnabled: prefs.Preferences.TaxPrefs?.UsingSalesTax !== false,
+    // Intuit: PartnerTaxEnabled is present, true or false, exactly when the
+    // company is on automated sales tax; absent otherwise.
+    automatedSalesTax: prefs.Preferences.TaxPrefs?.PartnerTaxEnabled !== undefined,
   }
+}
+
+/* ---------- tax ---------- */
+
+function isTaxCatalog(v: unknown): v is State['taxCatalog'] & object {
+  return (
+    typeof v === 'object' &&
+    v !== null &&
+    typeof (v as { fetchedAt?: unknown }).fetchedAt === 'string' &&
+    Array.isArray((v as { codes?: unknown }).codes)
+  )
+}
+
+/** A day; codes change when a rate changes, which is rare, and the settings page re-reads anyway. */
+const TAX_CATALOG_TTL_MS = 24 * 60 * 60 * 1000
+
+/**
+ * The company's tax codes with their rates. Nothing to read under automated
+ * sales tax. Cached on the connection so a push does not re-read two tables.
+ */
+async function loadTaxCatalog(
+  ctx: ConnectorContext,
+  opts: { refresh?: boolean } = {}
+): Promise<TaxCatalogEntry[]> {
+  const state = stateOf(ctx)
+  if (state.automatedSalesTax) return []
+  const cached = state.taxCatalog
+  if (
+    !opts.refresh &&
+    cached &&
+    Date.now() - new Date(cached.fetchedAt).getTime() < TAX_CATALOG_TTL_MS
+  ) {
+    return cached.codes
+  }
+  const [codes, rates] = await Promise.all([
+    query<QboTaxCode>(ctx, 'TaxCode', 'select * from TaxCode where Active = true maxresults 1000'),
+    query<QboTaxRate>(ctx, 'TaxRate', 'select * from TaxRate where Active = true maxresults 1000'),
+  ])
+  const catalog = buildTaxCatalog(codes, rates)
+  await ctx.saveState({ taxCatalog: { fetchedAt: new Date().toISOString(), codes: catalog } })
+  return catalog
+}
+
+interface ResolvedTax {
+  taxCodeId: string | null
+  zeroTaxCodeId: string | null
+  txnTaxDetail: Record<string, unknown> | null
+  /** Something the workshop should hear about, once per push. */
+  note: string | null
+}
+
+/**
+ * The codes for this invoice and, when the tax must stand as billed, the
+ * override that makes QuickBooks keep our amount. See tax.ts for the model.
+ */
+async function resolveTax(
+  ctx: ConnectorContext,
+  inv: AccountingInvoice,
+  taxExempt: boolean
+): Promise<ResolvedTax> {
+  const settings = settingsOf(ctx)
+  const state = stateOf(ctx)
+  const taxable = inv.taxRate > 0 && !taxExempt
+  // With sales tax off QuickBooks ignores TxnTaxDetail, so there is nothing to send.
+  const billed = settings.taxAmounts === 'billed' && state.salesTaxEnabled
+  if (state.automatedSalesTax) {
+    const taxCodeId = settings.taxCodeId ?? US_TAXABLE
+    const zeroTaxCodeId = settings.zeroTaxCodeId ?? US_NON_TAXABLE
+    return {
+      taxCodeId,
+      zeroTaxCodeId,
+      txnTaxDetail: billed
+        ? astTaxDetail(taxable ? taxCodeId : zeroTaxCodeId, taxable ? inv.taxAmount : 0)
+        : null,
+      note: null,
+    }
+  }
+  let catalog = await loadTaxCatalog(ctx)
+  const zeroTaxCodeId = pickZeroCode(catalog, settings.zeroTaxCodeId)
+  if (!taxable)
+    return { taxCodeId: settings.taxCodeId, zeroTaxCodeId, txnTaxDetail: null, note: null }
+  let pick = pickTaxableCode(catalog, inv.taxRate, settings.taxCodeId)
+  if (!pick.matched) {
+    // The rate may be new in QuickBooks since the catalog was read.
+    catalog = await loadTaxCatalog(ctx, { refresh: true })
+    pick = pickTaxableCode(catalog, inv.taxRate, settings.taxCodeId)
+  }
+  let note: string | null = null
+  if (!pick.matched) {
+    note = pick.entry
+      ? `No QuickBooks tax code carries ${inv.taxRate}%, so invoice ${inv.invoiceNumber} was booked under "${pick.entry.name}" (${pick.entry.percent ?? '?'}%). Add a ${inv.taxRate}% code in QuickBooks or pick another in the integration settings.`
+      : `No QuickBooks tax code carries ${inv.taxRate}% and none is chosen in the integration settings, so invoice ${inv.invoiceNumber} went over without one.`
+  }
+  // Only a code that carries the rate, and carries it as one rate, can be
+  // named on the override. A group of rates is left to QuickBooks, which
+  // reaches the same total when the rates fit; a code with another rate is
+  // not dressed up as this one, the warning above says what happened.
+  const rateId =
+    pick.matched && pick.entry && pick.entry.rateIds.length === 1 ? pick.entry.rateIds[0] : null
+  const txnTaxDetail =
+    billed && rateId
+      ? globalTaxDetail({
+          rateId,
+          percent: inv.taxRate,
+          taxAmount: inv.taxAmount,
+          netTaxable: inv.totalAmount - inv.taxAmount,
+        })
+      : null
+  return { taxCodeId: pick.id, zeroTaxCodeId, txnTaxDetail, note }
 }
 
 /* ---------- customers ---------- */
@@ -358,12 +486,20 @@ async function currencyFor(ctx: ConnectorContext): Promise<string | null> {
   return null
 }
 
-function eligible(inv: AccountingInvoice, s: ReturnType<typeof settingsOf>, tz: string): boolean {
-  if (!s.pushInvoices || !inv.invoiceNumber) return false
+/** Why the invoice stays out of the ledger, or null when it goes. */
+function whyNotEligible(
+  inv: AccountingInvoice,
+  s: ReturnType<typeof settingsOf>,
+  tz: string
+): string | null {
+  if (!s.pushInvoices) return 'invoice push switched off'
+  if (!inv.invoiceNumber) return 'no invoice number'
   const issued = Boolean(inv.issuedAt) || (s.pushOnComplete && inv.status === 'completed')
-  if (!issued) return false
-  if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) return false
-  return true
+  if (!issued) return 'not issued yet'
+  if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) {
+    return 'dated before the start date'
+  }
+  return null
 }
 
 /** The record is gone: void the ledger's copy unless money was taken against it. */
@@ -399,20 +535,20 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   const state = stateOf(ctx)
   const inv = await loadInvoiceForAccounting(ctx.connection.organizationId, serviceRecordId)
   if (!inv) return retireInvoice(ctx, serviceRecordId)
-  if (!eligible(inv, settings, ctx.timezone)) {
-    return { summary: inv.invoiceNumber ? 'not issued yet' : 'no invoice number' }
-  }
+  const skip = whyNotEligible(inv, settings, ctx.timezone)
+  if (skip) return { summary: skip }
 
   const customer = await ensureCustomer(ctx, inv.customer)
   const hasLabor = inv.lines.some((l) => l.kind === 'labor')
   const hasParts = inv.lines.some((l) => l.kind === 'part')
+  const tax = await resolveTax(ctx, inv, customer.taxExempt)
+  if (tax.note) await ctx.log('warn', tax.note)
   const body = buildInvoice(inv, {
     customerRef: customer.id,
     customerEmail: customer.email,
     laborItemId: hasLabor ? await ensureItem(ctx, 'labor') : null,
     partsItemId: hasParts ? await ensureItem(ctx, 'part') : null,
-    taxCodeId: settings.taxCodeId ?? (state.country === 'US' ? US_TAXABLE : null),
-    zeroTaxCodeId: settings.zeroTaxCodeId ?? (state.country === 'US' ? US_NON_TAXABLE : null),
+    ...tax,
     globalTax: state.country !== 'US',
     currency: await currencyFor(ctx),
     timezone: ctx.timezone,
@@ -457,9 +593,14 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
     })
     const theirs = saved.TotalAmt ?? 0
     if (Math.abs(theirs - inv.totalAmount) > TOTAL_TOLERANCE) {
+      const hint = !state.salesTaxEnabled
+        ? 'sales tax is switched off in QuickBooks'
+        : settings.taxAmounts === 'quickbooks'
+          ? 'QuickBooks worked the tax out itself; set Tax amounts to "as billed" to send yours'
+          : 'QuickBooks did not keep the billed tax; check the tax codes in the integration settings'
       await ctx.log(
         'warn',
-        `Invoice ${inv.invoiceNumber}: QuickBooks total ${round2(theirs)} differs from ${round2(inv.totalAmount)} here; check the tax codes in the integration settings`,
+        `Invoice ${inv.invoiceNumber}: QuickBooks total ${round2(theirs)} differs from ${round2(inv.totalAmount)} here; ${hint}`,
         { quickbooks: theirs, torqvoice: inv.totalAmount }
       )
     }
@@ -777,7 +918,16 @@ export const connector: ConnectorServer = {
       homeCurrency: company.homeCurrency,
       multiCurrency: company.multiCurrency,
       customTxnNumbers: company.customTxnNumbers,
+      salesTaxEnabled: company.salesTaxEnabled,
+      automatedSalesTax: company.automatedSalesTax,
+      taxCatalog: null,
     })
+    if (!company.salesTaxEnabled) {
+      await ctx.log(
+        'warn',
+        'Sales tax is switched off in this QuickBooks company, so it drops the tax on every invoice sent and the totals there will be lower than here. Turn it on under Taxes in QuickBooks.'
+      )
+    }
     if (!company.customTxnNumbers) {
       await ctx.log(
         'warn',
@@ -806,18 +956,25 @@ export const connector: ConnectorServer = {
         .map((i) => ({ value: i.Id, label: i.Type ? `${i.Name} (${i.Type})` : i.Name }))
     },
     async taxCodes(ctx) {
-      const codes = await query<QboTaxCode>(
-        ctx,
-        'TaxCode',
-        'select Id, Name, Taxable from TaxCode where Active = true maxresults 1000'
-      )
-      const listed = codes
-        .sort((a, b) => a.Name.localeCompare(b.Name))
-        .map((c) => ({ value: c.Id, label: c.Name }))
-      // A US company runs automated sales tax: TAX and NON are the codes a
-      // line carries, and the TaxCode query does not return them, only the
-      // company's own rate codes.
-      return stateOf(ctx).country === 'US' ? [...US_TAX_CODES, ...listed] : listed
+      // Under automated sales tax TAX and NON are what a line carries, and
+      // the TaxCode query does not return them, only the company's own rate
+      // codes, which stay on offer for a workshop that wants a fixed rate.
+      if (stateOf(ctx).automatedSalesTax) {
+        const codes = await query<QboTaxCode>(
+          ctx,
+          'TaxCode',
+          'select Id, Name, Taxable from TaxCode where Active = true maxresults 1000'
+        )
+        const listed = codes
+          .sort((a, b) => a.Name.localeCompare(b.Name))
+          .map((c) => ({ value: c.Id, label: c.Name }))
+        return [...US_TAX_CODES, ...listed]
+      }
+      const catalog = await loadTaxCatalog(ctx, { refresh: true })
+      return catalog.map((c) => ({
+        value: c.id,
+        label: c.percent == null ? c.name : `${c.name} (${c.percent}%)`,
+      }))
     },
     async depositAccounts(ctx) {
       const accounts = await query<QboAccount>(
