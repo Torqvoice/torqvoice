@@ -350,7 +350,7 @@ describe('QuickBooks: pushing an invoice', () => {
   it('skips invoices dated before the start date', async () => {
     const t = makeCtx({ settings: { startDate: '2026-10-01' }, answer: emptyCompany() })
     expect((await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' }))?.summary).toBe(
-      'not issued yet'
+      'dated before the start date'
     )
     expect(t.calls).toHaveLength(0)
   })

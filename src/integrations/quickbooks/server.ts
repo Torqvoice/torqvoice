@@ -358,12 +358,20 @@ async function currencyFor(ctx: ConnectorContext): Promise<string | null> {
   return null
 }
 
-function eligible(inv: AccountingInvoice, s: ReturnType<typeof settingsOf>, tz: string): boolean {
-  if (!s.pushInvoices || !inv.invoiceNumber) return false
+/** Why the invoice stays out of the ledger, or null when it goes. */
+function whyNotEligible(
+  inv: AccountingInvoice,
+  s: ReturnType<typeof settingsOf>,
+  tz: string
+): string | null {
+  if (!s.pushInvoices) return 'invoice push switched off'
+  if (!inv.invoiceNumber) return 'no invoice number'
   const issued = Boolean(inv.issuedAt) || (s.pushOnComplete && inv.status === 'completed')
-  if (!issued) return false
-  if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) return false
-  return true
+  if (!issued) return 'not issued yet'
+  if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) {
+    return 'dated before the start date'
+  }
+  return null
 }
 
 /** The record is gone: void the ledger's copy unless money was taken against it. */
@@ -399,9 +407,8 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   const state = stateOf(ctx)
   const inv = await loadInvoiceForAccounting(ctx.connection.organizationId, serviceRecordId)
   if (!inv) return retireInvoice(ctx, serviceRecordId)
-  if (!eligible(inv, settings, ctx.timezone)) {
-    return { summary: inv.invoiceNumber ? 'not issued yet' : 'no invoice number' }
-  }
+  const skip = whyNotEligible(inv, settings, ctx.timezone)
+  if (skip) return { summary: skip }
 
   const customer = await ensureCustomer(ctx, inv.customer)
   const hasLabor = inv.lines.some((l) => l.kind === 'labor')

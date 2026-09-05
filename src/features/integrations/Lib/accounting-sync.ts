@@ -9,6 +9,7 @@
  */
 
 import { db } from '@/lib/db'
+import type { Prisma } from '@/generated/prisma/client'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { serviceUrl } from './calendar-sync'
@@ -115,6 +116,7 @@ export async function loadInvoiceForAccounting(
       invoiceNumber: true,
       status: true,
       issuedAt: true,
+      sentAt: true,
       invoiceDate: true,
       startDateTime: true,
       serviceDate: true,
@@ -195,7 +197,7 @@ export async function loadInvoiceForAccounting(
     vehicleId: r.vehicleId,
     invoiceNumber: r.invoiceNumber,
     status: r.status,
-    issuedAt: r.issuedAt,
+    issuedAt: issuedAtOf(r),
     invoiceDate: effectiveInvoiceDate(r),
     serviceDate: r.serviceDate,
     dueDate: r.invoiceDueDate,
@@ -323,20 +325,69 @@ export async function removePulledPayment(
   return r.count > 0
 }
 
-/** Issued invoices from the last months, oldest first, for a fresh connection to push. */
+/**
+ * When the invoice reached the customer, which is when the ledger should have
+ * it. Invoices issued since locking exists carry the stamp. Older ones were
+ * sent, marked paid or paid before the stamp existed and never got one unless
+ * the workshop locked them from invoice settings; for the ledger they count
+ * as issued all the same, dated by the send or the first payment.
+ */
+export function issuedAtOf(r: {
+  issuedAt: Date | null
+  sentAt: Date | null
+  manuallyPaid: boolean
+  payments: { date: Date }[]
+  invoiceDate: Date | null
+  serviceDate: Date
+}): Date | null {
+  if (r.issuedAt) return r.issuedAt
+  if (r.sentAt) return r.sentAt
+  if (r.payments.length > 0) return r.payments[0].date
+  if (r.manuallyPaid) return r.invoiceDate ?? r.serviceDate
+  return null
+}
+
+/** Rows that count as issued for the ledger, mirroring issuedAtOf. */
+const ISSUED_WHERE: Prisma.ServiceRecordWhereInput = {
+  OR: [
+    { issuedAt: { not: null } },
+    { sentAt: { not: null } },
+    { manuallyPaid: true },
+    { payments: { some: {} } },
+  ],
+}
+
+/**
+ * Every issued invoice, oldest first, for a fresh connection to push. The
+ * date filter is coarse (the sheet's own date, or the service date without
+ * one); the connector applies the workshop's start date exactly, in its
+ * timezone, when each job runs.
+ */
 export async function invoicesForBackfill(
   organizationId: string,
-  since: Date,
-  limit = 500
+  since: Date | null,
+  limit = 5000
 ): Promise<string[]> {
   const rows = await db.serviceRecord.findMany({
     where: {
       organizationId,
       invoiceNumber: { not: null },
-      issuedAt: { not: null, gte: since },
+      AND: [
+        ISSUED_WHERE,
+        ...(since
+          ? [
+              {
+                OR: [
+                  { invoiceDate: { gte: since } },
+                  { invoiceDate: null, serviceDate: { gte: since } },
+                ],
+              },
+            ]
+          : []),
+      ],
     },
     select: { id: true },
-    orderBy: { issuedAt: 'asc' },
+    orderBy: { createdAt: 'asc' },
     take: limit,
   })
   return rows.map((r) => r.id)

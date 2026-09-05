@@ -811,6 +811,7 @@ function SettingFieldList({
               <DateInput
                 value={String(values[f.key] ?? '')}
                 onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
+                placeholder={t('connection.noLimit')}
               />
             )}
             {(f.type === 'select' || f.type === 'remote-select') && (
