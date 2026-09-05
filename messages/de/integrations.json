@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Kennzeichen- und FIN-Abfrage",
-      "inspection": "HU-Fälligkeitsdaten"
+      "inspection": "HU-Fälligkeitsdaten",
+      "safety": "Rückrufe und Beschwerden von Haltern"
     },
     "ai": {
       "chat": "Texte und Zusammenfassungen"
@@ -514,6 +515,14 @@
         "pullPayments": "In QuickBooks erfasste Zahlungen zurückholen",
         "pullPaymentsHelp": "Alle 30 Minuten. Eine in QuickBooks gegen eine Rechnung aus Torqvoice erhaltene Zahlung wird hier auf der Rechnung erfasst."
       }
+    },
+    "nhtsa": {
+      "description": "Fülle ein Fahrzeug aus seiner FIN aus und sieh Rückrufe, Halterbeschwerden und Crashtest-Bewertungen für jedes Modelljahr, von der US-Sicherheitsbehörde. Kostenlos, ohne Schlüssel.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Rückruf- und Beschwerdedaten für jedes Fahrzeug dieser Werkstatt aktuell halten",
+        "refreshFleetHelp": "Einmal täglich werden Modelle, die in der letzten Woche nicht aktualisiert wurden, erneut abgerufen, damit die Fahrzeugseite nie wartet und ein neuer Rückruf innerhalb einer Woche nach Einreichung erscheint. Nur Marke, Modell und Jahr werden gesendet."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,10 @@
       "payment": "Zahlung an die Buchhaltung",
       "customer": "Kunde an die Buchhaltung",
       "pull": "Zahlungen aus der Buchhaltung"
+    },
+    "safety": {
+      "refresh": "Aktualisierung der Rückrufdaten",
+      "vehicle": "Rückrufprüfung für ein neues Fahrzeug"
     }
   }
 }

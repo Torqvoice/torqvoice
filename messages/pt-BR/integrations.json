@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Consulta por placa e VIN",
-      "inspection": "Datas de inspeção"
+      "inspection": "Datas de inspeção",
+      "safety": "Recalls e reclamações de proprietários"
     },
     "ai": {
       "chat": "Textos e resumos"
@@ -514,6 +515,14 @@
         "pullPayments": "Trazer de volta pagamentos registrados no QuickBooks",
         "pullPaymentsHelp": "A cada 30 minutos. Um pagamento recebido no QuickBooks para uma fatura do Torqvoice é registrado aqui na fatura."
       }
+    },
+    "nhtsa": {
+      "description": "Preencha um veículo a partir do VIN e veja recalls, reclamações de proprietários e notas de testes de colisão de cada ano-modelo, da autoridade de segurança dos EUA. Grátis, sem chave.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Manter os dados de recalls e reclamações atualizados para todos os veículos desta oficina",
+        "refreshFleetHelp": "Uma vez por dia, os modelos não atualizados na última semana são buscados de novo, para que a página do veículo nunca espere e um novo recall apareça em até uma semana. Só marca, modelo e ano são enviados."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,10 @@
       "payment": "Pagamento para a contabilidade",
       "customer": "Cliente para a contabilidade",
       "pull": "Pagamentos da contabilidade"
+    },
+    "safety": {
+      "refresh": "Atualização dos dados de recall",
+      "vehicle": "Verificação de recall para um veículo novo"
     }
   }
 }

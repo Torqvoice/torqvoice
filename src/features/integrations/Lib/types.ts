@@ -239,6 +239,85 @@ export interface VehicleLookupResult {
   registered?: boolean
 }
 
+/** What a safety data source is asked about: the model, and the VIN when the vehicle has one. */
+export interface VehicleSafetyQuery {
+  make: string
+  model: string
+  year: number
+  vin?: string
+}
+
+export interface SafetyRecall {
+  /** The authority's campaign number, such as 19V182000. */
+  campaign: string
+  /** Component path as the authority files it, such as "AIR BAGS:FRONTAL:DRIVER SIDE". */
+  component: string
+  summary: string
+  consequence: string
+  remedy: string
+  /** ISO date the recall was reported. */
+  reported: string | null
+  /** The authority says not to drive the vehicle until it is fixed. */
+  parkIt: boolean
+  /** The authority says to park it outdoors, away from buildings: a fire risk. */
+  parkOutside: boolean
+  manufacturer: string
+}
+
+export interface SafetyComplaintExample {
+  date: string | null
+  summary: string
+  crash: boolean
+  fire: boolean
+}
+
+export interface SafetyComplaintGroup {
+  component: string
+  count: number
+  /** Share of all complaints, 0 to 1. */
+  share: number
+  /** The most recent few complaints naming this component, newest first, for reading on the spot. */
+  examples?: SafetyComplaintExample[]
+}
+
+export interface SafetyRating {
+  /** Stars 1 to 5, null when not rated. */
+  overall: number | null
+  frontal: number | null
+  side: number | null
+  rollover: number | null
+  /** The variant the rating is for, such as "2003 Honda Accord 4-DR. w/SAB". */
+  description: string
+}
+
+/**
+ * What an authority knows about one model year: open recall campaigns, what
+ * owners have complained about, and crash-test ratings. Public data, so the
+ * same report serves every vehicle of that model in every workshop.
+ */
+export interface VehicleSafetyReport {
+  /** Connector id. */
+  source: string
+  /** SAFETY_REPORT_VERSION at the time the connector built it. */
+  version?: number
+  /** The model as the authority names it, or null when it has no record of it. */
+  matched: { make: string; model: string; year: number } | null
+  recalls: SafetyRecall[]
+  complaints: {
+    total: number
+    crashes: number
+    fires: number
+    injuries: number
+    deaths: number
+    byComponent: SafetyComplaintGroup[]
+    /** The most recent few, newest first. */
+    latest: { date: string | null; component: string; summary: string }[]
+  }
+  rating: SafetyRating | null
+  /** Where a person can read the same on the authority's site. */
+  url: string
+}
+
 export interface ConnectorServer {
   manifest: ConnectorManifest
   /** After connecting: who the account is, shown on the connection page. */
@@ -262,6 +341,12 @@ export interface ConnectorServer {
     ctx: ConnectorContext,
     query: VehicleLookupQuery
   ): Promise<VehicleLookupResult | null>
+  /**
+   * Recalls, complaints and ratings for one model year, for connectors with
+   * the 'vehicle.safety' capability. Returns a report with matched null when
+   * the authority has no record of the model.
+   */
+  vehicleSafety?(ctx: ConnectorContext, query: VehicleSafetyQuery): Promise<VehicleSafetyReport>
   jobs: Record<string, JobHandler>
   /** Inbound webhook handling, where the vendor pushes. */
   webhook?: {

@@ -919,6 +919,9 @@ function ActivityCard({
   busy: string | null
 }) {
   const t = useTranslations('integrations.activity')
+  // Job kinds are shared by every connector, so their labels live at the
+  // namespace root rather than under the activity card.
+  const tk = useTranslations('integrations')
   const format = useFormatter()
   const when = (iso: string) =>
     format.dateTime(new Date(iso), { dateStyle: 'short', timeStyle: 'short' })
@@ -933,7 +936,7 @@ function ActivityCard({
             >
               <div className="min-w-0">
                 <span className="font-medium">
-                  {t.has(`jobKinds.${j.kind}`) ? t(`jobKinds.${j.kind}`) : j.kind}
+                  {tk.has(`jobKinds.${j.kind}`) ? tk(`jobKinds.${j.kind}`) : j.kind}
                 </span>
                 <span className="ml-2 text-xs text-muted-foreground">{when(j.createdAt)}</span>
                 {j.error && <p className="truncate text-xs text-destructive">{j.error}</p>}

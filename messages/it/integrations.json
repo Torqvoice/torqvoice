@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Ricerca per targa e VIN",
-      "inspection": "Scadenze revisione"
+      "inspection": "Scadenze revisione",
+      "safety": "Richiami e reclami dei proprietari"
     },
     "ai": {
       "chat": "Testi e riepiloghi"
@@ -514,6 +515,14 @@
         "pullPayments": "Riporta i pagamenti registrati in QuickBooks",
         "pullPaymentsHelp": "Ogni 30 minuti. Un pagamento ricevuto in QuickBooks su una fattura di Torqvoice viene registrato qui sulla fattura."
       }
+    },
+    "nhtsa": {
+      "description": "Compila un veicolo dal suo VIN e consulta richiami, reclami dei proprietari e valutazioni dei crash test per ogni anno modello, dall'autorità per la sicurezza statunitense. Gratuito, senza chiave.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Tieni aggiornati i dati su richiami e reclami per ogni veicolo di questa officina",
+        "refreshFleetHelp": "Una volta al giorno i modelli non aggiornati nell'ultima settimana vengono richiesti di nuovo, così la pagina del veicolo non attende mai e un nuovo richiamo compare entro una settimana. Vengono inviati solo marca, modello e anno."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,10 @@
       "payment": "Pagamento in contabilità",
       "customer": "Cliente in contabilità",
       "pull": "Pagamenti dalla contabilità"
+    },
+    "safety": {
+      "refresh": "Aggiornamento dei dati sui richiami",
+      "vehicle": "Controllo richiami per un nuovo veicolo"
     }
   }
 }

@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Paieška pagal numerį ir VIN",
-      "inspection": "Apžiūros terminai"
+      "inspection": "Apžiūros terminai",
+      "safety": "Atšaukimai ir savininkų skundai"
     },
     "ai": {
       "chat": "Tekstai ir santraukos"
@@ -514,6 +515,14 @@
         "pullPayments": "Parsisiųsti QuickBooks užregistruotus mokėjimus",
         "pullPaymentsHelp": "Kas 30 minučių. QuickBooks gautas mokėjimas už Torqvoice sąskaitą užregistruojamas čia prie sąskaitos."
       }
+    },
+    "nhtsa": {
+      "description": "Užpildykite transporto priemonę pagal VIN ir matykite kiekvienų modelio metų atšaukimus, savininkų skundus ir smūgio bandymų įvertinimus iš JAV saugos institucijos. Nemokamai, be rakto.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Nuolat atnaujinti atšaukimų ir skundų duomenis visoms šių dirbtuvių transporto priemonėms",
+        "refreshFleetHelp": "Kartą per dieną modeliai, neatnaujinti per pastarąją savaitę, užklausiami iš naujo, kad transporto priemonės puslapiui niekada nereikėtų laukti, o naujas atšaukimas pasirodytų per savaitę. Siunčiami tik markė, modelis ir metai."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,10 @@
       "payment": "Mokėjimas į apskaitą",
       "customer": "Klientas į apskaitą",
       "pull": "Mokėjimai iš apskaitos"
+    },
+    "safety": {
+      "refresh": "Atšaukimų duomenų atnaujinimas",
+      "vehicle": "Naujos transporto priemonės atšaukimų patikra"
     }
   }
 }

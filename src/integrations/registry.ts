@@ -13,6 +13,7 @@ import { manifest as anthropic } from './anthropic/manifest'
 import { manifest as googleCalendar } from './google-calendar/manifest'
 import { manifest as mailgun } from './mailgun/manifest'
 import { manifest as microsoft365 } from './microsoft-365/manifest'
+import { manifest as nhtsa } from './nhtsa/manifest'
 import { manifest as openai } from './openai/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as paypal } from './paypal/manifest'
@@ -49,6 +50,7 @@ const ENTRIES: readonly RegistryEntry[] = [
   { manifest: openapiAutomotive, load: () => import('./openapi-automotive/server') },
   { manifest: rdw, load: () => import('./rdw/server') },
   { manifest: regcheck, load: () => import('./regcheck/server') },
+  { manifest: nhtsa, load: () => import('./nhtsa/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },

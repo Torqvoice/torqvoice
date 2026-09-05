@@ -51,7 +51,8 @@
     },
     "vehicle": {
       "lookup": "Plaka ve VIN sorgulama",
-      "inspection": "Muayene tarihleri"
+      "inspection": "Muayene tarihleri",
+      "safety": "Geri çağırmalar ve sahip şikâyetleri"
     },
     "ai": {
       "chat": "Metinler ve özetler"
@@ -514,6 +515,14 @@
         "pullPayments": "QuickBooks'ta kaydedilen ödemeleri geri al",
         "pullPaymentsHelp": "Her 30 dakikada bir. QuickBooks'ta bir Torqvoice faturası için alınan ödeme burada faturaya kaydedilir."
       }
+    },
+    "nhtsa": {
+      "description": "Bir aracı VIN'inden doldurun ve her model yılı için geri çağırmaları, sahip şikâyetlerini ve çarpışma testi puanlarını ABD güvenlik kurumundan görün. Ücretsiz, anahtarsız.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Bu atölyedeki her araç için geri çağırma ve şikâyet verilerini güncel tut",
+        "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
+      }
     }
   },
   "jobKinds": {
@@ -532,6 +541,10 @@
       "payment": "Ödeme muhasebeye",
       "customer": "Müşteri muhasebeye",
       "pull": "Ödemeler muhasebeden"
+    },
+    "safety": {
+      "refresh": "Geri çağırma verisi yenileme",
+      "vehicle": "Yeni araç için geri çağırma kontrolü"
     }
   }
 }

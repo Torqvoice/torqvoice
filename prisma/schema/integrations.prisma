@@ -128,3 +128,29 @@ model ExternalCalendarEvent {
   @@index([organizationId, startAt])
   @@map("external_calendar_events")
 }
+
+/// What a safety authority knows about one model year: recalls, owner
+/// complaints and crash ratings, as the connector shaped them. Public data,
+/// keyed by model rather than by workshop or vehicle, so a 2003 Accord is
+/// fetched once for everyone. A cache: rebuilt by the connector, never edited.
+model VehicleSafetyReport {
+  id     String @id @default(cuid())
+  /// Connector id, such as "nhtsa".
+  source String
+  /// Make, model and year as the workshop wrote them, upper-cased and trimmed.
+  make   String
+  model  String
+  year   Int
+  /// False when the authority answered but had no such model.
+  found  Boolean @default(true)
+  data   Json
+  /// Counts lifted out of data so a list can show a badge without parsing it.
+  recallCount    Int      @default(0)
+  complaintCount Int      @default(0)
+  fetchedAt      DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@unique([source, make, model, year])
+  @@index([fetchedAt])
+  @@map("vehicle_safety_reports")
+}
