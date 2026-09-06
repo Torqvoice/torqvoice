@@ -185,7 +185,7 @@ export async function processDueReminders(now = new Date()) {
 
 /** Hourly scan for reminders that have come due. */
 export function checkDueReminders() {
-  const job = new CronJob('25 * * * *', async () => {
+  const job = new CronJob('*/10 * * * *', async () => {
     try {
       const notified = await processDueReminders()
       if (notified > 0) {

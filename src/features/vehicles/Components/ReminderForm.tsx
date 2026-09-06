@@ -21,6 +21,7 @@ interface ReminderData {
   title: string
   description: string | null
   dueDate: Date | null
+  hasDueTime?: boolean
   dueMileage: number | null
   notifyInApp?: boolean
   notifyEmail?: boolean
@@ -33,6 +34,17 @@ interface ReminderFormProps {
   reminder?: ReminderData
 }
 
+function toLocalDateStr(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+function toLocalTimeStr(d: Date): string {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
 export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: ReminderFormProps) {
   const router = useRouter()
   const modal = useGlassModal()
@@ -42,6 +54,8 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [dueDate, setDueDate] = useState('')
+  // '' means a day-only reminder
+  const [dueTime, setDueTime] = useState('')
   const [dueMileage, setDueMileage] = useState('')
   const [notifyInApp, setNotifyInApp] = useState(true)
   const [notifyEmail, setNotifyEmail] = useState(false)
@@ -52,7 +66,11 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
     if (open && reminder) {
       setTitle(reminder.title)
       setDescription(reminder.description || '')
-      setDueDate(reminder.dueDate ? new Date(reminder.dueDate).toISOString().split('T')[0] : '')
+      const due = reminder.dueDate ? new Date(reminder.dueDate) : null
+      // Local calendar day, not the UTC one: a reminder at 00:30 must not
+      // open on the day before.
+      setDueDate(due ? toLocalDateStr(due) : '')
+      setDueTime(due && reminder.hasDueTime ? toLocalTimeStr(due) : '')
       setDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : '')
       setNotifyInApp(reminder.notifyInApp ?? true)
       setNotifyEmail(reminder.notifyEmail ?? false)
@@ -60,6 +78,7 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       setTitle('')
       setDescription('')
       setDueDate('')
+      setDueTime('')
       setDueMileage('')
       setNotifyInApp(true)
       setNotifyEmail(false)
@@ -76,7 +95,13 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
       // When editing, emptied fields are sent as cleared ('' or null) so the
       // update action drops the old value.
       description: clearableInput(description, Boolean(reminder)),
-      dueDate: clearableInput(dueDate, Boolean(reminder)),
+      // The workshop's wall clock, read in its zone on the server; a
+      // day-only reminder sits at midday so it stays on its day everywhere.
+      dueDate: clearableInput(
+        dueDate ? `${dueDate}T${dueTime || '12:00'}:00` : '',
+        Boolean(reminder)
+      ),
+      hasDueTime: Boolean(dueDate && dueTime),
       dueMileage: dueMileage ? Number(dueMileage) : reminder ? null : undefined,
       notifyInApp,
       notifyEmail,
@@ -131,6 +156,16 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
             <div className="space-y-2">
               <Label htmlFor="reminder-dueDate">{t('dueDateLabel')}</Label>
               <DateInput id="reminder-dueDate" value={dueDate} onChange={setDueDate} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reminder-dueTime">{t('dueTimeLabel')}</Label>
+              <Input
+                id="reminder-dueTime"
+                type="time"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+                disabled={!dueDate}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="reminder-dueMileage">{t('dueMileageLabel')}</Label>

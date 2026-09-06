@@ -30,8 +30,49 @@
   },
   "today": "Vandaag",
   "workOrder": "Werkorder",
+  "allDay": "Hele dag",
+  "openDay": "{date} openen",
+  "dayTotal": "{count, plural, =1 {1 gebeurtenis} other {# gebeurtenissen}}",
+  "views": {
+    "day": "Dag",
+    "week": "Week",
+    "month": "Maand",
+    "year": "Jaar",
+    "schedule": "Planning",
+    "fourDays": "4 dagen"
+  },
+  "options": {
+    "showWeekends": "Weekenden tonen",
+    "showCompleted": "Afgeronde tonen",
+    "showWeekNumbers": "Weeknummers tonen"
+  },
+  "toolbar": {
+    "previous": "Vorige",
+    "next": "Volgende",
+    "create": "Aanmaken",
+    "showSidebar": "Zijpaneel tonen",
+    "hideSidebar": "Zijpaneel verbergen"
+  },
+  "sidebar": {
+    "calendars": "Agenda's",
+    "legend": "Statuskleuren"
+  },
+  "schedule": {
+    "empty": "Niets gepland",
+    "emptyHint": "Geen werkorders, herinneringen, offertes of berichten in deze periode."
+  },
+  "peek": {
+    "close": "Sluiten",
+    "open": {
+      "service": "Werkorder openen",
+      "reminder": "Herinnering openen",
+      "quote": "Offerte openen",
+      "message": "Berichten openen",
+      "external": "Openen"
+    }
+  },
   "filters": {
-    "services": "Diensten",
+    "services": "Werkorders",
     "reminders": "Herinneringen",
     "quotes": "Offertes",
     "messages": "Berichten",
@@ -45,14 +86,27 @@
     "useToday": "Use today"
   },
   "more": "+ {count} meer",
-  "monthTotal": "{count} items deze maand",
+  "monthTotal": "{count} gebeurtenissen",
   "contextMenu": {
     "newWorkOrder": "Nieuwe werkorder",
+    "newWorkOrderAt": "Nieuwe werkorder om {time}",
     "newReminder": "Nieuwe herinnering",
     "newQuote": "Nieuwe offerte",
     "openEvent": "Openen ({count})",
     "hint": "Tip: klik met de rechtermuisknop op een dag voor acties",
     "scheduleMessage": "Bericht plannen"
+  },
+  "eventMenu": {
+    "open": "Openen",
+    "markDone": "Markeren als afgerond",
+    "markNotDone": "Markeren als niet afgerond",
+    "deleteReminder": "Herinnering verwijderen",
+    "deleteReminderConfirm": "Herinnering \"{title}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "deleteMessage": "Gepland bericht verwijderen",
+    "deleteMessageConfirm": "Gepland bericht \"{title}\" verwijderen? Het wordt niet verzonden.",
+    "deleted": "Verwijderd",
+    "updated": "Bijgewerkt",
+    "failed": "Dat is niet gelukt. Probeer het opnieuw."
   },
   "events": {
     "status": {
@@ -60,6 +114,7 @@
       "inProgress": "In uitvoering",
       "waitingParts": "Wacht op onderdelen",
       "pending": "In afwachting",
+      "scheduled": "Ingepland",
       "sent": "Verzonden",
       "approved": "Goedgekeurd",
       "draft": "Concept",
@@ -71,10 +126,11 @@
       "busy": "Bezet"
     },
     "type": {
-      "service": "Dienst",
+      "service": "Werkorder",
       "reminder": "Herinnering",
       "quote": "Offerte",
-      "message": "Bericht"
+      "message": "Bericht",
+      "external": "Gekoppelde agenda"
     },
     "noEvents": "Geen evenementen",
     "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan.",

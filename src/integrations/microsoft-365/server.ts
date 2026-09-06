@@ -12,6 +12,8 @@ import {
   type ConnectorServer,
 } from '@/features/integrations/Lib/types'
 import { manifest } from './manifest'
+import { zonedDate } from '@/lib/timezone'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 const GRAPH = 'https://graph.microsoft.com/v1.0'
 
@@ -41,6 +43,16 @@ function settingsOf(ctx: ConnectorContext) {
 /** Graph wants a local-looking timestamp plus a zone; UTC keeps it unambiguous. */
 function graphTime(d: Date): { dateTime: string; timeZone: string } {
   return { dateTime: d.toISOString().replace('Z', ''), timeZone: 'UTC' }
+}
+
+/**
+ * An all-day event comes back as midnight of its day in the requested zone,
+ * which is UTC here; the day is the workshop's, so it is anchored there or
+ * a workshop west of UTC sees it on the evening before.
+ */
+function allDayBound(t: { dateTime: string } | undefined, timeZone: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(t?.dateTime ?? '')
+  return m ? zonedDate(Number(m[1]), Number(m[2]), Number(m[3]), 0, 0, timeZone) : null
 }
 
 /** Graph returns times in the requested zone (UTC here) without a Z. */
@@ -165,17 +177,18 @@ async function pushService(
   return { summary: link ? 'event updated' : 'event created' }
 }
 
-function toPulled(e: GraphEvent): PulledEvent | null {
+function toPulled(e: GraphEvent, timeZone: string): PulledEvent | null {
   if (e.isCancelled) return null
-  const start = fromGraphTime(e.start)
-  const end = fromGraphTime(e.end)
+  const allDay = Boolean(e.isAllDay)
+  const start = allDay ? allDayBound(e.start, timeZone) : fromGraphTime(e.start)
+  const end = allDay ? allDayBound(e.end, timeZone) : fromGraphTime(e.end)
   if (!start || !end) return null
   return {
     remoteId: e.id,
     title: e.subject ?? '',
     start,
     end,
-    allDay: Boolean(e.isAllDay),
+    allDay,
     updatedAt: e.lastModifiedDateTime ? new Date(e.lastModifiedDateTime) : null,
     url: e.webLink ?? null,
   }
@@ -186,6 +199,7 @@ async function pullBusy(ctx: ConnectorContext) {
   if (!settings.pullEnabled) return { summary: 'pull switched off' }
   if (!settings.calendarId) return { summary: 'no calendar chosen' }
   const window = pullWindow()
+  const timeZone = await workshopTimeZone(ctx.connection.organizationId)
   const events: PulledEvent[] = []
   let next: string | undefined = (() => {
     const url = new URL(
@@ -205,7 +219,7 @@ async function pullBusy(ctx: ConnectorContext) {
       headers: { Prefer: 'outlook.timezone="UTC"' },
     })
     for (const item of page.value ?? []) {
-      const pulled = toPulled(item)
+      const pulled = toPulled(item, timeZone)
       if (pulled) events.push(pulled)
     }
     next = page['@odata.nextLink']

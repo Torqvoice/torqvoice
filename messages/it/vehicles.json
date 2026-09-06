@@ -140,6 +140,7 @@
     "descriptionLabel": "Descrizione",
     "descriptionPlaceholder": "Dettagli facoltativi...",
     "dueDateLabel": "Data di Scadenza",
+    "dueTimeLabel": "Ora (facoltativa)",
     "dueMileageLabel": "Chilometraggio di Scadenza",
     "dueMileagePlaceholder": "es. 50000",
     "reminderUpdated": "Promemoria aggiornato",

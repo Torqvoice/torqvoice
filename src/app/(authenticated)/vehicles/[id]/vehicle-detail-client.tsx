@@ -211,6 +211,7 @@ interface VehicleDetail {
     title: string
     description: string | null
     dueDate: Date | null
+    hasDueTime?: boolean
     dueMileage: number | null
     isCompleted: boolean
     createdAt: Date
@@ -336,7 +337,7 @@ export function VehicleDetailClient({
   const distUnit = isMarine ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { formatDate } = useFormatDate()
+  const { formatDate, formatDateTime } = useFormatDate()
   const t = useTranslations('vehicles.detail')
   const ti = useTranslations('vehicles.inspections')
   const tr = useTranslations('vehicles.reminders')
@@ -1675,7 +1676,12 @@ export function VehicleDetailClient({
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            {r.dueDate && tr('due', { date: formatDate(new Date(r.dueDate)) })}
+                            {r.dueDate &&
+                              tr('due', {
+                                date: r.hasDueTime
+                                  ? formatDateTime(new Date(r.dueDate))
+                                  : formatDate(new Date(r.dueDate)),
+                              })}
                             {r.dueMileage &&
                               `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
                           </p>

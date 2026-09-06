@@ -1,268 +1,173 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useLayoutEffect, useRef, useState, type MouseEvent } from 'react'
 import { useTranslations } from 'next-intl'
-import { Bell, ExternalLink, FileText, Send, Wrench } from 'lucide-react'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
-import { useFormatDate } from '@/lib/use-format-date'
-import { getEventLink, toLocalDateStr } from './calendar-utils'
+import { useDayFormatter } from './useDayFormatter'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
+import { DayContextMenu, type DayActions } from './DayContextMenu'
+import { EventChip } from './EventChip'
+import { eventKey } from './calendar-utils'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
-function getEventDotColor(event: CalendarEvent) {
-  if (event.type === 'external') return 'bg-slate-400'
-  if (event.type === 'service') {
-    switch (event.status) {
-      case 'completed':
-        return 'bg-emerald-500'
-      case 'in_progress':
-      case 'in-progress':
-        return 'bg-blue-500'
-      case 'waiting-parts':
-        return 'bg-orange-500'
-      default:
-        return 'bg-amber-500'
-    }
-  }
-  if (event.type === 'quote') {
-    return event.status === 'sent' ? 'bg-violet-500' : 'bg-violet-300'
-  }
-  if (event.type === 'message') {
-    switch (event.status) {
-      case 'sent':
-        return 'bg-teal-500'
-      case 'failed':
-        return 'bg-red-500'
-      default:
-        return 'bg-sky-500'
-    }
-  }
-  // reminder
-  switch (event.status) {
-    case 'completed':
-      return 'bg-emerald-500'
-    case 'overdue':
-      return 'bg-red-500'
-    default:
-      return 'bg-slate-400'
-  }
-}
-
-/** How many of the day's events the right-click menu lists before it stops */
-const MAX_MENU_EVENTS = 8
+/** Height of one chip row plus its gap, in pixels; the overflow maths depends on it. */
+const ROW_PX = 24
+/** Room the "+N more" line takes when it is shown. */
+const MORE_PX = 20
 
 interface CalendarDayCellProps {
   date: Date
+  dateStr: string
+  /** Already filtered and sorted for this day. */
   events: CalendarEvent[]
   isCurrentMonth: boolean
   isToday: boolean
   isSelected: boolean
-  onClick: () => void
-  onNewWorkOrder: () => void
-  onNewReminder: () => void
-  onNewQuote: () => void
-  onScheduleMessage: () => void
+  isWeekend: boolean
+  actions: DayActions
+  onSelect: () => void
+  /** Day number clicked: jump into that day. */
+  onOpenDay: () => void
 }
 
+/**
+ * One day of the month grid. Chips fill whatever height the row was given
+ * and the rest fold into a "+N more" line that opens the whole day in a
+ * popover, so a day with forty jobs stays the same height as an empty one.
+ */
 export function CalendarDayCell({
   date,
+  dateStr,
   events,
   isCurrentMonth,
   isToday,
   isSelected,
-  onClick,
-  onNewWorkOrder,
-  onNewReminder,
-  onNewQuote,
-  onScheduleMessage,
+  isWeekend,
+  actions,
+  onSelect,
+  onOpenDay,
 }: CalendarDayCellProps) {
   const t = useTranslations('calendar')
-  const router = useRouter()
-  const { formatDate } = useFormatDate()
-  const dateStr = toLocalDateStr(date)
-  const dayEvents = events.filter((e) => e.date === dateStr)
-  const serviceCount = dayEvents.filter((e) => e.type === 'service').length
-  const reminderCount = dayEvents.filter((e) => e.type === 'reminder').length
-  const quoteCount = dayEvents.filter((e) => e.type === 'quote').length
+  const format = useDayFormatter()
+  const cellRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  // Measured height of the chip area; null until the browser has laid it out.
+  const [height, setHeight] = useState<number | null>(null)
+
+  useLayoutEffect(() => {
+    const el = listRef.current
+    if (!el) return
+    const measure = () => setHeight(el.clientHeight)
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const fitsAll = height === null ? 3 : Math.floor(height / ROW_PX)
+  // Only give a row up to the "more" line when something has to fold.
+  const withMore = height === null ? 2 : Math.floor((height - MORE_PX) / ROW_PX)
+  const visibleCount = events.length <= fitsAll ? events.length : Math.max(0, withMore)
+  const hidden = events.length - visibleCount
+  const dayNumber = date.getDate()
+  const dayLabel =
+    dayNumber === 1 ? format.dateTime(date, { day: 'numeric', month: 'short' }) : String(dayNumber)
+
+  const openDay = (e: MouseEvent) => {
+    e.stopPropagation()
+    onOpenDay()
+  }
 
   return (
-    <ContextMenu
-      // Right-clicking a day also selects it, so the sidebar and any dialog
-      // the menu opens are talking about the same date.
-      onOpenChange={(open) => {
-        if (open && !isSelected) onClick()
-      }}
+    <DayContextMenu
+      date={date}
+      dateStr={dateStr}
+      events={events}
+      actions={actions}
+      onOpen={() => !isSelected && onSelect()}
+      getAnchor={() => cellRef.current}
     >
-      <ContextMenuTrigger asChild>
-        <button
-          type="button"
-          onClick={onClick}
-          className={`
-            relative flex flex-col items-center justify-start p-1 min-h-[80px] w-full rounded-md text-sm transition-colors
-            ${isCurrentMonth ? '' : 'text-muted-foreground/40'}
-            ${isToday && !isSelected ? 'bg-primary/10' : ''}
-            ${isSelected ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}
-          `}
-        >
-          <span
-            className={`
-              flex h-6 w-6 items-center justify-center rounded-full text-xs
-              ${isToday ? 'bg-primary text-primary-foreground font-bold' : ''}
-            `}
-          >
-            {date.getDate()}
-          </span>
-          {dayEvents.length > 0 && (
-            <div className="flex flex-col gap-0.5 mt-0.5 w-full px-0.5">
-              {/* Show up to 3 mini event labels on larger screens */}
-              {dayEvents.slice(0, 2).map((event) => (
-                <div
-                  key={`${event.type}-${event.id}`}
-                  className={`hidden sm:flex items-center gap-1 rounded px-1 py-0 text-[10px] leading-tight truncate ${getEventBgColor(event)}`}
-                >
-                  <div className={`h-1 w-1 shrink-0 rounded-full ${getEventDotColor(event)}`} />
-                  <span className="truncate">{event.title}</span>
-                </div>
-              ))}
-              {dayEvents.length > 2 && (
-                <span className="hidden sm:block text-[9px] text-muted-foreground px-1">
-                  {t('more', { count: dayEvents.length - 2 })}
-                </span>
-              )}
-              {/* Mobile: show dots */}
-              <div className="flex sm:hidden gap-0.5 justify-center flex-wrap">
-                {serviceCount > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                    {serviceCount > 1 && (
-                      <span className="text-[8px] text-muted-foreground">{serviceCount}</span>
-                    )}
-                  </div>
-                )}
-                {reminderCount > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                    {reminderCount > 1 && (
-                      <span className="text-[8px] text-muted-foreground">{reminderCount}</span>
-                    )}
-                  </div>
-                )}
-                {quoteCount > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-                    {quoteCount > 1 && (
-                      <span className="text-[8px] text-muted-foreground">{quoteCount}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </button>
-      </ContextMenuTrigger>
-
-      <ContextMenuContent className="min-w-56">
-        <ContextMenuLabel className="text-xs font-normal text-muted-foreground">
-          {formatDate(date)}
-        </ContextMenuLabel>
-        <ContextMenuSeparator />
-        <ContextMenuItem onClick={onNewWorkOrder}>
-          <Wrench className="mr-2 h-4 w-4" />
-          {t('contextMenu.newWorkOrder')}
-        </ContextMenuItem>
-        <ContextMenuItem onClick={onNewReminder}>
-          <Bell className="mr-2 h-4 w-4" />
-          {t('contextMenu.newReminder')}
-        </ContextMenuItem>
-        <ContextMenuItem onClick={onNewQuote}>
-          <FileText className="mr-2 h-4 w-4" />
-          {t('contextMenu.newQuote')}
-        </ContextMenuItem>
-        <ContextMenuItem onClick={onScheduleMessage}>
-          <Send className="mr-2 h-4 w-4" />
-          {t('contextMenu.scheduleMessage')}
-        </ContextMenuItem>
-        {dayEvents.length > 0 && (
-          <>
-            <ContextMenuSeparator />
-            <ContextMenuSub>
-              <ContextMenuSubTrigger>
-                <ExternalLink className="mr-2 h-4 w-4" />
-                {t('contextMenu.openEvent', { count: dayEvents.length })}
-              </ContextMenuSubTrigger>
-              <ContextMenuSubContent className="max-w-72">
-                {dayEvents.slice(0, MAX_MENU_EVENTS).map((event) => (
-                  <ContextMenuItem
-                    key={`${event.type}-${event.id}`}
-                    onClick={() => {
-                      // Busy time from another calendar opens there, or
-                      // just selects the day so the list can show it.
-                      if (event.type === 'external') {
-                        if (event.externalUrl) window.open(event.externalUrl, '_blank', 'noopener')
-                        else onClick()
-                        return
-                      }
-                      router.push(getEventLink(event))
-                    }}
-                  >
-                    <div
-                      className={`mr-2 h-1.5 w-1.5 shrink-0 rounded-full ${getEventDotColor(event)}`}
-                    />
-                    <span className="truncate">{event.title}</span>
-                  </ContextMenuItem>
-                ))}
-                {dayEvents.length > MAX_MENU_EVENTS && (
-                  <ContextMenuItem disabled>
-                    {t('more', { count: dayEvents.length - MAX_MENU_EVENTS })}
-                  </ContextMenuItem>
-                )}
-              </ContextMenuSubContent>
-            </ContextMenuSub>
-          </>
+      <div
+        ref={cellRef}
+        role="gridcell"
+        aria-selected={isSelected}
+        aria-label={format.dateTime(date, { dateStyle: 'full' })}
+        onClick={onSelect}
+        onDoubleClick={openDay}
+        className={cn(
+          'group/day relative flex min-h-0 min-w-0 cursor-default flex-col border-b border-r border-border/70 transition-colors',
+          !isCurrentMonth && 'bg-muted/30',
+          isWeekend && isCurrentMonth && 'bg-muted/15',
+          isSelected ? 'bg-primary/5' : 'hover:bg-accent/40'
         )}
-      </ContextMenuContent>
-    </ContextMenu>
+      >
+        {isSelected && (
+          <div className="pointer-events-none absolute inset-0 z-10 ring-2 ring-inset ring-primary/60" />
+        )}
+        <div className="flex h-7 shrink-0 items-center justify-center pt-1">
+          <button
+            type="button"
+            onClick={openDay}
+            className={cn(
+              'flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-xs font-medium tabular-nums transition-colors',
+              isToday
+                ? 'bg-primary font-bold text-primary-foreground'
+                : isCurrentMonth
+                  ? 'text-foreground hover:bg-accent'
+                  : 'text-muted-foreground/60 hover:bg-accent'
+            )}
+            aria-label={t('openDay', { date: format.dateTime(date, { dateStyle: 'long' }) })}
+          >
+            {dayLabel}
+          </button>
+        </div>
+        <div ref={listRef} className="flex min-h-0 flex-1 flex-col gap-0.5 px-1 pb-1">
+          {events.slice(0, visibleCount).map((event) => (
+            <EventChip
+              key={eventKey(event)}
+              event={event}
+              variant={event.time ? 'timed' : 'chip'}
+              compact
+            />
+          ))}
+          {hidden > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="h-5 shrink-0 rounded px-1.5 text-left text-[11px] font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+                >
+                  {t('more', { count: hidden })}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-72 p-2"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <div className="mb-1.5 flex items-baseline justify-between px-1">
+                  <span className="text-sm font-semibold">
+                    {format.dateTime(date, { weekday: 'long', day: 'numeric', month: 'long' })}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {t('dayTotal', { count: events.length })}
+                  </span>
+                </div>
+                <div className="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+                  {events.map((event) => (
+                    <EventChip
+                      key={eventKey(event)}
+                      event={event}
+                      variant={event.time ? 'timed' : 'chip'}
+                    />
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      </div>
+    </DayContextMenu>
   )
-}
-
-function getEventBgColor(event: CalendarEvent) {
-  if (event.type === 'external') {
-    return 'bg-slate-500/10 text-slate-600 dark:text-slate-400 italic'
-  }
-  if (event.type === 'service') {
-    switch (event.status) {
-      case 'completed':
-        return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
-      case 'in_progress':
-      case 'in-progress':
-        return 'bg-blue-500/10 text-blue-700 dark:text-blue-400'
-      case 'waiting-parts':
-        return 'bg-orange-500/10 text-orange-700 dark:text-orange-400'
-      default:
-        return 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
-    }
-  }
-  if (event.type === 'quote') {
-    return 'bg-violet-500/10 text-violet-700 dark:text-violet-400'
-  }
-  if (event.type === 'message') {
-    return event.status === 'failed'
-      ? 'bg-red-500/10 text-red-700 dark:text-red-400'
-      : 'bg-sky-500/10 text-sky-700 dark:text-sky-400'
-  }
-  switch (event.status) {
-    case 'overdue':
-      return 'bg-red-500/10 text-red-700 dark:text-red-400'
-    default:
-      return 'bg-slate-500/10 text-slate-600 dark:text-slate-400'
-  }
 }

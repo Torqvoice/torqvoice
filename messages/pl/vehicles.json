@@ -140,6 +140,7 @@
     "descriptionLabel": "Opis",
     "descriptionPlaceholder": "Opcjonalne szczegóły...",
     "dueDateLabel": "Termin",
+    "dueTimeLabel": "Godzina (opcjonalnie)",
     "dueMileageLabel": "Przebieg terminu",
     "dueMileagePlaceholder": "np. 50000",
     "reminderUpdated": "Przypomnienie zaktualizowane",

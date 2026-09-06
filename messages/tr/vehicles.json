@@ -140,6 +140,7 @@
     "descriptionLabel": "Açıklama",
     "descriptionPlaceholder": "İsteğe bağlı detaylar...",
     "dueDateLabel": "Son Tarih",
+    "dueTimeLabel": "Saat (isteğe bağlı)",
     "dueMileageLabel": "Kilometre Sınırı",
     "dueMileagePlaceholder": "örn. 50000",
     "reminderUpdated": "Hatırlatıcı güncellendi",

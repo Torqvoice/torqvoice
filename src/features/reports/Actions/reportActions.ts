@@ -4,20 +4,38 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { netLineTotal } from '@/lib/tax'
+import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
+import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+
+/**
+ * The report window on the workshop's calendar. The picker sends bare
+ * YYYY-MM-DD keys, so "to 31 Dec" must cover the whole of that day in the
+ * workshop, and the default start is 1 January of the workshop's current
+ * year, not the server's. `end` is exclusive: query with `lt`.
+ */
+async function reportWindow(
+  organizationId: string,
+  params: { startDate?: string; endDate?: string }
+) {
+  const tz = await workshopTimeZone(organizationId)
+  const now = new Date()
+  const { gte, lt } = workshopDayRange(params.startDate, params.endDate, tz, {
+    start: zonedDate(zonedParts(now, tz).year, 1, 1, 0, 0, tz),
+    end: now,
+  })
+  return { tz, start: gte, end: lt }
+}
 
 export async function getRevenueReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { tz, start, end } = await reportWindow(organizationId, params)
 
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lte: end },
+          startDateTime: { gte: start, lt: end },
         },
         select: {
           serviceDate: true,
@@ -73,7 +91,7 @@ export async function getRevenueReport(params: { startDate?: string; endDate?: s
           0
         )
         const _date = r.startDateTime ?? r.serviceDate
-        const month = `${_date.getFullYear()}-${String(_date.getMonth() + 1).padStart(2, '0')}`
+        const month = workshopMonthKey(_date, tz)
 
         if (!monthly[month])
           monthly[month] = {
@@ -131,16 +149,12 @@ export async function getRevenueReport(params: { startDate?: string; endDate?: s
 export async function getServiceReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { start, end } = await reportWindow(organizationId, params)
 
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lte: end },
+          startDateTime: { gte: start, lt: end },
         },
         select: {
           type: true,
@@ -171,11 +185,7 @@ export async function getServiceReport(params: { startDate?: string; endDate?: s
 export async function getCustomerReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { start, end } = await reportWindow(organizationId, params)
 
       const customers = await db.customer.findMany({
         where: { organizationId },
@@ -186,7 +196,7 @@ export async function getCustomerReport(params: { startDate?: string; endDate?: 
           vehicles: {
             select: {
               serviceRecords: {
-                where: { startDateTime: { gte: start, lte: end } },
+                where: { startDateTime: { gte: start, lt: end } },
                 select: { totalAmount: true, cost: true },
               },
             },
@@ -222,16 +232,12 @@ export async function getCustomerReport(params: { startDate?: string; endDate?: 
 export async function getTechnicianReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { start, end } = await reportWindow(organizationId, params)
 
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lte: end },
+          startDateTime: { gte: start, lt: end },
           OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
         },
         select: {
@@ -284,17 +290,13 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
 export async function getPartsUsageReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { start, end } = await reportWindow(organizationId, params)
 
       const parts = await db.servicePart.findMany({
         where: {
           serviceRecord: {
             organizationId,
-            startDateTime: { gte: start, lte: end },
+            startDateTime: { gte: start, lt: end },
           },
         },
         select: {
@@ -379,16 +381,12 @@ export async function getPartsUsageReport(params: { startDate?: string; endDate?
 export async function getJobAnalyticsReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { tz, start, end } = await reportWindow(organizationId, params)
 
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lte: end },
+          startDateTime: { gte: start, lt: end },
         },
         select: {
           type: true,
@@ -438,7 +436,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
       ]
       const dayCount = [0, 0, 0, 0, 0, 0, 0]
       for (const r of records) {
-        dayCount[(r.startDateTime ?? r.serviceDate).getDay()] += 1
+        dayCount[zonedParts(r.startDateTime ?? r.serviceDate, tz).weekday] += 1
       }
       const dayOfWeek = dayNames.map((day, i) => ({ day, count: dayCount[i] }))
 
@@ -446,7 +444,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
       const monthly: Record<string, { count: number; revenue: number }> = {}
       for (const r of records) {
         const _d = r.startDateTime ?? r.serviceDate
-        const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}`
+        const month = workshopMonthKey(_d, tz)
         if (!monthly[month]) monthly[month] = { count: 0, revenue: 0 }
         monthly[month].count += 1
         monthly[month].revenue += r.totalAmount > 0 ? r.totalAmount : r.cost
@@ -470,11 +468,7 @@ export async function getJobAnalyticsReport(params: { startDate?: string; endDat
 export async function getCustomerRetentionReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { start, end } = await reportWindow(organizationId, params)
 
       const customers = await db.customer.findMany({
         where: { organizationId },
@@ -485,7 +479,7 @@ export async function getCustomerRetentionReport(params: { startDate?: string; e
           vehicles: {
             select: {
               serviceRecords: {
-                where: { startDateTime: { gte: start, lte: end } },
+                where: { startDateTime: { gte: start, lt: end } },
                 select: { serviceDate: true, startDateTime: true, totalAmount: true, cost: true },
                 orderBy: [
                   { startDateTime: { sort: 'asc', nulls: 'last' } },
@@ -613,6 +607,7 @@ export async function getPastDueInvoicesReport() {
   return withAuth(
     async ({ organizationId }) => {
       const now = new Date()
+      const tz = await workshopTimeZone(organizationId)
 
       const records = await db.serviceRecord.findMany({
         where: {
@@ -684,7 +679,7 @@ export async function getPastDueInvoicesReport() {
           totalAmount: total,
           amountPaid: paid,
           amountDue,
-          dueDate: dueDate.toISOString().split('T')[0],
+          dueDate: zonedDayKey(dueDate, tz),
           daysPastDue,
         })
 
@@ -717,11 +712,7 @@ export async function getVehicleReport(params: {
 }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { tz, start, end } = await reportWindow(organizationId, params)
 
       const vehicle = await db.vehicle.findFirst({
         where: { id: params.vehicleId, organizationId },
@@ -742,7 +733,7 @@ export async function getVehicleReport(params: {
         where: {
           vehicleId: params.vehicleId,
           organizationId,
-          startDateTime: { gte: start, lte: end },
+          startDateTime: { gte: start, lt: end },
         },
         select: {
           id: true,
@@ -806,7 +797,7 @@ export async function getVehicleReport(params: {
         typeCounts[r.type].totalCost += total
 
         const _d = r.startDateTime ?? r.serviceDate
-        const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}`
+        const month = workshopMonthKey(_d, tz)
         if (!monthly[month]) monthly[month] = { partsCost: 0, laborCost: 0, totalCost: 0, count: 0 }
         monthly[month].partsCost += partsCost
         monthly[month].laborCost += laborCost
@@ -866,7 +857,7 @@ export async function getVehicleReport(params: {
           title: r.title,
           type: r.type,
           status: r.status,
-          date: (r.startDateTime ?? r.serviceDate).toISOString().split('T')[0],
+          date: zonedDayKey(r.startDateTime ?? r.serviceDate, tz),
           totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
           partsCount: r.partItems.reduce((s, p) => s + p.quantity, 0),
           laborHours: r.laborItems.reduce((s, l) => s + l.hours, 0),
@@ -881,16 +872,12 @@ export async function getVehicleReport(params: {
 export async function getTaxReport(params: { startDate?: string; endDate?: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = params.startDate
-        ? new Date(params.startDate)
-        : new Date(new Date().getFullYear(), 0, 1)
-      const end = params.endDate ? new Date(params.endDate) : new Date()
-      end.setHours(23, 59, 59, 999)
+      const { tz, start, end } = await reportWindow(organizationId, params)
 
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lte: end },
+          startDateTime: { gte: start, lt: end },
         },
         select: {
           serviceDate: true,
@@ -917,7 +904,7 @@ export async function getTaxReport(params: { startDate?: string; endDate?: strin
         if (r.taxAmount <= 0) continue
 
         const _dt = r.startDateTime ?? r.serviceDate
-        const month = `${_dt.getFullYear()}-${String(_dt.getMonth() + 1).padStart(2, '0')}`
+        const month = workshopMonthKey(_dt, tz)
 
         // The taxable base = total - tax. This is the net amount on which tax
         // was calculated, and it works in BOTH inclusive and exclusive modes

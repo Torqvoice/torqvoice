@@ -7,7 +7,9 @@ import { withAuth } from '@/lib/with-auth'
 import { createQuoteSchema, quoteStatusSchema, updateQuoteSchema } from '../Schema/quoteSchema'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { copyFile, mkdir } from 'fs/promises'
@@ -253,7 +255,7 @@ export async function createQuote(input: unknown) {
             taxRate: quoteData.taxRate > 0 ? quoteData.taxRate : defaultTaxRate,
             taxInclusive,
             validUntil:
-              toSafeDate(quoteData.validUntil) ??
+              toSafeWorkshopDate(quoteData.validUntil, await workshopTimeZone(organizationId)) ??
               defaultValidUntil(settingsMap['workshop.quoteValidDays']),
             discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
           },
@@ -315,7 +317,10 @@ export async function updateQuote(input: unknown) {
             vehicleId: clearedToNull(quoteData.vehicleId),
             validUntil:
               quoteData.validUntil !== undefined
-                ? (toSafeDate(quoteData.validUntil) ?? null)
+                ? (toSafeWorkshopDate(
+                    quoteData.validUntil,
+                    await workshopTimeZone(organizationId)
+                  ) ?? null)
                 : undefined,
             discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
           },

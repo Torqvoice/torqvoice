@@ -12,6 +12,8 @@ import {
   type ConnectorServer,
 } from '@/features/integrations/Lib/types'
 import { manifest } from './manifest'
+import { zonedDate } from '@/lib/timezone'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 const API = 'https://www.googleapis.com/calendar/v3'
 
@@ -151,17 +153,31 @@ async function pushService(
   return { summary: link ? 'event updated' : 'event created' }
 }
 
-function toPulled(e: GoogleEvent): PulledEvent | null {
+// An all-day event carries bare days; they are the workshop's days, not UTC's.
+function allDayBound(day: string, timeZone: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day)
+  return m ? zonedDate(Number(m[1]), Number(m[2]), Number(m[3]), 0, 0, timeZone) : null
+}
+
+function toPulled(e: GoogleEvent, timeZone: string): PulledEvent | null {
   if (e.status === 'cancelled') return null
   const allDay = Boolean(e.start?.date)
-  const start = e.start?.dateTime ?? (e.start?.date ? `${e.start.date}T00:00:00Z` : null)
-  const end = e.end?.dateTime ?? (e.end?.date ? `${e.end.date}T00:00:00Z` : null)
+  const start = e.start?.dateTime
+    ? new Date(e.start.dateTime)
+    : e.start?.date
+      ? allDayBound(e.start.date, timeZone)
+      : null
+  const end = e.end?.dateTime
+    ? new Date(e.end.dateTime)
+    : e.end?.date
+      ? allDayBound(e.end.date, timeZone)
+      : null
   if (!start || !end) return null
   return {
     remoteId: e.id,
     title: e.summary ?? '',
-    start: new Date(start),
-    end: new Date(end),
+    start,
+    end,
     allDay,
     updatedAt: e.updated ? new Date(e.updated) : null,
     url: e.htmlLink ?? null,
@@ -173,6 +189,7 @@ async function pullBusy(ctx: ConnectorContext) {
   if (!settings.pullEnabled) return { summary: 'pull switched off' }
   if (!settings.calendarId) return { summary: 'no calendar chosen' }
   const window = pullWindow()
+  const timeZone = await workshopTimeZone(ctx.connection.organizationId)
   const events: PulledEvent[] = []
   let pageToken: string | undefined
   do {
@@ -192,7 +209,7 @@ async function pullBusy(ctx: ConnectorContext) {
     )
     for (const item of page.items ?? []) {
       if (item.extendedProperties?.private?.torqvoiceServiceId) continue
-      const pulled = toPulled(item)
+      const pulled = toPulled(item, timeZone)
       if (pulled) events.push(pulled)
     }
     pageToken = page.nextPageToken

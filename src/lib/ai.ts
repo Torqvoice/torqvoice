@@ -19,9 +19,7 @@ export async function getAiConfig(organizationId: string): Promise<AiConfig> {
   const setup = await aiSetup(organizationId)
 
   if (!setup) {
-    throw new Error(
-      'AI is not connected. Connect OpenAI or Anthropic in Settings → Integrations.'
-    )
+    throw new Error('AI is not connected. Connect OpenAI or Anthropic in Settings → Integrations.')
   }
 
   return { provider: setup.provider, apiKey: setup.apiKey, model: setup.model }

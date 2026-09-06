@@ -1,6 +1,7 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
@@ -400,7 +401,8 @@ export async function createServiceRequest(input: {
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate: toSafeDate(input.preferredDate) ?? null,
+        preferredDate:
+          toSafeWorkshopDate(input.preferredDate, await workshopTimeZone(organizationId)) ?? null,
         customerId,
         vehicleId: vehicle.id,
         organizationId,

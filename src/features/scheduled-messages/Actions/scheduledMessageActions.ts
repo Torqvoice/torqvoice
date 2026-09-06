@@ -10,6 +10,8 @@ import {
   updateScheduledMessageSchema,
 } from '../Schema/scheduledMessageSchema'
 import { dispatchScheduledMessage, nextSendAt } from '../Lib/dispatchScheduledMessage'
+import { parseWorkshopDateTime, workshopDayRange } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export type ScheduledMessageListItem = {
   id: string
@@ -49,11 +51,17 @@ const listSelect = {
  * Parse the local wall-clock the workshop typed ("2026-08-20T09:00") as local
  * time, never UTC, so the message goes out at the hour they see on screen.
  */
-function parseLocalDateTime(value: string): Date {
-  const normalized = /\d{2}:\d{2}$/.test(value) ? `${value}:00` : value
-  const date = new Date(normalized)
-  if (Number.isNaN(date.getTime())) throw new Error('Invalid send time')
-  return date
+/** A minute of grace, so a form filled in at 09:00 and saved at 09:00:20 still goes. */
+const PAST_GRACE_MS = 60_000
+
+/**
+ * A message cannot be scheduled for a moment that has passed: the dispatcher
+ * would fire it at once, and nobody meant that.
+ */
+function assertNotPast(sendAt: Date) {
+  if (sendAt.getTime() < Date.now() - PAST_GRACE_MS) {
+    throw new Error('The send time has already passed')
+  }
 }
 
 export async function getScheduledMessages(params?: { status?: string }) {
@@ -82,15 +90,16 @@ export async function getScheduledMessages(params?: { status?: string }) {
 export async function getScheduledMessagesInRange(params: { start: string; end: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = new Date(params.start)
-      const end = new Date(params.end)
-      end.setHours(23, 59, 59, 999)
+      // The keys are workshop days, so the window is whole days on its clock
+      const timeZone = await workshopTimeZone(organizationId)
+      const now = new Date()
+      const sendAt = workshopDayRange(params.start, params.end, timeZone, { start: now, end: now })
 
       return db.scheduledMessage.findMany({
         where: {
           organizationId,
           status: { not: 'cancelled' },
-          sendAt: { gte: start, lte: end },
+          sendAt,
         },
         select: listSelect,
         orderBy: { sendAt: 'asc' },
@@ -109,7 +118,9 @@ export async function createScheduledMessage(input: unknown) {
     async ({ organizationId, userId }) => {
       demoGuard()
       const data = createScheduledMessageSchema.parse(input)
-      const sendAt = parseLocalDateTime(data.sendAt)
+      const timeZone = await workshopTimeZone(organizationId)
+      const sendAt = parseWorkshopDateTime(data.sendAt, timeZone)
+      assertNotPast(sendAt)
 
       if (data.customerId) {
         const customer = await db.customer.findFirst({
@@ -136,7 +147,7 @@ export async function createScheduledMessage(input: unknown) {
           vehicleId: data.vehicleId || null,
           sendAt,
           frequency: data.frequency,
-          endDate: data.endDate ? parseLocalDateTime(data.endDate) : null,
+          endDate: data.endDate ? parseWorkshopDateTime(data.endDate, timeZone) : null,
           organizationId,
           createdById: userId,
         },
@@ -175,6 +186,8 @@ export async function updateScheduledMessage(input: unknown) {
         select: { id: true },
       })
       if (!existing) throw new Error('Scheduled message not found')
+      const timeZone = await workshopTimeZone(organizationId)
+      if (data.sendAt) assertNotPast(parseWorkshopDateTime(data.sendAt, timeZone))
 
       const message = await db.scheduledMessage.update({
         where: { id: data.id },
@@ -185,10 +198,10 @@ export async function updateScheduledMessage(input: unknown) {
           ...(data.recipient !== undefined ? { recipient: data.recipient?.trim() || null } : {}),
           ...(data.customerId !== undefined ? { customerId: data.customerId || null } : {}),
           ...(data.vehicleId !== undefined ? { vehicleId: data.vehicleId || null } : {}),
-          ...(data.sendAt ? { sendAt: parseLocalDateTime(data.sendAt) } : {}),
+          ...(data.sendAt ? { sendAt: parseWorkshopDateTime(data.sendAt, timeZone) } : {}),
           ...(data.frequency ? { frequency: data.frequency } : {}),
           ...(data.endDate !== undefined
-            ? { endDate: data.endDate ? parseLocalDateTime(data.endDate) : null }
+            ? { endDate: data.endDate ? parseWorkshopDateTime(data.endDate, timeZone) : null }
             : {}),
           ...(data.status ? { status: data.status } : {}),
           // Rescheduling clears the last failure, so a fixed address doesn't
@@ -304,7 +317,8 @@ export async function sendScheduledMessageNow(id: string) {
       if (!message) throw new Error('Scheduled message not found')
 
       const now = new Date()
-      const following = nextSendAt(message.sendAt, message.frequency, message.endDate)
+      const timeZone = await workshopTimeZone(organizationId)
+      const following = nextSendAt(message.sendAt, message.frequency, message.endDate, timeZone)
 
       try {
         await dispatchScheduledMessage(message)

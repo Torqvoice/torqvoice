@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
-import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { mkdir, writeFile, stat, readdir, rm } from 'fs/promises'
 import { readFileSync } from 'fs'
 import path from 'path'
@@ -208,6 +210,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { organizationId, userId } = ctx
+  const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
 
   try {
@@ -379,7 +382,7 @@ export async function POST(request: NextRequest) {
             status: 'completed',
             cost,
             mileage: sr.Mileage || null,
-            serviceDate: toSafeDate(sr.Date) ?? new Date(),
+            serviceDate: toSafeWorkshopDate(sr.Date, timeZone) ?? new Date(),
             invoiceNumber,
             subtotal: cost,
             totalAmount: cost,

@@ -43,6 +43,7 @@ interface Reminder {
   title: string
   description: string | null
   dueDate: Date | null
+  hasDueTime?: boolean
   dueMileage: number | null
   isCompleted: boolean
   notifyInApp: boolean
@@ -95,7 +96,7 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
   const tc = useTranslations('common.buttons')
   const tcm = useTranslations('common.contextMenu')
   const router = useRouter()
-  const { formatDate } = useFormatDate()
+  const { formatDate, formatDateTime } = useFormatDate()
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
 
   const [filter, setFilter] = useState<FilterType>('active')
@@ -243,7 +244,13 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
                           )}
                         </div>
                         <div className="shrink-0 flex items-center gap-2 text-xs text-muted-foreground">
-                          {r.dueDate && <span>{formatDate(new Date(r.dueDate))}</span>}
+                          {r.dueDate && (
+                            <span>
+                              {r.hasDueTime
+                                ? formatDateTime(new Date(r.dueDate))
+                                : formatDate(new Date(r.dueDate))}
+                            </span>
+                          )}
                           {r.dueMileage && (
                             <span>
                               {r.dueMileage.toLocaleString()} {distUnit}

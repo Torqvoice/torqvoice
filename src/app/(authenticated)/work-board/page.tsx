@@ -8,16 +8,14 @@ import {
   getWorkBoardSettings,
 } from '@/features/workboard/Actions/boardActions'
 import { WorkBoardClient } from '@/features/workboard/Components/WorkBoardClient'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { addZonedDays, zonedDayKey, zonedParts } from '@/lib/timezone'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
-function getWeekStart(date: Date, weekStartDay: number): string {
-  const d = new Date(date)
-  const currentDay = d.getDay()
-  const diff = (currentDay - weekStartDay + 7) % 7
-  d.setDate(d.getDate() - diff)
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${dd}`
+// The week that holds the workshop's today, on the workshop's clock.
+function getWeekStart(date: Date, weekStartDay: number, timeZone: string): string {
+  const diff = (zonedParts(date, timeZone).weekday - weekStartDay + 7) % 7
+  return zonedDayKey(addZonedDays(date, -diff, timeZone), timeZone)
 }
 
 export default async function WorkBoardPage() {
@@ -27,7 +25,9 @@ export default async function WorkBoardPage() {
       ? settingsResult.data
       : { weekStartDay: 1, workDayStart: '07:00', workDayEnd: '15:00' }
 
-  const weekStart = getWeekStart(new Date(), boardSettings.weekStartDay)
+  const ctx = await getAuthContext()
+  const timeZone = ctx ? await workshopTimeZone(ctx.organizationId) : 'UTC'
+  const weekStart = getWeekStart(new Date(), boardSettings.weekStartDay, timeZone)
 
   const [techResult, bayResult, assignResult, unassignedResult] = await Promise.all([
     getTechnicians(),

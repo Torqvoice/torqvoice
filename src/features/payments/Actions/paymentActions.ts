@@ -1,6 +1,7 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
@@ -26,7 +27,7 @@ export async function createPayment(input: unknown) {
         data: {
           serviceRecordId: data.serviceRecordId,
           amount: data.amount,
-          date: toSafeDate(data.date) ?? new Date(),
+          date: toSafeWorkshopDate(data.date, await workshopTimeZone(organizationId)) ?? new Date(),
           method: data.method,
           note: data.note || null,
         },

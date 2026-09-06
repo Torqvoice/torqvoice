@@ -1,6 +1,7 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -212,7 +213,7 @@ async function saveManualInspectionDate(
     })
     return
   }
-  const dueAt = toSafeDate(trimmed)
+  const dueAt = toSafeWorkshopDate(trimmed, await workshopTimeZone(organizationId))
   if (!dueAt) throw new Error('Invalid inspection date')
   await db.vehicleInspectionStatus.upsert({
     where: { vehicleId },
@@ -225,10 +226,11 @@ export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const { inspectionDueAt, ...data } = createVehicleSchema.parse(input)
+      const timeZone = await workshopTimeZone(organizationId)
       const vehicle = await db.vehicle.create({
         data: {
           ...data,
-          purchaseDate: toSafeDate(data.purchaseDate) ?? null,
+          purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
           customerId: data.customerId || null,
           userId,
           organizationId,
@@ -295,7 +297,10 @@ export async function updateVehicle(input: unknown) {
           transmission: data.transmission !== undefined ? data.transmission || null : undefined,
           engineSize: data.engineSize !== undefined ? data.engineSize || null : undefined,
           engineCode: data.engineCode !== undefined ? data.engineCode || null : undefined,
-          purchaseDate: toSafeDate(data.purchaseDate),
+          purchaseDate: toSafeWorkshopDate(
+            data.purchaseDate,
+            await workshopTimeZone(organizationId)
+          ),
           customerId: data.customerId !== undefined ? data.customerId || null : undefined,
         },
       })

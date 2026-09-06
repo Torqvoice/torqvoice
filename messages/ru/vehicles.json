@@ -140,6 +140,7 @@
     "descriptionLabel": "Описание",
     "descriptionPlaceholder": "Дополнительные сведения...",
     "dueDateLabel": "Дата срока",
+    "dueTimeLabel": "Время (необязательно)",
     "dueMileageLabel": "Пробег до срока",
     "dueMileagePlaceholder": "напр. 50000",
     "reminderUpdated": "Напоминание обновлено",

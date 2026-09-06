@@ -30,8 +30,49 @@
   },
   "today": "Hoy",
   "workOrder": "Orden de trabajo",
+  "allDay": "Todo el día",
+  "openDay": "Abrir {date}",
+  "dayTotal": "{count, plural, =1 {1 evento} other {# eventos}}",
+  "views": {
+    "day": "Día",
+    "week": "Semana",
+    "month": "Mes",
+    "year": "Año",
+    "schedule": "Agenda",
+    "fourDays": "4 días"
+  },
+  "options": {
+    "showWeekends": "Mostrar fines de semana",
+    "showCompleted": "Mostrar completados",
+    "showWeekNumbers": "Mostrar números de semana"
+  },
+  "toolbar": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "create": "Crear",
+    "showSidebar": "Mostrar panel lateral",
+    "hideSidebar": "Ocultar panel lateral"
+  },
+  "sidebar": {
+    "calendars": "Calendarios",
+    "legend": "Colores de estado"
+  },
+  "schedule": {
+    "empty": "Nada programado",
+    "emptyHint": "No hay órdenes de trabajo, recordatorios, presupuestos ni mensajes en este periodo."
+  },
+  "peek": {
+    "close": "Cerrar",
+    "open": {
+      "service": "Abrir orden de trabajo",
+      "reminder": "Abrir recordatorio",
+      "quote": "Abrir presupuesto",
+      "message": "Abrir mensajes",
+      "external": "Abrir"
+    }
+  },
   "filters": {
-    "services": "Servicios",
+    "services": "Órdenes de trabajo",
     "reminders": "Recordatorios",
     "quotes": "Presupuestos",
     "messages": "Mensajes",
@@ -45,14 +86,27 @@
     "useToday": "Use today"
   },
   "more": "+ {count} más",
-  "monthTotal": "{count} eventos este mes",
+  "monthTotal": "{count} eventos",
   "contextMenu": {
     "newWorkOrder": "Nueva orden de trabajo",
+    "newWorkOrderAt": "Nueva orden de trabajo a las {time}",
     "newReminder": "Nuevo recordatorio",
     "newQuote": "Nuevo presupuesto",
     "openEvent": "Abrir ({count})",
     "hint": "Consejo: haz clic derecho en un día para ver las acciones",
     "scheduleMessage": "Programar mensaje"
+  },
+  "eventMenu": {
+    "open": "Abrir",
+    "markDone": "Marcar como hecho",
+    "markNotDone": "Marcar como pendiente",
+    "deleteReminder": "Eliminar recordatorio",
+    "deleteReminderConfirm": "¿Eliminar el recordatorio \"{title}\"? Esta acción no se puede deshacer.",
+    "deleteMessage": "Eliminar mensaje programado",
+    "deleteMessageConfirm": "¿Eliminar el mensaje programado \"{title}\"? No se enviará.",
+    "deleted": "Eliminado",
+    "updated": "Actualizado",
+    "failed": "No se pudo completar. Inténtalo de nuevo."
   },
   "events": {
     "status": {
@@ -60,6 +114,7 @@
       "inProgress": "En progreso",
       "waitingParts": "Esperando piezas",
       "pending": "Pendiente",
+      "scheduled": "Programado",
       "sent": "Enviado",
       "approved": "Aprobado",
       "draft": "Borrador",
@@ -71,10 +126,11 @@
       "busy": "Ocupado"
     },
     "type": {
-      "service": "Servicio",
+      "service": "Orden de trabajo",
       "reminder": "Recordatorio",
       "quote": "Presupuesto",
-      "message": "Mensaje"
+      "message": "Mensaje",
+      "external": "Calendario conectado"
     },
     "noEvents": "Sin eventos",
     "selectDay": "Seleccione un día con eventos o cree una nueva orden de trabajo.",
