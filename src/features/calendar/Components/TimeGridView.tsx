@@ -229,7 +229,7 @@ export function TimeGridView({
       </div>
 
       {/* Hour grid */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
         <div
           className="relative grid"
           style={{ gridTemplateColumns: columnsTemplate, height: 24 * HOUR_PX }}

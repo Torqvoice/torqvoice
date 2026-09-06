@@ -471,7 +471,14 @@ export default function CalendarClient({
 
   return (
     <EventPeekProvider currencyCode={currencyCode}>
-      <div className="flex min-h-[32rem] min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-card-edge bg-card text-card-foreground shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)]">
+      {/*
+        A definite height, not flex-1: nothing above this in the layout has
+        one (the shell is min-h-svh), so a flexed calendar would grow to the
+        full 24-hour grid and hand scrolling to the page. The subtraction is
+        the header (4rem), the page padding (1rem) and, on phones, the
+        bottom nav (3.5rem). Short screens fall back to a page that scrolls.
+      */}
+      <div className="flex h-[calc(100svh-8.5rem)] min-h-[32rem] min-w-0 flex-col overflow-hidden rounded-xl border border-card-edge bg-card text-card-foreground shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)] md:h-[calc(100svh-5rem)]">
         <CalendarToolbar
           title={title}
           view={view}
