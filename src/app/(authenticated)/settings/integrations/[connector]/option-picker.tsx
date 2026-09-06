@@ -18,20 +18,24 @@ import type { SettingOption } from '@/features/integrations/Lib/types'
 
 /**
  * A picker for a list the vendor supplies: products, tax codes, accounts. A
- * company can have hundreds, so it searches as you type, and since every one
- * of these settings is optional there is a first entry that leaves it empty.
+ * company can have hundreds, so it searches as you type. An optional setting
+ * gets a first entry that leaves it empty; a required one, such as which
+ * calendar to write to, does not offer that, since nothing works without it.
  */
 export function OptionPicker({
   value,
   options,
   onChange,
   disabled,
+  required = false,
 }: {
   value: string
   /** undefined while the list is still loading. */
   options: SettingOption[] | null | undefined
   onChange: (value: string) => void
   disabled?: boolean
+  /** Whether the setting must have a value; hides the entry that clears it. */
+  required?: boolean
 }) {
   const t = useTranslations('integrations')
   const [open, setOpen] = useState(false)
@@ -66,17 +70,19 @@ export function OptionPicker({
           <CommandList>
             <CommandEmpty>{t('connection.noMatch')}</CommandEmpty>
             <CommandGroup>
-              <CommandItem
-                value="__none__"
-                onSelect={() => {
-                  onChange('')
-                  setOpen(false)
-                }}
-                className="text-muted-foreground"
-              >
-                <Check className={cn('mr-2 h-4 w-4', value ? 'opacity-0' : 'opacity-100')} />
-                {t('connection.leaveEmpty')}
-              </CommandItem>
+              {!required && (
+                <CommandItem
+                  value="__none__"
+                  onSelect={() => {
+                    onChange('')
+                    setOpen(false)
+                  }}
+                  className="text-muted-foreground"
+                >
+                  <Check className={cn('mr-2 h-4 w-4', value ? 'opacity-0' : 'opacity-100')} />
+                  {t('connection.leaveEmpty')}
+                </CommandItem>
+              )}
               {(options ?? []).map((o) => (
                 <CommandItem
                   key={o.value}

@@ -820,6 +820,7 @@ function SettingFieldList({
                 value={String(values[f.key] ?? '')}
                 options={remote[f.source ?? '']}
                 onChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
+                required={f.required}
               />
             )}
             {f.type === 'select' && (
