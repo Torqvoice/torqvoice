@@ -139,7 +139,18 @@ export function ConnectionSettings({
   const disconnect = async () => {
     const ok = await confirm({
       title: t('connection.disconnectTitle', { name: manifest.name }),
-      description: t('connection.disconnectDescription'),
+      // What a disconnect leaves behind differs by kind of service, and the
+      // dialog is the one place people read before pressing it.
+      description: t(
+        manifest.category === 'calendar'
+          ? 'connection.disconnectDescriptionCalendar'
+          : manifest.category === 'conferencing'
+            ? 'connection.disconnectDescriptionConferencing'
+            : manifest.category === 'accounting'
+              ? 'connection.disconnectDescriptionAccounting'
+              : 'connection.disconnectDescription',
+        { name: manifest.name }
+      ),
       confirmLabel: t('connection.disconnect'),
       destructive: true,
     })
