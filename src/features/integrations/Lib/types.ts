@@ -59,9 +59,11 @@ export type AuthSpec =
        */
       tokenAuth?: 'body' | 'basic'
       /**
-       * Query parameters the vendor adds to the callback beside code and
-       * state, kept on the connection's state under the same names. Intuit
-       * sends the company id (realmId) this way and nowhere else.
+       * Query parameters the vendor adds to the callback besides code and
+       * state, kept inside the sealed credentials under the same names, next
+       * to the tokens, so they are encrypted at rest and survive a token
+       * refresh. Intuit sends the company id (realmId) this way and nowhere
+       * else.
        */
       callbackParams?: string[]
       /** Environment variable names holding the platform-owned app's client id and secret. */

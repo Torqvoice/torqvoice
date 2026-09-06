@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { auth } from '@/lib/auth'
@@ -14,7 +15,7 @@ export default async function SignUpPage({
 }) {
   const params = await searchParams
   const inviteToken = params.invite
-  const redirectTo = params.redirect
+  const redirectTo = params.redirect ? safeRedirectPath(params.redirect) : undefined
 
   // If already authenticated, redirect to the target or home
   const session = await auth.api.getSession({ headers: await headers() })

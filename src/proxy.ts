@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isCrossSiteWrite } from '@/lib/same-origin'
 
 /**
  * Cross-origin access to the technician API, in development only.
@@ -42,7 +43,18 @@ function applyCors(response: NextResponse, origin: string | null) {
   return response
 }
 
+const PROTECTED_API = '/api/protected/'
+
 export default function proxy(request: NextRequest) {
+  // A write to the cookie-authenticated API from another site is refused
+  // before any handler runs. See lib/same-origin.ts.
+  if (request.nextUrl.pathname.startsWith(PROTECTED_API)) {
+    if (isCrossSiteWrite({ method: request.method, header: (n) => request.headers.get(n) })) {
+      return NextResponse.json({ error: 'Cross-site request refused' }, { status: 403 })
+    }
+    return undefined
+  }
+
   if (!IS_DEV) return undefined
 
   const origin = request.headers.get('origin')
@@ -65,5 +77,7 @@ export const config = {
     // Sign-in lives here, so the app hits it before it has a session and
     // would otherwise fail its very first request from a browser.
     '/api/public/auth/:path*',
+    // The cookie-authenticated API: cross-site writes are refused here.
+    '/api/protected/:path*',
   ],
 }
