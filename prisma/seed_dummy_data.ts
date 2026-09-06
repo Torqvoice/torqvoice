@@ -1,6 +1,6 @@
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { randomBytes, scryptSync } from "node:crypto";
+import { createCipheriv, createHash, hkdfSync, randomBytes, scryptSync } from "node:crypto";
 import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
@@ -14,6 +14,27 @@ function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
   const key = scryptSync(password.normalize("NFKC"), salt, dkLen, { N, r, p, maxmem });
   return `${salt}:${key.toString("hex")}`;
+}
+
+// Copy of src/features/integrations/Lib/vault.ts sealCredentials(). The image
+// does not ship that file, and the app must be able to open what is sealed
+// here, so the format (v1.iv.tag.data, AES-256-GCM) and the key derivation
+// (INTEGRATIONS_ENCRYPTION_KEY, else HKDF of BETTER_AUTH_SECRET) match exactly.
+function sealCredentials(value: Record<string, unknown>): string {
+  const explicit = process.env.INTEGRATIONS_ENCRYPTION_KEY?.trim();
+  let key: Buffer;
+  if (explicit) {
+    if (!/^[0-9a-f]{64}$/i.test(explicit)) throw new Error("INTEGRATIONS_ENCRYPTION_KEY must be 64 hex characters");
+    key = Buffer.from(explicit, "hex");
+  } else {
+    const authSecret = process.env.BETTER_AUTH_SECRET;
+    if (!authSecret) throw new Error("Set BETTER_AUTH_SECRET or INTEGRATIONS_ENCRYPTION_KEY to seed integration connections");
+    key = Buffer.from(hkdfSync("sha256", authSecret, "torqvoice", "integrations-vault", 32));
+  }
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  const encrypted = Buffer.concat([cipher.update(Buffer.from(JSON.stringify(value), "utf8")), cipher.final()]);
+  return ["v1", iv.toString("base64url"), cipher.getAuthTag().toString("base64url"), encrypted.toString("base64url")].join(".");
 }
 
 const prisma = new PrismaClient({
@@ -586,6 +607,9 @@ async function cleanup() {
   // Wipes branding, logo, invoice layout, localization, tax config. The
   // maintenance.* keys are re-upserted later in the seed.
   await prisma.appSetting.deleteMany({ where: { organizationId: ORG_ID } });
+  // Links, jobs and logs cascade. Recreated below from the placeholder
+  // provider config, so the catalog shows the same three vendors connected.
+  await prisma.integrationConnection.deleteMany({ where: { organizationId: ORG_ID } });
 
   // Transient/accumulating records.
   await prisma.aiChat.deleteMany({ where: { organizationId: ORG_ID } });
@@ -742,6 +766,13 @@ async function seed() {
     // Proof the webhook plumbing works, which is otherwise invisible from
     // inside the app and leaves the settings page looking half finished.
     "whatsapp.webhookSeenAt": hoursAgo(2).toISOString(),
+    // The three channels above are also created as catalog connections
+    // below, which is what adopting them on first use would leave behind.
+    // These markers say that has happened, so a disconnect in the demo
+    // sticks until the next reset instead of being undone by the old rows.
+    "integrations.sms.adoptedAt": NOW.toISOString(),
+    "integrations.telegram.adoptedAt": NOW.toISOString(),
+    "integrations.whatsapp.adoptedAt": NOW.toISOString(),
     // Tire hotel is opt-in per workshop, so the sidebar entry and the
     // routes stay hidden until this is set.
     "tireHotel.enabled": "true",
@@ -769,6 +800,88 @@ async function seed() {
     ),
   );
   console.log(`  Applied ${Object.keys(settings).length} settings`);
+
+  // -- Integration connections --
+  // The messaging vendors configured above, as the catalog sees them: sealed
+  // credentials, the settings adoption would split out of the old rows, and
+  // the sending identity as the connected account. Cosmetic only: the
+  // credentials are not real, and DEMO_MODE refuses every outbound call and
+  // every connector request before it reaches the network.
+  console.log("\nCreating integration connections...");
+  const webhookSecretHash = (secret: string) => createHash("sha256").update(secret).digest("hex");
+  const smsWebhookSecret = randomBytes(24).toString("hex");
+  const telegramWebhookSecret = randomBytes(24).toString("hex");
+  const connections: Array<{
+    connectorId: string;
+    credentials: Record<string, string>;
+    settings: Record<string, unknown>;
+    externalAccountName: string;
+  }> = [
+    {
+      connectorId: "twilio-sms",
+      credentials: {
+        accountSid: settings["sms.twilio.accountSid"],
+        authToken: settings["sms.twilio.authToken"],
+        webhookSecret: smsWebhookSecret,
+      },
+      settings: {
+        phoneNumber: settings["sms.phoneNumber"],
+        webhookSecretHash: webhookSecretHash(smsWebhookSecret),
+      },
+      externalAccountName: settings["sms.phoneNumber"],
+    },
+    {
+      connectorId: "telegram",
+      credentials: {
+        botToken: settings["telegram.botToken"],
+        webhookSecret: telegramWebhookSecret,
+      },
+      settings: {
+        enabled: true,
+        botUsername: settings["telegram.botUsername"],
+        webhookSecretHash: webhookSecretHash(telegramWebhookSecret),
+      },
+      externalAccountName: `@${settings["telegram.botUsername"]}`,
+    },
+    {
+      connectorId: "whatsapp-meta",
+      credentials: {
+        phoneNumberId: settings["whatsapp.cred.meta.phoneNumberId"],
+        accessToken: settings["whatsapp.cred.meta.accessToken"],
+        verifyToken: settings["whatsapp.cred.meta.verifyToken"],
+      },
+      settings: {
+        enabled: true,
+        phoneNumber: settings["whatsapp.from"],
+        templateName: settings["whatsapp.tpl.meta.text.name"],
+        templateLanguage: settings["whatsapp.tpl.meta.text.language"],
+        templateVariables: settings["whatsapp.tpl.meta.text.variables"],
+        mediaTemplateName: settings["whatsapp.tpl.meta.media.name"],
+        mediaTemplateLanguage: settings["whatsapp.tpl.meta.media.language"],
+        mediaTemplateVariables: settings["whatsapp.tpl.meta.media.variables"],
+      },
+      externalAccountName: settings["whatsapp.from"],
+    },
+  ];
+  await Promise.all(
+    connections.map((c) =>
+      prisma.integrationConnection.create({
+        data: {
+          organizationId: ORG_ID,
+          connectorId: c.connectorId,
+          status: "active",
+          label: "Adopted from settings",
+          credentials: sealCredentials(c.credentials),
+          settings: c.settings,
+          externalAccountName: c.externalAccountName,
+          createdById: USER_ID,
+          lastHealthAt: hoursAgo(1),
+          createdAt: hoursAgo(24 * 90),
+        },
+      }),
+    ),
+  );
+  console.log(`  Created ${connections.length} integration connections`);
 
   // -- Customers (20) --
   console.log("\nCreating customers...");
