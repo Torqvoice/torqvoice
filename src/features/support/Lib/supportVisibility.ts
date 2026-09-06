@@ -18,6 +18,28 @@ export const SUPPORT_VISIBILITY_EVENT = 'torqvoice:support:visibility'
 /** Asks the mounted widget to open, for the "contact support" button in settings. */
 export const SUPPORT_OPEN_EVENT = 'torqvoice:support:open'
 
+/** What a caller can hand the widget when opening it. */
+export interface SupportOpenDetail {
+  /** Prefills the subject of an empty form; never overwrites what someone typed. */
+  subject?: string
+}
+
+/**
+ * Opens the widget from anywhere in the app.
+ *
+ * Un-hides it first, because a dispatch into an unmounted widget is simply
+ * lost, and waits a frame so the widget has mounted before it is asked to
+ * open. Callers that hand over a subject, like the integration suggestion
+ * button, get a form that already says what it is about.
+ */
+export function openSupport(detail: SupportOpenDetail = {}): void {
+  if (typeof window === 'undefined') return
+  if (isSupportBubbleHidden()) setSupportBubbleHidden(false)
+  window.requestAnimationFrame(() => {
+    window.dispatchEvent(new CustomEvent<SupportOpenDetail>(SUPPORT_OPEN_EVENT, { detail }))
+  })
+}
+
 export function isSupportBubbleHidden(): boolean {
   if (typeof window === 'undefined') return false
   try {

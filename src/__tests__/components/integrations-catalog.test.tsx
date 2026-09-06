@@ -9,11 +9,14 @@
  * that list empty out while you type reads as though something came undone.
  */
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { IntegrationsCatalog } from '@/app/(authenticated)/settings/integrations/integrations-catalog'
 import type { CatalogEntry } from '@/features/integrations/Actions/integrationActions'
+import { openSupport } from '@/features/support/Lib/supportVisibility'
 import { getManifest } from '@/integrations/registry'
+
+vi.mock('@/features/support/Lib/supportVisibility', () => ({ openSupport: vi.fn() }))
 
 function entry(id: string, overrides: Partial<CatalogEntry> = {}): CatalogEntry {
   const manifest = getManifest(id)
@@ -36,8 +39,8 @@ const ENTRIES: CatalogEntry[] = [
   entry('zoom', { status: 'active', externalAccountName: 'workshop@example.com' }),
 ]
 
-function show() {
-  render(<IntegrationsCatalog entries={ENTRIES} />)
+function show(canSuggest = false) {
+  render(<IntegrationsCatalog entries={ENTRIES} canSuggest={canSuggest} />)
   return screen.getByRole('searchbox')
 }
 
@@ -131,5 +134,30 @@ describe('integration search', () => {
     fireEvent.change(box, { target: { value: 'google' } })
     expect(screen.queryByText('Google Calendar')).toBeNull()
     expect(screen.getByText('Nothing matches "google".')).toBeInTheDocument()
+  })
+})
+
+/**
+ * Asking for an integration goes through the support widget, so the button
+ * is only offered where that widget exists: a self-hosted workshop has nobody
+ * to send the suggestion to, and a dead button is worse than none.
+ */
+describe('suggesting an integration', () => {
+  it('is not offered where there is no support desk', () => {
+    show(false)
+    expect(screen.queryByRole('button', { name: 'Suggest an integration' })).toBeNull()
+  })
+
+  it('opens the support widget with the subject already filled in', () => {
+    show(true)
+    fireEvent.click(screen.getByRole('button', { name: 'Suggest an integration' }))
+    expect(openSupport).toHaveBeenCalledWith({ subject: 'Integration suggestion' })
+  })
+
+  it('always points at the documentation', () => {
+    show(false)
+    const link = screen.getByRole('link', { name: /Read more/ })
+    expect(link).toHaveAttribute('href', 'https://torqvoice.com/docs/integrations')
+    expect(link).toHaveAttribute('target', '_blank')
   })
 })

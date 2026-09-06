@@ -14,7 +14,12 @@
     "availableDescription": "Paslaugos, kurias galite pridėti. Kiekviena nustatoma vieną kartą ir veikia fone.",
     "allConnected": "Visos galimos paslaugos prijungtos.",
     "searchPlaceholder": "Ieškoti integracijų",
-    "noMatches": "Nieko nerasta pagal „{query}“."
+    "noMatches": "Nieko nerasta pagal „{query}“.",
+    "readMore": "Skaityti daugiau",
+    "suggestTitle": "Trūksta paslaugos, kurią naudojate?",
+    "suggestDescription": "Pasakykite, kokia integracija padėtų jūsų dirbtuvėms, ir mes ją apsvarstysime.",
+    "suggest": "Pasiūlyti integraciją",
+    "suggestSubject": "Integracijos pasiūlymas"
   },
   "categories": {
     "calendar": "Kalendorius",

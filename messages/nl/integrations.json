@@ -14,7 +14,12 @@
     "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
     "allConnected": "Alle beschikbare diensten zijn verbonden.",
     "searchPlaceholder": "Integraties zoeken",
-    "noMatches": "Niets komt overeen met \"{query}\"."
+    "noMatches": "Niets komt overeen met \"{query}\".",
+    "readMore": "Meer lezen",
+    "suggestTitle": "Mist u een dienst die u gebruikt?",
+    "suggestDescription": "Vertel ons welke integratie uw werkplaats zou helpen en we bekijken het.",
+    "suggest": "Een integratie voorstellen",
+    "suggestSubject": "Integratievoorstel"
   },
   "categories": {
     "calendar": "Agenda",

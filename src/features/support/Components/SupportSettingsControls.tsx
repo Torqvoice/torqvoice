@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 import {
-  SUPPORT_OPEN_EVENT,
   SUPPORT_VISIBILITY_EVENT,
   isSupportBubbleHidden,
+  openSupport,
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
 
@@ -67,13 +67,10 @@ export function SupportSettingsControls() {
           variant="outline"
           size="sm"
           onClick={() => {
-            // Opening while hidden would dispatch into nothing, so make it
-            // visible first and let the widget mount before asking it to open.
-            if (isSupportBubbleHidden()) {
-              setSupportBubbleHidden(false)
-              setVisible(true)
-            }
-            requestAnimationFrame(() => window.dispatchEvent(new Event(SUPPORT_OPEN_EVENT)))
+            // The toggle above mirrors the stored flag, which openSupport
+            // clears when the button was hidden.
+            setVisible(true)
+            openSupport()
           }}
         >
           {t('support.contactAction')}

@@ -14,7 +14,12 @@
     "availableDescription": "Services que vous pouvez ajouter. Chacun se configure une fois et fonctionne en arrière-plan.",
     "allConnected": "Tous les services disponibles sont connectés.",
     "searchPlaceholder": "Rechercher une intégration",
-    "noMatches": "Rien ne correspond à « {query} »."
+    "noMatches": "Rien ne correspond à « {query} ».",
+    "readMore": "En savoir plus",
+    "suggestTitle": "Il manque un service que vous utilisez ?",
+    "suggestDescription": "Dites-nous quelle intégration aiderait votre atelier et nous l'étudierons.",
+    "suggest": "Suggérer une intégration",
+    "suggestSubject": "Suggestion d'intégration"
   },
   "categories": {
     "calendar": "Calendrier",

@@ -14,7 +14,12 @@
     "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
     "allConnected": "Kullanılabilir tüm hizmetler bağlı.",
     "searchPlaceholder": "Entegrasyonlarda ara",
-    "noMatches": "\"{query}\" ile eşleşen bir şey yok."
+    "noMatches": "\"{query}\" ile eşleşen bir şey yok.",
+    "readMore": "Daha fazla bilgi",
+    "suggestTitle": "Kullandığınız bir hizmet eksik mi?",
+    "suggestDescription": "Atölyenize hangi entegrasyonun yardımcı olacağını söyleyin, inceleyelim.",
+    "suggest": "Entegrasyon öner",
+    "suggestSubject": "Entegrasyon önerisi"
   },
   "categories": {
     "calendar": "Takvim",

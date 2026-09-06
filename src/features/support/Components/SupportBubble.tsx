@@ -27,6 +27,7 @@ import {
 import {
   SUPPORT_OPEN_EVENT,
   SUPPORT_VISIBILITY_EVENT,
+  type SupportOpenDetail,
   isSupportBubbleHidden,
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
@@ -88,13 +89,6 @@ export function SupportBubble() {
     }
   }, [])
 
-  // The settings page opens the widget for someone who cannot find it.
-  useEffect(() => {
-    const open = () => setIsOpen(true)
-    window.addEventListener(SUPPORT_OPEN_EVENT, open)
-    return () => window.removeEventListener(SUPPORT_OPEN_EVENT, open)
-  }, [])
-
   /**
    * The panel follows the button. It is right-aligned to the button and opens
    * upward when the button sits low, which is where it usually will after being
@@ -124,6 +118,23 @@ export function SupportBubble() {
     setError(null)
     setStatus('idle')
   }, [])
+
+  // The settings page opens the widget for someone who cannot find it, and
+  // other pages open it with a subject already filled in. A subject only
+  // lands on an empty form: someone halfway through describing a problem
+  // does not lose their heading because they clicked another button.
+  useEffect(() => {
+    const open = (event: Event) => {
+      const subject = (event as CustomEvent<SupportOpenDetail>).detail?.subject
+      if (subject) {
+        if (status === 'sent') reset()
+        setSubject((current) => current || subject)
+      }
+      setIsOpen(true)
+    }
+    window.addEventListener(SUPPORT_OPEN_EVENT, open)
+    return () => window.removeEventListener(SUPPORT_OPEN_EVENT, open)
+  }, [status, reset])
 
   const handleClose = useCallback(() => {
     setIsOpen(false)

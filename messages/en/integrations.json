@@ -14,7 +14,12 @@
     "availableDescription": "Services you can add. Each one is set up once and runs in the background.",
     "allConnected": "Every available service is connected.",
     "searchPlaceholder": "Search integrations",
-    "noMatches": "Nothing matches \"{query}\"."
+    "noMatches": "Nothing matches \"{query}\".",
+    "readMore": "Read more",
+    "suggestTitle": "Missing a service you use?",
+    "suggestDescription": "Tell us which integration would help your workshop and we will look into it.",
+    "suggest": "Suggest an integration",
+    "suggestSubject": "Integration suggestion"
   },
   "categories": {
     "calendar": "Calendar",
