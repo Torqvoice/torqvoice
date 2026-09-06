@@ -723,7 +723,7 @@ export function VehiclesClient({
       ) : isPending ? (
         /* Grid skeleton */
         <div
-          className={`-m-1 grid min-h-0 flex-1 content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+          className={`-m-1 grid min-h-0 flex-1 auto-rows-max content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
           {Array.from({ length: view === 'grid6' ? 12 : 6 }).map((_, i) => (
             <Card key={i} className="overflow-hidden border-0 py-0 gap-0 shadow-sm">
@@ -736,9 +736,14 @@ export function VehiclesClient({
           ))}
         </div>
       ) : (
-        /* Grid view */
+        /* Grid view. Rows are sized to their content explicitly: the cards
+           clip their hover zoom with overflow-hidden, which makes each one
+           a scroll container whose minimum height is zero, so auto rows in
+           this fixed-height list would split its height evenly between
+           every row on the page instead. On a phone that was one thin
+           strip per vehicle; on a desktop the title was clipped away. */
         <div
-          className={`-m-1 grid min-h-0 flex-1 content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+          className={`-m-1 grid min-h-0 flex-1 auto-rows-max content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
           {data.vehicles.map((v) => (
             <ContextMenu key={v.id} modal={false}>
