@@ -447,6 +447,9 @@ export function ServicePageClient({
                 rightColumn={
                   <DetailsRightColumn
                     videoCall={videoCall}
+                    smsEnabled={smsEnabled}
+                    emailEnabled={emailEnabled}
+                    telegramEnabled={telegramEnabled}
                     formState={formState}
                     actions={actions}
                     record={record}

@@ -439,6 +439,33 @@
     "created": "Møte opprettet. Lenken ligger på arbeidsordren.",
     "removed": "Møte fjernet",
     "failed": "Noe gikk galt",
-    "shareHint": "Kunden får denne lenken bare når du sender den. Kopier den inn i en melding eller legg den ved et varsel."
+    "shareHint": "Kunden får denne lenken bare når du sender den.",
+    "shareHintNoChannel": "Kunden får denne lenken bare når du sender den. Ingen meldingskanal er satt opp, så kopier den inn i en melding selv.",
+    "send": {
+      "button": "Send til kunde",
+      "title": "Send lenken til videosamtalen",
+      "description": "Send lenken til {name}.",
+      "messageLabel": "Notat (valgfritt)",
+      "messagePlaceholder": "Noe kunden bør vite før samtalen...",
+      "linkAlwaysIncluded": "Lenken legges alltid til under notatet ditt.",
+      "sms": "SMS",
+      "email": "E-post",
+      "telegram": "Telegram",
+      "noPhone": "(ingen telefon)",
+      "noEmail": "(ingen e-post)",
+      "noTelegram": "(ingen chat koblet)",
+      "notAvailable": "(ikke satt opp)",
+      "cancel": "Avbryt",
+      "send": "Send",
+      "sent": "Lenken til videosamtalen er sendt",
+      "partlySent": "Sendt via {sent}; ikke via {failed}",
+      "failed": "Kunne ikke sende lenken"
+    },
+    "notify": {
+      "invitation": "Hei {name}, videosamtalen om {vehicle} er {when}. Bli med her: {url}",
+      "invitationNoTime": "Hei {name}, her er lenken til videosamtalen om {vehicle}: {url}",
+      "joinLine": "Bli med i videosamtalen her: {url}",
+      "emailSubject": "Videosamtale om din {vehicle}"
+    }
   }
 }

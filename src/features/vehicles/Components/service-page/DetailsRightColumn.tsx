@@ -44,6 +44,9 @@ interface DetailsRightColumnProps {
     toNumber: string
   }[]
   videoCall?: ServiceVideoCall
+  smsEnabled?: boolean
+  emailEnabled?: boolean
+  telegramEnabled?: boolean
   designOptions?: DesignOption[]
   designFollowsName?: string | null
   designPinnedAt?: string | null
@@ -64,6 +67,9 @@ export function DetailsRightColumn({
   orgMembers,
   notificationHistory = [],
   videoCall,
+  smsEnabled = false,
+  emailEnabled = false,
+  telegramEnabled = false,
   designOptions = [],
   designFollowsName = null,
   designPinnedAt = null,
@@ -130,6 +136,10 @@ export function DetailsRightColumn({
           serviceRecordId={record.id}
           videoCall={videoCall}
           scheduled={Boolean(formState.initialData.startDateTime)}
+          customer={record.customer ?? record.vehicle?.customer ?? null}
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+          telegramEnabled={telegramEnabled}
         />
       )}
       <TotalsSection

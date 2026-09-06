@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Copy, ExternalLink, Loader2, Trash2, Video } from 'lucide-react'
+import { Copy, ExternalLink, Loader2, Send, Trash2, Video } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -12,6 +12,7 @@ import {
   removeServiceMeeting,
   type ServiceVideoCall,
 } from '@/features/integrations/Actions/integrationActions'
+import { SendVideoCallDialog, type VideoCallRecipient } from './SendVideoCallDialog'
 
 /**
  * The work order's video call, added on purpose.
@@ -20,24 +21,41 @@ import {
  * is created at the provider, and the link lands on the work order. The
  * customer never receives it unless someone sends it, and the panel says
  * so, because a link that quietly appeared read as an invitation already
- * gone out.
+ * gone out. Sending is its own button, which opens a dialog that shows the
+ * channels and the text before anything leaves.
+ *
+ * The actions on an existing link are anchors rather than buttons. The
+ * column sits inside the form's fieldset, which is disabled once an invoice
+ * is locked, and sending or copying a meeting link is not editing the
+ * invoice.
  */
 export function VideoCallSection({
   serviceRecordId,
   videoCall,
   scheduled,
+  customer,
+  smsEnabled = false,
+  emailEnabled = false,
+  telegramEnabled = false,
 }: {
   serviceRecordId: string
   videoCall: ServiceVideoCall
   /** Whether the work order has a start time; a meeting follows the schedule. */
   scheduled: boolean
+  /** Who the link would go to; null on a counter sale with nobody attached. */
+  customer?: VideoCallRecipient | null
+  smsEnabled?: boolean
+  emailEnabled?: boolean
+  telegramEnabled?: boolean
 }) {
   const t = useTranslations('service.videoCall')
   const tp = useTranslations('integrations.meeting')
   const router = useRouter()
   const confirm = useConfirm()
   const [busy, setBusy] = useState(false)
+  const [sendOpen, setSendOpen] = useState(false)
   const { link, providers } = videoCall
+  const canSend = Boolean(customer) && (smsEnabled || emailEnabled || telegramEnabled)
 
   if (!link && providers.length === 0) return null
 
@@ -59,7 +77,7 @@ export function VideoCallSection({
   }
 
   const remove = async () => {
-    if (!link) return
+    if (!link || busy) return
     const ok = await confirm({
       title: t('removeTitle'),
       description: t('removeDescription'),
@@ -91,6 +109,11 @@ export function VideoCallSection({
     }
   }
 
+  const act = (fn: () => void) => (e: React.MouseEvent) => {
+    e.preventDefault()
+    fn()
+  }
+
   return (
     <div className="rounded-lg border p-3 space-y-3">
       <div className="flex items-center gap-2">
@@ -109,35 +132,86 @@ export function VideoCallSection({
           <code className="block select-all truncate rounded bg-muted px-2 py-1 text-xs">
             {link.url}
           </code>
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" asChild>
-              <a href={link.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-1 h-3.5 w-3.5" />
-                {t('join')}
+          {/* One labelled action, icon buttons beside it, so the row fits a narrow column. */}
+          <div className="flex items-center gap-1.5">
+            {canSend ? (
+              <Button size="sm" className="flex-1" asChild>
+                <a href="#" role="button" onClick={act(() => setSendOpen(true))}>
+                  <Send className="h-3.5 w-3.5" />
+                  {t('send.button')}
+                </a>
+              </Button>
+            ) : (
+              <Button size="sm" className="flex-1" asChild>
+                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  {t('join')}
+                </a>
+              </Button>
+            )}
+            {canSend && (
+              <Button size="icon-sm" variant="outline" asChild>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={t('join')}
+                  aria-label={t('join')}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </Button>
+            )}
+            <Button size="icon-sm" variant="outline" asChild>
+              <a
+                href="#"
+                role="button"
+                title={t('copy')}
+                aria-label={t('copy')}
+                onClick={act(() => void copy())}
+              >
+                <Copy className="h-3.5 w-3.5" />
               </a>
-            </Button>
-            <Button size="sm" variant="outline" onClick={copy}>
-              <Copy className="mr-1 h-3.5 w-3.5" />
-              {t('copy')}
             </Button>
             {link.removable && (
               <Button
-                size="sm"
+                size="icon-sm"
                 variant="outline"
-                className="ml-auto text-destructive hover:text-destructive"
-                onClick={remove}
-                disabled={busy}
+                className="text-destructive hover:text-destructive"
+                asChild
               >
-                {busy ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="mr-1 h-3.5 w-3.5" />
-                )}
-                {t('remove')}
+                <a
+                  href="#"
+                  role="button"
+                  title={t('remove')}
+                  aria-label={t('remove')}
+                  aria-disabled={busy}
+                  onClick={act(() => void remove())}
+                >
+                  {busy ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-3.5 w-3.5" />
+                  )}
+                </a>
               </Button>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{t('shareHint')}</p>
+          <p className="text-xs text-muted-foreground">
+            {canSend ? t('shareHint') : t('shareHintNoChannel')}
+          </p>
+          {customer && (
+            <SendVideoCallDialog
+              open={sendOpen}
+              onOpenChange={setSendOpen}
+              serviceRecordId={serviceRecordId}
+              meetingUrl={link.url}
+              customer={customer}
+              smsEnabled={smsEnabled}
+              emailEnabled={emailEnabled}
+              telegramEnabled={telegramEnabled}
+            />
+          )}
         </div>
       ) : (
         <div className="space-y-2">

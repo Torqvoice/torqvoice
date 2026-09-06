@@ -163,7 +163,8 @@
     "settings_setDocumentDesignRule": "Alterou quando um design é usado",
     "settings_freezeInvoices": "Faturas anteriores travadas",
     "inspection_reminders_sent": "Enviou lembretes de inspeção",
-    "inspection_reminders_send": "Enviou lembretes de inspeção"
+    "inspection_reminders_send": "Enviou lembretes de inspeção",
+    "service_videoCall_send": "Link da videochamada enviado"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -298,6 +299,7 @@
     "settings_applyDocumentDesign": "Definiu {name} como design de documento padrão",
     "settings_setDocumentDesignRule": "Alterou quando o design de documento {name} é usado",
     "settings_freezeInvoices": "Travou {count, plural, one {# fatura} other {# faturas}} anteriores ao bloqueio com o design atual",
-    "inspection_reminders_sent": "Enviou {count} lembretes de inspeção"
+    "inspection_reminders_sent": "Enviou {count} lembretes de inspeção",
+    "service_videoCall_send": "Enviou o link da videochamada por {channels}"
   }
 }

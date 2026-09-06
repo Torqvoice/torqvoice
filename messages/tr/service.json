@@ -439,6 +439,33 @@
     "created": "Toplantı oluşturuldu. Bağlantı iş emrinde.",
     "removed": "Toplantı kaldırıldı",
     "failed": "Bir şeyler ters gitti",
-    "shareHint": "Müşteri bu bağlantıyı yalnızca siz gönderdiğinizde alır. Bir mesaja kopyalayın veya bir bildirime ekleyin."
+    "shareHint": "Müşteri bu bağlantıyı yalnızca siz gönderdiğinizde alır.",
+    "shareHintNoChannel": "Müşteri bu bağlantıyı yalnızca siz gönderdiğinizde alır. Hiçbir mesaj kanalı ayarlı değil; bağlantıyı bir mesaja kendiniz kopyalayın.",
+    "send": {
+      "button": "Müşteriye gönder",
+      "title": "Görüntülü görüşme bağlantısını gönder",
+      "description": "Katılım bağlantısını {name} adlı müşteriye gönder.",
+      "messageLabel": "Not (isteğe bağlı)",
+      "messagePlaceholder": "Müşterinin görüşmeden önce bilmesi gerekenler...",
+      "linkAlwaysIncluded": "Katılım bağlantısı her zaman notunuzun altına eklenir.",
+      "sms": "SMS",
+      "email": "E-posta",
+      "telegram": "Telegram",
+      "noPhone": "(telefon yok)",
+      "noEmail": "(e-posta yok)",
+      "noTelegram": "(bağlı sohbet yok)",
+      "notAvailable": "(ayarlı değil)",
+      "cancel": "İptal",
+      "send": "Gönder",
+      "sent": "Görüntülü görüşme bağlantısı gönderildi",
+      "partlySent": "{sent} ile gönderildi; {failed} ile gönderilemedi",
+      "failed": "Bağlantı gönderilemedi"
+    },
+    "notify": {
+      "invitation": "Merhaba {name}, {vehicle} ile ilgili görüntülü görüşmeniz {when} tarihinde. Buradan katılın: {url}",
+      "invitationNoTime": "Merhaba {name}, {vehicle} ile ilgili görüntülü görüşmenin bağlantısı: {url}",
+      "joinLine": "Görüntülü görüşmeye buradan katılın: {url}",
+      "emailSubject": "{vehicle} aracınızla ilgili görüntülü görüşme"
+    }
   }
 }

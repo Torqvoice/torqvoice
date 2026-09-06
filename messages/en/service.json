@@ -439,6 +439,33 @@
     "created": "Meeting created. The link is on the work order.",
     "removed": "Meeting removed",
     "failed": "Something went wrong",
-    "shareHint": "The customer only gets this link when you send it. Copy it into a message or add it to a notification."
+    "shareHint": "The customer only gets this link when you send it.",
+    "shareHintNoChannel": "The customer only gets this link when you send it. No messaging channel is set up, so copy it into a message yourself.",
+    "send": {
+      "button": "Send to customer",
+      "title": "Send the video call link",
+      "description": "Send the join link to {name}.",
+      "messageLabel": "Note (optional)",
+      "messagePlaceholder": "Anything the customer should know before the call...",
+      "linkAlwaysIncluded": "The join link is always added below your note.",
+      "sms": "SMS",
+      "email": "Email",
+      "telegram": "Telegram",
+      "noPhone": "(no phone)",
+      "noEmail": "(no email)",
+      "noTelegram": "(no chat linked)",
+      "notAvailable": "(not set up)",
+      "cancel": "Cancel",
+      "send": "Send",
+      "sent": "Video call link sent",
+      "partlySent": "Sent by {sent}; not by {failed}",
+      "failed": "Could not send the link"
+    },
+    "notify": {
+      "invitation": "Hi {name}, your video call about the {vehicle} is on {when}. Join here: {url}",
+      "invitationNoTime": "Hi {name}, here is the link for the video call about the {vehicle}: {url}",
+      "joinLine": "Join the video call here: {url}",
+      "emailSubject": "Video call about your {vehicle}"
+    }
   }
 }

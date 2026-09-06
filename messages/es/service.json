@@ -439,6 +439,33 @@
     "created": "Reunión creada. El enlace está en la orden de trabajo.",
     "removed": "Reunión eliminada",
     "failed": "Algo salió mal",
-    "shareHint": "El cliente solo recibe este enlace cuando usted se lo envía. Cópielo en un mensaje o añádalo a una notificación."
+    "shareHint": "El cliente solo recibe este enlace cuando lo envías.",
+    "shareHintNoChannel": "El cliente solo recibe este enlace cuando lo envías. No hay ningún canal de mensajes configurado, así que cópialo tú en un mensaje.",
+    "send": {
+      "button": "Enviar al cliente",
+      "title": "Enviar el enlace de la videollamada",
+      "description": "Enviar el enlace para unirse a {name}.",
+      "messageLabel": "Nota (opcional)",
+      "messagePlaceholder": "Lo que el cliente deba saber antes de la llamada...",
+      "linkAlwaysIncluded": "El enlace para unirse se añade siempre debajo de tu nota.",
+      "sms": "SMS",
+      "email": "Correo",
+      "telegram": "Telegram",
+      "noPhone": "(sin teléfono)",
+      "noEmail": "(sin correo)",
+      "noTelegram": "(sin chat vinculado)",
+      "notAvailable": "(no configurado)",
+      "cancel": "Cancelar",
+      "send": "Enviar",
+      "sent": "Enlace de la videollamada enviado",
+      "partlySent": "Enviado por {sent}; no por {failed}",
+      "failed": "No se pudo enviar el enlace"
+    },
+    "notify": {
+      "invitation": "Hola {name}, tu videollamada sobre el {vehicle} es el {when}. Únete aquí: {url}",
+      "invitationNoTime": "Hola {name}, aquí tienes el enlace de la videollamada sobre el {vehicle}: {url}",
+      "joinLine": "Únete a la videollamada aquí: {url}",
+      "emailSubject": "Videollamada sobre tu {vehicle}"
+    }
   }
 }
