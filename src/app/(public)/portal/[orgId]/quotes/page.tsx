@@ -12,9 +12,14 @@ import {
 import { FileQuestion } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export default async function PortalQuotesPage({ params }: { params: Promise<{ orgId: string }> }) {
   const { orgId } = await params
+  // Dates on the portal are the workshop's calendar days, not the server's.
+  const org = await resolvePortalOrg(orgId)
+  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.quotes')
   const result = await getPortalQuotes()
 
@@ -72,7 +77,8 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                     )}
                     {q.validUntil && (
                       <span>
-                        {t('validUntil')}: {new Date(q.validUntil).toLocaleDateString()}
+                        {t('validUntil')}:{' '}
+                        {new Date(q.validUntil).toLocaleDateString(undefined, { timeZone })}
                       </span>
                     )}
                   </div>
@@ -125,7 +131,9 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                       </TableCell>
                       <TableCell>${q.totalAmount.toFixed(2)}</TableCell>
                       <TableCell>
-                        {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '-'}
+                        {q.validUntil
+                          ? new Date(q.validUntil).toLocaleDateString(undefined, { timeZone })
+                          : '-'}
                       </TableCell>
                       <TableCell>
                         {q.publicToken && (

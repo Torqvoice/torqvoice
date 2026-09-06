@@ -22,6 +22,10 @@ vi.mock('@/lib/cached-session', () => ({
 }))
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+vi.mock('@/lib/workshop-timezone', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/workshop-timezone')>()),
+  workshopTimeZone: async () => 'UTC',
+}))
 
 vi.mock('@/lib/invoice-utils', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/invoice-utils')>()),

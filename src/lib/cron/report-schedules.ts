@@ -7,88 +7,99 @@ import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { netLineTotal } from '@/lib/tax'
+import {
+  addZonedDays,
+  atZonedTime,
+  startOfZonedDay,
+  zonedDate,
+  zonedDayKey,
+  zonedParts,
+} from '@/lib/timezone'
+import { shiftWorkshopTime, workshopMonthKey } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 // --------------- date helpers ---------------
+// All in the workshop's zone: the server runs in UTC and its clock says
+// nothing about which day a report window or a run time falls on.
 
-function calculateNextRunDate(current: Date, frequency: string): Date {
-  const next = new Date(current)
+/** The next run is 08:00 on the workshop's clock, one period on from `current`. */
+function calculateNextRunDate(current: Date, frequency: string, timeZone: string): Date {
+  let next = current
   switch (frequency) {
     case 'daily':
-      next.setDate(next.getDate() + 1)
+      next = shiftWorkshopTime(current, { days: 1 }, timeZone)
       break
     case 'weekly':
-      next.setDate(next.getDate() + 7)
+      next = shiftWorkshopTime(current, { days: 7 }, timeZone)
       break
     case 'biweekly':
-      next.setDate(next.getDate() + 14)
+      next = shiftWorkshopTime(current, { days: 14 }, timeZone)
       break
     case 'monthly':
-      next.setMonth(next.getMonth() + 1)
+      next = shiftWorkshopTime(current, { months: 1 }, timeZone)
       break
     case 'bimonthly':
-      next.setMonth(next.getMonth() + 2)
+      next = shiftWorkshopTime(current, { months: 2 }, timeZone)
       break
     case 'quarterly':
-      next.setMonth(next.getMonth() + 4)
+      next = shiftWorkshopTime(current, { months: 3 }, timeZone)
       break
     case 'semiannually':
-      next.setMonth(next.getMonth() + 6)
+      next = shiftWorkshopTime(current, { months: 6 }, timeZone)
       break
     case 'yearly':
-      next.setFullYear(next.getFullYear() + 1)
+      next = shiftWorkshopTime(current, { years: 1 }, timeZone)
       break
   }
-  next.setHours(8, 0, 0, 0)
-  return next
+  return atZonedTime(next, '08:00', timeZone)
 }
 
-function getDateRange(dateRange: string): { start: Date; end: Date } {
-  const end = new Date()
-  end.setHours(23, 59, 59, 999)
-  const start = new Date(end)
+/** Whole workshop days, from the start of the period to the end of today. */
+function getDateRange(dateRange: string, now: Date, timeZone: string): { start: Date; end: Date } {
+  const today = startOfZonedDay(now, timeZone)
+  const end = new Date(addZonedDays(today, 1, timeZone).getTime() - 1)
+  let start: Date
 
   switch (dateRange) {
     case 'last1d':
-      start.setDate(start.getDate() - 1)
+      start = addZonedDays(today, -1, timeZone)
       break
     case 'last7d':
-      start.setDate(start.getDate() - 7)
+      start = addZonedDays(today, -7, timeZone)
       break
     case 'last14d':
-      start.setDate(start.getDate() - 14)
-      break
-    case 'last30d':
-      start.setMonth(start.getMonth() - 1)
+      start = addZonedDays(today, -14, timeZone)
       break
     case 'last60d':
-      start.setMonth(start.getMonth() - 2)
+      start = shiftWorkshopTime(today, { months: -2 }, timeZone)
       break
     case 'last90d':
-      start.setMonth(start.getMonth() - 3)
+      start = shiftWorkshopTime(today, { months: -3 }, timeZone)
       break
     case 'last6m':
-      start.setMonth(start.getMonth() - 6)
+      start = shiftWorkshopTime(today, { months: -6 }, timeZone)
       break
     case 'last12m':
-      start.setFullYear(start.getFullYear() - 1)
+      start = shiftWorkshopTime(today, { years: -1 }, timeZone)
       break
     case 'ytd':
-      start.setMonth(0, 1)
+      start = zonedDate(zonedParts(now, timeZone).year, 1, 1, 0, 0, timeZone)
       break
     case 'allTime':
-      start.setFullYear(2000, 0, 1)
+      start = zonedDate(2000, 1, 1, 0, 0, timeZone)
       break
+    case 'last30d':
     default:
-      start.setMonth(start.getMonth() - 1)
+      start = shiftWorkshopTime(today, { months: -1 }, timeZone)
       break
   }
-  start.setHours(0, 0, 0, 0)
   return { start, end }
 }
 
-function formatDateRange(start: Date, end: Date): string {
+function formatDateRange(start: Date, end: Date, timeZone: string): string {
   const fmt = (d: Date) =>
     d.toLocaleDateString('en-US', {
+      timeZone,
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -99,7 +110,7 @@ function formatDateRange(start: Date, end: Date): string {
 // --------------- internal report fetchers ---------------
 // These replicate the logic from reportActions.ts but accept orgId directly
 
-async function fetchRevenue(orgId: string, start: Date, end: Date) {
+async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: string) {
   const records = await db.serviceRecord.findMany({
     where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: {
@@ -151,7 +162,7 @@ async function fetchRevenue(orgId: string, start: Date, end: Date) {
       0
     )
     const _d = r.startDateTime ?? r.serviceDate
-    const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}`
+    const month = workshopMonthKey(_d, timeZone)
 
     if (!monthly[month])
       monthly[month] = {
@@ -362,7 +373,7 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
   }
 }
 
-async function fetchJobAnalytics(orgId: string, start: Date, end: Date) {
+async function fetchJobAnalytics(orgId: string, start: Date, end: Date, timeZone: string) {
   const records = await db.serviceRecord.findMany({
     where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: {
@@ -384,8 +395,8 @@ async function fetchJobAnalytics(orgId: string, start: Date, end: Date) {
     byType[r.type].totalValue += r.totalAmount > 0 ? r.totalAmount : r.cost
     byType[r.type].totalHours += r.laborItems.reduce((s, l) => s + l.hours, 0)
     const _d = r.startDateTime ?? r.serviceDate
-    dayCount[_d.getDay()] += 1
-    const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}`
+    dayCount[zonedParts(_d, timeZone).weekday] += 1
+    const month = workshopMonthKey(_d, timeZone)
     if (!monthly[month]) monthly[month] = { count: 0, revenue: 0 }
     monthly[month].count += 1
     monthly[month].revenue += r.totalAmount > 0 ? r.totalAmount : r.cost
@@ -506,7 +517,7 @@ async function fetchInventory(orgId: string) {
   return { totalParts: parts.length, totalItems, totalValue, totalSellValue, lowStock }
 }
 
-async function fetchPastDue(orgId: string) {
+async function fetchPastDue(orgId: string, timeZone: string) {
   const now = new Date()
   const records = await db.serviceRecord.findMany({
     where: { organizationId: orgId, invoiceDueDate: { lt: now }, status: { not: 'cancelled' } },
@@ -565,7 +576,7 @@ async function fetchPastDue(orgId: string) {
       totalAmount: total,
       amountPaid: paid,
       amountDue,
-      dueDate: dueDate.toISOString().split('T')[0],
+      dueDate: zonedDayKey(dueDate, timeZone),
       daysPastDue: days,
     })
     totalAmountDue += amountDue
@@ -586,7 +597,7 @@ async function fetchPastDue(orgId: string) {
   }
 }
 
-async function fetchTax(orgId: string, start: Date, end: Date) {
+async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string) {
   const records = await db.serviceRecord.findMany({
     where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
     select: {
@@ -611,7 +622,7 @@ async function fetchTax(orgId: string, start: Date, end: Date) {
   for (const r of records) {
     if (r.taxAmount <= 0) continue
     const _d = r.startDateTime ?? r.serviceDate
-    const month = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, '0')}`
+    const month = workshopMonthKey(_d, timeZone)
     // Net taxable base = totalAmount - taxAmount, valid for both modes.
     const taxableBase = Math.max(0, r.totalAmount - r.taxAmount)
     if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
@@ -634,21 +645,25 @@ async function fetchTax(orgId: string, start: Date, end: Date) {
 
 // --------------- process a single schedule ---------------
 
-export async function processOneSchedule(schedule: {
-  id: string
-  name: string
-  frequency: string
-  dateRange: string
-  sections: string
-  recipients: string
-  organizationId: string
-  endDate: Date | null
-}) {
+export async function processOneSchedule(
+  schedule: {
+    id: string
+    name: string
+    frequency: string
+    dateRange: string
+    sections: string
+    recipients: string
+    organizationId: string
+    endDate: Date | null
+  },
+  knownTimeZone?: string
+) {
   const now = new Date()
+  const timeZone = knownTimeZone ?? (await workshopTimeZone(schedule.organizationId))
   const sections: string[] = JSON.parse(schedule.sections)
   const recipientIds: string[] = JSON.parse(schedule.recipients)
-  const { start, end } = getDateRange(schedule.dateRange || 'last30d')
-  const dateRangeStr = formatDateRange(start, end)
+  const { start, end } = getDateRange(schedule.dateRange || 'last30d', now, timeZone)
+  const dateRangeStr = formatDateRange(start, end, timeZone)
 
   // Fetch org settings
   const settings = await db.appSetting.findMany({
@@ -683,15 +698,17 @@ export async function processOneSchedule(schedule: {
     retentionData,
     inventoryData,
   ] = await Promise.all([
-    sections.includes('revenue') ? fetchRevenue(schedule.organizationId, start, end) : null,
-    sections.includes('tax') ? fetchTax(schedule.organizationId, start, end) : null,
-    sections.includes('pastDue') ? fetchPastDue(schedule.organizationId) : null,
+    sections.includes('revenue')
+      ? fetchRevenue(schedule.organizationId, start, end, timeZone)
+      : null,
+    sections.includes('tax') ? fetchTax(schedule.organizationId, start, end, timeZone) : null,
+    sections.includes('pastDue') ? fetchPastDue(schedule.organizationId, timeZone) : null,
     sections.includes('services') ? fetchServices(schedule.organizationId, start, end) : null,
     sections.includes('customers') ? fetchCustomers(schedule.organizationId, start, end) : null,
     sections.includes('technicians') ? fetchTechnicians(schedule.organizationId, start, end) : null,
     sections.includes('parts') ? fetchParts(schedule.organizationId, start, end) : null,
     sections.includes('jobAnalytics')
-      ? fetchJobAnalytics(schedule.organizationId, start, end)
+      ? fetchJobAnalytics(schedule.organizationId, start, end, timeZone)
       : null,
     sections.includes('retention') ? fetchRetention(schedule.organizationId, start, end) : null,
     sections.includes('inventory') ? fetchInventory(schedule.organizationId) : null,
@@ -752,7 +769,7 @@ export async function processOneSchedule(schedule: {
   }
 
   // Update schedule
-  const nextRunDate = calculateNextRunDate(now, schedule.frequency)
+  const nextRunDate = calculateNextRunDate(now, schedule.frequency, timeZone)
   const shouldDeactivate = schedule.endDate && nextRunDate > schedule.endDate
 
   await db.reportSchedule.update({
@@ -777,10 +794,17 @@ export function processReportSchedules() {
     const dueSchedules = await db.reportSchedule.findMany({
       where: { isActive: true, nextRunDate: { lte: new Date() } },
     })
+    // One settings read per workshop, however many of its schedules are due
+    const zones = new Map<string, string>()
 
     for (const schedule of dueSchedules) {
       try {
-        await processOneSchedule(schedule)
+        let timeZone = zones.get(schedule.organizationId)
+        if (!timeZone) {
+          timeZone = await workshopTimeZone(schedule.organizationId)
+          zones.set(schedule.organizationId, timeZone)
+        }
+        await processOneSchedule(schedule, timeZone)
       } catch (err) {
         console.error(`[cron] Failed to process report schedule ${schedule.id}:`, err)
       }

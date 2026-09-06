@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export default async function PortalDashboardPage({
   params,
@@ -22,6 +24,9 @@ export default async function PortalDashboardPage({
   params: Promise<{ orgId: string }>
 }) {
   const { orgId } = await params
+  // Dates on the portal are the workshop's calendar days, not the server's.
+  const org = await resolvePortalOrg(orgId)
+  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.dashboard')
   const tInvoices = await getTranslations('portal.invoices')
   const result = await getPortalDashboard()
@@ -130,7 +135,10 @@ export default async function PortalDashboardPage({
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
                         {inv.vehicle?.make} {inv.vehicle?.model} ·{' '}
-                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
+                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString(
+                          undefined,
+                          { timeZone }
+                        )}
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
@@ -224,7 +232,10 @@ export default async function PortalDashboardPage({
                     <p className="truncate text-sm font-medium">{job.title}</p>
                     <p className="truncate text-xs text-muted-foreground">
                       {job.vehicle?.make} {job.vehicle?.model} ·{' '}
-                      {new Date(job.startDateTime ?? job.serviceDate).toLocaleDateString()}
+                      {new Date(job.startDateTime ?? job.serviceDate).toLocaleDateString(
+                        undefined,
+                        { timeZone }
+                      )}
                     </p>
                   </div>
                   <Badge variant="secondary" className="text-xs">
@@ -260,7 +271,7 @@ export default async function PortalDashboardPage({
                     <p className="truncate text-sm font-medium">{req.description.slice(0, 80)}</p>
                     <p className="truncate text-xs text-muted-foreground">
                       {req.vehicle?.make} {req.vehicle?.model} ·{' '}
-                      {new Date(req.createdAt).toLocaleDateString()}
+                      {new Date(req.createdAt).toLocaleDateString(undefined, { timeZone })}
                     </p>
                   </div>
                   <Badge variant="secondary" className="text-xs">

@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
-import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { mkdir, writeFile, rm } from 'fs/promises'
 import path from 'path'
 import os from 'os'
@@ -213,6 +215,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { organizationId, userId } = ctx
+  const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
 
   try {
@@ -403,7 +406,7 @@ export async function POST(request: NextRequest) {
               type: 'repair',
               status: 'completed',
               cost: amount,
-              serviceDate: toSafeDate(invoice.date) ?? new Date(),
+              serviceDate: toSafeWorkshopDate(invoice.date, timeZone) ?? new Date(),
               invoiceNumber,
               subtotal: partsTotal + laborTotal,
               discountType:
@@ -515,7 +518,7 @@ export async function POST(request: NextRequest) {
             await tx.payment.create({
               data: {
                 amount: parseNum(payable.amount),
-                date: toSafeDate(payment.date) ?? new Date(),
+                date: toSafeWorkshopDate(payment.date, timeZone) ?? new Date(),
                 method: getPaymentMethod(payment.type_id),
                 note: payment.private_notes || null,
                 externalId: payment.transaction_reference || null,

@@ -10,9 +10,12 @@ import {
   type CreateRecurringInvoiceInput,
   type UpdateRecurringInvoiceInput,
 } from '../Schema/recurringInvoiceSchema'
-import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { calculateTotals } from '@/lib/tax'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import { calculateNextRunDate } from '@/lib/cron/recurring-invoices'
+import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export async function getRecurringInvoices() {
   return withAuth(
@@ -63,13 +66,16 @@ export async function createRecurringInvoice(input: CreateRecurringInvoiceInput)
         taxInclusive = setting?.value === 'true'
       }
 
+      // The dates are workshop days: the first run is that day's midnight
+      // on its clock, and the end date covers the whole of its last day
+      const timeZone = await workshopTimeZone(organizationId)
       const invoice = await db.recurringInvoice.create({
         data: {
           title: parsed.title,
           description: parsed.description,
           frequency: parsed.frequency,
-          nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date(),
-          endDate: toSafeDate(parsed.endDate) ?? null,
+          nextRunDate: toSafeWorkshopDate(parsed.nextRunDate, timeZone) ?? new Date(),
+          endDate: endOfWorkshopDay(parsed.endDate, timeZone) ?? null,
           vehicleId: parsed.vehicleId,
           type: parsed.type,
           cost: parsed.cost,
@@ -129,6 +135,8 @@ export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput)
         if (!vehicle) throw new Error('Vehicle not found')
       }
 
+      const timeZone = await workshopTimeZone(organizationId)
+
       // Update main record
       const updated = await db.$transaction(async (tx) => {
         // Delete existing template items if new ones provided
@@ -146,9 +154,11 @@ export async function updateRecurringInvoice(input: UpdateRecurringInvoiceInput)
             ...(parsed.description !== undefined && { description: parsed.description }),
             ...(parsed.frequency !== undefined && { frequency: parsed.frequency }),
             ...(parsed.nextRunDate !== undefined && {
-              nextRunDate: toSafeDate(parsed.nextRunDate) ?? new Date(),
+              nextRunDate: toSafeWorkshopDate(parsed.nextRunDate, timeZone) ?? new Date(),
             }),
-            ...(parsed.endDate !== undefined && { endDate: toSafeDate(parsed.endDate) ?? null }),
+            ...(parsed.endDate !== undefined && {
+              endDate: endOfWorkshopDay(parsed.endDate, timeZone) ?? null,
+            }),
             ...(parsed.vehicleId !== undefined && { vehicleId: parsed.vehicleId }),
             ...(parsed.type !== undefined && { type: parsed.type }),
             ...(parsed.cost !== undefined && { cost: parsed.cost }),
@@ -248,28 +258,6 @@ export async function toggleRecurringInvoice(id: string) {
   )
 }
 
-function calculateNextRunDate(current: Date, frequency: string): Date {
-  const next = new Date(current)
-  switch (frequency) {
-    case 'weekly':
-      next.setDate(next.getDate() + 7)
-      break
-    case 'biweekly':
-      next.setDate(next.getDate() + 14)
-      break
-    case 'monthly':
-      next.setMonth(next.getMonth() + 1)
-      break
-    case 'quarterly':
-      next.setMonth(next.getMonth() + 3)
-      break
-    case 'yearly':
-      next.setFullYear(next.getFullYear() + 1)
-      break
-  }
-  return next
-}
-
 async function generateInvoiceNumber(organizationId: string): Promise<string> {
   const settings = await db.appSetting.findMany({
     where: {
@@ -306,6 +294,7 @@ export async function processRecurringInvoices() {
   return withAuth(
     async ({ organizationId }) => {
       const now = new Date()
+      const timeZone = await workshopTimeZone(organizationId)
 
       const dueInvoices = await db.recurringInvoice.findMany({
         where: {
@@ -376,7 +365,7 @@ export async function processRecurringInvoices() {
           })
 
           // Update recurring invoice
-          const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency)
+          const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency, timeZone)
           const shouldDeactivate = ri.endDate && nextRunDate > ri.endDate
 
           await tx.recurringInvoice.update({

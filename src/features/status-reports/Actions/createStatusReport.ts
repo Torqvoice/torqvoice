@@ -1,6 +1,7 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { endOfWorkshopDay } from '@/lib/workshop-datetime'
 import { randomBytes } from 'crypto'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
@@ -36,7 +37,10 @@ export async function createStatusReport(input: unknown) {
           organizationId,
           technicianId: technician?.id || serviceRecord.technicianId,
           status: data.videoUrl ? 'published' : 'draft',
-          expiresAt: toSafeDate(data.expiresAt) ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          // A chosen day means the link lives through the whole of that day.
+          expiresAt:
+            endOfWorkshopDay(data.expiresAt, await workshopTimeZone(organizationId)) ??
+            new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
       })
 

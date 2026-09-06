@@ -4,6 +4,7 @@ import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from '@/lib/sms'
 import { sendTelegramMessage } from '@/lib/telegram'
 import { sendOrgWhatsapp } from '@/lib/whatsapp'
+import { shiftWorkshopTime } from '@/lib/workshop-datetime'
 import type { MessageFrequency } from '../Schema/scheduledMessageSchema'
 
 /** Everything a send needs, whether it comes from the cron or a manual push. */
@@ -176,29 +177,31 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
 
 /**
  * When a repeating message goes out next, or null when it is done.
- * Keeps the wall-clock time of day and stops once past `endDate`.
+ * Keeps the wall-clock time of day on the workshop's clock, so a daily
+ * 18:00 stays 18:00 across a DST change, and stops once past `endDate`.
  */
 export function nextSendAt(
   current: Date,
   frequency: MessageFrequency | string,
-  endDate: Date | null
+  endDate: Date | null,
+  timeZone: string
 ): Date | null {
-  const next = new Date(current)
+  let next: Date
   switch (frequency) {
     case 'daily':
-      next.setDate(next.getDate() + 1)
+      next = shiftWorkshopTime(current, { days: 1 }, timeZone)
       break
     case 'weekly':
-      next.setDate(next.getDate() + 7)
+      next = shiftWorkshopTime(current, { days: 7 }, timeZone)
       break
     case 'biweekly':
-      next.setDate(next.getDate() + 14)
+      next = shiftWorkshopTime(current, { days: 14 }, timeZone)
       break
     case 'monthly':
-      next.setMonth(next.getMonth() + 1)
+      next = shiftWorkshopTime(current, { months: 1 }, timeZone)
       break
     case 'yearly':
-      next.setFullYear(next.getFullYear() + 1)
+      next = shiftWorkshopTime(current, { years: 1 }, timeZone)
       break
     default:
       return null // "once"

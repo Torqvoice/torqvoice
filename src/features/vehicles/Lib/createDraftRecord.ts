@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
 import { nextAvailableSlot } from '@/features/workboard/Lib/availability'
 import { loadBookingContext } from '@/features/workboard/Lib/bookings'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { atZonedTime, startOfZonedDay, zonedParts } from '@/lib/timezone'
 
 /**
  * Shared draft-record creation for both work orders (with a vehicle) and
@@ -24,7 +26,7 @@ export async function createDraftRecord(
     workBayId?: string
   }
 ) {
-  const [settings, org, currentUser] = await Promise.all([
+  const [settings, org, currentUser, timeZone] = await Promise.all([
     db.appSetting.findMany({
       where: {
         organizationId,
@@ -50,6 +52,7 @@ export async function createDraftRecord(
       where: { id: userId },
       select: { name: true },
     }),
+    workshopTimeZone(organizationId),
   ])
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
@@ -95,9 +98,10 @@ export async function createDraftRecord(
 
   const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
   const now = new Date()
+  const today = zonedParts(now, timeZone)
   const prefix = rawPrefix
-    .replace('{year}', now.getFullYear().toString())
-    .replace('{month}', String(now.getMonth() + 1).padStart(2, '0'))
+    .replace('{year}', String(today.year))
+    .replace('{month}', String(today.month).padStart(2, '0'))
 
   const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
   const lastRecord = await db.serviceRecord.findFirst({
@@ -146,9 +150,9 @@ export async function createDraftRecord(
   // scheduled around what the shop already has booked.
   const isShopWork = !!opts.vehicleId
   if (opts.startDateTime || !isShopWork) {
-    const [h, m] = (settingsMap['workboard.workDayStart'] || '07:00').split(':').map(Number)
     defaultStart =
-      opts.startDateTime ?? new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
+      opts.startDateTime ??
+      atZonedTime(now, settingsMap['workboard.workDayStart'] || '07:00', timeZone)
   } else {
     const { bookings, hours } = await loadBookingContext(organizationId, now)
     const slot = nextAvailableSlot({
@@ -165,16 +169,11 @@ export async function createDraftRecord(
     } else {
       // Booked solid for weeks. Falling back to opening time keeps the job on
       // the board rather than refusing to create it over a scheduling detail.
-      const [h, m] = (hours.start || '07:00').split(':').map(Number)
-      defaultStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
+      defaultStart = atZonedTime(now, hours.start || '07:00', timeZone)
     }
   }
-  // serviceDate should be date-only (start of day)
-  const serviceDate = new Date(
-    defaultStart.getFullYear(),
-    defaultStart.getMonth(),
-    defaultStart.getDate()
-  )
+  // serviceDate should be date-only (start of the workshop's day)
+  const serviceDate = startOfZonedDay(defaultStart, timeZone)
 
   return db.serviceRecord.create({
     data: {

@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 /**
  * Appends to the job's internal notes.
@@ -45,9 +46,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // Stamped, because a shared field with several authors and no
       // attribution becomes unreadable within a week. The web editor stores
       // HTML, so this matches rather than injecting bare newlines into it.
+      // Dated on the workshop's calendar, not the server's.
       const stamp = new Date().toLocaleDateString('en-GB', {
         day: 'numeric',
         month: 'short',
+        timeZone: await workshopTimeZone(ctx.organizationId),
       })
       const line = `<p><strong>${technician?.name ?? 'Technician'}, ${stamp}:</strong> ${escapeHtml(note.trim())}</p>`
 

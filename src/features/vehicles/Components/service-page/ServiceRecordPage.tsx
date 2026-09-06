@@ -25,6 +25,8 @@ import { listDesignOptions } from '@/features/invoice-designer/Actions/documentD
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
 import { PageHeader } from '@/components/page-header'
 import { getTranslations } from 'next-intl/server'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { addZonedDays, zonedDayKey } from '@/lib/timezone'
 
 /**
  * Shared server component behind both service-record routes:
@@ -191,6 +193,8 @@ export async function ServiceRecordPage({
     !!d && !isNaN(new Date(d).getTime())
   const effectiveInvoiceDate =
     [record.invoiceDate, record.startDateTime, record.serviceDate].find(isRenderable) ?? new Date()
+  // The date inputs show the workshop's calendar day, not the server's.
+  const timeZone = organizationId ? await workshopTimeZone(organizationId) : 'UTC'
 
   const initialData = {
     id: record.id,
@@ -199,22 +203,21 @@ export async function ServiceRecordPage({
     type: record.type,
     status: record.status,
     mileage: record.mileage,
-    serviceDate: (isRenderable(record.serviceDate) ? new Date(record.serviceDate) : new Date())
-      .toISOString()
-      .split('T')[0],
+    serviceDate: zonedDayKey(
+      isRenderable(record.serviceDate) ? new Date(record.serviceDate) : new Date(),
+      timeZone
+    ),
     startDateTime: isRenderable(record.startDateTime) ? record.startDateTime.toISOString() : null,
     endDateTime: isRenderable(record.endDateTime) ? record.endDateTime.toISOString() : null,
     techName: record.techName || '',
     diagnosticNotes: record.diagnosticNotes || '',
     invoiceNotes: record.invoiceNotes || '',
     invoiceNumber: record.invoiceNumber || '',
-    invoiceDate: effectiveInvoiceDate.toISOString().split('T')[0],
+    invoiceDate: zonedDayKey(effectiveInvoiceDate, timeZone),
     invoiceDueDate: isRenderable(record.invoiceDueDate)
-      ? record.invoiceDueDate.toISOString().split('T')[0]
+      ? zonedDayKey(record.invoiceDueDate, timeZone)
       : defaultDueDays > 0
-        ? new Date(effectiveInvoiceDate.getTime() + defaultDueDays * 86400000)
-            .toISOString()
-            .split('T')[0]
+        ? zonedDayKey(addZonedDays(effectiveInvoiceDate, defaultDueDays, timeZone), timeZone)
         : '',
     concerns: record.concerns.map((c) => ({
       id: c.id,

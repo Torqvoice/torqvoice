@@ -5,6 +5,9 @@ import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
+import { atZonedTime } from '@/lib/timezone'
+import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
 import { mkdir, rm, writeFile } from 'fs/promises'
@@ -72,6 +75,8 @@ async function importServiceRecordTree(
     vehicleId: string | null
     customerId: string | null
     workDayStartTime: string
+    /** The restored workshop's zone, which workDayStartTime is read in. */
+    timeZone: string
     /** Technicians restored by this import. See the time entries below. */
     technicianIds: ReadonlySet<string>
     /**
@@ -93,8 +98,7 @@ async function importServiceRecordTree(
   if (!startDT && sr.serviceDate) {
     const sd = toSafeDate(sr.serviceDate as string)
     if (sd) {
-      const [h, m] = opts.workDayStartTime.split(':').map(Number)
-      startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0)
+      startDT = atZonedTime(sd, opts.workDayStartTime, opts.timeZone)
     }
   }
   if (sr.endDateTime) {
@@ -679,6 +683,13 @@ export async function POST(request: NextRequest) {
         (s) => s.key === 'workboard.workDayStart'
       )
       const workDayStartTime = (workDayStartSetting?.value as string) || '07:00'
+      const importedSetting = (key: string) =>
+        (data.settings as Record<string, unknown>[] | undefined)?.find((s) => s.key === key)
+          ?.value as string | undefined
+      const timeZone = resolveWorkshopTimeZone(
+        importedSetting(SETTING_KEYS.TIMEZONE),
+        importedSetting(SETTING_KEYS.TIMEZONE_DETECTED)
+      )
 
       // 6. Insert vehicles with nested data
       if (data.vehicles?.length) {
@@ -776,6 +787,7 @@ export async function POST(request: NextRequest) {
                 vehicleId: v.id as string,
                 customerId: null,
                 workDayStartTime,
+                timeZone,
                 technicianIds,
                 designIds,
                 designSnapshotIds,
@@ -860,6 +872,7 @@ export async function POST(request: NextRequest) {
             vehicleId: null,
             customerId: (sr.customerId as string) || null,
             workDayStartTime,
+            timeZone,
             technicianIds,
             designIds,
             designSnapshotIds,

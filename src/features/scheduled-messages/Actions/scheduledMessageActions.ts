@@ -10,7 +10,7 @@ import {
   updateScheduledMessageSchema,
 } from '../Schema/scheduledMessageSchema'
 import { dispatchScheduledMessage, nextSendAt } from '../Lib/dispatchScheduledMessage'
-import { parseWorkshopDateTime } from '@/lib/workshop-datetime'
+import { parseWorkshopDateTime, workshopDayRange } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export type ScheduledMessageListItem = {
@@ -77,15 +77,16 @@ export async function getScheduledMessages(params?: { status?: string }) {
 export async function getScheduledMessagesInRange(params: { start: string; end: string }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = new Date(params.start)
-      const end = new Date(params.end)
-      end.setHours(23, 59, 59, 999)
+      // The keys are workshop days, so the window is whole days on its clock
+      const timeZone = await workshopTimeZone(organizationId)
+      const now = new Date()
+      const sendAt = workshopDayRange(params.start, params.end, timeZone, { start: now, end: now })
 
       return db.scheduledMessage.findMany({
         where: {
           organizationId,
           status: { not: 'cancelled' },
-          sendAt: { gte: start, lte: end },
+          sendAt,
         },
         select: listSelect,
         orderBy: { sendAt: 'asc' },
@@ -301,7 +302,8 @@ export async function sendScheduledMessageNow(id: string) {
       if (!message) throw new Error('Scheduled message not found')
 
       const now = new Date()
-      const following = nextSendAt(message.sendAt, message.frequency, message.endDate)
+      const timeZone = await workshopTimeZone(organizationId)
+      const following = nextSendAt(message.sendAt, message.frequency, message.endDate, timeZone)
 
       try {
         await dispatchScheduledMessage(message)
