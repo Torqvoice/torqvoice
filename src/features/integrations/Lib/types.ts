@@ -134,10 +134,19 @@ export interface ConnectorHttp {
 export class ConnectorHttpError extends Error {
   status: number
   body: string
-  constructor(status: number, body: string, url: string) {
-    super(`HTTP ${status} from ${url}: ${body.slice(0, 300)}`)
+  /**
+   * The vendor's id for the request (Intuit's intuit_tid, or x-request-id),
+   * which is what their support asks for first. Kept on the error so it
+   * reaches the job log.
+   */
+  requestId: string | null
+  constructor(status: number, body: string, url: string, requestId: string | null = null) {
+    super(
+      `HTTP ${status} from ${url}: ${body.slice(0, 300)}${requestId ? ` (request ${requestId})` : ''}`
+    )
     this.status = status
     this.body = body
+    this.requestId = requestId
   }
 }
 

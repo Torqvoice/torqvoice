@@ -55,11 +55,17 @@ interface Call {
 
 type Answer = (call: Call) => unknown
 
-function fault(status: number, code: string, message: string): ConnectorHttpError {
+function fault(
+  status: number,
+  code: string,
+  message: string,
+  requestId: string | null = null
+): ConnectorHttpError {
   return new ConnectorHttpError(
     status,
     JSON.stringify({ Fault: { Error: [{ Message: message, Detail: message, code }] } }),
-    'https://quickbooks.api.intuit.com/x'
+    'https://quickbooks.api.intuit.com/x',
+    requestId
   )
 }
 
@@ -1071,6 +1077,17 @@ describe('QuickBooks: connecting', () => {
     await connector.identify?.(t.ctx)
     expect(t.state).toMatchObject({ automatedSalesTax: true, salesTaxEnabled: false })
     expect(t.logs.some((l) => l.message.includes('Sales tax is switched off'))).toBe(true)
+  })
+
+  it('carries Intuit’s request id on a failure, for their support', async () => {
+    const t = makeCtx({
+      answer: () => {
+        throw fault(500, '10000', 'Internal error', 'tid-abc-123')
+      },
+    })
+    const res = await connector.test(t.ctx)
+    expect(res.ok).toBe(false)
+    expect(res.message).toContain('intuit_tid tid-abc-123')
   })
 
   it('reports a failed test with the vendor wording', async () => {
