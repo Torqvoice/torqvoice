@@ -23,6 +23,11 @@ import { SendVideoCallDialog, type VideoCallRecipient } from './SendVideoCallDia
  * so, because a link that quietly appeared read as an invitation already
  * gone out. Sending is its own button, which opens a dialog that shows the
  * channels and the text before anything leaves.
+ *
+ * The actions on an existing link are anchors rather than buttons. The
+ * column sits inside the form's fieldset, which is disabled once an invoice
+ * is locked, and sending or copying a meeting link is not editing the
+ * invoice.
  */
 export function VideoCallSection({
   serviceRecordId,
@@ -72,7 +77,7 @@ export function VideoCallSection({
   }
 
   const remove = async () => {
-    if (!link) return
+    if (!link || busy) return
     const ok = await confirm({
       title: t('removeTitle'),
       description: t('removeDescription'),
@@ -104,6 +109,11 @@ export function VideoCallSection({
     }
   }
 
+  const act = (fn: () => void) => (e: React.MouseEvent) => {
+    e.preventDefault()
+    fn()
+  }
+
   return (
     <div className="rounded-lg border p-3 space-y-3">
       <div className="flex items-center gap-2">
@@ -122,37 +132,68 @@ export function VideoCallSection({
           <code className="block select-all truncate rounded bg-muted px-2 py-1 text-xs">
             {link.url}
           </code>
-          <div className="flex flex-wrap gap-2">
-            {canSend && (
-              <Button size="sm" onClick={() => setSendOpen(true)}>
-                <Send className="mr-1 h-3.5 w-3.5" />
-                {t('send.button')}
+          {/* One labelled action, icon buttons beside it, so the row fits a narrow column. */}
+          <div className="flex items-center gap-1.5">
+            {canSend ? (
+              <Button size="sm" className="flex-1" asChild>
+                <a href="#" role="button" onClick={act(() => setSendOpen(true))}>
+                  <Send className="h-3.5 w-3.5" />
+                  {t('send.button')}
+                </a>
+              </Button>
+            ) : (
+              <Button size="sm" className="flex-1" asChild>
+                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  {t('join')}
+                </a>
               </Button>
             )}
-            <Button size="sm" variant={canSend ? 'outline' : 'default'} asChild>
-              <a href={link.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-1 h-3.5 w-3.5" />
-                {t('join')}
+            {canSend && (
+              <Button size="icon-sm" variant="outline" asChild>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={t('join')}
+                  aria-label={t('join')}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </Button>
+            )}
+            <Button size="icon-sm" variant="outline" asChild>
+              <a
+                href="#"
+                role="button"
+                title={t('copy')}
+                aria-label={t('copy')}
+                onClick={act(() => void copy())}
+              >
+                <Copy className="h-3.5 w-3.5" />
               </a>
-            </Button>
-            <Button size="sm" variant="outline" onClick={copy}>
-              <Copy className="mr-1 h-3.5 w-3.5" />
-              {t('copy')}
             </Button>
             {link.removable && (
               <Button
-                size="sm"
+                size="icon-sm"
                 variant="outline"
-                className="ml-auto text-destructive hover:text-destructive"
-                onClick={remove}
-                disabled={busy}
+                className="text-destructive hover:text-destructive"
+                asChild
               >
-                {busy ? (
-                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Trash2 className="mr-1 h-3.5 w-3.5" />
-                )}
-                {t('remove')}
+                <a
+                  href="#"
+                  role="button"
+                  title={t('remove')}
+                  aria-label={t('remove')}
+                  aria-disabled={busy}
+                  onClick={act(() => void remove())}
+                >
+                  {busy ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-3.5 w-3.5" />
+                  )}
+                </a>
               </Button>
             )}
           </div>
