@@ -23,6 +23,7 @@ import {
   providersForChannel,
 } from '@/integrations/messaging/catalog'
 import { db } from '@/lib/db'
+import { isUniqueViolation, writeAdoptionMarker } from './adoption-marker'
 import type { PaymentWebhook } from './payments'
 import { openCredentials, sealCredentials } from './vault'
 
@@ -163,12 +164,7 @@ export async function markChannelAdopted(
   channel: MessagingChannel,
   userId: string
 ): Promise<void> {
-  const key = adoptedMarkerKey(channel)
-  await db.appSetting.upsert({
-    where: { organizationId_key: { organizationId, key } },
-    create: { organizationId, userId, key, value: new Date().toISOString() },
-    update: {},
-  })
+  await writeAdoptionMarker(organizationId, adoptedMarkerKey(channel), userId)
 }
 
 function splitLegacy(
@@ -291,11 +287,6 @@ export async function legacyProviderNamed(
   })
   const named = row?.value?.trim()
   return named && providerForLegacyId(channel, named) ? named : null
-}
-
-/** Prisma's code for a unique constraint the row already satisfies. */
-function isUniqueViolation(err: unknown): boolean {
-  return typeof err === 'object' && err !== null && (err as { code?: string }).code === 'P2002'
 }
 
 async function adoptLegacySetup(

@@ -28,6 +28,7 @@ import {
 } from '@/integrations/payments/catalog'
 import { db } from '@/lib/db'
 import { type PaymentProvider, buildPaymentProvider } from '@/lib/payment-providers'
+import { isUniqueViolation, writeAdoptionMarker } from './adoption-marker'
 import { openCredentials, sealCredentials } from './vault'
 
 export { PAYMENT_CONNECTOR_IDS, isPaymentConnector }
@@ -78,11 +79,7 @@ function inVendorOrder<T extends { connectorId: string }>(setups: T[]): T[] {
 
 /** Record that the connections table decides online payments from now on. */
 export async function markPaymentsAdopted(organizationId: string, userId: string): Promise<void> {
-  await db.appSetting.upsert({
-    where: { organizationId_key: { organizationId, key: PAYMENTS_ADOPTED_KEY } },
-    create: { organizationId, userId, key: PAYMENTS_ADOPTED_KEY, value: new Date().toISOString() },
-    update: {},
-  })
+  await writeAdoptionMarker(organizationId, PAYMENTS_ADOPTED_KEY, userId)
 }
 
 export interface LegacyPaymentSetup {
@@ -143,11 +140,6 @@ export async function legacyPaymentSetups(
     setups.push({ vendor, credentials, settings, userId })
   }
   return { setups, adopted }
-}
-
-/** Prisma's code for a unique constraint the row already satisfies. */
-function isUniqueViolation(err: unknown): boolean {
-  return typeof err === 'object' && err !== null && (err as { code?: string }).code === 'P2002'
 }
 
 /** What the connection page shows as the account, for a setup that never went through identify. */
