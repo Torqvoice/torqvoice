@@ -70,7 +70,8 @@
     "active": "Prijungta",
     "error": "Reikia dėmesio",
     "pending": "Nustatoma",
-    "disconnected": "Atjungta"
+    "disconnected": "Atjungta",
+    "needsSetup": "Sąranka nebaigta"
   },
   "connection": {
     "back": "Visos integracijos",
@@ -78,6 +79,8 @@
     "lastHealth": "Paskutinį kartą tikrinta",
     "lastSync": "Paskutinis sinchronizavimas",
     "lastError": "Paskutinis vykdymas nepavyko",
+    "setupMissingTitle": "Sąranka nebaigta",
+    "setupMissing": "Žemiau esančiuose nustatymuose pasirinkite {fields}. Iki tol niekas nesinchronizuojama.",
     "connected": "{name} prijungta.",
     "connectedShort": "Prijungta",
     "connectWith": "Prijungti {name}",

@@ -70,7 +70,8 @@
     "active": "Połączono",
     "error": "Wymaga uwagi",
     "pending": "Konfiguracja w toku",
-    "disconnected": "Rozłączono"
+    "disconnected": "Rozłączono",
+    "needsSetup": "Konfiguracja nieukończona"
   },
   "connection": {
     "back": "Wszystkie integracje",
@@ -78,6 +79,8 @@
     "lastHealth": "Ostatnie sprawdzenie",
     "lastSync": "Ostatnia synchronizacja",
     "lastError": "Ostatnie uruchomienie nie powiodło się",
+    "setupMissingTitle": "Konfiguracja nieukończona",
+    "setupMissing": "Wybierz {fields} w ustawieniach poniżej. Do tego czasu nic nie jest synchronizowane.",
     "connected": "{name} jest połączony.",
     "connectedShort": "Połączono",
     "connectWith": "Połącz {name}",

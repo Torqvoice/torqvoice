@@ -70,7 +70,8 @@
     "active": "Conectada",
     "error": "Precisa de atenção",
     "pending": "Configuração em andamento",
-    "disconnected": "Desconectada"
+    "disconnected": "Desconectada",
+    "needsSetup": "Configuração incompleta"
   },
   "connection": {
     "back": "Todas as integrações",
@@ -78,6 +79,8 @@
     "lastHealth": "Última verificação",
     "lastSync": "Última sincronização",
     "lastError": "A última execução falhou",
+    "setupMissingTitle": "Configuração incompleta",
+    "setupMissing": "Escolha {fields} nas configurações abaixo. Até lá nada é sincronizado.",
     "connected": "{name} está conectado.",
     "connectedShort": "Conectado",
     "connectWith": "Conectar {name}",

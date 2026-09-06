@@ -70,7 +70,8 @@
     "active": "Bağlı",
     "error": "Dikkat gerekiyor",
     "pending": "Kurulum sürüyor",
-    "disconnected": "Bağlantı kesildi"
+    "disconnected": "Bağlantı kesildi",
+    "needsSetup": "Kurulum tamamlanmadı"
   },
   "connection": {
     "back": "Tüm entegrasyonlar",
@@ -78,6 +79,8 @@
     "lastHealth": "Son kontrol",
     "lastSync": "Son senkronizasyon",
     "lastError": "Son çalıştırma başarısız oldu",
+    "setupMissingTitle": "Kurulum tamamlanmadı",
+    "setupMissing": "Aşağıdaki ayarlarda {fields} seçin. O zamana kadar hiçbir şey eşitlenmez.",
     "connected": "{name} bağlandı.",
     "connectedShort": "Bağlı",
     "connectWith": "{name} bağlantısını kur",

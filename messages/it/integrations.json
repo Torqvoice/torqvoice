@@ -70,7 +70,8 @@
     "active": "Collegata",
     "error": "Richiede attenzione",
     "pending": "Configurazione in corso",
-    "disconnected": "Scollegata"
+    "disconnected": "Scollegata",
+    "needsSetup": "Configurazione incompleta"
   },
   "connection": {
     "back": "Tutte le integrazioni",
@@ -78,6 +79,8 @@
     "lastHealth": "Ultimo controllo",
     "lastSync": "Ultima sincronizzazione",
     "lastError": "L'ultima esecuzione non è riuscita",
+    "setupMissingTitle": "Configurazione incompleta",
+    "setupMissing": "Scegli {fields} nelle impostazioni qui sotto. Fino ad allora non viene sincronizzato nulla.",
     "connected": "{name} è collegato.",
     "connectedShort": "Collegato",
     "connectWith": "Collega {name}",

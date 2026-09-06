@@ -70,7 +70,8 @@
     "active": "Tilkoblet",
     "error": "Trenger oppfølging",
     "pending": "Oppsett pågår",
-    "disconnected": "Frakoblet"
+    "disconnected": "Frakoblet",
+    "needsSetup": "Oppsettet er ikke ferdig"
   },
   "connection": {
     "back": "Alle integrasjoner",
@@ -78,6 +79,8 @@
     "lastHealth": "Sist sjekket",
     "lastSync": "Siste synkronisering",
     "lastError": "Siste kjøring mislyktes",
+    "setupMissingTitle": "Oppsettet er ikke ferdig",
+    "setupMissing": "Velg {fields} i innstillingene nedenfor. Inntil da synkroniseres ingenting.",
     "connected": "{name} er tilkoblet.",
     "connectedShort": "Tilkoblet",
     "connectWith": "Koble til {name}",

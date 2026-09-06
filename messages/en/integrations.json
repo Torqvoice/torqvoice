@@ -70,7 +70,8 @@
     "active": "Connected",
     "error": "Needs attention",
     "pending": "Setup in progress",
-    "disconnected": "Disconnected"
+    "disconnected": "Disconnected",
+    "needsSetup": "Setup not finished"
   },
   "connection": {
     "back": "All integrations",
@@ -78,6 +79,8 @@
     "lastHealth": "Last checked",
     "lastSync": "Last sync",
     "lastError": "The last run failed",
+    "setupMissingTitle": "Setup not finished",
+    "setupMissing": "Choose {fields} in the settings below. Until then nothing is synced.",
     "connected": "{name} is connected.",
     "connectedShort": "Connected",
     "connectWith": "Connect {name}",

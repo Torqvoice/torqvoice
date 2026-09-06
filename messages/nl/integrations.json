@@ -70,7 +70,8 @@
     "active": "Gekoppeld",
     "error": "Aandacht vereist",
     "pending": "Installatie bezig",
-    "disconnected": "Losgekoppeld"
+    "disconnected": "Losgekoppeld",
+    "needsSetup": "Instellen niet afgerond"
   },
   "connection": {
     "back": "Alle integraties",
@@ -78,6 +79,8 @@
     "lastHealth": "Laatst gecontroleerd",
     "lastSync": "Laatste synchronisatie",
     "lastError": "De laatste uitvoering is mislukt",
+    "setupMissingTitle": "Instellen niet afgerond",
+    "setupMissing": "Kies {fields} in de instellingen hieronder. Tot die tijd wordt niets gesynchroniseerd.",
     "connected": "{name} is gekoppeld.",
     "connectedShort": "Gekoppeld",
     "connectWith": "{name} koppelen",

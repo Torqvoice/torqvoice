@@ -98,6 +98,17 @@ export function ConnectionSettings({
   }, [search, router, t, manifest])
 
   const isOAuth = manifest.auth.type === 'oauth2'
+  // A connected service with a required setting still empty is not working,
+  // whatever the vendor's status says; the calendar to write to is the usual
+  // case. The page says so up top rather than leaving it to the job log.
+  const savedSettings = initialSettingValues(manifest.settings, connection?.settings ?? {})
+  const unfinishedSetup =
+    connection?.status === 'active'
+      ? visibleSettingFields(manifest.settings, savedSettings).filter(
+          (f) => f.required && !savedSettings[f.key]
+        )
+      : []
+  const setupMissing = unfinishedSetup.length > 0
   const oauthNeedsTenantApp = isOAuth && !view.platformApp
   const connected = connection && (connection.status === 'active' || connection.status === 'error')
   const oauthStartUrl = `/api/integrations/${manifest.id}/oauth/start`
@@ -193,7 +204,7 @@ export function ConnectionSettings({
               unoptimized
             />
             {manifest.name}
-            {connection && <StatusBadge status={connection.status} />}
+            {connection && <StatusBadge status={setupMissing ? 'needsSetup' : connection.status} />}
           </span>
         }
         description={tc('description')}
@@ -207,6 +218,19 @@ export function ConnectionSettings({
           ))}
         </div>
 
+        {setupMissing && (
+          <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <div>
+              <p className="font-medium">{t('connection.setupMissingTitle')}</p>
+              <p className="text-muted-foreground">
+                {t('connection.setupMissing', {
+                  fields: unfinishedSetup.map((f) => tc(`settings.${f.label}`)).join(', '),
+                })}
+              </p>
+            </div>
+          </div>
+        )}
         {connection?.lastError && connection.status === 'error' && (
           <div className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
@@ -451,7 +475,7 @@ export function ConnectionSettings({
                     isAccounting ? t('connection.pullQueued') : t('connection.syncQueued')
                   )
                 }
-                disabled={busy !== null}
+                disabled={busy !== null || setupMissing}
               >
                 {busy === 'sync' ? (
                   <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
@@ -472,7 +496,7 @@ export function ConnectionSettings({
                     t('connection.backfillQueued')
                   )
                 }
-                disabled={busy !== null}
+                disabled={busy !== null || setupMissing}
               >
                 {busy === 'backfill' ? (
                   <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
@@ -498,7 +522,7 @@ export function ConnectionSettings({
                     }
                   )
                 }
-                disabled={busy !== null}
+                disabled={busy !== null || setupMissing}
               >
                 {busy === 'backfill' ? (
                   <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
@@ -566,7 +590,9 @@ function StatusBadge({ status }: { status: string }) {
       ? 'border-emerald-500/30 text-emerald-600'
       : status === 'error'
         ? 'border-destructive/30 text-destructive'
-        : 'text-muted-foreground'
+        : status === 'needsSetup'
+          ? 'border-amber-500/40 text-amber-600'
+          : 'text-muted-foreground'
   return (
     <Badge variant="outline" className={`text-[11px] font-normal ${cls}`}>
       {t(status)}

@@ -70,7 +70,8 @@
     "active": "Verbunden",
     "error": "Aufmerksamkeit erforderlich",
     "pending": "Einrichtung läuft",
-    "disconnected": "Getrennt"
+    "disconnected": "Getrennt",
+    "needsSetup": "Einrichtung unvollständig"
   },
   "connection": {
     "back": "Alle Integrationen",
@@ -78,6 +79,8 @@
     "lastHealth": "Zuletzt geprüft",
     "lastSync": "Letzte Synchronisierung",
     "lastError": "Der letzte Durchlauf ist fehlgeschlagen",
+    "setupMissingTitle": "Einrichtung unvollständig",
+    "setupMissing": "Wähle unten in den Einstellungen {fields}. Bis dahin wird nichts synchronisiert.",
     "connected": "{name} ist verbunden.",
     "connectedShort": "Verbunden",
     "connectWith": "{name} verbinden",
