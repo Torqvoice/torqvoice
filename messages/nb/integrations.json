@@ -147,7 +147,8 @@
       "off": "Slå på innstillingen og lagre; før det sjekker en gjennomgang ingenting.",
       "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige."
     },
-    "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang."
+    "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
+    "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}"
   },
   "activity": {
     "title": "Aktivitet",
@@ -159,7 +160,18 @@
       "done": "Ferdig",
       "failed": "Mislyktes",
       "dead": "Ga opp"
-    }
+    },
+    "jobs": "{count, plural, one {# jobb} other {# jobber}}",
+    "counts": {
+      "queued": "{count} i kø",
+      "running": "{count} kjører",
+      "done": "{count} ferdig",
+      "failed": "{count} mislyktes",
+      "dead": "{count} ga opp"
+    },
+    "noFailures": "Ingenting mislyktes.",
+    "retryFailed": "Prøv mislykkede på nytt",
+    "details": "Vis detaljer"
   },
   "errors": {
     "generic": "Noe gikk galt",

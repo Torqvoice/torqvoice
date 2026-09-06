@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { getManifest } from '@/integrations/registry'
 
 export type CalendarEvent = {
   id: string
@@ -18,6 +19,11 @@ export type CalendarEvent = {
   customerName: string | null
   invoiceNumber: string | null
   amount: number | null
+  /** Only on external events: when it ends, whether it fills the day, where it came from. */
+  endTime?: string | null
+  allDay?: boolean
+  source?: string | null
+  externalUrl?: string | null
 }
 
 /** Format a Date as YYYY-MM-DD in local time (avoids UTC shift from toISOString) */
@@ -139,7 +145,15 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
         // Busy time pulled from connected calendars; read-only on this side.
         db.externalCalendarEvent.findMany({
           where: { organizationId, startAt: { lte: end }, endAt: { gte: start } },
-          select: { id: true, title: true, startAt: true, endAt: true, allDay: true },
+          select: {
+            id: true,
+            title: true,
+            startAt: true,
+            endAt: true,
+            allDay: true,
+            remoteUrl: true,
+            connection: { select: { connectorId: true } },
+          },
           orderBy: { startAt: 'asc' },
         }),
       ])
@@ -150,6 +164,7 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
         // does not flood the month.
         const first = new Date(e.startAt)
         const last = new Date(e.endAt.getTime() - 1)
+        const source = getManifest(e.connection.connectorId)?.name ?? null
         for (let d = new Date(first), n = 0; d <= last && n < 31; d.setDate(d.getDate() + 1), n++) {
           if (d < start || d > end) continue
           externalEvents.push({
@@ -164,6 +179,10 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
             customerName: null,
             invoiceNumber: null,
             amount: null,
+            endTime: e.allDay ? null : toTimeStr(e.endAt),
+            allDay: e.allDay,
+            source,
+            externalUrl: e.remoteUrl,
           })
         }
       }

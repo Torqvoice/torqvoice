@@ -77,7 +77,16 @@
       "message": "Message"
     },
     "noEvents": "No events",
-    "selectDay": "Select a day with events or create a new work order."
+    "selectDay": "Select a day with events or create a new work order.",
+    "external": {
+      "source": "From {source}",
+      "sourceUnknown": "From a connected calendar",
+      "allDay": "All day",
+      "open": "Open in {source}",
+      "openGeneric": "Open in calendar",
+      "noLink": "This calendar does not give a link to the event.",
+      "readOnly": "Busy time from a connected calendar. Change it there and it updates here on the next sync."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

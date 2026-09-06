@@ -147,7 +147,8 @@
       "off": "Zet de instelling aan en sla op; tot die tijd controleert een ronde niets.",
       "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
     },
-    "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat."
+    "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
+    "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}"
   },
   "activity": {
     "title": "Activiteit",
@@ -159,7 +160,18 @@
       "done": "Klaar",
       "failed": "Mislukt",
       "dead": "Opgegeven"
-    }
+    },
+    "jobs": "{count, plural, one {# taak} other {# taken}}",
+    "counts": {
+      "queued": "{count} in wachtrij",
+      "running": "{count} bezig",
+      "done": "{count} klaar",
+      "failed": "{count} mislukt",
+      "dead": "{count} opgegeven"
+    },
+    "noFailures": "Niets is mislukt.",
+    "retryFailed": "Mislukte opnieuw proberen",
+    "details": "Details tonen"
   },
   "errors": {
     "generic": "Er is iets misgegaan",

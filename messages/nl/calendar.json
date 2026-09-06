@@ -77,7 +77,16 @@
       "message": "Bericht"
     },
     "noEvents": "Geen evenementen",
-    "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan."
+    "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan.",
+    "external": {
+      "source": "Uit {source}",
+      "sourceUnknown": "Uit een gekoppelde agenda",
+      "allDay": "Hele dag",
+      "open": "Openen in {source}",
+      "openGeneric": "Openen in agenda",
+      "noLink": "Deze agenda geeft geen link naar de afspraak.",
+      "readOnly": "Bezette tijd uit een gekoppelde agenda. Wijzig het daar, bij de volgende synchronisatie wordt het hier bijgewerkt."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

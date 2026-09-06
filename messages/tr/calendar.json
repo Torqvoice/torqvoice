@@ -77,7 +77,16 @@
       "message": "Mesaj"
     },
     "noEvents": "Etkinlik yok",
-    "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun."
+    "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun.",
+    "external": {
+      "source": "{source} kaynağından",
+      "sourceUnknown": "Bağlı bir takvimden",
+      "allDay": "Tüm gün",
+      "open": "{source} içinde aç",
+      "openGeneric": "Takvimde aç",
+      "noLink": "Bu takvim etkinliğe bağlantı vermiyor.",
+      "readOnly": "Bağlı bir takvimden gelen dolu zaman. Orada değiştirin, bir sonraki eşitlemede burada güncellenir."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

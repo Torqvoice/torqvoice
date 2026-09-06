@@ -43,7 +43,7 @@ export default async function IntegrationConnectionPage({
   return (
     <ConnectionSettings
       view={view.data}
-      activity={activity.success && activity.data ? activity.data : { jobs: [], logs: [] }}
+      activity={activity.success && activity.data ? activity.data : { items: [], logs: [] }}
     />
   )
 }

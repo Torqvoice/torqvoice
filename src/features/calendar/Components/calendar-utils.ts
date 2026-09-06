@@ -6,7 +6,11 @@ export function toLocalDateStr(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
-/** Where an event points: the quote itself, otherwise the vehicle it belongs to */
+/**
+ * Where an event points: the quote itself, otherwise the vehicle it belongs
+ * to. External events have no page here; they open a dialog, or the vendor's
+ * calendar, and only land on the integrations list as a last resort.
+ */
 export function getEventLink(event: {
   id: string
   type: 'service' | 'reminder' | 'quote' | 'message' | 'external'

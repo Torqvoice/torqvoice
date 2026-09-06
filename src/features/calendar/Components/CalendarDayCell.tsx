@@ -203,7 +203,16 @@ export function CalendarDayCell({
                 {dayEvents.slice(0, MAX_MENU_EVENTS).map((event) => (
                   <ContextMenuItem
                     key={`${event.type}-${event.id}`}
-                    onClick={() => router.push(getEventLink(event))}
+                    onClick={() => {
+                      // Busy time from another calendar opens there, or
+                      // just selects the day so the list can show it.
+                      if (event.type === 'external') {
+                        if (event.externalUrl) window.open(event.externalUrl, '_blank', 'noopener')
+                        else onClick()
+                        return
+                      }
+                      router.push(getEventLink(event))
+                    }}
                   >
                     <div
                       className={`mr-2 h-1.5 w-1.5 shrink-0 rounded-full ${getEventDotColor(event)}`}
