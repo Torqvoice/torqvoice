@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "Reminder" ADD COLUMN "hasDueTime" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "reminders" ADD COLUMN "hasDueTime" BOOLEAN NOT NULL DEFAULT false;
