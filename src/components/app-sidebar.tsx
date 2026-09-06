@@ -426,7 +426,10 @@ export function AppSidebar({
       <FullscreenLauncher />
       <SidebarHeader className="gap-2 p-2 pb-1">
         <SidebarMenu>
-          <SidebarMenuItem>
+          {/* The bell sits beside the workspace switcher, at the top where
+              it always was: a notification is something to notice on the
+              way in, not something to hunt for under the account menu. */}
+          <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
@@ -485,6 +488,7 @@ export function AppSidebar({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {isAdminOrOwner && <NotificationBell />}
           </SidebarMenuItem>
           {/* The one filled button in the sidebar: the action a workshop
               reaches for most, kept where it is never scrolled away. */}
@@ -593,7 +597,7 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:flex-col">
+          <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
@@ -692,7 +696,6 @@ export function AppSidebar({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAdminOrOwner && <NotificationBell />}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
