@@ -99,13 +99,26 @@ export function TimeGridView({
 
   const [nowMins, setNowMins] = useState<number | null>(null)
   useEffect(() => {
+    // Seconds count too: at a minute per pixel a line that only knows the
+    // minute can sit a whole pixel off, and the tick lands on the minute
+    // boundary so the line never lags the wall clock by most of a minute.
     const tick = () => {
       const n = new Date()
-      setNowMins(n.getHours() * 60 + n.getMinutes())
+      setNowMins(n.getHours() * 60 + n.getMinutes() + n.getSeconds() / 60)
     }
     tick()
-    const id = window.setInterval(tick, 60_000)
-    return () => window.clearInterval(id)
+    let interval: number | undefined
+    const timeout = window.setTimeout(
+      () => {
+        tick()
+        interval = window.setInterval(tick, 60_000)
+      },
+      60_000 - (Date.now() % 60_000)
+    )
+    return () => {
+      window.clearTimeout(timeout)
+      if (interval !== undefined) window.clearInterval(interval)
+    }
   }, [])
 
   // Land the reader on the working day, or an hour before the first thing
@@ -468,8 +481,10 @@ function DayColumn({
         })}
 
         {isToday && nowMins !== null && (
+          // Centred on the minute: the wrapper is as tall as its dot, so
+          // without the shift the line itself drew six minutes late.
           <div
-            className="pointer-events-none absolute inset-x-0 z-30 flex items-center"
+            className="pointer-events-none absolute inset-x-0 z-30 flex -translate-y-1/2 items-center"
             style={{ top: (nowMins / 60) * HOUR_PX }}
           >
             <span className="-ml-1.5 h-3 w-3 rounded-full bg-red-500 shadow" />
