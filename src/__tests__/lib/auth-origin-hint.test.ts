@@ -118,7 +118,7 @@ describe('warnAboutAppUrl', () => {
   })
 
   it('warns when unset, invalid, or localhost in production', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     vi.stubEnv('NEXT_PUBLIC_APP_URL', '')
     warnAboutAppUrl()
     vi.stubEnv('NEXT_PUBLIC_APP_URL', 'torqvoice.example.com')
@@ -131,7 +131,7 @@ describe('warnAboutAppUrl', () => {
   })
 
   it('stays quiet for a proper public address', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://torqvoice.example.com')
     vi.stubEnv('NODE_ENV', 'production')
     warnAboutAppUrl()

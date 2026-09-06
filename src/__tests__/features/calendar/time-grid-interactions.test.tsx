@@ -52,9 +52,15 @@ beforeAll(() => {
   vi.setSystemTime(new Date(2026, 7, 15, 12, 0))
   // jsdom has neither; Radix popovers and the slot anchor need both.
   class RO {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
+    observe() {
+      return undefined
+    }
+    unobserve() {
+      return undefined
+    }
+    disconnect() {
+      return undefined
+    }
   }
   ;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = RO
   if (typeof (globalThis as { DOMRect?: unknown }).DOMRect === 'undefined') {
