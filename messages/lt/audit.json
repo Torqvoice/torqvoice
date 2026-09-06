@@ -151,7 +151,20 @@
     "settings_whatsappNumberRegistered": "Užregistruotas „WhatsApp“ numeris",
     "team_giveTechnicianTheApp": "Lentos technikui suteikta paskyra",
     "team_createDefaultRoles": "Sukurtos standartinės rolės",
-    "settings_setCustomFieldPlacement": "Atnaujinta pasirinktinio lauko vieta"
+    "settings_setCustomFieldPlacement": "Atnaujinta pasirinktinio lauko vieta",
+    "import_commit": "Importuota skaičiuoklė",
+    "import_undo": "Atšauktas importas",
+    "integration_connect": "Prijungta integracija",
+    "integration_disconnect": "Atjungta integracija",
+    "service_setInvoiceDesign": "Pakeistas sąskaitos dizainas",
+    "settings_saveDocumentDesign": "Išsaugotas dokumento dizainas",
+    "settings_deleteDocumentDesign": "Ištrintas dokumento dizainas",
+    "settings_applyDocumentDesign": "Nustatytas numatytasis dokumento dizainas",
+    "settings_setDocumentDesignRule": "Pakeista, kada naudojamas dizainas",
+    "settings_freezeInvoices": "Užrakintos senesnės sąskaitos",
+    "inspection_reminders_sent": "Išsiųsti apžiūros priminimai",
+    "inspection_reminders_send": "Išsiųsti apžiūros priminimai",
+    "service_videoCall_send": "Išsiųsta vaizdo skambučio nuoroda"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -275,6 +288,18 @@
     "work_bay_create": "Sukurta darbo vieta „{name}“",
     "work_bay_update": "Atnaujinta darbo vieta „{name}“",
     "work_bay_delete": "Ištrinta darbo vieta {id}",
-    "settings_setCustomFieldPlacement": "Pakeitė, kur spausdinamas pasirinktinis laukas"
+    "settings_setCustomFieldPlacement": "Pakeitė, kur spausdinamas pasirinktinis laukas",
+    "import_commit": "Importuota skaičiuoklė: sukurta įrašų: {count}",
+    "import_undo": "Atšauktas skaičiuoklės importas: pašalinta įrašų: {records}",
+    "integration_connect": "Prijungta {name}",
+    "integration_disconnect": "Atjungta {name}",
+    "service_setInvoiceDesign": "Pakeitė, kokiu dizainu spausdinama sąskaita",
+    "settings_saveDocumentDesign": "Išsaugojo dokumento dizainą {name}",
+    "settings_deleteDocumentDesign": "Ištrynė dokumento dizainą {name}",
+    "settings_applyDocumentDesign": "Nustatė {name} kaip numatytąjį dokumento dizainą",
+    "settings_setDocumentDesignRule": "Pakeista, kada naudojamas dokumento dizainas {name}",
+    "settings_freezeInvoices": "Užrakino {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}} iki užrakinimo su dabartiniu dizainu",
+    "inspection_reminders_sent": "Išsiųsta {count} apžiūros priminimų",
+    "service_videoCall_send": "Išsiuntė vaizdo skambučio nuorodą per {channels}"
   }
 }

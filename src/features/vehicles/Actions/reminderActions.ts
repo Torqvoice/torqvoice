@@ -1,6 +1,7 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -66,13 +67,16 @@ export async function createReminder(input: unknown) {
         if (!customer) throw new Error('Customer not found')
       }
 
+      // The dialog sends the workshop's wall clock; read it in that zone,
+      // not the server's, or a reminder set for 18:00 lands two hours out.
+      const timeZone = await workshopTimeZone(organizationId)
       const reminder = await db.reminder.create({
         data: {
           ...data,
           organizationId,
           vehicleId: data.vehicleId ?? null,
           customerId,
-          dueDate: toSafeDate(data.dueDate) ?? null,
+          dueDate: toSafeWorkshopDate(data.dueDate, timeZone) ?? null,
         },
       })
       revalidateReminderPaths(data.vehicleId ?? null)
@@ -119,7 +123,11 @@ export async function updateReminder(input: unknown) {
         if (!customer) throw new Error('Customer not found')
       }
 
-      const newDueDate = data.dueDate !== undefined ? (toSafeDate(data.dueDate) ?? null) : undefined
+      const timeZone = await workshopTimeZone(organizationId)
+      const newDueDate =
+        data.dueDate !== undefined
+          ? (toSafeWorkshopDate(data.dueDate, timeZone) ?? null)
+          : undefined
       const updated = await db.reminder.update({
         where: { id },
         data: {

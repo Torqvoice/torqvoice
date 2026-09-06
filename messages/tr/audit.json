@@ -151,7 +151,20 @@
     "settings_whatsappNumberRegistered": "WhatsApp numarası kaydedildi",
     "team_giveTechnicianTheApp": "Pano teknisyenine hesap verildi",
     "team_createDefaultRoles": "Standart roller oluşturuldu",
-    "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi"
+    "settings_setCustomFieldPlacement": "Özel alan konumu güncellendi",
+    "import_commit": "Hesap Tablosu İçe Aktarıldı",
+    "import_undo": "İçe Aktarma Geri Alındı",
+    "integration_connect": "Entegrasyon bağlandı",
+    "integration_disconnect": "Entegrasyon bağlantısı kesildi",
+    "service_setInvoiceDesign": "Fatura tasarımı değiştirildi",
+    "settings_saveDocumentDesign": "Belge tasarımı kaydedildi",
+    "settings_deleteDocumentDesign": "Belge tasarımı silindi",
+    "settings_applyDocumentDesign": "Varsayılan belge tasarımı ayarlandı",
+    "settings_setDocumentDesignRule": "Bir tasarımın ne zaman kullanılacağı değiştirildi",
+    "settings_freezeInvoices": "Eski faturalar kilitlendi",
+    "inspection_reminders_sent": "Muayene hatırlatmaları gönderildi",
+    "inspection_reminders_send": "Muayene hatırlatmaları gönderildi",
+    "service_videoCall_send": "Görüntülü görüşme bağlantısı gönderildi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -275,6 +288,18 @@
     "work_bay_create": "\"{name}\" çalışma alanı oluşturuldu",
     "work_bay_update": "\"{name}\" çalışma alanı güncellendi",
     "work_bay_delete": "{id} çalışma alanı silindi",
-    "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi"
+    "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi",
+    "import_commit": "Bir hesap tablosu içe aktarıldı: {count} kayıt oluşturuldu",
+    "import_undo": "Bir hesap tablosu içe aktarması geri alındı: {records} kayıt kaldırıldı",
+    "integration_connect": "{name} bağlandı",
+    "integration_disconnect": "{name} bağlantısı kesildi",
+    "service_setInvoiceDesign": "Bir faturanın hangi tasarımla yazdırılacağını değiştirdi",
+    "settings_saveDocumentDesign": "{name} belge tasarımını kaydetti",
+    "settings_deleteDocumentDesign": "{name} belge tasarımını sildi",
+    "settings_applyDocumentDesign": "{name} tasarımını varsayılan belge tasarımı yaptı",
+    "settings_setDocumentDesignRule": "{name} belge tasarımının ne zaman kullanılacağı değiştirildi",
+    "settings_freezeInvoices": "Kilitlemeden önceki {count, plural, one {# faturayı} other {# faturayı}} mevcut tasarımla kilitledi",
+    "inspection_reminders_sent": "{count} muayene hatırlatması gönderildi",
+    "service_videoCall_send": "Görüntülü görüşme bağlantısını {channels} ile gönderdi"
   }
 }

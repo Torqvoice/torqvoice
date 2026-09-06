@@ -8,6 +8,7 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { InventoryClient } from './inventory-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function InventoryPage({
   searchParams,
@@ -67,7 +68,7 @@ export default async function InventoryPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <InventoryClient
           data={result.data}
           search={params.search || ''}
@@ -83,7 +84,7 @@ export default async function InventoryPage({
           lowStockOnly={params.lowStock === '1'}
           hasAnyReorderPoint={reorderResult.data ?? false}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

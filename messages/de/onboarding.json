@@ -76,7 +76,9 @@
     "allDoneTitle": "Alles erledigt",
     "allDoneDescription": "Alle Schritte sind abgeschlossen und Ihre Werkstatt ist startklar.",
     "dismiss": "Karte ausblenden",
-    "dismissAriaLabel": "Diese Checkliste ausblenden"
+    "dismissAriaLabel": "Diese Checkliste ausblenden",
+    "importTitle": "Haben Sie bereits Kunden und Fahrzeuge in einem anderen System?",
+    "importDescription": "Importieren Sie sie aus einer Tabelle oder Ihrem bisherigen System"
   },
   "sampleData": {
     "title": "Beispieldaten",

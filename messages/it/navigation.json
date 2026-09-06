@@ -59,7 +59,8 @@
     "tireStorage": "Disposizione del deposito",
     "tireSetDetails": "Treno di pneumatici",
     "tireForecast": "La prossima stagione",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Promemoria revisione"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",
@@ -117,6 +118,19 @@
     "auditLog": "Registro attività",
     "aiAssistant": "Assistente IA",
     "tireHotel": "Hotel pneumatici",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Nuovo ordine di lavoro",
+    "installApp": "Installa l'app",
+    "roles": {
+      "owner": "Proprietario",
+      "admin": "Amministratore",
+      "member": "Membro"
+    },
+    "badges": {
+      "messages": "{count} messaggi non letti",
+      "workOrders": "{count} ordini di lavoro aperti",
+      "inspections": "{count} ispezioni in corso",
+      "reminders": "{count} promemoria in scadenza"
+    }
   }
 }

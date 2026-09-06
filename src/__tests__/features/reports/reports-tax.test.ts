@@ -24,6 +24,8 @@ vi.mock('@/lib/cached-session', () => ({
   getCachedMembership: vi.fn(),
 }))
 
+vi.mock('@/lib/workshop-timezone', () => ({ workshopTimeZone: async () => 'UTC' }))
+
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },

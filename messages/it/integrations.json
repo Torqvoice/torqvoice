@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Integrazioni",
+    "description": "Collega i servizi che la tua officina usa già. Ogni integrazione si configura una sola volta e funziona in background.",
+    "all": "Tutte",
+    "empty": "Nessuna integrazione in questa categoria per ora.",
+    "notConnected": "Non collegata",
+    "connect": "Collega",
+    "manage": "Gestisci",
+    "connectedTitle": "Collegati",
+    "connectedDescription": "Servizi configurati da questa officina. Aprine uno per controllarne lo stato, cambiare le impostazioni o scollegarlo.",
+    "noneConnected": "Ancora nulla di collegato. Scegli un servizio qui sotto per iniziare.",
+    "availableTitle": "Disponibili",
+    "availableDescription": "Servizi che puoi aggiungere. Ognuno si configura una volta e lavora in background.",
+    "allConnected": "Tutti i servizi disponibili sono collegati.",
+    "searchPlaceholder": "Cerca integrazioni",
+    "noMatches": "Nessun risultato per «{query}».",
+    "readMore": "Scopri di più",
+    "suggestTitle": "Manca un servizio che usi?",
+    "suggestDescription": "Dicci quale integrazione aiuterebbe la tua officina e la valuteremo.",
+    "suggest": "Suggerisci un'integrazione",
+    "suggestSubject": "Suggerimento di integrazione"
+  },
+  "categories": {
+    "calendar": "Calendario",
+    "conferencing": "Videochiamate",
+    "accounting": "Contabilità",
+    "messaging": "Messaggistica",
+    "payments": "Pagamenti",
+    "automation": "Automazione",
+    "storage": "File",
+    "registry": "Registro veicoli",
+    "other": "Altro",
+    "ai": "IA"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Ordini di lavoro nel calendario",
+      "pull": "Impegni dal calendario",
+      "conference": "Link per videochiamate"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Ricerca per targa e VIN",
+      "inspection": "Scadenze revisione",
+      "safety": "Richiami e reclami dei proprietari"
+    },
+    "ai": {
+      "chat": "Testi e riepiloghi"
+    },
+    "payments": {
+      "checkout": "Paga dal link della fattura"
+    },
+    "accounting": {
+      "invoices": "Fatture in contabilità",
+      "customers": "Clienti in contabilità",
+      "payments": "Pagamenti in entrambe le direzioni"
+    }
+  },
+  "statuses": {
+    "active": "Collegata",
+    "error": "Richiede attenzione",
+    "pending": "Configurazione in corso",
+    "disconnected": "Scollegata",
+    "needsSetup": "Configurazione incompleta"
+  },
+  "connection": {
+    "back": "Tutte le integrazioni",
+    "account": "Account collegato",
+    "lastHealth": "Ultimo controllo",
+    "lastSync": "Ultima sincronizzazione",
+    "lastError": "L'ultima esecuzione non è riuscita",
+    "setupMissingTitle": "Configurazione incompleta",
+    "setupMissing": "Scegli {fields} nelle impostazioni qui sotto. Fino ad allora non viene sincronizzato nulla.",
+    "connected": "{name} è collegato.",
+    "connectedShort": "Collegato",
+    "connectWith": "Collega {name}",
+    "connect": "Collega",
+    "reconnect": "Ricollega",
+    "disconnect": "Scollega",
+    "disconnectTitle": "Scollegare {name}?",
+    "disconnectDescription": "Torqvoice dimentica l'account e smette di usarlo. Nulla di già inviato a {name} o salvato lì viene toccato.",
+    "disconnectDescriptionCalendar": "Torqvoice dimentica l'account e smette di sincronizzare. Gli ordini di lavoro già inseriti in {name} restano lì. Il tempo occupato mostrato da quel calendario viene rimosso dal calendario di Torqvoice.",
+    "disconnectDescriptionConferencing": "Torqvoice dimentica l'account e smette di creare riunioni. Le riunioni già create restano in {name} e i link sugli ordini di lavoro vengono conservati.",
+    "disconnectDescriptionAccounting": "Torqvoice dimentica l'account e smette di inviare e leggere. Fatture, clienti e pagamenti già in {name} restano lì.",
+    "removeSetup": "Rimuovi",
+    "removeSetupTitle": "Rimuovere {name}?",
+    "removeSetupDescription": "Non c'è ancora nulla di collegato. Torqvoice dimentica quanto inserito e {name} torna nell'elenco dei servizi disponibili.",
+    "removeSetupDone": "{name} rimosso",
+    "removeSetupHint": "Non vuoi procedere? Rimuovilo e il servizio torna nell'elenco qui sotto.",
+    "disconnected": "Scollegato",
+    "test": "Prova la connessione",
+    "testPassed": "La connessione funziona",
+    "syncNow": "Sincronizza ora",
+    "syncQueued": "Sincronizzazione in coda; verrà eseguita entro un minuto",
+    "pullNow": "Recupera i pagamenti ora",
+    "pullQueued": "Recupero pagamenti in coda; verrà eseguito entro un minuto",
+    "backfill": "Invia gli ordini di lavoro pianificati",
+    "backfillQueued": "Messi in coda gli ordini di lavoro pianificati dall'ultima settimana in poi",
+    "backfillInvoices": "Invia le fatture emesse",
+    "backfillInvoicesQueuedCount": "In coda {count, plural, one {# fattura emessa} other {# fatture emesse}} da inviare",
+    "backfillInvoicesNone": "Nessuna fattura emessa da inviare. Passano solo le fatture inviate, condivise o pagate, dalla data di inizio se ne hai impostata una.",
+    "retryQueued": "Attività rimessa in coda",
+    "settingsTitle": "Impostazioni",
+    "settingsDescription": "Cosa sincronizzare e dove. Le modifiche si applicano alla prossima sincronizzazione.",
+    "settingsSaved": "Impostazioni salvate",
+    "save": "Salva",
+    "loading": "Caricamento...",
+    "choose": "Scegli...",
+    "search": "Cerca...",
+    "noMatch": "Nessuna corrispondenza",
+    "leaveEmpty": "Lascia vuoto",
+    "noLimit": "Nessun limite",
+    "planLocked": "Le integrazioni non sono incluse nel tuo piano.",
+    "ownAppTitle": "Questa installazione usa la tua app presso il provider",
+    "redirectUri": "URI di reindirizzamento da registrare presso il provider:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Aggiungi questo URL nella dashboard di Stripe sotto Developers, Webhooks, iscritto a checkout.session.completed. Poi incolla il segreto di firma mostrato da Stripe nel campo segreto del webhook qui, così le notifiche possono essere verificate.",
+    "inboundHintVipps": "Inserisci questo URL come URL di callback nel portale Vipps MobilePay. Vipps richiede anche condizioni di vendita pubblicate, impostate in Impostazioni, Pagamento.",
+    "inboundHintPaypal": "Aggiungi questo URL nella dashboard sviluppatori di PayPal sotto Webhooks, iscritto a PAYMENT.CAPTURE.COMPLETED.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Sincronizzazione revisioni",
+      "vehicles": "{count} veicoli con targa in questa officina",
+      "dueNow": "{count} verrebbero cercati alla prossima esecuzione",
+      "withDate": "{count} hanno già una data di revisione",
+      "lastPass": "Ultimo passaggio completo {date}",
+      "never": "Nessun passaggio completo finora",
+      "inProgress": "Un passaggio è in corso",
+      "off": "Attiva l'impostazione e salva; fino ad allora un passaggio non controlla nulla.",
+      "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
+    },
+    "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
+    "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}"
+  },
+  "activity": {
+    "title": "Attività",
+    "description": "Attività recenti e righe di log per questa connessione.",
+    "retry": "Riprova",
+    "jobStatus": {
+      "queued": "In coda",
+      "running": "In esecuzione",
+      "done": "Completata",
+      "failed": "Non riuscita",
+      "dead": "Abbandonata"
+    },
+    "jobs": "{count, plural, one {# attività} other {# attività}}",
+    "counts": {
+      "queued": "{count} in coda",
+      "running": "{count} in corso",
+      "done": "{count} completate",
+      "failed": "{count} non riuscite",
+      "dead": "{count} abbandonate"
+    },
+    "noFailures": "Nessun errore.",
+    "retryFailed": "Riprova quelle non riuscite",
+    "details": "Mostra dettagli"
+  },
+  "errors": {
+    "generic": "Qualcosa è andato storto",
+    "demo": "Le integrazioni non possono essere collegate nella demo.",
+    "forbidden": "Solo un amministratore può collegare le integrazioni.",
+    "unknown": "Integrazione sconosciuta.",
+    "plan": "Questa integrazione non è inclusa nel tuo piano.",
+    "no-client": "Nessuna credenziale dell'app configurata per questo provider.",
+    "denied": "Hai annullato l'accesso presso il provider.",
+    "vendor": "Il provider ha restituito un errore. Riprova.",
+    "invalid": "La risposta del provider era incompleta. Riprova.",
+    "state": "Questo accesso è scaduto o appartiene a un'altra sessione. Ricomincia da capo.",
+    "exchange": "Il provider ha rifiutato l'accesso. Controlla le credenziali dell'app e riprova.",
+    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo."
+  },
+  "meeting": {
+    "join": "Partecipa alla videochiamata",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Dai calendari collegati",
+    "busy": "Occupato"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Inserisci gli ordini di lavoro pianificati in un Google Calendar, aggiungi un link Google Meet e vedi gli impegni del calendario in Torqvoice.",
+      "tenantHelp": "Crea un client OAuth in Google Cloud Console (API e servizi → Credenziali), abilita l'API Google Calendar, aggiungi l'URI di reindirizzamento qui sotto e incolla qui l'ID client e il segreto.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "calendarId": "Calendario",
+        "pushEnabled": "Aggiungi gli ordini di lavoro pianificati a questo calendario",
+        "includeCustomer": "Includi nome e telefono del cliente nell'evento",
+        "addConference": "Aggiungi una riunione Google Meet a ogni ordine di lavoro pianificato",
+        "addConferenceHelp": "Attivo: ogni ordine di lavoro inviato al calendario riceve una riunione Google Meet, e il link compare sull'ordine. Spento: aggiungi una riunione Google Meet a un singolo ordine dalla sua pagina. In entrambi i casi il cliente riceve il link solo quando lo invii.",
+        "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
+        "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
+      }
+    },
+    "microsoft-365": {
+      "description": "Inserisci gli ordini di lavoro pianificati in un calendario Outlook, aggiungi un link Microsoft Teams e vedi gli impegni del calendario in Torqvoice.",
+      "tenantHelp": "Registra un'applicazione in Microsoft Entra (Registrazioni app), consenti gli account personali e aziendali, aggiungi l'URI di reindirizzamento qui sotto come piattaforma Web, crea un segreto client e incolla entrambi qui.",
+      "fields": {
+        "clientId": "ID applicazione (client)",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "calendarId": "Calendario",
+        "pushEnabled": "Aggiungi gli ordini di lavoro pianificati a questo calendario",
+        "includeCustomer": "Includi nome e telefono del cliente nell'evento",
+        "addConference": "Aggiungi una riunione Microsoft Teams a ogni ordine di lavoro pianificato",
+        "addConferenceHelp": "Attivo: ogni ordine di lavoro inviato al calendario riceve una riunione Microsoft Teams, e il link compare sull'ordine. Spento: aggiungi una riunione Microsoft Teams a un singolo ordine dalla sua pagina. In entrambi i casi il cliente riceve il link solo quando lo invii.",
+        "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
+        "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
+      }
+    },
+    "zoom": {
+      "description": "Aggiungi una riunione Zoom a un ordine di lavoro programmato e tieni il link sull'ordine, per una diagnosi a distanza o per illustrare i risultati al cliente.",
+      "tenantHelp": "Nello Zoom App Marketplace crea un'app General (user-managed), aggiungi l'URI di reindirizzamento qui sotto, aggiungi gli scope meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting e user:read:user, quindi incolla qui client ID e secret.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "autoCreate": "Crea automaticamente una riunione Zoom per ogni ordine di lavoro programmato",
+        "autoCreateHelp": "Spento: aggiungi tu la videochiamata a un ordine di lavoro, dalla sua pagina. Acceso: ogni ordine con un'ora di inizio riceve una riunione, spostata se riprogrammato e rimossa se annullato. In entrambi i casi il cliente riceve il link solo quando glielo invii.",
+        "includeCustomer": "Includi il nome del cliente nell'argomento della riunione",
+        "joinBeforeHost": "Consenti al cliente di entrare prima di te",
+        "waitingRoom": "Usa la sala d'attesa"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Compila un veicolo dalla targa o dal VIN norvegese: marca, modello, anno, carburante, cambio, motore, colore, misure degli pneumatici e data della prossima EU-kontroll, direttamente dal registro di Statens vegvesen. Non vengono restituiti dati sul proprietario.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Gratuita. Richiedi la chiave su vegvesen.no alla voce «API for tekniske kjøretøyopplysninger»: accedi con BankID, rappresenta l'officina e la chiave viene rilasciata subito. Consente 50.000 ricerche al giorno."
+      },
+      "settings": {
+        "syncInspections": "Tieni aggiornate le scadenze di revisione di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data della prossima EU-kontroll viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Compila un veicolo dalla targa francese, italiana, spagnola, portoghese o britannica: marca, modello, anno, VIN, carburante, cilindrata e altro, dai dati di immatricolazione del paese tramite Openapi.com. Ogni ricerca è addebitata sull'account Openapi dell'officina. Non vengono restituiti dati sul proprietario.",
+      "fields": {
+        "token": "Token API",
+        "tokenHelp": "Crea un account su console.openapi.com, ricarica il portafoglio e, sotto Automotive, crea un token per l'ambiente di produzione. Ogni ricerca con esito costa qualche decina di centesimi; una senza esito è gratuita."
+      },
+      "settings": {
+        "country": "Paese",
+        "countryHelp": "Il registro da consultare. Le targhe francesi e italiane hanno lo stesso formato, quindi il paese non si può ricavare dalla targa.",
+        "bikes": "Cerca anche i motocicli",
+        "bikesHelp": "Quando una targa non è di un'auto, viene consultato anche il registro dei motocicli. Una ricerca auto senza esito è gratuita, quindi non costa nulla in più a meno che non venga trovato un motociclo. Non disponibile per il Portogallo."
+      }
+    },
+    "rdw": {
+      "description": "Compila un veicolo dalla targa olandese: marca, modello, anno, carburante, cilindrata, colore, masse e data del prossimo APK, direttamente dal registro veicoli aperto della RDW. Gratuito, senza chiave. Non vengono pubblicati né i dati del proprietario né il VIN.",
+      "fields": {
+        "appToken": "Token applicazione (facoltativo)",
+        "appTokenHelp": "I dati aperti della RDW funzionano senza chiave, ma le richieste anonime condividono una quota limitata. Per la sincronizzazione delle revisioni, crea un account gratuito su opendata.rdw.nl, apri le impostazioni sviluppatore del tuo profilo e crea un token applicazione."
+      },
+      "settings": {
+        "syncInspections": "Tieni aggiornate le date APK di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data del prossimo APK viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+      }
+    },
+    "regcheck": {
+      "description": "Compila un veicolo dalla targa in Australia, Nuova Zelanda, Stati Uniti, Irlanda, Norvegia, Svezia, Danimarca, Finlandia, Estonia, Cechia, Slovacchia, Ungheria o Croazia: marca, modello, anno, VIN, carburante e cilindrata quando il paese li pubblica, tramite RegCheck. Ogni ricerca con esito consuma un credito dall'account RegCheck dell'officina. Non vengono restituiti dati sul proprietario.",
+      "fields": {
+        "username": "Nome utente RegCheck",
+        "usernameHelp": "Registrati su regcheck.org.uk; l'account include 10 ricerche gratuite e le altre si acquistano in blocchi da 100 dal pannello. Qui serve solo il nome utente, mai la password. Una targa non trovata non costa nulla."
+      },
+      "settings": {
+        "country": "Paese",
+        "countryHelp": "Il registro da consultare. Ogni paese ha un proprio servizio, quindi la connessione ne consulta uno.",
+        "auState": "Stato o territorio",
+        "auStateHelp": "L'Australia immatricola i veicoli per stato e al registro va detto quale consultare. Scegli quello in cui è immatricolata la maggior parte dei veicoli dei tuoi clienti.",
+        "usState": "Stato",
+        "usStateHelp": "Il codice di due lettere dello stato in cui sono immatricolati i veicoli, come CA o TX. I registri americani si consultano per stato."
+      }
+    },
+    "openai": {
+      "description": "Descrizioni di servizio, riepiloghi dello storico, lettura dei documenti e l'assistente, risposti dal vostro account OpenAI. Ogni chiamata è addebitata su quell'account e il modello lo scegliete voi.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Da creare su platform.openai.com, in API keys. L'account deve avere credito; OpenAI fattura a chiamata."
+      },
+      "settings": {
+        "model": "Modello",
+        "modelHelp": "Quale modello risponde. L'elenco arriva dal vostro account, prima i più recenti. I modelli piccoli costano meno a chiamata e bastano per quasi tutti i testi dell'officina."
+      }
+    },
+    "anthropic": {
+      "description": "Descrizioni di servizio, riepiloghi dello storico, lettura dei documenti e l'assistente, risposti da Claude sul vostro account Anthropic. Ogni chiamata è addebitata su quell'account e il modello lo scegliete voi.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Da creare su console.anthropic.com, in API keys. L'account deve avere credito; Anthropic fattura a chiamata."
+      },
+      "settings": {
+        "model": "Modello",
+        "modelHelp": "Quale modello risponde. L'elenco arriva dal vostro account, prima i più recenti. I modelli piccoli costano meno a chiamata e bastano per quasi tutti i testi dell'officina."
+      }
+    },
+    "stripe": {
+      "description": "Pagamenti con carta dal link della fattura, sul tuo account Stripe. Il cliente paga, Stripe avvisa Torqvoice e la fattura si segna pagata da sola.",
+      "fields": {
+        "secretKey": "Chiave segreta",
+        "secretKeyHelp": "Dalla dashboard di Stripe sotto Developers, API keys. Le chiavi di test non elaborano nulla di reale, quindi prova prima un pagamento con quelle e passa poi alle chiavi live.",
+        "publishableKey": "Chiave pubblicabile",
+        "webhookSecret": "Segreto di firma del webhook",
+        "webhookSecretHelp": "Mostrato da Stripe quando aggiungi come webhook l'URL di notifica di questa pagina. Con esso ogni notifica viene verificata prima di registrare un pagamento."
+      },
+      "settings": {
+        "enabled": "Offri nei link delle fatture",
+        "enabledHelp": "Disattiva per togliere il pulsante di pagamento dalle fatture condivise per un po', senza disconnettere. I pagamenti già avviati vengono comunque registrati."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay dal link della fattura. Il cliente paga nell'app che ha già e la fattura si segna pagata da sola.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client",
+        "subscriptionKey": "Chiave di sottoscrizione",
+        "subscriptionKeyHelp": "La Ocp-Apim-Subscription-Key del portale Vipps MobilePay, tra le chiavi API dell'unità di vendita.",
+        "merchantSerialNumber": "Numero di serie del commerciante"
+      },
+      "settings": {
+        "enabled": "Offri nei link delle fatture",
+        "enabledHelp": "Disattiva per togliere il pulsante di pagamento dalle fatture condivise per un po', senza disconnettere. I pagamenti già avviati vengono comunque registrati.",
+        "testMode": "Modalità test",
+        "testModeHelp": "Usa l'ambiente di test di Vipps con chiavi di test. Lasciala attiva finché un pagamento completo non è andato a buon fine, poi disattivala e inserisci le chiavi live."
+      }
+    },
+    "paypal": {
+      "description": "Checkout PayPal dal link della fattura, tramite la tua app PayPal. Il cliente paga con un account PayPal o una carta e la fattura si segna pagata da sola.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "enabled": "Offri nei link delle fatture",
+        "enabledHelp": "Disattiva per togliere il pulsante di pagamento dalle fatture condivise per un po', senza disconnettere. I pagamenti già avviati vengono comunque registrati.",
+        "sandbox": "Modalità sandbox",
+        "sandboxHelp": "Usa la sandbox di PayPal con le chiavi dell'app sandbox. Lasciala attiva finché un pagamento completo non è andato a buon fine, poi disattivala e inserisci le chiavi dell'app live."
+      }
+    },
+    "quickbooks": {
+      "description": "Invia le fatture emesse, i loro clienti e i loro pagamenti a QuickBooks Online e riporta i pagamenti registrati lì.",
+      "tenantHelp": "Crea un'app nel portale sviluppatori Intuit. Copia client id e secret da Keys and credentials e inserisci l'URI di reindirizzamento qui sotto in Settings, Redirect URIs. Le chiavi di sviluppo raggiungono le aziende sandbox, quelle di produzione le aziende reali.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "pushInvoices": "Invia le fatture emesse a QuickBooks",
+        "pushOnComplete": "Invia le fatture anche quando il lavoro viene segnato come completato",
+        "pushOnCompleteHelp": "Senza questa opzione una fattura passa quando viene inviata, condivisa o pagata. Con questa, un lavoro completato passa subito e viene aggiornato se cambia.",
+        "startDate": "Solo fatture con data a partire dal",
+        "startDateHelp": "Lascia vuoto per inviare ogni fattura emessa. Usa la data in cui la contabilità è passata a QuickBooks, così le fatture più vecchie non vengono registrate due volte.",
+        "includeVehicle": "Indicare il veicolo sulla fattura",
+        "includeVehicleHelp": "Una riga di testo sopra le voci con anno, marca, modello, targa e chilometraggio, così la contabilità sa di quale auto si tratta.",
+        "laborItemId": "Articolo per le righe di manodopera",
+        "laborItemIdHelp": "Lascia vuoto e la prima volta verrà creato un articolo chiamato Labour sotto il tuo conto ricavi.",
+        "partsItemId": "Articolo per le righe di ricambi",
+        "partsItemIdHelp": "Lascia vuoto e la prima volta verrà creato un articolo chiamato Parts sotto il tuo conto ricavi.",
+        "taxAmounts": "Importi delle imposte",
+        "taxAmountsHelp": "Come fatturato invia l'imposta esattamente come compare sulla fattura ricevuta dal cliente, così i due sistemi coincidono al centesimo. Calcolato da QuickBooks lascia che QuickBooks applichi l'aliquota del codice imposta, o l'indirizzo del cliente negli USA, e il registro segnala i totali diversi.",
+        "taxAmountsBilled": "Come fatturato in Torqvoice",
+        "taxAmountsQuickbooks": "Calcolato da QuickBooks",
+        "taxCodeId": "Codice imposta per le fatture imponibili",
+        "taxCodeIdHelp": "QuickBooks registra l'imposta sotto un codice imposta. Torqvoice sceglie il codice con l'aliquota di ogni fattura; questo viene usato quando nessuno corrisponde. Un'azienda statunitense usa TAX se non scegli un altro codice.",
+        "zeroTaxCodeId": "Codice imposta per le fatture senza imposta",
+        "zeroTaxCodeIdHelp": "Usato quando la fattura non ha imposta o il cliente è esente. Un'azienda statunitense usa NON se non scegli un altro codice.",
+        "pushPayments": "Registra i pagamenti in QuickBooks",
+        "depositAccountId": "Deposita i pagamenti su",
+        "depositAccountIdHelp": "Lascia vuoto per usare Undeposited Funds.",
+        "manualPaidAsPayment": "Registrare un pagamento quando una fattura viene segnata come pagata a mano",
+        "manualPaidAsPaymentHelp": "Una fattura segnata come pagata in Torqvoice senza registrazione di pagamento riceve in QuickBooks un pagamento per quanto risulta ancora dovuto lì. Disattivato, resta aperta lì finché non viene registrato un pagamento.",
+        "pullPayments": "Riporta i pagamenti registrati in QuickBooks",
+        "pullPaymentsHelp": "Ogni 30 minuti. Un pagamento ricevuto in QuickBooks su una fattura di Torqvoice viene registrato qui sulla fattura."
+      }
+    },
+    "nhtsa": {
+      "description": "Compila un veicolo dal suo VIN e consulta richiami, reclami dei proprietari e valutazioni dei crash test per ogni anno modello, dall'autorità per la sicurezza statunitense. Gratuito, senza chiave.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Tieni aggiornati i dati su richiami e reclami per ogni veicolo di questa officina",
+        "refreshFleetHelp": "Una volta al giorno i modelli non aggiornati nell'ultima settimana vengono richiesti di nuovo, così la pagina del veicolo non attende mai e un nuovo richiamo compare entro una settimana. Vengono inviati solo marca, modello e anno."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Ordini di lavoro nel calendario",
+      "pull": "Impegni dal calendario"
+    },
+    "conference": {
+      "sync": "Link videochiamata"
+    },
+    "inspection": {
+      "refresh": "Aggiornamento scadenze revisione"
+    },
+    "accounting": {
+      "invoice": "Fattura in contabilità",
+      "payment": "Pagamento in contabilità",
+      "customer": "Cliente in contabilità",
+      "pull": "Pagamenti dalla contabilità"
+    },
+    "safety": {
+      "refresh": "Aggiornamento dei dati sui richiami",
+      "vehicle": "Controllo richiami per un nuovo veicolo"
+    }
+  }
+}

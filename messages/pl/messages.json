@@ -7,7 +7,8 @@
       "scheduled": "Zaplanowane",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Kampanie"
     },
     "smsNotConfiguredTitle": "SMS nie jest skonfigurowany",
     "smsNotConfiguredHint": "Podłącz dostawcę SMS, aby wysyłać i odbierać wiadomości tutaj. Zaplanowana poczta działa bez tego.",

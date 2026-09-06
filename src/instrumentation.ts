@@ -13,7 +13,11 @@ export async function register() {
       checkLowStock,
       checkDueReminders,
       processScheduledMessages,
+      processIntegrationJobs,
+      cleanupIntegrationLogs,
     } = await import('./cronTasks')
+    const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
+    warnAboutAppUrl()
     checkLicenses()
     checkSubscriptions()
     processRecurringInvoices()
@@ -26,5 +30,7 @@ export async function register() {
     checkLowStock()
     checkDueReminders()
     processScheduledMessages()
+    processIntegrationJobs()
+    cleanupIntegrationLogs()
   }
 }

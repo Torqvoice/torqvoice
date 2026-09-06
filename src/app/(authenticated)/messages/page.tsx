@@ -6,6 +6,7 @@ import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availabl
 import { getInboxThreads, type InboxPage } from '@/features/messaging/Actions/inboxActions'
 import { MessagesPageClient } from '@/features/messaging/Components/MessagesPageClient'
 import { PageHeader } from '@/components/page-header'
+import { listInspectionReminderCampaigns } from '@/features/inspection-reminders/Actions/inspectionReminderActions'
 
 export default async function MessagesPage() {
   const ctx = await getAuthContext()
@@ -13,10 +14,11 @@ export default async function MessagesPage() {
 
   // One inbox for every channel, so the page loads them together rather than
   // asking which one the workshop meant.
-  const [inboxResult, scheduledResult, messageChannels] = await Promise.all([
+  const [inboxResult, scheduledResult, messageChannels, campaignsResult] = await Promise.all([
     getInboxThreads(),
     getScheduledMessages(),
     getAvailableChannels(ctx.organizationId),
+    listInspectionReminderCampaigns(),
   ])
 
   const inbox: InboxPage =
@@ -24,6 +26,7 @@ export default async function MessagesPage() {
       ? inboxResult.data
       : { threads: [], nextCursor: null, channels: [] }
   const scheduled = scheduledResult.success && scheduledResult.data ? scheduledResult.data : []
+  const campaigns = campaignsResult.success && campaignsResult.data ? campaignsResult.data : []
 
   return (
     // The inbox is a full-height pane with its own scrolling regions, so the
@@ -37,6 +40,7 @@ export default async function MessagesPage() {
             initialCursor={inbox.nextCursor}
             channels={inbox.channels}
             initialScheduled={scheduled}
+            campaigns={campaigns}
             availableChannels={messageChannels}
           />
         </Suspense>

@@ -7,7 +7,8 @@
       "scheduled": "Scheduled",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Campaigns"
     },
     "smsNotConfiguredTitle": "SMS is not set up",
     "smsNotConfiguredHint": "Connect an SMS provider to send and receive texts here. Scheduled email still works without it.",

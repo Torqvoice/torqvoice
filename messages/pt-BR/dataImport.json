@@ -1,0 +1,228 @@
+{
+  "title": "Importar {entity}",
+  "cancel": "Cancelar",
+  "done": "Concluído",
+  "entities": {
+    "customers": "clientes",
+    "vehicles": "veículos",
+    "services": "histórico de serviços"
+  },
+  "entityHints": {
+    "customers": "Nomes, dados de contato, endereços. Uma linha por cliente.",
+    "vehicles": "Marca, modelo, ano, placa, chassi (VIN). Uma coluna de proprietário vincula ou cria o cliente.",
+    "services": "Serviços e faturas anteriores. Uma linha por serviço, com o veículo ao qual pertence."
+  },
+  "groups": {
+    "customer": "Cliente",
+    "vehicle": "Veículo",
+    "service": "Serviço"
+  },
+  "steps": {
+    "upload": "Escolha o que importar e envie o arquivo do seu sistema atual.",
+    "mapping": "Confira qual coluna vira qual campo. Nada foi gravado ainda.",
+    "preview": "Simulação: isto é exatamente o que a importação fará. Revise e depois importe.",
+    "importing": "Gravando linhas. Mantenha esta janela aberta.",
+    "result": "Importação finalizada."
+  },
+  "upload": {
+    "drop": "Arraste e solte um arquivo aqui",
+    "formats": "CSV, Excel (.xlsx) ou vCard (.vcf), até 25 MB e 50.000 linhas",
+    "browse": "Procurar arquivos",
+    "reading": "Lendo o arquivo...",
+    "templateHint": "Ainda não tem uma exportação? Preencha um modelo e envie-o.",
+    "templateXlsx": "Modelo Excel",
+    "templateCsv": "Modelo CSV",
+    "sourcesHint": "Funciona com exportações de qualquer sistema de oficina, ferramenta de contabilidade, Google Contatos, Outlook ou planilha. Os nomes das colunas são reconhecidos em vários idiomas; você confirma o mapeamento antes de qualquer gravação."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# linha} other {# linhas}}",
+    "colColumn": "Coluna no seu arquivo",
+    "colSample": "Valores de exemplo",
+    "colField": "Vira",
+    "ignore": "Ignorar esta coluna",
+    "source": {
+      "preset": "Layout reconhecido",
+      "header": "Correspondido pelo cabeçalho",
+      "values": "Deduzido pelos valores"
+    },
+    "suggestWithAi": "Sugerir com IA",
+    "aiApplied": "{count, plural, one {# coluna mapeada} other {# colunas mapeadas}} pela IA. Confira antes de continuar.",
+    "chooseAnother": "Escolher outro arquivo",
+    "missingRequired": "Ainda falta: {fields}",
+    "dryRunHint": "A simulação verifica cada linha em relação aos seus dados existentes sem gravar nada.",
+    "runDryRun": "Executar simulação"
+  },
+  "options": {
+    "dateFormat": "Formato de data",
+    "dateAuto": "Detectar automaticamente",
+    "dateDMY": "Dia / mês / ano",
+    "dateMDY": "Mês / dia / ano",
+    "dateYMD": "Ano / mês / dia",
+    "decimal": "Separador decimal",
+    "decimalAuto": "Detectar automaticamente",
+    "decimalDot": "Ponto (1,234.56)",
+    "decimalComma": "Vírgula (1.234,56)",
+    "countryCode": "Código do país para números de telefone",
+    "duplicates": "Quando uma linha corresponder a um registro existente",
+    "duplicatesUpdate": "Atualizar o registro existente",
+    "duplicatesSkip": "Pular a linha",
+    "duplicatesCreate": "Criar um novo registro mesmo assim"
+  },
+  "summary": {
+    "create": "Serão criados",
+    "update": "Serão atualizados",
+    "skip": "Serão pulados",
+    "error": "Não podem ser importados",
+    "warnings": "Com avisos",
+    "customersToCreate": "{count, plural, one {# cliente novo} other {# clientes novos}}",
+    "customersToUpdate": "{count, plural, one {# cliente atualizado} other {# clientes atualizados}}",
+    "vehiclesToCreate": "{count, plural, one {# veículo novo} other {# veículos novos}}",
+    "vehiclesToUpdate": "{count, plural, one {# veículo atualizado} other {# veículos atualizados}}",
+    "servicesToCreate": "{count, plural, one {# registro de serviço} other {# registros de serviço}}"
+  },
+  "actions": {
+    "create": "Criar",
+    "update": "Atualizar",
+    "skip": "Pular",
+    "error": "Erro"
+  },
+  "matchOn": {
+    "number": "número do cliente",
+    "email": "e-mail",
+    "phone": "telefone",
+    "name": "nome",
+    "vin": "chassi (VIN)",
+    "plate": "placa",
+    "makeModelYear": "marca, modelo e ano"
+  },
+  "preview": {
+    "colAction": "Ação",
+    "colOwner": "Proprietário",
+    "colDetails": "Detalhes",
+    "empty": "Nenhuma linha corresponde a este filtro.",
+    "matchedOn": "Corresponde a {name} (por {on})",
+    "linksCustomer": "Vinculado ao cliente {name}",
+    "linksVehicle": "Vinculado a {label}",
+    "sameCustomerAsRow": "Mesmo cliente da linha {row}",
+    "sameVehicleAsRow": "Mesmo veículo da linha {row}",
+    "createsCustomer": "Cria o cliente",
+    "createsVehicle": "Cria o veículo",
+    "downloadReport": "Baixar relatório da simulação",
+    "limitExceeded": "Seu plano permite mais {remaining} clientes, mas esta importação criaria {needed}. Remova linhas ou faça upgrade do seu plano.",
+    "pageInfo": "{from}–{to} de {total}",
+    "prev": "Anterior",
+    "next": "Próximo",
+    "backToMapping": "Voltar ao mapeamento",
+    "import": "Importar {count, plural, one {# linha} other {# linhas}}",
+    "nothingWrittenYet": "Nada foi gravado ainda. A importação pode ser desfeita depois em Configurações → Dados."
+  },
+  "importing": {
+    "title": "Importando...",
+    "starting": "Iniciando",
+    "progress": "{done} de {total} linhas",
+    "keepOpen": "Arquivos grandes levam um ou dois minutos."
+  },
+  "result": {
+    "title": "Importação concluída",
+    "undoneTitle": "Importação desfeita",
+    "created": "{count, plural, one {# registro criado} other {# registros criados}}",
+    "updated": "{count, plural, one {# registro atualizado} other {# registros atualizados}}",
+    "skipped": "{count, plural, one {# linha pulada} other {# linhas puladas}}",
+    "failed": "{count, plural, one {# linha não importada} other {# linhas não importadas}}",
+    "writeFailures": "{count, plural, one {# linha falhou ao gravar} other {# linhas falharam ao gravar}}",
+    "rowFailure": "Linha {row}: {error}",
+    "undo": "Desfazer esta importação",
+    "undone": "Removidos {customers} clientes, {vehicles} veículos e {services} registros de serviço.",
+    "undoHint": "Desfazer remove todos os registros que esta importação criou. Os registros que ela apenas atualizou mantêm os novos valores."
+  },
+  "history": {
+    "title": "Histórico de importações",
+    "description": "Importações de planilha executadas nesta oficina. Desfazer remove o que uma importação criou.",
+    "loading": "Carregando...",
+    "statusUndone": "Desfeita",
+    "counts": "{created} criados, {updated} atualizados, {skipped} pulados, {failed} com falha",
+    "undo": "Desfazer",
+    "undone": "Removidos {customers} clientes, {vehicles} veículos e {services} registros de serviço.",
+    "undoFailed": "Não foi possível desfazer a importação",
+    "confirmTitle": "Desfazer esta importação?",
+    "confirmDescription": "Remove o que {file} criou: {customers} clientes, {vehicles} veículos e {services} registros de serviço. Os registros que a importação apenas atualizou são mantidos.",
+    "cancel": "Cancelar",
+    "confirm": "Desfazer importação"
+  },
+  "fields": {
+    "customer": {
+      "name": "Nome do cliente",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "customerNumber": "Número do cliente",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "company": "Empresa",
+      "address": "Endereço",
+      "street": "Rua",
+      "postalCode": "CEP",
+      "city": "Cidade",
+      "state": "Estado / região",
+      "country": "País",
+      "taxId": "CPF/CNPJ",
+      "notes": "Notas do cliente"
+    },
+    "vehicle": {
+      "description": "Veículo (ano marca modelo em uma só coluna)",
+      "make": "Marca",
+      "model": "Modelo",
+      "year": "Ano",
+      "vin": "Chassi (VIN)",
+      "licensePlate": "Placa",
+      "color": "Cor",
+      "mileage": "Quilometragem",
+      "fuelType": "Tipo de combustível",
+      "transmission": "Transmissão",
+      "engineSize": "Cilindrada",
+      "engineCode": "Código do motor",
+      "purchaseDate": "Data de compra",
+      "purchasePrice": "Preço de compra"
+    },
+    "service": {
+      "date": "Data do serviço",
+      "title": "Título do serviço",
+      "description": "Descrição",
+      "total": "Valor total",
+      "mileage": "Quilometragem no serviço",
+      "invoiceNumber": "Número da fatura",
+      "notes": "Notas do serviço",
+      "technician": "Técnico"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Falta o nome do cliente",
+    "invalid_email": "O e-mail \"{value}\" não é válido e foi deixado de fora",
+    "invalid_vin": "O chassi \"{value}\" não tem 17 caracteres; mantido como digitado",
+    "vehicle_make_model_required": "Faltam a marca e o modelo",
+    "vehicle_year_required": "Falta o ano",
+    "vehicle_year_invalid": "O ano \"{value}\" não é um ano válido",
+    "vehicle_identifier_required": "Sem placa, chassi ou marca e modelo para identificar o veículo",
+    "vehicle_not_found": "Nenhum veículo existente corresponde a \"{value}\" e não há dados suficientes para criar um",
+    "service_date_required": "Falta a data do serviço",
+    "service_date_invalid": "Não foi possível ler a data \"{value}\"",
+    "service_title_required": "Falta o título ou a descrição do serviço",
+    "invalid_date": "Não foi possível ler {field} \"{value}\" e o valor foi deixado de fora",
+    "invalid_number": "{field} \"{value}\" não é um número e foi deixado de fora",
+    "duplicate_invoice_number": "O número de fatura {value} já existe",
+    "write_failed": "Não foi possível gravar: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Não foi possível ler o arquivo",
+    "aiFailed": "A IA não conseguiu sugerir um mapeamento",
+    "dryRunFailed": "A simulação falhou",
+    "importFailed": "A importação falhou",
+    "undoFailed": "Não foi possível desfazer a importação"
+  },
+  "entry": {
+    "title": "Importar de uma planilha",
+    "description": "Traga clientes, veículos e histórico de serviços de qualquer sistema que exporte CSV ou Excel. Mapeie as colunas, execute uma simulação e depois importe. Toda importação pode ser desfeita.",
+    "customers": "Importar clientes",
+    "vehicles": "Importar veículos",
+    "services": "Importar histórico de serviços"
+  }
+}

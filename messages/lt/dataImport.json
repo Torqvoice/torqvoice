@@ -1,0 +1,228 @@
+{
+  "title": "Importuoti {entity}",
+  "cancel": "Atšaukti",
+  "done": "Baigta",
+  "entities": {
+    "customers": "klientus",
+    "vehicles": "transporto priemones",
+    "services": "paslaugų istoriją"
+  },
+  "entityHints": {
+    "customers": "Vardai, kontaktiniai duomenys, adresai. Viena eilutė vienam klientui.",
+    "vehicles": "Markė, modelis, metai, valst. numeris, VIN. Savininko stulpelis susieja arba sukuria klientą.",
+    "services": "Ankstesni darbai ir sąskaitos. Viena eilutė vienam darbui su transporto priemone, kuriai jis priklauso."
+  },
+  "groups": {
+    "customer": "Klientas",
+    "vehicle": "Transporto priemonė",
+    "service": "Paslauga"
+  },
+  "steps": {
+    "upload": "Pasirinkite, ką importuoti, ir įkelkite failą iš dabartinės sistemos.",
+    "mapping": "Patikrinkite, kuris stulpelis taps kuriuo lauku. Kol kas niekas neįrašoma.",
+    "preview": "Bandomasis importas: tai tiksliai, ką atliks importas. Peržiūrėkite ir tada importuokite.",
+    "importing": "Įrašomos eilutės. Neuždarykite šio lango.",
+    "result": "Importas baigtas."
+  },
+  "upload": {
+    "drop": "Nutempkite failą čia",
+    "formats": "CSV, Excel (.xlsx) arba vCard (.vcf), iki 25 MB ir 50 000 eilučių",
+    "browse": "Naršyti failus",
+    "reading": "Skaitomas failas...",
+    "templateHint": "Dar neturite eksporto? Užpildykite šabloną ir įkelkite jį.",
+    "templateXlsx": "Excel šablonas",
+    "templateCsv": "CSV šablonas",
+    "sourcesHint": "Veikia su eksportais iš bet kurios dirbtuvių sistemos, apskaitos programos, Google Contacts, Outlook ar skaičiuoklės. Stulpelių pavadinimai atpažįstami daugeliu kalbų; susiejimą patvirtinate prieš ką nors įrašant."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# eilutė} few {# eilutės} many {# eilutės} other {# eilučių}}",
+    "colColumn": "Stulpelis jūsų faile",
+    "colSample": "Reikšmių pavyzdžiai",
+    "colField": "Taps",
+    "ignore": "Ignoruoti šį stulpelį",
+    "source": {
+      "preset": "Atpažintas išdėstymas",
+      "header": "Pagal antraštę",
+      "values": "Spėta pagal reikšmes"
+    },
+    "suggestWithAi": "Pasiūlyti su DI",
+    "aiApplied": "DI susiejo {count, plural, one {# stulpelį} few {# stulpelius} many {# stulpelio} other {# stulpelių}}. Patikrinkite prieš tęsdami.",
+    "chooseAnother": "Pasirinkti kitą failą",
+    "missingRequired": "Dar reikia: {fields}",
+    "dryRunHint": "Bandomasis importas patikrina kiekvieną eilutę pagal esamus duomenis nieko neįrašydamas.",
+    "runDryRun": "Paleisti bandomąjį importą"
+  },
+  "options": {
+    "dateFormat": "Datos formatas",
+    "dateAuto": "Nustatyti automatiškai",
+    "dateDMY": "Diena / mėnuo / metai",
+    "dateMDY": "Mėnuo / diena / metai",
+    "dateYMD": "Metai / mėnuo / diena",
+    "decimal": "Dešimtainis skirtukas",
+    "decimalAuto": "Nustatyti automatiškai",
+    "decimalDot": "Taškas (1,234.56)",
+    "decimalComma": "Kablelis (1.234,56)",
+    "countryCode": "Šalies kodas telefono numeriams",
+    "duplicates": "Kai eilutė atitinka esamą įrašą",
+    "duplicatesUpdate": "Atnaujinti esamą įrašą",
+    "duplicatesSkip": "Praleisti eilutę",
+    "duplicatesCreate": "Vis tiek sukurti naują įrašą"
+  },
+  "summary": {
+    "create": "Bus sukurta",
+    "update": "Bus atnaujinta",
+    "skip": "Bus praleista",
+    "error": "Negalima importuoti",
+    "warnings": "Su įspėjimais",
+    "customersToCreate": "{count, plural, one {# naujas klientas} few {# nauji klientai} many {# naujo kliento} other {# naujų klientų}}",
+    "customersToUpdate": "{count, plural, one {atnaujintas # klientas} few {atnaujinti # klientai} many {atnaujinta # kliento} other {atnaujinta # klientų}}",
+    "vehiclesToCreate": "{count, plural, one {# nauja transporto priemonė} few {# naujos transporto priemonės} many {# naujos transporto priemonės} other {# naujų transporto priemonių}}",
+    "vehiclesToUpdate": "{count, plural, one {atnaujinta # transporto priemonė} few {atnaujintos # transporto priemonės} many {atnaujinta # transporto priemonės} other {atnaujinta # transporto priemonių}}",
+    "servicesToCreate": "{count, plural, one {# paslaugos įrašas} few {# paslaugų įrašai} many {# paslaugos įrašo} other {# paslaugų įrašų}}"
+  },
+  "actions": {
+    "create": "Sukurti",
+    "update": "Atnaujinti",
+    "skip": "Praleisti",
+    "error": "Klaida"
+  },
+  "matchOn": {
+    "number": "kliento numerį",
+    "email": "el. paštą",
+    "phone": "telefoną",
+    "name": "vardą",
+    "vin": "VIN",
+    "plate": "valst. numerį",
+    "makeModelYear": "markę, modelį ir metus"
+  },
+  "preview": {
+    "colAction": "Veiksmas",
+    "colOwner": "Savininkas",
+    "colDetails": "Išsami informacija",
+    "empty": "Nėra šį filtrą atitinkančių eilučių.",
+    "matchedOn": "Atitinka {name} (pagal {on})",
+    "linksCustomer": "Susieta su klientu {name}",
+    "linksVehicle": "Susieta su {label}",
+    "sameCustomerAsRow": "Tas pats klientas kaip {row} eilutėje",
+    "sameVehicleAsRow": "Ta pati transporto priemonė kaip {row} eilutėje",
+    "createsCustomer": "Sukuria klientą",
+    "createsVehicle": "Sukuria transporto priemonę",
+    "downloadReport": "Atsisiųsti bandomojo importo ataskaitą",
+    "limitExceeded": "Jūsų planas leidžia dar {remaining} klientų, bet šis importas sukurtų {needed}. Pašalinkite eilutes arba atnaujinkite planą.",
+    "pageInfo": "{from}–{to} iš {total}",
+    "prev": "Ankstesnis",
+    "next": "Kitas",
+    "backToMapping": "Grįžti prie susiejimo",
+    "import": "Importuoti {count, plural, one {# eilutę} few {# eilutes} many {# eilutės} other {# eilučių}}",
+    "nothingWrittenYet": "Kol kas niekas neįrašyta. Importą vėliau galima atšaukti skiltyje Nustatymai → Duomenys."
+  },
+  "importing": {
+    "title": "Importuojama...",
+    "starting": "Pradedama",
+    "progress": "{done} iš {total} eilučių",
+    "keepOpen": "Dideli failai užtrunka minutę ar dvi."
+  },
+  "result": {
+    "title": "Importas baigtas",
+    "undoneTitle": "Importas atšauktas",
+    "created": "{count, plural, one {sukurtas # įrašas} few {sukurti # įrašai} many {sukurta # įrašo} other {sukurta # įrašų}}",
+    "updated": "{count, plural, one {atnaujintas # įrašas} few {atnaujinti # įrašai} many {atnaujinta # įrašo} other {atnaujinta # įrašų}}",
+    "skipped": "{count, plural, one {praleista # eilutė} few {praleistos # eilutės} many {praleista # eilutės} other {praleista # eilučių}}",
+    "failed": "{count, plural, one {neimportuota # eilutė} few {neimportuotos # eilutės} many {neimportuota # eilutės} other {neimportuota # eilučių}}",
+    "writeFailures": "{count, plural, one {įrašant nepavyko # eilutė} few {įrašant nepavyko # eilutės} many {įrašant nepavyko # eilutės} other {įrašant nepavyko # eilučių}}",
+    "rowFailure": "{row} eilutė: {error}",
+    "undo": "Atšaukti šį importą",
+    "undone": "Pašalinta: {customers} klientų, {vehicles} transporto priemonių ir {services} paslaugų įrašų.",
+    "undoHint": "Atšaukimas pašalina visus šio importo sukurtus įrašus. Įrašai, kuriuos importas tik atnaujino, išlaiko naujas reikšmes."
+  },
+  "history": {
+    "title": "Importų istorija",
+    "description": "Šiose dirbtuvėse atlikti skaičiuoklių importai. Atšaukimas pašalina tai, ką importas sukūrė.",
+    "loading": "Įkeliama...",
+    "statusUndone": "Atšauktas",
+    "counts": "{created} sukurta, {updated} atnaujinta, {skipped} praleista, {failed} nepavyko",
+    "undo": "Atšaukti",
+    "undone": "Pašalinta: {customers} klientų, {vehicles} transporto priemonių ir {services} paslaugų įrašų.",
+    "undoFailed": "Nepavyko atšaukti importo",
+    "confirmTitle": "Atšaukti šį importą?",
+    "confirmDescription": "Pašalina tai, ką sukūrė {file}: {customers} klientų, {vehicles} transporto priemonių ir {services} paslaugų įrašų. Įrašai, kuriuos importas tik atnaujino, išsaugomi.",
+    "cancel": "Atšaukti",
+    "confirm": "Atšaukti importą"
+  },
+  "fields": {
+    "customer": {
+      "name": "Kliento vardas",
+      "firstName": "Vardas",
+      "lastName": "Pavardė",
+      "customerNumber": "Kliento numeris",
+      "email": "El. paštas",
+      "phone": "Telefonas",
+      "company": "Įmonė",
+      "address": "Adresas",
+      "street": "Gatvė",
+      "postalCode": "Pašto kodas",
+      "city": "Miestas",
+      "state": "Valstija / regionas",
+      "country": "Šalis",
+      "taxId": "PVM kodas",
+      "notes": "Kliento pastabos"
+    },
+    "vehicle": {
+      "description": "Transporto priemonė (metai, markė ir modelis viename stulpelyje)",
+      "make": "Markė",
+      "model": "Modelis",
+      "year": "Metai",
+      "vin": "VIN",
+      "licensePlate": "Valstybinis numeris",
+      "color": "Spalva",
+      "mileage": "Rida",
+      "fuelType": "Degalų tipas",
+      "transmission": "Pavarų dėžė",
+      "engineSize": "Variklio tūris",
+      "engineCode": "Variklio kodas",
+      "purchaseDate": "Pirkimo data",
+      "purchasePrice": "Pirkimo kaina"
+    },
+    "service": {
+      "date": "Paslaugos data",
+      "title": "Paslaugos pavadinimas",
+      "description": "Aprašymas",
+      "total": "Bendra suma",
+      "mileage": "Rida paslaugos metu",
+      "invoiceNumber": "Sąskaitos numeris",
+      "notes": "Paslaugos pastabos",
+      "technician": "Technikas"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Trūksta kliento vardo",
+    "invalid_email": "El. paštas \"{value}\" netinkamas ir buvo praleistas",
+    "invalid_vin": "VIN \"{value}\" nėra 17 simbolių; paliktas kaip įvestas",
+    "vehicle_make_model_required": "Trūksta markės ir modelio",
+    "vehicle_year_required": "Trūksta metų",
+    "vehicle_year_invalid": "Metai \"{value}\" nėra tinkami metai",
+    "vehicle_identifier_required": "Nėra valst. numerio, VIN arba markės ir modelio transporto priemonei atpažinti",
+    "vehicle_not_found": "Jokia esama transporto priemonė neatitinka \"{value}\" ir nepakanka duomenų naujai sukurti",
+    "service_date_required": "Trūksta paslaugos datos",
+    "service_date_invalid": "Nepavyko nuskaityti datos \"{value}\"",
+    "service_title_required": "Trūksta paslaugos pavadinimo arba aprašymo",
+    "invalid_date": "{field} \"{value}\" nepavyko nuskaityti ir buvo praleista",
+    "invalid_number": "{field} \"{value}\" nėra skaičius ir buvo praleista",
+    "duplicate_invoice_number": "Sąskaitos numeris {value} jau egzistuoja",
+    "write_failed": "Nepavyko įrašyti: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Nepavyko nuskaityti failo",
+    "aiFailed": "DI nepavyko pasiūlyti susiejimo",
+    "dryRunFailed": "Bandomasis importas nepavyko",
+    "importFailed": "Importas nepavyko",
+    "undoFailed": "Nepavyko atšaukti importo"
+  },
+  "entry": {
+    "title": "Importuoti iš skaičiuoklės",
+    "description": "Perkelkite klientus, transporto priemones ir paslaugų istoriją iš bet kurios sistemos, eksportuojančios CSV arba Excel. Susiekite stulpelius, paleiskite bandomąjį importą ir tada importuokite. Kiekvieną importą galima atšaukti.",
+    "customers": "Importuoti klientus",
+    "vehicles": "Importuoti transporto priemones",
+    "services": "Importuoti paslaugų istoriją"
+  }
+}

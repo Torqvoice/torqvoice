@@ -34,7 +34,8 @@
     "delete": "Supprimer",
     "unpaid": "Non Payé",
     "unsavedChanges": "Modifications non enregistrées",
-    "saved": "Enregistré"
+    "saved": "Enregistré",
+    "joinCall": "Rejoindre l'appel vidéo"
   },
   "basicInfo": {
     "title": "Informations de Base",
@@ -78,7 +79,17 @@
       "typePrompt": "Tapez un nom...",
       "boardTechnicians": "Techniciens du Tableau",
       "teamMembers": "Membres de l'Équipe"
-    }
+    },
+    "design": "Design de facture",
+    "designDefault": "Défaut de l'atelier",
+    "designFollowing": "Défaut ({name})",
+    "designPinned": "La feuille a été figée à l'émission de la facture le {date}. Un nouveau choix ne s'applique qu'après qu'un propriétaire déverrouille la facture et qu'elle soit renvoyée.",
+    "designSaved": "Design de facture mis à jour",
+    "designFollowingRule": "Par défaut ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Vente de pièces seule"
+    },
+    "designSaveFailed": "Impossible de changer le design de la facture"
   },
   "parts": {
     "title": "Pièces",
@@ -349,6 +360,7 @@
     "workBay": "Poste de travail",
     "selectWorkBay": "Choisir un poste…",
     "noWorkBay": "Aucun poste",
+    "noTechnician": "Sans technicien",
     "technicians": "Techniciens",
     "otherTeamMembers": "Autres membres de l’équipe",
     "makeTechnician": "En fait un technicien",
@@ -410,5 +422,50 @@
     "remove": "Retirer ce point",
     "notAnswered": "Rien trouvé à ce sujet pour l'instant",
     "answered": "{count} constat(s) à ce sujet"
+  },
+  "videoCall": {
+    "title": "Appel vidéo",
+    "none": "Aucun appel vidéo sur cet ordre de travail.",
+    "needsSchedule": "Définissez d'abord une heure de début. La réunion suit le planning.",
+    "add": "Ajouter une réunion {provider}",
+    "addedHere": "ajouté depuis cet ordre de travail",
+    "fromCalendar": "depuis l'événement du calendrier",
+    "join": "Rejoindre",
+    "copy": "Copier le lien",
+    "copied": "Lien copié",
+    "remove": "Supprimer",
+    "removeTitle": "Supprimer l'appel vidéo ?",
+    "removeDescription": "La réunion est supprimée chez le fournisseur. Ceux qui ont déjà le lien ne pourront plus rejoindre.",
+    "created": "Réunion créée. Le lien est sur l'ordre de travail.",
+    "removed": "Réunion supprimée",
+    "failed": "Une erreur s'est produite",
+    "shareHint": "Le client ne reçoit ce lien que si vous l'envoyez.",
+    "shareHintNoChannel": "Le client ne reçoit ce lien que si vous l'envoyez. Aucun canal de messagerie n'est configuré : copiez-le vous-même dans un message.",
+    "send": {
+      "button": "Envoyer au client",
+      "title": "Envoyer le lien de l'appel vidéo",
+      "description": "Envoyer le lien de connexion à {name}.",
+      "messageLabel": "Note (facultatif)",
+      "messagePlaceholder": "Ce que le client doit savoir avant l'appel...",
+      "linkAlwaysIncluded": "Le lien de connexion est toujours ajouté sous votre note.",
+      "sms": "SMS",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(pas de téléphone)",
+      "noEmail": "(pas d'e-mail)",
+      "noTelegram": "(pas de chat lié)",
+      "notAvailable": "(non configuré)",
+      "cancel": "Annuler",
+      "send": "Envoyer",
+      "sent": "Lien de l'appel vidéo envoyé",
+      "partlySent": "Envoyé par {sent} ; pas par {failed}",
+      "failed": "Impossible d'envoyer le lien"
+    },
+    "notify": {
+      "invitation": "Bonjour {name}, votre appel vidéo concernant le véhicule {vehicle} a lieu le {when}. Rejoignez-le ici : {url}",
+      "invitationNoTime": "Bonjour {name}, voici le lien de l'appel vidéo concernant le véhicule {vehicle} : {url}",
+      "joinLine": "Rejoignez l'appel vidéo ici : {url}",
+      "emailSubject": "Appel vidéo concernant votre {vehicle}"
+    }
   }
 }

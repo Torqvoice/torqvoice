@@ -14,6 +14,7 @@ import {
   Car,
   Check,
   ClipboardList,
+  FileSpreadsheet,
   FileText,
   Loader2,
   PartyPopper,
@@ -169,6 +170,21 @@ export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) 
               </Link>
             )
           })}
+          <Link
+            href="/settings/data"
+            className="flex items-center justify-between gap-3 px-5 py-3 transition-colors hover:bg-muted/50"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+                <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{t('importTitle')}</p>
+                <p className="truncate text-xs text-muted-foreground">{t('importDescription')}</p>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+          </Link>
         </div>
       )}
     </AppCard>

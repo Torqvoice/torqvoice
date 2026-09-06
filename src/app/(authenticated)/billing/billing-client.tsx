@@ -229,9 +229,9 @@ export default function BillingClient({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
       {/* Navigation */}
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         <Button variant="outline" size="sm" disabled>
           {t('history.title')}
         </Button>
@@ -244,7 +244,7 @@ export default function BillingClient({
 
       {/* Summary Cards — hidden below md so the invoice list is what a phone
           or portrait tablet opens on. */}
-      <div className="hidden gap-3 md:grid md:grid-cols-3">
+      <div className="hidden shrink-0 gap-3 md:grid md:grid-cols-3">
         <Card>
           <CardContent className="flex items-center gap-3 px-4 py-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/10">
@@ -283,7 +283,7 @@ export default function BillingClient({
       </div>
 
       {/* Status Tabs and Search */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* A single scrollable row on phones, so four filters never wrap. */}
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:px-0 sm:pb-0">
           {STATUS_TABS.map((tab) => (
@@ -344,8 +344,8 @@ export default function BillingClient({
         </form>
       </div>
 
-      {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      {/* Card list (phones + small tablets) - only this scrolls */}
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.records.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {t('history.noRecords')}
@@ -391,10 +391,13 @@ export default function BillingClient({
         )}
       </div>
 
-      {/* Table (md and up) */}
-      <div className="hidden rounded-md border md:block" {...tableNav.containerProps}>
-        <Table className="table-fixed">
-          <TableHeader>
+      {/* Table (md and up) - only the rows scroll */}
+      <div
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-md border md:flex"
+        {...tableNav.containerProps}
+      >
+        <Table containerClassName="min-h-0 flex-1" className="table-fixed">
+          <TableHeader sticky>
             <TableRow>
               <TableHead className="w-[110px]">
                 <button

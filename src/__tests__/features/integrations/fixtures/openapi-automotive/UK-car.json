@@ -1,0 +1,31 @@
+{
+  "data": {
+    "ABICode": "31019211",
+    "Description": "Maserati Levante D V6 Auto",
+    "RegistrationYear": "2017",
+    "CarMake": "Maserati",
+    "CarModel": "Levante D V6 Auto",
+    "BodyStyle": "SUV",
+    "EngineSize": "2987",
+    "NumberOfDoors": "5",
+    "Transmission": "Automatic",
+    "FuelType": "Diesel",
+    "MakeDescription": "Maserati",
+    "ModelDescription": "Levante D V6 Auto",
+    "Immobiliser": "",
+    "NumberOfSeats": "5",
+    "IndicativeValue": 0,
+    "DriverSide": "",
+    "VehicleInsuranceGroup": 0,
+    "VehicleInsuranceGroupOutOf": 50,
+    "VehicleIdentificationNumber": "ZN6TU61C00X248858",
+    "EngineCode": "B630WM",
+    "EngineNumber": "B630WM",
+    "Colour": "Black",
+    "TimeStamp": 1709827711,
+    "LicensePlate": "CT17MLE"
+  },
+  "success": true,
+  "message": "",
+  "error": null
+}

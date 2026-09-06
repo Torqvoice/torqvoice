@@ -1,17 +1,21 @@
 /**
  * @vitest-environment node
  *
- * The number, the date and the amount a customer quotes back must print
- * exactly once, wherever the layout puts them. A layout with a Document Title
- * section shows it there; a layout without one gets it set directly under the
- * header, which is where every header used to print it. Enforced in the
- * document generator, so the designer and the paper obey the same rule.
+ * The Document Title switch means what it says: on, the strip prints where the
+ * layout puts it, exactly once; off, it does not print. It did not always. The
+ * strip carries the number and the dates, so a hidden one used to be drawn
+ * anyway, under the header, and switching it off in the designer looked broken
+ * because the strip stayed. Layouts saved before the switch was obeyed are read
+ * as showing the strip there, so honouring it takes nothing off a sheet that
+ * never chose to lose it.
  */
 import { describe, expect, it } from 'vitest'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import {
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
+  invoiceLayoutConfigSchema,
+  mergeWithDefaults,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { InvoiceData } from '@/features/vehicles/Components/invoice-pdf/types'
 
@@ -38,24 +42,32 @@ const data: InvoiceData = {
   vehicle: null,
 }
 
-function specWithTitleVisible(visible: boolean) {
+function specWithTitleVisible(visible: boolean, version = DESIGNER_LAYOUT_VERSION) {
   // A designer-saved layout: an unstamped one keeps the classic letterhead,
   // which carries the title itself and has no separate block to place.
-  const layout = { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION }
+  const layout = { ...getDefaultInvoiceLayout(), version }
   layout.sections = layout.sections.map((s) => (s.id === 'document_title' ? { ...s, visible } : s))
   return buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
 }
 
 describe('document title placement', () => {
-  it.each([true, false])('prints the block exactly once (visible: %s)', (visible) => {
-    const spec = specWithTitleVisible(visible)
+  it('prints the block exactly once when it is on', () => {
+    const spec = specWithTitleVisible(true)
     const titles = spec.blocks.filter((b) => b.id === 'document_title')
     expect(titles).toHaveLength(1)
     expect(JSON.stringify(titles[0])).toContain('INV-2026-1001')
   })
 
-  it('sets a borrowed title directly under the header', () => {
+  it('prints nothing at all when it is off', () => {
     const spec = specWithTitleVisible(false)
+    expect(spec.blocks.filter((b) => b.id === 'document_title')).toHaveLength(0)
+    expect(JSON.stringify(spec)).not.toContain('INV-2026-1001')
+  })
+
+  it('keeps the strip a layout from before the switch was drawing', () => {
+    // Version 2 is that era. The strip was drawn under the header however the
+    // switch was set, so reading it as off would take the number off paper.
+    const spec = specWithTitleVisible(false, 2)
     const header = spec.blocks.find((b) => b.id === 'header')
     const title = spec.blocks.find((b) => b.id === 'document_title')
     expect(header?.placement.mode).toBe('flow')
@@ -74,6 +86,40 @@ describe('document title placement', () => {
     }
   })
 
+  it('reads a layout from before the switch as one the designer can save again', () => {
+    // The strip is put under the header by renumbering, not by a fraction:
+    // orders are whole numbers to the schema, and a 0.5 that reached the
+    // designer failed validation on Save, so nothing typed there ever stuck.
+    const layout = { ...getDefaultInvoiceLayout(), version: 2 }
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'document_title' ? { ...s, visible: false, order: 12 } : s
+    )
+    const merged = mergeWithDefaults(layout)
+    const ordered = [...merged.sections].sort((a, b) => a.order - b.order)
+    const header = ordered.findIndex((s) => s.id === 'header')
+    expect(ordered[header + 1]?.id).toBe('document_title')
+    expect(ordered[header + 1]?.visible).toBe(true)
+    expect(merged.sections.every((s) => Number.isInteger(s.order))).toBe(true)
+
+    const named = merged.sections.map((s) =>
+      s.id === 'document_title' ? { ...s, text: 'Tax Invoice' } : s
+    )
+    const saved = invoiceLayoutConfigSchema.safeParse({
+      ...merged,
+      sections: named,
+      version: DESIGNER_LAYOUT_VERSION,
+    })
+    expect(saved.success).toBe(true)
+    if (saved.success) {
+      const spec = buildInvoicePrintSpec({
+        data,
+        template: { headerStyle: 'compact', layoutConfig: saved.data },
+      })
+      expect(JSON.stringify(spec)).toContain('Tax Invoice')
+      expect(JSON.stringify(spec)).not.toContain('"INVOICE"')
+    }
+  })
+
   it('leaves a visible title section at its own place in the order', () => {
     const spec = specWithTitleVisible(true)
     const title = spec.blocks.find((b) => b.id === 'document_title')
@@ -88,5 +134,93 @@ describe('document title placement', () => {
     })
     expect(spec.blocks.find((b) => b.id === 'header')?.placement.mode).toBe('anchored')
     expect(spec.blocks.find((b) => b.id === 'document_title')?.placement.mode).toBe('flow')
+  })
+})
+
+/**
+ * What the strip says is the workshop's to choose. A business that must call
+ * the sheet one thing in one country and another elsewhere, or that wants the
+ * number without the big word over it, sets that here rather than living with
+ * whatever the template prints.
+ */
+describe('what the title strip shows', () => {
+  /** The strip, as JSON, with only `visible` field ids switched on. */
+  function stripWith(visible: string[]) {
+    const layout = { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION }
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'document_title'
+        ? {
+            ...s,
+            fields: ['title', 'invoice_number', 'customer_number', 'date', 'due_date'].map(
+              (id) => ({ id, visible: visible.includes(id) })
+            ),
+          }
+        : s
+    )
+    const spec = buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
+    return spec.blocks.find((b) => b.id === 'document_title')
+  }
+
+  it('drops the big word but keeps the cells beside it', () => {
+    const strip = JSON.stringify(stripWith(['invoice_number', 'date']))
+    expect(strip).toContain('INV-2026-1001')
+    expect(strip).not.toContain('document_title.title')
+  })
+
+  it('drops a cell that is switched off', () => {
+    const strip = JSON.stringify(stripWith(['title', 'date']))
+    expect(strip).not.toContain('INV-2026-1001')
+    expect(strip).toContain('document_title.title')
+  })
+
+  it('prints no strip at all when everything in it is off', () => {
+    expect(stripWith([])).toBeUndefined()
+  })
+})
+
+/**
+ * What a sheet must call itself is local law, not translation: a business
+ * registered for GST in Australia heads its invoices "Tax Invoice", and one
+ * that is not registered must not. The word is the workshop's to write, and it
+ * lives with the design, so a sheet sent before they registered keeps the name
+ * it was sent under.
+ */
+describe('the words the title strip prints', () => {
+  /** The strip, as JSON, with `text` set on the Document Title section. */
+  function stripNamed(text?: string) {
+    const layout = { ...getDefaultInvoiceLayout(), version: DESIGNER_LAYOUT_VERSION }
+    layout.sections = layout.sections.map((s) => (s.id === 'document_title' ? { ...s, text } : s))
+    const spec = buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
+    return JSON.stringify(spec.blocks.find((b) => b.id === 'document_title'))
+  }
+
+  it("prints the workshop's own word for the document", () => {
+    expect(stripNamed('Tax Invoice')).toContain('Tax Invoice')
+  })
+
+  it.each([undefined, '', '   '])('falls back to the printed name (%s)', (text) => {
+    const strip = stripNamed(text)
+    expect(strip).toContain('INVOICE')
+    expect(strip).not.toContain('Tax Invoice')
+  })
+})
+
+/**
+ * A workshop still on the pre-designer sheet has no title strip: its
+ * letterhead prints the name itself. The name it prints is the one they wrote
+ * all the same, because a box that says what the document is called cannot
+ * quietly mean "on some sheets".
+ */
+describe('the classic letterhead', () => {
+  it('prints the name the workshop wrote', () => {
+    const layout = getDefaultInvoiceLayout()
+    layout.sections = layout.sections.map((s) =>
+      s.id === 'document_title' ? { ...s, text: 'Tax Invoice' } : s
+    )
+    // No version stamp is the classic era, which is what these sheets print.
+    const spec = buildInvoicePrintSpec({ data, template: { layoutConfig: layout } })
+    const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
+    expect(header).toContain('Tax Invoice')
+    expect(spec.blocks.find((b) => b.id === 'document_title')).toBeUndefined()
   })
 })

@@ -12,6 +12,9 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notificationBus } from '@/lib/notification-bus'
 import { isDefect } from '../Lib/conditions'
 import { findCompletionBlockers, summariseBlockers } from '../Lib/completion'
+import { clearedToNull } from '@/lib/clearable'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { startOfZonedDay, zonedDayKey, zonedParts } from '@/lib/timezone'
 
 export async function getInspectionsPaginated(params: {
   page?: number
@@ -294,10 +297,10 @@ export async function updateInspectionItem(itemId: string, input: unknown) {
         where: { id: itemId },
         data: {
           condition: data.condition,
-          notes: data.notes,
+          notes: clearedToNull(data.notes),
           imageUrls: data.imageUrls,
           measuredValue: data.measuredValue,
-          textValue: data.textValue,
+          textValue: clearedToNull(data.textValue),
         },
       })
 
@@ -666,7 +669,7 @@ export async function createWorkOrderFromInspection(id: string) {
         throw new Error('This inspection has no defects to work on')
       }
 
-      const [settings, org] = await Promise.all([
+      const [settings, org, timeZone] = await Promise.all([
         db.appSetting.findMany({
           where: {
             organizationId,
@@ -682,15 +685,17 @@ export async function createWorkOrderFromInspection(id: string) {
           },
         }),
         db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
+        workshopTimeZone(organizationId),
       ])
       const settingsMap: Record<string, string> = {}
       for (const s of settings) settingsMap[s.key] = s.value
 
       const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
       const now = new Date()
+      const today = zonedParts(now, timeZone)
       const prefix = rawPrefix
-        .replace('{year}', now.getFullYear().toString())
-        .replace('{month}', String(now.getMonth() + 1).padStart(2, '0'))
+        .replace('{year}', String(today.year))
+        .replace('{month}', String(today.month).padStart(2, '0'))
 
       const lastRecord = await db.serviceRecord.findFirst({
         where: { organizationId },
@@ -712,7 +717,7 @@ export async function createWorkOrderFromInspection(id: string) {
           data: {
             organizationId,
             title: `${vehicleName} — inspection repairs`,
-            description: `Raised from the inspection carried out on ${inspection.createdAt.toISOString().slice(0, 10)}.`,
+            description: `Raised from the inspection carried out on ${zonedDayKey(inspection.createdAt, timeZone)}.`,
             type: 'repair',
             status: 'pending',
             vehicleId: inspection.vehicle.id,
@@ -726,7 +731,7 @@ export async function createWorkOrderFromInspection(id: string) {
             // board immediately, and the workshop prices it as it works.
             taxRate: taxEnabled ? Number(settingsMap['workshop.defaultTaxRate']) || 0 : 0,
             taxInclusive: settingsMap['workshop.taxInclusive'] === 'true',
-            serviceDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+            serviceDate: startOfZonedDay(now, timeZone),
             startDateTime: now,
           },
         })

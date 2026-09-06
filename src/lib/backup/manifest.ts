@@ -52,6 +52,31 @@ export interface BackupEntity {
 
 export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'AppSetting', key: 'settings', option: 'settings', restore: 'replace', clearOrder: 90 },
+  // Named designs go with settings, which is where their default lives.
+  // Cleared before settings and after everything that points at them.
+  {
+    model: 'DocumentDesign',
+    key: 'documentDesigns',
+    option: 'settings',
+    restore: 'replace',
+    clearOrder: 88,
+  },
+  // What issued invoices were issued with. Service records point at these
+  // with Restrict, so they clear only after every service record has.
+  {
+    model: 'DocumentDesignSnapshot',
+    key: 'documentDesignSnapshots',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 55,
+  },
+  {
+    model: 'DocumentAssetSnapshot',
+    key: 'documentAssetSnapshots',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 56,
+  },
   { model: 'Customer', key: 'customers', option: 'customers', restore: 'replace', clearOrder: 80 },
   {
     model: 'CustomFieldDefinition',
@@ -70,6 +95,12 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'StockMovement', option: 'inventory', nestedUnder: 'InventoryPart', restore: 'replace' },
   { model: 'Vehicle', key: 'vehicles', option: 'vehicles', restore: 'replace', clearOrder: 50 },
   { model: 'ServiceRequest', option: 'vehicles', nestedUnder: 'Vehicle', restore: 'replace' },
+  {
+    model: 'VehicleInspectionStatus',
+    option: 'vehicles',
+    nestedUnder: 'Vehicle',
+    restore: 'replace',
+  },
   {
     model: 'ServiceRecord',
     key: 'counterSales',
@@ -150,6 +181,23 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     option: 'scheduledMessages',
     restore: 'replace',
     clearOrder: 13,
+  },
+  // Reminder campaigns travel with the messages they queued. The send rows
+  // are the guard against reminding a deadline twice, so a restore that
+  // dropped them would let the next campaign message everyone again.
+  {
+    model: 'InspectionReminderCampaign',
+    key: 'inspectionReminderCampaigns',
+    option: 'scheduledMessages',
+    restore: 'replace',
+    clearOrder: 4,
+  },
+  {
+    model: 'InspectionReminderSend',
+    key: 'inspectionReminderSends',
+    option: 'scheduledMessages',
+    restore: 'replace',
+    clearOrder: 3,
   },
   {
     model: 'Notification',
@@ -274,6 +322,16 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   CustomerSession: 'Portal session, recreated when the customer signs in.',
   CustomerSmsCode: 'One-time code, valid for minutes.',
   DashboardWidget: 'Per-user dashboard layout, tied to user accounts a backup does not carry.',
+  ImportBatch:
+    'Spreadsheet import history. Restored rows are rebuilt without their batch id, so an undo after a restore is not offered.',
+  ExternalCalendarEvent:
+    'Cache of busy time pulled from a connected calendar; rebuilt by the next sync.',
+  IntegrationConnection:
+    'Sealed third-party credentials, which must never travel in a backup file; the workshop reconnects after a restore.',
+  IntegrationJob: 'Pending connector work, meaningless without the live connection it belongs to.',
+  IntegrationLink:
+    'Remote ids in a connected system, only valid for the connection that created them.',
+  IntegrationLog: 'Connector activity log, rewritten every time a job runs.',
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',

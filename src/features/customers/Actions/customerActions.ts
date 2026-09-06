@@ -2,7 +2,6 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { z } from 'zod'
 import { createCustomerSchema, updateCustomerSchema } from '../Schema/customerSchema'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -10,6 +9,20 @@ import { getFeatures, FeatureGatedError } from '@/lib/features'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { claimWhatsappMessagesForCustomer } from '@/lib/whatsapp'
 import { serviceDateOrderBy } from '@/lib/date-sort'
+import { clearedToNull } from '@/lib/clearable'
+
+/**
+ * A design a customer is being pointed at has to be this workshop's and an
+ * invoice design; anything else is refused rather than stored.
+ */
+async function assertInvoiceDesign(organizationId: string, designId: string | null | undefined) {
+  if (!designId) return
+  const design = await db.documentDesign.findFirst({
+    where: { id: designId, organizationId, documentType: 'invoice' },
+    select: { id: true },
+  })
+  if (!design) throw new Error('Design not found')
+}
 
 export async function getCustomers() {
   return withAuth(
@@ -36,6 +49,9 @@ export async function getCustomer(customerId: string) {
       const customer = await db.customer.findFirst({
         where: { id: customerId, organizationId },
         include: {
+          // The name, so the page can say which design this customer's
+          // invoices print with rather than only that one was chosen.
+          invoiceDesign: { select: { id: true, name: true } },
           vehicles: {
             where: { isArchived: false },
             include: {
@@ -78,6 +94,7 @@ export async function createCustomer(input: unknown) {
       }
 
       const data = createCustomerSchema.parse(input)
+      await assertInvoiceDesign(organizationId, data.invoiceDesignId)
 
       // Auto-assign the next sequential number when none was provided; the
       // per-org unique index guards against races and manual duplicates.
@@ -136,18 +153,22 @@ export async function updateCustomer(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const { id, ...data } = updateCustomerSchema.parse(input)
+      await assertInvoiceDesign(organizationId, data.invoiceDesignId)
       let result
       try {
         result = await db.customer.updateMany({
           where: { id, organizationId },
+          // Fields left out of the input stay as they are; an emptied one
+          // ('') is cleared.
           data: {
             ...data,
-            customerNumber:
-              data.customerNumber !== undefined ? data.customerNumber.trim() || null : undefined,
-            email: data.email || null,
-            company: data.company || null,
-            phone: data.phone || null,
-            address: data.address || null,
+            customerNumber: clearedToNull(data.customerNumber),
+            email: clearedToNull(data.email),
+            company: clearedToNull(data.company),
+            phone: clearedToNull(data.phone),
+            address: clearedToNull(data.address),
+            taxId: clearedToNull(data.taxId),
+            notes: clearedToNull(data.notes),
           },
         })
       } catch (err: unknown) {
@@ -401,7 +422,7 @@ export async function updateServiceRequest(
     async ({ userId, organizationId }) => {
       const result = await db.serviceRequest.updateMany({
         where: { id: requestId, organizationId },
-        data,
+        data: { status: data.status, adminNotes: clearedToNull(data.adminNotes) },
       })
       if (result.count === 0) throw new Error('Service request not found')
       revalidatePath('/customers')
@@ -463,159 +484,6 @@ export async function createWorkOrderFromRequest(requestId: string) {
     {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.CUSTOMERS },
-      ],
-    }
-  )
-}
-
-const importCustomerRowSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email().optional().or(z.literal('')),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-  address: z.string().optional(),
-})
-
-export async function checkDuplicateCustomers(
-  rows: { name: string; email?: string; phone?: string }[]
-) {
-  return withAuth(
-    async ({ organizationId }) => {
-      const existing = await db.customer.findMany({
-        where: { organizationId },
-        select: { id: true, name: true, email: true, phone: true, company: true, address: true },
-      })
-
-      const duplicates: Record<
-        number,
-        { id: string; name: string; matchedOn: string; isExact: boolean }
-      > = {}
-
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i]
-        for (const ex of existing) {
-          // Match by email (non-empty)
-          if (row.email && ex.email && row.email.toLowerCase() === ex.email.toLowerCase()) {
-            const isExact =
-              ex.name.toLowerCase() === row.name.toLowerCase() &&
-              (ex.phone || '') === (row.phone || '')
-            duplicates[i] = { id: ex.id, name: ex.name, matchedOn: 'email', isExact }
-            break
-          }
-          // Match by phone (non-empty)
-          if (
-            row.phone &&
-            ex.phone &&
-            row.phone.replace(/\D/g, '') === ex.phone.replace(/\D/g, '')
-          ) {
-            const isExact =
-              ex.name.toLowerCase() === row.name.toLowerCase() &&
-              (ex.email || '').toLowerCase() === (row.email || '').toLowerCase()
-            duplicates[i] = { id: ex.id, name: ex.name, matchedOn: 'phone', isExact }
-            break
-          }
-          // Match by name (case-insensitive)
-          if (ex.name.toLowerCase() === row.name.toLowerCase()) {
-            const isExact =
-              (ex.email || '').toLowerCase() === (row.email || '').toLowerCase() &&
-              (ex.phone || '') === (row.phone || '')
-            duplicates[i] = { id: ex.id, name: ex.name, matchedOn: 'name', isExact }
-            break
-          }
-        }
-      }
-
-      return duplicates
-    },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
-      ],
-    }
-  )
-}
-
-export async function importCustomers(
-  rows: { name: string; email?: string; phone?: string; company?: string; address?: string }[],
-  mergeMap?: Record<number, string> // rowIndex → existing customer ID to update
-) {
-  return withAuth(
-    async ({ userId, organizationId }) => {
-      const features = await getFeatures(organizationId)
-      const currentCount = await db.customer.count({ where: { organizationId } })
-
-      type ValidRow = {
-        name: string
-        email: string | null
-        phone: string | null
-        company: string | null
-        address: string | null
-      }
-      const toCreate: ValidRow[] = []
-      const toMerge: { id: string; data: ValidRow }[] = []
-      const errors: { row: number; error: string }[] = []
-      let skipped = 0
-
-      for (let i = 0; i < rows.length; i++) {
-        const result = importCustomerRowSchema.safeParse(rows[i])
-        if (!result.success) {
-          errors.push({ row: i + 1, error: result.error.issues[0]?.message || 'Invalid data' })
-          continue
-        }
-
-        const parsed: ValidRow = {
-          name: result.data.name,
-          email: result.data.email || null,
-          phone: result.data.phone || null,
-          company: result.data.company || null,
-          address: result.data.address || null,
-        }
-
-        const mergeId = mergeMap?.[i]
-        if (mergeId === '__skip__') {
-          skipped++
-        } else if (mergeId) {
-          toMerge.push({ id: mergeId, data: parsed })
-        } else {
-          toCreate.push(parsed)
-        }
-      }
-
-      const remaining = features.maxCustomers - currentCount
-      if (toCreate.length > remaining) {
-        throw new FeatureGatedError(
-          'maxCustomers',
-          `Customer limit reached. You can import ${remaining} more customer(s). Upgrade your plan for more.`
-        )
-      }
-
-      if (toCreate.length > 0) {
-        await db.customer.createMany({
-          data: toCreate.map((c) => ({ ...c, userId, organizationId })),
-        })
-      }
-
-      let merged = 0
-      for (const { id, data } of toMerge) {
-        const res = await db.customer.updateMany({
-          where: { id, organizationId },
-          data: {
-            name: data.name,
-            email: data.email,
-            phone: data.phone,
-            company: data.company,
-            address: data.address,
-          },
-        })
-        if (res.count > 0) merged++
-      }
-
-      revalidatePath('/customers')
-      return { imported: toCreate.length, merged, skipped, errors }
-    },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.CREATE, subject: PermissionSubject.CUSTOMERS },
       ],
     }
   )

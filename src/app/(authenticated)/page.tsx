@@ -27,6 +27,7 @@ import { sanitizeConfig, type CustomWidget } from '@/features/dashboard/custom-c
 import { MyActiveJobs } from '@/features/vehicles/Components/MyActiveJobs'
 import { PageHeader } from '@/components/page-header'
 import { getTireHotelSummary } from '@/features/tire-hotel/Actions/getTireHotelSummary'
+import { getInspectionsDueSummary } from '@/features/vehicles/Actions/inspectionStatusActions'
 
 export default async function DashboardPage() {
   const auth = await getAuthContext()
@@ -55,6 +56,7 @@ export default async function DashboardPage() {
     checklistResult,
     tireHotelResult,
     serviceRequestsResult,
+    inspectionsDueResult,
   ] = await Promise.all([
     getDashboardStats(),
     getSettings([
@@ -77,6 +79,7 @@ export default async function DashboardPage() {
     getOnboardingChecklist(),
     getTireHotelSummary(),
     portalAllowed ? getPendingServiceRequests() : Promise.resolve(null),
+    getInspectionsDueSummary(),
   ])
 
   const [layoutUser, widgetRows] = auth
@@ -185,6 +188,11 @@ export default async function DashboardPage() {
           customWidgets={customWidgets}
           onboardingChecklist={onboardingChecklist}
           tireHotelSummary={tireHotelResult.success ? (tireHotelResult.data ?? null) : null}
+          inspectionsDue={
+            inspectionsDueResult.success && inspectionsDueResult.data
+              ? inspectionsDueResult.data
+              : null
+          }
         />
       </div>
     </>

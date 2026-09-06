@@ -2,6 +2,7 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures } from '@/lib/features'
 import { db } from '@/lib/db'
+import { channelEnabled } from '@/features/integrations/Lib/messaging'
 import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
@@ -9,6 +10,7 @@ import {
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
 import { redirect } from 'next/navigation'
 import { InvoiceSettings } from './invoice-settings'
+import { countUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
 
 export default async function InvoiceSettingsPage() {
   const data = await getLayoutData()
@@ -31,17 +33,13 @@ export default async function InvoiceSettingsPage() {
   })
   const customFields =
     customFieldsResult.success && customFieldsResult.data ? customFieldsResult.data : []
+  const unfrozenResult = await countUnfrozenInvoices()
+  const unfrozenInvoices = unfrozenResult.success ? (unfrozenResult.data ?? 0) : 0
 
-  // Check if Telegram is enabled (plan feature + user setting)
+  // Check if Telegram is enabled (plan feature + the switch on its integration)
   let telegramEnabled = false
   if (features.telegram) {
-    const tgSetting = await db.appSetting.findUnique({
-      where: {
-        organizationId_key: { organizationId: data.organizationId, key: 'telegram.enabled' },
-      },
-      select: { value: true },
-    })
-    telegramEnabled = tgSetting?.value === 'true'
+    telegramEnabled = await channelEnabled(data.organizationId, 'telegram')
   }
 
   // The preview is meant to look like this workshop's own paper, so it gets the
@@ -64,6 +62,7 @@ export default async function InvoiceSettingsPage() {
       settings={settings}
       workshop={workshop}
       unnumberedCustomers={unnumberedCustomers}
+      unfrozenInvoices={unfrozenInvoices}
       initialInvoiceLayout={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
       initialQuoteLayout={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
       customFields={customFields}

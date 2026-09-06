@@ -30,11 +30,53 @@
   },
   "today": "Oggi",
   "workOrder": "Ordine di lavoro",
+  "allDay": "Tutto il giorno",
+  "openDay": "Apri {date}",
+  "dayTotal": "{count, plural, =1 {1 evento} other {# eventi}}",
+  "views": {
+    "day": "Giorno",
+    "week": "Settimana",
+    "month": "Mese",
+    "year": "Anno",
+    "schedule": "Agenda",
+    "fourDays": "4 giorni"
+  },
+  "options": {
+    "showWeekends": "Mostra weekend",
+    "showCompleted": "Mostra completati",
+    "showWeekNumbers": "Mostra numeri delle settimane"
+  },
+  "toolbar": {
+    "previous": "Precedente",
+    "next": "Successivo",
+    "create": "Crea",
+    "showSidebar": "Mostra pannello laterale",
+    "hideSidebar": "Nascondi pannello laterale"
+  },
+  "sidebar": {
+    "calendars": "Calendari",
+    "legend": "Colori di stato"
+  },
+  "schedule": {
+    "empty": "Nulla in programma",
+    "emptyHint": "Nessun ordine di lavoro, promemoria, preventivo o messaggio in questo periodo."
+  },
+  "peek": {
+    "close": "Chiudi",
+    "open": {
+      "service": "Apri ordine di lavoro",
+      "reminder": "Apri promemoria",
+      "quote": "Apri preventivo",
+      "message": "Apri messaggi",
+      "external": "Apri"
+    }
+  },
   "filters": {
-    "services": "Servizi",
+    "services": "Ordini di lavoro",
     "reminders": "Promemoria",
     "quotes": "Preventivi",
-    "messages": "Messaggi"
+    "messages": "Messaggi",
+    "external": "Calendari collegati"
   },
   "selectVehicle": "Seleziona veicolo per ordine di lavoro",
   "dateChoice": {
@@ -44,14 +86,27 @@
     "useToday": "Use today"
   },
   "more": "+ {count} altri",
-  "monthTotal": "{count} eventi questo mese",
+  "monthTotal": "{count} eventi",
   "contextMenu": {
     "newWorkOrder": "Nuovo ordine di lavoro",
+    "newWorkOrderAt": "Nuovo ordine di lavoro alle {time}",
     "newReminder": "Nuovo promemoria",
     "newQuote": "Nuovo preventivo",
     "openEvent": "Apri ({count})",
     "hint": "Suggerimento: fai clic con il tasto destro su un giorno per le azioni",
     "scheduleMessage": "Pianifica messaggio"
+  },
+  "eventMenu": {
+    "open": "Apri",
+    "markDone": "Segna come fatto",
+    "markNotDone": "Segna come non fatto",
+    "deleteReminder": "Elimina promemoria",
+    "deleteReminderConfirm": "Eliminare il promemoria \"{title}\"? L'operazione non può essere annullata.",
+    "deleteMessage": "Elimina messaggio pianificato",
+    "deleteMessageConfirm": "Eliminare il messaggio pianificato \"{title}\"? Non verrà inviato.",
+    "deleted": "Eliminato",
+    "updated": "Aggiornato",
+    "failed": "Operazione non riuscita. Riprova."
   },
   "events": {
     "status": {
@@ -59,6 +114,7 @@
       "inProgress": "In corso",
       "waitingParts": "In attesa di ricambi",
       "pending": "In attesa",
+      "scheduled": "Pianificato",
       "sent": "Inviato",
       "approved": "Approvato",
       "draft": "Bozza",
@@ -66,16 +122,27 @@
       "overdue": "Scaduto",
       "upcoming": "In arrivo",
       "failed": "Non riuscito",
-      "queued": "In coda"
+      "queued": "In coda",
+      "busy": "Occupato"
     },
     "type": {
-      "service": "Servizio",
+      "service": "Ordine di lavoro",
       "reminder": "Promemoria",
       "quote": "Preventivo",
-      "message": "Messaggio"
+      "message": "Messaggio",
+      "external": "Calendario collegato"
     },
     "noEvents": "Nessun evento",
-    "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro."
+    "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro.",
+    "external": {
+      "source": "Da {source}",
+      "sourceUnknown": "Da un calendario collegato",
+      "allDay": "Tutto il giorno",
+      "open": "Apri in {source}",
+      "openGeneric": "Apri nel calendario",
+      "noLink": "Questo calendario non fornisce un link all'evento.",
+      "readOnly": "Tempo occupato da un calendario collegato. Modificalo lì e qui si aggiorna alla prossima sincronizzazione."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

@@ -116,14 +116,25 @@ export function useServiceActions({
       const last = inputs[inputs.length - 1]
       return last?.value ?? (new FormData(form).get(name) as string)
     }
-    const rawMileage = getVisible('mileage')
-    const parsedMileage = rawMileage ? Number(rawMileage) || undefined : undefined
+    // A field the layout does not render at all is left alone; an emptied one
+    // is sent so the update action clears it ('' for text, null for mileage).
+    const optionalText = (name: string): string | undefined => getVisible(name) ?? undefined
+    const rawMileage = getVisible('mileage') as string | null | undefined
+    const mileageNumber = rawMileage == null ? undefined : Number(rawMileage)
+    const parsedMileage =
+      rawMileage == null || Number.isNaN(mileageNumber)
+        ? undefined
+        : rawMileage.trim() === ''
+          ? null
+          : mileageNumber
+    // The editor reports an emptied box as one empty paragraph.
+    const richText = (html: string) => (html === '<p></p>' ? '' : html)
 
     const payload = {
       id: initialData.id,
       vehicleId: selectedVehicleId,
       title: getVisible('title'),
-      description: notesRef.current.description || undefined,
+      description: richText(notesRef.current.description),
       // What the customer said at drop-off. Typed at intake beside the vehicle,
       // not in the notes section, so it is read from the form rather than from
       // the notes state.
@@ -136,11 +147,11 @@ export function useServiceActions({
       // and the Schedule card writes it directly via assignTechnician. Sending
       // the form-state value here would clobber a tech change made via the
       // Schedule card with a stale name from initial load.
-      diagnosticNotes: notesRef.current.diagnosticNotes || undefined,
-      invoiceNotes: notesRef.current.invoiceNotes || undefined,
-      invoiceNumber: getVisible('invoiceNumber') || undefined,
-      invoiceDate: getVisible('invoiceDate') || undefined,
-      invoiceDueDate: getVisible('invoiceDueDate') || undefined,
+      diagnosticNotes: richText(notesRef.current.diagnosticNotes),
+      invoiceNotes: richText(notesRef.current.invoiceNotes),
+      invoiceNumber: optionalText('invoiceNumber'),
+      invoiceDate: optionalText('invoiceDate'),
+      invoiceDueDate: optionalText('invoiceDueDate'),
       // Blank rows are somebody halfway through typing, not a concern.
       concerns: concerns
         .filter((c) => c.description.trim())

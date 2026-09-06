@@ -59,7 +59,8 @@
     "tireStorage": "Distribución del almacén",
     "tireSetDetails": "Juego de neumáticos",
     "tireForecast": "La próxima temporada",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Recordatorios de inspección"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",
@@ -117,6 +118,19 @@
     "auditLog": "Registro de auditoría",
     "aiAssistant": "Asistente IA",
     "tireHotel": "Hotel de neumáticos",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Nueva orden de trabajo",
+    "installApp": "Instalar la app",
+    "roles": {
+      "owner": "Propietario",
+      "admin": "Administrador",
+      "member": "Miembro"
+    },
+    "badges": {
+      "messages": "{count} mensajes sin leer",
+      "workOrders": "{count} órdenes de trabajo abiertas",
+      "inspections": "{count} inspecciones en curso",
+      "reminders": "{count} recordatorios vencidos"
+    }
   }
 }

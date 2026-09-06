@@ -1,7 +1,9 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
 import { db } from '@/lib/db'
+import { atZonedTime } from '@/lib/timezone'
+import { endOfWorkshopDay, shiftWorkshopTime } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { withAuth } from '@/lib/with-auth'
 import { demoGuard } from '@/lib/demo'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -11,37 +13,36 @@ import {
   updateReportScheduleSchema,
 } from '../Schema/reportScheduleSchema'
 
-function calculateNextRunDate(from: Date, frequency: string): Date {
-  const next = new Date(from)
+/** The next run is 08:00 on the workshop's clock, one period on from `from`. */
+function calculateNextRunDate(from: Date, frequency: string, timeZone: string): Date {
+  let next = from
   switch (frequency) {
     case 'daily':
-      next.setDate(next.getDate() + 1)
+      next = shiftWorkshopTime(from, { days: 1 }, timeZone)
       break
     case 'weekly':
-      next.setDate(next.getDate() + 7)
+      next = shiftWorkshopTime(from, { days: 7 }, timeZone)
       break
     case 'biweekly':
-      next.setDate(next.getDate() + 14)
+      next = shiftWorkshopTime(from, { days: 14 }, timeZone)
       break
     case 'monthly':
-      next.setMonth(next.getMonth() + 1)
+      next = shiftWorkshopTime(from, { months: 1 }, timeZone)
       break
     case 'bimonthly':
-      next.setMonth(next.getMonth() + 2)
+      next = shiftWorkshopTime(from, { months: 2 }, timeZone)
       break
     case 'quarterly':
-      next.setMonth(next.getMonth() + 4)
+      next = shiftWorkshopTime(from, { months: 3 }, timeZone)
       break
     case 'semiannually':
-      next.setMonth(next.getMonth() + 6)
+      next = shiftWorkshopTime(from, { months: 6 }, timeZone)
       break
     case 'yearly':
-      next.setFullYear(next.getFullYear() + 1)
+      next = shiftWorkshopTime(from, { years: 1 }, timeZone)
       break
   }
-  // Set to 8:00 AM
-  next.setHours(8, 0, 0, 0)
-  return next
+  return atZonedTime(next, '08:00', timeZone)
 }
 
 export async function getReportSchedules() {
@@ -85,7 +86,8 @@ export async function createReportSchedule(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
       const data = createReportScheduleSchema.parse(input)
-      const nextRunDate = calculateNextRunDate(new Date(), data.frequency)
+      const timeZone = await workshopTimeZone(organizationId)
+      const nextRunDate = calculateNextRunDate(new Date(), data.frequency, timeZone)
 
       const schedule = await db.reportSchedule.create({
         data: {
@@ -95,7 +97,7 @@ export async function createReportSchedule(input: unknown) {
           sections: JSON.stringify(data.sections),
           recipients: JSON.stringify(data.recipients),
           nextRunDate,
-          endDate: toSafeDate(data.endDate) ?? null,
+          endDate: endOfWorkshopDay(data.endDate, timeZone) ?? null,
           organizationId,
           createdById: userId,
         },
@@ -125,9 +127,10 @@ export async function updateReportSchedule(input: unknown) {
       })
       if (!existing) throw new Error('Schedule not found')
 
+      const timeZone = await workshopTimeZone(organizationId)
       const frequencyChanged = data.frequency !== existing.frequency
       const nextRunDate = frequencyChanged
-        ? calculateNextRunDate(new Date(), data.frequency)
+        ? calculateNextRunDate(new Date(), data.frequency, timeZone)
         : existing.nextRunDate
 
       const schedule = await db.reportSchedule.update({
@@ -139,7 +142,7 @@ export async function updateReportSchedule(input: unknown) {
           sections: JSON.stringify(data.sections),
           recipients: JSON.stringify(data.recipients),
           nextRunDate,
-          endDate: toSafeDate(data.endDate) ?? null,
+          endDate: endOfWorkshopDay(data.endDate, timeZone) ?? null,
           isActive: data.isActive ?? existing.isActive,
         },
       })
@@ -222,7 +225,11 @@ export async function toggleReportSchedule(id: string) {
 
       const isActive = !existing.isActive
       const nextRunDate = isActive
-        ? calculateNextRunDate(new Date(), existing.frequency)
+        ? calculateNextRunDate(
+            new Date(),
+            existing.frequency,
+            await workshopTimeZone(organizationId)
+          )
         : existing.nextRunDate
 
       const schedule = await db.reportSchedule.update({

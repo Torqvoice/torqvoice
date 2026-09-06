@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Vehicle xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://regcheck.org.uk">
+  <vehicleJson>{
+  "Description": "FORD Fiesta 5D Hatchback LX",
+  "RegistrationYear": "2007",
+  "CarMake": {
+    "CurrentTextValue": "FORD"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "FORD"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "Fiesta 5D Hatchback"
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "Lx 5-Speed Manual"
+  },
+  "Colour": "",
+  "VechileIdentificationNumber": "FORFIELXWQ16FHS2007A",
+  "Engine": "1.6 litre, 4 cyl, WQ",
+  "extended": {
+    "nvic": "FHS07A",
+    "code": "FORFIELXWQ16FHS2007A",
+    "year": "2007",
+    "make": "FORD",
+    "model": "Fiesta 5D Hatchback",
+    "bodyType": "Lx 5-Speed Manual",
+    "engine": {
+      "capacity": {
+        "value": "1.6",
+        "unit": "L"
+      },
+      "cylinders": "4",
+      "description": "1.6 litre, 4 cyl, WQ"
+    },
+    "transmissionType": "Manual",
+    "driveType": "5D HATCHBACK",
+    "family": "FIESTA",
+    "variant": "LX",
+    "series": "WQ"
+  },
+  "ImageUrl": "http://www.carregistrationapi.com/image.aspx/@Rk9SRCBGaWVzdGEgNUQgSGF0Y2hiYWNr",
+  "Expiry": "",
+  "State": "NSW"
+}</vehicleJson>
+  <vehicleData>
+    <Description>FORD Fiesta 5D Hatchback LX</Description>
+    <RegistrationYear>2007</RegistrationYear>
+    <CarMake>
+      <CurrentTextValue>FORD</CurrentTextValue>
+    </CarMake>
+    <CarModel>Fiesta 5D Hatchback</CarModel>
+    <BodyStyle>
+      <CurrentTextValue>Lx 5-Speed Manual</CurrentTextValue>
+    </BodyStyle>
+  </vehicleData>
+</Vehicle>

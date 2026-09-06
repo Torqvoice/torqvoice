@@ -4,7 +4,7 @@
   "placeholder": "Fragen Sie zu Ihrer Werkstatt...",
   "clear": "Gespräch löschen",
   "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
-  "notEnabled": "KI ist nicht aktiviert. Konfigurieren Sie es unter Einstellungen → KI.",
+  "notEnabled": "KI ist nicht verbunden. Verbinden Sie OpenAI oder Anthropic unter Einstellungen → Integrationen.",
   "suggestion1": "Welche Fahrzeuge sind bald fällig für den Service?",
   "suggestion2": "Zeige mir unbezahlte Rechnungen",
   "suggestion3": "Wie ist der Umsatz diesen Monat?",

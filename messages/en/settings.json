@@ -7,7 +7,7 @@
       "billing": "Billing & Documents",
       "communications": "Communications",
       "workshop": "Workshop",
-      "integrations": "Integrations",
+      "integrations": "Apps & API",
       "system": "System"
     },
     "items": {
@@ -91,6 +91,10 @@
         "title": "Report Schedule",
         "description": "Automated report delivery"
       },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Calendars, video calls and connected services"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Real-time event notifications"
@@ -130,6 +134,10 @@
       "providers": {
         "title": "Providers",
         "description": "Email, SMS, WhatsApp & Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Inspection reminders",
+        "description": "Booking link, duration and lead time"
       }
     },
     "pro": "PRO"
@@ -572,7 +580,16 @@
     "quoteLockTriggerSent": "Once the quote is sent",
     "quoteLockTriggerAccepted": "Once the quote is accepted",
     "quoteLockTriggerSentHint": "Locks as soon as the quote goes to the customer. Choose this only if you never revise a quote during negotiation.",
-    "quoteLockTriggerAcceptedHint": "Locks once the customer has accepted the quote, or it has been converted to a job. Sent quotes stay editable."
+    "quoteLockTriggerAcceptedHint": "Locks once the customer has accepted the quote, or it has been converted to a job. Sent quotes stay editable.",
+    "freezeTitle": "Invoices from before locking",
+    "freezeBody": "{count, plural, one {# invoice} other {# invoices}} reached a customer before this version could lock what an invoice prints. They still print from your current details, logo and design, so a change you make today reaches them too. Locking them keeps each one as it prints right now.",
+    "freezeNone": "Every invoice that reached a customer is locked as it was sent.",
+    "freezeButton": "Lock them with the current design",
+    "freezeConfirmTitle": "Lock {count, plural, one {# invoice} other {# invoices}}?",
+    "freezeConfirmBody": "Each one keeps the design, logo, workshop details, customer, vehicle and findings it prints with right now. This cannot be undone, and the invoices stay editable or locked for editing exactly as they are today.",
+    "freezeProgress": "Locked {done} of {total}",
+    "freezeDone": "{count, plural, one {# invoice} other {# invoices}} locked",
+    "freezeFailed": "Could not lock the invoices"
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",
@@ -634,6 +651,12 @@
       "bank_account": "Bank Account",
       "footer_note": "Footer Note",
       "org_number": "Organization Number",
+      "payment_terms": "Payment Terms",
+      "due_date": "Due Date",
+      "title": "Title",
+      "invoice_number": "Invoice No.",
+      "customer_number": "Customer No.",
+      "date": "Date",
       "portal_link": "Portal Link"
     },
     "presetsTitle": "Start from an arrangement",
@@ -808,32 +831,17 @@
     "paymentTermsPlaceholder": "Net 14 days",
     "paymentTermsHint": "Payment terms text displayed on invoices (e.g. \"Net 14 days\", \"Due on receipt\")",
     "onlinePayments": "Online Payments",
-    "onlinePaymentsDescription": "Allow customers to pay invoices online via shared invoice links.",
-    "stripe": "Stripe",
-    "stripeDescription": "Accept credit/debit card payments",
-    "secretKey": "Secret Key",
-    "publishableKey": "Publishable Key",
-    "webhookSecret": "Webhook Secret",
-    "webhookUrl": "Webhook URL",
-    "stripeWebhookHint": "Add this URL in your Stripe Dashboard under Webhooks. Subscribe to <code>checkout.session.completed</code>.",
-    "vipps": "Vipps",
-    "vippsDescription": "Accept Vipps mobile payments (Norway)",
-    "clientId": "Client ID",
-    "clientSecret": "Client Secret",
-    "subscriptionKey": "Subscription Key",
-    "merchantSerialNumber": "Merchant Serial Number",
-    "testMode": "Test Mode",
-    "callbackUrl": "Callback URL",
-    "termsOfSale": "Terms of Sale (Salgsvilkar)",
-    "termsOfSaleDescription": "Required by Vipps. Customers can view these from the invoice page.",
+    "onlinePaymentsDescription": "Let customers pay invoices from the link you send them. Stripe, Vipps and PayPal are connected under Integrations, and can run side by side.",
+    "onlinePaymentsHint": "When a customer pays, the vendor notifies Torqvoice and the invoice marks itself paid. Each vendor's page shows the notification URL it needs.",
+    "offered": "On invoice links",
+    "paused": "Connected, not offered",
+    "termsOfSale": "Terms of sale",
+    "termsOfSaleDescription": "What a customer agrees to when paying online. Vipps requires published terms; the invoice links to them either way.",
+    "termsOfSaleText": "Terms text",
     "externalTermsUrl": "External Terms URL (optional)",
     "externalTermsUrlHint": "Link to an external page with your terms. If set, the invoice will link here instead of the built-in terms page.",
     "publicTermsUrl": "Public Terms URL",
     "publicTermsUrlHint": "Share this URL with Vipps or link it from your website.",
-    "paypal": "PayPal",
-    "paypalDescription": "Accept PayPal payments",
-    "sandboxMode": "Sandbox Mode",
-    "paypalWebhookHint": "Add this URL in your PayPal Developer Dashboard under Webhooks. Subscribe to <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Save Payment Settings",
     "saved": "Payment settings saved"
   },
@@ -1112,7 +1120,7 @@
   },
   "data": {
     "title": "Data Management",
-    "description": "Export your data as a backup or import a previously exported file.",
+    "description": "Bring data in from your old system, download a backup of everything, or restore one.",
     "exportTitle": "Export Data",
     "exportDescription": "Download your data as a zip file. Select which categories to include in the backup.",
     "includeInBackup": "Include in backup:",
@@ -1199,7 +1207,16 @@
     "optTireHotel": "Tire hotel",
     "optTireHotelDesc": "Stored tire sets, shelves, prep work and storage agreements",
     "optWorkshopConfig": "Workshop setup",
-    "optWorkshopConfigDesc": "Labour presets, roles, webhooks and scheduled reports"
+    "optWorkshopConfigDesc": "Labour presets, roles, webhooks and scheduled reports",
+    "importHubDescription": "Pick where your data is today. Spreadsheet and app imports add to what you have and can be undone; restoring a backup replaces everything.",
+    "sourceSpreadsheet": "Spreadsheet or CSV",
+    "sourceSpreadsheetDesc": "Exports from any shop system, accounting tool, Google Contacts, Outlook or Excel. You confirm the column mapping and see a dry run before anything is written.",
+    "sourceLubelogDesc": "Vehicles, service records and notes from a LubeLog backup.",
+    "sourceInvoiceNinjaDesc": "Clients, products, invoices and payments from an Invoice Ninja export.",
+    "sourceBackup": "Torqvoice backup",
+    "sourceBackupDesc": "A .zip or .json file downloaded from this page. Restoring replaces everything in this workshop.",
+    "restore": "Restore",
+    "restoreTitle": "Restore a backup"
   },
   "license": {
     "title": "White-Label License",
@@ -1740,6 +1757,17 @@
         "feature": "Telegram Messaging",
         "description": "Send and receive Telegram messages with your customers directly from Torqvoice."
       }
+    },
+    "moved": {
+      "title": "These settings moved to Integrations",
+      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
+      "connectedTo": "Connected through {vendor}",
+      "notSetUp": "Not set up yet",
+      "manage": "Manage",
+      "notConnected": "Not connected",
+      "goToIntegrations": "Go to Integrations",
+      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
+      "onByDefault": "On by default"
     }
   },
   "designer": {
@@ -1749,6 +1777,14 @@
     "galleryTitle": "Start from a template",
     "galleryHint": "Pick a starting point. You can change everything in the designer.",
     "yourDesigns": "Your designs",
+    "autoRuleHint": "Sales made without a vehicle print with the design marked for them, unless the sale or its customer chose another.",
+    "useForPartsSale": "Use for parts-only sales",
+    "usedForPartsSale": "Used for parts-only sales",
+    "autoRule": {
+      "parts_sale": "Parts-Only Sale"
+    },
+    "autoRuleSaved": "Updated when \"{name}\" is used",
+    "couldNotSaveRule": "Could not update the rule",
     "templates": "Templates",
     "inUse": "In use",
     "savedOn": "Saved {date}",
@@ -1908,6 +1944,7 @@
       "serviceType": "Repair",
       "companyName": "Your Workshop",
       "slogan": "Quality service you can trust",
+      "paymentTerms": "Due within 14 days",
       "footerNote": "Thank you for your business",
       "value": "Sample"
     },
@@ -1923,11 +1960,22 @@
     "sloganPlaceholderHint": "No slogan is set, so the sheet shows a stand-in that will not print.",
     "sloganSetHint": "Your slogan comes from your company details.",
     "sloganLink": "Company settings",
+    "paymentTerms": "Payment terms",
+    "paymentTermsPlaceholderHint": "No payment terms are set, so the sheet shows a stand-in that will not print.",
+    "paymentTermsSetHint": "Your payment terms come from your payment settings.",
+    "paymentTermsLink": "Payment settings",
+    "titleText": "Title text",
+    "titleTextHint": "What this document calls itself. Left empty, it prints its own name in the reader's language.",
     "placeholder": "Placeholder",
     "leaveTitle": "Leave without saving?",
     "leaveBody": "Your changes to this design have not been saved. They will be lost.",
     "leaveConfirm": "Leave",
-    "boldField": "Bold"
+    "boldField": "Bold",
+    "deleteDesignDrafts": "{count, plural, one {# draft invoice} other {# draft invoices}} using it will go back to the default design.",
+    "deleteDesignCustomers": "{count, plural, one {# customer} other {# customers}} set to it will go back to the default design.",
+    "setDefault": "Set as default",
+    "defaultSet": "\"{name}\" is now in use",
+    "couldNotSetDefault": "Could not set the default design"
   },
   "preview": {
     "title": "Brake Service & Oil Change",
@@ -1942,5 +1990,31 @@
     "partSyntheticOil": "Synthetic Oil 5W-30",
     "laborBrakeReplacement": "Brake Replacement",
     "laborOilChange": "Oil Change"
+  },
+  "inspectionReminders": {
+    "title": "Inspection reminders and booking",
+    "description": "How the booking link in a reminder behaves. Set once; every campaign uses these.",
+    "duration": "Inspection duration (minutes)",
+    "durationHint": "How long a periodic inspection occupies a bay. The link books slots of this length.",
+    "leadDays": "Earliest booking (days ahead)",
+    "leadDaysHint": "1 means the first time offered is tomorrow, never today.",
+    "horizonWeeks": "How far ahead (weeks)",
+    "horizonHint": "Customers can pick any free time inside this many weeks.",
+    "reserve": "Keep free for walk-ins",
+    "reserveHint": "Bays or technicians the link never fills. 0 lets it use every free one.",
+    "linkValidDays": "Link stays open (days)",
+    "linkValidHint": "At least {min}. Links also stay open until a week after the deadline, whichever is later.",
+    "bookingMode": "What a booking creates",
+    "bookingModeDirect": "A scheduled work order on the board",
+    "bookingModeRequest": "A request the office confirms first",
+    "bookingModeHint": "Direct booking is what makes the link worth clicking. Choose the request if you want to approve every time.",
+    "phone": "Phone number in messages",
+    "phoneHint": "Shown as the alternative to the link. Defaults to the workshop phone number.",
+    "save": "Save",
+    "saved": "Settings saved",
+    "saveFailed": "Could not save",
+    "timeZoneDetected": "Timezone is on automatic under Localization, so the server uses {zone}, the zone last seen in a browser that saved settings. Choose the workshop's zone explicitly so booking times never depend on who saved last.",
+    "timeZoneExplicit": "Booking times and opening hours are read in {zone}.",
+    "timeZoneChange": "Change under Localization"
   }
 }

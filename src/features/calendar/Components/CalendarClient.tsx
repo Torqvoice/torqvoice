@@ -1,24 +1,46 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useDayFormatter } from './useDayFormatter'
+import { CalendarDays } from 'lucide-react'
 import { useDateSettings } from '@/components/date-settings-context'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { ChevronLeft, ChevronRight, Loader2, Plus, MousePointerClick } from 'lucide-react'
-import { CalendarDayCell } from './CalendarDayCell'
-import { CalendarEventList } from './CalendarEventList'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { ReminderFormDialog } from '@/features/vehicles/Components/ReminderFormDialog'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 import { ScheduleMessageDialog } from '@/features/scheduled-messages/Components/ScheduleMessageDialog'
 import type { MessageChannel } from '@/features/scheduled-messages/Schema/scheduledMessageSchema'
-import { toLocalDateStr } from './calendar-utils'
 import { getCalendarEvents } from '../Actions/calendarActions'
-import type { CalendarEvent } from '../Actions/calendarActions'
-import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { CalendarDays } from 'lucide-react'
+import type { CalendarEvent, CalendarEventType } from '../Actions/calendarActions'
+import {
+  eachDay,
+  getMonthGridDays,
+  minutesToTime,
+  parseDateKey,
+  rangeCovers,
+  shiftDate,
+  timeToMinutes,
+  toLocalDateStr,
+  visibleRange,
+  type CalendarView,
+  type DateRange,
+} from '../Lib/calendar-range'
+import { compareEvents, isEventDone } from './calendar-utils'
+import { CalendarEventList } from './CalendarEventList'
+import { CalendarSidebar, type TypeFilters } from './CalendarSidebar'
+import { CalendarToolbar, VIEW_SHORTCUTS, type CreateKind } from './CalendarToolbar'
+import type { DayActions } from './DayContextMenu'
+import { EventPeekProvider } from './EventPeek'
+import { MonthView } from './MonthView'
+import { ScheduleView } from './ScheduleView'
+import { TimeGridView } from './TimeGridView'
+import { useCalendarPreferences } from './useCalendarPreferences'
+import { YearView } from './YearView'
 
 interface Vehicle {
   id: string
@@ -37,9 +59,11 @@ interface Customer {
 
 interface CalendarClientProps {
   initialEvents: CalendarEvent[]
-  initialMonth: number
-  initialYear: number
-  initialDay: number
+  /** The days `initialEvents` covers, as YYYY-MM-DD. */
+  initialRange: { start: string; end: string }
+  initialView: CalendarView
+  /** YYYY-MM-DD the calendar opens on. */
+  initialDate: string
   todayStr: string // YYYY-MM-DD computed on server to avoid hydration mismatch
   vehicles: Vehicle[]
   customers: Customer[]
@@ -48,39 +72,31 @@ interface CalendarClientProps {
   messageChannels: MessageChannel[]
 }
 
-function getMonthDays(year: number, month: number, weekStartDay: number) {
-  const firstDay = new Date(year, month, 1)
-  const lastDay = new Date(year, month + 1, 0)
-  const startPad = (firstDay.getDay() - weekStartDay + 7) % 7
+const ALL_TYPES: CalendarEventType[] = ['service', 'reminder', 'quote', 'message', 'external']
 
-  const days: Date[] = []
+/** Minutes a work order started from a time slot is booked for. */
+const SLOT_WORK_ORDER_MINUTES = 60
 
-  // Previous month padding
-  for (let i = startPad - 1; i >= 0; i--) {
-    days.push(new Date(year, month, -i))
+/**
+ * What to fetch so the view is covered and the neighbouring views usually
+ * are too: the whole month grid around the date, widened to whatever the
+ * view itself shows, or the whole year for the year view.
+ */
+function fetchRangeFor(view: CalendarView, date: Date, weekStartDay: number): DateRange {
+  const visible = visibleRange(view, date, weekStartDay)
+  if (view === 'year') return visible
+  const grid = getMonthGridDays(date.getFullYear(), date.getMonth(), weekStartDay)
+  return {
+    start: grid[0] < visible.start ? grid[0] : visible.start,
+    end: grid[grid.length - 1] > visible.end ? grid[grid.length - 1] : visible.end,
   }
-
-  // Current month days
-  for (let d = 1; d <= lastDay.getDate(); d++) {
-    days.push(new Date(year, month, d))
-  }
-
-  // Next month padding (fill to complete the last week)
-  const remaining = 7 - (days.length % 7)
-  if (remaining < 7) {
-    for (let i = 1; i <= remaining; i++) {
-      days.push(new Date(year, month + 1, i))
-    }
-  }
-
-  return days
 }
 
 export default function CalendarClient({
   initialEvents,
-  initialMonth,
-  initialYear,
-  initialDay,
+  initialRange,
+  initialView,
+  initialDate,
   todayStr,
   vehicles,
   customers,
@@ -88,114 +104,290 @@ export default function CalendarClient({
   messageChannels,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
+  const format = useDayFormatter()
+  const pathname = usePathname()
+  const isMobile = useIsMobile()
   const { weekStartDay } = useDateSettings()
-  const WEEKDAY_LABELS = [
-    t('weekdays.sun'),
-    t('weekdays.mon'),
-    t('weekdays.tue'),
-    t('weekdays.wed'),
-    t('weekdays.thu'),
-    t('weekdays.fri'),
-    t('weekdays.sat'),
-  ]
-  const WEEKDAYS = Array.from({ length: 7 }, (_, i) => WEEKDAY_LABELS[(weekStartDay + i) % 7])
-  const MONTH_NAMES = [
-    t('months.january'),
-    t('months.february'),
-    t('months.march'),
-    t('months.april'),
-    t('months.may'),
-    t('months.june'),
-    t('months.july'),
-    t('months.august'),
-    t('months.september'),
-    t('months.october'),
-    t('months.november'),
-    t('months.december'),
-  ]
+  const { preferences, update: updatePreferences } = useCalendarPreferences()
 
-  const [month, setMonth] = useState(initialMonth)
-  const [year, setYear] = useState(initialYear)
-  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents)
-  const [loading, setLoading] = useState(false)
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    () => new Date(initialYear, initialMonth, initialDay)
+  const [view, setView] = useState<CalendarView>(initialView)
+  const [date, setDate] = useState<Date>(
+    () => parseDateKey(initialDate) ?? parseDateKey(todayStr) ?? new Date()
   )
+  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents)
+  const [loadedRange, setLoadedRange] = useState<DateRange | null>(() => {
+    const start = parseDateKey(initialRange.start)
+    const end = parseDateKey(initialRange.end)
+    return start && end ? { start, end } : null
+  })
+  const [loading, setLoading] = useState(false)
+  const [filters, setFilters] = useState<TypeFilters>({
+    service: true,
+    reminder: true,
+    quote: true,
+    message: true,
+    external: true,
+  })
 
-  // Filters
-  const [showServices, setShowServices] = useState(true)
-  const [showReminders, setShowReminders] = useState(true)
-  const [showQuotes, setShowQuotes] = useState(true)
-  const [showMessages, setShowMessages] = useState(true)
-
-  // Vehicle picker
+  // Dialogs the calendar can open
   const [showPicker, setShowPicker] = useState(false)
   const [showDateChoice, setShowDateChoice] = useState(false)
-  const [workOrderDate, setWorkOrderDate] = useState<string | undefined>(undefined)
-
-  // Right-click menu targets: the day the menu was opened on
+  const [workOrderQuery, setWorkOrderQuery] = useState<Record<string, string> | undefined>()
   const [showReminderDialog, setShowReminderDialog] = useState(false)
   const [showQuoteDialog, setShowQuoteDialog] = useState(false)
   const [showMessageDialog, setShowMessageDialog] = useState(false)
   const [menuDateStr, setMenuDateStr] = useState<string | undefined>(undefined)
+  const [menuTime, setMenuTime] = useState<string | undefined>(undefined)
+  const [daySheetOpen, setDaySheetOpen] = useState(false)
 
-  const selectedDateStr = toLocalDateStr(selectedDate)
+  const dateStr = toLocalDateStr(date)
+  const range = useMemo(() => visibleRange(view, date, weekStartDay), [view, date, weekStartDay])
+  const days = useMemo(() => eachDay(range), [range])
 
-  const handleNewWorkOrder = useCallback(() => {
-    if (selectedDateStr !== todayStr) {
-      setShowDateChoice(true)
-    } else {
-      setWorkOrderDate(undefined)
-      setShowPicker(true)
+  // ── Loading ────────────────────────────────────────────────────────────
+  const requestId = useRef(0)
+  const load = useCallback(async (target: DateRange) => {
+    const id = ++requestId.current
+    setLoading(true)
+    const result = await getCalendarEvents({
+      start: toLocalDateStr(target.start),
+      end: toLocalDateStr(target.end),
+    })
+    // A slower earlier request must not overwrite a newer one.
+    if (id !== requestId.current) return
+    if (result.success && result.data) {
+      setEvents(result.data)
+      setLoadedRange(target)
     }
-  }, [selectedDateStr, todayStr])
+    setLoading(false)
+  }, [])
+
+  useEffect(() => {
+    if (rangeCovers(loadedRange, range)) return
+    load(fetchRangeFor(view, date, weekStartDay))
+  }, [range, loadedRange, load, view, date, weekStartDay])
+
+  const refresh = useCallback(() => {
+    load(loadedRange ?? fetchRangeFor(view, date, weekStartDay))
+  }, [load, loadedRange, view, date, weekStartDay])
+
+  // ── URL ────────────────────────────────────────────────────────────────
+  const firstRender = useRef(true)
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    const params = new URLSearchParams()
+    params.set('view', view)
+    params.set('date', dateStr)
+    // Native replaceState rather than router.replace: the Next router folds
+    // it into its own history, and no server render is asked for. Flicking
+    // through months would otherwise re-run the whole page on the server.
+    window.history.replaceState(window.history.state, '', `${pathname}?${params.toString()}`)
+  }, [view, dateStr, pathname])
+
+  // ── Derived data ───────────────────────────────────────────────────────
+  const counts = useMemo(() => {
+    const c: Record<CalendarEventType, number> = {
+      service: 0,
+      reminder: 0,
+      quote: 0,
+      message: 0,
+      external: 0,
+    }
+    const startKey = toLocalDateStr(range.start)
+    const endKey = toLocalDateStr(range.end)
+    for (const e of events) {
+      if (e.date >= startKey && e.date <= endKey) c[e.type]++
+    }
+    return c
+  }, [events, range])
+  const total = ALL_TYPES.reduce((sum, type) => sum + counts[type], 0)
+
+  const eventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>()
+    for (const e of events) {
+      if (!filters[e.type]) continue
+      if (
+        !preferences.showCompleted &&
+        (e.type === 'service' || e.type === 'reminder') &&
+        isEventDone(e)
+      ) {
+        continue
+      }
+      const list = map.get(e.date)
+      if (list) list.push(e)
+      else map.set(e.date, [e])
+    }
+    for (const list of map.values()) list.sort(compareEvents)
+    return map
+  }, [events, filters, preferences.showCompleted])
+
+  const busyDates = useMemo(
+    () =>
+      Array.from(eventsByDate.keys())
+        .map(parseDateKey)
+        .filter((d): d is Date => d !== null),
+    [eventsByDate]
+  )
+
+  const title = useMemo(() => {
+    switch (view) {
+      case 'day':
+        return format.dateTime(date, {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      case 'week':
+      case 'fourDays': {
+        // Composed by hand rather than with a range formatter: ICU versions
+        // disagree on the spaces around the dash, and the server's text
+        // would not match the browser's.
+        const sameYear = range.start.getFullYear() === range.end.getFullYear()
+        const day = { day: 'numeric', month: 'short' } as const
+        const start = format.dateTime(range.start, sameYear ? day : { ...day, year: 'numeric' })
+        const end = format.dateTime(range.end, { ...day, year: 'numeric' })
+        return `${start} – ${end}`
+      }
+      case 'year':
+        return String(date.getFullYear())
+      default:
+        return format.dateTime(date, { month: 'long', year: 'numeric' })
+    }
+  }, [view, date, range, format])
+
+  // ── Navigation ─────────────────────────────────────────────────────────
+  const goPrev = useCallback(() => setDate((d) => shiftDate(view, d, -1)), [view])
+  const goNext = useCallback(() => setDate((d) => shiftDate(view, d, 1)), [view])
+  const goToday = useCallback(() => setDate(parseDateKey(todayStr) ?? new Date()), [todayStr])
+
+  const selectDate = useCallback(
+    (d: Date) => {
+      setDate(d)
+      if (isMobile && (view === 'month' || view === 'year')) setDaySheetOpen(true)
+    },
+    [isMobile, view]
+  )
+  const openDay = useCallback((d: Date) => {
+    setDate(d)
+    setView('day')
+  }, [])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      const target = e.target as HTMLElement | null
+      if (
+        target?.closest(
+          'input, textarea, select, [contenteditable="true"], [role="dialog"], [role="menu"]'
+        )
+      ) {
+        return
+      }
+      const key = e.key.length === 1 ? e.key.toUpperCase() : e.key
+      const viewFor = (Object.keys(VIEW_SHORTCUTS) as CalendarView[]).find(
+        (v) => VIEW_SHORTCUTS[v] === key
+      )
+      if (viewFor) {
+        setView(viewFor)
+        return
+      }
+      switch (key) {
+        case 'T':
+          goToday()
+          break
+        case 'J':
+        case 'N':
+        case 'ArrowRight':
+          goNext()
+          break
+        case 'K':
+        case 'P':
+        case 'ArrowLeft':
+          goPrev()
+          break
+        default:
+          return
+      }
+      e.preventDefault()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [goToday, goNext, goPrev])
+
+  // ── Creating things ────────────────────────────────────────────────────
+  const openWorkOrderPicker = useCallback((query?: Record<string, string>) => {
+    setWorkOrderQuery(query)
+    setShowPicker(true)
+  }, [])
+
+  const handleCreate = useCallback(
+    (kind: CreateKind) => {
+      setMenuDateStr(dateStr)
+      setMenuTime(undefined)
+      switch (kind) {
+        case 'workOrder':
+          // A day other than today is probably what the person means, but
+          // it might not be: ask, as the old button did.
+          if (dateStr !== todayStr) setShowDateChoice(true)
+          else openWorkOrderPicker(undefined)
+          break
+        case 'reminder':
+          setShowReminderDialog(true)
+          break
+        case 'quote':
+          setShowQuoteDialog(true)
+          break
+        case 'message':
+          setShowMessageDialog(true)
+          break
+      }
+    },
+    [dateStr, todayStr, openWorkOrderPicker]
+  )
 
   const handleDateChoice = useCallback(
     (useSelectedDate: boolean) => {
       setShowDateChoice(false)
-      setWorkOrderDate(useSelectedDate ? selectedDateStr : undefined)
-      setShowPicker(true)
+      openWorkOrderPicker(useSelectedDate ? { boardDate: dateStr } : undefined)
     },
-    [selectedDateStr]
+    [dateStr, openWorkOrderPicker]
   )
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((e) => {
-      if (e.type === 'service' && !showServices) return false
-      if (e.type === 'reminder' && !showReminders) return false
-      if (e.type === 'quote' && !showQuotes) return false
-      if (e.type === 'message' && !showMessages) return false
-      return true
-    })
-  }, [events, showServices, showReminders, showQuotes, showMessages])
-
-  // What the displayed month holds, counted before the filters hide anything
-  const counts = useMemo(
+  const dayActions = useMemo<DayActions>(
     () => ({
-      services: events.filter((e) => e.type === 'service').length,
-      reminders: events.filter((e) => e.type === 'reminder').length,
-      quotes: events.filter((e) => e.type === 'quote').length,
-      messages: events.filter((e) => e.type === 'message').length,
-      total: events.length,
+      onNewWorkOrder: (day, time) => {
+        if (!time) {
+          openWorkOrderPicker({ boardDate: day })
+          return
+        }
+        const startMins = timeToMinutes(time)
+        openWorkOrderPicker({
+          boardDate: day,
+          boardStart: time,
+          boardEnd: minutesToTime(Math.min(startMins + SLOT_WORK_ORDER_MINUTES, 24 * 60 - 1)),
+        })
+      },
+      onNewReminder: (day, time) => {
+        setMenuDateStr(day)
+        setMenuTime(time)
+        setShowReminderDialog(true)
+      },
+      onNewQuote: (day) => {
+        setMenuDateStr(day)
+        setShowQuoteDialog(true)
+      },
+      onScheduleMessage: (day, time) => {
+        setMenuDateStr(day)
+        setMenuTime(time)
+        setShowMessageDialog(true)
+      },
     }),
-    [events]
+    [openWorkOrderPicker]
   )
-
-  const days = getMonthDays(year, month, weekStartDay)
-
-  const fetchEvents = useCallback(async (y: number, m: number) => {
-    setLoading(true)
-    const start = new Date(y, m, 1)
-    const end = new Date(y, m + 1, 0)
-    const result = await getCalendarEvents({
-      start: toLocalDateStr(start),
-      end: toLocalDateStr(end),
-    })
-    if (result.success && result.data) {
-      setEvents(result.data)
-    }
-    setLoading(false)
-  }, [])
 
   // Noon parse, so the seeded day survives any timezone the workshop sits in.
   // Memoised because the reminder dialog re-seeds whenever this value changes.
@@ -219,196 +411,135 @@ export default function CalendarClient({
     [vehicles]
   )
 
-  // Right-click actions carry their day explicitly, so no date-choice prompt
-  const handleMenuWorkOrder = useCallback((dateStr: string) => {
-    setWorkOrderDate(dateStr)
-    setShowPicker(true)
-  }, [])
+  const monthDays = useMemo(
+    () => getMonthGridDays(date.getFullYear(), date.getMonth(), weekStartDay),
+    [date, weekStartDay]
+  )
 
-  const handleMenuReminder = useCallback((dateStr: string) => {
-    setMenuDateStr(dateStr)
-    setShowReminderDialog(true)
-  }, [])
-
-  const handleMenuQuote = useCallback((dateStr: string) => {
-    setMenuDateStr(dateStr)
-    setShowQuoteDialog(true)
-  }, [])
-
-  const handleMenuMessage = useCallback((dateStr: string) => {
-    setMenuDateStr(dateStr)
-    setShowMessageDialog(true)
-  }, [])
-
-  const refreshMonth = useCallback(() => {
-    fetchEvents(year, month)
-  }, [fetchEvents, year, month])
-
-  const goToPrev = () => {
-    const newMonth = month === 0 ? 11 : month - 1
-    const newYear = month === 0 ? year - 1 : year
-    setMonth(newMonth)
-    setYear(newYear)
-    setSelectedDate(new Date(newYear, newMonth, 1))
-    fetchEvents(newYear, newMonth)
-  }
-
-  const goToNext = () => {
-    const newMonth = month === 11 ? 0 : month + 1
-    const newYear = month === 11 ? year + 1 : year
-    setMonth(newMonth)
-    setYear(newYear)
-    setSelectedDate(new Date(newYear, newMonth, 1))
-    fetchEvents(newYear, newMonth)
-  }
-
-  const goToToday = () => {
-    const now = new Date()
-    const needsFetch = now.getMonth() !== month || now.getFullYear() !== year
-    setMonth(now.getMonth())
-    setYear(now.getFullYear())
-    setSelectedDate(now)
-    if (needsFetch) {
-      fetchEvents(now.getFullYear(), now.getMonth())
+  const body = (() => {
+    switch (view) {
+      case 'month':
+        return (
+          <MonthView
+            days={monthDays}
+            month={date.getMonth()}
+            eventsByDate={eventsByDate}
+            todayStr={todayStr}
+            selectedDateStr={dateStr}
+            showWeekends={preferences.showWeekends}
+            showWeekNumbers={preferences.showWeekNumbers}
+            actions={dayActions}
+            onSelectDate={selectDate}
+            onOpenDay={openDay}
+          />
+        )
+      case 'year':
+        return (
+          <YearView
+            year={date.getFullYear()}
+            eventsByDate={eventsByDate}
+            todayStr={todayStr}
+            selectedDateStr={dateStr}
+            onSelectDate={selectDate}
+            onOpenDay={openDay}
+          />
+        )
+      case 'schedule':
+        return (
+          <ScheduleView
+            days={days}
+            eventsByDate={eventsByDate}
+            todayStr={todayStr}
+            onSelectDate={openDay}
+          />
+        )
+      default:
+        return (
+          <TimeGridView
+            key={view}
+            days={days}
+            eventsByDate={eventsByDate}
+            todayStr={todayStr}
+            selectedDateStr={dateStr}
+            showWeekends={preferences.showWeekends}
+            actions={dayActions}
+            onSelectDate={setDate}
+            onOpenDay={openDay}
+          />
+        )
     }
-  }
+  })()
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-3">
-        {/* Calendar grid */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardContent className="p-4">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="h-8 w-8"
-                    onClick={goToPrev}
-                    aria-label={t('previousMonth')}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="h-8 w-8"
-                    onClick={goToNext}
-                    aria-label={t('nextMonth')}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <h2 className="text-lg font-semibold ml-2">
-                    {MONTH_NAMES[month]} {year}
-                  </h2>
-                  {loading && (
-                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground ml-2" />
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" onClick={goToToday}>
-                    {t('today')}
-                  </Button>
-                  <Button size="sm" onClick={handleNewWorkOrder}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    {t('workOrder')}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Filters, each carrying what the month holds of that type */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-sm">
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <Checkbox checked={showServices} onCheckedChange={(v) => setShowServices(!!v)} />
-                  <div className="h-2 w-2 rounded-full bg-blue-500" />
-                  <span className="text-muted-foreground">{t('filters.services')}</span>
-                  <span className="font-medium tabular-nums">{counts.services}</span>
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <Checkbox
-                    checked={showReminders}
-                    onCheckedChange={(v) => setShowReminders(!!v)}
-                  />
-                  <div className="h-2 w-2 rounded-full bg-amber-500" />
-                  <span className="text-muted-foreground">{t('filters.reminders')}</span>
-                  <span className="font-medium tabular-nums">{counts.reminders}</span>
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <Checkbox checked={showQuotes} onCheckedChange={(v) => setShowQuotes(!!v)} />
-                  <div className="h-2 w-2 rounded-full bg-violet-500" />
-                  <span className="text-muted-foreground">{t('filters.quotes')}</span>
-                  <span className="font-medium tabular-nums">{counts.quotes}</span>
-                </label>
-                <label className="flex items-center gap-1.5 cursor-pointer">
-                  <Checkbox checked={showMessages} onCheckedChange={(v) => setShowMessages(!!v)} />
-                  <div className="h-2 w-2 rounded-full bg-sky-500" />
-                  <span className="text-muted-foreground">{t('filters.messages')}</span>
-                  <span className="font-medium tabular-nums">{counts.messages}</span>
-                </label>
-                <span className="text-xs text-muted-foreground ml-auto">
-                  {t('monthTotal', { count: counts.total })}
-                </span>
-              </div>
-
-              {/* Weekday headers */}
-              <div className="grid grid-cols-7 gap-px mb-1">
-                {WEEKDAYS.map((day) => (
-                  <div
-                    key={day}
-                    className="text-center text-xs font-medium text-muted-foreground py-1"
-                  >
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              {/* Day grid */}
-              <div className="grid grid-cols-7 gap-px">
-                {days.map((date) => {
-                  const dateStr = toLocalDateStr(date)
-                  return (
-                    <CalendarDayCell
-                      key={dateStr}
-                      date={date}
-                      events={filteredEvents}
-                      isCurrentMonth={date.getMonth() === month}
-                      isToday={dateStr === todayStr}
-                      isSelected={dateStr === selectedDateStr}
-                      onClick={() => setSelectedDate(date)}
-                      onNewWorkOrder={() => handleMenuWorkOrder(dateStr)}
-                      onNewReminder={() => handleMenuReminder(dateStr)}
-                      onNewQuote={() => handleMenuQuote(dateStr)}
-                      onScheduleMessage={() => handleMenuMessage(dateStr)}
-                    />
-                  )
-                })}
-              </div>
-
-              <div className="hidden md:flex items-center gap-1.5 pt-3 text-xs text-muted-foreground">
-                <MousePointerClick className="h-3.5 w-3.5" />
-                {t('contextMenu.hint')}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Event list sidebar */}
-        <div>
-          <Card>
-            <CardContent className="p-4">
-              <CalendarEventList
-                events={filteredEvents}
-                dateStr={selectedDateStr}
-                selectedDate={selectedDate}
-                currencyCode={currencyCode}
-              />
-            </CardContent>
-          </Card>
+    <EventPeekProvider currencyCode={currencyCode} onRefresh={refresh}>
+      {/*
+        A definite height, not flex-1: nothing above this in the layout has
+        one (the shell is min-h-svh), so a flexed calendar would grow to the
+        full 24-hour grid and hand scrolling to the page. The subtraction is
+        the header (4rem), the page padding (1rem) and, on phones, the
+        bottom nav (3.5rem). Short screens fall back to a page that scrolls.
+      */}
+      <div className="flex h-[calc(100svh-8.5rem)] min-h-[32rem] min-w-0 flex-col overflow-hidden rounded-xl border border-card-edge bg-card text-card-foreground shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)] md:h-[calc(100svh-5rem)]">
+        <CalendarToolbar
+          title={title}
+          view={view}
+          loading={loading}
+          sidebarOpen={preferences.sidebarOpen}
+          preferences={preferences}
+          onViewChange={setView}
+          onPrev={goPrev}
+          onNext={goNext}
+          onToday={goToday}
+          onToggleSidebar={() => updatePreferences({ sidebarOpen: !preferences.sidebarOpen })}
+          onPreferenceChange={updatePreferences}
+          onCreate={handleCreate}
+        />
+        <div className="flex min-h-0 flex-1">
+          {preferences.sidebarOpen && (
+            <CalendarSidebar
+              selectedDate={date}
+              month={date}
+              busyDates={busyDates}
+              filters={filters}
+              counts={counts}
+              total={total}
+              onSelectDate={selectDate}
+              onMonthChange={(m) => {
+                // Moving the mini calendar moves the main view with it, but a
+                // month that already holds the date is left alone.
+                if (m.getFullYear() !== date.getFullYear() || m.getMonth() !== date.getMonth()) {
+                  setDate(new Date(m.getFullYear(), m.getMonth(), 1))
+                }
+              }}
+              onFilterChange={(type, checked) =>
+                setFilters((current) => ({ ...current, [type]: checked }))
+              }
+            />
+          )}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">{body}</div>
         </div>
       </div>
+
+      <Sheet open={daySheetOpen} onOpenChange={setDaySheetOpen}>
+        <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+          <SheetHeader className="sr-only">
+            <SheetTitle>{format.dateTime(date, { dateStyle: 'full' })}</SheetTitle>
+          </SheetHeader>
+          <CalendarEventList events={eventsByDate.get(dateStr) ?? []} selectedDate={date} />
+          <div className="mt-3 flex justify-end">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setDaySheetOpen(false)
+                openDay(date)
+              }}
+            >
+              {t('openDay', { date: format.dateTime(date, { day: 'numeric', month: 'short' }) })}
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <Dialog open={showDateChoice} onOpenChange={setShowDateChoice}>
         <DialogContent className="max-w-sm">
@@ -417,7 +548,7 @@ export default function CalendarClient({
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             {t('dateChoice.description', {
-              selectedDate: selectedDate.toLocaleDateString(undefined, {
+              selectedDate: format.dateTime(date, {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -427,12 +558,9 @@ export default function CalendarClient({
           </p>
           <div className="flex flex-col gap-2 pt-2">
             <Button onClick={() => handleDateChoice(true)}>
-              <CalendarDays className="h-4 w-4 mr-2" />
+              <CalendarDays className="mr-2 h-4 w-4" />
               {t('dateChoice.useSelected', {
-                date: selectedDate.toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                }),
+                date: format.dateTime(date, { month: 'short', day: 'numeric' }),
               })}
             </Button>
             <Button variant="outline" onClick={() => handleDateChoice(false)}>
@@ -447,7 +575,8 @@ export default function CalendarClient({
         onOpenChange={setShowReminderDialog}
         vehicles={reminderVehicles}
         defaultDueDate={menuDate}
-        onSaved={refreshMonth}
+        defaultDueTime={menuTime}
+        onSaved={refresh}
       />
 
       <NewQuoteDialog
@@ -461,7 +590,8 @@ export default function CalendarClient({
         onOpenChange={setShowMessageDialog}
         availableChannels={messageChannels}
         defaultDate={menuDateStr}
-        onSaved={refreshMonth}
+        defaultTime={menuTime}
+        onSaved={refresh}
       />
 
       <VehiclePickerDialog
@@ -470,8 +600,8 @@ export default function CalendarClient({
         vehicles={vehicles}
         customers={customers}
         title={t('selectVehicle')}
-        redirectQuery={workOrderDate ? { boardDate: workOrderDate } : undefined}
+        redirectQuery={workOrderQuery}
       />
-    </div>
+    </EventPeekProvider>
   )
 }

@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Интеграции",
+    "description": "Подключите сервисы, которыми ваша мастерская уже пользуется. Каждая интеграция настраивается один раз и работает в фоновом режиме.",
+    "all": "Все",
+    "empty": "В этой категории пока нет интеграций.",
+    "notConnected": "Не подключено",
+    "connect": "Подключить",
+    "manage": "Управлять",
+    "connectedTitle": "Подключено",
+    "connectedDescription": "Сервисы, настроенные в этой мастерской. Откройте сервис, чтобы проверить статус, изменить настройки или отключить его.",
+    "noneConnected": "Пока ничего не подключено. Выберите сервис ниже, чтобы начать.",
+    "availableTitle": "Доступно",
+    "availableDescription": "Сервисы, которые можно добавить. Каждый настраивается один раз и работает в фоне.",
+    "allConnected": "Все доступные сервисы подключены.",
+    "searchPlaceholder": "Поиск интеграций",
+    "noMatches": "Ничего не найдено по запросу «{query}».",
+    "readMore": "Подробнее",
+    "suggestTitle": "Не хватает сервиса, которым вы пользуетесь?",
+    "suggestDescription": "Расскажите, какая интеграция помогла бы вашему автосервису, и мы её рассмотрим.",
+    "suggest": "Предложить интеграцию",
+    "suggestSubject": "Предложение интеграции"
+  },
+  "categories": {
+    "calendar": "Календарь",
+    "conferencing": "Видеозвонки",
+    "accounting": "Бухгалтерия",
+    "messaging": "Сообщения",
+    "payments": "Платежи",
+    "automation": "Автоматизация",
+    "storage": "Файлы",
+    "registry": "Реестр транспортных средств",
+    "other": "Другое",
+    "ai": "ИИ"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Заказ-наряды в календарь",
+      "pull": "Занятое время из календаря",
+      "conference": "Ссылки на видеозвонки"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Поиск по номеру и VIN",
+      "inspection": "Сроки техосмотра",
+      "safety": "Отзывные кампании и жалобы владельцев"
+    },
+    "ai": {
+      "chat": "Тексты и сводки"
+    },
+    "payments": {
+      "checkout": "Оплата по ссылке на счёт"
+    },
+    "accounting": {
+      "invoices": "Счета в бухгалтерию",
+      "customers": "Клиенты в бухгалтерию",
+      "payments": "Платежи в обе стороны"
+    }
+  },
+  "statuses": {
+    "active": "Подключено",
+    "error": "Требует внимания",
+    "pending": "Идёт настройка",
+    "disconnected": "Отключено",
+    "needsSetup": "Настройка не завершена"
+  },
+  "connection": {
+    "back": "Все интеграции",
+    "account": "Подключённый аккаунт",
+    "lastHealth": "Последняя проверка",
+    "lastSync": "Последняя синхронизация",
+    "lastError": "Последний запуск завершился ошибкой",
+    "setupMissingTitle": "Настройка не завершена",
+    "setupMissing": "Выберите {fields} в настройках ниже. До тех пор ничего не синхронизируется.",
+    "connected": "{name} подключено.",
+    "connectedShort": "Подключено",
+    "connectWith": "Подключить {name}",
+    "connect": "Подключить",
+    "reconnect": "Переподключить",
+    "disconnect": "Отключить",
+    "disconnectTitle": "Отключить {name}?",
+    "disconnectDescription": "Torqvoice забывает аккаунт и перестаёт им пользоваться. Всё, что уже отправлено в {name} или хранится там, не затрагивается.",
+    "disconnectDescriptionCalendar": "Torqvoice забывает аккаунт и перестаёт синхронизировать. Заказ-наряды, уже добавленные в {name}, остаются там. Занятое время, показанное из этого календаря, удаляется из календаря Torqvoice.",
+    "disconnectDescriptionConferencing": "Torqvoice забывает аккаунт и перестаёт создавать встречи. Уже созданные встречи остаются в {name}, а ссылки в заказ-нарядах сохраняются.",
+    "disconnectDescriptionAccounting": "Torqvoice забывает аккаунт и перестаёт отправлять и читать. Счета, клиенты и платежи, уже находящиеся в {name}, остаются там.",
+    "removeSetup": "Удалить",
+    "removeSetupTitle": "Удалить {name}?",
+    "removeSetupDescription": "Пока ничего не подключено. Torqvoice забудет введённые данные, и {name} вернётся в список доступных сервисов.",
+    "removeSetupDone": "{name} удалён",
+    "removeSetupHint": "Не будете продолжать? Удалите, и сервис вернётся в список ниже.",
+    "disconnected": "Отключено",
+    "test": "Проверить подключение",
+    "testPassed": "Подключение работает",
+    "syncNow": "Синхронизировать сейчас",
+    "syncQueued": "Синхронизация поставлена в очередь и запустится в течение минуты",
+    "pullNow": "Получить платежи сейчас",
+    "pullQueued": "Получение платежей поставлено в очередь и запустится в течение минуты",
+    "backfill": "Отправить запланированные заказ-наряды",
+    "backfillQueued": "Запланированные заказ-наряды за последнюю неделю и позже поставлены в очередь",
+    "backfillInvoices": "Отправить выставленные счета",
+    "backfillInvoicesQueuedCount": "В очередь поставлено {count, plural, one {# выставленный счёт} few {# выставленных счёта} many {# выставленных счетов} other {# выставленного счёта}}",
+    "backfillInvoicesNone": "Нет выставленных счетов для отправки. Передаются только отправленные, опубликованные или оплаченные счета, начиная с даты начала, если она задана.",
+    "retryQueued": "Задача снова поставлена в очередь",
+    "settingsTitle": "Настройки",
+    "settingsDescription": "Что синхронизировать и куда. Изменения применяются при следующей синхронизации.",
+    "settingsSaved": "Настройки сохранены",
+    "save": "Сохранить",
+    "loading": "Загрузка...",
+    "choose": "Выберите...",
+    "search": "Поиск...",
+    "noMatch": "Ничего не найдено",
+    "leaveEmpty": "Оставить пустым",
+    "noLimit": "Без ограничения",
+    "planLocked": "Интеграции не входят в ваш тариф.",
+    "ownAppTitle": "Эта установка использует ваше собственное приложение у провайдера",
+    "redirectUri": "URI перенаправления для регистрации у провайдера:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Добавьте этот URL в панели Stripe в разделе Developers, Webhooks с подпиской на checkout.session.completed. Затем вставьте секрет подписи, который покажет Stripe, в поле секрета вебхука здесь, чтобы уведомления можно было проверять.",
+    "inboundHintVipps": "Укажите этот URL как callback-URL в портале Vipps MobilePay. Vipps также требует опубликованных условий продажи, они задаются в разделе Настройки, Оплата.",
+    "inboundHintPaypal": "Добавьте этот URL в панели разработчика PayPal в разделе Webhooks с подпиской на PAYMENT.CAPTURE.COMPLETED.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Синхронизация техосмотров",
+      "vehicles": "{count} автомобилей с номером в этой мастерской",
+      "dueNow": "{count} будут проверены при следующем запуске",
+      "withDate": "{count} уже имеют дату техосмотра",
+      "lastPass": "Последний полный проход {date}",
+      "never": "Полного прохода ещё не было",
+      "inProgress": "Проход выполняется",
+      "off": "Включите настройку и сохраните; до этого проход ничего не проверяет.",
+      "syncNowHelp": "«Синхронизировать сейчас» запускает проход немедленно, не дожидаясь ежечасного. Он проверяет по 25 автомобилей и продолжает сам, пока не обработает все ожидающие."
+    },
+    "supersedes": "Подключение {next} отключит {current}. Одновременно работает только один, поэтому {current} перестанет использоваться, как только заработает {next}.",
+    "batchRetried": "{count, plural, =0 {Нечего повторять} one {# задача снова в очереди} few {# задачи снова в очереди} many {# задач снова в очереди} other {# задачи снова в очереди}}"
+  },
+  "activity": {
+    "title": "Активность",
+    "description": "Последние задачи и записи журнала для этого подключения.",
+    "retry": "Повторить",
+    "jobStatus": {
+      "queued": "В очереди",
+      "running": "Выполняется",
+      "done": "Готово",
+      "failed": "Ошибка",
+      "dead": "Прекращено"
+    },
+    "jobs": "{count, plural, one {# задача} few {# задачи} many {# задач} other {# задачи}}",
+    "counts": {
+      "queued": "{count} в очереди",
+      "running": "{count} выполняется",
+      "done": "{count} готово",
+      "failed": "{count} с ошибкой",
+      "dead": "{count} прекращено"
+    },
+    "noFailures": "Ошибок нет.",
+    "retryFailed": "Повторить неудавшиеся",
+    "details": "Показать подробности"
+  },
+  "errors": {
+    "generic": "Что-то пошло не так",
+    "demo": "В демо-режиме интеграции подключить нельзя.",
+    "forbidden": "Подключать интеграции может только администратор.",
+    "unknown": "Неизвестная интеграция.",
+    "plan": "Эта интеграция не входит в ваш тариф.",
+    "no-client": "Для этого провайдера не настроены данные приложения.",
+    "denied": "Вы отменили вход у провайдера.",
+    "vendor": "Провайдер вернул ошибку. Попробуйте ещё раз.",
+    "invalid": "Ответ провайдера был неполным. Попробуйте ещё раз.",
+    "state": "Срок этого входа истёк, или он относится к другой сессии. Начните заново.",
+    "exchange": "Провайдер отклонил вход. Проверьте данные приложения и попробуйте ещё раз.",
+    "identify": "Подключено, но не удалось прочитать данные аккаунта. Попробуйте переподключиться."
+  },
+  "meeting": {
+    "join": "Присоединиться к видеозвонку",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Из подключённых календарей",
+    "busy": "Занято"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Добавляйте запланированные заказ-наряды в Google Calendar, прикрепляйте ссылку Google Meet и видите занятое время календаря в Torqvoice.",
+      "tenantHelp": "Создайте OAuth-клиент в Google Cloud Console (APIs & Services → Credentials), включите Google Calendar API, добавьте указанный ниже URI перенаправления и вставьте сюда идентификатор клиента и секрет.",
+      "fields": {
+        "clientId": "Идентификатор клиента",
+        "clientSecret": "Секрет клиента"
+      },
+      "settings": {
+        "calendarId": "Календарь",
+        "pushEnabled": "Добавлять запланированные заказ-наряды в этот календарь",
+        "includeCustomer": "Включать имя и телефон клиента в событие",
+        "addConference": "Добавлять встречу Google Meet к каждому запланированному заказу",
+        "addConferenceHelp": "Вкл.: каждый заказ, отправленный в календарь, получает встречу Google Meet, а ссылка показывается в заказе. Выкл.: добавьте встречу Google Meet к отдельному заказу с его страницы. В любом случае клиент получает ссылку только когда вы её отправите.",
+        "pullEnabled": "Показывать занятое время этого календаря в календаре Torqvoice",
+        "pullEnabledHelp": "Только чтение. Обновляется каждые 15 минут: неделя назад и два месяца вперёд."
+      }
+    },
+    "microsoft-365": {
+      "description": "Добавляйте запланированные заказ-наряды в календарь Outlook, прикрепляйте ссылку Microsoft Teams и видите занятое время календаря в Torqvoice.",
+      "tenantHelp": "Зарегистрируйте приложение в Microsoft Entra (App registrations), разрешите личные и рабочие аккаунты, добавьте указанный ниже URI перенаправления как платформу Web, создайте секрет клиента и вставьте сюда оба значения.",
+      "fields": {
+        "clientId": "Идентификатор приложения (клиента)",
+        "clientSecret": "Секрет клиента"
+      },
+      "settings": {
+        "calendarId": "Календарь",
+        "pushEnabled": "Добавлять запланированные заказ-наряды в этот календарь",
+        "includeCustomer": "Включать имя и телефон клиента в событие",
+        "addConference": "Добавлять встречу Microsoft Teams к каждому запланированному заказу",
+        "addConferenceHelp": "Вкл.: каждый заказ, отправленный в календарь, получает встречу Microsoft Teams, а ссылка показывается в заказе. Выкл.: добавьте встречу Microsoft Teams к отдельному заказу с его страницы. В любом случае клиент получает ссылку только когда вы её отправите.",
+        "pullEnabled": "Показывать занятое время этого календаря в календаре Torqvoice",
+        "pullEnabledHelp": "Только чтение. Обновляется каждые 15 минут: неделя назад и два месяца вперёд."
+      }
+    },
+    "zoom": {
+      "description": "Добавьте встречу Zoom к запланированному заказ-наряду и держите ссылку на нём: для удалённой диагностики или разбора результатов с клиентом.",
+      "tenantHelp": "В Zoom App Marketplace создайте приложение General (user-managed), добавьте указанный ниже redirect URI, добавьте scope meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting и user:read:user, затем вставьте сюда client ID и секрет.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Секрет клиента"
+      },
+      "settings": {
+        "autoCreate": "Автоматически создавать встречу Zoom для каждого запланированного заказ-наряда",
+        "autoCreateHelp": "Выкл.: вы сами добавляете видеозвонок к заказ-наряду на его странице. Вкл.: каждый заказ-наряд с временем начала получает встречу, которая переносится при изменении расписания и удаляется при отмене. В любом случае клиент получает ссылку, только когда вы её отправите.",
+        "includeCustomer": "Указывать имя клиента в теме встречи",
+        "joinBeforeHost": "Разрешить клиенту входить раньше вас",
+        "waitingRoom": "Использовать зал ожидания"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Заполните данные автомобиля по норвежскому номеру или VIN: марка, модель, год, топливо, коробка передач, двигатель, цвет, размеры шин и дата следующего EU-kontroll, напрямую из реестра Statens vegvesen. Данные о владельце не передаются.",
+      "fields": {
+        "apiKey": "API-ключ",
+        "apiKeyHelp": "Бесплатно. Закажите ключ на vegvesen.no в разделе «API for tekniske kjøretøyopplysninger»: войдите через BankID, представьте мастерскую, и ключ будет выдан сразу. Он допускает 50 000 запросов в день."
+      },
+      "settings": {
+        "syncInspections": "Обновлять сроки техосмотра для всех автомобилей этой мастерской",
+        "syncInspectionsHelp": "Раз в час автомобили, которые давно не проверялись, ищутся по номеру, и сохраняется дата следующего EU-kontroll. Отправляются только автомобили этой мастерской. Автомобиль проверяется ежемесячно, а когда до срока меньше двух месяцев, еженедельно."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Заполните данные автомобиля по французскому, итальянскому, испанскому, португальскому или британскому номеру: марка, модель, год, VIN, топливо, объём двигателя и другое из регистрационных данных страны через Openapi.com. Каждый запрос списывается со счёта Openapi самой мастерской. Данные о владельце не передаются.",
+      "fields": {
+        "token": "API-токен",
+        "tokenHelp": "Создайте аккаунт на console.openapi.com, пополните кошелёк и в разделе Automotive создайте токен для производственной среды. Каждый успешный запрос стоит несколько десятков центов; запрос без результата бесплатен."
+      },
+      "settings": {
+        "country": "Страна",
+        "countryHelp": "Реестр, в котором искать. Французские и итальянские номера выглядят одинаково, поэтому страну нельзя определить по номеру.",
+        "bikes": "Искать также мотоциклы",
+        "bikesHelp": "Если номер не принадлежит автомобилю, запрашивается и реестр мотоциклов. Запрос по автомобилю без результата бесплатен, поэтому дополнительных расходов нет, если мотоцикл не найден. Недоступно для Португалии."
+      }
+    },
+    "rdw": {
+      "description": "Заполните данные автомобиля по нидерландскому номеру: марка, модель, год, топливо, объём двигателя, цвет, массы и дата следующего APK, напрямую из открытого реестра транспортных средств RDW. Бесплатно, ключ не нужен. Данные о владельце и VIN не публикуются.",
+      "fields": {
+        "appToken": "Токен приложения (необязательно)",
+        "appTokenHelp": "Открытые данные RDW работают без ключа, но анонимные запросы делят ограниченную квоту. Для синхронизации техосмотров создайте бесплатный аккаунт на opendata.rdw.nl, откройте настройки разработчика в профиле и создайте токен приложения."
+      },
+      "settings": {
+        "syncInspections": "Обновлять даты APK для всех автомобилей этой мастерской",
+        "syncInspectionsHelp": "Раз в час автомобили, которые давно не проверялись, ищутся по номеру, и сохраняется дата следующего APK. Отправляются только автомобили этой мастерской. Автомобиль проверяется ежемесячно, а когда до срока меньше двух месяцев, еженедельно."
+      }
+    },
+    "regcheck": {
+      "description": "Заполните данные автомобиля по номеру в Австралии, Новой Зеландии, США, Ирландии, Норвегии, Швеции, Дании, Финляндии, Эстонии, Чехии, Словакии, Венгрии или Хорватии: марка, модель, год, VIN, топливо и объём двигателя, если страна их публикует, через RegCheck. Каждый успешный запрос списывает один кредит со счёта RegCheck самой мастерской. Данные о владельце не передаются.",
+      "fields": {
+        "username": "Имя пользователя RegCheck",
+        "usernameHelp": "Зарегистрируйтесь на regcheck.org.uk; аккаунт включает 10 бесплатных запросов, остальные покупаются блоками по 100 в панели. Здесь нужно только имя пользователя, никогда пароль. Ненайденный номер ничего не стоит."
+      },
+      "settings": {
+        "country": "Страна",
+        "countryHelp": "Реестр, в котором искать. У каждой страны своя служба, поэтому подключение ищет в одной.",
+        "auState": "Штат или территория",
+        "auStateHelp": "Австралия регистрирует автомобили по штатам, и реестру нужно указать, в каком искать. Выберите тот, где зарегистрировано большинство автомобилей ваших клиентов.",
+        "usState": "Штат",
+        "usStateHelp": "Двухбуквенный код штата, в котором зарегистрированы автомобили, например CA или TX. Американские реестры запрашиваются по штатам."
+      }
+    },
+    "openai": {
+      "description": "Описания работ, сводки по истории, распознавание документов и ассистент — отвечает ваш собственный аккаунт OpenAI. Каждый запрос оплачивается с этого аккаунта, модель выбираете вы.",
+      "fields": {
+        "apiKey": "API-ключ",
+        "apiKeyHelp": "Создайте его на platform.openai.com в разделе API keys. На аккаунте нужен баланс; OpenAI списывает плату за каждый запрос."
+      },
+      "settings": {
+        "model": "Модель",
+        "modelHelp": "Какая модель отвечает. Список берётся из вашего аккаунта, новые сверху. Модели поменьше дешевле за запрос и справляются с большинством текстов мастерской."
+      }
+    },
+    "anthropic": {
+      "description": "Описания работ, сводки по истории, распознавание документов и ассистент — отвечает Claude в вашем собственном аккаунте Anthropic. Каждый запрос оплачивается с этого аккаунта, модель выбираете вы.",
+      "fields": {
+        "apiKey": "API-ключ",
+        "apiKeyHelp": "Создайте его на console.anthropic.com в разделе API keys. На аккаунте нужен баланс; Anthropic списывает плату за каждый запрос."
+      },
+      "settings": {
+        "model": "Модель",
+        "modelHelp": "Какая модель отвечает. Список берётся из вашего аккаунта, новые сверху. Модели поменьше дешевле за запрос и справляются с большинством текстов мастерской."
+      }
+    },
+    "stripe": {
+      "description": "Оплата картой по ссылке на счёт на ваш собственный аккаунт Stripe. Клиент платит, Stripe сообщает Torqvoice, и счёт сам отмечается оплаченным.",
+      "fields": {
+        "secretKey": "Секретный ключ",
+        "secretKeyHelp": "Из панели Stripe в разделе Developers, API keys. Тестовые ключи ничего реального не проводят, поэтому сначала попробуйте платёж на них, а затем переключитесь на боевые ключи.",
+        "publishableKey": "Публикуемый ключ",
+        "webhookSecret": "Секрет подписи вебхука",
+        "webhookSecretHelp": "Stripe показывает его, когда вы добавляете URL уведомлений с этой страницы как вебхук. С ним каждое уведомление проверяется перед записью платежа."
+      },
+      "settings": {
+        "enabled": "Предлагать в ссылках на счета",
+        "enabledHelp": "Выключите, чтобы на время убрать кнопку оплаты с общих счетов, не отключая интеграцию. Уже начатые платежи всё равно записываются."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay по ссылке на счёт. Клиент платит в приложении, которое у него уже есть, и счёт сам отмечается оплаченным.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Ключ подписки",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key из портала Vipps MobilePay, в API-ключах торговой единицы.",
+        "merchantSerialNumber": "Серийный номер продавца"
+      },
+      "settings": {
+        "enabled": "Предлагать в ссылках на счета",
+        "enabledHelp": "Выключите, чтобы на время убрать кнопку оплаты с общих счетов, не отключая интеграцию. Уже начатые платежи всё равно записываются.",
+        "testMode": "Тестовый режим",
+        "testModeHelp": "Использовать тестовую среду Vipps с тестовыми ключами. Оставьте включённым, пока не пройдёт полный платёж, затем выключите и введите боевые ключи."
+      }
+    },
+    "paypal": {
+      "description": "Оплата через PayPal по ссылке на счёт через ваше собственное приложение PayPal. Клиент платит аккаунтом PayPal или картой, и счёт сам отмечается оплаченным.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Предлагать в ссылках на счета",
+        "enabledHelp": "Выключите, чтобы на время убрать кнопку оплаты с общих счетов, не отключая интеграцию. Уже начатые платежи всё равно записываются.",
+        "sandbox": "Режим песочницы",
+        "sandboxHelp": "Использовать песочницу PayPal с ключами приложения песочницы. Оставьте включённым, пока не пройдёт полный платёж, затем выключите и введите ключи боевого приложения."
+      }
+    },
+    "quickbooks": {
+      "description": "Отправляйте выставленные счета, их клиентов и платежи в QuickBooks Online и получайте обратно платежи, записанные там.",
+      "tenantHelp": "Создайте приложение на портале Intuit Developer. Скопируйте client id и secret из Keys and credentials, а URI перенаправления ниже введите в Settings, Redirect URIs. Ключи разработки работают с sandbox-компаниями, production-ключи с настоящими.",
+      "fields": {
+        "clientId": "Идентификатор клиента",
+        "clientSecret": "Секрет клиента"
+      },
+      "settings": {
+        "pushInvoices": "Отправлять выставленные счета в QuickBooks",
+        "pushOnComplete": "Также отправлять счета, когда заказ отмечен как выполненный",
+        "pushOnCompleteHelp": "Без этого счёт уходит, когда он отправлен, передан по ссылке или оплачен. С этим выполненный заказ уходит сразу и обновляется при изменениях.",
+        "startDate": "Только счета с датой не раньше",
+        "startDateHelp": "Оставьте пустым, чтобы отправлять все выставленные счета. Укажите дату перехода бухгалтерии на QuickBooks, чтобы старые счета не вводились дважды.",
+        "includeVehicle": "Указывать автомобиль в счёте",
+        "includeVehicleHelp": "Текстовая строка над позициями с годом, маркой, моделью, номером и пробегом, чтобы бухгалтерия знала, о какой машине речь.",
+        "laborItemId": "Товар для строк работ",
+        "laborItemIdHelp": "Оставьте пустым, и в первый раз под вашим счётом доходов будет создан товар с именем Labour.",
+        "partsItemId": "Товар для строк запчастей",
+        "partsItemIdHelp": "Оставьте пустым, и в первый раз под вашим счётом доходов будет создан товар с именем Parts.",
+        "taxAmounts": "Суммы налога",
+        "taxAmountsHelp": "Как в счёте передаёт налог ровно таким, каким он указан в счёте клиента, поэтому обе системы сходятся до копейки. Рассчитывает QuickBooks позволяет QuickBooks применить ставку налогового кода, а в США адрес клиента; журнал сообщает о расхождении итогов.",
+        "taxAmountsBilled": "Как в счёте Torqvoice",
+        "taxAmountsQuickbooks": "Рассчитывает QuickBooks",
+        "taxCodeId": "Налоговый код для облагаемых счетов",
+        "taxCodeIdHelp": "QuickBooks учитывает налог по налоговому коду. Torqvoice подбирает код со ставкой каждого счёта; этот используется, когда подходящего нет. Компания в США использует TAX, если не выбрать другой код.",
+        "zeroTaxCodeId": "Налоговый код для счетов без налога",
+        "zeroTaxCodeIdHelp": "Используется, когда в счёте нет налога или клиент освобождён от него. Компания в США использует NON, если не выбрать другой код.",
+        "pushPayments": "Записывать платежи в QuickBooks",
+        "depositAccountId": "Зачислять платежи на",
+        "depositAccountIdHelp": "Оставьте пустым, чтобы использовать Undeposited Funds.",
+        "manualPaidAsPayment": "Записывать платёж, когда счёт отмечен оплаченным вручную",
+        "manualPaidAsPaymentHelp": "Счёт, отмеченный в Torqvoice как оплаченный без записи платежа, получает в QuickBooks один платёж на сумму, которая там ещё числится к оплате. Выключено: он остаётся там открытым, пока не будет записан платёж.",
+        "pullPayments": "Забирать платежи, записанные в QuickBooks",
+        "pullPaymentsHelp": "Каждые 30 минут. Платёж, полученный в QuickBooks по счёту из Torqvoice, записывается здесь на счёт."
+      }
+    },
+    "nhtsa": {
+      "description": "Заполните автомобиль по VIN и смотрите отзывные кампании, жалобы владельцев и рейтинги краш-тестов для каждого модельного года от американского ведомства безопасности. Бесплатно, без ключа.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Поддерживать актуальные данные об отзывах и жалобах для каждого автомобиля этой мастерской",
+        "refreshFleetHelp": "Раз в день модели, не обновлявшиеся за последнюю неделю, запрашиваются заново, чтобы страница автомобиля никогда не ждала, а новая отзывная кампания появлялась в течение недели. Отправляются только марка, модель и год."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Заказы в календарь",
+      "pull": "Занятое время из календаря"
+    },
+    "conference": {
+      "sync": "Ссылки на видеозвонки"
+    },
+    "inspection": {
+      "refresh": "Обновление сроков техосмотра"
+    },
+    "accounting": {
+      "invoice": "Счёт в бухгалтерию",
+      "payment": "Платёж в бухгалтерию",
+      "customer": "Клиент в бухгалтерию",
+      "pull": "Платежи из бухгалтерии"
+    },
+    "safety": {
+      "refresh": "Обновление данных об отзывных кампаниях",
+      "vehicle": "Проверка отзывных кампаний для нового автомобиля"
+    }
+  }
+}

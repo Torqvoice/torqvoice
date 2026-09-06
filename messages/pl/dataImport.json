@@ -1,0 +1,228 @@
+{
+  "title": "Importuj {entity}",
+  "cancel": "Anuluj",
+  "done": "Gotowe",
+  "entities": {
+    "customers": "klientów",
+    "vehicles": "pojazdy",
+    "services": "historię serwisową"
+  },
+  "entityHints": {
+    "customers": "Nazwy, dane kontaktowe, adresy. Jeden wiersz na klienta.",
+    "vehicles": "Marka, model, rok, rejestracja, VIN. Kolumna właściciela łączy z klientem lub go tworzy.",
+    "services": "Wcześniejsze zlecenia i faktury. Jeden wiersz na zlecenie, z pojazdem, którego dotyczy."
+  },
+  "groups": {
+    "customer": "Klient",
+    "vehicle": "Pojazd",
+    "service": "Serwis"
+  },
+  "steps": {
+    "upload": "Wybierz, co zaimportować, i prześlij plik z obecnego systemu.",
+    "mapping": "Sprawdź, która kolumna stanie się którym polem. Nic nie jest jeszcze zapisywane.",
+    "preview": "Próbny import: dokładnie to zrobi import. Przejrzyj wynik, a potem importuj.",
+    "importing": "Zapisywanie wierszy. Nie zamykaj tego okna.",
+    "result": "Import zakończony."
+  },
+  "upload": {
+    "drop": "Przeciągnij i upuść plik tutaj",
+    "formats": "CSV, Excel (.xlsx) lub vCard (.vcf), do 25 MB i 50 000 wierszy",
+    "browse": "Przeglądaj pliki",
+    "reading": "Odczytywanie pliku...",
+    "templateHint": "Nie masz jeszcze eksportu? Wypełnij szablon i prześlij go.",
+    "templateXlsx": "Szablon Excel",
+    "templateCsv": "Szablon CSV",
+    "sourcesHint": "Działa z eksportami z dowolnego systemu warsztatowego, programu księgowego, Kontaktów Google, Outlooka lub arkusza kalkulacyjnego. Nazwy kolumn są rozpoznawane w wielu językach; mapowanie potwierdzasz, zanim cokolwiek zostanie zapisane."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}",
+    "colColumn": "Kolumna w Twoim pliku",
+    "colSample": "Przykładowe wartości",
+    "colField": "Staje się",
+    "ignore": "Pomiń tę kolumnę",
+    "source": {
+      "preset": "Rozpoznany układ",
+      "header": "Dopasowano po nagłówku",
+      "values": "Odgadnięto z wartości"
+    },
+    "suggestWithAi": "Zaproponuj z AI",
+    "aiApplied": "AI zmapowało {count, plural, one {# kolumnę} few {# kolumny} many {# kolumn} other {# kolumny}}. Sprawdź je przed kontynuowaniem.",
+    "chooseAnother": "Wybierz inny plik",
+    "missingRequired": "Nadal wymagane: {fields}",
+    "dryRunHint": "Próbny import sprawdza każdy wiersz względem istniejących danych, niczego nie zapisując.",
+    "runDryRun": "Uruchom próbny import"
+  },
+  "options": {
+    "dateFormat": "Format daty",
+    "dateAuto": "Wykryj automatycznie",
+    "dateDMY": "Dzień / miesiąc / rok",
+    "dateMDY": "Miesiąc / dzień / rok",
+    "dateYMD": "Rok / miesiąc / dzień",
+    "decimal": "Separator dziesiętny",
+    "decimalAuto": "Wykryj automatycznie",
+    "decimalDot": "Kropka (1,234.56)",
+    "decimalComma": "Przecinek (1.234,56)",
+    "countryCode": "Kod kraju dla numerów telefonów",
+    "duplicates": "Gdy wiersz pasuje do istniejącego rekordu",
+    "duplicatesUpdate": "Zaktualizuj istniejący rekord",
+    "duplicatesSkip": "Pomiń wiersz",
+    "duplicatesCreate": "Mimo to utwórz nowy rekord"
+  },
+  "summary": {
+    "create": "Zostanie utworzonych",
+    "update": "Zostanie zaktualizowanych",
+    "skip": "Zostanie pominiętych",
+    "error": "Nie można zaimportować",
+    "warnings": "Z ostrzeżeniami",
+    "customersToCreate": "{count, plural, one {# nowy klient} few {# nowych klientów} many {# nowych klientów} other {# nowego klienta}}",
+    "customersToUpdate": "{count, plural, one {# zaktualizowany klient} few {# zaktualizowanych klientów} many {# zaktualizowanych klientów} other {# zaktualizowanego klienta}}",
+    "vehiclesToCreate": "{count, plural, one {# nowy pojazd} few {# nowe pojazdy} many {# nowych pojazdów} other {# nowego pojazdu}}",
+    "vehiclesToUpdate": "{count, plural, one {# zaktualizowany pojazd} few {# zaktualizowane pojazdy} many {# zaktualizowanych pojazdów} other {# zaktualizowanego pojazdu}}",
+    "servicesToCreate": "{count, plural, one {# rekord serwisowy} few {# rekordy serwisowe} many {# rekordów serwisowych} other {# rekordu serwisowego}}"
+  },
+  "actions": {
+    "create": "Utwórz",
+    "update": "Zaktualizuj",
+    "skip": "Pomiń",
+    "error": "Błąd"
+  },
+  "matchOn": {
+    "number": "numer klienta",
+    "email": "e-mail",
+    "phone": "telefon",
+    "name": "nazwa",
+    "vin": "VIN",
+    "plate": "rejestracja",
+    "makeModelYear": "marka, model i rok"
+  },
+  "preview": {
+    "colAction": "Akcja",
+    "colOwner": "Właściciel",
+    "colDetails": "Szczegóły",
+    "empty": "Żaden wiersz nie pasuje do tego filtra.",
+    "matchedOn": "Pasuje do {name} (po: {on})",
+    "linksCustomer": "Powiązano z klientem {name}",
+    "linksVehicle": "Powiązano z {label}",
+    "sameCustomerAsRow": "Ten sam klient co w wierszu {row}",
+    "sameVehicleAsRow": "Ten sam pojazd co w wierszu {row}",
+    "createsCustomer": "Tworzy klienta",
+    "createsVehicle": "Tworzy pojazd",
+    "downloadReport": "Pobierz raport próbnego importu",
+    "limitExceeded": "Twój plan pozwala na jeszcze {remaining} klientów, a ten import utworzyłby {needed}. Usuń wiersze lub zmień plan na wyższy.",
+    "pageInfo": "{from}–{to} z {total}",
+    "prev": "Poprzednia",
+    "next": "Następna",
+    "backToMapping": "Wróć do mapowania",
+    "import": "Importuj {count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}",
+    "nothingWrittenYet": "Nic nie zostało jeszcze zapisane. Import można później cofnąć w Ustawienia → Dane."
+  },
+  "importing": {
+    "title": "Importowanie...",
+    "starting": "Rozpoczynanie",
+    "progress": "{done} z {total} wierszy",
+    "keepOpen": "Duże pliki zajmują minutę lub dwie."
+  },
+  "result": {
+    "title": "Import zakończony",
+    "undoneTitle": "Import cofnięty",
+    "created": "{count, plural, one {# rekord utworzony} few {# rekordy utworzone} many {# rekordów utworzonych} other {# rekordu utworzonego}}",
+    "updated": "{count, plural, one {# rekord zaktualizowany} few {# rekordy zaktualizowane} many {# rekordów zaktualizowanych} other {# rekordu zaktualizowanego}}",
+    "skipped": "{count, plural, one {# wiersz pominięty} few {# wiersze pominięte} many {# wierszy pominiętych} other {# wiersza pominiętego}}",
+    "failed": "{count, plural, one {# wiersz niezaimportowany} few {# wiersze niezaimportowane} many {# wierszy niezaimportowanych} other {# wiersza niezaimportowanego}}",
+    "writeFailures": "{count, plural, one {# wiersz nie zapisał się} few {# wiersze nie zapisały się} many {# wierszy nie zapisało się} other {# wiersza nie zapisało się}}",
+    "rowFailure": "Wiersz {row}: {error}",
+    "undo": "Cofnij ten import",
+    "undone": "Usunięto {customers} klientów, {vehicles} pojazdów i {services} rekordów serwisowych.",
+    "undoHint": "Cofnięcie usuwa każdy rekord utworzony przez ten import. Rekordy, które import tylko zaktualizował, zachowują nowe wartości."
+  },
+  "history": {
+    "title": "Historia importów",
+    "description": "Importy z arkuszy wykonane w tym warsztacie. Cofnięcie usuwa to, co import utworzył.",
+    "loading": "Ładowanie...",
+    "statusUndone": "Cofnięty",
+    "counts": "{created} utworzono, {updated} zaktualizowano, {skipped} pominięto, {failed} nieudanych",
+    "undo": "Cofnij",
+    "undone": "Usunięto {customers} klientów, {vehicles} pojazdów i {services} rekordów serwisowych.",
+    "undoFailed": "Nie udało się cofnąć importu",
+    "confirmTitle": "Cofnąć ten import?",
+    "confirmDescription": "Usuwa to, co utworzył plik {file}: {customers} klientów, {vehicles} pojazdów i {services} rekordów serwisowych. Rekordy, które import tylko zaktualizował, zostają zachowane.",
+    "cancel": "Anuluj",
+    "confirm": "Cofnij import"
+  },
+  "fields": {
+    "customer": {
+      "name": "Nazwa klienta",
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "customerNumber": "Numer klienta",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "company": "Firma",
+      "address": "Adres",
+      "street": "Ulica",
+      "postalCode": "Kod pocztowy",
+      "city": "Miasto",
+      "state": "Województwo / region",
+      "country": "Kraj",
+      "taxId": "NIP",
+      "notes": "Notatki o kliencie"
+    },
+    "vehicle": {
+      "description": "Pojazd (rok marka model w jednej kolumnie)",
+      "make": "Marka",
+      "model": "Model",
+      "year": "Rok",
+      "vin": "VIN",
+      "licensePlate": "Numer rejestracyjny",
+      "color": "Kolor",
+      "mileage": "Przebieg",
+      "fuelType": "Rodzaj paliwa",
+      "transmission": "Skrzynia biegów",
+      "engineSize": "Pojemność silnika",
+      "engineCode": "Kod silnika",
+      "purchaseDate": "Data zakupu",
+      "purchasePrice": "Cena zakupu"
+    },
+    "service": {
+      "date": "Data serwisu",
+      "title": "Tytuł serwisu",
+      "description": "Opis",
+      "total": "Kwota łączna",
+      "mileage": "Przebieg przy serwisie",
+      "invoiceNumber": "Numer faktury",
+      "notes": "Notatki serwisowe",
+      "technician": "Technik"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Brak nazwy klienta",
+    "invalid_email": "E-mail \"{value}\" jest nieprawidłowy i został pominięty",
+    "invalid_vin": "VIN \"{value}\" nie ma 17 znaków; zachowano jak wpisano",
+    "vehicle_make_model_required": "Brak marki i modelu",
+    "vehicle_year_required": "Brak roku",
+    "vehicle_year_invalid": "Rok \"{value}\" nie jest prawidłowym rokiem",
+    "vehicle_identifier_required": "Brak rejestracji, VIN lub marki i modelu do identyfikacji pojazdu",
+    "vehicle_not_found": "Żaden istniejący pojazd nie pasuje do \"{value}\" i brakuje danych, aby go utworzyć",
+    "service_date_required": "Brak daty serwisu",
+    "service_date_invalid": "Nie udało się odczytać daty \"{value}\"",
+    "service_title_required": "Brak tytułu lub opisu serwisu",
+    "invalid_date": "Nie udało się odczytać {field} \"{value}\" i pole zostało pominięte",
+    "invalid_number": "{field} \"{value}\" nie jest liczbą i pole zostało pominięte",
+    "duplicate_invoice_number": "Numer faktury {value} już istnieje",
+    "write_failed": "Nie udało się zapisać: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Nie udało się odczytać pliku",
+    "aiFailed": "AI nie mogło zaproponować mapowania",
+    "dryRunFailed": "Próbny import nie powiódł się",
+    "importFailed": "Import nie powiódł się",
+    "undoFailed": "Nie udało się cofnąć importu"
+  },
+  "entry": {
+    "title": "Importuj z arkusza kalkulacyjnego",
+    "description": "Przenieś klientów, pojazdy i historię serwisową z dowolnego systemu, który eksportuje CSV lub Excel. Zmapuj kolumny, uruchom próbny import, a potem importuj. Każdy import można cofnąć.",
+    "customers": "Importuj klientów",
+    "vehicles": "Importuj pojazdy",
+    "services": "Importuj historię serwisową"
+  }
+}

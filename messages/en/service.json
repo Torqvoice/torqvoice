@@ -34,7 +34,8 @@
     "delete": "Delete",
     "unpaid": "Unpaid",
     "unsavedChanges": "Unsaved changes",
-    "saved": "Saved"
+    "saved": "Saved",
+    "joinCall": "Join video call"
   },
   "basicInfo": {
     "title": "Basic Information",
@@ -78,7 +79,17 @@
       "typePrompt": "Type a name...",
       "boardTechnicians": "Board Technicians",
       "teamMembers": "Team Members"
-    }
+    },
+    "design": "Invoice design",
+    "designDefault": "Workshop default",
+    "designFollowing": "Default ({name})",
+    "designPinned": "The sheet was frozen when the invoice was issued on {date}. A new choice applies only after an owner unlocks the invoice and it is sent again.",
+    "designSaved": "Invoice design updated",
+    "designFollowingRule": "Default ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Parts-Only Sale"
+    },
+    "designSaveFailed": "Could not change the invoice design"
   },
   "parts": {
     "title": "Parts",
@@ -349,6 +360,7 @@
     "workBay": "Work bay",
     "selectWorkBay": "Select work bay...",
     "noWorkBay": "No work bay",
+    "noTechnician": "No technician",
     "technicians": "Technicians",
     "otherTeamMembers": "Other team members",
     "makeTechnician": "Makes them a technician",
@@ -410,5 +422,50 @@
     "remove": "Remove this concern",
     "notAnswered": "Nothing found against this yet",
     "answered": "{count} finding(s) against this"
+  },
+  "videoCall": {
+    "title": "Video call",
+    "none": "No video call on this work order.",
+    "needsSchedule": "Set a start time first. The meeting follows the schedule.",
+    "add": "Add {provider} meeting",
+    "addedHere": "added from this work order",
+    "fromCalendar": "from the calendar event",
+    "join": "Join",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "remove": "Remove",
+    "removeTitle": "Remove the video call?",
+    "removeDescription": "The meeting is deleted at the provider. Anyone who already has the link can no longer join.",
+    "created": "Meeting created. The link is on the work order.",
+    "removed": "Meeting removed",
+    "failed": "Something went wrong",
+    "shareHint": "The customer only gets this link when you send it.",
+    "shareHintNoChannel": "The customer only gets this link when you send it. No messaging channel is set up, so copy it into a message yourself.",
+    "send": {
+      "button": "Send to customer",
+      "title": "Send the video call link",
+      "description": "Send the join link to {name}.",
+      "messageLabel": "Note (optional)",
+      "messagePlaceholder": "Anything the customer should know before the call...",
+      "linkAlwaysIncluded": "The join link is always added below your note.",
+      "sms": "SMS",
+      "email": "Email",
+      "telegram": "Telegram",
+      "noPhone": "(no phone)",
+      "noEmail": "(no email)",
+      "noTelegram": "(no chat linked)",
+      "notAvailable": "(not set up)",
+      "cancel": "Cancel",
+      "send": "Send",
+      "sent": "Video call link sent",
+      "partlySent": "Sent by {sent}; not by {failed}",
+      "failed": "Could not send the link"
+    },
+    "notify": {
+      "invitation": "Hi {name}, your video call about the {vehicle} is on {when}. Join here: {url}",
+      "invitationNoTime": "Hi {name}, here is the link for the video call about the {vehicle}: {url}",
+      "joinLine": "Join the video call here: {url}",
+      "emailSubject": "Video call about your {vehicle}"
+    }
   }
 }

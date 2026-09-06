@@ -7,6 +7,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { AppCard } from '@/components/app-card'
 import { getTranslations } from 'next-intl/server'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export default async function PortalRequestServicePage({
   params,
@@ -14,6 +16,9 @@ export default async function PortalRequestServicePage({
   params: Promise<{ orgId: string }>
 }) {
   const { orgId } = await params
+  // Dates on the portal are the workshop's calendar days, not the server's.
+  const org = await resolvePortalOrg(orgId)
+  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.requestService')
   const [vehiclesResult, requestsResult] = await Promise.all([
     getPortalVehicles(),
@@ -75,9 +80,9 @@ export default async function PortalRequestServicePage({
                     </p>
                     <p className="mt-1 text-sm text-muted-foreground">{req.description}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {new Date(req.createdAt).toLocaleDateString()}
+                      {new Date(req.createdAt).toLocaleDateString(undefined, { timeZone })}
                       {req.preferredDate &&
-                        ` - ${t('preferred', { date: new Date(req.preferredDate).toLocaleDateString() })}`}
+                        ` - ${t('preferred', { date: new Date(req.preferredDate).toLocaleDateString(undefined, { timeZone }) })}`}
                     </p>
                     {req.adminNotes && (
                       <p className="mt-1 text-xs text-muted-foreground">

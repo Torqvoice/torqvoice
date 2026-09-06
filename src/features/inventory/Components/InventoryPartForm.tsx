@@ -51,6 +51,7 @@ import { cn } from '@/lib/utils'
 import { compressImage } from '@/lib/compress-image'
 import { priceFromCostAndMultiplier } from '@/features/inventory/Lib/partPricing'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
+import { clearableInput } from '@/lib/clearable'
 
 interface InventoryPartFormProps {
   open: boolean
@@ -349,21 +350,24 @@ export function InventoryPartForm({
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    // An emptied field reaches the update action as '' so it can be cleared.
+    const optional = (value: FormDataEntryValue | string | null) =>
+      clearableInput(value, Boolean(part))
     const data = {
       name: formData.get('name') as string,
-      partNumber: (formData.get('partNumber') as string) || undefined,
-      barcode: (formData.get('barcode') as string) || undefined,
-      description: (formData.get('description') as string) || undefined,
-      category: category || undefined,
+      partNumber: optional(formData.get('partNumber')),
+      barcode: optional(formData.get('barcode')),
+      description: optional(formData.get('description')),
+      category: optional(category),
       quantity: Number(formData.get('quantity')) || 0,
       minQuantity: Number(formData.get('minQuantity')) || 0,
       unit: unit.trim(),
       unitCost: Number(formData.get('unitCost')) || 0,
       sellPrice: Number(formData.get('sellPrice')) || 0,
-      supplier: (formData.get('supplier') as string) || undefined,
-      supplierPhone: (formData.get('supplierPhone') as string) || undefined,
-      supplierEmail: (formData.get('supplierEmail') as string) || undefined,
-      supplierUrl: supplierUrl || undefined,
+      supplier: optional(formData.get('supplier')),
+      supplierPhone: optional(formData.get('supplierPhone')),
+      supplierEmail: optional(formData.get('supplierEmail')),
+      supplierUrl: optional(supplierUrl),
       gallery: gallery.map((g, i) => ({
         id: g.id,
         url: g.url,
@@ -371,7 +375,7 @@ export function InventoryPartForm({
         description: g.description || undefined,
         sortOrder: i,
       })),
-      location: (formData.get('location') as string) || undefined,
+      location: optional(formData.get('location')),
     }
 
     const result = part

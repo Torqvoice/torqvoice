@@ -1,0 +1,228 @@
+{
+  "title": "Importa {entity}",
+  "cancel": "Annulla",
+  "done": "Fatto",
+  "entities": {
+    "customers": "clienti",
+    "vehicles": "veicoli",
+    "services": "storico interventi"
+  },
+  "entityHints": {
+    "customers": "Nomi, contatti, indirizzi. Una riga per cliente.",
+    "vehicles": "Marca, modello, anno, targa, VIN. Una colonna proprietario collega o crea il cliente.",
+    "services": "Lavori e fatture passati. Una riga per lavoro, con il veicolo a cui appartiene."
+  },
+  "groups": {
+    "customer": "Cliente",
+    "vehicle": "Veicolo",
+    "service": "Intervento"
+  },
+  "steps": {
+    "upload": "Scegli cosa importare e carica il file dal tuo sistema attuale.",
+    "mapping": "Controlla quale colonna diventa quale campo. Non viene ancora scritto nulla.",
+    "preview": "Simulazione: questo è esattamente ciò che farà l'importazione. Controlla, poi importa.",
+    "importing": "Scrittura delle righe in corso. Tieni aperta questa finestra.",
+    "result": "Importazione terminata."
+  },
+  "upload": {
+    "drop": "Trascina qui un file",
+    "formats": "CSV, Excel (.xlsx) o vCard (.vcf), fino a 25 MB e 50.000 righe",
+    "browse": "Sfoglia file",
+    "reading": "Lettura del file...",
+    "templateHint": "Non hai ancora un'esportazione? Compila un modello e carica quello.",
+    "templateXlsx": "Modello Excel",
+    "templateCsv": "Modello CSV",
+    "sourcesHint": "Funziona con le esportazioni di qualsiasi gestionale per officine, software di contabilità, Google Contatti, Outlook o foglio di calcolo. I nomi delle colonne vengono riconosciuti in molte lingue; confermi la mappatura prima che venga scritto qualsiasi dato."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# riga} other {# righe}}",
+    "colColumn": "Colonna nel tuo file",
+    "colSample": "Valori di esempio",
+    "colField": "Diventa",
+    "ignore": "Ignora questa colonna",
+    "source": {
+      "preset": "Formato riconosciuto",
+      "header": "Abbinata dall'intestazione",
+      "values": "Dedotta dai valori"
+    },
+    "suggestWithAi": "Suggerisci con IA",
+    "aiApplied": "{count, plural, one {# colonna mappata} other {# colonne mappate}} dall'IA. Controllale prima di continuare.",
+    "chooseAnother": "Scegli un altro file",
+    "missingRequired": "Ancora necessari: {fields}",
+    "dryRunHint": "La simulazione confronta ogni riga con i tuoi dati esistenti senza scrivere nulla.",
+    "runDryRun": "Esegui simulazione"
+  },
+  "options": {
+    "dateFormat": "Formato data",
+    "dateAuto": "Rileva automaticamente",
+    "dateDMY": "Giorno / mese / anno",
+    "dateMDY": "Mese / giorno / anno",
+    "dateYMD": "Anno / mese / giorno",
+    "decimal": "Separatore decimale",
+    "decimalAuto": "Rileva automaticamente",
+    "decimalDot": "Punto (1,234.56)",
+    "decimalComma": "Virgola (1.234,56)",
+    "countryCode": "Prefisso internazionale per i numeri di telefono",
+    "duplicates": "Quando una riga corrisponde a un record esistente",
+    "duplicatesUpdate": "Aggiorna il record esistente",
+    "duplicatesSkip": "Salta la riga",
+    "duplicatesCreate": "Crea comunque un nuovo record"
+  },
+  "summary": {
+    "create": "Verranno creati",
+    "update": "Verranno aggiornati",
+    "skip": "Verranno saltati",
+    "error": "Non importabili",
+    "warnings": "Con avvisi",
+    "customersToCreate": "{count, plural, one {# nuovo cliente} other {# nuovi clienti}}",
+    "customersToUpdate": "{count, plural, one {# cliente aggiornato} other {# clienti aggiornati}}",
+    "vehiclesToCreate": "{count, plural, one {# nuovo veicolo} other {# nuovi veicoli}}",
+    "vehiclesToUpdate": "{count, plural, one {# veicolo aggiornato} other {# veicoli aggiornati}}",
+    "servicesToCreate": "{count, plural, one {# intervento} other {# interventi}}"
+  },
+  "actions": {
+    "create": "Crea",
+    "update": "Aggiorna",
+    "skip": "Salta",
+    "error": "Errore"
+  },
+  "matchOn": {
+    "number": "numero cliente",
+    "email": "email",
+    "phone": "telefono",
+    "name": "nome",
+    "vin": "VIN",
+    "plate": "targa",
+    "makeModelYear": "marca, modello e anno"
+  },
+  "preview": {
+    "colAction": "Azione",
+    "colOwner": "Proprietario",
+    "colDetails": "Dettagli",
+    "empty": "Nessuna riga corrisponde a questo filtro.",
+    "matchedOn": "Corrisponde a {name} (per {on})",
+    "linksCustomer": "Collegato al cliente {name}",
+    "linksVehicle": "Collegato a {label}",
+    "sameCustomerAsRow": "Stesso cliente della riga {row}",
+    "sameVehicleAsRow": "Stesso veicolo della riga {row}",
+    "createsCustomer": "Crea il cliente",
+    "createsVehicle": "Crea il veicolo",
+    "downloadReport": "Scarica il report della simulazione",
+    "limitExceeded": "Il tuo piano consente ancora {remaining} clienti, ma questa importazione ne creerebbe {needed}. Rimuovi delle righe o passa a un piano superiore.",
+    "pageInfo": "{from}–{to} di {total}",
+    "prev": "Precedente",
+    "next": "Successivo",
+    "backToMapping": "Torna alla mappatura",
+    "import": "Importa {count, plural, one {# riga} other {# righe}}",
+    "nothingWrittenYet": "Non è ancora stato scritto nulla. L'importazione può essere annullata in seguito da Impostazioni → Dati."
+  },
+  "importing": {
+    "title": "Importazione in corso...",
+    "starting": "Avvio",
+    "progress": "{done} di {total} righe",
+    "keepOpen": "I file grandi richiedono un minuto o due."
+  },
+  "result": {
+    "title": "Importazione completata",
+    "undoneTitle": "Importazione annullata",
+    "created": "{count, plural, one {# record creato} other {# record creati}}",
+    "updated": "{count, plural, one {# record aggiornato} other {# record aggiornati}}",
+    "skipped": "{count, plural, one {# riga saltata} other {# righe saltate}}",
+    "failed": "{count, plural, one {# riga non importata} other {# righe non importate}}",
+    "writeFailures": "{count, plural, one {# riga non riuscita durante la scrittura} other {# righe non riuscite durante la scrittura}}",
+    "rowFailure": "Riga {row}: {error}",
+    "undo": "Annulla questa importazione",
+    "undone": "Rimossi {customers} clienti, {vehicles} veicoli e {services} interventi.",
+    "undoHint": "L'annullamento rimuove ogni record creato da questa importazione. I record che sono stati solo aggiornati mantengono i nuovi valori."
+  },
+  "history": {
+    "title": "Cronologia importazioni",
+    "description": "Importazioni da foglio di calcolo eseguite in questa officina. L'annullamento rimuove ciò che un'importazione ha creato.",
+    "loading": "Caricamento...",
+    "statusUndone": "Annullata",
+    "counts": "{created} creati, {updated} aggiornati, {skipped} saltati, {failed} non riusciti",
+    "undo": "Annulla",
+    "undone": "Rimossi {customers} clienti, {vehicles} veicoli e {services} interventi.",
+    "undoFailed": "Impossibile annullare l'importazione",
+    "confirmTitle": "Annullare questa importazione?",
+    "confirmDescription": "Rimuove ciò che {file} ha creato: {customers} clienti, {vehicles} veicoli e {services} interventi. I record che l'importazione ha solo aggiornato vengono conservati.",
+    "cancel": "Annulla",
+    "confirm": "Annulla importazione"
+  },
+  "fields": {
+    "customer": {
+      "name": "Nome cliente",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "customerNumber": "Numero cliente",
+      "email": "Email",
+      "phone": "Telefono",
+      "company": "Azienda",
+      "address": "Indirizzo",
+      "street": "Via",
+      "postalCode": "CAP",
+      "city": "Città",
+      "state": "Provincia / regione",
+      "country": "Paese",
+      "taxId": "Partita IVA / codice fiscale",
+      "notes": "Note cliente"
+    },
+    "vehicle": {
+      "description": "Veicolo (anno marca modello in una sola colonna)",
+      "make": "Marca",
+      "model": "Modello",
+      "year": "Anno",
+      "vin": "VIN",
+      "licensePlate": "Targa",
+      "color": "Colore",
+      "mileage": "Chilometraggio",
+      "fuelType": "Tipo di carburante",
+      "transmission": "Cambio",
+      "engineSize": "Cilindrata",
+      "engineCode": "Codice motore",
+      "purchaseDate": "Data di acquisto",
+      "purchasePrice": "Prezzo di acquisto"
+    },
+    "service": {
+      "date": "Data intervento",
+      "title": "Titolo intervento",
+      "description": "Descrizione",
+      "total": "Importo totale",
+      "mileage": "Chilometraggio all'intervento",
+      "invoiceNumber": "Numero fattura",
+      "notes": "Note intervento",
+      "technician": "Tecnico"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Manca il nome del cliente",
+    "invalid_email": "L'email \"{value}\" non è valida ed è stata omessa",
+    "invalid_vin": "Il VIN \"{value}\" non è di 17 caratteri; conservato così com'è",
+    "vehicle_make_model_required": "Mancano marca e modello",
+    "vehicle_year_required": "Manca l'anno",
+    "vehicle_year_invalid": "L'anno \"{value}\" non è un anno valido",
+    "vehicle_identifier_required": "Nessuna targa, VIN o marca e modello per identificare il veicolo",
+    "vehicle_not_found": "Nessun veicolo esistente corrisponde a \"{value}\" e non ci sono abbastanza dati per crearne uno",
+    "service_date_required": "Manca la data dell'intervento",
+    "service_date_invalid": "Impossibile leggere la data \"{value}\"",
+    "service_title_required": "Mancano il titolo o la descrizione dell'intervento",
+    "invalid_date": "Impossibile leggere {field} \"{value}\", omesso",
+    "invalid_number": "{field} \"{value}\" non è un numero ed è stato omesso",
+    "duplicate_invoice_number": "Il numero fattura {value} esiste già",
+    "write_failed": "Impossibile scrivere: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Impossibile leggere il file",
+    "aiFailed": "L'IA non è riuscita a suggerire una mappatura",
+    "dryRunFailed": "La simulazione non è riuscita",
+    "importFailed": "L'importazione non è riuscita",
+    "undoFailed": "Impossibile annullare l'importazione"
+  },
+  "entry": {
+    "title": "Importa da un foglio di calcolo",
+    "description": "Porta clienti, veicoli e storico interventi da qualsiasi sistema che esporta in CSV o Excel. Mappa le colonne, esegui una simulazione, poi importa. Ogni importazione può essere annullata.",
+    "customers": "Importa clienti",
+    "vehicles": "Importa veicoli",
+    "services": "Importa storico interventi"
+  }
+}

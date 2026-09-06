@@ -19,6 +19,7 @@ export const DASHBOARD_CARD_IDS = [
   'recentActivity',
   'recentObservations',
   'tireHotel',
+  'inspectionsDue',
 ] as const
 
 export type DashboardCardId = (typeof DASHBOARD_CARD_IDS)[number]
@@ -120,8 +121,11 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     // which is the one place a hole is allowed. Hidden entirely when the
     // module is off, so a shop without it never reserves the slot.
     tireHotel: half(6, 24),
-    recentCompleted: full(29),
-    activeJobs: full(34),
+    // Full width so it never upsets the pairing above, and hidden entirely
+    // until a registry has put an inspection date on at least one vehicle.
+    inspectionsDue: full(29, 4),
+    recentCompleted: full(34),
+    activeJobs: full(39),
   },
 }
 

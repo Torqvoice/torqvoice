@@ -1,4 +1,5 @@
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { DesignAutoRule } from '../Lib/designRules'
 
 export type DocumentType = 'invoice' | 'quote'
 
@@ -35,6 +36,8 @@ export interface SavedDesign {
   savedAt: string
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
+  /** The kind of invoice this design prints by itself, or null for only when chosen. */
+  autoRule: DesignAutoRule | null
 }
 
 export interface DesignerWorkshop {
@@ -44,6 +47,8 @@ export interface DesignerWorkshop {
   email: string
   slogan: string
   orgNumber: string
+  /** Payment terms from payment settings. Empty prints nothing on the sheet. */
+  paymentTerms: string
   logoUrl: string
 }
 

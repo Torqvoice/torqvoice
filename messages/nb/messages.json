@@ -7,7 +7,8 @@
       "scheduled": "Planlagt",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Utsendinger"
     },
     "smsNotConfiguredTitle": "SMS er ikke satt opp",
     "smsNotConfiguredHint": "Koble til en SMS-leverandør for å sende og motta meldinger her. Planlagt e-post fungerer uansett.",

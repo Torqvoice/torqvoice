@@ -7,6 +7,8 @@ export const onboardingSchema = z.object({
     .max(100, 'Workshop name must be at most 100 characters')
     .trim(),
   loadSampleData: z.boolean().default(true),
+  /** IANA zone the browser reported, stored as the workshop's explicit zone. */
+  timeZone: z.string().max(64).optional(),
 })
 
 export type OnboardingInput = z.infer<typeof onboardingSchema>

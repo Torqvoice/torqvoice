@@ -13,6 +13,7 @@ export type PlanFeatures = {
   reports: boolean
   smtp: boolean
   api: boolean
+  integrations: boolean
   payments: boolean
   customFields: boolean
   sms: boolean
@@ -38,6 +39,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     reports: true,
     smtp: false,
     api: false,
+    integrations: false,
     payments: false,
     customFields: false,
     sms: false,
@@ -61,6 +63,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     reports: true,
     smtp: true,
     api: true,
+    integrations: true,
     payments: true,
     customFields: true,
     sms: true,
@@ -84,6 +87,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     reports: true,
     smtp: true,
     api: true,
+    integrations: true,
     payments: true,
     customFields: true,
     sms: true,
@@ -107,6 +111,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     reports: true,
     smtp: true,
     api: true,
+    integrations: true,
     payments: true,
     customFields: true,
     sms: true,

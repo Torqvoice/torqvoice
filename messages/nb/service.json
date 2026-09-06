@@ -34,7 +34,8 @@
     "delete": "Slett",
     "unpaid": "Ubetalt",
     "unsavedChanges": "Ulagrede endringer",
-    "saved": "Lagret"
+    "saved": "Lagret",
+    "joinCall": "Bli med i videosamtale"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",
@@ -78,7 +79,17 @@
       "typePrompt": "Skriv navn...",
       "boardTechnicians": "Tavleteknikere",
       "teamMembers": "Lagmedlemmer"
-    }
+    },
+    "design": "Fakturadesign",
+    "designDefault": "Verkstedets standard",
+    "designFollowing": "Standard ({name})",
+    "designPinned": "Arket ble fryst da fakturaen ble utstedt {date}. Et nytt valg gjelder først etter at en eier låser opp fakturaen og den sendes igjen.",
+    "designSaved": "Fakturadesign oppdatert",
+    "designFollowingRule": "Standard ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Kun delesalg"
+    },
+    "designSaveFailed": "Kunne ikke endre fakturadesignet"
   },
   "parts": {
     "title": "Deler",
@@ -349,6 +360,7 @@
     "workBay": "Arbeidsplass",
     "selectWorkBay": "Velg arbeidsplass …",
     "noWorkBay": "Ingen arbeidsplass",
+    "noTechnician": "Uten mekaniker",
     "technicians": "Teknikere",
     "otherTeamMembers": "Andre i teamet",
     "makeTechnician": "Gjør dem til tekniker",
@@ -410,5 +422,50 @@
     "remove": "Fjern dette punktet",
     "notAnswered": "Ingenting funnet på dette ennå",
     "answered": "{count} funn på dette"
+  },
+  "videoCall": {
+    "title": "Videosamtale",
+    "none": "Ingen videosamtale på denne arbeidsordren.",
+    "needsSchedule": "Sett en starttid først. Møtet følger tidsplanen.",
+    "add": "Legg til {provider}-møte",
+    "addedHere": "lagt til fra denne arbeidsordren",
+    "fromCalendar": "fra kalenderhendelsen",
+    "join": "Bli med",
+    "copy": "Kopier lenke",
+    "copied": "Lenke kopiert",
+    "remove": "Fjern",
+    "removeTitle": "Fjerne videosamtalen?",
+    "removeDescription": "Møtet slettes hos leverandøren. De som allerede har lenken, kan ikke lenger bli med.",
+    "created": "Møte opprettet. Lenken ligger på arbeidsordren.",
+    "removed": "Møte fjernet",
+    "failed": "Noe gikk galt",
+    "shareHint": "Kunden får denne lenken bare når du sender den.",
+    "shareHintNoChannel": "Kunden får denne lenken bare når du sender den. Ingen meldingskanal er satt opp, så kopier den inn i en melding selv.",
+    "send": {
+      "button": "Send til kunde",
+      "title": "Send lenken til videosamtalen",
+      "description": "Send lenken til {name}.",
+      "messageLabel": "Notat (valgfritt)",
+      "messagePlaceholder": "Noe kunden bør vite før samtalen...",
+      "linkAlwaysIncluded": "Lenken legges alltid til under notatet ditt.",
+      "sms": "SMS",
+      "email": "E-post",
+      "telegram": "Telegram",
+      "noPhone": "(ingen telefon)",
+      "noEmail": "(ingen e-post)",
+      "noTelegram": "(ingen chat koblet)",
+      "notAvailable": "(ikke satt opp)",
+      "cancel": "Avbryt",
+      "send": "Send",
+      "sent": "Lenken til videosamtalen er sendt",
+      "partlySent": "Sendt via {sent}; ikke via {failed}",
+      "failed": "Kunne ikke sende lenken"
+    },
+    "notify": {
+      "invitation": "Hei {name}, videosamtalen om {vehicle} er {when}. Bli med her: {url}",
+      "invitationNoTime": "Hei {name}, her er lenken til videosamtalen om {vehicle}: {url}",
+      "joinLine": "Bli med i videosamtalen her: {url}",
+      "emailSubject": "Videosamtale om din {vehicle}"
+    }
   }
 }

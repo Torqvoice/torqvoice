@@ -5,6 +5,9 @@ import { isDemoMode } from '@/lib/demo'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import { columnsOf } from '@/lib/backup/rows'
 import { toSafeDate } from '@/lib/invoice-utils'
+import { atZonedTime } from '@/lib/timezone'
+import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Prisma } from '@/generated/prisma/client'
 import JSZip from 'jszip'
 import { mkdir, rm, writeFile } from 'fs/promises'
@@ -54,6 +57,11 @@ async function parseBackup(
   return { backup, files: null }
 }
 
+/** A foreign key from the backup, kept only when this import restored its target. */
+function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): string | null {
+  return typeof id === 'string' && id && restored?.has(id) ? id : null
+}
+
 /**
  * Restores one service record with its nested parts/labor/attachments/payments.
  * Used for both vehicle-linked records (nested under vehicles in the backup)
@@ -67,8 +75,18 @@ async function importServiceRecordTree(
     vehicleId: string | null
     customerId: string | null
     workDayStartTime: string
+    /** The restored workshop's zone, which workDayStartTime is read in. */
+    timeZone: string
     /** Technicians restored by this import. See the time entries below. */
     technicianIds: ReadonlySet<string>
+    /**
+     * Designs and snapshots restored by this import. A reference to one the
+     * backup did not carry is dropped rather than left dangling: the record
+     * then prints from the default, as any invoice without a design does.
+     */
+    designIds?: ReadonlySet<string>
+    designSnapshotIds?: ReadonlySet<string>
+    assetSnapshotIds?: ReadonlySet<string>
   }
 ) {
   // Derive startDateTime/endDateTime from backup or fall back to serviceDate + work day start
@@ -80,8 +98,7 @@ async function importServiceRecordTree(
   if (!startDT && sr.serviceDate) {
     const sd = toSafeDate(sr.serviceDate as string)
     if (sd) {
-      const [h, m] = opts.workDayStartTime.split(':').map(Number)
-      startDT = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate(), h, m, 0, 0)
+      startDT = atZonedTime(sd, opts.workDayStartTime, opts.timeZone)
     }
   }
   if (sr.endDateTime) {
@@ -127,6 +144,14 @@ async function importServiceRecordTree(
       updatedAt: toSafeDate(sr.updatedAt as string),
       vehicleId: opts.vehicleId,
       customerId: opts.customerId,
+      designId: keptReference(sr.designId, opts.designIds),
+      issuedAt: sr.issuedAt ? toSafeDate(sr.issuedAt as string) : null,
+      issuedDesignSnapshotId: keptReference(sr.issuedDesignSnapshotId, opts.designSnapshotIds),
+      issuedLogoSnapshotId: keptReference(sr.issuedLogoSnapshotId, opts.assetSnapshotIds),
+      issuedData:
+        sr.issuedData && typeof sr.issuedData === 'object'
+          ? (sr.issuedData as Prisma.InputJsonValue)
+          : undefined,
     },
   })
 
@@ -388,6 +413,10 @@ export async function POST(request: NextRequest) {
         WhatsappMessage: () => tx.whatsappMessage.deleteMany({ where: { organizationId } }),
         TelegramMessage: () => tx.telegramMessage.deleteMany({ where: { organizationId } }),
         ScheduledMessage: () => tx.scheduledMessage.deleteMany({ where: { organizationId } }),
+        InspectionReminderSend: () =>
+          tx.inspectionReminderSend.deleteMany({ where: { organizationId } }),
+        InspectionReminderCampaign: () =>
+          tx.inspectionReminderCampaign.deleteMany({ where: { organizationId } }),
         AuditLog: () => tx.auditLog.deleteMany({ where: { organizationId } }),
         Inspection: () => tx.inspection.deleteMany({ where: { organizationId } }),
         InspectionTemplate: () => tx.inspectionTemplate.deleteMany({ where: { organizationId } }),
@@ -410,6 +439,11 @@ export async function POST(request: NextRequest) {
         Webhook: () => tx.webhook.deleteMany({ where: { organizationId } }),
         ReportSchedule: () => tx.reportSchedule.deleteMany({ where: { organizationId } }),
         AppSetting: () => tx.appSetting.deleteMany({ where: { organizationId } }),
+        DocumentDesign: () => tx.documentDesign.deleteMany({ where: { organizationId } }),
+        DocumentDesignSnapshot: () =>
+          tx.documentDesignSnapshot.deleteMany({ where: { organizationId } }),
+        DocumentAssetSnapshot: () =>
+          tx.documentAssetSnapshot.deleteMany({ where: { organizationId } }),
       }
 
       for (const model of clearPlanFor(Object.keys(data))) {
@@ -437,6 +471,66 @@ export async function POST(request: NextRequest) {
         })
       }
 
+      // 2b. Named designs, and what issued invoices were issued with. Before
+      // customers and service records, which point at them. Backups from
+      // before these existed have none of the keys and restore as before.
+      const designIds = new Set<string>()
+      if (data.documentDesigns?.length) {
+        const rows = (data.documentDesigns as Record<string, unknown>[]).filter(
+          (d) => typeof d.id === 'string' && typeof d.name === 'string'
+        )
+        await tx.documentDesign.createMany({
+          data: rows.map((d) => ({
+            id: d.id as string,
+            organizationId: ctx.organizationId,
+            documentType: (d.documentType as string) || 'invoice',
+            name: d.name as string,
+            layout: (d.layout ?? {}) as Prisma.InputJsonValue,
+            template: (d.template ?? {}) as Prisma.InputJsonValue,
+            createdAt: toSafeDate(d.createdAt as string),
+            updatedAt: toSafeDate(d.updatedAt as string),
+          })),
+        })
+        for (const d of rows) designIds.add(d.id as string)
+      }
+      const designSnapshotIds = new Set<string>()
+      if (data.documentDesignSnapshots?.length) {
+        const rows = (data.documentDesignSnapshots as Record<string, unknown>[]).filter(
+          (d) => typeof d.id === 'string' && typeof d.hash === 'string'
+        )
+        await tx.documentDesignSnapshot.createMany({
+          data: rows.map((d) => ({
+            id: d.id as string,
+            organizationId: ctx.organizationId,
+            hash: d.hash as string,
+            layout: (d.layout ?? {}) as Prisma.InputJsonValue,
+            template: (d.template ?? {}) as Prisma.InputJsonValue,
+            createdAt: toSafeDate(d.createdAt as string),
+          })),
+          skipDuplicates: true,
+        })
+        for (const d of rows) designSnapshotIds.add(d.id as string)
+      }
+      const assetSnapshotIds = new Set<string>()
+      if (data.documentAssetSnapshots?.length) {
+        const rows = (data.documentAssetSnapshots as Record<string, unknown>[]).filter(
+          (d) =>
+            typeof d.id === 'string' && typeof d.hash === 'string' && typeof d.data === 'string'
+        )
+        await tx.documentAssetSnapshot.createMany({
+          data: rows.map((d) => ({
+            id: d.id as string,
+            organizationId: ctx.organizationId,
+            hash: d.hash as string,
+            mimeType: (d.mimeType as string) || 'image/png',
+            data: new Uint8Array(Buffer.from(d.data as string, 'base64')),
+            createdAt: toSafeDate(d.createdAt as string),
+          })),
+          skipDuplicates: true,
+        })
+        for (const d of rows) assetSnapshotIds.add(d.id as string)
+      }
+
       // 3. Insert customers
       if (data.customers?.length) {
         await tx.customer.createMany({
@@ -448,6 +542,7 @@ export async function POST(request: NextRequest) {
             address: (c.address as string) || null,
             company: (c.company as string) || null,
             notes: (c.notes as string) || null,
+            invoiceDesignId: keptReference(c.invoiceDesignId, designIds),
             createdAt: toSafeDate(c.createdAt as string),
             updatedAt: toSafeDate(c.updatedAt as string),
             userId: ctx.userId,
@@ -588,6 +683,13 @@ export async function POST(request: NextRequest) {
         (s) => s.key === 'workboard.workDayStart'
       )
       const workDayStartTime = (workDayStartSetting?.value as string) || '07:00'
+      const importedSetting = (key: string) =>
+        (data.settings as Record<string, unknown>[] | undefined)?.find((s) => s.key === key)
+          ?.value as string | undefined
+      const timeZone = resolveWorkshopTimeZone(
+        importedSetting(SETTING_KEYS.TIMEZONE),
+        importedSetting(SETTING_KEYS.TIMEZONE_DETECTED)
+      )
 
       // 6. Insert vehicles with nested data
       if (data.vehicles?.length) {
@@ -685,7 +787,11 @@ export async function POST(request: NextRequest) {
                 vehicleId: v.id as string,
                 customerId: null,
                 workDayStartTime,
+                timeZone,
                 technicianIds,
+                designIds,
+                designSnapshotIds,
+                assetSnapshotIds,
               })
             }
           }
@@ -696,6 +802,13 @@ export async function POST(request: NextRequest) {
             'service requests',
             (rows) => tx.serviceRequest.createMany({ data: rows as never }),
             v.serviceRequests,
+            { organizationId }
+          )
+          // One row, not a list: the vehicle's inspection deadline and where it came from.
+          await restoreRows(
+            'inspection status',
+            (rows) => tx.vehicleInspectionStatus.createMany({ data: rows as never }),
+            v.inspectionStatus ? [v.inspectionStatus] : [],
             { organizationId }
           )
           await restoreRows(
@@ -759,7 +872,11 @@ export async function POST(request: NextRequest) {
             vehicleId: null,
             customerId: (sr.customerId as string) || null,
             workDayStartTime,
+            timeZone,
             technicianIds,
+            designIds,
+            designSnapshotIds,
+            assetSnapshotIds,
           })
         }
       }
@@ -1145,6 +1262,53 @@ export async function POST(request: NextRequest) {
               createdById: ctx.userId,
             })),
         })
+      }
+
+      // 14b. Reminder campaigns and their send rows, after the messages, the
+      // customers and the vehicles they point at. A send whose vehicle or
+      // customer is not in this restore is left out rather than invented,
+      // and one whose message is missing keeps everything but the message link.
+      if (data.inspectionReminderCampaigns?.length) {
+        await restoreRows(
+          'reminder campaigns',
+          (rows) => tx.inspectionReminderCampaign.createMany({ data: rows as never }),
+          data.inspectionReminderCampaigns,
+          { organizationId, createdById: ctx.userId }
+        )
+        const vehicleIds = new Set(
+          ((data.vehicles as Record<string, unknown>[] | undefined) ?? []).map(
+            (v) => v.id as string
+          )
+        )
+        const customerIds = new Set(
+          ((data.customers as Record<string, unknown>[] | undefined) ?? []).map(
+            (c) => c.id as string
+          )
+        )
+        const messageIds = new Set(
+          ((data.scheduledMessages as Record<string, unknown>[] | undefined) ?? []).map(
+            (m) => m.id as string
+          )
+        )
+        const sends = (
+          (data.inspectionReminderSends as Record<string, unknown>[] | undefined) ?? []
+        )
+          .filter(
+            (row) =>
+              vehicleIds.has(row.vehicleId as string) && customerIds.has(row.customerId as string)
+          )
+          .map((row) => ({
+            ...row,
+            scheduledMessageId: messageIds.has(row.scheduledMessageId as string)
+              ? row.scheduledMessageId
+              : null,
+          }))
+        await restoreRows(
+          'reminder sends',
+          (rows) => tx.inspectionReminderSend.createMany({ data: rows as never }),
+          sends,
+          { organizationId }
+        )
       }
 
       // 15. Tire hotel. Last, because sets point at customers and vehicles,

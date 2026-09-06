@@ -76,7 +76,9 @@
     "allDoneTitle": "Todo listo",
     "allDoneDescription": "Todos los pasos están completados y su taller ya está en marcha.",
     "dismiss": "Ocultar tarjeta",
-    "dismissAriaLabel": "Ocultar esta lista"
+    "dismissAriaLabel": "Ocultar esta lista",
+    "importTitle": "¿Ya tiene clientes y vehículos en algún otro sitio?",
+    "importDescription": "Impórtelos desde una hoja de cálculo o desde su sistema anterior"
   },
   "sampleData": {
     "title": "Datos de ejemplo",

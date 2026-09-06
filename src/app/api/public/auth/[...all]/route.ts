@@ -5,6 +5,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { toNextJsHandler } from 'better-auth/next-js'
 import { db } from '@/lib/db'
 import { logAudit } from '@/lib/audit'
+import { explainInvalidOrigin } from '@/lib/auth-origin-hint'
 
 const { POST: authPOST, GET } = toNextJsHandler(auth)
 
@@ -72,7 +73,7 @@ async function POST(request: Request) {
   if (isAuthAttempt) {
     // Clone body before better-auth consumes it
     const cloned = request.clone()
-    const response = await authPOST(request)
+    const response = await explainInvalidOrigin(cloned, await authPOST(request))
 
     // Log failed authentication attempts (fire-and-forget to avoid timing side-channels)
     if (!response.ok) {
@@ -116,7 +117,7 @@ async function POST(request: Request) {
     return response
   }
 
-  return authPOST(request)
+  return explainInvalidOrigin(request, await authPOST(request))
 }
 
 export { GET, POST }

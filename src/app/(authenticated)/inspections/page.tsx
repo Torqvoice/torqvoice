@@ -3,6 +3,7 @@ import { getInspectionsPaginated } from '@/features/inspections/Actions/inspecti
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { InspectionsClient } from './inspections-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function InspectionsPage({
   searchParams,
@@ -49,7 +50,7 @@ export default async function InspectionsPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <InspectionsClient
           data={result.data}
           templates={templates}
@@ -58,7 +59,7 @@ export default async function InspectionsPage({
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

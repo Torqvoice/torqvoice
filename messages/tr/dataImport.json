@@ -1,0 +1,228 @@
+{
+  "title": "{entity} içe aktar",
+  "cancel": "İptal",
+  "done": "Bitti",
+  "entities": {
+    "customers": "müşterileri",
+    "vehicles": "araçları",
+    "services": "servis geçmişini"
+  },
+  "entityHints": {
+    "customers": "Adlar, iletişim bilgileri, adresler. Her müşteri için bir satır.",
+    "vehicles": "Marka, model, yıl, plaka, VIN. Bir sahip sütunu müşteriyi bağlar veya oluşturur.",
+    "services": "Geçmiş işler ve faturalar. Her iş için bir satır, ait olduğu araçla birlikte."
+  },
+  "groups": {
+    "customer": "Müşteri",
+    "vehicle": "Araç",
+    "service": "Servis"
+  },
+  "steps": {
+    "upload": "Neyi içe aktaracağınızı seçin ve dosyayı mevcut sisteminizden yükleyin.",
+    "mapping": "Hangi sütunun hangi alana dönüşeceğini kontrol edin. Henüz hiçbir şey yazılmadı.",
+    "preview": "Deneme çalıştırması: içe aktarma tam olarak bunu yapacak. İnceleyin, ardından içe aktarın.",
+    "importing": "Satırlar yazılıyor. Bu pencereyi açık tutun.",
+    "result": "İçe aktarma tamamlandı."
+  },
+  "upload": {
+    "drop": "Bir dosyayı buraya sürükleyip bırakın",
+    "formats": "CSV, Excel (.xlsx) veya vCard (.vcf), en fazla 25 MB ve 50.000 satır",
+    "browse": "Dosyalara göz at",
+    "reading": "Dosya okunuyor...",
+    "templateHint": "Henüz dışa aktarmanız yok mu? Bir şablonu doldurup onu yükleyin.",
+    "templateXlsx": "Excel şablonu",
+    "templateCsv": "CSV şablonu",
+    "sourcesHint": "Herhangi bir atölye sistemi, muhasebe aracı, Google Kişiler, Outlook veya bir hesap tablosundan alınan dışa aktarmalarla çalışır. Sütun adları birçok dilde tanınır; hiçbir şey yazılmadan önce eşlemeyi siz onaylarsınız."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# satır} other {# satır}}",
+    "colColumn": "Dosyanızdaki sütun",
+    "colSample": "Örnek değerler",
+    "colField": "Şuna dönüşür",
+    "ignore": "Bu sütunu yoksay",
+    "source": {
+      "preset": "Tanınan düzen",
+      "header": "Başlığa göre eşleşti",
+      "values": "Değerlerden tahmin edildi"
+    },
+    "suggestWithAi": "Yapay zeka ile öner",
+    "aiApplied": "{count, plural, one {# sütun} other {# sütun}} yapay zeka tarafından eşlendi. Devam etmeden önce kontrol edin.",
+    "chooseAnother": "Başka bir dosya seç",
+    "missingRequired": "Hâlâ gerekli: {fields}",
+    "dryRunHint": "Deneme çalıştırması, hiçbir şey yazmadan her satırı mevcut verilerinizle karşılaştırır.",
+    "runDryRun": "Deneme çalıştırması yap"
+  },
+  "options": {
+    "dateFormat": "Tarih biçimi",
+    "dateAuto": "Otomatik algıla",
+    "dateDMY": "Gün / ay / yıl",
+    "dateMDY": "Ay / gün / yıl",
+    "dateYMD": "Yıl / ay / gün",
+    "decimal": "Ondalık ayırıcı",
+    "decimalAuto": "Otomatik algıla",
+    "decimalDot": "Nokta (1,234.56)",
+    "decimalComma": "Virgül (1.234,56)",
+    "countryCode": "Telefon numaraları için ülke kodu",
+    "duplicates": "Bir satır mevcut bir kayıtla eşleştiğinde",
+    "duplicatesUpdate": "Mevcut kaydı güncelle",
+    "duplicatesSkip": "Satırı atla",
+    "duplicatesCreate": "Yine de yeni bir kayıt oluştur"
+  },
+  "summary": {
+    "create": "Oluşturulacak",
+    "update": "Güncellenecek",
+    "skip": "Atlanacak",
+    "error": "İçe aktarılamaz",
+    "warnings": "Uyarılı",
+    "customersToCreate": "{count, plural, one {# yeni müşteri} other {# yeni müşteri}}",
+    "customersToUpdate": "{count, plural, one {# müşteri güncellenecek} other {# müşteri güncellenecek}}",
+    "vehiclesToCreate": "{count, plural, one {# yeni araç} other {# yeni araç}}",
+    "vehiclesToUpdate": "{count, plural, one {# araç güncellenecek} other {# araç güncellenecek}}",
+    "servicesToCreate": "{count, plural, one {# servis kaydı} other {# servis kaydı}}"
+  },
+  "actions": {
+    "create": "Oluştur",
+    "update": "Güncelle",
+    "skip": "Atla",
+    "error": "Hata"
+  },
+  "matchOn": {
+    "number": "müşteri numarası",
+    "email": "e-posta",
+    "phone": "telefon",
+    "name": "ad",
+    "vin": "VIN",
+    "plate": "plaka",
+    "makeModelYear": "marka, model ve yıl"
+  },
+  "preview": {
+    "colAction": "İşlem",
+    "colOwner": "Sahip",
+    "colDetails": "Ayrıntılar",
+    "empty": "Bu filtreyle eşleşen satır yok.",
+    "matchedOn": "{name} ile eşleşiyor ({on} üzerinden)",
+    "linksCustomer": "{name} müşterisine bağlandı",
+    "linksVehicle": "{label} aracına bağlandı",
+    "sameCustomerAsRow": "{row}. satırla aynı müşteri",
+    "sameVehicleAsRow": "{row}. satırla aynı araç",
+    "createsCustomer": "Müşteriyi oluşturur",
+    "createsVehicle": "Aracı oluşturur",
+    "downloadReport": "Deneme çalıştırması raporunu indir",
+    "limitExceeded": "Planınız {remaining} müşteri daha eklemenize izin veriyor, ancak bu içe aktarma {needed} müşteri oluşturacak. Satırları kaldırın veya planınızı yükseltin.",
+    "pageInfo": "{from}–{to} / {total}",
+    "prev": "Önceki",
+    "next": "Sonraki",
+    "backToMapping": "Eşlemeye dön",
+    "import": "{count, plural, one {# satırı} other {# satırı}} içe aktar",
+    "nothingWrittenYet": "Henüz hiçbir şey yazılmadı. İçe aktarma daha sonra Ayarlar → Veri bölümünden geri alınabilir."
+  },
+  "importing": {
+    "title": "İçe aktarılıyor...",
+    "starting": "Başlatılıyor",
+    "progress": "{done} / {total} satır",
+    "keepOpen": "Büyük dosyalar bir iki dakika sürer."
+  },
+  "result": {
+    "title": "İçe aktarma tamamlandı",
+    "undoneTitle": "İçe aktarma geri alındı",
+    "created": "{count, plural, one {# kayıt oluşturuldu} other {# kayıt oluşturuldu}}",
+    "updated": "{count, plural, one {# kayıt güncellendi} other {# kayıt güncellendi}}",
+    "skipped": "{count, plural, one {# satır atlandı} other {# satır atlandı}}",
+    "failed": "{count, plural, one {# satır içe aktarılmadı} other {# satır içe aktarılmadı}}",
+    "writeFailures": "{count, plural, one {# satır yazılırken başarısız oldu} other {# satır yazılırken başarısız oldu}}",
+    "rowFailure": "Satır {row}: {error}",
+    "undo": "Bu içe aktarmayı geri al",
+    "undone": "{customers} müşteri, {vehicles} araç ve {services} servis kaydı kaldırıldı.",
+    "undoHint": "Geri alma, bu içe aktarmanın oluşturduğu her kaydı kaldırır. Yalnızca güncellenen kayıtlar yeni değerlerini korur."
+  },
+  "history": {
+    "title": "İçe aktarma geçmişi",
+    "description": "Bu atölyede yapılan hesap tablosu içe aktarmaları. Geri alma, bir içe aktarmanın oluşturduklarını kaldırır.",
+    "loading": "Yükleniyor...",
+    "statusUndone": "Geri alındı",
+    "counts": "{created} oluşturuldu, {updated} güncellendi, {skipped} atlandı, {failed} başarısız",
+    "undo": "Geri Al",
+    "undone": "{customers} müşteri, {vehicles} araç ve {services} servis kaydı kaldırıldı.",
+    "undoFailed": "İçe aktarma geri alınamadı",
+    "confirmTitle": "Bu içe aktarma geri alınsın mı?",
+    "confirmDescription": "{file} dosyasının oluşturduklarını kaldırır: {customers} müşteri, {vehicles} araç ve {services} servis kaydı. İçe aktarmanın yalnızca güncellediği kayıtlar korunur.",
+    "cancel": "İptal",
+    "confirm": "İçe aktarmayı geri al"
+  },
+  "fields": {
+    "customer": {
+      "name": "Müşteri adı",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "customerNumber": "Müşteri numarası",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "company": "Şirket",
+      "address": "Adres",
+      "street": "Sokak",
+      "postalCode": "Posta kodu",
+      "city": "Şehir",
+      "state": "Eyalet / bölge",
+      "country": "Ülke",
+      "taxId": "Vergi numarası",
+      "notes": "Müşteri notları"
+    },
+    "vehicle": {
+      "description": "Araç (yıl marka model tek sütunda)",
+      "make": "Marka",
+      "model": "Model",
+      "year": "Yıl",
+      "vin": "VIN",
+      "licensePlate": "Plaka",
+      "color": "Renk",
+      "mileage": "Kilometre",
+      "fuelType": "Yakıt türü",
+      "transmission": "Şanzıman",
+      "engineSize": "Motor hacmi",
+      "engineCode": "Motor kodu",
+      "purchaseDate": "Satın alma tarihi",
+      "purchasePrice": "Satın alma fiyatı"
+    },
+    "service": {
+      "date": "Servis tarihi",
+      "title": "Servis başlığı",
+      "description": "Açıklama",
+      "total": "Toplam tutar",
+      "mileage": "Servisteki kilometre",
+      "invoiceNumber": "Fatura numarası",
+      "notes": "Servis notları",
+      "technician": "Teknisyen"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Müşteri adı eksik",
+    "invalid_email": "\"{value}\" e-postası geçerli değil ve dışarıda bırakıldı",
+    "invalid_vin": "\"{value}\" VIN'i 17 karakter değil; yazıldığı gibi tutuldu",
+    "vehicle_make_model_required": "Marka ve model eksik",
+    "vehicle_year_required": "Yıl eksik",
+    "vehicle_year_invalid": "\"{value}\" geçerli bir yıl değil",
+    "vehicle_identifier_required": "Aracı tanımlayacak plaka, VIN veya marka ve model yok",
+    "vehicle_not_found": "\"{value}\" ile eşleşen mevcut bir araç yok ve yeni bir araç oluşturmak için yeterli bilgi bulunmuyor",
+    "service_date_required": "Servis tarihi eksik",
+    "service_date_invalid": "\"{value}\" tarihi okunamadı",
+    "service_title_required": "Servis başlığı veya açıklaması eksik",
+    "invalid_date": "{field} \"{value}\" okunamadı ve dışarıda bırakıldı",
+    "invalid_number": "{field} \"{value}\" bir sayı değil ve dışarıda bırakıldı",
+    "duplicate_invoice_number": "{value} fatura numarası zaten mevcut",
+    "write_failed": "Yazılamadı: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Dosya okunamadı",
+    "aiFailed": "Yapay zeka bir eşleme öneremedi",
+    "dryRunFailed": "Deneme çalıştırması başarısız oldu",
+    "importFailed": "İçe aktarma başarısız oldu",
+    "undoFailed": "İçe aktarma geri alınamadı"
+  },
+  "entry": {
+    "title": "Hesap tablosundan içe aktar",
+    "description": "CSV veya Excel dışa aktaran herhangi bir sistemden müşterileri, araçları ve servis geçmişini getirin. Sütunları eşleyin, bir deneme çalıştırması yapın, ardından içe aktarın. Her içe aktarma geri alınabilir.",
+    "customers": "Müşterileri içe aktar",
+    "vehicles": "Araçları içe aktar",
+    "services": "Servis geçmişini içe aktar"
+  }
+}

@@ -4,12 +4,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react'
 import Image from 'next/image'
 import { Download, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  SidebarGroup,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 
 import { useTranslations } from 'next-intl'
 interface BeforeInstallPromptEvent extends Event {
@@ -176,25 +171,20 @@ export function InstallBanner() {
   )
 }
 
-export function SidebarInstallButton() {
+/** The install offer, as an entry in the account menu. */
+export function InstallMenuItem() {
   const t = useTranslations('common.shared')
   const { canInstall, dismissed, isIOS, install, dismiss } = useInstallPrompt()
 
   if (!canInstall || dismissed) return null
 
   return (
-    <SidebarGroup>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            onClick={isIOS ? dismiss : install}
-            tooltip={isIOS ? t('iosInstallHint') : t('installApp')}
-          >
-            <Download className="size-4" />
-            <span className="font-medium">{t('installApp')}</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarGroup>
+    <DropdownMenuItem
+      onClick={isIOS ? dismiss : install}
+      title={isIOS ? t('iosInstallHint') : undefined}
+    >
+      <Download className="mr-2 size-4" />
+      {t('installApp')}
+    </DropdownMenuItem>
   )
 }

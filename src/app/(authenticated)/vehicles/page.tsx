@@ -5,6 +5,7 @@ import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions
 import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { VehiclesClient } from './vehicles-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function VehiclesPage({
   searchParams,
@@ -16,6 +17,7 @@ export default async function VehiclesPage({
     archived?: string
     sortBy?: string
     sortOrder?: string
+    due?: string
   }>
 }) {
   const params = await searchParams
@@ -24,6 +26,14 @@ export default async function VehiclesPage({
     sortOrder: 'desc',
   })
   const isArchived = params.archived === 'true'
+  const inspectionDue =
+    params.due === 'overdue'
+      ? 'overdue'
+      : params.due === '30'
+        ? 30
+        : params.due === '90'
+          ? 90
+          : undefined
   const cookieStore = await cookies()
   const viewCookie = cookieStore.get('torqvoice-vehicles-view')?.value
   const initialView = viewCookie === 'table' ? 'table' : viewCookie === 'grid6' ? 'grid6' : 'grid'
@@ -35,6 +45,7 @@ export default async function VehiclesPage({
       archived: isArchived,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
+      inspectionDue,
     }),
     getCustomersList(),
   ])
@@ -55,7 +66,7 @@ export default async function VehiclesPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <VehiclesClient
           data={result.data}
           customers={customersResult.data ?? []}
@@ -65,8 +76,10 @@ export default async function VehiclesPage({
           initialView={initialView}
           isArchived={isArchived}
           archivedCount={result.data.archivedCount}
+          inspectionDue={inspectionDue}
+          hasInspectionData={result.data.hasInspectionData}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

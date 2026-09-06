@@ -7,3 +7,5 @@ node_modules
 .devcontainer
 plans
 public/uploads
+backups
+data/uploads

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,14 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import {
   Dialog,
   DialogContent,
@@ -24,6 +32,7 @@ import { createVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { ScanDocumentButton } from '@/features/vehicles/Components/ScanDocumentButton'
 import type { VehicleDocumentScan } from '@/features/vehicles/Actions/aiAnalyzeVehicleDocument'
 import { Loader2 } from 'lucide-react'
+import { clearableInput } from '@/lib/clearable'
 
 interface CustomerFormProps {
   open: boolean
@@ -38,7 +47,9 @@ interface CustomerFormProps {
     company?: string | null
     taxId?: string | null
     taxExempt?: boolean
+    reminderOptOut?: boolean
     notes?: string | null
+    invoiceDesignId?: string | null
   }
   /**
    * Prefills a new customer, e.g. with the keeper read off a scanned
@@ -62,6 +73,26 @@ export function CustomerForm({
   const tv = useTranslations('vehicles.form')
   const [loading, setLoading] = useState(false)
   const [taxExempt, setTaxExempt] = useState(customer?.taxExempt ?? false)
+  // The workshop's saved invoice designs, fetched when the dialog opens so
+  // the three places this form is used need not each carry the list. Radix
+  // reserves "" as a value, so "follow the default" is a sentinel.
+  const FOLLOW_DEFAULT = '__default__'
+  const [designOptions, setDesignOptions] = useState<{ id: string; name: string }[]>([])
+  const [invoiceDesignId, setInvoiceDesignId] = useState(
+    customer?.invoiceDesignId ?? FOLLOW_DEFAULT
+  )
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    listDesignOptions('invoice').then((result) => {
+      if (!cancelled && result.success && result.data) setDesignOptions(result.data)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open])
+
+  const [reminderOptOut, setReminderOptOut] = useState(customer?.reminderOptOut ?? false)
   const formRef = useRef<HTMLFormElement>(null)
   /** Vehicle details from a scanned document, offered once the customer exists. */
   const [scannedVehicle, setScannedVehicle] = useState<VehicleDocumentScan | null>(null)
@@ -95,16 +126,20 @@ export function CustomerForm({
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    // An emptied field reaches the update action as '' so it can be cleared.
+    const optional = (name: string) => clearableInput(formData.get(name), Boolean(customer))
     const data = {
       name: formData.get('name') as string,
-      customerNumber: (formData.get('customerNumber') as string) || undefined,
-      email: (formData.get('email') as string) || undefined,
-      phone: (formData.get('phone') as string) || undefined,
-      address: (formData.get('address') as string) || undefined,
-      company: (formData.get('company') as string) || undefined,
-      taxId: (formData.get('taxId') as string) || undefined,
+      customerNumber: optional('customerNumber'),
+      email: optional('email'),
+      phone: optional('phone'),
+      address: optional('address'),
+      company: optional('company'),
+      taxId: optional('taxId'),
       taxExempt,
-      notes: (formData.get('notes') as string) || undefined,
+      reminderOptOut,
+      notes: optional('notes'),
+      invoiceDesignId: invoiceDesignId === FOLLOW_DEFAULT ? null : invoiceDesignId,
     }
 
     const result = customer
@@ -282,6 +317,34 @@ export function CustomerForm({
                 <p className="text-xs text-muted-foreground">{t('taxExemptHint')}</p>
               </div>
               <Switch checked={taxExempt} onCheckedChange={setTaxExempt} />
+            </div>
+
+            {designOptions.length > 0 && (
+              <div className="space-y-2">
+                <Label>{t('invoiceDesign')}</Label>
+                <Select value={invoiceDesignId} onValueChange={setInvoiceDesignId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={FOLLOW_DEFAULT}>{t('invoiceDesignDefault')}</SelectItem>
+                    {designOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">{t('invoiceDesignHint')}</p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <Label>{t('reminderOptOut')}</Label>
+                <p className="text-xs text-muted-foreground">{t('reminderOptOutHint')}</p>
+              </div>
+              <Switch checked={reminderOptOut} onCheckedChange={setReminderOptOut} />
             </div>
           </div>
 

@@ -34,7 +34,8 @@
     "delete": "Verwijderen",
     "unpaid": "Onbetaald",
     "unsavedChanges": "Niet-opgeslagen wijzigingen",
-    "saved": "Opgeslagen"
+    "saved": "Opgeslagen",
+    "joinCall": "Deelnemen aan videogesprek"
   },
   "basicInfo": {
     "title": "Basisinformatie",
@@ -78,7 +79,17 @@
       "typePrompt": "Typ een naam...",
       "boardTechnicians": "Werkbordtechnici",
       "teamMembers": "Teamleden"
-    }
+    },
+    "design": "Factuurontwerp",
+    "designDefault": "Standaard van de werkplaats",
+    "designFollowing": "Standaard ({name})",
+    "designPinned": "Het blad is bevroren toen de factuur op {date} werd uitgegeven. Een nieuwe keuze geldt pas nadat een eigenaar de factuur ontgrendelt en ze opnieuw wordt verzonden.",
+    "designSaved": "Factuurontwerp bijgewerkt",
+    "designFollowingRule": "Standaard ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Alleen onderdelenverkoop"
+    },
+    "designSaveFailed": "Kon het factuurontwerp niet wijzigen"
   },
   "parts": {
     "title": "Onderdelen",
@@ -349,6 +360,7 @@
     "workBay": "Werkplek",
     "selectWorkBay": "Werkplek kiezen…",
     "noWorkBay": "Geen werkplek",
+    "noTechnician": "Zonder monteur",
     "technicians": "Monteurs",
     "otherTeamMembers": "Andere teamleden",
     "makeTechnician": "Maakt hen monteur",
@@ -410,5 +422,50 @@
     "remove": "Dit punt verwijderen",
     "notAnswered": "Hier is nog niets op gevonden",
     "answered": "{count} bevinding(en) hierop"
+  },
+  "videoCall": {
+    "title": "Videogesprek",
+    "none": "Geen videogesprek op deze werkorder.",
+    "needsSchedule": "Stel eerst een starttijd in. De vergadering volgt de planning.",
+    "add": "{provider}-vergadering toevoegen",
+    "addedHere": "toegevoegd vanaf deze werkorder",
+    "fromCalendar": "uit de agenda-afspraak",
+    "join": "Deelnemen",
+    "copy": "Link kopiëren",
+    "copied": "Link gekopieerd",
+    "remove": "Verwijderen",
+    "removeTitle": "Videogesprek verwijderen?",
+    "removeDescription": "De vergadering wordt bij de aanbieder verwijderd. Wie de link al heeft, kan niet meer deelnemen.",
+    "created": "Vergadering aangemaakt. De link staat op de werkorder.",
+    "removed": "Vergadering verwijderd",
+    "failed": "Er is iets misgegaan",
+    "shareHint": "De klant krijgt deze link alleen als je die verstuurt.",
+    "shareHintNoChannel": "De klant krijgt deze link alleen als je die verstuurt. Er is geen berichtenkanaal ingesteld, dus kopieer hem zelf in een bericht.",
+    "send": {
+      "button": "Naar klant sturen",
+      "title": "Link van het videogesprek sturen",
+      "description": "De deelnamelink naar {name} sturen.",
+      "messageLabel": "Notitie (optioneel)",
+      "messagePlaceholder": "Wat de klant vóór het gesprek moet weten...",
+      "linkAlwaysIncluded": "De deelnamelink komt altijd onder je notitie.",
+      "sms": "Sms",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(geen telefoon)",
+      "noEmail": "(geen e-mail)",
+      "noTelegram": "(geen chat gekoppeld)",
+      "notAvailable": "(niet ingesteld)",
+      "cancel": "Annuleren",
+      "send": "Versturen",
+      "sent": "Link van het videogesprek verstuurd",
+      "partlySent": "Verstuurd via {sent}; niet via {failed}",
+      "failed": "Link kon niet worden verstuurd"
+    },
+    "notify": {
+      "invitation": "Hallo {name}, je videogesprek over de {vehicle} is op {when}. Neem hier deel: {url}",
+      "invitationNoTime": "Hallo {name}, hier is de link voor het videogesprek over de {vehicle}: {url}",
+      "joinLine": "Neem hier deel aan het videogesprek: {url}",
+      "emailSubject": "Videogesprek over je {vehicle}"
+    }
   }
 }

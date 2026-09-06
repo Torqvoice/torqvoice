@@ -30,11 +30,53 @@
   },
   "today": "Dziś",
   "workOrder": "Zlecenie",
+  "allDay": "Cały dzień",
+  "openDay": "Otwórz {date}",
+  "dayTotal": "{count, plural, =1 {1 wydarzenie} one {# wydarzenie} few {# wydarzenia} many {# wydarzeń} other {# wydarzenia}}",
+  "views": {
+    "day": "Dzień",
+    "week": "Tydzień",
+    "month": "Miesiąc",
+    "year": "Rok",
+    "schedule": "Harmonogram",
+    "fourDays": "4 dni"
+  },
+  "options": {
+    "showWeekends": "Pokaż weekendy",
+    "showCompleted": "Pokaż zakończone",
+    "showWeekNumbers": "Pokaż numery tygodni"
+  },
+  "toolbar": {
+    "previous": "Poprzedni",
+    "next": "Następny",
+    "create": "Utwórz",
+    "showSidebar": "Pokaż panel boczny",
+    "hideSidebar": "Ukryj panel boczny"
+  },
+  "sidebar": {
+    "calendars": "Kalendarze",
+    "legend": "Kolory statusów"
+  },
+  "schedule": {
+    "empty": "Nic nie zaplanowano",
+    "emptyHint": "Brak zleceń, przypomnień, wycen i wiadomości w tym okresie."
+  },
+  "peek": {
+    "close": "Zamknij",
+    "open": {
+      "service": "Otwórz zlecenie",
+      "reminder": "Otwórz przypomnienie",
+      "quote": "Otwórz wycenę",
+      "message": "Otwórz wiadomości",
+      "external": "Otwórz"
+    }
+  },
   "filters": {
-    "services": "Usługi",
+    "services": "Zlecenia",
     "reminders": "Przypomnienia",
     "quotes": "Wyceny",
-    "messages": "Wiadomości"
+    "messages": "Wiadomości",
+    "external": "Połączone kalendarze"
   },
   "selectVehicle": "Wybierz pojazd do zlecenia",
   "dateChoice": {
@@ -44,14 +86,27 @@
     "useToday": "Use today"
   },
   "more": "+ {count} więcej",
-  "monthTotal": "{count} wydarzeń w tym miesiącu",
+  "monthTotal": "Wydarzenia: {count}",
   "contextMenu": {
     "newWorkOrder": "Nowe zlecenie",
+    "newWorkOrderAt": "Nowe zlecenie o {time}",
     "newReminder": "Nowe przypomnienie",
     "newQuote": "Nowa wycena",
     "openEvent": "Otwórz ({count})",
     "hint": "Wskazówka: kliknij dzień prawym przyciskiem myszy, aby zobaczyć akcje",
     "scheduleMessage": "Zaplanuj wiadomość"
+  },
+  "eventMenu": {
+    "open": "Otwórz",
+    "markDone": "Oznacz jako wykonane",
+    "markNotDone": "Oznacz jako niewykonane",
+    "deleteReminder": "Usuń przypomnienie",
+    "deleteReminderConfirm": "Usunąć przypomnienie „{title}”? Tej operacji nie można cofnąć.",
+    "deleteMessage": "Usuń zaplanowaną wiadomość",
+    "deleteMessageConfirm": "Usunąć zaplanowaną wiadomość „{title}”? Nie zostanie wysłana.",
+    "deleted": "Usunięto",
+    "updated": "Zaktualizowano",
+    "failed": "Nie udało się. Spróbuj ponownie."
   },
   "events": {
     "status": {
@@ -59,6 +114,7 @@
       "inProgress": "W trakcie",
       "waitingParts": "Oczekiwanie na części",
       "pending": "Oczekujące",
+      "scheduled": "Zaplanowane",
       "sent": "Wysłano",
       "approved": "Zatwierdzone",
       "draft": "Szkic",
@@ -66,16 +122,27 @@
       "overdue": "Zaległe",
       "upcoming": "Nadchodzące",
       "failed": "Nieudane",
-      "queued": "W kolejce"
+      "queued": "W kolejce",
+      "busy": "Zajęte"
     },
     "type": {
-      "service": "Usługa",
+      "service": "Zlecenie",
       "reminder": "Przypomnienie",
       "quote": "Wycena",
-      "message": "Wiadomość"
+      "message": "Wiadomość",
+      "external": "Połączony kalendarz"
     },
     "noEvents": "Brak wydarzeń",
-    "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie."
+    "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie.",
+    "external": {
+      "source": "Z {source}",
+      "sourceUnknown": "Z połączonego kalendarza",
+      "allDay": "Cały dzień",
+      "open": "Otwórz w {source}",
+      "openGeneric": "Otwórz w kalendarzu",
+      "noLink": "Ten kalendarz nie podaje linku do wydarzenia.",
+      "readOnly": "Zajęty czas z połączonego kalendarza. Zmień go tam, a tutaj zaktualizuje się przy następnej synchronizacji."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

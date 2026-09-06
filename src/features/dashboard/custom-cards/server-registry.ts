@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
-import { toSafeDate } from '@/lib/invoice-utils'
 import { PermissionSubject } from '@/lib/permissions'
+import { addZonedDays } from '@/lib/timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { serviceRecordHref } from '@/lib/service-record'
 import type { CardEntity, CardFilter, CustomCardConfig } from './registry'
 import { getField } from './registry'
@@ -60,13 +62,18 @@ function numberCond(operator: string, value: string): Cond | null {
   }
 }
 
-function dateCond(operator: string, value: string): Cond | null {
-  const d = toSafeDate(value)
+/** The value is a bare YYYY-MM-DD: "before" covers the whole of that workshop day. */
+function dateCond(operator: string, value: string, timeZone: string): Cond | null {
+  const d = toSafeWorkshopDate(value, timeZone)
   if (!d) return null
-  return operator === 'after' ? { gte: d } : operator === 'before' ? { lte: d } : null
+  return operator === 'after'
+    ? { gte: d }
+    : operator === 'before'
+      ? { lt: addZonedDays(d, 1, timeZone) }
+      : null
 }
 
-function condFor(entity: CardEntity, filter: CardFilter): Cond | null {
+function condFor(entity: CardEntity, filter: CardFilter, timeZone: string): Cond | null {
   const def = getField(entity, filter.field)
   if (!def) return null
   switch (def.type) {
@@ -75,7 +82,7 @@ function condFor(entity: CardEntity, filter: CardFilter): Cond | null {
     case 'number':
       return numberCond(filter.operator, filter.value)
     case 'date':
-      return dateCond(filter.operator, filter.value)
+      return dateCond(filter.operator, filter.value, timeZone)
     case 'select':
       return filter.operator === 'eq' && def.options?.includes(filter.value)
         ? { equals: filter.value }
@@ -91,8 +98,8 @@ function vehicleTextWhere(operator: string, value: string): Cond | null {
 }
 
 /** Maps a validated filter to a Prisma where fragment, per entity. */
-function whereFor(entity: CardEntity, filter: CardFilter): Cond | null {
-  const cond = condFor(entity, filter)
+function whereFor(entity: CardEntity, filter: CardFilter, timeZone: string): Cond | null {
+  const cond = condFor(entity, filter, timeZone)
   if (!cond) return null
   const field = filter.field
 
@@ -121,9 +128,9 @@ function whereFor(entity: CardEntity, filter: CardFilter): Cond | null {
   }
 }
 
-function buildWhere(config: CustomCardConfig, base: Cond): Cond {
+function buildWhere(config: CustomCardConfig, base: Cond, timeZone: string): Cond {
   const conds = config.filters
-    .map((filter) => whereFor(config.entity, filter))
+    .map((filter) => whereFor(config.entity, filter, timeZone))
     .filter((c): c is Cond => c !== null)
   return conds.length > 0 ? { AND: [base, ...conds] } : base
 }
@@ -135,11 +142,12 @@ export async function runEntityQuery(
   organizationId: string
 ): Promise<CardRow[]> {
   const limit = Math.max(1, Math.min(25, config.limit))
+  const timeZone = await workshopTimeZone(organizationId)
 
   switch (config.entity) {
     case 'vehicles': {
       const rows = await db.vehicle.findMany({
-        where: buildWhere(config, { organizationId, isArchived: false }),
+        where: buildWhere(config, { organizationId, isArchived: false }, timeZone),
         select: {
           id: true,
           licensePlate: true,
@@ -179,7 +187,7 @@ export async function runEntityQuery(
     }
     case 'customers': {
       const rows = await db.customer.findMany({
-        where: buildWhere(config, { organizationId }),
+        where: buildWhere(config, { organizationId }, timeZone),
         select: {
           id: true,
           name: true,
@@ -209,7 +217,7 @@ export async function runEntityQuery(
     }
     case 'workOrders': {
       const rows = await db.serviceRecord.findMany({
-        where: buildWhere(config, { organizationId }),
+        where: buildWhere(config, { organizationId }, timeZone),
         select: {
           id: true,
           invoiceNumber: true,
@@ -253,7 +261,7 @@ export async function runEntityQuery(
     }
     case 'quotes': {
       const rows = await db.quote.findMany({
-        where: buildWhere(config, { organizationId }),
+        where: buildWhere(config, { organizationId }, timeZone),
         select: {
           id: true,
           quoteNumber: true,
@@ -285,7 +293,7 @@ export async function runEntityQuery(
     }
     case 'inventory': {
       const rows = await db.inventoryPart.findMany({
-        where: buildWhere(config, { organizationId }),
+        where: buildWhere(config, { organizationId }, timeZone),
         select: {
           id: true,
           name: true,

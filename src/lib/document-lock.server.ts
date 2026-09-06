@@ -98,7 +98,24 @@ export async function assertQuoteEditable(quoteId: string, organizationId: strin
  * wrong for everyone who only uses that channel. Every send counts, not just
  * the first, so re-issuing after an unlock locks the corrected copy too.
  */
-export async function markInvoiceSent(recordId: string, organizationId: string) {
+export async function markInvoiceSent(
+  recordId: string,
+  organizationId: string,
+  options: {
+    /**
+     * The caller already issued the invoice, to render the copy it sent from
+     * the same snapshot. Skips the second, identical capture.
+     */
+    alreadyIssued?: boolean
+  } = {}
+) {
+  // Issued before the stamp, so what the customer receives and what is kept
+  // are the same copy. An invoice already issued is left as it is, unless an
+  // owner unlocked it since; see shouldIssue.
+  if (!options.alreadyIssued) {
+    const { issueInvoice } = await import('@/features/invoices/Lib/issueInvoice')
+    await issueInvoice(recordId, organizationId, 'sent')
+  }
   await db.serviceRecord.updateMany({
     where: { id: recordId, organizationId },
     data: { sentAt: new Date() },

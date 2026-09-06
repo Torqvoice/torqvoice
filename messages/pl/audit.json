@@ -151,7 +151,20 @@
     "settings_whatsappNumberRegistered": "Zarejestrowano numer WhatsApp",
     "team_giveTechnicianTheApp": "Nadano konto technikowi z tablicy",
     "team_createDefaultRoles": "Utworzono role standardowe",
-    "settings_setCustomFieldPlacement": "Zaktualizowano miejsce pola niestandardowego"
+    "settings_setCustomFieldPlacement": "Zaktualizowano miejsce pola niestandardowego",
+    "import_commit": "Zaimportowano arkusz",
+    "import_undo": "Cofnięto import",
+    "integration_connect": "Połączono integrację",
+    "integration_disconnect": "Rozłączono integrację",
+    "service_setInvoiceDesign": "Zmieniono projekt faktury",
+    "settings_saveDocumentDesign": "Zapisano projekt dokumentu",
+    "settings_deleteDocumentDesign": "Usunięto projekt dokumentu",
+    "settings_applyDocumentDesign": "Ustawiono domyślny projekt dokumentu",
+    "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt",
+    "settings_freezeInvoices": "Zablokowano starsze faktury",
+    "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
+    "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie",
+    "service_videoCall_send": "Wysłano link do rozmowy wideo"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -275,6 +288,18 @@
     "work_bay_create": "Utworzono stanowisko „{name}”",
     "work_bay_update": "Zaktualizowano stanowisko „{name}”",
     "work_bay_delete": "Usunięto stanowisko {id}",
-    "settings_setCustomFieldPlacement": "Zmieniono miejsce drukowania pola niestandardowego"
+    "settings_setCustomFieldPlacement": "Zmieniono miejsce drukowania pola niestandardowego",
+    "import_commit": "Zaimportowano arkusz: utworzono {count} rekordów",
+    "import_undo": "Cofnięto import arkusza: usunięto {records} rekordów",
+    "integration_connect": "Połączono {name}",
+    "integration_disconnect": "Rozłączono {name}",
+    "service_setInvoiceDesign": "Zmienił projekt, z którym drukowana jest faktura",
+    "settings_saveDocumentDesign": "Zapisał projekt dokumentu {name}",
+    "settings_deleteDocumentDesign": "Usunął projekt dokumentu {name}",
+    "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu",
+    "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt dokumentu {name}",
+    "settings_freezeInvoices": "Zablokował {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}} sprzed blokady z bieżącym projektem",
+    "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie",
+    "service_videoCall_send": "Wysłano link do rozmowy wideo przez {channels}"
   }
 }

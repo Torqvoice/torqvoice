@@ -7,7 +7,8 @@
       "scheduled": "Geplant",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Kampagnen"
     },
     "smsNotConfiguredTitle": "SMS ist nicht eingerichtet",
     "smsNotConfiguredHint": "Verbinden Sie einen SMS-Anbieter, um hier Nachrichten zu senden und zu empfangen. Geplante E-Mails funktionieren auch ohne.",

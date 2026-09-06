@@ -1,23 +1,23 @@
-import { redirect } from 'next/navigation'
+import { ArrowRight, Plug } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { channelSetup } from '@/features/integrations/Lib/messaging'
+import { type MessagingChannel, messagingProvider } from '@/integrations/messaging/catalog'
 import { getLayoutData } from '@/lib/get-layout-data'
-import { getFeatures, isCloudMode } from '@/lib/features'
-import { getEmailSettings } from '@/features/email/Actions/emailSettingsActions'
-import { getSmsSettings } from '@/features/sms/Actions/smsSettingsActions'
-import { getTelegramSettings } from '@/features/telegram/Actions/telegramSettingsActions'
-import { getWhatsappSettings } from '@/features/whatsapp/Actions/whatsappSettingsActions'
-import { EmailSettingsForm } from '@/features/email/Components/EmailSettingsForm'
-import { SmsSettingsForm } from '@/features/sms/Components/SmsSettingsForm'
-import { TelegramSettingsForm } from '@/features/telegram/Components/TelegramSettingsForm'
-import { WhatsappSettingsForm } from '@/features/whatsapp/Components/WhatsappSettingsForm'
-import { FeatureLockedMessage } from '../feature-locked-message'
-import { ProviderTabs, type ProviderPanel } from './provider-tabs'
+
+const CHANNELS: MessagingChannel[] = ['email', 'sms', 'whatsapp', 'telegram']
 
 /**
- * Every channel the workshop can reach customers on, in one place.
+ * Where the channel settings used to be.
  *
- * Each provider still loads its own settings on the server; the tabs only
- * decide which one is on screen.
+ * Email, SMS, WhatsApp and Telegram are integrations now, set up in the
+ * catalog alongside every other vendor. The page stays as a signpost rather
+ * than a redirect: a workshop that bookmarked it, or that remembers where SMS
+ * lived, gets told what happened and what it is connected to today, which a
+ * silent jump somewhere else would not do.
  */
 export default async function ProvidersSettingsPage() {
   const data = await getLayoutData()
@@ -25,92 +25,63 @@ export default async function ProvidersSettingsPage() {
   if (data.status === 'unauthenticated') redirect('/auth/sign-in')
   if (data.status === 'no-organization') redirect('/onboarding')
 
-  const [features, t] = await Promise.all([
-    getFeatures(data.organizationId),
-    getTranslations('settings.providers'),
-  ])
-  const isCloud = isCloudMode()
+  const t = await getTranslations('settings.providers')
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const rows = await Promise.all(
+    CHANNELS.map(async (channel) => {
+      const setup = await channelSetup(data.organizationId, channel)
+      return {
+        channel,
+        connectorId: setup?.connectorId ?? null,
+        vendor: setup ? (messagingProvider(setup.connectorId)?.name ?? null) : null,
+      }
+    })
+  )
 
-  // A locked channel is still worth a tab: it tells a workshop the capability
-  // exists, which a hidden tab cannot.
-  const [email, sms, telegram, whatsapp] = await Promise.all([
-    features.smtp ? getEmailSettings() : null,
-    features.sms ? getSmsSettings() : null,
-    features.telegram ? getTelegramSettings() : null,
-    features.whatsapp ? getWhatsappSettings() : null,
-  ])
+  return (
+    <div className="mx-auto max-w-3xl space-y-6 p-4 md:p-6">
+      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30">
+        <div className="flex items-start gap-3">
+          <Plug className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-500" />
+          <div className="space-y-1">
+            <p className="font-medium text-amber-900 dark:text-amber-200">{t('moved.title')}</p>
+            <p className="text-sm text-amber-800 dark:text-amber-300">{t('moved.description')}</p>
+          </div>
+        </div>
+      </div>
 
-  const panels: ProviderPanel[] = [
-    {
-      key: 'email',
-      label: t('tabs.email'),
-      locked: !features.smtp,
-      content: features.smtp ? (
-        <EmailSettingsForm initial={email?.success && email.data ? email.data : {}} />
-      ) : (
-        <FeatureLockedMessage
-          feature={t('locked.email.feature')}
-          description={t('locked.email.description')}
-          isCloud={isCloud}
-        />
-      ),
-    },
-    {
-      key: 'sms',
-      label: t('tabs.sms'),
-      locked: !features.sms,
-      content: features.sms ? (
-        <SmsSettingsForm initial={sms?.success && sms.data ? sms.data : {}} appUrl={appUrl} />
-      ) : (
-        <FeatureLockedMessage
-          feature={t('locked.sms.feature')}
-          description={t('locked.sms.description')}
-          isCloud={isCloud}
-        />
-      ),
-    },
-    {
-      key: 'whatsapp',
-      label: t('tabs.whatsapp'),
-      locked: !features.whatsapp,
-      content:
-        features.whatsapp && whatsapp?.success && whatsapp.data ? (
-          <WhatsappSettingsForm initial={whatsapp.data} />
-        ) : (
-          <FeatureLockedMessage
-            feature={t('locked.whatsapp.feature')}
-            description={t('locked.whatsapp.description')}
-            isCloud={isCloud}
-          />
-        ),
-    },
-    {
-      key: 'telegram',
-      label: t('tabs.telegram'),
-      locked: !features.telegram,
-      content: features.telegram ? (
-        <TelegramSettingsForm
-          initial={telegram?.success && telegram.data ? telegram.data : {}}
-          appUrl={appUrl}
-          initialEnabled={
-            telegram?.success && telegram.data
-              ? telegram.data['telegram.enabled'] === 'true'
-              : false
-          }
-        />
-      ) : (
-        <FeatureLockedMessage
-          feature={t('locked.telegram.feature')}
-          description={t('locked.telegram.description')}
-          isCloud={isCloud}
-        />
-      ),
-    },
-  ]
+      <div className="divide-y rounded-lg border">
+        {rows.map((row) => (
+          <div key={row.channel} className="flex items-center justify-between gap-4 p-4">
+            <div className="min-w-0">
+              <p className="font-medium">{t(`tabs.${row.channel}`)}</p>
+              <p className="truncate text-sm text-muted-foreground">
+                {row.vendor
+                  ? t('moved.connectedTo', { vendor: row.vendor })
+                  : row.channel === 'email'
+                    ? t('moved.platformMail')
+                    : t('moved.notSetUp')}
+              </p>
+            </div>
+            {row.connectorId ? (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/settings/integrations/${row.connectorId}`}>{t('moved.manage')}</Link>
+              </Button>
+            ) : (
+              <Badge variant="secondary">
+                {row.channel === 'email' ? t('moved.onByDefault') : t('moved.notConnected')}
+              </Badge>
+            )}
+          </div>
+        ))}
+      </div>
 
-  return <ProviderTabs panels={panels} defaultTab="email" />
+      <Button asChild>
+        <Link href="/settings/integrations">
+          {t('moved.goToIntegrations')}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Link>
+      </Button>
+    </div>
+  )
 }

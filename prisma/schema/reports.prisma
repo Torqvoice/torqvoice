@@ -1,0 +1,57 @@
+model StatusReport {
+  id               String    @id @default(cuid())
+  title            String?
+  message          String?   @db.Text
+  videoUrl         String?
+  videoFileName    String?
+  publicToken      String    @unique
+  status           String    @default("draft") // draft | published | sent | viewed
+  sentVia          String? // email, sms, telegram (comma-separated)
+  sentAt           DateTime?
+  viewedAt         DateTime?
+  customerFeedback String?   @db.Text
+  feedbackAt       DateTime?
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  technicianId String?
+  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+
+  @@index([serviceRecordId])
+  @@index([organizationId])
+  @@index([publicToken])
+  @@index([expiresAt])
+  @@map("status_reports")
+}
+
+model ReportSchedule {
+  id          String    @id @default(cuid())
+  name        String    @default("Scheduled Report")
+  frequency   String // "daily" | "weekly" | "monthly" etc.
+  dateRange   String    @default("last30d") // "last1d" | "last7d" | "last30d" | "ytd" | "allTime" etc.
+  sections    String // JSON array of section keys
+  recipients  String // JSON array of user IDs
+  nextRunDate DateTime
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+  lastRunAt   DateTime?
+  runCount    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdById String
+
+  @@index([organizationId])
+  @@index([nextRunDate, isActive])
+  @@map("report_schedules")
+}

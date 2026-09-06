@@ -60,7 +60,7 @@ export const createServiceSchema = z.object({
   type: z.enum(['maintenance', 'repair', 'upgrade', 'inspection']).default('maintenance'),
   status: z.enum(['pending', 'in-progress', 'waiting-parts', 'completed']).default('pending'),
   cost: z.coerce.number().min(0).default(0),
-  mileage: z.coerce.number().optional(),
+  mileage: z.coerce.number().nullable().optional(),
   serviceDate: z.string().default(() => new Date().toISOString()),
   shopName: z.string().optional(),
   techName: z.string().optional(),

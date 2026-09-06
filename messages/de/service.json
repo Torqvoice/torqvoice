@@ -34,7 +34,8 @@
     "delete": "Löschen",
     "unpaid": "Unbezahlt",
     "unsavedChanges": "Nicht gespeicherte Änderungen",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "joinCall": "Videoanruf beitreten"
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",
@@ -78,7 +79,17 @@
       "typePrompt": "Geben Sie einen Namen ein...",
       "boardTechnicians": "Board-Techniker",
       "teamMembers": "Teamitglieder"
-    }
+    },
+    "design": "Rechnungsdesign",
+    "designDefault": "Werkstatt-Standard",
+    "designFollowing": "Standard ({name})",
+    "designPinned": "Das Blatt wurde beim Ausstellen der Rechnung am {date} eingefroren. Eine neue Wahl gilt erst, wenn ein Inhaber die Rechnung entsperrt und sie erneut gesendet wird.",
+    "designSaved": "Rechnungsdesign aktualisiert",
+    "designFollowingRule": "Standard ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Reiner Teileverkauf"
+    },
+    "designSaveFailed": "Rechnungsdesign konnte nicht geändert werden"
   },
   "parts": {
     "title": "Teile",
@@ -349,6 +360,7 @@
     "workBay": "Arbeitsplatz",
     "selectWorkBay": "Arbeitsplatz wählen …",
     "noWorkBay": "Kein Arbeitsplatz",
+    "noTechnician": "Ohne Mechaniker",
     "technicians": "Techniker",
     "otherTeamMembers": "Weitere Teammitglieder",
     "makeTechnician": "Macht sie zum Techniker",
@@ -410,5 +422,50 @@
     "remove": "Dieses Anliegen entfernen",
     "notAnswered": "Dazu wurde noch nichts festgestellt",
     "answered": "{count} Feststellung(en) dazu"
+  },
+  "videoCall": {
+    "title": "Videoanruf",
+    "none": "Kein Videoanruf für diesen Auftrag.",
+    "needsSchedule": "Legen Sie zuerst eine Startzeit fest. Das Meeting folgt dem Termin.",
+    "add": "{provider}-Meeting hinzufügen",
+    "addedHere": "von diesem Auftrag hinzugefügt",
+    "fromCalendar": "aus dem Kalendereintrag",
+    "join": "Beitreten",
+    "copy": "Link kopieren",
+    "copied": "Link kopiert",
+    "remove": "Entfernen",
+    "removeTitle": "Videoanruf entfernen?",
+    "removeDescription": "Das Meeting wird beim Anbieter gelöscht. Wer den Link bereits hat, kann nicht mehr beitreten.",
+    "created": "Meeting erstellt. Der Link ist am Auftrag.",
+    "removed": "Meeting entfernt",
+    "failed": "Etwas ist schiefgelaufen",
+    "shareHint": "Der Kunde erhält diesen Link nur, wenn du ihn sendest.",
+    "shareHintNoChannel": "Der Kunde erhält diesen Link nur, wenn du ihn sendest. Es ist kein Nachrichtenkanal eingerichtet, kopiere ihn also selbst in eine Nachricht.",
+    "send": {
+      "button": "An Kunden senden",
+      "title": "Link zum Videoanruf senden",
+      "description": "Den Beitrittslink an {name} senden.",
+      "messageLabel": "Notiz (optional)",
+      "messagePlaceholder": "Was der Kunde vor dem Anruf wissen sollte...",
+      "linkAlwaysIncluded": "Der Beitrittslink wird immer unter deine Notiz gesetzt.",
+      "sms": "SMS",
+      "email": "E-Mail",
+      "telegram": "Telegram",
+      "noPhone": "(keine Telefonnummer)",
+      "noEmail": "(keine E-Mail)",
+      "noTelegram": "(kein Chat verknüpft)",
+      "notAvailable": "(nicht eingerichtet)",
+      "cancel": "Abbrechen",
+      "send": "Senden",
+      "sent": "Link zum Videoanruf gesendet",
+      "partlySent": "Gesendet per {sent}; nicht per {failed}",
+      "failed": "Link konnte nicht gesendet werden"
+    },
+    "notify": {
+      "invitation": "Hallo {name}, dein Videoanruf zum {vehicle} ist am {when}. Hier beitreten: {url}",
+      "invitationNoTime": "Hallo {name}, hier ist der Link zum Videoanruf zum {vehicle}: {url}",
+      "joinLine": "Hier dem Videoanruf beitreten: {url}",
+      "emailSubject": "Videoanruf zu deinem {vehicle}"
+    }
   }
 }

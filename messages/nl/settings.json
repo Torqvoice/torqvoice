@@ -7,7 +7,7 @@
       "billing": "Facturatie en documenten",
       "communications": "Communicatie",
       "workshop": "Werkplaats",
-      "integrations": "Integraties",
+      "integrations": "Apps en API",
       "system": "Systeem"
     },
     "items": {
@@ -91,6 +91,10 @@
         "title": "Rapportplanning",
         "description": "Automatische rapportlevering"
       },
+      "integrations": {
+        "title": "Integraties",
+        "description": "Agenda's, videogesprekken en gekoppelde diensten"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Realtime gebeurtenismeldingen"
@@ -130,6 +134,10 @@
       "providers": {
         "title": "Providers",
         "description": "E-mail, sms, WhatsApp en Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Keuringsherinneringen",
+        "description": "Boekingslink, duur en aanlooptijd"
       }
     },
     "pro": "PRO"
@@ -572,7 +580,16 @@
     "quoteLockTriggerSent": "Zodra de offerte is verstuurd",
     "quoteLockTriggerAccepted": "Zodra de offerte is geaccepteerd",
     "quoteLockTriggerSentHint": "Vergrendelt zodra de offerte naar de klant gaat. Kies dit alleen als je een offerte nooit aanpast tijdens de onderhandeling.",
-    "quoteLockTriggerAcceptedHint": "Vergrendelt zodra de klant de offerte heeft geaccepteerd of die is omgezet naar een opdracht. Verstuurde offertes blijven bewerkbaar."
+    "quoteLockTriggerAcceptedHint": "Vergrendelt zodra de klant de offerte heeft geaccepteerd of die is omgezet naar een opdracht. Verstuurde offertes blijven bewerkbaar.",
+    "freezeTitle": "Facturen van vóór het vergrendelen",
+    "freezeBody": "{count, plural, one {# factuur} other {# facturen}} bereikte een klant voordat deze versie kon vergrendelen wat een factuur afdrukt. Ze worden nog met uw huidige gegevens, logo en ontwerp afgedrukt, dus een wijziging van vandaag bereikt ze ook. Vergrendelen houdt elke factuur zoals ze nu wordt afgedrukt.",
+    "freezeNone": "Elke factuur die een klant bereikte is vergrendeld zoals ze is verstuurd.",
+    "freezeButton": "Vergrendelen met het huidige ontwerp",
+    "freezeConfirmTitle": "{count, plural, one {# factuur} other {# facturen}} vergrendelen?",
+    "freezeConfirmBody": "Elke factuur behoudt het ontwerp, het logo, de werkplaatsgegevens, de klant, het voertuig en de bevindingen waarmee ze nu wordt afgedrukt. Dit kan niet ongedaan worden gemaakt; de facturen blijven precies zo bewerkbaar of voor bewerking vergrendeld als vandaag.",
+    "freezeProgress": "{done} van {total} vergrendeld",
+    "freezeDone": "{count, plural, one {# factuur} other {# facturen}} vergrendeld",
+    "freezeFailed": "Kon de facturen niet vergrendelen"
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",
@@ -634,6 +651,12 @@
       "bank_account": "Bankrekening",
       "footer_note": "Voettekstnotitie",
       "org_number": "Organisatienummer",
+      "payment_terms": "Betalingsvoorwaarden",
+      "due_date": "Vervaldatum",
+      "title": "Titel",
+      "invoice_number": "Factuurnr.",
+      "customer_number": "Klantnr.",
+      "date": "Datum",
       "portal_link": "Portaallink"
     },
     "presetsTitle": "Begin met een indeling",
@@ -808,32 +831,17 @@
     "paymentTermsPlaceholder": "30 dagen netto",
     "paymentTermsHint": "Betalingsvoorwaarden op facturen (bijv. \"30 dagen netto\", \"Bij ontvangst\")",
     "onlinePayments": "Online betalingen",
-    "onlinePaymentsDescription": "Laat klanten facturen online betalen via gedeelde factuurlinks.",
-    "stripe": "Stripe",
-    "stripeDescription": "Creditcard-/debitcardbetalingen accepteren",
-    "secretKey": "Geheime sleutel",
-    "publishableKey": "Publieke sleutel",
-    "webhookSecret": "Webhook-geheim",
-    "webhookUrl": "Webhook-URL",
-    "stripeWebhookHint": "Voeg deze URL toe in uw Stripe Dashboard onder Webhooks. Abonneer op <code>checkout.session.completed</code>.",
-    "vipps": "Vipps",
-    "vippsDescription": "Vipps mobiele betalingen accepteren (Noorwegen)",
-    "clientId": "Client-ID",
-    "clientSecret": "Client-geheim",
-    "subscriptionKey": "Abonnementssleutel",
-    "merchantSerialNumber": "Handelaarserienummer",
-    "testMode": "Testmodus",
-    "callbackUrl": "Callback-URL",
-    "termsOfSale": "Verkoopvoorwaarden (Salgsvilkar)",
-    "termsOfSaleDescription": "Vereist door Vipps. Klanten kunnen deze bekijken vanaf de factuurpagina.",
+    "onlinePaymentsDescription": "Laat klanten facturen betalen via de link die je ze stuurt. Stripe, Vipps en PayPal koppel je onder Integraties en kunnen naast elkaar draaien.",
+    "onlinePaymentsHint": "Als een klant betaalt, meldt de aanbieder dat aan Torqvoice en markeert de factuur zichzelf als betaald. De pagina van elke aanbieder toont de meldings-URL die hij nodig heeft.",
+    "offered": "Op factuurlinks",
+    "paused": "Gekoppeld, niet aangeboden",
+    "termsOfSale": "Verkoopvoorwaarden",
+    "termsOfSaleDescription": "Waar een klant mee akkoord gaat bij online betalen. Vipps vereist gepubliceerde voorwaarden; de factuur linkt er hoe dan ook naar.",
+    "termsOfSaleText": "Tekst van de voorwaarden",
     "externalTermsUrl": "Externe voorwaarden-URL (optioneel)",
     "externalTermsUrlHint": "Link naar een externe pagina met uw voorwaarden.",
     "publicTermsUrl": "Publieke voorwaarden-URL",
     "publicTermsUrlHint": "Deel deze URL met Vipps of link ernaar vanaf uw website.",
-    "paypal": "PayPal",
-    "paypalDescription": "PayPal-betalingen accepteren",
-    "sandboxMode": "Sandboxmodus",
-    "paypalWebhookHint": "Voeg deze URL toe in uw PayPal Developer Dashboard onder Webhooks. Abonneer op <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Betalingsinstellingen opslaan",
     "saved": "Betalingsinstellingen opgeslagen"
   },
@@ -1112,7 +1120,7 @@
   },
   "data": {
     "title": "Gegevensbeheer",
-    "description": "Exporteer uw gegevens als back-up of importeer een eerder geëxporteerd bestand.",
+    "description": "Haal gegevens uit uw oude systeem, download een back-up van alles of zet er een terug.",
     "exportTitle": "Gegevens exporteren",
     "exportDescription": "Download uw gegevens als zipbestand. Selecteer welke categorieën u wilt opnemen.",
     "includeInBackup": "Opnemen in back-up:",
@@ -1199,7 +1207,16 @@
     "optTireHotel": "Bandenhotel",
     "optTireHotelDesc": "Opgeslagen bandensets, stellingen, voorbereiding en opslagovereenkomsten",
     "optWorkshopConfig": "Werkplaatsinrichting",
-    "optWorkshopConfigDesc": "Arbeidsjablonen, rollen, webhooks en geplande rapporten"
+    "optWorkshopConfigDesc": "Arbeidsjablonen, rollen, webhooks en geplande rapporten",
+    "importHubDescription": "Kies waar uw gegevens nu staan. Imports uit spreadsheets en apps komen bovenop wat u al hebt en zijn terug te draaien; een back-up terugzetten vervangt alles.",
+    "sourceSpreadsheet": "Spreadsheet of CSV",
+    "sourceSpreadsheetDesc": "Exports uit elk werkplaatssysteem, boekhoudpakket, Google Contacten, Outlook of Excel. U bevestigt de kolomtoewijzing en ziet een proefrun voordat er iets wordt weggeschreven.",
+    "sourceLubelogDesc": "Voertuigen, onderhoudsrecords en notities uit een LubeLog-back-up.",
+    "sourceInvoiceNinjaDesc": "Klanten, producten, facturen en betalingen uit een Invoice Ninja-export.",
+    "sourceBackup": "Torqvoice-back-up",
+    "sourceBackupDesc": "Een .zip- of .json-bestand dat u op deze pagina hebt gedownload. Terugzetten vervangt alles in deze werkplaats.",
+    "restore": "Terugzetten",
+    "restoreTitle": "Een back-up terugzetten"
   },
   "license": {
     "title": "White-label licentie",
@@ -1740,6 +1757,17 @@
         "feature": "Telegram-berichten",
         "description": "Verstuur en ontvang Telegram-berichten met je klanten vanuit Torqvoice."
       }
+    },
+    "moved": {
+      "title": "These settings moved to Integrations",
+      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
+      "connectedTo": "Connected through {vendor}",
+      "notSetUp": "Not set up yet",
+      "manage": "Manage",
+      "notConnected": "Not connected",
+      "goToIntegrations": "Go to Integrations",
+      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
+      "onByDefault": "On by default"
     }
   },
   "designer": {
@@ -1749,6 +1777,14 @@
     "galleryTitle": "Begin met een sjabloon",
     "galleryHint": "Kies een startpunt. In de ontwerper kunt u alles wijzigen.",
     "yourDesigns": "Uw ontwerpen",
+    "autoRuleHint": "Verkopen zonder voertuig worden afgedrukt met het daarvoor gemarkeerde ontwerp, tenzij de verkoop of de klant een ander koos.",
+    "useForPartsSale": "Gebruiken voor verkoop van alleen onderdelen",
+    "usedForPartsSale": "Gebruikt voor verkoop van alleen onderdelen",
+    "autoRule": {
+      "parts_sale": "Alleen onderdelenverkoop"
+    },
+    "autoRuleSaved": "Gebruik van \"{name}\" bijgewerkt",
+    "couldNotSaveRule": "Kon de regel niet bijwerken",
     "templates": "Sjablonen",
     "inUse": "In gebruik",
     "savedOn": "Opgeslagen {date}",
@@ -1908,6 +1944,7 @@
       "serviceType": "Reparatie",
       "companyName": "Uw werkplaats",
       "slogan": "Kwaliteit waar u op kunt bouwen",
+      "paymentTerms": "Betaling binnen 14 dagen",
       "footerNote": "Bedankt voor uw opdracht",
       "value": "Voorbeeld"
     },
@@ -1923,11 +1960,22 @@
     "sloganPlaceholderHint": "Er is geen slogan ingesteld, dus het blad toont een voorbeeldtekst die niet wordt afgedrukt.",
     "sloganSetHint": "Je slogan komt uit je bedrijfsgegevens.",
     "sloganLink": "Bedrijfsinstellingen",
+    "paymentTerms": "Betalingsvoorwaarden",
+    "paymentTermsPlaceholderHint": "Er zijn geen betalingsvoorwaarden ingesteld, dus het blad toont een voorbeeldtekst die niet wordt afgedrukt.",
+    "paymentTermsSetHint": "Je betalingsvoorwaarden komen uit je betaalinstellingen.",
+    "paymentTermsLink": "Betaalinstellingen",
+    "titleText": "Titeltekst",
+    "titleTextHint": "Hoe dit document zichzelf noemt. Laat je het leeg, dan drukt het zijn eigen naam af in de taal van de lezer.",
     "placeholder": "Voorbeeld",
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
     "leaveConfirm": "Weggaan",
-    "boldField": "Vet"
+    "boldField": "Vet",
+    "deleteDesignDrafts": "{count, plural, one {# conceptfactuur} other {# conceptfacturen}} die het gebruiken, vallen terug op het standaardontwerp.",
+    "deleteDesignCustomers": "{count, plural, one {# klant} other {# klanten}} die erop zijn ingesteld, vallen terug op het standaardontwerp.",
+    "setDefault": "Als standaard instellen",
+    "defaultSet": "\"{name}\" is nu in gebruik",
+    "couldNotSetDefault": "Kon het standaardontwerp niet instellen"
   },
   "preview": {
     "title": "Remservice en oliewissel",
@@ -1942,5 +1990,31 @@
     "partSyntheticOil": "Synthetische olie 5W-30",
     "laborBrakeReplacement": "Remmen vervangen",
     "laborOilChange": "Oliewissel"
+  },
+  "inspectionReminders": {
+    "title": "Keuringsherinneringen en boeken",
+    "description": "Hoe de boekingslink in een herinnering zich gedraagt. Eén keer instellen; elke campagne gebruikt dit.",
+    "duration": "Duur van de keuring (minuten)",
+    "durationHint": "Hoe lang een periodieke keuring een brug bezet. De link boekt tijden van deze lengte.",
+    "leadDays": "Vroegste boeking (dagen vooruit)",
+    "leadDaysHint": "1 betekent dat de eerste aangeboden tijd morgen is, nooit vandaag.",
+    "horizonWeeks": "Hoe ver vooruit (weken)",
+    "horizonHint": "Klanten kunnen elke vrije tijd binnen zoveel weken kiezen.",
+    "reserve": "Vrijhouden voor inloop",
+    "reserveHint": "Bruggen of monteurs die de link nooit vult. 0 laat alle vrije gebruiken.",
+    "linkValidDays": "Link blijft open (dagen)",
+    "linkValidHint": "Minstens {min}. Links blijven ook open tot een week na de vervaldatum, wat later is.",
+    "bookingMode": "Wat een boeking aanmaakt",
+    "bookingModeDirect": "Een geplande werkorder op het bord",
+    "bookingModeRequest": "Een verzoek dat de balie eerst bevestigt",
+    "bookingModeHint": "Direct boeken maakt de link de moeite waard. Kies verzoek als u elke keer wilt goedkeuren.",
+    "phone": "Telefoonnummer in berichten",
+    "phoneHint": "Getoond als alternatief voor de link. Standaard het nummer van de werkplaats.",
+    "save": "Opslaan",
+    "saved": "Instellingen opgeslagen",
+    "saveFailed": "Opslaan mislukt",
+    "timeZoneDetected": "De tijdzone staat op automatisch onder Lokalisatie, dus de server gebruikt {zone}, de zone die het laatst is gezien in een browser die instellingen opsloeg. Kies de zone van de werkplaats expliciet zodat boekingstijden nooit afhangen van wie het laatst opsloeg.",
+    "timeZoneExplicit": "Boekingstijden en openingstijden worden gelezen in {zone}.",
+    "timeZoneChange": "Wijzigen onder Lokalisatie"
   }
 }

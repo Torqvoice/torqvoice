@@ -3,27 +3,28 @@ import { db } from '@/lib/db'
 import { resolveInvoicePrefix } from '@/lib/invoice-utils'
 import { calculateTotals } from '@/lib/tax'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import { shiftWorkshopTime } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
-function calculateNextRunDate(current: Date, frequency: string): Date {
-  const next = new Date(current)
+/**
+ * One period on from `current`, at the same time on the workshop's clock.
+ * Shared with the manual "run now" action so both paths agree.
+ */
+export function calculateNextRunDate(current: Date, frequency: string, timeZone: string): Date {
   switch (frequency) {
     case 'weekly':
-      next.setDate(next.getDate() + 7)
-      break
+      return shiftWorkshopTime(current, { days: 7 }, timeZone)
     case 'biweekly':
-      next.setDate(next.getDate() + 14)
-      break
+      return shiftWorkshopTime(current, { days: 14 }, timeZone)
     case 'monthly':
-      next.setMonth(next.getMonth() + 1)
-      break
+      return shiftWorkshopTime(current, { months: 1 }, timeZone)
     case 'quarterly':
-      next.setMonth(next.getMonth() + 3)
-      break
+      return shiftWorkshopTime(current, { months: 3 }, timeZone)
     case 'yearly':
-      next.setFullYear(next.getFullYear() + 1)
-      break
+      return shiftWorkshopTime(current, { years: 1 }, timeZone)
+    default:
+      return current
   }
-  return next
 }
 
 async function generateInvoiceNumber(organizationId: string): Promise<string> {
@@ -74,12 +75,19 @@ export function processRecurringInvoices() {
       })
 
       let processed = 0
+      // One settings read per workshop, however many of its invoices are due
+      const zones = new Map<string, string>()
 
       for (const ri of dueInvoices) {
         const organizationId = ri.vehicle.organizationId
         if (!organizationId) continue
 
         try {
+          let timeZone = zones.get(organizationId)
+          if (!timeZone) {
+            timeZone = await workshopTimeZone(organizationId)
+            zones.set(organizationId, timeZone)
+          }
           const invoiceNumber = await generateInvoiceNumber(organizationId)
 
           const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
@@ -132,7 +140,7 @@ export function processRecurringInvoices() {
               },
             })
 
-            const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency)
+            const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency, timeZone)
             const shouldDeactivate = ri.endDate && nextRunDate > ri.endDate
 
             await tx.recurringInvoice.update({

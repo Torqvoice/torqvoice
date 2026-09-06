@@ -76,7 +76,9 @@
     "allDoneTitle": "You are all set",
     "allDoneDescription": "All steps are done and your workshop is up and running.",
     "dismiss": "Hide card",
-    "dismissAriaLabel": "Hide this checklist"
+    "dismissAriaLabel": "Hide this checklist",
+    "importTitle": "Already have customers and vehicles somewhere?",
+    "importDescription": "Import them from a spreadsheet or your old system"
   },
   "sampleData": {
     "title": "Sample data",

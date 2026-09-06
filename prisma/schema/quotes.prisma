@@ -1,0 +1,124 @@
+model Quote {
+  id              String    @id @default(cuid())
+  quoteNumber     String?
+  title           String
+  description     String?
+  status          String    @default("draft")
+  validUntil      DateTime?
+  subtotal        Float     @default(0)
+  taxRate         Float     @default(0)
+  taxAmount       Float     @default(0)
+  taxInclusive    Boolean   @default(false)
+  discountType    String?
+  discountValue   Float     @default(0)
+  discountAmount  Float     @default(0)
+  totalAmount     Float     @default(0)
+  notes           String?
+  publicToken     String?
+  sharedAt        DateTime?
+  viewCount       Int       @default(0)
+  lastViewedAt    DateTime?
+  customerMessage String?
+  convertedToId   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  /// Most recent time this quote reached the customer, by email or share
+  /// link. Exists so an unlock is spent when the quote is issued again; the
+  /// status alone cannot show that, because re-sending an accepted quote does
+  /// not change it.
+  sentAt DateTime?
+
+  /// See ServiceRecord.editUnlockedAt.
+  editUnlockedAt   DateTime?
+  editUnlockedById String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  /// The stored set this quote is about, when it came out of the tire hotel.
+  /// SetNull rather than Cascade: a quote already sent is a document the
+  /// customer holds, and deleting the set must not erase it.
+  tireSetId String?
+  tireSet   TireSet? @relation(fields: [tireSetId], references: [id], onDelete: SetNull)
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  inspectionId String?
+  inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+
+  partItems   QuotePart[]
+  laborItems  QuoteLabor[]
+  attachments QuoteAttachment[]
+
+  @@index([organizationId])
+  @@map("quotes")
+}
+
+model QuoteAttachment {
+  id               String   @id @default(cuid())
+  fileName         String
+  fileUrl          String
+  fileType         String
+  fileSize         Int
+  category         String   @default("image")
+  description      String?
+  includeInInvoice Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  quoteId String
+  quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("quote_attachments")
+}
+
+model QuotePart {
+  id            String  @id @default(cuid())
+  partNumber    String?
+  name          String
+  quantity      Float   @default(1)
+  /// Unit of measure snapshotted from InventoryPart at pick time; null for
+  /// free-text lines and legacy rows.
+  unit          String?
+  /// Internal purchase cost — never shown to customers (quote PDF/share
+  /// render unitPrice only)
+  unitCost      Float   @default(0)
+  markupPercent Float   @default(0)
+  unitPrice     Float   @default(0)
+  total         Float   @default(0)
+  excluded      Boolean @default(false)
+
+  /// Optional link to the stocked part this line was picked from. Carried into
+  /// ServicePart on conversion so the job deducts the right inventory item.
+  inventoryPartId String?
+
+  quoteId String
+  quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("quote_parts")
+}
+
+model QuoteLabor {
+  id          String  @id @default(cuid())
+  description String
+  hours       Float   @default(0)
+  rate        Float   @default(0)
+  total       Float   @default(0)
+  pricingType String  @default("hourly")
+  excluded    Boolean @default(false)
+
+  quoteId String
+  quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+  @@map("quote_labor")
+}

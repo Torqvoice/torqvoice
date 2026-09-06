@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import type { TemplateSectionInput } from '../Schema/templateSchema'
 import { TEMPLATE_PRESETS, presetPackageId, presetToTemplateCreate } from '../Lib/templatePresets'
+import { clearedToNull } from '@/lib/clearable'
 
 /**
  * Sections and their checks are always rewritten wholesale rather than diffed,
@@ -106,7 +107,7 @@ export async function createTemplate(input: unknown) {
         const created = await tx.inspectionTemplate.create({
           data: {
             name: data.name,
-            description: data.description,
+            description: clearedToNull(data.description),
             isDefault: data.isDefault,
             country: data.country ?? null,
             standard: data.standard ?? 'custom',
@@ -168,7 +169,7 @@ export async function updateTemplate(input: unknown) {
           where: { id: data.id },
           data: {
             name: data.name,
-            description: data.description,
+            description: clearedToNull(data.description),
             isDefault: data.isDefault,
             country: data.country ?? null,
             standard: data.standard ?? 'custom',

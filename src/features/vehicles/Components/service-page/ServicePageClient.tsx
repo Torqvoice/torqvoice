@@ -65,6 +65,7 @@ export function ServicePageClient({
   currencyCode,
   unitSystem,
   tireHotelEnabled = false,
+  videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
   taxEnabled,
@@ -95,6 +96,10 @@ export function ServicePageClient({
   findings = [],
   openObservations = [],
   notificationHistory = [],
+  designOptions = [],
+  designFollowsName = null,
+  designPinnedAt = null,
+  designFollowsRule = null,
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -338,6 +343,7 @@ export function ServicePageClient({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <UnifiedServiceHeader
         vehicleId={vehicleId}
+        meetingUrl={videoCall.link?.url ?? null}
         vehicleName={formState.vehicleName}
         title={record.title}
         status={formState.status}
@@ -440,6 +446,10 @@ export function ServicePageClient({
                 }
                 rightColumn={
                   <DetailsRightColumn
+                    videoCall={videoCall}
+                    smsEnabled={smsEnabled}
+                    emailEnabled={emailEnabled}
+                    telegramEnabled={telegramEnabled}
                     formState={formState}
                     actions={actions}
                     record={record}
@@ -452,6 +462,10 @@ export function ServicePageClient({
                     workBays={workBays}
                     orgMembers={orgMembers}
                     notificationHistory={notificationHistory}
+                    designOptions={designOptions}
+                    designFollowsName={designFollowsName}
+                    designPinnedAt={designPinnedAt}
+                    designFollowsRule={designFollowsRule}
                   />
                 }
               />

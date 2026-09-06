@@ -30,11 +30,53 @@
   },
   "today": "Šiandien",
   "workOrder": "Darbo užsakymas",
+  "allDay": "Visą dieną",
+  "openDay": "Atidaryti {date}",
+  "dayTotal": "{count, plural, =1 {1 įvykis} one {# įvykis} few {# įvykiai} many {# įvykio} other {# įvykių}}",
+  "views": {
+    "day": "Diena",
+    "week": "Savaitė",
+    "month": "Mėnuo",
+    "year": "Metai",
+    "schedule": "Tvarkaraštis",
+    "fourDays": "4 dienos"
+  },
+  "options": {
+    "showWeekends": "Rodyti savaitgalius",
+    "showCompleted": "Rodyti užbaigtus",
+    "showWeekNumbers": "Rodyti savaičių numerius"
+  },
+  "toolbar": {
+    "previous": "Ankstesnis",
+    "next": "Kitas",
+    "create": "Sukurti",
+    "showSidebar": "Rodyti šoninį skydelį",
+    "hideSidebar": "Slėpti šoninį skydelį"
+  },
+  "sidebar": {
+    "calendars": "Kalendoriai",
+    "legend": "Būsenų spalvos"
+  },
+  "schedule": {
+    "empty": "Nieko nesuplanuota",
+    "emptyHint": "Šiuo laikotarpiu nėra darbo užsakymų, priminimų, pasiūlymų ar žinučių."
+  },
+  "peek": {
+    "close": "Uždaryti",
+    "open": {
+      "service": "Atidaryti darbo užsakymą",
+      "reminder": "Atidaryti priminimą",
+      "quote": "Atidaryti pasiūlymą",
+      "message": "Atidaryti žinutes",
+      "external": "Atidaryti"
+    }
+  },
   "filters": {
-    "services": "Paslaugos",
+    "services": "Darbo užsakymai",
     "reminders": "Priminimai",
     "quotes": "Pasiūlymai",
-    "messages": "Žinutės"
+    "messages": "Žinutės",
+    "external": "Prijungti kalendoriai"
   },
   "selectVehicle": "Pasirinkite transporto priemonę darbo užsakymui",
   "dateChoice": {
@@ -44,14 +86,27 @@
     "useToday": "Naudoti šiandienos datą"
   },
   "more": "+ {count} daugiau",
-  "monthTotal": "{count} įvykių šį mėnesį",
+  "monthTotal": "Įvykių: {count}",
   "contextMenu": {
     "newWorkOrder": "Naujas darbo užsakymas",
+    "newWorkOrderAt": "Naujas darbo užsakymas {time}",
     "newReminder": "Naujas priminimas",
     "newQuote": "Naujas pasiūlymas",
     "openEvent": "Atidaryti ({count})",
     "hint": "Patarimas: spustelėkite dieną dešiniuoju pelės mygtuku, kad pamatytumėte veiksmus",
     "scheduleMessage": "Suplanuoti žinutę"
+  },
+  "eventMenu": {
+    "open": "Atidaryti",
+    "markDone": "Pažymėti kaip atliktą",
+    "markNotDone": "Pažymėti kaip neatliktą",
+    "deleteReminder": "Ištrinti priminimą",
+    "deleteReminderConfirm": "Ištrinti priminimą „{title}“? Šio veiksmo atšaukti negalima.",
+    "deleteMessage": "Ištrinti suplanuotą žinutę",
+    "deleteMessageConfirm": "Ištrinti suplanuotą žinutę „{title}“? Ji nebus išsiųsta.",
+    "deleted": "Ištrinta",
+    "updated": "Atnaujinta",
+    "failed": "Nepavyko. Bandykite dar kartą."
   },
   "events": {
     "status": {
@@ -59,6 +114,7 @@
       "inProgress": "Vykdoma",
       "waitingParts": "Laukia dalių",
       "pending": "Laukia",
+      "scheduled": "Suplanuota",
       "sent": "Išsiųsta",
       "approved": "Patvirtinta",
       "draft": "Juodraštis",
@@ -66,16 +122,27 @@
       "overdue": "Vėluoja",
       "upcoming": "Artėja",
       "failed": "Nepavyko",
-      "queued": "Eilėje"
+      "queued": "Eilėje",
+      "busy": "Užimta"
     },
     "type": {
-      "service": "Paslauga",
+      "service": "Darbo užsakymas",
       "reminder": "Priminimas",
       "quote": "Pasiūlymas",
-      "message": "Žinutė"
+      "message": "Žinutė",
+      "external": "Prijungtas kalendorius"
     },
     "noEvents": "Įvykių nėra",
-    "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą."
+    "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą.",
+    "external": {
+      "source": "Iš {source}",
+      "sourceUnknown": "Iš prijungto kalendoriaus",
+      "allDay": "Visą dieną",
+      "open": "Atidaryti „{source}“",
+      "openGeneric": "Atidaryti kalendoriuje",
+      "noLink": "Šis kalendorius nepateikia nuorodos į įvykį.",
+      "readOnly": "Užimtas laikas iš prijungto kalendoriaus. Keiskite jį ten, čia atsinaujins per kitą sinchronizaciją."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import type { Booking, WorkingHours } from './availability'
 
 /**
@@ -57,7 +58,15 @@ export async function loadBookingContext(
     db.appSetting.findMany({
       where: {
         organizationId,
-        key: { in: ['workboard.workDayStart', 'workboard.workDayEnd', 'workboard.showWeekends'] },
+        key: {
+          in: [
+            'workboard.workDayStart',
+            'workboard.workDayEnd',
+            'workboard.showWeekends',
+            'workshop.timezone',
+            'workshop.timezoneDetected',
+          ],
+        },
       },
       select: { key: true, value: true },
     }),
@@ -94,6 +103,7 @@ export async function loadBookingContext(
       start: map['workboard.workDayStart'] || '07:00',
       end: map['workboard.workDayEnd'] || '15:00',
       includeWeekends: map['workboard.showWeekends'] === 'true',
+      timeZone: resolveWorkshopTimeZone(map['workshop.timezone'], map['workshop.timezoneDetected']),
     },
   }
 }

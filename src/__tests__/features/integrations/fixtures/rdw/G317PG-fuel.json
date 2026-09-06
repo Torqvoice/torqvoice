@@ -1,0 +1,17 @@
+[
+  {
+    "kenteken": "G317PG",
+    "brandstof_volgnummer": "1",
+    "brandstof_omschrijving": "Benzine",
+    "brandstofverbruik_gecombineerd": "5.30",
+    "co2_uitstoot_gecombineerd": "124",
+    "geluidsniveau_rijdend": "71",
+    "geluidsniveau_stationair": "79",
+    "emissiecode_omschrijving": "5",
+    "milieuklasse_eg_goedkeuring_licht": "715/2007*692/2008A",
+    "uitstoot_deeltjes_licht": "0.00178",
+    "nettomaximumvermogen": "77.00",
+    "toerental_geluidsniveau": "3750",
+    "uitlaatemissieniveau": "EURO 5 A"
+  }
+]

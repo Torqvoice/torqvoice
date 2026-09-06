@@ -41,6 +41,7 @@ import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { deleteVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
 import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
+import { ImportWizard } from '@/features/import/Components/ImportWizard'
 import { toast } from 'sonner'
 import {
   Archive,
@@ -59,10 +60,13 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
   Users,
   Wrench,
+  Send,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
 
 interface Vehicle {
@@ -81,6 +85,7 @@ interface Vehicle {
   imageUrl: string | null
   customerId: string | null
   customer: { id: string; name: string; company: string | null } | null
+  inspectionStatus?: { dueAt: Date | string | null; source: string } | null
   _count: { serviceRecords: number }
 }
 
@@ -97,9 +102,26 @@ interface PaginatedData {
   pageSize: number
   totalPages: number
   archivedCount: number
+  hasInspectionData?: boolean
 }
 
+type InspectionDueFilter = 'overdue' | 30 | 90
+
 const VIEW_COOKIE = 'torqvoice-vehicles-view'
+
+/** How urgent a periodic inspection date is, for the badge colour. */
+function inspectionTone(dueAt: Date | string): 'overdue' | 'soon' | 'later' {
+  const days = (new Date(dueAt).getTime() - Date.now()) / 86_400_000
+  if (days < 0) return 'overdue'
+  if (days < 30) return 'soon'
+  return 'later'
+}
+
+const INSPECTION_TONE_CLASS: Record<ReturnType<typeof inspectionTone>, string> = {
+  overdue: 'border-destructive/40 bg-destructive/10 text-destructive',
+  soon: 'border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  later: 'border-border bg-muted text-muted-foreground',
+}
 
 export function VehiclesClient({
   data,
@@ -110,6 +132,8 @@ export function VehiclesClient({
   initialView = 'table',
   isArchived = false,
   archivedCount = 0,
+  inspectionDue,
+  hasInspectionData = false,
 }: {
   data: PaginatedData
   customers: CustomerOption[]
@@ -119,6 +143,10 @@ export function VehiclesClient({
   initialView?: 'table' | 'grid' | 'grid6'
   isArchived?: boolean
   archivedCount?: number
+  /** Active periodic-inspection filter, from the URL. */
+  inspectionDue?: InspectionDueFilter
+  /** Whether any vehicle has an inspection date, which is when the filter is offered. */
+  hasInspectionData?: boolean
 }) {
   const serviceType = useServiceType()
   const router = useRouter()
@@ -128,7 +156,9 @@ export function VehiclesClient({
   const t = useTranslations('vehicles.list')
   const tc = useTranslations('common.buttons')
   const tcm = useTranslations('common.contextMenu')
+  const { formatDate } = useFormatDate()
   const [showForm, setShowForm] = useState(false)
+  const [showImport, setShowImport] = useState(false)
   const [createCustomerId, setCreateCustomerId] = useState<string | undefined>(undefined)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [view, setView] = useState<'table' | 'grid' | 'grid6'>(initialView)
@@ -243,9 +273,9 @@ export function VehiclesClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex shrink-0 flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div className="flex flex-1 items-center gap-2 min-w-0">
           <div className="flex gap-1 rounded-lg border p-1 shrink-0">
             <button
@@ -270,6 +300,47 @@ export function VehiclesClient({
               {archivedCount > 0 ? ` (${archivedCount})` : ''}
             </button>
           </div>
+          {hasInspectionData && !isArchived && (
+            <div className="hidden gap-1 rounded-lg border p-1 shrink-0 sm:flex">
+              {(
+                [
+                  ['overdue', t('inspectionOverdue')],
+                  [30, t('inspectionDue30')],
+                  [90, t('inspectionDue90')],
+                ] as [InspectionDueFilter, string][]
+              ).map(([value, label]) => (
+                <button
+                  key={String(value)}
+                  type="button"
+                  onClick={() =>
+                    router.push(inspectionDue === value ? '/vehicles' : `/vehicles?due=${value}`)
+                  }
+                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                    inspectionDue === value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          {inspectionDue && !isArchived && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden sm:inline-flex"
+              onClick={() =>
+                router.push(
+                  `/vehicles/inspection-reminders?due=${inspectionDue === 'overdue' ? 30 : inspectionDue}`
+                )
+              }
+            >
+              <Send className="mr-1.5 h-3.5 w-3.5" />
+              {t('remindCustomers')}
+            </Button>
+          )}
           <div className="relative flex-1 min-w-0 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -313,28 +384,41 @@ export function VehiclesClient({
             </Button>
           </div>
           {!isArchived && (
-            <Button
-              size="sm"
-              onClick={() => setShowForm(true)}
-              aria-label={t('addVehicle')}
-              title={t('addVehicle')}
-              className="ml-auto h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-            >
-              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-              <span className="hidden md:inline">{t('addVehicle')}</span>
-            </Button>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowImport(true)}
+                aria-label={t('importVehicles')}
+                title={t('importVehicles')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Upload className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('importVehicles')}</span>
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setShowForm(true)}
+                aria-label={t('addVehicle')}
+                title={t('addVehicle')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('addVehicle')}</span>
+              </Button>
+            </div>
           )}
         </div>
       </div>
 
       {data.vehicles.length === 0 ? (
-        <div className="flex h-32 items-center justify-center rounded-lg border text-muted-foreground">
+        <div className="flex h-32 shrink-0 items-center justify-center rounded-lg border text-muted-foreground">
           {search ? t('emptySearch') : isArchived ? t('emptyArchived') : t('empty')}
         </div>
       ) : view === 'table' ? (
         <>
-          {/* Card list (phones + small tablets) */}
-          <div className="space-y-2 md:hidden">
+          {/* Card list (phones + small tablets) - only this scrolls */}
+          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
             {data.vehicles.map((v) => (
               <div key={v.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
                 <button
@@ -358,6 +442,13 @@ export function VehiclesClient({
                     <span>
                       {t('table.services')}: {v._count.serviceRecords}
                     </span>
+                    {v.inspectionStatus?.dueAt && (
+                      <span
+                        className={`rounded border px-1.5 py-0.5 ${INSPECTION_TONE_CLASS[inspectionTone(v.inspectionStatus.dueAt)]}`}
+                      >
+                        {t('inspectionDue', { date: formatDate(v.inspectionStatus.dueAt) })}
+                      </span>
+                    )}
                   </div>
                 </button>
                 <DropdownMenu>
@@ -413,11 +504,14 @@ export function VehiclesClient({
             ))}
           </div>
 
-          {/* Table (md and up) */}
-          <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+          {/* Table (md and up) - only the rows scroll */}
+          <div
+            className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+            {...tableNav.containerProps}
+          >
             <TableContextMenuHint />
-            <Table className="table-fixed">
-              <TableHeader>
+            <Table containerClassName="min-h-0 flex-1" className="table-fixed">
+              <TableHeader sticky>
                 <TableRow>
                   <TableHead className="w-[120px]">
                     <button
@@ -485,6 +579,13 @@ export function VehiclesClient({
                           <span className="font-medium">
                             {v.year} {v.make} {v.model}
                           </span>
+                          {v.inspectionStatus?.dueAt && (
+                            <span
+                              className={`ml-2 rounded border px-1.5 py-0.5 font-sans text-xs ${INSPECTION_TONE_CLASS[inspectionTone(v.inspectionStatus.dueAt)]}`}
+                            >
+                              {t('inspectionDue', { date: formatDate(v.inspectionStatus.dueAt) })}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell className="hidden truncate sm:table-cell text-muted-foreground">
                           {v.customer ? (
@@ -622,7 +723,7 @@ export function VehiclesClient({
       ) : isPending ? (
         /* Grid skeleton */
         <div
-          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+          className={`-m-1 grid min-h-0 flex-1 auto-rows-max content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
           {Array.from({ length: view === 'grid6' ? 12 : 6 }).map((_, i) => (
             <Card key={i} className="overflow-hidden border-0 py-0 gap-0 shadow-sm">
@@ -635,9 +736,14 @@ export function VehiclesClient({
           ))}
         </div>
       ) : (
-        /* Grid view */
+        /* Grid view. Rows are sized to their content explicitly: the cards
+           clip their hover zoom with overflow-hidden, which makes each one
+           a scroll container whose minimum height is zero, so auto rows in
+           this fixed-height list would split its height evenly between
+           every row on the page instead. On a phone that was one thin
+           strip per vehicle; on a desktop the title was clipped away. */
         <div
-          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
+          className={`-m-1 grid min-h-0 flex-1 auto-rows-max content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
           {data.vehicles.map((v) => (
             <ContextMenu key={v.id} modal={false}>
@@ -823,6 +929,8 @@ export function VehiclesClient({
         totalPages={data.totalPages}
         onNavigate={navigate}
       />
+
+      <ImportWizard open={showImport} onOpenChange={setShowImport} entity="vehicles" lockEntity />
 
       <VehicleForm
         open={showForm}

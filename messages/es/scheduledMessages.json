@@ -41,6 +41,7 @@
     "scheduled": "Mensaje programado",
     "updated": "Mensaje programado actualizado",
     "saveError": "No se pudo guardar el mensaje",
+    "inPast": "Esa hora ya ha pasado. Elige una hora futura.",
     "whatsappNeedsTemplate": "Se enviará mucho después de que se cierre la ventana de 24 horas del cliente y no hay plantilla de texto de WhatsApp configurada, así que fallaría al enviarse. Configura una en Ajustes > Proveedores > WhatsApp."
   },
   "list": {

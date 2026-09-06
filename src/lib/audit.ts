@@ -117,5 +117,18 @@ export async function logAudit(ctx: { userId: string; organizationId: string }, 
       .catch((err) => {
         console.error('[webhooks] dispatch failed:', err)
       })
+    // Connected integrations hear the same events; each queues its own job.
+    import('@/features/integrations/Lib/events')
+      .then(({ notifyIntegrations }) =>
+        notifyIntegrations({
+          event: event.action,
+          organizationId: ctx.organizationId,
+          entity: event.entity ?? null,
+          entityId: event.entityId ?? null,
+        })
+      )
+      .catch((err) => {
+        console.error('[integrations] event dispatch failed:', err)
+      })
   }
 }

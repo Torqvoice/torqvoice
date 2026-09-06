@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fs from 'node:fs'
 import path from 'node:path'
+import { readPrismaSchema } from '@/__tests__/stubs/prisma-schema'
 
 /**
  * Backup coverage for the tire hotel.
@@ -21,7 +22,7 @@ const importSource = fs.readFileSync(
   path.join(ROOT, 'src/app/api/protected/backup/import/route.ts'),
   'utf-8'
 )
-const schema = fs.readFileSync(path.join(ROOT, 'prisma/schema.prisma'), 'utf-8')
+const schema = readPrismaSchema(ROOT)
 
 /** Every tire hotel model the schema declares. */
 function tireModels(): string[] {

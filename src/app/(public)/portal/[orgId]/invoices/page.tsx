@@ -12,6 +12,8 @@ import {
 import { Download, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export default async function PortalInvoicesPage({
   params,
@@ -19,6 +21,9 @@ export default async function PortalInvoicesPage({
   params: Promise<{ orgId: string }>
 }) {
   const { orgId } = await params
+  // Dates on the portal are the workshop's calendar days, not the server's.
+  const org = await resolvePortalOrg(orgId)
+  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.invoices')
   const result = await getPortalInvoices()
 
@@ -85,7 +90,10 @@ export default async function PortalInvoicesPage({
                         </span>
                       )}
                       <span>
-                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
+                        {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString(
+                          undefined,
+                          { timeZone }
+                        )}
                       </span>
                     </div>
                     <div className="mt-3 flex items-center gap-4">
@@ -136,7 +144,10 @@ export default async function PortalInvoicesPage({
                           {inv.vehicle?.make} {inv.vehicle?.model}
                         </TableCell>
                         <TableCell>
-                          {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString()}
+                          {new Date(inv.startDateTime ?? inv.serviceDate).toLocaleDateString(
+                            undefined,
+                            { timeZone }
+                          )}
                         </TableCell>
                         <TableCell>${inv.totalAmount.toFixed(2)}</TableCell>
                         <TableCell>

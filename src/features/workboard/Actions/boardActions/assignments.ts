@@ -20,13 +20,17 @@ import {
   serviceRecordToJob,
 } from './mappers'
 import type { WorkBoardJob, WorkBoardSettings } from './types'
+import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export async function getBoardJobs(weekStart: string) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = new Date(weekStart)
-      const end = new Date(start)
-      end.setDate(end.getDate() + 7)
+      // weekStart is a bare YYYY-MM-DD: the workshop's week, not the server's.
+      const tz = await workshopTimeZone(organizationId)
+      const start = toSafeWorkshopDate(weekStart, tz) ?? startOfZonedDay(new Date(), tz)
+      const end = addZonedDays(start, 7, tz)
 
       const [serviceRecords, inspections] = await Promise.all([
         db.serviceRecord.findMany({

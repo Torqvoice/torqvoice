@@ -12,7 +12,7 @@ import { getTelegramConversation } from '@/features/telegram/Actions/telegramAct
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures } from '@/lib/features'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
-import { db } from '@/lib/db'
+import { channelEnabled } from '@/features/integrations/Lib/messaging'
 import { CustomerDetailClient } from './customer-detail-client'
 import { PageHeader } from '@/components/page-header'
 
@@ -69,32 +69,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     const features = await getFeatures(layoutData.organizationId)
     smsEnabled = features.sms
 
+    // Both switches live on the channel's integration now. The conversation
+    // itself loads client-side, so only the flag is needed here to decide
+    // whether the tab exists at all.
     if (features.telegram) {
-      const tgEnabledSetting = await db.appSetting.findUnique({
-        where: {
-          organizationId_key: {
-            organizationId: layoutData.organizationId,
-            key: 'telegram.enabled',
-          },
-        },
-        select: { value: true },
-      })
-      telegramEnabled = tgEnabledSetting?.value === 'true'
+      telegramEnabled = await channelEnabled(layoutData.organizationId, 'telegram')
     }
-
-    // The conversation itself loads client-side, so only the flag is needed
-    // here to decide whether the tab exists at all.
     if (features.whatsapp) {
-      const waEnabledSetting = await db.appSetting.findUnique({
-        where: {
-          organizationId_key: {
-            organizationId: layoutData.organizationId,
-            key: 'whatsapp.enabled',
-          },
-        },
-        select: { value: true },
-      })
-      whatsappEnabled = waEnabledSetting?.value === 'true'
+      whatsappEnabled = await channelEnabled(layoutData.organizationId, 'whatsapp')
     }
 
     if (smsEnabled && result.data.phone) {

@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Integrasjoner",
+    "description": "Koble til tjenestene verkstedet allerede bruker. Hver integrasjon settes opp én gang og kjører i bakgrunnen.",
+    "all": "Alle",
+    "empty": "Ingen integrasjoner i denne kategorien ennå.",
+    "notConnected": "Ikke tilkoblet",
+    "connect": "Koble til",
+    "manage": "Administrer",
+    "connectedTitle": "Tilkoblet",
+    "connectedDescription": "Tjenester dette verkstedet har satt opp. Åpne en for å sjekke status, endre innstillinger eller koble fra.",
+    "noneConnected": "Ingenting er koblet til ennå. Velg en tjeneste nedenfor for å komme i gang.",
+    "availableTitle": "Tilgjengelig",
+    "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
+    "allConnected": "Alle tilgjengelige tjenester er tilkoblet.",
+    "searchPlaceholder": "Søk i integrasjoner",
+    "noMatches": "Ingenting passer med «{query}».",
+    "readMore": "Les mer",
+    "suggestTitle": "Mangler du en tjeneste du bruker?",
+    "suggestDescription": "Fortell oss hvilken integrasjon som ville hjulpet verkstedet ditt, så ser vi på det.",
+    "suggest": "Foreslå en integrasjon",
+    "suggestSubject": "Forslag til integrasjon"
+  },
+  "categories": {
+    "calendar": "Kalender",
+    "conferencing": "Videosamtaler",
+    "accounting": "Regnskap",
+    "messaging": "Meldinger",
+    "payments": "Betalinger",
+    "automation": "Automatisering",
+    "storage": "Filer",
+    "registry": "Kjøretøyregister",
+    "other": "Annet",
+    "ai": "KI"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Arbeidsordre til kalender",
+      "pull": "Opptatt tid fra kalender",
+      "conference": "Lenker til videosamtaler"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Oppslag på skilt og understellsnummer",
+      "inspection": "Frist for EU-kontroll",
+      "safety": "Tilbakekallinger og eierklager"
+    },
+    "ai": {
+      "chat": "Tekst og sammendrag"
+    },
+    "payments": {
+      "checkout": "Betal fra fakturalenken"
+    },
+    "accounting": {
+      "invoices": "Fakturaer til regnskapet",
+      "customers": "Kunder til regnskapet",
+      "payments": "Betalinger begge veier"
+    }
+  },
+  "statuses": {
+    "active": "Tilkoblet",
+    "error": "Trenger oppfølging",
+    "pending": "Oppsett pågår",
+    "disconnected": "Frakoblet",
+    "needsSetup": "Oppsettet er ikke ferdig"
+  },
+  "connection": {
+    "back": "Alle integrasjoner",
+    "account": "Tilkoblet konto",
+    "lastHealth": "Sist sjekket",
+    "lastSync": "Siste synkronisering",
+    "lastError": "Siste kjøring mislyktes",
+    "setupMissingTitle": "Oppsettet er ikke ferdig",
+    "setupMissing": "Velg {fields} i innstillingene nedenfor. Inntil da synkroniseres ingenting.",
+    "connected": "{name} er tilkoblet.",
+    "connectedShort": "Tilkoblet",
+    "connectWith": "Koble til {name}",
+    "connect": "Koble til",
+    "reconnect": "Koble til på nytt",
+    "disconnect": "Koble fra",
+    "disconnectTitle": "Koble fra {name}?",
+    "disconnectDescription": "Torqvoice glemmer kontoen og slutter å bruke den. Ingenting som allerede er sendt til eller lagret i {name} røres.",
+    "disconnectDescriptionCalendar": "Torqvoice glemmer kontoen og slutter å synkronisere. Arbeidsordrer som allerede ligger i {name} blir der. Opptatt tid som ble vist fra den kalenderen fjernes fra Torqvoice-kalenderen.",
+    "disconnectDescriptionConferencing": "Torqvoice glemmer kontoen og slutter å opprette møter. Møter som allerede er opprettet blir i {name}, og lenkene på arbeidsordrene beholdes.",
+    "disconnectDescriptionAccounting": "Torqvoice glemmer kontoen og slutter å sende og lese. Fakturaer, kunder og betalinger som allerede er i {name} blir der.",
+    "removeSetup": "Fjern",
+    "removeSetupTitle": "Fjerne {name}?",
+    "removeSetupDescription": "Ingenting er koblet til ennå. Torqvoice glemmer det som ble fylt inn, og {name} går tilbake til listen over tilgjengelige tjenester.",
+    "removeSetupDone": "{name} fjernet",
+    "removeSetupHint": "Skal du ikke gå videre med dette? Fjern det, så går tjenesten tilbake til listen nedenfor.",
+    "disconnected": "Frakoblet",
+    "test": "Test tilkoblingen",
+    "testPassed": "Tilkoblingen fungerer",
+    "syncNow": "Synkroniser nå",
+    "syncQueued": "Synkronisering lagt i kø; den kjører innen ett minutt",
+    "pullNow": "Hent betalinger nå",
+    "pullQueued": "Henting av betalinger lagt i kø; den kjører innen ett minutt",
+    "backfill": "Send planlagte arbeidsordre",
+    "backfillQueued": "La planlagte arbeidsordre fra og med forrige uke i kø",
+    "backfillInvoices": "Send utstedte fakturaer",
+    "backfillInvoicesQueuedCount": "{count, plural, one {# utstedt faktura} other {# utstedte fakturaer}} lagt i kø for sending",
+    "backfillInvoicesNone": "Ingen utstedte fakturaer å sende. Bare sendte, delte eller betalte fakturaer går over, fra startdatoen hvis du har satt en.",
+    "retryQueued": "Jobben er lagt i kø på nytt",
+    "settingsTitle": "Innstillinger",
+    "settingsDescription": "Hva som skal synkroniseres og hvor. Endringer gjelder fra neste synkronisering.",
+    "settingsSaved": "Innstillinger lagret",
+    "save": "Lagre",
+    "loading": "Laster...",
+    "choose": "Velg...",
+    "search": "Søk...",
+    "noMatch": "Ingen treff",
+    "leaveEmpty": "La stå tomt",
+    "noLimit": "Ingen grense",
+    "planLocked": "Integrasjoner er ikke inkludert i abonnementet ditt.",
+    "ownAppTitle": "Denne installasjonen bruker din egen app hos leverandøren",
+    "redirectUri": "Omdirigerings-URI som må registreres hos leverandøren:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet under Developers, Webhooks, abonnert på checkout.session.completed. Lim deretter signeringshemmeligheten Stripe viser inn i feltet for webhook-hemmelighet her, slik at varslene kan verifiseres.",
+    "inboundHintVipps": "Legg inn denne URL-en som callback-URL i Vipps MobilePay-portalen. Vipps krever også publiserte salgsvilkår, som settes under Innstillinger, Betaling.",
+    "inboundHintPaypal": "Legg inn denne URL-en i PayPal-utviklerdashbordet under Webhooks, abonnert på PAYMENT.CAPTURE.COMPLETED.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Synkronisering av EU-kontroll",
+      "vehicles": "{count} kjøretøy med skilt i dette verkstedet",
+      "dueNow": "{count} slås opp ved neste kjøring",
+      "withDate": "{count} har allerede en frist",
+      "lastPass": "Siste fullstendige gjennomgang {date}",
+      "never": "Ingen fullstendig gjennomgang ennå",
+      "inProgress": "En gjennomgang pågår",
+      "off": "Slå på innstillingen og lagre; før det sjekker en gjennomgang ingenting.",
+      "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige."
+    },
+    "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
+    "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}"
+  },
+  "activity": {
+    "title": "Aktivitet",
+    "description": "Siste jobber og logglinjer for denne tilkoblingen.",
+    "retry": "Prøv igjen",
+    "jobStatus": {
+      "queued": "I kø",
+      "running": "Kjører",
+      "done": "Ferdig",
+      "failed": "Mislyktes",
+      "dead": "Ga opp"
+    },
+    "jobs": "{count, plural, one {# jobb} other {# jobber}}",
+    "counts": {
+      "queued": "{count} i kø",
+      "running": "{count} kjører",
+      "done": "{count} ferdig",
+      "failed": "{count} mislyktes",
+      "dead": "{count} ga opp"
+    },
+    "noFailures": "Ingenting mislyktes.",
+    "retryFailed": "Prøv mislykkede på nytt",
+    "details": "Vis detaljer"
+  },
+  "errors": {
+    "generic": "Noe gikk galt",
+    "demo": "Integrasjoner kan ikke kobles til i demoen.",
+    "forbidden": "Bare en administrator kan koble til integrasjoner.",
+    "unknown": "Ukjent integrasjon.",
+    "plan": "Denne integrasjonen er ikke inkludert i abonnementet ditt.",
+    "no-client": "Ingen app-legitimasjon er satt opp for denne leverandøren.",
+    "denied": "Du avbrøt påloggingen hos leverandøren.",
+    "vendor": "Leverandøren returnerte en feil. Prøv igjen.",
+    "invalid": "Svaret fra leverandøren var ufullstendig. Prøv igjen.",
+    "state": "Denne påloggingen har utløpt eller tilhører en annen økt. Start på nytt.",
+    "exchange": "Leverandøren avviste påloggingen. Sjekk app-legitimasjonen og prøv igjen.",
+    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt."
+  },
+  "meeting": {
+    "join": "Bli med i videosamtale",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Fra tilkoblede kalendere",
+    "busy": "Opptatt"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Legg planlagte arbeidsordre i en Google Calendar, legg til en Google Meet-lenke og se kalenderens opptatte tid i Torqvoice.",
+      "tenantHelp": "Opprett en OAuth-klient i Google Cloud Console (APIs & Services → Credentials), aktiver Google Calendar API, legg til omdirigerings-URI-en nedenfor og lim inn klient-ID og hemmelighet her.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Legg planlagte arbeidsordre i denne kalenderen",
+        "includeCustomer": "Ta med kundens navn og telefonnummer i hendelsen",
+        "addConference": "Legg til et Google Meet-møte på hver planlagte arbeidsordre",
+        "addConferenceHelp": "På: hver arbeidsordre som legges i kalenderen får et Google Meet-møte, og lenken vises på arbeidsordren. Av: legg til et Google Meet-møte på en enkelt arbeidsordre fra siden dens. Uansett får kunden lenken bare når du sender den.",
+        "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
+        "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
+      }
+    },
+    "microsoft-365": {
+      "description": "Legg planlagte arbeidsordre i en Outlook-kalender, legg til en Microsoft Teams-lenke og se kalenderens opptatte tid i Torqvoice.",
+      "tenantHelp": "Registrer en applikasjon i Microsoft Entra (App registrations), tillat både personlige kontoer og jobbkontoer, legg til omdirigerings-URI-en nedenfor som en Web-plattform, opprett en klienthemmelighet og lim inn begge her.",
+      "fields": {
+        "clientId": "Applikasjons-ID (klient-ID)",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Legg planlagte arbeidsordre i denne kalenderen",
+        "includeCustomer": "Ta med kundens navn og telefonnummer i hendelsen",
+        "addConference": "Legg til et Microsoft Teams-møte på hver planlagte arbeidsordre",
+        "addConferenceHelp": "På: hver arbeidsordre som legges i kalenderen får et Microsoft Teams-møte, og lenken vises på arbeidsordren. Av: legg til et Microsoft Teams-møte på en enkelt arbeidsordre fra siden dens. Uansett får kunden lenken bare når du sender den.",
+        "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
+        "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
+      }
+    },
+    "zoom": {
+      "description": "Legg til et Zoom-møte på en planlagt arbeidsordre og behold lenken på den, for fjerndiagnose eller for å gå gjennom funn med kunden.",
+      "tenantHelp": "I Zoom App Marketplace oppretter du en General-app (user-managed), legger til redirect-URI-en under, legger til scopene meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting og user:read:user, og limer inn klient-ID og hemmelighet her.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "autoCreate": "Opprett et Zoom-møte automatisk for hver planlagte arbeidsordre",
+        "autoCreateHelp": "Av: du legger til videosamtalen selv fra arbeidsordrens side. På: hver arbeidsordre med starttid får et møte, som flyttes når den omplanlegges og fjernes når den kanselleres. Uansett får kunden lenken bare når du sender den.",
+        "includeCustomer": "Ta med kundens navn i møteemnet",
+        "joinBeforeHost": "La kunden bli med før deg",
+        "waitingRoom": "Bruk venterom"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Fyll ut et kjøretøy fra norsk registreringsnummer eller understellsnummer: merke, modell, årsmodell, drivstoff, girkasse, motor, farge, dekkdimensjoner og frist for EU-kontroll, rett fra Statens vegvesens register. Eieropplysninger leveres ikke.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Gratis. Bestill nøkkelen på vegvesen.no under «API for tekniske kjøretøyopplysninger»: logg inn med BankID, representer verkstedet, og nøkkelen utstedes med en gang. Den gir 50 000 oppslag per døgn."
+      },
+      "settings": {
+        "syncInspections": "Hold EU-kontrollfristen oppdatert for alle kjøretøy i dette verkstedet",
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste EU-kontroll lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Fyll ut et kjøretøy fra fransk, italiensk, spansk, portugisisk eller britisk registreringsnummer: merke, modell, årsmodell, understellsnummer, drivstoff, slagvolum og mer fra landets registreringsdata via Openapi.com. Hvert oppslag belastes verkstedets egen Openapi-konto. Eieropplysninger leveres ikke.",
+      "fields": {
+        "token": "API-token",
+        "tokenHelp": "Opprett en konto på console.openapi.com, fyll på lommeboken, og lag et token for produksjonsmiljøet under Automotive. Hvert vellykkede oppslag koster noen titalls cent; et bomskudd er gratis."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Registeret som skal søkes i. Franske og italienske skilt ser like ut, så landet kan ikke leses av skiltet.",
+        "bikes": "Slå også opp motorsykler",
+        "bikesHelp": "Når et skilt ikke er en bil, spørres motorsykkelregisteret også. Et bomskudd på bilsiden er gratis, så dette koster ikke noe ekstra med mindre en motorsykkel blir funnet. Ikke tilgjengelig for Portugal."
+      }
+    },
+    "rdw": {
+      "description": "Fyll ut et kjøretøy fra nederlandsk registreringsnummer: merke, modell, årsmodell, drivstoff, slagvolum, farge, vekter og frist for neste APK, rett fra RDWs åpne kjøretøyregister. Gratis, ingen nøkkel nødvendig. Eieropplysninger og understellsnummer publiseres ikke.",
+      "fields": {
+        "appToken": "App-token (valgfritt)",
+        "appTokenHelp": "RDWs åpne data fungerer uten nøkkel, men anonyme forespørsler deler en begrenset kvote. For kontrollsynkroniseringen: opprett en gratis konto på opendata.rdw.nl, åpne utviklerinnstillingene i profilen og lag et app-token."
+      },
+      "settings": {
+        "syncInspections": "Hold APK-fristen oppdatert for alle kjøretøy i dette verkstedet",
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste APK lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+      }
+    },
+    "regcheck": {
+      "description": "Fyll ut et kjøretøy fra skiltet i Australia, New Zealand, USA, Irland, Norge, Sverige, Danmark, Finland, Estland, Tsjekkia, Slovakia, Ungarn eller Kroatia: merke, modell, årsmodell, understellsnummer, drivstoff og slagvolum der landet publiserer dem, via RegCheck. Hvert vellykkede oppslag bruker én kreditt fra verkstedets egen RegCheck-konto. Eieropplysninger leveres ikke.",
+      "fields": {
+        "username": "RegCheck-brukernavn",
+        "usernameHelp": "Registrer deg på regcheck.org.uk; kontoen kommer med 10 gratis oppslag, og flere kjøpes i blokker på 100 fra dashbordet. Bare brukernavnet trengs her, aldri passordet. Et skilt som ikke blir funnet koster ingenting."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Registeret som skal søkes i. Hvert land har sin egen tjeneste, så tilkoblingen søker i ett.",
+        "auState": "Delstat eller territorium",
+        "auStateHelp": "Australia registrerer kjøretøy per delstat, og registeret må få vite hvilken som skal søkes. Velg der de fleste av kundenes kjøretøy er registrert.",
+        "usState": "Delstat",
+        "usStateHelp": "Tobokstavskoden for delstaten kjøretøyene er registrert i, som CA eller TX. Amerikanske registre søkes per delstat."
+      }
+    },
+    "openai": {
+      "description": "Servicebeskrivelser, historikksammendrag, lesing av vognkort og assistenten, besvart av din egen OpenAI-konto. Hvert kall belastes den kontoen, og du velger modellen.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Lag en på platform.openai.com under API keys. Kontoen må ha saldo; OpenAI fakturerer per kall."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Hvilken modell som svarer. Listen leses fra kontoen din, nyeste først. Mindre modeller koster mindre per kall og holder for det meste av verkstedteksten."
+      }
+    },
+    "anthropic": {
+      "description": "Servicebeskrivelser, historikksammendrag, lesing av vognkort og assistenten, besvart av Claude på din egen Anthropic-konto. Hvert kall belastes den kontoen, og du velger modellen.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Lag en på console.anthropic.com under API keys. Kontoen må ha saldo; Anthropic fakturerer per kall."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Hvilken modell som svarer. Listen leses fra kontoen din, nyeste først. Mindre modeller koster mindre per kall og holder for det meste av verkstedteksten."
+      }
+    },
+    "stripe": {
+      "description": "Kortbetaling fra fakturalenken, rett inn på din egen Stripe-konto. Kunden betaler, Stripe sier fra til Torqvoice, og fakturaen merkes betalt av seg selv.",
+      "fields": {
+        "secretKey": "Hemmelig nøkkel",
+        "secretKeyHelp": "Fra Stripe-dashbordet under Developers, API keys. Testnøkler behandler ingenting ekte, så prøv en betaling med dem først og bytt til live-nøkler etterpå.",
+        "publishableKey": "Publiserbar nøkkel",
+        "webhookSecret": "Signeringshemmelighet for webhook",
+        "webhookSecretHelp": "Vises av Stripe når du legger inn varslings-URL-en fra denne siden som webhook. Med den verifiseres hvert varsel før en betaling registreres."
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay fra fakturalenken. Kunden betaler i appen de allerede har, og fakturaen merkes betalt av seg selv.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Subscription key",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key fra Vipps MobilePay-portalen, under salgsenhetens API-nøkler.",
+        "merchantSerialNumber": "Merchant Serial Number (MSN)"
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt.",
+        "testMode": "Testmodus",
+        "testModeHelp": "Bruk Vipps sitt testmiljø med testnøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-nøklene."
+      }
+    },
+    "paypal": {
+      "description": "PayPal-betaling fra fakturalenken, gjennom din egen PayPal-app. Kunden betaler med PayPal-konto eller kort, og fakturaen merkes betalt av seg selv.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt.",
+        "sandbox": "Sandkassemodus",
+        "sandboxHelp": "Bruk PayPal sin sandkasse med sandkasse-appens nøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-appens nøkler."
+      }
+    },
+    "quickbooks": {
+      "description": "Send utstedte fakturaer, kundene deres og betalingene deres til QuickBooks Online, og hent tilbake betalinger registrert der.",
+      "tenantHelp": "Opprett en app i Intuit Developer-portalen. Kopier klient-ID og hemmelighet fra Keys and credentials, og skriv inn omdirigerings-URI-en nedenfor under Settings, Redirect URIs. Utviklingsnøkler når sandkasse-selskaper, produksjonsnøkler ekte.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "pushInvoices": "Send utstedte fakturaer til QuickBooks",
+        "pushOnComplete": "Send også fakturaer når jobben markeres som fullført",
+        "pushOnCompleteHelp": "Uten dette går en faktura over når den er sendt, delt eller betalt. Med det går en fullført jobb over med en gang og oppdateres om den endres.",
+        "startDate": "Bare fakturaer datert fra og med",
+        "startDateHelp": "La stå tomt for å sende alle utstedte fakturaer. Bruk datoen regnskapet flyttet til QuickBooks, så eldre fakturaer ikke føres to ganger.",
+        "includeVehicle": "Oppgi kjøretøyet på fakturaen",
+        "includeVehicleHelp": "En tekstlinje over postene med årsmodell, merke, modell, skilt og kilometerstand, så regnskapet vet hvilken bil det gjelder.",
+        "laborItemId": "Vare for arbeidslinjer",
+        "laborItemIdHelp": "La stå tomt, så opprettes en vare kalt Labour under inntektskontoen din første gang.",
+        "partsItemId": "Vare for delelinjer",
+        "partsItemIdHelp": "La stå tomt, så opprettes en vare kalt Parts under inntektskontoen din første gang.",
+        "taxAmounts": "Avgiftsbeløp",
+        "taxAmountsHelp": "Som fakturert sender avgiften nøyaktig slik den står på fakturaen kunden fikk, så begge systemer stemmer på øret. Beregnet av QuickBooks lar QuickBooks bruke satsen på avgiftskoden, eller kundens adresse i USA, og loggen sier fra når totalene er ulike.",
+        "taxAmountsBilled": "Som fakturert i Torqvoice",
+        "taxAmountsQuickbooks": "Beregnet av QuickBooks",
+        "taxCodeId": "Avgiftskode for avgiftspliktige fakturaer",
+        "taxCodeIdHelp": "QuickBooks fører avgiften under en avgiftskode. Torqvoice velger koden med samme sats som hver faktura; denne brukes når ingen passer. Et amerikansk selskap bruker TAX med mindre du velger noe annet.",
+        "zeroTaxCodeId": "Avgiftskode for avgiftsfrie fakturaer",
+        "zeroTaxCodeIdHelp": "Brukes når fakturaen er uten avgift eller kunden er fritatt. Et amerikansk selskap bruker NON med mindre du velger noe annet.",
+        "pushPayments": "Registrer betalinger i QuickBooks",
+        "depositAccountId": "Sett betalinger inn på",
+        "depositAccountIdHelp": "La stå tomt for å bruke Undeposited Funds.",
+        "manualPaidAsPayment": "Registrer en betaling når en faktura markeres som betalt for hånd",
+        "manualPaidAsPaymentHelp": "En faktura markert som betalt i Torqvoice uten betalingsføring får én betaling i QuickBooks for det den fortsatt viser som skyldig der. Avslått blir den stående åpen der til en betaling registreres.",
+        "pullPayments": "Hent tilbake betalinger registrert i QuickBooks",
+        "pullPaymentsHelp": "Hvert 30. minutt. En betaling mottatt i QuickBooks mot en faktura fra Torqvoice registreres her på fakturaen."
+      }
+    },
+    "nhtsa": {
+      "description": "Fyll ut et kjøretøy fra VIN, og se tilbakekallinger, eierklager og kollisjonsvurderinger for hver årsmodell, fra den amerikanske trafikksikkerhetsmyndigheten. Gratis, uten nøkkel.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Hold tilbakekallings- og klagedata oppdatert for alle kjøretøy i dette verkstedet",
+        "refreshFleetHelp": "En gang om dagen hentes modeller som ikke er oppdatert siste uke på nytt, så kjøretøysiden aldri venter og en ny tilbakekalling vises innen en uke. Bare merke, modell og år sendes."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Arbeidsordrer til kalender",
+      "pull": "Opptatt tid fra kalender"
+    },
+    "conference": {
+      "sync": "Videomøtelenker"
+    },
+    "inspection": {
+      "refresh": "Oppdatering av EU-kontrollfrister"
+    },
+    "accounting": {
+      "invoice": "Faktura til regnskap",
+      "payment": "Betaling til regnskap",
+      "customer": "Kunde til regnskap",
+      "pull": "Betalinger fra regnskap"
+    },
+    "safety": {
+      "refresh": "Oppdatering av tilbakekallingsdata",
+      "vehicle": "Tilbakekallingssjekk for nytt kjøretøy"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { organizationForWebhookSecret } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { notify } from '@/lib/notify'
 
@@ -12,19 +13,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing org_secret' }, { status: 400 })
     }
 
-    const secretSetting = await db.appSetting.findFirst({
-      where: {
-        key: ORG_SMS_KEYS.SMS_WEBHOOK_SECRET,
-        value: orgSecret,
-      },
-      select: { organizationId: true },
-    })
+    const organizationId = await organizationForWebhookSecret(
+      'sms',
+      orgSecret,
+      ORG_SMS_KEYS.SMS_WEBHOOK_SECRET
+    )
 
-    if (!secretSetting?.organizationId) {
+    if (!organizationId) {
       return NextResponse.json({ error: 'Invalid org_secret' }, { status: 403 })
     }
-
-    const organizationId = secretSetting.organizationId
 
     // Vonage sends JSON
     const payload = (await request.json()) as {

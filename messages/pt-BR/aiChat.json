@@ -4,7 +4,7 @@
   "placeholder": "Pergunte sobre sua oficina...",
   "clear": "Limpar conversa",
   "error": "Algo deu errado. Tente novamente.",
-  "notEnabled": "A IA não está habilitada. Configure em Configurações → IA.",
+  "notEnabled": "A IA não está conectada. Conecte a OpenAI ou a Anthropic em Configurações → Integrações.",
   "suggestion1": "Quais veículos precisam de serviço em breve?",
   "suggestion2": "Mostre-me faturas não pagas",
   "suggestion3": "Qual é a receita deste mês?",

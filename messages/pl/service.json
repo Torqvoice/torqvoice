@@ -34,7 +34,8 @@
     "delete": "Usuń",
     "unpaid": "Niezapłacone",
     "unsavedChanges": "Niezapisane zmiany",
-    "saved": "Zapisano"
+    "saved": "Zapisano",
+    "joinCall": "Dołącz do rozmowy wideo"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",
@@ -78,7 +79,17 @@
       "typePrompt": "Wpisz nazwę...",
       "boardTechnicians": "Technicy z Tablicy",
       "teamMembers": "Członkowie Zespołu"
-    }
+    },
+    "design": "Projekt faktury",
+    "designDefault": "Domyślny warsztatu",
+    "designFollowing": "Domyślny ({name})",
+    "designPinned": "Arkusz został zamrożony przy wystawieniu faktury {date}. Nowy wybór zadziała dopiero, gdy właściciel odblokuje fakturę i zostanie ona wysłana ponownie.",
+    "designSaved": "Projekt faktury zaktualizowany",
+    "designFollowingRule": "Domyślny ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Sprzedaż samych części"
+    },
+    "designSaveFailed": "Nie udało się zmienić projektu faktury"
   },
   "parts": {
     "title": "Części",
@@ -349,6 +360,7 @@
     "workBay": "Stanowisko",
     "selectWorkBay": "Wybierz stanowisko…",
     "noWorkBay": "Bez stanowiska",
+    "noTechnician": "Bez mechanika",
     "technicians": "Technicy",
     "otherTeamMembers": "Pozostali członkowie zespołu",
     "makeTechnician": "Uczyni tę osobę technikiem",
@@ -410,5 +422,50 @@
     "remove": "Usuń ten punkt",
     "notAnswered": "Nic jeszcze nie ustalono",
     "answered": "Ustalenia: {count}"
+  },
+  "videoCall": {
+    "title": "Rozmowa wideo",
+    "none": "To zlecenie nie ma rozmowy wideo.",
+    "needsSchedule": "Najpierw ustaw godzinę rozpoczęcia. Spotkanie podąża za harmonogramem.",
+    "add": "Dodaj spotkanie {provider}",
+    "addedHere": "dodane z tego zlecenia",
+    "fromCalendar": "z wydarzenia w kalendarzu",
+    "join": "Dołącz",
+    "copy": "Kopiuj link",
+    "copied": "Link skopiowany",
+    "remove": "Usuń",
+    "removeTitle": "Usunąć rozmowę wideo?",
+    "removeDescription": "Spotkanie zostanie usunięte u dostawcy. Osoby, które mają już link, nie będą mogły dołączyć.",
+    "created": "Spotkanie utworzone. Link jest na zleceniu.",
+    "removed": "Spotkanie usunięte",
+    "failed": "Coś poszło nie tak",
+    "shareHint": "Klient dostaje ten link tylko wtedy, gdy go wyślesz.",
+    "shareHintNoChannel": "Klient dostaje ten link tylko wtedy, gdy go wyślesz. Żaden kanał wiadomości nie jest skonfigurowany, więc skopiuj go do wiadomości samodzielnie.",
+    "send": {
+      "button": "Wyślij do klienta",
+      "title": "Wyślij link do rozmowy wideo",
+      "description": "Wyślij link dołączenia do {name}.",
+      "messageLabel": "Notatka (opcjonalnie)",
+      "messagePlaceholder": "Co klient powinien wiedzieć przed rozmową...",
+      "linkAlwaysIncluded": "Link dołączenia jest zawsze dodawany pod Twoją notatką.",
+      "sms": "SMS",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(brak telefonu)",
+      "noEmail": "(brak e-maila)",
+      "noTelegram": "(brak powiązanego czatu)",
+      "notAvailable": "(nie skonfigurowano)",
+      "cancel": "Anuluj",
+      "send": "Wyślij",
+      "sent": "Link do rozmowy wideo wysłany",
+      "partlySent": "Wysłano przez {sent}; nie przez {failed}",
+      "failed": "Nie udało się wysłać linku"
+    },
+    "notify": {
+      "invitation": "Cześć {name}, Twoja rozmowa wideo dotycząca {vehicle} odbędzie się {when}. Dołącz tutaj: {url}",
+      "invitationNoTime": "Cześć {name}, oto link do rozmowy wideo dotyczącej {vehicle}: {url}",
+      "joinLine": "Dołącz do rozmowy wideo tutaj: {url}",
+      "emailSubject": "Rozmowa wideo dotycząca Twojego {vehicle}"
+    }
   }
 }

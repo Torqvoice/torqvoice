@@ -1,5 +1,6 @@
 'use client'
 
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -73,7 +74,7 @@ export function SignUpForm({
         const acceptResult = await acceptInvitation({ token: inviteToken })
         if (acceptResult.success) {
           // Invited users have a known email — skip verification, go straight to dashboard
-          router.push(redirectTo || '/')
+          router.push(safeRedirectPath(redirectTo))
           router.refresh()
         } else {
           setError(acceptResult.error || t('errors.invitationFailed'))

@@ -4,6 +4,9 @@ import { getTechnicians } from '@/features/workboard/Actions/technicianActions'
 import { getBoardJobs, getWorkBoardSettings } from '@/features/workboard/Actions/boardActions'
 import { getWorkBays } from '@/features/workboard/Actions/workBayActions'
 import { WorkBoardPresenter } from '@/features/workboard/Components/WorkBoardPresenter'
+import { getAuthContext } from '@/lib/get-auth-context'
+import { zonedDate, zonedParts } from '@/lib/timezone'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,9 +26,15 @@ export default async function WorkBoardPresenterPage({
   searchParams: Promise<{ date?: string }>
 }) {
   const params = await searchParams
-  const baseDate = params.date ? new Date(params.date + 'T12:00:00') : new Date()
-
   const techPromise = getTechnicians()
+  // Without a date the board opens on the workshop's today, not the server's.
+  const ctx = await getAuthContext()
+  const timeZone = ctx ? await workshopTimeZone(ctx.organizationId) : 'UTC'
+  const today = zonedParts(new Date(), timeZone)
+  const baseDate = params.date
+    ? new Date(params.date + 'T12:00:00')
+    : zonedDate(today.year, today.month, today.day, 12, 0, timeZone)
+
   const settingsResult = await getWorkBoardSettings()
 
   const boardSettings =

@@ -1,0 +1,42 @@
+{
+  "Description": "MAZDA  Mazda6 4D Sedan CLASSIC",
+  "RegistrationYear": "2008",
+  "CarMake": {
+    "CurrentTextValue": "MAZDA"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "MAZDA"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "Mazda6 4D Sedan"
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "Classic 6-Speed Manual"
+  },
+  "Colour": "",
+  "VechileIdentificationNumber": "MAZ--6CLGH25HV92008B",
+  "Engine": "2.5 litre, 4 cyl, GH",
+  "extended": {
+    "nvic": "HV908B",
+    "driveType": "4D SEDAN",
+    "family": "MAZDA6",
+    "variant": "CLASSIC",
+    "model": "Mazda6 4D Sedan",
+    "colour": "",
+    "code": "MAZ--6CLGH25HV92008B",
+    "make": "MAZDA",
+    "fuelType": "",
+    "capacityValue": "2.5",
+    "series": "GH",
+    "engineDescription": "2.5 litre, 4 cyl, GH",
+    "bodyDescription": "",
+    "bodyType": "Classic 6-Speed Manual",
+    "cylinders": "4",
+    "year": "2008",
+    "capacityUnit": "L",
+    "transmissionType": "Manual"
+  },
+  "ImageUrl": "http://www.carregistrationapi.com/image.aspx/@TUFaREEgTWF6ZGE2IDREIFNlZGFu",
+  "Expiry": "16/12/2017",
+  "State": "WA"
+}

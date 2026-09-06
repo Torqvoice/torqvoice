@@ -34,7 +34,8 @@
     "delete": "Deletar",
     "unpaid": "Não Pago",
     "unsavedChanges": "Alterações não salvas",
-    "saved": "Salvo"
+    "saved": "Salvo",
+    "joinCall": "Entrar na videochamada"
   },
   "basicInfo": {
     "title": "Informações Básicas",
@@ -78,7 +79,17 @@
       "typePrompt": "Digite um nome...",
       "boardTechnicians": "Técnicos do Quadro",
       "teamMembers": "Membros do Time"
-    }
+    },
+    "design": "Design da fatura",
+    "designDefault": "Padrão da oficina",
+    "designFollowing": "Padrão ({name})",
+    "designPinned": "A folha foi congelada quando a fatura foi emitida em {date}. Uma nova escolha só vale depois que um proprietário desbloquear a fatura e ela for enviada de novo.",
+    "designSaved": "Design da fatura atualizado",
+    "designFollowingRule": "Padrão ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Venda apenas de peças"
+    },
+    "designSaveFailed": "Não foi possível alterar o design da fatura"
   },
   "parts": {
     "title": "Peças",
@@ -349,6 +360,7 @@
     "workBay": "Baia",
     "selectWorkBay": "Selecionar baia…",
     "noWorkBay": "Sem baia",
+    "noTechnician": "Sem técnico",
     "technicians": "Técnicos",
     "otherTeamMembers": "Outros membros da equipe",
     "makeTechnician": "Torna essa pessoa técnica",
@@ -410,5 +422,50 @@
     "remove": "Remover este item",
     "notAnswered": "Nada encontrado sobre isso ainda",
     "answered": "{count} constatação(ões) sobre isso"
+  },
+  "videoCall": {
+    "title": "Videochamada",
+    "none": "Nenhuma videochamada nesta ordem de serviço.",
+    "needsSchedule": "Defina um horário de início primeiro. A reunião segue o agendamento.",
+    "add": "Adicionar reunião do {provider}",
+    "addedHere": "adicionada por esta ordem de serviço",
+    "fromCalendar": "do evento do calendário",
+    "join": "Entrar",
+    "copy": "Copiar link",
+    "copied": "Link copiado",
+    "remove": "Remover",
+    "removeTitle": "Remover a videochamada?",
+    "removeDescription": "A reunião é excluída no provedor. Quem já tem o link não poderá mais entrar.",
+    "created": "Reunião criada. O link está na ordem de serviço.",
+    "removed": "Reunião removida",
+    "failed": "Algo deu errado",
+    "shareHint": "O cliente só recebe este link quando você envia.",
+    "shareHintNoChannel": "O cliente só recebe este link quando você envia. Nenhum canal de mensagens está configurado, então copie-o você mesmo em uma mensagem.",
+    "send": {
+      "button": "Enviar ao cliente",
+      "title": "Enviar o link da videochamada",
+      "description": "Enviar o link de entrada para {name}.",
+      "messageLabel": "Observação (opcional)",
+      "messagePlaceholder": "O que o cliente deve saber antes da chamada...",
+      "linkAlwaysIncluded": "O link de entrada é sempre adicionado abaixo da sua observação.",
+      "sms": "SMS",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(sem telefone)",
+      "noEmail": "(sem e-mail)",
+      "noTelegram": "(sem chat vinculado)",
+      "notAvailable": "(não configurado)",
+      "cancel": "Cancelar",
+      "send": "Enviar",
+      "sent": "Link da videochamada enviado",
+      "partlySent": "Enviado por {sent}; não por {failed}",
+      "failed": "Não foi possível enviar o link"
+    },
+    "notify": {
+      "invitation": "Olá {name}, sua videochamada sobre o {vehicle} é em {when}. Entre aqui: {url}",
+      "invitationNoTime": "Olá {name}, aqui está o link da videochamada sobre o {vehicle}: {url}",
+      "joinLine": "Entre na videochamada aqui: {url}",
+      "emailSubject": "Videochamada sobre o seu {vehicle}"
+    }
   }
 }

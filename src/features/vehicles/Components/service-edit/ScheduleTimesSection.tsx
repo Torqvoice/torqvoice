@@ -247,6 +247,28 @@ export function ScheduleTimesSection({
     }
   }
 
+  /**
+   * Take the technician off the job. The bay and the booked times stay: the
+   * work is still planned, it just has nobody's name on it yet.
+   */
+  const handleTechClear = async () => {
+    const previous = selectedTechId
+    setSelectedTechId('')
+    setTechOpen(false)
+    const res = await scheduleJob({
+      id: serviceRecordId,
+      type: 'serviceRecord',
+      technicianId: null,
+    })
+    if (res.success) {
+      onSaved?.()
+      if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, '', bayId)
+    } else {
+      toast.error(res.error || t('failedUpdate'))
+      setSelectedTechId(previous)
+    }
+  }
+
   const handleMemberSelect = async (member: OrgMember) => {
     // Check if a technician already exists for this user
     const existing = technicians.find((t) => t.userId === member.id)
@@ -371,6 +393,17 @@ export function ScheduleTimesSection({
               />
               <CommandList className="max-h-60 overflow-y-auto">
                 <CommandEmpty className="p-0" />
+                {/* The way off the job, the same as the bay select's "No work
+                    bay". Without it a technician could be swapped but never
+                    removed from here. */}
+                <CommandGroup>
+                  <CommandItem value={t('noTechnician')} onSelect={handleTechClear}>
+                    <Check
+                      className={cn('mr-2 h-4 w-4', selectedTechId ? 'opacity-0' : 'opacity-100')}
+                    />
+                    <span className="text-muted-foreground">{t('noTechnician')}</span>
+                  </CommandItem>
+                </CommandGroup>
                 {/* Two different kinds of person, under two headings.
                     They used to share one, so somebody who books cars in read
                     as a mechanic, and choosing them quietly created a

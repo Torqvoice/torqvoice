@@ -366,9 +366,9 @@ export function InventoryClient({
   )
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+      <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         {selected.size > 0 ? (
           <div className="flex flex-1 items-center gap-2">
             <span className="text-sm text-muted-foreground">
@@ -482,8 +482,8 @@ export function InventoryClient({
         </div>
       </div>
 
-      {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      {/* Card list (phones + small tablets) - only this scrolls */}
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.parts.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {emptyMessage}
@@ -585,11 +585,14 @@ export function InventoryClient({
         )}
       </div>
 
-      {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+      {/* Table (md and up) - only the rows scroll */}
+      <div
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+        {...tableNav.containerProps}
+      >
         <TableContextMenuHint />
-        <Table>
-          <TableHeader>
+        <Table containerClassName="min-h-0 flex-1">
+          <TableHeader sticky>
             <TableRow>
               <TableHead className="w-[40px]">
                 <Checkbox

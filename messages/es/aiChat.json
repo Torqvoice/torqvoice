@@ -4,7 +4,7 @@
   "placeholder": "Pregunte sobre su taller...",
   "clear": "Borrar conversación",
   "error": "Algo salió mal. Por favor, inténtelo de nuevo.",
-  "notEnabled": "La IA no está habilitada. Configúrela en Ajustes → IA.",
+  "notEnabled": "La IA no está conectada. Conecta OpenAI o Anthropic en Ajustes → Integraciones.",
   "suggestion1": "¿Qué vehículos necesitan servicio pronto?",
   "suggestion2": "Muéstrame facturas sin pagar",
   "suggestion3": "¿Cuáles son los ingresos de este mes?",

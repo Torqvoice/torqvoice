@@ -1,0 +1,41 @@
+{
+  "ABICode": "",
+  "Description": "Ford Focus 1.8",
+  "RegistrationYear": "2006",
+  "CarMake": {
+    "CurrentTextValue": "Ford"
+  },
+  "CarModel": {
+    "CurrentTextValue": "Focus 1.8"
+  },
+  "EngineSize": {
+    "CurrentTextValue": "1798 cm"
+  },
+  "FuelType": {
+    "CurrentTextValue": "Bensin"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "Ford"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "Focus 1.8"
+  },
+  "Immobiliser": {
+    "CurrentTextValue": ""
+  },
+  "NumberOfSeats": {
+    "CurrentTextValue": "5"
+  },
+  "DriverSide": {
+    "CurrentTextValue": ""
+  },
+  "BodyStyle": {
+    "CurrentTextValue": "Halvkombi"
+  },
+  "Colour": "Grön",
+  "RegistrationDate": "2006",
+  "VechileIdentificationNumber": "WF05XXGCD56B24845",
+  "Transmission": "Manuell",
+  "Co2": "167 g/km",
+  "ImageUrl": "http://www.registreringsnummerapi.se/image.aspx/@Rm9yZCBGb2N1cyAxLjg="
+}

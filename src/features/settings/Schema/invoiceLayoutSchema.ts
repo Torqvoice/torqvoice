@@ -85,6 +85,14 @@ export const invoiceSectionSchema = z.object({
    * customer card. Unset means shown, which every layout has always done.
    */
   heading: z.boolean().optional(),
+  /**
+   * Words this section prints in place of the ones the app would print. The
+   * title strip is the section that has any: what a sheet must call itself is
+   * a matter of local law and local habit, not of translation, and a business
+   * that has to print "Tax Invoice" cannot wait for a release to do it.
+   * Blank or unset prints the document's own name in the reader's language.
+   */
+  text: z.string().max(60).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
@@ -144,7 +152,22 @@ export const invoiceLayoutConfigSchema = z.object({
 })
 
 /** Stamped on every layout the designer saves. */
-export const DESIGNER_LAYOUT_VERSION = 2
+export const DESIGNER_LAYOUT_VERSION = 3
+
+/**
+ * The stamp that means "saved from the full-screen designer". It is not the
+ * version the designer writes: that one moves whenever a layout needs reading
+ * differently, and moving this with it would drop every organization back to
+ * the classic sheet.
+ */
+const DESIGNER_ERA_VERSION = 2
+
+/**
+ * The first version whose Document Title switch is obeyed. Below it, a hidden
+ * title strip was drawn anyway, under the header, so hiding it there was never
+ * a choice to keep.
+ */
+const HONEST_TITLE_SWITCH_VERSION = 3
 
 /**
  * Whether this layout was saved from the full-screen designer. Anything else,
@@ -152,7 +175,7 @@ export const DESIGNER_LAYOUT_VERSION = 2
  * so a deploy never restyles an organization's documents behind its back.
  */
 export function isDesignerLayout(config?: Partial<InvoiceLayoutConfig> | null): boolean {
-  return (config?.version ?? 1) >= DESIGNER_LAYOUT_VERSION
+  return (config?.version ?? 1) >= DESIGNER_ERA_VERSION
 }
 
 // ---------------------------------------------------------------------------
@@ -190,13 +213,15 @@ export function fromCustomFieldId(cfId: string): string {
 
 export const BUILTIN_SECTIONS = [
   { id: 'header', name: 'Header' },
+  // Directly under the header, which is where the strip carrying the number
+  // and the date has always been drawn.
+  { id: 'document_title', name: 'Document Title' },
   // Its own section, not a line inside the header, so it can be placed,
   // paired and styled like anything else on the sheet.
   { id: 'slogan', name: 'Slogan' },
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
-  { id: 'document_title', name: 'Document Title' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
   { id: 'labor_table', name: 'Labor Table' },
@@ -273,10 +298,50 @@ export const BUILTIN_FOOTER_FIELDS = [
   { id: 'company_org_number', name: 'Organization Number' },
 ] as const
 
+/**
+ * The title strip: the big word, and the cells beside it. Each is a switch,
+ * because what a document must name differs by trade and by country, and the
+ * strip is where a sheet says its number and its dates.
+ */
+export const BUILTIN_DOCUMENT_TITLE_FIELDS = [
+  { id: 'title', name: 'Title' },
+  { id: 'invoice_number', name: 'Number' },
+  { id: 'customer_number', name: 'Customer Number' },
+  { id: 'date', name: 'Date' },
+  { id: 'due_date', name: 'Due Date' },
+] as const
+
 export const BUILTIN_BANK_ACCOUNT_FIELDS = [
   { id: 'bank_account', name: 'Bank Account' },
   { id: 'org_number', name: 'Organization Number' },
+  { id: 'payment_terms', name: 'Payment Terms' },
+  { id: 'due_date', name: 'Due Date' },
 ] as const
+
+/**
+ * Fields that printed before they had a switch, by section.
+ *
+ * A field added to a section is off in every layout saved before it existed,
+ * which is right for a line that never printed and wrong for one that always
+ * did: switches arrived for the payment panel's terms and due date long after
+ * the rows themselves, and defaulting them off would have quietly stripped
+ * them from every existing design. A layout that does not mention them shows
+ * them; switching one off is a choice somebody made, and is stored.
+ */
+export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
+  bank_account: ['payment_terms', 'due_date'],
+  document_title: ['title', 'invoice_number', 'customer_number', 'date', 'due_date'],
+}
+
+/** The ids of `sectionId`'s grandfathered fields that `fields` never mentions. */
+export function unmentionedGrandfathered(
+  sectionId: string,
+  fields: ReadonlyArray<{ id: string }> | undefined
+): string[] {
+  const ids = GRANDFATHERED_FIELDS[sectionId]
+  if (!ids || !fields) return []
+  return ids.filter((id) => !fields.some((f) => f.id === id))
+}
 
 /** The footer's rows that are not detail lines: the mark, the portal link and the closing note. */
 export const FOOTER_SPECIAL_FIELD_IDS: Set<string> = new Set(['logo', 'portal_link', 'footer_note'])
@@ -303,11 +368,13 @@ export type BuiltinVehicleFieldId = (typeof BUILTIN_VEHICLE_FIELDS)[number]['id'
 export type BuiltinServiceFieldId = (typeof BUILTIN_SERVICE_FIELDS)[number]['id']
 export type BuiltinHeaderFieldId = (typeof BUILTIN_HEADER_FIELDS)[number]['id']
 export type BuiltinBankAccountFieldId = (typeof BUILTIN_BANK_ACCOUNT_FIELDS)[number]['id']
+export type BuiltinDocumentTitleFieldId = (typeof BUILTIN_DOCUMENT_TITLE_FIELDS)[number]['id']
 export type BuiltinFooterFieldId = (typeof BUILTIN_FOOTER_FIELDS)[number]['id']
 
 /** Sections that have configurable fields */
 export const SECTIONS_WITH_FIELDS = new Set<string>([
   'header',
+  'document_title',
   'footer',
   'customer',
   'vehicle',
@@ -375,6 +442,8 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
       return BUILTIN_HEADER_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'document_title':
+      return BUILTIN_DOCUMENT_TITLE_FIELDS.map((f) => ({ id: f.id, visible: true }))
     case 'footer':
       // Only the note and the portal link, which is the footer every existing
       // invoice already has.
@@ -396,12 +465,7 @@ function getDefaultFieldsForSection(sectionId: string): InvoiceFieldConfig[] | u
  * rather than joining them, and `document_title` because the standard headers
  * already print the title themselves.
  */
-const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
-  'general',
-  'telegram_qr',
-  'items_table',
-  'document_title',
-])
+const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>(['general', 'telegram_qr', 'items_table'])
 
 export function getDefaultInvoiceLayout(): InvoiceLayoutConfig {
   return {
@@ -492,6 +556,8 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_HEADER_FIELDS
     case 'bank_account':
       return BUILTIN_BANK_ACCOUNT_FIELDS
+    case 'document_title':
+      return BUILTIN_DOCUMENT_TITLE_FIELDS
     case 'footer':
       return BUILTIN_FOOTER_FIELDS
     default:
@@ -507,6 +573,7 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_SERVICE_FIELDS,
     ...BUILTIN_HEADER_FIELDS,
     ...BUILTIN_BANK_ACCOUNT_FIELDS,
+    ...BUILTIN_DOCUMENT_TITLE_FIELDS,
     ...BUILTIN_FOOTER_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
@@ -597,6 +664,26 @@ export function mergeWithDefaults(saved: Partial<InvoiceLayoutConfig>): InvoiceL
     // Renumber all orders as clean integers
     for (let i = 0; i < merged.length; i++) {
       merged[i] = { ...merged[i], order: i }
+    }
+  }
+
+  // Before the switch was obeyed, a hidden title strip was drawn anyway, under
+  // the header. Those layouts are read as showing it there, which is what they
+  // print today: without this, honouring the switch would take the number and
+  // the date off every sheet that never chose to lose them. The designer
+  // stamps the current version when it saves, so a workshop that switches the
+  // strip off from now on keeps it off.
+  // Placed by renumbering the whole run rather than by a fraction after the
+  // header: orders are whole numbers as far as the saved layout's schema is
+  // concerned, and a 0.5 that reached the designer was rejected on Save, which
+  // silently kept every such workshop on the layout they were trying to change.
+  if ((saved.version ?? 1) < HONEST_TITLE_SWITCH_VERSION) {
+    const title = merged.find((s) => s.id === 'document_title')
+    if (title && !title.visible) {
+      const rest = merged.filter((s) => s !== title).sort((a, b) => a.order - b.order)
+      const headerIdx = rest.findIndex((s) => s.id === 'header')
+      rest.splice(headerIdx + 1, 0, { ...title, visible: true })
+      merged.splice(0, merged.length, ...rest.map((s, i) => ({ ...s, order: i })))
     }
   }
 

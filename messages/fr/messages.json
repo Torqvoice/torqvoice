@@ -7,7 +7,8 @@
       "scheduled": "Programmés",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Campagnes"
     },
     "smsNotConfiguredTitle": "Le SMS n'est pas configuré",
     "smsNotConfiguredHint": "Connectez un fournisseur SMS pour envoyer et recevoir des messages ici. Les e-mails programmés fonctionnent sans cela.",

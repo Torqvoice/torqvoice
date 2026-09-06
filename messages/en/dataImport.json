@@ -1,0 +1,228 @@
+{
+  "title": "Import {entity}",
+  "cancel": "Cancel",
+  "done": "Done",
+  "entities": {
+    "customers": "customers",
+    "vehicles": "vehicles",
+    "services": "service history"
+  },
+  "entityHints": {
+    "customers": "Names, contact details, addresses. One row per customer.",
+    "vehicles": "Make, model, year, plate, VIN. An owner column links or creates the customer.",
+    "services": "Past jobs and invoices. One row per job, with the vehicle it belongs to."
+  },
+  "groups": {
+    "customer": "Customer",
+    "vehicle": "Vehicle",
+    "service": "Service"
+  },
+  "steps": {
+    "upload": "Choose what to import and upload the file from your current system.",
+    "mapping": "Check which column becomes which field. Nothing is written yet.",
+    "preview": "Dry run: this is exactly what the import will do. Review it, then import.",
+    "importing": "Writing rows. Keep this window open.",
+    "result": "Import finished."
+  },
+  "upload": {
+    "drop": "Drag and drop a file here",
+    "formats": "CSV, Excel (.xlsx) or vCard (.vcf), up to 25 MB and 50,000 rows",
+    "browse": "Browse files",
+    "reading": "Reading the file...",
+    "templateHint": "No export yet? Fill in a template and upload that.",
+    "templateXlsx": "Excel template",
+    "templateCsv": "CSV template",
+    "sourcesHint": "Works with exports from any shop system, accounting tool, Google Contacts, Outlook or a spreadsheet. Column names are recognised in many languages; you confirm the mapping before anything is written."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# row} other {# rows}}",
+    "colColumn": "Column in your file",
+    "colSample": "Sample values",
+    "colField": "Becomes",
+    "ignore": "Ignore this column",
+    "source": {
+      "preset": "Recognised layout",
+      "header": "Matched by header",
+      "values": "Guessed from the values"
+    },
+    "suggestWithAi": "Suggest with AI",
+    "aiApplied": "{count, plural, one {# column mapped} other {# columns mapped}} by AI. Check them before continuing.",
+    "chooseAnother": "Choose another file",
+    "missingRequired": "Still needed: {fields}",
+    "dryRunHint": "The dry run checks every row against your existing data without writing anything.",
+    "runDryRun": "Run dry run"
+  },
+  "options": {
+    "dateFormat": "Date format",
+    "dateAuto": "Detect automatically",
+    "dateDMY": "Day / month / year",
+    "dateMDY": "Month / day / year",
+    "dateYMD": "Year / month / day",
+    "decimal": "Decimal mark",
+    "decimalAuto": "Detect automatically",
+    "decimalDot": "Dot (1,234.56)",
+    "decimalComma": "Comma (1.234,56)",
+    "countryCode": "Country code for phone numbers",
+    "duplicates": "When a row matches an existing record",
+    "duplicatesUpdate": "Update the existing record",
+    "duplicatesSkip": "Skip the row",
+    "duplicatesCreate": "Create a new record anyway"
+  },
+  "summary": {
+    "create": "Will be created",
+    "update": "Will be updated",
+    "skip": "Will be skipped",
+    "error": "Cannot be imported",
+    "warnings": "With warnings",
+    "customersToCreate": "{count, plural, one {# new customer} other {# new customers}}",
+    "customersToUpdate": "{count, plural, one {# customer updated} other {# customers updated}}",
+    "vehiclesToCreate": "{count, plural, one {# new vehicle} other {# new vehicles}}",
+    "vehiclesToUpdate": "{count, plural, one {# vehicle updated} other {# vehicles updated}}",
+    "servicesToCreate": "{count, plural, one {# service record} other {# service records}}"
+  },
+  "actions": {
+    "create": "Create",
+    "update": "Update",
+    "skip": "Skip",
+    "error": "Error"
+  },
+  "matchOn": {
+    "number": "customer number",
+    "email": "email",
+    "phone": "phone",
+    "name": "name",
+    "vin": "VIN",
+    "plate": "plate",
+    "makeModelYear": "make, model and year"
+  },
+  "preview": {
+    "colAction": "Action",
+    "colOwner": "Owner",
+    "colDetails": "Details",
+    "empty": "No rows match this filter.",
+    "matchedOn": "Matches {name} (by {on})",
+    "linksCustomer": "Linked to customer {name}",
+    "linksVehicle": "Linked to {label}",
+    "sameCustomerAsRow": "Same customer as row {row}",
+    "sameVehicleAsRow": "Same vehicle as row {row}",
+    "createsCustomer": "Creates the customer",
+    "createsVehicle": "Creates the vehicle",
+    "downloadReport": "Download dry run report",
+    "limitExceeded": "Your plan allows {remaining} more customers, but this import would create {needed}. Remove rows or upgrade your plan.",
+    "pageInfo": "{from}–{to} of {total}",
+    "prev": "Previous",
+    "next": "Next",
+    "backToMapping": "Back to mapping",
+    "import": "Import {count, plural, one {# row} other {# rows}}",
+    "nothingWrittenYet": "Nothing has been written yet. The import can be undone afterwards from Settings → Data."
+  },
+  "importing": {
+    "title": "Importing...",
+    "starting": "Starting",
+    "progress": "{done} of {total} rows",
+    "keepOpen": "Large files take a minute or two."
+  },
+  "result": {
+    "title": "Import complete",
+    "undoneTitle": "Import undone",
+    "created": "{count, plural, one {# record created} other {# records created}}",
+    "updated": "{count, plural, one {# record updated} other {# records updated}}",
+    "skipped": "{count, plural, one {# row skipped} other {# rows skipped}}",
+    "failed": "{count, plural, one {# row not imported} other {# rows not imported}}",
+    "writeFailures": "{count, plural, one {# row failed while writing} other {# rows failed while writing}}",
+    "rowFailure": "Row {row}: {error}",
+    "undo": "Undo this import",
+    "undone": "Removed {customers} customers, {vehicles} vehicles and {services} service records.",
+    "undoHint": "Undo removes every record this import created. Records it only updated keep their new values."
+  },
+  "history": {
+    "title": "Import history",
+    "description": "Spreadsheet imports run on this workshop. Undo removes what an import created.",
+    "loading": "Loading...",
+    "statusUndone": "Undone",
+    "counts": "{created} created, {updated} updated, {skipped} skipped, {failed} failed",
+    "undo": "Undo",
+    "undone": "Removed {customers} customers, {vehicles} vehicles and {services} service records.",
+    "undoFailed": "Could not undo the import",
+    "confirmTitle": "Undo this import?",
+    "confirmDescription": "Removes what {file} created: {customers} customers, {vehicles} vehicles and {services} service records. Records the import only updated are kept.",
+    "cancel": "Cancel",
+    "confirm": "Undo import"
+  },
+  "fields": {
+    "customer": {
+      "name": "Customer name",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "customerNumber": "Customer number",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "address": "Address",
+      "street": "Street",
+      "postalCode": "Postal code",
+      "city": "City",
+      "state": "State / region",
+      "country": "Country",
+      "taxId": "Tax ID",
+      "notes": "Customer notes"
+    },
+    "vehicle": {
+      "description": "Vehicle (year make model in one column)",
+      "make": "Make",
+      "model": "Model",
+      "year": "Year",
+      "vin": "VIN",
+      "licensePlate": "License plate",
+      "color": "Color",
+      "mileage": "Mileage",
+      "fuelType": "Fuel type",
+      "transmission": "Transmission",
+      "engineSize": "Engine size",
+      "engineCode": "Engine code",
+      "purchaseDate": "Purchase date",
+      "purchasePrice": "Purchase price"
+    },
+    "service": {
+      "date": "Service date",
+      "title": "Service title",
+      "description": "Description",
+      "total": "Total amount",
+      "mileage": "Mileage at service",
+      "invoiceNumber": "Invoice number",
+      "notes": "Service notes",
+      "technician": "Technician"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Customer name is missing",
+    "invalid_email": "Email \"{value}\" is not valid and was left out",
+    "invalid_vin": "VIN \"{value}\" is not 17 characters; kept as typed",
+    "vehicle_make_model_required": "Make and model are missing",
+    "vehicle_year_required": "Year is missing",
+    "vehicle_year_invalid": "Year \"{value}\" is not a valid year",
+    "vehicle_identifier_required": "No plate, VIN or make and model to identify the vehicle",
+    "vehicle_not_found": "No existing vehicle matches \"{value}\" and there is not enough to create one",
+    "service_date_required": "Service date is missing",
+    "service_date_invalid": "Date \"{value}\" could not be read",
+    "service_title_required": "Service title or description is missing",
+    "invalid_date": "{field} \"{value}\" could not be read and was left out",
+    "invalid_number": "{field} \"{value}\" is not a number and was left out",
+    "duplicate_invoice_number": "Invoice number {value} already exists",
+    "write_failed": "Could not be written: {value}"
+  },
+  "errors": {
+    "uploadFailed": "The file could not be read",
+    "aiFailed": "AI could not suggest a mapping",
+    "dryRunFailed": "The dry run failed",
+    "importFailed": "The import failed",
+    "undoFailed": "Could not undo the import"
+  },
+  "entry": {
+    "title": "Import from a spreadsheet",
+    "description": "Bring customers, vehicles and service history from any system that exports CSV or Excel. Map the columns, run a dry run, then import. Every import can be undone.",
+    "customers": "Import customers",
+    "vehicles": "Import vehicles",
+    "services": "Import service history"
+  }
+}

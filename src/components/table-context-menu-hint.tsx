@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 export function TableContextMenuHint() {
   const t = useTranslations('common.contextMenu')
   return (
-    <div className="hidden items-center gap-1.5 border-b bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground md:flex">
+    <div className="hidden shrink-0 items-center gap-1.5 border-b bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground md:flex">
       <MousePointerClick className="h-3.5 w-3.5" />
       {t('hint')}
     </div>

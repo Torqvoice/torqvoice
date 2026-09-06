@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Vehicle xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://regcheck.org.uk">
+<vehicleJson>{ "Description": "PEUGEOT 307 X-LINE", "RegistrationYear": "2007", "CarMake": { "CurrentTextValue": "PEUGEOT" }, "CarModel": { "CurrentTextValue": "307 X-LINE" }, "MakeDescription": { "CurrentTextValue": "PEUGEOT" }, "ModelDescription": { "CurrentTextValue": "307 X-LINE" }, "EngineSize": { "CurrentTextValue": "1360" }, "BodyStyle": { "CurrentTextValue": "Motorbike" }, "FuelType": { "CurrentTextValue": "PETROL" }, "Variant": "", "Colour": "SILVER", "VehicleIdentificationNumber": "VF33CKFUC84922414", "KType": "", "EngineNumber": "FE040407358", "ImageUrl": "https://www.regcheck.org.uk/image.aspx/@UEVVR0VPVCAzMDcgWC1MSU5FfG1vdG9yY3ljbGU=" }</vehicleJson>
+<vehicleData>
+<Description>PEUGEOT 307 X-LINE</Description>
+<RegistrationYear>2007</RegistrationYear>
+<CarMake>
+<CurrentTextValue>PEUGEOT</CurrentTextValue>
+</CarMake>
+<CarModel>307 X-LINE</CarModel>
+<BodyStyle>
+<CurrentTextValue>Motorbike</CurrentTextValue>
+</BodyStyle>
+<EngineSize>
+<CurrentTextValue>1360</CurrentTextValue>
+</EngineSize>
+<FuelType>
+<CurrentTextValue>PETROL</CurrentTextValue>
+</FuelType>
+</vehicleData>
+</Vehicle>

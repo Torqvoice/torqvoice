@@ -6,8 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ClipboardCheck, Download, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { db } from '@/lib/db'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
+import { ReportSoldButton } from '@/features/portal/Components/ReportSoldButton'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
   active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -22,15 +25,19 @@ export default async function PortalVehicleDetailPage({
   params: Promise<{ orgId: string; vehicleId: string }>
 }) {
   const { orgId, vehicleId } = await params
+  // Dates on the portal are the workshop's calendar days, not the server's.
+  const org = await resolvePortalOrg(orgId)
+  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.vehicles')
   const tInvoices = await getTranslations('portal.invoices')
   const tWarranty = await getTranslations('vehicles.services.warranty.status')
-  const [result, serviceTypeSetting] = await Promise.all([
+  const [result, serviceTypeSetting, ownership] = await Promise.all([
     getPortalVehicleDetail(vehicleId),
     db.appSetting.findUnique({
       where: { organizationId_key: { organizationId: orgId, key: 'workshop.serviceType' } },
       select: { value: true },
     }),
+    db.vehicle.findUnique({ where: { id: vehicleId }, select: { soldReportedAt: true } }),
   ])
   const serviceType = (serviceTypeSetting?.value || 'automotive') as 'automotive' | 'marine'
 
@@ -73,6 +80,12 @@ export default async function PortalVehicleDetailPage({
               )}
               {v.color && <span>{v.color}</span>}
             </div>
+            <div className="mt-3">
+              <ReportSoldButton
+                vehicleId={v.id}
+                reportedAt={ownership?.soldReportedAt?.toISOString() ?? null}
+              />
+            </div>
           </div>
         </div>
 
@@ -110,7 +123,10 @@ export default async function PortalVehicleDetailPage({
                           {sr.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(sr.startDateTime ?? sr.serviceDate).toLocaleDateString()}
+                          {new Date(sr.startDateTime ?? sr.serviceDate).toLocaleDateString(
+                            undefined,
+                            { timeZone }
+                          )}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
@@ -186,9 +202,9 @@ export default async function PortalVehicleDetailPage({
                         <div className="min-w-0">
                           <p className="truncate text-sm font-medium">{insp.template.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(insp.createdAt).toLocaleDateString()}
+                            {new Date(insp.createdAt).toLocaleDateString(undefined, { timeZone })}
                             {insp.completedAt &&
-                              ` - ${t('completed', { date: new Date(insp.completedAt).toLocaleDateString() })}`}
+                              ` - ${t('completed', { date: new Date(insp.completedAt).toLocaleDateString(undefined, { timeZone }) })}`}
                           </p>
                           <div className="mt-1 flex gap-2">
                             {conditions.good && (

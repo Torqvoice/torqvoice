@@ -1,6 +1,7 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
@@ -400,7 +401,8 @@ export async function createServiceRequest(input: {
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate: toSafeDate(input.preferredDate) ?? null,
+        preferredDate:
+          toSafeWorkshopDate(input.preferredDate, await workshopTimeZone(organizationId)) ?? null,
         customerId,
         vehicleId: vehicle.id,
         organizationId,
@@ -541,4 +543,46 @@ export async function updatePortalSlug(slug: string | null): Promise<ActionResul
           : null,
     }
   )
+}
+
+// ─── Ownership ────────────────────────────────────────────────────────────
+
+/**
+ * The customer says the vehicle is no longer theirs. Nothing is archived
+ * here: the vehicle is flagged, reminders about it stop, and the workshop
+ * gets a notification so a person decides what to do with the record.
+ */
+export async function reportVehicleSold(vehicleId: string) {
+  return withPortalAuth(async ({ customerId, organizationId }) => {
+    const vehicle = await db.vehicle.findFirst({
+      where: { id: vehicleId, customerId, organizationId, isArchived: false },
+      select: {
+        id: true,
+        year: true,
+        make: true,
+        model: true,
+        licensePlate: true,
+        soldReportedAt: true,
+      },
+    })
+    if (!vehicle) throw new Error('Vehicle not found')
+    if (vehicle.soldReportedAt) return { reportedAt: vehicle.soldReportedAt.toISOString() }
+    const now = new Date()
+    await db.vehicle.update({ where: { id: vehicle.id }, data: { soldReportedAt: now } })
+    const customer = await db.customer.findUnique({
+      where: { id: customerId },
+      select: { name: true },
+    })
+    const label = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
+    await notify({
+      organizationId,
+      type: 'vehicle_sold',
+      title: 'Vehicle reported sold',
+      message: `${customer?.name ?? 'A customer'} says ${label} is no longer theirs.`,
+      entityType: 'vehicle',
+      entityId: vehicle.id,
+      entityUrl: `/vehicles/${vehicle.id}`,
+    })
+    return { reportedAt: now.toISOString() }
+  })
 }

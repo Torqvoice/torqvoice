@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Entegrasyonlar",
+    "description": "Atölyenizin zaten kullandığı servisleri bağlayın. Her entegrasyon bir kez kurulur ve arka planda çalışır.",
+    "all": "Tümü",
+    "empty": "Bu kategoride henüz entegrasyon yok.",
+    "notConnected": "Bağlı değil",
+    "connect": "Bağlan",
+    "manage": "Yönet",
+    "connectedTitle": "Bağlı",
+    "connectedDescription": "Bu atölyenin kurduğu hizmetler. Durumunu görmek, ayarları değiştirmek veya bağlantıyı kesmek için birini açın.",
+    "noneConnected": "Henüz bağlı bir hizmet yok. Başlamak için aşağıdan bir hizmet seçin.",
+    "availableTitle": "Kullanılabilir",
+    "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
+    "allConnected": "Kullanılabilir tüm hizmetler bağlı.",
+    "searchPlaceholder": "Entegrasyonlarda ara",
+    "noMatches": "\"{query}\" ile eşleşen bir şey yok.",
+    "readMore": "Daha fazla bilgi",
+    "suggestTitle": "Kullandığınız bir hizmet eksik mi?",
+    "suggestDescription": "Atölyenize hangi entegrasyonun yardımcı olacağını söyleyin, inceleyelim.",
+    "suggest": "Entegrasyon öner",
+    "suggestSubject": "Entegrasyon önerisi"
+  },
+  "categories": {
+    "calendar": "Takvim",
+    "conferencing": "Görüntülü görüşmeler",
+    "accounting": "Muhasebe",
+    "messaging": "Mesajlaşma",
+    "payments": "Ödemeler",
+    "automation": "Otomasyon",
+    "storage": "Dosyalar",
+    "registry": "Araç kayıt sistemi",
+    "other": "Diğer",
+    "ai": "Yapay zekâ"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "İş emirlerini takvime aktarma",
+      "pull": "Takvimden meşgul zamanlar",
+      "conference": "Görüntülü görüşme bağlantıları"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Plaka ve VIN sorgulama",
+      "inspection": "Muayene tarihleri",
+      "safety": "Geri çağırmalar ve sahip şikâyetleri"
+    },
+    "ai": {
+      "chat": "Metinler ve özetler"
+    },
+    "payments": {
+      "checkout": "Fatura bağlantısından ödeme"
+    },
+    "accounting": {
+      "invoices": "Faturalar muhasebeye",
+      "customers": "Müşteriler muhasebeye",
+      "payments": "Ödemeler iki yönlü"
+    }
+  },
+  "statuses": {
+    "active": "Bağlı",
+    "error": "Dikkat gerekiyor",
+    "pending": "Kurulum sürüyor",
+    "disconnected": "Bağlantı kesildi",
+    "needsSetup": "Kurulum tamamlanmadı"
+  },
+  "connection": {
+    "back": "Tüm entegrasyonlar",
+    "account": "Bağlı hesap",
+    "lastHealth": "Son kontrol",
+    "lastSync": "Son senkronizasyon",
+    "lastError": "Son çalıştırma başarısız oldu",
+    "setupMissingTitle": "Kurulum tamamlanmadı",
+    "setupMissing": "Aşağıdaki ayarlarda {fields} seçin. O zamana kadar hiçbir şey eşitlenmez.",
+    "connected": "{name} bağlandı.",
+    "connectedShort": "Bağlı",
+    "connectWith": "{name} bağlantısını kur",
+    "connect": "Bağlan",
+    "reconnect": "Yeniden bağlan",
+    "disconnect": "Bağlantıyı kes",
+    "disconnectTitle": "{name} bağlantısı kesilsin mi?",
+    "disconnectDescription": "Torqvoice hesabı unutur ve kullanmayı bırakır. {name} hizmetine zaten gönderilen veya orada saklanan hiçbir şeye dokunulmaz.",
+    "disconnectDescriptionCalendar": "Torqvoice hesabı unutur ve eşitlemeyi bırakır. {name} takvimine zaten eklenmiş iş emirleri orada kalır. O takvimden gösterilen dolu zaman Torqvoice takviminden kaldırılır.",
+    "disconnectDescriptionConferencing": "Torqvoice hesabı unutur ve toplantı oluşturmayı bırakır. Zaten oluşturulmuş toplantılar {name} içinde kalır, iş emirlerindeki bağlantılar korunur.",
+    "disconnectDescriptionAccounting": "Torqvoice hesabı unutur; göndermeyi ve okumayı bırakır. {name} içinde zaten bulunan faturalar, müşteriler ve ödemeler orada kalır.",
+    "removeSetup": "Kaldır",
+    "removeSetupTitle": "{name} kaldırılsın mı?",
+    "removeSetupDescription": "Henüz hiçbir şey bağlı değil. Torqvoice girilenleri unutur ve {name} kullanılabilir hizmetler listesine geri döner.",
+    "removeSetupDone": "{name} kaldırıldı",
+    "removeSetupHint": "Devam etmeyecek misiniz? Kaldırın, hizmet aşağıdaki listeye geri döner.",
+    "disconnected": "Bağlantı kesildi",
+    "test": "Bağlantıyı test et",
+    "testPassed": "Bağlantı çalışıyor",
+    "syncNow": "Şimdi senkronize et",
+    "syncQueued": "Senkronizasyon sıraya alındı; bir dakika içinde çalışır",
+    "pullNow": "Ödemeleri şimdi al",
+    "pullQueued": "Ödeme alma sıraya alındı; bir dakika içinde çalışır",
+    "backfill": "Planlanmış iş emirlerini gönder",
+    "backfillQueued": "Geçen haftadan itibaren planlanmış iş emirleri sıraya alındı",
+    "backfillInvoices": "Kesilen faturaları gönder",
+    "backfillInvoicesQueuedCount": "Gönderilmek üzere {count, plural, one {# kesilen fatura} other {# kesilen fatura}} kuyruğa alındı",
+    "backfillInvoicesNone": "Gönderilecek kesilmiş fatura yok. Yalnızca gönderilen, paylaşılan veya ödenen faturalar aktarılır; başlangıç tarihi ayarladıysanız o tarihten itibaren.",
+    "retryQueued": "İş yeniden sıraya alındı",
+    "settingsTitle": "Ayarlar",
+    "settingsDescription": "Neyin nereye senkronize edileceği. Değişiklikler bir sonraki senkronizasyonda uygulanır.",
+    "settingsSaved": "Ayarlar kaydedildi",
+    "save": "Kaydet",
+    "loading": "Yükleniyor...",
+    "choose": "Seçin...",
+    "search": "Ara...",
+    "noMatch": "Eşleşme yok",
+    "leaveEmpty": "Boş bırak",
+    "noLimit": "Sınır yok",
+    "planLocked": "Entegrasyonlar planınıza dahil değil.",
+    "ownAppTitle": "Bu kurulum, sağlayıcıda kendi uygulamanızı kullanıyor",
+    "redirectUri": "Sağlayıcıya kaydedilecek yönlendirme URI'si:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Bu URL'yi Stripe panelinde Developers, Webhooks altında checkout.session.completed olayına abone olarak ekleyin. Ardından Stripe'ın gösterdiği imza sırrını buradaki webhook sırrı alanına yapıştırın ki bildirimler doğrulanabilsin.",
+    "inboundHintVipps": "Bu URL'yi Vipps MobilePay portalında geri çağırma URL'si olarak girin. Vipps ayrıca yayımlanmış satış koşulları ister; bunlar Ayarlar, Ödeme altında ayarlanır.",
+    "inboundHintPaypal": "Bu URL'yi PayPal geliştirici panelinde Webhooks altında PAYMENT.CAPTURE.COMPLETED olayına abone olarak ekleyin.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Muayene eşitleme",
+      "vehicles": "Bu atölyede plakalı {count} araç",
+      "dueNow": "{count} araç bir sonraki çalıştırmada sorgulanacak",
+      "withDate": "{count} aracın muayene tarihi zaten var",
+      "lastPass": "Son tam tarama {date}",
+      "never": "Henüz tam tarama yok",
+      "inProgress": "Bir tarama sürüyor",
+      "off": "Ayarı açıp kaydedin; o zamana kadar tarama hiçbir şeyi kontrol etmez.",
+      "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
+    },
+    "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
+    "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}"
+  },
+  "activity": {
+    "title": "Aktivite",
+    "description": "Bu bağlantıya ait son işler ve günlük satırları.",
+    "retry": "Yeniden dene",
+    "jobStatus": {
+      "queued": "Sırada",
+      "running": "Çalışıyor",
+      "done": "Tamamlandı",
+      "failed": "Başarısız",
+      "dead": "Vazgeçildi"
+    },
+    "jobs": "{count, plural, one {# iş} other {# iş}}",
+    "counts": {
+      "queued": "{count} kuyrukta",
+      "running": "{count} çalışıyor",
+      "done": "{count} tamamlandı",
+      "failed": "{count} başarısız",
+      "dead": "{count} vazgeçildi"
+    },
+    "noFailures": "Hiçbiri başarısız olmadı.",
+    "retryFailed": "Başarısızları yeniden dene",
+    "details": "Ayrıntıları göster"
+  },
+  "errors": {
+    "generic": "Bir şeyler ters gitti",
+    "demo": "Demoda entegrasyon bağlanamaz.",
+    "forbidden": "Entegrasyonları yalnızca bir yönetici bağlayabilir.",
+    "unknown": "Bilinmeyen entegrasyon.",
+    "plan": "Bu entegrasyon planınıza dahil değil.",
+    "no-client": "Bu sağlayıcı için yapılandırılmış uygulama kimlik bilgisi yok.",
+    "denied": "Sağlayıcıdaki oturum açmayı iptal ettiniz.",
+    "vendor": "Sağlayıcı bir hata döndürdü. Yeniden deneyin.",
+    "invalid": "Sağlayıcının yanıtı eksikti. Yeniden deneyin.",
+    "state": "Bu oturum açma işleminin süresi doldu veya başka bir oturuma ait. Yeniden başlayın.",
+    "exchange": "Sağlayıcı oturum açmayı reddetti. Uygulama kimlik bilgilerini kontrol edip yeniden deneyin.",
+    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin."
+  },
+  "meeting": {
+    "join": "Görüntülü görüşmeye katıl",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Bağlı takvimlerden",
+    "busy": "Meşgul"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Planlanmış iş emirlerini bir Google Calendar takvimine ekleyin, Google Meet bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
+      "tenantHelp": "Google Cloud Console'da (APIs & Services → Credentials) bir OAuth istemcisi oluşturun, Google Calendar API'sini etkinleştirin, aşağıdaki yönlendirme URI'sini ekleyin ve istemci kimliği ile gizli anahtarı buraya yapıştırın.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "calendarId": "Takvim",
+        "pushEnabled": "Planlanmış iş emirlerini bu takvime ekle",
+        "includeCustomer": "Etkinliğe müşterinin adını ve telefonunu ekle",
+        "addConference": "Planlanan her iş emrine Google Meet toplantısı ekle",
+        "addConferenceHelp": "Açık: takvime gönderilen her iş emri bir Google Meet toplantısı alır ve bağlantı iş emrinde görünür. Kapalı: tek bir iş emrine kendi sayfasından Google Meet toplantısı ekleyin. Her durumda müşteri bağlantıyı yalnızca siz gönderdiğinizde alır.",
+        "pullEnabled": "Bu takvimin meşgul zamanlarını Torqvoice takviminde göster",
+        "pullEnabledHelp": "Salt okunur. 15 dakikada bir yenilenir; bir hafta geriye ve iki ay ileriye."
+      }
+    },
+    "microsoft-365": {
+      "description": "Planlanmış iş emirlerini bir Outlook takvimine ekleyin, Microsoft Teams bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
+      "tenantHelp": "Microsoft Entra'da (App registrations) bir uygulama kaydedin, kişisel ve iş hesaplarına izin verin, aşağıdaki yönlendirme URI'sini Web platformu olarak ekleyin, bir istemci gizli anahtarı oluşturun ve her ikisini buraya yapıştırın.",
+      "fields": {
+        "clientId": "Uygulama (istemci) kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "calendarId": "Takvim",
+        "pushEnabled": "Planlanmış iş emirlerini bu takvime ekle",
+        "includeCustomer": "Etkinliğe müşterinin adını ve telefonunu ekle",
+        "addConference": "Planlanan her iş emrine Microsoft Teams toplantısı ekle",
+        "addConferenceHelp": "Açık: takvime gönderilen her iş emri bir Microsoft Teams toplantısı alır ve bağlantı iş emrinde görünür. Kapalı: tek bir iş emrine kendi sayfasından Microsoft Teams toplantısı ekleyin. Her durumda müşteri bağlantıyı yalnızca siz gönderdiğinizde alır.",
+        "pullEnabled": "Bu takvimin meşgul zamanlarını Torqvoice takviminde göster",
+        "pullEnabledHelp": "Salt okunur. 15 dakikada bir yenilenir; bir hafta geriye ve iki ay ileriye."
+      }
+    },
+    "zoom": {
+      "description": "Planlanmış bir iş emrine Zoom toplantısı ekleyin ve katılım bağlantısını iş emrinde tutun; uzaktan arıza tespiti veya bulguları müşteriyle gözden geçirmek için.",
+      "tenantHelp": "Zoom App Marketplace'te bir General (user-managed) uygulaması oluşturun, aşağıdaki yönlendirme URI'sini ekleyin, meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ve user:read:user kapsamlarını ekleyin ve istemci kimliği ile gizli anahtarı buraya yapıştırın.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "autoCreate": "Planlanmış her iş emri için otomatik olarak Zoom toplantısı oluştur",
+        "autoCreateHelp": "Kapalı: görüntülü görüşmeyi iş emrinin sayfasından kendiniz eklersiniz. Açık: başlangıç saati olan her iş emri bir toplantı alır; yeniden planlandığında taşınır, iptal edildiğinde kaldırılır. Her iki durumda da müşteri bağlantıyı yalnızca siz gönderdiğinizde alır.",
+        "includeCustomer": "Toplantı konusuna müşteri adını ekle",
+        "joinBeforeHost": "Müşterinin sizden önce katılmasına izin ver",
+        "waitingRoom": "Bekleme odası kullan"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Norveç plakası veya VIN ile aracı doldurun: marka, model, yıl, yakıt, şanzıman, motor, renk, lastik ölçüleri ve bir sonraki EU-kontroll tarihi, doğrudan Statens vegvesen sicilinden. Araç sahibi bilgisi döndürülmez.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "Ücretsiz. Anahtarı vegvesen.no'da \"API for tekniske kjøretøyopplysninger\" altından sipariş edin: BankID ile giriş yapın, atölyeyi temsil edin; anahtar hemen verilir. Günde 50.000 sorguya izin verir."
+      },
+      "settings": {
+        "syncInspections": "Bu atölyedeki tüm araçların muayene tarihlerini güncel tut",
+        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki EU-kontroll tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Fransız, İtalyan, İspanyol, Portekiz veya İngiliz plakasından aracı doldurun: marka, model, yıl, VIN, yakıt, motor hacmi ve daha fazlası, ülkenin tescil verilerinden Openapi.com aracılığıyla. Her sorgu atölyenin kendi Openapi hesabına yansıtılır. Araç sahibi bilgisi döndürülmez.",
+      "fields": {
+        "token": "API belirteci",
+        "tokenHelp": "console.openapi.com'da bir hesap oluşturun, cüzdana bakiye yükleyin ve Automotive altında üretim ortamı için bir belirteç oluşturun. Her başarılı sorgu birkaç on sent tutar; sonuçsuz sorgu ücretsizdir."
+      },
+      "settings": {
+        "country": "Ülke",
+        "countryHelp": "Aranacak sicil. Fransız ve İtalyan plakaları aynı görünür, bu yüzden ülke plakadan okunamaz.",
+        "bikes": "Motosikletleri de sorgula",
+        "bikesHelp": "Bir plaka otomobil değilse motosiklet sicili de sorgulanır. Otomobil tarafında sonuçsuz sorgu ücretsizdir, bu nedenle bir motosiklet bulunmadıkça ek maliyet oluşmaz. Portekiz için kullanılamaz."
+      }
+    },
+    "rdw": {
+      "description": "Hollanda plakasından aracı doldurun: marka, model, yıl, yakıt, motor hacmi, renk, ağırlıklar ve bir sonraki APK tarihi, doğrudan RDW'nin açık araç sicilinden. Ücretsiz, anahtar gerekmez. Araç sahibi bilgisi ve VIN yayımlanmaz.",
+      "fields": {
+        "appToken": "Uygulama belirteci (isteğe bağlı)",
+        "appTokenHelp": "RDW açık verileri anahtarsız çalışır, ancak anonim istekler sınırlı bir kotayı paylaşır. Muayene eşitlemesi için opendata.rdw.nl'de ücretsiz bir hesap açın, profilinizin geliştirici ayarlarını açın ve bir uygulama belirteci oluşturun."
+      },
+      "settings": {
+        "syncInspections": "Bu atölyedeki tüm araçların APK tarihlerini güncel tut",
+        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki APK tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+      }
+    },
+    "regcheck": {
+      "description": "Avustralya, Yeni Zelanda, ABD, İrlanda, Norveç, İsveç, Danimarka, Finlandiya, Estonya, Çekya, Slovakya, Macaristan veya Hırvatistan plakasından aracı doldurun: ülke yayımlıyorsa marka, model, yıl, VIN, yakıt ve motor hacmi, RegCheck aracılığıyla. Her başarılı sorgu atölyenin kendi RegCheck hesabından bir kredi harcar. Araç sahibi bilgisi döndürülmez.",
+      "fields": {
+        "username": "RegCheck kullanıcı adı",
+        "usernameHelp": "regcheck.org.uk'de kaydolun; hesap 10 ücretsiz sorguyla gelir, fazlası panelden 100'lük bloklar halinde satın alınır. Burada yalnızca kullanıcı adı gerekir, şifre asla. Bulunamayan plaka ücret oluşturmaz."
+      },
+      "settings": {
+        "country": "Ülke",
+        "countryHelp": "Aranacak sicil. Her ülkenin kendi hizmeti vardır, bu yüzden bağlantı tek birinde arar.",
+        "auState": "Eyalet veya bölge",
+        "auStateHelp": "Avustralya araçları eyalet bazında tescil eder ve sicile hangisinde aranacağı söylenmelidir. Müşterilerinizin araçlarının çoğunun tescilli olduğu eyaleti seçin.",
+        "usState": "Eyalet",
+        "usStateHelp": "Araçların tescilli olduğu eyaletin iki harfli kodu, örneğin CA veya TX. ABD sicilleri eyalet bazında sorgulanır."
+      }
+    },
+    "openai": {
+      "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan; kendi OpenAI hesabınız yanıtlar. Her çağrı o hesaba faturalanır ve modeli siz seçersiniz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "platform.openai.com adresinde API keys bölümünden oluşturun. Hesapta bakiye olmalı; OpenAI her çağrı için ücretlendirir."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
+      }
+    },
+    "anthropic": {
+      "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan; kendi Anthropic hesabınızda Claude yanıtlar. Her çağrı o hesaba faturalanır ve modeli siz seçersiniz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "console.anthropic.com adresinde API keys bölümünden oluşturun. Hesapta bakiye olmalı; Anthropic her çağrı için ücretlendirir."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Hangi modelin yanıtlayacağı. Liste hesabınızdan okunur, en yenisi üstte. Küçük modeller çağrı başına daha ucuzdur ve servis metinlerinin çoğuna yeter."
+      }
+    },
+    "stripe": {
+      "description": "Fatura bağlantısından kendi Stripe hesabınıza kart ödemesi. Müşteri öder, Stripe Torqvoice'a bildirir ve fatura kendini ödendi olarak işaretler.",
+      "fields": {
+        "secretKey": "Gizli anahtar",
+        "secretKeyHelp": "Stripe panelinde Developers, API keys altından. Test anahtarları gerçek hiçbir şeyi işlemez; önce onlarla bir ödeme deneyin, sonra canlı anahtarlara geçin.",
+        "publishableKey": "Yayımlanabilir anahtar",
+        "webhookSecret": "Webhook imza sırrı",
+        "webhookSecretHelp": "Bu sayfadaki bildirim URL'sini webhook olarak eklediğinizde Stripe gösterir. Onunla her bildirim, ödeme kaydedilmeden önce doğrulanır."
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir."
+      }
+    },
+    "vipps": {
+      "description": "Fatura bağlantısından Vipps MobilePay. Müşteri zaten sahip olduğu uygulamada öder ve fatura kendini ödendi olarak işaretler.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci sırrı",
+        "subscriptionKey": "Abonelik anahtarı",
+        "subscriptionKeyHelp": "Vipps MobilePay portalında satış biriminin API anahtarları altındaki Ocp-Apim-Subscription-Key.",
+        "merchantSerialNumber": "Satıcı seri numarası"
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir.",
+        "testMode": "Test modu",
+        "testModeHelp": "Vipps test ortamını test anahtarlarıyla kullanın. Tam bir ödeme geçene kadar açık bırakın, sonra kapatıp canlı anahtarları girin."
+      }
+    },
+    "paypal": {
+      "description": "Kendi PayPal uygulamanız üzerinden fatura bağlantısından PayPal ödemesi. Müşteri PayPal hesabı veya kartla öder ve fatura kendini ödendi olarak işaretler.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci sırrı"
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir.",
+        "sandbox": "Sandbox modu",
+        "sandboxHelp": "PayPal sandbox'ını sandbox uygulama anahtarlarıyla kullanın. Tam bir ödeme geçene kadar açık bırakın, sonra kapatıp canlı uygulamanın anahtarlarını girin."
+      }
+    },
+    "quickbooks": {
+      "description": "Kesilen faturaları, müşterilerini ve ödemelerini QuickBooks Online'a gönderin ve orada kaydedilen ödemeleri geri alın.",
+      "tenantHelp": "Intuit Developer portalında bir uygulama oluşturun. Client id ve secret'ı Keys and credentials'dan kopyalayın, aşağıdaki yönlendirme URI'sini Settings, Redirect URIs altına girin. Geliştirme anahtarları sandbox şirketlerine, üretim anahtarları gerçek şirketlere ulaşır.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "pushInvoices": "Kesilen faturaları QuickBooks'a gönder",
+        "pushOnComplete": "İş tamamlandı olarak işaretlendiğinde faturaları da gönder",
+        "pushOnCompleteHelp": "Bu olmadan fatura gönderildiğinde, paylaşıldığında veya ödendiğinde aktarılır. Bununla tamamlanan iş hemen aktarılır ve değişirse güncellenir.",
+        "startDate": "Yalnızca şu tarih ve sonrasındaki faturalar",
+        "startDateHelp": "Kesilen her faturayı göndermek için boş bırakın. Eski faturaların iki kez girilmemesi için defterlerinizin QuickBooks'a taşındığı tarihi kullanın.",
+        "includeVehicle": "Aracı faturada belirt",
+        "includeVehicleHelp": "Kalemlerin üzerinde yıl, marka, model, plaka ve kilometreyi içeren bir metin satırı; böylece defterler hangi araç olduğunu söyler.",
+        "laborItemId": "İşçilik satırları için kalem",
+        "laborItemIdHelp": "Boş bırakın; ilk seferde gelir hesabınızın altında Labour adlı bir kalem oluşturulur.",
+        "partsItemId": "Parça satırları için kalem",
+        "partsItemIdHelp": "Boş bırakın; ilk seferde gelir hesabınızın altında Parts adlı bir kalem oluşturulur.",
+        "taxAmounts": "Vergi tutarları",
+        "taxAmountsHelp": "Faturadaki gibi, vergiyi müşterinin aldığı faturadaki haliyle gönderir; böylece iki sistem kuruşuna kadar uyuşur. QuickBooks hesaplasın, QuickBooks'un vergi kodunun oranını, ABD'de ise müşterinin adresini uygulamasına izin verir; toplamlar farklıysa günlük bildirir.",
+        "taxAmountsBilled": "Torqvoice faturasındaki gibi",
+        "taxAmountsQuickbooks": "QuickBooks hesaplasın",
+        "taxCodeId": "Vergili faturalar için vergi kodu",
+        "taxCodeIdHelp": "QuickBooks vergiyi bir vergi koduna işler. Torqvoice her fatura için oranı eşleşen kodu kendisi seçer; hiçbiri eşleşmezse bu kod kullanılır. ABD şirketi başka bir kod seçmediğiniz sürece TAX kullanır.",
+        "zeroTaxCodeId": "Vergisiz faturalar için vergi kodu",
+        "zeroTaxCodeIdHelp": "Faturada vergi yoksa veya müşteri vergiden muafsa kullanılır. ABD şirketi başka bir kod seçmediğiniz sürece NON kullanır.",
+        "pushPayments": "Ödemeleri QuickBooks'a kaydet",
+        "depositAccountId": "Ödemeleri şuraya yatır",
+        "depositAccountIdHelp": "Undeposited Funds kullanmak için boş bırakın.",
+        "manualPaidAsPayment": "Fatura elle ödendi olarak işaretlendiğinde ödeme kaydet",
+        "manualPaidAsPaymentHelp": "Torqvoice'ta ödeme kaydı olmadan ödendi olarak işaretlenen bir fatura, QuickBooks'ta hâlâ alacak görünen tutar kadar tek bir ödeme alır. Kapalıysa bir ödeme kaydedilene kadar orada açık kalır.",
+        "pullPayments": "QuickBooks'ta kaydedilen ödemeleri geri al",
+        "pullPaymentsHelp": "Her 30 dakikada bir. QuickBooks'ta bir Torqvoice faturası için alınan ödeme burada faturaya kaydedilir."
+      }
+    },
+    "nhtsa": {
+      "description": "Bir aracı VIN'inden doldurun ve her model yılı için geri çağırmaları, sahip şikâyetlerini ve çarpışma testi puanlarını ABD güvenlik kurumundan görün. Ücretsiz, anahtarsız.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Bu atölyedeki her araç için geri çağırma ve şikâyet verilerini güncel tut",
+        "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "İş emirleri takvime",
+      "pull": "Takvimden dolu zamanlar"
+    },
+    "conference": {
+      "sync": "Görüntülü arama bağlantıları"
+    },
+    "inspection": {
+      "refresh": "Muayene tarihlerini yenileme"
+    },
+    "accounting": {
+      "invoice": "Fatura muhasebeye",
+      "payment": "Ödeme muhasebeye",
+      "customer": "Müşteri muhasebeye",
+      "pull": "Ödemeler muhasebeden"
+    },
+    "safety": {
+      "refresh": "Geri çağırma verisi yenileme",
+      "vehicle": "Yeni araç için geri çağırma kontrolü"
+    }
+  }
+}

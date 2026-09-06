@@ -4,7 +4,7 @@
   "placeholder": "Klauskite apie savo dirbtuves...",
   "clear": "Išvalyti pokalbį",
   "error": "Kažkas nutiko. Bandykite dar kartą.",
-  "notEnabled": "DI neįjungtas. Sukonfigūruokite jį skiltyje Nustatymai → DI.",
+  "notEnabled": "DI neprijungtas. Prijunkite OpenAI arba Anthropic skiltyje Nustatymai → Integracijos.",
   "suggestion1": "Kurioms transporto priemonėms reikia aptarnavimo?",
   "suggestion2": "Parodykite neapmokėtas sąskaitas",
   "suggestion3": "Kokios šio mėnesio pajamos?",

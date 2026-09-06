@@ -151,7 +151,20 @@
     "settings_whatsappNumberRegistered": "Registrerte et WhatsApp-nummer",
     "team_giveTechnicianTheApp": "Ga en tavle-tekniker en konto",
     "team_createDefaultRoles": "Opprettet standardrollene",
-    "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt"
+    "settings_setCustomFieldPlacement": "Oppdaterte plassering av egendefinert felt",
+    "import_commit": "Importerte regneark",
+    "import_undo": "Angret import",
+    "integration_connect": "Koblet til en integrasjon",
+    "integration_disconnect": "Koblet fra en integrasjon",
+    "service_setInvoiceDesign": "Endret fakturadesign",
+    "settings_saveDocumentDesign": "Lagret dokumentdesign",
+    "settings_deleteDocumentDesign": "Slettet dokumentdesign",
+    "settings_applyDocumentDesign": "Satte standard dokumentdesign",
+    "settings_setDocumentDesignRule": "Endret når et design brukes",
+    "settings_freezeInvoices": "Låste eldre fakturaer",
+    "inspection_reminders_sent": "Sendte påminnelser om EU-kontroll",
+    "inspection_reminders_send": "Sendte påminnelser om EU-kontroll",
+    "service_videoCall_send": "Sendte lenke til videosamtale"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -275,6 +288,18 @@
     "work_bay_create": "Opprettet arbeidsplass «{name}»",
     "work_bay_update": "Oppdaterte arbeidsplass «{name}»",
     "work_bay_delete": "Slettet arbeidsplass {id}",
-    "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut"
+    "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut",
+    "import_commit": "Importerte et regneark: {count} poster opprettet",
+    "import_undo": "Angret en regnearkimport: {records} poster fjernet",
+    "integration_connect": "Koblet til {name}",
+    "integration_disconnect": "Koblet fra {name}",
+    "service_setInvoiceDesign": "Endret hvilket design en faktura skrives ut med",
+    "settings_saveDocumentDesign": "Lagret dokumentdesignet {name}",
+    "settings_deleteDocumentDesign": "Slettet dokumentdesignet {name}",
+    "settings_applyDocumentDesign": "Gjorde {name} til standard dokumentdesign",
+    "settings_setDocumentDesignRule": "Endret når dokumentdesignet {name} brukes",
+    "settings_freezeInvoices": "Låste {count, plural, one {# faktura} other {# fakturaer}} fra før låsing med gjeldende design",
+    "inspection_reminders_sent": "Sendte {count} påminnelser om EU-kontroll",
+    "service_videoCall_send": "Sendte lenken til videosamtalen via {channels}"
   }
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
@@ -8,7 +9,9 @@ import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { unlink } from 'fs/promises'
 import { randomUUID } from 'crypto'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
-import { resolveInvoicePrefix, toSafeDate } from '@/lib/invoice-utils'
+import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { shiftWorkshopTime, toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { serviceDateOrderBy } from '@/lib/date-sort'
 import { notificationBus } from '@/lib/notification-bus'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -244,6 +247,7 @@ export async function getServiceRecord(recordId: string) {
               address: true,
               company: true,
               telegramChatId: true,
+              invoiceDesignId: true,
             },
           },
           vehicle: {
@@ -264,6 +268,7 @@ export async function getServiceRecord(recordId: string) {
                   address: true,
                   company: true,
                   telegramChatId: true,
+                  invoiceDesignId: true,
                 },
               },
             },
@@ -283,6 +288,7 @@ export async function createServiceRecord(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
       const data = createServiceSchema.parse(input)
+      const timeZone = await workshopTimeZone(organizationId)
 
       // Two shapes: a vehicle-linked work order, or a counter sale (no vehicle)
       // that must be linked directly to a customer instead.
@@ -394,18 +400,21 @@ export async function createServiceRecord(input: unknown) {
             taxInclusive,
             shopName,
             invoiceNumber,
-            serviceDate: toSafeDate(serviceDate) ?? new Date(),
-            invoiceDate: toSafeDate(invoiceDate) ?? toSafeDate(serviceDate) ?? new Date(),
-            invoiceDueDate: toSafeDate(invoiceDueDate),
+            serviceDate: toSafeWorkshopDate(serviceDate, timeZone) ?? new Date(),
+            invoiceDate:
+              toSafeWorkshopDate(invoiceDate, timeZone) ??
+              toSafeWorkshopDate(serviceDate, timeZone) ??
+              new Date(),
+            invoiceDueDate: toSafeWorkshopDate(invoiceDueDate, timeZone),
             warrantyMonths: warrantyMonths || null,
             warrantyMileage: warrantyMileage || null,
             warrantyNotes: warrantyNotes || null,
             warrantyExpiresAt: warrantyMonths
-              ? (() => {
-                  const base = new Date(serviceDate || Date.now())
-                  base.setMonth(base.getMonth() + warrantyMonths)
-                  return base
-                })()
+              ? shiftWorkshopTime(
+                  toSafeWorkshopDate(serviceDate, timeZone) ?? new Date(),
+                  { months: warrantyMonths },
+                  timeZone
+                )
               : null,
           },
         })
@@ -532,6 +541,7 @@ export async function updateServiceRecord(input: unknown) {
       // Refused before anything is read or written: this is the main way the
       // money on an invoice changes.
       await assertInvoiceEditable(data.id, organizationId)
+      const timeZone = await workshopTimeZone(organizationId)
       const existing = await db.serviceRecord.findFirst({
         where: { id: data.id, organizationId },
         include: {
@@ -619,9 +629,17 @@ export async function updateServiceRecord(input: unknown) {
             invoiceNumber:
               recordData.invoiceNumber !== undefined ? recordData.invoiceNumber || null : undefined,
             mileage: recordData.mileage !== undefined ? (recordData.mileage ?? null) : undefined,
-            serviceDate: toSafeDate(data.serviceDate),
-            invoiceDate: toSafeDate(data.invoiceDate),
-            invoiceDueDate: toSafeDate(data.invoiceDueDate),
+            serviceDate: toSafeWorkshopDate(data.serviceDate, timeZone),
+            // An emptied date clears it; the invoice then falls back to the
+            // scheduled start or the service date, as it did before one was set.
+            invoiceDate:
+              data.invoiceDate !== undefined
+                ? (toSafeWorkshopDate(data.invoiceDate, timeZone) ?? null)
+                : undefined,
+            invoiceDueDate:
+              data.invoiceDueDate !== undefined
+                ? (toSafeWorkshopDate(data.invoiceDueDate, timeZone) ?? null)
+                : undefined,
             warrantyMonths:
               data.warrantyMonths !== undefined ? data.warrantyMonths || null : undefined,
             warrantyMileage:
@@ -631,12 +649,11 @@ export async function updateServiceRecord(input: unknown) {
             warrantyExpiresAt:
               data.warrantyMonths !== undefined
                 ? data.warrantyMonths
-                  ? (() => {
-                      const serviceDate = data.serviceDate || existing.serviceDate
-                      const base = new Date(serviceDate)
-                      base.setMonth(base.getMonth() + data.warrantyMonths)
-                      return base
-                    })()
+                  ? shiftWorkshopTime(
+                      toSafeWorkshopDate(data.serviceDate, timeZone) ?? existing.serviceDate,
+                      { months: data.warrantyMonths },
+                      timeZone
+                    )
                   : null
                 : undefined,
           },
@@ -905,6 +922,9 @@ export async function toggleManuallyPaid(recordId: string) {
         where: { id: recordId },
         data: { manuallyPaid: !record.manuallyPaid },
       })
+      // A paid invoice is the customer's document whether or not it was ever
+      // sent through the app.
+      if (!record.manuallyPaid) await issueInvoice(recordId, organizationId, 'paid')
 
       revalidatePath('/')
       revalidatePath('/services')
@@ -1141,6 +1161,10 @@ export async function generatePublicLink(serviceRecordId: string) {
         where: { id: serviceRecordId, organizationId },
       })
       if (!record) throw new Error('Record not found')
+
+      // The link is a way of sending the invoice, so what it shows is frozen
+      // now, before the stamp below locks it.
+      await issueInvoice(serviceRecordId, organizationId, 'sent')
 
       const token = randomUUID()
       await db.serviceRecord.update({

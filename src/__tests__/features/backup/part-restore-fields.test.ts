@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { readPrismaSchema } from '@/__tests__/stubs/prisma-schema'
 
 /**
  * Restore completeness for part lines.
@@ -19,7 +20,7 @@ const importSource = fs.readFileSync(
   path.join(ROOT, 'src/app/api/protected/backup/import/route.ts'),
   'utf-8'
 )
-const schema = fs.readFileSync(path.join(ROOT, 'prisma/schema.prisma'), 'utf-8')
+const schema = readPrismaSchema(ROOT)
 
 /** Scalar (persisted, non-relation) columns of a model, from the schema. */
 function scalarColumns(model: string): string[] {

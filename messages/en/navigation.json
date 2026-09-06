@@ -59,7 +59,8 @@
     "tireStorage": "Storage Layout",
     "tireSetDetails": "Tire Set",
     "tireForecast": "Next season",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Inspection reminders"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",
@@ -117,6 +118,19 @@
     "auditLog": "Audit Log",
     "aiAssistant": "AI Assistant",
     "tireHotel": "Tire hotel",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "New work order",
+    "installApp": "Install app",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "badges": {
+      "messages": "{count} unread messages",
+      "workOrders": "{count} open work orders",
+      "inspections": "{count} inspections in progress",
+      "reminders": "{count} reminders due"
+    }
   }
 }

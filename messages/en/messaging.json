@@ -21,6 +21,10 @@
     "deleteFailed": "Could not delete the conversation",
     "delete": "Delete",
     "cancel": "Cancel",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "unread": "{count} unread",
+    "markUnread": "Mark as unread",
+    "nothingToMarkUnread": "The customer has not written in this conversation yet.",
+    "markUnreadFailed": "Could not mark the conversation as unread."
   }
 }

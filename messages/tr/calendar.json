@@ -30,11 +30,53 @@
   },
   "today": "Bugün",
   "workOrder": "İş emri",
+  "allDay": "Tüm gün",
+  "openDay": "{date} tarihini aç",
+  "dayTotal": "{count, plural, =1 {1 etkinlik} other {# etkinlik}}",
+  "views": {
+    "day": "Gün",
+    "week": "Hafta",
+    "month": "Ay",
+    "year": "Yıl",
+    "schedule": "Program",
+    "fourDays": "4 gün"
+  },
+  "options": {
+    "showWeekends": "Hafta sonlarını göster",
+    "showCompleted": "Tamamlananları göster",
+    "showWeekNumbers": "Hafta numaralarını göster"
+  },
+  "toolbar": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "create": "Oluştur",
+    "showSidebar": "Yan paneli göster",
+    "hideSidebar": "Yan paneli gizle"
+  },
+  "sidebar": {
+    "calendars": "Takvimler",
+    "legend": "Durum renkleri"
+  },
+  "schedule": {
+    "empty": "Planlanmış bir şey yok",
+    "emptyHint": "Bu dönemde iş emri, hatırlatıcı, teklif veya mesaj yok."
+  },
+  "peek": {
+    "close": "Kapat",
+    "open": {
+      "service": "İş emrini aç",
+      "reminder": "Hatırlatıcıyı aç",
+      "quote": "Teklifi aç",
+      "message": "Mesajları aç",
+      "external": "Aç"
+    }
+  },
   "filters": {
-    "services": "Servisler",
+    "services": "İş emirleri",
     "reminders": "Hatırlatıcılar",
     "quotes": "Teklifler",
-    "messages": "Mesajlar"
+    "messages": "Mesajlar",
+    "external": "Bağlı takvimler"
   },
   "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
@@ -44,14 +86,27 @@
     "useToday": "Use today"
   },
   "more": "+ {count} daha",
-  "monthTotal": "bu ay {count} kayıt",
+  "monthTotal": "{count} etkinlik",
   "contextMenu": {
     "newWorkOrder": "Yeni iş emri",
+    "newWorkOrderAt": "{time} için yeni iş emri",
     "newReminder": "Yeni hatırlatıcı",
     "newQuote": "Yeni teklif",
     "openEvent": "Aç ({count})",
     "hint": "İpucu: işlemler için bir güne sağ tıklayın",
     "scheduleMessage": "Mesaj planla"
+  },
+  "eventMenu": {
+    "open": "Aç",
+    "markDone": "Tamamlandı olarak işaretle",
+    "markNotDone": "Tamamlanmadı olarak işaretle",
+    "deleteReminder": "Hatırlatıcıyı sil",
+    "deleteReminderConfirm": "\"{title}\" hatırlatıcısı silinsin mi? Bu işlem geri alınamaz.",
+    "deleteMessage": "Planlanmış mesajı sil",
+    "deleteMessageConfirm": "\"{title}\" planlanmış mesajı silinsin mi? Gönderilmeyecek.",
+    "deleted": "Silindi",
+    "updated": "Güncellendi",
+    "failed": "Olmadı. Tekrar deneyin."
   },
   "events": {
     "status": {
@@ -59,6 +114,7 @@
       "inProgress": "Devam ediyor",
       "waitingParts": "Parça bekleniyor",
       "pending": "Beklemede",
+      "scheduled": "Planlandı",
       "sent": "Gönderildi",
       "approved": "Onaylandı",
       "draft": "Taslak",
@@ -66,16 +122,27 @@
       "overdue": "Gecikmiş",
       "upcoming": "Yaklaşan",
       "failed": "Başarısız",
-      "queued": "Sırada"
+      "queued": "Sırada",
+      "busy": "Meşgul"
     },
     "type": {
-      "service": "Servis",
+      "service": "İş emri",
       "reminder": "Hatırlatıcı",
       "quote": "Teklif",
-      "message": "Mesaj"
+      "message": "Mesaj",
+      "external": "Bağlı takvim"
     },
     "noEvents": "Etkinlik yok",
-    "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun."
+    "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun.",
+    "external": {
+      "source": "{source} kaynağından",
+      "sourceUnknown": "Bağlı bir takvimden",
+      "allDay": "Tüm gün",
+      "open": "{source} içinde aç",
+      "openGeneric": "Takvimde aç",
+      "noLink": "Bu takvim etkinliğe bağlantı vermiyor.",
+      "readOnly": "Bağlı bir takvimden gelen dolu zaman. Orada değiştirin, bir sonraki eşitlemede burada güncellenir."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

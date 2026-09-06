@@ -56,7 +56,8 @@
     "recentObservations": "Son Gözlemler",
     "recentActivity": "Son Etkinlik",
     "gettingStarted": "Başlarken",
-    "tireHotel": "Lastik oteli"
+    "tireHotel": "Lastik oteli",
+    "inspectionsDue": "Yaklaşan muayeneler"
   },
   "maintenance": {
     "title": "Tahmini Bakım Zamanı",
@@ -252,5 +253,15 @@
     "roomLeft": "{count} tane daha yer var",
     "needsPrep": "Hazırlık bekliyor",
     "unbilled": "Faturalanmamış ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Yaklaşan muayeneler",
+    "viewAll": "Süresi yaklaşan tüm araçları gör",
+    "overdue": "Gecikmiş",
+    "within30": "Önümüzdeki 30 gün",
+    "within90": "Önümüzdeki 90 gün",
+    "noData": "Önümüzdeki 90 günde muayene yok",
+    "overdueSince": "{date} tarihinden beri gecikmiş",
+    "remind": "Hatırlatma gönder"
   }
 }

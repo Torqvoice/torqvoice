@@ -25,6 +25,7 @@ import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { NoteForm } from '@/features/vehicles/Components/NoteForm'
 import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
+import { VehicleSafetyPanel } from '@/features/vehicles/Components/VehicleSafetyPanel'
 import { ServiceRecordsTable } from './service-records-table'
 import { NotesTable } from './notes-table'
 import { FindingsTable } from './findings-table'
@@ -184,6 +185,7 @@ interface VehicleDetail {
   imageUrl: string | null
   isArchived: boolean
   archiveReason: string | null
+  soldReportedAt?: Date | null
   customerId: string | null
   customer: {
     id: string
@@ -191,6 +193,13 @@ interface VehicleDetail {
     company: string | null
     email: string | null
     phone: string | null
+  } | null
+  inspectionStatus?: {
+    dueAt: Date | null
+    lastAt: Date | null
+    source: string
+    checkedAt: Date | null
+    registered: boolean | null
   } | null
   serviceRecords: {
     id: string
@@ -202,6 +211,7 @@ interface VehicleDetail {
     title: string
     description: string | null
     dueDate: Date | null
+    hasDueTime?: boolean
     dueMileage: number | null
     isCompleted: boolean
     createdAt: Date
@@ -282,6 +292,7 @@ export function VehicleDetailClient({
   inspectionTemplates,
   quotes = [],
   aiEnabled = false,
+  safetyAvailable = false,
   paginatedFindings,
   tireSets = [],
 }: {
@@ -317,6 +328,8 @@ export function VehicleDetailClient({
   inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
   quotes?: QuoteRecord[]
   aiEnabled?: boolean
+  /** A safety authority such as NHTSA is connected and this vehicle has a model to ask about. */
+  safetyAvailable?: boolean
 }) {
   const formatCurrency = useFormatCurrency()
   const serviceType = useServiceType()
@@ -324,7 +337,7 @@ export function VehicleDetailClient({
   const distUnit = isMarine ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { formatDate } = useFormatDate()
+  const { formatDate, formatDateTime } = useFormatDate()
   const t = useTranslations('vehicles.detail')
   const ti = useTranslations('vehicles.inspections')
   const tr = useTranslations('vehicles.reminders')
@@ -700,6 +713,44 @@ export function VehicleDetailClient({
               {vehicle.color && (
                 <Badge variant="secondary" className="text-xs px-1.5 py-0">
                   {vehicle.color}
+                </Badge>
+              )}
+              {vehicle.inspectionStatus?.dueAt && (
+                <Badge
+                  variant="outline"
+                  className={`text-xs px-1.5 py-0 ${
+                    new Date(vehicle.inspectionStatus.dueAt).getTime() < Date.now()
+                      ? 'border-destructive/40 text-destructive'
+                      : new Date(vehicle.inspectionStatus.dueAt).getTime() - Date.now() <
+                          30 * 86_400_000
+                        ? 'border-amber-500/40 text-amber-700 dark:text-amber-400'
+                        : ''
+                  }`}
+                  title={
+                    vehicle.inspectionStatus.checkedAt
+                      ? t('inspectionCheckedAt', {
+                          date: formatDate(vehicle.inspectionStatus.checkedAt),
+                        })
+                      : undefined
+                  }
+                >
+                  {t('inspectionDue', { date: formatDate(vehicle.inspectionStatus.dueAt) })}
+                </Badge>
+              )}
+              {vehicle.soldReportedAt && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-1.5 py-0 border-amber-500/40 text-amber-700 dark:text-amber-400"
+                >
+                  {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
+                </Badge>
+              )}
+              {vehicle.inspectionStatus?.registered === false && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-1.5 py-0 border-destructive/40 text-destructive"
+                >
+                  {t('notRegistered')}
                 </Badge>
               )}
               {vehicle.customer && (
@@ -1169,6 +1220,17 @@ export function VehicleDetailClient({
         </Card>
       )}
 
+      {/* Recalls, owner complaints and crash rating for this model year. */}
+      {safetyAvailable && !isMarine && (
+        <VehicleSafetyPanel
+          vehicleId={vehicle.id}
+          make={vehicle.make}
+          model={vehicle.model}
+          year={vehicle.year}
+          existingFindings={paginatedFindings.records.map((f) => f.description)}
+        />
+      )}
+
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
         <TabsList className="grid w-full grid-cols-6">
@@ -1614,7 +1676,12 @@ export function VehicleDetailClient({
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            {r.dueDate && tr('due', { date: formatDate(new Date(r.dueDate)) })}
+                            {r.dueDate &&
+                              tr('due', {
+                                date: r.hasDueTime
+                                  ? formatDateTime(new Date(r.dueDate))
+                                  : formatDate(new Date(r.dueDate)),
+                              })}
                             {r.dueMileage &&
                               `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
                           </p>

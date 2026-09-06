@@ -1,0 +1,25 @@
+{
+  "Description": "2009 Kia Rio Base / LX / SX",
+  "BodyStyle": {
+    "CurrentTextValue": "Sedan 4D"
+  },
+  "VechileIdentificationNumber": "KNADE223696445551",
+  "Assembly": "South Korea",
+  "EngineSize": {
+    "CurrentTextValue": "1.6L I4 MPI"
+  },
+  "RegistrationYear": "2009",
+  "CarMake": {
+    "CurrentTextValue": "Kia"
+  },
+  "CarModel": {
+    "CurrentTextValue": "Rio Base / LX / SX"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "Kia"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "Rio Base / LX / SX"
+  },
+  "ImageUrl": "http://vehicleregistrationapi.com/image.aspx/@S2lhIFJpbyBCYXNlIC8gTFggLyBTWA=="
+}

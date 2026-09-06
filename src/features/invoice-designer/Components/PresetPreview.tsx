@@ -44,6 +44,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         email: workshop?.email ?? '',
         slogan: workshop?.slogan ?? '',
         orgNumber: '',
+        paymentTerms: '',
         logoUrl: logoUrl ?? '',
       },
       [],

@@ -5,6 +5,7 @@ import {
   dispatchScheduledMessage,
   nextSendAt,
 } from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 const LOG_PREFIX = '[scheduled-messages]'
 
@@ -45,10 +46,17 @@ export async function processDueMessages(now = new Date()): Promise<number> {
   })
 
   let sent = 0
+  // One settings read per workshop, however many of its messages are due
+  const zones = new Map<string, string>()
 
   for (const message of due) {
     const isStale = now.getTime() - message.sendAt.getTime() > MAX_LATENESS_MS
-    const following = nextSendAt(message.sendAt, message.frequency, message.endDate)
+    let timeZone = zones.get(message.organizationId)
+    if (!timeZone) {
+      timeZone = await workshopTimeZone(message.organizationId)
+      zones.set(message.organizationId, timeZone)
+    }
+    const following = nextSendAt(message.sendAt, message.frequency, message.endDate, timeZone)
 
     if (isStale) {
       // A day late is no longer the message the workshop meant to send, so it

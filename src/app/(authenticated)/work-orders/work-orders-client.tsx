@@ -5,7 +5,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useState, useCallback, useEffect, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -198,6 +198,18 @@ export function WorkOrdersClient({
     [router, pathname, searchParams]
   )
 
+  // The sidebar's "New work order" lands here with ?new=1. Open the picker
+  // and drop the flag from the address, so a reload or a back-step does not
+  // open it again.
+  useEffect(() => {
+    if (searchParams.get('new') !== '1') return
+    setShowPicker(true)
+    const rest = new URLSearchParams(searchParams.toString())
+    rest.delete('new')
+    const query = rest.toString()
+    router.replace(query ? `${pathname}?${query}` : pathname)
+  }, [searchParams, pathname, router])
+
   const handleSort = useCallback(
     (column: string) => {
       const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
@@ -251,9 +263,9 @@ export function WorkOrdersClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Status tabs: one scrollable row on phones, wrapped above sm. */}
-      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+      <div className="-mx-1 flex shrink-0 gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabKeys.map((key) => {
           const isActive = statusFilter === key
           const count = key === 'all' || key === 'active' ? undefined : data.statusCounts[key] || 0
@@ -277,7 +289,7 @@ export function WorkOrdersClient({
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex shrink-0 items-center justify-between gap-2">
         <div className="flex flex-1 items-center gap-2">
           <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -303,8 +315,8 @@ export function WorkOrdersClient({
         </Button>
       </div>
 
-      {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
+      {/* Card list (phones + small tablets) - only this scrolls */}
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {data.records.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {t('empty')}
@@ -366,14 +378,17 @@ export function WorkOrdersClient({
         )}
       </div>
 
-      {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
+      {/* Table (md and up) - only the rows scroll */}
+      <div
+        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+        {...tableNav.containerProps}
+      >
         <TableContextMenuHint />
         {/* Low-priority columns drop out at sm/md/lg; the min-width stops what
             is left from being squeezed to a few characters, scrolling the
             table sideways instead (the Table wrapper handles the overflow) */}
-        <Table className="min-w-[36rem] table-fixed">
-          <TableHeader>
+        <Table containerClassName="min-h-0 flex-1" className="min-w-[36rem] table-fixed">
+          <TableHeader sticky>
             <TableRow>
               <TableHead className="hidden sm:table-cell w-[100px]">
                 <button

@@ -1,5 +1,6 @@
 'use client'
 
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -24,11 +25,17 @@ export function OnboardingForm({ redirectTo }: { redirectTo?: string }) {
     setLoading(true)
 
     try {
-      const result = await createOnboardingOrg({ workshopName, loadSampleData })
+      const result = await createOnboardingOrg({
+        workshopName,
+        loadSampleData,
+        // The workshop is where the browser is, on first run. Stored as a
+        // choice, not a guess, so scheduling has a zone from day one.
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      })
       if (!result.success) {
         modal.open('error', t('setupFailed'), result.error || t('couldNotCreate'))
       } else {
-        router.push(redirectTo || '/')
+        router.push(safeRedirectPath(redirectTo))
         router.refresh()
       }
     } catch {

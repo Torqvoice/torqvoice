@@ -7,7 +7,7 @@
       "billing": "Atsiskaitymai ir dokumentai",
       "communications": "Komunikacija",
       "workshop": "Dirbtuvės",
-      "integrations": "Integracijos",
+      "integrations": "Programos ir API",
       "system": "Sistema"
     },
     "items": {
@@ -91,6 +91,10 @@
         "title": "Ataskaitų grafikas",
         "description": "Automatinis ataskaitų siuntimas"
       },
+      "integrations": {
+        "title": "Integracijos",
+        "description": "Kalendoriai, vaizdo skambučiai ir prijungtos paslaugos"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Realaus laiko įvykių pranešimai"
@@ -130,6 +134,10 @@
       "providers": {
         "title": "Tiekėjai",
         "description": "El. paštas, SMS, „WhatsApp“ ir „Telegram“"
+      },
+      "inspectionReminders": {
+        "title": "Apžiūros priminimai",
+        "description": "Rezervacijos nuoroda, trukmė ir terminas"
       }
     },
     "pro": "PRO"
@@ -572,7 +580,16 @@
     "quoteLockTriggerSent": "Kai pasiūlymas išsiųstas",
     "quoteLockTriggerAccepted": "Kai pasiūlymas priimtas",
     "quoteLockTriggerSentHint": "Užrakina, kai tik pasiūlymas išsiunčiamas klientui. Rinkitės tik jei niekada nekeičiate pasiūlymo derybų metu.",
-    "quoteLockTriggerAcceptedHint": "Užrakina, kai klientas priima pasiūlymą arba jis paverčiamas darbu. Išsiųstus pasiūlymus galima redaguoti."
+    "quoteLockTriggerAcceptedHint": "Užrakina, kai klientas priima pasiūlymą arba jis paverčiamas darbu. Išsiųstus pasiūlymus galima redaguoti.",
+    "freezeTitle": "Sąskaitos iki užrakinimo",
+    "freezeBody": "{count, plural, one {# sąskaita pasiekė} few {# sąskaitos pasiekė} other {# sąskaitų pasiekė}} klientą anksčiau, nei ši versija galėjo užrakinti, ką sąskaita spausdina. Jos vis dar spausdinamos su dabartiniais duomenimis, logotipu ir dizainu, tad šiandienos pakeitimas pasiekia ir jas. Užrakinus, kiekviena lieka tokia, kokia spausdinama dabar.",
+    "freezeNone": "Kiekviena klientą pasiekusi sąskaita užrakinta tokia, kokia buvo išsiųsta.",
+    "freezeButton": "Užrakinti su dabartiniu dizainu",
+    "freezeConfirmTitle": "Užrakinti {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}}?",
+    "freezeConfirmBody": "Kiekviena išlaiko dizainą, logotipą, dirbtuvės duomenis, klientą, transporto priemonę ir pastebėjimus, su kuriais spausdinama dabar. To atšaukti negalima; sąskaitos lieka redaguojamos arba užrakintos redagavimui lygiai kaip šiandien.",
+    "freezeProgress": "Užrakinta {done} iš {total}",
+    "freezeDone": "Užrakinta {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
+    "freezeFailed": "Nepavyko užrakinti sąskaitų"
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",
@@ -634,6 +651,12 @@
       "bank_account": "Banko sąskaita",
       "footer_note": "Poraštės pastaba",
       "org_number": "Įmonės kodas",
+      "payment_terms": "Mokėjimo sąlygos",
+      "due_date": "Mokėjimo terminas",
+      "title": "Pavadinimas",
+      "invoice_number": "Sąskaitos Nr.",
+      "customer_number": "Kliento Nr.",
+      "date": "Data",
       "portal_link": "Portalo nuoroda"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
@@ -808,32 +831,17 @@
     "paymentTermsPlaceholder": "Per 14 dienų",
     "paymentTermsHint": "Mokėjimo sąlygų tekstas, rodomas sąskaitose (pvz., \"Per 14 dienų\", \"Gavus sąskaitą\")",
     "onlinePayments": "Mokėjimai internetu",
-    "onlinePaymentsDescription": "Leiskite klientams apmokėti sąskaitas internetu per bendrinamas sąskaitų nuorodas.",
-    "stripe": "Stripe",
-    "stripeDescription": "Priimti kredito/debeto kortelių mokėjimus",
-    "secretKey": "Slaptas raktas",
-    "publishableKey": "Viešas raktas",
-    "webhookSecret": "Webhook slaptas raktas",
-    "webhookUrl": "Webhook URL",
-    "stripeWebhookHint": "Pridėkite šį URL savo Stripe valdymo skydelyje po Webhooks. Prenumeruokite <code>checkout.session.completed</code>.",
-    "vipps": "Vipps",
-    "vippsDescription": "Priimti Vipps mobiliuosius mokėjimus (Norvegija)",
-    "clientId": "Kliento ID",
-    "clientSecret": "Kliento slaptas raktas",
-    "subscriptionKey": "Prenumeratos raktas",
-    "merchantSerialNumber": "Prekybininko serijos numeris",
-    "testMode": "Testavimo režimas",
-    "callbackUrl": "Grįžtamojo ryšio URL",
+    "onlinePaymentsDescription": "Leiskite klientams apmokėti sąskaitas iš nuorodos, kurią jiems siunčiate. Stripe, Vipps ir PayPal prijungiami skiltyje Integracijos ir gali veikti kartu.",
+    "onlinePaymentsHint": "Kai klientas sumoka, tiekėjas praneša Torqvoice ir sąskaita pati pažymima kaip apmokėta. Kiekvieno tiekėjo puslapyje rodomas jam reikalingas pranešimų URL.",
+    "offered": "Sąskaitų nuorodose",
+    "paused": "Prijungta, nesiūloma",
     "termsOfSale": "Pardavimo sąlygos",
-    "termsOfSaleDescription": "Reikalaujama Vipps. Klientai gali jas peržiūrėti iš sąskaitos puslapio.",
+    "termsOfSaleDescription": "Su kuo klientas sutinka mokėdamas internetu. Vipps reikalauja paskelbtų sąlygų; sąskaita bet kuriuo atveju pateikia nuorodą į jas.",
+    "termsOfSaleText": "Sąlygų tekstas",
     "externalTermsUrl": "Išorinis sąlygų URL (neprivaloma)",
     "externalTermsUrlHint": "Nuoroda į išorinį puslapį su jūsų sąlygomis. Jei nustatyta, sąskaita nukreips čia, o ne į įtaisytą sąlygų puslapį.",
     "publicTermsUrl": "Viešas sąlygų URL",
     "publicTermsUrlHint": "Pasidalinkite šiuo URL su Vipps arba nurodykite iš savo svetainės.",
-    "paypal": "PayPal",
-    "paypalDescription": "Priimti PayPal mokėjimus",
-    "sandboxMode": "Sandbox režimas",
-    "paypalWebhookHint": "Pridėkite šį URL savo PayPal Developer valdymo skydelyje po Webhooks. Prenumeruokite <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Išsaugoti mokėjimo nustatymus",
     "saved": "Mokėjimo nustatymai išsaugoti"
   },
@@ -1112,7 +1120,7 @@
   },
   "data": {
     "title": "Duomenų valdymas",
-    "description": "Eksportuokite duomenis kaip atsarginę kopiją arba importuokite anksčiau eksportuotą failą.",
+    "description": "Perkelkite duomenis iš senos sistemos, atsisiųskite visko atsarginę kopiją arba ją atkurkite.",
     "exportTitle": "Eksportuoti duomenis",
     "exportDescription": "Atsisiųskite duomenis kaip zip failą. Pasirinkite, kurias kategorijas įtraukti į atsarginę kopiją.",
     "includeInBackup": "Įtraukti į atsarginę kopiją:",
@@ -1199,7 +1207,16 @@
     "optTireHotel": "Padangų viešbutis",
     "optTireHotelDesc": "Saugomi komplektai, lentynos, paruošimas ir saugojimo sutartys",
     "optWorkshopConfig": "Dirbtuvių nustatymai",
-    "optWorkshopConfigDesc": "Darbo šablonai, rolės, webhook'ai ir suplanuotos ataskaitos"
+    "optWorkshopConfigDesc": "Darbo šablonai, rolės, webhook'ai ir suplanuotos ataskaitos",
+    "importHubDescription": "Pasirinkite, kur šiandien yra jūsų duomenys. Importas iš skaičiuoklių ir programų papildo tai, ką turite, ir gali būti atšauktas; atsarginės kopijos atkūrimas pakeičia viską.",
+    "sourceSpreadsheet": "Skaičiuoklė arba CSV",
+    "sourceSpreadsheetDesc": "Eksportas iš bet kurios dirbtuvių sistemos, apskaitos programos, „Google“ kontaktų, „Outlook“ ar „Excel“. Patvirtinate stulpelių atitikimą ir matote bandomąjį paleidimą prieš ką nors įrašant.",
+    "sourceLubelogDesc": "Transporto priemonės, aptarnavimo įrašai ir pastabos iš „LubeLog“ atsarginės kopijos.",
+    "sourceInvoiceNinjaDesc": "Klientai, produktai, sąskaitos ir mokėjimai iš „Invoice Ninja“ eksporto.",
+    "sourceBackup": "„Torqvoice“ atsarginė kopija",
+    "sourceBackupDesc": ".zip arba .json failas, atsisiųstas iš šio puslapio. Atkūrimas pakeičia viską šiose dirbtuvėse.",
+    "restore": "Atkurti",
+    "restoreTitle": "Atkurti atsarginę kopiją"
   },
   "license": {
     "title": "\"White-Label\" licencija",
@@ -1740,6 +1757,17 @@
         "feature": "„Telegram“ žinutės",
         "description": "Siųskite ir gaukite „Telegram“ žinutes su klientais tiesiai iš „Torqvoice“."
       }
+    },
+    "moved": {
+      "title": "These settings moved to Integrations",
+      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
+      "connectedTo": "Connected through {vendor}",
+      "notSetUp": "Not set up yet",
+      "manage": "Manage",
+      "notConnected": "Not connected",
+      "goToIntegrations": "Go to Integrations",
+      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
+      "onByDefault": "On by default"
     }
   },
   "designer": {
@@ -1749,6 +1777,14 @@
     "galleryTitle": "Pradėkite nuo šablono",
     "galleryHint": "Pasirinkite atspirties tašką. Kūrimo įrankyje galėsite pakeisti viską.",
     "yourDesigns": "Jūsų dizainai",
+    "autoRuleHint": "Pardavimai be transporto priemonės spausdinami jiems pažymėtu dizainu, nebent pardavimas ar jo klientas pasirinko kitą.",
+    "useForPartsSale": "Naudoti tik dalių pardavimams",
+    "usedForPartsSale": "Naudojamas tik dalių pardavimams",
+    "autoRule": {
+      "parts_sale": "Tik dalių pardavimas"
+    },
+    "autoRuleSaved": "„{name}“ naudojimas atnaujintas",
+    "couldNotSaveRule": "Nepavyko atnaujinti taisyklės",
     "templates": "Šablonai",
     "inUse": "Naudojamas",
     "savedOn": "Išsaugota {date}",
@@ -1908,6 +1944,7 @@
       "serviceType": "Remontas",
       "companyName": "Jūsų servisas",
       "slogan": "Kokybiškas aptarnavimas, kuriuo galite pasitikėti",
+      "paymentTerms": "Apmokėti per 14 dienų",
       "footerNote": "Ačiū, kad renkatės mus",
       "value": "Pavyzdys"
     },
@@ -1923,11 +1960,22 @@
     "sloganPlaceholderHint": "Šūkis nenustatytas, todėl lape rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
     "sloganSetHint": "Jūsų šūkis imamas iš įmonės duomenų.",
     "sloganLink": "Įmonės nustatymai",
+    "paymentTerms": "Mokėjimo sąlygos",
+    "paymentTermsPlaceholderHint": "Mokėjimo sąlygos nenustatytos, todėl lape rodomas pavyzdinis tekstas, kuris nebus spausdinamas.",
+    "paymentTermsSetHint": "Jūsų mokėjimo sąlygos imamos iš mokėjimų nustatymų.",
+    "paymentTermsLink": "Mokėjimų nustatymai",
+    "titleText": "Pavadinimo tekstas",
+    "titleTextHint": "Kaip vadinasi šis dokumentas. Palikus tuščią, spausdinamas jo paties pavadinimas skaitytojo kalba.",
     "placeholder": "Vietaženklis",
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
     "leaveConfirm": "Išeiti",
-    "boldField": "Paryškinta"
+    "boldField": "Paryškinta",
+    "deleteDesignDrafts": "{count, plural, one {# sąskaitos juodraštis} few {# sąskaitų juodraščiai} other {# sąskaitų juodraščių}}, kurie jį naudoja, grįš prie numatytojo dizaino.",
+    "deleteDesignCustomers": "{count, plural, one {# klientas} few {# klientai} other {# klientų}}, kuriems jis priskirtas, grįš prie numatytojo dizaino.",
+    "setDefault": "Nustatyti kaip numatytąjį",
+    "defaultSet": "„{name}“ dabar naudojamas",
+    "couldNotSetDefault": "Nepavyko nustatyti numatytojo dizaino"
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",
@@ -1942,5 +1990,31 @@
     "partSyntheticOil": "Sintetinė alyva 5W-30",
     "laborBrakeReplacement": "Stabdžių keitimas",
     "laborOilChange": "Alyvos keitimas"
+  },
+  "inspectionReminders": {
+    "title": "Apžiūros priminimai ir rezervacija",
+    "description": "Kaip veikia priminimo rezervacijos nuoroda. Nustatoma kartą; naudoja visos kampanijos.",
+    "duration": "Apžiūros trukmė (min.)",
+    "durationHint": "Kiek laiko apžiūra užima postą. Nuoroda rezervuoja tokios trukmės laikus.",
+    "leadDays": "Anksčiausia rezervacija (dienos)",
+    "leadDaysHint": "1 reiškia, kad pirmas siūlomas laikas yra rytoj, niekada šiandien.",
+    "horizonWeeks": "Kiek į priekį (savaitės)",
+    "horizonHint": "Klientai gali rinktis bet kurį laisvą laiką per tiek savaičių.",
+    "reserve": "Palikti laisvą be užsakymo",
+    "reserveHint": "Postai ar meistrai, kurių nuoroda niekada neužpildo. 0 leidžia naudoti visus laisvus.",
+    "linkValidDays": "Nuoroda galioja (dienos)",
+    "linkValidHint": "Bent {min}. Nuorodos taip pat galioja iki savaitės po termino, priklausomai nuo to, kas vėliau.",
+    "bookingMode": "Ką sukuria rezervacija",
+    "bookingModeDirect": "Suplanuotą užsakymą lentoje",
+    "bookingModeRequest": "Užklausą, kurią biuras pirmiausia patvirtina",
+    "bookingModeHint": "Tiesioginė rezervacija ir yra nuorodos vertė. Rinkitės užklausą, jei norite tvirtinti kiekvieną kartą.",
+    "phone": "Telefono numeris žinutėse",
+    "phoneHint": "Rodomas kaip alternatyva nuorodai. Numatytasis – dirbtuvių numeris.",
+    "save": "Išsaugoti",
+    "saved": "Nustatymai išsaugoti",
+    "saveFailed": "Nepavyko išsaugoti",
+    "timeZoneDetected": "Laiko juosta nustatyta automatiškai skiltyje Lokalizacija, todėl serveris naudoja {zone} – paskutinę naršyklėje matytą juostą išsaugant nustatymus. Pasirinkite dirbtuvių juostą aiškiai, kad rezervacijos laikai niekada nepriklausytų nuo to, kas išsaugojo paskutinis.",
+    "timeZoneExplicit": "Rezervacijos ir darbo laikai skaitomi {zone} juostoje.",
+    "timeZoneChange": "Keisti skiltyje Lokalizacija"
   }
 }

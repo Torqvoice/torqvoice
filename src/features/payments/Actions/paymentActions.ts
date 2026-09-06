@@ -1,7 +1,9 @@
 'use server'
 
-import { toSafeDate } from '@/lib/invoice-utils'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
+import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createPaymentSchema } from '../Schema/paymentSchema'
@@ -25,11 +27,14 @@ export async function createPayment(input: unknown) {
         data: {
           serviceRecordId: data.serviceRecordId,
           amount: data.amount,
-          date: toSafeDate(data.date) ?? new Date(),
+          date: toSafeWorkshopDate(data.date, await workshopTimeZone(organizationId)) ?? new Date(),
           method: data.method,
           note: data.note || null,
         },
       })
+      // Money against it makes the invoice the customer's document, even one
+      // handed over on paper and never sent through the app.
+      await issueInvoice(data.serviceRecordId, organizationId, 'paid')
 
       revalidatePath(
         serviceRecord.vehicleId

@@ -151,7 +151,20 @@
     "settings_whatsappNumberRegistered": "WhatsApp-Nummer registriert",
     "team_giveTechnicianTheApp": "Board-Techniker ein Konto gegeben",
     "team_createDefaultRoles": "Standardrollen angelegt",
-    "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert"
+    "settings_setCustomFieldPlacement": "Position eines benutzerdefinierten Felds geändert",
+    "import_commit": "Tabelle importiert",
+    "import_undo": "Import rückgängig gemacht",
+    "integration_connect": "Integration verbunden",
+    "integration_disconnect": "Integration getrennt",
+    "service_setInvoiceDesign": "Rechnungsdesign geändert",
+    "settings_saveDocumentDesign": "Dokumentdesign gespeichert",
+    "settings_deleteDocumentDesign": "Dokumentdesign gelöscht",
+    "settings_applyDocumentDesign": "Standard-Dokumentdesign festgelegt",
+    "settings_setDocumentDesignRule": "Verwendung eines Designs geändert",
+    "settings_freezeInvoices": "Ältere Rechnungen gesperrt",
+    "inspection_reminders_sent": "HU-Erinnerungen gesendet",
+    "inspection_reminders_send": "HU-Erinnerungen gesendet",
+    "service_videoCall_send": "Link zum Videoanruf gesendet"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -275,6 +288,18 @@
     "work_bay_create": "Arbeitsplatz „{name}“ angelegt",
     "work_bay_update": "Arbeitsplatz „{name}“ aktualisiert",
     "work_bay_delete": "Arbeitsplatz {id} gelöscht",
-    "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird"
+    "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird",
+    "import_commit": "Tabelle importiert: {count} Datensätze angelegt",
+    "import_undo": "Tabellenimport rückgängig gemacht: {records} Datensätze entfernt",
+    "integration_connect": "{name} verbunden",
+    "integration_disconnect": "{name} getrennt",
+    "service_setInvoiceDesign": "Hat geändert, mit welchem Design eine Rechnung gedruckt wird",
+    "settings_saveDocumentDesign": "Hat das Dokumentdesign {name} gespeichert",
+    "settings_deleteDocumentDesign": "Hat das Dokumentdesign {name} gelöscht",
+    "settings_applyDocumentDesign": "Hat {name} zum Standard-Dokumentdesign gemacht",
+    "settings_setDocumentDesignRule": "Verwendung des Dokumentdesigns {name} geändert",
+    "settings_freezeInvoices": "Hat {count, plural, one {# Rechnung} other {# Rechnungen}} von vor der Sperre mit dem aktuellen Design gesperrt",
+    "inspection_reminders_sent": "{count} HU-Erinnerungen gesendet",
+    "service_videoCall_send": "Link zum Videoanruf per {channels} gesendet"
   }
 }

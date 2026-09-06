@@ -28,13 +28,14 @@ import {
   Layout,
   MessagesSquare,
   Percent,
-  Sparkles,
   UserCog,
   UsersRound,
   Webhook,
   Wrench,
   BellRing,
   LifeBuoy,
+  Plug,
+  ClipboardCheck,
 } from 'lucide-react'
 
 type SettingsNavItem = {
@@ -94,9 +95,9 @@ const settingsCategories: SettingsCategory[] = [
     items: [
       { key: 'workshop', href: '/settings/workshop', icon: Wrench },
       { key: 'maintenance', href: '/settings/maintenance', icon: Gauge },
+      { key: 'inspectionReminders', href: '/settings/inspection-reminders', icon: ClipboardCheck },
       { key: 'alerts', href: '/settings/alerts', icon: BellRing },
       { key: 'tireHotel', href: '/settings/tire-hotel', icon: Disc3, gate: 'tireHotel' },
-      { key: 'ai', href: '/settings/ai', icon: Sparkles, gate: 'ai' },
       {
         key: 'reportSchedule',
         href: '/settings/report-schedule',
@@ -107,7 +108,10 @@ const settingsCategories: SettingsCategory[] = [
   },
   {
     key: 'integrations',
-    items: [{ key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' }],
+    items: [
+      { key: 'integrations', href: '/settings/integrations', icon: Plug, gate: 'integrations' },
+      { key: 'webhooks', href: '/settings/webhooks', icon: Webhook, gate: 'api' },
+    ],
   },
   {
     key: 'system',

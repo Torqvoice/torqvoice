@@ -1,4 +1,5 @@
 import { getSettings } from '@/features/settings/Actions/settingsActions'
+import { getPaymentConnections } from '@/features/integrations/Actions/integrationActions'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { PaymentSettings } from './payment-settings'
@@ -23,8 +24,14 @@ export default async function PaymentSettingsPage() {
     )
   }
 
-  const result = await getSettings()
+  const [result, connections] = await Promise.all([getSettings(), getPaymentConnections()])
   const settings = result.success && result.data ? result.data : {}
 
-  return <PaymentSettings settings={settings} orgId={data.organizationId} />
+  return (
+    <PaymentSettings
+      settings={settings}
+      orgId={data.organizationId}
+      providers={connections.success && connections.data ? connections.data : []}
+    />
+  )
 }

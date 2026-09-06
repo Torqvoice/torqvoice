@@ -1,0 +1,23 @@
+{
+  "Description": "FORD GALAXY",
+  "RegistrationYear": "2011",
+  "CarMake": {
+    "CurrentTextValue": "FORD"
+  },
+  "CarModel": {
+    "CurrentTextValue": "GALAXY"
+  },
+  "MakeDescription": {
+    "CurrentTextValue": "FORD"
+  },
+  "ModelDescription": {
+    "CurrentTextValue": "GALAXY"
+  },
+  "NumberOfSeats": {
+    "CurrentTextValue": ""
+  },
+  "Power": "103",
+  "GrossWeight": "2400",
+  "VIN": "WF0MXXGBWMAG34779",
+  "ImageUrl": "http://www.sõiduk.com/image.aspx/@Rk9SRCBHQUxBWFk="
+}

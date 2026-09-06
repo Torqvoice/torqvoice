@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Integrationen",
+    "description": "Verbinden Sie die Dienste, die Ihre Werkstatt bereits nutzt. Jede Integration wird einmal eingerichtet und läuft im Hintergrund.",
+    "all": "Alle",
+    "empty": "In dieser Kategorie gibt es noch keine Integrationen.",
+    "notConnected": "Nicht verbunden",
+    "connect": "Verbinden",
+    "manage": "Verwalten",
+    "connectedTitle": "Verbunden",
+    "connectedDescription": "Dienste, die diese Werkstatt eingerichtet hat. Öffnen Sie einen, um den Status zu prüfen, Einstellungen zu ändern oder die Verbindung zu trennen.",
+    "noneConnected": "Noch nichts verbunden. Wählen Sie unten einen Dienst, um zu beginnen.",
+    "availableTitle": "Verfügbar",
+    "availableDescription": "Dienste, die Sie hinzufügen können. Jeder wird einmal eingerichtet und läuft im Hintergrund.",
+    "allConnected": "Alle verfügbaren Dienste sind verbunden.",
+    "searchPlaceholder": "Integrationen durchsuchen",
+    "noMatches": "Nichts passt zu „{query}“.",
+    "readMore": "Mehr erfahren",
+    "suggestTitle": "Fehlt ein Dienst, den Sie nutzen?",
+    "suggestDescription": "Sagen Sie uns, welche Integration Ihrer Werkstatt helfen würde, und wir prüfen sie.",
+    "suggest": "Integration vorschlagen",
+    "suggestSubject": "Integrationsvorschlag"
+  },
+  "categories": {
+    "calendar": "Kalender",
+    "conferencing": "Videoanrufe",
+    "accounting": "Buchhaltung",
+    "messaging": "Nachrichten",
+    "payments": "Zahlungen",
+    "automation": "Automatisierung",
+    "storage": "Dateien",
+    "registry": "Fahrzeugregister",
+    "other": "Sonstiges",
+    "ai": "KI"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Aufträge in den Kalender",
+      "pull": "Belegte Zeiten aus dem Kalender",
+      "conference": "Links für Videoanrufe"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Kennzeichen- und FIN-Abfrage",
+      "inspection": "HU-Fälligkeitsdaten",
+      "safety": "Rückrufe und Beschwerden von Haltern"
+    },
+    "ai": {
+      "chat": "Texte und Zusammenfassungen"
+    },
+    "payments": {
+      "checkout": "Bezahlen über den Rechnungslink"
+    },
+    "accounting": {
+      "invoices": "Rechnungen ins Buchhaltungssystem",
+      "customers": "Kunden ins Buchhaltungssystem",
+      "payments": "Zahlungen in beide Richtungen"
+    }
+  },
+  "statuses": {
+    "active": "Verbunden",
+    "error": "Aufmerksamkeit erforderlich",
+    "pending": "Einrichtung läuft",
+    "disconnected": "Getrennt",
+    "needsSetup": "Einrichtung unvollständig"
+  },
+  "connection": {
+    "back": "Alle Integrationen",
+    "account": "Verbundenes Konto",
+    "lastHealth": "Zuletzt geprüft",
+    "lastSync": "Letzte Synchronisierung",
+    "lastError": "Der letzte Durchlauf ist fehlgeschlagen",
+    "setupMissingTitle": "Einrichtung unvollständig",
+    "setupMissing": "Wähle unten in den Einstellungen {fields}. Bis dahin wird nichts synchronisiert.",
+    "connected": "{name} ist verbunden.",
+    "connectedShort": "Verbunden",
+    "connectWith": "{name} verbinden",
+    "connect": "Verbinden",
+    "reconnect": "Erneut verbinden",
+    "disconnect": "Trennen",
+    "disconnectTitle": "{name} trennen?",
+    "disconnectDescription": "Torqvoice vergisst das Konto und nutzt es nicht mehr. Was bereits an {name} gesendet oder dort gespeichert wurde, bleibt unberührt.",
+    "disconnectDescriptionCalendar": "Torqvoice vergisst das Konto und synchronisiert nicht mehr. Aufträge, die bereits in {name} stehen, bleiben dort. Die aus diesem Kalender angezeigte belegte Zeit wird aus dem Torqvoice-Kalender entfernt.",
+    "disconnectDescriptionConferencing": "Torqvoice vergisst das Konto und erstellt keine Meetings mehr. Bereits erstellte Meetings bleiben in {name}, die Links an den Aufträgen bleiben erhalten.",
+    "disconnectDescriptionAccounting": "Torqvoice vergisst das Konto und sendet und liest nichts mehr. Rechnungen, Kunden und Zahlungen, die bereits in {name} sind, bleiben dort.",
+    "removeSetup": "Entfernen",
+    "removeSetupTitle": "{name} entfernen?",
+    "removeSetupDescription": "Es ist noch nichts verbunden. Torqvoice vergisst die Eingaben, und {name} erscheint wieder in der Liste der verfügbaren Dienste.",
+    "removeSetupDone": "{name} entfernt",
+    "removeSetupHint": "Doch nicht? Entfernen Sie die Einrichtung, und der Dienst kehrt in die Liste unten zurück.",
+    "disconnected": "Getrennt",
+    "test": "Verbindung testen",
+    "testPassed": "Verbindung funktioniert",
+    "syncNow": "Jetzt synchronisieren",
+    "syncQueued": "Synchronisierung eingereiht; sie läuft innerhalb einer Minute",
+    "pullNow": "Zahlungen jetzt abrufen",
+    "pullQueued": "Zahlungsabruf eingereiht; er läuft innerhalb einer Minute",
+    "backfill": "Geplante Aufträge übertragen",
+    "backfillQueued": "Die geplanten Aufträge ab der letzten Woche wurden eingereiht",
+    "backfillInvoices": "Ausgestellte Rechnungen übertragen",
+    "backfillInvoicesQueuedCount": "{count, plural, one {# ausgestellte Rechnung} other {# ausgestellte Rechnungen}} zum Übertragen eingereiht",
+    "backfillInvoicesNone": "Keine ausgestellten Rechnungen zum Übertragen. Nur gesendete, geteilte oder bezahlte Rechnungen werden übertragen, ab dem Startdatum, falls gesetzt.",
+    "retryQueued": "Job erneut eingereiht",
+    "settingsTitle": "Einstellungen",
+    "settingsDescription": "Was synchronisiert wird und wohin. Änderungen gelten ab der nächsten Synchronisierung.",
+    "settingsSaved": "Einstellungen gespeichert",
+    "save": "Speichern",
+    "loading": "Wird geladen...",
+    "choose": "Auswählen...",
+    "search": "Suchen...",
+    "noMatch": "Nichts gefunden",
+    "leaveEmpty": "Leer lassen",
+    "noLimit": "Keine Grenze",
+    "planLocked": "Integrationen sind in Ihrem Tarif nicht enthalten.",
+    "ownAppTitle": "Diese Installation verwendet Ihre eigene App beim Anbieter",
+    "redirectUri": "Beim Anbieter zu registrierende Redirect-URI:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Fügen Sie diese URL im Stripe-Dashboard unter Developers, Webhooks hinzu, abonniert auf checkout.session.completed. Tragen Sie dann das von Stripe angezeigte Signaturgeheimnis hier im Feld Webhook-Geheimnis ein, damit Benachrichtigungen geprüft werden können.",
+    "inboundHintVipps": "Tragen Sie diese URL als Callback-URL im Vipps-MobilePay-Portal ein. Vipps verlangt außerdem veröffentlichte Verkaufsbedingungen, die unter Einstellungen, Zahlung hinterlegt werden.",
+    "inboundHintPaypal": "Fügen Sie diese URL im PayPal-Entwicklerdashboard unter Webhooks hinzu, abonniert auf PAYMENT.CAPTURE.COMPLETED.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "HU-Abgleich",
+      "vehicles": "{count} Fahrzeuge mit Kennzeichen in dieser Werkstatt",
+      "dueNow": "{count} würden beim nächsten Lauf abgefragt",
+      "withDate": "{count} haben bereits einen HU-Termin",
+      "lastPass": "Letzter vollständiger Durchlauf {date}",
+      "never": "Noch kein vollständiger Durchlauf",
+      "inProgress": "Ein Durchlauf läuft",
+      "off": "Einstellung einschalten und speichern; bis dahin prüft ein Durchlauf nichts.",
+      "syncNowHelp": "Jetzt synchronisieren startet sofort einen Durchlauf statt auf den stündlichen zu warten. Er fragt 25 Fahrzeuge auf einmal ab und macht von selbst weiter, bis alle fälligen Fahrzeuge erledigt sind."
+    },
+    "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
+    "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}"
+  },
+  "activity": {
+    "title": "Aktivität",
+    "description": "Aktuelle Jobs und Protokollzeilen dieser Verbindung.",
+    "retry": "Erneut versuchen",
+    "jobStatus": {
+      "queued": "Eingereiht",
+      "running": "Läuft",
+      "done": "Erledigt",
+      "failed": "Fehlgeschlagen",
+      "dead": "Aufgegeben"
+    },
+    "jobs": "{count, plural, one {# Auftrag} other {# Aufträge}}",
+    "counts": {
+      "queued": "{count} in Warteschlange",
+      "running": "{count} laufen",
+      "done": "{count} erledigt",
+      "failed": "{count} fehlgeschlagen",
+      "dead": "{count} aufgegeben"
+    },
+    "noFailures": "Nichts ist fehlgeschlagen.",
+    "retryFailed": "Fehlgeschlagene wiederholen",
+    "details": "Details anzeigen"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen",
+    "demo": "In der Demo können keine Integrationen verbunden werden.",
+    "forbidden": "Nur ein Administrator kann Integrationen verbinden.",
+    "unknown": "Unbekannte Integration.",
+    "plan": "Diese Integration ist in Ihrem Tarif nicht enthalten.",
+    "no-client": "Für diesen Anbieter sind keine App-Zugangsdaten konfiguriert.",
+    "denied": "Sie haben die Anmeldung beim Anbieter abgebrochen.",
+    "vendor": "Der Anbieter hat einen Fehler zurückgegeben. Versuchen Sie es erneut.",
+    "invalid": "Die Antwort des Anbieters war unvollständig. Versuchen Sie es erneut.",
+    "state": "Diese Anmeldung ist abgelaufen oder gehört zu einer anderen Sitzung. Beginnen Sie erneut.",
+    "exchange": "Der Anbieter hat die Anmeldung abgelehnt. Prüfen Sie die App-Zugangsdaten und versuchen Sie es erneut.",
+    "identify": "Verbunden, aber das Konto konnte nicht gelesen werden. Versuchen Sie, die Verbindung neu herzustellen."
+  },
+  "meeting": {
+    "join": "Videoanruf beitreten",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Aus verbundenen Kalendern",
+    "busy": "Belegt"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Geplante Aufträge in einen Google Calendar eintragen, einen Google Meet-Link hinzufügen und die belegten Zeiten des Kalenders in Torqvoice sehen.",
+      "tenantHelp": "Erstellen Sie einen OAuth-Client in der Google Cloud Console (APIs & Dienste → Anmeldedaten), aktivieren Sie die Google Calendar API, fügen Sie die untenstehende Redirect-URI hinzu und tragen Sie Client-ID und Client-Secret hier ein.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Geplante Aufträge in diesen Kalender eintragen",
+        "includeCustomer": "Name und Telefonnummer des Kunden in den Termin aufnehmen",
+        "addConference": "Jedem geplanten Auftrag ein Google Meet-Meeting hinzufügen",
+        "addConferenceHelp": "Ein: jeder in den Kalender übertragene Auftrag bekommt ein Google Meet-Meeting, und der Link erscheint auf dem Auftrag. Aus: ein Google Meet-Meeting einem einzelnen Auftrag von dessen Seite aus hinzufügen. In beiden Fällen bekommt der Kunde den Link erst, wenn Sie ihn senden.",
+        "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
+        "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
+      }
+    },
+    "microsoft-365": {
+      "description": "Geplante Aufträge in einen Outlook-Kalender eintragen, einen Microsoft Teams-Link hinzufügen und die belegten Zeiten des Kalenders in Torqvoice sehen.",
+      "tenantHelp": "Registrieren Sie eine Anwendung in Microsoft Entra (App-Registrierungen), erlauben Sie persönliche und Geschäftskonten, fügen Sie die untenstehende Redirect-URI als Web-Plattform hinzu, erstellen Sie ein Client-Secret und tragen Sie beides hier ein.",
+      "fields": {
+        "clientId": "Anwendungs-ID (Client-ID)",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "calendarId": "Kalender",
+        "pushEnabled": "Geplante Aufträge in diesen Kalender eintragen",
+        "includeCustomer": "Name und Telefonnummer des Kunden in den Termin aufnehmen",
+        "addConference": "Jedem geplanten Auftrag ein Microsoft Teams-Meeting hinzufügen",
+        "addConferenceHelp": "Ein: jeder in den Kalender übertragene Auftrag bekommt ein Microsoft Teams-Meeting, und der Link erscheint auf dem Auftrag. Aus: ein Microsoft Teams-Meeting einem einzelnen Auftrag von dessen Seite aus hinzufügen. In beiden Fällen bekommt der Kunde den Link erst, wenn Sie ihn senden.",
+        "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
+        "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
+      }
+    },
+    "zoom": {
+      "description": "Fügen Sie einem geplanten Auftrag ein Zoom-Meeting hinzu und behalten Sie den Beitrittslink am Auftrag, für Ferndiagnosen oder um Kunden durch Befunde zu führen.",
+      "tenantHelp": "Erstellen Sie im Zoom App Marketplace eine General-App (user-managed), tragen Sie die Redirect-URI unten ein, fügen Sie die Scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting und user:read:user hinzu und tragen Sie Client-ID und Client-Secret hier ein.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "autoCreate": "Für jeden geplanten Auftrag automatisch ein Zoom-Meeting erstellen",
+        "autoCreateHelp": "Aus: Sie fügen einem Auftrag den Videoanruf selbst hinzu, auf seiner Seite. An: Jeder Auftrag mit Startzeit bekommt ein Meeting, das bei Terminverschiebung mitwandert und bei Stornierung entfernt wird. In beiden Fällen erhält der Kunde den Link nur, wenn Sie ihn senden.",
+        "includeCustomer": "Kundennamen in das Meeting-Thema aufnehmen",
+        "joinBeforeHost": "Kunden vor Ihnen beitreten lassen",
+        "waitingRoom": "Warteraum verwenden"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Fahrzeug aus dem norwegischen Kennzeichen oder der FIN ausfüllen: Marke, Modell, Baujahr, Kraftstoff, Getriebe, Motor, Farbe, Reifengrößen und der nächste EU-kontroll-Termin, direkt aus dem Register von Statens vegvesen. Halterdaten werden nicht geliefert.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Kostenlos. Bestellen Sie den Schlüssel auf vegvesen.no unter „API for tekniske kjøretøyopplysninger“: mit BankID anmelden, die Werkstatt vertreten, und der Schlüssel wird sofort ausgestellt. Er erlaubt 50.000 Abfragen pro Tag."
+      },
+      "settings": {
+        "syncInspections": "HU-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
+        "syncInspectionsHelp": "Einmal pro Stunde werden Fahrzeuge, die länger nicht geprüft wurden, per Kennzeichen abgefragt und der nächste EU-kontroll-Termin gespeichert. Es werden nur Fahrzeuge dieser Werkstatt gesendet. Ein Fahrzeug wird monatlich geprüft, wöchentlich sobald die Frist unter zwei Monaten liegt."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Fahrzeug aus dem französischen, italienischen, spanischen, portugiesischen oder britischen Kennzeichen ausfüllen: Marke, Modell, Baujahr, FIN, Kraftstoff, Hubraum und mehr aus den Zulassungsdaten des Landes über Openapi.com. Jede Abfrage wird dem eigenen Openapi-Konto der Werkstatt berechnet. Halterdaten werden nicht geliefert.",
+      "fields": {
+        "token": "API-Token",
+        "tokenHelp": "Legen Sie ein Konto auf console.openapi.com an, laden Sie Guthaben auf und erstellen Sie unter Automotive ein Token für die Produktionsumgebung. Jede erfolgreiche Abfrage kostet einige Dutzend Cent; ein Fehltreffer ist kostenlos."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Das zu durchsuchende Register. Französische und italienische Kennzeichen sehen gleich aus, das Land lässt sich daher nicht am Kennzeichen ablesen.",
+        "bikes": "Auch Motorräder abfragen",
+        "bikesHelp": "Ist ein Kennzeichen kein Pkw, wird zusätzlich das Motorradregister gefragt. Ein Fehltreffer beim Pkw ist kostenlos, es entstehen also nur Kosten, wenn ein Motorrad gefunden wird. Für Portugal nicht verfügbar."
+      }
+    },
+    "rdw": {
+      "description": "Fahrzeug aus dem niederländischen Kennzeichen ausfüllen: Marke, Modell, Baujahr, Kraftstoff, Hubraum, Farbe, Gewichte und der nächste APK-Termin, direkt aus dem offenen Fahrzeugregister der RDW. Kostenlos, kein Schlüssel nötig. Halterdaten und FIN werden nicht veröffentlicht.",
+      "fields": {
+        "appToken": "App-Token (optional)",
+        "appTokenHelp": "Die offenen Daten der RDW funktionieren ohne Schlüssel, anonyme Anfragen teilen sich aber ein gedrosseltes Kontingent. Für die Prüfterminsynchronisation legen Sie auf opendata.rdw.nl ein kostenloses Konto an, öffnen die Entwicklereinstellungen Ihres Profils und erstellen ein App-Token."
+      },
+      "settings": {
+        "syncInspections": "APK-Termine für alle Fahrzeuge dieser Werkstatt aktuell halten",
+        "syncInspectionsHelp": "Einmal pro Stunde werden Fahrzeuge, die länger nicht geprüft wurden, per Kennzeichen abgefragt und der nächste APK-Termin gespeichert. Es werden nur Fahrzeuge dieser Werkstatt gesendet. Ein Fahrzeug wird monatlich geprüft, wöchentlich sobald die Frist unter zwei Monaten liegt."
+      }
+    },
+    "regcheck": {
+      "description": "Fahrzeug aus dem Kennzeichen in Australien, Neuseeland, den USA, Irland, Norwegen, Schweden, Dänemark, Finnland, Estland, Tschechien, der Slowakei, Ungarn oder Kroatien ausfüllen: Marke, Modell, Baujahr, FIN, Kraftstoff und Hubraum, soweit das Land sie veröffentlicht, über RegCheck. Jede erfolgreiche Abfrage verbraucht ein Guthaben aus dem eigenen RegCheck-Konto der Werkstatt. Halterdaten werden nicht geliefert.",
+      "fields": {
+        "username": "RegCheck-Benutzername",
+        "usernameHelp": "Registrieren Sie sich auf regcheck.org.uk; das Konto enthält 10 kostenlose Abfragen, weitere werden über das Dashboard in Blöcken von 100 gekauft. Hier wird nur der Benutzername benötigt, nie das Passwort. Ein nicht gefundenes Kennzeichen kostet nichts."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Das zu durchsuchende Register. Jedes Land hat einen eigenen Dienst, die Verbindung durchsucht daher eines.",
+        "auState": "Bundesstaat oder Territorium",
+        "auStateHelp": "Australien lässt Fahrzeuge je Bundesstaat zu, und dem Register muss gesagt werden, welcher durchsucht wird. Wählen Sie den Staat, in dem die meisten Fahrzeuge Ihrer Kunden zugelassen sind.",
+        "usState": "Bundesstaat",
+        "usStateHelp": "Der zweibuchstabige Code des Bundesstaats, in dem die Fahrzeuge zugelassen sind, etwa CA oder TX. Amerikanische Register werden je Bundesstaat durchsucht."
+      }
+    },
+    "openai": {
+      "description": "Servicebeschreibungen, Verlaufszusammenfassungen, Dokumentenerkennung und der Assistent, beantwortet über Ihr eigenes OpenAI-Konto. Jeder Aufruf wird diesem Konto berechnet, und Sie wählen das Modell.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Auf platform.openai.com unter API keys anlegen. Das Konto braucht Guthaben; OpenAI rechnet pro Aufruf ab."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Welches Modell antwortet. Die Liste kommt aus Ihrem Konto, neueste zuerst. Kleinere Modelle kosten pro Aufruf weniger und reichen für die meisten Werkstatttexte."
+      }
+    },
+    "anthropic": {
+      "description": "Servicebeschreibungen, Verlaufszusammenfassungen, Dokumentenerkennung und der Assistent, beantwortet von Claude über Ihr eigenes Anthropic-Konto. Jeder Aufruf wird diesem Konto berechnet, und Sie wählen das Modell.",
+      "fields": {
+        "apiKey": "API-Schlüssel",
+        "apiKeyHelp": "Auf console.anthropic.com unter API keys anlegen. Das Konto braucht Guthaben; Anthropic rechnet pro Aufruf ab."
+      },
+      "settings": {
+        "model": "Modell",
+        "modelHelp": "Welches Modell antwortet. Die Liste kommt aus Ihrem Konto, neueste zuerst. Kleinere Modelle kosten pro Aufruf weniger und reichen für die meisten Werkstatttexte."
+      }
+    },
+    "stripe": {
+      "description": "Kartenzahlungen über den Rechnungslink auf Ihr eigenes Stripe-Konto. Der Kunde zahlt, Stripe meldet es Torqvoice, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "secretKey": "Geheimer Schlüssel",
+        "secretKeyHelp": "Aus dem Stripe-Dashboard unter Developers, API keys. Testschlüssel verarbeiten nichts Echtes, probieren Sie also zuerst eine Zahlung damit und wechseln Sie danach zu Live-Schlüsseln.",
+        "publishableKey": "Veröffentlichbarer Schlüssel",
+        "webhookSecret": "Webhook-Signaturgeheimnis",
+        "webhookSecretHelp": "Wird von Stripe angezeigt, sobald Sie die Benachrichtigungs-URL dieser Seite als Webhook hinzufügen. Damit wird jede Benachrichtigung geprüft, bevor eine Zahlung erfasst wird."
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay über den Rechnungslink. Der Kunde zahlt in der App, die er ohnehin hat, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret",
+        "subscriptionKey": "Subscription Key",
+        "subscriptionKeyHelp": "Der Ocp-Apim-Subscription-Key aus dem Vipps-MobilePay-Portal, unter den API-Schlüsseln der Verkaufseinheit.",
+        "merchantSerialNumber": "Merchant Serial Number"
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst.",
+        "testMode": "Testmodus",
+        "testModeHelp": "Die Vipps-Testumgebung mit Testschlüsseln verwenden. Lassen Sie ihn an, bis eine vollständige Zahlung durchgelaufen ist, und schalten Sie dann um auf die Live-Schlüssel."
+      }
+    },
+    "paypal": {
+      "description": "PayPal-Checkout über den Rechnungslink mit Ihrer eigenen PayPal-App. Der Kunde zahlt mit PayPal-Konto oder Karte, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst.",
+        "sandbox": "Sandbox-Modus",
+        "sandboxHelp": "Die PayPal-Sandbox mit Sandbox-App-Schlüsseln verwenden. Lassen Sie ihn an, bis eine vollständige Zahlung durchgelaufen ist, und tragen Sie dann die Schlüssel der Live-App ein."
+      }
+    },
+    "quickbooks": {
+      "description": "Sende ausgestellte Rechnungen, ihre Kunden und ihre Zahlungen an QuickBooks Online und hole dort erfasste Zahlungen zurück.",
+      "tenantHelp": "Erstelle eine App im Intuit Developer Portal. Kopiere Client-ID und Secret unter Keys and credentials und trage die Redirect-URI unten unter Settings, Redirect URIs ein. Entwicklungsschlüssel erreichen Sandbox-Firmen, Produktionsschlüssel echte.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client-Secret"
+      },
+      "settings": {
+        "pushInvoices": "Ausgestellte Rechnungen an QuickBooks senden",
+        "pushOnComplete": "Rechnungen auch senden, wenn der Auftrag als abgeschlossen markiert wird",
+        "pushOnCompleteHelp": "Ohne diese Option geht eine Rechnung erst über, wenn sie gesendet, geteilt oder bezahlt wurde. Mit ihr geht ein abgeschlossener Auftrag sofort über und wird bei Änderungen aktualisiert.",
+        "startDate": "Nur Rechnungen mit Datum ab",
+        "startDateHelp": "Leer lassen, um jede ausgestellte Rechnung zu senden. Nutze das Datum, an dem deine Bücher zu QuickBooks gewechselt sind, damit ältere Rechnungen nicht doppelt erfasst werden.",
+        "includeVehicle": "Fahrzeug auf der Rechnung nennen",
+        "includeVehicleHelp": "Eine Textzeile über den Positionen mit Baujahr, Marke, Modell, Kennzeichen und Kilometerstand, damit die Buchhaltung weiß, um welches Auto es geht.",
+        "laborItemId": "Artikel für Arbeitspositionen",
+        "laborItemIdHelp": "Leer lassen, dann wird beim ersten Mal ein Artikel namens Labour unter deinem Ertragskonto angelegt.",
+        "partsItemId": "Artikel für Teilepositionen",
+        "partsItemIdHelp": "Leer lassen, dann wird beim ersten Mal ein Artikel namens Parts unter deinem Ertragskonto angelegt.",
+        "taxAmounts": "Steuerbeträge",
+        "taxAmountsHelp": "Wie berechnet sendet die Steuer genau so, wie sie auf der Rechnung des Kunden steht, sodass beide Systeme auf den Cent übereinstimmen. Von QuickBooks ermittelt lässt QuickBooks den Satz des Steuercodes anwenden, in den USA die Adresse des Kunden, und das Protokoll meldet abweichende Summen.",
+        "taxAmountsBilled": "Wie in Torqvoice berechnet",
+        "taxAmountsQuickbooks": "Von QuickBooks ermittelt",
+        "taxCodeId": "Steuercode für steuerpflichtige Rechnungen",
+        "taxCodeIdHelp": "QuickBooks bucht die Steuer unter einem Steuercode. Torqvoice wählt den Code, dessen Satz zur jeweiligen Rechnung passt; dieser wird verwendet, wenn keiner passt. Ein US-Unternehmen verwendet TAX, sofern du nichts anderes wählst.",
+        "zeroTaxCodeId": "Steuercode für steuerfreie Rechnungen",
+        "zeroTaxCodeIdHelp": "Wird verwendet, wenn die Rechnung keine Steuer hat oder der Kunde steuerbefreit ist. Ein US-Unternehmen verwendet NON, sofern du nichts anderes wählst.",
+        "pushPayments": "Zahlungen in QuickBooks erfassen",
+        "depositAccountId": "Zahlungen einzahlen auf",
+        "depositAccountIdHelp": "Leer lassen, um Undeposited Funds zu verwenden.",
+        "manualPaidAsPayment": "Zahlung erfassen, wenn eine Rechnung von Hand als bezahlt markiert wird",
+        "manualPaidAsPaymentHelp": "Eine in Torqvoice ohne Zahlungseintrag als bezahlt markierte Rechnung erhält in QuickBooks eine Zahlung über den dort noch offenen Betrag. Ausgeschaltet bleibt sie dort offen, bis eine Zahlung erfasst wird.",
+        "pullPayments": "In QuickBooks erfasste Zahlungen zurückholen",
+        "pullPaymentsHelp": "Alle 30 Minuten. Eine in QuickBooks gegen eine Rechnung aus Torqvoice erhaltene Zahlung wird hier auf der Rechnung erfasst."
+      }
+    },
+    "nhtsa": {
+      "description": "Fülle ein Fahrzeug aus seiner FIN aus und sieh Rückrufe, Halterbeschwerden und Crashtest-Bewertungen für jedes Modelljahr, von der US-Sicherheitsbehörde. Kostenlos, ohne Schlüssel.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Rückruf- und Beschwerdedaten für jedes Fahrzeug dieser Werkstatt aktuell halten",
+        "refreshFleetHelp": "Einmal täglich werden Modelle, die in der letzten Woche nicht aktualisiert wurden, erneut abgerufen, damit die Fahrzeugseite nie wartet und ein neuer Rückruf innerhalb einer Woche nach Einreichung erscheint. Nur Marke, Modell und Jahr werden gesendet."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Aufträge in den Kalender",
+      "pull": "Belegte Zeit aus dem Kalender"
+    },
+    "conference": {
+      "sync": "Videoanruf-Links"
+    },
+    "inspection": {
+      "refresh": "HU-Termine aktualisieren"
+    },
+    "accounting": {
+      "invoice": "Rechnung an die Buchhaltung",
+      "payment": "Zahlung an die Buchhaltung",
+      "customer": "Kunde an die Buchhaltung",
+      "pull": "Zahlungen aus der Buchhaltung"
+    },
+    "safety": {
+      "refresh": "Aktualisierung der Rückrufdaten",
+      "vehicle": "Rückrufprüfung für ein neues Fahrzeug"
+    }
+  }
+}

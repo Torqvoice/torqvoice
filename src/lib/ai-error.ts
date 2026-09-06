@@ -14,11 +14,11 @@ export function describeAiError(error: unknown): string {
   switch (status) {
     case 401:
     case 403:
-      return 'The AI provider rejected the API key. Check it in Settings → AI.'
+      return 'The AI provider rejected the API key. Check it in Settings → Integrations.'
     case 402:
       return 'The AI provider reports no usable credit for this API key.'
     case 404:
-      return 'The AI provider does not offer the selected model. Pick another in Settings → AI.'
+      return 'The AI provider does not offer the selected model. Pick another in Settings → Integrations.'
     case 413:
       return 'The image was too large for the AI provider.'
     case 429:

@@ -55,6 +55,7 @@ import { toast } from 'sonner'
 import { createTemplate, updateTemplate } from '../Actions/templateActions'
 import { COMMON_UNITS, INPUT_TYPES, type InputType, type SeverityScale } from '../Lib/conditions'
 import { TEMPLATE_COUNTRIES } from '../Lib/templatePresets'
+import { clearableInput } from '@/lib/clearable'
 
 /**
  * Sections and checks are lists, so sideways movement during a drag is only
@@ -711,7 +712,7 @@ export function TemplateForm({
     const payload = {
       ...(isEdit ? { id: template.id } : {}),
       name,
-      description: description || undefined,
+      description: clearableInput(description, isEdit),
       isDefault,
       country: country === 'none' ? null : country,
       standard: template?.standard ?? 'custom',

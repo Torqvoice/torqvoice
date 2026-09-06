@@ -12,6 +12,8 @@ import {
 import { ClipboardCheck } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export default async function PortalInspectionsPage({
   params,
@@ -19,6 +21,9 @@ export default async function PortalInspectionsPage({
   params: Promise<{ orgId: string }>
 }) {
   const { orgId } = await params
+  // Dates on the portal are the workshop's calendar days, not the server's.
+  const org = await resolvePortalOrg(orgId)
+  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.inspections')
   const result = await getPortalInspections()
 
@@ -94,7 +99,7 @@ export default async function PortalInspectionsPage({
                         </span>
                       )}
                       <span className="text-muted-foreground">
-                        {new Date(insp.createdAt).toLocaleDateString()}
+                        {new Date(insp.createdAt).toLocaleDateString(undefined, { timeZone })}
                       </span>
                     </div>
                     {insp.publicToken && (
@@ -149,7 +154,9 @@ export default async function PortalInspectionsPage({
                             {insp.status.replace('_', ' ')}
                           </Badge>
                         </TableCell>
-                        <TableCell>{new Date(insp.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {new Date(insp.createdAt).toLocaleDateString(undefined, { timeZone })}
+                        </TableCell>
                         <TableCell>
                           <div className="flex gap-2 text-xs">
                             {conditions.good && (

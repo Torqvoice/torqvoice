@@ -7,7 +7,7 @@
       "billing": "Fatura & Belgeler",
       "communications": "İletişim",
       "workshop": "Atölye",
-      "integrations": "Entegrasyonlar",
+      "integrations": "Uygulamalar ve API",
       "system": "Sistem"
     },
     "items": {
@@ -91,6 +91,10 @@
         "title": "Rapor zamanlayıcı",
         "description": "Otomatik rapor gönderimi"
       },
+      "integrations": {
+        "title": "Entegrasyonlar",
+        "description": "Takvimler, görüntülü görüşmeler ve bağlı servisler"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Gerçek zamanlı olay bildirimleri"
@@ -130,6 +134,10 @@
       "providers": {
         "title": "Sağlayıcılar",
         "description": "E-posta, SMS, WhatsApp ve Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Muayene hatırlatmaları",
+        "description": "Randevu bağlantısı, süre ve öncelik"
       }
     },
     "pro": "PRO"
@@ -572,7 +580,16 @@
     "quoteLockTriggerSent": "Teklif gönderildiğinde",
     "quoteLockTriggerAccepted": "Teklif kabul edildiğinde",
     "quoteLockTriggerSentHint": "Teklif müşteriye ulaşır ulaşmaz kilitlenir. Yalnızca pazarlık sırasında teklifi hiç revize etmiyorsanız seçin.",
-    "quoteLockTriggerAcceptedHint": "Müşteri teklifi kabul ettiğinde veya teklif bir işe dönüştürüldüğünde kilitlenir. Gönderilmiş teklifler düzenlenebilir kalır."
+    "quoteLockTriggerAcceptedHint": "Müşteri teklifi kabul ettiğinde veya teklif bir işe dönüştürüldüğünde kilitlenir. Gönderilmiş teklifler düzenlenebilir kalır.",
+    "freezeTitle": "Kilitlemeden önceki faturalar",
+    "freezeBody": "{count, plural, one {# fatura} other {# fatura}}, bu sürüm bir faturanın yazdırdığını kilitleyemeden önce bir müşteriye ulaştı. Hâlâ mevcut bilgileriniz, logonuz ve tasarımınızla yazdırılıyorlar; bugün yaptığınız bir değişiklik onlara da ulaşır. Kilitlemek her birini şu anda yazdırıldığı gibi korur.",
+    "freezeNone": "Müşteriye ulaşan her fatura gönderildiği haliyle kilitlenmiş.",
+    "freezeButton": "Mevcut tasarımla kilitle",
+    "freezeConfirmTitle": "{count, plural, one {# fatura} other {# fatura}} kilitlensin mi?",
+    "freezeConfirmBody": "Her biri şu anda yazdırıldığı tasarımı, logoyu, atölye bilgilerini, müşteriyi, aracı ve bulguları korur. Geri alınamaz; faturalar bugünkü gibi düzenlenebilir ya da düzenlemeye kilitli kalır.",
+    "freezeProgress": "{total} faturadan {done} tanesi kilitlendi",
+    "freezeDone": "{count, plural, one {# fatura} other {# fatura}} kilitlendi",
+    "freezeFailed": "Faturalar kilitlenemedi"
   },
   "layoutEditor": {
     "helpText": "Sıralamak için sürükleyin. Bölümleri yan yana yerleştirmek için genişlik değiştiriciyi kullanın. Ardışık yarım genişlik bölümleri (S/S) iki sütun halinde görüntülenir.",
@@ -634,6 +651,12 @@
       "bank_account": "Banka hesabı",
       "footer_note": "Alt bilgi notu",
       "org_number": "Kuruluş numarası",
+      "payment_terms": "Ödeme koşulları",
+      "due_date": "Vade tarihi",
+      "title": "Başlık",
+      "invoice_number": "Fatura No",
+      "customer_number": "Müşteri No",
+      "date": "Tarih",
       "portal_link": "Portal bağlantısı"
     },
     "presetsTitle": "Bir düzenle başlayın",
@@ -808,32 +831,17 @@
     "paymentTermsPlaceholder": "Net 14 gün",
     "paymentTermsHint": "Faturalarda gösterilen ödeme koşulları metni (ör. \"Net 14 gün\", \"Teslimde ödeme\")",
     "onlinePayments": "Online Ödemeler",
-    "onlinePaymentsDescription": "Müşterilerin paylaşılan fatura linkleri üzerinden online ödeme yapmasına izin verin.",
-    "stripe": "Stripe",
-    "stripeDescription": "Kredi/banka kartı ödemelerini kabul edin",
-    "secretKey": "Gizli Anahtar",
-    "publishableKey": "Yayınlanabilir Anahtar",
-    "webhookSecret": "Webhook Gizli Anahtarı",
-    "webhookUrl": "Webhook URL'si",
-    "stripeWebhookHint": "Bu URL'yi Stripe Panonuzda Webhooks altına ekleyin. <code>checkout.session.completed</code> olayına abone olun.",
-    "vipps": "Vipps",
-    "vippsDescription": "Vipps mobil ödemelerini kabul edin (Norveç)",
-    "clientId": "İstemci Kimliği",
-    "clientSecret": "İstemci Gizli Anahtarı",
-    "subscriptionKey": "Abonelik Anahtarı",
-    "merchantSerialNumber": "Satıcı Seri Numarası",
-    "testMode": "Test Modu",
-    "callbackUrl": "Geri Çağırma URL'si",
-    "termsOfSale": "Satış Koşulları (Salgsvilkår)",
-    "termsOfSaleDescription": "Vipps tarafından zorunludur. Müşteriler bunları fatura sayfasından görüntüleyebilir.",
+    "onlinePaymentsDescription": "Müşterilerin, gönderdiğiniz bağlantıdan fatura ödemesine izin verin. Stripe, Vipps ve PayPal, Entegrasyonlar altında bağlanır ve birlikte çalışabilir.",
+    "onlinePaymentsHint": "Bir müşteri ödediğinde sağlayıcı Torqvoice'a bildirir ve fatura kendini ödendi olarak işaretler. Her sağlayıcının sayfası, ihtiyaç duyduğu bildirim URL'sini gösterir.",
+    "offered": "Fatura bağlantılarında",
+    "paused": "Bağlı, sunulmuyor",
+    "termsOfSale": "Satış koşulları",
+    "termsOfSaleDescription": "Müşterinin çevrimiçi öderken kabul ettiği şey. Vipps yayımlanmış koşullar ister; fatura her durumda onlara bağlantı verir.",
+    "termsOfSaleText": "Koşul metni",
     "externalTermsUrl": "Harici Koşullar URL'si (isteğe bağlı)",
     "externalTermsUrlHint": "Koşullarınızın bulunduğu harici bir sayfaya bağlantı. Ayarlanırsa, fatura yerleşik koşullar sayfası yerine buraya bağlanır.",
     "publicTermsUrl": "Genel Koşullar URL'si",
     "publicTermsUrlHint": "Bu URL'yi Vipps ile paylaşın veya web sitenizden bağlantı verin.",
-    "paypal": "PayPal",
-    "paypalDescription": "PayPal ödemelerini kabul edin",
-    "sandboxMode": "Sandbox Modu",
-    "paypalWebhookHint": "Bu URL'yi PayPal Geliştirici Panonuzda Webhooks altına ekleyin. <code>PAYMENT.CAPTURE.COMPLETED</code> olayına abone olun.",
     "savePayment": "Ödeme Ayarlarını Kaydet",
     "saved": "Ödeme ayarları kaydedildi"
   },
@@ -1112,7 +1120,7 @@
   },
   "data": {
     "title": "Veri Yönetimi",
-    "description": "Verilerinizi yedek olarak dışa aktarın veya daha önce dışa aktarılmış bir dosyayı içe aktarın.",
+    "description": "Eski sisteminizden veri aktarın, her şeyin yedeğini indirin veya bir yedeği geri yükleyin.",
     "exportTitle": "Veri Dışa Aktar",
     "exportDescription": "Verilerinizi zip dosyası olarak indirin. Yedeğe dahil edilecek kategorileri seçin.",
     "includeInBackup": "Yedeğe dahil et:",
@@ -1199,7 +1207,16 @@
     "optTireHotel": "Lastik oteli",
     "optTireHotelDesc": "Depodaki takımlar, raflar, hazırlık ve depolama sözleşmeleri",
     "optWorkshopConfig": "Atölye kurulumu",
-    "optWorkshopConfigDesc": "İşçilik şablonları, roller, webhook'lar ve zamanlanmış raporlar"
+    "optWorkshopConfigDesc": "İşçilik şablonları, roller, webhook'lar ve zamanlanmış raporlar",
+    "importHubDescription": "Verilerinizin bugün nerede olduğunu seçin. Tablo ve uygulama içe aktarımları mevcut verilerinize eklenir ve geri alınabilir; yedek geri yükleme her şeyi değiştirir.",
+    "sourceSpreadsheet": "Tablo veya CSV",
+    "sourceSpreadsheetDesc": "Herhangi bir atölye sistemi, muhasebe aracı, Google Kişiler, Outlook veya Excel dışa aktarımları. Bir şey yazılmadan önce sütun eşlemesini onaylar ve deneme çalıştırmasını görürsünüz.",
+    "sourceLubelogDesc": "Bir LubeLog yedeğinden araçlar, servis kayıtları ve notlar.",
+    "sourceInvoiceNinjaDesc": "Bir Invoice Ninja dışa aktarımından müşteriler, ürünler, faturalar ve ödemeler.",
+    "sourceBackup": "Torqvoice yedeği",
+    "sourceBackupDesc": "Bu sayfadan indirilmiş bir .zip veya .json dosyası. Geri yükleme bu atölyedeki her şeyi değiştirir.",
+    "restore": "Geri yükle",
+    "restoreTitle": "Bir yedeği geri yükle"
   },
   "license": {
     "title": "Beyaz Etiket Lisansı",
@@ -1740,6 +1757,17 @@
         "feature": "Telegram mesajlaşma",
         "description": "Müşterilerinizle Telegram mesajlarını doğrudan Torqvoice üzerinden gönderip alın."
       }
+    },
+    "moved": {
+      "title": "These settings moved to Integrations",
+      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
+      "connectedTo": "Connected through {vendor}",
+      "notSetUp": "Not set up yet",
+      "manage": "Manage",
+      "notConnected": "Not connected",
+      "goToIntegrations": "Go to Integrations",
+      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
+      "onByDefault": "On by default"
     }
   },
   "designer": {
@@ -1749,6 +1777,14 @@
     "galleryTitle": "Bir şablonla başlayın",
     "galleryHint": "Bir başlangıç noktası seçin. Tasarımcıda her şeyi değiştirebilirsiniz.",
     "yourDesigns": "Tasarımlarınız",
+    "autoRuleHint": "Araçsız satışlar, satış veya müşterisi başka birini seçmedikçe, kendileri için işaretlenen tasarımla yazdırılır.",
+    "useForPartsSale": "Yalnızca parça satışları için kullan",
+    "usedForPartsSale": "Yalnızca parça satışları için kullanılıyor",
+    "autoRule": {
+      "parts_sale": "Yalnızca parça satışı"
+    },
+    "autoRuleSaved": "\"{name}\" kullanımı güncellendi",
+    "couldNotSaveRule": "Kural güncellenemedi",
     "templates": "Şablonlar",
     "inUse": "Kullanımda",
     "savedOn": "{date} tarihinde kaydedildi",
@@ -1908,6 +1944,7 @@
       "serviceType": "Onarım",
       "companyName": "Servisiniz",
       "slogan": "Güvenebileceğiniz kaliteli hizmet",
+      "paymentTerms": "14 gün içinde ödenir",
       "footerNote": "İş birliğiniz için teşekkürler",
       "value": "Örnek"
     },
@@ -1923,11 +1960,22 @@
     "sloganPlaceholderHint": "Slogan tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
     "sloganSetHint": "Sloganınız şirket bilgilerinizden gelir.",
     "sloganLink": "Şirket ayarları",
+    "paymentTerms": "Ödeme koşulları",
+    "paymentTermsPlaceholderHint": "Ödeme koşulları tanımlanmadığı için sayfada yazdırılmayacak bir örnek metin gösteriliyor.",
+    "paymentTermsSetHint": "Ödeme koşullarınız ödeme ayarlarınızdan gelir.",
+    "paymentTermsLink": "Ödeme ayarları",
+    "titleText": "Başlık metni",
+    "titleTextHint": "Bu belgenin kendine verdiği ad. Boş bırakılırsa kendi adını okuyucunun dilinde yazdırır.",
     "placeholder": "Örnek",
     "leaveTitle": "Kaydetmeden çıkılsın mı?",
     "leaveBody": "Bu tasarımdaki değişiklikler kaydedilmedi ve kaybolacak.",
     "leaveConfirm": "Çık",
-    "boldField": "Kalın"
+    "boldField": "Kalın",
+    "deleteDesignDrafts": "Bunu kullanan {count, plural, one {# taslak fatura} other {# taslak fatura}} varsayılan tasarıma döner.",
+    "deleteDesignCustomers": "Buna ayarlı {count, plural, one {# müşteri} other {# müşteri}} varsayılan tasarıma döner.",
+    "setDefault": "Varsayılan yap",
+    "defaultSet": "\"{name}\" artık kullanımda",
+    "couldNotSetDefault": "Varsayılan tasarım ayarlanamadı"
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",
@@ -1942,5 +1990,31 @@
     "partSyntheticOil": "Sentetik yağ 5W-30",
     "laborBrakeReplacement": "Fren değişimi",
     "laborOilChange": "Yağ değişimi"
+  },
+  "inspectionReminders": {
+    "title": "Muayene hatırlatmaları ve randevu",
+    "description": "Hatırlatmadaki randevu bağlantısının nasıl çalışacağı. Bir kez ayarlanır; her kampanya bunları kullanır.",
+    "duration": "Muayene süresi (dakika)",
+    "durationHint": "Periyodik muayenenin bir lifti ne kadar meşgul ettiği. Bağlantı bu uzunlukta randevular ayırır.",
+    "leadDays": "En erken randevu (gün sonra)",
+    "leadDaysHint": "1, önerilen ilk saatin yarın olduğu, asla bugün olmadığı anlamına gelir.",
+    "horizonWeeks": "Ne kadar ileri (hafta)",
+    "horizonHint": "Müşteriler bu kadar hafta içindeki boş saatlerden seçebilir.",
+    "reserve": "Randevusuz gelenler için boş tut",
+    "reserveHint": "Bağlantının asla doldurmadığı lift veya teknisyenler. 0 tüm boşları kullanır.",
+    "linkValidDays": "Bağlantı açık kalır (gün)",
+    "linkValidHint": "En az {min}. Bağlantılar ayrıca son tarihten bir hafta sonrasına kadar açık kalır, hangisi daha geçse.",
+    "bookingMode": "Randevu ne oluşturur",
+    "bookingModeDirect": "Panoda planlanmış bir iş emri",
+    "bookingModeRequest": "Ofisin önce onayladığı bir talep",
+    "bookingModeHint": "Doğrudan randevu bağlantıyı tıklamaya değer kılar. Her seferinde onaylamak istiyorsanız talebi seçin.",
+    "phone": "Mesajlardaki telefon numarası",
+    "phoneHint": "Bağlantıya alternatif olarak gösterilir. Varsayılan atölye numarasıdır.",
+    "save": "Kaydet",
+    "saved": "Ayarlar kaydedildi",
+    "saveFailed": "Kaydedilemedi",
+    "timeZoneDetected": "Saat dilimi Yerelleştirme altında otomatik olduğundan sunucu, ayarları kaydeden bir tarayıcıda son görülen {zone} dilimini kullanıyor. Randevu saatlerinin son kaydeden kişiye bağlı olmaması için atölyenin dilimini açıkça seçin.",
+    "timeZoneExplicit": "Randevu saatleri ve çalışma saatleri {zone} diliminde okunur.",
+    "timeZoneChange": "Yerelleştirme altında değiştir"
   }
 }

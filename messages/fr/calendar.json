@@ -30,11 +30,53 @@
   },
   "today": "Aujourd’hui",
   "workOrder": "Ordre de travail",
+  "allDay": "Toute la journée",
+  "openDay": "Ouvrir le {date}",
+  "dayTotal": "{count, plural, =1 {1 événement} other {# événements}}",
+  "views": {
+    "day": "Jour",
+    "week": "Semaine",
+    "month": "Mois",
+    "year": "Année",
+    "schedule": "Planning",
+    "fourDays": "4 jours"
+  },
+  "options": {
+    "showWeekends": "Afficher les week-ends",
+    "showCompleted": "Afficher les terminés",
+    "showWeekNumbers": "Afficher les numéros de semaine"
+  },
+  "toolbar": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "create": "Créer",
+    "showSidebar": "Afficher le panneau latéral",
+    "hideSidebar": "Masquer le panneau latéral"
+  },
+  "sidebar": {
+    "calendars": "Calendriers",
+    "legend": "Couleurs des statuts"
+  },
+  "schedule": {
+    "empty": "Rien de prévu",
+    "emptyHint": "Aucun ordre de travail, rappel, devis ni message sur cette période."
+  },
+  "peek": {
+    "close": "Fermer",
+    "open": {
+      "service": "Ouvrir l'ordre de travail",
+      "reminder": "Ouvrir le rappel",
+      "quote": "Ouvrir le devis",
+      "message": "Ouvrir les messages",
+      "external": "Ouvrir"
+    }
+  },
   "filters": {
-    "services": "Services",
+    "services": "Ordres de travail",
     "reminders": "Rappels",
     "quotes": "Devis",
-    "messages": "Messages"
+    "messages": "Messages",
+    "external": "Calendriers connectés"
   },
   "selectVehicle": "Sélectionner un véhicule pour l’ordre de travail",
   "dateChoice": {
@@ -44,14 +86,27 @@
     "useToday": "Use today"
   },
   "more": "+ {count} de plus",
-  "monthTotal": "{count} événements ce mois-ci",
+  "monthTotal": "{count} événements",
   "contextMenu": {
     "newWorkOrder": "Nouvel ordre de travail",
+    "newWorkOrderAt": "Nouvel ordre de travail à {time}",
     "newReminder": "Nouveau rappel",
     "newQuote": "Nouveau devis",
     "openEvent": "Ouvrir ({count})",
     "hint": "Astuce : faites un clic droit sur un jour pour voir les actions",
     "scheduleMessage": "Programmer un message"
+  },
+  "eventMenu": {
+    "open": "Ouvrir",
+    "markDone": "Marquer comme fait",
+    "markNotDone": "Marquer comme non fait",
+    "deleteReminder": "Supprimer le rappel",
+    "deleteReminderConfirm": "Supprimer le rappel \"{title}\" ? Cette action est irréversible.",
+    "deleteMessage": "Supprimer le message programmé",
+    "deleteMessageConfirm": "Supprimer le message programmé \"{title}\" ? Il ne sera pas envoyé.",
+    "deleted": "Supprimé",
+    "updated": "Mis à jour",
+    "failed": "Cela n'a pas fonctionné. Réessayez."
   },
   "events": {
     "status": {
@@ -59,6 +114,7 @@
       "inProgress": "En cours",
       "waitingParts": "En attente de pièces",
       "pending": "En attente",
+      "scheduled": "Planifié",
       "sent": "Envoyé",
       "approved": "Approuvé",
       "draft": "Brouillon",
@@ -66,16 +122,27 @@
       "overdue": "En retard",
       "upcoming": "À venir",
       "failed": "Échec",
-      "queued": "En file"
+      "queued": "En file",
+      "busy": "Occupé"
     },
     "type": {
-      "service": "Service",
+      "service": "Ordre de travail",
       "reminder": "Rappel",
       "quote": "Devis",
-      "message": "Message"
+      "message": "Message",
+      "external": "Calendrier connecté"
     },
     "noEvents": "Aucun événement",
-    "selectDay": "Sélectionnez un jour avec des événements ou créez un nouvel ordre de travail."
+    "selectDay": "Sélectionnez un jour avec des événements ou créez un nouvel ordre de travail.",
+    "external": {
+      "source": "Depuis {source}",
+      "sourceUnknown": "Depuis un calendrier connecté",
+      "allDay": "Toute la journée",
+      "open": "Ouvrir dans {source}",
+      "openGeneric": "Ouvrir dans le calendrier",
+      "noLink": "Ce calendrier ne fournit pas de lien vers l'événement.",
+      "readOnly": "Créneau occupé venant d'un calendrier connecté. Modifiez-le là-bas, il sera mis à jour ici à la prochaine synchronisation."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

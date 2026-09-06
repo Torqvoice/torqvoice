@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Integraties",
+    "description": "Koppel de diensten die uw werkplaats al gebruikt. Elke integratie wordt eenmalig ingesteld en draait op de achtergrond.",
+    "all": "Alle",
+    "empty": "Nog geen integraties in deze categorie.",
+    "notConnected": "Niet gekoppeld",
+    "connect": "Koppelen",
+    "manage": "Beheren",
+    "connectedTitle": "Verbonden",
+    "connectedDescription": "Diensten die deze werkplaats heeft ingesteld. Open er een om de status te bekijken, instellingen te wijzigen of de verbinding te verbreken.",
+    "noneConnected": "Nog niets verbonden. Kies hieronder een dienst om te beginnen.",
+    "availableTitle": "Beschikbaar",
+    "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
+    "allConnected": "Alle beschikbare diensten zijn verbonden.",
+    "searchPlaceholder": "Integraties zoeken",
+    "noMatches": "Niets komt overeen met \"{query}\".",
+    "readMore": "Meer lezen",
+    "suggestTitle": "Mist u een dienst die u gebruikt?",
+    "suggestDescription": "Vertel ons welke integratie uw werkplaats zou helpen en we bekijken het.",
+    "suggest": "Een integratie voorstellen",
+    "suggestSubject": "Integratievoorstel"
+  },
+  "categories": {
+    "calendar": "Agenda",
+    "conferencing": "Videogesprekken",
+    "accounting": "Boekhouding",
+    "messaging": "Berichten",
+    "payments": "Betalingen",
+    "automation": "Automatisering",
+    "storage": "Bestanden",
+    "registry": "Voertuigregister",
+    "other": "Overig",
+    "ai": "AI"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Werkorders naar agenda",
+      "pull": "Bezette tijd uit agenda",
+      "conference": "Links voor videogesprekken"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Kenteken- en VIN-opzoeking",
+      "inspection": "APK-vervaldatums",
+      "safety": "Terugroepacties en klachten van eigenaren"
+    },
+    "ai": {
+      "chat": "Teksten en samenvattingen"
+    },
+    "payments": {
+      "checkout": "Betalen via de factuurlink"
+    },
+    "accounting": {
+      "invoices": "Facturen naar de boekhouding",
+      "customers": "Klanten naar de boekhouding",
+      "payments": "Betalingen in beide richtingen"
+    }
+  },
+  "statuses": {
+    "active": "Gekoppeld",
+    "error": "Aandacht vereist",
+    "pending": "Installatie bezig",
+    "disconnected": "Losgekoppeld",
+    "needsSetup": "Instellen niet afgerond"
+  },
+  "connection": {
+    "back": "Alle integraties",
+    "account": "Gekoppeld account",
+    "lastHealth": "Laatst gecontroleerd",
+    "lastSync": "Laatste synchronisatie",
+    "lastError": "De laatste uitvoering is mislukt",
+    "setupMissingTitle": "Instellen niet afgerond",
+    "setupMissing": "Kies {fields} in de instellingen hieronder. Tot die tijd wordt niets gesynchroniseerd.",
+    "connected": "{name} is gekoppeld.",
+    "connectedShort": "Gekoppeld",
+    "connectWith": "{name} koppelen",
+    "connect": "Koppelen",
+    "reconnect": "Opnieuw koppelen",
+    "disconnect": "Loskoppelen",
+    "disconnectTitle": "{name} loskoppelen?",
+    "disconnectDescription": "Torqvoice vergeet het account en gebruikt het niet meer. Niets wat al naar {name} is gestuurd of daar is opgeslagen wordt aangeraakt.",
+    "disconnectDescriptionCalendar": "Torqvoice vergeet het account en stopt met synchroniseren. Werkorders die al in {name} staan blijven daar. De drukke tijd die uit die agenda werd getoond wordt uit de Torqvoice-agenda verwijderd.",
+    "disconnectDescriptionConferencing": "Torqvoice vergeet het account en maakt geen vergaderingen meer aan. Al aangemaakte vergaderingen blijven in {name} en de links op werkorders blijven bewaard.",
+    "disconnectDescriptionAccounting": "Torqvoice vergeet het account en stopt met versturen en lezen. Facturen, klanten en betalingen die al in {name} staan blijven daar.",
+    "removeSetup": "Verwijderen",
+    "removeSetupTitle": "{name} verwijderen?",
+    "removeSetupDescription": "Er is nog niets verbonden. Torqvoice vergeet wat is ingevuld en {name} gaat terug naar de lijst met beschikbare diensten.",
+    "removeSetupDone": "{name} verwijderd",
+    "removeSetupHint": "Gaat u hier niet mee door? Verwijder het en de dienst keert terug naar de lijst hieronder.",
+    "disconnected": "Losgekoppeld",
+    "test": "Verbinding testen",
+    "testPassed": "Verbinding werkt",
+    "syncNow": "Nu synchroniseren",
+    "syncQueued": "Synchronisatie in wachtrij; wordt binnen een minuut uitgevoerd",
+    "pullNow": "Betalingen nu ophalen",
+    "pullQueued": "Ophalen van betalingen in wachtrij; wordt binnen een minuut uitgevoerd",
+    "backfill": "Geplande werkorders doorsturen",
+    "backfillQueued": "Geplande werkorders vanaf afgelopen week in de wachtrij gezet",
+    "backfillInvoices": "Uitgegeven facturen versturen",
+    "backfillInvoicesQueuedCount": "{count, plural, one {# uitgegeven factuur} other {# uitgegeven facturen}} in de wachtrij gezet om te sturen",
+    "backfillInvoicesNone": "Geen uitgegeven facturen om te sturen. Alleen verzonden, gedeelde of betaalde facturen gaan over, vanaf de begindatum als je die hebt ingesteld.",
+    "retryQueued": "Taak opnieuw in de wachtrij gezet",
+    "settingsTitle": "Instellingen",
+    "settingsDescription": "Wat er wordt gesynchroniseerd en waarheen. Wijzigingen gelden vanaf de volgende synchronisatie.",
+    "settingsSaved": "Instellingen opgeslagen",
+    "save": "Opslaan",
+    "loading": "Laden...",
+    "choose": "Kiezen...",
+    "search": "Zoeken...",
+    "noMatch": "Niets gevonden",
+    "leaveEmpty": "Leeg laten",
+    "noLimit": "Geen grens",
+    "planLocked": "Integraties zijn niet inbegrepen in uw abonnement.",
+    "ownAppTitle": "Deze installatie gebruikt uw eigen app bij de provider",
+    "redirectUri": "Redirect-URI om bij de provider te registreren:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard onder Developers, Webhooks, geabonneerd op checkout.session.completed. Plak daarna het ondertekeningsgeheim dat Stripe toont in het veld webhookgeheim hier, zodat meldingen geverifieerd kunnen worden.",
+    "inboundHintVipps": "Vul deze URL in als callback-URL in het Vipps MobilePay-portaal. Vipps vereist ook gepubliceerde verkoopvoorwaarden, die staan onder Instellingen, Betaling.",
+    "inboundHintPaypal": "Voeg deze URL toe in het PayPal-ontwikkelaarsdashboard onder Webhooks, geabonneerd op PAYMENT.CAPTURE.COMPLETED.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Keuringssynchronisatie",
+      "vehicles": "{count} voertuigen met kenteken in deze werkplaats",
+      "dueNow": "{count} zouden bij de volgende run worden opgezocht",
+      "withDate": "{count} hebben al een keuringsdatum",
+      "lastPass": "Laatste volledige ronde {date}",
+      "never": "Nog geen volledige ronde",
+      "inProgress": "Er loopt een ronde",
+      "off": "Zet de instelling aan en sla op; tot die tijd controleert een ronde niets.",
+      "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
+    },
+    "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
+    "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}"
+  },
+  "activity": {
+    "title": "Activiteit",
+    "description": "Recente taken en logregels voor deze koppeling.",
+    "retry": "Opnieuw proberen",
+    "jobStatus": {
+      "queued": "In wachtrij",
+      "running": "Bezig",
+      "done": "Klaar",
+      "failed": "Mislukt",
+      "dead": "Opgegeven"
+    },
+    "jobs": "{count, plural, one {# taak} other {# taken}}",
+    "counts": {
+      "queued": "{count} in wachtrij",
+      "running": "{count} bezig",
+      "done": "{count} klaar",
+      "failed": "{count} mislukt",
+      "dead": "{count} opgegeven"
+    },
+    "noFailures": "Niets is mislukt.",
+    "retryFailed": "Mislukte opnieuw proberen",
+    "details": "Details tonen"
+  },
+  "errors": {
+    "generic": "Er is iets misgegaan",
+    "demo": "Integraties kunnen niet worden gekoppeld in de demo.",
+    "forbidden": "Alleen een beheerder kan integraties koppelen.",
+    "unknown": "Onbekende integratie.",
+    "plan": "Deze integratie is niet inbegrepen in uw abonnement.",
+    "no-client": "Er zijn geen app-gegevens geconfigureerd voor deze provider.",
+    "denied": "U heeft het aanmelden bij de provider geannuleerd.",
+    "vendor": "De provider gaf een fout terug. Probeer het opnieuw.",
+    "invalid": "Het antwoord van de provider was onvolledig. Probeer het opnieuw.",
+    "state": "Deze aanmelding is verlopen of hoort bij een andere sessie. Begin opnieuw.",
+    "exchange": "De provider heeft de aanmelding geweigerd. Controleer de app-gegevens en probeer het opnieuw.",
+    "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen."
+  },
+  "meeting": {
+    "join": "Deelnemen aan videogesprek",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Uit gekoppelde agenda's",
+    "busy": "Bezet"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Zet geplande werkorders in een Google Calendar, voeg een Google Meet-link toe en bekijk de bezette tijd van de agenda in Torqvoice.",
+      "tenantHelp": "Maak een OAuth-client aan in Google Cloud Console (APIs & Services → Credentials), schakel de Google Calendar API in, voeg de onderstaande redirect-URI toe en plak hier de client-ID en het geheim.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "calendarId": "Agenda",
+        "pushEnabled": "Geplande werkorders aan deze agenda toevoegen",
+        "includeCustomer": "Naam en telefoonnummer van de klant in de afspraak opnemen",
+        "addConference": "Een Google Meet-vergadering toevoegen aan elke geplande werkorder",
+        "addConferenceHelp": "Aan: elke werkorder die naar de agenda gaat krijgt een Google Meet-vergadering, en de link staat op de werkorder. Uit: voeg een Google Meet-vergadering toe aan één werkorder vanaf zijn pagina. In beide gevallen krijgt de klant de link pas als u die verstuurt.",
+        "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
+        "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
+      }
+    },
+    "microsoft-365": {
+      "description": "Zet geplande werkorders in een Outlook-agenda, voeg een Microsoft Teams-link toe en bekijk de bezette tijd van de agenda in Torqvoice.",
+      "tenantHelp": "Registreer een toepassing in Microsoft Entra (App registrations), sta persoonlijke en werkaccounts toe, voeg de onderstaande redirect-URI toe als Web-platform, maak een clientgeheim aan en plak beide hier.",
+      "fields": {
+        "clientId": "Toepassings-ID (client-ID)",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "calendarId": "Agenda",
+        "pushEnabled": "Geplande werkorders aan deze agenda toevoegen",
+        "includeCustomer": "Naam en telefoonnummer van de klant in de afspraak opnemen",
+        "addConference": "Een Microsoft Teams-vergadering toevoegen aan elke geplande werkorder",
+        "addConferenceHelp": "Aan: elke werkorder die naar de agenda gaat krijgt een Microsoft Teams-vergadering, en de link staat op de werkorder. Uit: voeg een Microsoft Teams-vergadering toe aan één werkorder vanaf zijn pagina. In beide gevallen krijgt de klant de link pas als u die verstuurt.",
+        "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
+        "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
+      }
+    },
+    "zoom": {
+      "description": "Voeg een Zoom-vergadering toe aan een ingeplande werkorder en houd de deelnamelink erop, voor diagnose op afstand of om bevindingen met de klant door te nemen.",
+      "tenantHelp": "Maak in de Zoom App Marketplace een General-app (user-managed), voeg de onderstaande redirect-URI toe, voeg de scopes meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting en user:read:user toe en plak hier de client-ID en het client secret.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "autoCreate": "Automatisch een Zoom-vergadering aanmaken voor elke ingeplande werkorder",
+        "autoCreateHelp": "Uit: u voegt het videogesprek zelf toe aan een werkorder, vanaf de pagina ervan. Aan: elke werkorder met een starttijd krijgt een vergadering, die meeschuift bij verplaatsen en verdwijnt bij annuleren. In beide gevallen krijgt de klant de link alleen als u die verstuurt.",
+        "includeCustomer": "Naam van de klant in het onderwerp opnemen",
+        "joinBeforeHost": "Klant vóór u laten deelnemen",
+        "waitingRoom": "Wachtkamer gebruiken"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Vul een voertuig in vanuit het Noorse kenteken of VIN: merk, model, bouwjaar, brandstof, versnellingsbak, motor, kleur, bandenmaten en de volgende EU-kontroll-datum, rechtstreeks uit het register van Statens vegvesen. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Gratis. Bestel de sleutel op vegvesen.no onder \"API for tekniske kjøretøyopplysninger\": log in met BankID, vertegenwoordig de werkplaats, en de sleutel wordt direct uitgegeven. Hij staat 50.000 opzoekingen per dag toe."
+      },
+      "settings": {
+        "syncInspections": "Keuringsdatums van alle voertuigen in deze werkplaats bijhouden",
+        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Vul een voertuig in vanuit het Franse, Italiaanse, Spaanse, Portugese of Britse kenteken: merk, model, bouwjaar, VIN, brandstof, cilinderinhoud en meer uit de registratiegegevens van het land via Openapi.com. Elke opzoeking wordt in rekening gebracht op het eigen Openapi-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "token": "API-token",
+        "tokenHelp": "Maak een account op console.openapi.com, zet tegoed in de portemonnee en maak onder Automotive een token voor de productieomgeving. Elke geslaagde opzoeking kost enkele tientallen centen; geen resultaat is gratis."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Het register om in te zoeken. Franse en Italiaanse kentekens zien er hetzelfde uit, dus het land is niet van het kenteken af te lezen.",
+        "bikes": "Ook motorfietsen opzoeken",
+        "bikesHelp": "Als een kenteken geen auto is, wordt ook het motorfietsregister bevraagd. Geen resultaat bij auto's is gratis, dus dit kost niets extra tenzij een motorfiets wordt gevonden. Niet beschikbaar voor Portugal."
+      }
+    },
+    "rdw": {
+      "description": "Vul een voertuig in vanuit het Nederlandse kenteken: merk, model, bouwjaar, brandstof, cilinderinhoud, kleur, massa's en de volgende APK-vervaldatum, rechtstreeks uit het open voertuigregister van de RDW. Gratis, geen sleutel nodig. Eigenaarsgegevens en VIN worden niet gepubliceerd.",
+      "fields": {
+        "appToken": "App-token (optioneel)",
+        "appTokenHelp": "De open data van de RDW werkt zonder sleutel, maar anonieme verzoeken delen een beperkt quotum. Voor de APK-synchronisatie: maak een gratis account op opendata.rdw.nl, open de ontwikkelaarsinstellingen van je profiel en maak een app-token aan."
+      },
+      "settings": {
+        "syncInspections": "APK-vervaldatums van alle voertuigen in deze werkplaats bijhouden",
+        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende APK-vervaldatum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+      }
+    },
+    "regcheck": {
+      "description": "Vul een voertuig in vanuit het kenteken in Australië, Nieuw-Zeeland, de Verenigde Staten, Ierland, Noorwegen, Zweden, Denemarken, Finland, Estland, Tsjechië, Slowakije, Hongarije of Kroatië: merk, model, bouwjaar, VIN, brandstof en cilinderinhoud waar het land ze publiceert, via RegCheck. Elke geslaagde opzoeking kost één credit van het eigen RegCheck-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "username": "RegCheck-gebruikersnaam",
+        "usernameHelp": "Registreer op regcheck.org.uk; het account komt met 10 gratis opzoekingen en meer koop je in blokken van 100 via het dashboard. Hier is alleen de gebruikersnaam nodig, nooit het wachtwoord. Een kenteken dat niet wordt gevonden kost niets."
+      },
+      "settings": {
+        "country": "Land",
+        "countryHelp": "Het register om in te zoeken. Elk land heeft zijn eigen dienst, dus de verbinding zoekt in één.",
+        "auState": "Staat of territorium",
+        "auStateHelp": "Australië registreert voertuigen per staat en het register moet weten welke te doorzoeken. Kies waar de meeste voertuigen van je klanten geregistreerd zijn.",
+        "usState": "Staat",
+        "usStateHelp": "De tweeletterige code van de staat waar de voertuigen geregistreerd zijn, zoals CA of TX. Amerikaanse registers worden per staat doorzocht."
+      }
+    },
+    "openai": {
+      "description": "Servicebeschrijvingen, samenvattingen van de historie, documenten lezen en de assistent, beantwoord door uw eigen OpenAI-account. Elke aanroep wordt op dat account afgerekend, en u kiest het model.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Maak er een aan op platform.openai.com onder API keys. Het account moet tegoed hebben; OpenAI rekent per aanroep af."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Welk model antwoordt. De lijst komt uit uw account, nieuwste eerst. Kleinere modellen kosten minder per aanroep en volstaan voor de meeste werkplaatsteksten."
+      }
+    },
+    "anthropic": {
+      "description": "Servicebeschrijvingen, samenvattingen van de historie, documenten lezen en de assistent, beantwoord door Claude op uw eigen Anthropic-account. Elke aanroep wordt op dat account afgerekend, en u kiest het model.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Maak er een aan op console.anthropic.com onder API keys. Het account moet tegoed hebben; Anthropic rekent per aanroep af."
+      },
+      "settings": {
+        "model": "Model",
+        "modelHelp": "Welk model antwoordt. De lijst komt uit uw account, nieuwste eerst. Kleinere modellen kosten minder per aanroep en volstaan voor de meeste werkplaatsteksten."
+      }
+    },
+    "stripe": {
+      "description": "Kaartbetalingen via de factuurlink, op je eigen Stripe-account. De klant betaalt, Stripe meldt het aan Torqvoice en de factuur markeert zichzelf als betaald.",
+      "fields": {
+        "secretKey": "Geheime sleutel",
+        "secretKeyHelp": "Uit het Stripe-dashboard onder Developers, API keys. Testsleutels verwerken niets echts, dus probeer er eerst een betaling mee en wissel daarna naar live-sleutels.",
+        "publishableKey": "Publiceerbare sleutel",
+        "webhookSecret": "Ondertekeningsgeheim van webhook",
+        "webhookSecretHelp": "Stripe toont dit zodra je de meldings-URL van deze pagina als webhook toevoegt. Hiermee wordt elke melding geverifieerd voordat een betaling wordt vastgelegd."
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay via de factuurlink. De klant betaalt in de app die hij al heeft en de factuur markeert zichzelf als betaald.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret",
+        "subscriptionKey": "Subscription key",
+        "subscriptionKeyHelp": "De Ocp-Apim-Subscription-Key uit het Vipps MobilePay-portaal, onder de API-sleutels van de verkoopeenheid.",
+        "merchantSerialNumber": "Merchant serial number"
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd.",
+        "testMode": "Testmodus",
+        "testModeHelp": "Gebruik de testomgeving van Vipps met testsleutels. Laat dit aan tot een volledige betaling is gelukt, zet het dan uit en vul de live-sleutels in."
+      }
+    },
+    "paypal": {
+      "description": "PayPal-checkout via de factuurlink, met je eigen PayPal-app. De klant betaalt met een PayPal-account of een kaart en de factuur markeert zichzelf als betaald.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd.",
+        "sandbox": "Sandboxmodus",
+        "sandboxHelp": "Gebruik de sandbox van PayPal met de sleutels van de sandbox-app. Laat dit aan tot een volledige betaling is gelukt, zet het dan uit en vul de sleutels van de live-app in."
+      }
+    },
+    "quickbooks": {
+      "description": "Stuur uitgegeven facturen, hun klanten en hun betalingen naar QuickBooks Online en haal daar geregistreerde betalingen terug.",
+      "tenantHelp": "Maak een app aan in het Intuit Developer-portaal. Kopieer de client-id en het secret uit Keys and credentials en voer de redirect-URI hieronder in onder Settings, Redirect URIs. Ontwikkelsleutels bereiken sandbox-bedrijven, productiesleutels echte.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "pushInvoices": "Uitgegeven facturen naar QuickBooks sturen",
+        "pushOnComplete": "Facturen ook sturen zodra de klus als voltooid is gemarkeerd",
+        "pushOnCompleteHelp": "Zonder deze optie gaat een factuur over zodra hij is verzonden, gedeeld of betaald. Met deze optie gaat een voltooide klus direct over en wordt hij bijgewerkt als er iets verandert.",
+        "startDate": "Alleen facturen gedateerd op of na",
+        "startDateHelp": "Laat leeg om elke uitgegeven factuur te sturen. Gebruik de datum waarop je boekhouding naar QuickBooks is overgegaan, zodat oudere facturen niet dubbel worden ingevoerd.",
+        "includeVehicle": "Het voertuig op de factuur vermelden",
+        "includeVehicleHelp": "Een tekstregel boven de posten met bouwjaar, merk, model, kenteken en kilometerstand, zodat de boekhouding weet om welke auto het gaat.",
+        "laborItemId": "Artikel voor arbeidsregels",
+        "laborItemIdHelp": "Laat leeg en de eerste keer wordt een artikel met de naam Labour aangemaakt onder je opbrengstenrekening.",
+        "partsItemId": "Artikel voor onderdelenregels",
+        "partsItemIdHelp": "Laat leeg en de eerste keer wordt een artikel met de naam Parts aangemaakt onder je opbrengstenrekening.",
+        "taxAmounts": "Belastingbedragen",
+        "taxAmountsHelp": "Zoals gefactureerd stuurt de belasting precies zoals die op de factuur van de klant staat, zodat beide systemen tot op de cent overeenkomen. Berekend door QuickBooks laat QuickBooks het tarief van de belastingcode toepassen, of het adres van de klant in de VS, en het logboek meldt afwijkende totalen.",
+        "taxAmountsBilled": "Zoals gefactureerd in Torqvoice",
+        "taxAmountsQuickbooks": "Berekend door QuickBooks",
+        "taxCodeId": "Btw-code voor belaste facturen",
+        "taxCodeIdHelp": "QuickBooks boekt de belasting onder een belastingcode. Torqvoice kiest de code waarvan het tarief bij elke factuur past; deze wordt gebruikt als er geen past. Een Amerikaans bedrijf gebruikt TAX tenzij je iets anders kiest.",
+        "zeroTaxCodeId": "Btw-code voor facturen zonder belasting",
+        "zeroTaxCodeIdHelp": "Gebruikt als de factuur geen belasting heeft of de klant is vrijgesteld. Een Amerikaans bedrijf gebruikt NON tenzij je iets anders kiest.",
+        "pushPayments": "Betalingen in QuickBooks registreren",
+        "depositAccountId": "Betalingen storten op",
+        "depositAccountIdHelp": "Laat leeg om Undeposited Funds te gebruiken.",
+        "manualPaidAsPayment": "Een betaling registreren als een factuur handmatig als betaald wordt gemarkeerd",
+        "manualPaidAsPaymentHelp": "Een factuur die in Torqvoice zonder betalingsregistratie als betaald is gemarkeerd, krijgt in QuickBooks één betaling voor wat daar nog openstaat. Uit blijft hij daar open tot er een betaling wordt geregistreerd.",
+        "pullPayments": "In QuickBooks geregistreerde betalingen terughalen",
+        "pullPaymentsHelp": "Elke 30 minuten. Een betaling die in QuickBooks op een factuur van Torqvoice is ontvangen, wordt hier op de factuur geregistreerd."
+      }
+    },
+    "nhtsa": {
+      "description": "Vul een voertuig in vanuit het VIN en bekijk terugroepacties, klachten van eigenaren en botsproefscores per modeljaar, van de Amerikaanse verkeersveiligheidsautoriteit. Gratis, zonder sleutel.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Terugroep- en klachtgegevens actueel houden voor elk voertuig in deze werkplaats",
+        "refreshFleetHelp": "Eén keer per dag worden modellen die de afgelopen week niet zijn vernieuwd opnieuw opgehaald, zodat de voertuigpagina nooit wacht en een nieuwe terugroepactie binnen een week zichtbaar is. Alleen merk, model en bouwjaar worden verstuurd."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Werkorders naar agenda",
+      "pull": "Bezette tijd uit agenda"
+    },
+    "conference": {
+      "sync": "Videogesprek-links"
+    },
+    "inspection": {
+      "refresh": "Keuringsdatums verversen"
+    },
+    "accounting": {
+      "invoice": "Factuur naar boekhouding",
+      "payment": "Betaling naar boekhouding",
+      "customer": "Klant naar boekhouding",
+      "pull": "Betalingen uit boekhouding"
+    },
+    "safety": {
+      "refresh": "Vernieuwing van terugroepgegevens",
+      "vehicle": "Terugroepcontrole voor een nieuw voertuig"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { OnboardingForm } from '@/features/onboarding/Components/OnboardingForm'
@@ -10,7 +11,7 @@ export default async function OnboardingPage({
   searchParams: Promise<{ redirect?: string }>
 }) {
   const params = await searchParams
-  const redirectTo = params.redirect
+  const redirectTo = params.redirect ? safeRedirectPath(params.redirect) : undefined
   const session = await auth.api.getSession({ headers: await headers() })
 
   if (!session?.user?.id) {

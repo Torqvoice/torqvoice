@@ -237,6 +237,8 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       [SETTING_KEYS.DATE_FORMAT]: dateFormat,
       [SETTING_KEYS.TIME_FORMAT]: timeFormat,
       [SETTING_KEYS.TIMEZONE]: timezone,
+      // What the browser resolved, so the server can follow "automatic".
+      [SETTING_KEYS.TIMEZONE_DETECTED]: Intl.DateTimeFormat().resolvedOptions().timeZone,
       [SETTING_KEYS.WORKBOARD_WEEK_START_DAY]: weekStartDay,
       [SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE]: normalizedCountryCode ?? '',
     })

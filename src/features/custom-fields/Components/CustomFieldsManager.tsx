@@ -174,10 +174,12 @@ export function CustomFieldsManager({
 
   const handleSave = async () => {
     setLoading(true)
+    // Sent as-is: '' clears a default, and a type without options clears
+    // the list a select used to have.
     const payload = {
       ...formData,
-      options: formData.fieldType === 'select' ? formData.options : undefined,
-      defaultValue: formData.defaultValue || undefined,
+      options: formData.fieldType === 'select' ? formData.options : '',
+      defaultValue: formData.defaultValue,
     }
 
     const result = editing

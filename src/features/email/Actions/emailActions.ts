@@ -22,6 +22,10 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { requireFeature } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
+import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
+import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
+import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
+import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 
 async function getWorkshopSettings(organizationId: string) {
   const [settings, org] = await Promise.all([
@@ -278,97 +282,44 @@ export async function sendInvoiceEmail(input: {
 
       const { serviceRecordId, recipientEmail, message } = input
 
-      const record = await db.serviceRecord.findFirst({
+      const owned = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
-        include: {
-          partItems: true,
-          laborItems: true,
-          customer: {
-            select: {
-              name: true,
-              email: true,
-              phone: true,
-              address: true,
-              company: true,
-              customerNumber: true,
-            },
-          },
-          vehicle: {
-            include: {
-              customer: {
-                select: {
-                  name: true,
-                  email: true,
-                  phone: true,
-                  address: true,
-                  company: true,
-                  customerNumber: true,
-                },
-              },
-            },
-          },
-        },
+        select: { id: true, publicToken: true },
       })
-      if (!record) throw new Error('Service record not found')
+      if (!owned) throw new Error('Service record not found')
 
       const settings = await getWorkshopSettings(organizationId)
       if (settings['workshop.emailEnabled'] === 'false') {
         throw new Error('Email sending is disabled. Enable it in Settings.')
       }
 
-      const logoDataUri = await loadLogoDataUri(documentLogoPath(settings, 'invoice'))
-      const currencyCode = settings['workshop.currencyCode'] || 'USD'
-      const currencyFormat: 'symbol' | 'code' =
-        settings['workshop.currencyFormat'] === 'code' ? 'code' : 'symbol'
-      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
+      // Issued before it is rendered, so the copy that goes out and the copy
+      // the workshop can print in five years are the same one.
+      await issueInvoice(serviceRecordId, organizationId, 'sent')
+      const assembly = await assembleInvoicePrint(serviceRecordId)
+      if (!assembly) throw new Error('Service record not found')
+      const { record } = assembly
 
-      const invoiceTemplate = {
-        primaryColor: settings['invoice.primaryColor'] || '#d97706',
-        backgroundColor: settings['invoice.backgroundColor'] || undefined,
-        textColor: settings['invoice.textColor'] || undefined,
-        companyTextColor: settings['invoice.companyTextColor'] || undefined,
-        frameBorderColor: settings['invoice.frameBorderColor'] || undefined,
-        frameShadow: settings['invoice.frameShadow'],
-        frameRadius: Number(settings['invoice.frameRadius']) || 0,
-        frameSide: (settings['invoice.frameSide'] === 'right' ? 'right' : 'left') as
-          | 'left'
-          | 'right',
-        fontFamily: settings['invoice.fontFamily'] || 'Helvetica',
-        showLogo: settings['invoice.showLogo'] !== 'false',
-        showCompanyName: settings['invoice.showCompanyName'] !== 'false',
-        headerStyle: settings['invoice.headerStyle'] || 'standard',
-        logoSize: Number(settings['invoice.logoSize']) || undefined,
-        layoutConfig: (() => {
-          try {
-            return settings['invoice.layoutConfig']
-              ? mergeWithDefaults(JSON.parse(settings['invoice.layoutConfig']))
-              : undefined
-          } catch {
-            return undefined
-          }
-        })(),
-      }
+      const locale = await resolveCustomerLocale(organizationId, null)
+      const labels = await loadPrintLabels(locale, assembly.labelSettings)
+      const fromName = settings['workshop.emailFromName'] || settings['workshop.name'] || 'Workshop'
 
       // Generate PDF
       const element = React.createElement(InvoicePDF, {
-        data: record,
-        workshop: {
-          name: settings['workshop.name'] || '',
-          address: settings['workshop.address'] || '',
-          phone: settings['workshop.phone'] || '',
-          email: settings['workshop.email'] || '',
-          slogan: settings['workshop.slogan'] || undefined,
-        },
-        invoiceSettings: { currencyCode, currencyFormat },
-        logoDataUri,
-        template: invoiceTemplate,
+        data: assembly.data,
+        workshop: assembly.workshop,
+        invoiceSettings: assembly.invoiceSettings,
+        paymentSummary: assembly.paymentSummary,
+        logoDataUri: assembly.logoDataUri,
+        template: assembly.template,
+        labels,
       }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
       const pdfBuffer = await renderToBuffer(element)
-      const invoiceNum = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
+      const invoiceNum = invoiceNumberOf(record)
 
       // Build public invoice link if token exists
-      const publicLink = record.publicToken
-        ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/share/invoice/${organizationId}/${record.publicToken}`
+      const publicLink = owned.publicToken
+        ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/share/invoice/${organizationId}/${owned.publicToken}`
         : null
 
       const from = await getOrgFromAddress(organizationId)
@@ -397,7 +348,7 @@ export async function sendInvoiceEmail(input: {
         ],
       })
 
-      await markInvoiceSent(serviceRecordId, organizationId)
+      await markInvoiceSent(serviceRecordId, organizationId, { alreadyIssued: true })
 
       return { sent: true, serviceRecordId, recipientEmail }
     },

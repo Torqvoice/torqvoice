@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { DocsLink } from '@/components/docs-link'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { createScheduledMessage, updateScheduledMessage } from '../Actions/scheduledMessageActions'
+import { clearableInput } from '@/lib/clearable'
 import {
   MESSAGE_FREQUENCIES,
   type MessageChannel,
@@ -59,6 +60,8 @@ interface ScheduleMessageDialogProps {
   message?: ScheduleMessageValues
   /** YYYY-MM-DD the message goes out on, e.g. the calendar day that was right-clicked */
   defaultDate?: string
+  /** HH:MM it goes out at, when the calendar was clicked on a time slot */
+  defaultTime?: string
   defaultCustomer?: { id: string; name: string; company: string | null } | null
   /** Pre-filled text, e.g. a draft handed over from the compose dialog */
   defaultBody?: string
@@ -82,6 +85,7 @@ export function ScheduleMessageDialog({
   availableChannels,
   message,
   defaultDate,
+  defaultTime,
   defaultCustomer = null,
   defaultBody,
   onSaved,
@@ -126,11 +130,11 @@ export function ScheduleMessageDialog({
       setSubject('')
       setBody(defaultBody ?? '')
       setDate(defaultDate ?? toLocalDateStr(new Date()))
-      setTime('09:00')
+      setTime(defaultTime ?? '09:00')
       setFrequency('once')
       setEndDate('')
     }
-  }, [open, message, defaultDate, defaultBody, defaultCustomer?.id, availableChannels])
+  }, [open, message, defaultDate, defaultTime, defaultBody, defaultCustomer?.id, availableChannels])
 
   // A scheduled message fires later, when the customer's 24 hour window has
   // almost certainly closed, so it goes as a template or not at all.
@@ -159,16 +163,22 @@ export function ScheduleMessageDialog({
     (channel !== 'email' || !!subject.trim()) &&
     (!needsRecipient || !!recipient.trim())
 
+  // The browser's clock stands in for the workshop's here, as everywhere on
+  // the client; the server checks again in the workshop's zone.
+  const inPast = !!date && !!time && new Date(`${date}T${time}:00`).getTime() < Date.now()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!canSave) return
+    if (!canSave || inPast) return
     setSaving(true)
 
     const payload = {
       channel,
-      subject: subject.trim() || undefined,
+      // When editing, an emptied subject or recipient override goes as ''
+      // so the update action clears it.
+      subject: clearableInput(subject, isEdit),
       body: body.trim(),
-      recipient: recipient.trim() || undefined,
+      recipient: clearableInput(recipient, isEdit),
       customerId: customerId || null,
       sendAt: `${date}T${time}`,
       frequency,
@@ -314,6 +324,7 @@ export function ScheduleMessageDialog({
                 onChange={(e) => setTime(e.target.value)}
                 required
               />
+              {inPast && <p className="text-xs text-destructive">{t('inPast')}</p>}
             </div>
           </div>
 
@@ -329,7 +340,7 @@ export function ScheduleMessageDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {tc('cancel')}
             </Button>
-            <Button type="submit" disabled={saving || !canSave}>
+            <Button type="submit" disabled={saving || !canSave || inPast}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEdit ? tc('saveChanges') : t('schedule')}
             </Button>

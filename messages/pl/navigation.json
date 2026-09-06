@@ -59,7 +59,8 @@
     "tireStorage": "Układ magazynu",
     "tireSetDetails": "Komplet opon",
     "tireForecast": "Następny sezon",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Przypomnienia o przeglądzie"
   },
   "search": "Szukaj...",
   "shortcut": "Ctrl+K",
@@ -117,6 +118,19 @@
     "auditLog": "Dziennik audytu",
     "aiAssistant": "Asystent AI",
     "tireHotel": "Hotel opon",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Nowe zlecenie",
+    "installApp": "Zainstaluj aplikację",
+    "roles": {
+      "owner": "Właściciel",
+      "admin": "Administrator",
+      "member": "Członek"
+    },
+    "badges": {
+      "messages": "{count} nieprzeczytane wiadomości",
+      "workOrders": "{count} otwarte zlecenia",
+      "inspections": "{count} przeglądy w toku",
+      "reminders": "{count} zaległe przypomnienia"
+    }
   }
 }

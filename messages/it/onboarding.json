@@ -76,7 +76,9 @@
     "allDoneTitle": "Tutto pronto",
     "allDoneDescription": "Tutti i passaggi sono completati e la Sua officina è operativa.",
     "dismiss": "Nascondi scheda",
-    "dismissAriaLabel": "Nascondi questa lista"
+    "dismissAriaLabel": "Nascondi questa lista",
+    "importTitle": "Ha già clienti e veicoli da qualche parte?",
+    "importDescription": "Li importi da un foglio di calcolo o dal Suo vecchio sistema"
   },
   "sampleData": {
     "title": "Dati di esempio",

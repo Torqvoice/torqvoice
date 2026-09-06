@@ -56,7 +56,8 @@
     "recentObservations": "Recente waarnemingen",
     "recentActivity": "Recente activiteit",
     "gettingStarted": "Aan de slag",
-    "tireHotel": "Bandenhotel"
+    "tireHotel": "Bandenhotel",
+    "inspectionsDue": "Keuringen die vervallen"
   },
   "maintenance": {
     "title": "Verwacht onderhoud gepland",
@@ -252,5 +253,15 @@
     "roomLeft": "Ruimte voor {count} meer",
     "needsPrep": "Voorbereiding nodig",
     "unbilled": "Niet gefactureerd ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Keuringen die vervallen",
+    "viewAll": "Alle voertuigen met vervaldatum",
+    "overdue": "Verlopen",
+    "within30": "Komende 30 dagen",
+    "within90": "Komende 90 dagen",
+    "noData": "Geen keuringen in de komende 90 dagen",
+    "overdueSince": "Verlopen sinds {date}",
+    "remind": "Herinneringen versturen"
   }
 }

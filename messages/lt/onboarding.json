@@ -76,7 +76,9 @@
     "allDoneTitle": "Viskas paruošta",
     "allDoneDescription": "Visi žingsniai atlikti ir jūsų dirbtuvės veikia.",
     "dismiss": "Slėpti kortelę",
-    "dismissAriaLabel": "Slėpti šį sąrašą"
+    "dismissAriaLabel": "Slėpti šį sąrašą",
+    "importTitle": "Jau turite klientų ir transporto priemonių kitur?",
+    "importDescription": "Importuokite juos iš skaičiuoklės arba senos sistemos"
   },
   "sampleData": {
     "title": "Pavyzdiniai duomenys",

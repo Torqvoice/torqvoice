@@ -76,7 +76,9 @@
     "allDoneTitle": "Alles staat klaar",
     "allDoneDescription": "Alle stappen zijn afgerond en uw werkplaats draait.",
     "dismiss": "Kaart verbergen",
-    "dismissAriaLabel": "Deze checklist verbergen"
+    "dismissAriaLabel": "Deze checklist verbergen",
+    "importTitle": "Heeft u al ergens klanten en voertuigen?",
+    "importDescription": "Importeer ze uit een spreadsheet of uw oude systeem"
   },
   "sampleData": {
     "title": "Voorbeeldgegevens",

@@ -3,12 +3,38 @@ import type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } f
 const VIPPS_API_URL = 'https://api.vipps.no'
 const VIPPS_TEST_API_URL = 'https://apitest.vipps.no'
 
-interface VippsConfig {
+export interface VippsConfig {
   clientId: string
   clientSecret: string
   subscriptionKey: string
   merchantSerialNumber: string
   useTestMode: boolean
+}
+
+function text(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+/**
+ * The config a connection's credentials and settings amount to, or null when
+ * any of the four values Vipps insists on is missing.
+ */
+export function vippsConfigFrom(
+  credentials: Record<string, unknown>,
+  settings: Record<string, unknown>
+): VippsConfig | null {
+  const clientId = text(credentials.clientId)
+  const clientSecret = text(credentials.clientSecret)
+  const subscriptionKey = text(credentials.subscriptionKey)
+  const merchantSerialNumber = text(credentials.merchantSerialNumber)
+  if (!clientId || !clientSecret || !subscriptionKey || !merchantSerialNumber) return null
+  return {
+    clientId,
+    clientSecret,
+    subscriptionKey,
+    merchantSerialNumber,
+    useTestMode: settings.testMode === true,
+  }
 }
 
 export class VippsProvider implements PaymentProvider {
@@ -20,7 +46,7 @@ export class VippsProvider implements PaymentProvider {
     this.baseUrl = config.useTestMode ? VIPPS_TEST_API_URL : VIPPS_API_URL
   }
 
-  private async getAccessToken(): Promise<string> {
+  async getAccessToken(): Promise<string> {
     const res = await fetch(`${this.baseUrl}/accesstoken/get`, {
       method: 'POST',
       headers: {

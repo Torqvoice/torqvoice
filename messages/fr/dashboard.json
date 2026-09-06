@@ -56,7 +56,8 @@
     "recentObservations": "Observations récentes",
     "recentActivity": "Activité récente",
     "gettingStarted": "Premiers pas",
-    "tireHotel": "Hôtel à pneus"
+    "tireHotel": "Hôtel à pneus",
+    "inspectionsDue": "Contrôles techniques à venir"
   },
   "maintenance": {
     "title": "Maintenance prévue à effectuer",
@@ -252,5 +253,15 @@
     "roomLeft": "Place pour {count} de plus",
     "needsPrep": "À préparer",
     "unbilled": "Non facturé ({count})"
+  },
+  "inspectionsDue": {
+    "title": "Contrôles techniques à venir",
+    "viewAll": "Voir tous les véhicules concernés",
+    "overdue": "En retard",
+    "within30": "30 prochains jours",
+    "within90": "90 prochains jours",
+    "noData": "Aucun contrôle dans les 90 prochains jours",
+    "overdueSince": "En retard depuis le {date}",
+    "remind": "Envoyer des rappels"
   }
 }

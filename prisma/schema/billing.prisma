@@ -1,0 +1,36 @@
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  name          String
+  stripePriceId String?  @unique
+  price         Float    @default(0)
+  interval      String   @default("month") // "month" | "year"
+  maxMembers    Int      @default(1)
+  features      String? // JSON feature flags
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  status               String    @default("active") // active | canceled | past_due | trialing
+  stripeSubscriptionId String?   @unique
+  stripeCustomerId     String?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  planId String
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@map("subscriptions")
+}

@@ -19,6 +19,7 @@ import {
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
+  unmentionedGrandfathered,
   isCustomFieldId,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -320,6 +321,8 @@ export function DesignerInspector({
   ownLogo,
   onLogo,
   sloganSet,
+  paymentTermsSet,
+  documentTitleDefault,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -339,6 +342,10 @@ export function DesignerInspector({
   onLogo: (url: string) => void
   /** Whether the workshop has a slogan, or the canvas is showing a stand-in. */
   sloganSet: boolean
+  /** Whether payment terms are set, or the panel is showing a stand-in. */
+  paymentTermsSet: boolean
+  /** What the title strip prints when the workshop has not renamed it. */
+  documentTitleDefault: string
 }) {
   const t = useTranslations('settings.designer')
   const tSection = useTranslations('settings.layoutEditor.sections')
@@ -370,12 +377,15 @@ export function DesignerInspector({
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
     // A field added after this layout was written still needs its switch.
     // Without this a saved design, which is loaded as it was stored, can never
-    // reach anything built since, and the option looks simply missing.
+    // reach anything built since, and the option looks simply missing. It
+    // arrives off, except for the rows that printed before they had a switch:
+    // those show what the sheet is already doing.
+    const grandfathered = new Set(unmentionedGrandfathered(section.id, stored))
     const resolvedFields: InvoiceFieldConfig[] = [
       ...stored,
       ...builtins
         .filter((f) => !stored.some((existing) => existing.id === f.id))
-        .map((f) => ({ id: f.id, visible: false })),
+        .map((f) => ({ id: f.id, visible: grandfathered.has(f.id) })),
     ]
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The
@@ -604,6 +614,26 @@ export function DesignerInspector({
             )}
           </Group>
 
+          {/* What this document calls itself. It is the workshop's to write,
+              because the right word is a matter of local law and local habit:
+              a business registered for GST in Australia must head the sheet
+              "Tax Invoice" and one that is not registered must not. Kept with
+              the design rather than in settings, so a sheet sent last year
+              keeps the name it was sent under. */}
+          {section.id === 'document_title' && (
+            <Group title={t('titleText')}>
+              <input
+                type="text"
+                maxLength={60}
+                value={section.text ?? ''}
+                placeholder={documentTitleDefault}
+                onChange={(e) => onSection(section.id, { text: e.target.value || undefined })}
+                className="h-7 w-full rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('titleTextHint')}</p>
+            </Group>
+          )}
+
           {/* The slogan is the workshop's own words, kept in company settings
               rather than here, because it is the same line wherever it is
               printed. When there is none the canvas shows a stand-in so the
@@ -621,6 +651,27 @@ export function DesignerInspector({
                   className="font-medium text-[#2563eb] underline underline-offset-2"
                 >
                   {t('sloganLink')}
+                </a>
+              </p>
+            </Group>
+          )}
+
+          {/* Payment terms live in payment settings, the same line on every
+              invoice, so they are not edited here. When there is none the
+              panel shows a stand-in so the row can be seen and switched, and
+              that has to say so: it reads as a real term otherwise, and it
+              prints as nothing. */}
+          {section.id === 'bank_account' && (
+            <Group title={t('paymentTerms')}>
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {paymentTermsSet ? t('paymentTermsSetHint') : t('paymentTermsPlaceholderHint')}{' '}
+                <a
+                  href="/settings/payment"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-[#2563eb] underline underline-offset-2"
+                >
+                  {t('paymentTermsLink')}
                 </a>
               </p>
             </Group>

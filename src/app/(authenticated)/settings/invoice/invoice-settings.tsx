@@ -20,6 +20,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { backfillCustomerNumbers } from '@/features/customers/Actions/customerActions'
+import { freezeUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { FileText, Loader2, Lock, Save } from 'lucide-react'
 import { ReadOnlyBanner, SaveButton, ReadOnlyWrapper } from '../read-only-guard'
@@ -51,6 +52,8 @@ interface InvoiceSettingsProps {
   /** Fills the layout preview with this workshop's own letterhead. */
   workshop?: { name?: string; address?: string; phone?: string; email?: string; slogan?: string }
   unnumberedCustomers?: number
+  /** Invoices that reached a customer before issuing existed, still unfrozen. */
+  unfrozenInvoices?: number
   initialInvoiceLayout?: InvoiceLayoutConfig
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
@@ -62,6 +65,7 @@ export function InvoiceSettings({
   settings,
   workshop,
   unnumberedCustomers = 0,
+  unfrozenInvoices = 0,
   initialInvoiceLayout,
   initialQuoteLayout,
   customFields,
@@ -144,6 +148,43 @@ export function InvoiceSettings({
   const confirm = useConfirm()
   const [assigning, setAssigning] = useState(false)
   const [unnumbered, setUnnumbered] = useState(unnumberedCustomers)
+
+  // Invoices sent before this version could lock what they print. Locked in
+  // batches, one request each, so a workshop with thousands of them sees
+  // progress rather than a timeout.
+  const [unfrozen, setUnfrozen] = useState(unfrozenInvoices)
+  const [freezing, setFreezing] = useState<{ done: number; total: number } | null>(null)
+  const handleFreezeInvoices = async () => {
+    const total = unfrozen
+    const ok = await confirm({
+      title: t('invoice.freezeConfirmTitle', { count: total }),
+      description: t('invoice.freezeConfirmBody'),
+      confirmLabel: t('invoice.freezeButton'),
+    })
+    if (!ok) return
+    setFreezing({ done: 0, total })
+    let done = 0
+    try {
+      let remaining = total
+      while (remaining > 0) {
+        const result = await freezeUnfrozenInvoices()
+        if (!result.success || !result.data) throw new Error(result.success ? '' : result.error)
+        done += result.data.frozen
+        remaining = result.data.remaining
+        setFreezing({ done, total })
+        // A batch that locked nothing yet left some behind would loop forever.
+        if (result.data.frozen === 0) break
+      }
+      setUnfrozen(remaining)
+      toast.success(t('invoice.freezeDone', { count: done }))
+      router.refresh()
+    } catch {
+      setUnfrozen(Math.max(0, total - done))
+      toast.error(t('invoice.freezeFailed'))
+    } finally {
+      setFreezing(null)
+    }
+  }
   const handleAssignCustomerNumbers = async () => {
     const ok = await confirm({
       title: t('invoice.assignCustomerNumbersConfirmTitle'),
@@ -421,6 +462,35 @@ export function InvoiceSettings({
                       ? t('invoice.quoteLockTriggerSentHint')
                       : t('invoice.quoteLockTriggerAcceptedHint')}
                   </p>
+                </div>
+              </div>
+
+              <div className="rounded-md border p-3">
+                <h4 className="text-sm font-medium">{t('invoice.freezeTitle')}</h4>
+                <div className="mt-1.5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    {unfrozen > 0
+                      ? t('invoice.freezeBody', { count: unfrozen })
+                      : t('invoice.freezeNone')}
+                  </p>
+                  {unfrozen > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      disabled={freezing !== null}
+                      onClick={handleFreezeInvoices}
+                    >
+                      {freezing && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                      {freezing
+                        ? t('invoice.freezeProgress', {
+                            done: freezing.done,
+                            total: freezing.total,
+                          })
+                        : t('invoice.freezeButton')}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

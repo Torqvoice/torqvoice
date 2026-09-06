@@ -151,7 +151,20 @@
     "settings_whatsappNumberRegistered": "Número de WhatsApp registrado",
     "team_giveTechnicianTheApp": "Cuenta dada a un técnico solo de tablero",
     "team_createDefaultRoles": "Roles estándar creados",
-    "settings_setCustomFieldPlacement": "Ubicación de campo personalizado actualizada"
+    "settings_setCustomFieldPlacement": "Ubicación de campo personalizado actualizada",
+    "import_commit": "Hoja de cálculo importada",
+    "import_undo": "Importación deshecha",
+    "integration_connect": "Integración conectada",
+    "integration_disconnect": "Integración desconectada",
+    "service_setInvoiceDesign": "Diseño de factura cambiado",
+    "settings_saveDocumentDesign": "Diseño de documento guardado",
+    "settings_deleteDocumentDesign": "Diseño de documento eliminado",
+    "settings_applyDocumentDesign": "Diseño de documento predeterminado establecido",
+    "settings_setDocumentDesignRule": "Cambió cuándo se usa un diseño",
+    "settings_freezeInvoices": "Facturas anteriores bloqueadas",
+    "inspection_reminders_sent": "Envió recordatorios de inspección",
+    "inspection_reminders_send": "Envió recordatorios de inspección",
+    "service_videoCall_send": "Enlace de videollamada enviado"
   },
   "summary": {
     "customField_create": "Campo personalizado «{name}» creado",
@@ -275,6 +288,18 @@
     "work_bay_create": "Puesto de trabajo «{name}» creado",
     "work_bay_update": "Puesto de trabajo «{name}» actualizado",
     "work_bay_delete": "Puesto de trabajo {id} eliminado",
-    "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado"
+    "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado",
+    "import_commit": "Importó una hoja de cálculo: {count} registros creados",
+    "import_undo": "Deshizo una importación de hoja de cálculo: {records} registros eliminados",
+    "integration_connect": "{name} conectado",
+    "integration_disconnect": "{name} desconectado",
+    "service_setInvoiceDesign": "Cambió con qué diseño se imprime una factura",
+    "settings_saveDocumentDesign": "Guardó el diseño de documento {name}",
+    "settings_deleteDocumentDesign": "Eliminó el diseño de documento {name}",
+    "settings_applyDocumentDesign": "Estableció {name} como diseño de documento predeterminado",
+    "settings_setDocumentDesignRule": "Cambió cuándo se usa el diseño de documento {name}",
+    "settings_freezeInvoices": "Bloqueó {count, plural, one {# factura} other {# facturas}} anteriores al bloqueo con el diseño actual",
+    "inspection_reminders_sent": "Envió {count} recordatorios de inspección",
+    "service_videoCall_send": "Envió el enlace de la videollamada por {channels}"
   }
 }

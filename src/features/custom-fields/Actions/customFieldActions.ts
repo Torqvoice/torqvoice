@@ -9,6 +9,7 @@ import {
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { requireFeature } from '@/lib/features'
+import { clearedToNull } from '@/lib/clearable'
 
 export async function getFieldDefinitions(entityType?: string) {
   return withAuth(
@@ -41,7 +42,13 @@ export async function createFieldDefinition(input: unknown) {
       if (existing) throw new Error('A field with this name already exists for this entity type')
 
       const field = await db.customFieldDefinition.create({
-        data: { ...data, userId, organizationId },
+        data: {
+          ...data,
+          options: clearedToNull(data.options),
+          defaultValue: clearedToNull(data.defaultValue),
+          userId,
+          organizationId,
+        },
       })
 
       revalidatePath('/settings/custom-fields')
@@ -75,7 +82,11 @@ export async function updateFieldDefinition(input: unknown) {
 
       const field = await db.customFieldDefinition.update({
         where: { id },
-        data: rest,
+        data: {
+          ...rest,
+          options: clearedToNull(rest.options),
+          defaultValue: clearedToNull(rest.defaultValue),
+        },
       })
 
       revalidatePath('/settings/custom-fields')

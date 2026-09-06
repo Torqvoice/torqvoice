@@ -7,7 +7,9 @@ export const createReminderSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   dueDate: z.string().optional(),
-  dueMileage: z.coerce.number().optional(),
+  /** Whether the time inside dueDate was chosen; false means "some time that day" */
+  hasDueTime: z.boolean().optional(),
+  dueMileage: z.coerce.number().nullable().optional(),
   // How the workshop wants to be notified when the reminder comes due
   notifyInApp: z.boolean().optional(),
   notifyEmail: z.boolean().optional(),

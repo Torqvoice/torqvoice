@@ -76,7 +76,9 @@
     "allDoneTitle": "Tudo pronto",
     "allDoneDescription": "Todos os passos foram concluídos e sua oficina está em funcionamento.",
     "dismiss": "Ocultar cartão",
-    "dismissAriaLabel": "Ocultar esta lista"
+    "dismissAriaLabel": "Ocultar esta lista",
+    "importTitle": "Já tem clientes e veículos em algum lugar?",
+    "importDescription": "Importe-os de uma planilha ou do seu sistema antigo"
   },
   "sampleData": {
     "title": "Dados de exemplo",

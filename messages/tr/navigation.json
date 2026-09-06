@@ -59,7 +59,8 @@
     "tireStorage": "Depo düzeni",
     "tireSetDetails": "Lastik takımı",
     "tireForecast": "Gelecek sezon",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "inspectionReminders": "Muayene hatırlatmaları"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",
@@ -117,6 +118,19 @@
     "auditLog": "Denetim günlüğü",
     "aiAssistant": "AI Asistanı",
     "tireHotel": "Lastik oteli",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "newWorkOrder": "Yeni iş emri",
+    "installApp": "Uygulamayı yükle",
+    "roles": {
+      "owner": "Sahip",
+      "admin": "Yönetici",
+      "member": "Üye"
+    },
+    "badges": {
+      "messages": "{count} okunmamış mesaj",
+      "workOrders": "{count} açık iş emri",
+      "inspections": "{count} devam eden muayene",
+      "reminders": "{count} vadesi gelen hatırlatma"
+    }
   }
 }

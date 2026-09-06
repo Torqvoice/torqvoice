@@ -1,0 +1,584 @@
+{
+  "catalog": {
+    "title": "Integracijos",
+    "description": "Prijunkite paslaugas, kuriomis jūsų dirbtuvė jau naudojasi. Kiekviena integracija nustatoma vieną kartą ir veikia fone.",
+    "all": "Visos",
+    "empty": "Šioje kategorijoje integracijų kol kas nėra.",
+    "notConnected": "Neprijungta",
+    "connect": "Prijungti",
+    "manage": "Tvarkyti",
+    "connectedTitle": "Prijungta",
+    "connectedDescription": "Paslaugos, kurias ši dirbtuvė nustatė. Atidarykite, kad patikrintumėte būseną, pakeistumėte nustatymus ar atjungtumėte.",
+    "noneConnected": "Kol kas niekas neprijungta. Pasirinkite paslaugą žemiau, kad pradėtumėte.",
+    "availableTitle": "Galima pridėti",
+    "availableDescription": "Paslaugos, kurias galite pridėti. Kiekviena nustatoma vieną kartą ir veikia fone.",
+    "allConnected": "Visos galimos paslaugos prijungtos.",
+    "searchPlaceholder": "Ieškoti integracijų",
+    "noMatches": "Nieko nerasta pagal „{query}“.",
+    "readMore": "Skaityti daugiau",
+    "suggestTitle": "Trūksta paslaugos, kurią naudojate?",
+    "suggestDescription": "Pasakykite, kokia integracija padėtų jūsų dirbtuvėms, ir mes ją apsvarstysime.",
+    "suggest": "Pasiūlyti integraciją",
+    "suggestSubject": "Integracijos pasiūlymas"
+  },
+  "categories": {
+    "calendar": "Kalendorius",
+    "conferencing": "Vaizdo skambučiai",
+    "accounting": "Apskaita",
+    "messaging": "Žinutės",
+    "payments": "Mokėjimai",
+    "automation": "Automatizavimas",
+    "storage": "Failai",
+    "registry": "Transporto priemonių registras",
+    "other": "Kita",
+    "ai": "DI"
+  },
+  "capabilities": {
+    "calendar": {
+      "push": "Darbo užsakymai į kalendorių",
+      "pull": "Užimtas laikas iš kalendoriaus",
+      "conference": "Vaizdo skambučių nuorodos"
+    },
+    "sms": {
+      "send": "Text messages out",
+      "receive": "Replies back in"
+    },
+    "whatsapp": {
+      "send": "WhatsApp messages out",
+      "receive": "Replies back in"
+    },
+    "telegram": {
+      "send": "Telegram messages out",
+      "receive": "Replies back in"
+    },
+    "email": {
+      "send": "Email out"
+    },
+    "vehicle": {
+      "lookup": "Paieška pagal numerį ir VIN",
+      "inspection": "Apžiūros terminai",
+      "safety": "Atšaukimai ir savininkų skundai"
+    },
+    "ai": {
+      "chat": "Tekstai ir santraukos"
+    },
+    "payments": {
+      "checkout": "Mokėti iš sąskaitos nuorodos"
+    },
+    "accounting": {
+      "invoices": "Sąskaitos į apskaitą",
+      "customers": "Klientai į apskaitą",
+      "payments": "Mokėjimai abiem kryptimis"
+    }
+  },
+  "statuses": {
+    "active": "Prijungta",
+    "error": "Reikia dėmesio",
+    "pending": "Nustatoma",
+    "disconnected": "Atjungta",
+    "needsSetup": "Sąranka nebaigta"
+  },
+  "connection": {
+    "back": "Visos integracijos",
+    "account": "Prijungta paskyra",
+    "lastHealth": "Paskutinį kartą tikrinta",
+    "lastSync": "Paskutinis sinchronizavimas",
+    "lastError": "Paskutinis vykdymas nepavyko",
+    "setupMissingTitle": "Sąranka nebaigta",
+    "setupMissing": "Žemiau esančiuose nustatymuose pasirinkite {fields}. Iki tol niekas nesinchronizuojama.",
+    "connected": "{name} prijungta.",
+    "connectedShort": "Prijungta",
+    "connectWith": "Prijungti {name}",
+    "connect": "Prijungti",
+    "reconnect": "Prijungti iš naujo",
+    "disconnect": "Atjungti",
+    "disconnectTitle": "Atjungti {name}?",
+    "disconnectDescription": "Torqvoice pamiršta paskyrą ir nustoja ja naudotis. Tai, kas jau išsiųsta į {name} ar ten saugoma, neliečiama.",
+    "disconnectDescriptionCalendar": "Torqvoice pamiršta paskyrą ir nustoja sinchronizuoti. Darbo užsakymai, jau įrašyti į {name}, lieka ten. Iš to kalendoriaus rodytas užimtas laikas pašalinamas iš Torqvoice kalendoriaus.",
+    "disconnectDescriptionConferencing": "Torqvoice pamiršta paskyrą ir nebekuria susitikimų. Jau sukurti susitikimai lieka {name}, o nuorodos darbo užsakymuose išsaugomos.",
+    "disconnectDescriptionAccounting": "Torqvoice pamiršta paskyrą ir nustoja siųsti bei skaityti. Sąskaitos, klientai ir mokėjimai, jau esantys {name}, lieka ten.",
+    "removeSetup": "Pašalinti",
+    "removeSetupTitle": "Pašalinti {name}?",
+    "removeSetupDescription": "Dar niekas neprijungta. Torqvoice pamiršta, kas buvo įvesta, o {name} grįžta į galimų paslaugų sąrašą.",
+    "removeSetupDone": "{name} pašalinta",
+    "removeSetupHint": "Nebetęsite? Pašalinkite, ir paslauga grįš į sąrašą žemiau.",
+    "disconnected": "Atjungta",
+    "test": "Tikrinti ryšį",
+    "testPassed": "Ryšys veikia",
+    "syncNow": "Sinchronizuoti dabar",
+    "syncQueued": "Sinchronizavimas eilėje; jis įvyks per minutę",
+    "pullNow": "Gauti mokėjimus dabar",
+    "pullQueued": "Mokėjimų nuskaitymas eilėje; jis įvyks per minutę",
+    "backfill": "Perkelti suplanuotus darbo užsakymus",
+    "backfillQueued": "Į eilę įtraukti suplanuoti darbo užsakymai nuo praėjusios savaitės",
+    "backfillInvoices": "Siųsti išrašytas sąskaitas",
+    "backfillInvoicesQueuedCount": "Į eilę įtraukta {count, plural, one {# išrašyta sąskaita} few {# išrašytos sąskaitos} other {# išrašytų sąskaitų}}",
+    "backfillInvoicesNone": "Nėra išrašytų sąskaitų siųsti. Perduodamos tik išsiųstos, pasidalintos ar apmokėtos sąskaitos, nuo pradžios datos, jei ją nustatėte.",
+    "retryQueued": "Užduotis vėl įtraukta į eilę",
+    "settingsTitle": "Nustatymai",
+    "settingsDescription": "Ką sinchronizuoti ir kur. Pakeitimai įsigalios kito sinchronizavimo metu.",
+    "settingsSaved": "Nustatymai išsaugoti",
+    "save": "Išsaugoti",
+    "loading": "Kraunama...",
+    "choose": "Pasirinkite...",
+    "search": "Ieškoti...",
+    "noMatch": "Nieko nerasta",
+    "leaveEmpty": "Palikti tuščią",
+    "noLimit": "Be ribos",
+    "planLocked": "Integracijos neįtrauktos į jūsų planą.",
+    "ownAppTitle": "Šis diegimas naudoja jūsų pačių programą pas tiekėją",
+    "redirectUri": "Nukreipimo URI, kurį reikia užregistruoti pas tiekėją:",
+    "sendTestEmail": "Send test email",
+    "testEmailSent": "Test email sent to {email}",
+    "testEmailHint": "A test email goes to your own address through this vendor, which proves the from address and the sending rules a key check cannot.",
+    "inboundUrl": "Inbound webhook URL",
+    "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
+    "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
+    "inboundHintStripe": "Pridėkite šį URL Stripe valdymo skydelyje, skiltyje Developers, Webhooks, prenumeruodami checkout.session.completed. Tada įklijuokite Stripe rodomą parašo paslaptį į webhook paslapties lauką čia, kad pranešimus būtų galima patikrinti.",
+    "inboundHintVipps": "Įveskite šį URL kaip atgalinio iškvietimo URL Vipps MobilePay portale. Vipps taip pat reikalauja paskelbtų pardavimo sąlygų, kurios nustatomos skiltyje Nustatymai, Mokėjimas.",
+    "inboundHintPaypal": "Pridėkite šį URL PayPal kūrėjų skydelyje, skiltyje Webhooks, prenumeruodami PAYMENT.CAPTURE.COMPLETED.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "updateKeys": "Update keys",
+    "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "inspectionSync": {
+      "title": "Apžiūrų sinchronizavimas",
+      "vehicles": "{count} transporto priemonės su numeriu šiose dirbtuvėse",
+      "dueNow": "{count} būtų patikrintos kito paleidimo metu",
+      "withDate": "{count} jau turi apžiūros datą",
+      "lastPass": "Paskutinis pilnas perėjimas {date}",
+      "never": "Pilno perėjimo dar nebuvo",
+      "inProgress": "Perėjimas vyksta",
+      "off": "Įjunkite nustatymą ir išsaugokite; iki tol perėjimas nieko netikrina.",
+      "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
+    },
+    "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
+    "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}"
+  },
+  "activity": {
+    "title": "Veikla",
+    "description": "Naujausios šio ryšio užduotys ir žurnalo įrašai.",
+    "retry": "Bandyti dar kartą",
+    "jobStatus": {
+      "queued": "Eilėje",
+      "running": "Vykdoma",
+      "done": "Atlikta",
+      "failed": "Nepavyko",
+      "dead": "Nutraukta"
+    },
+    "jobs": "{count, plural, one {# užduotis} few {# užduotys} many {# užduoties} other {# užduočių}}",
+    "counts": {
+      "queued": "{count} eilėje",
+      "running": "{count} vykdoma",
+      "done": "{count} atlikta",
+      "failed": "{count} nepavyko",
+      "dead": "{count} atsisakyta"
+    },
+    "noFailures": "Niekas nenutrūko.",
+    "retryFailed": "Kartoti nepavykusias",
+    "details": "Rodyti detales"
+  },
+  "errors": {
+    "generic": "Kažkas nepavyko",
+    "demo": "Demonstracinėje versijoje integracijų prijungti negalima.",
+    "forbidden": "Integracijas prijungti gali tik administratorius.",
+    "unknown": "Nežinoma integracija.",
+    "plan": "Ši integracija neįtraukta į jūsų planą.",
+    "no-client": "Šiam tiekėjui nesukonfigūruoti programos prisijungimo duomenys.",
+    "denied": "Atšaukėte prisijungimą pas tiekėją.",
+    "vendor": "Tiekėjas grąžino klaidą. Bandykite dar kartą.",
+    "invalid": "Tiekėjo atsakymas buvo neišsamus. Bandykite dar kartą.",
+    "state": "Šis prisijungimas baigė galioti arba priklauso kitai sesijai. Pradėkite iš naujo.",
+    "exchange": "Tiekėjas atmetė prisijungimą. Patikrinkite programos prisijungimo duomenis ir bandykite dar kartą.",
+    "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo."
+  },
+  "meeting": {
+    "join": "Prisijungti prie vaizdo skambučio",
+    "google-meet": "Google Meet",
+    "teams": "Microsoft Teams",
+    "zoom": "Zoom"
+  },
+  "calendar": {
+    "external": "Iš prijungtų kalendorių",
+    "busy": "Užimta"
+  },
+  "connectors": {
+    "google-calendar": {
+      "description": "Įtraukite suplanuotus darbo užsakymus į Google Calendar, pridėkite Google Meet nuorodą ir matykite kalendoriaus užimtą laiką Torqvoice.",
+      "tenantHelp": "Sukurkite OAuth klientą Google Cloud Console (APIs & Services → Credentials), įjunkite Google Calendar API, pridėkite žemiau nurodytą nukreipimo URI ir įklijuokite čia kliento ID ir slaptažodį.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "calendarId": "Kalendorius",
+        "pushEnabled": "Įtraukti suplanuotus darbo užsakymus į šį kalendorių",
+        "includeCustomer": "Įtraukti į įvykį kliento vardą ir telefoną",
+        "addConference": "Pridėti Google Meet susitikimą prie kiekvieno suplanuoto darbo užsakymo",
+        "addConferenceHelp": "Įjungta: kiekvienas į kalendorių įkeltas darbo užsakymas gauna Google Meet susitikimą, o nuoroda rodoma užsakyme. Išjungta: pridėkite Google Meet susitikimą prie vieno užsakymo iš jo puslapio. Bet kuriuo atveju klientas nuorodą gauna tik tada, kai ją išsiunčiate.",
+        "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
+        "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
+      }
+    },
+    "microsoft-365": {
+      "description": "Įtraukite suplanuotus darbo užsakymus į Outlook kalendorių, pridėkite Microsoft Teams nuorodą ir matykite kalendoriaus užimtą laiką Torqvoice.",
+      "tenantHelp": "Užregistruokite programą Microsoft Entra (App registrations), leiskite asmenines ir darbo paskyras, pridėkite žemiau nurodytą nukreipimo URI kaip Web platformą, sukurkite kliento slaptažodį ir įklijuokite abu čia.",
+      "fields": {
+        "clientId": "Programos (kliento) ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "calendarId": "Kalendorius",
+        "pushEnabled": "Įtraukti suplanuotus darbo užsakymus į šį kalendorių",
+        "includeCustomer": "Įtraukti į įvykį kliento vardą ir telefoną",
+        "addConference": "Pridėti Microsoft Teams susitikimą prie kiekvieno suplanuoto darbo užsakymo",
+        "addConferenceHelp": "Įjungta: kiekvienas į kalendorių įkeltas darbo užsakymas gauna Microsoft Teams susitikimą, o nuoroda rodoma užsakyme. Išjungta: pridėkite Microsoft Teams susitikimą prie vieno užsakymo iš jo puslapio. Bet kuriuo atveju klientas nuorodą gauna tik tada, kai ją išsiunčiate.",
+        "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
+        "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
+      }
+    },
+    "zoom": {
+      "description": "Pridėkite „Zoom“ susitikimą prie suplanuoto darbo užsakymo ir laikykite nuorodą jame: nuotolinei diagnostikai ar radiniams aptarti su klientu.",
+      "tenantHelp": "Zoom App Marketplace sukurkite General (user-managed) programą, pridėkite žemiau nurodytą peradresavimo URI, pridėkite apimtis meeting:write:meeting, meeting:update:meeting, meeting:delete:meeting, meeting:read:meeting ir user:read:user, tada čia įklijuokite kliento ID ir slaptažodį.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "autoCreate": "Automatiškai kurti „Zoom“ susitikimą kiekvienam suplanuotam darbo užsakymui",
+        "autoCreateHelp": "Išjungta: vaizdo skambutį prie darbo užsakymo pridedate patys jo puslapyje. Įjungta: kiekvienas darbo užsakymas su pradžios laiku gauna susitikimą, kuris perkeliamas perplanavus ir pašalinamas atšaukus. Bet kuriuo atveju klientas nuorodą gauna tik tada, kai ją išsiunčiate.",
+        "includeCustomer": "Įtraukti kliento vardą į susitikimo temą",
+        "joinBeforeHost": "Leisti klientui prisijungti anksčiau už jus",
+        "waitingRoom": "Naudoti laukimo kambarį"
+      }
+    },
+    "twilio-sms": {
+      "description": "Send and receive text messages through a Twilio number. Reminders, ready-for-pickup messages and the replies that come back.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "vonage-sms": {
+      "description": "Send and receive text messages through a Vonage number.",
+      "fields": {
+        "apiKey": "API key",
+        "apiSecret": "API secret"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "telnyx-sms": {
+      "description": "Send and receive text messages through a Telnyx number.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "phoneNumber": "Send from this number"
+      }
+    },
+    "whatsapp-meta": {
+      "description": "Message customers on WhatsApp through Meta directly. Photos of what you found, and the conversation that follows.",
+      "fields": {
+        "phoneNumberId": "Phone number ID",
+        "accessToken": "Access token",
+        "verifyToken": "Webhook verify token",
+        "appSecret": "App secret",
+        "apiVersion": "Graph API version"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "whatsapp-twilio": {
+      "description": "Message customers on WhatsApp through a Twilio number, if Twilio is who sold you one.",
+      "fields": {
+        "accountSid": "Account SID",
+        "authToken": "Auth token",
+        "messagingServiceSid": "Messaging service SID"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "phoneNumber": "Send from this number",
+        "templateName": "Template for reopening a conversation",
+        "templateLanguage": "Template language",
+        "templateVariables": "Template values, in order",
+        "mediaTemplateName": "Template for a message with a photo",
+        "mediaTemplateLanguage": "Photo template language",
+        "mediaTemplateVariables": "Photo template values, in order"
+      }
+    },
+    "telegram": {
+      "description": "A Telegram bot that reaches customers who use it, and brings their replies into the inbox.",
+      "fields": {
+        "botToken": "Bot token"
+      },
+      "settings": {
+        "enabled": "Send messages on this channel",
+        "botUsername": "Bot username"
+      }
+    },
+    "smtp": {
+      "description": "Send invoices and reminders through your own mail server, rather than the platform mail.",
+      "fields": {
+        "host": "Server",
+        "port": "Port",
+        "user": "Username",
+        "pass": "Password"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "secure": "Connect over TLS from the start",
+        "requireTls": "Require the server to upgrade to TLS",
+        "rejectUnauthorized": "Reject a certificate that does not check out"
+      }
+    },
+    "resend": {
+      "description": "Send invoices and reminders through Resend.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "postmark": {
+      "description": "Send invoices and reminders through Postmark.",
+      "fields": {
+        "apiKey": "Server token"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "mailgun": {
+      "description": "Send invoices and reminders through Mailgun.",
+      "fields": {
+        "apiKey": "API key",
+        "domain": "Sending domain"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender",
+        "region": "Region the domain is in"
+      }
+    },
+    "sendgrid": {
+      "description": "Send invoices and reminders through SendGrid.",
+      "fields": {
+        "apiKey": "API key"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "amazon-ses": {
+      "description": "Send invoices and reminders through Amazon SES.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "secretAccessKey": "Secret access key",
+        "region": "Region"
+      },
+      "settings": {
+        "fromEmail": "Send from this address",
+        "fromName": "Name shown as the sender"
+      }
+    },
+    "vegvesen": {
+      "description": "Užpildykite transporto priemonę pagal norvegišką numerį arba VIN: markė, modelis, metai, degalai, pavarų dėžė, variklis, spalva, padangų matmenys ir kita EU-kontroll data, tiesiai iš Statens vegvesen registro. Savininko duomenys negrąžinami.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Nemokamas. Užsisakykite raktą vegvesen.no skiltyje „API for tekniske kjøretøyopplysninger“: prisijunkite su BankID, atstovaukite dirbtuvėms, ir raktas išduodamas iš karto. Jis leidžia 50 000 užklausų per dieną."
+      },
+      "settings": {
+        "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių apžiūros terminus",
+        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+      }
+    },
+    "openapi-automotive": {
+      "description": "Užpildykite transporto priemonę pagal prancūzišką, itališką, ispanišką, portugališką arba britišką numerį: markė, modelis, metai, VIN, degalai, variklio tūris ir daugiau iš šalies registracijos duomenų per Openapi.com. Kiekviena užklausa apmokestinama iš pačių dirbtuvių Openapi paskyros. Savininko duomenys negrąžinami.",
+      "fields": {
+        "token": "API žetonas",
+        "tokenHelp": "Susikurkite paskyrą console.openapi.com, papildykite piniginę ir skiltyje Automotive sukurkite žetoną gamybinei aplinkai. Kiekviena sėkminga užklausa kainuoja kelias dešimtis centų; nerastas rezultatas nemokamas."
+      },
+      "settings": {
+        "country": "Šalis",
+        "countryHelp": "Registras, kuriame ieškoti. Prancūziški ir itališki numeriai atrodo vienodai, todėl šalies negalima nustatyti iš numerio.",
+        "bikes": "Ieškoti ir motociklų",
+        "bikesHelp": "Kai numeris nėra automobilio, papildomai užklausiamas motociklų registras. Nerastas automobilis nekainuoja, todėl papildomų išlaidų nėra, nebent randamas motociklas. Portugalijai neprieinama."
+      }
+    },
+    "rdw": {
+      "description": "Užpildykite transporto priemonę pagal olandišką numerį: markė, modelis, metai, degalai, variklio tūris, spalva, masės ir kita APK data, tiesiai iš atviro RDW transporto priemonių registro. Nemokamai, be rakto. Savininko duomenys ir VIN neskelbiami.",
+      "fields": {
+        "appToken": "Programos žetonas (neprivaloma)",
+        "appTokenHelp": "RDW atviri duomenys veikia be rakto, bet anoniminės užklausos dalijasi ribotą kvotą. Apžiūrų sinchronizavimui susikurkite nemokamą paskyrą opendata.rdw.nl, atverkite profilio kūrėjo nustatymus ir sukurkite programos žetoną."
+      },
+      "settings": {
+        "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių APK datas",
+        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+      }
+    },
+    "regcheck": {
+      "description": "Užpildykite transporto priemonę pagal numerį Australijoje, Naujojoje Zelandijoje, JAV, Airijoje, Norvegijoje, Švedijoje, Danijoje, Suomijoje, Estijoje, Čekijoje, Slovakijoje, Vengrijoje arba Kroatijoje: markė, modelis, metai, VIN, degalai ir variklio tūris, kai šalis juos skelbia, per RegCheck. Kiekviena sėkminga užklausa išleidžia vieną kreditą iš pačių dirbtuvių RegCheck paskyros. Savininko duomenys negrąžinami.",
+      "fields": {
+        "username": "RegCheck naudotojo vardas",
+        "usernameHelp": "Užsiregistruokite regcheck.org.uk; paskyroje yra 10 nemokamų užklausų, daugiau perkama po 100 valdymo skydelyje. Čia reikia tik naudotojo vardo, niekada slaptažodžio. Nerastas numeris nieko nekainuoja."
+      },
+      "settings": {
+        "country": "Šalis",
+        "countryHelp": "Registras, kuriame ieškoti. Kiekviena šalis turi savo paslaugą, todėl ryšys ieško vienoje.",
+        "auState": "Valstija arba teritorija",
+        "auStateHelp": "Australija registruoja transporto priemones pagal valstijas, ir registrui reikia nurodyti, kurioje ieškoti. Pasirinkite tą, kurioje registruota dauguma jūsų klientų transporto priemonių.",
+        "usState": "Valstija",
+        "usStateHelp": "Dviejų raidžių valstijos, kurioje registruotos transporto priemonės, kodas, pvz., CA arba TX. JAV registrai užklausiami pagal valstiją."
+      }
+    },
+    "openai": {
+      "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas — atsako jūsų pačių OpenAI paskyra. Kiekvienas užklausimas apmokestinamas toje paskyroje, o modelį pasirenkate jūs.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Susikurkite platform.openai.com skiltyje API keys. Paskyroje reikia lėšų; OpenAI apmokestina kiekvieną užklausimą."
+      },
+      "settings": {
+        "model": "Modelis",
+        "modelHelp": "Kuris modelis atsako. Sąrašas nuskaitomas iš jūsų paskyros, naujausi viršuje. Mažesni modeliai kainuoja mažiau ir daugumai serviso tekstų visiškai pakanka."
+      }
+    },
+    "anthropic": {
+      "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas — atsako Claude jūsų pačių Anthropic paskyroje. Kiekvienas užklausimas apmokestinamas toje paskyroje, o modelį pasirenkate jūs.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Susikurkite console.anthropic.com skiltyje API keys. Paskyroje reikia lėšų; Anthropic apmokestina kiekvieną užklausimą."
+      },
+      "settings": {
+        "model": "Modelis",
+        "modelHelp": "Kuris modelis atsako. Sąrašas nuskaitomas iš jūsų paskyros, naujausi viršuje. Mažesni modeliai kainuoja mažiau ir daugumai serviso tekstų visiškai pakanka."
+      }
+    },
+    "stripe": {
+      "description": "Mokėjimai kortele iš sąskaitos nuorodos į jūsų Stripe paskyrą. Klientas sumoka, Stripe praneša Torqvoice, ir sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "secretKey": "Slaptasis raktas",
+        "secretKeyHelp": "Iš Stripe valdymo skydelio, Developers, API keys. Bandomieji raktai nieko tikro neapdoroja, todėl pirmiausia išbandykite mokėjimą su jais, o paskui pereikite prie tikrų raktų.",
+        "publishableKey": "Viešasis raktas",
+        "webhookSecret": "Webhook parašo paslaptis",
+        "webhookSecretHelp": "Stripe ją parodo, kai šio puslapio pranešimų URL pridedate kaip webhook. Su ja kiekvienas pranešimas patikrinamas prieš užregistruojant mokėjimą."
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami."
+      }
+    },
+    "vipps": {
+      "description": "Vipps MobilePay iš sąskaitos nuorodos. Klientas sumoka programėlėje, kurią jau turi, ir sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento paslaptis",
+        "subscriptionKey": "Prenumeratos raktas",
+        "subscriptionKeyHelp": "Ocp-Apim-Subscription-Key iš Vipps MobilePay portalo, pardavimo vieneto API raktuose.",
+        "merchantSerialNumber": "Prekybininko serijos numeris"
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami.",
+        "testMode": "Bandomasis režimas",
+        "testModeHelp": "Naudoti Vipps bandomąją aplinką su bandomaisiais raktais. Palikite įjungtą, kol pavyks visas mokėjimas, tada išjunkite ir įveskite tikrus raktus."
+      }
+    },
+    "paypal": {
+      "description": "PayPal atsiskaitymas iš sąskaitos nuorodos per jūsų PayPal programėlę. Klientas sumoka PayPal paskyra arba kortele, ir sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento paslaptis"
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami.",
+        "sandbox": "Smėlio dėžės režimas",
+        "sandboxHelp": "Naudoti PayPal smėlio dėžę su smėlio dėžės programėlės raktais. Palikite įjungtą, kol pavyks visas mokėjimas, tada išjunkite ir įveskite tikros programėlės raktus."
+      }
+    },
+    "quickbooks": {
+      "description": "Siųskite išrašytas sąskaitas, jų klientus ir mokėjimus į QuickBooks Online ir parsisiųskite ten užregistruotus mokėjimus.",
+      "tenantHelp": "Sukurkite programą Intuit kūrėjų portale. Nukopijuokite client id ir secret iš Keys and credentials, o žemiau esantį peradresavimo URI įveskite skiltyje Settings, Redirect URIs. Kūrimo raktai pasiekia sandbox įmones, gamybos raktai tikras.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "pushInvoices": "Siųsti išrašytas sąskaitas į QuickBooks",
+        "pushOnComplete": "Siųsti sąskaitas ir tada, kai darbas pažymimas kaip užbaigtas",
+        "pushOnCompleteHelp": "Be šio nustatymo sąskaita perduodama, kai ji išsiunčiama, pasidalinama ar apmokama. Su juo užbaigtas darbas perduodamas iš karto ir atnaujinamas, jei pasikeičia.",
+        "startDate": "Tik sąskaitos, datuotos nuo",
+        "startDateHelp": "Palikite tuščią, kad būtų siunčiamos visos išrašytos sąskaitos. Naudokite datą, kada apskaita perkelta į QuickBooks, kad senesnės sąskaitos nebūtų įvestos dukart.",
+        "includeVehicle": "Nurodyti transporto priemonę sąskaitoje",
+        "includeVehicleHelp": "Teksto eilutė virš pozicijų su metais, marke, modeliu, numeriu ir rida, kad apskaita žinotų, apie kurį automobilį kalbama.",
+        "laborItemId": "Prekė darbo eilutėms",
+        "laborItemIdHelp": "Palikite tuščią ir pirmą kartą po jūsų pajamų sąskaita bus sukurta prekė pavadinimu Labour.",
+        "partsItemId": "Prekė dalių eilutėms",
+        "partsItemIdHelp": "Palikite tuščią ir pirmą kartą po jūsų pajamų sąskaita bus sukurta prekė pavadinimu Parts.",
+        "taxAmounts": "Mokesčių sumos",
+        "taxAmountsHelp": "Kaip sąskaitoje siunčia mokestį tiksliai tokį, koks nurodytas kliento gautoje sąskaitoje, todėl abi sistemos sutampa iki cento. Apskaičiuoja QuickBooks leidžia QuickBooks taikyti mokesčio kodo tarifą, JAV – kliento adresą, o žurnalas praneša, kai sumos skiriasi.",
+        "taxAmountsBilled": "Kaip sąskaitoje Torqvoice",
+        "taxAmountsQuickbooks": "Apskaičiuoja QuickBooks",
+        "taxCodeId": "Mokesčio kodas apmokestinamoms sąskaitoms",
+        "taxCodeIdHelp": "QuickBooks mokestį apskaito pagal mokesčio kodą. Torqvoice parenka kodą, kurio tarifas sutampa su kiekviena sąskaita; šis naudojamas, kai nė vienas nesutampa. JAV įmonė naudoja TAX, nebent pasirinksite kitą kodą.",
+        "zeroTaxCodeId": "Mokesčio kodas sąskaitoms be mokesčio",
+        "zeroTaxCodeIdHelp": "Naudojamas, kai sąskaitoje nėra mokesčio arba klientas atleistas nuo mokesčio. JAV įmonė naudoja NON, nebent pasirinksite kitą kodą.",
+        "pushPayments": "Registruoti mokėjimus QuickBooks",
+        "depositAccountId": "Mokėjimus įnešti į",
+        "depositAccountIdHelp": "Palikite tuščią, kad būtų naudojama Undeposited Funds.",
+        "manualPaidAsPayment": "Registruoti mokėjimą, kai sąskaita ranka pažymima kaip apmokėta",
+        "manualPaidAsPaymentHelp": "Torqvoice be mokėjimo įrašo kaip apmokėta pažymėta sąskaita QuickBooks gauna vieną mokėjimą likusiai ten rodomai sumai. Išjungus ji ten lieka atvira, kol užregistruojamas mokėjimas.",
+        "pullPayments": "Parsisiųsti QuickBooks užregistruotus mokėjimus",
+        "pullPaymentsHelp": "Kas 30 minučių. QuickBooks gautas mokėjimas už Torqvoice sąskaitą užregistruojamas čia prie sąskaitos."
+      }
+    },
+    "nhtsa": {
+      "description": "Užpildykite transporto priemonę pagal VIN ir matykite kiekvienų modelio metų atšaukimus, savininkų skundus ir smūgio bandymų įvertinimus iš JAV saugos institucijos. Nemokamai, be rakto.",
+      "fields": {},
+      "settings": {
+        "refreshFleet": "Nuolat atnaujinti atšaukimų ir skundų duomenis visoms šių dirbtuvių transporto priemonėms",
+        "refreshFleetHelp": "Kartą per dieną modeliai, neatnaujinti per pastarąją savaitę, užklausiami iš naujo, kad transporto priemonės puslapiui niekada nereikėtų laukti, o naujas atšaukimas pasirodytų per savaitę. Siunčiami tik markė, modelis ir metai."
+      }
+    }
+  },
+  "jobKinds": {
+    "calendar": {
+      "push": "Užsakymai į kalendorių",
+      "pull": "Užimtas laikas iš kalendoriaus"
+    },
+    "conference": {
+      "sync": "Vaizdo skambučių nuorodos"
+    },
+    "inspection": {
+      "refresh": "Apžiūros terminų atnaujinimas"
+    },
+    "accounting": {
+      "invoice": "Sąskaita į apskaitą",
+      "payment": "Mokėjimas į apskaitą",
+      "customer": "Klientas į apskaitą",
+      "pull": "Mokėjimai iš apskaitos"
+    },
+    "safety": {
+      "refresh": "Atšaukimų duomenų atnaujinimas",
+      "vehicle": "Naujos transporto priemonės atšaukimų patikra"
+    }
+  }
+}

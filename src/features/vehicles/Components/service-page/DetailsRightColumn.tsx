@@ -1,14 +1,17 @@
 import { useRouter } from 'next/navigation'
+import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import { useTranslations } from 'next-intl'
 import { MessageSquare } from 'lucide-react'
 import { SharedLinkCard } from '@/components/shared-link-card'
-import { InvoiceDetailsSection } from '../service-edit/InvoiceDetailsSection'
+import { InvoiceDetailsSection, type DesignOption } from '../service-edit/InvoiceDetailsSection'
 import { BasicInfoSection } from '../service-edit/BasicInfoSection'
 import { ScheduleTimesSection } from '../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../service-edit/TotalsSection'
 import { ServiceAttachments } from '../service-detail/ServiceAttachments'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { WarrantySection } from './WarrantySection'
+import { VideoCallSection } from './VideoCallSection'
+import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 import type { useServiceFormState } from './useServiceFormState'
 import type { useServiceActions } from './useServiceActions'
@@ -40,6 +43,14 @@ interface DetailsRightColumnProps {
     createdAt: string
     toNumber: string
   }[]
+  videoCall?: ServiceVideoCall
+  smsEnabled?: boolean
+  emailEnabled?: boolean
+  telegramEnabled?: boolean
+  designOptions?: DesignOption[]
+  designFollowsName?: string | null
+  designPinnedAt?: string | null
+  designFollowsRule?: DesignAutoRule | null
 }
 
 export function DetailsRightColumn({
@@ -55,6 +66,14 @@ export function DetailsRightColumn({
   workBays,
   orgMembers,
   notificationHistory = [],
+  videoCall,
+  smsEnabled = false,
+  emailEnabled = false,
+  telegramEnabled = false,
+  designOptions = [],
+  designFollowsName = null,
+  designPinnedAt = null,
+  designFollowsRule = null,
 }: DetailsRightColumnProps) {
   const router = useRouter()
 
@@ -85,6 +104,11 @@ export function DetailsRightColumn({
         paymentStatus={formState.paymentStatus}
         onTogglePaid={actions.handleTogglePaid}
         paymentLoading={actions.paymentLoading}
+        designOptions={designOptions}
+        designId={record.designId ?? null}
+        designFollowsName={designFollowsName}
+        designPinnedAt={designPinnedAt}
+        designFollowsRule={designFollowsRule}
       />
       <BasicInfoSection
         initialData={formState.initialData}
@@ -107,6 +131,17 @@ export function DetailsRightColumn({
         initialWorkBayId={record.workBayId}
         onSaved={formState.flashSaved}
       />
+      {videoCall && (
+        <VideoCallSection
+          serviceRecordId={record.id}
+          videoCall={videoCall}
+          scheduled={Boolean(formState.initialData.startDateTime)}
+          customer={record.customer ?? record.vehicle?.customer ?? null}
+          smsEnabled={smsEnabled}
+          emailEnabled={emailEnabled}
+          telegramEnabled={telegramEnabled}
+        />
+      )}
       <TotalsSection
         partsSubtotal={formState.partsSubtotal}
         partsCostSubtotal={formState.partsCostSubtotal}

@@ -7,7 +7,7 @@
       "billing": "Fakturowanie i dokumenty",
       "communications": "Komunikacja",
       "workshop": "Warsztat",
-      "integrations": "Integracje",
+      "integrations": "Aplikacje i API",
       "system": "System"
     },
     "items": {
@@ -91,6 +91,10 @@
         "title": "Harmonogram raportów",
         "description": "Automatyczne wysyłanie raportów"
       },
+      "integrations": {
+        "title": "Integracje",
+        "description": "Kalendarze, rozmowy wideo i połączone usługi"
+      },
       "webhooks": {
         "title": "Webhooks",
         "description": "Powiadomienia o zdarzeniach w czasie rzeczywistym"
@@ -130,6 +134,10 @@
       "providers": {
         "title": "Dostawcy",
         "description": "E-mail, SMS, WhatsApp i Telegram"
+      },
+      "inspectionReminders": {
+        "title": "Przypomnienia o przeglądzie",
+        "description": "Link do rezerwacji, czas trwania i wyprzedzenie"
       }
     },
     "pro": "PRO"
@@ -572,7 +580,16 @@
     "quoteLockTriggerSent": "Po wysłaniu oferty",
     "quoteLockTriggerAccepted": "Po zaakceptowaniu oferty",
     "quoteLockTriggerSentHint": "Blokuje, gdy oferta trafi do klienta. Wybierz tylko wtedy, gdy nigdy nie zmieniasz oferty w trakcie negocjacji.",
-    "quoteLockTriggerAcceptedHint": "Blokuje po zaakceptowaniu oferty przez klienta lub przekształceniu jej w zlecenie. Wysłane oferty pozostają edytowalne."
+    "quoteLockTriggerAcceptedHint": "Blokuje po zaakceptowaniu oferty przez klienta lub przekształceniu jej w zlecenie. Wysłane oferty pozostają edytowalne.",
+    "freezeTitle": "Faktury sprzed blokady",
+    "freezeBody": "{count, plural, one {# faktura dotarła} few {# faktury dotarły} many {# faktur dotarło} other {# faktury dotarło}} do klienta, zanim ta wersja mogła zablokować to, co drukuje faktura. Nadal drukują się z bieżącymi danymi, logo i projektem, więc dzisiejsza zmiana dotrze też do nich. Zablokowanie zachowuje każdą taką, jaka drukuje się teraz.",
+    "freezeNone": "Każda faktura, która dotarła do klienta, jest zablokowana tak, jak została wysłana.",
+    "freezeButton": "Zablokuj je z bieżącym projektem",
+    "freezeConfirmTitle": "Zablokować {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}?",
+    "freezeConfirmBody": "Każda zachowa projekt, logo, dane warsztatu, klienta, pojazd i ustalenia, z którymi drukuje się teraz. Nie da się tego cofnąć; faktury pozostaną edytowalne lub zablokowane do edycji dokładnie tak jak dziś.",
+    "freezeProgress": "Zablokowano {done} z {total}",
+    "freezeDone": "Zablokowano {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}",
+    "freezeFailed": "Nie udało się zablokować faktur"
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",
@@ -634,6 +651,12 @@
       "bank_account": "Konto bankowe",
       "footer_note": "Notatka w stopce",
       "org_number": "Numer organizacji",
+      "payment_terms": "Warunki płatności",
+      "due_date": "Termin płatności",
+      "title": "Tytuł",
+      "invoice_number": "Nr faktury",
+      "customer_number": "Nr klienta",
+      "date": "Data",
       "portal_link": "Link do portalu"
     },
     "presetsTitle": "Zacznij od układu",
@@ -808,32 +831,17 @@
     "paymentTermsPlaceholder": "14 dni netto",
     "paymentTermsHint": "Tekst warunkow platnosci na fakturach (np. \"14 dni netto\", \"Platne przy odbiorze\")",
     "onlinePayments": "Platnosci online",
-    "onlinePaymentsDescription": "Pozwól klientom płacić faktury online przez udostępnione linki do faktur.",
-    "stripe": "Stripe",
-    "stripeDescription": "Akceptuj platnosci karta kredytowa/debetowa",
-    "secretKey": "Klucz tajny",
-    "publishableKey": "Klucz publiczny",
-    "webhookSecret": "Sekret webhook",
-    "webhookUrl": "URL webhook",
-    "stripeWebhookHint": "Dodaj ten URL w panelu Stripe w sekcji Webhooks. Subskrybuj <code>checkout.session.completed</code>.",
-    "vipps": "Vipps",
-    "vippsDescription": "Akceptuj platnosci mobilne Vipps (Norwegia)",
-    "clientId": "ID klienta",
-    "clientSecret": "Sekret klienta",
-    "subscriptionKey": "Klucz subskrypcji",
-    "merchantSerialNumber": "Numer seryjny sprzedawcy",
-    "testMode": "Tryb testowy",
-    "callbackUrl": "URL callback",
-    "termsOfSale": "Warunki sprzedaży (Salgsvilkår)",
-    "termsOfSaleDescription": "Wymagane przez Vipps. Klienci mogą je wyswietlic ze strony faktury.",
+    "onlinePaymentsDescription": "Pozwól klientom płacić faktury z linku, który im wysyłasz. Stripe, Vipps i PayPal podłącza się w Integracjach i mogą działać równolegle.",
+    "onlinePaymentsHint": "Gdy klient płaci, dostawca informuje Torqvoice, a faktura sama oznacza się jako opłacona. Strona każdego dostawcy pokazuje potrzebny mu adres powiadomień.",
+    "offered": "W linkach do faktur",
+    "paused": "Podłączony, nieoferowany",
+    "termsOfSale": "Warunki sprzedaży",
+    "termsOfSaleDescription": "To, na co klient zgadza się, płacąc online. Vipps wymaga opublikowanych warunków; faktura i tak do nich linkuje.",
+    "termsOfSaleText": "Treść warunków",
     "externalTermsUrl": "Zewnetrzny URL warunkow (opcjonalnie)",
     "externalTermsUrlHint": "Link do zewnetrznej strony z warunkami. Jeśli ustawiony, faktura będzie tu kierowac.",
     "publicTermsUrl": "Publiczny URL warunkow",
     "publicTermsUrlHint": "Udostępnij ten URL Vipps lub podlacz go ze swojej strony.",
-    "paypal": "PayPal",
-    "paypalDescription": "Akceptuj platnosci PayPal",
-    "sandboxMode": "Tryb sandbox",
-    "paypalWebhookHint": "Dodaj ten URL w panelu PayPal Developer w sekcji Webhooks. Subskrybuj <code>PAYMENT.CAPTURE.COMPLETED</code>.",
     "savePayment": "Zapisz ustawienia platnosci",
     "saved": "Ustawienia platnosci zapisane"
   },
@@ -1112,7 +1120,7 @@
   },
   "data": {
     "title": "Zarządzanie danymi",
-    "description": "Eksportuj dane jako kopie zapasowa lub importuj wczesniej wyeksportowany plik.",
+    "description": "Przenieś dane ze starego systemu, pobierz kopię zapasową wszystkiego lub ją przywróć.",
     "exportTitle": "Eksportuj dane",
     "exportDescription": "Pobierz dane jako plik zip. Wybierz kategorie do uwzglednienia w kopii zapasowej.",
     "includeInBackup": "Dolacz do kopii zapasowej:",
@@ -1199,7 +1207,16 @@
     "optTireHotel": "Hotel opon",
     "optTireHotelDesc": "Przechowywane komplety, półki, przygotowanie i umowy przechowywania",
     "optWorkshopConfig": "Konfiguracja warsztatu",
-    "optWorkshopConfigDesc": "Szablony robocizny, role, webhooki i zaplanowane raporty"
+    "optWorkshopConfigDesc": "Szablony robocizny, role, webhooki i zaplanowane raporty",
+    "importHubDescription": "Wybierz, gdzie dziś są Twoje dane. Importy z arkuszy i aplikacji dodają się do tego, co masz, i można je cofnąć; przywrócenie kopii zapasowej zastępuje wszystko.",
+    "sourceSpreadsheet": "Arkusz lub CSV",
+    "sourceSpreadsheetDesc": "Eksporty z dowolnego systemu warsztatowego, programu księgowego, Kontaktów Google, Outlooka lub Excela. Potwierdzasz mapowanie kolumn i widzisz próbny przebieg, zanim cokolwiek zostanie zapisane.",
+    "sourceLubelogDesc": "Pojazdy, wpisy serwisowe i notatki z kopii zapasowej LubeLog.",
+    "sourceInvoiceNinjaDesc": "Klienci, produkty, faktury i płatności z eksportu Invoice Ninja.",
+    "sourceBackup": "Kopia zapasowa Torqvoice",
+    "sourceBackupDesc": "Plik .zip lub .json pobrany z tej strony. Przywrócenie zastępuje wszystko w tym warsztacie.",
+    "restore": "Przywróć",
+    "restoreTitle": "Przywróć kopię zapasową"
   },
   "license": {
     "title": "Licencja white-label",
@@ -1740,6 +1757,17 @@
         "feature": "Wiadomości Telegram",
         "description": "Wysyłaj i odbieraj wiadomości Telegram z klientami bezpośrednio w Torqvoice."
       }
+    },
+    "moved": {
+      "title": "These settings moved to Integrations",
+      "description": "Email, SMS, WhatsApp and Telegram are set up in Integrations now, alongside calendars and everything else you connect. What you had set up came with them, so there is nothing to enter again.",
+      "connectedTo": "Connected through {vendor}",
+      "notSetUp": "Not set up yet",
+      "manage": "Manage",
+      "notConnected": "Not connected",
+      "goToIntegrations": "Go to Integrations",
+      "platformMail": "Sending through the platform mail server. Connect your own to send from your address.",
+      "onByDefault": "On by default"
     }
   },
   "designer": {
@@ -1749,6 +1777,14 @@
     "galleryTitle": "Zacznij od szablonu",
     "galleryHint": "Wybierz punkt wyjścia. W kreatorze zmienisz wszystko.",
     "yourDesigns": "Twoje projekty",
+    "autoRuleHint": "Sprzedaże bez pojazdu drukują się z oznaczonym dla nich projektem, chyba że sprzedaż lub jej klient wybrali inny.",
+    "useForPartsSale": "Używaj do sprzedaży samych części",
+    "usedForPartsSale": "Używany do sprzedaży samych części",
+    "autoRule": {
+      "parts_sale": "Sprzedaż samych części"
+    },
+    "autoRuleSaved": "Zaktualizowano, kiedy używany jest „{name}”",
+    "couldNotSaveRule": "Nie udało się zaktualizować reguły",
     "templates": "Szablony",
     "inUse": "W użyciu",
     "savedOn": "Zapisano {date}",
@@ -1908,6 +1944,7 @@
       "serviceType": "Naprawa",
       "companyName": "Twój warsztat",
       "slogan": "Jakość, której możesz zaufać",
+      "paymentTerms": "Płatne w ciągu 14 dni",
       "footerNote": "Dziękujemy za współpracę",
       "value": "Przykład"
     },
@@ -1923,11 +1960,22 @@
     "sloganPlaceholderHint": "Nie ustawiono sloganu, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
     "sloganSetHint": "Twój slogan pochodzi z danych firmy.",
     "sloganLink": "Ustawienia firmy",
+    "paymentTerms": "Warunki płatności",
+    "paymentTermsPlaceholderHint": "Nie ustawiono warunków płatności, więc arkusz pokazuje tekst zastępczy, który nie zostanie wydrukowany.",
+    "paymentTermsSetHint": "Twoje warunki płatności pochodzą z ustawień płatności.",
+    "paymentTermsLink": "Ustawienia płatności",
+    "titleText": "Tekst tytułu",
+    "titleTextHint": "Jak nazywa się ten dokument. Pozostawione puste, drukuje własną nazwę w języku odbiorcy.",
     "placeholder": "Symbol zastępczy",
     "leaveTitle": "Wyjść bez zapisywania?",
     "leaveBody": "Zmiany w tym projekcie nie zostały zapisane i zostaną utracone.",
     "leaveConfirm": "Wyjdź",
-    "boldField": "Pogrubienie"
+    "boldField": "Pogrubienie",
+    "deleteDesignDrafts": "{count, plural, one {# szkic faktury} few {# szkice faktur} many {# szkiców faktur} other {# szkicu faktury}} z tym projektem wróci do projektu domyślnego.",
+    "deleteDesignCustomers": "{count, plural, one {# klient} few {# klientów} many {# klientów} other {# klienta}} z tym projektem wróci do projektu domyślnego.",
+    "setDefault": "Ustaw jako domyślny",
+    "defaultSet": "„{name}” jest teraz w użyciu",
+    "couldNotSetDefault": "Nie udało się ustawić domyślnego projektu"
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",
@@ -1942,5 +1990,31 @@
     "partSyntheticOil": "Olej syntetyczny 5W-30",
     "laborBrakeReplacement": "Wymiana hamulców",
     "laborOilChange": "Wymiana oleju"
+  },
+  "inspectionReminders": {
+    "title": "Przypomnienia o przeglądzie i rezerwacje",
+    "description": "Jak działa link do rezerwacji w przypomnieniu. Ustawiane raz; używa każda kampania.",
+    "duration": "Czas przeglądu (minuty)",
+    "durationHint": "Jak długo przegląd okresowy zajmuje stanowisko. Link rezerwuje terminy tej długości.",
+    "leadDays": "Najwcześniejsza rezerwacja (dni)",
+    "leadDaysHint": "1 oznacza, że pierwszy oferowany termin to jutro, nigdy dziś.",
+    "horizonWeeks": "Jak daleko (tygodnie)",
+    "horizonHint": "Klienci mogą wybrać dowolny wolny termin w tylu tygodniach.",
+    "reserve": "Zostaw wolne dla klientów bez zapisu",
+    "reserveHint": "Stanowiska lub technicy, których link nigdy nie zajmuje. 0 pozwala użyć wszystkich wolnych.",
+    "linkValidDays": "Link pozostaje aktywny (dni)",
+    "linkValidHint": "Co najmniej {min}. Linki są też aktywne do tygodnia po terminie, w zależności od tego, co później.",
+    "bookingMode": "Co tworzy rezerwacja",
+    "bookingModeDirect": "Zaplanowane zlecenie na tablicy",
+    "bookingModeRequest": "Prośbę, którą biuro najpierw potwierdza",
+    "bookingModeHint": "Bezpośrednia rezerwacja to sens tego linku. Wybierz prośbę, jeśli chcesz zatwierdzać każdą.",
+    "phone": "Numer telefonu w wiadomościach",
+    "phoneHint": "Pokazywany jako alternatywa dla linku. Domyślnie numer warsztatu.",
+    "save": "Zapisz",
+    "saved": "Ustawienia zapisane",
+    "saveFailed": "Nie udało się zapisać",
+    "timeZoneDetected": "Strefa czasowa jest ustawiona na automatyczną w Lokalizacji, więc serwer używa {zone}, strefy ostatnio widzianej w przeglądarce, która zapisała ustawienia. Wybierz strefę warsztatu jawnie, aby godziny rezerwacji nigdy nie zależały od tego, kto zapisał ostatni.",
+    "timeZoneExplicit": "Godziny rezerwacji i otwarcia są odczytywane w strefie {zone}.",
+    "timeZoneChange": "Zmień w Lokalizacji"
   }
 }

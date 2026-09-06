@@ -1,0 +1,259 @@
+model Vehicle {
+  id                     String               @id @default(cuid())
+  make                   String
+  model                  String
+  year                   Int
+  vin                    String?
+  licensePlate           String?
+  color                  String?
+  mileage                Int                  @default(0)
+  fuelType               String?              @default("gasoline")
+  transmission           String?              @default("automatic")
+  engineSize             String?
+  engineCode             String?
+  purchaseDate           DateTime?
+  purchasePrice          Float?
+  imageUrl               String?
+  isArchived             Boolean              @default(false)
+  archiveReason          String?
+  /// Set when the customer said in the portal that the vehicle is no longer theirs.
+  soldReportedAt         DateTime?
+  maintenanceDismissed   Boolean              @default(false)
+  maintenanceDismissedAt DateTime?
+  aiMessages             AiGeneratedMessage[]
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  serviceRecords    ServiceRecord[]
+  notes             Note[]
+  fuelLogs          FuelLog[]
+  reminders         Reminder[]
+  quotes            Quote[]
+  recurringInvoices RecurringInvoice[]
+  inspections       Inspection[]
+  serviceRequests   ServiceRequest[]
+  findings          VehicleFinding[]
+  scheduledMessages ScheduledMessage[]
+  tireSets          TireSet[]
+
+  inspectionStatus    VehicleInspectionStatus?
+  inspectionReminders InspectionReminderSend[]
+
+  importBatchId String?
+  importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([importBatchId])
+  @@map("vehicles")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("notes")
+}
+
+model FuelLog {
+  id             String   @id @default(cuid())
+  date           DateTime @default(now())
+  mileage        Int
+  gallons        Float
+  pricePerGallon Float
+  totalCost      Float
+  isFillUp       Boolean  @default(true)
+  station        String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("fuel_logs")
+}
+
+model Reminder {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  /// True when the time of day in dueDate was chosen, not the noon a
+  /// day-only reminder is stored at
+  hasDueTime  Boolean   @default(false)
+  dueMileage  Int?
+  isCompleted Boolean   @default(false)
+  /// Per-reminder notification channels, chosen when creating the reminder
+  notifyInApp Boolean   @default(true)
+  notifyEmail Boolean   @default(false)
+  /// Set by the due-reminder cron once notified; cleared when dueDate changes
+  notifiedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  /// A reminder relates to a vehicle, a customer, or just the workshop
+  /// (both null). organizationId is the canonical scope for all three.
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([customerId])
+  @@index([organizationId])
+  @@map("reminders")
+}
+
+model VehicleFinding {
+  id          String   @id @default(cuid())
+  description String
+  severity    String   @default("needs_work")
+  status      String   @default("open")
+  notes       String?
+  imageUrls   String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation("FindingDiscoveredIn", fields: [serviceRecordId], references: [id], onDelete: SetNull)
+
+  resolvedServiceRecordId String?
+  resolvedServiceRecord   ServiceRecord? @relation("FindingResolvedIn", fields: [resolvedServiceRecordId], references: [id], onDelete: SetNull)
+
+  /// The customer concern this finding answers, if it answers one.
+  ///
+  /// Nullable because plenty of findings are things nobody asked about: the
+  /// perished bush somebody noticed while the car was on the lift. Those are
+  /// worth just as much, they just are not part of the story the customer
+  /// started. SetNull rather than Cascade because a finding is a fact about
+  /// the vehicle and outlives the concern that prompted the look.
+  concernId String?
+  concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId])
+  @@index([serviceRecordId])
+  @@index([concernId])
+  @@map("vehicle_findings")
+}
+
+/// What a vehicle registry, or the workshop itself, last said about when the
+/// vehicle's periodic roadworthiness inspection (EU-kontroll, MOT, APK, HU,
+/// contrôle technique, and so on) is due. One row per vehicle. The
+/// organisation is on the row so "what is due for this workshop" is one
+/// indexed query and the isolation is explicit rather than inherited.
+model VehicleInspectionStatus {
+  id             String       @id @default(cuid())
+  vehicleId      String       @unique
+  vehicle        Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Next periodic inspection deadline, when known.
+  dueAt      DateTime?
+  /// Last approved periodic inspection, when known.
+  lastAt     DateTime?
+  /// Connector id ("vegvesen"), or "manual" / "inspection" for the workshop's own entries.
+  source     String
+  /// When a registry last confirmed the row. Null for manual entries.
+  checkedAt  DateTime?
+  /// False when the registry answered but had no such vehicle.
+  found      Boolean   @default(true)
+  /// Whether the registry lists the vehicle as currently registered, when it says.
+  registered Boolean?
+  /// Last lookup failure, cleared on success. Never a plate or VIN.
+  lastError  String?
+  /// Whatever else the registry returned and the app has no column for yet:
+  /// approved tyre sizes, weights, vehicle class, first registration.
+  extras     Json?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([organizationId, dueAt])
+  @@index([organizationId, checkedAt])
+  @@map("vehicle_inspection_statuses")
+}
+
+/// One "remind these customers" action, created only by a person confirming
+/// a reviewed list. Never created by a timer.
+model InspectionReminderCampaign {
+  id               String       @id @default(cuid())
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdById      String
+  /// Client-generated, so a double submit creates one campaign, not two.
+  idempotencyToken String       @unique
+  /// Deadline window the list was built from, in days.
+  windowDays       Int
+  channel          String
+  subject          String?
+  body             String
+  /// "sent" once rows exist; "dry_run" in demo mode, where nothing goes out.
+  status           String       @default("sent")
+  recipientCount   Int          @default(0)
+  createdAt        DateTime     @default(now())
+
+  sends InspectionReminderSend[]
+
+  @@index([organizationId, createdAt])
+  @@map("inspection_reminder_campaigns")
+}
+
+/// One customer told once about one vehicle's deadline. The unique pair of
+/// vehicle and deadline is the guarantee that no deadline is ever reminded
+/// twice, whatever the code above it does.
+model InspectionReminderSend {
+  id                     String                     @id @default(cuid())
+  campaignId             String
+  campaign               InspectionReminderCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  organizationId         String
+  organization           Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  vehicleId              String
+  vehicle                Vehicle                    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  customerId             String
+  customer               Customer                   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  /// The deadline as it stood when the reminder went out.
+  dueAt                  DateTime
+  channel                String
+  recipient              String
+  /// Booking link secret; the link is /b/<token>.
+  token                  String                     @unique
+  expiresAt              DateTime
+  scheduledMessageId     String?                    @unique
+  scheduledMessage       ScheduledMessage?          @relation(fields: [scheduledMessageId], references: [id], onDelete: SetNull)
+  /// Set when the customer booked from the link.
+  bookedAt               DateTime?
+  bookedServiceRecordId  String?
+  bookedServiceRequestId String?
+  cancelledAt            DateTime?
+  createdAt              DateTime                   @default(now())
+
+  @@unique([vehicleId, dueAt])
+  @@index([organizationId, createdAt])
+  @@index([campaignId])
+  @@map("inspection_reminder_sends")
+}

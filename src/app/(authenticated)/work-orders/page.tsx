@@ -9,6 +9,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { getFeatures } from '@/lib/features'
 import { WorkOrdersClient } from './work-orders-client'
 import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
 
 export default async function WorkOrdersPage({
   searchParams,
@@ -75,7 +76,7 @@ export default async function WorkOrdersPage({
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <ListPage>
         <WorkOrdersClient
           data={result.data}
           vehicles={vehicles}
@@ -88,7 +89,7 @@ export default async function WorkOrdersPage({
           smsEnabled={features?.sms ?? false}
           emailEnabled={features?.smtp ?? false}
         />
-      </div>
+      </ListPage>
     </>
   )
 }

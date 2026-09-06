@@ -7,7 +7,8 @@
       "scheduled": "Gepland",
       "sms": "Sms",
       "whatsapp": "WhatsApp",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "campaigns": "Campagnes"
     },
     "smsNotConfiguredTitle": "Sms is niet ingesteld",
     "smsNotConfiguredHint": "Koppel een sms-provider om hier berichten te versturen en ontvangen. Geplande e-mail werkt ook zonder.",

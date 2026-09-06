@@ -1,0 +1,228 @@
+{
+  "title": "{entity} importieren",
+  "cancel": "Abbrechen",
+  "done": "Fertig",
+  "entities": {
+    "customers": "Kunden",
+    "vehicles": "Fahrzeuge",
+    "services": "Servicehistorie"
+  },
+  "entityHints": {
+    "customers": "Namen, Kontaktdaten, Adressen. Eine Zeile pro Kunde.",
+    "vehicles": "Marke, Modell, Baujahr, Kennzeichen, FIN. Eine Besitzer-Spalte verknüpft oder erstellt den Kunden.",
+    "services": "Frühere Aufträge und Rechnungen. Eine Zeile pro Auftrag, mit dem zugehörigen Fahrzeug."
+  },
+  "groups": {
+    "customer": "Kunde",
+    "vehicle": "Fahrzeug",
+    "service": "Service"
+  },
+  "steps": {
+    "upload": "Wählen Sie, was importiert werden soll, und laden Sie die Datei aus Ihrem bisherigen System hoch.",
+    "mapping": "Prüfen Sie, welche Spalte zu welchem Feld wird. Es wird noch nichts geschrieben.",
+    "preview": "Testlauf: Genau das wird der Import tun. Prüfen Sie es und importieren Sie dann.",
+    "importing": "Zeilen werden geschrieben. Lassen Sie dieses Fenster geöffnet.",
+    "result": "Import abgeschlossen."
+  },
+  "upload": {
+    "drop": "Datei hierher ziehen und ablegen",
+    "formats": "CSV, Excel (.xlsx) oder vCard (.vcf), bis zu 25 MB und 50.000 Zeilen",
+    "browse": "Dateien durchsuchen",
+    "reading": "Datei wird gelesen...",
+    "templateHint": "Noch kein Export? Füllen Sie eine Vorlage aus und laden Sie diese hoch.",
+    "templateXlsx": "Excel-Vorlage",
+    "templateCsv": "CSV-Vorlage",
+    "sourcesHint": "Funktioniert mit Exporten aus jedem Werkstattsystem, Buchhaltungsprogramm, Google Kontakte, Outlook oder einer Tabelle. Spaltennamen werden in vielen Sprachen erkannt; Sie bestätigen die Zuordnung, bevor etwas geschrieben wird."
+  },
+  "mapping": {
+    "rows": "{count, plural, one {# Zeile} other {# Zeilen}}",
+    "colColumn": "Spalte in Ihrer Datei",
+    "colSample": "Beispielwerte",
+    "colField": "Wird zu",
+    "ignore": "Diese Spalte ignorieren",
+    "source": {
+      "preset": "Erkanntes Layout",
+      "header": "Über Spaltenüberschrift zugeordnet",
+      "values": "Aus den Werten abgeleitet"
+    },
+    "suggestWithAi": "Mit KI vorschlagen",
+    "aiApplied": "{count, plural, one {# Spalte} other {# Spalten}} durch KI zugeordnet. Prüfen Sie die Zuordnung, bevor Sie fortfahren.",
+    "chooseAnother": "Andere Datei wählen",
+    "missingRequired": "Noch erforderlich: {fields}",
+    "dryRunHint": "Der Testlauf prüft jede Zeile gegen Ihre vorhandenen Daten, ohne etwas zu schreiben.",
+    "runDryRun": "Testlauf starten"
+  },
+  "options": {
+    "dateFormat": "Datumsformat",
+    "dateAuto": "Automatisch erkennen",
+    "dateDMY": "Tag / Monat / Jahr",
+    "dateMDY": "Monat / Tag / Jahr",
+    "dateYMD": "Jahr / Monat / Tag",
+    "decimal": "Dezimaltrennzeichen",
+    "decimalAuto": "Automatisch erkennen",
+    "decimalDot": "Punkt (1,234.56)",
+    "decimalComma": "Komma (1.234,56)",
+    "countryCode": "Ländervorwahl für Telefonnummern",
+    "duplicates": "Wenn eine Zeile einem vorhandenen Datensatz entspricht",
+    "duplicatesUpdate": "Vorhandenen Datensatz aktualisieren",
+    "duplicatesSkip": "Zeile überspringen",
+    "duplicatesCreate": "Trotzdem neuen Datensatz anlegen"
+  },
+  "summary": {
+    "create": "Wird angelegt",
+    "update": "Wird aktualisiert",
+    "skip": "Wird übersprungen",
+    "error": "Kann nicht importiert werden",
+    "warnings": "Mit Warnungen",
+    "customersToCreate": "{count, plural, one {# neuer Kunde} other {# neue Kunden}}",
+    "customersToUpdate": "{count, plural, one {# Kunde aktualisiert} other {# Kunden aktualisiert}}",
+    "vehiclesToCreate": "{count, plural, one {# neues Fahrzeug} other {# neue Fahrzeuge}}",
+    "vehiclesToUpdate": "{count, plural, one {# Fahrzeug aktualisiert} other {# Fahrzeuge aktualisiert}}",
+    "servicesToCreate": "{count, plural, one {# Serviceeintrag} other {# Serviceeinträge}}"
+  },
+  "actions": {
+    "create": "Anlegen",
+    "update": "Aktualisieren",
+    "skip": "Überspringen",
+    "error": "Fehler"
+  },
+  "matchOn": {
+    "number": "Kundennummer",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "name": "Name",
+    "vin": "FIN",
+    "plate": "Kennzeichen",
+    "makeModelYear": "Marke, Modell und Baujahr"
+  },
+  "preview": {
+    "colAction": "Aktion",
+    "colOwner": "Besitzer",
+    "colDetails": "Details",
+    "empty": "Keine Zeilen entsprechen diesem Filter.",
+    "matchedOn": "Entspricht {name} (über {on})",
+    "linksCustomer": "Verknüpft mit Kunde {name}",
+    "linksVehicle": "Verknüpft mit {label}",
+    "sameCustomerAsRow": "Gleicher Kunde wie Zeile {row}",
+    "sameVehicleAsRow": "Gleiches Fahrzeug wie Zeile {row}",
+    "createsCustomer": "Legt den Kunden an",
+    "createsVehicle": "Legt das Fahrzeug an",
+    "downloadReport": "Testlauf-Bericht herunterladen",
+    "limitExceeded": "Ihr Tarif erlaubt noch {remaining} weitere Kunden, dieser Import würde aber {needed} anlegen. Entfernen Sie Zeilen oder wechseln Sie zu einem höheren Tarif.",
+    "pageInfo": "{from}–{to} von {total}",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "backToMapping": "Zurück zur Zuordnung",
+    "import": "{count, plural, one {# Zeile} other {# Zeilen}} importieren",
+    "nothingWrittenYet": "Es wurde noch nichts geschrieben. Der Import kann anschließend unter Einstellungen → Daten rückgängig gemacht werden."
+  },
+  "importing": {
+    "title": "Import läuft...",
+    "starting": "Wird gestartet",
+    "progress": "{done} von {total} Zeilen",
+    "keepOpen": "Große Dateien brauchen ein bis zwei Minuten."
+  },
+  "result": {
+    "title": "Import abgeschlossen",
+    "undoneTitle": "Import rückgängig gemacht",
+    "created": "{count, plural, one {# Datensatz angelegt} other {# Datensätze angelegt}}",
+    "updated": "{count, plural, one {# Datensatz aktualisiert} other {# Datensätze aktualisiert}}",
+    "skipped": "{count, plural, one {# Zeile übersprungen} other {# Zeilen übersprungen}}",
+    "failed": "{count, plural, one {# Zeile nicht importiert} other {# Zeilen nicht importiert}}",
+    "writeFailures": "{count, plural, one {# Zeile beim Schreiben fehlgeschlagen} other {# Zeilen beim Schreiben fehlgeschlagen}}",
+    "rowFailure": "Zeile {row}: {error}",
+    "undo": "Diesen Import rückgängig machen",
+    "undone": "{customers} Kunden, {vehicles} Fahrzeuge und {services} Serviceeinträge entfernt.",
+    "undoHint": "Rückgängig machen entfernt jeden Datensatz, den dieser Import angelegt hat. Datensätze, die nur aktualisiert wurden, behalten ihre neuen Werte."
+  },
+  "history": {
+    "title": "Importverlauf",
+    "description": "In dieser Werkstatt ausgeführte Tabellenimporte. Rückgängig machen entfernt, was ein Import angelegt hat.",
+    "loading": "Wird geladen...",
+    "statusUndone": "Rückgängig gemacht",
+    "counts": "{created} angelegt, {updated} aktualisiert, {skipped} übersprungen, {failed} fehlgeschlagen",
+    "undo": "Rückgängig",
+    "undone": "{customers} Kunden, {vehicles} Fahrzeuge und {services} Serviceeinträge entfernt.",
+    "undoFailed": "Der Import konnte nicht rückgängig gemacht werden",
+    "confirmTitle": "Diesen Import rückgängig machen?",
+    "confirmDescription": "Entfernt, was {file} angelegt hat: {customers} Kunden, {vehicles} Fahrzeuge und {services} Serviceeinträge. Datensätze, die der Import nur aktualisiert hat, bleiben erhalten.",
+    "cancel": "Abbrechen",
+    "confirm": "Import rückgängig machen"
+  },
+  "fields": {
+    "customer": {
+      "name": "Kundenname",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "customerNumber": "Kundennummer",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "company": "Unternehmen",
+      "address": "Adresse",
+      "street": "Straße",
+      "postalCode": "Postleitzahl",
+      "city": "Ort",
+      "state": "Bundesland / Region",
+      "country": "Land",
+      "taxId": "Steuer-/USt-IdNr.",
+      "notes": "Kundennotizen"
+    },
+    "vehicle": {
+      "description": "Fahrzeug (Baujahr Marke Modell in einer Spalte)",
+      "make": "Marke",
+      "model": "Modell",
+      "year": "Baujahr",
+      "vin": "FIN",
+      "licensePlate": "Kennzeichen",
+      "color": "Farbe",
+      "mileage": "Kilometerstand",
+      "fuelType": "Kraftstoffart",
+      "transmission": "Getriebe",
+      "engineSize": "Hubraum",
+      "engineCode": "Motorcode",
+      "purchaseDate": "Kaufdatum",
+      "purchasePrice": "Kaufpreis"
+    },
+    "service": {
+      "date": "Servicedatum",
+      "title": "Servicebezeichnung",
+      "description": "Beschreibung",
+      "total": "Gesamtbetrag",
+      "mileage": "Kilometerstand beim Service",
+      "invoiceNumber": "Rechnungsnummer",
+      "notes": "Servicenotizen",
+      "technician": "Techniker"
+    }
+  },
+  "issues": {
+    "customer_name_required": "Kundenname fehlt",
+    "invalid_email": "E-Mail \"{value}\" ist ungültig und wurde weggelassen",
+    "invalid_vin": "FIN \"{value}\" hat nicht 17 Zeichen; wie eingegeben übernommen",
+    "vehicle_make_model_required": "Marke und Modell fehlen",
+    "vehicle_year_required": "Baujahr fehlt",
+    "vehicle_year_invalid": "Baujahr \"{value}\" ist kein gültiges Jahr",
+    "vehicle_identifier_required": "Kein Kennzeichen, keine FIN und keine Marke mit Modell, um das Fahrzeug zu identifizieren",
+    "vehicle_not_found": "Kein vorhandenes Fahrzeug entspricht \"{value}\" und die Angaben reichen nicht aus, um eines anzulegen",
+    "service_date_required": "Servicedatum fehlt",
+    "service_date_invalid": "Datum \"{value}\" konnte nicht gelesen werden",
+    "service_title_required": "Servicebezeichnung oder Beschreibung fehlt",
+    "invalid_date": "{field} \"{value}\" konnte nicht gelesen werden und wurde weggelassen",
+    "invalid_number": "{field} \"{value}\" ist keine Zahl und wurde weggelassen",
+    "duplicate_invoice_number": "Rechnungsnummer {value} existiert bereits",
+    "write_failed": "Konnte nicht geschrieben werden: {value}"
+  },
+  "errors": {
+    "uploadFailed": "Die Datei konnte nicht gelesen werden",
+    "aiFailed": "Die KI konnte keine Zuordnung vorschlagen",
+    "dryRunFailed": "Der Testlauf ist fehlgeschlagen",
+    "importFailed": "Der Import ist fehlgeschlagen",
+    "undoFailed": "Der Import konnte nicht rückgängig gemacht werden"
+  },
+  "entry": {
+    "title": "Aus einer Tabelle importieren",
+    "description": "Übernehmen Sie Kunden, Fahrzeuge und Servicehistorie aus jedem System, das CSV oder Excel exportiert. Ordnen Sie die Spalten zu, starten Sie einen Testlauf und importieren Sie dann. Jeder Import kann rückgängig gemacht werden.",
+    "customers": "Kunden importieren",
+    "vehicles": "Fahrzeuge importieren",
+    "services": "Servicehistorie importieren"
+  }
+}

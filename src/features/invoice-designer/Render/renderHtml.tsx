@@ -1,6 +1,6 @@
 'use client'
 
-import type { CSSProperties, ReactNode } from 'react'
+import { createContext, useContext, type CSSProperties, type ReactNode } from 'react'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import type { BoxStyle, Node, TextStyle } from '../Spec/documentSpec'
 import { fontStack } from '../Components/types'
@@ -56,10 +56,57 @@ const JUSTIFY = {
 const ALIGN = { start: 'flex-start', center: 'center', end: 'flex-end' } as const
 
 /**
+ * Nodes the designer is standing in for, by id, and what to call them.
+ *
+ * Only the editing canvas provides this. Every other reader of this model
+ * draws the same nodes and must never wear the mark, because a stand-in that
+ * reaches paper is a bug the mark would hide rather than something to print.
+ */
+export const PlaceholderNodes = createContext<{
+  ids: ReadonlySet<string>
+  label: string
+} | null>(null)
+
+/** The dashed frame and tag a marked row wears, matching a marked block's. */
+function Marked({ label, children }: { label: string; children: ReactNode }): ReactNode {
+  return (
+    <div style={{ position: 'relative', outline: '1px dashed #c9a227', outlineOffset: 2 }}>
+      {children}
+      <span
+        style={{
+          position: 'absolute',
+          top: -8,
+          right: -2,
+          background: '#fdf6e3',
+          border: '1px solid #e6d8a8',
+          color: '#8a6d1f',
+          fontFamily: "'IBM Plex Sans', sans-serif",
+          fontSize: 9,
+          fontWeight: 600,
+          padding: '1px 5px',
+          borderRadius: 3,
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+        }}
+      >
+        {label}
+      </span>
+    </div>
+  )
+}
+
+/**
  * Draw one node. Anchored nodes are handled by the page, which lifts them out
  * of the flow before they get here, so this only ever lays out in flow.
  */
 export function RenderNode({ node }: { node: Node }): ReactNode {
+  const placeholders = useContext(PlaceholderNodes)
+  const drawn = <NodeBody node={node} />
+  if (!node.id || !placeholders?.ids.has(node.id)) return drawn
+  return <Marked label={placeholders.label}>{drawn}</Marked>
+}
+
+function NodeBody({ node }: { node: Node }): ReactNode {
   const id = node.id ? { 'data-node-id': node.id } : {}
 
   switch (node.kind) {

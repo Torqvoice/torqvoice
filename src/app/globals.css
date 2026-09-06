@@ -328,6 +328,16 @@
   }
 }
 
+/* Dialogs lock body scroll through react-remove-scroll, which then pushes
+   the body in by one scrollbar width to stop the page jumping when the bar
+   goes. The gutter above already keeps that space, so the push is the jump:
+   the whole page slid left every time the search or plate lookup opened.
+   Outranks the library's injected !important rule by specificity. */
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
 /* Keyboard-focusable rows (see src/lib/interactive-row.ts). Inset outline so
    the ring survives overflow-hidden card and table corners. */
 [data-row-interactive] {

@@ -34,7 +34,8 @@
     "delete": "Sil",
     "unpaid": "Ödenmedi",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",
-    "saved": "Kaydedildi"
+    "saved": "Kaydedildi",
+    "joinCall": "Görüntülü görüşmeye katıl"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
@@ -78,7 +79,17 @@
       "typePrompt": "Adını yazın...",
       "boardTechnicians": "Pano Teknisyenleri",
       "teamMembers": "Takım Üyeleri"
-    }
+    },
+    "design": "Fatura tasarımı",
+    "designDefault": "Atölye varsayılanı",
+    "designFollowing": "Varsayılan ({name})",
+    "designPinned": "Sayfa, fatura {date} tarihinde düzenlendiğinde donduruldu. Yeni seçim yalnızca bir sahip faturanın kilidini açıp yeniden gönderildikten sonra uygulanır.",
+    "designSaved": "Fatura tasarımı güncellendi",
+    "designFollowingRule": "Varsayılan ({name}, {rule})",
+    "designRule": {
+      "parts_sale": "Yalnızca parça satışı"
+    },
+    "designSaveFailed": "Fatura tasarımı değiştirilemedi"
   },
   "parts": {
     "title": "Parçalar",
@@ -349,6 +360,7 @@
     "workBay": "Çalışma alanı",
     "selectWorkBay": "Çalışma alanı seçin…",
     "noWorkBay": "Çalışma alanı yok",
+    "noTechnician": "Teknisyensiz",
     "technicians": "Teknisyenler",
     "otherTeamMembers": "Diğer ekip üyeleri",
     "makeTechnician": "Onu teknisyen yapar",
@@ -410,5 +422,50 @@
     "remove": "Bu maddeyi kaldır",
     "notAnswered": "Bu konuda henüz bir şey bulunmadı",
     "answered": "Bu konuda {count} tespit"
+  },
+  "videoCall": {
+    "title": "Görüntülü görüşme",
+    "none": "Bu iş emrinde görüntülü görüşme yok.",
+    "needsSchedule": "Önce bir başlangıç saati belirleyin. Toplantı programı izler.",
+    "add": "{provider} toplantısı ekle",
+    "addedHere": "bu iş emrinden eklendi",
+    "fromCalendar": "takvim etkinliğinden",
+    "join": "Katıl",
+    "copy": "Bağlantıyı kopyala",
+    "copied": "Bağlantı kopyalandı",
+    "remove": "Kaldır",
+    "removeTitle": "Görüntülü görüşme kaldırılsın mı?",
+    "removeDescription": "Toplantı sağlayıcıda silinir. Bağlantıya sahip olanlar artık katılamaz.",
+    "created": "Toplantı oluşturuldu. Bağlantı iş emrinde.",
+    "removed": "Toplantı kaldırıldı",
+    "failed": "Bir şeyler ters gitti",
+    "shareHint": "Müşteri bu bağlantıyı yalnızca siz gönderdiğinizde alır.",
+    "shareHintNoChannel": "Müşteri bu bağlantıyı yalnızca siz gönderdiğinizde alır. Hiçbir mesaj kanalı ayarlı değil; bağlantıyı bir mesaja kendiniz kopyalayın.",
+    "send": {
+      "button": "Müşteriye gönder",
+      "title": "Görüntülü görüşme bağlantısını gönder",
+      "description": "Katılım bağlantısını {name} adlı müşteriye gönder.",
+      "messageLabel": "Not (isteğe bağlı)",
+      "messagePlaceholder": "Müşterinin görüşmeden önce bilmesi gerekenler...",
+      "linkAlwaysIncluded": "Katılım bağlantısı her zaman notunuzun altına eklenir.",
+      "sms": "SMS",
+      "email": "E-posta",
+      "telegram": "Telegram",
+      "noPhone": "(telefon yok)",
+      "noEmail": "(e-posta yok)",
+      "noTelegram": "(bağlı sohbet yok)",
+      "notAvailable": "(ayarlı değil)",
+      "cancel": "İptal",
+      "send": "Gönder",
+      "sent": "Görüntülü görüşme bağlantısı gönderildi",
+      "partlySent": "{sent} ile gönderildi; {failed} ile gönderilemedi",
+      "failed": "Bağlantı gönderilemedi"
+    },
+    "notify": {
+      "invitation": "Merhaba {name}, {vehicle} ile ilgili görüntülü görüşmeniz {when} tarihinde. Buradan katılın: {url}",
+      "invitationNoTime": "Merhaba {name}, {vehicle} ile ilgili görüntülü görüşmenin bağlantısı: {url}",
+      "joinLine": "Görüntülü görüşmeye buradan katılın: {url}",
+      "emailSubject": "{vehicle} aracınızla ilgili görüntülü görüşme"
+    }
   }
 }
