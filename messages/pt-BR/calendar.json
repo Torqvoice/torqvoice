@@ -30,8 +30,49 @@
   },
   "today": "Hoje",
   "workOrder": "Ordem de serviço",
+  "allDay": "Dia inteiro",
+  "openDay": "Abrir {date}",
+  "dayTotal": "{count, plural, =1 {1 evento} other {# eventos}}",
+  "views": {
+    "day": "Dia",
+    "week": "Semana",
+    "month": "Mês",
+    "year": "Ano",
+    "schedule": "Agenda",
+    "fourDays": "4 dias"
+  },
+  "options": {
+    "showWeekends": "Mostrar fins de semana",
+    "showCompleted": "Mostrar concluídos",
+    "showWeekNumbers": "Mostrar números das semanas"
+  },
+  "toolbar": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "create": "Criar",
+    "showSidebar": "Mostrar painel lateral",
+    "hideSidebar": "Ocultar painel lateral"
+  },
+  "sidebar": {
+    "calendars": "Calendários",
+    "legend": "Cores de status"
+  },
+  "schedule": {
+    "empty": "Nada agendado",
+    "emptyHint": "Nenhuma ordem de serviço, lembrete, orçamento ou mensagem neste período."
+  },
+  "peek": {
+    "close": "Fechar",
+    "open": {
+      "service": "Abrir ordem de serviço",
+      "reminder": "Abrir lembrete",
+      "quote": "Abrir orçamento",
+      "message": "Abrir mensagens",
+      "external": "Abrir"
+    }
+  },
   "filters": {
-    "services": "Serviços",
+    "services": "Ordens de serviço",
     "reminders": "Lembretes",
     "quotes": "Orçamentos",
     "messages": "Mensagens",
@@ -45,9 +86,10 @@
     "useToday": "Use today"
   },
   "more": "+ {count} mais",
-  "monthTotal": "{count} eventos neste mês",
+  "monthTotal": "{count} eventos",
   "contextMenu": {
     "newWorkOrder": "Nova ordem de serviço",
+    "newWorkOrderAt": "Nova ordem de serviço às {time}",
     "newReminder": "Novo lembrete",
     "newQuote": "Novo orçamento",
     "openEvent": "Abrir ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "Em andamento",
       "waitingParts": "Aguardando peças",
       "pending": "Pendente",
+      "scheduled": "Agendado",
       "sent": "Enviado",
       "approved": "Aprovado",
       "draft": "Rascunho",
@@ -71,10 +114,11 @@
       "busy": "Ocupado"
     },
     "type": {
-      "service": "Serviço",
+      "service": "Ordem de serviço",
       "reminder": "Lembrete",
       "quote": "Orçamento",
-      "message": "Mensagem"
+      "message": "Mensagem",
+      "external": "Calendário conectado"
     },
     "noEvents": "Sem eventos",
     "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço.",

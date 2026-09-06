@@ -30,8 +30,49 @@
   },
   "today": "Oggi",
   "workOrder": "Ordine di lavoro",
+  "allDay": "Tutto il giorno",
+  "openDay": "Apri {date}",
+  "dayTotal": "{count, plural, =1 {1 evento} other {# eventi}}",
+  "views": {
+    "day": "Giorno",
+    "week": "Settimana",
+    "month": "Mese",
+    "year": "Anno",
+    "schedule": "Agenda",
+    "fourDays": "4 giorni"
+  },
+  "options": {
+    "showWeekends": "Mostra weekend",
+    "showCompleted": "Mostra completati",
+    "showWeekNumbers": "Mostra numeri delle settimane"
+  },
+  "toolbar": {
+    "previous": "Precedente",
+    "next": "Successivo",
+    "create": "Crea",
+    "showSidebar": "Mostra pannello laterale",
+    "hideSidebar": "Nascondi pannello laterale"
+  },
+  "sidebar": {
+    "calendars": "Calendari",
+    "legend": "Colori di stato"
+  },
+  "schedule": {
+    "empty": "Nulla in programma",
+    "emptyHint": "Nessun ordine di lavoro, promemoria, preventivo o messaggio in questo periodo."
+  },
+  "peek": {
+    "close": "Chiudi",
+    "open": {
+      "service": "Apri ordine di lavoro",
+      "reminder": "Apri promemoria",
+      "quote": "Apri preventivo",
+      "message": "Apri messaggi",
+      "external": "Apri"
+    }
+  },
   "filters": {
-    "services": "Servizi",
+    "services": "Ordini di lavoro",
     "reminders": "Promemoria",
     "quotes": "Preventivi",
     "messages": "Messaggi",
@@ -45,9 +86,10 @@
     "useToday": "Use today"
   },
   "more": "+ {count} altri",
-  "monthTotal": "{count} eventi questo mese",
+  "monthTotal": "{count} eventi",
   "contextMenu": {
     "newWorkOrder": "Nuovo ordine di lavoro",
+    "newWorkOrderAt": "Nuovo ordine di lavoro alle {time}",
     "newReminder": "Nuovo promemoria",
     "newQuote": "Nuovo preventivo",
     "openEvent": "Apri ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "In corso",
       "waitingParts": "In attesa di ricambi",
       "pending": "In attesa",
+      "scheduled": "Pianificato",
       "sent": "Inviato",
       "approved": "Approvato",
       "draft": "Bozza",
@@ -71,10 +114,11 @@
       "busy": "Occupato"
     },
     "type": {
-      "service": "Servizio",
+      "service": "Ordine di lavoro",
       "reminder": "Promemoria",
       "quote": "Preventivo",
-      "message": "Messaggio"
+      "message": "Messaggio",
+      "external": "Calendario collegato"
     },
     "noEvents": "Nessun evento",
     "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro.",

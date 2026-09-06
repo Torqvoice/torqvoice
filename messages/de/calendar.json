@@ -30,8 +30,49 @@
   },
   "today": "Heute",
   "workOrder": "Arbeitsauftrag",
+  "allDay": "Ganztägig",
+  "openDay": "{date} öffnen",
+  "dayTotal": "{count, plural, =1 {1 Termin} other {# Termine}}",
+  "views": {
+    "day": "Tag",
+    "week": "Woche",
+    "month": "Monat",
+    "year": "Jahr",
+    "schedule": "Terminübersicht",
+    "fourDays": "4 Tage"
+  },
+  "options": {
+    "showWeekends": "Wochenenden anzeigen",
+    "showCompleted": "Abgeschlossene anzeigen",
+    "showWeekNumbers": "Kalenderwochen anzeigen"
+  },
+  "toolbar": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "create": "Erstellen",
+    "showSidebar": "Seitenleiste anzeigen",
+    "hideSidebar": "Seitenleiste ausblenden"
+  },
+  "sidebar": {
+    "calendars": "Kalender",
+    "legend": "Statusfarben"
+  },
+  "schedule": {
+    "empty": "Nichts geplant",
+    "emptyHint": "Keine Arbeitsaufträge, Erinnerungen, Angebote oder Nachrichten in diesem Zeitraum."
+  },
+  "peek": {
+    "close": "Schließen",
+    "open": {
+      "service": "Arbeitsauftrag öffnen",
+      "reminder": "Erinnerung öffnen",
+      "quote": "Angebot öffnen",
+      "message": "Nachrichten öffnen",
+      "external": "Öffnen"
+    }
+  },
   "filters": {
-    "services": "Aufträge",
+    "services": "Arbeitsaufträge",
     "reminders": "Erinnerungen",
     "quotes": "Angebote",
     "messages": "Nachrichten",
@@ -45,9 +86,10 @@
     "useToday": "Use today"
   },
   "more": "+ {count} weitere",
-  "monthTotal": "{count} Termine in diesem Monat",
+  "monthTotal": "{count} Termine",
   "contextMenu": {
     "newWorkOrder": "Neuer Arbeitsauftrag",
+    "newWorkOrderAt": "Neuer Arbeitsauftrag um {time}",
     "newReminder": "Neue Erinnerung",
     "newQuote": "Neues Angebot",
     "openEvent": "Öffnen ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "In Bearbeitung",
       "waitingParts": "Warte auf Teile",
       "pending": "Ausstehend",
+      "scheduled": "Geplant",
       "sent": "Gesendet",
       "approved": "Genehmigt",
       "draft": "Entwurf",
@@ -71,10 +114,11 @@
       "busy": "Belegt"
     },
     "type": {
-      "service": "Service",
+      "service": "Arbeitsauftrag",
       "reminder": "Erinnerung",
       "quote": "Angebot",
-      "message": "Nachricht"
+      "message": "Nachricht",
+      "external": "Verbundener Kalender"
     },
     "noEvents": "Keine Ereignisse",
     "selectDay": "Wählen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag.",

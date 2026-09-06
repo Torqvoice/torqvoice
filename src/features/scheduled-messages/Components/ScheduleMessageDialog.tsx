@@ -60,6 +60,8 @@ interface ScheduleMessageDialogProps {
   message?: ScheduleMessageValues
   /** YYYY-MM-DD the message goes out on, e.g. the calendar day that was right-clicked */
   defaultDate?: string
+  /** HH:MM it goes out at, when the calendar was clicked on a time slot */
+  defaultTime?: string
   defaultCustomer?: { id: string; name: string; company: string | null } | null
   /** Pre-filled text, e.g. a draft handed over from the compose dialog */
   defaultBody?: string
@@ -83,6 +85,7 @@ export function ScheduleMessageDialog({
   availableChannels,
   message,
   defaultDate,
+  defaultTime,
   defaultCustomer = null,
   defaultBody,
   onSaved,
@@ -127,11 +130,11 @@ export function ScheduleMessageDialog({
       setSubject('')
       setBody(defaultBody ?? '')
       setDate(defaultDate ?? toLocalDateStr(new Date()))
-      setTime('09:00')
+      setTime(defaultTime ?? '09:00')
       setFrequency('once')
       setEndDate('')
     }
-  }, [open, message, defaultDate, defaultBody, defaultCustomer?.id, availableChannels])
+  }, [open, message, defaultDate, defaultTime, defaultBody, defaultCustomer?.id, availableChannels])
 
   // A scheduled message fires later, when the customer's 24 hour window has
   // almost certainly closed, so it goes as a template or not at all.

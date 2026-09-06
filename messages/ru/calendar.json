@@ -30,8 +30,49 @@
   },
   "today": "Сегодня",
   "workOrder": "Заказ-наряд",
+  "allDay": "Весь день",
+  "openDay": "Открыть {date}",
+  "dayTotal": "{count, plural, =1 {1 событие} one {# событие} few {# события} many {# событий} other {# события}}",
+  "views": {
+    "day": "День",
+    "week": "Неделя",
+    "month": "Месяц",
+    "year": "Год",
+    "schedule": "Расписание",
+    "fourDays": "4 дня"
+  },
+  "options": {
+    "showWeekends": "Показывать выходные",
+    "showCompleted": "Показывать завершённые",
+    "showWeekNumbers": "Показывать номера недель"
+  },
+  "toolbar": {
+    "previous": "Назад",
+    "next": "Вперёд",
+    "create": "Создать",
+    "showSidebar": "Показать боковую панель",
+    "hideSidebar": "Скрыть боковую панель"
+  },
+  "sidebar": {
+    "calendars": "Календари",
+    "legend": "Цвета статусов"
+  },
+  "schedule": {
+    "empty": "Ничего не запланировано",
+    "emptyHint": "В этом периоде нет заказ-нарядов, напоминаний, смет и сообщений."
+  },
+  "peek": {
+    "close": "Закрыть",
+    "open": {
+      "service": "Открыть заказ-наряд",
+      "reminder": "Открыть напоминание",
+      "quote": "Открыть смету",
+      "message": "Открыть сообщения",
+      "external": "Открыть"
+    }
+  },
   "filters": {
-    "services": "Обслуживания",
+    "services": "Заказ-наряды",
     "reminders": "Напоминания",
     "quotes": "Предложения",
     "messages": "Сообщения",
@@ -45,9 +86,10 @@
     "useToday": "Сегодня"
   },
   "more": "+ ещё {count}",
-  "monthTotal": "{count} событий в этом месяце",
+  "monthTotal": "Событий: {count}",
   "contextMenu": {
     "newWorkOrder": "Новый заказ-наряд",
+    "newWorkOrderAt": "Новый заказ-наряд в {time}",
     "newReminder": "Новое напоминание",
     "newQuote": "Новое предложение",
     "openEvent": "Открыть ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "В работе",
       "waitingParts": "Ожидание запчастей",
       "pending": "Ожидает",
+      "scheduled": "Запланировано",
       "sent": "Отправлено",
       "approved": "Одобрено",
       "draft": "Черновик",
@@ -71,10 +114,11 @@
       "busy": "Занято"
     },
     "type": {
-      "service": "Обслуживание",
+      "service": "Заказ-наряд",
       "reminder": "Напоминание",
       "quote": "Предложение",
-      "message": "Сообщение"
+      "message": "Сообщение",
+      "external": "Подключённый календарь"
     },
     "noEvents": "Нет событий",
     "selectDay": "Выберите день с событиями или создайте новый заказ-наряд.",

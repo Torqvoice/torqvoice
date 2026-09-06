@@ -30,8 +30,49 @@
   },
   "today": "Today",
   "workOrder": "Work Order",
+  "allDay": "All day",
+  "openDay": "Open {date}",
+  "dayTotal": "{count, plural, =1 {1 event} other {# events}}",
+  "views": {
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "schedule": "Schedule",
+    "fourDays": "4 days"
+  },
+  "options": {
+    "showWeekends": "Show weekends",
+    "showCompleted": "Show completed",
+    "showWeekNumbers": "Show week numbers"
+  },
+  "toolbar": {
+    "previous": "Previous",
+    "next": "Next",
+    "create": "Create",
+    "showSidebar": "Show side panel",
+    "hideSidebar": "Hide side panel"
+  },
+  "sidebar": {
+    "calendars": "Calendars",
+    "legend": "Status colours"
+  },
+  "schedule": {
+    "empty": "Nothing scheduled",
+    "emptyHint": "No work orders, reminders, quotes or messages in this period."
+  },
+  "peek": {
+    "close": "Close",
+    "open": {
+      "service": "Open work order",
+      "reminder": "Open reminder",
+      "quote": "Open quote",
+      "message": "Open messages",
+      "external": "Open"
+    }
+  },
   "filters": {
-    "services": "Services",
+    "services": "Work orders",
     "reminders": "Reminders",
     "quotes": "Quotes",
     "messages": "Messages",
@@ -45,9 +86,10 @@
     "useToday": "Use today"
   },
   "more": "+ {count} more",
-  "monthTotal": "{count} events this month",
+  "monthTotal": "{count} events",
   "contextMenu": {
     "newWorkOrder": "New work order",
+    "newWorkOrderAt": "New work order at {time}",
     "newReminder": "New reminder",
     "newQuote": "New quote",
     "openEvent": "Open ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "In Progress",
       "waitingParts": "Waiting Parts",
       "pending": "Pending",
+      "scheduled": "Scheduled",
       "sent": "Sent",
       "approved": "Approved",
       "draft": "Draft",
@@ -71,10 +114,11 @@
       "busy": "Busy"
     },
     "type": {
-      "service": "Service",
+      "service": "Work order",
       "reminder": "Reminder",
       "quote": "Quote",
-      "message": "Message"
+      "message": "Message",
+      "external": "Connected calendar"
     },
     "noEvents": "No events",
     "selectDay": "Select a day with events or create a new work order.",

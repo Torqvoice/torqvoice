@@ -30,8 +30,49 @@
   },
   "today": "Bugün",
   "workOrder": "İş emri",
+  "allDay": "Tüm gün",
+  "openDay": "{date} tarihini aç",
+  "dayTotal": "{count, plural, =1 {1 etkinlik} other {# etkinlik}}",
+  "views": {
+    "day": "Gün",
+    "week": "Hafta",
+    "month": "Ay",
+    "year": "Yıl",
+    "schedule": "Program",
+    "fourDays": "4 gün"
+  },
+  "options": {
+    "showWeekends": "Hafta sonlarını göster",
+    "showCompleted": "Tamamlananları göster",
+    "showWeekNumbers": "Hafta numaralarını göster"
+  },
+  "toolbar": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "create": "Oluştur",
+    "showSidebar": "Yan paneli göster",
+    "hideSidebar": "Yan paneli gizle"
+  },
+  "sidebar": {
+    "calendars": "Takvimler",
+    "legend": "Durum renkleri"
+  },
+  "schedule": {
+    "empty": "Planlanmış bir şey yok",
+    "emptyHint": "Bu dönemde iş emri, hatırlatıcı, teklif veya mesaj yok."
+  },
+  "peek": {
+    "close": "Kapat",
+    "open": {
+      "service": "İş emrini aç",
+      "reminder": "Hatırlatıcıyı aç",
+      "quote": "Teklifi aç",
+      "message": "Mesajları aç",
+      "external": "Aç"
+    }
+  },
   "filters": {
-    "services": "Servisler",
+    "services": "İş emirleri",
     "reminders": "Hatırlatıcılar",
     "quotes": "Teklifler",
     "messages": "Mesajlar",
@@ -45,9 +86,10 @@
     "useToday": "Use today"
   },
   "more": "+ {count} daha",
-  "monthTotal": "bu ay {count} kayıt",
+  "monthTotal": "{count} etkinlik",
   "contextMenu": {
     "newWorkOrder": "Yeni iş emri",
+    "newWorkOrderAt": "{time} için yeni iş emri",
     "newReminder": "Yeni hatırlatıcı",
     "newQuote": "Yeni teklif",
     "openEvent": "Aç ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "Devam ediyor",
       "waitingParts": "Parça bekleniyor",
       "pending": "Beklemede",
+      "scheduled": "Planlandı",
       "sent": "Gönderildi",
       "approved": "Onaylandı",
       "draft": "Taslak",
@@ -71,10 +114,11 @@
       "busy": "Meşgul"
     },
     "type": {
-      "service": "Servis",
+      "service": "İş emri",
       "reminder": "Hatırlatıcı",
       "quote": "Teklif",
-      "message": "Mesaj"
+      "message": "Mesaj",
+      "external": "Bağlı takvim"
     },
     "noEvents": "Etkinlik yok",
     "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun.",

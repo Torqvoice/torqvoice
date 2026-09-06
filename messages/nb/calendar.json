@@ -30,8 +30,49 @@
   },
   "today": "I dag",
   "workOrder": "Arbeidsordre",
+  "allDay": "Hele dagen",
+  "openDay": "Åpne {date}",
+  "dayTotal": "{count, plural, =1 {1 hendelse} other {# hendelser}}",
+  "views": {
+    "day": "Dag",
+    "week": "Uke",
+    "month": "Måned",
+    "year": "År",
+    "schedule": "Tidsplan",
+    "fourDays": "4 dager"
+  },
+  "options": {
+    "showWeekends": "Vis helger",
+    "showCompleted": "Vis fullførte",
+    "showWeekNumbers": "Vis ukenummer"
+  },
+  "toolbar": {
+    "previous": "Forrige",
+    "next": "Neste",
+    "create": "Opprett",
+    "showSidebar": "Vis sidepanel",
+    "hideSidebar": "Skjul sidepanel"
+  },
+  "sidebar": {
+    "calendars": "Kalendere",
+    "legend": "Statusfarger"
+  },
+  "schedule": {
+    "empty": "Ingenting planlagt",
+    "emptyHint": "Ingen arbeidsordrer, påminnelser, tilbud eller meldinger i denne perioden."
+  },
+  "peek": {
+    "close": "Lukk",
+    "open": {
+      "service": "Åpne arbeidsordre",
+      "reminder": "Åpne påminnelse",
+      "quote": "Åpne tilbud",
+      "message": "Åpne meldinger",
+      "external": "Åpne"
+    }
+  },
   "filters": {
-    "services": "Tjenester",
+    "services": "Arbeidsordrer",
     "reminders": "Påminnelser",
     "quotes": "Tilbud",
     "messages": "Meldinger",
@@ -45,9 +86,10 @@
     "useToday": "Use today"
   },
   "more": "+ {count} flere",
-  "monthTotal": "{count} hendelser denne måneden",
+  "monthTotal": "{count} hendelser",
   "contextMenu": {
     "newWorkOrder": "Ny arbeidsordre",
+    "newWorkOrderAt": "Ny arbeidsordre kl. {time}",
     "newReminder": "Ny påminnelse",
     "newQuote": "Nytt tilbud",
     "openEvent": "Åpne ({count})",
@@ -60,6 +102,7 @@
       "inProgress": "Pågår",
       "waitingParts": "Venter på deler",
       "pending": "Ventende",
+      "scheduled": "Planlagt",
       "sent": "Sendt",
       "approved": "Godkjent",
       "draft": "Utkast",
@@ -71,10 +114,11 @@
       "busy": "Opptatt"
     },
     "type": {
-      "service": "Tjeneste",
+      "service": "Arbeidsordre",
       "reminder": "Påminnelse",
       "quote": "Tilbud",
-      "message": "Melding"
+      "message": "Melding",
+      "external": "Tilkoblet kalender"
     },
     "noEvents": "Ingen hendelser",
     "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre.",
