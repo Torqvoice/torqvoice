@@ -147,7 +147,8 @@
       "off": "Turn the setting on and save; until then a pass checks nothing.",
       "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done."
     },
-    "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live."
+    "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live.",
+    "batchRetried": "{count, plural, =0 {Nothing to retry} one {# job queued again} other {# jobs queued again}}"
   },
   "activity": {
     "title": "Activity",
@@ -159,7 +160,18 @@
       "done": "Done",
       "failed": "Failed",
       "dead": "Gave up"
-    }
+    },
+    "jobs": "{count, plural, one {# job} other {# jobs}}",
+    "counts": {
+      "queued": "{count} queued",
+      "running": "{count} running",
+      "done": "{count} done",
+      "failed": "{count} failed",
+      "dead": "{count} gave up"
+    },
+    "noFailures": "Nothing failed.",
+    "retryFailed": "Retry failed jobs",
+    "details": "Show details"
   },
   "errors": {
     "generic": "Something went wrong",

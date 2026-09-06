@@ -147,7 +147,8 @@
       "off": "Activa el ajuste y guarda; hasta entonces una pasada no comprueba nada.",
       "syncNowHelp": "Sincronizar ahora inicia una pasada de inmediato en vez de esperar a la horaria. Consulta 25 vehículos cada vez y continúa sola hasta terminar con todos los pendientes."
     },
-    "supersedes": "Conectar {next} desconecta {current}. Solo uno puede estar activo a la vez, así que {current} deja de usarse en cuanto {next} entra en servicio."
+    "supersedes": "Conectar {next} desconecta {current}. Solo uno puede estar activo a la vez, así que {current} deja de usarse en cuanto {next} entra en servicio.",
+    "batchRetried": "{count, plural, =0 {Nada que reintentar} one {# tarea vuelta a la cola} other {# tareas vueltas a la cola}}"
   },
   "activity": {
     "title": "Actividad",
@@ -159,7 +160,18 @@
       "done": "Hecho",
       "failed": "Fallido",
       "dead": "Abandonado"
-    }
+    },
+    "jobs": "{count, plural, one {# tarea} other {# tareas}}",
+    "counts": {
+      "queued": "{count} en cola",
+      "running": "{count} en curso",
+      "done": "{count} hechas",
+      "failed": "{count} fallidas",
+      "dead": "{count} abandonadas"
+    },
+    "noFailures": "Nada ha fallado.",
+    "retryFailed": "Reintentar las fallidas",
+    "details": "Ver detalles"
   },
   "errors": {
     "generic": "Algo salió mal",

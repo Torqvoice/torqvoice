@@ -77,7 +77,16 @@
       "message": "Žinutė"
     },
     "noEvents": "Įvykių nėra",
-    "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą."
+    "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą.",
+    "external": {
+      "source": "Iš {source}",
+      "sourceUnknown": "Iš prijungto kalendoriaus",
+      "allDay": "Visą dieną",
+      "open": "Atidaryti „{source}“",
+      "openGeneric": "Atidaryti kalendoriuje",
+      "noLink": "Šis kalendorius nepateikia nuorodos į įvykį.",
+      "readOnly": "Užimtas laikas iš prijungto kalendoriaus. Keiskite jį ten, čia atsinaujins per kitą sinchronizaciją."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

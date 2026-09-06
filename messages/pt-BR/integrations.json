@@ -147,7 +147,8 @@
       "off": "Ative a opção e salve; até lá uma passagem não verifica nada.",
       "syncNowHelp": "Sincronizar agora inicia uma passagem imediatamente em vez de esperar a de hora em hora. Consulta 25 veículos por vez e continua sozinha até terminar todos os veículos pendentes."
     },
-    "supersedes": "Conectar a {next} desconecta a {current}. Só uma pode estar ativa por vez, então {current} deixa de ser usada assim que {next} entrar no ar."
+    "supersedes": "Conectar a {next} desconecta a {current}. Só uma pode estar ativa por vez, então {current} deixa de ser usada assim que {next} entrar no ar.",
+    "batchRetried": "{count, plural, =0 {Nada para tentar de novo} one {# tarefa de volta à fila} other {# tarefas de volta à fila}}"
   },
   "activity": {
     "title": "Atividade",
@@ -159,7 +160,18 @@
       "done": "Concluída",
       "failed": "Falhou",
       "dead": "Desistiu"
-    }
+    },
+    "jobs": "{count, plural, one {# tarefa} other {# tarefas}}",
+    "counts": {
+      "queued": "{count} na fila",
+      "running": "{count} em andamento",
+      "done": "{count} concluídas",
+      "failed": "{count} com falha",
+      "dead": "{count} desistidas"
+    },
+    "noFailures": "Nada falhou.",
+    "retryFailed": "Tentar as com falha de novo",
+    "details": "Mostrar detalhes"
   },
   "errors": {
     "generic": "Algo deu errado",

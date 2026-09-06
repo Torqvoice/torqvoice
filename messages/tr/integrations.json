@@ -147,7 +147,8 @@
       "off": "Ayarı açıp kaydedin; o zamana kadar tarama hiçbir şeyi kontrol etmez.",
       "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
     },
-    "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır."
+    "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
+    "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}"
   },
   "activity": {
     "title": "Aktivite",
@@ -159,7 +160,18 @@
       "done": "Tamamlandı",
       "failed": "Başarısız",
       "dead": "Vazgeçildi"
-    }
+    },
+    "jobs": "{count, plural, one {# iş} other {# iş}}",
+    "counts": {
+      "queued": "{count} kuyrukta",
+      "running": "{count} çalışıyor",
+      "done": "{count} tamamlandı",
+      "failed": "{count} başarısız",
+      "dead": "{count} vazgeçildi"
+    },
+    "noFailures": "Hiçbiri başarısız olmadı.",
+    "retryFailed": "Başarısızları yeniden dene",
+    "details": "Ayrıntıları göster"
   },
   "errors": {
     "generic": "Bir şeyler ters gitti",

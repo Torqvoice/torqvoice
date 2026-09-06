@@ -147,7 +147,8 @@
       "off": "Įjunkite nustatymą ir išsaugokite; iki tol perėjimas nieko netikrina.",
       "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
     },
-    "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti."
+    "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
+    "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}"
   },
   "activity": {
     "title": "Veikla",
@@ -159,7 +160,18 @@
       "done": "Atlikta",
       "failed": "Nepavyko",
       "dead": "Nutraukta"
-    }
+    },
+    "jobs": "{count, plural, one {# užduotis} few {# užduotys} many {# užduoties} other {# užduočių}}",
+    "counts": {
+      "queued": "{count} eilėje",
+      "running": "{count} vykdoma",
+      "done": "{count} atlikta",
+      "failed": "{count} nepavyko",
+      "dead": "{count} atsisakyta"
+    },
+    "noFailures": "Niekas nenutrūko.",
+    "retryFailed": "Kartoti nepavykusias",
+    "details": "Rodyti detales"
   },
   "errors": {
     "generic": "Kažkas nepavyko",

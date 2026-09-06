@@ -22,6 +22,7 @@ interface GoogleEvent {
   start?: { dateTime?: string; date?: string }
   end?: { dateTime?: string; date?: string }
   updated?: string
+  htmlLink?: string
   hangoutLink?: string
   extendedProperties?: { private?: Record<string, string> }
 }
@@ -141,6 +142,7 @@ function toPulled(e: GoogleEvent): PulledEvent | null {
     end: new Date(end),
     allDay,
     updatedAt: e.updated ? new Date(e.updated) : null,
+    url: e.htmlLink ?? null,
   }
 }
 
@@ -160,7 +162,7 @@ async function pullBusy(ctx: ConnectorContext) {
     url.searchParams.set('maxResults', '250')
     url.searchParams.set(
       'fields',
-      'nextPageToken,items(id,status,summary,start,end,updated,extendedProperties)'
+      'nextPageToken,items(id,status,summary,start,end,updated,htmlLink,extendedProperties)'
     )
     if (pageToken) url.searchParams.set('pageToken', pageToken)
     const page = await ctx.http.json<{ items?: GoogleEvent[]; nextPageToken?: string }>(

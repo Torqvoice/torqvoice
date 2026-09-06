@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Check,
+  ChevronDown,
   Copy,
   Loader2,
   Mail,
@@ -44,6 +45,7 @@ import {
   type ConnectionView,
   disconnectIntegration,
   getIntegrationRemoteOptions,
+  retryIntegrationBatch,
   retryIntegrationJob,
   runIntegrationJob,
   saveIntegrationCredentials,
@@ -52,22 +54,15 @@ import {
   updateIntegrationSettings,
 } from '@/features/integrations/Actions/integrationActions'
 import type {
+  ActivityItem,
+  ActivityJob,
   CredentialField,
   SettingField,
   SettingOption,
 } from '@/features/integrations/Lib/types'
 
 type Activity = {
-  jobs: {
-    id: string
-    kind: string
-    status: string
-    attempts: number
-    error: string | null
-    runAfter: string
-    finishedAt: string | null
-    createdAt: string
-  }[]
+  items: ActivityItem[]
   logs: { id: string; level: string; message: string; createdAt: string; details?: unknown }[]
 }
 
@@ -96,6 +91,19 @@ export function ConnectionSettings({
     if (error) toast.error(t.has(`errors.${error}`) ? t(`errors.${error}`) : t('errors.vendor'))
     if (error || connected) router.replace(`/settings/integrations/${manifest.id}`)
   }, [search, router, t, manifest])
+
+  // A backfill runs fifty jobs a minute in the background; while any are
+  // still pending the counts on the activity card follow along.
+  const pending = activity.items.some((i) =>
+    i.type === 'batch'
+      ? i.counts.queued + i.counts.running > 0
+      : i.status === 'queued' || i.status === 'running'
+  )
+  useEffect(() => {
+    if (!pending) return
+    const id = setInterval(() => router.refresh(), 10_000)
+    return () => clearInterval(id)
+  }, [pending, router])
 
   const isOAuth = manifest.auth.type === 'oauth2'
   // A connected service with a required setting still empty is not working,
@@ -581,11 +589,21 @@ export function ConnectionSettings({
         />
       )}
 
-      {connection && (activity.jobs.length > 0 || activity.logs.length > 0) && (
+      {connection && (activity.items.length > 0 || activity.logs.length > 0) && (
         <ActivityCard
           activity={activity}
           onRetry={(id) =>
             run(`retry:${id}`, () => retryIntegrationJob(id), t('connection.retryQueued'))
+          }
+          onRetryBatch={(batchId) =>
+            run(
+              `retry-batch:${batchId}`,
+              () => retryIntegrationBatch(manifest.id, batchId),
+              (data) =>
+                t('connection.batchRetried', {
+                  count: (data as { retried?: number } | undefined)?.retried ?? 0,
+                })
+            )
           }
           busy={busy}
         />
@@ -963,57 +981,33 @@ function describeDetails(details: Record<string, unknown>): string {
 function ActivityCard({
   activity,
   onRetry,
+  onRetryBatch,
   busy,
 }: {
   activity: Activity
   onRetry: (jobId: string) => void
+  onRetryBatch: (batchId: string) => void
   busy: string | null
 }) {
   const t = useTranslations('integrations.activity')
-  // Job kinds are shared by every connector, so their labels live at the
-  // namespace root rather than under the activity card.
-  const tk = useTranslations('integrations')
-  const format = useFormatter()
-  const when = (iso: string) =>
-    format.dateTime(new Date(iso), { dateStyle: 'short', timeStyle: 'short' })
+  const when = useWhen()
   return (
     <AppCard title={t('title')} description={t('description')}>
-      {activity.jobs.length > 0 && (
+      {activity.items.length > 0 && (
         <div className="mb-4 divide-y rounded-lg border">
-          {activity.jobs.map((j) => (
-            <div
-              key={j.id}
-              className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm"
-            >
-              <div className="min-w-0">
-                <span className="font-medium">
-                  {tk.has(`jobKinds.${j.kind}`) ? tk(`jobKinds.${j.kind}`) : j.kind}
-                </span>
-                <span className="ml-2 text-xs text-muted-foreground">{when(j.createdAt)}</span>
-                {j.error && <p className="truncate text-xs text-destructive">{j.error}</p>}
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={`text-[11px] ${j.status === 'dead' || j.status === 'failed' ? 'border-destructive/30 text-destructive' : j.status === 'done' ? 'border-emerald-500/30 text-emerald-600' : ''}`}
-                >
-                  {t(`jobStatus.${j.status}`)}
-                </Badge>
-                {(j.status === 'dead' || j.status === 'failed') && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-xs"
-                    onClick={() => onRetry(j.id)}
-                    disabled={busy !== null}
-                  >
-                    <Play className="mr-1 h-3 w-3" />
-                    {t('retry')}
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
+          {activity.items.map((item) =>
+            item.type === 'batch' ? (
+              <BatchRow
+                key={item.batchId}
+                batch={item}
+                onRetry={onRetry}
+                onRetryBatch={onRetryBatch}
+                busy={busy}
+              />
+            ) : (
+              <JobRow key={item.id} job={item} onRetry={onRetry} busy={busy} />
+            )
+          )}
         </div>
       )}
       {activity.logs.length > 0 && (
@@ -1041,5 +1035,147 @@ function ActivityCard({
         </div>
       )}
     </AppCard>
+  )
+}
+
+const FAILED = new Set(['failed', 'dead'])
+
+function statusClass(status: string): string {
+  if (FAILED.has(status)) return 'border-destructive/30 text-destructive'
+  if (status === 'done') return 'border-emerald-500/30 text-emerald-600'
+  return ''
+}
+
+/** Job kinds are shared by every connector, so their labels live at the namespace root. */
+function useJobKindLabel() {
+  const tk = useTranslations('integrations')
+  return (kind: string) => (tk.has(`jobKinds.${kind}`) ? tk(`jobKinds.${kind}`) : kind)
+}
+
+function useWhen() {
+  const format = useFormatter()
+  return (iso: string) => format.dateTime(new Date(iso), { dateStyle: 'short', timeStyle: 'short' })
+}
+
+function JobRow({
+  job,
+  onRetry,
+  busy,
+}: {
+  job: ActivityJob
+  onRetry: (jobId: string) => void
+  busy: string | null
+}) {
+  const t = useTranslations('integrations.activity')
+  const kindLabel = useJobKindLabel()
+  const when = useWhen()
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
+      <div className="min-w-0">
+        <span className="font-medium">{kindLabel(job.kind)}</span>
+        <span className="ml-2 text-xs text-muted-foreground">{when(job.createdAt)}</span>
+        {job.error && <p className="truncate text-xs text-destructive">{job.error}</p>}
+      </div>
+      <div className="flex items-center gap-2">
+        <Badge variant="outline" className={`text-[11px] ${statusClass(job.status)}`}>
+          {t(`jobStatus.${job.status}`)}
+        </Badge>
+        {FAILED.has(job.status) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs"
+            onClick={() => onRetry(job.id)}
+            disabled={busy !== null}
+          >
+            <Play className="mr-1 h-3 w-3" />
+            {t('retry')}
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const COUNT_ORDER = ['queued', 'running', 'done', 'failed', 'dead'] as const
+
+/**
+ * A backfill as one line: the kind, how many jobs, and a badge per status
+ * that is not zero. Opening it lists the failed jobs, each with its own
+ * Retry, and one button to queue them all again.
+ */
+function BatchRow({
+  batch,
+  onRetry,
+  onRetryBatch,
+  busy,
+}: {
+  batch: Extract<ActivityItem, { type: 'batch' }>
+  onRetry: (jobId: string) => void
+  onRetryBatch: (batchId: string) => void
+  busy: string | null
+}) {
+  const t = useTranslations('integrations.activity')
+  const kindLabel = useJobKindLabel()
+  const when = useWhen()
+  const [open, setOpen] = useState(false)
+  const total = COUNT_ORDER.reduce((sum, k) => sum + batch.counts[k], 0)
+  const failedCount = batch.counts.failed + batch.counts.dead
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-label={t('details')}
+        className="flex w-full flex-wrap items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-muted/40"
+      >
+        <div className="min-w-0">
+          <span className="font-medium">{kindLabel(batch.kind)}</span>
+          <span className="ml-2 text-xs text-muted-foreground">
+            {t('jobs', { count: total })} · {when(batch.createdAt)}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {COUNT_ORDER.filter((k) => batch.counts[k] > 0).map((k) => (
+            <Badge key={k} variant="outline" className={`text-[11px] ${statusClass(k)}`}>
+              {t(`counts.${k}`, { count: batch.counts[k] })}
+            </Badge>
+          ))}
+          <ChevronDown
+            className={`h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`}
+          />
+        </div>
+      </button>
+      {open && (
+        <div className="border-t bg-muted/30">
+          {batch.failures.length === 0 ? (
+            <p className="px-3 py-2 text-xs text-muted-foreground">{t('noFailures')}</p>
+          ) : (
+            <>
+              {failedCount > 1 && (
+                <div className="flex justify-end px-3 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => onRetryBatch(batch.batchId)}
+                    disabled={busy !== null}
+                  >
+                    <Play className="mr-1 h-3 w-3" />
+                    {t('retryFailed')}
+                  </Button>
+                </div>
+              )}
+              <div className="divide-y">
+                {batch.failures.map((job) => (
+                  <JobRow key={job.id} job={job} onRetry={onRetry} busy={busy} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   )
 }

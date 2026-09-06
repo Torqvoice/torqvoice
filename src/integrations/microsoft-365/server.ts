@@ -149,6 +149,7 @@ function toPulled(e: GraphEvent): PulledEvent | null {
     end,
     allDay: Boolean(e.isAllDay),
     updatedAt: e.lastModifiedDateTime ? new Date(e.lastModifiedDateTime) : null,
+    url: e.webLink ?? null,
   }
 }
 
@@ -167,7 +168,7 @@ async function pullBusy(ctx: ConnectorContext) {
     url.searchParams.set('$top', '250')
     url.searchParams.set(
       '$select',
-      'id,subject,start,end,isAllDay,isCancelled,lastModifiedDateTime'
+      'id,subject,start,end,isAllDay,isCancelled,lastModifiedDateTime,webLink'
     )
     return url.toString()
   })()

@@ -77,7 +77,16 @@
       "message": "Messaggio"
     },
     "noEvents": "Nessun evento",
-    "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro."
+    "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro.",
+    "external": {
+      "source": "Da {source}",
+      "sourceUnknown": "Da un calendario collegato",
+      "allDay": "Tutto il giorno",
+      "open": "Apri in {source}",
+      "openGeneric": "Apri nel calendario",
+      "noLink": "Questo calendario non fornisce un link all'evento.",
+      "readOnly": "Tempo occupato da un calendario collegato. Modificalo lì e qui si aggiorna alla prossima sincronizzazione."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

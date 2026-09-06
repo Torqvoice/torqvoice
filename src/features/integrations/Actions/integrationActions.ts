@@ -1,5 +1,6 @@
 'use server'
 
+import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
@@ -26,7 +27,14 @@ import {
 } from '../Lib/connections'
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
-import type { ConnectionStatus, ConnectorManifest, SettingOption } from '../Lib/types'
+import type {
+  ActivityBatch,
+  ActivityItem,
+  ActivityJob,
+  ConnectionStatus,
+  ConnectorManifest,
+  SettingOption,
+} from '../Lib/types'
 import { messagingProvider, providersForChannel } from '@/integrations/messaging/catalog'
 import {
   type InboundWebhook,
@@ -639,12 +647,15 @@ export async function backfillIntegrationCalendar(connectorId: string) {
         select: { id: true },
         take: 500,
       })
+      // One batch id across the run, so the activity list shows it as one
+      // row with counts instead of a page of identical jobs.
+      const batchId = randomUUID()
       for (const r of records) {
         await enqueueJob({
           connectionId: row.id,
           organizationId,
           kind: 'calendar.push',
-          payload: { entityId: r.id, event: 'backfill' },
+          payload: { entityId: r.id, event: 'backfill', batchId },
           idempotencyKey: `calendar.push:${r.id}`,
         })
       }
@@ -678,13 +689,14 @@ export async function backfillIntegrationAccounting(connectorId: string) {
           ? new Date(new Date(`${startDate}T00:00:00Z`).getTime() - 86_400_000)
           : null
       const ids = await invoicesForBackfill(organizationId, since)
+      const batchId = randomUUID()
       if (ids.length > 0) {
         await db.integrationJob.createMany({
           data: ids.map((id) => ({
             connectionId: row.id,
             organizationId,
             kind: 'accounting.invoice',
-            payload: { entityId: id, event: 'backfill' },
+            payload: { entityId: id, event: 'backfill', batchId },
             idempotencyKey: `accounting.invoice:${id}`,
           })),
           skipDuplicates: true,
@@ -743,6 +755,56 @@ export async function disconnectIntegration(connectorId: string) {
   )
 }
 
+const JOB_SELECT = {
+  id: true,
+  kind: true,
+  status: true,
+  attempts: true,
+  error: true,
+  runAfter: true,
+  finishedAt: true,
+  createdAt: true,
+} as const
+
+type JobRow = {
+  id: string
+  kind: string
+  status: string
+  attempts: number
+  error: string | null
+  runAfter: Date
+  finishedAt: Date | null
+  createdAt: Date
+}
+
+function toActivityJob(j: JobRow): ActivityJob {
+  return {
+    ...j,
+    runAfter: j.runAfter.toISOString(),
+    finishedAt: j.finishedAt?.toISOString() ?? null,
+    createdAt: j.createdAt.toISOString(),
+  }
+}
+
+/** A batch's jobs grouped as one line, single jobs as their own. */
+interface JobGroup {
+  groupKey: string
+  batchId: string | null
+  kind: string
+  createdAt: Date
+  queued: number
+  running: number
+  done: number
+  failed: number
+  dead: number
+}
+
+/**
+ * The last twenty things that happened on a connection, where a backfill
+ * counts as one thing however many jobs it queued. Each batch carries its
+ * counts by status and the jobs that failed, since those are the ones with
+ * a Retry button.
+ */
 export async function getIntegrationActivity(connectorId: string) {
   return withAuth(
     async ({ organizationId }) => {
@@ -750,23 +812,23 @@ export async function getIntegrationActivity(connectorId: string) {
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true },
       })
-      if (!row) return { jobs: [], logs: [] }
-      const [jobs, logs] = await Promise.all([
-        db.integrationJob.findMany({
-          where: { connectionId: row.id },
-          orderBy: { createdAt: 'desc' },
-          take: 20,
-          select: {
-            id: true,
-            kind: true,
-            status: true,
-            attempts: true,
-            error: true,
-            runAfter: true,
-            finishedAt: true,
-            createdAt: true,
-          },
-        }),
+      if (!row) return { items: [] as ActivityItem[], logs: [] }
+      const [groups, logs] = await Promise.all([
+        db.$queryRaw<JobGroup[]>`
+          SELECT coalesce(payload->>'batchId', id) AS "groupKey",
+                 payload->>'batchId' AS "batchId",
+                 kind,
+                 min("createdAt") AS "createdAt",
+                 count(*) FILTER (WHERE status = 'queued')::int AS queued,
+                 count(*) FILTER (WHERE status = 'running')::int AS running,
+                 count(*) FILTER (WHERE status = 'done')::int AS done,
+                 count(*) FILTER (WHERE status = 'failed')::int AS failed,
+                 count(*) FILTER (WHERE status = 'dead')::int AS dead
+          FROM integration_jobs
+          WHERE "connectionId" = ${row.id}
+          GROUP BY 1, 2, 3
+          ORDER BY 4 DESC
+          LIMIT 20`,
         db.integrationLog.findMany({
           where: { connectionId: row.id },
           orderBy: { createdAt: 'desc' },
@@ -774,13 +836,60 @@ export async function getIntegrationActivity(connectorId: string) {
           select: { id: true, level: true, message: true, details: true, createdAt: true },
         }),
       ])
+      const singleIds = groups.filter((g) => !g.batchId).map((g) => g.groupKey)
+      const batchIds = groups.flatMap((g) => (g.batchId ? [g.batchId] : []))
+      const [singles, failures] = await Promise.all([
+        singleIds.length > 0
+          ? db.integrationJob.findMany({ where: { id: { in: singleIds } }, select: JOB_SELECT })
+          : [],
+        batchIds.length > 0
+          ? db.integrationJob.findMany({
+              where: {
+                connectionId: row.id,
+                status: { in: ['failed', 'dead'] },
+                OR: batchIds.map((batchId) => ({
+                  payload: { path: ['batchId'], equals: batchId },
+                })),
+              },
+              orderBy: { createdAt: 'desc' },
+              take: 200,
+              select: { ...JOB_SELECT, payload: true },
+            })
+          : [],
+      ])
+      const singleById = new Map(singles.map((j) => [j.id, j]))
+      const failuresByBatch = new Map<string, ActivityJob[]>()
+      for (const f of failures) {
+        const batchId = (f.payload as { batchId?: unknown } | null)?.batchId
+        if (typeof batchId !== 'string') continue
+        const list = failuresByBatch.get(batchId) ?? []
+        list.push(toActivityJob(f))
+        failuresByBatch.set(batchId, list)
+      }
+      const items: ActivityItem[] = []
+      for (const g of groups) {
+        if (g.batchId) {
+          const batch: ActivityBatch = {
+            batchId: g.batchId,
+            kind: g.kind,
+            createdAt: g.createdAt.toISOString(),
+            counts: {
+              queued: g.queued,
+              running: g.running,
+              done: g.done,
+              failed: g.failed,
+              dead: g.dead,
+            },
+            failures: failuresByBatch.get(g.batchId) ?? [],
+          }
+          items.push({ type: 'batch', ...batch })
+        } else {
+          const job = singleById.get(g.groupKey)
+          if (job) items.push({ type: 'job', ...toActivityJob(job) })
+        }
+      }
       return {
-        jobs: jobs.map((j) => ({
-          ...j,
-          runAfter: j.runAfter.toISOString(),
-          finishedAt: j.finishedAt?.toISOString() ?? null,
-          createdAt: j.createdAt.toISOString(),
-        })),
+        items,
         logs: logs.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })),
       }
     },
@@ -793,6 +902,39 @@ export async function retryIntegrationJob(jobId: string) {
     async ({ organizationId }) => {
       const r = await db.integrationJob.updateMany({
         where: { id: jobId, organizationId, status: { in: ['dead', 'failed'] } },
+        data: {
+          status: 'queued',
+          runAfter: new Date(),
+          attempts: 0,
+          error: null,
+          finishedAt: null,
+        },
+      })
+      return { retried: r.count }
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
+  )
+}
+
+const batchIdSchema = z.string().uuid()
+
+/** Queue every failed job of one backfill again, in a single write. */
+export async function retryIntegrationBatch(connectorId: string, rawBatchId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const batchId = batchIdSchema.parse(rawBatchId)
+      const row = await db.integrationConnection.findUnique({
+        where: { organizationId_connectorId: { organizationId, connectorId } },
+        select: { id: true },
+      })
+      if (!row) throw new Error('Unknown integration')
+      const r = await db.integrationJob.updateMany({
+        where: {
+          connectionId: row.id,
+          organizationId,
+          status: { in: ['dead', 'failed'] },
+          payload: { path: ['batchId'], equals: batchId },
+        },
         data: {
           status: 'queued',
           runAfter: new Date(),

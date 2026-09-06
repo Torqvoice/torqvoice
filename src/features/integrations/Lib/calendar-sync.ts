@@ -130,6 +130,8 @@ export interface PulledEvent {
   end: Date
   allDay: boolean
   updatedAt: Date | null
+  /** Where the event opens in the vendor's calendar; null when not offered. */
+  url: string | null
 }
 
 export function pullWindow(now = new Date()): { from: Date; to: Date } {
@@ -176,6 +178,7 @@ export async function storePulledEvents(
           startAt: e.start,
           endAt: e.end,
           allDay: e.allDay,
+          remoteUrl: e.url,
           remoteUpdatedAt: e.updatedAt,
         })),
         skipDuplicates: true,

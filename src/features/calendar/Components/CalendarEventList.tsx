@@ -1,8 +1,19 @@
 'use client'
 
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useState } from 'react'
+import { useFormatter, useTranslations } from 'next-intl'
+import { CalendarClock, ExternalLink } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { formatDateHeader, getEventLink } from './calendar-utils'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { CalendarEvent } from '../Actions/calendarActions'
@@ -232,6 +243,54 @@ export function CalendarEventList({
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('calendar')
   const dayEvents = events.filter((e) => e.date === dateStr)
+  // Busy time from a connected calendar has no page of its own here, so a
+  // click opens it in place instead of sending the reader to settings.
+  const [external, setExternal] = useState<CalendarEvent | null>(null)
+
+  const rowClass =
+    'flex w-full items-start gap-2.5 rounded-lg border p-2.5 text-left transition-colors hover:bg-muted/50'
+  const body = (event: CalendarEvent) => (
+    <>
+      <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${getStatusColor(event)}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="text-sm font-medium truncate">{event.title}</p>
+          {getStatusBadge(event, t)}
+        </div>
+        <div className="flex items-center gap-2 mt-0.5">
+          <p className="text-xs text-muted-foreground truncate">
+            {event.type === 'external' && event.source
+              ? t('events.external.source', { source: event.source })
+              : event.vehicleLabel}
+          </p>
+          {event.time && (
+            <span className="text-xs text-muted-foreground shrink-0">
+              {event.endTime ? `${event.time} – ${event.endTime}` : event.time}
+            </span>
+          )}
+          {event.type === 'external' && event.allDay && (
+            <span className="text-xs text-muted-foreground shrink-0">
+              {t('events.external.allDay')}
+            </span>
+          )}
+        </div>
+        {event.customerName && (
+          <p className="text-xs text-muted-foreground">{event.customerName}</p>
+        )}
+        <div className="flex items-center gap-2 mt-1">
+          {getTypeBadge(event.type, t)}
+          {event.invoiceNumber && (
+            <span className="text-[10px] text-muted-foreground">#{event.invoiceNumber}</span>
+          )}
+          {event.amount != null && (
+            <span className="text-[10px] font-medium ml-auto">
+              {formatCurrency(event.amount, currencyCode)}
+            </span>
+          )}
+        </div>
+      </div>
+    </>
+  )
 
   return (
     <div className="space-y-3">
@@ -244,45 +303,87 @@ export function CalendarEventList({
         </div>
       ) : (
         <div className="space-y-2">
-          {dayEvents.map((event) => (
-            <Link
-              key={`${event.type}-${event.id}`}
-              href={getEventLink(event)}
-              className="flex items-start gap-2.5 rounded-lg border p-2.5 transition-colors hover:bg-muted/50"
-            >
-              <div className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${getStatusColor(event)}`} />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <p className="text-sm font-medium truncate">{event.title}</p>
-                  {getStatusBadge(event, t)}
-                </div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <p className="text-xs text-muted-foreground truncate">{event.vehicleLabel}</p>
-                  {event.time && (
-                    <span className="text-xs text-muted-foreground shrink-0">{event.time}</span>
-                  )}
-                </div>
-                {event.customerName && (
-                  <p className="text-xs text-muted-foreground">{event.customerName}</p>
-                )}
-                <div className="flex items-center gap-2 mt-1">
-                  {getTypeBadge(event.type, t)}
-                  {event.invoiceNumber && (
-                    <span className="text-[10px] text-muted-foreground">
-                      #{event.invoiceNumber}
-                    </span>
-                  )}
-                  {event.amount != null && (
-                    <span className="text-[10px] font-medium ml-auto">
-                      {formatCurrency(event.amount, currencyCode)}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </Link>
-          ))}
+          {dayEvents.map((event) =>
+            event.type === 'external' ? (
+              <button
+                key={`${event.type}-${event.id}`}
+                type="button"
+                onClick={() => setExternal(event)}
+                className={rowClass}
+              >
+                {body(event)}
+              </button>
+            ) : (
+              <Link
+                key={`${event.type}-${event.id}`}
+                href={getEventLink(event)}
+                className={rowClass}
+              >
+                {body(event)}
+              </Link>
+            )
+          )}
         </div>
       )}
+      <ExternalEventDialog event={external} onClose={() => setExternal(null)} />
     </div>
+  )
+}
+
+/**
+ * What a busy block from Google or Outlook is: title, when, which calendar,
+ * and a way to open it there. Nothing here edits it; the vendor owns it.
+ */
+function ExternalEventDialog({
+  event,
+  onClose,
+}: {
+  event: CalendarEvent | null
+  onClose: () => void
+}) {
+  const t = useTranslations('calendar.events.external')
+  const format = useFormatter()
+  const day = event ? new Date(`${event.date}T00:00:00`) : null
+  return (
+    <Dialog open={event !== null} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        {event && day && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="break-words">{event.title}</DialogTitle>
+              <DialogDescription>
+                {event.source ? t('source', { source: event.source }) : t('sourceUnknown')}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-start gap-3 text-sm">
+              <CalendarClock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+              <div>
+                <p>{format.dateTime(day, { dateStyle: 'full' })}</p>
+                <p className="text-muted-foreground">
+                  {event.allDay || !event.time
+                    ? t('allDay')
+                    : event.endTime
+                      ? `${event.time} – ${event.endTime}`
+                      : event.time}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">{t('readOnly')}</p>
+            <DialogFooter>
+              {event.externalUrl ? (
+                <Button asChild>
+                  <a href={event.externalUrl} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {event.source ? t('open', { source: event.source }) : t('openGeneric')}
+                  </a>
+                </Button>
+              ) : (
+                <p className="text-xs text-muted-foreground">{t('noLink')}</p>
+              )}
+            </DialogFooter>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }

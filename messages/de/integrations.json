@@ -147,7 +147,8 @@
       "off": "Einstellung einschalten und speichern; bis dahin prüft ein Durchlauf nichts.",
       "syncNowHelp": "Jetzt synchronisieren startet sofort einen Durchlauf statt auf den stündlichen zu warten. Er fragt 25 Fahrzeuge auf einmal ab und macht von selbst weiter, bis alle fälligen Fahrzeuge erledigt sind."
     },
-    "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt."
+    "supersedes": "Wenn Sie {next} verbinden, wird {current} getrennt. Nur einer kann zuständig sein: Sobald {next} aktiv ist, wird {current} nicht mehr genutzt.",
+    "batchRetried": "{count, plural, =0 {Nichts zu wiederholen} one {# Auftrag erneut eingereiht} other {# Aufträge erneut eingereiht}}"
   },
   "activity": {
     "title": "Aktivität",
@@ -159,7 +160,18 @@
       "done": "Erledigt",
       "failed": "Fehlgeschlagen",
       "dead": "Aufgegeben"
-    }
+    },
+    "jobs": "{count, plural, one {# Auftrag} other {# Aufträge}}",
+    "counts": {
+      "queued": "{count} in Warteschlange",
+      "running": "{count} laufen",
+      "done": "{count} erledigt",
+      "failed": "{count} fehlgeschlagen",
+      "dead": "{count} aufgegeben"
+    },
+    "noFailures": "Nichts ist fehlgeschlagen.",
+    "retryFailed": "Fehlgeschlagene wiederholen",
+    "details": "Details anzeigen"
   },
   "errors": {
     "generic": "Etwas ist schiefgelaufen",

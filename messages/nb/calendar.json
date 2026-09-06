@@ -77,7 +77,16 @@
       "message": "Melding"
     },
     "noEvents": "Ingen hendelser",
-    "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre."
+    "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre.",
+    "external": {
+      "source": "Fra {source}",
+      "sourceUnknown": "Fra en tilkoblet kalender",
+      "allDay": "Hele dagen",
+      "open": "Åpne i {source}",
+      "openGeneric": "Åpne i kalenderen",
+      "noLink": "Denne kalenderen gir ingen lenke til hendelsen.",
+      "readOnly": "Opptatt tid fra en tilkoblet kalender. Endre den der, så oppdateres den her ved neste synkronisering."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

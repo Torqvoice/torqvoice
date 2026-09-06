@@ -391,3 +391,26 @@ export interface OAuthCredentials {
   /** PKCE verifier and nonce, only while pending. */
   codeVerifier?: string
 }
+
+/** One job on the activity list. */
+export interface ActivityJob {
+  id: string
+  kind: string
+  status: string
+  attempts: number
+  error: string | null
+  runAfter: string
+  finishedAt: string | null
+  createdAt: string
+}
+
+/** A backfill on the activity list: its jobs by status, and the failed ones. */
+export interface ActivityBatch {
+  batchId: string
+  kind: string
+  createdAt: string
+  counts: { queued: number; running: number; done: number; failed: number; dead: number }
+  failures: ActivityJob[]
+}
+
+export type ActivityItem = ({ type: 'job' } & ActivityJob) | ({ type: 'batch' } & ActivityBatch)

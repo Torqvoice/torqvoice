@@ -147,7 +147,8 @@
       "off": "Attiva l'impostazione e salva; fino ad allora un passaggio non controlla nulla.",
       "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
     },
-    "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio."
+    "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
+    "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}"
   },
   "activity": {
     "title": "Attività",
@@ -159,7 +160,18 @@
       "done": "Completata",
       "failed": "Non riuscita",
       "dead": "Abbandonata"
-    }
+    },
+    "jobs": "{count, plural, one {# attività} other {# attività}}",
+    "counts": {
+      "queued": "{count} in coda",
+      "running": "{count} in corso",
+      "done": "{count} completate",
+      "failed": "{count} non riuscite",
+      "dead": "{count} abbandonate"
+    },
+    "noFailures": "Nessun errore.",
+    "retryFailed": "Riprova quelle non riuscite",
+    "details": "Mostra dettagli"
   },
   "errors": {
     "generic": "Qualcosa è andato storto",

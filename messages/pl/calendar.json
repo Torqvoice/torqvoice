@@ -77,7 +77,16 @@
       "message": "Wiadomość"
     },
     "noEvents": "Brak wydarzeń",
-    "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie."
+    "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie.",
+    "external": {
+      "source": "Z {source}",
+      "sourceUnknown": "Z połączonego kalendarza",
+      "allDay": "Cały dzień",
+      "open": "Otwórz w {source}",
+      "openGeneric": "Otwórz w kalendarzu",
+      "noLink": "Ten kalendarz nie podaje linku do wydarzenia.",
+      "readOnly": "Zajęty czas z połączonego kalendarza. Zmień go tam, a tutaj zaktualizuje się przy następnej synchronizacji."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"

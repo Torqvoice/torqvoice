@@ -147,7 +147,8 @@
       "off": "Włącz ustawienie i zapisz; do tego czasu przebieg niczego nie sprawdza.",
       "syncNowHelp": "Synchronizuj teraz uruchamia przebieg od razu zamiast czekać na cogodzinny. Sprawdza po 25 pojazdów i kontynuuje sam, aż wszystkie oczekujące pojazdy zostaną obsłużone."
     },
-    "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać."
+    "supersedes": "Podłączenie {next} odłączy {current}. Naraz może działać tylko jedno, więc {current} przestanie być używane, gdy tylko {next} zacznie działać.",
+    "batchRetried": "{count, plural, =0 {Nie ma czego ponawiać} one {# zadanie ponownie w kolejce} few {# zadania ponownie w kolejce} many {# zadań ponownie w kolejce} other {# zadania ponownie w kolejce}}"
   },
   "activity": {
     "title": "Aktywność",
@@ -159,7 +160,18 @@
       "done": "Gotowe",
       "failed": "Nieudane",
       "dead": "Przerwano"
-    }
+    },
+    "jobs": "{count, plural, one {# zadanie} few {# zadania} many {# zadań} other {# zadania}}",
+    "counts": {
+      "queued": "{count} w kolejce",
+      "running": "{count} w toku",
+      "done": "{count} gotowe",
+      "failed": "{count} nieudane",
+      "dead": "{count} porzucone"
+    },
+    "noFailures": "Nic nie zawiodło.",
+    "retryFailed": "Ponów nieudane",
+    "details": "Pokaż szczegóły"
   },
   "errors": {
     "generic": "Coś poszło nie tak",

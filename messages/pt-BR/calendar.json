@@ -77,7 +77,16 @@
       "message": "Mensagem"
     },
     "noEvents": "Sem eventos",
-    "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço."
+    "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço.",
+    "external": {
+      "source": "De {source}",
+      "sourceUnknown": "De uma agenda conectada",
+      "allDay": "Dia inteiro",
+      "open": "Abrir no {source}",
+      "openGeneric": "Abrir na agenda",
+      "noLink": "Esta agenda não fornece um link para o evento.",
+      "readOnly": "Horário ocupado de uma agenda conectada. Altere lá e aqui atualiza na próxima sincronização."
+    }
   },
   "previousMonth": "Previous month",
   "nextMonth": "Next month"
