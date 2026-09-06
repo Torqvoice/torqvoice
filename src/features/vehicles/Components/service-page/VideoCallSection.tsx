@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Copy, ExternalLink, Loader2, Trash2, Video } from 'lucide-react'
+import { Copy, ExternalLink, Loader2, Send, Trash2, Video } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -12,6 +12,7 @@ import {
   removeServiceMeeting,
   type ServiceVideoCall,
 } from '@/features/integrations/Actions/integrationActions'
+import { SendVideoCallDialog, type VideoCallRecipient } from './SendVideoCallDialog'
 
 /**
  * The work order's video call, added on purpose.
@@ -20,24 +21,36 @@ import {
  * is created at the provider, and the link lands on the work order. The
  * customer never receives it unless someone sends it, and the panel says
  * so, because a link that quietly appeared read as an invitation already
- * gone out.
+ * gone out. Sending is its own button, which opens a dialog that shows the
+ * channels and the text before anything leaves.
  */
 export function VideoCallSection({
   serviceRecordId,
   videoCall,
   scheduled,
+  customer,
+  smsEnabled = false,
+  emailEnabled = false,
+  telegramEnabled = false,
 }: {
   serviceRecordId: string
   videoCall: ServiceVideoCall
   /** Whether the work order has a start time; a meeting follows the schedule. */
   scheduled: boolean
+  /** Who the link would go to; null on a counter sale with nobody attached. */
+  customer?: VideoCallRecipient | null
+  smsEnabled?: boolean
+  emailEnabled?: boolean
+  telegramEnabled?: boolean
 }) {
   const t = useTranslations('service.videoCall')
   const tp = useTranslations('integrations.meeting')
   const router = useRouter()
   const confirm = useConfirm()
   const [busy, setBusy] = useState(false)
+  const [sendOpen, setSendOpen] = useState(false)
   const { link, providers } = videoCall
+  const canSend = Boolean(customer) && (smsEnabled || emailEnabled || telegramEnabled)
 
   if (!link && providers.length === 0) return null
 
@@ -110,7 +123,13 @@ export function VideoCallSection({
             {link.url}
           </code>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" asChild>
+            {canSend && (
+              <Button size="sm" onClick={() => setSendOpen(true)}>
+                <Send className="mr-1 h-3.5 w-3.5" />
+                {t('send.button')}
+              </Button>
+            )}
+            <Button size="sm" variant={canSend ? 'outline' : 'default'} asChild>
               <a href={link.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="mr-1 h-3.5 w-3.5" />
                 {t('join')}
@@ -137,7 +156,21 @@ export function VideoCallSection({
               </Button>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{t('shareHint')}</p>
+          <p className="text-xs text-muted-foreground">
+            {canSend ? t('shareHint') : t('shareHintNoChannel')}
+          </p>
+          {customer && (
+            <SendVideoCallDialog
+              open={sendOpen}
+              onOpenChange={setSendOpen}
+              serviceRecordId={serviceRecordId}
+              meetingUrl={link.url}
+              customer={customer}
+              smsEnabled={smsEnabled}
+              emailEnabled={emailEnabled}
+              telegramEnabled={telegramEnabled}
+            />
+          )}
         </div>
       ) : (
         <div className="space-y-2">

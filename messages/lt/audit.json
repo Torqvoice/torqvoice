@@ -163,7 +163,8 @@
     "settings_setDocumentDesignRule": "Pakeista, kada naudojamas dizainas",
     "settings_freezeInvoices": "Užrakintos senesnės sąskaitos",
     "inspection_reminders_sent": "Išsiųsti apžiūros priminimai",
-    "inspection_reminders_send": "Išsiųsti apžiūros priminimai"
+    "inspection_reminders_send": "Išsiųsti apžiūros priminimai",
+    "service_videoCall_send": "Išsiųsta vaizdo skambučio nuoroda"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -298,6 +299,7 @@
     "settings_applyDocumentDesign": "Nustatė {name} kaip numatytąjį dokumento dizainą",
     "settings_setDocumentDesignRule": "Pakeista, kada naudojamas dokumento dizainas {name}",
     "settings_freezeInvoices": "Užrakino {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}} iki užrakinimo su dabartiniu dizainu",
-    "inspection_reminders_sent": "Išsiųsta {count} apžiūros priminimų"
+    "inspection_reminders_sent": "Išsiųsta {count} apžiūros priminimų",
+    "service_videoCall_send": "Išsiuntė vaizdo skambučio nuorodą per {channels}"
   }
 }

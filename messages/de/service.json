@@ -439,6 +439,33 @@
     "created": "Meeting erstellt. Der Link ist am Auftrag.",
     "removed": "Meeting entfernt",
     "failed": "Etwas ist schiefgelaufen",
-    "shareHint": "Der Kunde erhält diesen Link nur, wenn Sie ihn senden. Kopieren Sie ihn in eine Nachricht oder fügen Sie ihn einer Benachrichtigung hinzu."
+    "shareHint": "Der Kunde erhält diesen Link nur, wenn du ihn sendest.",
+    "shareHintNoChannel": "Der Kunde erhält diesen Link nur, wenn du ihn sendest. Es ist kein Nachrichtenkanal eingerichtet, kopiere ihn also selbst in eine Nachricht.",
+    "send": {
+      "button": "An Kunden senden",
+      "title": "Link zum Videoanruf senden",
+      "description": "Den Beitrittslink an {name} senden.",
+      "messageLabel": "Notiz (optional)",
+      "messagePlaceholder": "Was der Kunde vor dem Anruf wissen sollte...",
+      "linkAlwaysIncluded": "Der Beitrittslink wird immer unter deine Notiz gesetzt.",
+      "sms": "SMS",
+      "email": "E-Mail",
+      "telegram": "Telegram",
+      "noPhone": "(keine Telefonnummer)",
+      "noEmail": "(keine E-Mail)",
+      "noTelegram": "(kein Chat verknüpft)",
+      "notAvailable": "(nicht eingerichtet)",
+      "cancel": "Abbrechen",
+      "send": "Senden",
+      "sent": "Link zum Videoanruf gesendet",
+      "partlySent": "Gesendet per {sent}; nicht per {failed}",
+      "failed": "Link konnte nicht gesendet werden"
+    },
+    "notify": {
+      "invitation": "Hallo {name}, dein Videoanruf zum {vehicle} ist am {when}. Hier beitreten: {url}",
+      "invitationNoTime": "Hallo {name}, hier ist der Link zum Videoanruf zum {vehicle}: {url}",
+      "joinLine": "Hier dem Videoanruf beitreten: {url}",
+      "emailSubject": "Videoanruf zu deinem {vehicle}"
+    }
   }
 }

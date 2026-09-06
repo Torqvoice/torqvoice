@@ -439,6 +439,33 @@
     "created": "Susitikimas sukurtas. Nuoroda yra darbo užsakyme.",
     "removed": "Susitikimas pašalintas",
     "failed": "Kažkas nutiko ne taip",
-    "shareHint": "Klientas šią nuorodą gauna tik tada, kai ją išsiunčiate. Nukopijuokite ją į žinutę arba pridėkite prie pranešimo."
+    "shareHint": "Klientas šią nuorodą gauna tik tada, kai ją išsiunčiate.",
+    "shareHintNoChannel": "Klientas šią nuorodą gauna tik tada, kai ją išsiunčiate. Pranešimų kanalas nenustatytas, todėl nukopijuokite ją į žinutę patys.",
+    "send": {
+      "button": "Siųsti klientui",
+      "title": "Siųsti vaizdo skambučio nuorodą",
+      "description": "Išsiųsti prisijungimo nuorodą klientui {name}.",
+      "messageLabel": "Pastaba (neprivaloma)",
+      "messagePlaceholder": "Ką klientas turėtų žinoti prieš skambutį...",
+      "linkAlwaysIncluded": "Prisijungimo nuoroda visada pridedama po jūsų pastaba.",
+      "sms": "SMS",
+      "email": "El. paštas",
+      "telegram": "Telegram",
+      "noPhone": "(nėra telefono)",
+      "noEmail": "(nėra el. pašto)",
+      "noTelegram": "(nesusietas pokalbis)",
+      "notAvailable": "(nenustatyta)",
+      "cancel": "Atšaukti",
+      "send": "Siųsti",
+      "sent": "Vaizdo skambučio nuoroda išsiųsta",
+      "partlySent": "Išsiųsta per {sent}; neišsiųsta per {failed}",
+      "failed": "Nepavyko išsiųsti nuorodos"
+    },
+    "notify": {
+      "invitation": "Sveiki, {name}, jūsų vaizdo skambutis dėl {vehicle} vyks {when}. Prisijunkite čia: {url}",
+      "invitationNoTime": "Sveiki, {name}, štai vaizdo skambučio dėl {vehicle} nuoroda: {url}",
+      "joinLine": "Prisijunkite prie vaizdo skambučio čia: {url}",
+      "emailSubject": "Vaizdo skambutis dėl jūsų {vehicle}"
+    }
   }
 }

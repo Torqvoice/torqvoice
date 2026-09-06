@@ -439,6 +439,33 @@
     "created": "Vergadering aangemaakt. De link staat op de werkorder.",
     "removed": "Vergadering verwijderd",
     "failed": "Er is iets misgegaan",
-    "shareHint": "De klant krijgt deze link alleen als u die verstuurt. Kopieer hem in een bericht of voeg hem toe aan een melding."
+    "shareHint": "De klant krijgt deze link alleen als je die verstuurt.",
+    "shareHintNoChannel": "De klant krijgt deze link alleen als je die verstuurt. Er is geen berichtenkanaal ingesteld, dus kopieer hem zelf in een bericht.",
+    "send": {
+      "button": "Naar klant sturen",
+      "title": "Link van het videogesprek sturen",
+      "description": "De deelnamelink naar {name} sturen.",
+      "messageLabel": "Notitie (optioneel)",
+      "messagePlaceholder": "Wat de klant vóór het gesprek moet weten...",
+      "linkAlwaysIncluded": "De deelnamelink komt altijd onder je notitie.",
+      "sms": "Sms",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(geen telefoon)",
+      "noEmail": "(geen e-mail)",
+      "noTelegram": "(geen chat gekoppeld)",
+      "notAvailable": "(niet ingesteld)",
+      "cancel": "Annuleren",
+      "send": "Versturen",
+      "sent": "Link van het videogesprek verstuurd",
+      "partlySent": "Verstuurd via {sent}; niet via {failed}",
+      "failed": "Link kon niet worden verstuurd"
+    },
+    "notify": {
+      "invitation": "Hallo {name}, je videogesprek over de {vehicle} is op {when}. Neem hier deel: {url}",
+      "invitationNoTime": "Hallo {name}, hier is de link voor het videogesprek over de {vehicle}: {url}",
+      "joinLine": "Neem hier deel aan het videogesprek: {url}",
+      "emailSubject": "Videogesprek over je {vehicle}"
+    }
   }
 }

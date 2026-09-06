@@ -439,6 +439,33 @@
     "created": "Spotkanie utworzone. Link jest na zleceniu.",
     "removed": "Spotkanie usunięte",
     "failed": "Coś poszło nie tak",
-    "shareHint": "Klient dostaje ten link tylko wtedy, gdy go wyślesz. Skopiuj go do wiadomości lub dodaj do powiadomienia."
+    "shareHint": "Klient dostaje ten link tylko wtedy, gdy go wyślesz.",
+    "shareHintNoChannel": "Klient dostaje ten link tylko wtedy, gdy go wyślesz. Żaden kanał wiadomości nie jest skonfigurowany, więc skopiuj go do wiadomości samodzielnie.",
+    "send": {
+      "button": "Wyślij do klienta",
+      "title": "Wyślij link do rozmowy wideo",
+      "description": "Wyślij link dołączenia do {name}.",
+      "messageLabel": "Notatka (opcjonalnie)",
+      "messagePlaceholder": "Co klient powinien wiedzieć przed rozmową...",
+      "linkAlwaysIncluded": "Link dołączenia jest zawsze dodawany pod Twoją notatką.",
+      "sms": "SMS",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(brak telefonu)",
+      "noEmail": "(brak e-maila)",
+      "noTelegram": "(brak powiązanego czatu)",
+      "notAvailable": "(nie skonfigurowano)",
+      "cancel": "Anuluj",
+      "send": "Wyślij",
+      "sent": "Link do rozmowy wideo wysłany",
+      "partlySent": "Wysłano przez {sent}; nie przez {failed}",
+      "failed": "Nie udało się wysłać linku"
+    },
+    "notify": {
+      "invitation": "Cześć {name}, Twoja rozmowa wideo dotycząca {vehicle} odbędzie się {when}. Dołącz tutaj: {url}",
+      "invitationNoTime": "Cześć {name}, oto link do rozmowy wideo dotyczącej {vehicle}: {url}",
+      "joinLine": "Dołącz do rozmowy wideo tutaj: {url}",
+      "emailSubject": "Rozmowa wideo dotycząca Twojego {vehicle}"
+    }
   }
 }

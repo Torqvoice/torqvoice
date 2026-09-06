@@ -439,6 +439,33 @@
     "created": "Reunião criada. O link está na ordem de serviço.",
     "removed": "Reunião removida",
     "failed": "Algo deu errado",
-    "shareHint": "O cliente só recebe este link quando você envia. Copie-o em uma mensagem ou adicione-o a uma notificação."
+    "shareHint": "O cliente só recebe este link quando você envia.",
+    "shareHintNoChannel": "O cliente só recebe este link quando você envia. Nenhum canal de mensagens está configurado, então copie-o você mesmo em uma mensagem.",
+    "send": {
+      "button": "Enviar ao cliente",
+      "title": "Enviar o link da videochamada",
+      "description": "Enviar o link de entrada para {name}.",
+      "messageLabel": "Observação (opcional)",
+      "messagePlaceholder": "O que o cliente deve saber antes da chamada...",
+      "linkAlwaysIncluded": "O link de entrada é sempre adicionado abaixo da sua observação.",
+      "sms": "SMS",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(sem telefone)",
+      "noEmail": "(sem e-mail)",
+      "noTelegram": "(sem chat vinculado)",
+      "notAvailable": "(não configurado)",
+      "cancel": "Cancelar",
+      "send": "Enviar",
+      "sent": "Link da videochamada enviado",
+      "partlySent": "Enviado por {sent}; não por {failed}",
+      "failed": "Não foi possível enviar o link"
+    },
+    "notify": {
+      "invitation": "Olá {name}, sua videochamada sobre o {vehicle} é em {when}. Entre aqui: {url}",
+      "invitationNoTime": "Olá {name}, aqui está o link da videochamada sobre o {vehicle}: {url}",
+      "joinLine": "Entre na videochamada aqui: {url}",
+      "emailSubject": "Videochamada sobre o seu {vehicle}"
+    }
   }
 }

@@ -163,7 +163,8 @@
     "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt",
     "settings_freezeInvoices": "Zablokowano starsze faktury",
     "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
-    "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie"
+    "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie",
+    "service_videoCall_send": "Wysłano link do rozmowy wideo"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -298,6 +299,7 @@
     "settings_applyDocumentDesign": "Ustawił {name} jako domyślny projekt dokumentu",
     "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt dokumentu {name}",
     "settings_freezeInvoices": "Zablokował {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}} sprzed blokady z bieżącym projektem",
-    "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie"
+    "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie",
+    "service_videoCall_send": "Wysłano link do rozmowy wideo przez {channels}"
   }
 }

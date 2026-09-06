@@ -163,7 +163,8 @@
     "settings_setDocumentDesignRule": "Modificato quando viene usato un design",
     "settings_freezeInvoices": "Fatture precedenti bloccate",
     "inspection_reminders_sent": "Promemoria revisione inviati",
-    "inspection_reminders_send": "Promemoria revisione inviati"
+    "inspection_reminders_send": "Promemoria revisione inviati",
+    "service_videoCall_send": "Link videochiamata inviato"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -298,6 +299,7 @@
     "settings_applyDocumentDesign": "Ha impostato {name} come design del documento predefinito",
     "settings_setDocumentDesignRule": "Modificato quando viene usato il design del documento {name}",
     "settings_freezeInvoices": "Ha bloccato {count, plural, one {# fattura} other {# fatture}} precedenti al blocco con il design attuale",
-    "inspection_reminders_sent": "Inviati {count} promemoria revisione"
+    "inspection_reminders_sent": "Inviati {count} promemoria revisione",
+    "service_videoCall_send": "Ha inviato il link della videochiamata via {channels}"
   }
 }

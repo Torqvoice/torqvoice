@@ -163,7 +163,8 @@
     "settings_setDocumentDesignRule": "Gewijzigd wanneer een ontwerp wordt gebruikt",
     "settings_freezeInvoices": "Oudere facturen vergrendeld",
     "inspection_reminders_sent": "Keuringsherinneringen verstuurd",
-    "inspection_reminders_send": "Keuringsherinneringen verstuurd"
+    "inspection_reminders_send": "Keuringsherinneringen verstuurd",
+    "service_videoCall_send": "Link videogesprek verstuurd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -298,6 +299,7 @@
     "settings_applyDocumentDesign": "Maakte {name} het standaard documentontwerp",
     "settings_setDocumentDesignRule": "Gewijzigd wanneer het documentontwerp {name} wordt gebruikt",
     "settings_freezeInvoices": "Vergrendelde {count, plural, one {# factuur} other {# facturen}} van vóór het vergrendelen met het huidige ontwerp",
-    "inspection_reminders_sent": "{count} keuringsherinneringen verstuurd"
+    "inspection_reminders_sent": "{count} keuringsherinneringen verstuurd",
+    "service_videoCall_send": "Heeft de link van het videogesprek verstuurd via {channels}"
   }
 }

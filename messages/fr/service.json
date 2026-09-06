@@ -439,6 +439,33 @@
     "created": "Réunion créée. Le lien est sur l'ordre de travail.",
     "removed": "Réunion supprimée",
     "failed": "Une erreur s'est produite",
-    "shareHint": "Le client ne reçoit ce lien que si vous l'envoyez. Copiez-le dans un message ou ajoutez-le à une notification."
+    "shareHint": "Le client ne reçoit ce lien que si vous l'envoyez.",
+    "shareHintNoChannel": "Le client ne reçoit ce lien que si vous l'envoyez. Aucun canal de messagerie n'est configuré : copiez-le vous-même dans un message.",
+    "send": {
+      "button": "Envoyer au client",
+      "title": "Envoyer le lien de l'appel vidéo",
+      "description": "Envoyer le lien de connexion à {name}.",
+      "messageLabel": "Note (facultatif)",
+      "messagePlaceholder": "Ce que le client doit savoir avant l'appel...",
+      "linkAlwaysIncluded": "Le lien de connexion est toujours ajouté sous votre note.",
+      "sms": "SMS",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "noPhone": "(pas de téléphone)",
+      "noEmail": "(pas d'e-mail)",
+      "noTelegram": "(pas de chat lié)",
+      "notAvailable": "(non configuré)",
+      "cancel": "Annuler",
+      "send": "Envoyer",
+      "sent": "Lien de l'appel vidéo envoyé",
+      "partlySent": "Envoyé par {sent} ; pas par {failed}",
+      "failed": "Impossible d'envoyer le lien"
+    },
+    "notify": {
+      "invitation": "Bonjour {name}, votre appel vidéo concernant le véhicule {vehicle} a lieu le {when}. Rejoignez-le ici : {url}",
+      "invitationNoTime": "Bonjour {name}, voici le lien de l'appel vidéo concernant le véhicule {vehicle} : {url}",
+      "joinLine": "Rejoignez l'appel vidéo ici : {url}",
+      "emailSubject": "Appel vidéo concernant votre {vehicle}"
+    }
   }
 }

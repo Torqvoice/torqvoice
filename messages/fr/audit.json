@@ -163,7 +163,8 @@
     "settings_setDocumentDesignRule": "A modifié quand un design est utilisé",
     "settings_freezeInvoices": "Anciennes factures verrouillées",
     "inspection_reminders_sent": "Rappels de contrôle envoyés",
-    "inspection_reminders_send": "Rappels de contrôle envoyés"
+    "inspection_reminders_send": "Rappels de contrôle envoyés",
+    "service_videoCall_send": "Lien d'appel vidéo envoyé"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -298,6 +299,7 @@
     "settings_applyDocumentDesign": "A défini {name} comme design de document par défaut",
     "settings_setDocumentDesignRule": "A modifié quand le design de document {name} est utilisé",
     "settings_freezeInvoices": "A verrouillé {count, plural, one {# facture} other {# factures}} antérieures au verrouillage avec le design actuel",
-    "inspection_reminders_sent": "{count} rappels de contrôle envoyés"
+    "inspection_reminders_sent": "{count} rappels de contrôle envoyés",
+    "service_videoCall_send": "A envoyé le lien de l'appel vidéo par {channels}"
   }
 }
