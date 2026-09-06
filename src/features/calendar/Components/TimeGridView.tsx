@@ -30,6 +30,8 @@ const MAX_ALL_DAY = 3
 const DEFAULT_SCROLL_HOUR = 7
 /** Minutes the placeholder covers while the create menu is open. */
 const SLOT_MINUTES = 60
+/** A click on the grid rounds to the nearest of these. */
+const SNAP_MINUTES = 30
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 
 /** An empty slot somebody clicked, waiting to become something. */
@@ -339,8 +341,12 @@ function SlotMenuItem({
 function minutesAtPointer(e: MouseEvent<HTMLElement>): number {
   const rect = e.currentTarget.getBoundingClientRect()
   const ratio = (e.clientY - rect.top) / Math.max(rect.height, 1)
-  // Snap to the quarter hour, the way a planner drops things.
-  return Math.max(0, Math.min(24 * 60 - 15, Math.round((ratio * 24 * 60) / 15) * 15))
+  // Snap to the half hour: close enough to aim at, and the dialog that opens
+  // is where a precise time gets typed if it matters.
+  return Math.max(
+    0,
+    Math.min(24 * 60 - SNAP_MINUTES, Math.round((ratio * 24 * 60) / SNAP_MINUTES) * SNAP_MINUTES)
+  )
 }
 
 function DayColumn({

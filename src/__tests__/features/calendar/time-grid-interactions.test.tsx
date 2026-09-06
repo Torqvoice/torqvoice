@@ -138,16 +138,16 @@ describe('TimeGridView', () => {
   it('opens the create menu at the clicked quarter hour and hands the time on', async () => {
     const { columns, actions, onSelectDate } = setup()
     const tuesday = columns[1]
-    fireEvent.click(tuesday, { clientX: 10, clientY: 615 })
+    fireEvent.click(tuesday, { clientX: 10, clientY: 620 })
 
     expect(onSelectDate).toHaveBeenCalledTimes(1)
     expect(onSelectDate.mock.calls[0][0].getDate()).toBe(1)
 
-    // 615px of 1440 is 10:15
-    const item = await screen.findByText('New work order at 10:15')
+    // 620px of 1440 is 10:20, which rounds to the half hour
+    const item = await screen.findByText('New work order at 10:30')
     expect(screen.getByText('Schedule message')).toBeInTheDocument()
     fireEvent.click(item)
-    expect(actions.onNewWorkOrder).toHaveBeenCalledWith('2026-09-01', '10:15')
+    expect(actions.onNewWorkOrder).toHaveBeenCalledWith('2026-09-01', '10:30')
     await waitFor(() => expect(screen.queryByText('Schedule message')).not.toBeInTheDocument())
   })
 
