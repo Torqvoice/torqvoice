@@ -42,8 +42,14 @@ function SignInFormInner({
     try {
       const result = await signIn.email({ email, password })
       if (result.error) {
+        // The origin refusal carries both addresses, see lib/auth-origin-hint.
+        const refusal = result.error as { code?: string; origin?: string; configured?: string }
         if (result.error.status === 429) {
           setError(t('errors.tooManyAttempts'))
+        } else if (refusal.code === 'INVALID_ORIGIN' && refusal.origin && refusal.configured) {
+          setError(
+            t('errors.invalidOrigin', { origin: refusal.origin, configured: refusal.configured })
+          )
         } else {
           setError(result.error.message || t('errors.invalidCredentials'))
         }
