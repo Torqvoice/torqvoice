@@ -16,6 +16,8 @@ export async function register() {
       processIntegrationJobs,
       cleanupIntegrationLogs,
     } = await import('./cronTasks')
+    const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
+    warnAboutAppUrl()
     checkLicenses()
     checkSubscriptions()
     processRecurringInvoices()
