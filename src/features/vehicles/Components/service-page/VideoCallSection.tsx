@@ -232,7 +232,7 @@ export function VideoCallSection({
                 ) : (
                   <Video className="mr-1 h-3.5 w-3.5" />
                 )}
-                {t('add', { provider: p.name })}
+                {t('add', { provider: providerLabel(p.provider) })}
               </Button>
             ))}
           </div>

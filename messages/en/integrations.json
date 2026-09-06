@@ -209,8 +209,8 @@
         "calendarId": "Calendar",
         "pushEnabled": "Add scheduled work orders to this calendar",
         "includeCustomer": "Include the customer's name and phone in the event",
-        "addConference": "Add a Google Meet link to each event",
-        "addConferenceHelp": "The link is shown on the work order so you can share it with the customer.",
+        "addConference": "Add a Google Meet meeting to every scheduled work order",
+        "addConferenceHelp": "On: every work order pushed to the calendar gets a Google Meet meeting, and the join link shows on the work order. Off: add a Google Meet meeting to a single work order from its page. Either way the customer only gets the link when you send it.",
         "pullEnabled": "Show this calendar's busy time on the Torqvoice calendar",
         "pullEnabledHelp": "Read-only. Refreshed every 15 minutes, one week back and two months ahead."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Calendar",
         "pushEnabled": "Add scheduled work orders to this calendar",
         "includeCustomer": "Include the customer's name and phone in the event",
-        "addConference": "Add a Microsoft Teams link to each event",
-        "addConferenceHelp": "The link is shown on the work order so you can share it with the customer.",
+        "addConference": "Add a Microsoft Teams meeting to every scheduled work order",
+        "addConferenceHelp": "On: every work order pushed to the calendar gets a Microsoft Teams meeting, and the join link shows on the work order. Off: add a Microsoft Teams meeting to a single work order from its page. Either way the customer only gets the link when you send it.",
         "pullEnabled": "Show this calendar's busy time on the Torqvoice calendar",
         "pullEnabledHelp": "Read-only. Refreshed every 15 minutes, one week back and two months ahead."
       }

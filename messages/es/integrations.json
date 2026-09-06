@@ -209,8 +209,8 @@
         "calendarId": "Calendario",
         "pushEnabled": "Añadir las órdenes de trabajo programadas a este calendario",
         "includeCustomer": "Incluir el nombre y el teléfono del cliente en el evento",
-        "addConference": "Añadir un enlace de Google Meet a cada evento",
-        "addConferenceHelp": "El enlace se muestra en la orden de trabajo para que pueda compartirlo con el cliente.",
+        "addConference": "Añadir una reunión de Google Meet a cada orden de trabajo programada",
+        "addConferenceHelp": "Activado: cada orden de trabajo enviada al calendario recibe una reunión de Google Meet, y el enlace se muestra en la orden. Desactivado: añade una reunión de Google Meet a una orden concreta desde su página. En ambos casos el cliente solo recibe el enlace cuando lo envías.",
         "pullEnabled": "Mostrar el tiempo ocupado de este calendario en el calendario de Torqvoice",
         "pullEnabledHelp": "Solo lectura. Se actualiza cada 15 minutos, una semana hacia atrás y dos meses hacia adelante."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Calendario",
         "pushEnabled": "Añadir las órdenes de trabajo programadas a este calendario",
         "includeCustomer": "Incluir el nombre y el teléfono del cliente en el evento",
-        "addConference": "Añadir un enlace de Microsoft Teams a cada evento",
-        "addConferenceHelp": "El enlace se muestra en la orden de trabajo para que pueda compartirlo con el cliente.",
+        "addConference": "Añadir una reunión de Microsoft Teams a cada orden de trabajo programada",
+        "addConferenceHelp": "Activado: cada orden de trabajo enviada al calendario recibe una reunión de Microsoft Teams, y el enlace se muestra en la orden. Desactivado: añade una reunión de Microsoft Teams a una orden concreta desde su página. En ambos casos el cliente solo recibe el enlace cuando lo envías.",
         "pullEnabled": "Mostrar el tiempo ocupado de este calendario en el calendario de Torqvoice",
         "pullEnabledHelp": "Solo lectura. Se actualiza cada 15 minutos, una semana hacia atrás y dos meses hacia adelante."
       }

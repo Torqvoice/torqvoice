@@ -209,8 +209,8 @@
         "calendarId": "Agenda",
         "pushEnabled": "Geplande werkorders aan deze agenda toevoegen",
         "includeCustomer": "Naam en telefoonnummer van de klant in de afspraak opnemen",
-        "addConference": "Een Google Meet-link aan elke afspraak toevoegen",
-        "addConferenceHelp": "De link wordt op de werkorder getoond, zodat u die met de klant kunt delen.",
+        "addConference": "Een Google Meet-vergadering toevoegen aan elke geplande werkorder",
+        "addConferenceHelp": "Aan: elke werkorder die naar de agenda gaat krijgt een Google Meet-vergadering, en de link staat op de werkorder. Uit: voeg een Google Meet-vergadering toe aan één werkorder vanaf zijn pagina. In beide gevallen krijgt de klant de link pas als u die verstuurt.",
         "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
         "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Agenda",
         "pushEnabled": "Geplande werkorders aan deze agenda toevoegen",
         "includeCustomer": "Naam en telefoonnummer van de klant in de afspraak opnemen",
-        "addConference": "Een Microsoft Teams-link aan elke afspraak toevoegen",
-        "addConferenceHelp": "De link wordt op de werkorder getoond, zodat u die met de klant kunt delen.",
+        "addConference": "Een Microsoft Teams-vergadering toevoegen aan elke geplande werkorder",
+        "addConferenceHelp": "Aan: elke werkorder die naar de agenda gaat krijgt een Microsoft Teams-vergadering, en de link staat op de werkorder. Uit: voeg een Microsoft Teams-vergadering toe aan één werkorder vanaf zijn pagina. In beide gevallen krijgt de klant de link pas als u die verstuurt.",
         "pullEnabled": "Bezette tijd van deze agenda in de Torqvoice-agenda tonen",
         "pullEnabledHelp": "Alleen-lezen. Elke 15 minuten vernieuwd, één week terug en twee maanden vooruit."
       }

@@ -209,8 +209,8 @@
         "calendarId": "Kalender",
         "pushEnabled": "Legg planlagte arbeidsordre i denne kalenderen",
         "includeCustomer": "Ta med kundens navn og telefonnummer i hendelsen",
-        "addConference": "Legg til en Google Meet-lenke i hver hendelse",
-        "addConferenceHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden.",
+        "addConference": "Legg til et Google Meet-møte på hver planlagte arbeidsordre",
+        "addConferenceHelp": "På: hver arbeidsordre som legges i kalenderen får et Google Meet-møte, og lenken vises på arbeidsordren. Av: legg til et Google Meet-møte på en enkelt arbeidsordre fra siden dens. Uansett får kunden lenken bare når du sender den.",
         "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
         "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Kalender",
         "pushEnabled": "Legg planlagte arbeidsordre i denne kalenderen",
         "includeCustomer": "Ta med kundens navn og telefonnummer i hendelsen",
-        "addConference": "Legg til en Microsoft Teams-lenke i hver hendelse",
-        "addConferenceHelp": "Lenken vises på arbeidsordren slik at du kan dele den med kunden.",
+        "addConference": "Legg til et Microsoft Teams-møte på hver planlagte arbeidsordre",
+        "addConferenceHelp": "På: hver arbeidsordre som legges i kalenderen får et Microsoft Teams-møte, og lenken vises på arbeidsordren. Av: legg til et Microsoft Teams-møte på en enkelt arbeidsordre fra siden dens. Uansett får kunden lenken bare når du sender den.",
         "pullEnabled": "Vis denne kalenderens opptatte tid i Torqvoice-kalenderen",
         "pullEnabledHelp": "Skrivebeskyttet. Oppdateres hvert 15. minutt, én uke bakover og to måneder fremover."
       }

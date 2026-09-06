@@ -37,6 +37,7 @@ export const manifest: ConnectorManifest = {
     ],
     tenantHelp: 'tenantHelp',
   },
+  meetingProvider: 'zoom',
   capabilities: ['calendar.conference'],
   settings: [
     {

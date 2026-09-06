@@ -209,8 +209,8 @@
         "calendarId": "Kalendarz",
         "pushEnabled": "Dodawaj zaplanowane zlecenia do tego kalendarza",
         "includeCustomer": "Umieść w wydarzeniu imię i nazwisko oraz telefon klienta",
-        "addConference": "Dodaj link Google Meet do każdego wydarzenia",
-        "addConferenceHelp": "Link jest widoczny na zleceniu, więc możesz go przekazać klientowi.",
+        "addConference": "Dodawaj spotkanie Google Meet do każdego zaplanowanego zlecenia",
+        "addConferenceHelp": "Włączone: każde zlecenie wysłane do kalendarza dostaje spotkanie Google Meet, a link pojawia się na zleceniu. Wyłączone: dodaj spotkanie Google Meet do pojedynczego zlecenia z jego strony. W obu przypadkach klient dostaje link dopiero, gdy go wyślesz.",
         "pullEnabled": "Pokazuj zajęty czas z tego kalendarza w kalendarzu Torqvoice",
         "pullEnabledHelp": "Tylko do odczytu. Odświeżane co 15 minut, tydzień wstecz i dwa miesiące do przodu."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Kalendarz",
         "pushEnabled": "Dodawaj zaplanowane zlecenia do tego kalendarza",
         "includeCustomer": "Umieść w wydarzeniu imię i nazwisko oraz telefon klienta",
-        "addConference": "Dodaj link Microsoft Teams do każdego wydarzenia",
-        "addConferenceHelp": "Link jest widoczny na zleceniu, więc możesz go przekazać klientowi.",
+        "addConference": "Dodawaj spotkanie Microsoft Teams do każdego zaplanowanego zlecenia",
+        "addConferenceHelp": "Włączone: każde zlecenie wysłane do kalendarza dostaje spotkanie Microsoft Teams, a link pojawia się na zleceniu. Wyłączone: dodaj spotkanie Microsoft Teams do pojedynczego zlecenia z jego strony. W obu przypadkach klient dostaje link dopiero, gdy go wyślesz.",
         "pullEnabled": "Pokazuj zajęty czas z tego kalendarza w kalendarzu Torqvoice",
         "pullEnabledHelp": "Tylko do odczytu. Odświeżane co 15 minut, tydzień wstecz i dwa miesiące do przodu."
       }

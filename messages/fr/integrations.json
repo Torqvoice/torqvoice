@@ -209,8 +209,8 @@
         "calendarId": "Calendrier",
         "pushEnabled": "Ajouter les ordres de travail planifiés à ce calendrier",
         "includeCustomer": "Inclure le nom et le téléphone du client dans l'événement",
-        "addConference": "Ajouter un lien Google Meet à chaque événement",
-        "addConferenceHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client.",
+        "addConference": "Ajouter une réunion Google Meet à chaque ordre de travail planifié",
+        "addConferenceHelp": "Activé : chaque ordre de travail envoyé au calendrier reçoit une réunion Google Meet, et le lien apparaît sur l'ordre. Désactivé : ajoutez une réunion Google Meet à un ordre précis depuis sa page. Dans les deux cas, le client ne reçoit le lien que lorsque vous l'envoyez.",
         "pullEnabled": "Afficher les plages occupées de ce calendrier dans le calendrier Torqvoice",
         "pullEnabledHelp": "Lecture seule. Actualisé toutes les 15 minutes, une semaine en arrière et deux mois en avant."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Calendrier",
         "pushEnabled": "Ajouter les ordres de travail planifiés à ce calendrier",
         "includeCustomer": "Inclure le nom et le téléphone du client dans l'événement",
-        "addConference": "Ajouter un lien Microsoft Teams à chaque événement",
-        "addConferenceHelp": "Le lien est affiché sur l'ordre de travail pour que vous puissiez le partager avec le client.",
+        "addConference": "Ajouter une réunion Microsoft Teams à chaque ordre de travail planifié",
+        "addConferenceHelp": "Activé : chaque ordre de travail envoyé au calendrier reçoit une réunion Microsoft Teams, et le lien apparaît sur l'ordre. Désactivé : ajoutez une réunion Microsoft Teams à un ordre précis depuis sa page. Dans les deux cas, le client ne reçoit le lien que lorsque vous l'envoyez.",
         "pullEnabled": "Afficher les plages occupées de ce calendrier dans le calendrier Torqvoice",
         "pullEnabledHelp": "Lecture seule. Actualisé toutes les 15 minutes, une semaine en arrière et deux mois en avant."
       }

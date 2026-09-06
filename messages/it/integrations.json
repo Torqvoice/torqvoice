@@ -209,8 +209,8 @@
         "calendarId": "Calendario",
         "pushEnabled": "Aggiungi gli ordini di lavoro pianificati a questo calendario",
         "includeCustomer": "Includi nome e telefono del cliente nell'evento",
-        "addConference": "Aggiungi un link Google Meet a ogni evento",
-        "addConferenceHelp": "Il link viene mostrato nell'ordine di lavoro, così puoi condividerlo con il cliente.",
+        "addConference": "Aggiungi una riunione Google Meet a ogni ordine di lavoro pianificato",
+        "addConferenceHelp": "Attivo: ogni ordine di lavoro inviato al calendario riceve una riunione Google Meet, e il link compare sull'ordine. Spento: aggiungi una riunione Google Meet a un singolo ordine dalla sua pagina. In entrambi i casi il cliente riceve il link solo quando lo invii.",
         "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
         "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Calendario",
         "pushEnabled": "Aggiungi gli ordini di lavoro pianificati a questo calendario",
         "includeCustomer": "Includi nome e telefono del cliente nell'evento",
-        "addConference": "Aggiungi un link Microsoft Teams a ogni evento",
-        "addConferenceHelp": "Il link viene mostrato nell'ordine di lavoro, così puoi condividerlo con il cliente.",
+        "addConference": "Aggiungi una riunione Microsoft Teams a ogni ordine di lavoro pianificato",
+        "addConferenceHelp": "Attivo: ogni ordine di lavoro inviato al calendario riceve una riunione Microsoft Teams, e il link compare sull'ordine. Spento: aggiungi una riunione Microsoft Teams a un singolo ordine dalla sua pagina. In entrambi i casi il cliente riceve il link solo quando lo invii.",
         "pullEnabled": "Mostra gli impegni di questo calendario nel calendario di Torqvoice",
         "pullEnabledHelp": "Sola lettura. Aggiornato ogni 15 minuti, da una settimana indietro a due mesi avanti."
       }
