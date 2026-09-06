@@ -1,4 +1,5 @@
 import { CronJob } from 'cron'
+import { isDemoMode } from '@/lib/demo'
 import {
   cleanupIntegrationHistory,
   recoverStuckJobs,
@@ -11,6 +12,12 @@ import {
  * left running, queue the timed syncs that are due, then run due jobs.
  */
 export function processIntegrationJobs() {
+  // Nothing can be connected on the demo, and a job that somehow exists would
+  // only fail against the connection loader's refusal every minute.
+  if (isDemoMode) {
+    console.warn('[cron] Integration job runner not started: demo mode')
+    return
+  }
   const job = new CronJob('* * * * *', async () => {
     try {
       const recovered = await recoverStuckJobs()

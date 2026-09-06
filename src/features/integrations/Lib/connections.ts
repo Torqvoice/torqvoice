@@ -8,6 +8,7 @@
  */
 
 import { db } from '@/lib/db'
+import { assertConnectorAllowed } from '@/lib/demo'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { getConnector, getManifest } from '@/integrations/registry'
 import { createConnectorHttp } from './http'
@@ -118,6 +119,7 @@ export async function loadConnection(
   connectionId: string,
   options: { jobId?: string | null } = {}
 ): Promise<LoadedConnection> {
+  assertConnectorAllowed()
   const row = await db.integrationConnection.findUnique({ where: { id: connectionId } })
   if (!row) throw new Error('Integration connection not found')
   const manifest = getManifest(row.connectorId)

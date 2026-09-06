@@ -9,6 +9,7 @@
  */
 
 import { db } from '@/lib/db'
+import { assertConnectorAllowed } from '@/lib/demo'
 import { type OAuth2Spec, needsRefresh, refreshToken, resolveClient } from './oauth'
 import {
   type ConnectorHttp,
@@ -109,6 +110,7 @@ export function createConnectorHttp(input: {
   }
 
   const doFetch = async (url: string, init?: RequestInit): Promise<Response> => {
+    assertConnectorAllowed()
     let forceRefresh = false
     let last: Response | null = null
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {

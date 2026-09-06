@@ -9,6 +9,7 @@
  */
 
 import { createHash, randomBytes } from 'node:crypto'
+import { assertConnectorAllowed } from '@/lib/demo'
 import type { AuthSpec, ConnectorManifest, OAuthCredentials } from './types'
 
 export type OAuth2Spec = Extract<AuthSpec, { type: 'oauth2' }>
@@ -101,6 +102,7 @@ async function tokenRequest(
   client: OAuthClient,
   params: Record<string, string>
 ): Promise<TokenResponse> {
+  assertConnectorAllowed()
   const headers: Record<string, string> = {
     'Content-Type': 'application/x-www-form-urlencoded',
     Accept: 'application/json',

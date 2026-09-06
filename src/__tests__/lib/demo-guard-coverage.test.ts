@@ -50,6 +50,17 @@ const EGRESS_PATHS: Array<{ file: string; stoppedBy: RegExp }> = [
     file: 'src/features/notifications/Lib/pushToTechnician.ts',
     stoppedBy: /if \(isDemoMode\) return/,
   },
+  // The integrations catalog. Every connector call goes out through one HTTP
+  // client, every token exchange or refresh through the OAuth module, and
+  // every context a connector runs with (jobs, webhooks, tests, lookups,
+  // remote options) is built by the connection loader. All three refuse, so
+  // a connector's own bare fetch in a test probe is never reached either.
+  { file: 'src/features/integrations/Lib/http.ts', stoppedBy: /assertConnectorAllowed\(\)/ },
+  { file: 'src/features/integrations/Lib/oauth.ts', stoppedBy: /assertConnectorAllowed\(\)/ },
+  {
+    file: 'src/features/integrations/Lib/connections.ts',
+    stoppedBy: /assertConnectorAllowed\(\)/,
+  },
 ]
 
 describe('demo mode', () => {
@@ -81,7 +92,7 @@ describe('demo mode', () => {
     // finding one that nobody has classified is worth failing over. Payment
     // providers are exempt: their credentials cannot be set on the demo, so
     // there is no configured client for anything to call.
-    const searchRoots = ['src/lib', 'src/app/api', 'src/features']
+    const searchRoots = ['src/lib', 'src/app/api', 'src/features', 'src/integrations']
     // The directory names are anchored to a path separator on both sides:
     // unanchored, `hooks/` also matches `webhooks/` and quietly exempts the
     // one tree in here that talks to a URL somebody else chose.
@@ -101,13 +112,23 @@ describe('demo mode', () => {
     const known = new Set(EGRESS_PATHS.map((e) => e.file.split(path.posix.sep).join(path.sep)))
     // Adapters are reached only through their transport, which already refuses.
     const reachedViaTransport = /whatsapp[/\\]adapters[/\\]/
+    // A connector only ever runs with a context from the connection loader,
+    // which refuses; its bare fetches (credential probes, a token revoke) sit
+    // behind that. Anything under src/integrations that could run without a
+    // context would need a home of its own in this file.
+    const reachedViaConnection = /src[/\\]integrations[/\\]/
     // Guarded by demoGuard() in the action that calls them, or by isDemoMode
     // in the cron that does.
     const guardedByCaller =
       /aiSettingsActions\.ts$|validateLicense\.ts$|cron[/\\]check-licenses\.ts$/
 
     const unclassified = files.filter((file) => {
-      if (known.has(file) || reachedViaTransport.test(file) || guardedByCaller.test(file))
+      if (
+        known.has(file) ||
+        reachedViaTransport.test(file) ||
+        reachedViaConnection.test(file) ||
+        guardedByCaller.test(file)
+      )
         return false
       return /\bawait fetch\(|= fetch\(/.test(fs.readFileSync(file, 'utf-8'))
     })

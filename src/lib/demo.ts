@@ -48,6 +48,21 @@ export function assertOutboundAllowed(channel: 'email' | 'sms' | 'whatsapp' | 't
 }
 
 /**
+ * Hard stop for the integrations catalog: every connector call runs with a
+ * context built by `loadConnection`, goes out through the connector HTTP
+ * client, or exchanges a token through the OAuth module, and all three
+ * refuse here. The actions that connect a vendor already refuse, so no
+ * connection should exist on the demo; this is for the one that does.
+ */
+export function assertConnectorAllowed(): void {
+  if (isDemoMode) {
+    throw new Error(
+      'Integrations are disabled on the demo. Install Torqvoice on your own server to connect one.'
+    )
+  }
+}
+
+/**
  * Setting keys that store provider credentials / secrets. Demo visitors
  * shouldn't be able to paste real API keys into a shared demo DB.
  */
