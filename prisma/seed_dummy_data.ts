@@ -872,7 +872,7 @@ async function seed() {
           status: "active",
           label: "Adopted from settings",
           credentials: sealCredentials(c.credentials),
-          settings: c.settings,
+          settings: c.settings as object,
           externalAccountName: c.externalAccountName,
           createdById: USER_ID,
           lastHealthAt: hoursAgo(1),
