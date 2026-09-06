@@ -30,6 +30,7 @@ export const manifest: ConnectorManifest = {
     ],
     tenantHelp: 'tenantHelp',
   },
+  meetingProvider: 'teams',
   capabilities: ['calendar.push', 'calendar.pull', 'calendar.conference'],
   settings: [
     {

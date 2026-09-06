@@ -209,8 +209,8 @@
         "calendarId": "Calendário",
         "pushEnabled": "Adicionar ordens de serviço agendadas a este calendário",
         "includeCustomer": "Incluir o nome e o telefone do cliente no evento",
-        "addConference": "Adicionar um link do Google Meet a cada evento",
-        "addConferenceHelp": "O link aparece na ordem de serviço para que você possa compartilhá-lo com o cliente.",
+        "addConference": "Adicionar uma reunião do Google Meet a cada ordem de serviço agendada",
+        "addConferenceHelp": "Ligado: cada ordem de serviço enviada à agenda recebe uma reunião do Google Meet, e o link aparece na ordem. Desligado: adicione uma reunião do Google Meet a uma ordem específica pela página dela. De qualquer forma o cliente só recebe o link quando você o envia.",
         "pullEnabled": "Mostrar os horários ocupados deste calendário no calendário do Torqvoice",
         "pullEnabledHelp": "Somente leitura. Atualizado a cada 15 minutos, uma semana para trás e dois meses para a frente."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Calendário",
         "pushEnabled": "Adicionar ordens de serviço agendadas a este calendário",
         "includeCustomer": "Incluir o nome e o telefone do cliente no evento",
-        "addConference": "Adicionar um link do Microsoft Teams a cada evento",
-        "addConferenceHelp": "O link aparece na ordem de serviço para que você possa compartilhá-lo com o cliente.",
+        "addConference": "Adicionar uma reunião do Microsoft Teams a cada ordem de serviço agendada",
+        "addConferenceHelp": "Ligado: cada ordem de serviço enviada à agenda recebe uma reunião do Microsoft Teams, e o link aparece na ordem. Desligado: adicione uma reunião do Microsoft Teams a uma ordem específica pela página dela. De qualquer forma o cliente só recebe o link quando você o envia.",
         "pullEnabled": "Mostrar os horários ocupados deste calendário no calendário do Torqvoice",
         "pullEnabledHelp": "Somente leitura. Atualizado a cada 15 minutos, uma semana para trás e dois meses para a frente."
       }

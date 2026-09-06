@@ -209,8 +209,8 @@
         "calendarId": "Kalendorius",
         "pushEnabled": "Įtraukti suplanuotus darbo užsakymus į šį kalendorių",
         "includeCustomer": "Įtraukti į įvykį kliento vardą ir telefoną",
-        "addConference": "Pridėti Google Meet nuorodą prie kiekvieno įvykio",
-        "addConferenceHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ja pasidalinti su klientu.",
+        "addConference": "Pridėti Google Meet susitikimą prie kiekvieno suplanuoto darbo užsakymo",
+        "addConferenceHelp": "Įjungta: kiekvienas į kalendorių įkeltas darbo užsakymas gauna Google Meet susitikimą, o nuoroda rodoma užsakyme. Išjungta: pridėkite Google Meet susitikimą prie vieno užsakymo iš jo puslapio. Bet kuriuo atveju klientas nuorodą gauna tik tada, kai ją išsiunčiate.",
         "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
         "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Kalendorius",
         "pushEnabled": "Įtraukti suplanuotus darbo užsakymus į šį kalendorių",
         "includeCustomer": "Įtraukti į įvykį kliento vardą ir telefoną",
-        "addConference": "Pridėti Microsoft Teams nuorodą prie kiekvieno įvykio",
-        "addConferenceHelp": "Nuoroda rodoma darbo užsakyme, kad galėtumėte ja pasidalinti su klientu.",
+        "addConference": "Pridėti Microsoft Teams susitikimą prie kiekvieno suplanuoto darbo užsakymo",
+        "addConferenceHelp": "Įjungta: kiekvienas į kalendorių įkeltas darbo užsakymas gauna Microsoft Teams susitikimą, o nuoroda rodoma užsakyme. Išjungta: pridėkite Microsoft Teams susitikimą prie vieno užsakymo iš jo puslapio. Bet kuriuo atveju klientas nuorodą gauna tik tada, kai ją išsiunčiate.",
         "pullEnabled": "Rodyti šio kalendoriaus užimtą laiką Torqvoice kalendoriuje",
         "pullEnabledHelp": "Tik skaitymui. Atnaujinama kas 15 minučių, viena savaitė atgal ir du mėnesiai į priekį."
       }

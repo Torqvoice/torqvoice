@@ -37,6 +37,7 @@ export const manifest: ConnectorManifest = {
     ],
     tenantHelp: 'tenantHelp',
   },
+  meetingProvider: 'google-meet',
   capabilities: ['calendar.push', 'calendar.pull', 'calendar.conference'],
   settings: [
     {

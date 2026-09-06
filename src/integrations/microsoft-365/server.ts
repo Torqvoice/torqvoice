@@ -51,7 +51,18 @@ function fromGraphTime(t: { dateTime: string; timeZone: string } | undefined): D
   return Number.isNaN(d.getTime()) ? null : d
 }
 
-async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
+/**
+ * Put the work order on the calendar, as a Teams meeting when the setting
+ * says so or a person asked for one from the work order (`action:
+ * 'create'`, remembered as `manual` on the link). A meeting added by hand
+ * keeps its event even with the automatic push switched off, since the
+ * meeting is the event.
+ */
+async function pushService(
+  ctx: ConnectorContext,
+  serviceRecordId: string,
+  action: 'create' | null = null
+) {
   const settings = settingsOf(ctx)
   if (!settings.calendarId) throw new Error('No calendar chosen in the integration settings')
   const link = await ctx.links.get(SERVICE_ENTITY, serviceRecordId)
@@ -59,8 +70,10 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
   const draft = record
     ? draftCalendarEvent(record, { appUrl: ctx.appUrl, includeCustomer: settings.includeCustomer })
     : null
+  const manual = action === 'create' || link?.metadata?.manual === true
+  const wantMeeting = settings.addConference || manual
 
-  if (!draft || !settings.pushEnabled) {
+  if (!draft || !(settings.pushEnabled || manual)) {
     if (!link) return { summary: 'nothing to do' }
     try {
       const res = await ctx.http.fetch(`${GRAPH}/me/events/${encodeURIComponent(link.remoteId)}`, {
@@ -75,19 +88,22 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
     return { summary: 'event removed' }
   }
 
-  if (link?.checksum === draft.checksum && (!settings.addConference || link.metadata?.meetingUrl)) {
+  if (link?.checksum === draft.checksum && (!wantMeeting || link.metadata?.meetingUrl)) {
     return { summary: 'unchanged' }
   }
 
+  // Graph does not let an online meeting be switched off again, so it is
+  // only asked for while the event has none.
   const body: Record<string, unknown> = {
     subject: draft.title,
     body: { contentType: 'text', content: draft.description },
     start: graphTime(draft.start),
     end: graphTime(draft.end),
-    ...(settings.addConference && {
-      isOnlineMeeting: true,
-      onlineMeetingProvider: 'teamsForBusiness',
-    }),
+    ...(wantMeeting &&
+      !link?.metadata?.meetingUrl && {
+        isOnlineMeeting: true,
+        onlineMeetingProvider: 'teamsForBusiness',
+      }),
   }
 
   let saved: GraphEvent
@@ -121,6 +137,20 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
     )
   }
 
+  // Graph fills the join link a moment after an update returns; one read
+  // back catches it rather than leaving the work order without a link.
+  if (wantMeeting && !link?.metadata?.meetingUrl && !saved.onlineMeeting?.joinUrl) {
+    saved = await ctx.http.json<GraphEvent>(
+      `${GRAPH}/me/events/${encodeURIComponent(saved.id)}?$select=id,webLink,onlineMeeting`
+    )
+  }
+  const meetingUrl = saved.onlineMeeting?.joinUrl
+  if (manual && action === 'create' && !meetingUrl && !link?.metadata?.meetingUrl) {
+    throw new Error(
+      'Microsoft did not add a Teams meeting to the event. Teams meetings need a work or school account with Teams.'
+    )
+  }
+
   await ctx.links.set(SERVICE_ENTITY, serviceRecordId, {
     remoteId: saved.id,
     remoteUrl: saved.webLink ?? null,
@@ -128,10 +158,8 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
     metadata: {
       ...(link?.metadata ?? {}),
       calendarId: settings.calendarId,
-      ...(saved.onlineMeeting?.joinUrl && {
-        meetingUrl: saved.onlineMeeting.joinUrl,
-        meetingProvider: 'teams',
-      }),
+      ...(manual && { manual: true }),
+      ...(meetingUrl && { meetingUrl, meetingProvider: 'teams' }),
     },
   })
   return { summary: link ? 'event updated' : 'event created' }
@@ -222,7 +250,7 @@ export const connector: ConnectorServer = {
     'calendar.push': async (ctx, payload) => {
       const id = typeof payload.entityId === 'string' ? payload.entityId : null
       if (!id) return { summary: 'no record id' }
-      return pushService(ctx, id)
+      return pushService(ctx, id, payload.action === 'create' ? 'create' : null)
     },
     'calendar.pull': pullBusy,
   },

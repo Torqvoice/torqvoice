@@ -113,6 +113,12 @@ export interface ConnectorManifest {
   auth: AuthSpec
   /** Capability ids such as 'calendar.push'. Shown as badges; used by the app to find a provider. */
   capabilities: string[]
+  /**
+   * The video call product a person can add to a work order from its page,
+   * as a key under integrations.meeting: 'teams', 'google-meet', 'zoom'.
+   * Only connectors whose service.update job honours a `create` action.
+   */
+  meetingProvider?: string
   settings: SettingField[]
   /** App events (webhook event names) that enqueue a job of the given kind with the event's entityId. */
   subscriptions?: { event: string; job: string }[]

@@ -965,16 +965,16 @@ export interface ServiceVideoCall {
     /** True when it can be removed from the work order: the connector owns the meeting. */
     removable: boolean
   } | null
-  /** Connected video call services a meeting can be added from. */
-  providers: { connectorId: string; name: string }[]
+  /** Connected services a meeting can be added from, with the meeting product's label key. */
+  providers: { connectorId: string; name: string; provider: string }[]
 }
 
 /**
  * Video call state for one work order: the link a connection attached, and
- * the connected conferencing services that could add one. Calendar
- * connectors attach links as part of their event (Google Meet, Teams); a
- * conferencing connector such as Zoom owns the meeting outright, which is
- * the only kind a person can add or remove from the work order.
+ * the connected services that could add one. Calendar connectors attach
+ * the meeting to their event (Google Meet, Teams) and can do so on request;
+ * a conferencing connector such as Zoom owns the meeting outright, which is
+ * the only kind a person can remove again from the work order.
  */
 export async function getServiceVideoCall(serviceRecordId: string) {
   return withAuth(
@@ -1009,8 +1009,10 @@ export async function getServiceVideoCall(serviceRecordId: string) {
       }
       const providers = connections
         .map((c) => getManifest(c.connectorId))
-        .filter((m): m is ConnectorManifest => Boolean(m && m.category === 'conferencing'))
-        .map((m) => ({ connectorId: m.id, name: m.name }))
+        .filter((m): m is ConnectorManifest & { meetingProvider: string } =>
+          Boolean(m?.meetingProvider)
+        )
+        .map((m) => ({ connectorId: m.id, name: m.name, provider: m.meetingProvider }))
       return { link, providers }
     },
     { requiredPermissions: READ_PERMISSION }
@@ -1018,10 +1020,10 @@ export async function getServiceVideoCall(serviceRecordId: string) {
 }
 
 /**
- * Run a conferencing connector's sync for one work order right now, rather
- * than within the minute the cron would take, and report what it left
- * behind. The job still goes through the queue so it is logged, retried and
- * visible on the integration page like any other.
+ * Run a connector's sync for one work order right now, rather than within
+ * the minute the cron would take, and report what it left behind. The job
+ * still goes through the queue so it is logged, retried and visible on the
+ * integration page like any other.
  */
 async function syncServiceConference(
   organizationId: string,
@@ -1030,7 +1032,9 @@ async function syncServiceConference(
   action: 'create' | 'remove'
 ) {
   const manifest = getManifest(connectorId)
-  if (!manifest || manifest.category !== 'conferencing') throw new Error('Unknown integration')
+  if (!manifest?.meetingProvider) throw new Error('Unknown integration')
+  if (action === 'remove' && manifest.category !== 'conferencing')
+    throw new Error('This meeting is part of the calendar event and is removed with it')
   const job = manifest.subscriptions?.find((s) => s.event === 'service.update')?.job
   if (!job) throw new Error('This integration cannot add video calls')
   const row = await db.integrationConnection.findUnique({

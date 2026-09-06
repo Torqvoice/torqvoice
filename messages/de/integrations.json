@@ -209,8 +209,8 @@
         "calendarId": "Kalender",
         "pushEnabled": "Geplante Aufträge in diesen Kalender eintragen",
         "includeCustomer": "Name und Telefonnummer des Kunden in den Termin aufnehmen",
-        "addConference": "Jedem Termin einen Google Meet-Link hinzufügen",
-        "addConferenceHelp": "Der Link wird im Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können.",
+        "addConference": "Jedem geplanten Auftrag ein Google Meet-Meeting hinzufügen",
+        "addConferenceHelp": "Ein: jeder in den Kalender übertragene Auftrag bekommt ein Google Meet-Meeting, und der Link erscheint auf dem Auftrag. Aus: ein Google Meet-Meeting einem einzelnen Auftrag von dessen Seite aus hinzufügen. In beiden Fällen bekommt der Kunde den Link erst, wenn Sie ihn senden.",
         "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
         "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
       }
@@ -226,8 +226,8 @@
         "calendarId": "Kalender",
         "pushEnabled": "Geplante Aufträge in diesen Kalender eintragen",
         "includeCustomer": "Name und Telefonnummer des Kunden in den Termin aufnehmen",
-        "addConference": "Jedem Termin einen Microsoft Teams-Link hinzufügen",
-        "addConferenceHelp": "Der Link wird im Auftrag angezeigt, damit Sie ihn mit dem Kunden teilen können.",
+        "addConference": "Jedem geplanten Auftrag ein Microsoft Teams-Meeting hinzufügen",
+        "addConferenceHelp": "Ein: jeder in den Kalender übertragene Auftrag bekommt ein Microsoft Teams-Meeting, und der Link erscheint auf dem Auftrag. Aus: ein Microsoft Teams-Meeting einem einzelnen Auftrag von dessen Seite aus hinzufügen. In beiden Fällen bekommt der Kunde den Link erst, wenn Sie ihn senden.",
         "pullEnabled": "Belegte Zeiten dieses Kalenders im Torqvoice-Kalender anzeigen",
         "pullEnabledHelp": "Nur lesend. Wird alle 15 Minuten aktualisiert, eine Woche zurück und zwei Monate voraus."
       }

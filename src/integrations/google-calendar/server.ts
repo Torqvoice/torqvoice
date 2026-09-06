@@ -43,7 +43,17 @@ function eventsUrl(calendarId: string, eventId?: string): string {
   return eventId ? `${base}/${encodeURIComponent(eventId)}` : base
 }
 
-async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
+/**
+ * Put the work order on the calendar, with a Meet link when the setting
+ * says so or a person asked for one from the work order (`action:
+ * 'create'`, remembered as `manual` on the link). A meeting added by hand
+ * keeps its event even with the automatic push switched off.
+ */
+async function pushService(
+  ctx: ConnectorContext,
+  serviceRecordId: string,
+  action: 'create' | null = null
+) {
   const settings = settingsOf(ctx)
   if (!settings.calendarId) throw new Error('No calendar chosen in the integration settings')
   const link = await ctx.links.get(SERVICE_ENTITY, serviceRecordId)
@@ -51,8 +61,10 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
   const draft = record
     ? draftCalendarEvent(record, { appUrl: ctx.appUrl, includeCustomer: settings.includeCustomer })
     : null
+  const manual = action === 'create' || link?.metadata?.manual === true
+  const wantMeeting = settings.addConference || manual
 
-  if (!draft || !settings.pushEnabled) {
+  if (!draft || !(settings.pushEnabled || manual)) {
     if (!link) return { summary: 'nothing to do' }
     try {
       await ctx.http.fetch(eventsUrl(settings.calendarId, link.remoteId), { method: 'DELETE' })
@@ -64,7 +76,7 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
     return { summary: 'event removed' }
   }
 
-  if (link?.checksum === draft.checksum && (!settings.addConference || link.metadata?.meetingUrl)) {
+  if (link?.checksum === draft.checksum && (!wantMeeting || link.metadata?.meetingUrl)) {
     return { summary: 'unchanged' }
   }
 
@@ -76,7 +88,7 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
     source: { title: 'Torqvoice', url: draft.url },
     extendedProperties: { private: { torqvoiceServiceId: serviceRecordId } },
   }
-  if (settings.addConference && !link?.metadata?.meetingUrl) {
+  if (wantMeeting && !link?.metadata?.meetingUrl) {
     body.conferenceData = {
       createRequest: {
         requestId: `torqvoice-${serviceRecordId}-${Date.now()}`,
@@ -116,13 +128,23 @@ async function pushService(ctx: ConnectorContext, serviceRecordId: string) {
     )
   }
 
+  // Google creates the Meet room after the write returns; one read back
+  // catches the link rather than leaving the work order without it.
+  if (wantMeeting && !link?.metadata?.meetingUrl && !saved.hangoutLink) {
+    saved = await ctx.http.json<GoogleEvent>(eventsUrl(settings.calendarId, saved.id))
+  }
+  if (action === 'create' && !saved.hangoutLink && !link?.metadata?.meetingUrl) {
+    throw new Error('Google did not add a Meet link to the event. Try again in a moment.')
+  }
+
   await ctx.links.set(SERVICE_ENTITY, serviceRecordId, {
     remoteId: saved.id,
-    remoteUrl: null,
+    remoteUrl: saved.htmlLink ?? null,
     checksum: draft.checksum,
     metadata: {
       ...(link?.metadata ?? {}),
       calendarId: settings.calendarId,
+      ...(manual && { manual: true }),
       ...(saved.hangoutLink && { meetingUrl: saved.hangoutLink, meetingProvider: 'google-meet' }),
     },
   })
@@ -211,7 +233,7 @@ export const connector: ConnectorServer = {
     'calendar.push': async (ctx, payload) => {
       const id = typeof payload.entityId === 'string' ? payload.entityId : null
       if (!id) return { summary: 'no record id' }
-      return pushService(ctx, id)
+      return pushService(ctx, id, payload.action === 'create' ? 'create' : null)
     },
     'calendar.pull': pullBusy,
   },
