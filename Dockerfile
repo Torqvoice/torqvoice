@@ -93,6 +93,13 @@ RUN rm -rf \
 # resolve the binary against the platform the image will actually run on.
 RUN npx next-ws patch --yes
 
+# next-ws reads a route module's exports the moment an upgrade arrives, and
+# Next 16.3 loads route modules lazily, so the first WebSocket connection after
+# every boot died with "The lazy module is still loading" until the fix below
+# is applied to the fresh copy the install above pulled in.
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/patch-next-ws-first-upgrade.mjs ./scripts/patch-next-ws-first-upgrade.mjs
+RUN node scripts/patch-next-ws-first-upgrade.mjs
+
 # Fail the build here rather than at the first certificate download: a native
 # module that cannot be loaded throws while the route module is being
 # evaluated, which reaches the browser as an empty HTTP 500 with nothing in it
