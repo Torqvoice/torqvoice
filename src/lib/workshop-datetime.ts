@@ -22,3 +22,21 @@ export function parseWorkshopDateTime(value: string, timeZone: string): Date {
   if (Number.isNaN(date.getTime())) throw new Error('Invalid send time')
   return date
 }
+
+/**
+ * The same, for optional form input: empty, malformed or absurd values come
+ * back as undefined instead of throwing, the way toSafeDate behaves.
+ */
+export function toSafeWorkshopDate(
+  value: string | null | undefined,
+  timeZone: string
+): Date | undefined {
+  if (!value) return undefined
+  try {
+    const date = parseWorkshopDateTime(value, timeZone)
+    const year = date.getUTCFullYear()
+    return year >= 1900 && year <= 2100 ? date : undefined
+  } catch {
+    return undefined
+  }
+}

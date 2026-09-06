@@ -140,6 +140,7 @@
     "descriptionLabel": "Beskrivelse",
     "descriptionPlaceholder": "Valgfrie detaljer...",
     "dueDateLabel": "Forfallsdato",
+    "dueTimeLabel": "Klokkeslett (valgfritt)",
     "dueMileageLabel": "Kilometerstand ved forfall",
     "dueMileagePlaceholder": "f.eks. 50000",
     "reminderUpdated": "Påminnelse oppdatert",

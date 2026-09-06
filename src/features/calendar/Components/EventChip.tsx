@@ -1,12 +1,13 @@
 'use client'
 
-import type { CSSProperties, MouseEvent } from 'react'
+import type { CSSProperties, MouseEvent, ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import { useDateSettings } from '@/components/date-settings-context'
 import { formatClock } from '@/features/workboard/utils/clock'
 import { cn } from '@/lib/utils'
 import { timeToMinutes } from '../Lib/calendar-range'
 import { eventPalette, isEventDone } from './calendar-utils'
+import { EventContextMenu } from './EventContextMenu'
 import { useEventPeek } from './EventPeek'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
@@ -18,7 +19,8 @@ import type { CalendarEvent } from '../Actions/calendarActions'
  * - `block` a solid block on the time grid; the parent positions it
  * - `row`   a list row for the schedule view and the day sheet
  *
- * Every shape opens the same peek card on click, so nothing here links out.
+ * Every shape opens the same peek card on click and the same menu on
+ * right-click, so nothing here links out.
  */
 export function EventChip({
   event,
@@ -45,13 +47,19 @@ export function EventChip({
     e.stopPropagation()
     openPeek(event, e.currentTarget)
   }
+  // The day underneath has a menu of its own; a right-click on the event
+  // must open the event's, not both.
+  const onContextMenu = (e: MouseEvent<HTMLButtonElement>) => e.stopPropagation()
   const label = start ? `${start} ${event.title}` : event.title
 
+  let button: ReactNode
+
   if (variant === 'timed') {
-    return (
+    button = (
       <button
         type="button"
         onClick={onClick}
+        onContextMenu={onContextMenu}
         title={label}
         style={style}
         className={cn(
@@ -69,13 +77,12 @@ export function EventChip({
         <span className={cn('truncate font-medium', done && 'line-through')}>{event.title}</span>
       </button>
     )
-  }
-
-  if (variant === 'chip') {
-    return (
+  } else if (variant === 'chip') {
+    button = (
       <button
         type="button"
         onClick={onClick}
+        onContextMenu={onContextMenu}
         title={label}
         style={style}
         className={cn(
@@ -92,20 +99,19 @@ export function EventChip({
         )}
       </button>
     )
-  }
-
-  if (variant === 'block') {
-    return (
+  } else if (variant === 'block') {
+    button = (
       <button
         type="button"
         onClick={onClick}
+        onContextMenu={onContextMenu}
         title={end ? `${start} – ${end} ${event.title}` : label}
         style={style}
         className={cn(
           'absolute flex flex-col overflow-hidden rounded-md border px-1.5 py-1 text-left text-xs leading-tight shadow-sm transition-[filter,box-shadow] hover:z-20 hover:shadow-md',
           palette.block,
           done && 'opacity-70',
-          compact && 'py-0 justify-center',
+          compact && 'justify-center py-0',
           className
         )}
       >
@@ -122,32 +128,35 @@ export function EventChip({
         )}
       </button>
     )
+  } else {
+    button = (
+      <button
+        type="button"
+        onClick={onClick}
+        onContextMenu={onContextMenu}
+        style={style}
+        className={cn(
+          'flex w-full items-start gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent',
+          className
+        )}
+      >
+        <span className="w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
+          {start ? (end ? `${start} – ${end}` : start) : null}
+        </span>
+        <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', palette.dot)} />
+        <span className="min-w-0 flex-1">
+          <span className={cn('block truncate font-medium', done && 'line-through opacity-70')}>
+            {event.title}
+          </span>
+          {(event.vehicleLabel || event.customerName) && (
+            <span className="block truncate text-xs text-muted-foreground">
+              {[event.vehicleLabel, event.customerName].filter(Boolean).join(' · ')}
+            </span>
+          )}
+        </span>
+      </button>
+    )
   }
 
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={style}
-      className={cn(
-        'flex w-full items-start gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent',
-        className
-      )}
-    >
-      <span className="w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
-        {start ? (end ? `${start} – ${end}` : start) : null}
-      </span>
-      <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', palette.dot)} />
-      <span className="min-w-0 flex-1">
-        <span className={cn('block truncate font-medium', done && 'line-through opacity-70')}>
-          {event.title}
-        </span>
-        {(event.vehicleLabel || event.customerName) && (
-          <span className="block truncate text-xs text-muted-foreground">
-            {[event.vehicleLabel, event.customerName].filter(Boolean).join(' · ')}
-          </span>
-        )}
-      </span>
-    </button>
-  )
+  return <EventContextMenu event={event}>{button}</EventContextMenu>
 }

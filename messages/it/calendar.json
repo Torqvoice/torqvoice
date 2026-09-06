@@ -96,6 +96,18 @@
     "hint": "Suggerimento: fai clic con il tasto destro su un giorno per le azioni",
     "scheduleMessage": "Pianifica messaggio"
   },
+  "eventMenu": {
+    "open": "Apri",
+    "markDone": "Segna come fatto",
+    "markNotDone": "Segna come non fatto",
+    "deleteReminder": "Elimina promemoria",
+    "deleteReminderConfirm": "Eliminare il promemoria \"{title}\"? L'operazione non può essere annullata.",
+    "deleteMessage": "Elimina messaggio pianificato",
+    "deleteMessageConfirm": "Eliminare il messaggio pianificato \"{title}\"? Non verrà inviato.",
+    "deleted": "Eliminato",
+    "updated": "Aggiornato",
+    "failed": "Operazione non riuscita. Riprova."
+  },
   "events": {
     "status": {
       "completed": "Completato",

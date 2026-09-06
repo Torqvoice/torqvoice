@@ -96,6 +96,9 @@ model Reminder {
   title       String
   description String?
   dueDate     DateTime?
+  /// True when the time of day in dueDate was chosen, not the noon a
+  /// day-only reminder is stored at
+  hasDueTime  Boolean   @default(false)
   dueMileage  Int?
   isCompleted Boolean   @default(false)
   /// Per-reminder notification channels, chosen when creating the reminder

@@ -43,6 +43,8 @@ export interface ReminderFormValues {
   title: string
   description: string | null
   dueDate: Date | null
+  /** True when the time inside dueDate was chosen */
+  hasDueTime?: boolean
   dueMileage: number | null
   notifyInApp: boolean
   notifyEmail: boolean
@@ -58,7 +60,14 @@ interface ReminderFormDialogProps {
   reminder?: ReminderFormValues
   /** Seeds the due date of a new reminder, e.g. the calendar day that was right-clicked */
   defaultDueDate?: Date
+  /** HH:MM to seed the time with, when the calendar was clicked on a time slot */
+  defaultDueTime?: string
   onSaved?: () => void
+}
+
+/** HH:MM of the local clock */
+function toLocalTimeStr(d: Date): string {
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
 /** YYYY-MM-DD from the local calendar day, never the UTC one */
@@ -75,6 +84,7 @@ export function ReminderFormDialog({
   vehicles,
   reminder,
   defaultDueDate,
+  defaultDueTime,
   onSaved,
 }: ReminderFormDialogProps) {
   const t = useTranslations('reminders')
@@ -86,6 +96,8 @@ export function ReminderFormDialog({
   const [formTitle, setFormTitle] = useState('')
   const [formDescription, setFormDescription] = useState('')
   const [formDueDate, setFormDueDate] = useState<Date | undefined>()
+  // '' means a day-only reminder
+  const [formDueTime, setFormDueTime] = useState('')
   const [formDueMileage, setFormDueMileage] = useState('')
   const [formNotifyInApp, setFormNotifyInApp] = useState(true)
   const [formNotifyEmail, setFormNotifyEmail] = useState(false)
@@ -109,6 +121,9 @@ export function ReminderFormDialog({
       setFormTitle(reminder.title)
       setFormDescription(reminder.description || '')
       setFormDueDate(reminder.dueDate ? new Date(reminder.dueDate) : undefined)
+      setFormDueTime(
+        reminder.hasDueTime && reminder.dueDate ? toLocalTimeStr(new Date(reminder.dueDate)) : ''
+      )
       setFormDueMileage(reminder.dueMileage ? String(reminder.dueMileage) : '')
       setFormNotifyInApp(reminder.notifyInApp ?? true)
       setFormNotifyEmail(reminder.notifyEmail ?? false)
@@ -119,13 +134,14 @@ export function ReminderFormDialog({
       setFormTitle('')
       setFormDescription('')
       setFormDueDate(defaultDueDate)
+      setFormDueTime(defaultDueTime ?? '')
       setFormDueMileage('')
       setFormNotifyInApp(true)
       setFormNotifyEmail(false)
       setFormCustomerId('')
       setFormCustomer(null)
     }
-  }, [open, reminder, defaultDueDate])
+  }, [open, reminder, defaultDueDate, defaultDueTime])
 
   const selectedVehicle = vehicles.find((v) => v.id === formVehicleId)
 
@@ -140,9 +156,14 @@ export function ReminderFormDialog({
       // When editing, emptied fields are sent as cleared ('' or null) so the
       // update action drops the old value.
       description: clearableInput(formDescription, isEdit),
-      // Midday on the local day, so the reminder stays on the day that was
-      // picked whichever side of UTC the workshop sits on
-      dueDate: formDueDate ? `${toLocalDateStr(formDueDate)}T12:00:00` : isEdit ? '' : undefined,
+      // The workshop's wall clock, read in its zone on the server. A
+      // day-only reminder sits at midday so it stays on its day everywhere.
+      dueDate: formDueDate
+        ? `${toLocalDateStr(formDueDate)}T${formDueTime || '12:00'}:00`
+        : isEdit
+          ? ''
+          : undefined,
+      hasDueTime: Boolean(formDueDate && formDueTime),
       dueMileage: formDueMileage ? Number(formDueMileage) : isEdit ? null : undefined,
       notifyInApp: formNotifyInApp,
       notifyEmail: formNotifyEmail,
@@ -299,7 +320,7 @@ export function ReminderFormDialog({
             />
           </div>
 
-          {/* Due date + mileage */}
+          {/* Due date, time + mileage */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>{tv('dueDateLabel')}</Label>
@@ -328,6 +349,16 @@ export function ReminderFormDialog({
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reminder-time">{tv('dueTimeLabel')}</Label>
+              <Input
+                id="reminder-time"
+                type="time"
+                value={formDueTime}
+                onChange={(e) => setFormDueTime(e.target.value)}
+                disabled={!formDueDate}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="reminder-mileage">{tv('dueMileageLabel')}</Label>

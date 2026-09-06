@@ -96,6 +96,18 @@
     "hint": "Astuce : faites un clic droit sur un jour pour voir les actions",
     "scheduleMessage": "Programmer un message"
   },
+  "eventMenu": {
+    "open": "Ouvrir",
+    "markDone": "Marquer comme fait",
+    "markNotDone": "Marquer comme non fait",
+    "deleteReminder": "Supprimer le rappel",
+    "deleteReminderConfirm": "Supprimer le rappel \"{title}\" ? Cette action est irréversible.",
+    "deleteMessage": "Supprimer le message programmé",
+    "deleteMessageConfirm": "Supprimer le message programmé \"{title}\" ? Il ne sera pas envoyé.",
+    "deleted": "Supprimé",
+    "updated": "Mis à jour",
+    "failed": "Cela n'a pas fonctionné. Réessayez."
+  },
   "events": {
     "status": {
       "completed": "Terminé",

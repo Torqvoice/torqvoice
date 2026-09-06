@@ -371,8 +371,9 @@ export default function CalendarClient({
           boardEnd: minutesToTime(Math.min(startMins + SLOT_WORK_ORDER_MINUTES, 24 * 60 - 1)),
         })
       },
-      onNewReminder: (day) => {
+      onNewReminder: (day, time) => {
         setMenuDateStr(day)
+        setMenuTime(time)
         setShowReminderDialog(true)
       },
       onNewQuote: (day) => {
@@ -470,7 +471,7 @@ export default function CalendarClient({
   })()
 
   return (
-    <EventPeekProvider currencyCode={currencyCode}>
+    <EventPeekProvider currencyCode={currencyCode} onRefresh={refresh}>
       {/*
         A definite height, not flex-1: nothing above this in the layout has
         one (the shell is min-h-svh), so a flexed calendar would grow to the
@@ -574,6 +575,7 @@ export default function CalendarClient({
         onOpenChange={setShowReminderDialog}
         vehicles={reminderVehicles}
         defaultDueDate={menuDate}
+        defaultDueTime={menuTime}
         onSaved={refresh}
       />
 

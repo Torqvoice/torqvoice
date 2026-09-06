@@ -96,6 +96,18 @@
     "hint": "İpucu: işlemler için bir güne sağ tıklayın",
     "scheduleMessage": "Mesaj planla"
   },
+  "eventMenu": {
+    "open": "Aç",
+    "markDone": "Tamamlandı olarak işaretle",
+    "markNotDone": "Tamamlanmadı olarak işaretle",
+    "deleteReminder": "Hatırlatıcıyı sil",
+    "deleteReminderConfirm": "\"{title}\" hatırlatıcısı silinsin mi? Bu işlem geri alınamaz.",
+    "deleteMessage": "Planlanmış mesajı sil",
+    "deleteMessageConfirm": "\"{title}\" planlanmış mesajı silinsin mi? Gönderilmeyecek.",
+    "deleted": "Silindi",
+    "updated": "Güncellendi",
+    "failed": "Olmadı. Tekrar deneyin."
+  },
   "events": {
     "status": {
       "completed": "Tamamlandı",

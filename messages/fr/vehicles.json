@@ -140,6 +140,7 @@
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Détails optionnels...",
     "dueDateLabel": "Date d'échéance",
+    "dueTimeLabel": "Heure (facultatif)",
     "dueMileageLabel": "Kilométrage d'échéance",
     "dueMileagePlaceholder": "ex. 50000",
     "reminderUpdated": "Rappel mis à jour",

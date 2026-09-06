@@ -140,6 +140,7 @@
     "descriptionLabel": "Beschrijving",
     "descriptionPlaceholder": "Optionele details...",
     "dueDateLabel": "Vervaldatum",
+    "dueTimeLabel": "Tijd (optioneel)",
     "dueMileageLabel": "Verval kilometerstand",
     "dueMileagePlaceholder": "bijv. 50000",
     "reminderUpdated": "Herinnering bijgewerkt",

@@ -96,6 +96,18 @@
     "hint": "Patarimas: spustelėkite dieną dešiniuoju pelės mygtuku, kad pamatytumėte veiksmus",
     "scheduleMessage": "Suplanuoti žinutę"
   },
+  "eventMenu": {
+    "open": "Atidaryti",
+    "markDone": "Pažymėti kaip atliktą",
+    "markNotDone": "Pažymėti kaip neatliktą",
+    "deleteReminder": "Ištrinti priminimą",
+    "deleteReminderConfirm": "Ištrinti priminimą „{title}“? Šio veiksmo atšaukti negalima.",
+    "deleteMessage": "Ištrinti suplanuotą žinutę",
+    "deleteMessageConfirm": "Ištrinti suplanuotą žinutę „{title}“? Ji nebus išsiųsta.",
+    "deleted": "Ištrinta",
+    "updated": "Atnaujinta",
+    "failed": "Nepavyko. Bandykite dar kartą."
+  },
   "events": {
     "status": {
       "completed": "Užbaigta",

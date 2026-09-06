@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseWorkshopDateTime } from '@/features/scheduled-messages/Lib/parseWorkshopDateTime'
+import { parseWorkshopDateTime } from '@/lib/workshop-datetime'
 
 describe('parseWorkshopDateTime', () => {
   it('reads a wall-clock time in the workshop zone, not the server zone', () => {

@@ -140,6 +140,7 @@
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Optional details...",
     "dueDateLabel": "Due Date",
+    "dueTimeLabel": "Time (optional)",
     "dueMileageLabel": "Due Mileage",
     "dueMileagePlaceholder": "e.g. 50000",
     "reminderUpdated": "Reminder updated",

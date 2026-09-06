@@ -15,6 +15,23 @@ vi.mock('@/components/currency-settings-context', () => ({
   useFormatCurrency: () => (amount: number, code: string) => `${amount} ${code}`,
 }))
 
+const push = vi.fn()
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push }) }))
+
+const confirmMock = vi.fn()
+vi.mock('@/components/confirm-dialog', () => ({ useConfirm: () => confirmMock }))
+
+const deleteScheduledMessage = vi.fn()
+vi.mock('@/features/scheduled-messages/Actions/scheduledMessageActions', () => ({
+  deleteScheduledMessage: (...args: unknown[]) => deleteScheduledMessage(...args),
+}))
+const toggleReminder = vi.fn()
+const deleteReminder = vi.fn()
+vi.mock('@/features/vehicles/Actions/reminderActions', () => ({
+  toggleReminder: (...args: unknown[]) => toggleReminder(...args),
+  deleteReminder: (...args: unknown[]) => deleteReminder(...args),
+}))
+
 // The global next-intl mock has no useFormatter; the calendar's own wrapper
 // is what the components import, so give it a plain Intl formatter.
 vi.mock('@/features/calendar/Components/useDayFormatter', () => ({
@@ -92,7 +109,23 @@ const job: CalendarEvent = {
   amount: 1200,
 }
 
+const message: CalendarEvent = {
+  id: 'm1',
+  title: 'Service due soon',
+  date: '2026-09-04',
+  time: '08:00',
+  type: 'message',
+  status: 'scheduled',
+  channel: 'sms',
+  vehicleId: null,
+  vehicleLabel: '',
+  customerName: 'Ola Nordmann',
+  invoiceNumber: null,
+  amount: null,
+}
+
 function setup() {
+  const onRefresh = vi.fn()
   const actions = {
     onNewWorkOrder: vi.fn(),
     onNewReminder: vi.fn(),
@@ -101,9 +134,12 @@ function setup() {
   }
   const onSelectDate = vi.fn()
   const onOpenDay = vi.fn()
-  const eventsByDate = new Map<string, CalendarEvent[]>([['2026-09-03', [job]]])
+  const eventsByDate = new Map<string, CalendarEvent[]>([
+    ['2026-09-03', [job]],
+    ['2026-09-04', [message]],
+  ])
   const utils = render(
-    <EventPeekProvider currencyCode="NOK">
+    <EventPeekProvider currencyCode="NOK" onRefresh={onRefresh}>
       <TimeGridView
         days={days}
         eventsByDate={eventsByDate}
@@ -125,7 +161,7 @@ function setup() {
     col.getBoundingClientRect = () =>
       ({ top: 0, left: 0, width: 100, height: 1440, right: 100, bottom: 1440 }) as DOMRect
   }
-  return { ...utils, actions, onSelectDate, onOpenDay, columns }
+  return { ...utils, actions, onSelectDate, onOpenDay, onRefresh, columns }
 }
 
 describe('TimeGridView', () => {
@@ -166,6 +202,30 @@ describe('TimeGridView', () => {
     expect(screen.getByText('Kari Nordmann')).toBeInTheDocument()
     expect(screen.getByText('1200 NOK')).toBeInTheDocument()
     expect(actions.onNewWorkOrder).not.toHaveBeenCalled()
+  })
+
+  it('right-click on a scheduled message can delete it after a confirmation', async () => {
+    const { onRefresh, actions } = setup()
+    confirmMock.mockResolvedValue(true)
+    deleteScheduledMessage.mockResolvedValue({ success: true })
+    fireEvent.contextMenu(screen.getByText(/Service due soon/))
+    fireEvent.click(await screen.findByText('Delete scheduled message'))
+    await waitFor(() => expect(deleteScheduledMessage).toHaveBeenCalledWith('m1'))
+    expect(confirmMock).toHaveBeenCalled()
+    await waitFor(() => expect(onRefresh).toHaveBeenCalled())
+    // The day's own menu stayed shut: no "New work order" item appeared.
+    expect(screen.queryByText(/New work order/)).not.toBeInTheDocument()
+    expect(actions.onNewWorkOrder).not.toHaveBeenCalled()
+  })
+
+  it('does nothing when the delete is not confirmed', async () => {
+    setup()
+    confirmMock.mockResolvedValue(false)
+    deleteScheduledMessage.mockClear()
+    fireEvent.contextMenu(screen.getByText(/Service due soon/))
+    fireEvent.click(await screen.findByText('Delete scheduled message'))
+    await waitFor(() => expect(confirmMock).toHaveBeenCalled())
+    expect(deleteScheduledMessage).not.toHaveBeenCalled()
   })
 
   it('offers the same choices on right-click, with the slot time', async () => {

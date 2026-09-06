@@ -96,6 +96,18 @@
     "hint": "Tips: høyreklikk en dag for handlinger",
     "scheduleMessage": "Planlegg melding"
   },
+  "eventMenu": {
+    "open": "Åpne",
+    "markDone": "Merk som fullført",
+    "markNotDone": "Merk som ikke fullført",
+    "deleteReminder": "Slett påminnelse",
+    "deleteReminderConfirm": "Slette påminnelsen «{title}»? Dette kan ikke angres.",
+    "deleteMessage": "Slett planlagt melding",
+    "deleteMessageConfirm": "Slette den planlagte meldingen «{title}»? Den blir ikke sendt.",
+    "deleted": "Slettet",
+    "updated": "Oppdatert",
+    "failed": "Det gikk ikke. Prøv igjen."
+  },
   "events": {
     "status": {
       "completed": "Fullført",

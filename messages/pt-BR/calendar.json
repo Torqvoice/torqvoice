@@ -96,6 +96,18 @@
     "hint": "Dica: clique com o botão direito em um dia para ver as ações",
     "scheduleMessage": "Agendar mensagem"
   },
+  "eventMenu": {
+    "open": "Abrir",
+    "markDone": "Marcar como concluído",
+    "markNotDone": "Marcar como não concluído",
+    "deleteReminder": "Excluir lembrete",
+    "deleteReminderConfirm": "Excluir o lembrete \"{title}\"? Isso não pode ser desfeito.",
+    "deleteMessage": "Excluir mensagem agendada",
+    "deleteMessageConfirm": "Excluir a mensagem agendada \"{title}\"? Ela não será enviada.",
+    "deleted": "Excluído",
+    "updated": "Atualizado",
+    "failed": "Não foi possível concluir. Tente novamente."
+  },
   "events": {
     "status": {
       "completed": "Concluído",

@@ -96,6 +96,18 @@
     "hint": "Tip: klik met de rechtermuisknop op een dag voor acties",
     "scheduleMessage": "Bericht plannen"
   },
+  "eventMenu": {
+    "open": "Openen",
+    "markDone": "Markeren als afgerond",
+    "markNotDone": "Markeren als niet afgerond",
+    "deleteReminder": "Herinnering verwijderen",
+    "deleteReminderConfirm": "Herinnering \"{title}\" verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "deleteMessage": "Gepland bericht verwijderen",
+    "deleteMessageConfirm": "Gepland bericht \"{title}\" verwijderen? Het wordt niet verzonden.",
+    "deleted": "Verwijderd",
+    "updated": "Bijgewerkt",
+    "failed": "Dat is niet gelukt. Probeer het opnieuw."
+  },
   "events": {
     "status": {
       "completed": "Voltooid",

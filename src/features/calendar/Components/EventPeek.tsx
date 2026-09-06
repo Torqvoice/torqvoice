@@ -52,11 +52,14 @@ interface PeekState {
 interface PeekApi {
   openPeek: (event: CalendarEvent, anchor: HTMLElement) => void
   closePeek: () => void
+  /** Reloads the events after something was deleted or ticked off in place. */
+  refresh: () => void
 }
 
 const PeekContext = createContext<PeekApi>({
   openPeek: () => undefined,
   closePeek: () => undefined,
+  refresh: () => undefined,
 })
 
 export function useEventPeek() {
@@ -65,9 +68,11 @@ export function useEventPeek() {
 
 export function EventPeekProvider({
   currencyCode,
+  onRefresh,
   children,
 }: {
   currencyCode: string
+  onRefresh?: () => void
   children: ReactNode
 }) {
   const [peek, setPeek] = useState<PeekState | null>(null)
@@ -88,7 +93,11 @@ export function EventPeekProvider({
     )
   }, [])
   const closePeek = useCallback(() => setPeek(null), [])
-  const api = useMemo(() => ({ openPeek, closePeek }), [openPeek, closePeek])
+  const refresh = useCallback(() => {
+    setPeek(null)
+    onRefresh?.()
+  }, [onRefresh])
+  const api = useMemo(() => ({ openPeek, closePeek, refresh }), [openPeek, closePeek, refresh])
 
   return (
     <PeekContext.Provider value={api}>

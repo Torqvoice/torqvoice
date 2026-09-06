@@ -9,6 +9,9 @@ vi.mock('@/lib/cached-session', () => ({
   getCachedMembership: vi.fn(),
 }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+// The workshop zone is UTC here, so a bare day is that day's UTC midnight.
+// A plain function, so a resetAllMocks in a beforeEach cannot blank it.
+vi.mock('@/lib/workshop-timezone', () => ({ workshopTimeZone: async () => 'UTC' }))
 vi.mock('@/lib/notify', () => ({ notify: vi.fn() }))
 vi.mock('@/lib/email', () => ({
   sendOrgMail: vi.fn(),

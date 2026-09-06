@@ -10,7 +10,7 @@ import {
   updateScheduledMessageSchema,
 } from '../Schema/scheduledMessageSchema'
 import { dispatchScheduledMessage, nextSendAt } from '../Lib/dispatchScheduledMessage'
-import { parseWorkshopDateTime } from '../Lib/parseWorkshopDateTime'
+import { parseWorkshopDateTime } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 export type ScheduledMessageListItem = {
@@ -222,7 +222,6 @@ export async function cancelScheduledMessage(id: string) {
         select: { id: true },
       })
       if (!existing) throw new Error('Scheduled message not found')
-      const timeZone = await workshopTimeZone(organizationId)
 
       const message = await db.scheduledMessage.update({
         where: { id },

@@ -96,6 +96,18 @@
     "hint": "Tip: right-click a day for actions",
     "scheduleMessage": "Schedule message"
   },
+  "eventMenu": {
+    "open": "Open",
+    "markDone": "Mark as done",
+    "markNotDone": "Mark as not done",
+    "deleteReminder": "Delete reminder",
+    "deleteReminderConfirm": "Delete the reminder \"{title}\"? This cannot be undone.",
+    "deleteMessage": "Delete scheduled message",
+    "deleteMessageConfirm": "Delete the scheduled message \"{title}\"? It will not be sent.",
+    "deleted": "Deleted",
+    "updated": "Updated",
+    "failed": "That did not work. Try again."
+  },
   "events": {
     "status": {
       "completed": "Completed",

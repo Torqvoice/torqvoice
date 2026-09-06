@@ -96,6 +96,18 @@
     "hint": "Consejo: haz clic derecho en un día para ver las acciones",
     "scheduleMessage": "Programar mensaje"
   },
+  "eventMenu": {
+    "open": "Abrir",
+    "markDone": "Marcar como hecho",
+    "markNotDone": "Marcar como pendiente",
+    "deleteReminder": "Eliminar recordatorio",
+    "deleteReminderConfirm": "¿Eliminar el recordatorio \"{title}\"? Esta acción no se puede deshacer.",
+    "deleteMessage": "Eliminar mensaje programado",
+    "deleteMessageConfirm": "¿Eliminar el mensaje programado \"{title}\"? No se enviará.",
+    "deleted": "Eliminado",
+    "updated": "Actualizado",
+    "failed": "No se pudo completar. Inténtalo de nuevo."
+  },
   "events": {
     "status": {
       "completed": "Completado",

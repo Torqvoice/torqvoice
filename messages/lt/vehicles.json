@@ -140,6 +140,7 @@
     "descriptionLabel": "Aprašymas",
     "descriptionPlaceholder": "Papildoma informacija...",
     "dueDateLabel": "Termino data",
+    "dueTimeLabel": "Laikas (neprivaloma)",
     "dueMileageLabel": "Termino rida",
     "dueMileagePlaceholder": "pvz., 50000",
     "reminderUpdated": "Priminimas atnaujintas",

@@ -140,6 +140,7 @@
     "descriptionLabel": "Descrição",
     "descriptionPlaceholder": "Detalhes opcionais...",
     "dueDateLabel": "Data de Vencimento",
+    "dueTimeLabel": "Horário (opcional)",
     "dueMileageLabel": "Quilometragem de Vencimento",
     "dueMileagePlaceholder": "ex. 50000",
     "reminderUpdated": "Lembrete atualizado",

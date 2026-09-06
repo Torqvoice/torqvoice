@@ -96,6 +96,18 @@
     "hint": "Wskazówka: kliknij dzień prawym przyciskiem myszy, aby zobaczyć akcje",
     "scheduleMessage": "Zaplanuj wiadomość"
   },
+  "eventMenu": {
+    "open": "Otwórz",
+    "markDone": "Oznacz jako wykonane",
+    "markNotDone": "Oznacz jako niewykonane",
+    "deleteReminder": "Usuń przypomnienie",
+    "deleteReminderConfirm": "Usunąć przypomnienie „{title}”? Tej operacji nie można cofnąć.",
+    "deleteMessage": "Usuń zaplanowaną wiadomość",
+    "deleteMessageConfirm": "Usunąć zaplanowaną wiadomość „{title}”? Nie zostanie wysłana.",
+    "deleted": "Usunięto",
+    "updated": "Zaktualizowano",
+    "failed": "Nie udało się. Spróbuj ponownie."
+  },
   "events": {
     "status": {
       "completed": "Ukończono",

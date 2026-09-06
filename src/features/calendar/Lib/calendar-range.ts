@@ -173,7 +173,7 @@ export const DEFAULT_SPAN_MINUTES: Record<string, number> = {
   service: 60,
   message: 30,
   external: 60,
-  reminder: 60,
+  reminder: 30,
   quote: 60,
 }
 

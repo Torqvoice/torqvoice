@@ -96,6 +96,18 @@
     "hint": "Tipp: Rechtsklick auf einen Tag zeigt Aktionen",
     "scheduleMessage": "Nachricht planen"
   },
+  "eventMenu": {
+    "open": "Öffnen",
+    "markDone": "Als erledigt markieren",
+    "markNotDone": "Als nicht erledigt markieren",
+    "deleteReminder": "Erinnerung löschen",
+    "deleteReminderConfirm": "Erinnerung \"{title}\" löschen? Das lässt sich nicht rückgängig machen.",
+    "deleteMessage": "Geplante Nachricht löschen",
+    "deleteMessageConfirm": "Geplante Nachricht \"{title}\" löschen? Sie wird nicht gesendet.",
+    "deleted": "Gelöscht",
+    "updated": "Aktualisiert",
+    "failed": "Das hat nicht geklappt. Bitte erneut versuchen."
+  },
   "events": {
     "status": {
       "completed": "Abgeschlossen",

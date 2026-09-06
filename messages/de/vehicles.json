@@ -140,6 +140,7 @@
     "descriptionLabel": "Beschreibung",
     "descriptionPlaceholder": "Optionale Details...",
     "dueDateLabel": "Fälligkeitsdatum",
+    "dueTimeLabel": "Uhrzeit (optional)",
     "dueMileageLabel": "Fälligkeitskilometerstand",
     "dueMileagePlaceholder": "z.B. 50000",
     "reminderUpdated": "Erinnerung aktualisiert",
