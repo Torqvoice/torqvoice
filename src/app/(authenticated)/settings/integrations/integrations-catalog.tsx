@@ -4,13 +4,16 @@ import { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { AlertTriangle, ArrowRight, Check, Plug, Search, Settings2 } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Check, Lightbulb, Plug, Search, Settings2 } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { CatalogEntry } from '@/features/integrations/Actions/integrationActions'
 import type { IntegrationCategory } from '@/features/integrations/Lib/types'
+import { openSupport } from '@/features/support/Lib/supportVisibility'
+
+const DOCS_URL = 'https://torqvoice.com/docs/integrations'
 
 const CATEGORY_ORDER: IntegrationCategory[] = [
   'ai',
@@ -42,7 +45,14 @@ function normalize(value: string): string {
  * what this workshop already runs stays whole while you look for something
  * to add to it.
  */
-export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
+export function IntegrationsCatalog({
+  entries,
+  canSuggest,
+}: {
+  entries: CatalogEntry[]
+  /** Whether the support widget is there to receive a suggestion. */
+  canSuggest: boolean
+}) {
   const t = useTranslations('integrations')
   const [category, setCategory] = useState<IntegrationCategory | 'all'>('all')
   const [query, setQuery] = useState('')
@@ -169,6 +179,16 @@ export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
         icon={Plug}
         title={t('catalog.availableTitle')}
         description={t('catalog.availableDescription')}
+        action={
+          <a
+            href={DOCS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {t('catalog.readMore')} →
+          </a>
+        }
       >
         <div className="relative mb-4">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -257,6 +277,27 @@ export function IntegrationsCatalog({ entries }: { entries: CatalogEntry[] }) {
                 </Link>
               )
             })}
+          </div>
+        )}
+
+        {canSuggest && (
+          <div className="mt-4 flex flex-col gap-3 rounded-lg border border-dashed px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">{t('catalog.suggestTitle')}</p>
+                <p className="text-xs text-muted-foreground">{t('catalog.suggestDescription')}</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() => openSupport({ subject: t('catalog.suggestSubject') })}
+            >
+              {t('catalog.suggest')}
+            </Button>
           </div>
         )}
       </AppCard>

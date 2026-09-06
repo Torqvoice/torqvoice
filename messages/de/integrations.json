@@ -14,7 +14,12 @@
     "availableDescription": "Dienste, die Sie hinzufügen können. Jeder wird einmal eingerichtet und läuft im Hintergrund.",
     "allConnected": "Alle verfügbaren Dienste sind verbunden.",
     "searchPlaceholder": "Integrationen durchsuchen",
-    "noMatches": "Nichts passt zu „{query}“."
+    "noMatches": "Nichts passt zu „{query}“.",
+    "readMore": "Mehr erfahren",
+    "suggestTitle": "Fehlt ein Dienst, den Sie nutzen?",
+    "suggestDescription": "Sagen Sie uns, welche Integration Ihrer Werkstatt helfen würde, und wir prüfen sie.",
+    "suggest": "Integration vorschlagen",
+    "suggestSubject": "Integrationsvorschlag"
   },
   "categories": {
     "calendar": "Kalender",

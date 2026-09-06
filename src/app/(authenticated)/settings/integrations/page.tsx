@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
+import { isSupportEnabled } from '@/lib/support'
 import { anyConnectorAllowed } from '@/features/integrations/Lib/plan'
 import { getIntegrationCatalog } from '@/features/integrations/Actions/integrationActions'
 import { FeatureLockedMessage } from '../feature-locked-message'
@@ -22,10 +23,13 @@ export default async function IntegrationsPage() {
     )
   }
 
-  const result = await getIntegrationCatalog()
+  // Suggestions go through the support widget, so the button exists exactly
+  // where the widget does: cloud mode with support switched on. A self-hosted
+  // install has nobody on the other end to suggest anything to.
+  const [result, canSuggest] = await Promise.all([getIntegrationCatalog(), isSupportEnabled()])
   const catalog =
     result.success && result.data
       ? result.data
       : { entries: [], enabled: true, isCloud: isCloudMode() }
-  return <IntegrationsCatalog entries={catalog.entries} />
+  return <IntegrationsCatalog entries={catalog.entries} canSuggest={canSuggest} />
 }

@@ -14,7 +14,12 @@
     "availableDescription": "Servizi che puoi aggiungere. Ognuno si configura una volta e lavora in background.",
     "allConnected": "Tutti i servizi disponibili sono collegati.",
     "searchPlaceholder": "Cerca integrazioni",
-    "noMatches": "Nessun risultato per «{query}»."
+    "noMatches": "Nessun risultato per «{query}».",
+    "readMore": "Scopri di più",
+    "suggestTitle": "Manca un servizio che usi?",
+    "suggestDescription": "Dicci quale integrazione aiuterebbe la tua officina e la valuteremo.",
+    "suggest": "Suggerisci un'integrazione",
+    "suggestSubject": "Suggerimento di integrazione"
   },
   "categories": {
     "calendar": "Calendario",

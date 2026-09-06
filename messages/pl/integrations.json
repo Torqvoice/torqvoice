@@ -14,7 +14,12 @@
     "availableDescription": "Usługi, które możesz dodać. Każdą konfiguruje się raz, a potem działa w tle.",
     "allConnected": "Wszystkie dostępne usługi są połączone.",
     "searchPlaceholder": "Szukaj integracji",
-    "noMatches": "Nic nie pasuje do „{query}”."
+    "noMatches": "Nic nie pasuje do „{query}”.",
+    "readMore": "Czytaj więcej",
+    "suggestTitle": "Brakuje usługi, z której korzystasz?",
+    "suggestDescription": "Powiedz nam, która integracja pomogłaby Twojemu warsztatowi, a przyjrzymy się jej.",
+    "suggest": "Zaproponuj integrację",
+    "suggestSubject": "Propozycja integracji"
   },
   "categories": {
     "calendar": "Kalendarz",

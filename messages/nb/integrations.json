@@ -14,7 +14,12 @@
     "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
     "allConnected": "Alle tilgjengelige tjenester er tilkoblet.",
     "searchPlaceholder": "Søk i integrasjoner",
-    "noMatches": "Ingenting passer med «{query}»."
+    "noMatches": "Ingenting passer med «{query}».",
+    "readMore": "Les mer",
+    "suggestTitle": "Mangler du en tjeneste du bruker?",
+    "suggestDescription": "Fortell oss hvilken integrasjon som ville hjulpet verkstedet ditt, så ser vi på det.",
+    "suggest": "Foreslå en integrasjon",
+    "suggestSubject": "Forslag til integrasjon"
   },
   "categories": {
     "calendar": "Kalender",
