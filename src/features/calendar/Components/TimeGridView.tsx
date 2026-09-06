@@ -34,11 +34,6 @@ const SLOT_MINUTES = 60
 const SNAP_MINUTES = 30
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 
-/** A message cannot go out at a time that has passed, so the option is not offered. */
-function slotInPast(slot: { dateStr: string; time: string }): boolean {
-  return new Date(`${slot.dateStr}T${slot.time}:00`).getTime() < Date.now()
-}
-
 /** An empty slot somebody clicked, waiting to become something. */
 interface Slot {
   date: Date
@@ -309,13 +304,11 @@ export function TimeGridView({
                 label={t('contextMenu.newQuote')}
                 onClick={() => runSlotAction(actions.onNewQuote)}
               />
-              {!slotInPast(slot) && (
-                <SlotMenuItem
-                  icon={Send}
-                  label={t('contextMenu.scheduleMessage')}
-                  onClick={() => runSlotAction(actions.onScheduleMessage)}
-                />
-              )}
+              <SlotMenuItem
+                icon={Send}
+                label={t('contextMenu.scheduleMessage')}
+                onClick={() => runSlotAction(actions.onScheduleMessage)}
+              />
             </>
           )}
         </PopoverContent>

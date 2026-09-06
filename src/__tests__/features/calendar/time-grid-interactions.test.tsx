@@ -237,12 +237,12 @@ describe('TimeGridView', () => {
     expect(deleteScheduledMessage).not.toHaveBeenCalled()
   })
 
-  it('does not offer a scheduled message for a slot that has passed', async () => {
-    const { columns } = setup()
+  it('still offers a scheduled message for a slot that has passed; the dialog says no', async () => {
+    const { columns, actions } = setup()
     vi.setSystemTime(new Date(2026, 8, 2, 16, 0)) // 2 Sep, 16:00
     fireEvent.click(columns[2], { clientX: 10, clientY: 600 }) // 2 Sep, 10:00
-    await screen.findByText('New work order at 10:00')
-    expect(screen.queryByText('Schedule message')).not.toBeInTheDocument()
+    fireEvent.click(await screen.findByText('Schedule message'))
+    expect(actions.onScheduleMessage).toHaveBeenCalledWith('2026-09-02', '10:00')
     vi.setSystemTime(new Date(2026, 7, 15, 12, 0))
   })
 

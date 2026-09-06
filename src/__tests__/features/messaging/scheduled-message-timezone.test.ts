@@ -36,7 +36,7 @@ vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     customer: { findFirst: vi.fn() },
-    scheduledMessage: { findMany: vi.fn(), update: vi.fn() },
+    scheduledMessage: { findMany: vi.fn(), update: vi.fn(), create: vi.fn() },
   },
 }))
 
@@ -44,7 +44,10 @@ import { db } from '@/lib/db'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { nextSendAt } from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
 import { processDueMessages } from '@/lib/cron/scheduled-messages'
-import { getScheduledMessagesInRange } from '@/features/scheduled-messages/Actions/scheduledMessageActions'
+import {
+  createScheduledMessage,
+  getScheduledMessagesInRange,
+} from '@/features/scheduled-messages/Actions/scheduledMessageActions'
 
 function setupAuth(organizationId: string) {
   vi.mocked(getCachedSession).mockResolvedValue({
@@ -124,5 +127,22 @@ describe('getScheduledMessagesInRange', () => {
       gte: new Date('2026-08-31T22:00:00.000Z'),
       lt: new Date('2026-09-30T22:00:00.000Z'),
     })
+  })
+})
+
+describe('createScheduledMessage', () => {
+  it('refuses a send time that has already passed', async () => {
+    setupAuth('org-oslo')
+    vi.mocked(db.scheduledMessage.create).mockResolvedValue({ id: 'm-1' } as any)
+    const result = await createScheduledMessage({
+      channel: 'sms',
+      body: 'Your car is ready',
+      recipient: '+4799999999',
+      sendAt: '2020-01-01T09:00',
+      frequency: 'once',
+    })
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/already passed/)
+    expect(vi.mocked(db.scheduledMessage.create)).not.toHaveBeenCalled()
   })
 })
