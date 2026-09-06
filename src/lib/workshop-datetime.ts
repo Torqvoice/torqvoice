@@ -1,4 +1,4 @@
-import { zonedDate } from '@/lib/timezone'
+import { addZonedDays, startOfZonedDay, zonedDate, zonedParts } from '@/lib/timezone'
 
 /**
  * A "YYYY-MM-DDTHH:MM" from the schedule dialog is the workshop's wall
@@ -39,4 +39,66 @@ export function toSafeWorkshopDate(
   } catch {
     return undefined
   }
+}
+
+/**
+ * The last instant of the day `value` names in the workshop, for things
+ * that are valid "until the 7th": the whole of the 7th, not its first
+ * second. Undefined for empty or malformed input.
+ */
+export function endOfWorkshopDay(
+  value: string | null | undefined,
+  timeZone: string
+): Date | undefined {
+  const start = toSafeWorkshopDate(value, timeZone)
+  if (!start) return undefined
+  return new Date(addZonedDays(startOfZonedDay(start, timeZone), 1, timeZone).getTime() - 1)
+}
+
+/**
+ * A Prisma window covering whole workshop days from `startKey` to `endKey`
+ * inclusive, as `{ gte, lt }`. Both keys are YYYY-MM-DD; a bad or missing
+ * key falls back to the given default instant.
+ */
+export function workshopDayRange(
+  startKey: string | null | undefined,
+  endKey: string | null | undefined,
+  timeZone: string,
+  fallback: { start: Date; end: Date }
+): { gte: Date; lt: Date } {
+  const start = toSafeWorkshopDate(startKey, timeZone) ?? fallback.start
+  const endDay = toSafeWorkshopDate(endKey, timeZone) ?? fallback.end
+  return {
+    gte: startOfZonedDay(start, timeZone),
+    lt: addZonedDays(startOfZonedDay(endDay, timeZone), 1, timeZone),
+  }
+}
+
+/**
+ * Wall-clock arithmetic: the same time of day, `days`/`months`/`years`
+ * later on the workshop's clock. Plain `setDate`/`setMonth` on the server
+ * keeps the UTC time of day instead, so a daily 18:00 message drifts an
+ * hour at every DST change. Month steps clamp the day the way people
+ * expect: 31 Jan plus a month is 28 Feb.
+ */
+export function shiftWorkshopTime(
+  date: Date,
+  by: { days?: number; months?: number; years?: number },
+  timeZone: string
+): Date {
+  const p = zonedParts(date, timeZone)
+  const year = p.year + (by.years ?? 0)
+  const monthIndex = p.month - 1 + (by.months ?? 0)
+  const first = new Date(Date.UTC(year, monthIndex, 1))
+  const lastDay = new Date(
+    Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)
+  ).getUTCDate()
+  const day = Math.min(p.day, lastDay) + (by.days ?? 0)
+  return zonedDate(first.getUTCFullYear(), first.getUTCMonth() + 1, day, p.hour, p.minute, timeZone)
+}
+
+/** YYYY-MM of the workshop's month an instant falls in, for monthly buckets. */
+export function workshopMonthKey(date: Date, timeZone: string): string {
+  const p = zonedParts(date, timeZone)
+  return `${p.year}-${String(p.month).padStart(2, '0')}`
 }
