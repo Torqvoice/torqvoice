@@ -76,10 +76,13 @@ const TOTAL_TOLERANCE = 0.05
 class QboError extends Error {
   status: number
   code: string | null
-  constructor(status: number, body: string) {
-    super(`QuickBooks: ${faultMessage(body)}`)
+  /** Intuit's intuit_tid for the failed call; their support asks for it. */
+  requestId: string | null
+  constructor(status: number, body: string, requestId: string | null = null) {
+    super(`QuickBooks: ${faultMessage(body)}${requestId ? ` (intuit_tid ${requestId})` : ''}`)
     this.status = status
     this.code = faultCode(body)
+    this.requestId = requestId
   }
 }
 
@@ -181,7 +184,7 @@ async function api<T>(
       ...(init.body !== undefined && { body: JSON.stringify(init.body) }),
     })
   } catch (err) {
-    if (err instanceof ConnectorHttpError) throw new QboError(err.status, err.body)
+    if (err instanceof ConnectorHttpError) throw new QboError(err.status, err.body, err.requestId)
     throw err
   }
 }

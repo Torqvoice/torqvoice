@@ -32,6 +32,11 @@ async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+/** The vendor's request id, in the header Intuit and most others use for it. */
+function requestIdOf(res: Response): string | null {
+  return res.headers.get('intuit_tid') ?? res.headers.get('x-request-id') ?? null
+}
+
 function retryDelayMs(attempt: number, res: Response | null): number {
   const retryAfter = res?.headers.get('retry-after')
   if (retryAfter) {
@@ -143,7 +148,7 @@ export function createConnectorHttp(input: {
     async json<T>(url: string, init?: RequestInit): Promise<T> {
       const res = await doFetch(url, init)
       const text = await res.text()
-      if (!res.ok) throw new ConnectorHttpError(res.status, text, url)
+      if (!res.ok) throw new ConnectorHttpError(res.status, text, url, requestIdOf(res))
       if (!text) return undefined as T
       return JSON.parse(text) as T
     },
