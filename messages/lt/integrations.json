@@ -70,7 +70,8 @@
     "active": "Prijungta",
     "error": "Reikia dėmesio",
     "pending": "Nustatoma",
-    "disconnected": "Atjungta"
+    "disconnected": "Atjungta",
+    "needsSetup": "Sąranka nebaigta"
   },
   "connection": {
     "back": "Visos integracijos",
@@ -78,6 +79,8 @@
     "lastHealth": "Paskutinį kartą tikrinta",
     "lastSync": "Paskutinis sinchronizavimas",
     "lastError": "Paskutinis vykdymas nepavyko",
+    "setupMissingTitle": "Sąranka nebaigta",
+    "setupMissing": "Žemiau esančiuose nustatymuose pasirinkite {fields}. Iki tol niekas nesinchronizuojama.",
     "connected": "{name} prijungta.",
     "connectedShort": "Prijungta",
     "connectWith": "Prijungti {name}",
@@ -85,7 +88,10 @@
     "reconnect": "Prijungti iš naujo",
     "disconnect": "Atjungti",
     "disconnectTitle": "Atjungti {name}?",
-    "disconnectDescription": "Torqvoice pamirš paskyrą ir nustos sinchronizuoti. Kalendoriuje jau sukurti įvykiai liks.",
+    "disconnectDescription": "Torqvoice pamiršta paskyrą ir nustoja ja naudotis. Tai, kas jau išsiųsta į {name} ar ten saugoma, neliečiama.",
+    "disconnectDescriptionCalendar": "Torqvoice pamiršta paskyrą ir nustoja sinchronizuoti. Darbo užsakymai, jau įrašyti į {name}, lieka ten. Iš to kalendoriaus rodytas užimtas laikas pašalinamas iš Torqvoice kalendoriaus.",
+    "disconnectDescriptionConferencing": "Torqvoice pamiršta paskyrą ir nebekuria susitikimų. Jau sukurti susitikimai lieka {name}, o nuorodos darbo užsakymuose išsaugomos.",
+    "disconnectDescriptionAccounting": "Torqvoice pamiršta paskyrą ir nustoja siųsti bei skaityti. Sąskaitos, klientai ir mokėjimai, jau esantys {name}, lieka ten.",
     "removeSetup": "Pašalinti",
     "removeSetupTitle": "Pašalinti {name}?",
     "removeSetupDescription": "Dar niekas neprijungta. Torqvoice pamiršta, kas buvo įvesta, o {name} grįžta į galimų paslaugų sąrašą.",

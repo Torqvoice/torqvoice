@@ -70,7 +70,8 @@
     "active": "Connectée",
     "error": "Attention requise",
     "pending": "Configuration en cours",
-    "disconnected": "Déconnectée"
+    "disconnected": "Déconnectée",
+    "needsSetup": "Configuration inachevée"
   },
   "connection": {
     "back": "Toutes les intégrations",
@@ -78,6 +79,8 @@
     "lastHealth": "Dernière vérification",
     "lastSync": "Dernière synchronisation",
     "lastError": "La dernière exécution a échoué",
+    "setupMissingTitle": "Configuration inachevée",
+    "setupMissing": "Choisissez {fields} dans les réglages ci-dessous. D'ici là, rien n'est synchronisé.",
     "connected": "{name} est connecté.",
     "connectedShort": "Connecté",
     "connectWith": "Connecter {name}",
@@ -85,7 +88,10 @@
     "reconnect": "Reconnecter",
     "disconnect": "Déconnecter",
     "disconnectTitle": "Déconnecter {name} ?",
-    "disconnectDescription": "Torqvoice oublie le compte et arrête la synchronisation. Les événements déjà créés dans le calendrier y restent.",
+    "disconnectDescription": "Torqvoice oublie le compte et cesse de l'utiliser. Rien de ce qui a déjà été envoyé à {name} ou stocké dedans n'est touché.",
+    "disconnectDescriptionCalendar": "Torqvoice oublie le compte et cesse de synchroniser. Les ordres de travail déjà placés dans {name} y restent. Le temps occupé affiché depuis ce calendrier est retiré du calendrier Torqvoice.",
+    "disconnectDescriptionConferencing": "Torqvoice oublie le compte et cesse de créer des réunions. Les réunions déjà créées restent dans {name} et les liens sur les ordres de travail sont conservés.",
+    "disconnectDescriptionAccounting": "Torqvoice oublie le compte et cesse d'envoyer et de lire. Les factures, clients et paiements déjà dans {name} y restent.",
     "removeSetup": "Retirer",
     "removeSetupTitle": "Retirer {name} ?",
     "removeSetupDescription": "Rien n'est encore connecté. Torqvoice oublie ce qui a été saisi et {name} revient dans la liste des services disponibles.",

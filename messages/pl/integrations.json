@@ -70,7 +70,8 @@
     "active": "Połączono",
     "error": "Wymaga uwagi",
     "pending": "Konfiguracja w toku",
-    "disconnected": "Rozłączono"
+    "disconnected": "Rozłączono",
+    "needsSetup": "Konfiguracja nieukończona"
   },
   "connection": {
     "back": "Wszystkie integracje",
@@ -78,6 +79,8 @@
     "lastHealth": "Ostatnie sprawdzenie",
     "lastSync": "Ostatnia synchronizacja",
     "lastError": "Ostatnie uruchomienie nie powiodło się",
+    "setupMissingTitle": "Konfiguracja nieukończona",
+    "setupMissing": "Wybierz {fields} w ustawieniach poniżej. Do tego czasu nic nie jest synchronizowane.",
     "connected": "{name} jest połączony.",
     "connectedShort": "Połączono",
     "connectWith": "Połącz {name}",
@@ -85,7 +88,10 @@
     "reconnect": "Połącz ponownie",
     "disconnect": "Rozłącz",
     "disconnectTitle": "Rozłączyć {name}?",
-    "disconnectDescription": "Torqvoice zapomni konto i przestanie synchronizować. Wydarzenia już utworzone w kalendarzu pozostaną.",
+    "disconnectDescription": "Torqvoice zapomina konto i przestaje z niego korzystać. Nic, co już wysłano do {name} lub tam zapisano, nie jest ruszane.",
+    "disconnectDescriptionCalendar": "Torqvoice zapomina konto i przestaje synchronizować. Zlecenia już umieszczone w {name} tam zostają. Czas zajęty pokazywany z tego kalendarza jest usuwany z kalendarza Torqvoice.",
+    "disconnectDescriptionConferencing": "Torqvoice zapomina konto i przestaje tworzyć spotkania. Utworzone już spotkania zostają w {name}, a linki na zleceniach są zachowane.",
+    "disconnectDescriptionAccounting": "Torqvoice zapomina konto i przestaje wysyłać oraz odczytywać. Faktury, klienci i płatności już obecne w {name} tam zostają.",
     "removeSetup": "Usuń",
     "removeSetupTitle": "Usunąć {name}?",
     "removeSetupDescription": "Nic nie jest jeszcze połączone. Torqvoice zapomina wpisane dane, a {name} wraca na listę dostępnych usług.",

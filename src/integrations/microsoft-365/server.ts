@@ -154,7 +154,8 @@ function toPulled(e: GraphEvent): PulledEvent | null {
 
 async function pullBusy(ctx: ConnectorContext) {
   const settings = settingsOf(ctx)
-  if (!settings.pullEnabled || !settings.calendarId) return { summary: 'pull disabled' }
+  if (!settings.pullEnabled) return { summary: 'pull switched off' }
+  if (!settings.calendarId) return { summary: 'no calendar chosen' }
   const window = pullWindow()
   const events: PulledEvent[] = []
   let next: string | undefined = (() => {

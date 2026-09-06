@@ -70,7 +70,8 @@
     "active": "Connected",
     "error": "Needs attention",
     "pending": "Setup in progress",
-    "disconnected": "Disconnected"
+    "disconnected": "Disconnected",
+    "needsSetup": "Setup not finished"
   },
   "connection": {
     "back": "All integrations",
@@ -78,6 +79,8 @@
     "lastHealth": "Last checked",
     "lastSync": "Last sync",
     "lastError": "The last run failed",
+    "setupMissingTitle": "Setup not finished",
+    "setupMissing": "Choose {fields} in the settings below. Until then nothing is synced.",
     "connected": "{name} is connected.",
     "connectedShort": "Connected",
     "connectWith": "Connect {name}",
@@ -85,7 +88,10 @@
     "reconnect": "Reconnect",
     "disconnect": "Disconnect",
     "disconnectTitle": "Disconnect {name}?",
-    "disconnectDescription": "Torqvoice forgets the account and stops syncing. Events already created in the calendar stay there.",
+    "disconnectDescription": "Torqvoice forgets the account and stops using it. Nothing already sent to or stored in {name} is touched.",
+    "disconnectDescriptionCalendar": "Torqvoice forgets the account and stops syncing. Work orders already put in {name} stay there. The busy time shown from that calendar is removed from the Torqvoice calendar.",
+    "disconnectDescriptionConferencing": "Torqvoice forgets the account and stops creating meetings. Meetings already created stay in {name}, and the links on work orders are kept.",
+    "disconnectDescriptionAccounting": "Torqvoice forgets the account and stops sending and reading. Invoices, customers and payments already in {name} stay there.",
     "removeSetup": "Remove",
     "removeSetupTitle": "Remove {name}?",
     "removeSetupDescription": "Nothing is connected yet. Torqvoice forgets what was entered, and {name} goes back to the list of available services.",
