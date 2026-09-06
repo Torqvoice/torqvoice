@@ -65,6 +65,9 @@ export function DayContextMenu({
   const { formatDate } = useFormatDate()
   const { timeFormat } = useDateSettings()
   const { openPeek } = useEventPeek()
+  // A message cannot go out at a time that has passed: a whole day that is
+  // over, or a slot earlier today, gets no such option.
+  const messageSlotPassed = new Date(`${dateStr}T${time ?? '23:59'}:00`).getTime() < Date.now()
 
   return (
     <ContextMenu onOpenChange={(open) => open && onOpen?.()}>
@@ -91,10 +94,12 @@ export function DayContextMenu({
           <FileText className="mr-2 h-4 w-4" />
           {t('contextMenu.newQuote')}
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => actions.onScheduleMessage(dateStr, time ?? undefined)}>
-          <Send className="mr-2 h-4 w-4" />
-          {t('contextMenu.scheduleMessage')}
-        </ContextMenuItem>
+        {!messageSlotPassed && (
+          <ContextMenuItem onClick={() => actions.onScheduleMessage(dateStr, time ?? undefined)}>
+            <Send className="mr-2 h-4 w-4" />
+            {t('contextMenu.scheduleMessage')}
+          </ContextMenuItem>
+        )}
         {events.length > 0 && (
           <>
             <ContextMenuSeparator />

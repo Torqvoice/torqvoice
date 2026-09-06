@@ -41,6 +41,7 @@
     "scheduled": "Message programmé",
     "updated": "Message programmé mis à jour",
     "saveError": "Impossible d'enregistrer le message",
+    "inPast": "Cette heure est déjà passée. Choisissez un moment à venir.",
     "whatsappNeedsTemplate": "Ce message partira bien après la fermeture de la fenêtre de 24 heures et aucun modèle texte WhatsApp n'est configuré : il échouerait à l'envoi. Configurez-en un dans Paramètres > Fournisseurs > WhatsApp."
   },
   "list": {

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeAll } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
 
@@ -45,6 +45,11 @@ import { TimeGridView } from '@/features/calendar/Components/TimeGridView'
 import { EventPeekProvider } from '@/features/calendar/Components/EventPeek'
 
 beforeAll(() => {
+  // The fixtures live in September 2026; the clock stands still in August so
+  // they stay in the future however long the tests survive. Only Date is
+  // faked: Radix and testing-library still need real timers.
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 7, 15, 12, 0))
   // jsdom has neither; Radix popovers and the slot anchor need both.
   class RO {
     observe() {}
@@ -77,6 +82,10 @@ beforeAll(() => {
       }
     }
   }
+})
+
+afterAll(() => {
+  vi.useRealTimers()
 })
 
 const day = (s: string) => {
@@ -226,6 +235,15 @@ describe('TimeGridView', () => {
     fireEvent.click(await screen.findByText('Delete scheduled message'))
     await waitFor(() => expect(confirmMock).toHaveBeenCalled())
     expect(deleteScheduledMessage).not.toHaveBeenCalled()
+  })
+
+  it('does not offer a scheduled message for a slot that has passed', async () => {
+    const { columns } = setup()
+    vi.setSystemTime(new Date(2026, 8, 2, 16, 0)) // 2 Sep, 16:00
+    fireEvent.click(columns[2], { clientX: 10, clientY: 600 }) // 2 Sep, 10:00
+    await screen.findByText('New work order at 10:00')
+    expect(screen.queryByText('Schedule message')).not.toBeInTheDocument()
+    vi.setSystemTime(new Date(2026, 7, 15, 12, 0))
   })
 
   it('offers the same choices on right-click, with the slot time', async () => {

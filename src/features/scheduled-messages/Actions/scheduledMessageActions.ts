@@ -51,6 +51,19 @@ const listSelect = {
  * Parse the local wall-clock the workshop typed ("2026-08-20T09:00") as local
  * time, never UTC, so the message goes out at the hour they see on screen.
  */
+/** A minute of grace, so a form filled in at 09:00 and saved at 09:00:20 still goes. */
+const PAST_GRACE_MS = 60_000
+
+/**
+ * A message cannot be scheduled for a moment that has passed: the dispatcher
+ * would fire it at once, and nobody meant that.
+ */
+function assertNotPast(sendAt: Date) {
+  if (sendAt.getTime() < Date.now() - PAST_GRACE_MS) {
+    throw new Error('The send time has already passed')
+  }
+}
+
 export async function getScheduledMessages(params?: { status?: string }) {
   return withAuth(
     async ({ organizationId }) => {
@@ -107,6 +120,7 @@ export async function createScheduledMessage(input: unknown) {
       const data = createScheduledMessageSchema.parse(input)
       const timeZone = await workshopTimeZone(organizationId)
       const sendAt = parseWorkshopDateTime(data.sendAt, timeZone)
+      assertNotPast(sendAt)
 
       if (data.customerId) {
         const customer = await db.customer.findFirst({
@@ -173,6 +187,7 @@ export async function updateScheduledMessage(input: unknown) {
       })
       if (!existing) throw new Error('Scheduled message not found')
       const timeZone = await workshopTimeZone(organizationId)
+      if (data.sendAt) assertNotPast(parseWorkshopDateTime(data.sendAt, timeZone))
 
       const message = await db.scheduledMessage.update({
         where: { id: data.id },

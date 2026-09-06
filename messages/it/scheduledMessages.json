@@ -41,6 +41,7 @@
     "scheduled": "Messaggio pianificato",
     "updated": "Messaggio pianificato aggiornato",
     "saveError": "Impossibile salvare il messaggio",
+    "inPast": "Quell'ora è già passata. Scegli un orario futuro.",
     "whatsappNeedsTemplate": "Partirà molto dopo la chiusura della finestra di 24 ore e non c'è un modello di testo WhatsApp configurato, quindi fallirebbe all'invio. Configuralo in Impostazioni > Provider > WhatsApp."
   },
   "list": {

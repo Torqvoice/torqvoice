@@ -163,9 +163,13 @@ export function ScheduleMessageDialog({
     (channel !== 'email' || !!subject.trim()) &&
     (!needsRecipient || !!recipient.trim())
 
+  // The browser's clock stands in for the workshop's here, as everywhere on
+  // the client; the server checks again in the workshop's zone.
+  const inPast = !!date && !!time && new Date(`${date}T${time}:00`).getTime() < Date.now()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!canSave) return
+    if (!canSave || inPast) return
     setSaving(true)
 
     const payload = {
@@ -320,6 +324,7 @@ export function ScheduleMessageDialog({
                 onChange={(e) => setTime(e.target.value)}
                 required
               />
+              {inPast && <p className="text-xs text-destructive">{t('inPast')}</p>}
             </div>
           </div>
 
@@ -335,7 +340,7 @@ export function ScheduleMessageDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {tc('cancel')}
             </Button>
-            <Button type="submit" disabled={saving || !canSave}>
+            <Button type="submit" disabled={saving || !canSave || inPast}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEdit ? tc('saveChanges') : t('schedule')}
             </Button>
