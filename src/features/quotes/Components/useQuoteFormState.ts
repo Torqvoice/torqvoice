@@ -329,6 +329,9 @@ export function useQuoteFormState({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    // currentTarget is nulled once the event has finished dispatching, which
+    // happens during the custom-fields await below. Read the form now.
+    const form = e.currentTarget
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
 
@@ -349,40 +352,47 @@ export function useQuoteFormState({
 
     isSavingRef.current = true
     setSaving(true)
-    const formData = new FormData(e.currentTarget)
-    const result = await updateQuote({
-      id: quote.id,
-      title: formData.get('title') as string,
-      // Emptied fields go as '' (and a removed discount as 'none') so the
-      // update action clears them; undefined would leave the old value.
-      description,
-      status,
-      validUntil: (formData.get('validUntil') as string | null) ?? '',
-      customerId,
-      vehicleId,
-      notes,
-      partItems: partItems.filter((p) => p.name),
-      laborItems: laborItems.filter((l) => l.description),
-      subtotal,
-      taxRate,
-      taxInclusive,
-      taxAmount,
-      discountType,
-      discountValue,
-      discountAmount,
-      totalAmount,
-    })
-    if (result.success) {
-      setHasUnsavedChanges(false)
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
-      setShowSaved(true)
-      savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
-      router.refresh()
-    } else {
-      modal.open('error', 'Error', result.error || t('page.failedSave'))
+    try {
+      const formData = new FormData(form)
+      const result = await updateQuote({
+        id: quote.id,
+        title: formData.get('title') as string,
+        // Emptied fields go as '' (and a removed discount as 'none') so the
+        // update action clears them; undefined would leave the old value.
+        description,
+        status,
+        validUntil: (formData.get('validUntil') as string | null) ?? '',
+        customerId,
+        vehicleId,
+        notes,
+        partItems: partItems.filter((p) => p.name),
+        laborItems: laborItems.filter((l) => l.description),
+        subtotal,
+        taxRate,
+        taxInclusive,
+        taxAmount,
+        discountType,
+        discountValue,
+        discountAmount,
+        totalAmount,
+      })
+      if (result.success) {
+        setHasUnsavedChanges(false)
+        if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+        setShowSaved(true)
+        savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
+        router.refresh()
+      } else {
+        modal.open('error', 'Error', result.error || t('page.failedSave'))
+      }
+    } catch (err) {
+      console.error('Quote save error:', err)
+      modal.open('error', 'Error', t('page.failedSave'))
+    } finally {
+      // Whatever happened, the save button must stop spinning.
+      isSavingRef.current = false
+      setSaving(false)
     }
-    isSavingRef.current = false
-    setSaving(false)
   }
 
   const handleDelete = async () => {
