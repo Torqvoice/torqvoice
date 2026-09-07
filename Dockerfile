@@ -8,6 +8,10 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./prisma.config.ts
+# npm ci runs the prepare script, which patches next-ws and then applies our
+# own follow-up patch from scripts/. The source tree is not copied until the
+# builder stage, so that one file has to come along here.
+COPY scripts/patch-next-ws-first-upgrade.mjs ./scripts/
 RUN npm ci
 
 # Rebuild the source code only when needed
