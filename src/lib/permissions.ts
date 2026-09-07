@@ -22,6 +22,7 @@ export enum PermissionSubject {
   SETTINGS = 'settings',
   WORK_BOARD = 'work_board',
   AI_ASSISTANT = 'ai_assistant',
+  TIME_TRACKING = 'time_tracking',
 }
 
 export type PermissionInput = {
@@ -149,6 +150,17 @@ export const permissionGroups: PermissionGroup[] = [
     name: 'Reports',
     subject: PermissionSubject.REPORTS,
     permissions: [{ action: PermissionAction.READ, label: 'View' }],
+  },
+  {
+    // View is the timesheet page; Edit is correcting what a clock recorded.
+    // Clocking oneself in and out is not here: that follows UPDATE:SERVICES,
+    // the same permission the technician app asks for.
+    name: 'Time tracking',
+    subject: PermissionSubject.TIME_TRACKING,
+    permissions: [
+      { action: PermissionAction.READ, label: 'View' },
+      { action: PermissionAction.UPDATE, label: 'Edit' },
+    ],
   },
   {
     name: 'Work Board',

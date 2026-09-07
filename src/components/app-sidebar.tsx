@@ -66,6 +66,7 @@ import {
   Settings,
   Ship,
   ShieldCheck,
+  Timer,
   Users,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
@@ -130,6 +131,7 @@ export function AppSidebar({
   visibleSubjects,
   announcement = null,
   counts,
+  isTechnician = false,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -143,6 +145,8 @@ export function AppSidebar({
   /** The one product announcement to show, worked out on the server. */
   announcement?: string | null
   counts?: SidebarCounts
+  /** Linked to a technician row: the dashboard is their job list even without the figures. */
+  isTechnician?: boolean
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -263,6 +267,12 @@ export function AppSidebar({
           },
         ]
       : []),
+    {
+      titleKey: 'sidebar.timesheets' as const,
+      url: '/timesheets',
+      icon: Timer,
+      subject: 'time_tracking',
+    },
     {
       titleKey: 'sidebar.auditLog' as const,
       url: '/audit-log',
@@ -512,7 +522,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent className="gap-0">
         {/* Dashboard */}
-        {canAccess('dashboard') && (
+        {(canAccess('dashboard') || isTechnician) && (
           <SidebarGroup className="pb-0">
             <SidebarMenu className="gap-1">
               <SidebarMenuItem>

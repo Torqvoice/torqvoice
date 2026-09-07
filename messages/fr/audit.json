@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Anciennes factures verrouillées",
     "inspection_reminders_sent": "Rappels de contrôle envoyés",
     "inspection_reminders_send": "Rappels de contrôle envoyés",
-    "service_videoCall_send": "Lien d'appel vidéo envoyé"
+    "service_videoCall_send": "Lien d'appel vidéo envoyé",
+    "timeEntry_create": "Entrée de temps ajoutée",
+    "timeEntry_update": "Entrée de temps corrigée",
+    "timeEntry_delete": "Entrée de temps supprimée"
   },
   "summary": {
     "customField_create": "Champ personnalisé « {name} » créé",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "A modifié quand le design de document {name} est utilisé",
     "settings_freezeInvoices": "A verrouillé {count, plural, one {# facture} other {# factures}} antérieures au verrouillage avec le design actuel",
     "inspection_reminders_sent": "{count} rappels de contrôle envoyés",
-    "service_videoCall_send": "A envoyé le lien de l'appel vidéo par {channels}"
+    "service_videoCall_send": "A envoyé le lien de l'appel vidéo par {channels}",
+    "timeEntry_create": "{minutes} minutes ajoutées pour {technician} sur « {job} »",
+    "timeEntry_update": "Entrée de temps de {technician} sur « {job} » corrigée à {minutes} minutes",
+    "timeEntry_stop": "Pointage de {technician} sur « {job} » arrêté à {minutes} minutes",
+    "timeEntry_delete": "Entrée de temps {id} supprimée"
   }
 }

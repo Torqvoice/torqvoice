@@ -12,7 +12,9 @@
     "parts": "Części",
     "jobAnalytics": "Analiza Zleceń",
     "retention": "Utrzymanie Klientów",
-    "vehicles": "Pojazdy"
+    "vehicles": "Pojazdy",
+    "techniciansOverview": "Przegląd",
+    "clockedTime": "Zarejestrowany czas"
   },
   "dateRange": {
     "to": "do",
@@ -138,6 +140,19 @@
       "avgRevenue": "Śr. Przychód",
       "totalHours": "Łączne Godziny",
       "avgHours": "Śr. Godziny"
+    },
+    "time": {
+      "clockedHours": "Godziny zarejestrowane",
+      "billedHours": "Godziny zafakturowane",
+      "efficiency": "Efektywność",
+      "techniciansClocked": "Technicy z czasem",
+      "chartTitle": "Zarejestrowane i zafakturowane wg technika",
+      "tableTitle": "Zarejestrowane a zafakturowane",
+      "clocked": "Zarejestrowane",
+      "billed": "Zafakturowane",
+      "hint": "Godziny zarejestrowane pochodzą z zegara. Godziny zafakturowane to pozycje robocizny w zleceniach przypisanych technikowi, rozpoczętych w zakresie. Efektywność to zafakturowane podzielone przez zarejestrowane.",
+      "noClock": "Brak czasu",
+      "jobsClocked": "Zlecenia z czasem"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Typ",
     "status": "Status",
     "partsUsed": "Części",
-    "laborHours": "Godziny Robocizny"
+    "laborHours": "Godziny Robocizny",
+    "clockedHours": "Godziny zarejestrowane",
+    "billedHours": "Godziny zafakturowane",
+    "efficiency": "Efektywność",
+    "jobsClocked": "Zlecenia z czasem"
   },
   "pdf": {
     "reportTitle": "Business Report",

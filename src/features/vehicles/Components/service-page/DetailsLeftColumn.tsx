@@ -14,6 +14,9 @@ import {
 } from '@/features/tire-hotel/Components/TireSetBanner'
 import { StoreTiresButton } from '@/features/tire-hotel/Components/StoreTiresButton'
 import type { InventoryPartOption } from '../service-edit/form-types'
+import { useTranslations } from 'next-intl'
+import { JobClockSection } from '@/features/time-tracking/Components/JobClockSection'
+import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
 
 interface DetailsLeftColumnProps {
   formState: ReturnType<typeof useServiceFormState>
@@ -52,6 +55,7 @@ interface DetailsLeftColumnProps {
   }) => void
   openObservationsCount?: number
   onShowExistingObservations?: () => void
+  jobClock: JobClock
 }
 
 export function DetailsLeftColumn({
@@ -77,7 +81,9 @@ export function DetailsLeftColumn({
   onEditFinding,
   openObservationsCount = 0,
   onShowExistingObservations,
+  jobClock,
 }: DetailsLeftColumnProps) {
+  const tClock = useTranslations('timeTracking.job')
   // Which concerns somebody has actually looked at. Counted here rather than
   // queried, because the findings are already loaded for the section below.
   const answeredCounts = findings.reduce<Record<string, number>>((counts, finding) => {
@@ -168,6 +174,22 @@ export function DetailsLeftColumn({
         onAddFinding={onAddFinding}
         openObservationsCount={openObservationsCount}
         onShowExistingObservations={onShowExistingObservations}
+      />
+      <JobClockSection
+        serviceRecordId={record.id}
+        initial={jobClock}
+        onAddLabor={(hours) =>
+          formState.dirtySetLaborItems((prev) => [
+            ...prev,
+            {
+              description: tClock('laborDescription'),
+              hours,
+              rate: defaultLaborRate,
+              total: Math.round(hours * defaultLaborRate * 100) / 100,
+              pricingType: 'hourly' as const,
+            },
+          ])
+        }
       />
       <NotesSection
         initialData={formState.initialData}

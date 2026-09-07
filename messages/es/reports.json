@@ -12,7 +12,9 @@
     "parts": "Piezas",
     "jobAnalytics": "Análisis de Trabajos",
     "retention": "Retención",
-    "vehicles": "Vehículos"
+    "vehicles": "Vehículos",
+    "techniciansOverview": "Resumen",
+    "clockedTime": "Tiempo registrado"
   },
   "dateRange": {
     "to": "a",
@@ -138,6 +140,19 @@
       "avgRevenue": "Ingreso Prom.",
       "totalHours": "Horas Totales",
       "avgHours": "Horas Prom."
+    },
+    "time": {
+      "clockedHours": "Horas registradas",
+      "billedHours": "Horas facturadas",
+      "efficiency": "Eficiencia",
+      "techniciansClocked": "Técnicos con registro",
+      "chartTitle": "Registrado vs. facturado por técnico",
+      "tableTitle": "Registrado frente a facturado",
+      "clocked": "Registrado",
+      "billed": "Facturado",
+      "hint": "Las horas registradas vienen del reloj. Las horas facturadas son las líneas de mano de obra de los trabajos asignados al técnico que empezaron en el rango. La eficiencia es facturado entre registrado.",
+      "noClock": "Sin registro",
+      "jobsClocked": "Trabajos registrados"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Tipo",
     "status": "Estado",
     "partsUsed": "Piezas",
-    "laborHours": "Horas de Mano de Obra"
+    "laborHours": "Horas de Mano de Obra",
+    "clockedHours": "Horas registradas",
+    "billedHours": "Horas facturadas",
+    "efficiency": "Eficiencia",
+    "jobsClocked": "Trabajos registrados"
   },
   "pdf": {
     "reportTitle": "Business Report",

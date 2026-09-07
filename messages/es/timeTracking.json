@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Reloj en marcha en {job}",
+    "stop": "Detener el reloj",
+    "stopped": "{minutes} registrados",
+    "switched": "Trabajo anterior detenido en {minutes}",
+    "startFailed": "No se pudo iniciar el reloj",
+    "stopFailed": "No se pudo detener el reloj"
+  },
+  "job": {
+    "title": "Tiempo registrado",
+    "running": "en marcha",
+    "clockIn": "Fichar entrada",
+    "clockOut": "Fichar salida",
+    "switchHere": "Cambiar a este trabajo",
+    "switchHint": "Detiene el reloj en {job} y lo inicia aquí",
+    "addAsLabor": "Añadir {hours, number} h como mano de obra",
+    "addAsLaborHint": "Añade una línea de mano de obra de {hours, number} horas a la tarifa predeterminada. El tiempo registrado no cambia.",
+    "laborDescription": "Mano de obra (tiempo registrado)",
+    "empty": "Aún no hay tiempo registrado en este trabajo. Los técnicos fichan desde la app o desde Mis trabajos activos en el panel.",
+    "showAll": "Mostrar {count} más",
+    "showFewer": "Mostrar menos",
+    "openTimesheets": "Abrir hojas de horas"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manual",
+    "editedBy": "Ajustado por {name}"
+  },
+  "page": {
+    "title": "Hojas de horas",
+    "description": "Quién trabajó y cuándo, según el reloj del taller.",
+    "loadFailed": "No se pudo cargar la hoja de horas",
+    "presets": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "thisWeek": "Esta semana",
+      "lastWeek": "Semana pasada",
+      "thisMonth": "Este mes",
+      "lastMonth": "Mes pasado"
+    },
+    "customRange": "Rango personalizado",
+    "apply": "Aplicar",
+    "allTechnicians": "Todos los técnicos",
+    "export": "Exportar CSV",
+    "addEntry": "Añadir entrada",
+    "stats": {
+      "total": "Tiempo total",
+      "totalHint": "{days, plural, =1 {1 día} other {# días}} en el rango",
+      "technicians": "Técnicos con tiempo",
+      "techniciansHint": "de {count} en el equipo",
+      "running": "Fichados ahora",
+      "runningHint": "en directo",
+      "average": "Promedio por día activo",
+      "averageHint": "en {days, plural, =1 {1 día} other {# días}} con tiempo"
+    },
+    "nowStrip": {
+      "title": "Fichados ahora",
+      "since": "desde {time}",
+      "stop": "Detener"
+    },
+    "grid": {
+      "title": "Resumen",
+      "description": "Horas por técnico y día. Haz clic en una celda para ir a ese día.",
+      "technician": "Técnico",
+      "total": "Total",
+      "tooLong": "El resumen muestra hasta 31 días. Reduce el rango para verlo."
+    },
+    "table": {
+      "time": "Hora",
+      "duration": "Duración",
+      "job": "Trabajo",
+      "vehicle": "Vehículo",
+      "source": "Origen",
+      "note": "Nota",
+      "running": "En marcha",
+      "dayTotal": "Total del día",
+      "counterSale": "Venta de mostrador",
+      "edit": "Editar",
+      "stop": "Detener el reloj",
+      "delete": "Eliminar",
+      "actions": "Acciones"
+    },
+    "empty": {
+      "title": "No hay tiempo registrado en este rango",
+      "body": "Los técnicos fichan desde la app Torqvoice Technicians o desde Mis trabajos activos en el panel. Las entradas aparecen aquí en cuanto arranca un reloj.",
+      "noTechnicians": "Nadie del equipo está configurado como técnico todavía. Vincula miembros del equipo con técnicos en Ajustes, Equipo.",
+      "teamLink": "Abrir ajustes del equipo"
+    },
+    "deleteTitle": "¿Eliminar esta entrada?",
+    "deleteBody": "Se eliminarán {duration} en {job} de {technician} de la hoja de horas. Esta acción no se puede deshacer.",
+    "deleteConfirm": "Eliminar",
+    "deleted": "Entrada eliminada",
+    "stoppedByManager": "Reloj detenido en {minutes}",
+    "csv": {
+      "technician": "Técnico",
+      "date": "Fecha",
+      "start": "Inicio",
+      "end": "Fin",
+      "duration": "Duración",
+      "hours": "Horas",
+      "job": "Trabajo",
+      "vehicle": "Vehículo",
+      "plate": "Matrícula",
+      "source": "Origen",
+      "editedBy": "Ajustado por",
+      "note": "Nota"
+    },
+    "unlinked": "Sin cuenta",
+    "unlinkedHint": "Técnico solo del tablero, no vinculado a un miembro del equipo"
+  },
+  "dialog": {
+    "addTitle": "Añadir entrada de tiempo",
+    "addDescription": "Tiempo que un técnico trabajó pero no fichó. Se marca como introducido a mano.",
+    "editTitle": "Corregir entrada de tiempo",
+    "editDescription": "La entrada conserva su técnico y trabajo. Se registra quién la cambió.",
+    "technician": "Técnico",
+    "pickTechnician": "Elige un técnico",
+    "job": "Orden de trabajo",
+    "pickJob": "Elige una orden de trabajo",
+    "searchJobs": "Buscar por título o matrícula",
+    "searching": "Buscando…",
+    "noJobs": "No se encontraron órdenes de trabajo",
+    "start": "Inicio",
+    "end": "Fin",
+    "stillRunning": "Todavía en marcha",
+    "leaveEndEmpty": "Deja el fin vacío para mantener el reloj en marcha.",
+    "endBeforeStart": "El fin debe ser posterior al inicio.",
+    "duration": "Duración: {duration}",
+    "timesInWorkshopZone": "Las horas siguen el reloj del taller ({zone}).",
+    "note": "Nota",
+    "notePlaceholder": "Opcional. Por qué se añadió o cambió.",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "add": "Añadir",
+    "added": "Entrada añadida",
+    "updated": "Entrada actualizada",
+    "saveFailed": "No se pudo guardar la entrada"
+  }
+}

@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Locked Older Invoices",
     "inspection_reminders_sent": "Sent inspection reminders",
     "inspection_reminders_send": "Sent inspection reminders",
-    "service_videoCall_send": "Sent video call link"
+    "service_videoCall_send": "Sent video call link",
+    "timeEntry_create": "Added time entry",
+    "timeEntry_update": "Corrected time entry",
+    "timeEntry_delete": "Deleted time entry"
   },
   "summary": {
     "customField_create": "Created custom field \"{name}\"",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Changed when the document design {name} is used",
     "settings_freezeInvoices": "Locked {count, plural, one {# invoice} other {# invoices}} from before locking with the current design",
     "inspection_reminders_sent": "Sent {count} inspection reminders",
-    "service_videoCall_send": "Sent the video call link via {channels}"
+    "service_videoCall_send": "Sent the video call link via {channels}",
+    "timeEntry_create": "Added {minutes} minutes for {technician} on \"{job}\"",
+    "timeEntry_update": "Corrected time entry for {technician} on \"{job}\" to {minutes} minutes",
+    "timeEntry_stop": "Stopped the clock for {technician} on \"{job}\" at {minutes} minutes",
+    "timeEntry_delete": "Deleted time entry {id}"
   }
 }

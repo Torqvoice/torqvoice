@@ -19,7 +19,8 @@
     "addToJob": "{qty} toevoegen aan klus",
     "statusReport": "Statusrapport",
     "report": "Rapport",
-    "observation": "Observatie"
+    "observation": "Observatie",
+    "empty": "Er zijn op dit moment geen werkorders aan je toegewezen."
   },
   "recentActivity": "Recente activiteit",
   "noRecentActivity": "Geen recente activiteit",

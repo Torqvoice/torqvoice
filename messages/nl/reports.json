@@ -12,7 +12,9 @@
     "parts": "Onderdelen",
     "jobAnalytics": "Opdrachtanalyse",
     "retention": "Klantbehoud",
-    "vehicles": "Voertuigen"
+    "vehicles": "Voertuigen",
+    "techniciansOverview": "Overzicht",
+    "clockedTime": "Geklokte tijd"
   },
   "dateRange": {
     "to": "tot",
@@ -138,6 +140,19 @@
       "avgRevenue": "Gem. Omzet",
       "totalHours": "Totale Uren",
       "avgHours": "Gem. Uren"
+    },
+    "time": {
+      "clockedHours": "Geklokte uren",
+      "billedHours": "Gefactureerde uren",
+      "efficiency": "Efficiëntie",
+      "techniciansClocked": "Monteurs met tijd",
+      "chartTitle": "Geklokt versus gefactureerd per monteur",
+      "tableTitle": "Geklokt tegenover gefactureerd",
+      "clocked": "Geklokt",
+      "billed": "Gefactureerd",
+      "hint": "Geklokte uren komen van de prikklok. Gefactureerde uren zijn de arbeidsregels op klussen die aan de monteur zijn toegewezen en in de periode zijn gestart. Efficiëntie is gefactureerd gedeeld door geklokt.",
+      "noClock": "Geen tijd",
+      "jobsClocked": "Geklokte klussen"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Type",
     "status": "Status",
     "partsUsed": "Onderdelen",
-    "laborHours": "Arbeidsuren"
+    "laborHours": "Arbeidsuren",
+    "clockedHours": "Geklokte uren",
+    "billedHours": "Gefactureerde uren",
+    "efficiency": "Efficiëntie",
+    "jobsClocked": "Geklokte klussen"
   },
   "pdf": {
     "reportTitle": "Business Report",

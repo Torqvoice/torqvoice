@@ -16,9 +16,11 @@ import {
   Wrench,
   Clock,
   Pause,
+  Timer,
   Plus,
   ScanBarcode,
   Package,
+  Square,
 } from 'lucide-react'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { AppCard } from '@/components/app-card'
@@ -43,12 +45,18 @@ import { InventoryPartForm } from '@/features/inventory/Components/InventoryPart
 import { CreateStatusReportDialog } from '@/features/status-reports/Components/CreateStatusReportDialog'
 import { SendStatusReportDialog } from '@/features/status-reports/Components/SendStatusReportDialog'
 import type { MyActiveJob } from '@/features/vehicles/Actions/getMyActiveJobs'
+import { useTimeClock } from '@/features/time-tracking/Components/TimeClockProvider'
+import { useTick } from '@/features/time-tracking/hooks/useTick'
+import { formatElapsed } from '@/features/time-tracking/Lib/timesheet'
+import { cn } from '@/lib/utils'
 
 interface MyActiveJobsProps {
   jobs: MyActiveJob[]
   smsEnabled: boolean
   emailEnabled: boolean
   telegramEnabled: boolean
+  /** Render a card saying so when there are no jobs, instead of nothing at all. */
+  showEmpty?: boolean
 }
 
 const STATUS_ICON: Record<string, typeof Wrench> = {
@@ -68,9 +76,16 @@ export function MyActiveJobs({
   smsEnabled,
   emailEnabled,
   telegramEnabled,
+  showEmpty = false,
 }: MyActiveJobsProps) {
   const t = useTranslations('dashboard.myJobs')
+  const tClock = useTranslations('timeTracking.job')
   const router = useRouter()
+  // The clock lives here rather than on the work order page: this list is
+  // where a technician already is, and everyone who sees it owns a
+  // technician row, so the button never has to explain itself away.
+  const clock = useTimeClock()
+  const now = useTick(clock.open !== null)
   const [uploading, setUploading] = useState<{ jobId: string; type: 'photo' | 'video' } | null>(
     null
   )
@@ -115,7 +130,59 @@ export function MyActiveJobs({
     serviceRecordId: string
   } | null>(null)
 
-  if (jobs.length === 0) return null
+  if (jobs.length === 0) {
+    if (!showEmpty) return null
+    return (
+      <AppCard icon={Wrench} title={t('title')} description={t('description')}>
+        <p className="py-6 text-center text-sm text-muted-foreground">{t('empty')}</p>
+      </AppCard>
+    )
+  }
+
+  const clockButton = (jobId: string, className?: string) => {
+    const runningHere = clock.open?.serviceRecordId === jobId
+    return runningHere ? (
+      <Button
+        variant="outline"
+        size="sm"
+        className={cn(
+          'h-9 border-primary/50 bg-primary/10 text-foreground hover:bg-primary/15',
+          className
+        )}
+        disabled={clock.busy}
+        onClick={() => void clock.stop()}
+      >
+        {clock.busy ? (
+          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+        ) : (
+          <span className="relative mr-1.5 flex size-2" aria-hidden>
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+            <span className="relative inline-flex size-2 rounded-full bg-primary" />
+          </span>
+        )}
+        <span className="font-mono text-xs tabular-nums">
+          {formatElapsed(now.getTime() - new Date(clock.open?.startedAt ?? 0).getTime())}
+        </span>
+        <span className="ml-1.5 hidden sm:inline">{tClock('clockOut')}</span>
+        <Square className="ml-1.5 h-3 w-3 fill-current opacity-70" />
+      </Button>
+    ) : (
+      <Button
+        size="sm"
+        className={cn('h-9', className)}
+        disabled={clock.busy}
+        onClick={() => void clock.start(jobId)}
+        title={clock.open ? tClock('switchHint', { job: clock.open.jobTitle }) : undefined}
+      >
+        {clock.busy ? (
+          <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+        ) : (
+          <Timer className="mr-1.5 h-4 w-4" />
+        )}
+        {clock.open ? tClock('switchHere') : tClock('clockIn')}
+      </Button>
+    )
+  }
 
   const handleCameraClick = (jobId: string) => {
     fileInputRefs.current[jobId]?.click()
@@ -342,7 +409,15 @@ export function MyActiveJobs({
                       <StatusIcon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-medium text-sm truncate">{job.title}</p>
+                      <p className="flex items-center gap-2 font-medium text-sm truncate">
+                        <span className="truncate">{job.title}</span>
+                        {clock.open?.serviceRecordId === job.id && (
+                          <span className="relative flex size-2 shrink-0" aria-hidden>
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+                            <span className="relative inline-flex size-2 rounded-full bg-primary" />
+                          </span>
+                        )}
+                      </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {job.vehicle
                           ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}${job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}`
@@ -351,7 +426,7 @@ export function MyActiveJobs({
                     </div>
                   </div>
                   {/* Desktop: inline buttons */}
-                  <div className="shrink-0 ml-3 hidden sm:flex items-center gap-2">
+                  <div className="shrink-0 ml-3 hidden lg:flex items-center gap-2">
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       {imgCount > 0 && (
                         <Tooltip>
@@ -387,6 +462,7 @@ export function MyActiveJobs({
                         </Tooltip>
                       )}
                     </div>
+                    {clockButton(job.id)}
                     <Button
                       variant="outline"
                       size="sm"
@@ -451,7 +527,7 @@ export function MyActiveJobs({
                     )}
                   </div>
                   {/* Mobile: counters only */}
-                  <div className="shrink-0 ml-3 flex sm:hidden items-center gap-1.5 text-xs text-muted-foreground">
+                  <div className="shrink-0 ml-3 flex lg:hidden items-center gap-1.5 text-xs text-muted-foreground">
                     {imgCount > 0 && (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -488,7 +564,8 @@ export function MyActiveJobs({
                   </div>
                 </div>
                 {/* Mobile: action buttons on two rows */}
-                <div className="mt-2 flex flex-col gap-1.5 sm:hidden">
+                <div className="mt-2 flex flex-col gap-1.5 lg:hidden">
+                  {clockButton(job.id, 'w-full')}
                   <ButtonGroup className="w-full">
                     <Button
                       variant="outline"

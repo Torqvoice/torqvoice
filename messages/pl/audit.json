@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Zablokowano starsze faktury",
     "inspection_reminders_sent": "Wysłano przypomnienia o przeglądzie",
     "inspection_reminders_send": "Wysłano przypomnienia o przeglądzie",
-    "service_videoCall_send": "Wysłano link do rozmowy wideo"
+    "service_videoCall_send": "Wysłano link do rozmowy wideo",
+    "timeEntry_create": "Dodano wpis czasu",
+    "timeEntry_update": "Poprawiono wpis czasu",
+    "timeEntry_delete": "Usunięto wpis czasu"
   },
   "summary": {
     "customField_create": "Utworzono pole niestandardowe „{name}”",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Zmieniono, kiedy używany jest projekt dokumentu {name}",
     "settings_freezeInvoices": "Zablokował {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}} sprzed blokady z bieżącym projektem",
     "inspection_reminders_sent": "Wysłano {count} przypomnień o przeglądzie",
-    "service_videoCall_send": "Wysłano link do rozmowy wideo przez {channels}"
+    "service_videoCall_send": "Wysłano link do rozmowy wideo przez {channels}",
+    "timeEntry_create": "Dodano {minutes} min dla {technician} w zleceniu „{job}”",
+    "timeEntry_update": "Poprawiono wpis czasu {technician} w zleceniu „{job}” na {minutes} min",
+    "timeEntry_stop": "Zatrzymano zegar {technician} w zleceniu „{job}” na {minutes} min",
+    "timeEntry_delete": "Usunięto wpis czasu {id}"
   }
 }

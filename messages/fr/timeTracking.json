@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Pointage en cours sur {job}",
+    "stop": "Arrêter le pointage",
+    "stopped": "{minutes} pointées",
+    "switched": "Travail précédent arrêté à {minutes}",
+    "startFailed": "Impossible de démarrer le pointage",
+    "stopFailed": "Impossible d'arrêter le pointage"
+  },
+  "job": {
+    "title": "Temps pointé",
+    "running": "en cours",
+    "clockIn": "Pointer",
+    "clockOut": "Dépointer",
+    "switchHere": "Passer à ce travail",
+    "switchHint": "Arrête le pointage sur {job} et le démarre ici",
+    "addAsLabor": "Ajouter {hours, number} h en main-d'œuvre",
+    "addAsLaborHint": "Ajoute une ligne de main-d'œuvre de {hours, number} heures au taux par défaut. Le temps pointé lui-même n'est pas modifié.",
+    "laborDescription": "Main-d'œuvre (temps pointé)",
+    "empty": "Aucun temps pointé sur ce travail pour l'instant. Les techniciens pointent depuis l'application ou depuis Mes travaux actifs sur le tableau de bord.",
+    "showAll": "Afficher {count} de plus",
+    "showFewer": "Afficher moins",
+    "openTimesheets": "Ouvrir les feuilles de temps"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manuel",
+    "editedBy": "Ajusté par {name}"
+  },
+  "page": {
+    "title": "Feuilles de temps",
+    "description": "Qui a travaillé et quand, à l'heure de l'atelier.",
+    "loadFailed": "Impossible de charger la feuille de temps",
+    "presets": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "thisWeek": "Cette semaine",
+      "lastWeek": "Semaine dernière",
+      "thisMonth": "Ce mois-ci",
+      "lastMonth": "Mois dernier"
+    },
+    "customRange": "Période personnalisée",
+    "apply": "Appliquer",
+    "allTechnicians": "Tous les techniciens",
+    "export": "Exporter en CSV",
+    "addEntry": "Ajouter une entrée",
+    "stats": {
+      "total": "Temps total",
+      "totalHint": "{days, plural, =1 {1 jour} other {# jours}} dans la période",
+      "technicians": "Techniciens avec du temps",
+      "techniciansHint": "sur {count} dans l'équipe",
+      "running": "Pointés en ce moment",
+      "runningHint": "en direct",
+      "average": "Moyenne par jour actif",
+      "averageHint": "sur {days, plural, =1 {1 jour} other {# jours}} avec du temps"
+    },
+    "nowStrip": {
+      "title": "Pointés en ce moment",
+      "since": "depuis {time}",
+      "stop": "Arrêter"
+    },
+    "grid": {
+      "title": "Vue d'ensemble",
+      "description": "Heures par technicien et par jour. Cliquez sur une cellule pour aller à ce jour.",
+      "technician": "Technicien",
+      "total": "Total",
+      "tooLong": "La vue d'ensemble affiche jusqu'à 31 jours. Réduisez la période pour la voir."
+    },
+    "table": {
+      "time": "Heure",
+      "duration": "Durée",
+      "job": "Travail",
+      "vehicle": "Véhicule",
+      "source": "Source",
+      "note": "Note",
+      "running": "En cours",
+      "dayTotal": "Total du jour",
+      "counterSale": "Vente au comptoir",
+      "edit": "Modifier",
+      "stop": "Arrêter le pointage",
+      "delete": "Supprimer",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "Aucun temps pointé sur cette période",
+      "body": "Les techniciens pointent depuis l'application Torqvoice Technicians ou depuis Mes travaux actifs sur le tableau de bord. Les entrées apparaissent ici dès qu'un pointage démarre.",
+      "noTechnicians": "Personne dans l'équipe n'est encore configuré comme technicien. Associez des membres de l'équipe à des techniciens dans Paramètres, Équipe.",
+      "teamLink": "Ouvrir les paramètres de l'équipe"
+    },
+    "deleteTitle": "Supprimer cette entrée ?",
+    "deleteBody": "{duration} sur {job} par {technician} seront retirées de la feuille de temps. Cette action est irréversible.",
+    "deleteConfirm": "Supprimer",
+    "deleted": "Entrée supprimée",
+    "stoppedByManager": "Pointage arrêté à {minutes}",
+    "csv": {
+      "technician": "Technicien",
+      "date": "Date",
+      "start": "Début",
+      "end": "Fin",
+      "duration": "Durée",
+      "hours": "Heures",
+      "job": "Travail",
+      "vehicle": "Véhicule",
+      "plate": "Immatriculation",
+      "source": "Source",
+      "editedBy": "Ajusté par",
+      "note": "Note"
+    },
+    "unlinked": "Sans compte",
+    "unlinkedHint": "Technicien du tableau seulement, non lié à un membre de l'équipe"
+  },
+  "dialog": {
+    "addTitle": "Ajouter une entrée de temps",
+    "addDescription": "Du temps qu'un technicien a travaillé sans pointer. Elle est marquée comme saisie à la main.",
+    "editTitle": "Corriger l'entrée de temps",
+    "editDescription": "L'entrée garde son technicien et son travail. L'auteur de la modification est enregistré.",
+    "technician": "Technicien",
+    "pickTechnician": "Choisir un technicien",
+    "job": "Ordre de travail",
+    "pickJob": "Choisir un ordre de travail",
+    "searchJobs": "Rechercher par titre ou immatriculation",
+    "searching": "Recherche…",
+    "noJobs": "Aucun ordre de travail trouvé",
+    "start": "Début",
+    "end": "Fin",
+    "stillRunning": "Toujours en cours",
+    "leaveEndEmpty": "Laissez la fin vide pour garder le pointage en cours.",
+    "endBeforeStart": "La fin doit être après le début.",
+    "duration": "Durée : {duration}",
+    "timesInWorkshopZone": "Les heures suivent l'horloge de l'atelier ({zone}).",
+    "note": "Note",
+    "notePlaceholder": "Facultatif. Pourquoi cela a été ajouté ou modifié.",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "add": "Ajouter",
+    "added": "Entrée ajoutée",
+    "updated": "Entrée mise à jour",
+    "saveFailed": "Impossible d'enregistrer l'entrée"
+  }
+}

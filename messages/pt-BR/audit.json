@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Faturas anteriores travadas",
     "inspection_reminders_sent": "Enviou lembretes de inspeção",
     "inspection_reminders_send": "Enviou lembretes de inspeção",
-    "service_videoCall_send": "Link da videochamada enviado"
+    "service_videoCall_send": "Link da videochamada enviado",
+    "timeEntry_create": "Registro de tempo adicionado",
+    "timeEntry_update": "Registro de tempo corrigido",
+    "timeEntry_delete": "Registro de tempo excluído"
   },
   "summary": {
     "customField_create": "Campo personalizado \"{name}\" criado",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Alterou quando o design de documento {name} é usado",
     "settings_freezeInvoices": "Travou {count, plural, one {# fatura} other {# faturas}} anteriores ao bloqueio com o design atual",
     "inspection_reminders_sent": "Enviou {count} lembretes de inspeção",
-    "service_videoCall_send": "Enviou o link da videochamada por {channels}"
+    "service_videoCall_send": "Enviou o link da videochamada por {channels}",
+    "timeEntry_create": "Adicionados {minutes} minutos para {technician} em \"{job}\"",
+    "timeEntry_update": "Registro de tempo de {technician} em \"{job}\" corrigido para {minutes} minutos",
+    "timeEntry_stop": "Relógio de {technician} em \"{job}\" parado em {minutes} minutos",
+    "timeEntry_delete": "Registro de tempo {id} excluído"
   }
 }

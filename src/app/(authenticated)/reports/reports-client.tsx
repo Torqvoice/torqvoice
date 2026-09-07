@@ -54,6 +54,8 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Timer,
+  Gauge,
 } from 'lucide-react'
 import {
   getRevenueReport,
@@ -67,6 +69,7 @@ import {
   getTaxReport,
   getPastDueInvoicesReport,
   getVehicleReport,
+  getTechnicianTimeReport,
 } from '@/features/reports/Actions/reportActions'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import type {
@@ -81,11 +84,15 @@ import type {
   TaxReport,
   PastDueInvoicesReport,
   VehicleReportData,
+  TechnicianTimeReport,
 } from '@/features/reports/Schema/reportTypes'
 import { RevenueBarChart, RevenueTypeDonut } from '@/features/reports/Components/RevenueCharts'
 import { ServiceStatusChart, ServiceTypeDonut } from '@/features/reports/Components/ServiceCharts'
 import { TopCustomersChart } from '@/features/reports/Components/CustomerCharts'
-import { TechnicianBarChart } from '@/features/reports/Components/TechnicianCharts'
+import {
+  TechnicianBarChart,
+  TechnicianTimeChart,
+} from '@/features/reports/Components/TechnicianCharts'
 import { PartsDonut } from '@/features/reports/Components/PartsCharts'
 import {
   DayOfWeekChart,
@@ -108,6 +115,7 @@ import {
   exportTaxCsv,
   exportPastDueInvoicesCsv,
   exportVehicleReportCsv,
+  exportTechnicianTimeCsv,
 } from '@/features/reports/Components/csv-export'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { pdf } from '@react-pdf/renderer'
@@ -123,6 +131,7 @@ type ReportTab =
   | 'retention'
   | 'vehicles'
 type FinancialSubTab = 'revenue' | 'past-due-invoices' | 'tax'
+type TechnicianSubTab = 'overview' | 'clocked-time'
 type PastDueSortKey = 'customerName' | 'amountDue' | 'daysPastDue'
 type PastDueSortDir = 'asc' | 'desc'
 
@@ -144,6 +153,7 @@ const VALID_TABS: ReportTab[] = [
   'vehicles',
 ]
 const VALID_SUB_TABS: FinancialSubTab[] = ['revenue', 'past-due-invoices', 'tax']
+const VALID_TECH_SUB_TABS: TechnicianSubTab[] = ['overview', 'clocked-time']
 
 export default function ReportsClient({
   currencyCode,
@@ -170,6 +180,13 @@ export default function ReportsClient({
 
   const [activeTab, setActiveTab] = useState<ReportTab>(initialTab)
   const [financialSubTab, setFinancialSubTab] = useState<FinancialSubTab>(initialSubTab)
+  const initialTechSubTab = (
+    VALID_TECH_SUB_TABS.includes(searchParams.get('subtab') as TechnicianSubTab)
+      ? searchParams.get('subtab')
+      : 'overview'
+  ) as TechnicianSubTab
+  const [technicianSubTab, setTechnicianSubTab] = useState<TechnicianSubTab>(initialTechSubTab)
+  const [technicianTimeData, setTechnicianTimeData] = useState<TechnicianTimeReport | null>(null)
 
   const updateUrl = useCallback(
     (tab: string, subtab?: string) => {
@@ -216,7 +233,10 @@ export default function ReportsClient({
     [currencyCode]
   )
 
-  type FetchableReport = ReportTab | FinancialSubTab
+  type FetchableReport = ReportTab | FinancialSubTab | 'clocked-time'
+  // The technicians tab fetches one of two reports depending on its sub-tab.
+  const technicianFetchKey = (sub: TechnicianSubTab): FetchableReport =>
+    sub === 'clocked-time' ? 'clocked-time' : 'technicians'
 
   const fetchReport = useCallback(
     async (type: FetchableReport, overrideDateRange?: DateRange, overrideVehicleId?: string) => {
@@ -263,6 +283,11 @@ export default function ReportsClient({
             if (result.success && result.data) setTechnicianData(result.data)
             break
           }
+          case 'clocked-time': {
+            const result = await getTechnicianTimeReport(dateParams)
+            if (result.success && result.data) setTechnicianTimeData(result.data)
+            break
+          }
           case 'parts': {
             const result = await getPartsUsageReport(dateParams)
             if (result.success && result.data) setPartsData(result.data)
@@ -299,6 +324,8 @@ export default function ReportsClient({
   useEffect(() => {
     if (activeTab === 'financial') {
       fetchReport(financialSubTab)
+    } else if (activeTab === 'technicians') {
+      fetchReport(technicianFetchKey(technicianSubTab))
     } else {
       fetchReport(activeTab)
     }
@@ -307,7 +334,10 @@ export default function ReportsClient({
   const handleTabChange = (value: string) => {
     const tab = value as ReportTab
     setActiveTab(tab)
-    updateUrl(tab, tab === 'financial' ? financialSubTab : undefined)
+    updateUrl(
+      tab,
+      tab === 'financial' ? financialSubTab : tab === 'technicians' ? technicianSubTab : undefined
+    )
     if (tab === 'financial') {
       const subDataMap: Record<FinancialSubTab, unknown> = {
         revenue: revenueData,
@@ -317,6 +347,9 @@ export default function ReportsClient({
       if (!subDataMap[financialSubTab]) {
         fetchReport(financialSubTab)
       }
+    } else if (tab === 'technicians') {
+      const has = technicianSubTab === 'clocked-time' ? technicianTimeData : technicianData
+      if (!has) fetchReport(technicianFetchKey(technicianSubTab))
     } else {
       const dataMap: Record<string, unknown> = {
         services: serviceData,
@@ -352,9 +385,19 @@ export default function ReportsClient({
     }
   }
 
+  const handleTechnicianSubTabChange = (value: string) => {
+    const subTab = value as TechnicianSubTab
+    setTechnicianSubTab(subTab)
+    updateUrl('technicians', subTab)
+    const has = subTab === 'clocked-time' ? technicianTimeData : technicianData
+    if (!has) fetchReport(technicianFetchKey(subTab))
+  }
+
   const handleRefresh = () => {
     if (activeTab === 'financial') {
       fetchReport(financialSubTab)
+    } else if (activeTab === 'technicians') {
+      fetchReport(technicianFetchKey(technicianSubTab))
     } else if (activeTab === 'vehicles') {
       if (selectedVehicleId) fetchReport('vehicles')
     } else {
@@ -427,6 +470,17 @@ export default function ReportsClient({
             ])
           break
         case 'technicians':
+          if (technicianSubTab === 'clocked-time') {
+            if (technicianTimeData)
+              exportTechnicianTimeCsv(technicianTimeData, [
+                h('technician'),
+                h('clockedHours'),
+                h('billedHours'),
+                h('efficiency'),
+                h('jobsClocked'),
+              ])
+            break
+          }
           if (technicianData)
             exportTechniciansCsv(technicianData, currencyCode, [
               h('technician'),
@@ -666,7 +720,7 @@ export default function ReportsClient({
       services: serviceData,
       customers: customerData,
       inventory: inventoryData,
-      technicians: technicianData,
+      technicians: technicianSubTab === 'clocked-time' ? technicianTimeData : technicianData,
       parts: partsData,
       'job-analytics': jobAnalyticsData,
       retention: retentionData,
@@ -880,6 +934,8 @@ export default function ReportsClient({
                             setDatePickerOpen(false)
                             if (activeTab === 'financial') {
                               fetchReport(financialSubTab, range)
+                            } else if (activeTab === 'technicians') {
+                              fetchReport(technicianFetchKey(technicianSubTab), range)
                             } else {
                               fetchReport(activeTab, range)
                             }
@@ -900,6 +956,8 @@ export default function ReportsClient({
                       setDatePickerOpen(false)
                       if (activeTab === 'financial') {
                         fetchReport(financialSubTab, pendingDateRange)
+                      } else if (activeTab === 'technicians') {
+                        fetchReport(technicianFetchKey(technicianSubTab), pendingDateRange)
                       } else {
                         fetchReport(activeTab, pendingDateRange)
                       }
@@ -1723,92 +1781,261 @@ export default function ReportsClient({
 
       {/* Technicians Tab */}
       <TabsContent value="technicians">
-        {!loading && technicianData && (
-          <div className="space-y-4">
-            <div className="grid gap-3 grid-cols-2 max-w-lg">
-              <Card>
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
-                    <Wrench className="h-4 w-4 text-violet-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t('technicians.totalJobs')}</p>
-                    <p className="text-lg font-semibold">{technicianData.totalJobs}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
-                    <DollarSign className="h-4 w-4 text-emerald-500" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">{t('technicians.totalRevenue')}</p>
-                    <p className="text-lg font-semibold truncate">
-                      {fmtCurrency(technicianData.totalRevenue)}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            {technicianData.technicians.length > 0 && (
-              <AppCard title={t('technicians.revenueByTechnician')}>
-                <TechnicianBarChart
-                  data={technicianData.technicians}
-                  formatCurrency={fmtCurrency}
-                  labels={{ revenue: t('charts.revenue') }}
-                />
-              </AppCard>
+        <Tabs
+          value={technicianSubTab}
+          onValueChange={handleTechnicianSubTabChange}
+          className="space-y-4"
+        >
+          <TabsList variant="line">
+            <TabsTrigger value="overview" className="gap-1.5">
+              <UserCheck className="h-4 w-4" />
+              {t('tabs.techniciansOverview')}
+            </TabsTrigger>
+            <TabsTrigger value="clocked-time" className="gap-1.5">
+              <Timer className="h-4 w-4" />
+              {t('tabs.clockedTime')}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview">
+            {!loading && technicianData && (
+              <div className="space-y-4">
+                <div className="grid gap-3 grid-cols-2 max-w-lg">
+                  <Card>
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
+                        <Wrench className="h-4 w-4 text-violet-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {t('technicians.totalJobs')}
+                        </p>
+                        <p className="text-lg font-semibold">{technicianData.totalJobs}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
+                        <DollarSign className="h-4 w-4 text-emerald-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {t('technicians.totalRevenue')}
+                        </p>
+                        <p className="text-lg font-semibold truncate">
+                          {fmtCurrency(technicianData.totalRevenue)}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                {technicianData.technicians.length > 0 && (
+                  <AppCard title={t('technicians.revenueByTechnician')}>
+                    <TechnicianBarChart
+                      data={technicianData.technicians}
+                      formatCurrency={fmtCurrency}
+                      labels={{ revenue: t('charts.revenue') }}
+                    />
+                  </AppCard>
+                )}
+                {technicianData.technicians.length > 0 && (
+                  <AppCard title={t('technicians.technicianBreakdown')}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('technicians.tableHeaders.technician')}</TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.tableHeaders.jobs')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.tableHeaders.revenue')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.tableHeaders.avgRevenue')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.tableHeaders.totalHours')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.tableHeaders.avgHours')}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {technicianData.technicians.map((row) => (
+                          <TableRow key={row.techName}>
+                            <TableCell className="text-sm font-medium">{row.techName}</TableCell>
+                            <TableCell className="text-right text-sm">{row.jobCount}</TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.totalRevenue)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {fmtCurrency(row.avgRevenue)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {row.totalLaborHours.toFixed(1)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm">
+                              {row.avgHours.toFixed(1)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </AppCard>
+                )}
+              </div>
             )}
-            {technicianData.technicians.length > 0 && (
-              <AppCard title={t('technicians.technicianBreakdown')}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t('technicians.tableHeaders.technician')}</TableHead>
-                      <TableHead className="text-right">
-                        {t('technicians.tableHeaders.jobs')}
-                      </TableHead>
-                      <TableHead className="text-right">
-                        {t('technicians.tableHeaders.revenue')}
-                      </TableHead>
-                      <TableHead className="text-right">
-                        {t('technicians.tableHeaders.avgRevenue')}
-                      </TableHead>
-                      <TableHead className="text-right">
-                        {t('technicians.tableHeaders.totalHours')}
-                      </TableHead>
-                      <TableHead className="text-right">
-                        {t('technicians.tableHeaders.avgHours')}
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {technicianData.technicians.map((row) => (
-                      <TableRow key={row.techName}>
-                        <TableCell className="text-sm font-medium">{row.techName}</TableCell>
-                        <TableCell className="text-right text-sm">{row.jobCount}</TableCell>
-                        <TableCell className="text-right text-sm">
-                          {fmtCurrency(row.totalRevenue)}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {fmtCurrency(row.avgRevenue)}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {row.totalLaborHours.toFixed(1)}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {row.avgHours.toFixed(1)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </AppCard>
+            {!loading && !technicianData && <EmptyState message={t('empty')} />}
+          </TabsContent>
+
+          {/* Clocked time sub-tab: what technicians spent against what was billed */}
+          <TabsContent value="clocked-time">
+            {!loading && technicianTimeData && (
+              <div className="space-y-4">
+                <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+                  <Card>
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
+                        <Timer className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {t('technicians.time.clockedHours')}
+                        </p>
+                        <p className="text-lg font-semibold">
+                          {(technicianTimeData.totalClockedMinutes / 60).toFixed(1)}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-violet-500/10">
+                        <Wrench className="h-4 w-4 text-violet-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {t('technicians.time.billedHours')}
+                        </p>
+                        <p className="text-lg font-semibold">
+                          {technicianTimeData.totalBilledHours.toFixed(1)}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10">
+                        <Gauge className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {t('technicians.time.efficiency')}
+                        </p>
+                        <p className="text-lg font-semibold">
+                          {technicianTimeData.efficiency === null
+                            ? '–'
+                            : `${technicianTimeData.efficiency.toFixed(0)}%`}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="flex items-center gap-3 p-4">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10">
+                        <Users className="h-4 w-4 text-amber-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {t('technicians.time.techniciansClocked')}
+                        </p>
+                        <p className="text-lg font-semibold">
+                          {
+                            technicianTimeData.technicians.filter((r) => r.clockedMinutes > 0)
+                              .length
+                          }
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                {technicianTimeData.technicians.length > 0 && (
+                  <AppCard title={t('technicians.time.chartTitle')}>
+                    <TechnicianTimeChart
+                      data={technicianTimeData.technicians}
+                      labels={{
+                        clocked: t('technicians.time.clocked'),
+                        billed: t('technicians.time.billed'),
+                      }}
+                    />
+                  </AppCard>
+                )}
+                {technicianTimeData.technicians.length > 0 && (
+                  <AppCard
+                    title={t('technicians.time.tableTitle')}
+                    description={t('technicians.time.hint')}
+                  >
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{t('technicians.tableHeaders.technician')}</TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.time.clocked')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.time.billed')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.time.efficiency')}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t('technicians.time.jobsClocked')}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {technicianTimeData.technicians.map((row) => (
+                          <TableRow key={row.technicianId}>
+                            <TableCell className="text-sm font-medium">
+                              <span className="flex items-center gap-2">
+                                <span
+                                  className="size-2 rounded-full"
+                                  style={{ backgroundColor: row.color }}
+                                />
+                                {row.techName}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right text-sm tabular-nums">
+                              {(row.clockedMinutes / 60).toFixed(1)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm tabular-nums">
+                              {row.billedHours.toFixed(1)}
+                            </TableCell>
+                            <TableCell className="text-right text-sm tabular-nums">
+                              {row.efficiency === null ? (
+                                <span className="text-muted-foreground">
+                                  {t('technicians.time.noClock')}
+                                </span>
+                              ) : (
+                                `${row.efficiency.toFixed(0)}%`
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right text-sm tabular-nums">
+                              {row.jobsClocked}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </AppCard>
+                )}
+              </div>
             )}
-          </div>
-        )}
-        {!loading && !technicianData && <EmptyState message={t('empty')} />}
+            {!loading && !technicianTimeData && <EmptyState message={t('empty')} />}
+          </TabsContent>
+        </Tabs>
       </TabsContent>
 
       {/* Parts Tab */}
