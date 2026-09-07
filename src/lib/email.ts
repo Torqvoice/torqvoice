@@ -21,6 +21,12 @@ export type EmailProvider = 'smtp' | 'resend' | 'postmark' | 'mailgun' | 'sendgr
 export interface SendMailOptions {
   from: string
   to: string
+  /**
+   * Where a reply should go when it is not the sender. A support request goes
+   * out from the platform address, so without this the administrator's reply
+   * button addresses the platform itself rather than the person asking.
+   */
+  replyTo?: string
   subject: string
   html: string
   attachments?: {
@@ -195,6 +201,7 @@ async function sendViaSmtpWithSettings(
   await transporter.sendMail({
     from: options.from,
     to: options.to,
+    replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
     attachments: options.attachments?.map((a) => ({
@@ -247,6 +254,7 @@ async function sendViaResendWithSettings(
   await resend.emails.send({
     from: options.from,
     to: options.to,
+    replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
     attachments: options.attachments?.map((a) => ({
@@ -279,6 +287,7 @@ async function sendViaPostmarkWithSettings(
     await client.sendEmail({
       From: options.from,
       To: options.to,
+      ReplyTo: options.replyTo,
       Subject: options.subject,
       HtmlBody: options.html,
       Attachments: options.attachments.map((a) => ({
@@ -292,6 +301,7 @@ async function sendViaPostmarkWithSettings(
     await client.sendEmail({
       From: options.from,
       To: options.to,
+      ReplyTo: options.replyTo,
       Subject: options.subject,
       HtmlBody: options.html,
     })
@@ -328,6 +338,7 @@ async function sendViaMailgunWithSettings(
   await mg.messages.create(domain, {
     from: options.from,
     to: [options.to],
+    ...(options.replyTo && { 'h:Reply-To': options.replyTo }),
     subject: options.subject,
     html: options.html,
     ...(options.attachments?.length && {
@@ -370,6 +381,7 @@ async function sendViaSendGridWithSettings(
   const msg: MailDataRequired = {
     from: options.from,
     to: options.to,
+    replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
   }
@@ -410,6 +422,7 @@ async function sendViaSesWithSettings(
   const info = await transporter.sendMail({
     from: options.from,
     to: options.to,
+    replyTo: options.replyTo,
     subject: options.subject,
     html: options.html,
     attachments: options.attachments?.map((a) => ({
