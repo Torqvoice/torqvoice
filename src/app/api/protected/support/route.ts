@@ -18,6 +18,7 @@ import {
   MAX_TOTAL_ATTACHMENT_BYTES,
   sanitizeFilename,
   validateSupportRequest,
+  supportReplyToAddress,
 } from '@/features/support/Lib/supportRequest'
 
 export async function POST(request: NextRequest) {
@@ -119,6 +120,9 @@ export async function POST(request: NextRequest) {
     await sendMail({
       from,
       to,
+      // Hitting reply in the inbox should address the person who asked, not
+      // the platform sender the mail went out from.
+      replyTo: supportReplyToAddress(user.name, user.email),
       subject: `[Support] ${validation.subject}`,
       html,
       attachments,
