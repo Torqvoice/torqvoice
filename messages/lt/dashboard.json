@@ -19,7 +19,8 @@
     "addToJob": "Pridėti {qty} prie darbo",
     "statusReport": "Būsenos ataskaita",
     "report": "Ataskaita",
-    "observation": "Pastebėjimas"
+    "observation": "Pastebėjimas",
+    "empty": "Šiuo metu jums nepriskirta jokių darbo užsakymų."
   },
   "recentActivity": "Naujausios veiklos",
   "noRecentActivity": "Naujausių veiklų nėra",

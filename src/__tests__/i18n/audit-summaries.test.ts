@@ -124,6 +124,9 @@ describe('audit summaries', () => {
       count: 2,
       records: 2,
       quotes: 2,
+      technician: 'Kari',
+      job: 'Brakes',
+      minutes: 45,
     }
     for (const locale of LOCALES) {
       const messages = summary(locale)

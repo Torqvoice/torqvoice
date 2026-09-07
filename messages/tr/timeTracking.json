@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Sayaç {job} işinde çalışıyor",
+    "stop": "Sayacı durdur",
+    "stopped": "{minutes} kaydedildi",
+    "switched": "Önceki iş {minutes} sürede durduruldu",
+    "startFailed": "Sayaç başlatılamadı",
+    "stopFailed": "Sayaç durdurulamadı"
+  },
+  "job": {
+    "title": "Kaydedilen süre",
+    "running": "çalışıyor",
+    "clockIn": "İşe başla",
+    "clockOut": "İşi bitir",
+    "switchHere": "Bu işe geç",
+    "switchHint": "{job} işindeki sayacı durdurur ve burada başlatır",
+    "addAsLabor": "{hours, number} sa işçilik olarak ekle",
+    "addAsLaborHint": "Varsayılan ücretle {hours, number} saatlik bir işçilik satırı ekler. Kaydedilen süre değişmez.",
+    "laborDescription": "İşçilik (kaydedilen süre)",
+    "empty": "Bu işte henüz süre kaydedilmedi. Teknisyenler uygulamadan veya panodaki Aktif İşlerim bölümünden işe başlar.",
+    "showAll": "{count} tane daha göster",
+    "showFewer": "Daha az göster",
+    "openTimesheets": "Zaman çizelgelerini aç"
+  },
+  "source": {
+    "app": "Uygulama",
+    "web": "Web",
+    "manual": "Elle",
+    "editedBy": "{name} tarafından düzeltildi"
+  },
+  "page": {
+    "title": "Zaman çizelgeleri",
+    "description": "Kimin ne zaman çalıştığı, atölyenin saatine göre.",
+    "loadFailed": "Zaman çizelgesi yüklenemedi",
+    "presets": {
+      "today": "Bugün",
+      "yesterday": "Dün",
+      "thisWeek": "Bu hafta",
+      "lastWeek": "Geçen hafta",
+      "thisMonth": "Bu ay",
+      "lastMonth": "Geçen ay"
+    },
+    "customRange": "Özel aralık",
+    "apply": "Uygula",
+    "allTechnicians": "Tüm teknisyenler",
+    "export": "CSV dışa aktar",
+    "addEntry": "Kayıt ekle",
+    "stats": {
+      "total": "Toplam süre",
+      "totalHint": "aralıkta {days, plural, =1 {1 gün} other {# gün}}",
+      "technicians": "Süresi olan teknisyenler",
+      "techniciansHint": "ekipteki {count} kişiden",
+      "running": "Şu an çalışanlar",
+      "runningHint": "canlı",
+      "average": "Aktif gün başına ortalama",
+      "averageHint": "süresi olan {days, plural, =1 {1 gün} other {# gün}} üzerinden"
+    },
+    "nowStrip": {
+      "title": "Şu an çalışanlar",
+      "since": "{time} itibarıyla",
+      "stop": "Durdur"
+    },
+    "grid": {
+      "title": "Genel bakış",
+      "description": "Teknisyen ve gün başına saatler. O güne gitmek için bir hücreye tıklayın.",
+      "technician": "Teknisyen",
+      "total": "Toplam",
+      "tooLong": "Genel bakış en fazla 31 gün gösterir. Görmek için aralığı daraltın."
+    },
+    "table": {
+      "time": "Saat",
+      "duration": "Süre",
+      "job": "İş",
+      "vehicle": "Araç",
+      "source": "Kaynak",
+      "note": "Not",
+      "running": "Çalışıyor",
+      "dayTotal": "Gün toplamı",
+      "counterSale": "Tezgâh satışı",
+      "edit": "Düzenle",
+      "stop": "Sayacı durdur",
+      "delete": "Sil",
+      "actions": "İşlemler"
+    },
+    "empty": {
+      "title": "Bu aralıkta kaydedilen süre yok",
+      "body": "Teknisyenler Torqvoice Technicians uygulamasından veya panodaki Aktif İşlerim bölümünden işe başlar. Bir sayaç başladığı anda kayıtlar burada görünür.",
+      "noTechnicians": "Ekipte henüz kimse teknisyen olarak ayarlanmadı. Ayarlar, Ekip altında ekip üyelerini teknisyenlerle eşleştirin.",
+      "teamLink": "Ekip ayarlarını aç"
+    },
+    "deleteTitle": "Bu kayıt silinsin mi?",
+    "deleteBody": "{technician} tarafından {job} işindeki {duration} zaman çizelgesinden kaldırılacak. Bu geri alınamaz.",
+    "deleteConfirm": "Sil",
+    "deleted": "Kayıt silindi",
+    "stoppedByManager": "Sayaç {minutes} sürede durduruldu",
+    "csv": {
+      "technician": "Teknisyen",
+      "date": "Tarih",
+      "start": "Başlangıç",
+      "end": "Bitiş",
+      "duration": "Süre",
+      "hours": "Saat",
+      "job": "İş",
+      "vehicle": "Araç",
+      "plate": "Plaka",
+      "source": "Kaynak",
+      "editedBy": "Düzelten",
+      "note": "Not"
+    },
+    "unlinked": "Hesap yok",
+    "unlinkedHint": "Yalnızca panoda olan, bir ekip üyesine bağlı olmayan teknisyen"
+  },
+  "dialog": {
+    "addTitle": "Zaman kaydı ekle",
+    "addDescription": "Bir teknisyenin çalıştığı ama kaydetmediği süre. Elle girildi olarak işaretlenir.",
+    "editTitle": "Zaman kaydını düzelt",
+    "editDescription": "Kaydın teknisyeni ve işi değişmez. Kimin değiştirdiği kaydedilir.",
+    "technician": "Teknisyen",
+    "pickTechnician": "Bir teknisyen seçin",
+    "job": "İş emri",
+    "pickJob": "Bir iş emri seçin",
+    "searchJobs": "Başlık veya plakaya göre ara",
+    "searching": "Aranıyor…",
+    "noJobs": "İş emri bulunamadı",
+    "start": "Başlangıç",
+    "end": "Bitiş",
+    "stillRunning": "Hâlâ çalışıyor",
+    "leaveEndEmpty": "Sayacın çalışmaya devam etmesi için bitişi boş bırakın.",
+    "endBeforeStart": "Bitiş, başlangıçtan sonra olmalı.",
+    "duration": "Süre: {duration}",
+    "timesInWorkshopZone": "Saatler atölyenin saatine göredir ({zone}).",
+    "note": "Not",
+    "notePlaceholder": "İsteğe bağlı. Neden eklendiği veya değiştirildiği.",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "add": "Ekle",
+    "added": "Kayıt eklendi",
+    "updated": "Kayıt güncellendi",
+    "saveFailed": "Kayıt kaydedilemedi"
+  }
+}

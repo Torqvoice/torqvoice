@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Klokken går på {job}",
+    "stop": "Stopp klokken",
+    "stopped": "{minutes} registrert",
+    "switched": "Stoppet forrige jobb ved {minutes}",
+    "startFailed": "Kunne ikke starte klokken",
+    "stopFailed": "Kunne ikke stoppe klokken"
+  },
+  "job": {
+    "title": "Registrert tid",
+    "running": "pågår",
+    "clockIn": "Stemple inn",
+    "clockOut": "Stemple ut",
+    "switchHere": "Bytt til denne jobben",
+    "switchHint": "Stopper klokken på {job} og starter den her",
+    "addAsLabor": "Legg til {hours, number} t som arbeid",
+    "addAsLaborHint": "Legger til en arbeidslinje på {hours, number} timer til standardsats. Den registrerte tiden endres ikke.",
+    "laborDescription": "Arbeid (registrert tid)",
+    "empty": "Ingen tid registrert på denne jobben ennå. Teknikere stempler inn fra appen eller fra Mine aktive jobber på dashbordet.",
+    "showAll": "Vis {count} til",
+    "showFewer": "Vis færre",
+    "openTimesheets": "Åpne timelister"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manuell",
+    "editedBy": "Justert av {name}"
+  },
+  "page": {
+    "title": "Timelister",
+    "description": "Hvem som jobbet når, etter verkstedets klokke.",
+    "loadFailed": "Kunne ikke laste timelisten",
+    "presets": {
+      "today": "I dag",
+      "yesterday": "I går",
+      "thisWeek": "Denne uken",
+      "lastWeek": "Forrige uke",
+      "thisMonth": "Denne måneden",
+      "lastMonth": "Forrige måned"
+    },
+    "customRange": "Egendefinert periode",
+    "apply": "Bruk",
+    "allTechnicians": "Alle teknikere",
+    "export": "Eksporter CSV",
+    "addEntry": "Legg til oppføring",
+    "stats": {
+      "total": "Total tid",
+      "totalHint": "{days, plural, =1 {1 dag} other {# dager}} i perioden",
+      "technicians": "Teknikere med tid",
+      "techniciansHint": "av {count} på laget",
+      "running": "Stemplet inn nå",
+      "runningHint": "direkte",
+      "average": "Snitt per aktiv dag",
+      "averageHint": "over {days, plural, =1 {1 dag} other {# dager}} med tid"
+    },
+    "nowStrip": {
+      "title": "Stemplet inn nå",
+      "since": "siden {time}",
+      "stop": "Stopp"
+    },
+    "grid": {
+      "title": "Oversikt",
+      "description": "Timer per tekniker per dag. Klikk på en celle for å hoppe til den dagen.",
+      "technician": "Tekniker",
+      "total": "Totalt",
+      "tooLong": "Oversikten viser opptil 31 dager. Snevre inn perioden for å se den."
+    },
+    "table": {
+      "time": "Tid",
+      "duration": "Varighet",
+      "job": "Jobb",
+      "vehicle": "Kjøretøy",
+      "source": "Kilde",
+      "note": "Notat",
+      "running": "Pågår",
+      "dayTotal": "Dagstotal",
+      "counterSale": "Disksalg",
+      "edit": "Rediger",
+      "stop": "Stopp klokken",
+      "delete": "Slett",
+      "actions": "Handlinger"
+    },
+    "empty": {
+      "title": "Ingen tid registrert i denne perioden",
+      "body": "Teknikere stempler inn fra Torqvoice Technicians-appen eller fra Mine aktive jobber på dashbordet. Oppføringer vises her i det øyeblikket en klokke starter.",
+      "noTechnicians": "Ingen på laget er satt opp som tekniker ennå. Koble teammedlemmer til teknikere under Innstillinger, Team.",
+      "teamLink": "Åpne teaminnstillinger"
+    },
+    "deleteTitle": "Slette denne oppføringen?",
+    "deleteBody": "{duration} på {job} av {technician} fjernes fra timelisten. Dette kan ikke angres.",
+    "deleteConfirm": "Slett",
+    "deleted": "Oppføring slettet",
+    "stoppedByManager": "Klokken stoppet ved {minutes}",
+    "csv": {
+      "technician": "Tekniker",
+      "date": "Dato",
+      "start": "Start",
+      "end": "Slutt",
+      "duration": "Varighet",
+      "hours": "Timer",
+      "job": "Jobb",
+      "vehicle": "Kjøretøy",
+      "plate": "Skilt",
+      "source": "Kilde",
+      "editedBy": "Justert av",
+      "note": "Notat"
+    },
+    "unlinked": "Ingen konto",
+    "unlinkedHint": "Kun på tavlen, ikke koblet til et teammedlem"
+  },
+  "dialog": {
+    "addTitle": "Legg til tidsoppføring",
+    "addDescription": "Tid en tekniker jobbet, men ikke stemplet. Den merkes som lagt inn for hånd.",
+    "editTitle": "Korriger tidsoppføring",
+    "editDescription": "Oppføringen beholder tekniker og jobb. Hvem som endret den, blir registrert.",
+    "technician": "Tekniker",
+    "pickTechnician": "Velg en tekniker",
+    "job": "Arbeidsordre",
+    "pickJob": "Velg en arbeidsordre",
+    "searchJobs": "Søk etter tittel eller skilt",
+    "searching": "Søker…",
+    "noJobs": "Fant ingen arbeidsordrer",
+    "start": "Start",
+    "end": "Slutt",
+    "stillRunning": "Går fortsatt",
+    "leaveEndEmpty": "La sluttiden stå tom for å la klokken gå videre.",
+    "endBeforeStart": "Slutt må være etter start.",
+    "duration": "Varighet: {duration}",
+    "timesInWorkshopZone": "Tidene følger verkstedets klokke ({zone}).",
+    "note": "Notat",
+    "notePlaceholder": "Valgfritt. Hvorfor dette ble lagt til eller endret.",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "add": "Legg til",
+    "added": "Oppføring lagt til",
+    "updated": "Oppføring oppdatert",
+    "saveFailed": "Kunne ikke lagre oppføringen"
+  }
+}

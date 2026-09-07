@@ -100,6 +100,7 @@ export function ServicePageClient({
   designFollowsName = null,
   designPinnedAt = null,
   designFollowsRule = null,
+  jobClock = { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' },
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -442,6 +443,7 @@ export function ServicePageClient({
                     onShowExistingObservations={() =>
                       obsControlsRef.current?.onShowExistingObservations()
                     }
+                    jobClock={jobClock}
                   />
                 }
                 rightColumn={

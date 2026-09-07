@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   BarChart3,
+  Timer,
   Bell,
   CalendarDays,
   Car,
@@ -69,6 +70,7 @@ const businessItems = [
   { href: '/billing', icon: Receipt, labelKey: 'billing' },
   { href: '/labor-presets', icon: Layers, labelKey: 'laborPresets' },
   { href: '/reports', icon: BarChart3, labelKey: 'reports' },
+  { href: '/timesheets', icon: Timer, labelKey: 'timesheets' },
   { href: '/audit-log', icon: History, labelKey: 'auditLog' },
 ] as const
 

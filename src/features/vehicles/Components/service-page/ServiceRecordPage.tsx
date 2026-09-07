@@ -8,6 +8,7 @@ import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryAct
 import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPresetActions'
 
 import { getTechnicians, getOrgMembers } from '@/features/workboard/Actions/technicianActions'
+import { getJobClock } from '@/features/time-tracking/Actions/timeClockActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getInvoiceLockState } from '@/lib/document-lock.server'
 import {
@@ -54,6 +55,7 @@ export async function ServiceRecordPage({
     workBaysResult,
     videoCallResult,
     designOptionsResult,
+    jobClockResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
     getSettings([
@@ -78,6 +80,7 @@ export async function ServiceRecordPage({
     getWorkBays(),
     getServiceVideoCall(serviceId),
     listDesignOptions('invoice'),
+    getJobClock(serviceId),
   ])
 
   if (!result.success || !result.data) {
@@ -375,6 +378,11 @@ export async function ServiceRecordPage({
         designOptions={designOptions}
         designFollowsName={designFollowsName}
         designFollowsRule={designFollowsRule}
+        jobClock={
+          jobClockResult.success && jobClockResult.data
+            ? jobClockResult.data
+            : { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' }
+        }
         designPinnedAt={designPinnedAt}
       />
     </div>

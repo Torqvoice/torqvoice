@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Fatture precedenti bloccate",
     "inspection_reminders_sent": "Promemoria revisione inviati",
     "inspection_reminders_send": "Promemoria revisione inviati",
-    "service_videoCall_send": "Link videochiamata inviato"
+    "service_videoCall_send": "Link videochiamata inviato",
+    "timeEntry_create": "Voce oraria aggiunta",
+    "timeEntry_update": "Voce oraria corretta",
+    "timeEntry_delete": "Voce oraria eliminata"
   },
   "summary": {
     "customField_create": "Campo personalizzato «{name}» creato",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Modificato quando viene usato il design del documento {name}",
     "settings_freezeInvoices": "Ha bloccato {count, plural, one {# fattura} other {# fatture}} precedenti al blocco con il design attuale",
     "inspection_reminders_sent": "Inviati {count} promemoria revisione",
-    "service_videoCall_send": "Ha inviato il link della videochiamata via {channels}"
+    "service_videoCall_send": "Ha inviato il link della videochiamata via {channels}",
+    "timeEntry_create": "Aggiunti {minutes} minuti per {technician} su \"{job}\"",
+    "timeEntry_update": "Voce oraria di {technician} su \"{job}\" corretta a {minutes} minuti",
+    "timeEntry_stop": "Timer di {technician} su \"{job}\" fermato a {minutes} minuti",
+    "timeEntry_delete": "Voce oraria {id} eliminata"
   }
 }

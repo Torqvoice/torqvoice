@@ -19,7 +19,8 @@
     "addToJob": "Legg til {qty} i jobb",
     "statusReport": "Statusrapport",
     "report": "Rapport",
-    "observation": "Observasjon"
+    "observation": "Observasjon",
+    "empty": "Ingen arbeidsordrer er tildelt deg akkurat nå."
   },
   "recentActivity": "Nylig aktivitet",
   "noRecentActivity": "Ingen nylig aktivitet",

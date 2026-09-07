@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Laikmatis eina darbe {job}",
+    "stop": "Sustabdyti laikmatį",
+    "stopped": "Užregistruota {minutes}",
+    "switched": "Ankstesnis darbas sustabdytas ties {minutes}",
+    "startFailed": "Nepavyko paleisti laikmačio",
+    "stopFailed": "Nepavyko sustabdyti laikmačio"
+  },
+  "job": {
+    "title": "Užregistruotas laikas",
+    "running": "eina",
+    "clockIn": "Pradėti darbą",
+    "clockOut": "Baigti darbą",
+    "switchHere": "Pereiti prie šio darbo",
+    "switchHint": "Sustabdo laikmatį darbe {job} ir paleidžia jį čia",
+    "addAsLabor": "Pridėti {hours, number} val. kaip darbą",
+    "addAsLaborHint": "Prideda {hours, number} val. darbo eilutę pagal numatytąjį įkainį. Pats užregistruotas laikas nesikeičia.",
+    "laborDescription": "Darbas (užregistruotas laikas)",
+    "empty": "Šiame darbe laikas dar neužregistruotas. Technikai pradeda darbą programėlėje arba skydelio skiltyje „Mano aktyvūs darbai“.",
+    "showAll": "Rodyti dar {count}",
+    "showFewer": "Rodyti mažiau",
+    "openTimesheets": "Atidaryti žiniaraščius"
+  },
+  "source": {
+    "app": "Programėlė",
+    "web": "Žiniatinklis",
+    "manual": "Rankinis",
+    "editedBy": "Pataisė {name}"
+  },
+  "page": {
+    "title": "Darbo laiko žiniaraščiai",
+    "description": "Kas ir kada dirbo, pagal dirbtuvių laikrodį.",
+    "loadFailed": "Nepavyko įkelti žiniaraščio",
+    "presets": {
+      "today": "Šiandien",
+      "yesterday": "Vakar",
+      "thisWeek": "Ši savaitė",
+      "lastWeek": "Praėjusi savaitė",
+      "thisMonth": "Šis mėnuo",
+      "lastMonth": "Praėjęs mėnuo"
+    },
+    "customRange": "Pasirinktinis laikotarpis",
+    "apply": "Taikyti",
+    "allTechnicians": "Visi technikai",
+    "export": "Eksportuoti CSV",
+    "addEntry": "Pridėti įrašą",
+    "stats": {
+      "total": "Bendras laikas",
+      "totalHint": "laikotarpyje {days, plural, =1 {1 diena} one {# diena} few {# dienos} other {# dienų}}",
+      "technicians": "Technikai su laiku",
+      "techniciansHint": "iš {count} komandoje",
+      "running": "Dirba dabar",
+      "runningHint": "tiesiogiai",
+      "average": "Vidurkis per aktyvią dieną",
+      "averageHint": "per {days, plural, =1 {1 dieną} one {# dieną} few {# dienas} other {# dienų}} su laiku"
+    },
+    "nowStrip": {
+      "title": "Dirba dabar",
+      "since": "nuo {time}",
+      "stop": "Sustabdyti"
+    },
+    "grid": {
+      "title": "Apžvalga",
+      "description": "Valandos pagal techniką ir dieną. Spustelėkite langelį, kad pereitumėte į tą dieną.",
+      "technician": "Technikas",
+      "total": "Iš viso",
+      "tooLong": "Apžvalga rodo iki 31 dienos. Susiaurinkite laikotarpį, kad ją pamatytumėte."
+    },
+    "table": {
+      "time": "Laikas",
+      "duration": "Trukmė",
+      "job": "Darbas",
+      "vehicle": "Transporto priemonė",
+      "source": "Šaltinis",
+      "note": "Pastaba",
+      "running": "Eina",
+      "dayTotal": "Dienos suma",
+      "counterSale": "Pardavimas prie prekystalio",
+      "edit": "Redaguoti",
+      "stop": "Sustabdyti laikmatį",
+      "delete": "Ištrinti",
+      "actions": "Veiksmai"
+    },
+    "empty": {
+      "title": "Šiame laikotarpyje laikas neužregistruotas",
+      "body": "Technikai pradeda darbą programėlėje „Torqvoice Technicians“ arba skydelio skiltyje „Mano aktyvūs darbai“. Įrašai čia atsiranda vos paleidus laikmatį.",
+      "noTechnicians": "Komandoje dar niekas nenustatytas kaip technikas. Susiekite komandos narius su technikais skiltyje Nustatymai, Komanda.",
+      "teamLink": "Atidaryti komandos nustatymus"
+    },
+    "deleteTitle": "Ištrinti šį įrašą?",
+    "deleteBody": "{technician} {duration} darbe {job} bus pašalinta iš žiniaraščio. Šio veiksmo atšaukti negalima.",
+    "deleteConfirm": "Ištrinti",
+    "deleted": "Įrašas ištrintas",
+    "stoppedByManager": "Laikmatis sustabdytas ties {minutes}",
+    "csv": {
+      "technician": "Technikas",
+      "date": "Data",
+      "start": "Pradžia",
+      "end": "Pabaiga",
+      "duration": "Trukmė",
+      "hours": "Valandos",
+      "job": "Darbas",
+      "vehicle": "Transporto priemonė",
+      "plate": "Numeris",
+      "source": "Šaltinis",
+      "editedBy": "Pataisė",
+      "note": "Pastaba"
+    },
+    "unlinked": "Be paskyros",
+    "unlinkedHint": "Tik lentos technikas, nesusietas su komandos nariu"
+  },
+  "dialog": {
+    "addTitle": "Pridėti laiko įrašą",
+    "addDescription": "Laikas, kurį technikas dirbo, bet neužregistravo. Pažymimas kaip įvestas ranka.",
+    "editTitle": "Pataisyti laiko įrašą",
+    "editDescription": "Įrašo technikas ir darbas nesikeičia. Užfiksuojama, kas jį pakeitė.",
+    "technician": "Technikas",
+    "pickTechnician": "Pasirinkite techniką",
+    "job": "Darbo užsakymas",
+    "pickJob": "Pasirinkite darbo užsakymą",
+    "searchJobs": "Ieškoti pagal pavadinimą ar numerį",
+    "searching": "Ieškoma…",
+    "noJobs": "Darbo užsakymų nerasta",
+    "start": "Pradžia",
+    "end": "Pabaiga",
+    "stillRunning": "Vis dar eina",
+    "leaveEndEmpty": "Palikite pabaigą tuščią, kad laikmatis eitų toliau.",
+    "endBeforeStart": "Pabaiga turi būti po pradžios.",
+    "duration": "Trukmė: {duration}",
+    "timesInWorkshopZone": "Laikas nurodytas pagal dirbtuvių laikrodį ({zone}).",
+    "note": "Pastaba",
+    "notePlaceholder": "Neprivaloma. Kodėl tai pridėta ar pakeista.",
+    "cancel": "Atšaukti",
+    "save": "Išsaugoti",
+    "add": "Pridėti",
+    "added": "Įrašas pridėtas",
+    "updated": "Įrašas atnaujintas",
+    "saveFailed": "Nepavyko išsaugoti įrašo"
+  }
+}

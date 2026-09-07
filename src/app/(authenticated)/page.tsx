@@ -25,6 +25,7 @@ import { DashboardClient } from './dashboard-client'
 import { db } from '@/lib/db'
 import { sanitizeConfig, type CustomWidget } from '@/features/dashboard/custom-cards/registry'
 import { MyActiveJobs } from '@/features/vehicles/Components/MyActiveJobs'
+import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { PageHeader } from '@/components/page-header'
 import { getTireHotelSummary } from '@/features/tire-hotel/Actions/getTireHotelSummary'
 import { getInspectionsDueSummary } from '@/features/vehicles/Actions/inspectionStatusActions'
@@ -103,6 +104,27 @@ export default async function DashboardPage() {
 
   if (!result.success || !result.data) {
     const t = await getTranslations('dashboard')
+    // A technician's role often grants services and inventory but not the
+    // dashboard figures. Their jobs, and the clock on them, must not vanish
+    // with the revenue tiles: the page becomes their job list instead.
+    const technicianIds = auth ? await technicianIdsForUser(auth.organizationId, auth.userId) : []
+    if (technicianIds.length > 0) {
+      const myJobs = myJobsResult.success && myJobsResult.data ? myJobsResult.data : []
+      return (
+        <>
+          <PageHeader />
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <MyActiveJobs
+              jobs={myJobs}
+              smsEnabled={features?.sms ?? false}
+              emailEnabled={features?.smtp ?? false}
+              telegramEnabled={features?.telegram ?? false}
+              showEmpty
+            />
+          </div>
+        </>
+      )
+    }
     return (
       <>
         <PageHeader />

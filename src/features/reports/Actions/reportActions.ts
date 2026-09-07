@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { listOrgEntries } from '@/features/time-tracking/Lib/timeEntries'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { netLineTotal } from '@/lib/tax'
@@ -281,6 +282,99 @@ export async function getTechnicianReport(params: { startDate?: string; endDate?
         technicians,
         totalJobs: records.length,
         totalRevenue: technicians.reduce((s, t) => s + t.totalRevenue, 0),
+      }
+    },
+    { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] }
+  )
+}
+
+/**
+ * Clocked against billed, per technician.
+ *
+ * Clocked minutes come from the time entries, clipped to the window so a
+ * night shift that crossed into it counts only the part inside. Billed
+ * hours are the labor lines on the jobs assigned to the technician that
+ * started in the window, the same figure the overview tab shows. The ratio
+ * is the efficiency a workshop actually manages by: hours it could invoice
+ * for every hour it paid.
+ */
+export async function getTechnicianTimeReport(params: { startDate?: string; endDate?: string }) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const { start, end } = await reportWindow(organizationId, params)
+      const now = new Date()
+
+      const [entries, records, technicians] = await Promise.all([
+        listOrgEntries({ organizationId, from: start, to: end }),
+        db.serviceRecord.findMany({
+          where: {
+            organizationId,
+            startDateTime: { gte: start, lt: end },
+            technicianId: { not: null },
+          },
+          select: { technicianId: true, laborItems: { select: { hours: true } } },
+        }),
+        db.technician.findMany({
+          where: { organizationId },
+          select: { id: true, name: true, color: true, user: { select: { name: true } } },
+        }),
+      ])
+
+      const byTech = new Map<
+        string,
+        { clockedMinutes: number; billedHours: number; jobs: Set<string> }
+      >()
+      const row = (id: string) => {
+        let r = byTech.get(id)
+        if (!r) {
+          r = { clockedMinutes: 0, billedHours: 0, jobs: new Set() }
+          byTech.set(id, r)
+        }
+        return r
+      }
+
+      for (const e of entries) {
+        const from = e.startedAt < start ? start : e.startedAt
+        const rawEnd = e.endedAt ?? now
+        const to = rawEnd > end ? end : rawEnd
+        const minutes = Math.max(0, Math.round((to.getTime() - from.getTime()) / 60_000))
+        if (minutes === 0) continue
+        const r = row(e.technicianId)
+        r.clockedMinutes += minutes
+        r.jobs.add(e.serviceRecord.id)
+      }
+      for (const rec of records) {
+        if (!rec.technicianId) continue
+        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + l.hours, 0)
+      }
+
+      const names = new Map(
+        technicians.map((t) => [t.id, { name: t.user?.name || t.name, color: t.color }])
+      )
+      const list = [...byTech.entries()]
+        .map(([technicianId, r]) => {
+          const clockedHours = r.clockedMinutes / 60
+          return {
+            technicianId,
+            techName: names.get(technicianId)?.name ?? 'Unknown',
+            color: names.get(technicianId)?.color ?? '#3b82f6',
+            clockedMinutes: r.clockedMinutes,
+            billedHours: r.billedHours,
+            efficiency: clockedHours > 0 ? (r.billedHours / clockedHours) * 100 : null,
+            jobsClocked: r.jobs.size,
+          }
+        })
+        .filter((t) => t.clockedMinutes > 0 || t.billedHours > 0)
+        .sort((a, b) => b.clockedMinutes - a.clockedMinutes)
+
+      const totalClockedMinutes = list.reduce((s, t) => s + t.clockedMinutes, 0)
+      const totalBilledHours = list.reduce((s, t) => s + t.billedHours, 0)
+      return {
+        technicians: list,
+        totalClockedMinutes,
+        totalBilledHours,
+        efficiency:
+          totalClockedMinutes > 0 ? (totalBilledHours / (totalClockedMinutes / 60)) * 100 : null,
       }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] }

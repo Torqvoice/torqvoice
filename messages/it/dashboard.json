@@ -19,7 +19,8 @@
     "addToJob": "Aggiungi {qty} al lavoro",
     "statusReport": "Rapporto di stato",
     "report": "Rapporto",
-    "observation": "Osservazione"
+    "observation": "Osservazione",
+    "empty": "Al momento non hai ordini di lavoro assegnati."
   },
   "recentActivity": "Attività recente",
   "noRecentActivity": "Nessuna attività recente",

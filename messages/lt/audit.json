@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Užrakintos senesnės sąskaitos",
     "inspection_reminders_sent": "Išsiųsti apžiūros priminimai",
     "inspection_reminders_send": "Išsiųsti apžiūros priminimai",
-    "service_videoCall_send": "Išsiųsta vaizdo skambučio nuoroda"
+    "service_videoCall_send": "Išsiųsta vaizdo skambučio nuoroda",
+    "timeEntry_create": "Pridėtas laiko įrašas",
+    "timeEntry_update": "Pataisytas laiko įrašas",
+    "timeEntry_delete": "Ištrintas laiko įrašas"
   },
   "summary": {
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Pakeista, kada naudojamas dokumento dizainas {name}",
     "settings_freezeInvoices": "Užrakino {count, plural, one {# sąskaitą} few {# sąskaitas} other {# sąskaitų}} iki užrakinimo su dabartiniu dizainu",
     "inspection_reminders_sent": "Išsiųsta {count} apžiūros priminimų",
-    "service_videoCall_send": "Išsiuntė vaizdo skambučio nuorodą per {channels}"
+    "service_videoCall_send": "Išsiuntė vaizdo skambučio nuorodą per {channels}",
+    "timeEntry_create": "Pridėta {minutes} min. technikui {technician} darbe „{job}“",
+    "timeEntry_update": "Techniko {technician} laiko įrašas darbe „{job}“ pataisytas į {minutes} min.",
+    "timeEntry_stop": "Techniko {technician} laikmatis darbe „{job}“ sustabdytas ties {minutes} min.",
+    "timeEntry_delete": "Ištrintas laiko įrašas {id}"
   }
 }

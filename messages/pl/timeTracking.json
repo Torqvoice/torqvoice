@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Zegar działa w zleceniu {job}",
+    "stop": "Zatrzymaj zegar",
+    "stopped": "Zarejestrowano {minutes}",
+    "switched": "Poprzednie zlecenie zatrzymano na {minutes}",
+    "startFailed": "Nie udało się uruchomić zegara",
+    "stopFailed": "Nie udało się zatrzymać zegara"
+  },
+  "job": {
+    "title": "Zarejestrowany czas",
+    "running": "w toku",
+    "clockIn": "Rozpocznij pracę",
+    "clockOut": "Zakończ pracę",
+    "switchHere": "Przełącz na to zlecenie",
+    "switchHint": "Zatrzymuje zegar w zleceniu {job} i uruchamia go tutaj",
+    "addAsLabor": "Dodaj {hours, number} h jako robociznę",
+    "addAsLaborHint": "Dodaje pozycję robocizny {hours, number} godz. według stawki domyślnej. Zarejestrowany czas nie zmienia się.",
+    "laborDescription": "Robocizna (zarejestrowany czas)",
+    "empty": "W tym zleceniu nie zarejestrowano jeszcze czasu. Technicy rozpoczynają pracę w aplikacji lub w sekcji Moje aktywne zlecenia na pulpicie.",
+    "showAll": "Pokaż jeszcze {count}",
+    "showFewer": "Pokaż mniej",
+    "openTimesheets": "Otwórz ewidencję czasu"
+  },
+  "source": {
+    "app": "Aplikacja",
+    "web": "Web",
+    "manual": "Ręcznie",
+    "editedBy": "Poprawione przez {name}"
+  },
+  "page": {
+    "title": "Ewidencja czasu",
+    "description": "Kto i kiedy pracował, według zegara warsztatu.",
+    "loadFailed": "Nie udało się wczytać ewidencji",
+    "presets": {
+      "today": "Dziś",
+      "yesterday": "Wczoraj",
+      "thisWeek": "Ten tydzień",
+      "lastWeek": "Poprzedni tydzień",
+      "thisMonth": "Ten miesiąc",
+      "lastMonth": "Poprzedni miesiąc"
+    },
+    "customRange": "Własny zakres",
+    "apply": "Zastosuj",
+    "allTechnicians": "Wszyscy technicy",
+    "export": "Eksportuj CSV",
+    "addEntry": "Dodaj wpis",
+    "stats": {
+      "total": "Łączny czas",
+      "totalHint": "{days, plural, =1 {1 dzień} few {# dni} other {# dni}} w zakresie",
+      "technicians": "Technicy z czasem",
+      "techniciansHint": "z {count} w zespole",
+      "running": "Pracują teraz",
+      "runningHint": "na żywo",
+      "average": "Średnio na aktywny dzień",
+      "averageHint": "w {days, plural, =1 {1 dniu} few {# dniach} other {# dniach}} z czasem"
+    },
+    "nowStrip": {
+      "title": "Pracują teraz",
+      "since": "od {time}",
+      "stop": "Zatrzymaj"
+    },
+    "grid": {
+      "title": "Przegląd",
+      "description": "Godziny na technika na dzień. Kliknij komórkę, aby przejść do tego dnia.",
+      "technician": "Technik",
+      "total": "Razem",
+      "tooLong": "Przegląd pokazuje do 31 dni. Zawęź zakres, aby go zobaczyć."
+    },
+    "table": {
+      "time": "Czas",
+      "duration": "Czas trwania",
+      "job": "Zlecenie",
+      "vehicle": "Pojazd",
+      "source": "Źródło",
+      "note": "Notatka",
+      "running": "W toku",
+      "dayTotal": "Suma dnia",
+      "counterSale": "Sprzedaż przy ladzie",
+      "edit": "Edytuj",
+      "stop": "Zatrzymaj zegar",
+      "delete": "Usuń",
+      "actions": "Akcje"
+    },
+    "empty": {
+      "title": "Brak zarejestrowanego czasu w tym zakresie",
+      "body": "Technicy rozpoczynają pracę w aplikacji Torqvoice Technicians lub w sekcji Moje aktywne zlecenia na pulpicie. Wpisy pojawiają się tutaj, gdy tylko zegar wystartuje.",
+      "noTechnicians": "Nikt w zespole nie jest jeszcze ustawiony jako technik. Powiąż członków zespołu z technikami w Ustawienia, Zespół.",
+      "teamLink": "Otwórz ustawienia zespołu"
+    },
+    "deleteTitle": "Usunąć ten wpis?",
+    "deleteBody": "{duration} w zleceniu {job} technika {technician} zostanie usunięte z ewidencji. Tej operacji nie można cofnąć.",
+    "deleteConfirm": "Usuń",
+    "deleted": "Wpis usunięty",
+    "stoppedByManager": "Zegar zatrzymany na {minutes}",
+    "csv": {
+      "technician": "Technik",
+      "date": "Data",
+      "start": "Początek",
+      "end": "Koniec",
+      "duration": "Czas trwania",
+      "hours": "Godziny",
+      "job": "Zlecenie",
+      "vehicle": "Pojazd",
+      "plate": "Rejestracja",
+      "source": "Źródło",
+      "editedBy": "Poprawione przez",
+      "note": "Notatka"
+    },
+    "unlinked": "Brak konta",
+    "unlinkedHint": "Technik tylko na tablicy, niepowiązany z członkiem zespołu"
+  },
+  "dialog": {
+    "addTitle": "Dodaj wpis czasu",
+    "addDescription": "Czas, który technik przepracował, ale nie zarejestrował. Wpis jest oznaczony jako wprowadzony ręcznie.",
+    "editTitle": "Popraw wpis czasu",
+    "editDescription": "Wpis zachowuje technika i zlecenie. Zapisywane jest, kto go zmienił.",
+    "technician": "Technik",
+    "pickTechnician": "Wybierz technika",
+    "job": "Zlecenie",
+    "pickJob": "Wybierz zlecenie",
+    "searchJobs": "Szukaj po tytule lub rejestracji",
+    "searching": "Szukanie…",
+    "noJobs": "Nie znaleziono zleceń",
+    "start": "Początek",
+    "end": "Koniec",
+    "stillRunning": "Nadal trwa",
+    "leaveEndEmpty": "Zostaw koniec pusty, aby zegar dalej działał.",
+    "endBeforeStart": "Koniec musi być po początku.",
+    "duration": "Czas trwania: {duration}",
+    "timesInWorkshopZone": "Godziny według zegara warsztatu ({zone}).",
+    "note": "Notatka",
+    "notePlaceholder": "Opcjonalnie. Dlaczego to dodano lub zmieniono.",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "add": "Dodaj",
+    "added": "Wpis dodany",
+    "updated": "Wpis zaktualizowany",
+    "saveFailed": "Nie udało się zapisać wpisu"
+  }
+}

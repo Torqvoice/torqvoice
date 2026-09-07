@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Oudere facturen vergrendeld",
     "inspection_reminders_sent": "Keuringsherinneringen verstuurd",
     "inspection_reminders_send": "Keuringsherinneringen verstuurd",
-    "service_videoCall_send": "Link videogesprek verstuurd"
+    "service_videoCall_send": "Link videogesprek verstuurd",
+    "timeEntry_create": "Tijdregistratie toegevoegd",
+    "timeEntry_update": "Tijdregistratie gecorrigeerd",
+    "timeEntry_delete": "Tijdregistratie verwijderd"
   },
   "summary": {
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Gewijzigd wanneer het documentontwerp {name} wordt gebruikt",
     "settings_freezeInvoices": "Vergrendelde {count, plural, one {# factuur} other {# facturen}} van vóór het vergrendelen met het huidige ontwerp",
     "inspection_reminders_sent": "{count} keuringsherinneringen verstuurd",
-    "service_videoCall_send": "Heeft de link van het videogesprek verstuurd via {channels}"
+    "service_videoCall_send": "Heeft de link van het videogesprek verstuurd via {channels}",
+    "timeEntry_create": "{minutes} minuten toegevoegd voor {technician} op \"{job}\"",
+    "timeEntry_update": "Tijdregistratie van {technician} op \"{job}\" gecorrigeerd naar {minutes} minuten",
+    "timeEntry_stop": "Klok van {technician} op \"{job}\" gestopt op {minutes} minuten",
+    "timeEntry_delete": "Tijdregistratie {id} verwijderd"
   }
 }

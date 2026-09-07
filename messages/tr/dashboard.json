@@ -19,7 +19,8 @@
     "addToJob": "{qty} işe ekle",
     "statusReport": "Durum Raporu",
     "report": "Rapor",
-    "observation": "Gözlem"
+    "observation": "Gözlem",
+    "empty": "Şu anda size atanmış iş emri yok."
   },
   "recentActivity": "Son aktivite",
   "noRecentActivity": "Son aktivite yok",

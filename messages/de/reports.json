@@ -12,7 +12,9 @@
     "parts": "Teile",
     "jobAnalytics": "Auftragsanalyse",
     "retention": "Kundenbindung",
-    "vehicles": "Fahrzeuge"
+    "vehicles": "Fahrzeuge",
+    "techniciansOverview": "Übersicht",
+    "clockedTime": "Erfasste Zeit"
   },
   "dateRange": {
     "to": "bis",
@@ -138,6 +140,19 @@
       "avgRevenue": "Ø Umsatz",
       "totalHours": "Gesamtstunden",
       "avgHours": "Ø Stunden"
+    },
+    "time": {
+      "clockedHours": "Erfasste Stunden",
+      "billedHours": "Abgerechnete Stunden",
+      "efficiency": "Effizienz",
+      "techniciansClocked": "Techniker mit Zeit",
+      "chartTitle": "Erfasst vs. abgerechnet je Techniker",
+      "tableTitle": "Erfasst gegen abgerechnet",
+      "clocked": "Erfasst",
+      "billed": "Abgerechnet",
+      "hint": "Erfasste Stunden stammen von der Stempeluhr. Abgerechnete Stunden sind die Arbeitspositionen der dem Techniker zugewiesenen Aufträge, die im Zeitraum begonnen haben. Effizienz ist abgerechnet geteilt durch erfasst.",
+      "noClock": "Keine Zeit",
+      "jobsClocked": "Erfasste Aufträge"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Typ",
     "status": "Status",
     "partsUsed": "Teile",
-    "laborHours": "Arbeitsstunden"
+    "laborHours": "Arbeitsstunden",
+    "clockedHours": "Erfasste Stunden",
+    "billedHours": "Abgerechnete Stunden",
+    "efficiency": "Effizienz",
+    "jobsClocked": "Erfasste Aufträge"
   },
   "pdf": {
     "reportTitle": "Business Report",

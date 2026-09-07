@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Låste eldre fakturaer",
     "inspection_reminders_sent": "Sendte påminnelser om EU-kontroll",
     "inspection_reminders_send": "Sendte påminnelser om EU-kontroll",
-    "service_videoCall_send": "Sendte lenke til videosamtale"
+    "service_videoCall_send": "Sendte lenke til videosamtale",
+    "timeEntry_create": "La til tidsoppføring",
+    "timeEntry_update": "Korrigerte tidsoppføring",
+    "timeEntry_delete": "Slettet tidsoppføring"
   },
   "summary": {
     "customField_create": "Opprettet egendefinert felt «{name}»",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Endret når dokumentdesignet {name} brukes",
     "settings_freezeInvoices": "Låste {count, plural, one {# faktura} other {# fakturaer}} fra før låsing med gjeldende design",
     "inspection_reminders_sent": "Sendte {count} påminnelser om EU-kontroll",
-    "service_videoCall_send": "Sendte lenken til videosamtalen via {channels}"
+    "service_videoCall_send": "Sendte lenken til videosamtalen via {channels}",
+    "timeEntry_create": "La til {minutes} minutter for {technician} på «{job}»",
+    "timeEntry_update": "Korrigerte tidsoppføringen til {technician} på «{job}» til {minutes} minutter",
+    "timeEntry_stop": "Stoppet klokken til {technician} på «{job}» ved {minutes} minutter",
+    "timeEntry_delete": "Slettet tidsoppføring {id}"
   }
 }

@@ -1,4 +1,5 @@
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
+import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
 import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
 import type { LockState } from '@/lib/document-lock'
 import type { ServicePartInput, ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -109,6 +110,8 @@ export interface ServicePageClientProps {
   designPinnedAt?: string | null
   /** The rule that picked the default design, when a rule did. */
   designFollowsRule?: DesignAutoRule | null
+  /** Every stretch anyone has clocked on this job, for the panel beside labor. */
+  jobClock?: JobClock
   findings?: {
     id: string
     description: string

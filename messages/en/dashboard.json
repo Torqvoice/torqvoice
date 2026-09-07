@@ -19,7 +19,8 @@
     "addToJob": "Add {qty} to job",
     "statusReport": "Status Report",
     "report": "Report",
-    "observation": "Observation"
+    "observation": "Observation",
+    "empty": "No work orders are assigned to you right now."
   },
   "recentActivity": "Recent Activity",
   "noRecentActivity": "No recent activity",

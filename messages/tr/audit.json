@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Eski faturalar kilitlendi",
     "inspection_reminders_sent": "Muayene hatırlatmaları gönderildi",
     "inspection_reminders_send": "Muayene hatırlatmaları gönderildi",
-    "service_videoCall_send": "Görüntülü görüşme bağlantısı gönderildi"
+    "service_videoCall_send": "Görüntülü görüşme bağlantısı gönderildi",
+    "timeEntry_create": "Zaman kaydı eklendi",
+    "timeEntry_update": "Zaman kaydı düzeltildi",
+    "timeEntry_delete": "Zaman kaydı silindi"
   },
   "summary": {
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "{name} belge tasarımının ne zaman kullanılacağı değiştirildi",
     "settings_freezeInvoices": "Kilitlemeden önceki {count, plural, one {# faturayı} other {# faturayı}} mevcut tasarımla kilitledi",
     "inspection_reminders_sent": "{count} muayene hatırlatması gönderildi",
-    "service_videoCall_send": "Görüntülü görüşme bağlantısını {channels} ile gönderdi"
+    "service_videoCall_send": "Görüntülü görüşme bağlantısını {channels} ile gönderdi",
+    "timeEntry_create": "{technician} için \"{job}\" işine {minutes} dakika eklendi",
+    "timeEntry_update": "{technician} için \"{job}\" işindeki zaman kaydı {minutes} dakika olarak düzeltildi",
+    "timeEntry_stop": "{technician} için \"{job}\" işindeki sayaç {minutes} dakikada durduruldu",
+    "timeEntry_delete": "{id} zaman kaydı silindi"
   }
 }

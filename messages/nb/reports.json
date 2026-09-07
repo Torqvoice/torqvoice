@@ -12,7 +12,9 @@
     "parts": "Deler",
     "jobAnalytics": "Jobbanalyse",
     "retention": "Kundelojalitet",
-    "vehicles": "Kjøretøy"
+    "vehicles": "Kjøretøy",
+    "techniciansOverview": "Oversikt",
+    "clockedTime": "Registrert tid"
   },
   "dateRange": {
     "to": "til",
@@ -138,6 +140,19 @@
       "avgRevenue": "Gj.sn. Inntekt",
       "totalHours": "Totale Timer",
       "avgHours": "Gj.sn. Timer"
+    },
+    "time": {
+      "clockedHours": "Registrerte timer",
+      "billedHours": "Fakturerte timer",
+      "efficiency": "Effektivitet",
+      "techniciansClocked": "Teknikere med tid",
+      "chartTitle": "Registrert mot fakturert per tekniker",
+      "tableTitle": "Registrert mot fakturert",
+      "clocked": "Registrert",
+      "billed": "Fakturert",
+      "hint": "Registrerte timer kommer fra stemplingsklokken. Fakturerte timer er arbeidslinjene på jobber tildelt teknikeren som startet i perioden. Effektivitet er fakturert delt på registrert.",
+      "noClock": "Ingen tid",
+      "jobsClocked": "Jobber med tid"
     }
   },
   "parts": {
@@ -307,7 +322,11 @@
     "type": "Type",
     "status": "Status",
     "partsUsed": "Deler",
-    "laborHours": "Arbeidstimer"
+    "laborHours": "Arbeidstimer",
+    "clockedHours": "Registrerte timer",
+    "billedHours": "Fakturerte timer",
+    "efficiency": "Effektivitet",
+    "jobsClocked": "Jobber med tid"
   },
   "pdf": {
     "reportTitle": "Business Report",

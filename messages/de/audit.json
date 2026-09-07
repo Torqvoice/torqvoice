@@ -164,7 +164,10 @@
     "settings_freezeInvoices": "Ältere Rechnungen gesperrt",
     "inspection_reminders_sent": "HU-Erinnerungen gesendet",
     "inspection_reminders_send": "HU-Erinnerungen gesendet",
-    "service_videoCall_send": "Link zum Videoanruf gesendet"
+    "service_videoCall_send": "Link zum Videoanruf gesendet",
+    "timeEntry_create": "Zeiteintrag hinzugefügt",
+    "timeEntry_update": "Zeiteintrag korrigiert",
+    "timeEntry_delete": "Zeiteintrag gelöscht"
   },
   "summary": {
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
@@ -300,6 +303,10 @@
     "settings_setDocumentDesignRule": "Verwendung des Dokumentdesigns {name} geändert",
     "settings_freezeInvoices": "Hat {count, plural, one {# Rechnung} other {# Rechnungen}} von vor der Sperre mit dem aktuellen Design gesperrt",
     "inspection_reminders_sent": "{count} HU-Erinnerungen gesendet",
-    "service_videoCall_send": "Link zum Videoanruf per {channels} gesendet"
+    "service_videoCall_send": "Link zum Videoanruf per {channels} gesendet",
+    "timeEntry_create": "{minutes} Minuten für {technician} auf \"{job}\" hinzugefügt",
+    "timeEntry_update": "Zeiteintrag für {technician} auf \"{job}\" auf {minutes} Minuten korrigiert",
+    "timeEntry_stop": "Uhr für {technician} auf \"{job}\" bei {minutes} Minuten gestoppt",
+    "timeEntry_delete": "Zeiteintrag {id} gelöscht"
   }
 }

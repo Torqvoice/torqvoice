@@ -1,0 +1,141 @@
+{
+  "clock": {
+    "runningOn": "Clock running on {job}",
+    "stop": "Stop the clock",
+    "stopped": "Clocked {minutes}",
+    "switched": "Stopped the previous job at {minutes}",
+    "startFailed": "Could not start the clock",
+    "stopFailed": "Could not stop the clock"
+  },
+  "job": {
+    "title": "Clocked time",
+    "running": "running",
+    "clockIn": "Clock in",
+    "clockOut": "Clock out",
+    "switchHere": "Switch to this job",
+    "switchHint": "Stops the clock on {job} and starts it here",
+    "addAsLabor": "Add {hours, number} h as labor",
+    "addAsLaborHint": "Adds a labor line of {hours, number} hours at the default rate. The clocked time itself is not changed.",
+    "laborDescription": "Labor (clocked time)",
+    "empty": "Nothing clocked on this job yet. Technicians clock in from the app or from My Active Jobs on the dashboard.",
+    "showAll": "Show {count} more",
+    "showFewer": "Show fewer",
+    "openTimesheets": "Open timesheets"
+  },
+  "source": {
+    "app": "App",
+    "web": "Web",
+    "manual": "Manual",
+    "editedBy": "Adjusted by {name}"
+  },
+  "page": {
+    "title": "Timesheets",
+    "description": "Who worked when, on the workshop's clock.",
+    "loadFailed": "Could not load the timesheet",
+    "presets": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This week",
+      "lastWeek": "Last week",
+      "thisMonth": "This month",
+      "lastMonth": "Last month"
+    },
+    "customRange": "Custom range",
+    "apply": "Apply",
+    "allTechnicians": "All technicians",
+    "export": "Export CSV",
+    "addEntry": "Add entry",
+    "stats": {
+      "total": "Total time",
+      "totalHint": "{days, plural, =1 {1 day} other {# days}} in range",
+      "technicians": "Technicians with time",
+      "techniciansHint": "of {count} on the roster",
+      "running": "On the clock now",
+      "runningHint": "live",
+      "average": "Average per active day",
+      "averageHint": "across {days, plural, =1 {1 day} other {# days}} with time"
+    },
+    "nowStrip": {
+      "title": "On the clock now",
+      "since": "since {time}",
+      "stop": "Stop"
+    },
+    "grid": {
+      "title": "Overview",
+      "description": "Hours per technician per day. Click a cell to jump to that day.",
+      "technician": "Technician",
+      "total": "Total",
+      "tooLong": "The overview grid shows up to 31 days. Narrow the range to see it."
+    },
+    "table": {
+      "time": "Time",
+      "duration": "Duration",
+      "job": "Job",
+      "vehicle": "Vehicle",
+      "source": "Source",
+      "note": "Note",
+      "running": "Running",
+      "dayTotal": "Day total",
+      "counterSale": "Counter sale",
+      "edit": "Edit",
+      "stop": "Stop clock",
+      "delete": "Delete",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No time clocked in this range",
+      "body": "Technicians clock in from the Torqvoice Technicians app or from My Active Jobs on the dashboard. Entries show up here the moment a clock starts.",
+      "noTechnicians": "Nobody on the team is set up as a technician yet. Link team members to technicians under Settings, Team.",
+      "teamLink": "Open team settings"
+    },
+    "deleteTitle": "Delete this entry?",
+    "deleteBody": "{duration} on {job} by {technician} will be removed from the timesheet. This cannot be undone.",
+    "deleteConfirm": "Delete",
+    "deleted": "Entry deleted",
+    "stoppedByManager": "Clock stopped at {minutes}",
+    "csv": {
+      "technician": "Technician",
+      "date": "Date",
+      "start": "Start",
+      "end": "End",
+      "duration": "Duration",
+      "hours": "Hours",
+      "job": "Job",
+      "vehicle": "Vehicle",
+      "plate": "Plate",
+      "source": "Source",
+      "editedBy": "Adjusted by",
+      "note": "Note"
+    },
+    "unlinked": "No account",
+    "unlinkedHint": "Board-only technician, not linked to a team member"
+  },
+  "dialog": {
+    "addTitle": "Add time entry",
+    "addDescription": "Time a technician worked but did not clock. It is marked as entered by hand.",
+    "editTitle": "Correct time entry",
+    "editDescription": "The entry keeps its technician and job. Who changed it is recorded.",
+    "technician": "Technician",
+    "pickTechnician": "Pick a technician",
+    "job": "Work order",
+    "pickJob": "Pick a work order",
+    "searchJobs": "Search by title or plate",
+    "searching": "Searching…",
+    "noJobs": "No work orders found",
+    "start": "Start",
+    "end": "End",
+    "stillRunning": "Still running",
+    "leaveEndEmpty": "Leave the end empty to keep the clock running.",
+    "endBeforeStart": "The end must come after the start.",
+    "duration": "Duration: {duration}",
+    "timesInWorkshopZone": "Times are on the workshop's clock ({zone}).",
+    "note": "Note",
+    "notePlaceholder": "Optional. Why this was added or changed.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "add": "Add",
+    "added": "Entry added",
+    "updated": "Entry updated",
+    "saveFailed": "Could not save the entry"
+  }
+}
