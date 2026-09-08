@@ -26,6 +26,7 @@ import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 async function getWorkshopSettings(organizationId: string) {
   const [settings, org] = await Promise.all([
@@ -319,7 +320,7 @@ export async function sendInvoiceEmail(input: {
 
       // Build public invoice link if token exists
       const publicLink = owned.publicToken
-        ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/share/invoice/${organizationId}/${owned.publicToken}`
+        ? `${getAppBaseUrl()}/share/invoice/${organizationId}/${owned.publicToken}`
         : null
 
       const from = await getOrgFromAddress(organizationId)
@@ -459,7 +460,7 @@ export async function sendInspectionEmail(input: {
 
       // Build public link if token exists
       const publicLink = inspection.publicToken
-        ? `${process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/share/inspection/${organizationId}/${inspection.publicToken}`
+        ? `${getAppBaseUrl()}/share/inspection/${organizationId}/${inspection.publicToken}`
         : null
 
       const from = await getOrgFromAddress(organizationId)

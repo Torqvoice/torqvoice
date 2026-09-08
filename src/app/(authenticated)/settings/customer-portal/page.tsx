@@ -9,6 +9,7 @@ import {
   isValidPortalBackgroundType,
   type PortalBackgroundType,
 } from '@/features/portal/portal-backgrounds'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 export default async function CustomerPortalSettingsPage() {
   const data = await getLayoutData()
@@ -53,9 +54,7 @@ export default async function CustomerPortalSettingsPage() {
 
   const settingMap = new Map(settings.map((s) => [s.key, s.value]))
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const appUrl = getAppBaseUrl()
 
   const rawBgType = settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_TYPE)
   const backgroundType: PortalBackgroundType = isValidPortalBackgroundType(rawBgType)
