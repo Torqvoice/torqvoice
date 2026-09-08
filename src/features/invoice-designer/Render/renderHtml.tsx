@@ -43,6 +43,12 @@ export function textCss(style?: TextStyle): CSSProperties {
     textTransform: style.uppercase ? 'uppercase' : undefined,
     letterSpacing: style.letterSpacing,
     lineHeight: style.lineHeight ?? 1.4,
+    // A line break the workshop typed is a line break. HTML would fold it
+    // into a space, which is why a multi-line part description or a bank
+    // block ran together here while the PDF, where a newline is a newline,
+    // printed it correctly. pre-line keeps the breaks and still wraps and
+    // collapses runs of spaces, so nothing else about the sheet changes.
+    whiteSpace: 'pre-line',
   }
 }
 
@@ -168,7 +174,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
       return (
         <div
           {...id}
-          style={{ lineHeight: 1.5, ...textCss(node.style) }}
+          // Rich text carries its own <p> and <br>; the newlines between those
+          // tags are markup whitespace, not the writer's line breaks, so this
+          // block opts out of pre-line rather than printing a blank line
+          // between every paragraph.
+          style={{ lineHeight: 1.5, ...textCss(node.style), whiteSpace: 'normal' }}
           // The workshop's own rich-text notes, sanitized the same way the
           // PDF sanitizes them before parsing.
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(node.html) }}
@@ -250,7 +260,14 @@ function NodeBody({ node }: { node: Node }): ReactNode {
                 }}
               >
                 {node.columns.map((column) => (
-                  <span key={column.key} style={{ ...cell(column.width), textAlign: column.align }}>
+                  <span
+                    key={column.key}
+                    style={{
+                      ...cell(column.width),
+                      textAlign: column.align,
+                      whiteSpace: 'pre-line',
+                    }}
+                  >
                     {row[column.key]}
                     {node.subKey && column.width === 'flex' && row[node.subKey] ? (
                       <span style={{ display: 'block', opacity: 0.6, fontSize: '0.85em' }}>

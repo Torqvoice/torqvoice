@@ -759,7 +759,9 @@ export function InvoiceView({
                       className="w-full"
                     />
                     {att.description && (
-                      <p className="px-3 py-2 text-sm text-gray-500">{att.description}</p>
+                      <p className="whitespace-pre-line px-3 py-2 text-sm text-gray-500">
+                        {att.description}
+                      </p>
                     )}
                   </div>
                 ))}

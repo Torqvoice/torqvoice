@@ -79,7 +79,7 @@ export default async function PublicTermsPage({ params }: { params: Promise<{ or
           <div className="mt-8 border-t pt-4">
             <p className="text-xs font-bold uppercase text-gray-400">{t('contact')}</p>
             <div className="mt-1 space-y-0.5 text-sm text-gray-500">
-              {address && <p>{address}</p>}
+              {address && <p className="whitespace-pre-wrap">{address}</p>}
               {phone && <p>{t('tel', { phone })}</p>}
               {email && <p>{email}</p>}
             </div>
