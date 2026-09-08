@@ -34,6 +34,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useFormatCurrency } from '@/components/currency-settings-context'
+import { useRememberedSort } from '@/hooks/use-remembered-sort'
 
 interface BillingRecord {
   id: string
@@ -105,6 +106,7 @@ export default function BillingClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
+  useRememberedSort('billing')
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
