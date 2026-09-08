@@ -19,7 +19,13 @@
     "columnTotal": "Toplam",
     "columnPaid": "Ödenen",
     "columnBalance": "Bakiye",
-    "noRecords": "Fatura kaydı bulunamadı."
+    "noRecords": "Fatura kaydı bulunamadı.",
+    "columnDelivery": "Teslim",
+    "deliverySent": "Gönderildi",
+    "deliveryViewed": "Görüntülendi",
+    "deliveryViewedOn": "Son açılma {date}",
+    "filterUnviewed": "Görüntülenmeyen",
+    "filterUnviewedHint": "Gönderilen ancak hiç açılmayan faturalar"
   },
   "recurring": {
     "title": "Tekrarlayan",

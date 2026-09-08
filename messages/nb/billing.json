@@ -19,7 +19,13 @@
     "columnTotal": "Totalt",
     "columnPaid": "Betalt",
     "columnBalance": "Saldo",
-    "noRecords": "Ingen faktureringsoppføringer funnet."
+    "noRecords": "Ingen faktureringsoppføringer funnet.",
+    "columnDelivery": "Levering",
+    "deliverySent": "Sendt",
+    "deliveryViewed": "Åpnet",
+    "deliveryViewedOn": "Sist åpnet {date}",
+    "filterUnviewed": "Ikke åpnet",
+    "filterUnviewedHint": "Fakturaer som er sendt, men aldri åpnet"
   },
   "recurring": {
     "title": "Gjentakende",

@@ -19,7 +19,13 @@
     "columnTotal": "Total",
     "columnPaid": "Pago",
     "columnBalance": "Saldo",
-    "noRecords": "Nenhum registro de faturamento encontrado."
+    "noRecords": "Nenhum registro de faturamento encontrado.",
+    "columnDelivery": "Entrega",
+    "deliverySent": "Enviada",
+    "deliveryViewed": "Aberta",
+    "deliveryViewedOn": "Aberta pela última vez em {date}",
+    "filterUnviewed": "Não abertas",
+    "filterUnviewedHint": "Faturas enviadas que nunca foram abertas"
   },
   "recurring": {
     "title": "Recorrente",
