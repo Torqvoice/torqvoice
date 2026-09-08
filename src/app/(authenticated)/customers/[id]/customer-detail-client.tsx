@@ -351,9 +351,9 @@ export function CustomerDetailClient({
                   </button>
                 )}
                 {customer.address && (
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" />
-                    <span>{customer.address}</span>
+                  <div className="flex items-start gap-1.5 text-muted-foreground">
+                    <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    <span className="whitespace-pre-line">{customer.address}</span>
                   </div>
                 )}
                 {customer.taxId && (
