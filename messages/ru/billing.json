@@ -19,7 +19,13 @@
     "columnTotal": "Итого",
     "columnPaid": "Оплачено",
     "columnBalance": "Остаток",
-    "noRecords": "Записи счетов не найдены."
+    "noRecords": "Записи счетов не найдены.",
+    "columnDelivery": "Отправка",
+    "deliverySent": "Отправлен",
+    "deliveryViewed": "Открыт",
+    "deliveryViewedOn": "Последний просмотр {date}",
+    "filterUnviewed": "Не открыты",
+    "filterUnviewedHint": "Счета, которые отправлены, но ни разу не открыты"
   },
   "recurring": {
     "title": "Периодические",

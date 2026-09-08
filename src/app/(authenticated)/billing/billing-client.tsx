@@ -31,8 +31,10 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  EyeOff,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { deliveryState } from '@/features/billing/Lib/deliveryState'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
 
@@ -45,6 +47,10 @@ interface BillingRecord {
   totalAmount: number
   totalPaid: number
   status: string
+  /** When the invoice first reached the customer, by mail or by link. */
+  sentAt: string | Date | null
+  viewCount: number
+  lastViewedAt: string | Date | null
   vehicle: {
     id: string
     make: string
@@ -79,6 +85,7 @@ interface BillingClientProps {
   currencyCode?: string
   search: string
   statusFilter: string
+  deliveryFilter: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
 }
@@ -95,6 +102,7 @@ export default function BillingClient({
   currencyCode = 'USD',
   search,
   statusFilter,
+  deliveryFilter,
   sortBy = '',
   sortOrder = 'desc',
 }: BillingClientProps) {
@@ -192,6 +200,19 @@ export default function BillingClient({
 
   const fmt = (amount: number) => formatCurrency(amount, currencyCode)
 
+  // Its own axis, kept out of the payment tabs: "unpaid" and "never opened"
+  // are different questions and a workshop chasing one often wants both.
+  const handleDeliveryToggle = () => {
+    startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({
+          delivery: deliveryFilter === 'unviewed' ? '' : 'unviewed',
+          page: '1',
+        })}`
+      )
+    })
+  }
+
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case 'paid':
@@ -215,6 +236,33 @@ export default function BillingClient({
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
+  }
+
+  /**
+   * How far the invoice got to the customer. Payment status answers whether
+   * the money arrived; this answers whether the invoice was ever opened, so
+   * one that went out days ago and has never been read can be chased.
+   *
+   * A mail with the PDF attached is read in the mail client and leaves no
+   * trace here, so "sent" on those means sent, not unread.
+   */
+  const getDeliveryBadge = (record: BillingRecord) => {
+    const state = deliveryState(record)
+    if (state === 'viewed') {
+      const seen = record.lastViewedAt ? formatDate(new Date(record.lastViewedAt)) : ''
+      return (
+        <Badge
+          className="bg-sky-100 text-sky-800 hover:bg-sky-100"
+          title={seen ? t('history.deliveryViewedOn', { date: seen }) : undefined}
+        >
+          {t('history.deliveryViewed')}
+        </Badge>
+      )
+    }
+    if (state === 'sent') {
+      return <Badge variant="outline">{t('history.deliverySent')}</Badge>
+    }
+    return <span className="text-muted-foreground">{'\u2014'}</span>
   }
 
   const getBalanceColor = (status: string) => {
@@ -313,6 +361,17 @@ export default function BillingClient({
               )}
             </Button>
           ))}
+          <Button
+            variant={deliveryFilter === 'unviewed' ? 'default' : 'outline'}
+            size="sm"
+            className="h-9 shrink-0 sm:h-8"
+            onClick={handleDeliveryToggle}
+            disabled={isPending}
+            title={t('history.filterUnviewedHint')}
+          >
+            <EyeOff className="mr-1 h-3.5 w-3.5" />
+            {t('history.filterUnviewed')}
+          </Button>
         </div>
 
         <form onSubmit={handleSearch} className="flex gap-2">
@@ -377,6 +436,7 @@ export default function BillingClient({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
                   {getStatusBadge(record.status)}
+                  {getDeliveryBadge(record)}
                   <span className={cn('font-medium', getBalanceColor(record.status))}>
                     {t('history.columnBalance')}: {fmt(balance)}
                   </span>
@@ -461,6 +521,16 @@ export default function BillingClient({
                   <SortIcon column="total" />
                 </button>
               </TableHead>
+              <TableHead className="w-[110px]">
+                <button
+                  type="button"
+                  className="flex items-center hover:text-foreground"
+                  onClick={() => handleSort('delivery')}
+                >
+                  {t('history.columnDelivery')}
+                  <SortIcon column="delivery" />
+                </button>
+              </TableHead>
               <TableHead className="w-[100px] text-right">{t('history.columnPaid')}</TableHead>
               <TableHead className="w-[180px] text-right">{t('history.columnBalance')}</TableHead>
             </TableRow>
@@ -468,7 +538,7 @@ export default function BillingClient({
           <TableBody>
             {data.records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={9} className="h-24 text-center">
                   {t('history.noRecords')}
                 </TableCell>
               </TableRow>
@@ -505,6 +575,7 @@ export default function BillingClient({
                     </TableCell>
                     <TableCell>{formatDate(new Date(record.serviceDate))}</TableCell>
                     <TableCell className="text-right">{fmt(record.totalAmount)}</TableCell>
+                    <TableCell>{getDeliveryBadge(record)}</TableCell>
                     <TableCell className="text-right">{fmt(record.totalPaid)}</TableCell>
                     <TableCell
                       className={cn(

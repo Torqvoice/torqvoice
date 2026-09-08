@@ -19,7 +19,13 @@
     "columnTotal": "Totaal",
     "columnPaid": "Betaald",
     "columnBalance": "Saldo",
-    "noRecords": "Geen factureringsgegevens gevonden."
+    "noRecords": "Geen factureringsgegevens gevonden.",
+    "columnDelivery": "Bezorging",
+    "deliverySent": "Verzonden",
+    "deliveryViewed": "Bekeken",
+    "deliveryViewedOn": "Laatst geopend op {date}",
+    "filterUnviewed": "Niet bekeken",
+    "filterUnviewedHint": "Facturen die zijn verzonden maar nooit geopend"
   },
   "recurring": {
     "title": "Terugkerend",

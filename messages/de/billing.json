@@ -19,7 +19,13 @@
     "columnTotal": "Gesamt",
     "columnPaid": "Bezahlt",
     "columnBalance": "Saldo",
-    "noRecords": "Keine Abrechnungseinträge gefunden."
+    "noRecords": "Keine Abrechnungseinträge gefunden.",
+    "columnDelivery": "Zustellung",
+    "deliverySent": "Gesendet",
+    "deliveryViewed": "Geöffnet",
+    "deliveryViewedOn": "Zuletzt geöffnet {date}",
+    "filterUnviewed": "Nicht geöffnet",
+    "filterUnviewedHint": "Rechnungen, die gesendet, aber nie geöffnet wurden"
   },
   "recurring": {
     "title": "Wiederkehrend",
