@@ -592,7 +592,7 @@
     "freezeFailed": "Rechnungen konnten nicht gesperrt werden",
     "sectionSending": "Versand",
     "attachPdfLabel": "PDF an E-Mails anhängen",
-    "attachPdfHint": "Ein: Der Kunde erhält das PDF in der E-Mail. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt Ihnen, wann es geöffnet wurde."
+    "attachPdfHint": "Die Vorgabe für jede Rechnung, jedes Angebot und jede Prüfung, die Sie per E-Mail senden. Ein: Der Kunde erhält das PDF als Anhang. Aus: Er erhält stattdessen einen Link zum Dokument, und der Aufrufzähler zeigt, wann es geöffnet wurde, damit Sie bei den unbeachteten nachfassen können. Für einen einzelnen Versand können Sie das im Teilen-Dialog ändern."
   },
   "layoutEditor": {
     "helpText": "Ziehen zum Neuordnen. Verwenden Sie den Breiten-Umschalter, um Abschnitte nebeneinander zu platzieren. Aufeinanderfolgende Halbbreite-Abschnitte (L/R) werden in zwei Spalten dargestellt.",

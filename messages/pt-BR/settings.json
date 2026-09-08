@@ -592,7 +592,7 @@
     "freezeFailed": "Não foi possível travar as faturas",
     "sectionSending": "Envio",
     "attachPdfLabel": "Anexar o PDF aos e-mails",
-    "attachPdfHint": "Ligado: o cliente recebe o PDF no e-mail. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto."
+    "attachPdfHint": "O padrão para cada fatura, orçamento e inspeção que você envia por e-mail. Ligado: o cliente recebe o PDF em anexo. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto, para você cobrar quem ainda não olhou. Você pode mudar isso em um envio específico na janela de compartilhamento."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",

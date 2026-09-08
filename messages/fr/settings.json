@@ -592,7 +592,7 @@
     "freezeFailed": "Impossible de verrouiller les factures",
     "sectionSending": "Envoi",
     "attachPdfLabel": "Joindre le PDF aux e-mails",
-    "attachPdfHint": "Activé : le client reçoit le PDF dans l'e-mail. Désactivé : il reçoit un lien vers le document, et le compteur de consultations vous indique quand il l'a ouvert."
+    "attachPdfHint": "La valeur par défaut pour chaque facture, devis et inspection que vous envoyez par e-mail. Activé : le client reçoit le PDF en pièce jointe. Désactivé : il reçoit un lien vers le document, et le compteur de consultations indique quand il l'a ouvert, ce qui permet de relancer ceux que personne n'a regardés. Vous pouvez le changer pour un envoi précis dans la fenêtre de partage."
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",

@@ -592,7 +592,7 @@
     "freezeFailed": "Impossibile bloccare le fatture",
     "sectionSending": "Invio",
     "attachPdfLabel": "Allega il PDF alle email",
-    "attachPdfHint": "Attivo: il cliente riceve il PDF nell'email. Disattivo: riceve invece un link al documento e il contatore delle visualizzazioni ti dice quando lo ha aperto."
+    "attachPdfHint": "L'impostazione predefinita per ogni fattura, preventivo e controllo che invii via email. Attivo: il cliente riceve il PDF in allegato. Disattivo: riceve invece un link al documento e il contatore delle visualizzazioni indica quando lo ha aperto, così puoi sollecitare quelli che nessuno ha guardato. Puoi cambiarlo per un singolo invio nella finestra di condivisione."
   },
   "layoutEditor": {
     "helpText": "Trascina per riordinare. Usa il selettore di larghezza per posizionare le sezioni affiancate. Le sezioni consecutive a mezza larghezza (S/D) verranno visualizzate in due colonne.",

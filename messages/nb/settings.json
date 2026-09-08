@@ -592,7 +592,7 @@
     "freezeFailed": "Kunne ikke låse fakturaene",
     "sectionSending": "Utsending",
     "attachPdfLabel": "Legg ved PDF i e-post",
-    "attachPdfHint": "På: kunden får PDF-en i e-posten. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser deg når det ble åpnet."
+    "attachPdfHint": "Standard for alle fakturaer, tilbud og kontroller du sender på e-post. På: kunden får PDF-en vedlagt. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser når det ble åpnet, så du kan følge opp dem ingen har sett på. Du kan endre det for én enkelt utsending i delingsdialogen."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",

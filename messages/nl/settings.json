@@ -592,7 +592,7 @@
     "freezeFailed": "Kon de facturen niet vergrendelen",
     "sectionSending": "Verzenden",
     "attachPdfLabel": "De pdf aan e-mails toevoegen",
-    "attachPdfHint": "Aan: de klant krijgt de pdf in de e-mail. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend."
+    "attachPdfHint": "De standaard voor elke factuur, offerte en inspectie die je per e-mail verstuurt. Aan: de klant krijgt de pdf als bijlage. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend, zodat je kunt nabellen bij wie nog niet gekeken heeft. Voor één verzending kun je het aanpassen in het deelvenster."
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",

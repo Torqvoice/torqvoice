@@ -592,7 +592,7 @@
     "freezeFailed": "Could not lock the invoices",
     "sectionSending": "Sending",
     "attachPdfLabel": "Attach the PDF to emails",
-    "attachPdfHint": "On, the customer gets the PDF in the mail. Off, they get a link to the document instead, and the viewed counter tells you when they opened it."
+    "attachPdfHint": "The default for every invoice, quote and inspection you send by email. On, the customer gets the PDF attached. Off, they get a link to the document instead, and the view counter tells you when they opened it, so you can chase the ones nobody has looked at. You can change it for a single send in the share dialog."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",
