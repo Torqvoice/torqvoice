@@ -100,5 +100,7 @@
     "title": "PDF-voorbeeld",
     "preview": "Voorbeeld",
     "failed": "Kon het PDF-voorbeeld niet genereren."
-  }
+  },
+  "attachPdf": "Pdf toevoegen",
+  "attachPdfHint": "Zet dit uit om in plaats daarvan een link te sturen, zodat je ziet wanneer de klant hem opent."
 }

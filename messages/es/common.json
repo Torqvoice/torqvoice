@@ -100,5 +100,7 @@
     "title": "Vista previa del PDF",
     "preview": "Vista previa",
     "failed": "No se pudo generar la vista previa del PDF."
-  }
+  },
+  "attachPdf": "Adjuntar PDF",
+  "attachPdfHint": "Desactívalo para enviar un enlace en su lugar y ver cuándo lo abre el cliente."
 }

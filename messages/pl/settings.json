@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Każda zachowa projekt, logo, dane warsztatu, klienta, pojazd i ustalenia, z którymi drukuje się teraz. Nie da się tego cofnąć; faktury pozostaną edytowalne lub zablokowane do edycji dokładnie tak jak dziś.",
     "freezeProgress": "Zablokowano {done} z {total}",
     "freezeDone": "Zablokowano {count, plural, one {# fakturę} few {# faktury} many {# faktur} other {# faktury}}",
-    "freezeFailed": "Nie udało się zablokować faktur"
+    "freezeFailed": "Nie udało się zablokować faktur",
+    "sectionSending": "Wysyłka",
+    "attachPdfLabel": "Dołączaj PDF do wiadomości e-mail",
+    "attachPdfHint": "Włączone: klient otrzymuje PDF w wiadomości. Wyłączone: otrzymuje link do dokumentu, a licznik wyświetleń pokazuje, kiedy go otworzył."
   },
   "layoutEditor": {
     "helpText": "Przeciągnij, aby zmienić kolejność. Użyj przełącznika szerokości, aby umieścić sekcje obok siebie. Kolejne sekcje o połowie szerokości (L/P) będą wyświetlane w dwóch kolumnach.",

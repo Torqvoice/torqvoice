@@ -37,6 +37,10 @@ export const SETTING_KEYS = {
   QUOTE_VALID_DAYS: 'workshop.quoteValidDays',
   EMAIL_FROM_NAME: 'email.fromName',
   EMAIL_ENABLED: 'email.enabled',
+  /// Whether a document emailed from Torqvoice carries its PDF. Off sends the
+  /// share link instead, which is the only way to learn whether the customer
+  /// opened it.
+  EMAIL_ATTACH_PDF: 'email.attachPdf',
   INVOICE_TEMPLATE: 'invoice.template',
   INVOICE_PRIMARY_COLOR: 'invoice.primaryColor',
   /// Sheet color behind the document. Empty means the paper stays white.

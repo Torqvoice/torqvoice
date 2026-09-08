@@ -24,6 +24,7 @@ import { sendSmsToCustomer, getSmsTemplates } from '@/features/sms/Actions/smsAc
 import { sendInspectionEmail } from '@/features/email/Actions/emailActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
+import { AttachPdfOption, useAttachPdf } from '@/features/email/Components/AttachPdfOption'
 
 interface InspectionShareDialogProps {
   open: boolean
@@ -58,6 +59,7 @@ export function InspectionShareDialog({
   const [token, setToken] = useState(publicToken)
   const [notifySms, setNotifySms] = useState(false)
   const [notifyEmail, setNotifyEmail] = useState(false)
+  const [attachPdf, setAttachPdf] = useAttachPdf(open)
   const [sending, setSending] = useState(false)
 
   const hasPhone = !!customer?.phone
@@ -107,6 +109,16 @@ export function InspectionShareDialog({
 
     const results: string[] = []
 
+    if (notifyEmail && hasEmail) {
+      const res = await sendInspectionEmail({
+        inspectionId,
+        recipientEmail: customer.email!,
+        attachPdf,
+      })
+      if (res.success) results.push('Email sent')
+      else toast.error(res.error || 'Failed to send email')
+    }
+
     if (notifySms && hasPhone) {
       const tplResult = await getSmsTemplates()
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null
@@ -129,16 +141,6 @@ export function InspectionShareDialog({
       else toast.error(res.error || 'Failed to send SMS')
     }
 
-    if (notifyEmail && hasEmail) {
-      const res = await sendInspectionEmail({
-        inspectionId,
-        recipientEmail: customer.email!,
-        message: `Your vehicle inspection report is ready. View it here: ${shareUrl}`,
-      })
-      if (res.success) results.push('Email sent')
-      else toast.error(res.error || 'Failed to send email')
-    }
-
     if (results.length > 0) {
       toast.success(results.join(' & '))
       setNotifySms(false)
@@ -147,7 +149,7 @@ export function InspectionShareDialog({
     setSending(false)
   }
 
-  const canNotify = shareUrl && customer && (notifySms || notifyEmail)
+  const canNotify = shareUrl && customer && (notifyEmail || notifySms)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -177,28 +179,10 @@ export function InspectionShareDialog({
               </div>
 
               {/* Notify customer */}
-              {customer && (smsEnabled || emailEnabled) && (
+              {customer && (emailEnabled || smsEnabled) && (
                 <div className="space-y-3 rounded-lg border p-3">
                   <p className="text-sm font-medium">Notify {customer.name}</p>
                   <div className="space-y-2">
-                    {smsEnabled && (
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id="notify-sms-inspection"
-                          checked={notifySms}
-                          onCheckedChange={(v) => setNotifySms(v === true)}
-                          disabled={!hasPhone}
-                        />
-                        <Label
-                          htmlFor="notify-sms-inspection"
-                          className={`flex items-center gap-1.5 text-sm ${!hasPhone ? 'text-muted-foreground/50' : ''}`}
-                        >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          SMS
-                          {!hasPhone && <span className="text-xs">(no phone on file)</span>}
-                        </Label>
-                      </div>
-                    )}
                     {emailEnabled && (
                       <div className="flex items-center gap-2">
                         <Checkbox
@@ -217,13 +201,45 @@ export function InspectionShareDialog({
                         </Label>
                       </div>
                     )}
+                    {emailEnabled && notifyEmail && hasEmail && (
+                      <div className="pl-6">
+                        <AttachPdfOption
+                          id="attach-pdf-inspection"
+                          checked={attachPdf}
+                          onCheckedChange={setAttachPdf}
+                        />
+                      </div>
+                    )}
+                    {smsEnabled && (
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="notify-sms-inspection"
+                          checked={notifySms}
+                          onCheckedChange={(v) => setNotifySms(v === true)}
+                          disabled={!hasPhone}
+                        />
+                        <Label
+                          htmlFor="notify-sms-inspection"
+                          className={`flex items-center gap-1.5 text-sm ${!hasPhone ? 'text-muted-foreground/50' : ''}`}
+                        >
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          SMS
+                          {!hasPhone && <span className="text-xs">(no phone on file)</span>}
+                        </Label>
+                      </div>
+                    )}
                   </div>
-                  {canNotify && (
-                    <Button size="sm" onClick={handleNotify} disabled={sending} className="w-full">
-                      {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                      Send Notification
-                    </Button>
-                  )}
+                  {/* Always here, disabled until a channel is ticked: it used to
+                      appear on the first tick and shove the dialog around. */}
+                  <Button
+                    size="sm"
+                    onClick={handleNotify}
+                    disabled={sending || !canNotify}
+                    className="w-full"
+                  >
+                    {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                    Send Notification
+                  </Button>
                 </div>
               )}
 

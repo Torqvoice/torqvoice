@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Each one keeps the design, logo, workshop details, customer, vehicle and findings it prints with right now. This cannot be undone, and the invoices stay editable or locked for editing exactly as they are today.",
     "freezeProgress": "Locked {done} of {total}",
     "freezeDone": "{count, plural, one {# invoice} other {# invoices}} locked",
-    "freezeFailed": "Could not lock the invoices"
+    "freezeFailed": "Could not lock the invoices",
+    "sectionSending": "Sending",
+    "attachPdfLabel": "Attach the PDF to emails",
+    "attachPdfHint": "On, the customer gets the PDF in the mail. Off, they get a link to the document instead, and the viewed counter tells you when they opened it."
   },
   "layoutEditor": {
     "helpText": "Drag to reorder. Use the width toggle to place sections side-by-side. Consecutive half-width sections (L/R) will render in two columns.",

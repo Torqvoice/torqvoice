@@ -481,8 +481,13 @@ export function QuotePageClient({
         onOpenChange={state.setShowEmailDialog}
         defaultEmail={quote.customer?.email || ''}
         entityLabel={t('page.entityLabel')}
-        onSend={async (email, message) => {
-          const result = await sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message })
+        onSend={async (email, message, attachPdf) => {
+          const result = await sendQuoteEmail({
+            quoteId: quote.id,
+            recipientEmail: email,
+            message,
+            attachPdf,
+          })
           if (result.success) handleQuoteSent()
           return result
         }}

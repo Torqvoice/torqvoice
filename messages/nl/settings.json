@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Elke factuur behoudt het ontwerp, het logo, de werkplaatsgegevens, de klant, het voertuig en de bevindingen waarmee ze nu wordt afgedrukt. Dit kan niet ongedaan worden gemaakt; de facturen blijven precies zo bewerkbaar of voor bewerking vergrendeld als vandaag.",
     "freezeProgress": "{done} van {total} vergrendeld",
     "freezeDone": "{count, plural, one {# factuur} other {# facturen}} vergrendeld",
-    "freezeFailed": "Kon de facturen niet vergrendelen"
+    "freezeFailed": "Kon de facturen niet vergrendelen",
+    "sectionSending": "Verzenden",
+    "attachPdfLabel": "De pdf aan e-mails toevoegen",
+    "attachPdfHint": "Aan: de klant krijgt de pdf in de e-mail. Uit: hij krijgt een link naar het document, en de weergaveteller laat zien wanneer het is geopend."
   },
   "layoutEditor": {
     "helpText": "Sleep om te herordenen. Gebruik de breedte-schakelaar om secties naast elkaar te plaatsen. Opeenvolgende halve breedte secties (L/R) worden in twee kolommen weergegeven.",

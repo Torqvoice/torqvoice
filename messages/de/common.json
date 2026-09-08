@@ -100,5 +100,7 @@
     "title": "PDF-Vorschau",
     "preview": "Vorschau",
     "failed": "Die PDF-Vorschau konnte nicht erstellt werden."
-  }
+  },
+  "attachPdf": "PDF anhängen",
+  "attachPdfHint": "Ausschalten, um stattdessen einen Link zu senden, damit Sie sehen, wann der Kunde ihn öffnet."
 }

@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Hver av dem beholder designet, logoen, verkstedopplysningene, kunden, kjøretøyet og funnene den skrives ut med akkurat nå. Dette kan ikke angres, og fakturaene forblir redigerbare eller låst for redigering nøyaktig som i dag.",
     "freezeProgress": "Låst {done} av {total}",
     "freezeDone": "{count, plural, one {# faktura} other {# fakturaer}} låst",
-    "freezeFailed": "Kunne ikke låse fakturaene"
+    "freezeFailed": "Kunne ikke låse fakturaene",
+    "sectionSending": "Utsending",
+    "attachPdfLabel": "Legg ved PDF i e-post",
+    "attachPdfHint": "På: kunden får PDF-en i e-posten. Av: kunden får en lenke til dokumentet i stedet, og visningstelleren viser deg når det ble åpnet."
   },
   "layoutEditor": {
     "helpText": "Dra for å sortere. Bruk bredde-veksler for å plassere seksjoner side om side. Påfølgende halvbredde-seksjoner (V/H) vises i to kolonner.",

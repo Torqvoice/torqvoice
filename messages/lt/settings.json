@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Kiekviena išlaiko dizainą, logotipą, dirbtuvės duomenis, klientą, transporto priemonę ir pastebėjimus, su kuriais spausdinama dabar. To atšaukti negalima; sąskaitos lieka redaguojamos arba užrakintos redagavimui lygiai kaip šiandien.",
     "freezeProgress": "Užrakinta {done} iš {total}",
     "freezeDone": "Užrakinta {count, plural, one {# sąskaita} few {# sąskaitos} other {# sąskaitų}}",
-    "freezeFailed": "Nepavyko užrakinti sąskaitų"
+    "freezeFailed": "Nepavyko užrakinti sąskaitų",
+    "sectionSending": "Siuntimas",
+    "attachPdfLabel": "Prie el. laiškų pridėti PDF",
+    "attachPdfHint": "Įjungta: klientas gauna PDF el. laiške. Išjungta: jis gauna nuorodą į dokumentą, o peržiūrų skaitiklis parodo, kada jis buvo atidarytas."
   },
   "layoutEditor": {
     "helpText": "Vilkite, kad pertvarkytumėte. Naudokite pločio perjungiklį, kad išdėstytumėte sekcijas greta. Iš eilės einančios pusės pločio sekcijos (K/D) bus vaizduojamos dviejuose stulpeliuose.",

@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Chacune conserve le design, le logo, les coordonnées de l'atelier, le client, le véhicule et les constats avec lesquels elle s'imprime maintenant. Irréversible ; les factures restent modifiables ou verrouillées en modification exactement comme aujourd'hui.",
     "freezeProgress": "{done} sur {total} verrouillées",
     "freezeDone": "{count, plural, one {# facture verrouillée} other {# factures verrouillées}}",
-    "freezeFailed": "Impossible de verrouiller les factures"
+    "freezeFailed": "Impossible de verrouiller les factures",
+    "sectionSending": "Envoi",
+    "attachPdfLabel": "Joindre le PDF aux e-mails",
+    "attachPdfHint": "Activé : le client reçoit le PDF dans l'e-mail. Désactivé : il reçoit un lien vers le document, et le compteur de consultations vous indique quand il l'a ouvert."
   },
   "layoutEditor": {
     "helpText": "Glissez pour réorganiser. Utilisez le sélecteur de largeur pour placer les sections côte à côte. Les sections consécutives en demi-largeur (G/D) s'afficheront en deux colonnes.",

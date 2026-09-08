@@ -589,7 +589,10 @@
     "freezeConfirmBody": "Cada uma mantém o design, o logo, os dados da oficina, o cliente, o veículo e as constatações com que é impressa agora. Não pode ser desfeito, e as faturas continuam editáveis ou travadas para edição exatamente como hoje.",
     "freezeProgress": "Travadas {done} de {total}",
     "freezeDone": "{count, plural, one {# fatura travada} other {# faturas travadas}}",
-    "freezeFailed": "Não foi possível travar as faturas"
+    "freezeFailed": "Não foi possível travar as faturas",
+    "sectionSending": "Envio",
+    "attachPdfLabel": "Anexar o PDF aos e-mails",
+    "attachPdfHint": "Ligado: o cliente recebe o PDF no e-mail. Desligado: ele recebe um link para o documento, e o contador de visualizações mostra quando foi aberto."
   },
   "layoutEditor": {
     "helpText": "Arraste para reordenar. Use o alternador de largura para posicionar seções lado a lado. Seções consecutivas de meia largura (E/D) serão exibidas em duas colunas.",
