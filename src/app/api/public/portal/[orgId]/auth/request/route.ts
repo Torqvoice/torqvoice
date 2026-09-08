@@ -6,6 +6,7 @@ import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { MAGIC_LINK_DURATION } from '@/lib/customer-session'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 function escapeHtml(value: string): string {
   return value
@@ -80,9 +81,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
     })
 
     // Send email - use the URL param (slug) so the verify link matches the user's URL
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const appUrl = getAppBaseUrl()
 
     const magicLinkUrl = `${appUrl}/portal/${orgParam}/auth/verify?token=${token}`
     const fromAddress = await getOrgFromAddress(orgId)

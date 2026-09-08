@@ -10,10 +10,15 @@
  * : d` reads as `(a || b) ? c : d`, which tests one address and then prints
  * the other. That typo sent every emailed share link out as
  * "https://undefined/share/..." on installations that are not on Vercel.
+ *
+ * `fallback` is what to use when neither is configured. It defaults to the
+ * dev server, which is the right guess for a link built while someone is
+ * working locally; a request handler that knows the origin it was called on
+ * should pass that instead, since it is the address that actually reached us.
  */
-export function getAppBaseUrl(): string {
+export function getAppBaseUrl(fallback = 'http://localhost:3000'): string {
   const configured = process.env.NEXT_PUBLIC_APP_URL?.trim()
   if (configured) return configured.replace(/\/+$/, '')
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return 'http://localhost:3000'
+  return fallback
 }

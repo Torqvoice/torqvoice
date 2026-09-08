@@ -21,6 +21,7 @@ import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { assembleInvoicePrint, invoiceNumberOf } from '../Lib/assembleInvoicePrint'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 export async function buildInvoicePdfBuffer(
   serviceRecordId: string,
@@ -40,9 +41,7 @@ export async function buildInvoicePdfBuffer(
     torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
   }
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const appUrl = getAppBaseUrl()
   const portalSlug = org?.portalSlug
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined

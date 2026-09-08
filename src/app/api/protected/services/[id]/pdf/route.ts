@@ -15,6 +15,7 @@ import { markInvoiceIssued } from '@/features/onboarding/Lib/markInvoiceIssued'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -101,9 +102,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       torqvoiceLogoDataUri = await getTorqvoiceLogoDataUri()
     }
 
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const appUrl = getAppBaseUrl()
     const portalSlug = org?.portalSlug
     const portalEnabled = settingsMap['portal.enabled'] === 'true'
     const portalUrl = portalEnabled

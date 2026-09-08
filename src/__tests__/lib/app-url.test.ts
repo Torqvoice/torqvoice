@@ -58,6 +58,20 @@ describe('getAppBaseUrl', () => {
     )
   })
 
+  it("uses the caller's fallback when nothing is configured", () => {
+    // The portal verify route sends people back to the address that reached
+    // it, which beats guessing at the dev server.
+    delete process.env.NEXT_PUBLIC_APP_URL
+    delete process.env.VERCEL_URL
+    expect(getAppBaseUrl('https://portal.example.com')).toBe('https://portal.example.com')
+  })
+
+  it("still prefers the configured address over the caller's fallback", () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'https://workshop.example.com'
+    delete process.env.VERCEL_URL
+    expect(getAppBaseUrl('https://portal.example.com')).toBe('https://workshop.example.com')
+  })
+
   it('ignores an address set to whitespace', () => {
     process.env.NEXT_PUBLIC_APP_URL = '   '
     delete process.env.VERCEL_URL

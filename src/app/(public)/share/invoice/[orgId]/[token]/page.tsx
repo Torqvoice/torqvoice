@@ -12,6 +12,7 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
+import { getAppBaseUrl } from '@/lib/app-url'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -130,9 +131,7 @@ export default async function PublicInvoicePage({
     settingsMap['payment.termsOfSaleUrl'] ||
     (settingsMap['payment.termsOfSale'] ? `/share/terms/${orgId}` : undefined)
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  const appUrl = getAppBaseUrl()
   const portalSlug = org?.portalSlug
   const portalEnabled = settingsMap['portal.enabled'] === 'true'
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined

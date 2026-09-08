@@ -3,19 +3,14 @@ import { randomBytes } from 'crypto'
 import { db } from '@/lib/db'
 import { CUSTOMER_SESSION_COOKIE, CUSTOMER_SESSION_DURATION } from '@/lib/customer-session'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-
-function getBaseUrl(requestUrl: string): string {
-  // Prefer configured app URL, fall back to request origin
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return new URL(requestUrl).origin
-}
+import { getAppBaseUrl } from '@/lib/app-url'
 
 export async function GET(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
   const { orgId: orgParam } = await params
   const { searchParams } = new URL(request.url)
   const token = searchParams.get('token')
-  const baseUrl = getBaseUrl(request.url)
+  // Nothing configured: the address that reached us is the one to send them back to.
+  const baseUrl = getAppBaseUrl(new URL(request.url).origin)
 
   const loginUrl = `${baseUrl}/portal/${orgParam}/auth/login`
 
