@@ -201,12 +201,13 @@ export function InspectionShareDialog({
                         </Label>
                       </div>
                     )}
-                    {emailEnabled && notifyEmail && hasEmail && (
+                    {emailEnabled && (
                       <div className="pl-6">
                         <AttachPdfOption
                           id="attach-pdf-inspection"
                           checked={attachPdf}
                           onCheckedChange={setAttachPdf}
+                          disabled={!notifyEmail || !hasEmail}
                         />
                       </div>
                     )}

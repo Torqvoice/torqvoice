@@ -193,12 +193,13 @@ export function QuoteShareDialog({
                         </Label>
                       </div>
                     )}
-                    {emailEnabled && notifyEmail && hasEmail && (
+                    {emailEnabled && (
                       <div className="pl-6">
                         <AttachPdfOption
                           id="attach-pdf-quote"
                           checked={attachPdf}
                           onCheckedChange={setAttachPdf}
+                          disabled={!notifyEmail || !hasEmail}
                         />
                       </div>
                     )}

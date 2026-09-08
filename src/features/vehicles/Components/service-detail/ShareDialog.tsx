@@ -197,12 +197,13 @@ export function ShareDialog({
                         </Label>
                       </div>
                     )}
-                    {emailEnabled && notifyEmail && hasEmail && (
+                    {emailEnabled && (
                       <div className="pl-6">
                         <AttachPdfOption
                           id="attach-pdf-invoice"
                           checked={attachPdf}
                           onCheckedChange={setAttachPdf}
+                          disabled={!notifyEmail || !hasEmail}
                         />
                       </div>
                     )}
